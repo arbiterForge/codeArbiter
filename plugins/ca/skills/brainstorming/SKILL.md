@@ -45,6 +45,12 @@ State the problem, observable result, intended scope and explicit exclusions. Re
 
 Consider genuine trade-offs where they matter, recommend a suitable approach and explain why. Do not manufacture straw alternatives. Reversible implementation methods remain agent-owned within the agreed outcome. Ask for a user ruling on an unresolved, consequential product choice, not on every viable implementation detail.
 
+**Never manufacture alternatives.** When only one sane approach exists, say so in one line and say why; that path runs no SMARTS comparison and adds no SMARTS table.
+
+**SMARTS on a material choice.** Only when two or more materially plausible approaches exist, run a SMARTS comparison per `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` inline before recommending one. Bound it to the context-envelope dimensions that could differentiate the approaches, mark missing evidence `Unknown` with its missing observation, and surface a decision-critical `Unknown` before selecting. If every candidate carries one, pause the selection until the missing observation is resolved or the user rules. The comparison dispatches no grader or scout, performs no bulk read of `plans/` or `decisions/`, and loads `${CLAUDE_PLUGIN_ROOT}/includes/smarts/lenses.md` only when a verdict turns on a consideration the core summaries do not settle. Name cost, schedule, team-skill, vendor or stakeholder constraints alongside the result; they never become a seventh lens. Apply the core's priority order when lenses conflict; a tie without explicit priority evidence goes to the user. An explicit request for a full SMARTS read changes only the presentation depth — the full option-by-option table — with no new command and no change to decision authority.
+
+**Record the rationale.** When the comparison ran, write the decisive lenses, any `Unknown` with its missing observation, the non-SMARTS constraints and the selection reason into the spec's `SEC-SMARTS` section, or the `## SMARTS design rationale` section of a Markdown spec. A single-approach choice records only its one-line statement there.
+
 Review applicable ADRs and explicit exclusions. A real conflicting architecture decision goes to its owner. Mentioning a protected file does not by itself restart the entire feature interview.
 
 ## Phase 3 - Make acceptance observable
