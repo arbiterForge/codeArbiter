@@ -1,0 +1,1282 @@
+#!/usr/bin/env python3
+# codeArbiter — installs the git-level enforcement hooks (#161).
+#
+# The PreToolUse Bash hook (pre-bash.py) gates git operations by matching the
+# literal command string, so shell indirection (`g=git; c=commit; $g $c`) walks
+# past it. There is no enforcement below that layer. This module installs
+# repo-level .git/hooks/pre-commit and pre-push that invoke git-enforce.py at the
+# git operation itself, where spelling no longer matters.
+#
+# Design decisions (ADR-0014, resolves #265 / tribunal reliability-009):
+#   * The shim is a tiny POSIX `sh` script that detects the interpreter ONCE
+#     (python3 else python) and runs the enforcer EXACTLY once — never
+#     `python3 X || python X`, which would (a) swallow a BLOCK when python3 both
+#     exists and blocks, and (b) drain stdin before the fallback (pre-push feeds
+#     the ref list on stdin). Same hazard hooks.json avoids via two entries; a
+#     single hook file must guard it inline.
+#   * The shim itself is HOST-NEUTRAL: it embeds no absolute enforcer path at
+#     all. It instead points at a shared, non-versioned drop-in directory
+#     inside the repo's OWN `.git/`:
+#
+#         .git/codearbiter-hooksd/<plugin>.path      # e.g. ca.path, ca-codex.path
+#
+#     Each installed host writes its OWN current `_enforcer_path()` into its
+#     own `<plugin>.path` file every SessionStart (install() below) — a live
+#     host self-heals a stale entry on its very next session. The shim runs
+#     every resolving enforcer until one blocks; all must allow for Git to
+#     proceed. A dead entry from an uninstalled plugin is skipped.
+#     `uninstall()` removes only ITS OWN
+#     `.path` file — never the shared shim, which a sibling plugin may still
+#     depend on.
+#   * FAIL CLOSED, not fail-open: if the directory is empty, absent, or every
+#     entry it contains names a file that no longer exists, the shim prints a
+#     diagnostic to stderr and exits non-zero — it BLOCKS the git operation
+#     rather than silently allowing it. This is a deliberate reversal of the
+#     single-plugin fail-open era: ADR-0014 records why. Before this drop-in dir
+#     existed, the shim embedded ONE absolute enforcer path (whichever plugin's
+#     SessionStart ran last), so uninstalling that plugin — or even the OTHER
+#     plugin, if IT never got a chance to write its own copy afterward — could
+#     silently unwire the git-level backstop for every host. The drop-in dir
+#     removes the reason fail-open existed (a plugin no longer has to derive a
+#     SIBLING's path — each writes only its own), so the residual failure mode
+#     (truly nothing resolves) can safely — and must — fail closed instead.
+#   * The drop-in directory itself is resolved via the repo's git COMMON dir
+#     (mirrors `git rev-parse --git-common-dir`, resolved without a git spawn
+#     when possible — see `_git_common_dir`), never `--git-dir` and never a
+#     per-worktree path: a linked worktree's `.git` is a FILE pointing at
+#     `<main>/.git/worktrees/<name>`, and the shared hooks/backstop must resolve
+#     to the ONE drop-in dir inside the MAIN repo's `.git/`, so every worktree
+#     and every host agree on the same directory — a per-worktree drop-in dir
+#     would defeat the entire cross-host purpose.
+#   * A pre-existing NON-ours hook is NEVER clobbered — we warn loudly and skip,
+#     so an existing husky / pre-commit-framework setup is preserved.
+#   * Idempotent: an up-to-date ours-hook is left untouched (no churn); a stale
+#     ours-hook is refreshed. Because the shim no longer embeds any
+#     plugin-specific path, an enforcer-path change (e.g. a version bump moving
+#     the install dir) does NOT by itself require rewriting the shim file — only
+#     this plugin's own `<plugin>.path` drop-in entry, which install() refreshes
+#     unconditionally every session regardless of whether the shim itself needed
+#     a rewrite.
+#   * A pre-existing NON-ours hook is NEVER clobbered — we warn loudly and skip,
+#     so an existing husky / pre-commit-framework setup is preserved.
+#   * Idempotent: an up-to-date ours-hook is left untouched (no churn); a stale
+#     ours-hook is refreshed.
+#   * performance-002 (#194): re-resolving hooks_dir() every SessionStart costs
+#     one blocking `git` subprocess spawn (`rev-parse --git-path hooks`) even
+#     on the common steady-state call where
+#     nothing changed. install() first checks a cheap on-disk cache (a single
+#     small file read, no git spawn) recording the hooks_dir a prior successful
+#     resolution used; if BOTH phase shims at that cached location already
+#     match what we'd install right now, it returns immediately. Any mismatch
+#     or absence (including a genuinely fresh/cold repo) falls through to the
+#     full git-based probe unchanged — the cache is a pure latency optimization,
+#     never load-bearing for correctness.
+#
+#     CRITICAL fix (security review, post-#194): the fast path must NEVER trust
+#     a cached hooks_dir without CHEAPLY (no git spawn) proving the EFFECTIVE
+#     hooks dir has not moved since that cache was written. The original cut
+#     only re-checked that the shims AT the cached location were current — it
+#     never re-checked that git would still read hooks FROM that location. A
+#     LOCAL core.hooksPath change after the cache was written (the realistic
+#     case: the user later adopts husky / pre-commit-framework, which set
+#     `core.hooksPath` in `.git/config`) left the fast path returning `[]`
+#     (success) while the NEW hooks dir got no codeArbiter shim at all — the
+#     #161 backstop silently unwired. Fixed: the fast path now ALSO requires
+#     (a) the cached dir be exactly the DEFAULT `<root>/.git/hooks` (never a
+#     cached custom hooksPath — those must always re-confirm via git, since a
+#     custom path is exactly the kind of thing that gets repointed), and (b) a
+#     direct read of `.git/config` (and `.git/config.worktree`, for
+#     extensions.worktreeConfig repos) positively CONFIRMS no local
+#     core.hooksPath key is set. Any read failure, parse ambiguity, or a
+#     detected key falls through to the full git-based probe — fail direction
+#     is "install when unsure," never "skip when unsure."
+#
+#     Documented residual (accepted, not cheaply closable): a GLOBAL/SYSTEM
+#     core.hooksPath set AFTER a default-location install is not caught by the
+#     `.git/config` read alone. This covers ALL of git's global/system config
+#     locations, not just `~/.gitconfig`: `~/.config/git/config` (or
+#     `$XDG_CONFIG_HOME/git/config`), and a `$GIT_CONFIG_GLOBAL`/
+#     `$GIT_CONFIG_SYSTEM` env override repointing the file entirely. The cache
+#     is keyed on the mtime of `~/.gitconfig` AND the XDG path (below), which
+#     closes the common case of a later edit to either of those two files; a
+#     `GIT_CONFIG_GLOBAL`/`GIT_CONFIG_SYSTEM` env override, or an edit to
+#     `/etc/gitconfig`, is not cheaply detectable from a fixed path and remains
+#     residual. This is rare (those overrides predating a later default-location
+#     install is the unusual order), and a cold/first install always resolves
+#     it correctly via the full git-based probe regardless.
+
+import json
+import os
+import re
+import stat
+import subprocess
+import sys
+
+import _hooklib
+from _durabilitylib import is_ephemeral_path
+from _gitexec import (git_executable, root_bound_git_env,
+                      trusted_git_executable, trusted_python_executable)
+
+SENTINEL = "# codeArbiter-managed git hook (#161)"
+SHIM_NOTICE = (
+    "# This SHIM is refreshed by any live "
+    "host's session (it is host-neutral, ADR-0014); the plugin-specific enforcer "
+    "entries it dispatches to (.git/codearbiter-hooksd/*.path) each self-heal "
+    "only on THAT plugin's own next session (#556) — edits here are overwritten."
+)
+PHASES = ("pre-commit", "pre-push")
+# The hooks_dir() resolution cache lives INSIDE .git/ itself (never under
+# .codearbiter/): a linked worktree's `.git` is a FILE (not a directory)
+# pointing at the real gitdir elsewhere, so os.path.isdir(...) on it is
+# naturally False there — the cache silently declines to engage and every call
+# falls through to the full probe, rather than ever risking a wrong-repo guess.
+_HOOKSDIR_CACHE_NAME = "codearbiter-hooksdir-cache"
+
+
+def _warn(msg):
+    print(f"codeArbiter git-hooks: {msg}", file=sys.stderr)
+
+
+def _git(args, cwd):
+    try:
+        return subprocess.run(
+            [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=5,
+            env=root_bound_git_env(),
+        )
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def hooks_dir(root):
+    """The directory git actually reads hooks from for `root`, or None.
+
+    The selected Git binary owns core.hooksPath parsing, including its path
+    grammar (`~`, `%(prefix)`, absolute, and relative forms), and linked
+    worktree/submodule semantics. Python must not reinterpret the raw config
+    value differently from the binary that will execute the hooks."""
+    gp = _git(["rev-parse", "--git-path", "hooks"], root)
+    if gp is not None and gp.returncode == 0 and gp.stdout.strip():
+        hp = gp.stdout.strip()
+        return hp if os.path.isabs(hp) else os.path.join(root, hp)
+    return None
+
+
+def _enforcer_path():
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "git-enforce.py")
+
+
+def _plugin_name():
+    """A stable per-plugin identifier for THIS install's drop-in `.path`
+    filename (ADR-0014). Host caches insert a version directory between the
+    plugin name and `hooks/`, so the package-directory basename is not stable.
+    Prefer the shipped host manifest. A damaged versioned cache falls back to
+    its parent plugin directory; a source-tree install falls back to its
+    package-directory basename. Every returned key is filename-safe."""
+    hooks_dir_path = os.path.dirname(os.path.abspath(__file__))
+    package_dir = os.path.dirname(hooks_dir_path)
+    manifests = (
+        os.path.join(package_dir, ".claude-plugin", "plugin.json"),
+        os.path.join(package_dir, ".codex-plugin", "plugin.json"),
+        os.path.join(package_dir, "package.json"),
+    )
+    safe_name = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+    for manifest in manifests:
+        try:
+            with open(manifest, encoding="utf-8") as f:
+                name = json.load(f).get("name")
+        except (OSError, UnicodeError, json.JSONDecodeError, AttributeError):
+            continue
+        if isinstance(name, str) and safe_name.fullmatch(name):
+            return name
+
+    package_name = os.path.basename(package_dir)
+    if re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9._-]+)?", package_name):
+        package_name = os.path.basename(os.path.dirname(package_dir))
+    return package_name if safe_name.fullmatch(package_name or "") else "plugin"
+
+
+_DROPIN_DIRNAME = "codearbiter-hooksd"
+
+
+def _git_common_dir(root):
+    """The directory `git rev-parse --git-common-dir` would report for
+    `root` — resolved WITHOUT a git spawn whenever the on-disk layout is
+    cheaply readable, falling back to a real git spawn only when it isn't.
+
+    Deliberately mirrors --git-common-dir, NOT --git-dir: a linked worktree's
+    `.git` is a FILE (not a directory) holding a `gitdir: <path>` pointer into
+    `<main>/.git/worktrees/<name>`, and THAT directory in turn holds a
+    `commondir` file naming the real, SHARED main `.git`. Every worktree of a
+    repo must resolve to the SAME common dir here, or the #265 drop-in dir
+    would fork per-worktree and defeat the entire cross-host purpose (a shim
+    installed from worktree A would never see an entry written from
+    worktree B). The returned path is canonical so equivalent symlink, macOS
+    `/var`, and Windows short-name spellings produce the same registry path in
+    every managed shim. The main-repo case (`.git` is a directory) needs no
+    spawn at all: it IS its own common dir. Returns None if nothing resolves —
+    callers must treat that as "can't place the drop-in dir right now" and
+    never invent a per-worktree fallback."""
+    git_path = os.path.join(root, ".git")
+    if os.path.isdir(git_path):
+        return os.path.realpath(git_path)
+    if os.path.isfile(git_path):
+        text = _read(git_path)
+        if text:
+            for line in text.splitlines():
+                line = line.strip()
+                if line.lower().startswith("gitdir:"):
+                    wt_gitdir = line.split(":", 1)[1].strip()
+                    if not os.path.isabs(wt_gitdir):
+                        wt_gitdir = os.path.normpath(os.path.join(root, wt_gitdir))
+                    cd_text = _read(os.path.join(wt_gitdir, "commondir"))
+                    if cd_text:
+                        cd = cd_text.strip()
+                        common = (cd if os.path.isabs(cd)
+                                  else os.path.normpath(os.path.join(wt_gitdir, cd)))
+                        return os.path.realpath(common)
+                    break
+    r = _git(["rev-parse", "--git-common-dir"], root)
+    if r is not None and r.returncode == 0 and r.stdout.strip():
+        out = r.stdout.strip()
+        return os.path.realpath(
+            out if os.path.isabs(out) else os.path.join(root, out))
+    return None
+
+
+def _dropin_dir(root):
+    """The shared, non-versioned drop-in directory (ADR-0014) each installed
+    host writes its own `<plugin>.path` entry into. Lives inside the repo's
+    git COMMON dir (never a per-worktree one — see `_git_common_dir`) so
+    every worktree and every host share exactly ONE directory. Returns None
+    when the common dir itself can't be resolved (no git dir at all)."""
+    common = _git_common_dir(root)
+    return os.path.join(common, _DROPIN_DIRNAME) if common else None
+
+
+def _path_entry_file(dropin_dir, plugin):
+    return os.path.join(dropin_dir, f"{plugin}.path")
+
+
+def _shell_path(path):
+    """Render an absolute native path for the POSIX sh git-hook boundary.
+
+    Git for Windows executes these hooks through its POSIX shell. Native
+    backslashes are ordinary characters there, so both globbing the drop-in
+    directory and testing an enforcer entry would fail closed even though the
+    Windows files exist. Forward slashes remain valid to Windows Python and
+    Git while also being unambiguous to the shell.
+    """
+    return path.replace("\\", "/")
+
+
+# ADR-0038: a bounded, finite translator between the three known spellings of
+# an absolute path on a Windows drive letter -- Windows-native (`C:/...`),
+# Git-Bash/MSYS (`/c/...`), and WSL drvfs (`/mnt/c/...`). This is the ONE
+# place cross-host path-form resolution happens; every caller (the Python
+# registry checks below, and the shell text `_CX_RESOLVE_SH` embedded into
+# the generated shim) must implement this SAME grammar, never re-derive it.
+# Scope is deliberately closed: a path matching none of the three patterns
+# (e.g. a WSL-native /home/... path with no Windows-drive equivalent) is left
+# as its own sole candidate -- this is not a general host-layout search.
+_WIN_DRIVE = re.compile(r'^([A-Za-z]):[/\\](.*)$')
+_GITBASH_DRIVE = re.compile(r'^/([A-Za-z])/(.*)$')
+_WSL_DRIVE = re.compile(r'^/mnt/([A-Za-z])/(.*)$')
+
+
+def _path_form_candidates(path):
+    """Every spelling of `path` worth testing for existence (ADR-0038): the
+    host-native absolute form first, then the other translated forms when
+    `path` matches one of the three known Windows-drive spellings. Pure -- no
+    filesystem access.
+
+    A native Windows-drive spelling ("C:/...") is only ever offered as a
+    checkable candidate when this interpreter is itself native Windows
+    (`os.name == "nt"`): on a genuine POSIX interpreter (real WSL, Linux) that
+    spelling is not absolute at all and a caller testing it with
+    `os.path.isfile` would have it silently reinterpreted as relative to the
+    current directory -- a foreign-spelled entry could then resolve to an
+    unrelated, attacker-plantable relative path instead of correctly falling
+    through to the POSIX-absolute translated forms. Git-Bash resolves the
+    same file via its own "/<drive>/..." candidate below regardless, so
+    nothing is lost by withholding the native spelling there."""
+    normalized = _shell_path(path)
+    on_windows = os.name == "nt"
+    m = _WSL_DRIVE.match(normalized)
+    if m:
+        drive, rest = m.group(1).lower(), m.group(2)
+        if on_windows:
+            return [f"{drive.upper()}:/{rest}", normalized, f"/{drive}/{rest}"]
+        return [normalized, f"/{drive}/{rest}"]
+    m = _GITBASH_DRIVE.match(normalized)
+    if m:
+        drive, rest = m.group(1).lower(), m.group(2)
+        if on_windows:
+            return [f"{drive.upper()}:/{rest}", normalized, f"/mnt/{drive}/{rest}"]
+        return [normalized, f"/mnt/{drive}/{rest}"]
+    m = _WIN_DRIVE.match(normalized)
+    if m:
+        drive, rest = m.group(1).lower(), m.group(2)
+        candidates = [f"/{drive}/{rest}", f"/mnt/{drive}/{rest}"]
+        if on_windows:
+            candidates.insert(0, normalized)
+        return candidates
+    return [normalized]
+
+
+def _resolve_live(path):
+    """The first candidate spelling of `path` (ADR-0038) naming an existing
+    regular file, or None if none does. The ONE Python-side entry point for
+    cross-host file resolution -- callers must never re-derive candidates."""
+    for candidate in _path_form_candidates(path):
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+def _resolve_live_dir(path):
+    """Directory analogue of `_resolve_live` (ADR-0038) -- used to recognize
+    that a sibling host's differently-spelled drop-in-dir string names the
+    SAME real directory this host resolves, so a shim differing only in that
+    spelling is not treated as stale (B3/#684 churn)."""
+    for candidate in _path_form_candidates(path):
+        if os.path.isdir(candidate):
+            return candidate
+    return None
+
+
+# The bounded, finite shell-side translator (ADR-0038), using POSIX path
+# semantics like `_path_form_candidates` on POSIX -- embedded verbatim into
+# every generated shim so the REAL git-hook execution path (not just Python
+# diagnostics) resolves a foreign-but-translatable spelling instead of
+# failing closed on it. Pure POSIX sh (`case`, `cut`, `tr`, parameter
+# expansion) -- no extra process spawn beyond the cheap utilities already
+# used elsewhere in this shim. Prints the resolved path and returns 0 on the
+# first candidate that exists; returns 1 with nothing printed when NONE of
+# the (as-is, plus up to two translated) candidates resolves -- callers must
+# treat that as "does not exist," preserving ADR-0014's fail-closed contract.
+_CX_RESOLVE_SH = (
+    "_cx_resolve() {\n"
+    "  P=$1\n"
+    "  K=-f\n"
+    '  [ "${2:-}" = dir ] && K=-d\n'
+    '  case "$P" in\n'
+    "    /mnt/[A-Za-z]/*)\n"
+    '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
+    '      REST=${P#/mnt/?/}\n'
+    '      DR=$(printf \'%s\' "$P" | cut -c6)\n'
+    '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
+    '      DRU=$(printf \'%s\' "$DR" | tr \'a-z\' \'A-Z\')\n'
+    '      A1="/$DRL/$REST"; A2="$DRU:/$REST"\n'
+    "      ;;\n"
+    "    /[A-Za-z]/*)\n"
+    '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
+    '      REST=${P#/?/}\n'
+    '      DR=$(printf \'%s\' "$P" | cut -c2)\n'
+    '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
+    '      DRU=$(printf \'%s\' "$DR" | tr \'a-z\' \'A-Z\')\n'
+    '      A1="/mnt/$DRL/$REST"; A2="$DRU:/$REST"\n'
+    "      ;;\n"
+    "    [A-Za-z]:/*)\n"
+    "      # Deliberately do NOT test \"$P\" as-is here (unlike the two\n"
+    "      # branches above): on a genuine POSIX sh (real WSL, Linux), a\n"
+    "      # drive-letter-native spelling like \"C:/...\" is not absolute at\n"
+    "      # all -- it is silently reinterpreted as relative to CWD, which\n"
+    "      # could select an attacker-plantable file at ./C:/... instead of\n"
+    "      # correctly falling through to the translated candidates below.\n"
+    "      # Git-Bash resolves this same spelling too, but via A1 (\"/<drive>/\n"
+    "      # ...\"), which Git-Bash ALSO resolves -- so nothing is lost by\n"
+    "      # withholding the raw as-is test for this one grammar.\n"
+    '      DR=$(printf \'%s\' "$P" | cut -c1 | tr \'A-Z\' \'a-z\')\n'
+    "      # ??: (two wildcards, literal colon) never matches a drive-letter\n"
+    "      # path like C:/... (its 3rd char is / , not the required literal\n"
+    "      # ':'), so it left REST completely unstripped -- a confirmed\n"
+    "      # security-review regression (fixed before merge, never released).\n"
+    "      # ?:/ (one wildcard drive letter, literal ':', literal '/') is the\n"
+    "      # correct 3-char match for this branch's own case pattern.\n"
+    '      REST=${P#?:/}\n'
+    '      REST=${REST#/}\n'
+    '      A1="/$DR/$REST"; A2="/mnt/$DR/$REST"\n'
+    "      ;;\n"
+    "    *)\n"
+    '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
+    "      return 1\n"
+    "      ;;\n"
+    "  esac\n"
+    '  [ "$K" "$A1" ] && { printf \'%s\' "$A1"; return 0; }\n'
+    '  [ "$K" "$A2" ] && { printf \'%s\' "$A2"; return 0; }\n'
+    "  return 1\n"
+    "}\n"
+)
+
+
+def _path_entry_current(dropin_dir, plugin, enforcer):
+    """True iff this plugin's own drop-in entry already names `enforcer`."""
+    existing = _read(_path_entry_file(dropin_dir, plugin))
+    return existing is not None and existing.strip() == enforcer
+
+
+def _write_path_entry(dropin_dir, plugin, enforcer):
+    """Best-effort (never fatal) write/refresh of this plugin's OWN
+    `<plugin>.path` drop-in entry — the self-heal half of ADR-0014: a live
+    host rewrites its own entry every SessionStart regardless of whether the
+    shared shim itself needed any change, so a stale entry from a version
+    bump never outlives one session on a live install.
+
+    #441: that self-heal must never pin an EPHEMERAL enforcer. The drop-in dir
+    lives in the git COMMON dir, so every linked worktree writes the MAIN
+    repository's entry (`TestDropInSharedDir` proves the sharing, and it is the
+    point of ADR-0014). A session started inside a worktree — subagents do this
+    routinely — therefore repoints the main repo's enforcer at a directory that
+    vanishes the moment that worktree is pruned, which is what worktrees are
+    for.
+
+    Losing this entry is SILENT gate loss, not a visible break like #438's
+    statusline: H-01, H-03, H-05, H-09b, H-10b, H-11 and H-19 all run through
+    the enforcer named here, and a repo that loses it keeps looking governed.
+    So an ephemeral enforcer is refused outright, leaving whatever durable entry
+    is already there untouched — a stale-but-durable enforcer still enforces, an
+    absent one does not.
+
+    A stale but DURABLE path is still refreshed exactly as before; the guard is
+    not a kill-switch. `is_ephemeral_path` fails toward "durable", so an
+    unreadable or unrecognised layout keeps the old behaviour rather than
+    silently disabling the self-heal."""
+    if is_ephemeral_path(enforcer):
+        _warn(f"'{plugin}' was loaded from a path that will not outlive this session "
+              f"({enforcer}); leaving the shared enforcer entry as it is. Git-level "
+              f"enforcement keeps using the previously registered install. Start a "
+              f"session from the main checkout to refresh it.")
+        return False
+    shell_enforcer = _shell_path(enforcer)
+    if _path_entry_current(dropin_dir, plugin, shell_enforcer):
+        return True
+    try:
+        os.makedirs(dropin_dir, exist_ok=True)
+        _hooklib.write_text_atomic(
+            _path_entry_file(dropin_dir, plugin), shell_enforcer + "\n", newline="\n")
+        return True
+    except Exception as e:  # noqa: BLE001
+        _warn(f"could not write drop-in enforcer entry for '{plugin}' at {dropin_dir}: {e}")
+        return False
+
+
+def _seen_marker_file(dropin_dir, plugin):
+    return os.path.join(dropin_dir, f"{plugin}.seen")
+
+
+def _touch_seen_marker(dropin_dir, plugin, enforcer):
+    """Best-effort (never fatal) freshness heartbeat for `plugin` (#556).
+
+    Records the SAME enforcer value `_write_path_entry` just confirmed in
+    `<plugin>.path` — content-addressed on purpose. The freshness guard below
+    only trusts this heartbeat's mtime when its recorded content still
+    matches `<plugin>.path`'s CURRENT content; a raw mtime-only heartbeat
+    (compared only against `.path`'s own mtime) is a sub-millisecond race on
+    some filesystems whenever a `.path` entry is rewritten by something other
+    than `install()` shortly after a real install (exactly what several
+    existing drop-in tests simulate to probe unrelated behavior) — content
+    equality has no such timing dependency.
+
+    Unlike `<plugin>.path` (which `_write_path_entry` deliberately leaves
+    untouched when its content hasn't changed, to avoid churn), THIS file is
+    rewritten every live session regardless of whether the `.path` entry
+    itself changed — it is the signal a sibling plugin's cache has gone
+    stale. A plugin whose host never runs a session again simply stops
+    updating its `.seen` file, which is exactly the staleness #556 needs
+    surfaced.
+
+    Callers must skip this for an ephemeral enforcer (mirroring
+    `_write_path_entry`'s own refusal) — an ephemeral session confirming
+    freshness would be exactly the wrong direction: it would make a
+    sibling's genuinely durable, still-correct entry look stale by
+    comparison."""
+    try:
+        os.makedirs(dropin_dir, exist_ok=True)
+        _hooklib.write_text_atomic(
+            _seen_marker_file(dropin_dir, plugin), _shell_path(enforcer) + "\n", newline="\n")
+    except Exception:  # noqa: BLE001
+        pass
+
+
+# The freshness probe embedded VERBATIM into every generated shim (via a
+# stdin heredoc, see `_shim()`) AND run identically by `stale_registered_plugins`
+# below for `/ca:doctor` (#556, AC-3). Deliberately a single string constant
+# run in BOTH places rather than two hand-kept implementations: the shim
+# cannot import any plugin's `_githooks.py` to get this logic (whichever
+# plugin's copy it picked could itself be the stale one this guard exists to
+# distrust — the exact #556 failure, one level up), so it must be entirely
+# self-contained text that the CURRENTLY installing (never stale — the shim
+# file itself is regenerated by whatever live host runs `install()`, see
+# SENTINEL) session bakes in. `/ca:doctor` runs the SAME text as a real
+# subprocess instead of a parallel port, so the two can never drift.
+#
+# Algorithm: first discard entries whose registered enforcer is not a live
+# regular file. A remaining plugin's registered entry is "stale" — printed to
+# stdout, one per line — iff (a) at least one OTHER live registered entry in the same
+# drop-in dir has recorded a `.seen` heartbeat, AND (b) this plugin's own
+# heartbeat is either absent or strictly older than the freshest one seen.
+# When NOBODY has ever recorded a heartbeat (a repo that predates #556, or
+# every registered plugin genuinely dormant), nothing is printed — the
+# caller then treats every entry as before this fix (the original, safe
+# fail-closed "run everything" default), never silently disabling
+# enforcement outright.
+_FRESHNESS_PY = (
+    "import os, re, sys\n"
+    "d = sys.argv[1] if len(sys.argv) > 1 else ''\n"
+    "try:\n"
+    "    names = os.listdir(d)\n"
+    "except OSError:\n"
+    "    names = []\n"
+    "legacy = re.compile(r'^[0-9]+\\.[0-9]+\\.[0-9]+$')\n"
+    # ADR-0038: mirrors `_path_form_candidates`/`_resolve_live` exactly (a
+    # foreign-spelled but resolvable entry must not be treated as absent
+    # here, or a stale sibling would go unmarked). A native Windows-drive
+    # spelling ("C:/...") is only offered as a checkable candidate when this
+    # interpreter itself is native Windows -- on a genuine POSIX shell/
+    # interpreter that spelling is not absolute and would otherwise be
+    # silently reinterpreted as relative to CWD.
+    "def _resolve(p):\n"
+    "    p = p.replace('\\\\', '/')\n"
+    "    m = re.match(r'^/mnt/([A-Za-z])/(.*)$', p)\n"
+    "    if m:\n"
+    "        dr, rest = m.group(1).lower(), m.group(2)\n"
+    "        cands = [p, '/' + dr + '/' + rest]\n"
+    "        if os.name == 'nt':\n"
+    "            cands.append(dr.upper() + ':/' + rest)\n"
+    "        return any(os.path.isfile(c) for c in cands)\n"
+    "    m = re.match(r'^/([A-Za-z])/(.*)$', p)\n"
+    "    if m:\n"
+    "        dr, rest = m.group(1).lower(), m.group(2)\n"
+    "        cands = [p, '/mnt/' + dr + '/' + rest]\n"
+    "        if os.name == 'nt':\n"
+    "            cands.append(dr.upper() + ':/' + rest)\n"
+    "        return any(os.path.isfile(c) for c in cands)\n"
+    "    m = re.match(r'^([A-Za-z]):[/\\\\](.*)$', p)\n"
+    "    if m:\n"
+    "        dr, rest = m.group(1).lower(), m.group(2)\n"
+    "        cands = ['/' + dr + '/' + rest, '/mnt/' + dr + '/' + rest]\n"
+    "        if os.name == 'nt':\n"
+    "            cands.insert(0, p)\n"
+    "        return any(os.path.isfile(c) for c in cands)\n"
+    "    return os.path.isfile(p)\n"
+    "def _rd(p):\n"
+    "    try:\n"
+    "        with open(p, encoding='utf-8', errors='replace') as f:\n"
+    "            return f.read().strip()\n"
+    "    except OSError:\n"
+    "        return None\n"
+    "entries = []\n"
+    "for n in sorted(names):\n"
+    "    if not n.endswith('.path'):\n"
+    "        continue\n"
+    "    plugin = n[:-len('.path')]\n"
+    "    if legacy.fullmatch(plugin):\n"
+    "        continue\n"
+    "    path_val = _rd(os.path.join(d, n))\n"
+    "    if not path_val or not _resolve(path_val.strip()):\n"
+    "        continue\n"
+    "    seen_file = os.path.join(d, plugin + '.seen')\n"
+    # `.seen` only counts as a confirmation of what's registered RIGHT NOW when
+    # its recorded value still matches `.path`'s CURRENT content -- content
+    # equality, never a raw mtime-ordering guess. A `.path` entry rewritten by
+    # something other than install() (a version bump landing between two
+    # sessions, or -- in this suite's own drop-in fixtures -- a direct
+    # overwrite that never re-confirms) leaves a `.seen` file whose value no
+    # longer matches, which must NOT count as evidence for the new content: a
+    # sub-millisecond mtime race between two nearly-simultaneous writes is not
+    # a reliable ordering signal on every filesystem, but string equality has
+    # no timing dependency at all.
+    "    confirmed = None\n"
+    "    if _rd(seen_file) == path_val:\n"
+    "        try:\n"
+    "            confirmed = os.stat(seen_file).st_mtime\n"
+    "        except OSError:\n"
+    "            confirmed = None\n"
+    "    entries.append((plugin, confirmed))\n"
+    "known = [m for _, m in entries if m is not None]\n"
+    "if known:\n"
+    "    mx = max(known)\n"
+    "    for plugin, m in entries:\n"
+    "        if m is None or m < mx:\n"
+    "            print(plugin)\n"
+)
+
+
+def stale_registered_plugins(dropin_dir):
+    """Plugin names whose drop-in `.path` entry the generated shim's
+    freshness guard (#556) will SKIP at the next commit/push, because a
+    fresher registered sibling exists. Runs `_FRESHNESS_PY` as a real
+    subprocess of THIS interpreter — never a hand-kept parallel
+    implementation — so `/ca:doctor` (AC-3) and the shim can never disagree.
+
+    Returns [] when `dropin_dir` doesn't exist, nothing is registered, or
+    the probe fails for any reason — a diagnostic must never be able to
+    raise into its caller."""
+    if not dropin_dir or not os.path.isdir(dropin_dir):
+        return []
+    try:
+        r = subprocess.run(
+            [sys.executable, "-", dropin_dir], input=_FRESHNESS_PY,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5,
+        )
+    except Exception:  # noqa: BLE001
+        return []
+    if r.returncode != 0:
+        return []
+    return [ln for ln in r.stdout.splitlines() if ln.strip()]
+
+
+def live_registered_plugins(dropin_dir):
+    """Stable plugin names whose current `.path` target is a regular file.
+
+    This deliberately uses the same liveness boundary as the generated shim
+    (`[ -f "$E" ]`) and the freshness probe above. It is diagnostic support
+    for doctor, not a second freshness implementation."""
+    if not dropin_dir or not os.path.isdir(dropin_dir):
+        return []
+    legacy = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
+    live = []
+    try:
+        names = sorted(os.listdir(dropin_dir))
+    except OSError:
+        return []
+    for name in names:
+        if not name.endswith(".path"):
+            continue
+        plugin = name[:-len(".path")]
+        if legacy.fullmatch(plugin):
+            continue
+        path_val = _read(os.path.join(dropin_dir, name))
+        if path_val and _resolve_live(path_val.strip()):
+            live.append(plugin)
+    return live
+
+
+_TRUSTED_IDENTITY_FILE = "trusted-executables.identity"
+
+
+def _identity_file(dropin_dir):
+    return os.path.join(dropin_dir, _TRUSTED_IDENTITY_FILE)
+
+
+def _read_trusted_identity(dropin_dir):
+    text = _read(_identity_file(dropin_dir))
+    if text is None:
+        return None
+    lines = text.splitlines()
+    if len(lines) != 3 or not lines[2]:
+        return None
+    python_path, git_path, owner = lines
+    resolved_python = _resolve_live(python_path)
+    resolved_git = _resolve_live(git_path)
+    if not resolved_python or not resolved_git:
+        return None
+    return resolved_python, resolved_git, owner
+
+
+def _refresh_trusted_identity(dropin_dir, plugin):
+    """Persist trusted executables without permitting an identity-less host
+    session to downgrade the shared shim back to PATH resolution."""
+    trusted_git = trusted_git_executable()
+    trusted_python = trusted_python_executable()
+    existing = _read_trusted_identity(dropin_dir)
+    if trusted_git is None and trusted_python is None:
+        return True
+    if trusted_git is None or trusted_python is None:
+        if existing is not None:
+            _warn("trusted executable refresh is incomplete; preserving the prior complete identity")
+            return True
+        raise RuntimeError("codeArbiter executable identity channel is incomplete")
+    values = (_shell_path(trusted_python), _shell_path(trusted_git), plugin)
+    if any("\n" in value or "\r" in value for value in values):
+        raise RuntimeError("trusted executable identity contains a newline")
+    payload = "\n".join(values) + "\n"
+    try:
+        os.makedirs(dropin_dir, exist_ok=True)
+        _hooklib.write_text_atomic(_identity_file(dropin_dir), payload, newline="\n")
+        return True
+    except Exception as e:  # noqa: BLE001
+        if existing is not None:
+            _warn(f"could not refresh trusted identity; preserving prior complete identity: {e}")
+            return True
+        raise RuntimeError(
+            f"could not persist trusted executable identity at {dropin_dir}: {e}") from e
+
+
+def _shim(dropin_dir, phase):
+    # Single-interpreter selection preserves stdin (pre-push) and the BLOCK
+    # exit code. The shim is HOST-NEUTRAL (ADR-0014): it embeds no plugin-
+    # specific enforcer path, only the shared drop-in directory. It iterates
+    # every "*.path" entry there and runs every enforcer that resolves AND is
+    # not recognized as stale (#556, below) — any non-zero verdict from one of
+    # those blocks. A dead entry from an uninstalled plugin is skipped. An
+    # unmatched glob (dir absent or
+    # empty) leaves `c` as the literal, un-expanded "$D/*.path" string in
+    # POSIX `sh` — `[ -f "$c" ]` on that literal correctly fails too, so the
+    # loop falls straight through to the same fail-closed tail with no special
+    # case needed. When NOTHING resolves, this now FAILS CLOSED: a loud
+    # stderr diagnostic and a non-zero exit, blocking the git operation,
+    # rather than the old single-plugin era's `exit 0`. When the Pi bridge
+    # provides trusted executable identities, install() persists them beside
+    # the registry. Identity-less hosts preserve that set, so a later Claude or
+    # Codex session cannot downgrade Pi's absolute executable boundary.
+    #
+    # #556 (AC-1): "any non-zero verdict blocks" used to mean an entry that
+    # nobody has refreshed in months — a host cache that predates a fix THIS
+    # checkout already carries, e.g. the #279 sensitive-scan exemption — could
+    # resurrect an already-closed false positive with no in-session exit but
+    # an override. Before running the loop, `$SKIP` is populated (via
+    # `_FRESHNESS_PY`, run once here from a heredoc so this is never delegated
+    # to any specific plugin's own — possibly stale — `_githooks.py`) with the
+    # plugin names whose `.seen` heartbeat (written every live session,
+    # unconditionally, by `install()`) is missing or older than a sibling's.
+    # Those entries are skipped WITHOUT running their python at all, deferring
+    # to whichever registered sibling a live session confirmed more recently.
+    # When NO entry anywhere has ever recorded a heartbeat (a repo that
+    # predates this fix, or a wholly dormant install), `$SKIP` is empty and
+    # every entry runs exactly as before — this can only ever narrow which
+    # entries run, never widen it, so a genuine `SEEN=0` fail-closed case is
+    # unaffected.
+    def quote(value):
+        return "'" + value.replace("'", "'\"'\"'") + "'"
+
+    capture = ""
+    invoke = f'"$PY" "$E" {phase}\n'
+    if phase == "pre-push":
+        capture = (
+            "PUSH_INPUT=''\n"
+            "while IFS= read -r L; do\n"
+            "  PUSH_INPUT=\"${PUSH_INPUT}${L}\n\"\n"
+            "done\n"
+        )
+        invoke = f'printf \'%s\' "$PUSH_INPUT" | "$PY" "$E" {phase}\n'
+    return (
+        "#!/bin/sh\n"
+        f"{SENTINEL}\n"
+        f"{SHIM_NOTICE}\n"
+        f"{_CX_RESOLVE_SH}"
+        f"D={quote(_shell_path(dropin_dir))}\n"
+        'D=$(_cx_resolve "$D" dir) || {\n'
+        '  echo "codeArbiter: hook registry directory could not be resolved '
+        'across host path forms -- failing CLOSED." >&2\n'
+        '  exit 1\n'
+        '}\n'
+        f'if [ -e "$D/{_TRUSTED_IDENTITY_FILE}" ] || [ -L "$D/{_TRUSTED_IDENTITY_FILE}" ]; then\n'
+        f'  [ -f "$D/{_TRUSTED_IDENTITY_FILE}" ] || exit 1\n'
+        f'  exec 3< "$D/{_TRUSTED_IDENTITY_FILE}" || exit 1\n'
+        '  IFS= read -r PY_RAW <&3 || exit 1\n'
+        '  IFS= read -r G_RAW <&3 || exit 1\n'
+        '  IFS= read -r IDENTITY_OWNER <&3 || exit 1\n'
+        "  IDENTITY_EXTRA=''\n"
+        '  if IFS= read -r IDENTITY_EXTRA <&3 || [ -n "$IDENTITY_EXTRA" ]; then exit 1; fi\n'
+        '  exec 3<&-\n'
+        '  [ -n "$IDENTITY_OWNER" ] || exit 1\n'
+        '  PY=$(_cx_resolve "$PY_RAW") || {\n'
+        '    echo "codeArbiter: trusted python executable \\"$PY_RAW\\" could not be '
+        'resolved (tried cross-host path-form candidates, ADR-0038) -- failing CLOSED." >&2\n'
+        "    exit 1\n"
+        "  }\n"
+        '  G=$(_cx_resolve "$G_RAW") || {\n'
+        '    echo "codeArbiter: trusted git executable \\"$G_RAW\\" could not be '
+        'resolved (tried cross-host path-form candidates, ADR-0038) -- failing CLOSED." >&2\n'
+        "    exit 1\n"
+        "  }\n"
+        '  export CODEARBITER_GIT_EXECUTABLE="$G"\n'
+        '  export CODEARBITER_PYTHON_EXECUTABLE="$PY"\n'
+        "else\n"
+        '  if python3 -c "" 2>/dev/null; then PY=python3; else PY=python; fi\n'
+        "fi\n"
+        f"{capture}"
+        # #556: computed once per hook firing, from a literal heredoc (never
+        # an `import` of any plugin's own `_githooks.py`) so this stays
+        # correct even when every REGISTERED enforcer is stale — only the
+        # currently-installing session's freshly generated shim needs to be
+        # current for this to work. A crash/empty result here just leaves
+        # $SKIP empty (see `[ "$RC" -eq 0 ] || exit "$RC"` below — command
+        # substitution failure doesn't abort `sh`), the original run-everything
+        # behavior.
+        "SKIP=$(\"$PY\" - \"$D\" <<'CODEARBITER_556_FRESHNESS'\n"
+        f"{_FRESHNESS_PY}"
+        "CODEARBITER_556_FRESHNESS\n"
+        ")\n"
+        "SEEN=0\n"
+        'for c in "$D"/*.path; do\n'
+        '  [ -f "$c" ] || continue\n'
+        '  N=${c##*/}\n'
+        '  case "$N" in [0-9]*.[0-9]*.[0-9]*.path) continue ;; esac\n'
+        '  case " $SKIP " in *" ${N%.path} "*) continue ;; esac\n'
+        '  IFS= read -r E < "$c" || continue\n'
+        '  E=$(_cx_resolve "$E") || continue\n'
+        '  SEEN=1\n'
+        f'  {invoke}'
+        '  RC=$?\n'
+        '  [ "$RC" -eq 0 ] || exit "$RC"\n'
+        'done\n'
+        '[ "$SEEN" -eq 0 ] || exit 0\n'
+        'echo "codeArbiter: no registered git-enforce.py could be resolved from '
+        '\\"$D\\" -- failing CLOSED (#161/#265 git backstop, ADR-0014). Reinstall '
+        'codeArbiter, or check .git/codearbiter-hooksd/*.path entries." >&2\n'
+        'exit 1\n'
+    )
+
+
+def _read(path):
+    try:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            return f.read()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _local_config_paths(root):
+    """git-config files that could define a LOCAL core.hooksPath override for
+    `root` — `.git/config` (always checked, even if the file happens to be
+    missing — see _confirmed_no_local_hooks_path) plus `.git/config.worktree`
+    (extensions.worktreeConfig repos), when it exists. Deliberately excludes
+    global/system config — see the module header's documented residual."""
+    git_dir = os.path.join(root, ".git")
+    return [os.path.join(git_dir, "config"), os.path.join(git_dir, "config.worktree")]
+
+
+def _confirmed_no_local_hooks_path(root):
+    """True ONLY if a direct, no-git-spawn read of the config file(s) that
+    could set a LOCAL core.hooksPath for `root` positively confirms NONE of
+    them could possibly do so.
+
+    GRAMMAR-FREE by design (HIGH-severity fix, second spelling of the same
+    skip -> backstop-unwire class): git's config grammar honors a variable on
+    the SAME line as its section header (`[core] hooksPath = x`,
+    `[core]hooksPath=x`, `[CORE]HooksPath=x` are all valid and honored by real
+    git), plus quoting/continuation/case variations — a hand-rolled
+    line-oriented section/key parser reliably misses some of these spellings.
+    Rather than chase git's config grammar (an unbounded set of spellings),
+    this check is a single case-insensitive SUBSTRING scan for `hookspath`
+    anywhere in the file, plus a substring scan for an `[include`/`[includeif`
+    directive (which could pull a hooksPath in from elsewhere, unfollowed by
+    this check). Any occurrence of either substring — even inside a comment —
+    or any read failure, returns False (not confirmed). This can never
+    UNDER-detect a real hooksPath key (a real key always contains the
+    substring "hookspath" case-insensitively, by definition of the git-config
+    keyword), so it can only ever be OVER-cautious (an extra, harmless
+    git-spawn fall-through on a false positive, e.g. a stray comment
+    mentioning the word) — never falsely confirm an override is absent when
+    one is actually present. That asymmetry is exactly the fail-direction the
+    fast path requires: "install when unsure," never "skip when unsure." A
+    simply-ABSENT `config.worktree` is not an error (most repos don't have
+    one) and contributes no override, exactly like git itself.
+
+    This is the fail-direction-critical check (CRITICAL/HIGH fix, post-#194):
+    the fast path in install() must never trust a cached hooks_dir without
+    this positive confirmation, or a later `core.hooksPath` change (husky /
+    pre-commit-framework) would silently leave the NEW hooks dir unwired."""
+    for path in _local_config_paths(root):
+        if not os.path.isfile(path):
+            continue  # absent -> no override possible from this file
+        text = _read(path)
+        if text is None:
+            return False  # exists but unreadable -> can't confirm -> unsafe to skip
+        lowered = text.lower()
+        if "hookspath" in lowered:
+            return False  # ANY spelling/placement/casing -> can't confirm absent
+        if "[include" in lowered:
+            return False  # could pull in a hooksPath from elsewhere -> can't confirm
+    return True
+
+
+def _xdg_git_config_path():
+    """The XDG git global-config path git ALSO reads (lower precedence than
+    ~/.gitconfig, but still consulted): `$XDG_CONFIG_HOME/git/config`, or
+    `~/.config/git/config` when XDG_CONFIG_HOME is unset — matching git's own
+    fallback."""
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    return os.path.join(base, "git", "config")
+
+
+def _file_mtime_token(path):
+    """A cheap cache-invalidation token for `path`: its mtime, or the literal
+    'absent' if it doesn't exist."""
+    try:
+        return repr(os.stat(path).st_mtime)
+    except OSError:
+        return "absent"
+
+
+def _global_gitconfig_mtime_token():
+    """A cheap cache-invalidation token covering BOTH global git-config
+    locations codeArbiter can cheaply stat by a fixed path: `~/.gitconfig` and
+    the XDG `~/.config/git/config` (or `$XDG_CONFIG_HOME/git/config`).
+    Included in the on-disk cache so a LATER edit to either (e.g. adding a
+    global core.hooksPath) invalidates a previously-fast-pathable cache
+    instead of silently going unnoticed. Does NOT cover a `$GIT_CONFIG_GLOBAL`/
+    `$GIT_CONFIG_SYSTEM` env override repointing the file entirely, nor
+    `/etc/gitconfig` — see the module header's documented residual."""
+    return f"{_file_mtime_token(os.path.join(os.path.expanduser('~'), '.gitconfig'))}|" \
+           f"{_file_mtime_token(_xdg_git_config_path())}"
+
+
+def _cached_hooks_dir(root):
+    """The last hooks_dir() a successful resolution used for `root`, read from
+    the on-disk cache — NO git spawn. Returns None (cache miss) if the cache
+    file is absent/unreadable/blank/malformed, if it names a directory that no
+    longer exists (e.g. deleted between sessions), or if either global
+    git-config location (~/.gitconfig, the XDG git config) has changed since
+    the cache was written (see _global_gitconfig_mtime_token). A None return
+    always falls the caller through to the real git-based hooks_dir() probe."""
+    git_dir = os.path.join(root, ".git")
+    if not os.path.isdir(git_dir):
+        return None
+    text = _read(os.path.join(git_dir, _HOOKSDIR_CACHE_NAME))
+    if not text:
+        return None
+    lines = text.splitlines()
+    if len(lines) < 2:
+        return None  # malformed/legacy cache shape -> treat as a miss
+    hd, stored_token = lines[0].strip(), lines[1].strip()
+    if not hd or not os.path.isdir(hd):
+        return None
+    if stored_token != _global_gitconfig_mtime_token():
+        return None  # a covered global git-config location changed since this cache was written
+    return hd
+
+
+def _write_hooks_dir_cache(root, hd):
+    """Best-effort persistence of the resolved hooks_dir (+ the global
+    git-config invalidation token) so a LATER session can skip the
+    git-config/rev-parse re-probe (performance-002) when nothing has changed.
+    Any failure — including `.git` being a FILE, not a directory, for a linked
+    worktree — is swallowed: this cache is a pure optimization and is never
+    allowed to affect whether hooks actually get installed."""
+    git_dir = os.path.join(root, ".git")
+    if not os.path.isdir(git_dir):
+        return
+    try:
+        payload = f"{hd}\n{_global_gitconfig_mtime_token()}\n"
+        _hooklib.write_text_atomic(
+            os.path.join(git_dir, _HOOKSDIR_CACHE_NAME), payload, newline="\n")
+    except Exception:  # noqa: BLE001 — best-effort cache, never fatal
+        pass
+
+
+def _hooks_current(hd, dropin_dir):
+    """True iff BOTH phase shims at `hd` already match what install() would
+    write right now for `dropin_dir` — i.e. install() would be a complete
+    no-op for the SHIM files themselves. Filesystem-only (no git spawn): this
+    is exactly the check that lets install() skip the git-config/rev-parse
+    re-probe when a prior session already installed current hooks. A foreign
+    (non-sentinel) hook, a stale shim, or a missing file all correctly return
+    False here, falling the caller through to the full probe (which then
+    re-derives the right action: refresh, warn-and-preserve, or install
+    fresh).
+
+    Note (ADR-0014): the shim is host-neutral — it depends only on
+    `dropin_dir` (repo-derived, stable across plugin versions), never on this
+    plugin's own enforcer path. So a plugin-version bump that only changes
+    `_enforcer_path()` does NOT make this return False; install() refreshes
+    the plugin's OWN drop-in `.path` entry unconditionally every call,
+    independent of whether this check short-circuits the shim-file rewrite.
+
+    B3/#684 (ADR-0038): the embedded `D=` line is host-LOCAL by necessity —
+    each host's shell needs a spelling IT can actually glob the drop-in dir
+    with, so two hosts sharing one repo legitimately compute two different
+    (but equally correct) `D=` strings for the very same directory. A raw
+    whole-body string compare therefore always disagreed across alternating
+    SessionStarts, reinstalling every time. When the bodies differ ONLY in
+    that one line, a resolved-directory comparison (`_same_dropin_dir`)
+    decides instead — a shim a sibling host wrote for the SAME directory is
+    still current; one that names a genuinely different directory is not."""
+    for phase in PHASES:
+        existing = _read(os.path.join(hd, phase))
+        if existing is None:
+            return False
+        desired = _shim(dropin_dir, phase)
+        if not _shim_matches(existing, desired, dropin_dir):
+            return False
+    return True
+
+
+_DROPIN_LINE_PREFIX = "D="
+
+
+def _shim_body_without_dropin_line(text):
+    """`text` with its `D=...` line replaced by a fixed placeholder, so two
+    shim bodies differing ONLY in that line's host-local spelling compare
+    equal (B3/#684)."""
+    out = []
+    for line in text.splitlines(keepends=True):
+        if line.startswith(_DROPIN_LINE_PREFIX):
+            out.append(f"{_DROPIN_LINE_PREFIX}<dropin>\n")
+        else:
+            out.append(line)
+    return "".join(out)
+
+
+def _extract_dropin_line_value(text):
+    """The shell-single-quoted value a shim's `D=` line embeds, or None."""
+    for line in text.splitlines():
+        if not line.startswith(_DROPIN_LINE_PREFIX):
+            continue
+        inner = line[len(_DROPIN_LINE_PREFIX):]
+        if inner.startswith("'") and inner.endswith("'"):
+            return inner[1:-1].replace("'\"'\"'", "'")
+        return None
+    return None
+
+
+def _same_dropin_dir(existing_value, dropin_dir):
+    """True iff `existing_value` (a `D=` string a shim already embeds,
+    possibly written by a SIBLING host in its own spelling) names the SAME
+    directory as `dropin_dir` (this host's own resolution) — tried as-is and
+    via the bounded cross-host path-form candidates (ADR-0038)."""
+    if existing_value is None:
+        return False
+    target = _shell_path(dropin_dir)
+    if existing_value == target:
+        return True
+    if not os.path.isdir(dropin_dir):
+        return False
+    resolved = _resolve_live_dir(existing_value)
+    if resolved is None:
+        return False
+    return os.path.realpath(resolved) == os.path.realpath(dropin_dir)
+
+
+def _shim_matches(existing, desired, dropin_dir):
+    """Accept only an identical shim or a sibling-host D= for this same dir."""
+    return existing == desired or (
+        _shim_body_without_dropin_line(existing)
+        == _shim_body_without_dropin_line(desired)
+        and _same_dropin_dir(_extract_dropin_line_value(existing), dropin_dir)
+    )
+
+
+def _default_hooks_dir(root):
+    return os.path.join(root, ".git", "hooks")
+
+
+def install(root):
+    """Ensure the git-level enforcement hooks are installed for `root`.
+    Idempotent and safe to call every session. Returns a list of human-readable
+    actions taken (possibly empty). Never raises for an expected condition
+    (no git dir, foreign hook) — those are reported, not fatal.
+
+    performance-002 (#194): before doing any git spawn, checks a cheap on-disk
+    cache of the last resolved hooks_dir. The fast path (zero git subprocess
+    calls) fires ONLY when ALL of the following hold — every one of them is a
+    cheap, no-git-spawn check:
+      1. a cached hooks_dir exists and still exists on disk;
+      2. that cached dir is EXACTLY the default `<root>/.git/hooks` — a cached
+         CUSTOM hooksPath is never fast-pathed, since a custom path is exactly
+         the kind of value that gets repointed later;
+      3. a direct read of `.git/config` (+ `.git/config.worktree`) positively
+         CONFIRMS no local core.hooksPath override is set right now (see
+         _confirmed_no_local_hooks_path — CRITICAL fix, post-#194: the
+         original cut skipped this check entirely, so a LOCAL hooksPath added
+         after the cache was written — e.g. adopting husky / pre-commit-
+         framework — silently left the NEW hooks dir unwired while returning
+         `[]`);
+      4. the shims at that dir are already current for the drop-in dir
+         (_hooks_current — ADR-0014: the shim depends only on `dropin_dir`,
+         never on this plugin's own enforcer path).
+    Any single miss/mismatch — including a genuine cold install, a foreign
+    hook, a changed core.hooksPath, or ambiguity in the config read — falls
+    through to the original git-based probe below, unchanged. Fail direction
+    is "install when unsure," never "skip when unsure".
+
+    ADR-0014: regardless of which path this function takes (fast path or full
+    probe), THIS plugin's own drop-in `<plugin>.path` entry is refreshed
+    every single call — a live host self-heals a stale entry (e.g. after a
+    version bump moved `_enforcer_path()`) every SessionStart, independent of
+    whether the shared shim FILE itself needed any rewrite."""
+    plugin = _plugin_name()
+    enforcer = _enforcer_path()
+    dropin_dir = _dropin_dir(root)
+    if dropin_dir is None:
+        return []  # no resolvable git dir at all — nothing to install against
+    _refresh_trusted_identity(dropin_dir, plugin)
+    cached_hd = _cached_hooks_dir(root)
+    if cached_hd is not None:
+        default_hd = os.path.normcase(os.path.abspath(_default_hooks_dir(root)))
+        cached_norm = os.path.normcase(os.path.abspath(cached_hd))
+        if (cached_norm == default_hd
+                and _confirmed_no_local_hooks_path(root)
+                and _hooks_current(cached_hd, dropin_dir)):
+            if _write_path_entry(dropin_dir, plugin, enforcer):
+                _touch_seen_marker(dropin_dir, plugin, enforcer)  # #556 freshness heartbeat
+            return []
+    hd = hooks_dir(root)
+    if not hd:
+        return []
+    try:
+        os.makedirs(hd, exist_ok=True)
+    except Exception:  # noqa: BLE001
+        _warn(f"could not create hooks dir {hd}; skipping git-hook install")
+        return []
+    actions = []
+    # B1/#686: pre-commit and pre-push are written as a PAIR. Two concurrent
+    # install() calls (typically two different hosts' SessionStarts racing
+    # each other) can otherwise interleave their writes, and even a single
+    # process's own mid-loop failure (disk full, AV scan, a locked drvfs
+    # file) can leave one phase upgraded and its sibling not — either way a
+    # permanently split, mutually-inconsistent pair until a later lone
+    # session happens to reinstall both together. A cross-process lock
+    # serializes concurrent installers; a plan-then-write-then-rollback
+    # sequence ensures a failure partway through this call restores the
+    # PRIOR consistent pair rather than leaving a new/old split.
+    #
+    # Documented residual (accepted, security-review-noted): the rollback
+    # write below is itself best-effort. If the SAME failure mode that broke
+    # the original write (disk full, an AV lock) also blocks the rollback
+    # write for an already-written phase, the pair can still end up split.
+    # This requires two independent write failures in one call, versus zero
+    # rollback at all before this fix (any single failure could split the
+    # pair) — narrower, not eliminated.
+    #
+    # The lock is acquired BEFORE reading the existing hooks or computing the
+    # plan, not just around the writes: reading "existing" outside the lock
+    # would let a concurrent installer's write land between this read and
+    # this call's own write, so the "already current" skip and the rollback
+    # `prior` snapshot could both be stale relative to what is actually on
+    # disk the moment this call writes — reintroducing exactly the split-pair
+    # and churn failures this lock exists to prevent (security review).
+    lock_handle = _hooklib.acquire_lock(os.path.join(dropin_dir, "install"))
+    if lock_handle is None:
+        _warn("could not acquire the shared install lock (B1/#686); leaving the "
+              "existing pre-commit/pre-push pair untouched this session — a later "
+              "session will retry rather than risk writing an unlocked, possibly "
+              "split pair")
+    else:
+        try:
+            plan = []
+            for phase in PHASES:
+                dest = os.path.join(hd, phase)
+                desired = _shim(dropin_dir, phase)
+                existing = _read(dest) if os.path.exists(dest) else None
+                if existing is not None:
+                    lines = existing.splitlines()
+                    managed = len(lines) >= 2 and lines[0] == "#!/bin/sh" and (
+                        lines[1] == SENTINEL or lines[1].startswith(f"{SENTINEL} — ")
+                    )
+                    if not managed:
+                        _warn(f"an existing {phase} hook is not codeArbiter-managed — leaving "
+                              f"it untouched. For git-level enforcement, call "
+                              f"'{os.path.basename(enforcer)} {phase}' from it (see includes "
+                              f"docs).")
+                        actions.append(f"{phase}: foreign hook preserved (not installed)")
+                        continue
+                    if _shim_matches(existing, desired, dropin_dir):
+                        continue  # already current — no churn
+                plan.append((phase, dest, desired, existing))
+
+            if plan:
+                written = []
+                failure = None
+                for phase, dest, desired, prior in plan:
+                    # Capture the destination's CURRENT mode before replacing it —
+                    # rollback restores this exact mode, not just "executable",
+                    # so a foreign hook's own permission bits survive a rollback
+                    # (security review).
+                    try:
+                        prior_mode = (
+                            stat.S_IMODE(os.stat(dest).st_mode) if prior is not None else None
+                        )
+                        # reliability-010: atomic sibling-temp + os.replace (mirrors
+                        # write_provenance/save_state) — os.replace guarantees `dest`
+                        # is either the complete new shim or the prior file, never a
+                        # torn write.
+                        _hooklib.write_text_atomic(dest, desired, newline="\n")
+                        # Recorded as soon as the content write lands — a chmod
+                        # failure just below must still roll this phase back
+                        # (security review): before this fix a chmod-only failure
+                        # left the new content in place, untracked for rollback.
+                        written.append((phase, dest, prior, prior_mode))
+                        st = os.stat(dest)
+                        os.chmod(dest, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+                    except Exception as e:  # noqa: BLE001
+                        failure = (dest, e)
+                        break
+                if failure is None:
+                    for phase, _dest, _prior, _prior_mode in written:
+                        actions.append(f"{phase}: installed")
+                else:
+                    for _phase, dest, prior, prior_mode in written:
+                        try:
+                            if prior is None:
+                                os.remove(dest)
+                            else:
+                                _hooklib.write_text_atomic(dest, prior, newline="\n")
+                                if prior_mode is not None:
+                                    os.chmod(dest, prior_mode)
+                        except Exception:  # noqa: BLE001 — rollback is best-effort
+                            pass
+                    fail_dest, fail_exc = failure
+                    _warn(f"could not write {fail_dest}: {fail_exc} — rolled back "
+                          f"{len(written)} already-written phase(s) to avoid a split "
+                          f"pre-commit/pre-push pair (B1/#686)")
+        finally:
+            _hooklib.release_lock(lock_handle)
+    # Cache the resolved location so the NEXT call can skip the git-config/
+    # rev-parse re-probe entirely (performance-002) — best-effort, never fatal.
+    _write_hooks_dir_cache(root, hd)
+    # ADR-0014: refresh THIS plugin's own drop-in entry every call, whether or
+    # not the shim files above needed a rewrite. #556: the `.seen` heartbeat
+    # is touched on every successful confirmation too (never skipped for
+    # "no churn" the way the `.path` entry itself is) — it is the freshness
+    # guard's only signal that a LIVE session confirmed this entry today.
+    if _write_path_entry(dropin_dir, plugin, enforcer):
+        _touch_seen_marker(dropin_dir, plugin, enforcer)
+    return actions
+
+
+def uninstall(root):
+    """Remove ONLY this plugin's OWN drop-in `<plugin>.path` entry (ADR-0014).
+
+    Deliberately does NOT touch the shared shim file (.git/hooks/pre-commit /
+    pre-push) — that shim is host-neutral and a sibling plugin may still
+    depend on it. Leaving a genuinely EMPTY drop-in dir behind (every plugin
+    uninstalled) is the intended fail-closed contract, not a bug: the next
+    commit finds no resolvable enforcer and blocks with a clear diagnostic
+    (see `_shim`'s tail), rather than the old single-plugin era silently
+    passing. Returns the actions taken."""
+    plugin = _plugin_name()
+    dropin_dir = _dropin_dir(root)
+    if dropin_dir is None:
+        return []
+    actions = []
+    entry = _path_entry_file(dropin_dir, plugin)
+    if os.path.isfile(entry):
+        try:
+            os.remove(entry)
+            actions.append(f"{plugin}.path: removed")
+        except Exception as e:  # noqa: BLE001
+            _warn(f"could not remove {entry}: {e}")
+    # #556: drop this plugin's OWN freshness heartbeat alongside its `.path`
+    # entry — a genuinely uninstalled plugin must not keep looking "live" to
+    # the freshness guard above (it would otherwise sit there, forever
+    # confirmed-fresh at its last mtime, potentially outranking a sibling
+    # that IS still being maintained).
+    seen = _seen_marker_file(dropin_dir, plugin)
+    if os.path.isfile(seen):
+        try:
+            os.remove(seen)
+            actions.append(f"{plugin}.seen: removed")
+        except Exception as e:  # noqa: BLE001
+            _warn(f"could not remove {seen}: {e}")
+    identity = _read_trusted_identity(dropin_dir)
+    if identity is not None and identity[2] == plugin:
+        path = _identity_file(dropin_dir)
+        try:
+            os.remove(path)
+            actions.append(f"{plugin} trusted identity: removed")
+        except Exception as e:  # noqa: BLE001
+            _warn(f"could not remove {path}: {e}")
+    return actions
+
+
+if __name__ == "__main__":
+    # Manual install/uninstall: `python _githooks.py [install|uninstall] [root]`.
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "install"
+    where = sys.argv[2] if len(sys.argv) > 2 else os.getcwd()
+    done = uninstall(where) if cmd == "uninstall" else install(where)
+    print(f"{cmd}: " + (", ".join(done) if done else "no changes"))

@@ -1,0 +1,854 @@
+"""observability-001 (#186): durable gate-events sink, scoped to block().
+
+AC-1: a repo-local run of a hook that hits block() produces a durable,
+greppable record in .codearbiter/gate-events.log, outside the live stderr
+transcript. remind()/warn() are stderr-only, non-blocking nudges — they are
+deliberately NOT persisted (2026-09-17 scope-down, see _hooklib._log_gate_event:
+REMIND/WARN were 76% of a live repo's log and 60% was one repeated boilerplate
+line, all carrying the full cost of a git-tracked H-05 append-only artifact).
+Their stderr output is asserted here so a dropped print() cannot pass green.
+The sink's own machinery (attribution, locking, fail-open) is exercised by
+calling _log_gate_event directly — it is the subject, and block() is now its
+only public caller.
+
+AC-2 (load-bearing): the write path is FAIL-OPEN — a locked/missing/unwritable
+gate-events.log (or a project_root() that itself misbehaves) must NEVER change
+the caller's exit code and must NEVER raise. block() still exits 2 with its
+stderr message intact; remind()/warn() still return normally.
+
+CONFIRM-09: the paired staleness-warn (_hooklib.staleness_warning) is WARN-only
+— it never has side effects and never raises, and a stale /dev or /sprint flow
+is detected purely from the markers the framework already drops.
+
+Stdlib only. Fail-open is proven via a directory-collision on the log path and
+via a patched writer that raises — never by unsetting PATH/env (that changes
+an unrelated resolution mechanism, not writability).
+"""
+import errno
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+import unittest
+from unittest import mock
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import _hooklib  # noqa: E402
+
+HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
+
+
+def _read_log(cad):
+    path = os.path.join(cad, "gate-events.log")
+    if not os.path.isfile(path):
+        return ""
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
+
+class _GateEventsFixture(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
+        self.cad = os.path.join(self.root, ".codearbiter")
+        os.makedirs(self.cad)
+        self._env_patch = mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.root})
+        self._env_patch.start()
+
+    def tearDown(self):
+        self._env_patch.stop()
+        self._tmp.cleanup()
+
+
+class TestDurableRecordAC1(_GateEventsFixture):
+    def test_block_writes_greppable_record_and_still_exits_2(self):
+        with self.assertRaises(SystemExit) as cm:
+            _hooklib.block("H-01", "example block reason")
+        self.assertEqual(cm.exception.code, 2)
+        text = _read_log(self.cad)
+        self.assertIn("BLOCK", text)
+        self.assertIn("[H-01]", text)
+        self.assertIn("example block reason", text)
+        # ISO-8601 UTC timestamp, bracketed.
+        self.assertRegex(text, r"\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\]")
+
+    def test_remind_does_not_write_a_record_but_still_reaches_stderr(self):
+        # Scope-down: REMIND is not persisted. The stderr half is asserted in
+        # the same test on purpose — without it, deleting remind()'s print()
+        # would leave this suite green while silencing the nudge entirely.
+        import io
+        buf = io.StringIO()
+        with mock.patch.object(sys, "stderr", buf):
+            _hooklib.remind("H-05", "example reminder")  # must not raise
+        self.assertIn("REMINDER [H-05]: example reminder", buf.getvalue())
+        self.assertEqual(_read_log(self.cad), "")
+
+    def test_warn_does_not_write_a_record_but_still_reaches_stderr(self):
+        import io
+        buf = io.StringIO()
+        with mock.patch.object(sys, "stderr", buf):
+            _hooklib.warn("example degradation")  # must not raise
+        self.assertIn("codeArbiter hook: example degradation", buf.getvalue())
+        self.assertEqual(_read_log(self.cad), "")
+
+    def test_multiple_events_append_rather_than_overwrite(self):
+        # block() is the sink's only public caller now, so the append-not-
+        # overwrite property is proven with two separate blocks (each exits,
+        # hence one assertRaises apiece).
+        with self.assertRaises(SystemExit):
+            _hooklib.block("H-01", "first")
+        with self.assertRaises(SystemExit):
+            _hooklib.block("H-02", "second")
+        text = _read_log(self.cad)
+        self.assertIn("first", text)
+        self.assertIn("second", text)
+        self.assertEqual(len(text.splitlines()), 2)
+
+    def test_record_carries_the_invoking_hook_name(self):
+        # "hook/tool if available" — sys.argv[0] is the one signal available
+        # at this shared layer without threading a new param through every
+        # call site.
+        #
+        # Calls the sink directly: attribution formatting is a sink-internal
+        # concern, identical for every kind, and block() would drag an
+        # irrelevant assertRaises(SystemExit) into a test about field order.
+        with mock.patch.object(sys, "argv", ["/path/to/pre-bash.py"]):
+            _hooklib._log_gate_event("WARN", None, "hook-attributed line")
+        text = _read_log(self.cad)
+        self.assertIn("hook=pre-bash.py", text)
+
+    def test_record_carries_the_resolved_host_name(self):
+        # ADR-0012/observability-001: three hosts (Claude, Codex, Pi) can share one
+        # gate-events.log — each line must be attributable to the host that
+        # wrote it via get_host().name. project_root() itself is threaded
+        # through get_host() too (#260), so the fake host must resolve a real
+        # root, not just carry a `.name`.
+        fake_host = mock.Mock()
+        fake_host.name = "codex"
+        fake_host.project_root.return_value = self.root
+        with mock.patch.object(_hooklib, "get_host", return_value=fake_host):
+            _hooklib._log_gate_event("WARN", None, "host-attributed line")
+        text = _read_log(self.cad)
+        self.assertIn("host=codex", text)
+
+    def test_host_field_precedes_hook_field_and_both_present(self):
+        fake_host = mock.Mock()
+        fake_host.name = "claude"
+        fake_host.project_root.return_value = self.root
+        with mock.patch.object(_hooklib, "get_host", return_value=fake_host), \
+             mock.patch.object(sys, "argv", ["/path/to/pre-write.py"]):
+            _hooklib._log_gate_event("REMIND", "H-01", "ordering check")
+        text = _read_log(self.cad)
+        self.assertIn("host=claude hook=pre-write.py", text)
+
+    def test_host_resolution_failure_does_not_break_fail_open_contract(self):
+        # host resolution must never turn a BLOCK into a raised exception or
+        # change its exit code — mirrors the other AC-2 fail-open guarantees.
+        # project_root() succeeds (it needs a real host to resolve a real
+        # root, #260); only the `.name` access fails, isolating the guard
+        # this test targets from the unrelated project_root() fail-open path
+        # already covered by test_block_still_exits_2_when_project_root_raises.
+        class _BoomNameHost:
+            def project_root(self, payload=None):
+                return self.root_value
+
+        boom_host = _BoomNameHost()
+        boom_host.root_value = self.root
+        type(boom_host).name = property(lambda self: (_ for _ in ()).throw(RuntimeError("boom")))
+        with mock.patch.object(_hooklib, "get_host", return_value=boom_host):
+            with self.assertRaises(SystemExit) as cm:
+                _hooklib.block("H-07", "must still block despite host resolution failure")
+        self.assertEqual(cm.exception.code, 2)
+        text = _read_log(self.cad)
+        self.assertIn("host=unknown", text)
+
+
+class TestRealHookIntegrationAC1(unittest.TestCase):
+    """AC-1, end-to-end: a REAL hook (pre-bash.py) run against a real
+    throwaway git repo, hitting an actual H-20 block, must leave a durable
+    record in that repo's .codearbiter/gate-events.log — outside the live
+    transcript (here: outside the subprocess's own stderr)."""
+
+    ARBITER = "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n"
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self._tmp.name, "repo")
+        os.makedirs(self.root)
+        self._git(["init", "-q", "-b", "feat/work"])
+        self._git(["config", "user.email", "h@example.com"])
+        self._git(["config", "user.name", "harness"])
+        os.makedirs(os.path.join(self.root, ".codearbiter"))
+        with open(os.path.join(self.root, ".codearbiter", "CONTEXT.md"), "w",
+                  encoding="utf-8") as f:
+            f.write(self.ARBITER)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _git(self, args):
+        env = {**os.environ, "CLAUDE_PROJECT_DIR": self.root}
+        r = subprocess.run(["git"] + args, cwd=self.root, capture_output=True,
+                           text=True, encoding="utf-8", errors="replace",
+                           timeout=60, env=env)
+        if r.returncode != 0:
+            raise RuntimeError(f"git {' '.join(args)} failed: {r.stderr}")
+        return r
+
+    def test_h20_block_leaves_durable_record_outside_the_transcript(self):
+        payload = json.dumps({"tool_name": "Bash",
+                              "tool_input": {"command": "git commit --no-verify -m x"}})
+        env = {**os.environ, "CLAUDE_PROJECT_DIR": self.root}
+        res = subprocess.run([sys.executable, PRE_BASH], cwd=self.root, input=payload,
+                             capture_output=True, text=True, encoding="utf-8",
+                             errors="replace", timeout=60, env=env)
+        self.assertEqual(res.returncode, 2)
+        self.assertIn("H-20", res.stderr)
+        log_path = os.path.join(self.root, ".codearbiter", "gate-events.log")
+        self.assertTrue(os.path.isfile(log_path), "gate-events.log was not created")
+        with open(log_path, encoding="utf-8") as f:
+            log = f.read()
+        self.assertIn("BLOCK", log)
+        self.assertIn("[H-20]", log)
+        self.assertIn("host=claude hook=pre-bash.py", log)
+
+
+class TestFailOpenAC2(_GateEventsFixture):
+    """AC-2: the sink must NEVER turn a fail-open hook fail-closed, and must
+    NEVER suppress a BLOCK. Failure is injected by making the log path
+    unwritable (a directory collision) or by making the writer itself raise
+    — never by unsetting PATH/env vars."""
+
+    def test_block_still_exits_2_when_log_path_is_a_directory(self):
+        # gate-events.log exists as a DIRECTORY, not a file -> open(path, "a")
+        # raises (IsADirectoryError / PermissionError depending on platform).
+        os.makedirs(os.path.join(self.cad, "gate-events.log"))
+        with self.assertRaises(SystemExit) as cm:
+            _hooklib.block("H-02", "must still block")
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_warn_does_not_raise_when_log_path_is_a_directory(self):
+        os.makedirs(os.path.join(self.cad, "gate-events.log"))
+        try:
+            _hooklib.warn("must not raise")
+        except Exception as e:  # noqa: BLE001
+            self.fail(f"warn() raised despite fail-open contract: {e!r}")
+
+    def test_remind_does_not_raise_when_log_path_is_a_directory(self):
+        os.makedirs(os.path.join(self.cad, "gate-events.log"))
+        try:
+            _hooklib.remind("TAG", "must not raise")
+        except Exception as e:  # noqa: BLE001
+            self.fail(f"remind() raised despite fail-open contract: {e!r}")
+
+    def test_block_still_exits_2_when_open_itself_raises(self):
+        with mock.patch("builtins.open", side_effect=OSError("locked")):
+            with self.assertRaises(SystemExit) as cm:
+                _hooklib.block("H-03", "must still block despite locked log")
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_block_still_exits_2_when_project_root_raises(self):
+        with mock.patch.object(_hooklib, "project_root", side_effect=RuntimeError("boom")):
+            with self.assertRaises(SystemExit) as cm:
+                _hooklib.block("H-04", "must still block despite root resolution failure")
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_sink_is_silent_no_op_when_codearbiter_dir_is_missing(self):
+        # A repo that never opted in (no .codearbiter/ at all) must not have
+        # one conjured into existence just to hold this log. Addressed to the
+        # sink directly: this is _log_gate_event's own property, and warn()
+        # no longer reaches it at all.
+        missing_root = os.path.join(self.root, "not-a-repo")
+        os.makedirs(missing_root)
+        with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": missing_root}):
+            _hooklib._log_gate_event("WARN", None, "no dir to write into")  # must not raise
+        self.assertFalse(os.path.isdir(os.path.join(missing_root, ".codearbiter")))
+
+    def test_sidecar_lock_contention_drops_event_without_opening_log(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        with mock.patch.object(_hooklib, "acquire_lock", return_value=None) as acquire, \
+             mock.patch("os.open") as open_log:
+            _hooklib._log_gate_event("WARN", None, "contended audit sink remains fail-open")
+
+        acquire.assert_called_once_with(
+            _hooklib.audit_lock_key(self.root, log_path),
+            wait_seconds=_hooklib.GATE_EVENT_LOCK_WAIT_SECONDS,
+        )
+        open_log.assert_not_called()
+        self.assertEqual(_read_log(self.cad), "")
+
+    def test_sidecar_lock_is_held_until_after_append_and_then_released(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        handle = object()
+        order = []
+        real_write = os.write
+
+        def spy_write(fd, data):
+            order.append("write")
+            return real_write(fd, data)
+
+        def spy_release(observed):
+            self.assertIs(observed, handle)
+            order.append("release")
+
+        with mock.patch.object(_hooklib, "acquire_lock", return_value=handle) as acquire, \
+             mock.patch.object(_hooklib, "release_lock", side_effect=spy_release), \
+             mock.patch("os.write", side_effect=spy_write):
+            _hooklib._log_gate_event("WARN", None, "locked append")
+
+        acquire.assert_called_once_with(
+            _hooklib.audit_lock_key(self.root, log_path),
+            wait_seconds=_hooklib.GATE_EVENT_LOCK_WAIT_SECONDS,
+        )
+        self.assertEqual(order, ["write", "release"])
+        self.assertIn("locked append", _read_log(self.cad))
+
+    def test_real_resolver_sidecar_lock_makes_best_effort_sink_skip(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        holder = _hooklib.acquire_lock(_hooklib.audit_lock_key(self.root, log_path))
+        self.assertIsNotNone(holder)
+        try:
+            _hooklib._log_gate_event("WARN", None, "must not write outside the resolver lock")
+        finally:
+            _hooklib.release_lock(holder)
+
+        self.assertEqual(_read_log(self.cad), "")
+
+    def test_gate_event_waits_past_generic_lock_budget_for_short_contention(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        holder = _hooklib.acquire_lock(_hooklib.audit_lock_key(self.root, log_path))
+        self.assertIsNotNone(holder)
+
+        def release_after_generic_budget():
+            time.sleep(_hooklib.LOCK_WAIT + 0.15)
+            _hooklib.release_lock(holder)
+
+        releaser = threading.Thread(target=release_after_generic_budget)
+        releaser.start()
+        try:
+            _hooklib._log_gate_event(
+                "WARN", None, "retained after short cross-process contention"
+            )
+        finally:
+            releaser.join()
+
+        self.assertIn(
+            "retained after short cross-process contention", _read_log(self.cad)
+        )
+
+    def test_windows_process_lock_precedes_sidecar_acquisition(self):
+        class _NoopMsvcrt:
+            LK_NBLCK = 1
+            LK_UNLCK = 2
+
+            @staticmethod
+            def locking(_fd, _mode, _nbytes):
+                return None
+
+        process_lock = threading.Lock()
+        observed_process_lock_state = []
+
+        def acquire_sidecar(_path, *, wait_seconds):
+            self.assertEqual(wait_seconds, _hooklib.GATE_EVENT_LOCK_WAIT_SECONDS)
+            observed_process_lock_state.append(process_lock.locked())
+            return object()
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": _NoopMsvcrt()}), \
+             mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
+             mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
+             mock.patch.object(_hooklib, "release_lock"):
+            _hooklib._log_gate_event("WARN", None, "serialize same-process writers before sidecar acquisition")
+
+        self.assertEqual(observed_process_lock_state, [True])
+        self.assertFalse(process_lock.locked())
+
+    def test_posix_process_lock_precedes_sidecar_acquisition(self):
+        process_lock = threading.Lock()
+        observed_process_lock_state = []
+
+        def acquire_sidecar(_path, *, wait_seconds):
+            self.assertEqual(wait_seconds, _hooklib.GATE_EVENT_LOCK_WAIT_SECONDS)
+            observed_process_lock_state.append(process_lock.locked())
+            return object()
+
+        with mock.patch.object(os, "name", "posix"), \
+             mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
+             mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
+             mock.patch.object(_hooklib, "release_lock"):
+            _hooklib._log_gate_event("WARN", None, "serialize POSIX same-process writers before sidecar acquisition")
+
+        self.assertEqual(observed_process_lock_state, [True])
+        self.assertFalse(process_lock.locked())
+
+    def test_repository_controlled_adjacent_lock_symlink_cannot_cross_boundary(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        outside = os.path.join(self._tmp.name, "outside-empty")
+        with open(outside, "wb"):
+            pass
+        adjacent = log_path + ".lock"
+        try:
+            os.symlink(outside, adjacent)
+        except OSError as error:
+            self.skipTest(f"symlink unavailable: {error}")
+
+        _hooklib._log_gate_event("WARN", None, "trusted lock namespace")
+
+        with open(outside, "rb") as handle:
+            self.assertEqual(handle.read(), b"")
+        self.assertIn("trusted lock namespace", _read_log(self.cad))
+
+    def test_block_exit_code_and_stderr_unchanged_by_sink_failure(self):
+        # The stderr message itself (the pre-existing contract) must be
+        # unaffected by a sink failure — capture it directly.
+        import io
+        buf = io.StringIO()
+        with mock.patch("builtins.open", side_effect=OSError("locked")):
+            with mock.patch.object(sys, "stderr", buf):
+                with self.assertRaises(SystemExit) as cm:
+                    _hooklib.block("H-06", "stderr must still say this")
+        self.assertEqual(cm.exception.code, 2)
+        self.assertIn("BLOCKED [H-06]: stderr must still say this", buf.getvalue())
+
+
+class TestWindowsLockAC3(_GateEventsFixture):
+    """FINDING 3 (HIGH/coverage): the msvcrt.locking byte-range lock around
+    gate-events.log appends (_hooklib._log_gate_event, os.name == "nt" leg)
+    has no direct coverage. These tests inject a fake `msvcrt` module into
+    sys.modules and force os.name == "nt" so the locking branch runs
+    deterministically on ANY host OS (not just when CI happens to run on
+    Windows) — the real Windows-only exercise still happens for free whenever
+    this suite runs on an actual Windows box, since os.name is genuinely
+    "nt" there and the local `import msvcrt` picks up the real module unless
+    this fixture's sys.modules patch is active."""
+
+    class _FakeMsvcrt:
+        LK_LOCK = 1
+        LK_UNLCK = 0
+
+        def __init__(self, on_unlock=None):
+            self.calls = []
+            self._on_unlock = on_unlock
+
+        def locking(self, fd, mode, nbytes):
+            kind = "lock" if mode == self.LK_LOCK else "unlock"
+            self.calls.append((kind, fd, nbytes))
+            if kind == "unlock" and self._on_unlock is not None:
+                self._on_unlock()
+
+    def setUp(self):
+        super().setUp()
+        with open(os.path.join(self.cad, "gate-events.log"), "wb") as handle:
+            handle.write(b"seed\n")
+        # These cases isolate the legacy Windows lock on the log descriptor.
+        # The cross-platform sidecar protocol has independent tests above;
+        # patch it here so the injected fake msvcrt sees only the descriptor
+        # lock calls each assertion is designed to count.
+        self._sidecar_handle = object()
+        self._sidecar_acquire = mock.patch.object(
+            _hooklib, "acquire_lock", return_value=self._sidecar_handle
+        )
+        self._sidecar_release = mock.patch.object(_hooklib, "release_lock")
+        self._sidecar_acquire.start()
+        self._sidecar_release.start()
+
+    def tearDown(self):
+        self._sidecar_release.stop()
+        self._sidecar_acquire.stop()
+        super().tearDown()
+
+    def test_windows_crt_deadlock_code_is_host_errno_independent(self):
+        self.assertTrue(
+            _hooklib._is_lock_contention(
+                OSError(36, "simulated Windows CRT deadlock")
+            )
+        )
+
+    def test_empty_log_uses_the_trusted_sidecar_without_byte_range_lock(self):
+        os.unlink(os.path.join(self.cad, "gate-events.log"))
+
+        class _UnexpectedMsvcrt:
+            LK_LOCK = 1
+            LK_UNLCK = 0
+
+            @staticmethod
+            def locking(_fd, _mode, _nbytes):
+                raise AssertionError("an empty log has no byte zero to lock")
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": _UnexpectedMsvcrt()}):
+            _hooklib._log_gate_event("WARN", None, "first append")
+
+        self.assertIn("first append", _read_log(self.cad))
+
+    def test_lock_called_before_write_and_unlock_called_after(self):
+        fake = self._FakeMsvcrt()
+        order = []
+        real_write = os.write
+
+        def spy_write(fd, data):
+            order.append("write")
+            return real_write(fd, data)
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("os.write", side_effect=spy_write):
+            _hooklib._log_gate_event("WARN", None, "lock ordering check")
+
+        kinds = [c[0] for c in fake.calls]
+        self.assertIn("lock", kinds)
+        self.assertIn("unlock", kinds)
+        lock_idx = kinds.index("lock")
+        unlock_idx = kinds.index("unlock")
+        # The write happened strictly between the lock and unlock calls.
+        self.assertEqual(order, ["write"])
+        self.assertLess(lock_idx, unlock_idx)
+        self.assertEqual(unlock_idx, len(fake.calls) - 1,
+                         "unlock must be the last locking() call")
+        # Both calls lock/unlock exactly the same 1-byte range.
+        for _, _, nbytes in fake.calls:
+            self.assertEqual(nbytes, 1)
+
+    def test_unlock_oserror_is_caught_and_does_not_propagate(self):
+        def _boom():
+            raise OSError("simulated unlock failure")
+
+        fake = self._FakeMsvcrt(on_unlock=_boom)
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}):
+            try:
+                _hooklib._log_gate_event("WARN", None, "unlock failure must not propagate")
+            except Exception as e:  # noqa: BLE001
+                self.fail(f"warn() raised despite unlock-failure catch: {e!r}")
+        # The write itself happens before the (failing) unlock, so the line
+        # must still have landed durably despite the unlock error.
+        text = _read_log(self.cad)
+        self.assertIn("unlock failure must not propagate", text)
+        kinds = [c[0] for c in fake.calls]
+        self.assertIn("unlock", kinds)
+
+    def test_lock_oserror_does_not_break_fail_open_contract(self):
+        class _BoomLockMsvcrt:
+            LK_LOCK = 1
+            LK_UNLCK = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_LOCK:
+                    raise OSError("simulated lock failure")
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": _BoomLockMsvcrt()}):
+            with self.assertRaises(SystemExit) as cm:
+                _hooklib.block("H-08", "must still block despite lock failure")
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_transient_lock_contention_is_retried_and_event_lands(self):
+        class _TransientMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def __init__(self):
+                super().__init__()
+                self.lock_attempts = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_NBLCK:
+                    self.lock_attempts += 1
+                    self.calls.append(("lock", fd, nbytes))
+                    if self.lock_attempts < 3:
+                        raise OSError(36, "simulated transient contention")
+                    return
+                return super().locking(fd, mode, nbytes)
+
+        fake = _TransientMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib._log_gate_event("WARN", None, "transient contention must not drop this event")
+
+        self.assertEqual(fake.lock_attempts, 3)
+        self.assertEqual(sleep.call_count, 2)
+        self.assertIn("transient contention must not drop this event", _read_log(self.cad))
+        self.assertEqual([call[0] for call in fake.calls].count("unlock"), 1)
+
+    def test_windows_lock_violation_is_retried_and_event_lands(self):
+        class _WinLockViolationMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def __init__(self):
+                super().__init__()
+                self.lock_attempts = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_NBLCK:
+                    self.lock_attempts += 1
+                    self.calls.append(("lock", fd, nbytes))
+                    if self.lock_attempts == 1:
+                        error = OSError(0, "simulated Windows lock violation")
+                        error.winerror = 33
+                        raise error
+                    return
+                return super().locking(fd, mode, nbytes)
+
+        fake = _WinLockViolationMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib._log_gate_event("WARN", None, "Windows lock violation must be retried")
+
+        self.assertEqual(fake.lock_attempts, 2)
+        sleep.assert_called_once()
+        self.assertIn("Windows lock violation must be retried", _read_log(self.cad))
+        self.assertEqual([call[0] for call in fake.calls].count("unlock"), 1)
+
+    def test_crt_access_denied_contention_is_retried_and_event_lands(self):
+        class _CrtContentionMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def __init__(self):
+                super().__init__()
+                self.lock_attempts = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_NBLCK:
+                    self.lock_attempts += 1
+                    self.calls.append(("lock", fd, nbytes))
+                    if self.lock_attempts == 1:
+                        raise OSError(errno.EACCES,
+                                      "simulated CRT lock contention")
+                    return
+                return super().locking(fd, mode, nbytes)
+
+        fake = _CrtContentionMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib._log_gate_event("WARN", None, "CRT access-denied contention must be retried")
+
+        self.assertEqual(fake.lock_attempts, 2)
+        sleep.assert_called_once()
+        self.assertIn("CRT access-denied contention must be retried",
+                      _read_log(self.cad))
+        self.assertEqual([call[0] for call in fake.calls].count("unlock"), 1)
+
+    def test_non_contention_lock_oserror_fails_open_without_retry_or_unlock(self):
+        class _InvalidHandleMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def locking(self, fd, mode, nbytes):
+                kind = "lock" if mode == self.LK_NBLCK else "unlock"
+                self.calls.append((kind, fd, nbytes))
+                if kind == "lock":
+                    error = OSError(9, "simulated invalid file descriptor")
+                    error.winerror = 6
+                    raise error
+
+        fake = _InvalidHandleMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib._log_gate_event("WARN", None, "invalid handle must fail open immediately")
+
+        self.assertEqual([call[0] for call in fake.calls], ["lock"])
+        sleep.assert_not_called()
+        self.assertEqual(_read_log(self.cad), "seed\n")
+
+    def test_lock_failure_never_attempts_unlock_without_acquisition(self):
+        class _PermanentContentionMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def locking(self, fd, mode, nbytes):
+                kind = "lock" if mode == self.LK_NBLCK else "unlock"
+                self.calls.append((kind, fd, nbytes))
+                if kind == "lock":
+                    raise OSError(36, "simulated permanent contention")
+
+        fake = _PermanentContentionMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.monotonic", side_effect=(100.0, 100.0, 105.0)) as monotonic, \
+             mock.patch("time.sleep") as sleep:
+            _hooklib._log_gate_event("WARN", None, "fail open without an unowned unlock")
+
+        self.assertEqual([call[0] for call in fake.calls], ["lock", "lock"])
+        self.assertEqual(monotonic.call_count, 3)
+        sleep.assert_called_once_with(_hooklib._WINDOWS_LOCK_RETRY_SECONDS)
+        self.assertEqual(_read_log(self.cad), "seed\n")
+
+
+class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
+    """Same-process concurrent-append coverage (FINDING 3c): many threads
+    appending to the sink concurrently must each land as exactly one intact
+    line — no interleaving of two threads' text within a line and no
+    truncation.
+
+    These drive _log_gate_event directly rather than through block(), the
+    sink's only remaining public caller: block() ends in sys.exit(2), which in
+    a non-main thread raises SystemExit there and buys nothing — the subject
+    here is the sink's thread-safety, not exit behavior."""
+
+    def test_concurrent_sink_appends_land_as_intact_non_interleaved_lines(self):
+        n_threads = 16
+        messages = [f"thread-payload-{i:03d}-{'x' * 40}" for i in range(n_threads)]
+
+        def worker(msg):
+            _hooklib._log_gate_event("WARN", None, msg)
+
+        threads = [threading.Thread(target=worker, args=(m,)) for m in messages]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=30)
+
+        text = _read_log(self.cad)
+        lines = text.splitlines()
+        self.assertEqual(len(lines), n_threads,
+                         f"expected {n_threads} intact lines, got {len(lines)}: {lines}")
+        for msg in messages:
+            matches = [line for line in lines if msg in line]
+            self.assertEqual(len(matches), 1,
+                             f"message {msg!r} missing or duplicated: {lines}")
+        for line in lines:
+            self.assertIn("WARN", line)
+
+    @unittest.skipUnless(os.name == "nt", "Windows lock contention regression")
+    def test_repeated_windows_thread_bursts_land_every_message_without_stair_step(self):
+        n_rounds = 3
+        n_threads = 16
+        messages = [
+            f"burst-{round_no:02d}-payload-{thread_no:03d}"
+            for round_no in range(n_rounds)
+            for thread_no in range(n_threads)
+        ]
+
+        started = time.monotonic()
+        for round_no in range(n_rounds):
+            round_messages = messages[round_no * n_threads:(round_no + 1) * n_threads]
+            threads = [
+                threading.Thread(target=_hooklib._log_gate_event,
+                                 args=("WARN", None, message))
+                for message in round_messages
+            ]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join(timeout=15)
+                self.assertFalse(thread.is_alive(), "gate-event writer thread stalled")
+        elapsed = time.monotonic() - started
+
+        lines = _read_log(self.cad).splitlines()
+        self.assertEqual(len(lines), len(messages))
+        for message in messages:
+            self.assertEqual(sum(message in line for line in lines), 1, message)
+        self.assertLess(elapsed, 5.0, f"Windows lock retries stair-stepped for {elapsed:.2f}s")
+
+
+class TestStalenessWarnCONFIRM09(_GateEventsFixture):
+    """CONFIRM-09: active-flow audit-log staleness is a WARN, never a gate.
+    Detected from EXISTING markers (.markers/mode, sprint-active) — no new
+    state invented.
+
+    #437 (mode-plane-deterministic-flip): repointed from the retired
+    'dev-active' presence marker onto the mode plane's `{session_id: mode}`
+    JSON marker. `_hooklib._STALE_FLOWS`'s 'dev' entry was renamed to
+    'mode' and gained a content check — a session must be recorded as
+    something OTHER than 'arbiter' to count as active; bare file presence
+    is not enough (the file is a persistent map that legitimately keeps
+    existing with only-arbiter entries long after every non-arbiter
+    session has flipped back). Before this repoint, every `dev-active`
+    reference here was silently exercising a marker `_STALE_FLOWS` no
+    longer names at all — the tests that asserted "no warning" kept
+    passing, but for the WRONG reason (nothing was being detected, not
+    "correctly not-yet-stale"), which is exactly the kind of false-green
+    this WARN-not-gate mechanism has no other safety net for.
+    `test_stale_arbiter_only_mode_marker_yields_no_warning` below is new:
+    the negative arm this class had no coverage for at all."""
+
+    def _touch(self, path, age_seconds=0):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("x")
+        t = time.time() - age_seconds
+        os.utime(path, (t, t))
+
+    def _write_mode_marker(self, entries, age_seconds=0):
+        markers = os.path.join(self.cad, ".markers")
+        if not os.path.isdir(markers):
+            os.makedirs(markers)
+        path = os.path.join(markers, "mode")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(json.dumps(entries))
+        t = time.time() - age_seconds
+        os.utime(path, (t, t))
+
+    def test_no_markers_present_yields_no_warnings(self):
+        self.assertEqual(_hooklib.staleness_warning(self.root), [])
+
+    def test_fresh_dangerous_mode_is_not_stale(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=5)
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
+
+    def test_stale_dangerous_mode_with_no_log_activity_warns(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
+        msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("/mode", msgs[0])
+        self.assertIn("CONFIRM-09", msgs[0])
+
+    def test_stale_ops_mode_with_no_log_activity_warns(self):
+        # AC-36 covers every non-arbiter mode, not just 'dangerous'.
+        self._write_mode_marker({"sess-x": "ops"}, age_seconds=3600)
+        msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("/mode", msgs[0])
+
+    def test_stale_arbiter_only_mode_marker_yields_no_warning(self):
+        # AC-36 negative arm: the marker file EXISTS and IS old, but every
+        # session recorded in it is 'arbiter'. Presence alone must not trip
+        # the WARN — the retired dev-active boolean marker's exact shape,
+        # and the failure mode that would make this WARN fire on every
+        # repo that has ever used the mode plane at all, arbiter included.
+        self._write_mode_marker({"sess-x": "arbiter", "sess-y": "arbiter"}, age_seconds=3600)
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
+
+    def test_stale_dangerous_mode_but_recent_log_write_is_not_stale(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
+        # overrides.log was written recently -> the flow IS producing audit
+        # activity even though the marker itself is old.
+        self._touch(os.path.join(self.cad, "overrides.log"), age_seconds=5)
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
+
+    def test_stale_sprint_marker_with_no_log_activity_warns(self):
+        self._touch(os.path.join(self.cad, "sprint-active"), age_seconds=3600)
+        msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("/sprint", msgs[0])
+
+    def test_both_flows_stale_yields_two_warnings(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
+        self._touch(os.path.join(self.cad, "sprint-active"), age_seconds=3600)
+        msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertEqual(len(msgs), 2)
+
+    def test_never_raises_on_a_stat_failure(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
+        with mock.patch("os.path.getmtime", side_effect=OSError("boom")):
+            try:
+                msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
+            except Exception as e:  # noqa: BLE001
+                self.fail(f"staleness_warning raised: {e!r}")
+        self.assertEqual(msgs, [])
+
+    def test_has_no_side_effects_pure_function(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
+        before = set(os.listdir(self.cad))
+        _hooklib.staleness_warning(self.root, window_minutes=30)
+        after = set(os.listdir(self.cad))
+        self.assertEqual(before, after)
+
+
+if __name__ == "__main__":
+    unittest.main()
