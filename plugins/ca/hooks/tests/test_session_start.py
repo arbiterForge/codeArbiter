@@ -576,7 +576,7 @@ class TestStartupStateHostLine(unittest.TestCase):
 
 class TestStartupInstructionsHostAware(unittest.TestCase):
     """Issue #609: ORCHESTRATOR.md's §1 ("Present it: stage, blocking CONFIRM-NN
-    items, in-flight tasks, and a pointer to /ca:commands. Then await a
+    items, in-flight tasks. Then await a
     command." plus the two uninitialized-repo routing rules) moved OUT of the
     always-on persona and into this hook's own emitted briefing — the state
     and the instruction to act on it now travel together. The routing rules
@@ -643,7 +643,7 @@ class TestStartupInstructionsHostAware(unittest.TestCase):
             out,
         )
         self.assertNotIn("Present this state, then await a fake-command.", out)
-        self.assertIn("Type $$fake-commands for the catalog.", out)
+        self.assertNotIn("for the catalog", out)
 
     def test_uninitialized_repo_with_source_routes_to_create_context(self):
         self._write_context(initialized=False)
@@ -652,7 +652,7 @@ class TestStartupInstructionsHostAware(unittest.TestCase):
         out = self._run_main(self._FakeHost())
         self.assertIn("NOT INITIALIZED: source exists", out)
         self.assertIn("$$fake-create-context", out)
-        self.assertIn("Type $$fake-commands for the catalog.", out)
+        self.assertNotIn("for the catalog", out)
 
     def test_uninitialized_empty_repo_routes_to_decompose(self):
         self._write_context(initialized=False)

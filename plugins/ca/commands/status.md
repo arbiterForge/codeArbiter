@@ -73,7 +73,7 @@ If `[CONFIRM-NN]` placeholders are open, surface them — do not resolve them he
 ## When NOT to use
 
 - A full cross-cutting review → `/ca:checkpoint`.
-- A specific question → `/ca:btw`.
+- A specific question → ask it directly; no command needed.
 
 ## Hard gate
 

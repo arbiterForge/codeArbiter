@@ -77,7 +77,7 @@ Consume the validated symptom, observed behavior, expected behavior and expectat
 
 - New behavior → `/ca:feature`.
 - A behavior-preserving restructure → `/ca:refactor`.
-- "Why does it do this?" → `/ca:btw`.
+- "Why does it do this?" → ask it directly; no command needed.
 - Persisting fix code already written → `/ca:commit` (the gates still apply).
 
 ## Hard gate
