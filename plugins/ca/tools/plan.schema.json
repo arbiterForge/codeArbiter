@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codearbiter/farm/plan.schema.json",
+  "title": "codeArbiter farm plan",
+  "description": "The handoff artifact writing-plans emits in --farm mode. Each task is a self-contained work packet a cheap Zen worker can complete. meta.model and meta.apiBaseUrl are written by subagent-driven-development at dispatch time (not at plan-authoring time). AUTHORING CONTRACT: this schema is what writing-plans validates its output against; it is never consulted at runtime. The EXECUTED contract is farm.ts's PLAN_SHAPE / parsePlan(), which is authoritative and kept identical to this file key-for-key and type-for-type by the parity test in plan-contract.test.ts. The one ratified divergence is task.id: the kebab-case pattern below is an authoring rule, while the runtime path-traversal rule is SAFE_TASK_ID in validate().",
+  "type": "object",
+  "required": ["meta", "tasks"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "repo": { "type": "string" },
+        "model": {
+          "type": "string",
+          "description": "Zen model selected at dispatch time by subagent-driven-development's model research step. Not set at plan-authoring time."
+        },
+        "apiBaseUrl": {
+          "type": "string",
+          "description": "OpenAI-compatible endpoint base URL. Set at dispatch time alongside model."
+        },
+        "setup": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Per-worktree setup shell commands run BEFORE the worker in each task worktree (e.g. `npm ci`). Runs ONCE per worktree — the inter-attempt reset is `git clean -fd`, which preserves ignored paths, so the dependency tree survives. Propagates to every task lacking its own task.setup. Setup-produced files must be gitignored or they trip drift detection."
+        },
+        "setupEachAttempt": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Setup shell commands rerun before EVERY worker attempt (after `setup`), for commands that rebuild ignored output from tracked source and go stale on reset. Propagates to every task lacking its own task.setupEachAttempt."
+        },
+        "setupInputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Relative paths whose content hashes join the once-per-worktree `setup` fingerprint (e.g. `package-lock.json`), so setup reruns when the baseline moves under the worktree. Propagates to every task lacking its own task.setupInputs."
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/task" }
+    }
+  },
+  "$defs": {
+    "task": {
+      "type": "object",
+      "required": ["id", "description", "filesInScope", "test", "gate"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Unique, kebab-case. Becomes the branch name farm/<id>."
+        },
+        "description": {
+          "type": "string",
+          "description": "One concrete unit of work, scoped tightly enough that a cheap model can do it."
+        },
+        "deps": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Task ids that must be GREEN before this one runs."
+        },
+        "filesInScope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "The ONLY paths the worker may create or edit. Enforced by drift detection after each worker run."
+        },
+        "test": {
+          "type": "object",
+          "required": ["path"],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Path to the failing test writing-plans already wrote. Workers must NOT touch it."
+            }
+          }
+        },
+        "gate": {
+          "type": "object",
+          "required": ["commands"],
+          "additionalProperties": false,
+          "properties": {
+            "commands": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string" },
+              "description": "Shell commands; ALL must exit 0. Put the narrow behavioral test first, then affected contract tests and applicable lint/typecheck under the shared verification boundary; exhaustive exact-head proof runs in hosted CI."
+            }
+          }
+        },
+        "context": {
+          "type": "string",
+          "description": "Minimal context slice — relevant types/interfaces/conventions only. NOT the whole module."
+        },
+        "model": {
+          "type": "string",
+          "description": "Optional per-task model id override. When set, the effective model for this task is task.model; when absent it falls back to the run-level resolved model (FARM_MODEL / meta.model). Model id only — no per-task provider or apiBaseUrl. Must be declared here because the task object is additionalProperties:false."
+        },
+        "maxRetries": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Overrides FARM_MAX_RETRIES for this task."
+        },
+        "setup": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional per-task override of meta.setup — per-worktree setup shell commands run ONCE per worktree before the worker. When set, replaces meta.setup for this task. Must be declared here because the task object is additionalProperties:false."
+        },
+        "setupEachAttempt": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional per-task override of meta.setupEachAttempt — setup commands rerun before EVERY attempt, for output that goes stale when the inter-attempt reset rolls tracked files back."
+        },
+        "setupInputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional per-task override of meta.setupInputs — relative paths whose content hashes join the `setup` fingerprint, so setup reruns when they change under the worktree."
+        }
+      }
+    }
+  }
+}
