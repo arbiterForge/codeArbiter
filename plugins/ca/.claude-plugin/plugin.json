@@ -1,0 +1,21 @@
+{
+  "name": "ca",
+  "displayName": "codeArbiter",
+  "description": "Assistive orchestration for Claude Code: maintain project context and plans, implement authorized work, coordinate useful reviews, and record actual checks and progress. Preserves host permissions, repository safeguards and audit history without a second artifact permission exchange. Requires Python 3 on PATH. Dormant until you opt a repo in; run /ca:init to activate.",
+  "version": "3.1.0",
+  "author": {
+    "name": "arbiterForge"
+  },
+  "license": "AGPL-3.0-only",
+  "homepage": "https://github.com/arbiterForge/codeArbiter",
+  "repository": "https://github.com/arbiterForge/codeArbiter",
+  "keywords": [
+    "orchestration",
+    "tdd",
+    "commit-gate",
+    "code-review",
+    "adr",
+    "audit-trail",
+    "governance"
+  ]
+}
