@@ -6,32 +6,32 @@
   "binaries": {
     "darwin/amd64": {
       "file": "ca-artifact-darwin-amd64",
-      "sha256": "8e2a1f3026d5d9a8de36f3f748a7140ecf1ef8e768022aaa8745884e09551f9a",
+      "sha256": "3c8d8deb48d85ba1c9a6cfaf1286543cc8193fc8db307fe35446f29e53d3ca7a",
       "native_tested": true
     },
     "darwin/arm64": {
       "file": "ca-artifact-darwin-arm64",
-      "sha256": "cce4b1cd751ada483bffd2de53bd14cdfda50f5d7392b49ba3f020b58fc59da4",
+      "sha256": "af3a36a6926532c6e0b4da10397aae17a472e300f50d5c0dc7886aa722046d28",
       "native_tested": true
     },
     "linux/amd64": {
       "file": "ca-artifact-linux-amd64",
-      "sha256": "7637fe233e8731f4f15ff36b2e80714edd7e6fd96117b41f911d0c8f46639615",
+      "sha256": "83300e32dd6514b4716707091d900611f42454097b177443c9c47f464cad5065",
       "native_tested": true
     },
     "linux/arm64": {
       "file": "ca-artifact-linux-arm64",
-      "sha256": "daa4ed9f1f577c59afd0250701959718f501799c204df01a92f00876c088f619",
+      "sha256": "47f1e529140642c7574f29664bb9adacc2755458a1cd9a30c6fdc0f9df447f24",
       "native_tested": true
     },
     "windows/amd64": {
       "file": "ca-artifact-windows-amd64.exe",
-      "sha256": "16a3a26c5c606fe77703cbc9ae69414cbbe93f2c50dda9301eb9784e2e842206",
+      "sha256": "fa1a11489cc4521c945a59d2dce9f270ba9fcf6fcdc220011579326d5e97569a",
       "native_tested": true
     },
     "windows/arm64": {
       "file": "ca-artifact-windows-arm64.exe",
-      "sha256": "f64155cd951be94039ea85d4420b2d3bad75ebcb14e68aeb15be8ccf9ec1f690",
+      "sha256": "88e0e9c2cf7d5861ff1365d8aa4d9376f6fa1ff8cdf0eb708be78be88af45468",
       "native_tested": true
     }
   }

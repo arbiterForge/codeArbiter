@@ -3,6 +3,7 @@
 """Supervise verification and correlate independent Codex or Claude review evidence.
 
 arm_request(...) -> dict
+validate_command_definition(definition, cwd=None) -> str
 run_verification(...) -> dict
 observe_codex_hook(...) -> dict
 observe_claude_hook(...) -> dict
@@ -28,7 +29,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import secrets
 import shlex
@@ -706,19 +707,87 @@ def _bind_commands(
     for command in context["commands"]:
         definition = command["definition"]
         cwd, worktree, common = _workspace_for(root, definition["cwd"], workspace_roots)
+        collector = validate_command_definition(definition, cwd=cwd)
         executable = _resolve_executable(definition["argv"][0], cwd)
+        argv, launch_files = _native_launch(executable, definition["argv"][1:])
+        if (_command_name(definition["argv"][0]) in {"node", "node.exe"}
+                and len(definition["argv"]) > 1
+                and Path(definition["argv"][1]).suffix.casefold() in {".js", ".mjs", ".cjs"}):
+            # Match Node's lexical entrypoint normalization and the Go contract;
+            # retain this lookup path so linked-parent retargeting stays visible.
+            script = Path(os.path.normpath(cwd / definition["argv"][1]))
+            try:
+                _path_identity(script)
+                if not script.is_file():
+                    raise OSError("runner entrypoint is not a file")
+            except OSError as exc:
+                raise AuthorityError("UNSUPPORTED_EXECUTABLE", "declared Node runner entrypoint is unavailable") from exc
+            launch_files.append(_launch_file(script, "runner-entrypoint"))
+        if definition["required_tests"] and _command_name(definition["argv"][0]) in {"npm", "npm.cmd"}:
+            _runner, manifest = _npm_runner(definition["argv"], cwd)
+            launch_files.append(_launch_file(manifest, "npm-manifest"))
         bindings.append({
             "definition_sha256": command["definition_sha256"],
-            "argv": [str(executable), *definition["argv"][1:]],
+            "argv": argv,
+            "collector_profile": collector,
+            "launch_files": launch_files,
             "cwd": str(cwd),
             "cwd_filesystem_id": _path_identity(cwd),
             "workspace_root": str(worktree),
             "workspace_filesystem_id": _path_identity(worktree),
             "git_common_dir": str(common),
             "git_common_filesystem_id": _path_identity(common),
-            "executable_sha256": _file_sha256(executable),
+            "executable_sha256": _file_sha256(Path(argv[0])),
         })
     return bindings
+
+
+def _launch_file(path: Path, role: str) -> dict[str, str]:
+    return {"path": str(path), "sha256": _file_sha256(path),
+            "filesystem_id": _path_identity(path), "role": role}
+
+
+def _native_launch(executable: Path, arguments: list[str]) -> tuple[list[str], list[dict[str, str]]]:
+    files = [_launch_file(executable, "declared-executable")]
+    if executable.suffix.casefold() not in {".cmd", ".bat"}:
+        return [str(executable), *arguments], files
+    if os.name != "nt" or executable.name.casefold() != "npm.cmd":
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "batch executables are unsupported; declare a native executable")
+    # CreateProcess may send a .cmd file through cmd.exe despite shell=False.
+    # Support only npm's standard colocated installation; never execute the shim.
+    # This adapter deliberately selects the sibling CLI, not npm.cmd's optional
+    # global-prefix redirect. The wrapper, native runtime, and CLI are all pinned.
+    standard_wrapper = r''':: Created by npm, please don't edit manually.
+@ECHO OFF
+SETLOCAL
+SET "NODE_EXE=%~dp0\node.exe"
+IF NOT EXIST "%NODE_EXE%" (
+  SET "NODE_EXE=node"
+)
+SET "NPM_PREFIX_JS=%~dp0\node_modules\npm\bin\npm-prefix.js"
+SET "NPM_CLI_JS=%~dp0\node_modules\npm\bin\npm-cli.js"
+FOR /F "delims=" %%F IN ('CALL "%NODE_EXE%" "%NPM_PREFIX_JS%"') DO (
+  SET "NPM_PREFIX_NPM_CLI_JS=%%F\node_modules\npm\bin\npm-cli.js"
+)
+IF EXIST "%NPM_PREFIX_NPM_CLI_JS%" (
+  SET "NPM_CLI_JS=%NPM_PREFIX_NPM_CLI_JS%"
+)
+"%NODE_EXE%" "%NPM_CLI_JS%" %*'''
+    try:
+        actual = executable.read_text("utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "npm wrapper is unreadable") from exc
+    if [line for line in actual.splitlines() if line] != standard_wrapper.splitlines():
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "npm wrapper is not a qualified standard npm.cmd; declare node.exe and npm-cli.js explicitly")
+    node = executable.parent / "node.exe"
+    cli = executable.parent / "node_modules" / "npm" / "bin" / "npm-cli.js"
+    if not node.is_file() or not cli.is_file():
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "npm batch adapter requires sibling node.exe and node_modules/npm/bin/npm-cli.js")
+    for path, role in ((node, "node-runtime"), (cli, "npm-cli")):
+        files.append(_launch_file(path, role))
+    for directory in (cli.parent, cli.parent.parent, cli.parent.parent.parent):
+        _path_identity(directory)
+    return [str(node), str(cli), *arguments], files
 
 
 def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]:
@@ -734,6 +803,10 @@ def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]
             or _file_sha256(Path(binding["argv"][0])) != binding["executable_sha256"]
         ):
             raise AuthorityError("WORKSPACE_DRIFT", "workspace or executable identity changed")
+        for item in binding.get("launch_files", []):
+            path = Path(item["path"])
+            if _launch_file(path, item["role"]) != item:
+                raise AuthorityError("WORKSPACE_DRIFT", "runner, npm wrapper, or script manifest identity changed")
         status = _git_text(root, "status", "--porcelain=v2", "-z", "--untracked-files=all")
         index = _git_text(root, "ls-files", "--stage", "-z")
         untracked = _git_text(root, "ls-files", "--others", "--exclude-standard", "-z")
@@ -958,12 +1031,14 @@ def _unittest_collector(stdout: bytes, stderr: bytes, required: list[str]) -> li
     text = (stdout + b"\n" + stderr).decode("utf-8", "replace")
     results = []
     for name in required:
-        pattern = re.compile(r"(?m)^" + re.escape(name) + r"(?:\s+\([^\r\n]*\))?\s+\.\.\.\s+ok\s*$")
+        pattern = re.compile(r"(?m)^" + re.escape(name) + r"(?:[ \t]+\([^\r\n]*\))?[ \t]+\.\.\.[ \t]+([^\r\n]+)\r?$")
         matches = pattern.findall(text)
         if not matches:
             raise AuthorityError("MISSING_TEST_RESULT", f"required test did not pass: {name}")
         if len(matches) != 1:
             raise AuthorityError("DUPLICATE_TEST_RESULT", f"required test appeared more than once: {name}")
+        if matches[0].strip() != "ok":
+            raise AuthorityError("MISSING_TEST_RESULT", f"required test did not pass: {name}")
         results.append({"name": name, "status": "pass"})
     return results
 
@@ -973,16 +1048,16 @@ def _named_line_collector(stdout: bytes, stderr: bytes, required: list[str]) -> 
     # fall-damage harnesses emit umbrella summaries for some plan aggregates.
     # Those summaries are not semantic evidence; only exact PASS names qualify.
     text = (stdout + b"\n" + stderr).decode("utf-8", "replace")
-    passed: dict[str, int] = {}
+    observed: dict[str, list[bool]] = {}
     for line in text.splitlines():
         stripped = line.strip()
-        if stripped.startswith("PASS: "):
-            name = stripped[6:].rstrip(".")
-            passed[name] = passed.get(name, 0) + 1
-    duplicates = [name for name in required if passed.get(name, 0) > 1]
+        if stripped.startswith(("PASS: ", "FAIL: ", "SKIP: ")):
+            name = stripped[6:]
+            observed.setdefault(name, []).append(stripped.startswith("PASS: "))
+    duplicates = [name for name in required if len(observed.get(name, [])) > 1]
     if duplicates:
         raise AuthorityError("DUPLICATE_TEST_RESULT", "required PASS lines are duplicated: " + ", ".join(duplicates))
-    missing = [name for name in required if passed.get(name, 0) != 1]
+    missing = [name for name in required if observed.get(name) != [True]]
     if missing:
         raise AuthorityError(
             "MISSING_TEST_RESULT", "required explicit PASS lines are absent: " + ", ".join(missing)
@@ -992,21 +1067,89 @@ def _named_line_collector(stdout: bytes, stderr: bytes, required: list[str]) -> 
 
 def _vitest_verbose_collector(stdout: bytes, stderr: bytes, required: list[str]) -> list[dict[str, str]]:
     text = (stdout + b"\n" + stderr).decode("utf-8", "replace")
-    passed: dict[str, int] = {}
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text)
+    observed: dict[str, list[bool]] = {}
     for line in text.splitlines():
         stripped = line.strip()
-        if stripped.startswith(("✓ ", "√ ")):
-            name = stripped[2:].rsplit(" > ", 1)[-1]
+        if stripped.startswith(("✓ ", "√ ", "↓ ", "× ", "✗ ", "- ")) and " > " in stripped:
+            # The full rendered identity after the filename retains every suite
+            # and title segment. A short suffix cannot prove the exact test.
+            name = stripped[2:].split(" > ", 1)[1]
+            annotated = re.search(r" \((?:retry|repeat) x\d+\)| \d+ MB heap used| \[[^\r\n]*\]$", name)
+            if annotated:
+                name = name[:annotated.start()]
             name = re.sub(r"\s+\d+(?:\.\d+)?m?s$", "", name)
-            passed[name] = passed.get(name, 0) + 1
-    duplicates = [name for name in required if passed.get(name, 0) > 1]
+            observed.setdefault(name, []).append(stripped[0] in {"✓", "√"} and not annotated)
+    duplicates = [name for name in required if len(observed.get(name, [])) > 1]
     if duplicates:
         raise AuthorityError("DUPLICATE_TEST_RESULT", "required Vitest cases are duplicated: " + ", ".join(duplicates))
-    missing = [name for name in required if passed.get(name, 0) != 1]
+    missing = [name for name in required if observed.get(name) != [True]]
     if missing:
         raise AuthorityError(
             "MISSING_TEST_RESULT", "required exact Vitest case names are absent: " + ", ".join(missing)
         )
+    return [{"name": name, "status": "pass"} for name in required]
+
+
+def _unique_json_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate JSON key")
+        value[key] = item
+    return value
+
+
+def _invalid_json_constant(_value: str) -> Any:
+    raise ValueError("nonfinite JSON")
+
+
+def _playwright_json_collector(stdout: bytes, _stderr: bytes, required: list[str]) -> list[dict[str, str]]:
+    # Native JSONReporter reports spec.title separately from suites/projects and
+    # preserves every retry. Never infer a case from a summary or title prefix.
+    try:
+        text = stdout.decode("utf-8")
+        # npm run's two-line command banner precedes the native JSON report.
+        text = re.sub(r"\A\s*>[^\r\n]*\r?\n>[^\r\n]*\r?\n\s*(?=\{)", "", text)
+        report = json.loads(text, object_pairs_hook=_unique_json_pairs,
+                            parse_constant=_invalid_json_constant)
+    except (ValueError, UnicodeError, RecursionError) as exc:
+        raise AuthorityError("INVALID_TEST_RESULT", "Playwright requires one complete JSON reporter document") from exc
+    if not isinstance(report, dict) or not isinstance(report.get("suites"), list) or report.get("errors") != []:
+        raise AuthorityError("INVALID_TEST_RESULT", "Playwright report is malformed or contains global errors")
+    observed: dict[str, list[dict[str, Any]]] = {}
+    pending = list(report["suites"])
+    while pending:
+        suite = pending.pop()
+        if not isinstance(suite, dict) or not isinstance(suite.get("specs"), list) or not isinstance(suite.get("suites", []), list):
+            raise AuthorityError("INVALID_TEST_RESULT", "Playwright suite is malformed")
+        pending.extend(suite.get("suites", []))
+        for spec in suite["specs"]:
+            if (not isinstance(spec, dict) or not isinstance(spec.get("title"), str)
+                    or not isinstance(spec.get("tests"), list) or not spec["tests"]):
+                raise AuthorityError("INVALID_TEST_RESULT", "Playwright spec is malformed")
+            if spec["title"] in required and spec.get("ok") is not True:
+                raise AuthorityError("INVALID_TEST_RESULT", "required Playwright spec verdict is inconsistent")
+            for test in spec["tests"]:
+                if not isinstance(test, dict):
+                    raise AuthorityError("INVALID_TEST_RESULT", "Playwright test is malformed")
+                observed.setdefault(spec["title"], []).append(test)
+    for name in required:
+        tests = observed.get(name, [])
+        if not tests:
+            raise AuthorityError("MISSING_TEST_RESULT", f"required exact Playwright title is absent: {name}")
+        if len(tests) != 1:
+            raise AuthorityError("DUPLICATE_TEST_RESULT", f"required Playwright title is ambiguous: {name}")
+        test = tests[0]
+        results = test.get("results")
+        if (test.get("expectedStatus") != "passed" or test.get("status") != "expected"
+                or not isinstance(results, list) or len(results) != 1):
+            raise AuthorityError("FAILED_TEST_RESULT", f"required Playwright test has no single clean pass: {name}")
+        result = results[0]
+        if (not isinstance(result, dict) or result.get("status") != "passed"
+                or type(result.get("retry")) is not int or result["retry"] != 0
+                or result.get("errors") != [] or result.get("error") is not None):
+            raise AuthorityError("FAILED_TEST_RESULT", f"required Playwright test did not pass without retry or error: {name}")
     return [{"name": name, "status": "pass"} for name in required]
 
 
@@ -1020,26 +1163,135 @@ COLLECTORS: dict[str, Callable[[bytes, bytes, list[str]], list[dict[str, str]]]]
     "python-unittest-text/0.1.0": _unittest_collector,
     "codearbiter-named-lines/0.1.0": _named_line_collector,
     "vitest-verbose/0.1.0": _vitest_verbose_collector,
+    "playwright-json/0.1.0": _playwright_json_collector,
     "exit-only/0.1.0": _exit_only_collector,
 }
+
+
+def _command_name(value: str) -> str:
+    return value.replace("\\", "/").rsplit("/", 1)[-1].casefold()
+
+
+def _command_tokens(command: str) -> list[str]:
+    lexer = shlex.shlex(command, posix=True)
+    lexer.whitespace_split = True
+    lexer.commenters = ""
+    lexer.escape = ""  # Native Windows paths retain backslashes inside both quotes.
+    return list(lexer)
+
+
+def _npm_runner(argv: list[str], cwd: Path | None) -> tuple[list[str], Path]:
+    message = "declare a direct test runner with an explicit supported reporter; npm scripts must be a single runner command"
+    if cwd is None:
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm runner requires an inspectable package.json; " + message)
+    rest = list(argv[1:])
+    prefix = "."
+    while rest and rest[0].startswith("-"):
+        option = rest.pop(0)
+        if option == "--prefix" and rest:
+            prefix = rest.pop(0)
+        elif option.startswith("--prefix="):
+            prefix = option.split("=", 1)[1]
+        elif option not in {"--silent", "-s"}:
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "unsupported npm runner option; " + message)
+    if len(rest) >= 2 and rest[0] in {"run", "run-script"}:
+        script_name, forwarded = rest[1], rest[2:]
+    elif rest and rest[0] in {"test", "t", "tst"}:
+        script_name, forwarded = "test", rest[1:]
+    else:
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "unsupported npm runner shape; " + message)
+    if forwarded:
+        if forwarded[0] != "--":
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm runner arguments must follow --; " + message)
+        forwarded = forwarded[1:]
+    relative = Path(prefix)
+    if (not prefix or relative.anchor or PureWindowsPath(prefix).anchor
+            or ".." in relative.parts or ".." in PureWindowsPath(prefix).parts):
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm --prefix must stay within the declared cwd; " + message)
+    manifest = cwd / relative / "package.json"
+    try:
+        directory = cwd
+        for part in relative.parts:
+            directory /= part
+            _path_identity(directory)
+        manifest.parent.resolve(strict=True).relative_to(cwd.resolve(strict=True))
+        _path_identity(manifest)
+        with manifest.open("rb") as stream:
+            raw = stream.read(MAX_STATE + 1)
+        if len(raw) > MAX_STATE:
+            raise ValueError("oversized manifest")
+        package = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_json_pairs,
+                             parse_constant=_invalid_json_constant)
+        scripts = package["scripts"]
+        script = scripts[script_name]
+        if not isinstance(script, str) or any(marker in script for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$")):
+            raise ValueError("compound script")
+        if scripts.get("pre" + script_name) or scripts.get("post" + script_name):
+            raise ValueError("lifecycle scripts")
+        tokens = _command_tokens(script)
+        if not tokens or _command_name(tokens[0]) in {"npm", "npm.cmd"}:
+            raise ValueError("nested npm script")
+    except (OSError, ValueError, KeyError, TypeError, RecursionError, AuthorityError) as exc:
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm package script is unavailable or compound; " + message) from exc
+    return [*tokens, *forwarded], manifest
+
+
+def validate_command_definition(definition: dict[str, Any], *, cwd: Path | None = None) -> str:
+    """Inspect declared runner grammar without executing or discovering tools."""
+    argv, required = definition.get("argv"), definition.get("required_tests")
+    if (not isinstance(argv, list) or not argv or any(not isinstance(item, str) or not item or "\0" in item for item in argv)
+            or not isinstance(required, list) or any(not isinstance(item, str) or not item for item in required)
+            or len(set(required)) != len(required)):
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "runner argv and required_tests must be nonempty strings without duplicate tests")
+    name = _command_name(argv[0])
+    if name.endswith((".cmd", ".bat")) and name != "npm.cmd":
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "batch executables are unsupported; declare a native executable")
+    if required and name in {"npm", "npm.cmd"}:
+        argv, _manifest = _npm_runner(argv, cwd)
+    return _collector_profile(argv, required)
 
 
 def _collector_profile(argv: list[str], required: list[str]) -> str:
     if not required:
         return "exit-only/0.1.0"
-    lowered = [part.casefold() for part in argv]
-    if len(lowered) >= 3 and lowered[1:3] == ["-m", "unittest"]:
+    name = _command_name(argv[0])
+    arguments = argv[1:]
+    if re.fullmatch(r"(?:python(?:\d+(?:\.\d+)*)?|py)(?:\.exe)?", name) and arguments[:2] == ["-m", "unittest"]:
+        if not any(item in {"-v", "--verbose"} for item in arguments[2:]):
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "unittest named results require -v or --verbose")
         return "python-unittest-text/0.1.0"
-    if "vitest" in lowered and "--reporter=verbose" in lowered:
-        return "vitest-verbose/0.1.0"
-    if "tsx" in lowered or lowered[:3] == ["npm", "run", "test:client"] or lowered[:3] == ["npm", "run", "check"]:
+    if name in {"node", "node.exe"} and arguments:
+        script = arguments[0].replace("\\", "/")
+        for suffix, runner in (("node_modules/playwright/cli.js", "playwright"),
+                               ("node_modules/@playwright/test/cli.js", "playwright"),
+                               ("node_modules/vitest/vitest.mjs", "vitest"),
+                               ("node_modules/tsx/dist/cli.mjs", "tsx")):
+            if script == suffix or script.endswith("/" + suffix):
+                name, arguments = runner, arguments[1:]
+                break
+    if name in {"playwright", "vitest"}:
+        expected = "json" if name == "playwright" else "verbose"
+        reporters = []
+        for index, value in enumerate(arguments):
+            if value.startswith("--reporter="):
+                reporters.append(value.split("=", 1)[1])
+            elif value == "--reporter":
+                reporters.append(arguments[index + 1] if index + 1 < len(arguments) else "")
+        mode = "test" if name == "playwright" else "run"
+        if (not arguments or arguments[0] != mode or reporters != [expected]
+                or "--" in arguments or "--list" in arguments
+                or any(item.startswith("--outputFile") for item in arguments)):
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", f"declare {name} {mode} with exactly --reporter={expected} and stdout output")
+        return "playwright-json/0.1.0" if name == "playwright" else "vitest-verbose/0.1.0"
+    if name == "tsx" and arguments:
         return "codearbiter-named-lines/0.1.0"
-    raise AuthorityError("UNSUPPORTED_COLLECTOR", "declared runner has no qualified collector")
+    raise AuthorityError("UNSUPPORTED_COLLECTOR", "declared runner has no qualified collector; declare a direct supported runner")
 
 
 def _minimal_environment() -> tuple[dict[str, str], str]:
     names = (
         "PATH", "PATHEXT", "SystemRoot", "WINDIR", "COMSPEC", "TEMP", "TMP",
+        "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432", "SystemDrive",
         "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "LANG", "LC_ALL",
     )
     environment = {name: os.environ[name] for name in names if name in os.environ}
@@ -1064,6 +1316,8 @@ def _run_contained(
     argv: list[str], *, cwd: str, env: dict[str, str], timeout_seconds: float = 1800.0
 ) -> subprocess.CompletedProcess:
     """Bound output and descendants with POSIX sessions or a Windows Job Object."""
+    if argv and _command_name(argv[0]).endswith((".cmd", ".bat")):
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "batch execution requires a bound native adapter")
     if not isinstance(timeout_seconds, (int, float)) or timeout_seconds <= 0:
         raise AuthorityError("INVALID_PROCESS_TIMEOUT", "process timeout must be positive")
     job = None
@@ -1339,7 +1593,7 @@ def run_verification(
     commands = []
     for command, binding in zip(request["context"]["commands"], request["command_bindings"]):
         definition = command["definition"]
-        collector = COLLECTORS[_collector_profile(definition["argv"], definition["required_tests"])]
+        collector = COLLECTORS[binding["collector_profile"]]
         cwd = _resolved_directory(binding["cwd"])
         try:
             completed = _run_contained(list(binding["argv"]), cwd=str(cwd), env=environment)
@@ -1384,7 +1638,7 @@ def run_verification(
         "commands": commands,
     }
     observation = _closed_observation(
-        request, payload, "declared-command/0.1.0", request["attempt"],
+        request, payload, "declared-command/0.2.0", request["attempt"],
         producer_result,
     )
     _observation(root, request, observation)
@@ -1423,37 +1677,34 @@ def _verification_selector(event: dict[str, Any]) -> tuple[str, Path, str] | Non
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "exec command is absent")
     compound = any(marker in command for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$"))
     try:
-        tokens = [token.strip('"') for token in shlex.split(command, posix=False)]
+        tokens = _command_tokens(command)
     except ValueError as exc:
         # An ordinary command with unbalanced quoting is not ours to deny.
         if "artifact-authority" not in command.casefold():
             return None
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is malformed") from exc
     wrapper_start = (
-        len(tokens) >= 3
-        and Path(tokens[0]).name.lower() in {
+        len(tokens) >= 2
+        and _command_name(tokens[0]) in {
             "python", "python.exe", "python3", "python3.exe", "py", "py.exe",
         }
-        and Path(tokens[1]).name.lower() == "artifact-authority.py"
-        and tokens[2] == "verify"
+        and _command_name(tokens[1]) == "artifact-authority.py"
+        and (len(tokens) == 2 or tokens[2] == "verify")
     )
     if compound:
         if wrapper_start:
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is compound")
         return None
-    if len(tokens) != 7:
+    if not wrapper_start:
         return None
     if (
-        Path(tokens[0]).name.lower() not in {
-            "python", "python.exe", "python3", "python3.exe", "py", "py.exe",
-        }
-        or Path(tokens[1]).name.lower() != "artifact-authority.py"
+        len(tokens) != 7
         or tokens[2] != "verify"
         or tokens[3] != "--root"
         or tokens[5] != "--request-id"
         or REQUEST_RE.fullmatch(tokens[6]) is None
     ):
-        return None
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper selector is malformed")
     return tokens[6], _real_root(tokens[4]), tokens[1]
 
 
@@ -1506,9 +1757,6 @@ def observe_verifier_hook(
         current_bindings = _bind_commands(root, request["context"], request["workspace_roots"])
         if current_bindings != request["command_bindings"]:
             raise AuthorityError("WORKSPACE_DRIFT", "effective child argv or cwd changed")
-        for command in request["context"]["commands"]:
-            definition = command["definition"]
-            _collector_profile(definition["argv"], definition["required_tests"])
         workspace_before = _workspace_snapshots(current_bindings)
         request["wrapper"] = {
             "state": "AUTHORIZED", "session_id": session_id,
