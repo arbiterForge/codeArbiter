@@ -93,70 +93,44 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
     artifact_id = identity["artifact_id"]
 
     def same_identity(value: dict[str, Any]) -> None:
-        if not isinstance(value, dict) or any(value.get(key) != identity.get(key) for key in keys):
+        if not isinstance(value, dict) or type(value.get("revision")) is not int:
+            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification identity is malformed")
+        if any(value.get(key) != identity.get(key) for key in keys):
             raise _artifactlib.ArtifactError("STALE_PLAN_PREFLIGHT", "plan identity changed during verification preflight; reread the complete current plan")
 
-    def task_records(ids: list[str]):
-        for start in range(0, len(ids), 128):
-            selected = ids[start:start + 128]
-            offset = 0
-            for _ in range(len(selected)):
-                page = client.call("read-batch", {
-                    "artifact_id": artifact_id, "symbols": selected,
-                    "model_sha256": identity["model_sha256"], "offset": offset, "budget": 16384,
-                })
-                same_identity(page)
-                _artifactlib.ArtifactClient._check_page(page, offset, "records")
-                records = page["records"]
-                end = offset + len(records)
-                if (page.get("mode") != "exact" or page.get("context_complete") is not False
-                        or type(page.get("offset")) is not int or page["offset"] != offset
-                        or type(page.get("total")) is not int or page["total"] != len(selected)
-                        or not records or end > len(selected)
-                        or page["next_offset"] != (end if end < len(selected) else None)):
-                    raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task batch count, offset or completeness changed")
-                for expected_id, row in zip(selected[offset:end], records):
-                    if (not isinstance(row, dict) or row.get("id") != expected_id
-                            or row.get("kind") != "tasks" or row.get("retired") is not False
-                            or not isinstance(row.get("record"), dict) or row["record"].get("id") != expected_id):
-                        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task batch contains an invalid or unexpected record")
-                    yield row["record"]
-                if page["next_offset"] is None:
-                    break
-                offset = end
-            else:
-                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task batch did not terminate")
-
-    same_identity(client.call("identity", {"artifact_id": artifact_id}))
     root = _artifactlib._trusted_directory(client.root, "UNSAFE_ROOT")
     diagnostics: list[str] = []
-    seen: set[str] = set()
+    last_task_id = ""
     command_count = 0
     offset, total = 0, None
     for _ in range(8193):
-        request = {"artifact_id": artifact_id, "offset": offset, "budget": 16384}
-        if offset:
-            request["model_sha256"] = identity["model_sha256"]
-        page = client.call("outline", request)
+        try:
+            page = client.call("plan-verification", {
+                "artifact_id": artifact_id, "expected": {key: identity[key] for key in keys},
+                "offset": offset, "budget": 16384,
+            })
+        except _artifactlib.ArtifactError as exc:
+            if exc.code == "STALE_CURSOR":
+                raise _artifactlib.ArtifactError("STALE_PLAN_PREFLIGHT", "plan identity changed during verification preflight; reread the complete current plan") from exc
+            raise
         same_identity(page)
-        _artifactlib.ArtifactClient._check_page(page, offset, "records")
-        if (page.get("offset") != offset or type(page.get("total")) is not int
-                or page["total"] < offset + len(page["records"])
-                or total is not None and page["total"] != total):
-            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline count or offset changed")
+        _artifactlib.ArtifactClient._check_page(page, offset, "tasks")
+        tasks = page["tasks"]
+        end = offset + len(tasks)
+        if (page.get("context_complete") is not False
+                or type(page.get("offset")) is not int or page["offset"] != offset
+                or type(page.get("total")) is not int or page["total"] < end
+                or total is not None and page["total"] != total
+                or not tasks and page["total"] != 0
+                or page["next_offset"] != (end if end < page["total"] else None)):
+            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification count, offset or completeness changed")
         total = page["total"]
-        tasks = []
-        for row in page["records"]:
-            if (not isinstance(row, dict) or not isinstance(row.get("id"), str)
-                    or row["id"] in seen or type(row.get("retired")) is not bool):
-                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline contains an invalid or duplicate record")
-            seen.add(row["id"])
-            if row.get("kind") != "tasks" or row["retired"]:
-                continue
-            tasks.append(row["id"])
-        for task in task_records(tasks):
-            if not isinstance(task.get("verification"), list) or not task["verification"]:
-                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task lacks complete verification definitions")
+        for task in tasks:
+            if (not isinstance(task, dict) or set(task) != {"id", "verification"}
+                    or not isinstance(task.get("id"), str) or task["id"] <= last_task_id
+                    or not isinstance(task.get("verification"), list) or not task["verification"]):
+                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification contains an invalid, unordered or incomplete task")
+            last_task_id = task["id"]
             for number, definition in enumerate(task["verification"], 1):
                 command_count += 1
                 try:
@@ -177,17 +151,11 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
                 except (_artifactlib.ArtifactError, _artifactauthoritylib.AuthorityError) as exc:
                     argv = definition.get("argv") if isinstance(definition, dict) else None
                     diagnostics.append(f"{task['id']} verification[{number}] {json.dumps(argv, ensure_ascii=True)}: {exc}")
-        next_offset = page["next_offset"]
-        expected = offset + len(page["records"])
-        if next_offset is None:
-            if expected != total:
-                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline ended before every record was inspected")
+        if page["next_offset"] is None:
             break
-        if next_offset != expected:
-            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline skipped records")
-        offset = next_offset
+        offset = end
     else:
-        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline did not terminate")
+        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification did not terminate")
     try:
         snapshot = client.call("snapshot", {"artifact_id": artifact_id})
     except _artifactlib.ArtifactError as exc:
