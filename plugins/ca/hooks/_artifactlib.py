@@ -977,10 +977,14 @@ def _engine_timeout() -> float:
 
 
 class ArtifactClient:
-    def __init__(self, root: str | Path, installation: str | Path, *, timeout: float | None = None):
+    def __init__(self, root: str | Path, installation: str | Path, *, timeout: float | None = None,
+                 initialize_store: bool = True):
         self.root = _trusted_directory(root, "UNSAFE_ROOT")
         self.installation = _trusted_directory(installation, "CAPABILITY_MISSING")
         self.timeout = _engine_timeout() if timeout is None else timeout
+        # A fresh clone or worktree has no local store, and reads never create
+        # one. With this set, the client creates it once through init-store.
+        self.initialize_store = initialize_store
 
     def workflow_preflight(self) -> dict[str, object]:
         """Read fresh installed prerequisites; never attest live host authority."""
@@ -1074,6 +1078,22 @@ class ArtifactClient:
             raise
 
     def call(self, operation: str, request: dict[str, Any] | None = None, *, permit_invalid: bool = False) -> dict:
+        try:
+            return self._exchange(operation, request, permit_invalid)
+        except ArtifactError as exc:
+            if exc.code != "NO_LOCAL_STORE" or operation == "init-store" or not self.initialize_store:
+                raise
+        # One explicit initialization, then one retry of the original request.
+        try:
+            self._exchange("init-store", {}, False)
+        except ArtifactError as refused:
+            raise ArtifactError(
+                "NO_LOCAL_STORE",
+                f"local artifact store is absent and initialization was refused ({refused.code})",
+            ) from refused
+        return self._exchange(operation, request, permit_invalid)
+
+    def _exchange(self, operation: str, request: dict[str, Any] | None, permit_invalid: bool) -> dict:
         if not re.fullmatch(r"[a-z][a-z-]{0,39}", operation):
             raise ArtifactError("UNKNOWN_OPERATION", "invalid internal operation name")
         if operation in {"context-preview", "context-finalize-preview", "context-apply"}:
