@@ -104,14 +104,17 @@ for the exact source span, or `null` when no source span exists. A note is not
 an approval or operative scope rule. A
 declared command keeps `run_state: unrun` until a run is actually reported. Never
 record secret values. Decomposition owns intended architecture; the code map owns
-what the code actually contains; the task board owns task state; ADRs own accepted
+what the code actually contains; the selected work owner owns task state; ADRs own accepted
 decisions.
 
 ## Initialize, convert, promote, merge
 
 - Greenfield or brownfield: `knowledge.py create-missing`, add the records you
   have, then `knowledge.py initialize`. Unanswered questions stay `unknown` or
-  `open`; initialization only needs the documents to exist and parse.
+  `open`; initialization needs the documents to exist and parse. A selected
+  legacy board is validated; new native enrollment creates its portable project
+  ID with the marker. Keep the returned ID in the enrollment commit before
+  independent clones create their first work items.
 - Markdown to HTML, only when the user chooses it: `knowledge.py convert`
   creates empty HTML documents and returns the Markdown files, their sections,
   and a fingerprint token. Read every section and add its meaning as sourced

@@ -10,6 +10,9 @@ Produce the plan for the active feature or sprint, then return it to that caller
 Do not execute implementation from this skill. Use the user's existing direction;
 ask only about a consequential unresolved outcome, not permission to maintain the
 plan. An explicitly requested human checkpoint still belongs to the caller.
+When the caller selected a `WORK-ID`, retain it and return the actual new or
+resumed `PLAN-ID` so the caller can attach it to that same work item. A plan
+slug or title is not permission to create a second work item.
 
 ## Select the source and representation
 

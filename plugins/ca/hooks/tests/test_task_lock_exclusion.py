@@ -112,7 +112,7 @@ exclude = Path(sys.argv[sys.argv.index('--root') + 1]) / '.git/info/exclude'
                                            ok=False).returncode, 1)
 
     def test_real_start_done_lifecycle_is_git_clean_after_board_commit(self):
-        self._init()
+        self._init("--format", "markdown")
         self._writer("add", "preserve the retained lock", "--id", "fixture.task")
         state = self.root / ".codearbiter"
         tracked = [str(path.relative_to(self.root)).replace("\\", "/")
@@ -132,7 +132,8 @@ exclude = Path(sys.argv[sys.argv.index('--root') + 1]) / '.git/info/exclude'
         exclude = Path(os.fsdecode(self._git("rev-parse", "--path-format=absolute",
                                             "--git-path", "info/exclude").stdout).strip())
         before = exclude.read_bytes()
-        argv = [sys.executable, "-B", str(self.hooks / SCRIPT.name), "--root", str(spelling)]
+        argv = [sys.executable, "-B", str(self.hooks / SCRIPT.name), "--root", str(spelling),
+                "--format", "markdown"]
         self._run(argv)
         self.assertEqual(exclude.read_bytes(), before + RULE + b"\n")
         self._writer("add", "aliased root lifecycle", "--id", "alias.task")
