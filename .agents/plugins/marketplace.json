@@ -7,8 +7,11 @@
     {
       "name": "ca-codex",
       "source": {
-        "source": "local",
-        "path": "./plugins/ca-codex"
+        "source": "git-subdir",
+        "url": "https://github.com/arbiterForge/codeArbiter.git",
+        "path": "plugins/ca-codex",
+        "ref": "refs/tags/ca-codex-dist-v0.13.12",
+        "sha": "43703a0c2d664d979f1d0cb4078afbeb2aca7e01"
       },
       "policy": {
         "installation": "AVAILABLE",
