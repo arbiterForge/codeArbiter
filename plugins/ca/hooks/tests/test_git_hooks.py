@@ -830,6 +830,62 @@ class TestDropInMultiPluginFailClosed(_GitFixture):
         self.assertNotEqual(result.returncode, 0, result.stderr)
         self.assertFalse(os.path.exists(marker), "malformed identity reached an enforcer")
 
+    def test_hostile_path_preserves_trusted_identity_and_freshness(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        live_marker = os.path.join(self.root, "live.marker")
+        live = self._probe_enforcer("live.py", live_marker)
+        self._write_entry(dropin, "ca", live)
+        self._write(os.path.join(dropin, "ca.seen"), live + "\n")
+        os.utime(os.path.join(dropin, "ca.seen"), (200, 200))
+        stale_markers = []
+        for plugin in ("ca-codex", "ca-pi"):
+            marker = os.path.join(self.root, plugin + ".marker")
+            stale_markers.append(marker)
+            target = self._probe_enforcer(plugin + ".py", marker, returncode=9)
+            self._write_entry(dropin, plugin, target)
+            if plugin == "ca-codex":
+                self._write(os.path.join(dropin, plugin + ".seen"), target + "\n")
+                os.utime(os.path.join(dropin, plugin + ".seen"), (100, 100))
+        self.assertEqual(_githooks.stale_registered_plugins(dropin),
+                         ["ca-codex", "ca-pi"])
+        identity = "\n".join((
+            _githooks._shell_path(sys.executable),
+            _githooks._shell_path(os.path.realpath(shutil.which("git"))),
+            "ca",
+        )) + "\n"
+        with open(_githooks._identity_file(dropin), "w", encoding="utf-8",
+                  newline="\n") as output:
+            output.write(identity)
+        fake_bin = os.path.join(self.root, "poison-bin")
+        poison_marker = os.path.join(self.root, "ambient-tool.marker")
+        for tool in ("cut", "tr", "python", "python3", "git"):
+            path = os.path.join(fake_bin, tool)
+            self._write(path, "#!/bin/sh\nprintf ran >> '" +
+                        _githooks._shell_path(poison_marker) + "'\nexit 97\n")
+            os.chmod(path, 0o755)
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        # Git-for-Windows launchers may augment PATH. Restrict it inside the
+        # actual shell, then execute the unmodified generated hook body.
+        shell = shutil.which("sh")
+        shell_bin = gitbashify(fake_bin) if os.name == "nt" else fake_bin
+        control = _sh([shell, "-c", 'PATH="$1"; export PATH; cut',
+                       "poison-control", shell_bin], self.root)
+        self.assertEqual(control.returncode, 97, control.stderr)
+        self.assertTrue(os.path.isfile(poison_marker), "utility canary was not reachable")
+        os.remove(poison_marker)
+        result = _sh([
+            shell, "-c", 'PATH="$1"; export PATH; . "$2"',
+            "hostile-path", shell_bin,
+            _githooks._shell_path(hook),
+        ], self.root)
+        self.assertFalse(os.path.exists(poison_marker),
+                         "trusted hook execution reached an ambient PATH utility")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(os.path.isfile(live_marker), "current enforcer did not run")
+        for marker in stale_markers:
+            self.assertFalse(os.path.exists(marker), "stale enforcer was not skipped")
+
     def test_identity_bundle_with_unterminated_extra_record_fails_closed(self):
         with mock.patch.object(
                 _githooks, "trusted_git_executable", return_value=None), \
@@ -1443,6 +1499,28 @@ class TestCrossHostPathFormResolution(_GitFixture):
         self.assertIsNone(_githooks._resolve_live(os.path.abspath(missing)))
 
     # ---- real generated shim, executed by this host's real sh ----
+
+    @unittest.skipUnless(os.name == "nt", "requires real drive-letter aliases")
+    def test_drive_forms_resolve_without_path_utilities(self):
+        target = os.path.abspath(os.path.join(self.root, "drive-target.txt"))
+        self._write(target, "real file")
+        native = target.replace("\\", "/")
+        drive, rest = native[0], native[3:]
+        forms = [form for letter in (drive.lower(), drive.upper()) for form in (
+            letter + ":/" + rest, "/" + letter + "/" + rest,
+            "/mnt/" + letter + "/" + rest,
+        )]
+        for form in forms:
+            with self.subTest(path_form=form):
+                script = 'PATH=; export PATH\n' + _githooks._CX_RESOLVE_SH
+                script += '_cx_resolve "$1"\n'
+                result = _sh([shutil.which("sh"), "-c", script, "resolve", form],
+                             self.root)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stderr, "", "resolver invoked a missing utility")
+                resolved = _githooks._resolve_live(result.stdout)
+                self.assertIsNotNone(resolved, result.stdout)
+                self.assertEqual(os.path.realpath(resolved), os.path.realpath(target))
 
     @unittest.skipUnless(
         os.name == "nt",
