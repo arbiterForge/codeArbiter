@@ -1,12 +1,12 @@
 ---
 name: dispatching-parallel-agents
-description: "The parallel fan-out primitive. Routed to by any skill or command that splits work across independent units and dispatches an agent per unit — subagent-driven-development, /sprint, parallel /review. It owns the dispatch/collect/funnel discipline: bound concurrency, isolate units, collect every result, dedupe overlap, and funnel through finding-triage then the read-only verdict-aggregator. Raw agent output is never consumed before the funnel runs; an agent that errors records its unit as incomplete without corrupting the batch."
+description: "Parallel fan-out for authors, scouts and reviewers. Collect every result; only explicit review batches use finding-triage and verdict-aggregator."
 disable-model-invocation: true
 ---
 
 # dispatching-parallel-agents
 
-Fan out, collect everything, funnel before consuming. Plumbing other skills dispatch through — it owns the parallel discipline, not domain logic.
+Fan out and collect every result. The caller's existing agent kind and completion contract determine whether this is author/scout work or an explicit review batch. This routing adds no receipt, approval mode or extra review requirement. The primitive owns parallel discipline, not domain logic.
 
 ## Pre-flight
 
@@ -14,7 +14,7 @@ The caller supplies the work. Confirm it, or STOP and surface the gap — never 
 
 - **The unit list** — N discrete, independently-completable units of work, each with its scope and target paths.
 - **The agent kind** — which agent kind to dispatch per unit (e.g. `backend-author`, `frontend-author`, `scout`, `security-reviewer` at `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`). One kind per batch.
-- **The completion contract** — what each agent must return: a structured result, its unit ID, and a pass/fail/error status. Self-reports are claims, not evidence (see Phase 4).
+- **The completion contract** — what each agent must return: a structured result, its unit ID, pass/fail/error status, required checks and any findings or unfinished obligations. Self-reports are claims, not evidence (see Phase 4). Preserve whether the caller requested authors/scouts or an explicit reviewer batch.
 
 ## Phase 1 — Partition · gate: BLOCK
 
@@ -41,36 +41,37 @@ Gate: every unit is dispatched or explicitly deferred. No unit is dropped silent
 
 Wait for the full wave, then the next, until every unit has terminated. Record each unit's terminal state: `DONE` (returned a result), `ERRORED` (the agent failed), or `DEFERRED` (a hard-stop surfaced).
 
-An `ERRORED` unit drops its own work — its partial output is discarded, never half-applied — and is logged against its unit ID. **One errored unit MUST NOT corrupt or discard the batch.** The remaining units' results stand. Record the error for the funnel; do not retry blindly inside this phase.
+An `ERRORED` unit is not complete. Preserve its diagnostic output and any still-inspectable changed paths for diagnosis; do not apply its unreviewed partial changes as a finished unit. **One errored unit MUST NOT corrupt or discard the batch.** The remaining units' results stand. Record errors and deferrals for the caller, and for the review funnel when this is an explicit review batch; do not retry blindly.
 
-Gate: every unit has a terminal state and `DONE` results are captured intact. A still-running or unaccounted unit blocks Phase 4 — partial collection does not pass.
+Gate: every unit has a terminal state and `DONE` results are captured intact. A still-running or unaccounted unit prevents a complete batch result; partial diagnostic evidence remains visible.
 
 ## Phase 4 — Dedupe · gate: BLOCK
 
-Parallel agents over adjacent units produce overlapping findings — the same issue reported by two units, the same fix proposed twice. Collapse them before anything downstream sees the batch.
+Parallel agents over adjacent units may report the same defect or contradict each other. Reconcile the actual overlap before the coordinator uses the result.
 
 - Merge findings that name the same defect at the same location into one, keeping the highest severity reported.
 - Reconcile contradictory results across units (two units that disagree on the same fact) into a single surfaced conflict, not a silent pick.
-- Verify any "done" claim that gates real work: re-run the proving command fresh and read its output and exit code. A subagent's self-report is a claim — never trust it as evidence of completion.
+- Inspect any "done" claim that gates real work: command, cwd, relevant source/input identity, output and exit code. Reuse accessible applicable passing evidence when those inputs still match; run a missing, changed, insufficient or unresolved check. A success sentence without accessible evidence is not proof. Follow `${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`.
 
-Gate: the result set is deduped, contradictions surfaced, and completion claims verified by fresh evidence. Raw, un-deduped agent output MUST NOT reach Phase 5.
+Gate: overlapping findings are deduped, contradictions surfaced, and completion claims inspected against applicable evidence. No failed or unknown result becomes a pass because another unit succeeded.
 
-## Phase 5 — Funnel · gate: STOP
+## Phase 5 — Return by the caller's contract · gate: STOP
 
-The batch is consumed only here, through the fixed funnel — never directly by the caller.
+**Author/scout batches return inspected results directly** to their coordinator: unit IDs, changed paths or source observations, accessible checks, errors, deferrals, contradictions and remaining obligations. The coordinator reviews implementation and applies only accepted units through its normal task and worktree contract. It does not dispatch `finding-triage` or `verdict-aggregator` merely to collect author/scout work. This result is not an independent reviewer certificate.
 
-1. Dispatch `finding-triage` (`${CLAUDE_PLUGIN_ROOT}/agents/finding-triage.md`) over the deduped result set and batch completion contract: it classifies severity and marks out-of-scope items with an inline `[NEEDS-TRIAGE]` marker. Every reviewer finding reaches the verdict; only non-finding transport metadata may be omitted.
-2. Hand the triaged set to `verdict-aggregator` (`${CLAUDE_PLUGIN_ROOT}/agents/verdict-aggregator.md`): it composes the single read-only batch verdict the caller consumes — `PASS`, `BLOCKING_FINDINGS`, or `INCOMPLETE`.
+**Explicit review batches use finding-triage then verdict-aggregator** in order:
 
-The errored and deferred units from Phase 3 ride through the funnel as findings — an `ERRORED` unit is a finding the caller must see, not a silent gap.
+1. Dispatch `finding-triage` (`${CLAUDE_PLUGIN_ROOT}/agents/finding-triage.md`) over the complete deduped reviewer result set and batch contract. It classifies severity and marks out-of-scope items with inline `[NEEDS-TRIAGE]`. Every reviewer finding reaches the verdict; only non-finding transport metadata may be omitted. `ERRORED`, `DEFERRED` and missing reviewer units remain incomplete-result findings.
+2. Hand the complete triage report to the read-only `verdict-aggregator` (`${CLAUDE_PLUGIN_ROOT}/agents/verdict-aggregator.md`). It returns `PASS`, `BLOCKING_FINDINGS`, or `INCOMPLETE`; incompleteness takes precedence without suppressing blocking findings.
 
-Gate: the caller receives only the aggregated verdict. Bypassing the funnel — consuming raw or merely-deduped agent output — is a gate violation. STOP and return the verdict.
+Gate: the caller gets its selected completion result. An explicit review cannot bypass the funnel; an author/scout batch cannot claim a review verdict.
 
 ## Hard rules
 
 - MUST NOT dispatch two units that mutate the same path in one batch; isolate via `using-git-worktrees` or serialize.
 - MUST NOT fan out unbounded; dispatch within the concurrency bound.
-- MUST NOT let one `ERRORED` unit discard or corrupt the rest of the batch.
-- MUST NOT consume agent output before the `finding-triage` → `verdict-aggregator` funnel runs.
-- MUST NOT trust a subagent's self-reported completion; verify with a fresh proving command.
-- MUST NOT silently drop a unit — every unit terminates with a recorded state that rides through the funnel.
+- MUST NOT let one `ERRORED` unit discard or corrupt the rest of the batch, or apply its unreviewed partial changes as complete.
+- MUST use the `finding-triage` → `verdict-aggregator` funnel for every explicit review batch and preserve every finding, contradiction and incomplete unit.
+- MUST NOT require that reviewer funnel for an author/scout batch whose caller requested direct results.
+- MUST NOT trust a subagent's self-reported completion; inspect accessible proving evidence and rerun only missing or affected checks.
+- MUST NOT silently drop a unit — every unit terminates with a visible result, error or deferral.
