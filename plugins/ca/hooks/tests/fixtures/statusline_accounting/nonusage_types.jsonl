@@ -1,0 +1,19 @@
+{"type": "agent-name", "sessionId": "sess-fx-006"}
+{"type": "ai-title", "sessionId": "sess-fx-002"}
+{"type": "atis-latch", "sessionId": "sess-fx-002"}
+{"type": "attachment", "timestamp": "2026-08-29T20:13:57.128Z", "isSidechain": false, "uuid": "uuid-fx-055", "parentUuid": "uuid-fx-056", "sessionId": "sess-fx-002"}
+{"type": "bridge-session", "sessionId": "sess-fx-002"}
+{"type": "custom-title", "sessionId": "sess-fx-007"}
+{"type": "file-history-delta", "timestamp": "2026-09-15T18:41:18.721Z"}
+{"type": "file-history-snapshot"}
+{"type": "fork-context-ref", "agentId": "fxagent001", "parentSessionId": "sess-fx-001", "parentLastUuid": "uuid-fx-002", "contextLength": 99}
+{"type": "last-prompt", "sessionId": "sess-fx-002"}
+{"type": "mode", "sessionId": "sess-fx-002"}
+{"type": "permission-mode", "sessionId": "sess-fx-002"}
+{"type": "pr-link", "timestamp": "2026-09-16T14:46:49.089Z", "sessionId": "sess-fx-005"}
+{"type": "queue-operation", "timestamp": "2026-09-15T18:20:15.476Z", "sessionId": "sess-fx-001"}
+{"type": "relocated", "sessionId": "sess-fx-008"}
+{"type": "system", "timestamp": "2026-08-29T20:21:11.044Z", "isSidechain": false, "uuid": "uuid-fx-057", "parentUuid": "uuid-fx-058", "sessionId": "sess-fx-002"}
+{"type": "user", "timestamp": "2026-08-29T20:12:59.029Z", "isSidechain": false, "uuid": "uuid-fx-059", "sessionId": "sess-fx-002", "message": {"role": "user", "content": "Fixture user message"}}
+{"type": "worktree-state", "sessionId": "sess-fx-008"}
+{"type": "attachment", "timestamp": "2026-09-24T10:08:53.126Z", "isSidechain": false, "uuid": "uuid-fx-060", "parentUuid": "uuid-fx-061", "sessionId": "sess-fx-009", "attachment": {"type": "queued_command", "commandMode": "task-notification", "usage": {"totalTokens": 86090, "toolUses": 22, "durationMs": 307430}}}
