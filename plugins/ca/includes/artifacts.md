@@ -99,9 +99,9 @@ limit or excluding source/test/governance inputs needed for the task.
 The existing user, SMARTS, reviewer, or verification boundary must first persist
 its actual policy-owned workflow event as canonical JSON in the reserved
 content-addressed authority-source store. Interactive prompt approval currently
-has production host seams in Claude Code and Codex. Pi 0.84.1 exposes no
-pre-model event carrying the user's exact prompt, so under Pi do not arm this
-adapter; the workflow remains blocked until a Pi-native authority adapter is
+has production host seams in Claude Code and Codex. Pi 1.0.0 exposes an `input`
+event, but codeArbiter has no Pi-native authority adapter. Under Pi do not arm this
+adapter; the workflow remains blocked until that adapter is
 implemented. On Claude Code or Codex, arm the exact current artifact immediately
 before asking the approval question:
 
@@ -180,8 +180,9 @@ current approved plan and prerequisite:
 python "${CLAUDE_PLUGIN_ROOT}/hooks/_prerequisitelib.py" arm --root "${CLAUDE_PROJECT_DIR}" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
 ```
 
-Show the returned title, requirement, and review-packet digest, then require the
-returned `short_reply` (`satisfy-prerequisite <code>`) or the full `reply`, with
+Show the returned title, requirement, review-packet digest, and `expires_at_utc`
+deadline. The request and its reply code expire together 24 hours after arming.
+Require the returned `short_reply` (`satisfy-prerequisite <code>`) or the full `reply`, with
 the same tolerance and mismatch reporting as approval. The `UserPromptSubmit` hook
 durably records that observed decision before publishing its authority source,
 captures a prerequisite receipt, and applies the existing prerequisite CAS
@@ -211,7 +212,7 @@ python "${CLAUDE_PLUGIN_ROOT}/hooks/_prerequisitelib.py" supersede --root "${CLA
 The adapter fixes `authority_kind: user_workflow` and `verdict: satisfied`;
 there is no caller-selected authority or bulk-satisfaction path. SMARTS prerequisite satisfaction remains unsupported; the plan-method producer below does not
 grant prerequisite, security, backend or publication authority. Pi has no
-qualified pre-model prompt seam and must remain blocked. Do not infer eligibility from one satisfied prerequisite:
+prerequisite-capture adapter and must remain blocked. Do not infer eligibility from one satisfied prerequisite:
 rerun `eligible`, and resolve each remaining record independently against the
 new current plan identity.
 

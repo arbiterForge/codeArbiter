@@ -48,7 +48,7 @@ PENDING_DIR = Path(".codearbiter/.markers/pending-prerequisites")
 SOURCE_DIR = Path(".codearbiter/.artifacts/authority-sources")
 FORMAT = "codearbiter.pending-user-prerequisite/0.1.0"
 POLICY = "explicit-user-prerequisite-confirmation/0.1.0"
-CONFIRMATION_LIFETIME_SECONDS = 15 * 60
+CONFIRMATION_LIFETIME_SECONDS = _replylib.CODE_TTL_SECONDS
 CONFIRMATION_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 ID_RE = re.compile(r"[A-Z][A-Z0-9_-]{0,127}")
 HOST_RE = re.compile(r"[A-Za-z0-9_-]{1,32}")
@@ -620,9 +620,12 @@ def arm_user_prerequisite(
         "requirement": record["requirement"],
         "review_packet_sha256": packet_sha256,
         "reply": reply,
+        "expires_at": pending["expires_at"],
+        "expires_at_utc": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(pending["expires_at"])),
         **_replylib.offer_code(root, "prerequisite", artifact_id, reply,
                                names=[artifact_id, prerequisite_id],
-                               short_prefix=["satisfy-prerequisite"]),
+                               short_prefix=["satisfy-prerequisite"],
+                               expires_at=pending["expires_at"]),
         "pending": relative.as_posix(),
     }
 
@@ -652,7 +655,7 @@ def _confirm(
     session_id: str,
     now: int,
 ) -> dict[str, Any]:
-    if now > pending["expires_at"]:
+    if now >= pending["expires_at"]:
         raise PrerequisiteError(
             "EXPIRED_PREREQUISITE", "the prerequisite confirmation request expired"
         )

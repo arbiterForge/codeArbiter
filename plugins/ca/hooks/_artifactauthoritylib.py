@@ -1325,6 +1325,8 @@ def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) ->
             "HTML to reconstruct artifact authority. "
             "Do not pass if the evidence is missing, unreadable or inconsistent. The locator "
             "is a reference to the complete immutable evidence, not replacement authority.\n"
+            "Each finding has exactly severity, code, message; severity must be BLOCK, WARN, or INFO. "
+            "code and message must be non-empty strings. Use an empty findings list when there are none.\n"
         )
     profile = (
         f"Native review profile: {CODEX_NATIVE_V1}. This review was dispatched through "
