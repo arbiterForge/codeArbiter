@@ -65,6 +65,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _approvallib  # noqa: E402 — host-owned artifact approval capture
+import _artifactauthoritylib  # noqa: E402 — exact context preview approval capture
 import _hooklib  # noqa: E402
 import _modelib  # noqa: E402 — mode plane core (T-06..T-16, Lane A)
 import _prerequisitelib  # noqa: E402 — host-owned prerequisite capture
@@ -485,6 +486,15 @@ def _handle_user_prompt_submit(payload, host):
         )
         if reconciliation:
             contexts.append(reconciliation)
+        context_preview = _artifactauthoritylib.capture_context_preview_from_hook(
+            root=root,
+            plugin_root=host.plugin_root(),
+            prompt=prompt,
+            host=host.name,
+            session_id=session_id,
+        )
+        if context_preview:
+            contexts.append(context_preview)
         approval_context = "\n".join(contexts)
     if not active:
         if not approval_context:
@@ -513,6 +523,10 @@ def _handle_precompact(payload, host):
     if not _hooklib.arbiter_active(root):
         return 0
     _bump_compaction_generation(_hooklib.marker_root(payload), session_id)
+    # Read-time context pointers have their own worktree-local epoch. A
+    # surviving read marker cannot prove that a compacted actor still carries
+    # those pointers. Keep this separate from the persona generation above.
+    _readinjectlib.bump_context_generation(root, session_id)
     return 0
 
 

@@ -52,6 +52,7 @@ import re
 # exactly like a failure to import `os` would. No circularity risk: _modelib
 # imports _activationlib and _hooklib, neither of which imports this module.
 from _modelib import current_mode as _modelib_current_mode
+from _activationlib import frontmatter_enabled_text as _activation_enabled_text
 
 # mtime-keyed memo: statusline.py is a short-lived subprocess, but a single render
 # can resolve arbiter_state more than once (safe() probes), and the StopHook fires
@@ -143,14 +144,18 @@ def _arbiter_enabled(ctx_path, frontmatter_enabled=None, ctx_text=None):
     When `ctx_text` is supplied (performance-003: the caller already read
     CONTEXT.md), the decision is made from that text — no re-read of ctx_path."""
     if ctx_text is not None:
-        return frontmatter_text(ctx_text).get("arbiter", "").lower() == "enabled"
+        return _activation_enabled_text(ctx_text)[0]
     if frontmatter_enabled is not None:
         try:
             enabled, _malformed = frontmatter_enabled(ctx_path)
             return enabled
         except Exception:  # noqa: BLE001 — degrade to the local parser, never crash
             pass
-    return frontmatter(ctx_path).get("arbiter", "").lower() == "enabled"
+    try:
+        with open(ctx_path, encoding="utf-8-sig", errors="replace") as handle:
+            return _activation_enabled_text(handle.read())[0]
+    except OSError:
+        return False
 
 
 def arbiter_state(root, count_in_flight=None, read_board=None, frontmatter_enabled=None,
