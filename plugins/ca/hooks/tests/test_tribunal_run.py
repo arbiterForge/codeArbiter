@@ -1,0 +1,983 @@
+"""Behavioral obligations for SPEC-TRIBUNAL-VNEXT-001 / T-01.
+
+AC01/02: fingerprint bytes, index, HEAD, scope, target, own-output and untracked.
+AC03: exclusive allocation preserves forced collisions.
+AC04/05: report resumes only follow-ups; dispositions gate terminal completion.
+AC06: durable leads and append-only dispositions survive process recreation.
+AC07/08: cross-lens root identity and factual uncertainty/design separation.
+AC27/28: independently verified serious work only; no refuted filing.
+AC32/33: legacy read-only history and issue references remain intact.
+AC37: real Git, hostile config, malformed input, containment and CLI exercise.
+"""
+import copy
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import time
+from types import SimpleNamespace
+import unittest
+from unittest import mock
+
+
+REPO = Path(__file__).resolve().parents[4]
+SOURCE = REPO / "core" / "pysrc" / "_tribunalrunlib.py"
+CLI = SOURCE.with_name("tribunal.py")
+sys.path.insert(0, str(SOURCE.parent))
+
+
+def load_library():
+    spec = importlib.util.spec_from_file_location("tribunal_run_under_test", SOURCE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+run = load_library()
+
+
+def finding(**updates):
+    value = {
+        "schema": "finding/v1", "id": "reliability-001", "lens": "reliability",
+        "title": "Preserve queued writes", "category": "reliability",
+        "severity": "high", "confidence": 0.9, "observed": True,
+        "locations": [{"path": "src/app.py", "lines": "2-4"}],
+        "evidence": "The second writer replaces the first writer's queued state.",
+        "impact": "Queued work is lost.", "recommendation": "Serialize mutation.",
+        "dedup_key": "reliability:src/app.py:queued-writes",
+        "created_at": "2026-10-05T12:00:00Z",
+    }
+    value.update(updates)
+    return value
+
+
+def triage(**updates):
+    value = {
+        "schema": "triage/v1", "id": "reliability-001", "decision": "keep",
+        "final_severity": "high", "final_confidence": 0.9,
+        "counter_argument": "The caller might serialize; tracing shows it does not.",
+        "rationale": "The boundary trace establishes a lost update.",
+        "decided_at": "2026-10-05T12:00:00Z",
+    }
+    value.update(updates)
+    return value
+
+
+def verification(outcome="confirmed", **updates):
+    value = {
+        "schema": "verification/v1", "id": "reliability-001",
+        "outcome": outcome, "evidence": "Independent trace confirms ownership.",
+        "verification_independence": "independent",
+    }
+    value.update(updates)
+    return value
+
+
+class RelativePathTests(unittest.TestCase):
+    def test_relative_paths_follow_native_filename_rules(self):
+        for platform in ("posix", "nt"):
+            with mock.patch.object(run, "os", SimpleNamespace(name=platform)):
+                for value in ("notes/2026-10-05T12:00:00.txt", r"src/literal\name.py"):
+                    with self.subTest(platform=platform, value=value):
+                        if platform == "posix":
+                            self.assertEqual(run._relative(value), value)
+                        else:
+                            with self.assertRaises(run._Invalid):
+                                run._relative(value)
+                for value in ("/absolute", "../escape", ".git/config", "src/\x00bad"):
+                    with self.subTest(platform=platform, value=value):
+                        with self.assertRaises(run._Invalid):
+                            run._relative(value)
+
+
+class RepositoryTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "repo"
+        self.root.mkdir()
+        self.env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        self.env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull)
+        self.git("init", "-q")
+        self.git("config", "user.name", "Tribunal fixture")
+        self.git("config", "user.email", "fixture@example.invalid")
+        self.git("config", "core.autocrlf", "false")
+        self.write("src/app.py", b"print('reviewed')\n")
+        self.write("outside.txt", b"outside scope\n")
+        self.write(".gitignore", b"ignored.txt\n")
+        self.git("add", "--", ".")
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "-qm", "fixture", "--no-gpg-sign")
+
+    def git(self, *args):
+        result = subprocess.run(["git", *args], cwd=self.root, env=self.env,
+                                capture_output=True, check=True, shell=False)
+        return result.stdout.decode("utf-8").strip()
+
+    def write(self, name, content):
+        path = self.root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+        return path
+
+    def success(self, value):
+        self.assertTrue(value.get("ok"), value)
+        return value
+
+    def start(self, **kwargs):
+        return Path(self.success(run.start_run(self.root, **kwargs))["run_dir"])
+
+    def fingerprint(self, **kwargs):
+        return self.success(run.source_fingerprint(self.root, **kwargs))["fingerprint"]
+
+    def test_fingerprint_binds_bytes_index_and_root(self):
+        initial = self.fingerprint()
+        self.assertTrue(initial["clean"])
+        self.assertEqual(initial["head"], self.git("rev-parse", "HEAD"))
+        self.assertEqual(initial["scope"], ".")
+        self.assertEqual(len(initial["digest"]), 64)
+        self.write("src/app.py", b"print('staged')\n")
+        dirty = self.fingerprint()
+        self.assertFalse(dirty["clean"])
+        self.assertNotEqual(initial["digest"], dirty["digest"])
+        self.git("add", "--", "src/app.py")
+        staged = self.fingerprint()
+        self.write("src/app.py", b"print('reviewed')\n")
+        worktree_restored = self.fingerprint()
+        self.assertNotEqual(dirty["index_digest"], staged["index_digest"])
+        self.assertNotEqual(initial["digest"], worktree_restored["digest"])
+        self.assertEqual(staged["index_digest"], worktree_restored["index_digest"])
+        self.assertNotEqual(staged["worktree_digest"], worktree_restored["worktree_digest"])
+
+    def test_scope_ignores_unreviewed_files_and_target_changes_binding(self):
+        first = self.fingerprint(scope="src", target_digest="a" * 64)
+        self.write("outside.txt", b"not reviewed\n")
+        self.assertEqual(first, self.fingerprint(scope="./src/", target_digest="a" * 64))
+        self.assertNotEqual(first["digest"], self.fingerprint(scope="src", target_digest="b" * 64)["digest"])
+        self.assertFalse(run.source_fingerprint(self.root, scope="../elsewhere")["ok"])
+        self.assertFalse(run.source_fingerprint(self.root, target_digest="bad")["ok"])
+
+    @unittest.skipUnless(os.name == "posix", "POSIX literal filename contract")
+    def test_posix_literal_filenames_preserve_scope_and_source_binding(self):
+        outside = "notes/2026-10-05T12:00:00.txt"
+        reviewed = r"src/literal\name.py"
+        self.write(outside, b"outside scope\n")
+        self.write(reviewed, b"reviewed literal filename\n")
+        self.git("add", "--", outside, reviewed)
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "-qm", "literal filenames", "--no-gpg-sign")
+        folder = self.start(scope="src")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "audit")
+        self.write(outside, b"changed outside scope\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "audit")
+        self.write(reviewed, b"changed reviewed source\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+
+    def test_declared_external_evidence_is_bound_without_widening_finding_scope(self):
+        folder = self.start(scope="src", evidence_paths=["outside.txt"])
+        binding = json.loads((folder / "source.json").read_text(encoding="utf-8"))["fingerprint"]
+        self.assertEqual(binding["scope"], "src")
+        self.assertEqual(binding["evidence_paths"], ["outside.txt"])
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "audit")
+        self.write("outside.txt", b"changed reviewed caller\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+
+    def test_declared_evidence_must_name_represented_inputs(self):
+        self.write("ignored.txt", b"contract = allow\n")
+        self.write("unselected.txt", b"not selected for review\n")
+        for evidence in ("ignored.txt", "missing.txt", "src", "unselected.txt"):
+            with self.subTest(evidence=evidence):
+                result = run.start_run(self.root, scope="src", evidence_paths=[evidence], reviewed_untracked=[])
+                self.assertEqual(result, {"ok": False, "error": "evidence-input-unavailable"})
+        self.write("ignored.txt", b"contract = deny\n")
+        self.assertEqual(run.start_run(self.root, scope="src", evidence_paths=["ignored.txt"]),
+                         {"ok": False, "error": "evidence-input-unavailable"})
+
+    def test_source_drift_rejects_persistent_writes_without_changing_records(self):
+        folder = self.start(scope="src")
+        lead = {"schema": "lead/v1", "id": "reliability-001", "source_lens": "reliability",
+                "target_lens": "appsec", "locations": [{"path": "src/app.py", "lines": "1"}],
+                "observation": "Caller identity may be lost.", "reason": "Auth owner not yet traced.",
+                "created_at": "2026-10-05T12:00:00Z", "disposition": "open"}
+        self.success(run.write_lead(self.root, folder, lead))
+        self.success(run.dispose_lead(self.root, folder, lead["id"], "routed", "Appsec owns trace."))
+        self.success(run.append_triage(self.root, folder, finding(), triage(), verification()))
+
+        def records():
+            return {path.relative_to(folder).as_posix(): path.read_bytes()
+                    for path in folder.rglob("*") if path.is_file()}
+
+        before = records()
+        self.write("src/app.py", b"changed reviewed source\n")
+        operations = [
+            ("event", lambda: run.append_event(self.root, folder, "lens-completed", lens="reliability")),
+            ("new lead", lambda: run.write_lead(self.root, folder, dict(lead, id="reliability-002"))),
+            ("lead disposition", lambda: run.dispose_lead(self.root, folder, lead["id"], "dismissed", "Trace complete.")),
+            ("triage", lambda: run.append_triage(self.root, folder, finding(), triage(), verification())),
+        ]
+        for name, operation in operations:
+            with self.subTest(operation=name):
+                self.assertEqual(operation(), {"ok": False, "error": "run-not-writable"})
+                self.assertEqual(records(), before)
+
+    def test_fingerprint_probe_failure_is_not_reported_as_source_drift(self):
+        folder = self.start(scope="src")
+        with mock.patch.object(run, "_fingerprint", side_effect=OSError("private machine detail")):
+            status = self.success(run.resume_status(self.root, folder))
+            self.assertEqual(status["state"], "source-probe-failed")
+            self.assertFalse(status["can_resume_audit"])
+            self.assertFalse(status["can_resume_follow_up"])
+            self.assertNotIn("private machine detail", json.dumps(status))
+            self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
+                             {"ok": False, "error": "run-not-writable"})
+
+    def test_changed_scope_with_selected_input_is_source_drift(self):
+        self.write("src/reviewed.txt", b"selected input\n")
+        folder = self.start(scope="src", reviewed_untracked=["src/reviewed.txt"])
+        status = self.success(run.resume_status(self.root, folder, scope="outside.txt"))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+
+    def test_changed_evidence_set_is_drift_before_old_input_probe(self):
+        self.write("old-evidence.txt", b"selected input\n")
+        folder = self.start(scope="src", reviewed_untracked=["old-evidence.txt"],
+                            evidence_paths=["old-evidence.txt"])
+        (self.root / "old-evidence.txt").unlink()
+        self.write("new-evidence.txt", b"replacement input\n")
+        status = self.success(run.resume_status(self.root, folder,
+                                                evidence_paths=["new-evidence.txt"]))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+        self.assertFalse(status["can_resume_follow_up"])
+
+    def test_committed_evidence_deletion_is_source_drift(self):
+        folder = self.start(scope="src", evidence_paths=["outside.txt"])
+        self.git("rm", "--", "outside.txt")
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "-qm", "remove evidence", "--no-gpg-sign")
+        status = self.success(run.resume_status(self.root, folder))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+
+    def test_populated_gitlink_binds_child_source_and_rejects_child_drift(self):
+        child = self.root / "child"
+        self.git("clone", "-q", "--no-hardlinks", str(self.root), str(child))
+        child_head = self.git("rev-parse", "HEAD")
+        self.git("update-index", "--add", "--cacheinfo", "160000," + child_head + ",child")
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "-qm", "gitlink", "--no-gpg-sign")
+        folder = self.start()
+        subtree = self.fingerprint(scope="child/src")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "audit")
+        (child / "src/app.py").write_bytes(b"changed child source\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+        self.assertNotEqual(subtree["digest"], self.fingerprint(scope="child/src")["digest"])
+
+    def test_malformed_nested_binding_is_a_refusal_without_traceback(self):
+        folder = self.start()
+        path = folder / "source.json"
+        value = json.loads(path.read_text(encoding="utf-8"))
+        fp = value["fingerprint"]
+        fp["repository"] = []
+        fp["digest"] = hashlib.sha256(json.dumps({key: entry for key, entry in fp.items() if key != "digest"}, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        path.write_text(json.dumps(value), encoding="utf-8")
+        result = subprocess.run([sys.executable, str(CLI), "--root", str(self.root), "resume-status", str(folder)], capture_output=True, text=True, shell=False)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertFalse(json.loads(result.stdout)["ok"])
+
+    def test_cli_rejects_reserved_event_arguments_without_traceback(self):
+        folder = self.start()
+        result = subprocess.run([sys.executable, str(CLI), "--root", str(self.root), "event", str(folder), "report-written", "--data", '{"event":"run-completed"}'], capture_output=True, text=True, shell=False)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertNotEqual(result.returncode, 0)
+
+    def test_own_output_is_stable_but_historical_reports_and_new_inputs_drift(self):
+        self.write(".codearbiter/reports/old/report.md", b"historical evidence\n")
+        folder = self.start()
+        before = (folder / "source.json").read_bytes()
+        (folder / "report.md").write_text("generated output", encoding="utf-8")
+        self.success(run.append_event(self.root, folder, "lens-completed", lens="reliability"))
+        self.assertEqual(self.success(run.resume_status(self.root, folder))["state"], "audit")
+        self.assertEqual(before, (folder / "source.json").read_bytes())
+        self.write(".codearbiter/reports/old/report.md", b"changed evidence\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+
+    def test_selected_untracked_and_ignored_inputs(self):
+        self.write("src/reviewed.txt", b"reviewed untracked\n")
+        folder = self.start(reviewed_untracked=["src/reviewed.txt"])
+        self.write("ignored.txt", b"ignored\n")
+        self.write("unselected.txt", b"not selected\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "audit")
+        self.write("src/reviewed.txt", b"changed same selected input\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+        self.assertFalse(run.start_run(self.root, reviewed_untracked=["ignored.txt"])["ok"])
+
+    def test_staged_selected_untracked_input_is_source_drift(self):
+        self.write("src/reviewed.txt", b"reviewed untracked\n")
+        folder = self.start(reviewed_untracked=["src/reviewed.txt"])
+        self.git("add", "--", "src/reviewed.txt")
+        status = self.success(run.resume_status(self.root, folder))
+        self.assertEqual(status["state"], "source-drift")
+        self.assertFalse(status["can_resume_audit"])
+        self.assertFalse(status["can_resume_follow_up"])
+
+    def test_new_untracked_default_and_index_deletion_invalidate_resume(self):
+        folder = self.start()
+        self.write("new.txt", b"new reviewed input\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+        (self.root / "new.txt").unlink()
+        self.git("rm", "--cached", "--", "src/app.py")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+
+    def test_head_scope_target_and_cross_repository_resume_are_rejected(self):
+        folder = self.start(target_digest="a" * 64)
+        self.assertEqual(run.resume_status(self.root, folder, scope="src")["state"], "source-drift")
+        self.assertEqual(run.resume_status(self.root, folder, target_digest="b" * 64)["state"], "source-drift")
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "--allow-empty", "-qm", "head changed", "--no-gpg-sign")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
+        other = Path(self.temp.name) / "other"
+        other.mkdir()
+        result = run.resume_status(other, folder)
+        self.assertFalse(result.get("can_resume_audit", False))
+        self.assertFalse(result["ok"])
+
+    def test_exclusive_allocation_retries_collision_without_modifying_history(self):
+        reports = self.root / ".codearbiter" / "reports"
+        reports.mkdir(parents=True)
+        old = reports / "20261005T120000000000Z-all-00000000"
+        old.mkdir()
+        (old / "report.md").write_bytes(b"keep this exact prior report")
+        with mock.patch.object(run, "_new_run_id", side_effect=[old.name, "20261005T120000000000Z-all-11111111"]):
+            fresh = self.start()
+        self.assertNotEqual(fresh, old)
+        self.assertEqual((old / "report.md").read_bytes(), b"keep this exact prior report")
+        self.assertEqual(list(old.iterdir()), [old / "report.md"])
+
+    def test_stranded_lock_has_explicit_recovery_without_rewriting_run_records(self):
+        folder = self.start()
+        stamp = "2026-10-24T05:24:37.963439Z"
+        stranded = (json.dumps({"at": stamp}, sort_keys=True, separators=(",", ":")) + "\n").encode()
+        lock = folder / ".write-lock"
+        lock.write_bytes(stranded)
+        source_before = (folder / "source.json").read_bytes()
+        events_before = (folder / "run.jsonl").read_bytes()
+        self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
+                         {"ok": False, "error": "run-busy-recovery-required"})
+
+        result = subprocess.run(
+            [sys.executable, str(CLI), "--root", str(self.root), "recover-lock", str(folder),
+             "--expected-sha256", hashlib.sha256(stranded).hexdigest(), "--confirm-no-writer"],
+            capture_output=True, text=True, shell=False)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertTrue(json.loads(result.stdout)["ok"])
+        self.assertFalse(lock.exists())
+        self.assertEqual((folder / "source.json").read_bytes(), source_before)
+        self.assertEqual((folder / "run.jsonl").read_bytes(), events_before)
+        recovered = list(folder.glob(".write-lock.recovered-*.json"))
+        self.assertEqual(len(recovered), 1)
+        self.assertEqual(recovered[0].read_bytes(), stranded)
+        guard = folder / ".write-guard"
+        self.assertTrue(guard.is_file())
+        guard_identity = (guard.stat().st_dev, guard.stat().st_ino)
+        self.success(run.append_event(self.root, folder, "lens-launched", lens="appsec"))
+        self.assertEqual((guard.stat().st_dev, guard.stat().st_ino), guard_identity)
+
+    def test_lock_normalizes_equivalent_root_and_run_paths(self):
+        folder = self.start()
+        alias_segment = self.root.parent / "alias-segment"
+        alias_segment.mkdir()
+        alternate_root = alias_segment / ".." / self.root.name
+        alternate_folder = alternate_root / ".codearbiter" / "reports" / folder.name
+
+        with run._lock(alternate_root, folder):
+            self.assertTrue((folder / ".write-lock").is_file())
+        self.assertFalse((folder / ".write-lock").exists())
+        with run._lock(self.root, alternate_folder):
+            self.assertTrue((folder / ".write-lock").is_file())
+        self.assertFalse((folder / ".write-lock").exists())
+
+    def test_lock_recovery_refuses_a_live_writer_and_unconfirmed_or_changed_lock(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        stamp = "2026-10-24T05:24:37.963439Z"
+        with mock.patch.object(run, "_now", return_value=stamp):
+            with run._lock(self.root, folder):
+                digest = hashlib.sha256((json.dumps({"at": stamp}, sort_keys=True,
+                                                    separators=(",", ":")) + "\n").encode()).hexdigest()
+                self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                                 {"ok": False, "error": "run-lock-active"})
+                self.assertTrue(lock.exists())
+        lock.write_bytes(b'{"at":"interrupted"}\n')
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        self.assertEqual(run.recover_lock(self.root, folder, digest),
+                         {"ok": False, "error": "lock-recovery-confirmation-required"})
+        self.assertEqual(run.recover_lock(self.root, folder, "0" * 64, True),
+                         {"ok": False, "error": "run-lock-changed"})
+        self.assertTrue(lock.exists())
+        self.assertTrue(run.recover_lock(self.root, folder, digest, True)["ok"])
+
+    def test_lock_recovery_refuses_another_process_holding_the_lock(self):
+        folder = self.start()
+        stamp = "2026-10-24T05:24:37.963439Z"
+        ready = Path(self.temp.name) / "writer-ready"
+        script = ("import sys\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  f"run._now = lambda: {stamp!r}\n"
+                  f"with run._lock(Path({str(self.root)!r}), Path({str(folder)!r})):\n"
+                  f"    Path({str(ready)!r}).write_text('ready')\n"
+                  "    sys.stdin.readline()\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            raw = (json.dumps({"at": stamp}, sort_keys=True, separators=(",", ":")) + "\n").encode()
+            digest = hashlib.sha256(raw).hexdigest()
+            self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue((folder / ".write-lock").exists())
+        finally:
+            if writer.poll() is None:
+                writer.stdin.write("\n")
+                writer.stdin.flush()
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertFalse((folder / ".write-lock").exists())
+
+    def test_lock_recovery_refuses_legacy_writer_without_guard(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"legacy live lock")
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        ready = Path(self.temp.name) / "legacy-writer-ready"
+        script = ("import os, sys\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  f"fd = os.open(Path({str(lock)!r}), os.O_RDWR | getattr(os, 'O_BINARY', 0))\n"
+                  "run._acquire_file_lock(fd)\n"
+                  f"Path({str(ready)!r}).write_text('ready')\n"
+                  "sys.stdin.readline()\n"
+                  "run._release_file_lock(fd)\n"
+                  "os.close(fd)\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue(lock.exists())
+        finally:
+            if writer.poll() is None:
+                writer.stdin.write("\n")
+                writer.stdin.flush()
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertEqual(lock.read_bytes(), b"legacy live lock")
+
+    def test_lock_recovery_refuses_writer_during_lock_publication(self):
+        folder = self.start()
+        stamp = "2026-10-24T05:24:37.963439Z"
+        ready = Path(self.temp.name) / "publication-paused"
+        release = Path(self.temp.name) / "publication-release"
+        script = ("import sys, time\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  f"run._now = lambda: {stamp!r}\n"
+                  "original_fsync = run.os.fsync\n"
+                  "def pause(fd):\n"
+                  f"    Path({str(ready)!r}).write_text('ready')\n"
+                  f"    while not Path({str(release)!r}).exists(): time.sleep(0.01)\n"
+                  "    original_fsync(fd)\n"
+                  "run.os.fsync = pause\n"
+                  f"with run._lock(Path({str(self.root)!r}), Path({str(folder)!r})):\n"
+                  "    pass\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            raw = (json.dumps({"at": stamp}, sort_keys=True, separators=(",", ":")) + "\n").encode()
+            digest = hashlib.sha256(raw).hexdigest()
+            self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue((folder / ".write-lock").exists())
+        finally:
+            release.write_text("resume", encoding="utf-8")
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertFalse((folder / ".write-lock").exists())
+
+    def test_lock_recovery_refuses_writer_before_lock_contents_are_published(self):
+        folder = self.start()
+        ready = Path(self.temp.name) / "lock-created"
+        release = Path(self.temp.name) / "lock-creation-release"
+        script = ("import os, sys, time\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  "original_open = run.os.open\n"
+                  "def pause_open(path, flags, *args, **kwargs):\n"
+                  "    fd = original_open(path, flags, *args, **kwargs)\n"
+                  "    if Path(path).name == '.write-lock':\n"
+                  f"        Path({str(ready)!r}).write_text('ready')\n"
+                  f"        while not Path({str(release)!r}).exists(): time.sleep(0.01)\n"
+                  "    return fd\n"
+                  "run.os.open = pause_open\n"
+                  f"with run._lock(Path({str(self.root)!r}), Path({str(folder)!r})):\n"
+                  "    pass\n")
+        writer = subprocess.Popen([sys.executable, "-c", script], stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or writer.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), writer.stderr.read() if writer.poll() is not None else "writer not ready")
+            self.assertEqual(run.recover_lock(self.root, folder, hashlib.sha256(b"").hexdigest(), True),
+                             {"ok": False, "error": "run-lock-active"})
+            self.assertTrue((folder / ".write-lock").exists())
+        finally:
+            release.write_text("resume", encoding="utf-8")
+            writer.communicate(timeout=10)
+        self.assertEqual(writer.returncode, 0)
+        self.assertFalse((folder / ".write-lock").exists())
+
+    def test_recovery_holds_guard_after_archive_until_return(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        events_before = (folder / "run.jsonl").read_bytes()
+        ready = Path(self.temp.name) / "archive-paused"
+        release = Path(self.temp.name) / "archive-release"
+        script = ("import json, sys, time\nfrom pathlib import Path\n"
+                  f"sys.path.insert(0, {str(SOURCE.parent)!r})\n"
+                  "import _tribunalrunlib as run\n"
+                  "original_rename = Path.rename\n"
+                  "def pause_rename(self, target):\n"
+                  "    result = original_rename(self, target)\n"
+                  "    if self.name == '.write-lock':\n"
+                  f"        Path({str(ready)!r}).write_text('ready')\n"
+                  f"        while not Path({str(release)!r}).exists(): time.sleep(0.01)\n"
+                  "    return result\n"
+                  "Path.rename = pause_rename\n"
+                  f"print(json.dumps(run.recover_lock(Path({str(self.root)!r}), Path({str(folder)!r}), {digest!r}, True)))\n")
+        recovery = subprocess.Popen([sys.executable, "-c", script], stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, text=True, shell=False)
+        try:
+            for _ in range(100):
+                if ready.exists() or recovery.poll() is not None:
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready.exists(), recovery.stderr.read() if recovery.poll() is not None else "recovery not ready")
+            self.assertFalse(lock.exists())
+            self.assertEqual(run.append_event(self.root, folder, "lens-launched", lens="appsec"),
+                             {"ok": False, "error": "run-busy"})
+            self.assertEqual((folder / "run.jsonl").read_bytes(), events_before)
+        finally:
+            release.write_text("resume", encoding="utf-8")
+            stdout, stderr = recovery.communicate(timeout=10)
+        self.assertEqual(recovery.returncode, 0, stderr)
+        self.assertTrue(json.loads(stdout)["ok"])
+        self.success(run.append_event(self.root, folder, "lens-launched", lens="appsec"))
+
+    def test_lock_recovery_preserves_a_run_with_malformed_records(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"interrupted lock write")
+        with (folder / "run.jsonl").open("ab") as handle:
+            handle.write(b'{"event":')
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertEqual(lock.read_bytes(), b"interrupted lock write")
+
+    def test_lock_recovery_preserves_runs_with_malformed_auxiliary_records(self):
+        valid_triage = {**triage(), "root_cause_key": "queue-owner",
+                        "related_lenses": ["reliability"], "corroborates": [],
+                        "verification": verification()}
+        invalid_triage = (
+            {**valid_triage, "root_cause_key": []},
+            {**valid_triage, "related_lenses": "reliability"},
+            {**valid_triage, "corroborates": "reliability"},
+            {**valid_triage, "verification": {"schema": "verification/v1", "id": "other",
+                                             "outcome": "confirmed", "evidence": "mismatched",
+                                             "verification_independence": "independent"}},
+            {**valid_triage, "verification": None},
+            {**valid_triage, "verification": verification(verification_independence="limited")},
+            {**valid_triage, "verification": verification(outcome="inconclusive")},
+        )
+        cases = (
+            ("triage.jsonl", b'{"partial":'),
+            ("lead-dispositions.jsonl", b'{"partial":'),
+            ("leads/reliability/lead-001.json", b'{"partial":'),
+            ("triage.jsonl", b'{"schema":"triage/v1","id":"lead-001","decision":"unknown",'
+             b'"final_severity":"high","final_confidence":0.9,"rationale":"invalid"}\n'),
+            ("lead-dispositions.jsonl", b'{"schema":"lead-disposition/v1","id":"missing",'
+             b'"disposition":"routed","rationale":"unknown lead"}\n'),
+            ("leads/reliability/lead-001.json", b'{"schema":"lead/v1","id":"lead-001",'
+             b'"source_lens":"reliability","disposition":"open"}'),
+            *(("triage.jsonl", (json.dumps(record) + "\n").encode()) for record in invalid_triage),
+        )
+        for relative, malformed in cases:
+            with self.subTest(relative=relative, malformed=malformed):
+                folder = self.start()
+                lock = folder / ".write-lock"
+                lock.write_bytes(b"stranded lock")
+                record = folder / relative
+                record.parent.mkdir(parents=True, exist_ok=True)
+                record.write_bytes(malformed)
+                digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+                self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                                 {"ok": False, "error": "run-not-recoverable"})
+                self.assertEqual(lock.read_bytes(), b"stranded lock")
+
+    def test_lock_recovery_accepts_valid_persisted_triage(self):
+        folder = self.start()
+        self.success(run.append_triage(self.root, folder, finding(), triage(), verification()))
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        result = run.recover_lock(self.root, folder, hashlib.sha256(lock.read_bytes()).hexdigest(), True)
+        self.assertTrue(result.get("ok"), result)
+
+    def test_lock_recovery_detects_lock_change_after_initial_digest(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        original = lock.read_bytes()
+        identity = lock.stat()
+        original_release = run._release_file_lock
+        mutated = False
+
+        def mutate_at_unlock(fd):
+            nonlocal mutated
+            original_release(fd)
+            current = os.fstat(fd)
+            if not mutated and (current.st_dev, current.st_ino) == (identity.st_dev, identity.st_ino):
+                os.lseek(fd, 0, os.SEEK_SET)
+                os.write(fd, b"changed lock!")
+                os.fsync(fd)
+                mutated = True
+
+        with mock.patch.object(run, "_release_file_lock", side_effect=mutate_at_unlock):
+            result = run.recover_lock(self.root, folder, hashlib.sha256(original).hexdigest(), True)
+        self.assertTrue(mutated)
+        self.assertEqual(result, {"ok": False, "error": "run-lock-changed"})
+        self.assertTrue(lock.exists())
+        self.assertEqual(lock.read_bytes(), b"changed lock!")
+        self.assertEqual(list(folder.glob(".write-lock.recovered-*.json")), [])
+
+    def test_lock_recovery_refuses_source_drift_and_invalid_binding(self):
+        folder = self.start()
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        digest = hashlib.sha256(lock.read_bytes()).hexdigest()
+        self.write("src/app.py", b"print('changed after review')\n")
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertTrue(lock.exists())
+        self.write("src/app.py", b"print('reviewed')\n")
+        source = folder / "source.json"
+        binding = json.loads(source.read_text(encoding="utf-8"))
+        binding["fingerprint"]["digest"] = "0" * 64
+        source.write_text(json.dumps(binding), encoding="utf-8")
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertTrue(lock.exists())
+
+    def test_lock_recovery_allows_follow_up_but_refuses_unbound_history(self):
+        folder = self.start()
+        self.success(run.append_event(self.root, folder, "report-written"))
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"follow-up lock")
+        result = run.recover_lock(self.root, folder, hashlib.sha256(lock.read_bytes()).hexdigest(), True)
+        self.assertTrue(result.get("ok"), result)
+        self.assertEqual(result["state"], "follow-up")
+        self.success(run.append_event(self.root, folder, "filing-skipped", detail="No filing."))
+
+        legacy = self.start()
+        (legacy / "source.json").unlink()
+        old_lock = legacy / ".write-lock"
+        old_lock.write_bytes(b"unbound lock")
+        self.assertEqual(run.recover_lock(self.root, legacy, hashlib.sha256(old_lock.read_bytes()).hexdigest(), True),
+                         {"ok": False, "error": "run-not-recoverable"})
+        self.assertEqual(old_lock.read_bytes(), b"unbound lock")
+
+    def test_lock_recovery_refuses_a_linked_guard_without_touching_its_target(self):
+        folder = self.start()
+        external = Path(self.temp.name) / "outside-guard.txt"
+        external.write_bytes(b"outside stays intact")
+        guard = folder / ".write-guard"
+        self.assertFalse(guard.exists())
+        try:
+            guard.symlink_to(external)
+        except (OSError, NotImplementedError):
+            self.skipTest("file symlink creation unavailable")
+        lock = folder / ".write-lock"
+        lock.write_bytes(b"stranded lock")
+        self.assertEqual(run.recover_lock(self.root, folder, hashlib.sha256(lock.read_bytes()).hexdigest(), True),
+                         {"ok": False, "error": "linked-path-refused"})
+        self.assertEqual(external.read_bytes(), b"outside stays intact")
+        self.assertEqual(lock.read_bytes(), b"stranded lock")
+
+    def test_lock_recovery_refuses_a_linked_lock_without_touching_its_target(self):
+        folder = self.start()
+        external = Path(self.temp.name) / "outside.txt"
+        external.write_bytes(b"outside stays intact")
+        lock = folder / ".write-lock"
+        try:
+            lock.symlink_to(external)
+        except (OSError, NotImplementedError):
+            self.skipTest("file symlink creation unavailable")
+        digest = hashlib.sha256(external.read_bytes()).hexdigest()
+        self.assertEqual(run.recover_lock(self.root, folder, digest, True),
+                         {"ok": False, "error": "linked-path-refused"})
+        self.assertEqual(external.read_bytes(), b"outside stays intact")
+
+    def test_report_followup_dispositions_and_terminal_state(self):
+        folder = self.start(detail={"waves": [["reliability"], ["appsec"]]})
+        self.success(run.append_event(self.root, folder, "wave-triaged", wave=1))
+        self.success(run.append_event(self.root, folder, "report-written"))
+        status = self.success(load_library().resume_status(self.root, folder))
+        self.assertEqual(status["state"], "follow-up")
+        self.assertFalse(status["can_resume_audit"])
+        self.assertTrue(status["can_resume_follow_up"])
+        self.assertFalse(run.append_event(self.root, folder, "lens-launched", lens="appsec")["ok"])
+        self.assertFalse(run.append_event(self.root, folder, "run-completed")["ok"])
+        self.success(run.append_event(self.root, folder, "filing-skipped", detail="Owner skipped filing."))
+        self.assertFalse(run.append_event(self.root, folder, "run-completed")["ok"])
+        self.success(run.append_event(self.root, folder, "telemetry-skipped", detail="No opt-in."))
+        self.success(run.append_event(self.root, folder, "run-completed"))
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "terminal")
+        self.assertFalse(run.append_event(self.root, folder, "run-aborted")["ok"])
+
+    def test_abort_is_terminal_and_malformed_or_rebound_logs_cannot_resume(self):
+        folder = self.start()
+        self.success(run.append_event(self.root, folder, "run-aborted", detail="Owner stopped."))
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "terminal")
+        folder = self.start()
+        with (folder / "run.jsonl").open("ab") as handle:
+            handle.write(b'{"event":')
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "invalid")
+        folder = self.start()
+        source = json.loads((folder / "source.json").read_text(encoding="utf-8"))
+        source["fingerprint"]["head"] = "0" * 40
+        (folder / "source.json").write_text(json.dumps(source), encoding="utf-8")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "invalid")
+
+    def test_durable_leads_append_disposition_and_cannot_overwrite_or_escape(self):
+        folder = self.start()
+        lead = {"schema": "lead/v1", "id": "reliability-001", "source_lens": "reliability",
+                "target_lens": "appsec", "locations": [{"path": "src/app.py", "lines": "1"}],
+                "observation": "Caller identity may be lost.", "reason": "Auth owner not yet traced.",
+                "created_at": "2026-10-05T12:00:00Z", "disposition": "open"}
+        self.success(run.write_lead(self.root, folder, lead))
+        path = folder / "leads" / "reliability" / "reliability-001.json"
+        original = path.read_bytes()
+        self.assertFalse(run.write_lead(self.root, folder, lead)["ok"])
+        self.success(run.dispose_lead(self.root, folder, lead["id"], "routed", "Appsec owns trace."))
+        prefix = (folder / "lead-dispositions.jsonl").read_bytes()
+        self.success(run.dispose_lead(self.root, folder, lead["id"], "dismissed", "Middleware preserves identity."))
+        self.assertTrue((folder / "lead-dispositions.jsonl").read_bytes().startswith(prefix))
+        leads = self.success(load_library().read_leads(self.root, folder))["leads"]
+        self.assertEqual(leads[0]["disposition"], "dismissed")
+        self.assertEqual(len(leads[0]["disposition_history"]), 2)
+        self.assertEqual(original, path.read_bytes())
+        self.assertFalse(run.write_lead(self.root, folder, dict(lead, id="../escape"))["ok"])
+
+    def test_legacy_history_is_readable_without_rewriting_issue_references(self):
+        folder = self.root / ".codearbiter/reports/2026-07-01-all"
+        folder.mkdir(parents=True)
+        old = b'{"schema":"run/v1","event":"run-started","detail":"legacy"}\n'
+        (folder / "run.jsonl").write_bytes(old)
+        decisions = b'{"schema":"triage/v1","id":"reliability-001","issue_ref":"https://github.com/example/repo/issues/1"}\n'
+        (folder / "triage.jsonl").write_bytes(decisions)
+        status = self.success(run.resume_status(self.root, folder))
+        self.assertEqual(status["state"], "legacy-unbound")
+        history = self.success(run.read_run(self.root, folder))
+        self.assertEqual(history["triage"][0]["issue_ref"], "https://github.com/example/repo/issues/1")
+        self.assertFalse(run.append_event(self.root, folder, "lens-launched")["ok"])
+        self.assertEqual(old, (folder / "run.jsonl").read_bytes())
+        self.assertEqual(decisions, (folder / "triage.jsonl").read_bytes())
+
+    @unittest.skipUnless(os.name == "nt", "Windows native short-path contract")
+    def test_native_short_repository_alias_preserves_legacy_history(self):
+        import ctypes
+        canonical = self.root.resolve(strict=True)
+        buffer = ctypes.create_unicode_buffer(32768)
+        count = ctypes.windll.kernel32.GetShortPathNameW(str(canonical), buffer, len(buffer))
+        self.assertGreater(count, 0, "GetShortPathNameW failed")
+        self.assertLess(count, len(buffer))
+        alias = Path(buffer.value)
+        if alias == canonical:
+            self.skipTest("fixture volume has no native short-path alias")
+        self.assertEqual(alias.resolve(strict=True), canonical)
+        self.root = alias
+        self.test_legacy_history_is_readable_without_rewriting_issue_references()
+
+    def test_run_path_refuses_linked_history_directory(self):
+        folder = self.start()
+        link = folder.with_name("linked-history")
+        try:
+            link.symlink_to(folder, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            if os.name != "nt":
+                self.skipTest("directory symlink creation unavailable")
+            result = subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(folder)],
+                                    capture_output=True, shell=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.addCleanup(lambda: link.rmdir() if link.exists() else None)
+        before = (folder / "run.jsonl").read_bytes()
+        self.assertEqual(run.read_run(self.root, link),
+                         {"ok": False, "error": "linked-path-refused"})
+        self.assertEqual((folder / "run.jsonl").read_bytes(), before)
+
+    def test_triage_append_preserves_original_issue_reference_and_root_identity(self):
+        folder = self.start()
+        candidate = finding(root_cause_key="state:queue:lost-update", corroborates=["appsec-002"], related_lenses=["appsec"])
+        self.success(run.append_triage(self.root, folder, candidate, triage(), verification()))
+        prefix = (folder / "triage.jsonl").read_bytes()
+        decision = triage(issue_ref="https://github.com/example/repo/issues/1")
+        self.success(run.append_triage(self.root, folder, candidate, decision, verification()))
+        self.assertTrue((folder / "triage.jsonl").read_bytes().startswith(prefix))
+        entries = self.success(run.read_run(self.root, folder))["triage"]
+        self.assertEqual(entries[-1]["issue_ref"], decision["issue_ref"])
+        self.assertEqual(entries[-1]["root_cause_key"], candidate["root_cause_key"])
+        self.assertFalse(run.append_triage(self.root, folder, candidate, decision, verification("refuted"))["ok"])
+
+    def test_git_config_cannot_run_diff_filter_fsmonitor_or_shell_payloads(self):
+        sentinel = Path(self.temp.name) / "executed.txt"
+        executable = Path(self.temp.name) / "hostile.py"
+        executable.write_text("from pathlib import Path\nPath(" + repr(str(sentinel)) + ").write_text('executed')\n", encoding="utf-8")
+        command = '"' + sys.executable.replace("\\", "/") + '" "' + str(executable).replace("\\", "/") + '"'
+        for key in ["core.fsmonitor", "diff.external", "diff.hostile.textconv", "filter.hostile.clean"]:
+            self.git("config", key, command)
+        self.write(".gitattributes", b"*.py diff=hostile filter=hostile\n")
+        self.write("src/app.py", b"changed\n")
+        self.success(run.source_fingerprint(self.root))
+        self.assertFalse(sentinel.exists())
+
+    def test_git_preserves_protected_config_with_inert_subprocess_controls(self):
+        injected = {"GIT_DIR": str(self.root / "wrong-repository"),
+                    "GIT_CONFIG_GLOBAL": str(self.root / "injected-config"),
+                    "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_COUNT": "1",
+                    "GIT_CONFIG_KEY_0": "core.fsmonitor", "GIT_CONFIG_VALUE_0": "unused"}
+        with mock.patch.dict(os.environ, injected), \
+                mock.patch.object(run.subprocess, "run", wraps=subprocess.run) as execute:
+            actual = run._git(self.root, "rev-parse", "--show-toplevel")
+        self.assertEqual(Path(actual.decode().strip()).resolve(), self.root.resolve())
+        execute.assert_called_once()
+        args, kwargs = execute.call_args
+        self.assertEqual(args[0][1:], ["--no-pager", "--no-lazy-fetch", "-c", "core.fsmonitor=false",
+                                     "-c", "core.hooksPath=" + os.devnull, "-c", "core.untrackedCache=false",
+                                     "rev-parse", "--show-toplevel"])
+        self.assertFalse(kwargs["shell"])
+        expected = {"GIT_OPTIONAL_LOCKS": "0", "GIT_TERMINAL_PROMPT": "0", "GIT_NO_REPLACE_OBJECTS": "1"}
+        self.assertEqual({key for key in kwargs["env"] if key.startswith("GIT_")}, set(expected))
+        for key, value in expected.items():
+            self.assertEqual(kwargs["env"][key], value)
+
+    def test_selected_git_identity_is_not_silently_ignored(self):
+        self.assertTrue(run.source_fingerprint(self.root)["ok"])
+        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.root / "missing-git.exe")}):
+            result = run.source_fingerprint(self.root)
+        self.assertFalse(result["ok"])
+
+    def test_symlink_contents_never_read_external_bytes(self):
+        external = Path(self.temp.name) / "outside-secret.txt"
+        external.write_bytes(b"external original")
+        link = self.root / "src/link.txt"
+        try:
+            link.symlink_to(external)
+        except (OSError, NotImplementedError):
+            # Windows without link privilege: a directory junction still exercises containment.
+            target = Path(self.temp.name) / "external-dir"
+            target.mkdir()
+            result = subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], capture_output=True, shell=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.addCleanup(lambda: link.rmdir() if link.exists() else None)
+            self.assertFalse(run.source_fingerprint(self.root, scope="src/link.txt")["ok"])
+        else:
+            before = self.fingerprint()
+            external.write_bytes(b"changed outside source")
+            self.assertEqual(before, self.fingerprint())
+            self.assertFalse(run.source_fingerprint(self.root, scope="src/link.txt/child")["ok"])
+
+    def test_cli_start_resume_event_lead_and_triage_are_local_json_operations(self):
+        def command(*args):
+            result = subprocess.run([sys.executable, str(CLI), "--root", str(self.root), *args], capture_output=True, text=True, shell=False)
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+            return self.success(json.loads(result.stdout))
+        started = command("start", "--scope", "src")
+        folder = started["run_dir"]
+        self.assertEqual(command("resume-status", folder)["state"], "audit")
+        command("triage", folder, "--finding", json.dumps(finding()), "--record", json.dumps(triage()), "--verification", json.dumps(verification()))
+        command("event", folder, "report-written")
+        self.assertEqual(command("resume-status", folder)["state"], "follow-up")
+        invalid = subprocess.run([sys.executable, str(CLI), "--root", str(self.root), "event", folder, "run-completed"], capture_output=True, text=True, shell=False)
+        self.assertNotEqual(invalid.returncode, 0)
+        self.assertFalse(json.loads(invalid.stdout)["ok"])
+
+
+class FindingEligibilityTests(unittest.TestCase):
+    def test_legacy_finding_and_additive_cross_lens_identity(self):
+        original = finding()
+        self.assertTrue(run.validate_finding(original)["ok"])
+        shared = "state:queue:lost-update"
+        a = finding(root_cause_key=shared, related_lenses=["appsec"], corroborates=["appsec-002"])
+        b = finding(id="appsec-002", lens="appsec", root_cause_key=shared, related_lenses=["reliability"])
+        first = run.triage_eligibility(a, triage(), verification())
+        second = run.triage_eligibility(b, triage(id="appsec-002", decision="combine"), verification(id="appsec-002"))
+        self.assertTrue(first["filing_eligible"])
+        self.assertEqual(first["root_cause_key"], second["root_cause_key"])
+        self.assertEqual(a["lens"], "reliability")
+        self.assertEqual(b["lens"], "appsec")
+        self.assertEqual(original, finding())
+
+    def test_uncertainty_does_not_become_design_decision(self):
+        uncertain = run.triage_eligibility(finding(confidence=0.4), triage(decision="decision-required"))
+        self.assertFalse(uncertain["ok"])
+        actual_design = run.triage_eligibility(finding(claim_type="design-choice", severity="medium"), triage(decision="decision-required", final_severity="medium"))
+        self.assertTrue(actual_design["ok"])
+        self.assertFalse(actual_design["filing_eligible"])
+
+    def test_serious_candidates_require_independent_confirmation_or_narrowing(self):
+        for outcome in [None, "inconclusive", "refuted", "confirmed", "narrowed"]:
+            with self.subTest(outcome=outcome):
+                result = run.triage_eligibility(finding(), triage(), verification(outcome) if outcome else None)
+                self.assertTrue(result["ok"], result)
+                self.assertEqual(result["filing_eligible"], outcome in {"confirmed", "narrowed"})
+                self.assertEqual(result["plan_eligible"], outcome in {"confirmed", "narrowed"})
+        limited = run.triage_eligibility(finding(), triage(), verification(verification_independence="limited"))
+        self.assertFalse(limited["filing_eligible"])
+        promoted = run.triage_eligibility(finding(severity="medium"), triage(final_severity="critical"))
+        self.assertFalse(promoted["filing_eligible"])
+        downgraded = run.triage_eligibility(finding(), triage(final_severity="low"))
+        self.assertFalse(downgraded["filing_eligible"])
+
+    def test_malformed_records_cannot_claim_verification_or_filing(self):
+        valid = run.triage_eligibility(finding(), triage(), verification())
+        self.assertTrue(valid["filing_eligible"])
+        malformed = [None, [], {}, finding(confidence=float("nan")), finding(locations=[]), finding(corroborates="appsec-002")]
+        for candidate in malformed:
+            with self.subTest(candidate=candidate):
+                self.assertFalse(run.validate_finding(candidate)["ok"])
+        for bad in [verification(id="wrong-001"), verification(outcome="yes"), verification(evidence=""), {"outcome": "confirmed"}]:
+            with self.subTest(verification=bad):
+                self.assertFalse(run.triage_eligibility(finding(), triage(), bad)["ok"])
+
+
+if __name__ == "__main__":
+    unittest.main()
