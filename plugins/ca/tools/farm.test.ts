@@ -1,0 +1,2861 @@
+/**
+ * Smoke tests for farm.ts. Uses a mock HTTP server so no real API key needed.
+ * Tests run against a temp git repo to avoid touching the main worktree.
+ */
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { execSync, execFileSync, spawn } from "node:child_process";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync, realpathSync } from "node:fs";
+import { join, resolve, basename } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const farmTs = resolve(__dirname, "farm.ts");
+// Absolute file: URL to the tsx ESM loader, resolved from THIS file's location
+// (where tsx is installed) so it is independent of the child's cwd — the temp
+// repo the child runs in has no node_modules.
+const TSX_LOADER = pathToFileURL(
+  createRequire(import.meta.url).resolve("tsx"),
+).href;
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import { vi } from "vitest";
+
+// #542, third pass — and the last, because the budget finally matches the
+// population it applies to.
+//
+// EVERY case in this file launches a real farm subprocess. Process creation on a
+// hosted Windows runner is far slower than on a developer box, so the 5000ms
+// default is marginal there for the whole file, not for any one case in it.
+//
+// The first fix raised one case (the heaviest, measured at 3553ms isolated and
+// 5331ms under CI load). Seven more in its block then timed out. The second fix
+// raised that block. Two cases in a DIFFERENT block then timed out. Each pass
+// fixed the sample the last failure happened to name, and the next-slowest case
+// was always waiting.
+//
+// So: the file. 30s is ~6x the slowest measured run and still bounded, so a
+// genuine hang fails rather than sitting until the job timeout. Scoped here
+// rather than in vitest.config.ts on purpose - the sibling suites are ordinary
+// in-process unit tests, and a 30s default there would turn a hung unit test
+// from a 5s failure into a 30s one.
+vi.setConfig({ testTimeout: 30_000 });
+import type { Server } from "node:http";
+
+// --------------------------------------------------------------------------
+// Mini mock HTTP server that returns canned file-block responses
+// --------------------------------------------------------------------------
+// reliability-013 test support: a handler may return a Promise<string> to
+// deliberately delay a response, so a test can arrange one task to stay
+// "in flight" while a sibling settles fast enough to trip the circuit breaker.
+type MockHandler = (body: unknown) => string | Promise<string>;
+
+function startMockServer(
+  handler: MockHandler,
+  usage?: { prompt_tokens: number; completion_tokens: number },
+): Promise<{ server: Server; port: number }> {
+  return new Promise((resolve) => {
+    const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+      let data = "";
+      req.on("data", (chunk) => (data += chunk));
+      req.on("end", () => {
+        const body = JSON.parse(data || "{}");
+        Promise.resolve(handler(body)).then((content) => {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              choices: [{ message: { content } }],
+              ...(usage ? { usage } : {}),
+            }),
+          );
+        });
+      });
+    });
+    server.listen(0, "127.0.0.1", () => {
+      const addr = server.address() as { port: number };
+      resolve({ server, port: addr.port });
+    });
+  });
+}
+
+/** Isolate test subprocesses from the developer's Git repository and farm settings.
+ * Explicit FARM_* fixture inputs are allowed; repository/config redirection is
+ * stripped last, including from caller extras and case variants on Windows.
+ * Real product Git behavior is not changed by this test-only boundary.
+ */
+function fixtureEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
+  const base = Object.fromEntries(Object.entries(process.env)
+    .filter(([key]) => !/^(?:GIT_|FARM_|CLAUDE_CODE_OAUTH_TOKEN$)/i.test(key)));
+  const env: NodeJS.ProcessEnv = { ...base, ...extra };
+  for (const key of Object.keys(env)) {
+    if (/^(?:GIT_|CLAUDE_CODE_OAUTH_TOKEN$)/i.test(key)) delete env[key];
+  }
+  // No inherited global hooks, include files, signing commands or config-count
+  // injection can escape the disposable repository selected by cwd.
+  Object.assign(env, {
+    GIT_CONFIG_NOSYSTEM: "1", GIT_CONFIG_GLOBAL: process.platform === "win32" ? "NUL" : "/dev/null",
+    GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "commit.gpgsign", GIT_CONFIG_VALUE_0: "false",
+  });
+  return env;
+}
+
+// --------------------------------------------------------------------------
+// Temp git repo setup
+// --------------------------------------------------------------------------
+function createTempRepo(dir: string) {
+  mkdirSync(dir, { recursive: true });
+  execSync("git init -b main", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git config user.email test@test.com", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git config user.name Test", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git config commit.gpgsign false", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  // Initial commit so we have a HEAD on main
+  writeFileSync(join(dir, "README.md"), "# test\n");
+  execSync("git add -A", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git commit -m init --no-gpg-sign", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  mkdirSync(join(dir, "src"), { recursive: true });
+}
+
+// --------------------------------------------------------------------------
+// Run farm.ts via tsx (dev path) against the temp repo
+// --------------------------------------------------------------------------
+// #542 — every farm launch here is a real subprocess, and nothing tracked it.
+// When vitest abandons a case on timeout the child keeps running, keeps its cwd
+// open, and the afterEach `rmSync(tmpDir)` then fails with EBUSY on Windows. The
+// teardown error is louder than the timeout that caused it, so the log names the
+// wrong problem.
+//
+// Track every live child so teardown can release the directory before deleting
+// it. A test that times out is already failing; it must not also corrupt the
+// diagnosis of the next one.
+const liveChildren = new Set<ReturnType<typeof spawn>>();
+
+function trackChild(child: ReturnType<typeof spawn>): void {
+  liveChildren.add(child);
+  child.on("close", () => liveChildren.delete(child));
+}
+
+/** Kill any subprocess still running, and wait for the OS to release its handles. */
+async function reapStrayChildren(): Promise<void> {
+  if (liveChildren.size === 0) return;
+  for (const child of liveChildren) {
+    try {
+      child.kill("SIGKILL");
+    } catch {
+      /* already gone */
+    }
+  }
+  // Windows releases the cwd handle asynchronously after the process dies, so a
+  // kill alone is not enough to make rmSync succeed on the next line.
+  for (let i = 0; i < 40 && liveChildren.size > 0; i++) {
+    await new Promise((r) => setTimeout(r, 25));
+  }
+  liveChildren.clear();
+}
+
+/** `rmSync` that tolerates Windows' asynchronous handle release. */
+function rmWithRetry(target: string): void {
+  for (let attempt = 1; attempt <= 10; attempt++) {
+    try {
+      rmSync(target, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if ((code !== "EBUSY" && code !== "EPERM" && code !== "ENOTEMPTY") || attempt === 10) throw error;
+      const until = Date.now() + 50 * attempt;
+      while (Date.now() < until) { /* brief spin; afterEach is sync */ }
+    }
+  }
+}
+
+/** Ordinary and option-bearing CLI tests share the same isolated launcher. */
+function runFarm(
+  repoDir: string,
+  planPath: string,
+  env: Record<string, string>,
+): Promise<{ code: number; out: string }> {
+  return runFarmWithArgs(repoDir, [], planPath, env);
+}
+
+// coverage-003 (#183): same launcher as runFarm, but with an extra leading CLI
+// arg (e.g. "--canary") so runCanary's early-exit validation paths can be
+// exercised — those paths read ENV.candidateModels/ENV.apiKey, which are fixed
+// at module import time in the CHILD process, so they can only be varied via a
+// fresh subprocess per test (not a same-process unit test).
+function runFarmWithArgs(
+  repoDir: string,
+  extraArgs: string[],
+  planPath: string,
+  env: Record<string, string>,
+  // Some early-exit assertions (e.g. "FARM_API_KEY is not set") require the
+  // var to be ABSENT, not merely an empty string. The isolated environment
+  // already drops ambient FARM_* settings; `unset` also removes an explicitly
+  // supplied fixture variable before the child starts.
+  unset: string[] = [],
+  entry: "source" | "bundle" = "source",
+): Promise<{ code: number; out: string }> {
+  return new Promise((resolve) => {
+    const spawnEnv = fixtureEnv(env);
+    for (const k of unset) delete spawnEnv[k];
+    const child = spawn(
+      process.execPath,
+      [...(entry === "bundle" ? [join(__dirname, "farm.js")] : ["--import", TSX_LOADER, farmTs]), ...extraArgs, planPath],
+      { cwd: repoDir, env: spawnEnv },
+    );
+    trackChild(child);
+    let out = "";
+    child.stdout.on("data", (d: Buffer) => (out += d));
+    child.stderr.on("data", (d: Buffer) => (out += d));
+    child.on("close", (code: number | null) => resolve({ code: code ?? 1, out }));
+    child.on("error", (e: Error) => resolve({ code: 1, out: String(e) }));
+  });
+}
+
+// reliability-012: a raw http server that sends response HEADERS then never
+// closes/writes the body — the exact "slow-loris" / stalled-body shape the
+// fix must bound. Distinct from startMockServer (which always completes the
+// response) because callApi's OLD bug was specifically that the timer was
+// cleared right after headers arrived, leaving the body read unbounded.
+function startStalledBodyServer(): Promise<{ server: Server; port: number }> {
+  return new Promise((resolve) => {
+    const server = createServer((_req: IncomingMessage, res: ServerResponse) => {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.write("{"); // headers + partial body sent; body deliberately never closes
+      // no res.end() — the connection is held open indefinitely
+    });
+    server.listen(0, "127.0.0.1", () => {
+      const addr = server.address() as { port: number };
+      resolve({ server, port: addr.port });
+    });
+  });
+}
+
+// --------------------------------------------------------------------------
+// Tests
+// --------------------------------------------------------------------------
+describe("farm.ts smoke tests", () => {
+  let tmpDir: string;
+  let mockServer: Server;
+  let port: number;
+
+  beforeEach(async () => {
+    tmpDir = join(tmpdir(), `farm-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    createTempRepo(tmpDir);
+  });
+
+  afterEach(async () => {
+    mockServer?.close();
+    // #542, same reasoning as the artifact block: this suite launches the same
+    // real subprocesses, so it inherits the same abandoned-child teardown.
+    await reapStrayChildren();
+    rmWithRetry(tmpDir);
+    // All owned worktrees are below tmpDir; never remove a shared sibling.
+  });
+
+  it("fails immediately when FARM_MODEL is not set", async () => {
+    const plan = {
+      meta: { name: "test" },
+      tasks: [
+        {
+          id: "t1",
+          description: "test",
+          filesInScope: ["src/a.ts"],
+          test: { path: "src/a.test.ts" },
+          gate: { commands: ["node -p 0"] },
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_API_BASE_URL: "http://localhost:9",
+      // No FARM_MODEL, no meta.model
+    });
+
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("No model configured");
+  });
+
+  // #412 — the runtime boundary. A malformed plan must stop at parse time with a
+  // named, bounded, field-specific message and BEFORE any side effect: no
+  // worktree, no branch, no report directory, no network call, no shell process.
+  it.each([
+    ["null root", "null", /plan must be a JSON object/],
+    ["missing meta", '{"tasks":[]}', /plan\.meta/],
+    ["null meta", '{"meta":null,"tasks":[]}', /plan\.meta/],
+    ["numeric task id", '{"meta":{"name":"p"},"tasks":[{"id":1,"description":"d","filesInScope":["a"],"test":{"path":"a"},"gate":{"commands":["c"]}}]}', /plan\.tasks\[0\]\.id must be a string/],
+    ["unknown task field", '{"meta":{"name":"p"},"tasks":[{"id":"a","bogus":1,"description":"d","filesInScope":["a"],"test":{"path":"a"},"gate":{"commands":["c"]}}]}', /unknown property "bogus"/],
+  ])("refuses a malformed plan (%s) with no side effects", async (_label, raw, expected) => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, raw);
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_MODEL: "test-model",
+      FARM_API_BASE_URL: "http://127.0.0.1:9",
+    });
+
+    expect(result.code).toBe(1);
+    expect(result.out).toMatch(expected);
+    // A raw TypeError/stack is not an acceptable contract failure.
+    expect(result.out).not.toMatch(/Cannot read properties|TypeError|is not iterable/);
+    // No side effects.
+    expect(existsSync(join(tmpDir, ".farm"))).toBe(false);
+    const branches = execSync("git branch --list", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" }).toString();
+    expect(branches).not.toContain("farm/");
+  });
+
+  it("refuses unparseable plan JSON with a bounded message, not a stack", async () => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, "{ not json");
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_MODEL: "test-model",
+    });
+
+    expect(result.code).toBe(1);
+    expect(result.out).toMatch(/plan\.json/);
+    expect(result.out.length).toBeLessThan(500);
+    expect(existsSync(join(tmpDir, ".farm"))).toBe(false);
+  });
+
+  it("completes two tasks green when API returns valid file blocks", async () => {
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      // Return a file block appropriate to the task described in the prompt
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      if (content.includes("src/hello.ts")) {
+        return [
+          "```typescript",
+          "// path: src/hello.ts",
+          "export function hello() { return 'hello'; }",
+          "```",
+        ].join("\n");
+      }
+      return [
+        "```typescript",
+        "// path: src/world.ts",
+        "export function world() { return 'world'; }",
+        "```",
+      ].join("\n");
+    }));
+
+    const planPath = join(tmpDir, "plan.json");
+    const plan = JSON.parse(
+      readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"),
+    );
+    plan.meta.apiBaseUrl = `http://127.0.0.1:${port}`;
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_BASE_BRANCH: "main",
+    });
+
+    if (result.code !== 0) {
+      console.error("FARM OUTPUT:", result.out);
+      try {
+        const r = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+        console.error("REPORT:", JSON.stringify(r.results, null, 2));
+      } catch {}
+    }
+    expect(result.code).toBe(0);
+    expect(result.out).toContain("green=2");
+    expect(result.out).toContain("escalate=0");
+
+    // Report written
+    const report = JSON.parse(
+      readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"),
+    );
+    expect(report.results).toHaveLength(2);
+    expect(report.results.every((r: { status: string }) => r.status === "green")).toBe(true);
+  });
+
+  it("streams each settled task to .farm/farm-results.jsonl as it settles (AC-08)", async () => {
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      const file = content.includes("src/hello.ts") ? "src/hello.ts" : "src/world.ts";
+      return ["```typescript", `// path: ${file}`, `export const x = 1;`, "```"].join("\n");
+    }));
+
+    const planPath = join(tmpDir, "plan.json");
+    const plan = JSON.parse(readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"));
+    plan.meta.apiBaseUrl = `http://127.0.0.1:${port}`;
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    expect(result.code).toBe(0);
+    expect(result.out).toContain("green=2");
+
+    // The incremental settlement record exists and holds exactly one line per
+    // settled task (D7: JSONL is the per-task stream; report is authoritative).
+    const jsonlPath = join(tmpDir, ".farm/farm-results.jsonl");
+    const raw = readFileSync(jsonlPath, "utf8");
+    const lines = raw.split("\n").filter((l) => l.trim().length > 0);
+    expect(lines).toHaveLength(2);
+
+    // Each line parses to a JSON object carrying a result with an id.
+    const parsed = lines.map((l) => JSON.parse(l) as { id: string });
+    for (const entry of parsed) expect(typeof entry.id).toBe("string");
+
+    // Both tasks are present (settlement order is non-deterministic across two
+    // independent tasks — assert presence/count, not a strict order).
+    const ids = parsed.map((e) => e.id).sort();
+    expect(ids).toEqual(["task-a", "task-b"]);
+
+    // The authoritative final summary is still written.
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results).toHaveLength(2);
+  });
+
+  it("escalates with 'drift:' note when worker writes outside filesInScope", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```typescript",
+        "// path: src/hello.ts",
+        "export function hello() { return 'hello'; }",
+        "```",
+        "```typescript",
+        "// path: src/UNAUTHORIZED.ts",
+        "// this file should not be here",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "drift-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["node -p 0"] },
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    console.error("DRIFT TEST OUTPUT:", result.out);
+    expect(result.code).toBe(2);
+    const report = JSON.parse(
+      readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"),
+    );
+    const escalated = report.results.find((r: { id: string }) => r.id === "task-a");
+    expect(escalated.status).toBe("escalate");
+    expect(escalated.note).toMatch(/^drift:/);
+  });
+
+  it("escalates with gate failure note after maxRetries exceeded", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```typescript",
+        "// path: src/hello.ts",
+        "export function hello() { return 'hello'; }",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "gate-fail-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ['node -e "process.exit(1)"'] }, // always fails (exit 1)
+          maxRetries: 1,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    const report = JSON.parse(
+      readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"),
+    );
+    expect(report.results[0].status).toBe("escalate");
+  });
+
+  it("blocks path traversal — worker cannot write outside the worktree", async () => {
+    const sentinel = join(tmpDir, "..", `farm-escape-${Date.now()}.txt`);
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```typescript",
+        `// path: ../${basename(sentinel)}`,
+        "export const pwned = true;",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "traversal-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    // The escape file must NOT have been written anywhere outside the worktree.
+    expect(existsSync(sentinel)).toBe(false);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/escapes worktree/);
+  });
+
+  it("protects the failing test — worker cannot overwrite test.path", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```typescript",
+        "// path: src/hello.test.ts",
+        "// neutered test that always passes",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "test-protect", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/read-only|tampered/);
+  });
+
+  it("flags anti-gaming — tiny impl that hard-codes the asserted literal escalates", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      ["```typescript", "// path: src/answer.ts", "export const answer = 42;", "```"].join("\n"),
+    ));
+
+    // Commit a test that asserts a specific literal, so it exists in the worktree.
+    writeFileSync(join(tmpDir, "src", "answer.test.ts"), "expect(answer).toBe(42);\n");
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add failing test" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "gaming-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Compute the answer",
+          deps: [],
+          filesInScope: ["src/answer.ts"],
+          test: { path: "src/answer.test.ts" },
+          gate: { commands: ["node -p 0"] }, // gate passes; guard must still catch gaming
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/^gaming:/);
+  });
+
+  for (const entry of ["source", "bundle"] as const) {
+    it.each([
+      ["larger numeric literal", "module.exports.answer = () => 420 / 10;", false, "green"],
+      ["comment-only literal", "module.exports.answer = () => 6 * 7; // 42", false, "green"],
+      ["actual repeated literal", "module.exports.answer = () => 42;", false, "escalate"],
+      ["independent adverse mutation", "module.exports.answer = () => 420 / 10;", true, "escalate"],
+    ] as const)(`${entry} literal matching: %s preserves gates without another worker call`, async (_name, implementation, mutation, status) => {
+      let calls = 0;
+      ({ server: mockServer, port } = await startMockServer(() => {
+        calls++;
+        return ["```javascript", "// path: src/value.cjs", implementation, "```"].join("\n");
+      }, { prompt_tokens: 23, completion_tokens: 11 }));
+      const test = 'const assert = require("node:assert/strict");\n' +
+        'const { answer } = require("./value.cjs");\nassert.equal(answer(), 42);\n';
+      writeFileSync(join(tmpDir, "src/value.test.cjs"), test);
+      gitIn(tmpDir, "add", "src/value.test.cjs");
+      gitIn(tmpDir, "commit", "-m", "declare real narrow test");
+      const before = gitIn(tmpDir, "rev-parse", "main");
+      const plan = { meta: { name: "literal-boundary", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: [{ id: "literal-case", description: "Compute the answer through the declared implementation", deps: [],
+          filesInScope: ["src/value.cjs"], test: { path: "src/value.test.cjs" },
+          gate: { commands: ["node src/value.test.cjs"] }, maxRetries: 0 }] };
+      const planPath = join(tmpDir, "plan.json"); writeFileSync(planPath, JSON.stringify(plan));
+      const done = await runFarmWithArgs(tmpDir, [], planPath, {
+        FARM_API_KEY: "test-key", FARM_SAMPLES: "1", FARM_MUTATION: mutation ? "on" : "off",
+        ...(mutation ? { FARM_MUTATION_CMD: `echo '{"score":0,"evaluated":8}'` } : {}),
+      }, [], entry);
+      expect(done.code, done.out).toBe(status === "green" ? 0 : 2);
+      const result = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8")).results[0];
+      expect(result.status).toBe(status);
+      expect(result.attempts).toBe(1); expect(calls).toBe(1);
+      expect(result.promptTokens).toBe(23); expect(result.completionTokens).toBe(11);
+      if (mutation) expect(result.note).toContain("gaming: mutation");
+      else if (status === "escalate") expect(result.note).toContain("src/value.cjs contains test literal");
+      else expect(result.warning).toBeUndefined();
+      expect(gitIn(tmpDir, "rev-parse", "main")).toBe(before);
+      expect(readFileSync(join(tmpDir, "src/value.test.cjs"), "utf8")).toBe(test);
+    });
+  }
+
+  it("mutation guard — flags an impl whose branches the narrow test does not constrain", async () => {
+    // The narrow test misses two changes and rejects one. Bare exits cannot
+    // establish why that rerun failed; preserve the adverse upper bound, not a
+    // measured score. The task still enters independent review with a warning.
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```javascript",
+        "// path: src/classify.js",
+        "module.exports.classify = function (n) {",
+        '  if (n > 10) return "big";',
+        '  return "small";',
+        "};",
+        "```",
+      ].join("\n"),
+    ));
+
+    const narrowTest =
+      `node -e "const {classify}=require('./src/classify.js'); process.exit(classify(5)==='small'?0:1)"`;
+    const plan = {
+      meta: { name: "mutation-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Classify a number",
+          deps: [],
+          filesInScope: ["src/classify.js"],
+          test: { path: "src/classify.test.js" },
+          gate: { commands: [narrowTest] }, // gate.commands[0] = the narrow behavioral test
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    // Two passes and one nonzero exit bound the rejection rate at 1/3. This is
+    // below the warning threshold, but neither near-zero nor five evaluated
+    // reruns: preserve the existing green authoring + independent-review route.
+    expect(result.code).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    const r = report.results[0];
+    expect(r.status).toBe("green");
+    expect(r.mutationScore).toBeNull();
+    expect(r.warning).toMatch(/^builtin-mutation-failed:/);
+    expect(r.warning).toContain("1 unclassified nonzero rerun(s), 2 passed, 3 completed");
+    expect(r.warning).toContain("upper bound 0.333 is not a measured score");
+  });
+
+  it("mutation guard — near-zero score on a non-trivial impl hard-escalates", async () => {
+    // A multi-branch impl behind a no-op gate: nothing is constrained, so every
+    // mutant survives (score ~0) and the guard escalates.
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```javascript",
+        "// path: src/m.js",
+        "module.exports.f = function (a, b) {",
+        "  if (a > b) return 1;",
+        "  if (a < b) return 2;",
+        "  if (a === b) return 3;",
+        "  return 4;",
+        "};",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "mutation-escalate", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Compare",
+          deps: [],
+          filesInScope: ["src/m.js"],
+          test: { path: "src/m.test.js" },
+          gate: { commands: ["node -p 0"] }, // no-op gate constrains nothing
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/mutation score/);
+  });
+
+  it("runs FARM_MUTATION_CMD under the scrubbed env — the pluggable hook cannot read FARM_API_KEY / OAuth (least-privilege parity)", async () => {
+    // The pluggable mutation hook runs operator-supplied, possibly third-party
+    // code in the worktree. Like every other child (gate/setup/test/git via
+    // run()), it must NOT inherit the dispatcher's secrets — only the
+    // FARM_MUTATION_* contract vars. Probe: a committed script the hook invokes
+    // records its own env to an absolute PROBE_OUT path (an env value, so no
+    // shell quoting), then prints a score line so mutationCheck parses cleanly.
+    const probeOut = join(tmpdir(), `farm-mut-env-probe-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
+    const probe = [
+      "const fs = require('node:fs');",
+      "fs.writeFileSync(process.env.PROBE_OUT, JSON.stringify({",
+      "  key: process.env.FARM_API_KEY ?? 'ABSENT',",
+      "  tok: process.env.CLAUDE_CODE_OAUTH_TOKEN ?? 'ABSENT',",
+      "  files: process.env.FARM_MUTATION_FILES ?? 'ABSENT',",
+      "  testPath: process.env.FARM_MUTATION_TEST_PATH ?? 'ABSENT',",
+      "  testCmd: process.env.FARM_MUTATION_TEST_CMD ?? 'ABSENT',",
+      "}));",
+      "process.stdout.write('{\"score\":1,\"total\":5}');",
+    ].join("\n");
+    // Commit the probe so it lands in the ephemeral worktree the hook runs in.
+    writeFileSync(join(tmpDir, "mut-probe.cjs"), probe);
+    execSync("git add mut-probe.cjs", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync("git commit -m probe --no-gpg-sign", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    ({ server: mockServer, port } = await startMockServer(() =>
+      ["```javascript", "// path: src/m.js", "module.exports.f = (a, b) => a + b;", "```"].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "mutation-env-scrub", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Add",
+          deps: [],
+          filesInScope: ["src/m.js"],
+          test: { path: "src/m.test.js" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "sk-must-not-leak-to-hook",
+      CLAUDE_CODE_OAUTH_TOKEN: "tok-must-not-leak",
+      FARM_MUTATION: "on",
+      FARM_MUTATION_CMD: "node mut-probe.cjs",
+      PROBE_OUT: probeOut,
+    });
+
+    expect(existsSync(probeOut)).toBe(true); // the pluggable hook actually ran
+    const seen = JSON.parse(readFileSync(probeOut, "utf8"));
+    expect(seen.key).toBe("ABSENT"); // SEC-1: FARM_API_KEY scrubbed from the hook env
+    expect(seen.tok).toBe("ABSENT"); // SEC-1: OAuth token scrubbed
+    expect(seen.files).toContain("src/m.js"); // CON-1: feature env still delivered
+    expect(seen.testPath).toBe("src/m.test.js"); // CON-1
+    expect(seen.testCmd).toBe("node -p 0"); // CON-1
+    rmSync(probeOut, { force: true });
+  });
+
+  it("enriches the worker prompt with the test source AND an in-scope sibling's contents (AC-03/AC-04)", async () => {
+    // Capture every prompt the worker is sent. The mock returns a benign
+    // in-scope file so the task can settle; the assertion is on what reached it.
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      prompts.push(content);
+      return ["```typescript", "// path: src/feature.ts", "export const feature = () => helper() + 1;", "```"].join("\n");
+    }));
+
+    // Plant the failing test AND an in-scope sibling in the worktree baseline
+    // with recognizable, distinct content, then commit so they exist on the
+    // integration HEAD the task's worktree is cut from.
+    const TEST_MARKER = "RECOGNIZABLE_TEST_SOURCE_MARKER_8675309";
+    const SIBLING_MARKER = "RECOGNIZABLE_SIBLING_CONTENTS_MARKER_24601";
+    writeFileSync(
+      join(tmpDir, "src", "feature.test.ts"),
+      `// ${TEST_MARKER}\nexpect(feature()).toBe(1);\n`,
+    );
+    writeFileSync(
+      join(tmpDir, "src", "helper.ts"),
+      `// ${SIBLING_MARKER}\nexport const helper = () => 0;\n`,
+    );
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add failing test + sibling" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "enrich-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Implement feature using helper",
+          deps: [],
+          // helper.ts is in scope (existing sibling), feature.ts is the target.
+          filesInScope: ["src/feature.ts", "src/helper.ts"],
+          test: { path: "src/feature.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(prompts.length).toBeGreaterThan(0);
+    const firstPrompt = prompts[0];
+    // AC-03: the read-only test source reached the worker.
+    expect(firstPrompt).toContain(TEST_MARKER);
+    // AC-04: the existing in-scope sibling's contents reached the worker.
+    expect(firstPrompt).toContain(SIBLING_MARKER);
+  });
+
+  it("redacts secret-pattern matches from the injected context before transmission (AC-05)", async () => {
+    // Capture every outgoing prompt. The mock returns a benign in-scope file so
+    // the task can settle; the assertion is on what reached the third party.
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      prompts.push(content);
+      return ["```typescript", "// path: src/feature.ts", "export const feature = () => helper() + 1;", "```"].join("\n");
+    }));
+
+    // Plant secret-shaped strings in an in-scope sibling that enrichment reads.
+    // The secret VALUES must never leave the trust boundary.
+    const SECRET_TOKEN = "sk-ant-PLANTEDSECRET123";
+    const SECRET_APIKEY = "PLANTEDSECRETVALUE";
+    writeFileSync(
+      join(tmpDir, "src", "feature.test.ts"),
+      `expect(feature()).toBe(1);\n`,
+    );
+    writeFileSync(
+      join(tmpDir, "src", "helper.ts"),
+      [
+        "export const helper = () => 0;",
+        `const token = "${SECRET_TOKEN}";`,
+        `api_key = "${SECRET_APIKEY}";`,
+        "",
+      ].join("\n"),
+    );
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + sibling with planted secrets" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "redact-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Implement feature using helper",
+          deps: [],
+          filesInScope: ["src/feature.ts", "src/helper.ts"],
+          test: { path: "src/feature.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(prompts.length).toBeGreaterThan(0);
+    // No outgoing prompt may contain a planted secret value.
+    for (const p of prompts) {
+      expect(p).not.toContain(SECRET_TOKEN);
+      expect(p).not.toContain(SECRET_APIKEY);
+    }
+    // The redaction marker stands in for what was removed.
+    expect(prompts[0]).toContain("[REDACTED");
+  });
+
+  it("redacts a multi-line PEM private key as a span — no key-body line leaks (FINDING 1)", async () => {
+    // A PEM block: only the BEGIN header matches the per-line trigger word
+    // (PRIVATE). The base64 body lines carry no trigger word, so a per-line
+    // redactor would transmit the key body. Span-aware redaction must remove
+    // the whole BEGIN..END block.
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      prompts.push(content);
+      return ["```typescript", "// path: src/feature.ts", "export const feature = () => helper() + 1;", "```"].join("\n");
+    }));
+
+    // Fake (non-real) PEM key. Body lines are distinct, recognizable markers
+    // with NO trigger word so a per-line redactor would let them through.
+    const KEY_BODY_1 = "FAKEKEYBODYLINEONE0000000000000000000000000000";
+    const KEY_BODY_2 = "FAKEKEYBODYLINETWO1111111111111111111111111111";
+    const KEY_BODY_3 = "FAKEKEYBODYLINETHREE222222222222222222222222==";
+    writeFileSync(join(tmpDir, "src", "feature.test.ts"), `expect(feature()).toBe(1);\n`);
+    writeFileSync(
+      join(tmpDir, "src", "helper.ts"),
+      [
+        "export const helper = () => 0;",
+        "const pem = `",
+        "-----BEGIN RSA PRIVATE KEY-----",
+        KEY_BODY_1,
+        KEY_BODY_2,
+        KEY_BODY_3,
+        "-----END RSA PRIVATE KEY-----",
+        "`;",
+        "",
+      ].join("\n"),
+    );
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + sibling with planted PEM" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "pem-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Implement feature using helper",
+          deps: [],
+          filesInScope: ["src/feature.ts", "src/helper.ts"],
+          test: { path: "src/feature.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(prompts.length).toBeGreaterThan(0);
+    // No outgoing prompt may contain ANY key-body line.
+    for (const p of prompts) {
+      expect(p).not.toContain(KEY_BODY_1);
+      expect(p).not.toContain(KEY_BODY_2);
+      expect(p).not.toContain(KEY_BODY_3);
+    }
+    // The redaction marker stands in for what was removed.
+    expect(prompts[0]).toContain("[REDACTED");
+  });
+
+  it("redacts the gate-output tail before it reaches the retry prompt (FINDING 2)", async () => {
+    // The gate prints a secret-shaped string then exits non-zero, forcing a
+    // retry. The retry prompt embeds the prior gate tail as priorFailure — it
+    // MUST be run through redaction so the secret value never reaches the worker.
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      prompts.push(content);
+      return ["```typescript", "// path: src/hello.ts", "export function hello() { return 'hello'; }", "```"].join("\n");
+    }));
+
+    const GATE_SECRET = "sk-ant-GATETAILSECRET99999";
+    const plan = {
+      meta: { name: "gate-tail-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          // Print a secret-shaped string to stdout, then fail → forces a retry
+          // whose priorFailure carries the gate tail.
+          gate: { commands: [`node -e "console.log('${GATE_SECRET}'); process.exit(1)"`] },
+          maxRetries: 1,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    // More than one prompt means a retry happened (so a priorFailure was built).
+    expect(prompts.length).toBeGreaterThan(1);
+    // The planted secret must appear in NO outgoing prompt.
+    for (const p of prompts) {
+      expect(p).not.toContain(GATE_SECRET);
+    }
+  });
+
+  it("never reads a denylisted secret-bearing file into injected context (FINDING / data-minimization)", async () => {
+    // An in-scope .env file with recognizable contents must be skipped entirely
+    // by buildEnrichment — its body is never read into the prompt regardless of
+    // per-line redaction.
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      prompts.push(content);
+      return ["```typescript", "// path: src/feature.ts", "export const feature = () => 1;", "```"].join("\n");
+    }));
+
+    const ENV_MARKER = "DENYLISTED_ENV_FILE_CONTENTS_MARKER_4815162342";
+    writeFileSync(join(tmpDir, "src", "feature.test.ts"), `expect(feature()).toBe(1);\n`);
+    // A denylisted filename whose body would otherwise be injected.
+    writeFileSync(join(tmpDir, "src", ".env"), `SOME_VAR=${ENV_MARKER}\n`);
+    execSync("git add -A -f", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + denylisted .env" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "denylist-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Implement feature",
+          deps: [],
+          filesInScope: ["src/feature.ts", "src/.env"],
+          test: { path: "src/feature.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(prompts.length).toBeGreaterThan(0);
+    // The denylisted file's contents must appear in NO outgoing prompt.
+    for (const p of prompts) {
+      expect(p).not.toContain(ENV_MARKER);
+    }
+  });
+
+  it("never injects a denylisted test.path source into injected context (STEP-A defense-in-depth)", async () => {
+    // The read-only test source (task.test.path) is injected via the same
+    // chokepoint as in-scope files, but until now it bypassed the
+    // isSecretBearingFilename denylist that guards in-scope files. A test.path
+    // pointing at a secret-bearing filename (e.g. *.pem/*.key/.env) must be
+    // skipped too — its body must never cross the trust boundary.
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      prompts.push(content);
+      return ["```typescript", "// path: src/feature.ts", "export const feature = () => 1;", "```"].join("\n");
+    }));
+
+    const TESTPATH_MARKER = "DENYLISTED_TESTPATH_CONTENTS_MARKER_2718281828";
+    // A denylisted filename in the test.path slot whose body would otherwise be
+    // injected read-only. The body carries NO secret trigger word, so per-line
+    // redaction would NOT catch it — only the filename denylist can. That makes
+    // this an assertion on the denylist gap specifically, not on redactSecrets.
+    writeFileSync(join(tmpDir, "src", "creds.pem"), `harmless looking body ${TESTPATH_MARKER}\n`);
+    execSync("git add -A -f", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add denylisted test.path source" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "denylist-testpath", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Implement feature",
+          deps: [],
+          filesInScope: ["src/feature.ts"],
+          test: { path: "src/creds.pem" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(prompts.length).toBeGreaterThan(0);
+    // The denylisted test.path body must appear in NO outgoing prompt.
+    for (const p of prompts) {
+      expect(p).not.toContain(TESTPATH_MARKER);
+    }
+  });
+
+  it("byte-caps the injected context with a visible truncation marker (AC-05)", async () => {
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      prompts.push(content);
+      return ["```typescript", "// path: src/feature.ts", "export const feature = () => helper() + 1;", "```"].join("\n");
+    }));
+
+    // An in-scope sibling far larger than the (test-lowered) cap, with a unique
+    // marker only at the very tail — past the cap it must not be transmitted.
+    const TAIL_MARKER = "TAIL_PAST_THE_CAP_MARKER_31337";
+    const big = "// filler line of in-scope source content\n".repeat(4000);
+    writeFileSync(join(tmpDir, "src", "feature.test.ts"), `expect(feature()).toBe(1);\n`);
+    writeFileSync(join(tmpDir, "src", "helper.ts"), `export const helper = () => 0;\n${big}\n// ${TAIL_MARKER}\n`);
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + oversized sibling" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "cap-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Implement feature using helper",
+          deps: [],
+          filesInScope: ["src/feature.ts", "src/helper.ts"],
+          test: { path: "src/feature.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_ENRICH_MAX_BYTES: "2048" });
+
+    expect(prompts.length).toBeGreaterThan(0);
+    // Content past the cap is not transmitted; a visible truncation marker is.
+    expect(prompts[0]).not.toContain(TAIL_MARKER);
+    expect(prompts[0]).toContain("TRUNCATED");
+    // Compare the actual transmitted enrichment, including its framing. The
+    // two pre-existing separators remain even when no context is injected.
+    const boundary = "Touch nothing else. Do not run git. Do not install global packages.";
+    const context = prompts[0].slice(prompts[0].indexOf(boundary) + boundary.length,
+      prompts[0].indexOf("Solve the task with REAL logic."));
+    expect(Buffer.byteLength(context, "utf8") - 2).toBeLessThanOrEqual(2048);
+  });
+
+  it("serializes scope-overlapping tasks so the second inherits the first's merged change (AC-06)", async () => {
+    // Two no-dep tasks whose filesInScope intersect on src/shared.ts.
+    //  - task-a writes X = src/shared.ts (carrying a recognizable marker).
+    //  - task-b lists src/shared.ts (overlap) in scope but writes a DIFFERENT
+    //    file Y = src/b-out.ts; its gate asserts X is present with A's marker, so
+    //    its success DEPENDS on inheriting A's merged change.
+    // Without scope-aware readiness both dispatch concurrently (default
+    // concurrency 4): task-b cuts its worktree from integration BEFORE A merges,
+    // so src/shared.ts is absent and B's gate fails → escalate. With the
+    // readiness filter B waits until A is green+merged, cuts from the post-A HEAD,
+    // sees X, and both reach green with no merge conflict.
+    const SHARED_MARKER = "SHARED_X_FROM_TASK_A_MARKER_112358";
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      // task-b's scope/target identifies it; otherwise it is task-a.
+      if (content.includes("src/b-out.ts")) {
+        return ["```typescript", "// path: src/b-out.ts", "export const b = 2;", "```"].join("\n");
+      }
+      return [
+        "```typescript",
+        "// path: src/shared.ts",
+        `export const shared = "${SHARED_MARKER}";`,
+        "```",
+      ].join("\n");
+    }));
+
+    // Both tasks' failing tests exist on the baseline so enrichment can read them.
+    writeFileSync(join(tmpDir, "src", "shared.test.ts"), `expect(shared).toBeDefined();\n`);
+    writeFileSync(join(tmpDir, "src", "b.test.ts"), `expect(b).toBe(2);\n`);
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add failing tests for overlap tasks" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+
+    // task-b's gate proves it cut from the post-A-merge integration HEAD: it
+    // requires src/shared.ts to exist AND to carry A's marker. If B ran before
+    // A merged, shared.ts is absent → gate exits non-zero → escalate.
+    const bGate =
+      `node -e "const fs=require('fs');const s=fs.readFileSync('src/shared.ts','utf8');` +
+      `if(!s.includes('${SHARED_MARKER}'))process.exit(1)"`;
+
+    const plan = {
+      meta: { name: "overlap-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write shared X",
+          deps: [],
+          filesInScope: ["src/shared.ts"],
+          test: { path: "src/shared.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+        {
+          id: "task-b",
+          description: "Write b-out depending on shared X",
+          deps: [],
+          // Overlaps task-a on src/shared.ts; writes a different file.
+          filesInScope: ["src/shared.ts", "src/b-out.ts"],
+          test: { path: "src/b.test.ts" },
+          gate: { commands: [bGate] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    if (result.code !== 0) {
+      console.error("AC-06 OUTPUT:", result.out);
+    }
+    // Both green, no escalation, no merge-conflict note anywhere.
+    expect(result.code).toBe(0);
+    expect(result.out).toContain("green=2");
+    expect(result.out).toContain("escalate=0");
+
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    const b = report.results.find((r: { id: string }) => r.id === "task-b");
+    expect(b.status).toBe("green");
+    // No task escalated with a merge-conflict note.
+    for (const r of report.results as Array<{ note?: string }>) {
+      expect(r.note ?? "").not.toMatch(/merge failed/);
+    }
+
+    // The integration branch contains BOTH the merged X and Y — proving B cut
+    // from the post-A-merge HEAD and merged cleanly on top.
+    const integShared = execSync("git show farm/integration:src/shared.ts", {
+      cwd: tmpDir,
+      env: fixtureEnv(),
+      encoding: "utf8",
+    });
+    expect(integShared).toContain(SHARED_MARKER);
+    const integB = execSync("git show farm/integration:src/b-out.ts", {
+      cwd: tmpDir,
+      env: fixtureEnv(),
+      encoding: "utf8",
+    });
+    expect(integB).toContain("export const b = 2;");
+  });
+
+  it("best-of-N (FARM_SAMPLES>1) draws N samples in real isolated worktrees, accepts a green one, and cleans up scratch worktrees", async () => {
+    // Real-worktree validation of F1 (stubs can't exercise git worktree add /
+    // cleanup / winner materialization). The mock returns a valid impl for every
+    // sample, so all samples pass the gate and the first (index 0) is accepted.
+    let calls = 0;
+    ({ server: mockServer, port } = await startMockServer(() => {
+      calls++;
+      return ["```typescript", "// path: src/hello.ts", "export function hello() { return 'hello'; }", "```"].join("\n");
+    }));
+
+    const plan = {
+      meta: { name: "best-of-n", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_SAMPLES: "3", FARM_TEMPERATURE: "0.5" });
+    if (result.code !== 0) console.error("BEST-OF-N OUTPUT:", result.out);
+
+    expect(result.code).toBe(0);
+    expect(result.out).toContain("green=1");
+    // One worker call PER sample for the single task → exactly 3.
+    expect(calls).toBe(3);
+
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("green");
+    expect(report.results[0].samples).toBe(3);
+
+    // The winning impl actually landed on the integration branch.
+    const integHello = execSync("git show farm/integration:src/hello.ts", { cwd: tmpDir, env: fixtureEnv(), encoding: "utf8" });
+    expect(integHello).toContain("export function hello()");
+
+    // Scratch sample worktrees AND the task worktree are removed on success.
+    expect(existsSync(join(tmpDir, ".farm/worktrees/task-a__s0"))).toBe(false);
+    expect(existsSync(join(tmpDir, ".farm/worktrees/task-a__s2"))).toBe(false);
+    expect(existsSync(join(tmpDir, ".farm/worktrees/task-a"))).toBe(false);
+  });
+
+  for (const entry of ["source", "bundle"] as const) {
+    for (const gateTimeout of ["0", "3000"]) {
+      it(`bounds built-in mutation and reports incomplete evidence (${entry}, gate timeout ${gateTimeout})`, async () => {
+        const impl = [
+          "function classify(value) {", "  const enabled = true;", "  const disabled = false;",
+          "  const next = value + 1;", "  const selected = next > 0 && enabled;",
+          "  return selected || disabled;", "}", "module.exports = classify;", "",
+        ].join("\n");
+        writeFileSync(join(tmpDir, "original.txt"), impl);
+        writeFileSync(join(tmpDir, ".gitignore"), ".farm/\nplan.json\nmutation-probe.log\n");
+        writeFileSync(join(tmpDir, "src/probe.cjs"), [
+          'const fs = require("node:fs");',
+          'const actual = fs.readFileSync("src/impl.cjs", "utf8");',
+          'const original = fs.readFileSync("original.txt", "utf8");',
+          'if (actual === original) process.exit(0);',
+          'fs.appendFileSync("mutation-probe.log", "mutated\\n");',
+          // Old zero-timeout execution still exits eventually; no runaway
+          // process is needed to show the new budget and evidence boundary.
+          'setTimeout(() => process.exit(1), 2000);',
+        ].join("\n"));
+        gitIn(tmpDir, "add", ".");
+        gitIn(tmpDir, "commit", "-m", "built-in deadline fixture");
+        const before = gitIn(tmpDir, "rev-parse", "HEAD");
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return "```javascript\n// path: src/impl.cjs\n" + impl + "```";
+        }, {prompt_tokens: 13, completion_tokens: 17}));
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify({meta: {name: "built-in deadline", model: "fixture",
+          apiBaseUrl: `http://127.0.0.1:${port}`}, tasks: [{id: "task-a", description: "classify",
+          deps: [], filesInScope: ["src/impl.cjs"], test: {path: "src/probe.cjs"},
+          gate: {commands: ["node src/probe.cjs"]}, maxRetries: 0}]}));
+        const result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY: "fixture-only", FARM_BASE_BRANCH: "main", FARM_SAMPLES: "1",
+          FARM_MUTATION: "on", FARM_MUTATION_SAMPLE: "6", FARM_MUTATION_BUDGET_MS: "1000",
+          FARM_GATE_TIMEOUT_MS: gateTimeout,
+        }, ["FARM_MUTATION_CMD"], entry);
+        expect(result.code, result.out).toBe(0);
+        expect(calls).toBe(1);
+        const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+        expect(report.results).toHaveLength(1);
+        expect(report.results[0]).toMatchObject({status: "green", attempts: 1,
+          promptTokens: 13, completionTokens: 17, mutationScore: null});
+        expect(report.results[0].warning).toContain("builtin-mutation-failed");
+        expect(report.results[0].warning).toContain("trial timed out");
+        expect(gitIn(tmpDir, "show", "farm/integration:src/impl.cjs") + "\n").toBe(impl);
+        expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(before);
+        expect(gitIn(tmpDir, "status", "--porcelain")).toBe("");
+        // Authoring green carries the diagnostic into independent review; it
+        // is not a false perfect mutation score or another request to the user.
+      });
+    }
+  }
+
+
+  for (const entry of ["source", "bundle"] as const) {
+    for (const mode of ["syntax", "assertion", "low-upper-bound", "survivors"] as const) {
+      it(`keeps built-in ${mode} evidence honest in the ${entry} CLI without extra authoring`, async () => {
+        const implementation = mode === "syntax" ? [
+          'module.exports.first = function () {', '  return "alpha;beta";', '};',
+          'module.exports.second = function () {', '  return "gamma;delta";', '};',
+          'module.exports.third = function () {', '  return "epsilon;zeta";', '};',
+        ].join("\n") + "\n" : "module.exports = {\n" +
+          Array.from({length: mode === "low-upper-bound" ? 10 : mode === "survivors" ? 5 : 3},
+            (_, i) => `  fn${i}: value => value + 1,`).join("\n") + "\n};\n";
+        const test = 'const assert = require("node:assert/strict");\nconst values = require("./value.cjs");\n' +
+          (mode === "syntax" ? 'for (const fn of Object.values(values)) assert.equal(fn().split(String.fromCharCode(59)).length, 2);\n'
+            : mode === "assertion" ? 'for (const fn of Object.values(values)) assert.equal(fn(7), 8);\n'
+            : mode === "low-upper-bound" ? 'assert.equal(values.fn0(7), 8);\n'
+            : 'assert.equal(Object.values(values).length, 5);\n');
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return ['```javascript', '// path: src/value.cjs', implementation, '```'].join("\n");
+        }, {prompt_tokens:19,completion_tokens:13}));
+        writeFileSync(join(tmpDir,"src/value.test.cjs"),test);
+        gitIn(tmpDir,"add","src/value.test.cjs");
+        gitIn(tmpDir,"commit","-m","declare narrow mutation validity fixture");
+        const before = gitIn(tmpDir,"rev-parse","main");
+        const planPath = join(tmpDir,"plan.json");
+        writeFileSync(planPath,JSON.stringify({meta:{name:"mutation validity",model:"fixture",apiBaseUrl:`http://127.0.0.1:${port}`},
+          tasks:[{id:"validity",description:"Implement the existing behavioral obligation",deps:[],
+            filesInScope:["src/value.cjs"],test:{path:"src/value.test.cjs"},gate:{commands:["node src/value.test.cjs"]},maxRetries:0}]}));
+        const done = await runFarmWithArgs(tmpDir,[],planPath,{FARM_API_KEY:"test-key",FARM_SAMPLES:"1",FARM_MUTATION:"on",
+          FARM_MUTATION_SAMPLE:"20",FARM_MUTATION_BUDGET_MS:"15000"},[],entry);
+        const adverse = mode === "low-upper-bound" || mode === "survivors";
+        expect(done.code,done.out).toBe(adverse ? 2 : 0);
+        const result = JSON.parse(readFileSync(join(tmpDir,".farm/farm-report.json"),"utf8")).results[0];
+        expect(result).toMatchObject({status:adverse ? "escalate" : "green",attempts:1,promptTokens:19,completionTokens:13});
+        expect(calls).toBe(1);
+        expect(result.mutationScore).toBe(mode === "survivors" ? 0 : null);
+        if (mode === "survivors") expect(result.note).toContain("gaming: mutation");
+        else if (adverse) {
+          expect(result.note).toContain("builtin-mutation-failed");
+          expect(result.note).toContain("adverse completed reruns");
+        } else {
+          expect(result.warning).toContain("unclassified nonzero rerun(s)");
+          expect(result.warning).toContain("upper bound 1.000 is not a measured score");
+          expect(gitIn(tmpDir,"show","farm/integration:src/value.cjs") + "\n").toBe(implementation);
+        }
+        expect(gitIn(tmpDir,"rev-parse","main")).toBe(before);
+        expect(readFileSync(join(tmpDir,"src/value.test.cjs"),"utf8")).toBe(test);
+      });
+    }
+  }
+
+  it("is safe to run twice in a row (stale branches cleaned)", async () => {
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      const file = content.includes("src/hello.ts") ? "src/hello.ts" : "src/world.ts";
+      return ["```typescript", `// path: ${file}`, `export const x = 1;`, "```"].join("\n");
+    }));
+
+    const planPath = join(tmpDir, "plan.json");
+    const plan = JSON.parse(readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"));
+    plan.meta.apiBaseUrl = `http://127.0.0.1:${port}`;
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const first = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    expect(first.code).toBe(0);
+    // Second run against the same repo must not fail on stale farm/* branches.
+    const second = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    expect(second.code).toBe(0);
+    expect(second.out).toContain("green=2");
+
+    // The streaming rail is truncated at run start, so a re-run does not
+    // accumulate stale lines (the "safe to run twice" invariant covers it too).
+    const raw = readFileSync(join(tmpDir, ".farm/farm-results.jsonl"), "utf8");
+    const lines = raw.split("\n").filter((l) => l.trim().length > 0);
+    expect(lines).toHaveLength(2);
+  });
+
+
+  // Real HTTP + Git paths for both delivered entry points. The server's forced
+  // finish is fixture cleanup only; the client must abort unused streams first.
+  describe.each(["source", "bundle"] as const)("HTTP transport lifecycle via %s", (entry) => {
+    const output = (file = "src/transport.ts") => JSON.stringify({
+      choices: [{ message: { content: `\`\`\`typescript:${file}\nexport function transport(value: number) { return value + value; }\n\`\`\`` } }],
+      usage: { prompt_tokens: 7, completion_tokens: 11 },
+    });
+    async function serverFor(select: (index: number, prompt: string) => { status: number; retryAfter?: string; stall?: boolean; body?: string }) {
+      const calls: string[] = [];
+      const discarded: Array<{ closedEarly: boolean; closed: boolean }> = [];
+      const server = createServer((req, res) => {
+        let raw = "";
+        req.on("data", data => { raw += data; });
+        req.on("end", () => {
+          const prompt = JSON.parse(raw).messages[0].content as string;
+          calls.push(prompt);
+          const reply = select(calls.length, prompt);
+          res.writeHead(reply.status, { "Content-Type": "application/json", ...(reply.retryAfter !== undefined ? { "Retry-After": reply.retryAfter } : {}) });
+          if (!reply.stall) { res.end(reply.body ?? "private provider diagnostic"); return; }
+          const state = { closedEarly: false, closed: false };
+          discarded.push(state);
+          let ended = false;
+          const timer = setTimeout(() => { ended = true; res.end(); }, 5000);
+          res.on("close", () => { state.closed = true; state.closedEarly = !ended; clearTimeout(timer); });
+          res.write("private provider diagnostic");
+        });
+      });
+      await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
+      mockServer = server;
+      port = (server.address() as { port: number }).port;
+      return { calls, discarded };
+    }
+    function planFor(tasks = [{ id: "transport", file: "src/transport.ts", deps: [] as string[] }]) {
+      writeFileSync(join(tmpDir, "immutable.txt"), "do not mutate this fixture test\n");
+      gitIn(tmpDir, "add", "--", "immutable.txt");
+      gitIn(tmpDir, "commit", "--no-gpg-sign", "-m", "transport fixture");
+      const base = gitIn(tmpDir, "rev-parse", "main");
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "transport fixture", model: "fixture", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: tasks.map(t => ({ id: t.id, description: `write ${t.file}`, deps: t.deps,
+          filesInScope: [t.file], test: { path: "immutable.txt" }, gate: { commands: ["node -p 0"] }, maxRetries: 2 })) }));
+      return { planPath, base };
+    }
+    const env = { FARM_API_KEY: "fixture-key", FARM_API_MAX_RETRIES: "1", FARM_MUTATION: "off", FARM_REQUEST_TIMEOUT_MS: "10000" };
+    function report() { return JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8")); }
+    function preserved(base: string) {
+      expect(gitIn(tmpDir, "rev-parse", "main")).toBe(base);
+      expect(readFileSync(join(tmpDir, "immutable.txt"), "utf8")).toBe("do not mutate this fixture test\n");
+    }
+
+    it.each([1, 2])("defers an excessive cooldown without multiplying %s planned sample(s)", async (samples) => {
+      const s = await serverFor(() => ({ status: 429, retryAfter: "2147484", stall: true }));
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_SAMPLES: String(samples) }, [], entry);
+      expect(result.code).toBe(2);
+      expect(s.calls).toHaveLength(samples);
+      expect(s.discarded.every(x => x.closed && x.closedEarly)).toBe(true);
+      expect(report().results[0]).toMatchObject({ status: "escalate", attempts: 1 });
+      expect(report().results[0].note).toMatch(/Retry-After exceeds the local wait budget/);
+      expect(result.out).not.toMatch(/TimeoutOverflowWarning|private provider diagnostic/);
+      expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(p.base);
+      preserved(p.base);
+    });
+
+    it.each([0, 1, 2])("uses %s transport retries once, rather than each authoring attempt", async (retries) => {
+      const s = await serverFor(() => ({ status: 503, retryAfter: "0", stall: true }));
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_API_MAX_RETRIES: String(retries) }, [], entry);
+      expect(result.code).toBe(2);
+      expect(s.calls).toHaveLength(retries + 1);
+      expect(s.discarded.every(x => x.closed && x.closedEarly)).toBe(true);
+      expect(report().results[0]).toMatchObject({ status: "escalate", attempts: 1 });
+      expect(report().results[0].note).toContain(`API 503 after ${retries} retries`);
+      preserved(p.base);
+    });
+
+    it("retries a transient error after closing its body and qualifies the eventual output", async () => {
+      const s = await serverFor(index => index === 1 ? { status: 429, retryAfter: "0", stall: true } : { status: 200, body: output() });
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, env, [], entry);
+      expect(result.code).toBe(0);
+      expect(s.calls).toHaveLength(2);
+      expect(s.discarded).toEqual([{ closed: true, closedEarly: true }]);
+      expect(report().results[0]).toMatchObject({ status: "green", attempts: 1, promptTokens: 7, completionTokens: 11 });
+      expect(gitIn(tmpDir, "show", "farm/integration:src/transport.ts")).toContain("return value + value");
+      preserved(p.base);
+    });
+
+    it("can accept an already-generated sibling without retrying a deferred sample", async () => {
+      const s = await serverFor(index => index === 1 ? { status: 503, retryAfter: "2147484" } : { status: 200, body: output() });
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_SAMPLES: "2" }, [], entry);
+      expect(result.code).toBe(0);
+      expect(s.calls).toHaveLength(2);
+      expect(report().results[0]).toMatchObject({ status: "green", attempts: 1,
+        promptTokens: 7, completionTokens: 11, acceptedPromptTokens: 7, acceptedCompletionTokens: 11 });
+      preserved(p.base);
+    });
+
+    it("continues independently eligible work while leaving a deferred prerequisite unaccepted", async () => {
+      const s = await serverFor((_index, prompt) => prompt.includes("src/deferred.ts")
+        ? { status: 429, retryAfter: "2147484" } : { status: 200, body: output("src/independent.ts") });
+      const p = planFor([{ id: "a", file: "src/deferred.ts", deps: [] },
+        { id: "b", file: "src/independent.ts", deps: [] }, { id: "c", file: "src/dependent.ts", deps: ["a"] }]);
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_CONCURRENCY: "1" }, [], entry);
+      expect(result.code).toBe(2);
+      expect(s.calls).toHaveLength(2);
+      const r = report();
+      expect(r.results.find((x: { id: string }) => x.id === "a")).toMatchObject({ status: "escalate", attempts: 1 });
+      expect(r.results.find((x: { id: string }) => x.id === "b")).toMatchObject({ status: "green", attempts: 1 });
+      expect(r.blocked).toContainEqual(expect.objectContaining({ id: "c" }));
+      expect(gitIn(tmpDir, "show", "farm/integration:src/independent.ts")).toContain("return value + value");
+      preserved(p.base);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // reliability-012 — callApi must bound the response BODY read, not just the
+  // time-to-headers.
+  // -------------------------------------------------------------------------
+  it("reliability-012: a stalled response body (headers sent, body never closes) fails within FARM_REQUEST_TIMEOUT_MS instead of hanging", async () => {
+    ({ server: mockServer, port } = await startStalledBodyServer());
+
+    const plan = {
+      meta: { name: "stalled-body-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const start = Date.now();
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_REQUEST_TIMEOUT_MS: "500",
+      FARM_API_MAX_RETRIES: "0",
+    });
+    const elapsed = Date.now() - start;
+
+    // Must fail (escalate), not hang — bounded well under a "forever" wedge.
+    // Generous ceiling for CI/Windows process-spawn overhead; the point under
+    // test is "bounded", not a tight latency budget.
+    expect(elapsed).toBeLessThan(15_000);
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/timed out/i);
+  });
+
+  // -------------------------------------------------------------------------
+  // reliability-013 — a circuit-breaker abort must not drop in-flight tasks
+  // from accounting, and must not tear down the integration worktree while a
+  // merge could still be in flight.
+  // -------------------------------------------------------------------------
+  it("reliability-013: every dispatched task appears in farm-report.json with a status after a breaker abort, none vanish", async () => {
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      // task-fail gets malformed (unparseable) content → escalates fast.
+      if (content.includes("src/fail.ts")) return "no code fence here, sorry";
+      // The other three tasks succeed, but only after a short delay, so they
+      // are still IN FLIGHT ("running") when task-fail's fast escalation trips
+      // the circuit breaker.
+      const file = ["src/b.ts", "src/c.ts", "src/d.ts"].find((f) => content.includes(f)) ?? "src/b.ts";
+      return new Promise<string>((resolve) => {
+        setTimeout(() => resolve(["```typescript", `// path: ${file}`, "export const x = 1;", "```"].join("\n")), 300);
+      });
+    }));
+
+    const plan = {
+      meta: { name: "breaker-abort-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        { id: "task-fail", description: "fail fast", deps: [], filesInScope: ["src/fail.ts"], test: { path: "src/fail.test.ts" }, gate: { commands: ["node -p 0"] }, maxRetries: 0 },
+        { id: "task-b", description: "b", deps: [], filesInScope: ["src/b.ts"], test: { path: "src/b.test.ts" }, gate: { commands: ["node -p 0"] } },
+        { id: "task-c", description: "c", deps: [], filesInScope: ["src/c.ts"], test: { path: "src/c.test.ts" }, gate: { commands: ["node -p 0"] } },
+        { id: "task-d", description: "d", deps: [], filesInScope: ["src/d.ts"], test: { path: "src/d.test.ts" }, gate: { commands: ["node -p 0"] } },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_CONCURRENCY: "4", // all four dispatch concurrently — no scope overlap
+      FARM_ABORT_MIN_TASKS: "1",
+      FARM_ABORT_ESCALATION_RATE: "0", // any escalation trips the breaker immediately
+    });
+
+    expect(result.out).toContain("ABORTED by circuit breaker");
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.aborted).toBe(true);
+    // The load-bearing assertion: every task the scheduler DISPATCHED appears
+    // with a real status — none vanish from the report because they were
+    // still "running" (in-flight) when the breaker tripped.
+    const ids = report.results.map((r: { id: string }) => r.id).sort();
+    expect(ids).toEqual(["task-b", "task-c", "task-d", "task-fail"]);
+    for (const r of report.results) expect(["green", "escalate"]).toContain(r.status);
+    // Nothing dispatched should show up as merely "blocked" — dispatched means
+    // it left `pending`, so it must settle to green/escalate, not blocked.
+    expect(report.blocked.map((b: { id: string }) => b.id)).not.toEqual(
+      expect.arrayContaining(["task-b", "task-c", "task-d"]),
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // observability-002 (#187) — a crashing/unparseable FARM_MUTATION_CMD must
+  // surface a diagnostic distinct from "mutation checking is not configured".
+  // -------------------------------------------------------------------------
+  it("#187: a crashing FARM_MUTATION_CMD surfaces a distinct diagnostic — never silently indistinguishable from not-configured", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      ["```typescript", "// path: src/m.ts", "export const add = (a, b) => a + b;", "```"].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "mutation-hook-fail", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Add",
+          deps: [],
+          filesInScope: ["src/m.ts"],
+          test: { path: "src/m.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const withCrashingHook = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_MUTATION: "on",
+      FARM_MUTATION_CMD: 'node -e "process.exit(1)"',
+    });
+    // A broken mutation-hook integration is a diagnostic, not a task failure —
+    // the task itself still goes green.
+    expect(withCrashingHook.code).toBe(0);
+    expect(withCrashingHook.out).toMatch(/mutation hook failed for task task-a/);
+
+    const withoutHook = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    expect(withoutHook.code).toBe(0);
+    expect(withoutHook.out).not.toMatch(/mutation hook failed/);
+  });
+
+
+  // Follow-up to #850: execute both the TypeScript entry and the actually shipped
+  // bundle. These tests use real Git refs/worktrees and loopback HTTP only.
+  const gitIn = (dir: string, ...args: string[]) =>
+    execFileSync("git", args, { cwd: dir, env: fixtureEnv(), encoding: "utf8", stdio: "pipe" }).trim();
+  const identityImpl = [
+    "module.exports = function identity(value) {",
+    "  const copied = value;",
+    "  const wrapped = { copied };",
+    "  const result = wrapped.copied;",
+    "  return result;",
+    "};",
+  ].join("\n");
+  const fileBlock = (file: string, body: string) =>
+    ["```javascript", `// path: ${file}`, body, "```"].join("\n");
+  function identityFixture() {
+    writeFileSync(join(tmpDir, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(tmpDir, "src/identity.cjs"), "// BASELINE_IMPLEMENTATION_ONLY\nmodule.exports = () => undefined;\n");
+    writeFileSync(join(tmpDir, "src/identity.test.cjs"),
+      "const assert = require('node:assert/strict');\nconst identity = require('./identity.cjs');\nassert.equal(identity('fixture input'), 'fixture input');\n");
+    gitIn(tmpDir, "add", "--", ".gitignore", "src");
+    gitIn(tmpDir, "commit", "-m", "failing identity obligation");
+    return {
+      id: "identity", description: "Implement identity without changing its argument",
+      filesInScope: ["src/identity.cjs"], test: { path: "src/identity.test.cjs" },
+      gate: { commands: ["node src/identity.test.cjs"] }, maxRetries: 0,
+    };
+  }
+
+
+  // The hostile target is itself disposable. Even the pre-fix RED run can
+  // touch only these two owned fixtures, never the actual developer checkout.
+  for (const entry of ["source", "bundle"] as const) {
+    it(`isolates fixture Git and farm children from inherited repository context (${entry})`, async () => {
+      const external = join(tmpDir, "foreign-fixture");
+      createTempRepo(external);
+      writeFileSync(join(external, "not-staged.txt"), "must remain untracked");
+      const before = {
+        refs: gitIn(external, "show-ref"),
+        index: readFileSync(join(external, ".git/index")),
+        config: readFileSync(join(external, ".git/config")),
+        status: gitIn(external, "status", "--porcelain"),
+        worktrees: gitIn(external, "worktree", "list", "--porcelain"),
+      };
+      // Explicit repository, object database, index, and injected Git config
+      // must not override either the fixture setup or the farm subprocess cwd.
+      const poisoned = {
+        GIT_DIR: join(external, ".git"), GIT_WORK_TREE: external,
+        GIT_COMMON_DIR: join(external, ".git"),
+        GIT_INDEX_FILE: join(external, ".git/index"),
+        GIT_OBJECT_DIRECTORY: join(external, ".git/objects"),
+        GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "core.bare", GIT_CONFIG_VALUE_0: "true",
+      };
+      let result: { code: number; out: string } | undefined;
+      try {
+        for (const [key, value] of Object.entries(poisoned)) vi.stubEnv(key, value);
+        const created = join(tmpDir, "fresh-fixture");
+        createTempRepo(created);
+        // Git expands Windows 8.3 names (and platform directory aliases).
+        // Compare the actual directories without weakening the foreign-repo check.
+        expect(realpathSync.native(gitIn(created, "rev-parse", "--show-toplevel")))
+          .toBe(realpathSync.native(created));
+        const task = identityFixture();
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return fileBlock("src/identity.cjs", identityImpl);
+        }));
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify({ meta: { name: "fixture isolation", model: "fixture" }, tasks: [task] }));
+        result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+          FARM_SAMPLES: "1", FARM_MUTATION: "off", ...poisoned,
+        }, [], entry);
+        expect(result.code, result.out).toBe(0);
+        expect(calls).toBe(1);
+        expect(gitIn(tmpDir, "show", "farm/integration:src/identity.cjs")).toBe(identityImpl);
+      } finally {
+        vi.unstubAllEnvs();
+      }
+      expect(gitIn(external, "show-ref")).toBe(before.refs);
+      expect(readFileSync(join(external, ".git/index"))).toEqual(before.index);
+      expect(readFileSync(join(external, ".git/config"))).toEqual(before.config);
+      expect(gitIn(external, "status", "--porcelain")).toBe(before.status);
+      expect(gitIn(external, "worktree", "list", "--porcelain")).toBe(before.worktrees);
+      expect(readFileSync(join(external, "not-staged.txt"), "utf8")).toBe("must remain untracked");
+    });
+
+    for (const mode of ["failed-low", "failed-high", "stderr-only", "stderr-decoy", "timeout-score"] as const) {
+      it(`mutation evidence respects ${mode} process outcome (${entry})`, async () => {
+        const task = identityFixture();
+        const rows = mode === "stderr-only"
+          ? ['console.error(JSON.stringify({score:1,total:9}));']
+          : ['console.log(JSON.stringify({score:' + (mode === "failed-low" ? 0 : 1) + ',total:9}));'];
+        if (mode.startsWith("failed")) rows.push("process.exitCode = 7;");
+        if (mode === "stderr-decoy") rows.push('console.error(JSON.stringify({score:0,total:9}));');
+        if (mode === "timeout-score") rows.push('setInterval(() => {}, 1000);');
+        writeFileSync(join(tmpDir, "src/mutation-fixture.cjs"), rows.join("\n"));
+        gitIn(tmpDir, "add", "--", "src/mutation-fixture.cjs");
+        gitIn(tmpDir, "commit", "-m", "mutation evidence fixture");
+        const originalHead = gitIn(tmpDir, "rev-parse", "HEAD");
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return fileBlock("src/identity.cjs", identityImpl);
+        }, {prompt_tokens: 12, completion_tokens: 7}));
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify({meta:{name:"mutation evidence",model:"fixture"},tasks:[task]}));
+        const result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY:"fixture-key", FARM_API_BASE_URL:`http://127.0.0.1:${port}`,
+          FARM_MUTATION:"on", FARM_MUTATION_CMD:"node src/mutation-fixture.cjs",
+          FARM_SAMPLES:"1", FARM_GATE_TIMEOUT_MS: mode === "timeout-score" ? "3000" : "10000",
+        }, [], entry);
+        expect(result.code, result.out).toBe(mode === "failed-low" ? 2 : 0);
+        expect(calls).toBe(1);
+        const actual = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8")).results[0];
+        expect(actual.status).toBe(mode === "failed-low" ? "escalate" : "green"); // not scope acceptance
+        expect(actual.promptTokens).toBe(12);
+        expect(actual.completionTokens).toBe(7);
+        if (mode === "stderr-decoy") {
+          expect(actual.mutationScore).toBe(1);
+          expect(actual.warning).toBeUndefined();
+        } else {
+          expect(actual.mutationScore).toBeNull();
+          expect(actual.note ?? actual.warning).toContain("mutation-hook-failed");
+          if (mode === "timeout-score") expect(actual.warning).toContain("exit 124");
+        }
+        expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(originalHead);
+        if (mode === "failed-low") expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(originalHead);
+        else expect(gitIn(tmpDir, "show", "farm/integration:src/identity.cjs")).toBe(identityImpl);
+      });
+    }
+  }
+
+  for (const entry of ["source", "bundle"] as const) {
+    for (const mode of ["literal", "mutation", "materialized-gate", "all-rejected"] as const) {
+      it(`qualified candidate selection retains alternatives through ${mode} (${entry})`, async () => {
+        const task = identityFixture();
+        const baseHead = gitIn(tmpDir, "rev-parse", "HEAD");
+        const seen: string[] = [];
+        ({ server: mockServer, port } = await startMockServer(() => {
+          const k = seen.length;
+          seen.push(`sample-${k}`);
+          const rejected = k === 0 || mode === "all-rejected";
+          const impl = (mode === "literal" || mode === "all-rejected") && rejected
+            ? "module.exports = () => 'fixture input';"
+            : identityImpl + (rejected ? "\n// CANDIDATE_REJECT\n" : "\n// CANDIDATE_QUALIFIED\n");
+          return fileBlock("src/identity.cjs", impl) +
+            (rejected ? "\n" + fileBlock("src/rejected-only.cjs", "module.exports = 'discard';") : "");
+        }));
+        if (mode === "materialized-gate") {
+          writeFileSync(join(tmpDir, "src/task-context-gate.cjs"), [
+            "const fs = require('node:fs');",
+            "const path = require('node:path');",
+            "require('./identity.test.cjs');",
+            "if (path.basename(process.cwd()) === 'identity' &&",
+            "    fs.readFileSync('src/identity.cjs','utf8').includes('CANDIDATE_REJECT')) {",
+            "  throw new Error('rejected only in the materialized task context');",
+            "}",
+          ].join("\n"));
+          task.gate.commands = ["node src/task-context-gate.cjs"];
+        }
+        if (mode === "mutation") {
+          writeFileSync(join(tmpDir, "src/fixture-mutation.cjs"), [
+            "const fs = require('node:fs');",
+            "const rejected = fs.readFileSync('src/identity.cjs','utf8').includes('CANDIDATE_REJECT');",
+            "console.log(JSON.stringify({score: rejected ? 0 : 1, total: 5}));",
+          ].join("\n"));
+        }
+        gitIn(tmpDir, "add", "--", "src");
+        if (mode === "materialized-gate" || mode === "mutation") gitIn(tmpDir, "commit", "-m", "qualification fixture");
+        const frozen = gitIn(tmpDir, "rev-parse", "HEAD");
+        const plan = { meta: { name: "retain existing candidates", model: "fixture" }, tasks: [
+          { ...task, filesInScope: [...task.filesInScope, "src/rejected-only.cjs"] },
+        ] };
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify(plan));
+        const result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+          FARM_SAMPLES: "2", FARM_CONCURRENCY: "1", FARM_TEMPERATURE: "0",
+          FARM_API_MAX_RETRIES: "0",
+          ...(mode === "mutation" ? { FARM_MUTATION_CMD: "node src/fixture-mutation.cjs" } : {}),
+        }, mode === "mutation" ? [] : ["FARM_MUTATION_CMD"], entry);
+        expect(seen).toEqual(["sample-0", "sample-1"]);
+        const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+        expect(report.results[0].attempts).toBe(1);
+        if (mode === "all-rejected") {
+          expect(result.code, result.out).toBe(2);
+          expect(report.results[0].status).toBe("escalate");
+          expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(frozen);
+        } else {
+          expect(result.code, result.out).toBe(0);
+          expect(report.results[0].status).toBe("green");
+          expect(gitIn(tmpDir, "show", "farm/integration:src/identity.cjs")).toContain("CANDIDATE_QUALIFIED");
+          expect(gitIn(tmpDir, "ls-tree", "-r", "--name-only", "farm/integration")).not.toContain("rejected-only");
+          if (mode === "mutation") expect(report.results[0].mutationScore).toBe(1);
+        }
+        expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(frozen);
+        expect(frozen.length).toBe(baseHead.length);
+        for (const suffix of ["__s0", "__s1"]) {
+          expect(existsSync(join(tmpDir, ".farm/worktrees/identity" + suffix))).toBe(false);
+          expect(gitIn(tmpDir, "branch", "--list", "farm/identity" + suffix)).toBe("");
+        }
+      });
+    }
+
+    it(`retry reset refusal preserves actual worker spend in both reports (${entry})`, async () => {
+      const task = identityFixture();
+      // The trusted test gate plants a lock owned only by this disposable Git
+      // fixture, outside the sample being removed. The real next-attempt Git
+      // reset must fail; no simulated exit code or production timeout change.
+      writeFileSync(join(tmpDir, "src/retry-reset-gate.cjs"), [
+        "const fs = require('node:fs');",
+        "const path = require('node:path');",
+        "const { execFileSync } = require('node:child_process');",
+        "require('./identity.test.cjs');",
+        "if (path.basename(process.cwd()) === 'identity__s0') {",
+        "  const task = path.resolve('..', 'identity');",
+        "  const lock = execFileSync('git', ['rev-parse', '--git-path', 'index.lock'], {cwd: task, encoding: 'utf8'}).trim();",
+        "  fs.writeFileSync(path.resolve(task, lock), 'owned by retry-reset fixture', {flag: 'wx'});",
+        "}",
+        "throw new Error('deliberately reject this sampling round');",
+      ].join("\n"));
+      gitIn(tmpDir, "add", "--", "src/retry-reset-gate.cjs");
+      gitIn(tmpDir, "commit", "-m", "controlled retry reset refusal");
+      const frozen = gitIn(tmpDir, "rev-parse", "HEAD");
+      let calls = 0;
+      ({ server: mockServer, port } = await startMockServer(() => {
+        calls++;
+        return fileBlock("src/identity.cjs", identityImpl);
+      }, { prompt_tokens: 7, completion_tokens: 11 }));
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "retry evidence", model: "fixture" }, tasks: [
+        { ...task, maxRetries: 1, gate: { commands: ["node src/retry-reset-gate.cjs"] } },
+      ] }));
+      const result = await runFarmWithArgs(tmpDir, [], planPath, {
+        FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+        FARM_SAMPLES: "2", FARM_CONCURRENCY: "1", FARM_TEMPERATURE: "0", FARM_API_MAX_RETRIES: "0",
+      }, ["FARM_MUTATION_CMD"], entry);
+      expect(result.code, result.out).toBe(2);
+      expect(calls).toBe(2); // No second sampling round after a failed reset.
+      const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+      expect(report.results).toHaveLength(1);
+      const recorded = report.results[0];
+      expect(recorded.status).toBe("escalate");
+      expect(recorded.attempts).toBe(2);
+      expect(recorded.note).toContain("retry reset failed:");
+      expect(recorded.note).toContain("index.lock");
+      expect(recorded.promptTokens).toBe(14);
+      expect(recorded.completionTokens).toBe(22);
+      expect(recorded.filesWritten).toEqual(["src/identity.cjs"]);
+      const streamed = readFileSync(join(tmpDir, ".farm/farm-results.jsonl"), "utf8").trim().split("\n").map(line => JSON.parse(line));
+      expect(streamed).toHaveLength(1);
+      expect(streamed[0]).toEqual(recorded);
+      expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(frozen);
+      expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(frozen);
+      const taskDir = join(tmpDir, ".farm/worktrees/identity");
+      const lock = resolve(taskDir, gitIn(taskDir, "rev-parse", "--git-path", "index.lock"));
+      expect(readFileSync(lock, "utf8")).toBe("owned by retry-reset fixture");
+      for (const suffix of ["__s0", "__s1"]) {
+        expect(existsSync(join(tmpDir, ".farm/worktrees/identity" + suffix))).toBe(false);
+        expect(gitIn(tmpDir, "branch", "--list", "farm/identity" + suffix)).toBe("");
+      }
+    });
+
+    it(`qualified candidate selection also applies to detached canary evaluation (${entry})`, async () => {
+      const task = identityFixture();
+      const frozen = gitIn(tmpDir, "rev-parse", "HEAD");
+      let probes = 0, calls = 0;
+      ({ server: mockServer, port } = await startMockServer(raw => {
+        if ((raw as { max_tokens?: number }).max_tokens === 1) { probes++; return "ready"; }
+        return fileBlock("src/identity.cjs", calls++ === 0
+          ? "module.exports = () => 'fixture input';" : identityImpl);
+      }));
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "canary alternatives" }, tasks: [task] }));
+      const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+        FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+        FARM_CANDIDATE_MODELS: "candidate", FARM_CONCURRENCY: "1",
+        FARM_SAMPLES: "2", FARM_API_MAX_RETRIES: "0",
+      }, ["FARM_MUTATION_CMD"], entry);
+      expect(result.code, result.out).toBe(0);
+      expect(probes).toBe(1);
+      expect(calls).toBe(2);
+      const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+      expect(report.baseCommit).toBe(frozen);
+      expect(report.results[0].green).toBe(true);
+      expect(report.results[0].cleanup).toEqual([]);
+      expect(gitIn(tmpDir, "branch", "--list", "farm/*")).toBe("");
+      expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(frozen);
+    });
+  }
+
+  it.each(["source", "bundle"] as const)("dependency-ready predecessor wins over an unready lower ID (%s)", async (entry) => {
+    const first = { ...identityFixture(), id: "task-z" };
+    writeFileSync(join(tmpDir, "src/follow.test.cjs"),
+      "const assert = require('node:assert/strict');\nconst follow = require('./follow.cjs');\nassert.equal(follow('dependent input'), 'dependent input');\n");
+    gitIn(tmpDir, "add", "--", "src/follow.test.cjs");
+    gitIn(tmpDir, "commit", "-m", "dependent obligation");
+    const requests: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((raw) => {
+      const body = raw as { messages: Array<{ content: string }> };
+      const prompt = body.messages[0].content;
+      const dependent = prompt.includes("The failing test is at: src/follow.test.cjs");
+      requests.push(dependent ? "task-a" : "task-z");
+      return dependent
+        ? fileBlock("src/follow.cjs", "const identity = require('./identity.cjs');\nmodule.exports = (value) => identity(value);\n")
+        : fileBlock("src/identity.cjs", identityImpl);
+    }));
+    const plan = { meta: { name: "readiness before lexical scope order", model: "fixture-model" }, tasks: [
+      { ...first, id: "task-a", deps: ["task-z"], filesInScope: ["src/identity.cjs", "src/follow.cjs"],
+        test: { path: "src/follow.test.cjs" }, gate: { commands: ["node src/follow.test.cjs"] } }, first,
+    ] };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+    const head = gitIn(tmpDir, "rev-parse", "HEAD");
+    const result = await runFarmWithArgs(tmpDir, [], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_SAMPLES: "1", FARM_CONCURRENCY: "4", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(0);
+    expect(requests).toEqual(["task-z", "task-a"]);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results.map((r: { id: string; status: string }) => [r.id, r.status])).toEqual([
+      ["task-z", "green"], ["task-a", "green"],
+    ]);
+    expect(report.blocked).toEqual([]);
+    expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(head);
+  });
+
+  for (const samples of [1, 2]) {
+    it.each(["source", "bundle"] as const)(`canary isolates every model and preserves existing refs, samples=${samples} (%s)`, async (entry) => {
+      const task = { ...identityFixture(), model: "task-override" };
+      const base = gitIn(tmpDir, "rev-parse", "HEAD");
+      // A canary must neither reset an existing integration branch nor tear down
+      // its checked-out worktree. Old task-ID-based scratch is not ours either.
+      gitIn(tmpDir, "checkout", "-b", "farm/integration");
+      writeFileSync(join(tmpDir, "unrelated.txt"), "preexisting integration work\n");
+      gitIn(tmpDir, "add", "--", "unrelated.txt");
+      gitIn(tmpDir, "commit", "-m", "preserve unrelated integration");
+      gitIn(tmpDir, "checkout", "main");
+      gitIn(tmpDir, "worktree", "add", join(tmpDir, ".farm/preserved-wt"), "farm/integration");
+      gitIn(tmpDir, "worktree", "add", "-b", "farm/canary-identity", join(tmpDir, ".farm/worktrees/canary-identity"), "main");
+      writeFileSync(join(tmpDir, ".farm/worktrees/canary-identity/keep.txt"), "uncommitted prior investigation\n");
+      const refs = gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)");
+      const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+      const prompts: string[] = [], models: string[] = [];
+      ({ server: mockServer, port } = await startMockServer((raw) => {
+        const body = raw as { model: string; max_tokens: number; messages: Array<{ content: string }> };
+        if (body.max_tokens === 1) return "entitled";
+        models.push(body.model); prompts.push(body.messages[0].content);
+        return fileBlock("src/identity.cjs", `// IMPL_GENERATED_BY_${body.model}\n${identityImpl}`);
+      }));
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "canary isolation" }, tasks: [task] }));
+      const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+        FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+        FARM_CANDIDATE_MODELS: "candidate-a,candidate-b", FARM_SAMPLES: String(samples),
+        FARM_API_MAX_RETRIES: "0",
+      }, [], entry);
+      expect(result.code, result.out).toBe(0);
+      expect(models).toEqual([...Array(samples).fill("candidate-a"), ...Array(samples).fill("candidate-b")]);
+      expect(prompts).toHaveLength(samples * 2);
+      expect(new Set(prompts).size).toBe(1);
+      expect(prompts.every(p => p.includes("BASELINE_IMPLEMENTATION_ONLY") && !p.includes("IMPL_GENERATED_BY_"))).toBe(true);
+      expect(gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)")).toBe(refs);
+      expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+      expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(base);
+      expect(readFileSync(join(tmpDir, ".farm/worktrees/canary-identity/keep.txt"), "utf8")).toContain("prior investigation");
+      const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+      expect(report.baseCommit).toBe(base);
+      expect(report.results.map((r: { model: string }) => r.model).sort()).toEqual(["candidate-a", "candidate-b"]);
+      expect(report.results.every((r: { green: boolean; cleanup: unknown[] }) => r.green && r.cleanup.length === 0)).toBe(true);
+    });
+  }
+
+  it.each(["source", "bundle"] as const)("failed canary cleans its own scratch without creating integration (%s)", async (entry) => {
+    const task = identityFixture();
+    const refs = gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)");
+    const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+    ({ server: mockServer, port } = await startMockServer(() => "no implementation files"));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "failed canary" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "candidate-a", FARM_SAMPLES: "1", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(2);
+    expect(gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)")).toBe(refs);
+    expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+    expect(report.results).toHaveLength(1);
+    expect(report.results[0].green).toBe(false);
+    expect(report.results[0].cleanup).toEqual([]);
+  });
+
+  it.each(["source", "bundle"] as const)("canary retains gate failures and evaluates the next model independently (%s)", async (entry) => {
+    const task = { ...identityFixture(), model: "not-the-canary-candidate" };
+    const refs = gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)");
+    const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((raw) => {
+      const body = raw as { model: string; max_tokens: number; messages: Array<{ content: string }> };
+      if (body.max_tokens === 1) return "entitled";
+      prompts.push(body.messages[0].content);
+      return fileBlock("src/identity.cjs", body.model === "bad-candidate"
+        ? "module.exports = () => undefined;\n" : identityImpl);
+    }));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "gate remains mandatory" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "bad-candidate,good-candidate", FARM_SAMPLES: "1", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(0);
+    expect(prompts).toHaveLength(2);
+    expect(prompts[1]).toBe(prompts[0]);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+    const bad = report.results.find((r: { model: string }) => r.model === "bad-candidate");
+    expect(bad.green).toBe(false);
+    expect(bad.note).toBe("failed: node src/identity.test.cjs");
+    expect(report.results[0].model).toBe("good-candidate");
+    expect(report.results[0].green).toBe(true);
+    expect(report.results.every((r: { cleanup: unknown[] }) => r.cleanup.length === 0)).toBe(true);
+    expect(gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)")).toBe(refs);
+    expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+  });
+
+  it.each(["source", "bundle"] as const)("canary freezes its base before entitlement probes can move the named ref (%s)", async (entry) => {
+    const task = identityFixture();
+    const original = gitIn(tmpDir, "rev-parse", "HEAD");
+    gitIn(tmpDir, "branch", "moving-base", original);
+    writeFileSync(join(tmpDir, "src/identity.cjs"), "// LATER_BASE_NOT_FOR_THIS_TRIAL\n" + identityImpl);
+    gitIn(tmpDir, "add", "--", "src/identity.cjs");
+    gitIn(tmpDir, "commit", "-m", "later named base");
+    const later = gitIn(tmpDir, "rev-parse", "HEAD");
+    const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((raw) => {
+      const body = raw as { max_tokens: number; messages: Array<{ content: string }> };
+      if (body.max_tokens === 1) {
+        // Deliberate fixture mutation, not a dispatcher write. All trial worktrees
+        // must still start from the commit resolved before this network callback.
+        gitIn(tmpDir, "update-ref", "refs/heads/moving-base", later);
+        return "entitled";
+      }
+      prompts.push(body.messages[0].content);
+      return fileBlock("src/identity.cjs", identityImpl);
+    }));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "frozen named base" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "candidate-a,candidate-b", FARM_BASE_BRANCH: "moving-base",
+      FARM_SAMPLES: "1", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(0);
+    expect(prompts).toHaveLength(2);
+    expect(prompts.every(p => p.includes("BASELINE_IMPLEMENTATION_ONLY") && !p.includes("LATER_BASE_NOT_FOR_THIS_TRIAL"))).toBe(true);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+    expect(report.baseCommit).toBe(original);
+    expect(gitIn(tmpDir, "rev-parse", "moving-base")).toBe(later);
+    expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(later);
+    expect(gitIn(tmpDir, "branch", "--list", "farm/*")).toBe("");
+    expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+  });
+
+  it.each(["source", "bundle"] as const)("canary rejects an unresolved base before model requests (%s)", async (entry) => {
+    const task = identityFixture(); let requests = 0;
+    ({ server: mockServer, port } = await startMockServer(() => { requests++; return "not expected"; }));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "missing base" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "candidate-a", FARM_BASE_BRANCH: "missing-base", FARM_SAMPLES: "1",
+    }, [], entry);
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("canary base");
+    expect(requests).toBe(0);
+    expect(existsSync(join(tmpDir, ".farm"))).toBe(false);
+    expect(gitIn(tmpDir, "branch", "--list", "farm/*")).toBe("");
+  });
+
+  // -------------------------------------------------------------------------
+  // coverage-003 (#183) — runCanary's early-exit validation paths.
+  // -------------------------------------------------------------------------
+  it("#183: --canary exits 1 with a named error when FARM_CANDIDATE_MODELS is missing", async () => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(JSON.parse(readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"))));
+
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "test-key",
+      // FARM_CANDIDATE_MODELS deliberately unset
+    });
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("--canary requires FARM_CANDIDATE_MODELS");
+  });
+
+  it("#183: --canary exits 1 with a named error when FARM_API_KEY is missing", async () => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(JSON.parse(readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"))));
+
+    const result = await runFarmWithArgs(
+      tmpDir,
+      ["--canary"],
+      planPath,
+      { FARM_CANDIDATE_MODELS: "some-model" },
+      ["FARM_API_KEY"], // force-absent regardless of the ambient shell
+    );
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("FARM_API_KEY is not set");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #397 — run-scoped artifact isolation + atomic publication.
+// #387 — a failure to publish the authoritative receipt fails the run.
+//
+// These exercise the full dispatcher through a subprocess because the defects
+// live in main()'s artifact lifecycle (stream init/append, diff writes, final
+// report publication, exit-code derivation), not in a pure helper.
+// ---------------------------------------------------------------------------
+describe("farm artifact publication (#397 / #387)", () => {
+  let tmpDir: string;
+  let mockServer: Server;
+  let port: number;
+
+  /**
+   * #515: name the escalation.
+   *
+   * A run that flips to a non-zero exit fails as `expected 2 to be +0`, and the
+   * farm's stdout carries only counts ("green=11 escalate=1") — never which task
+   * or why. The reason is in the run report, which `afterEach` deletes with the
+   * temp tree, so it has to be lifted into the message while the tree still
+   * exists. Message only: no assertion changes.
+   */
+  function diagnose(result: { code: number; out: string }): string {
+    const tasks: string[] = [];
+    const problems: string[] = [];
+    const runsDir = join(tmpDir, ".farm/runs");
+    let runIds: string[] = [];
+    try {
+      runIds = existsSync(runsDir) ? readdirSync(runsDir) : [];
+    } catch (error) {
+      problems.push(`runs directory unreadable: ${String(error)}`);
+    }
+    for (const runId of runIds) {
+      // Per-run, deliberately: one unreadable report must not hide the others.
+      // A test in this block plants a DIRECTORY at a report path, which
+      // existsSync reports true and readFileSync rejects with EISDIR.
+      try {
+        const reportPath = join(runsDir, runId, "farm-report.json");
+        if (!existsSync(reportPath)) continue;
+        const report = JSON.parse(readFileSync(reportPath, "utf8")) as {
+          results?: Array<{ id: string; status: string; note?: string; attempts?: number }>;
+          blocked?: Array<{ id: string; reason: string }>;
+        };
+        for (const r of report.results ?? []) {
+          if (r.status === "green") continue;
+          tasks.push(`  [${runId}] ${r.id}: ${r.status} after ${r.attempts ?? "?"} attempt(s) — ${r.note ?? "(no note)"}`);
+        }
+        // `blocked` flips the exit code independently of `results` (runExitCode),
+        // so a blocked-only run would otherwise report counts and no names.
+        for (const b of report.blocked ?? []) {
+          tasks.push(`  [${runId}] ${b.id}: blocked — ${b.reason}`);
+        }
+      } catch (error) {
+        problems.push(`[${runId}] report unreadable: ${String(error)}`);
+      }
+    }
+    return [
+      result.out,
+      tasks.length ? `\n\nnon-green tasks:\n${tasks.join("\n")}` : "",
+      problems.length ? `\n\ndiagnostic could not read:\n  ${problems.join("\n  ")}` : "",
+    ].join("");
+  }
+
+  // Every task in these plans owns exactly one `src/<id>.ts`; the worker echoes
+  // back whichever in-scope file the prompt names.
+  function greenHandler(): MockHandler {
+    return (body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      const m = /\bsrc\/([A-Za-z0-9_-]+)\.ts\b/.exec(content);
+      const file = m ? `src/${m[1]}.ts` : "src/fallback.ts";
+      return ["```typescript", `// path: ${file}`, "export const x = 1;", "```"].join("\n");
+    };
+  }
+
+  function planFor(name: string, ids: string[], p: number) {
+    return {
+      meta: { name, model: "test-model", apiBaseUrl: `http://127.0.0.1:${p}` },
+      tasks: ids.map((id) => ({
+        id,
+        description: `Write src/${id}.ts`,
+        deps: [] as string[],
+        filesInScope: [`src/${id}.ts`],
+        test: { path: `src/${id}.spec.ts` },
+        gate: { commands: ["node -p 0"] },
+      })),
+    };
+  }
+
+  function writePlan(file: string, plan: unknown) {
+    const p = join(tmpDir, file);
+    writeFileSync(p, JSON.stringify(plan));
+    return p;
+  }
+
+  function jsonl(file: string) {
+    return readFileSync(file, "utf8")
+      .split("\n")
+      .filter((l) => l.trim().length > 0)
+      .map((l) => JSON.parse(l) as { id: string; runId?: string });
+  }
+
+  beforeEach(async () => {
+    tmpDir = join(tmpdir(), `farm-artifacts-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    createTempRepo(tmpDir);
+  });
+
+  afterEach(async () => {
+    mockServer?.close();
+    // #542: release any subprocess a timed-out case abandoned BEFORE deleting
+    // its cwd, or the delete fails EBUSY and reports the teardown instead of
+    // the timeout that caused it.
+    await reapStrayChildren();
+    rmWithRetry(tmpDir);
+  });
+
+  // -------------------------------------------------------------------------
+  // #397
+  // -------------------------------------------------------------------------
+  it("#397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("scoped", ["task-a", "task-b"], port));
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_RUN_ID: "runone",
+    });
+    expect(result.code, diagnose(result)).toBe(0);
+
+    const runDir = join(tmpDir, ".farm/runs/runone");
+    const report = JSON.parse(readFileSync(join(runDir, "farm-report.json"), "utf8"));
+    expect(report.run_id).toBe("runone");
+    expect(report.results.map((r: { id: string }) => r.id).sort()).toEqual(["task-a", "task-b"]);
+    expect(existsSync(join(runDir, "farm-report.md"))).toBe(true);
+    expect(jsonl(join(runDir, "farm-results.jsonl"))).toHaveLength(2);
+    expect(existsSync(join(runDir, "diffs/task-a.patch"))).toBe(true);
+    expect(existsSync(join(runDir, "diffs/task-b.patch"))).toBe(true);
+
+    // The documented "latest" convenience paths still resolve to this run.
+    const latest = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(latest.run_id).toBe("runone");
+    expect(existsSync(join(tmpDir, ".farm/farm-report.md"))).toBe(true);
+    expect(jsonl(join(tmpDir, ".farm/farm-results.jsonl"))).toHaveLength(2);
+  });
+
+  it("#397: two concurrent farm processes on one repo both keep complete, independently parseable receipts", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planA = writePlan("plan-a.json", planFor("run-a", ["alpha1", "alpha2"], port));
+    const planB = writePlan("plan-b.json", planFor("run-b", ["bravo1", "bravo2"], port));
+
+    // Same repo, same shared `.farm` report dir, launched together. The git-side
+    // scratch (integration branch, worktree root) is separated per process so
+    // this test isolates the ARTIFACT contract rather than git ref contention.
+    const common = { FARM_API_KEY: "test-key", FARM_CONCURRENCY: "2" };
+    const [a, b] = await Promise.all([
+      runFarm(tmpDir, planA, {
+        ...common,
+        FARM_RUN_ID: "runalpha",
+        FARM_WORKTREE_ROOT: ".farm/wt-alpha",
+        FARM_INTEGRATION_BRANCH: "farm/integration-alpha",
+      }),
+      runFarm(tmpDir, planB, {
+        ...common,
+        FARM_RUN_ID: "runbravo",
+        FARM_WORKTREE_ROOT: ".farm/wt-bravo",
+        FARM_INTEGRATION_BRANCH: "farm/integration-bravo",
+      }),
+    ]);
+
+    expect([a.code, b.code], `${diagnose(a)}\n---\n${diagnose(b)}`).toEqual([0, 0]);
+
+    for (const [runId, ids] of [
+      ["runalpha", ["alpha1", "alpha2"]],
+      ["runbravo", ["bravo1", "bravo2"]],
+    ] as const) {
+      const runDir = join(tmpDir, ".farm/runs", runId);
+      const report = JSON.parse(readFileSync(join(runDir, "farm-report.json"), "utf8"));
+      expect(report.run_id).toBe(runId);
+      expect(report.results.map((r: { id: string }) => r.id).sort()).toEqual([...ids]);
+      expect(report.results.every((r: { status: string }) => r.status === "green")).toBe(true);
+
+      // The streaming rail is this run's alone — no cross-run lines, no
+      // truncation by the sibling process.
+      const lines = jsonl(join(runDir, "farm-results.jsonl"));
+      expect(lines.map((l) => l.id).sort()).toEqual([...ids]);
+      expect(lines.every((l) => l.runId === runId)).toBe(true);
+
+      // Markdown + per-task diff evidence survive for both runs.
+      expect(readFileSync(join(runDir, "farm-report.md"), "utf8")).toContain(ids[0]);
+      for (const id of ids) expect(existsSync(join(runDir, "diffs", `${id}.patch`))).toBe(true);
+    }
+  });
+
+  it("#397: a failed report publication leaves the previous run's complete report intact — never a truncated one", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("prior", ["task-a", "task-b"], port));
+
+    const first = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "goodrun" });
+    expect(first.code, diagnose(first)).toBe(0);
+    const before = readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8");
+    expect(JSON.parse(before).run_id).toBe("goodrun");
+
+    // Make the second run's authoritative JSON unwritable (a directory sits at
+    // the destination path) so publication fails mid-run.
+    mkdirSync(join(tmpDir, ".farm/runs/badrun/farm-report.json"), { recursive: true });
+    const second = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "badrun" });
+    expect(second.code).not.toBe(0);
+
+    const after = readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8");
+    expect(() => JSON.parse(after)).not.toThrow();
+    expect(JSON.parse(after).run_id).toBe("goodrun");
+    expect(after).toBe(before);
+  });
+
+  it("#397: rejects a caller-supplied run id that is not a safe single path segment", async () => {
+    const planPath = writePlan("plan.json", planFor("bad-id", ["task-a"], 9));
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_RUN_ID: "../escape",
+    });
+    expect(result.code, diagnose(result)).toBe(1);
+    expect(result.out).toContain("FARM_RUN_ID");
+  });
+
+  // -------------------------------------------------------------------------
+  // #387
+  // -------------------------------------------------------------------------
+  it("#387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("json-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/jsonbad/farm-report.json"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "jsonbad" });
+
+    // Every task went green — the RUN succeeded, the RECEIPT did not. Those are
+    // distinguished in both the exit code and the message.
+    expect(result.out).toContain("green=2");
+    expect(result.code, diagnose(result)).toBe(3);
+    expect(result.out).toMatch(/receipt/i);
+    expect(result.out).not.toMatch(/^Report: /m);
+  });
+
+  it("#387: a failure to publish farm-report.md also fails the run", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("md-fail", ["task-a"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/mdbad/farm-report.md"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdbad" });
+    expect(result.code, diagnose(result)).toBe(3);
+    expect(result.out).toMatch(/receipt/i);
+  });
+
+  it("#387: a broken streaming rail is recorded as incomplete in the published report", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("stream-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/streambad/farm-results.jsonl"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "streambad" });
+    // The rail is best-effort — the run still settles on task outcome...
+    expect(result.code, diagnose(result)).toBe(0);
+    // ...but the authoritative report says so, instead of leaving a consumer to
+    // infer completeness from a silently short file.
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/streambad/farm-report.json"), "utf8"));
+    expect(report.artifacts.stream.complete).toBe(false);
+    expect(report.artifacts.stream.errors.length).toBeGreaterThan(0);
+    expect(readFileSync(join(tmpDir, ".farm/runs/streambad/farm-report.md"), "utf8")).toMatch(
+      /streaming rail incomplete/i,
+    );
+  });
+
+  it("#387: a broken latest streaming pointer is also recorded as incomplete", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("latest-stream-fail", ["task-a"], port));
+    mkdirSync(join(tmpDir, ".farm/farm-results.jsonl"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "lstream" });
+    expect(result.code, diagnose(result)).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/lstream/farm-report.json"), "utf8"));
+    expect(report.artifacts.stream.complete).toBe(false);
+    // The run-scoped rail itself is fine — only the shared pointer failed.
+    expect(jsonl(join(tmpDir, ".farm/runs/lstream/farm-results.jsonl"))).toHaveLength(1);
+  });
+
+  it("#387: an unusable diffs directory marks every task's diff evidence unavailable", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("diffdir-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/diffdirbad"), { recursive: true });
+    // A regular FILE where the diffs directory belongs.
+    writeFileSync(join(tmpDir, ".farm/runs/diffdirbad/diffs"), "not a directory");
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "diffdirbad" });
+    expect(result.code, diagnose(result)).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/diffdirbad/farm-report.json"), "utf8"));
+    expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id).sort()).toEqual([
+      "task-a",
+      "task-b",
+    ]);
+    expect(readFileSync(join(tmpDir, ".farm/runs/diffdirbad/farm-report.md"), "utf8")).toMatch(
+      /diff evidence unavailable/i,
+    );
+  });
+
+  it("#387: a single failed patch write marks only that task's diff evidence unavailable", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("patch-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-a.patch"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "patchbad" });
+    expect(result.code, diagnose(result)).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/patchbad/farm-report.json"), "utf8"));
+    expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id)).toEqual(["task-a"]);
+    expect(existsSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-b.patch"))).toBe(true);
+  });
+
+  // -------------------------------------------------------------------------
+  // #387 — the authoritative/convenience split has to hold in BOTH directions.
+  // Exit 3 is reserved for a failure of the run-scoped receipt; the "latest"
+  // pointer is explicitly non-authoritative, so its failure must not sink a run
+  // whose durable receipt is on disk, and no emitted message may deny a receipt
+  // that exists.
+  // -------------------------------------------------------------------------
+  it("#387: a failed LATEST report pointer does not fail a run whose authoritative receipt landed", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("mirror-fail", ["task-a", "task-b"], port));
+    // Block only the non-authoritative convenience pointer.
+    mkdirSync(join(tmpDir, ".farm/farm-report.json"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mirrorbad" });
+
+    // The durable receipt is on disk, so this is not a receipt failure.
+    expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.json"))).toBe(true);
+    expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.md"))).toBe(true);
+    expect(result.code, diagnose(result)).toBe(0);
+    expect(result.out).not.toMatch(/RECEIPT PUBLICATION FAILED/);
+    // The operator is still pointed at the receipt that exists...
+    expect(result.out).toContain(join(".farm", "runs", "mirrorbad", "farm-report.md"));
+    // ...and told, truthfully, that the shared pointer was not refreshed.
+    expect(result.out).toMatch(/latest.*pointer.*not.*refresh/i);
+  });
+
+  it("#387: the exit-3 message names the run's artifact directory and never denies a receipt that exists", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("md-only-fail", ["task-a"], port));
+    // The Markdown receipt cannot be published; the JSON one still can.
+    mkdirSync(join(tmpDir, ".farm/runs/mdonly/farm-report.md"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdonly" });
+    expect(result.code, diagnose(result)).toBe(3);
+    // The JSON receipt DID land — a message asserting "there is no durable
+    // receipt for this run" would be false.
+    expect(existsSync(join(tmpDir, ".farm/runs/mdonly/farm-report.json"))).toBe(true);
+    expect(result.out).not.toMatch(/there is no durable receipt/i);
+    expect(result.out).toContain(join(".farm", "runs", "mdonly"));
+  });
+
+  // The heaviest case in the block: 12 tasks at FARM_CONCURRENCY 6, each
+  // spawning a real gate subprocess. Native Windows coverage hit the 30s
+  // case cap in run 35984421923 while the other 82 CLI cases passed. Give
+  // only this multi-task Windows fixture 60s; retain 30s elsewhere. Do not
+  // shrink its twelve tasks/six-worker path or change production timeouts
+  // to buy headroom (#515 AC-4, #542 AC-2).
+  it("#387: the unavailable-diff list is bounded and still reports the true total", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const ids = Array.from({ length: 12 }, (_, i) => `bulk${i}`);
+    const planPath = writePlan("plan.json", planFor("bounded", ids, port));
+    mkdirSync(join(tmpDir, ".farm/runs/bounded"), { recursive: true });
+    // A regular FILE where the diffs directory belongs → every task's diff
+    // evidence is unavailable for the same single reason.
+    writeFileSync(join(tmpDir, ".farm/runs/bounded/diffs"), "not a directory");
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_RUN_ID: "bounded",
+      FARM_CONCURRENCY: "6",
+    });
+    expect(result.code, diagnose(result)).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/bounded/farm-report.json"), "utf8"));
+    // 12 tasks, one diagnosis — the report carries the diagnosis and the count,
+    // not 12 copies of the same line.
+    expect(report.artifacts.diffs.unavailable_total).toBe(12);
+    expect(report.artifacts.diffs.unavailable.length).toBeLessThanOrEqual(11);
+    const md = readFileSync(join(tmpDir, ".farm/runs/bounded/farm-report.md"), "utf8");
+    expect(md).toMatch(/12 task\(s\) have no diff evidence/i);
+  }, process.platform === "win32" ? 60_000 : 30_000);
+});
+
+
+// The actual source and shipped bundle must preserve already-reported usage
+// through rejected output, bounded retry and best-of-N accounting. No provider
+// beyond this loopback fixture is contacted and no gate is stubbed out.
+describe("worker response evidence CLI", () => {
+  const gitIn = (dir: string, ...args: string[]) =>
+    execFileSync("git", args, { cwd: dir, env: fixtureEnv(), encoding: "utf8" }).trim();
+  let root: string;
+  let server: Server | undefined;
+  beforeEach(() => {
+    root = join(tmpdir(), `farm-response-cli-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    createTempRepo(root);
+    writeFileSync(join(root, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(root, "src/identity.test.cjs"),
+      'const assert = require("node:assert/strict");\nconst identity = require("./identity.cjs");\nassert.equal(identity("fixture"), "fixture");\n');
+    gitIn(root, "add", ".gitignore", "src/identity.test.cjs");
+    gitIn(root, "commit", "-m", "immutable test fixture");
+  });
+  afterEach(async () => {
+    await reapStrayChildren();
+    if (server) {
+      server.closeAllConnections();
+      await new Promise<void>((resolve) => server!.close(() => resolve()));
+      server = undefined;
+    }
+    rmWithRetry(root);
+  });
+  const code = ["module.exports = function identity(value) {", "  // Keep the exact input.",
+    "  const unchanged = value;", "  return unchanged;", "};", ""].join("\n");
+  const block = (p: string) => "```javascript:" + p + "\n" + code + "```";
+  const completion = (content: unknown, p = 7, c = 11) => ({ choices: [{ message: { content } }],
+    usage: { prompt_tokens: p, completion_tokens: c } });
+
+  for (const entry of ["source", "bundle"] as const) {
+    it.each(["readonly", "escape", "object-content", "missing-message"])(`${entry}: preserves rejected %s evidence without another request`, async (kind) => {
+      let calls = 0;
+      server = createServer((_req, res) => {
+        _req.resume();
+        _req.on("end", () => {
+          calls++;
+          const response = kind === "missing-message" ? { choices: [{}], usage: { prompt_tokens: 7, completion_tokens: 11 } }
+            : completion(kind === "readonly" ? block("src/identity.test.cjs") : kind === "escape" ? block("../outside.cjs") : { opaque: "private-response" });
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(response));
+        });
+      });
+      await new Promise<void>((resolve) => server!.listen(0, "127.0.0.1", () => resolve()));
+      const port = (server.address() as { port: number }).port;
+      writeFileSync(join(root, "plan.json"), JSON.stringify({ meta: { name: "response-evidence", model: "fixture-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: [{ id: "identity", description: "Implement identity without changing tests", deps: [], filesInScope: ["src/identity.cjs"],
+          test: { path: "src/identity.test.cjs" }, gate: { commands: ["node src/identity.test.cjs"] }, maxRetries: 0 }] }));
+      const before = gitIn(root, "rev-parse", "main");
+      const testBytes = readFileSync(join(root, "src/identity.test.cjs"));
+      const run = await runFarmWithArgs(root, [], join(root, "plan.json"), { FARM_API_KEY: "fixture-key", FARM_API_MAX_RETRIES: "0" }, [], entry);
+      expect(run.code, run.out).toBe(2);
+      expect(calls).toBe(1);
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "escalate", attempts: 1, promptTokens: 7, completionTokens: 11 });
+      expect(report.results[0].note).not.toContain("private-response");
+      expect(report.tokens).toEqual({ prompt: 7, completion: 11 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before);
+      expect(gitIn(root, "rev-parse", "farm/integration")).toBe(before);
+      expect(readFileSync(join(root, "src/identity.test.cjs"))).toEqual(testBytes);
+      expect(existsSync(join(root, "src/identity.cjs"))).toBe(false);
+    });
+
+    it.each(["retry", "samples"])(`${entry}: accounts for rejected and accepted responses across %s`, async (mode) => {
+      let calls = 0;
+      server = createServer((req, res) => {
+        req.resume();
+        req.on("end", () => {
+          const first = calls++ === 0;
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(completion(first ? { opaque: "private-response" } : block("src/identity.cjs"), first ? 7 : 13, first ? 11 : 17)));
+        });
+      });
+      await new Promise<void>((resolve) => server!.listen(0, "127.0.0.1", () => resolve()));
+      const port = (server.address() as { port: number }).port;
+      writeFileSync(join(root, "plan.json"), JSON.stringify({ meta: { name: "response-recovery", model: "fixture-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: [{ id: "identity", description: "Implement identity without changing tests", deps: [], filesInScope: ["src/identity.cjs"],
+          test: { path: "src/identity.test.cjs" }, gate: { commands: ["node src/identity.test.cjs"] }, maxRetries: mode === "retry" ? 1 : 0 }] }));
+      const before = gitIn(root, "rev-parse", "main");
+      const testBytes = readFileSync(join(root, "src/identity.test.cjs"));
+      const run = await runFarmWithArgs(root, [], join(root, "plan.json"), { FARM_API_KEY: "fixture-key", FARM_API_MAX_RETRIES: "0",
+        FARM_SAMPLES: mode === "samples" ? "2" : "1", FARM_CONCURRENCY: "2" }, [], entry);
+      expect(run.code, run.out).toBe(0);
+      expect(calls).toBe(2);
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "green", attempts: mode === "retry" ? 2 : 1, promptTokens: 20, completionTokens: 28 });
+      expect(report.tokens).toEqual({ prompt: 20, completion: 28 });
+      if (mode === "samples") expect(report.results[0]).toMatchObject({ acceptedPromptTokens: 13, acceptedCompletionTokens: 17 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before);
+      expect(readFileSync(join(root, "src/identity.test.cjs"))).toEqual(testBytes);
+      expect(gitIn(root, "show", "farm/integration:src/identity.cjs")).toBe(code.trim());
+    });
+  }
+});
+
+// Real merge conflicts against a concurrently advanced integration branch.
+// No model/provider or non-fixture repository participates.
+describe("verified merge recovery CLI", () => {
+  let root: string;
+  let server: Server | undefined;
+  const gitIn = (dir: string, ...args: string[]) => execFileSync("git", args,
+    { cwd: dir, env: fixtureEnv(), encoding: "utf8", stdio: "pipe" }).trim();
+  beforeEach(() => {
+    root = join(tmpdir(), `farm-merge-recovery-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    createTempRepo(root);
+    writeFileSync(join(root, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(root, "src/impl.cjs"), "module.exports = n => n * 0;\n");
+    writeFileSync(join(root, "src/check.cjs"), "require('node:assert/strict').equal(require('./impl.cjs')(6), 12);\n");
+    gitIn(root, "add", "--", ".gitignore", "src");
+    gitIn(root, "commit", "-m", "original failing obligation");
+  });
+  afterEach(async () => {
+    await reapStrayChildren();
+    if (server) { server.closeAllConnections(); await new Promise<void>(done => server!.close(() => done())); server = undefined; }
+    rmWithRetry(root);
+  });
+  for (const entry of ["source", "bundle"] as const) {
+    for (const mode of ["single", "samples", "reset-refusal"] as const) {
+      it(`${entry}: ${mode} retains merge evidence and uses the verified baseline`, async () => {
+        const samples = mode === "samples" ? 2 : 1;
+        const runId = "merge-recovery";
+        const integration = join(root, ".farm/runs", runId, "integration-wt");
+        const before = gitIn(root, "rev-parse", "main");
+        const testBefore = readFileSync(join(root, "src/check.cjs"));
+        const prompts: string[] = [];
+        let calls = 0, advanced = "", handlerError: unknown;
+        const firstCode = "module.exports = n => n + n;\n";
+        const nextCode = "module.exports = n => n + n + n;\n";
+        const mock = await startMockServer(body => {
+          try {
+            calls++; prompts.push((body as { messages: Array<{ content: string }> }).messages[0].content);
+            if (calls === 1) {
+              writeFileSync(join(integration, "src/impl.cjs"), "module.exports = n => n * 3;\n");
+              writeFileSync(join(integration, "src/check.cjs"), "require('node:assert/strict').equal(require('./impl.cjs')(6), 18);\n");
+              gitIn(integration, "add", "--", "src/impl.cjs", "src/check.cjs");
+              gitIn(integration, "commit", "-m", "concurrent integration obligation");
+              advanced = gitIn(integration, "rev-parse", "HEAD");
+              if (mode === "reset-refusal") {
+                // A fixture-owned post-commit lock permits the first candidate
+                // commit, then makes the real task reset refuse after conflict.
+                const hook = ["#!/bin/sh", 'case "$(git symbolic-ref --short HEAD)" in',
+                  '  farm/recover) index="$(git rev-parse --git-path index)";',
+                  '    printf "%s\\n" "fixture-owned reset lock" > "$index.lock";;',
+                  "esac", ""].join("\n");
+                writeFileSync(join(root, ".git/hooks/post-commit"), hook, { mode: 0o755 });
+              }
+            }
+            return "```javascript:src/impl.cjs\n" + (calls <= samples ? firstCode : nextCode) + "```";
+          } catch (error) { handlerError = error; return ""; }
+        }, { prompt_tokens: 7, completion_tokens: 11 });
+        server = mock.server;
+        const planPath = join(root, "plan.json");
+        writeFileSync(planPath, JSON.stringify({ meta: { name: "merge recovery", model: "fixture" }, tasks: [{
+          id: "recover", description: "Implement the current arithmetic obligation", deps: [],
+          filesInScope: ["src/impl.cjs"], test: { path: "src/check.cjs" },
+          gate: { commands: ["node src/check.cjs"] }, maxRetries: 1 }] }));
+        const run = await runFarmWithArgs(root, [], planPath, {
+          FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${mock.port}`,
+          FARM_RUN_ID: runId, FARM_SAMPLES: String(samples), FARM_TEMPERATURE: "0",
+          FARM_MUTATION: "off", FARM_API_MAX_RETRIES: "0",
+        }, [], entry);
+        expect(handlerError).toBeUndefined(); expect(advanced).toMatch(/^[0-9a-f]{40}$/);
+        expect(run.code, run.out).toBe(mode === "reset-refusal" ? 2 : 0);
+        expect(gitIn(root, "rev-parse", "main")).toBe(before);
+        expect(readFileSync(join(root, "src/check.cjs"))).toEqual(testBefore);
+        const report = JSON.parse(readFileSync(join(root, ".farm/runs", runId, "farm-report.json"), "utf8"));
+        const result = report.results[0];
+        const expectedCalls = mode === "reset-refusal" ? 1 : 2 * samples;
+        expect(calls).toBe(expectedCalls);
+        expect(result).toMatchObject({ attempts: mode === "reset-refusal" ? 1 : 2,
+          promptTokens: 7 * expectedCalls, completionTokens: 11 * expectedCalls });
+        const streamed = JSON.parse(readFileSync(join(root, ".farm/runs", runId, "farm-results.jsonl"), "utf8").trim());
+        expect(streamed).toMatchObject({ id: "recover", status: result.status, promptTokens: result.promptTokens });
+        if (mode === "reset-refusal") {
+          expect(result.note).toMatch(/merge recovery failed.*reset refused/);
+          expect(gitIn(root, "rev-parse", "farm/integration")).toBe(advanced);
+          const taskTree = join(root, ".farm/worktrees/recover");
+          const index = gitIn(taskTree, "rev-parse", "--git-path", "index");
+          expect(readFileSync(resolve(taskTree, index + ".lock"), "utf8")).toContain("fixture-owned reset lock");
+          expect(readFileSync(join(taskTree, "src/impl.cjs"), "utf8")).toBe(firstCode);
+        } else {
+          expect(gitIn(root, "show", "farm/integration:src/impl.cjs")).toBe(nextCode.trim());
+          expect(gitIn(root, "show", "farm/integration:src/check.cjs")).toContain("18");
+          expect(prompts[samples]).toContain(advanced);
+          const prior = prompts[samples].split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+          expect(prior).toContain(firstCode.trim());
+          expect(prior).not.toContain("n * 3");
+          expect(prompts[samples]).toContain("18");
+          expect(result.acceptedPromptTokens).toBe(7);
+          expect(existsSync(join(root, ".farm/worktrees/recover"))).toBe(false);
+        }
+      });
+    }
+  }
+});
+
+/** Observe the actual source/bundle prompt at a loopback provider boundary. */
+describe("bounded prompt assembly CLI", () => {
+  let root: string; let server: Server | undefined;
+  const gitIn = (dir: string, ...args: string[]) => execFileSync("git", args,
+    { cwd: dir, env: fixtureEnv(), encoding: "utf8", stdio: "pipe" }).trim();
+  beforeEach(() => {
+    root = join(tmpdir(), `farm-prompt-budget-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    createTempRepo(root);
+    writeFileSync(join(root, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(root, "src/impl.cjs"), "module.exports = n => n * 0;\n");
+    writeFileSync(join(root, "src/check.cjs"), "// " + "😀界é".repeat(400) + "\n" +
+      "require('node:assert/strict').equal(require('./impl.cjs')(6), 12);\n");
+    gitIn(root, "add", "--", ".gitignore", "src"); gitIn(root, "commit", "-m", "prompt budget obligation");
+  });
+  afterEach(async () => {
+    await reapStrayChildren();
+    if (server) { server.closeAllConnections(); await new Promise<void>(done => server!.close(() => done())); server = undefined; }
+    rmWithRetry(root);
+  });
+  const code = "module.exports = n => n + n;\n";
+  const block = "```javascript:src/impl.cjs\n" + code + "```";
+  for (const entry of ["source", "bundle"] as const) {
+    it.each([1, 256, 512])(`${entry}: respects the actual %s-byte enrichment allowance`, async budget => {
+      const prompts: string[] = [];
+      const mock = await startMockServer(body => {
+        prompts.push((body as { messages: Array<{ content: string }> }).messages[0].content); return block;
+      }, { prompt_tokens: 7, completion_tokens: 11 });
+      server = mock.server;
+      const planPath = join(root, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "prompt budget", model: "fixture" }, tasks: [{
+        id: "bounded", description: "Implement arithmetic without editing tests", deps: [], filesInScope: ["src/impl.cjs"],
+        test: { path: "src/check.cjs" }, gate: { commands: ["node src/check.cjs"] }, maxRetries: 0 }] }));
+      const before = gitIn(root, "rev-parse", "main"); const testBefore = readFileSync(join(root, "src/check.cjs"));
+      const result = await runFarmWithArgs(root, [], planPath, { FARM_API_KEY: "fixture-key",
+        FARM_API_BASE_URL: `http://127.0.0.1:${mock.port}`, FARM_ENRICH_MAX_BYTES: String(budget),
+        FARM_MUTATION: "off", FARM_API_MAX_RETRIES: "0" }, [], entry);
+      expect(result.code, result.out).toBe(0); expect(prompts).toHaveLength(1);
+      const boundary = "Touch nothing else. Do not run git. Do not install global packages.";
+      const start = prompts[0].indexOf(boundary) + boundary.length;
+      const end = prompts[0].indexOf("Solve the task with REAL logic.");
+      expect(start).toBeGreaterThan(boundary.length); expect(end).toBeGreaterThan(start);
+      expect(Buffer.byteLength(prompts[0].slice(start, end), "utf8") - 2).toBeLessThanOrEqual(budget);
+      expect(prompts[0]).not.toContain("\uFFFD");
+      if (budget > 1) expect(prompts[0]).toContain("TRUNCATED");
+      expect(prompts[0]).toContain("Make it pass WITHOUT modifying, deleting, or weakening that test.");
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "green", attempts: 1, promptTokens: 7, completionTokens: 11 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before); expect(readFileSync(join(root, "src/check.cjs"))).toEqual(testBefore);
+      expect(gitIn(root, "show", "farm/integration:src/impl.cjs")).toBe(code.trim());
+    });
+    it(`${entry}: does not tell a worker that an empty response failed a test`, async () => {
+      const prompts: string[] = [];
+      const mock = await startMockServer(body => {
+        prompts.push((body as { messages: Array<{ content: string }> }).messages[0].content);
+        return prompts.length === 1 ? "" : block;
+      }, { prompt_tokens: 7, completion_tokens: 11 });
+      server = mock.server;
+      const planPath = join(root, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "no output retry", model: "fixture" }, tasks: [{
+        id: "retry", description: "Implement arithmetic without editing tests", filesInScope: ["src/impl.cjs"],
+        test: { path: "src/check.cjs" }, gate: { commands: ["node src/check.cjs"] }, maxRetries: 1 }] }));
+      const before = gitIn(root, "rev-parse", "main"); const testBefore = readFileSync(join(root, "src/check.cjs"));
+      const result = await runFarmWithArgs(root, [], planPath, { FARM_API_KEY: "fixture-key",
+        FARM_API_BASE_URL: `http://127.0.0.1:${mock.port}`, FARM_ENRICH_MAX_BYTES: "512",
+        FARM_MUTATION: "off", FARM_API_MAX_RETRIES: "0" }, [], entry);
+      expect(result.code, result.out).toBe(0); expect(prompts).toHaveLength(2);
+      expect(prompts[1]).toContain("Previous attempt was not accepted");
+      expect(prompts[1]).toContain("worker error:"); expect(prompts[1]).not.toContain("FAILED the gate");
+      expect(prompts[1]).not.toContain("your previous attempt — FAILED");
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "green", attempts: 2, promptTokens: 14, completionTokens: 22 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before); expect(readFileSync(join(root, "src/check.cjs"))).toEqual(testBefore);
+      expect(gitIn(root, "show", "farm/integration:src/impl.cjs")).toBe(code.trim());
+    });
+  }
+});
