@@ -1,0 +1,879 @@
+{
+  "$defs": {
+    "blocker": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "access",
+            "evidence",
+            "authority",
+            "capability",
+            "safety",
+            "scope",
+            "budget",
+            "input"
+          ],
+          "type": "string"
+        },
+        "missing": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "owner": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resume_condition": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "missing",
+        "owner",
+        "resume_condition"
+      ],
+      "type": "object"
+    },
+    "check": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_basis": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cwd": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expectation": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^(?:C-[0-9]{2,4})(?![\\s\\S])",
+          "type": "string"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "side_effects": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "completed",
+            "not_run",
+            "interrupted"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "authorization_basis",
+        "cwd",
+        "evidence_ids",
+        "exit_code",
+        "expectation",
+        "id",
+        "observed",
+        "operation",
+        "side_effects",
+        "status"
+      ],
+      "type": "object"
+    },
+    "disposition": {
+      "additionalProperties": false,
+      "properties": {
+        "blockers": {
+          "items": {
+            "$ref": "#/$defs/blocker"
+          },
+          "maxItems": 8,
+          "minItems": 0,
+          "type": "array"
+        },
+        "cause_ids": {
+          "items": {
+            "pattern": "^(?:H-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "kind": {
+          "enum": [
+            "confirmed_code_defect",
+            "confirmed_noncode_cause",
+            "design_question",
+            "no_action",
+            "unresolved"
+          ],
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "blockers",
+        "cause_ids",
+        "evidence_ids",
+        "kind",
+        "rationale"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "anyOf": [
+            {
+              "pattern": "^(?:C-[0-9]{2,4})(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage": {
+          "enum": [
+            "complete_for_claim",
+            "partial",
+            "unknown"
+          ],
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "source",
+            "observation",
+            "user_report",
+            "command_result",
+            "contract"
+          ],
+          "type": "string"
+        },
+        "limitations": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "locator": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "observation": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "pattern": "^(?:([0-9]{4})-([0-9]{2})-([0-9]{2})[Tt](?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,9})?(?:[Zz]|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9]))(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snapshot_id": {
+          "anyOf": [
+            {
+              "pattern": "^(?:S-[0-9]{2,4})(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "check_id",
+        "coverage",
+        "id",
+        "kind",
+        "limitations",
+        "locator",
+        "observation",
+        "observed_at",
+        "snapshot_id"
+      ],
+      "type": "object"
+    },
+    "hypothesis": {
+      "additionalProperties": false,
+      "properties": {
+        "discriminator": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^(?:H-[0-9]{2,4})(?![\\s\\S])",
+          "type": "string"
+        },
+        "limitations": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mechanism": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "opposing_evidence_ids": {
+          "items": {
+            "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "supported",
+            "refuted",
+            "inconclusive"
+          ],
+          "type": "string"
+        },
+        "supporting_evidence_ids": {
+          "items": {
+            "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "discriminator",
+        "id",
+        "limitations",
+        "mechanism",
+        "opposing_evidence_ids",
+        "status",
+        "supporting_evidence_ids"
+      ],
+      "type": "object"
+    },
+    "next_step": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completion_evidence": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "owner": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target": {
+          "enum": [
+            "none",
+            "fix",
+            "adr",
+            "existing_owner",
+            "evidence"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "completion_evidence",
+        "owner",
+        "target"
+      ],
+      "type": "object"
+    },
+    "packet": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^(?:DBG-[A-Za-z0-9][A-Za-z0-9_-]{2,63})(?![\\s\\S])",
+          "type": "string"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/check"
+          },
+          "maxItems": 24,
+          "minItems": 0,
+          "type": "array"
+        },
+        "disposition": {
+          "$ref": "#/$defs/disposition"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/evidence"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "type": "array"
+        },
+        "hypotheses": {
+          "items": {
+            "$ref": "#/$defs/hypothesis"
+          },
+          "maxItems": 16,
+          "minItems": 0,
+          "type": "array"
+        },
+        "next_step": {
+          "$ref": "#/$defs/next_step"
+        },
+        "protocol": {
+          "const": "codearbiter.debug-handoff/1.0.0",
+          "type": "string"
+        },
+        "regression": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/regression"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reproduction": {
+          "$ref": "#/$defs/reproduction"
+        },
+        "request": {
+          "$ref": "#/$defs/request"
+        },
+        "snapshots": {
+          "items": {
+            "$ref": "#/$defs/snapshot"
+          },
+          "maxItems": 4,
+          "minItems": 0,
+          "type": "array"
+        },
+        "symptom": {
+          "$ref": "#/$defs/symptom"
+        }
+      },
+      "required": [
+        "case_id",
+        "checks",
+        "disposition",
+        "evidence",
+        "hypotheses",
+        "next_step",
+        "protocol",
+        "regression",
+        "reproduction",
+        "request",
+        "snapshots",
+        "symptom"
+      ],
+      "type": "object"
+    },
+    "recipe": {
+      "additionalProperties": false,
+      "properties": {
+        "cwd": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "failure_signature": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "preconditions": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "cwd",
+        "failure_signature",
+        "preconditions",
+        "steps"
+      ],
+      "type": "object"
+    },
+    "regression": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "enum": [
+            "reproduction",
+            "causal_trace"
+          ],
+          "type": "string"
+        },
+        "candidate_test_id": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "obligation": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "oracle": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "reuse_existing": {
+          "type": "boolean"
+        },
+        "snapshot_id": {
+          "pattern": "^(?:S-[0-9]{2,4})(?![\\s\\S])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "basis",
+        "candidate_test_id",
+        "evidence_ids",
+        "obligation",
+        "oracle",
+        "reuse_existing",
+        "snapshot_id"
+      ],
+      "type": "object"
+    },
+    "reproduction": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ids": {
+          "items": {
+            "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "limitations": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recipe": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/recipe"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "reproduced",
+            "intermittent",
+            "not_yet_reproduced",
+            "unsafe_to_replay",
+            "unavailable"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_ids",
+        "limitations",
+        "recipe",
+        "status"
+      ],
+      "type": "object"
+    },
+    "request": {
+      "additionalProperties": false,
+      "properties": {
+        "intent": {
+          "enum": [
+            "diagnosis_only",
+            "repair_requested"
+          ],
+          "type": "string"
+        },
+        "request_ref": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "restrictions": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+            "type": "string"
+          },
+          "maxItems": 12,
+          "minItems": 0,
+          "type": "array"
+        },
+        "scope": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "intent",
+        "request_ref",
+        "restrictions",
+        "scope"
+      ],
+      "type": "object"
+    },
+    "snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "anyOf": [
+            {
+              "pattern": "^(?:(?:[0-9a-f]{40}|[0-9a-f]{64}))(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dirty_state": {
+          "enum": [
+            "clean",
+            "dirty",
+            "unknown"
+          ],
+          "type": "string"
+        },
+        "fingerprint": {
+          "anyOf": [
+            {
+              "pattern": "^(?:sha256:[0-9a-f]{64})(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fingerprint_recipe": {
+          "anyOf": [
+            {
+              "pattern": "^(?:[a-z][a-z0-9-]{0,63}/[1-9][0-9]{0,3})(?![\\s\\S])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "pattern": "^(?:S-[0-9]{2,4})(?![\\s\\S])",
+          "type": "string"
+        },
+        "limitations": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repository": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        },
+        "runtime_identity": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "worktree": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "commit",
+        "dirty_state",
+        "fingerprint",
+        "fingerprint_recipe",
+        "id",
+        "limitations",
+        "repository",
+        "runtime_identity",
+        "worktree"
+      ],
+      "type": "object"
+    },
+    "symptom": {
+      "additionalProperties": false,
+      "properties": {
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 1500,
+              "minLength": 1,
+              "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_evidence_ids": {
+          "items": {
+            "pattern": "^(?:E-[0-9]{2,4})(?![\\s\\S])",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 0,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "observed": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "pattern": "^(?=[\\s\\S]*[^\\u0009\\u000A\\u000B\\u000C\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000])(?![\\s\\S]*[\\uD800-\\uDFFF])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "expected",
+        "expected_evidence_ids",
+        "observed"
+      ],
+      "type": "object"
+    }
+  },
+  "$ref": "#/$defs/packet",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
