@@ -1,0 +1,3077 @@
+/**
+ * Unit tests for farm.ts pure-function core.
+ * These test the exported helpers directly without spawning a subprocess.
+ */
+import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
+import path from "node:path";
+import { readFileSync, mkdtempSync, mkdirSync, symlinkSync, rmSync, realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir, chmod as fsChmod, stat as fsStat, open as fsOpen } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId, WINDOWS_PIN_READY_TIMEOUT_MS, releaseWindowsPinGuard } from "./farm.ts";
+import type { InjectedFile, Sampling } from "./farm.ts";
+import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
+import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines, withWorktreeLock, prepareWorktree } from "./farm.ts";
+import { projectPlanMetaForReport, noteArtifactError, noteUnavailableDiff, MAX_RECORDED_ARTIFACT_ERRORS } from "./farm.ts";
+import { scrubbedEnv, treeKill, taskkillPath } from "./exec.ts";
+import type { RunResult } from "./exec.ts";
+import { spawn } from "node:child_process";
+import { mutationCheck as realMutationCheck } from "./mutation.ts";
+
+describe("Windows artifact executable pin guard", () => {
+  it("allows a cold native PowerShell startup on slower Windows hosts", () => {
+    expect(WINDOWS_PIN_READY_TIMEOUT_MS).toBeGreaterThanOrEqual(30_000);
+  });
+
+  it("does not return until the guard has released its file handle", async () => {
+    const guard = spawn(process.execPath, [
+      "-e",
+      "process.stdin.once('data', () => setTimeout(() => process.exit(0), 50))",
+    ], { stdio: ["pipe", "pipe", "pipe"] });
+    let closed = false;
+    guard.once("close", () => { closed = true; });
+
+    await releaseWindowsPinGuard(guard);
+
+    expect(closed).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// redactSecrets — outbound-boundary redactor must stay aligned with the hook
+// SECRET_RE: catch known high-entropy key prefixes, not just trigger words.
+// ---------------------------------------------------------------------------
+describe("redactSecrets — high-entropy key prefixes (checkpoint 2026-06-22)", () => {
+  it("redacts an AWS access key id with no trigger word on the line", () => {
+    const out = redactSecrets("const id = AKIAIOSFODNN7EXAMPLE;");
+    expect(out).not.toContain("AKIAIOSFODNN7EXAMPLE");
+    expect(out).toContain("[REDACTED");
+  });
+
+  it("redacts a GitHub PAT prefix with no trigger word on the line", () => {
+    const pat = "ghp_abcdefghijklmnopqrstuvwxyz0123456789";
+    expect(redactSecrets(`const t = ${pat};`)).not.toContain(pat);
+  });
+
+  it("still redacts the existing sk-ant trigger", () => {
+    expect(redactSecrets("key: sk-ant-secret")).toContain("[REDACTED");
+  });
+
+  it("passes a benign line through unchanged", () => {
+    expect(redactSecrets("const total = sum(a, b);")).toBe("const total = sum(a, b);");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Shared secret-detection corpus (architecture-001). SECRET_LINE (this
+// outbound redactor) and _hooklib.SECRET_RE (the commit gate) are deliberately
+// distinct in shape, but must never drift apart on the AGREEMENT region. This
+// pins the TS (SECRET_LINE) side against the SAME corpus file that
+// .github/scripts/test_hooklib.py asserts SECRET_RE against — a divergence on
+// any entry fails CI on one side or the other. (For a single-line input
+// redactSecrets returns the marker iff SECRET_LINE matched.)
+// ---------------------------------------------------------------------------
+describe("redactSecrets — shared secret-detection corpus parity", () => {
+  const corpusPath = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "hooks",
+    "secret-detection-corpus.json",
+  );
+  const corpus = JSON.parse(readFileSync(corpusPath, "utf8")) as {
+    must_match: string[];
+    must_not_match: string[];
+  };
+
+  it("has both corpus sets", () => {
+    expect(corpus.must_match.length).toBeGreaterThan(0);
+    expect(corpus.must_not_match.length).toBeGreaterThan(0);
+  });
+
+  it.each(corpus.must_match)("redacts a must_match secret: %s", (line) => {
+    expect(redactSecrets(line)).toContain("[REDACTED");
+  });
+
+  it.each(corpus.must_not_match)("passes a must_not_match benign line: %s", (line) => {
+    expect(redactSecrets(line)).toBe(line);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// extractFileBlocks
+// ---------------------------------------------------------------------------
+describe("extractFileBlocks", () => {
+  it("parses a single block with lang:path info string", () => {
+    const content = "```typescript:src/foo.ts\nconst x = 1;\n```";
+    const blocks = extractFileBlocks(content);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].path).toBe("src/foo.ts");
+    expect(blocks[0].body).toBe("const x = 1;");
+  });
+
+  it("parses a block with // path: comment (strips the comment line)", () => {
+    const content = "```typescript\n// path: src/bar.ts\nconst y = 2;\n```";
+    const blocks = extractFileBlocks(content);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].path).toBe("src/bar.ts");
+    expect(blocks[0].body).toBe("const y = 2;");
+  });
+
+  it("parses a block with # path: comment (Python style)", () => {
+    const content = "```python\n# path: src/utils.py\ndef f(): pass\n```";
+    const blocks = extractFileBlocks(content);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].path).toBe("src/utils.py");
+    expect(blocks[0].body).toBe("def f(): pass");
+  });
+
+  it("parses multiple blocks from a single response", () => {
+    const content = [
+      "```typescript:src/a.ts",
+      "const a = 1;",
+      "```",
+      "some text between blocks",
+      "```typescript:src/b.ts",
+      "const b = 2;",
+      "```",
+    ].join("\n");
+    const blocks = extractFileBlocks(content);
+    expect(blocks).toHaveLength(2);
+    expect(blocks[0].path).toBe("src/a.ts");
+    expect(blocks[1].path).toBe("src/b.ts");
+  });
+
+  it("ignores blocks with no path identifier", () => {
+    const content = "```\nsome code with no path\n```";
+    const blocks = extractFileBlocks(content);
+    expect(blocks).toHaveLength(0);
+  });
+
+  it("does not filter out path-traversal paths — validate() is responsible for that", () => {
+    const content = "```typescript:../escape.ts\nconst x = 1;\n```";
+    const blocks = extractFileBlocks(content);
+    // extractFileBlocks parses faithfully; runWorker's isInside() guard rejects
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].path).toBe("../escape.ts");
+  });
+
+  it("handles an unclosed fence gracefully (falls off end)", () => {
+    const content = "```typescript:src/a.ts\nconst x = 1;\n";
+    const blocks = extractFileBlocks(content);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].path).toBe("src/a.ts");
+  });
+
+  it("returns empty array for response with no code blocks", () => {
+    expect(extractFileBlocks("just some prose, no fences")).toHaveLength(0);
+    expect(extractFileBlocks("")).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// extractLiterals
+// ---------------------------------------------------------------------------
+describe("extractLiterals", () => {
+  it("extracts double-quoted string literals", () => {
+    const lits = extractLiterals('expect(result).toBe("hello world");');
+    expect(lits).toContain("hello world");
+  });
+
+  it("extracts single-quoted string literals", () => {
+    const lits = extractLiterals("expect(x).toBe('abc');");
+    expect(lits).toContain("abc");
+  });
+
+  it("extracts multi-digit numbers", () => {
+    const lits = extractLiterals("expect(count).toBe(42);");
+    expect(lits).toContain("42");
+  });
+
+  it("extracts single non-0/1 digits", () => {
+    const lits = extractLiterals("expect(x).toBe(7);");
+    expect(lits).toContain("7");
+  });
+
+  it("does NOT extract the literal 0 or 1", () => {
+    const lits = extractLiterals("expect(x).toBe(0); expect(y).toBe(1);");
+    expect(lits).not.toContain("0");
+    expect(lits).not.toContain("1");
+  });
+
+  it("deduplicates repeated literals", () => {
+    const lits = extractLiterals('toBe("abc"); toBe("abc");');
+    expect(lits.filter((l) => l === "abc")).toHaveLength(1);
+  });
+
+  it("returns empty array for no literals", () => {
+    expect(extractLiterals("// just a comment")).toHaveLength(0);
+    expect(extractLiterals("")).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// codeLineCount
+// ---------------------------------------------------------------------------
+describe("codeLineCount", () => {
+  it("counts non-blank, non-comment lines", () => {
+    const src = `
+// a comment
+const x = 1;
+const y = 2;
+`;
+    expect(codeLineCount(src)).toBe(2);
+  });
+
+  it("returns 0 for a file with only comments and blanks", () => {
+    const src = `
+// comment
+/* block */
+* star line
+`;
+    expect(codeLineCount(src)).toBe(0);
+  });
+
+  it("returns 0 for empty string", () => {
+    expect(codeLineCount("")).toBe(0);
+  });
+
+  it("counts a 5-line trivial impl as <= 5 (gaming threshold)", () => {
+    const src = "const x = 42;\n".repeat(5);
+    expect(codeLineCount(src)).toBe(5);
+  });
+
+  it("counts a 6-line impl as > 5", () => {
+    const src = "const x = 1;\n".repeat(6);
+    expect(codeLineCount(src)).toBe(6);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// validate — B-2 (t.id safety) and D-2 (schema checks)
+// ---------------------------------------------------------------------------
+function baseTask(overrides: object = {}) {
+  return {
+    id: "my-task",
+    description: "test task",
+    filesInScope: ["src/foo.ts"],
+    test: { path: "src/foo.test.ts" },
+    gate: { commands: ["npm test"] },
+    ...overrides,
+  };
+}
+
+function basePlan(taskOverrides: object = {}, metaOverrides: object = {}) {
+  return {
+    meta: { name: "test-plan", ...metaOverrides },
+    tasks: [baseTask(taskOverrides)],
+  };
+}
+
+describe("validate — task id safety (B-2)", () => {
+  it("accepts a valid alphanumeric id", () => {
+    expect(() => validate(basePlan())).not.toThrow();
+  });
+
+  it("accepts ids with dots, hyphens, underscores", () => {
+    expect(() => validate(basePlan({ id: "my.task-name_v1" }))).not.toThrow();
+  });
+
+  it("rejects an id with path-separator characters", () => {
+    expect(() => validate(basePlan({ id: "../escape" }))).toThrow(/must match/);
+  });
+
+  it("rejects an id with forward slash", () => {
+    expect(() => validate(basePlan({ id: "a/b" }))).toThrow(/must match/);
+  });
+
+  it("rejects an id with spaces", () => {
+    expect(() => validate(basePlan({ id: "my task" }))).toThrow(/must match/);
+  });
+
+  it("rejects an empty id", () => {
+    expect(() => validate(basePlan({ id: "" }))).toThrow(/must match/);
+  });
+
+  it("rejects an id longer than 64 characters", () => {
+    expect(() => validate(basePlan({ id: "a".repeat(65) }))).toThrow(/must match/);
+  });
+
+  it("accepts an id of exactly 64 characters", () => {
+    expect(() => validate(basePlan({ id: "a".repeat(64) }))).not.toThrow();
+  });
+
+  // #163: "." and ".." satisfy SAFE_TASK_ID (all-dot strings) but as a worktree
+  // path segment resolve to the root itself / its parent, feeding a recursive
+  // delete. They must be rejected explicitly.
+  it("rejects the reserved id '.'", () => {
+    expect(() => validate(basePlan({ id: "." }))).toThrow(/reserved/);
+  });
+
+  it("rejects the reserved id '..'", () => {
+    expect(() => validate(basePlan({ id: ".." }))).toThrow(/reserved/);
+  });
+});
+
+describe("validate — schema checks (D-2)", () => {
+  it("rejects test.path with .. traversal", () => {
+    expect(() => validate(basePlan({ test: { path: "../secret.test.ts" } }))).toThrow(/test\.path/);
+  });
+
+  it("rejects an absolute test.path", () => {
+    expect(() => validate(basePlan({ test: { path: "/etc/passwd" } }))).toThrow(/test\.path/);
+  });
+
+  it("accepts a relative test.path without traversal", () => {
+    expect(() => validate(basePlan({ test: { path: "src/foo.test.ts" } }))).not.toThrow();
+  });
+
+  it("rejects filesInScope entry with .. traversal", () => {
+    expect(() =>
+      validate(basePlan({ filesInScope: ["../escape.ts"] }))
+    ).toThrow(/filesInScope/);
+  });
+
+  it("rejects an absolute filesInScope entry", () => {
+    expect(() =>
+      validate(basePlan({ filesInScope: ["/etc/shadow"] }))
+    ).toThrow(/filesInScope/);
+  });
+
+  it("accepts relative filesInScope entries", () => {
+    expect(() =>
+      validate(basePlan({ filesInScope: ["src/a.ts", "lib/b.ts"] }))
+    ).not.toThrow();
+  });
+
+  it("rejects meta.apiBaseUrl with http:// scheme on external host", () => {
+    expect(() =>
+      validate(basePlan({}, { apiBaseUrl: "http://evil.example.com" }))
+    ).toThrow(/HTTPS/);
+  });
+
+  it("accepts meta.apiBaseUrl with https:// scheme", () => {
+    expect(() =>
+      validate(basePlan({}, { apiBaseUrl: "https://api.example.com" }))
+    ).not.toThrow();
+  });
+
+  it("accepts http://127.0.0.1 (loopback — used by test mocks)", () => {
+    expect(() =>
+      validate(basePlan({}, { apiBaseUrl: "http://127.0.0.1:8080" }))
+    ).not.toThrow();
+  });
+
+  it("accepts http://localhost (loopback — used by test mocks)", () => {
+    expect(() =>
+      validate(basePlan({}, { apiBaseUrl: "http://localhost:3000" }))
+    ).not.toThrow();
+  });
+
+  it("accepts a plan with no meta.apiBaseUrl", () => {
+    expect(() => validate(basePlan())).not.toThrow();
+  });
+
+  it("rejects a gate command longer than 1024 chars", () => {
+    expect(() =>
+      validate(basePlan({ gate: { commands: ["x".repeat(1025)] } }))
+    ).toThrow(/1024/);
+  });
+
+  it("rejects an empty gate command string", () => {
+    expect(() =>
+      validate(basePlan({ gate: { commands: [""] } }))
+    ).toThrow(/non-empty/);
+  });
+
+  it("accepts valid gate commands", () => {
+    expect(() =>
+      validate(basePlan({ gate: { commands: ["npm test", "npm run typecheck"] } }))
+    ).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// assertSecureBaseUrl — the resolved-URL guard that closes the FARM_API_BASE_URL
+// cleartext-secret-leak bypass (the validate() check only covers plan.meta).
+// ---------------------------------------------------------------------------
+describe("assertSecureBaseUrl — resolved base URL guard", () => {
+  it("rejects a non-loopback http:// URL (the FARM_API_BASE_URL bypass)", () => {
+    expect(() => assertSecureBaseUrl("http://evil.example")).toThrow(/HTTPS/);
+  });
+
+  it("rejects a non-loopback http:// URL with a port", () => {
+    expect(() => assertSecureBaseUrl("http://evil.example:8080/v1")).toThrow(/HTTPS/);
+  });
+
+  it("accepts an https:// URL", () => {
+    expect(() => assertSecureBaseUrl("https://api.opencode.ai/v1")).not.toThrow();
+  });
+
+  it("accepts http://127.0.0.1 loopback (test mocks rely on it)", () => {
+    expect(() => assertSecureBaseUrl("http://127.0.0.1:8080")).not.toThrow();
+  });
+
+  it("accepts http://localhost loopback (test mocks rely on it)", () => {
+    expect(() => assertSecureBaseUrl("http://localhost:3000")).not.toThrow();
+  });
+
+  it("does not treat a host that merely starts with localhost as loopback", () => {
+    expect(() => assertSecureBaseUrl("http://localhost.evil.example")).toThrow(/HTTPS/);
+  });
+
+  // Defense-in-depth: userinfo tricks on the http-loopback path. A URL whose
+  // userinfo is a loopback-looking string but whose real host is hostile must
+  // be rejected; and any userinfo on the loopback path is disallowed.
+  it("rejects http with loopback-looking userinfo but a hostile host", () => {
+    expect(() => assertSecureBaseUrl("http://localhost@evil.example")).toThrow(/HTTPS/);
+  });
+
+  it("rejects http loopback that carries username:password userinfo", () => {
+    expect(() => assertSecureBaseUrl("http://user:pass@127.0.0.1:8080")).toThrow(/HTTPS/);
+  });
+
+  it("still accepts a clean http://127.0.0.1 loopback with no userinfo", () => {
+    expect(() => assertSecureBaseUrl("http://127.0.0.1:8080")).not.toThrow();
+  });
+
+  it("still accepts a clean http://localhost loopback with a path", () => {
+    expect(() => assertSecureBaseUrl("http://localhost:3000/v1")).not.toThrow();
+  });
+
+  it("rejects a malformed / unparseable URL", () => {
+    expect(() => assertSecureBaseUrl("not a url")).toThrow(/HTTPS/);
+  });
+
+  it("rejects https userinfo without echoing embedded credentials", () => {
+    const url = "https://user:credential-value@example.com/v1";
+    expect(() => assertSecureBaseUrl(url)).toThrow(/HTTPS/);
+    try {
+      assertSecureBaseUrl(url);
+    } catch (e) {
+      expect((e as Error).message).not.toContain("user");
+      expect((e as Error).message).not.toContain("credential-value");
+    }
+  });
+
+  it("rejects userinfo before protocol handling for every scheme", () => {
+    const url = "ftp://user:credential-value@example.com/v1";
+    try {
+      assertSecureBaseUrl(url);
+      throw new Error("expected assertSecureBaseUrl to reject");
+    } catch (e) {
+      expect((e as Error).message).toMatch(/HTTPS/);
+      expect((e as Error).message).not.toContain("credential-value");
+    }
+  });
+
+  it("does not echo malformed URL contents or terminal controls", () => {
+    const url = "not-a-url\r\nforged-log-line: credential-value";
+    try {
+      assertSecureBaseUrl(url);
+      throw new Error("expected assertSecureBaseUrl to reject");
+    } catch (e) {
+      expect((e as Error).message).not.toContain("forged-log-line");
+      expect((e as Error).message).not.toContain("credential-value");
+      expect((e as Error).message).not.toContain("\r");
+      expect((e as Error).message).not.toContain("\n");
+    }
+  });
+
+  it("never leaks FARM_API_KEY in the thrown error message", () => {
+    const secret = "sk-ant-should-never-appear";
+    process.env.FARM_API_KEY = secret;
+    try {
+      assertSecureBaseUrl("http://evil.example");
+    } catch (e) {
+      expect((e as Error).message).not.toContain(secret);
+    } finally {
+      delete process.env.FARM_API_KEY;
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Worker seam (T-01 / AC-01) — runTask must obtain and invoke its worker
+// THROUGH the Worker interface, not by calling runWorker/callApi directly.
+// This drives a task with every side-effecting dependency stubbed (no network,
+// no git, no spawned process) and asserts the injected worker is the thing that
+// produced the task's output.
+// ---------------------------------------------------------------------------
+describe("Worker seam — runTask invokes an injectable Worker (AC-01)", () => {
+  // A deps bag that makes runTask's git/process/fs effects no-ops, so the only
+  // behaviour under test is the worker indirection.
+  function stubDeps(worker: Worker): RunTaskDeps {
+    return {
+      worker,
+      prepareWorktree: async () => null, // worktree "created"
+      resetWorktree: async () => {},
+      fileHash: async () => null, // null short-circuits the tamper check
+      checkDrift: async () => [], // no files outside scope
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  const task: Task = {
+    id: "seam-task",
+    description: "make the test pass",
+    filesInScope: ["src/seam.ts"],
+    test: { path: "src/seam.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  it("calls the injected worker exactly once with the resolved config", async () => {
+    const calls: Array<{ model: string; apiBaseUrl: string; apiKey: string }> = [];
+    const worker: Worker = {
+      async apply(ctx) {
+        calls.push({ model: ctx.model, apiBaseUrl: ctx.apiBaseUrl, apiKey: ctx.apiKey });
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(task, "stub-model", "https://api.example/v1", "stub-key", stubDeps(worker));
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toEqual({ model: "stub-model", apiBaseUrl: "https://api.example/v1", apiKey: "stub-key" });
+    expect(r.status).toBe("green");
+    // The worker's output is what flows into the result — proves the task path
+    // consumed the injected worker rather than an internal runWorker call.
+    expect(r.filesWritten).toEqual(["src/seam.ts"]);
+  });
+
+  it("escalates via the worker's error without ever hitting the network", async () => {
+    const worker: Worker = {
+      async apply() {
+        return { ok: false, filesWritten: [], error: "stub worker refused" } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(worker),
+    );
+
+    expect(r.status).toBe("escalate");
+  });
+
+  it("exposes a default httpWorker implementation behind the interface", () => {
+    expect(httpWorker).toBeDefined();
+    expect(typeof httpWorker.apply).toBe("function");
+  });
+});
+
+describe("httpWorker secure request boundary", () => {
+  const realFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = realFetch;
+    vi.restoreAllMocks();
+  });
+
+  const context = (apiBaseUrl: string) => ({
+    cwd: process.cwd(),
+    prompt: "test prompt",
+    model: "test-model",
+    apiBaseUrl,
+    apiKey: "DUMMY-KEY",
+    forbidden: new Set<string>(),
+  });
+
+  it("rejects a direct external-http call before fetch", async () => {
+    global.fetch = vi.fn() as unknown as typeof fetch;
+
+    const result = await httpWorker.apply(context("http://evil.example"));
+
+    expect(result.ok).toBe(false);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("refuses automatic redirects on the worker request", async () => {
+    let capturedInit: RequestInit | undefined;
+    global.fetch = vi.fn(async (_url: string | URL, init?: RequestInit) => {
+      capturedInit = init;
+      return new Response(JSON.stringify({ choices: [{ message: { content: "" } }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+
+    await httpWorker.apply(context("https://api.example/v1"));
+
+    expect(capturedInit?.redirect).toBe("error");
+  });
+
+  it("does not write an upstream response body to stderr", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    global.fetch = vi.fn(async () => new Response("opaque-provider-credential", { status: 400 })) as unknown as typeof fetch;
+
+    const result = await httpWorker.apply(context("https://api.example/v1"));
+
+    expect(stderr.mock.calls.flat().join(" ")).not.toContain("opaque-provider-credential");
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).not.toContain("opaque-provider-credential");
+  });
+});
+
+describe("farm worktree write containment", () => {
+  const savedSamples = process.env.FARM_SAMPLES;
+  const savedTemperature = process.env.FARM_TEMPERATURE;
+  const realFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = realFetch;
+    if (savedSamples === undefined) delete process.env.FARM_SAMPLES;
+    else process.env.FARM_SAMPLES = savedSamples;
+    if (savedTemperature === undefined) delete process.env.FARM_TEMPERATURE;
+    else process.env.FARM_TEMPERATURE = savedTemperature;
+    vi.restoreAllMocks();
+  });
+
+  const taskFor = (id: string): Task => ({
+    id,
+    description: "write through a hostile worktree link",
+    filesInScope: ["linked/sentinel.txt"],
+    test: { path: "tests/read-only.test.ts" },
+    gate: { commands: ["node -p 0"] },
+    maxRetries: 0,
+  });
+
+  const worktreeFor = (id: string) => path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+
+  it("escalates single-worker directory-link writes with a bounded error and stages nothing", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const id = "unsafe-single-write";
+    const wt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-single-"));
+    const sentinel = path.join(external, "sentinel.txt");
+    await fsWriteFile(sentinel, "outside-must-survive", "utf8");
+    const gitCalls: string[][] = [];
+    global.fetch = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: "```text:linked/sentinel.txt\noverwritten\n```" } }],
+    }), { status: 200, headers: { "content-type": "application/json" } })) as unknown as typeof fetch;
+    try {
+      const result = await runTask(taskFor(id), "stub-model", "https://api.example/v1", "stub-key", {
+        worker: httpWorker,
+        prepareWorktree: async () => {
+          await fsMkdir(wt, { recursive: true });
+          await fsSymlink(external, path.join(wt, "linked"), process.platform === "win32" ? "junction" : "dir");
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: async () => null,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toMatch(/unsafe worktree path rejected/u);
+      expect(result.note!.length).toBeLessThan(80);
+      expect(await fsReadFile(sentinel, "utf8")).toBe("outside-must-survive");
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      await fsRm(wt, { recursive: true, force: true });
+      await fsRm(external, { recursive: true, force: true });
+    }
+  });
+
+  it("escalates best-of-N winner materialization through a directory link and stages nothing", async () => {
+    process.env.FARM_SAMPLES = "2";
+    process.env.FARM_TEMPERATURE = "0";
+    const id = "unsafe-winner-write";
+    const mainWt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-winner-"));
+    const sentinel = path.join(external, "sentinel.txt");
+    await fsWriteFile(sentinel, "outside-must-survive", "utf8");
+    const gitCalls: string[][] = [];
+    try {
+      const result = await runTask(taskFor(id), "stub-model", "https://api.example/v1", "stub-key", {
+        worker: {
+          async apply(ctx) {
+            await fsMkdir(path.join(ctx.cwd, "linked"), { recursive: true });
+            await fsWriteFile(path.join(ctx.cwd, "linked", "sentinel.txt"), "winner-output", "utf8");
+            return { ok: true, filesWritten: ["linked/sentinel.txt"] } satisfies WorkerResult;
+          },
+        },
+        prepareWorktree: async (_branch, candidateWt) => {
+          await fsMkdir(candidateWt, { recursive: true });
+          if (candidateWt === mainWt) {
+            await fsSymlink(external, path.join(candidateWt, "linked"), process.platform === "win32" ? "junction" : "dir");
+          }
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: async () => null,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toBe("unsafe worktree path rejected");
+      expect(await fsReadFile(sentinel, "utf8")).toBe("outside-must-survive");
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      for (const suffix of ["", "__s0", "__s1"]) {
+        await fsRm(worktreeFor(id + suffix), { recursive: true, force: true });
+      }
+      await fsRm(external, { recursive: true, force: true });
+    }
+  });
+
+  it("escalates unsafe mutation write/finally-restore paths without touching or staging the external file", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const id = "unsafe-mutation-write";
+    const wt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-mutation-"));
+    const sentinel = path.join(external, "impl.ts");
+    const original = [
+      "export function classify(value: number) {",
+      "  const enabled = true;",
+      "  return value > 1 && enabled;",
+      "}",
+    ].join("\n");
+    await fsWriteFile(sentinel, original, "utf8");
+    const gitCalls: string[][] = [];
+    try {
+      const result = await runTask({
+        ...taskFor(id),
+        filesInScope: ["linked/impl.ts"],
+      }, "stub-model", "https://api.example/v1", "stub-key", {
+        worker: { async apply() { return { ok: true, filesWritten: ["linked/impl.ts"] }; } },
+        prepareWorktree: async () => {
+          await fsMkdir(wt, { recursive: true });
+          await fsSymlink(external, path.join(wt, "linked"), process.platform === "win32" ? "junction" : "dir");
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: realMutationCheck,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toBe("unsafe worktree path rejected");
+      expect(await fsReadFile(sentinel, "utf8")).toBe(original);
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      await fsRm(wt, { recursive: true, force: true });
+      await fsRm(external, { recursive: true, force: true });
+    }
+  });
+
+  it("escalates when the mutation command swaps an ancestor before immediate and final restore", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const id = "unsafe-mutation-restore";
+    const wt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-restore-"));
+    const sentinel = path.join(external, "impl.ts");
+    const externalOriginal = "external-must-survive";
+    const internalOriginal = [
+      "export function classify(value: number) {",
+      "  const enabled = true;",
+      "  return value > 1 && enabled;",
+      "}",
+    ].join("\n");
+    await fsWriteFile(sentinel, externalOriginal, "utf8");
+    // Run the swap from a real script FILE rather than `node -e`. An inline
+    // -e payload has to survive two levels of shell quoting on both platforms,
+    // which is why this was once a base64+eval one-liner - but constructing
+    // code to eval trips CodeQL js/bad-code-sanitization, and a standing
+    // dismissal would re-raise on every bundle rebuild. A file has neither
+    // problem: same behaviour, no quoting gymnastics, no eval. Relative paths
+    // below still resolve against the worktree because the gate command runs
+    // with cwd = the worktree.
+    const scriptDir = await mkdtemp(path.join(tmpdir(), "farm-external-swap-"));
+    const scriptPath = path.join(scriptDir, "swap.cjs");
+    await fsWriteFile(
+      scriptPath,
+      [
+        "const fs=require('node:fs');",
+        "fs.rmSync('src',{recursive:true,force:true});",
+        `fs.symlinkSync(${JSON.stringify(external)},'src',process.platform==='win32'?'junction':'dir');`,
+      ].join("\n"),
+      "utf8",
+    );
+    const swapCommand = `node ${JSON.stringify(scriptPath)}`;
+    const gitCalls: string[][] = [];
+    try {
+      const result = await runTask({
+        ...taskFor(id),
+        filesInScope: ["src/impl.ts"],
+        gate: { commands: [swapCommand] },
+      }, "stub-model", "https://api.example/v1", "stub-key", {
+        worker: { async apply() { return { ok: true, filesWritten: ["src/impl.ts"] }; } },
+        prepareWorktree: async () => {
+          await fsMkdir(path.join(wt, "src"), { recursive: true });
+          await fsWriteFile(path.join(wt, "src", "impl.ts"), internalOriginal, "utf8");
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: realMutationCheck,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toBe("unsafe worktree path rejected");
+      expect(await fsReadFile(sentinel, "utf8")).toBe(externalOriginal);
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      await fsRm(wt, { recursive: true, force: true });
+      await fsRm(external, { recursive: true, force: true });
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Post-apply containment sweep (T-02 / D6) — containment (isInside) and the
+// read-only-test guard are enforced at the TASK level after worker.apply()
+// returns, inspecting what the worker actually produced — NOT only inside
+// runWorker's write loop. A worker that bypasses runWorker's inline guard
+// (e.g. a future agentic CLI that writes its own files) must still be caught.
+//
+// These stubs deliberately do NOT route through runWorker/httpWorker: they
+// report (and, for the escape case, physically write) paths the inline guard
+// would have refused. Red before the relocation, green after.
+// ---------------------------------------------------------------------------
+describe("Post-apply containment sweep — task-level enforcement for ANY worker (D6)", () => {
+  // Same no-op deps bag as the Worker-seam suite, but we keep the REAL
+  // containment behaviour under test by routing it through runTask's sweep.
+  function stubDeps(worker: Worker): RunTaskDeps {
+    return {
+      worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null, // null short-circuits the hash tamper check
+      checkDrift: async () => [], // the allowlist sweep is satisfied
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  const task: Task = {
+    id: "sweep-task",
+    description: "make the test pass",
+    filesInScope: ["src/seam.ts"],
+    test: { path: "src/seam.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  it("escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard", async () => {
+    // A worker that does NOT use runWorker's write loop — it reports a path that
+    // escapes the worktree. The inline isInside guard never ran; only the
+    // task-level post-apply sweep can catch this.
+    const escapeWorker: Worker = {
+      async apply(ctx) {
+        const escaped = path.resolve(ctx.cwd, "..", "escape.ts");
+        return { ok: true, filesWritten: [escaped] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(escapeWorker),
+    );
+
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/escapes worktree/);
+  });
+
+  it("escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard", async () => {
+    // A worker that overwrites task.test.path directly. fileHash is stubbed to
+    // null (no hash-based tamper signal), and the inline forbidden-set guard
+    // never ran — so only the task-level sweep can reject this.
+    const testTamperWorker: Worker = {
+      async apply() {
+        return { ok: true, filesWritten: [task.test.path] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(testTamperWorker),
+    );
+
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/read-only|tampered/);
+  });
+
+  it("lets a compliant worker through the sweep (in-scope file, no escape)", async () => {
+    const goodWorker: Worker = {
+      async apply() {
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(goodWorker),
+    );
+
+    expect(r.status).toBe("green");
+    expect(r.filesWritten).toEqual(["src/seam.ts"]);
+  });
+});
+
+describe("validate — existing checks (cycles, duplicates, unknown deps)", () => {
+  it("rejects duplicate task ids", () => {
+    const plan = {
+      meta: { name: "p" },
+      tasks: [baseTask({ id: "t1" }), baseTask({ id: "t1" })],
+    };
+    expect(() => validate(plan)).toThrow(/duplicate/);
+  });
+
+  it("rejects a task depending on an unknown id", () => {
+    const plan = {
+      meta: { name: "p" },
+      tasks: [baseTask({ id: "t1", deps: ["nonexistent"] })],
+    };
+    expect(() => validate(plan)).toThrow(/unknown/);
+  });
+
+  it("rejects a dependency cycle", () => {
+    const plan = {
+      meta: { name: "p" },
+      tasks: [
+        baseTask({ id: "t1", deps: ["t2"] }),
+        baseTask({ id: "t2", deps: ["t1"] }),
+      ],
+    };
+    expect(() => validate(plan)).toThrow(/cycle/);
+  });
+
+  it("accepts a valid two-task plan with dependency", () => {
+    const plan = {
+      meta: { name: "p" },
+      tasks: [
+        baseTask({ id: "t1" }),
+        baseTask({ id: "t2", deps: ["t1"] }),
+      ],
+    };
+    expect(() => validate(plan)).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Optional per-task model (T-03 / AC-02) — the effective model for a task is
+// `task.model ?? <run-level resolved model>`, layered where runTask invokes the
+// worker. A task WITH `model` overrides; a task WITHOUT behaves EXACTLY as
+// today (run-level model passed straight through to the worker).
+// ---------------------------------------------------------------------------
+describe("Per-task model resolution — task.model ?? run-level model (AC-02)", () => {
+  function stubDeps(worker: Worker): RunTaskDeps {
+    return {
+      worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  const baseModelTask: Task = {
+    id: "model-task",
+    description: "make the test pass",
+    filesInScope: ["src/seam.ts"],
+    test: { path: "src/seam.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  it("passes task.model to worker.apply when the task overrides the run-level model", async () => {
+    const seen: string[] = [];
+    const worker: Worker = {
+      async apply(ctx) {
+        seen.push(ctx.model);
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...baseModelTask, model: "premium-x" },
+      "run-level-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(worker),
+    );
+
+    expect(seen).toEqual(["premium-x"]);
+    expect(r.status).toBe("green");
+  });
+
+  it("passes the run-level model to worker.apply when the task has no model (unchanged behavior)", async () => {
+    const seen: string[] = [];
+    const worker: Worker = {
+      async apply(ctx) {
+        seen.push(ctx.model);
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      baseModelTask, // no `model`
+      "run-level-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(worker),
+    );
+
+    expect(seen).toEqual(["run-level-model"]);
+    expect(r.status).toBe("green");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// plan.schema.json — the optional per-task `model` field (T-03 / AC-02).
+// No JSON-schema validator is present in devDependencies, so we assert the
+// schema STRUCTURE directly via JSON.parse: `model` is declared on the task
+// `$defs` (required because the task object is additionalProperties:false, so
+// an undeclared field would be rejected) and additionalProperties:false is
+// kept intact (the strict authoring contract is not relaxed).
+// ---------------------------------------------------------------------------
+describe("plan.schema.json — optional per-task model (AC-02)", () => {
+  const schemaPath = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "plan.schema.json",
+  );
+  const schema = JSON.parse(readFileSync(schemaPath, "utf8"));
+  const taskDef = schema.$defs.task;
+
+  it("declares `model` as a string on the task properties", () => {
+    expect(taskDef.properties.model).toBeDefined();
+    expect(taskDef.properties.model.type).toBe("string");
+  });
+
+  it("does NOT add `model` to the task's required list (it is optional)", () => {
+    expect(taskDef.required).not.toContain("model");
+  });
+
+  it("keeps the task object additionalProperties:false (strict authoring contract intact)", () => {
+    // additionalProperties:false is what makes the declaration in (1) necessary:
+    // a plan carrying task.model would be rejected unless `model` is declared.
+    // Asserting this here documents that the field was added the correct way
+    // rather than by relaxing the contract.
+    expect(taskDef.additionalProperties).toBe(false);
+  });
+
+  it("would reject an unknown task field — no validator available, asserted structurally", () => {
+    // With additionalProperties:false and a fixed properties set, any field not
+    // in properties (e.g. `bogusField`) is rejected by a conforming validator.
+    // We have no validator in devDependencies, so we assert the structural
+    // precondition directly: the closed property set does not include it.
+    expect(taskDef.additionalProperties).toBe(false);
+    expect(Object.keys(taskDef.properties)).not.toContain("bogusField");
+    // and `model` IS in the closed set, so a plan with task.model is accepted.
+    expect(Object.keys(taskDef.properties)).toContain("model");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Regenerate-on-conflict (T-07 / AC-07 / D4) — a merge conflict against the
+// integration branch is treated like a gate failure: the task resets to the new
+// integration HEAD and RE-RUNS the worker, consuming ONE of the existing
+// maxRetries attempts, rather than escalating on the first conflict. If retries
+// are exhausted with the merge still conflicting, it escalates exactly as today.
+//
+// The clean deterministic way to force a conflict is the injected deps: the git
+// stub returns a non-zero `merge` on the first merge attempt and code 0 on the
+// second, with a worker we can count. (The merge runs through deps.git inside
+// deps.withMergeLock; everything else is a no-op.)
+// ---------------------------------------------------------------------------
+describe("Regenerate-on-conflict — merge conflict re-enters regeneration (AC-07)", () => {
+  const task: Task = {
+    id: "conflict-task",
+    description: "make the test pass",
+    filesInScope: ["src/conflict.ts"],
+    test: { path: "src/conflict.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  // A deps bag where `git` is a programmable stub: every `merge --no-ff` consults
+  // `mergeOutcomes` (shift one per call); all other git calls succeed as no-ops.
+  // `worker` counts apply() invocations so we can prove regeneration happened.
+  function conflictDeps(opts: {
+    worker: Worker;
+    // one entry consumed per merge attempt: null === success, string === conflict output
+    mergeOutcomes: Array<string | null>;
+    resetCalls: Array<string[]>;
+  }): RunTaskDeps {
+    const outcomes = [...opts.mergeOutcomes];
+    return {
+      worker: opts.worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async (args: string[]) => {
+        if (args.includes("merge") && args.includes("--no-ff")) {
+          const next = outcomes.shift();
+          // unspecified beyond the provided outcomes: default to conflict so an
+          // always-conflicting test doesn't accidentally fall through to green
+          const out = next === undefined ? "CONFLICT (content): fallback" : next;
+          if (out !== null) return { code: 1, out, stdout: "", stderr: out };
+          return { code: 0, out: "", stdout: "", stderr: "" };
+        }
+        if (args[0] === "reset" || args[0] === "clean") {
+          opts.resetCalls.push(args);
+        }
+        return { code: 0, out: "", stdout: "", stderr: "" };
+      },
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  it("re-runs the worker after a conflict and ends green when the second merge succeeds", async () => {
+    let workerCalls = 0;
+    const worker: Worker = {
+      async apply() {
+        workerCalls++;
+        return { ok: true, filesWritten: ["src/conflict.ts"] } satisfies WorkerResult;
+      },
+    };
+    const resetCalls: Array<string[]> = [];
+
+    const r = await runTask(
+      // maxRetries:1 → 2 attempts total; first merge conflicts, second succeeds.
+      { ...task, maxRetries: 1 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      conflictDeps({ worker, mergeOutcomes: ["CONFLICT (content): src/conflict.ts", null], resetCalls }),
+    );
+
+    // Regeneration happened: the worker was invoked a SECOND time after the
+    // conflict (not an instant escalate, which would leave it at one call).
+    expect(workerCalls).toBe(2);
+    // The conflict path reset the task worktree to the new integration HEAD
+    // before re-running (rebuild against the updated baseline).
+    expect(resetCalls.some((a) => a[0] === "reset" && a.includes("--hard"))).toBe(true);
+    // Second merge succeeded → green, NOT escalate.
+    expect(r.status).toBe("green");
+    expect(r.attempts).toBe(2);
+  });
+
+  it("escalates with a merge-related note when every merge conflicts and retries are spent (no infinite loop)", async () => {
+    let workerCalls = 0;
+    const worker: Worker = {
+      async apply() {
+        workerCalls++;
+        return { ok: true, filesWritten: ["src/conflict.ts"] } satisfies WorkerResult;
+      },
+    };
+    const resetCalls: Array<string[]> = [];
+
+    const r = await runTask(
+      // maxRetries:1 → 2 attempts; BOTH merges conflict → escalate after the budget.
+      { ...task, maxRetries: 1 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      conflictDeps({
+        worker,
+        mergeOutcomes: ["CONFLICT (content): a", "CONFLICT (content): b"],
+        resetCalls,
+      }),
+    );
+
+    // The worker ran on each of the two attempts (bounded — no unbounded loop).
+    expect(workerCalls).toBe(2);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/merge/i);
+    expect(r.attempts).toBe(2);
+  });
+
+  it("escalates instantly (no regeneration) on conflict when maxRetries is 0", async () => {
+    let workerCalls = 0;
+    const worker: Worker = {
+      async apply() {
+        workerCalls++;
+        return { ok: true, filesWritten: ["src/conflict.ts"] } satisfies WorkerResult;
+      },
+    };
+    const resetCalls: Array<string[]> = [];
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      conflictDeps({ worker, mergeOutcomes: ["CONFLICT (content): only-attempt"], resetCalls }),
+    );
+
+    // Budget is zero retries → the single attempt's conflict escalates at once.
+    expect(workerCalls).toBe(1);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/merge failed vs integration/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #90 — stale default base URL + opaque non-JSON-body error
+// ---------------------------------------------------------------------------
+describe("#90 default base URL + non-JSON body", () => {
+  it("default base URL points at the live OpenCode Zen endpoint", () => {
+    expect(DEFAULT_API_BASE_URL).toBe("https://opencode.ai/zen/v1");
+  });
+
+  it("parseChatCompletion returns content + usage for a valid JSON body", () => {
+    const body = JSON.stringify({
+      choices: [{ message: { content: "hello" } }],
+      usage: { prompt_tokens: 3, completion_tokens: 4 },
+    });
+    const r = parseChatCompletion(body, "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.content).toBe("hello");
+      expect(r.usage?.prompt_tokens).toBe(3);
+      expect(r.usage?.completion_tokens).toBe(4);
+    }
+  });
+
+  it("parseChatCompletion returns an actionable, sanitized-endpoint error for a non-JSON body", () => {
+    // The exact failure mode of the stale endpoint: 200 with body "Not Found".
+    const r = parseChatCompletion("Not Found", "https://api.opencode.ai/v1?credential=opaque-value");
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      // Names the knob the operator must fix...
+      expect(r.error).toMatch(/FARM_API_BASE_URL/);
+      // ...identifies the endpoint without reflecting its query credentials...
+      expect(r.error).toMatch(/api\.opencode\.ai/);
+      expect(r.error).not.toContain("opaque-value");
+      // ...and is NOT the opaque raw-SyntaxError message it used to be.
+      expect(r.error).not.toMatch(/^non-JSON response: SyntaxError/);
+    }
+  });
+
+  it("parseChatCompletion does not propagate the offending response body", () => {
+    const r = parseChatCompletion("opaque-provider-credential", "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).not.toContain("opaque-provider-credential");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #91 — git CRLF stderr warning must not pollute drift detection (Windows)
+// ---------------------------------------------------------------------------
+describe("#91 checkDrift parses stdout only (CRLF stderr immune)", () => {
+  // The exact line git prints to STDERR under core.safecrlf on Windows.
+  const crlfWarning =
+    "warning: in the working copy of 'site/scripts/generator/split-frontmatter.ts', LF will be replaced by CRLF the next time Git touches it";
+
+  // Stub git runner: returns the given stdout per subcommand, with the CRLF
+  // warning ALWAYS on stderr (and folded into the merged `out`, as the real
+  // run() helper does) — so a stdout-only parser is immune and a merged-string
+  // parser is poisoned.
+  function stubGit(stdoutFor: { diff?: string; lsfiles?: string }) {
+    return async (args: string[]) => {
+      const stdout = args[0] === "diff" ? (stdoutFor.diff ?? "") : (stdoutFor.lsfiles ?? "");
+      const stderr = crlfWarning + "\n";
+      return { code: 0, stdout, stderr, out: stdout + stderr };
+    };
+  }
+
+  it("never treats a git CRLF stderr warning as a changed path", async () => {
+    const allowed = new Set(["src/a.ts"]);
+    // worker edited an OUT-of-scope file (src/b.ts) — that is real drift; the
+    // CRLF warning on stderr is noise that must be ignored.
+    const drift = await checkDrift("/wt", allowed, stubGit({ diff: "src/b.ts\n" }));
+    expect(drift).toEqual(["src/b.ts"]);
+    expect(drift.join(" ")).not.toMatch(/LF will be replaced by CRLF/);
+    expect(drift.some((f) => f.startsWith("warning:"))).toBe(false);
+  });
+
+  it("reports NO drift when only in-scope files changed, despite a CRLF warning on stderr", async () => {
+    const allowed = new Set(["src/a.ts"]);
+    const drift = await checkDrift("/wt", allowed, stubGit({ diff: "src/a.ts\n" }));
+    expect(drift).toEqual([]);
+  });
+
+  it("still catches an out-of-scope untracked file from ls-files stdout", async () => {
+    const allowed = new Set(["src/a.ts"]);
+    const drift = await checkDrift("/wt", allowed, stubGit({ diff: "", lsfiles: "src/new.ts\0" }));
+    expect(drift).toEqual(["src/new.ts"]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #93 — entitlement pre-check drops 401 ("free promotion ended") candidates
+// ---------------------------------------------------------------------------
+describe("#93 screenEntitlements", () => {
+  // sleepFn that never resolves → the wall-clock race never fires, so the
+  // probe's verdict is what's tested (used by the non-timeout cases).
+  const neverSleep = () => new Promise<void>(() => {});
+
+  it("drops a 401 candidate with a distinct entitlement note and keeps an entitled one", async () => {
+    const probe = async (m: string) => ({ status: m.endsWith("-free") ? 401 : 200 });
+    const { survivors, skipped } = await screenEntitlements(
+      ["big-pickle", "minimax-m3-free"],
+      probe,
+      { sleepFn: neverSleep },
+    );
+    expect(survivors).toEqual(["big-pickle"]);
+    expect(skipped).toHaveLength(1);
+    expect(skipped[0].model).toBe("minimax-m3-free");
+    expect(skipped[0].reason).toBe("entitlement");
+    expect(skipped[0].note).toMatch(/401/);
+    expect(skipped[0].note).toMatch(/promotion|entitle/i);
+  });
+
+  it("keeps every candidate when none returns 401", async () => {
+    const probe = async () => ({ status: 200 });
+    const { survivors, skipped } = await screenEntitlements(["a", "b"], probe, { sleepFn: neverSleep });
+    expect(survivors).toEqual(["a", "b"]);
+    expect(skipped).toEqual([]);
+  });
+
+  it("drops a candidate whose probe exceeds the per-candidate wall-clock cap (no hang)", async () => {
+    const hangingProbe = () => new Promise<{ status: number }>(() => {}); // never resolves
+    const { survivors, skipped } = await screenEntitlements(
+      ["slow-model"],
+      hangingProbe,
+      { timeoutMs: 5, sleepFn: async () => {} }, // instant timeout wins the race
+    );
+    expect(survivors).toEqual([]);
+    expect(skipped).toHaveLength(1);
+    expect(skipped[0].model).toBe("slow-model");
+    expect(skipped[0].reason).toBe("timeout");
+  });
+
+  it("treats a non-401 error status as a survivor (let the canary judge capability)", async () => {
+    const probe = async () => ({ status: 500 });
+    const { survivors, skipped } = await screenEntitlements(["flaky"], probe, { sleepFn: neverSleep });
+    expect(survivors).toEqual(["flaky"]);
+    expect(skipped).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// coverage-003 (#183) — makeEntitlementProbe: the real network-facing probe
+// screenEntitlements is fed. Only the pure decision logic above had coverage;
+// this exercises the Bearer-auth header, body shape, and AbortController
+// timeout the probe itself builds, against a mocked global fetch.
+// ---------------------------------------------------------------------------
+describe("coverage-003 (#183) makeEntitlementProbe", () => {
+  const realFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = realFetch;
+    vi.restoreAllMocks();
+  });
+
+  it("sends the Bearer apiKey header and a minimal POST body naming the model", async () => {
+    let capturedUrl: string | undefined;
+    let capturedInit: RequestInit | undefined;
+    global.fetch = vi.fn(async (url: string | URL, init?: RequestInit) => {
+      capturedUrl = String(url);
+      capturedInit = init;
+      return new Response("{}", { status: 200 });
+    }) as unknown as typeof fetch;
+
+    const probe = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY-do-not-leak", 5_000);
+    const res = await probe("candidate-model");
+
+    expect(res.status).toBe(200);
+    expect(capturedUrl).toBe("https://api.example/v1/chat/completions");
+    expect(capturedInit?.method).toBe("POST");
+    expect(capturedInit?.redirect).toBe("error");
+    const headers = capturedInit?.headers as Record<string, string>;
+    expect(headers.Authorization).toBe("Bearer DUMMY-KEY-do-not-leak");
+    const body = JSON.parse(String(capturedInit?.body)) as { model?: string; max_tokens?: number; messages?: unknown[] };
+    expect(body.model).toBe("candidate-model");
+    expect(body.max_tokens).toBe(1);
+    expect(Array.isArray(body.messages)).toBe(true);
+  });
+
+  it("rejects a direct external-http probe before fetch", () => {
+    global.fetch = vi.fn() as unknown as typeof fetch;
+
+    expect(() => makeEntitlementProbe("http://evil.example", "DUMMY-KEY", 5_000)).toThrow(/HTTPS/);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("distinguishes a real 401 response from a network throw (both map to a status, not an exception)", async () => {
+    global.fetch = vi.fn(async () => new Response("nope", { status: 401 })) as unknown as typeof fetch;
+    const probe401 = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY", 5_000);
+    await expect(probe401("m")).resolves.toEqual({ status: 401 });
+
+    global.fetch = vi.fn(async () => {
+      throw new TypeError("network down");
+    }) as unknown as typeof fetch;
+    const probeNetworkFail = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY", 5_000);
+    // A network failure maps to status 0 — never an unhandled rejection — so
+    // screenEntitlements' caller can tell it apart from a genuine 401.
+    await expect(probeNetworkFail("m")).resolves.toEqual({ status: 0 });
+  });
+
+  it("the AbortController-driven timeout actually fires and maps to status 0, bounded by timeoutMs", async () => {
+    global.fetch = vi.fn((_url: string | URL, init?: RequestInit) => {
+      return new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => {
+          const e = new Error("aborted");
+          e.name = "AbortError";
+          reject(e);
+        });
+      });
+    }) as unknown as typeof fetch;
+
+    const probe = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY", 20);
+    const start = Date.now();
+    const res = await probe("slow-model");
+    const elapsed = Date.now() - start;
+
+    expect(res).toEqual({ status: 0 });
+    // Bounded — proves the AbortController actually tore the hung fetch down
+    // rather than the probe just happening to resolve on its own.
+    expect(elapsed).toBeLessThan(2_000);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// reliability-014 — numEnv: the shared hardened numeric-env reader every
+// FARM_*/MUT_* knob routes through. A non-finite parse must fall back to the
+// default LOUDLY (stderr) rather than silently becoming NaN.
+// ---------------------------------------------------------------------------
+describe("reliability-014 numEnv", () => {
+  const saved = { X: process.env.FARM_TEST_NUMENV_X };
+  afterEach(() => {
+    if (saved.X === undefined) delete process.env.FARM_TEST_NUMENV_X;
+    else process.env.FARM_TEST_NUMENV_X = saved.X;
+    vi.restoreAllMocks();
+  });
+
+  it("returns the default when the env var is unset", () => {
+    delete process.env.FARM_TEST_NUMENV_X;
+    expect(numEnv("FARM_TEST_NUMENV_X", 7)).toBe(7);
+  });
+
+  it("parses a valid numeric value", () => {
+    process.env.FARM_TEST_NUMENV_X = "42";
+    expect(numEnv("FARM_TEST_NUMENV_X", 7)).toBe(42);
+  });
+
+  it("falls back to the default AND logs a stderr warning on a non-finite value", () => {
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    process.env.FARM_TEST_NUMENV_X = "not-a-number";
+    expect(numEnv("FARM_TEST_NUMENV_X", 7)).toBe(7);
+    expect(spy).toHaveBeenCalledWith(expect.stringMatching(/FARM_TEST_NUMENV_X.*not a finite number/));
+  });
+
+  it("clamps a below-minimum value up to min and logs a warning", () => {
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    process.env.FARM_TEST_NUMENV_X = "-5";
+    expect(numEnv("FARM_TEST_NUMENV_X", 7, { min: 1 })).toBe(1);
+    expect(spy).toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #92 — per-worktree dependency setup hook (task.setup / meta.setup)
+// ---------------------------------------------------------------------------
+describe("#92 per-worktree setup hook", () => {
+  const baseTask: Task = {
+    id: "setup-task",
+    description: "make the test pass",
+    filesInScope: ["src/s.ts"],
+    test: { path: "src/s.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  // Deps that record the ORDER of runGate vs worker calls, so we can prove setup
+  // runs in the worktree BEFORE the worker. runGate is the execution path for
+  // both setup and the gate; a `gateFailFor` predicate lets a test fail a
+  // specific command set.
+  function recordingDeps(opts: {
+    events: string[];
+    workerCalls: { n: number };
+    gateFailFor?: (commands: string[]) => boolean;
+  }): RunTaskDeps {
+    const worker: Worker = {
+      async apply() {
+        opts.workerCalls.n++;
+        opts.events.push("worker");
+        return { ok: true, filesWritten: ["src/s.ts"] } satisfies WorkerResult;
+      },
+    };
+    return {
+      worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async (_cwd: string, commands: string[]) => {
+        opts.events.push(`runGate:${commands.join(",")}`);
+        if (opts.gateFailFor?.(commands))
+          return { ok: false as const, failed: commands[0], tail: "boom" };
+        return { ok: true as const };
+      },
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  it("runs setup commands in the worktree BEFORE the worker", async () => {
+    const events: string[] = [];
+    const workerCalls = { n: 0 };
+    const r = await runTask(
+      { ...baseTask, setup: ["npm ci"] },
+      "m", "https://api.example/v1", "k",
+      recordingDeps({ events, workerCalls }),
+    );
+    expect(r.status).toBe("green");
+    // setup runGate fires, THEN the worker, THEN the gate runGate.
+    expect(events[0]).toBe("runGate:npm ci");
+    expect(events.indexOf("runGate:npm ci")).toBeLessThan(events.indexOf("worker"));
+  });
+
+  it("escalates immediately when a setup command fails — worker never runs", async () => {
+    const events: string[] = [];
+    const workerCalls = { n: 0 };
+    const r = await runTask(
+      { ...baseTask, maxRetries: 0, setup: ["npm ci"] },
+      "m", "https://api.example/v1", "k",
+      recordingDeps({ events, workerCalls, gateFailFor: (c) => c[0] === "npm ci" }),
+    );
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/setup failed/i);
+    expect(workerCalls.n).toBe(0);
+  });
+
+  it("is a no-op when no setup is configured (worker runs, runGate only for the gate)", async () => {
+    const events: string[] = [];
+    const workerCalls = { n: 0 };
+    const r = await runTask(
+      baseTask, "m", "https://api.example/v1", "k",
+      recordingDeps({ events, workerCalls }),
+    );
+    expect(r.status).toBe("green");
+    expect(workerCalls.n).toBe(1);
+    // The only runGate call is the gate itself — no setup invocation.
+    expect(events.filter((e) => e.startsWith("runGate:"))).toEqual(["runGate:node -p 0"]);
+  });
+
+  it("validate() rejects an empty or oversized setup command (meta and task)", () => {
+    const okTask: Task = { ...baseTask, deps: [] };
+    expect(() => validate({ meta: { name: "p", setup: [""] }, tasks: [okTask] })).toThrow(/setup/i);
+    expect(() => validate({ meta: { name: "p", setup: ["x".repeat(1025)] }, tasks: [okTask] })).toThrow(/setup/i);
+    expect(() => validate({ meta: { name: "p" }, tasks: [{ ...okTask, setup: [""] }] })).toThrow(/setup/i);
+    // A valid setup passes.
+    expect(() => validate({ meta: { name: "p", setup: ["npm ci"] }, tasks: [okTask] })).not.toThrow();
+  });
+});
+
+// ===========================================================================
+// deep-review-quick-kills Slice 3
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// T-06 (reliability-001) — per-command wall-clock timeout on run(). A hung
+// gate/setup/mutation command must be KILLED and surface as a non-zero,
+// timeout-tagged RunResult so the worker (and the scheduler) finalizes instead
+// of awaiting forever.
+// ---------------------------------------------------------------------------
+describe("T-06 run() wall-clock timeout (reliability-001)", () => {
+  // A node child that never exits (mirrors a watch/dev-server or a test blocking
+  // on stdin). Spawned via process.execPath so it is cross-platform.
+  const HANG = ["-e", "setInterval(() => {}, 1000);"];
+
+  it("kills a hung command after the timeout and tags the result timedOut", async () => {
+    const t0 = Date.now();
+    const r = await run(process.execPath, HANG, undefined, {}, 200);
+    const elapsed = Date.now() - t0;
+    // It actually resolved (did not hang the test) ...
+    expect(r.timedOut).toBe(true);
+    // ... with a non-zero code so every consumer's `code !== 0` branch fires ...
+    expect(r.code).not.toBe(0);
+    // ... and it resolved promptly around the timeout, not after the child's
+    // (never-arriving) natural exit.
+    expect(elapsed).toBeLessThan(5000);
+    expect(r.out).toMatch(/timeout/i);
+  });
+
+  it("does NOT time out a fast command and reports its real exit code", async () => {
+    const ok = await run(process.execPath, ["-e", "process.exit(0)"], undefined, {}, 5000);
+    expect(ok.timedOut).toBeUndefined();
+    expect(ok.code).toBe(0);
+    const bad = await run(process.execPath, ["-e", "process.exit(3)"], undefined, {}, 5000);
+    expect(bad.timedOut).toBeUndefined();
+    expect(bad.code).toBe(3);
+  });
+
+  it("disables the timeout when timeoutMs is 0/omitted (git-style calls are unbounded)", async () => {
+    // No timeout arg → a fast command still completes normally (proves the
+    // default path is unchanged for git and other un-timed callers).
+    const r = await run(process.execPath, ["-e", "process.exit(0)"]);
+    expect(r.timedOut).toBeUndefined();
+    expect(r.code).toBe(0);
+  });
+
+  it("runGate surfaces a killed hung command as a gate failure (scheduler can finalize)", async () => {
+    // runGate uses the module default FARM_GATE_TIMEOUT_MS (minutes), so rather
+    // than wait that long we prove the runTask path FINALIZES (escalate) when its
+    // injected runGate reports a timeout failure — exactly the RunResult shape
+    // run() produces on a kill. The scheduler never wedges because runGate
+    // returns instead of awaiting forever.
+    const task: Task = {
+      id: "hang-task",
+      description: "make the test pass",
+      filesInScope: ["src/x.ts"],
+      test: { path: "src/x.test.ts" },
+      gate: { commands: ["sleep infinity"] },
+    };
+    const deps: RunTaskDeps = {
+      worker: { async apply() { return { ok: true, filesWritten: ["src/x.ts"] }; } },
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      // The gate "hangs" → run() kills it → runGate reports the timeout failure.
+      runGate: async () => ({ ok: false as const, failed: "sleep infinity", tail: "[FARM] command exceeded ...ms wall-clock timeout — killed" }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+    const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", deps);
+    // Finalizes (does not hang) and escalates on the persistent gate failure.
+    expect(r.status).toBe("escalate");
+  });
+
+  it("runGate (real) returns {ok:false} on a non-zero exit and {ok:true} on success", async () => {
+    // The runGate wiring passes GATE_TIMEOUT_MS into run() for every command;
+    // the kill path itself is proven via run() above (the module default is too
+    // long to wait on here). This asserts runGate's contract is intact: a real
+    // failing command is a gate failure, a passing one is a pass.
+    // `exit N` is a builtin in both cmd.exe and bash, so no path-quoting issues.
+    const fail = await runGate(process.cwd(), ["exit 7"]);
+    expect(fail.ok).toBe(false);
+    const pass = await runGate(process.cwd(), ["exit 0"]);
+    expect(pass.ok).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-07 (reliability-004 + migration-004 + observability-003)
+// ---------------------------------------------------------------------------
+describe("T-07a validate() named errors on malformed required fields (migration-004)", () => {
+  const ok = (o: object) => ({ id: "t", description: "d", filesInScope: ["a.ts"], test: { path: "a.test.ts" }, gate: { commands: ["x"] }, ...o });
+
+  it("throws a NAMED error (task id + field) for test:null, not a TypeError", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ test: null })] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).toThrow(/task t: test\.path is required/);
+  });
+
+  it("throws a named error for filesInScope:null", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ filesInScope: null })] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).toThrow(/task t: filesInScope is required/);
+  });
+
+  it("throws a named error for gate:null", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ gate: null })] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).toThrow(/task t: gate\.commands is required/);
+  });
+
+  it("does not raise a raw TypeError (Cannot read properties of null) for any of them", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ test: null })] } as unknown as Parameters<typeof validate>[0];
+    try {
+      validate(plan);
+    } catch (e) {
+      expect((e as Error).message).not.toMatch(/Cannot read properties of null/);
+    }
+  });
+
+  it("still accepts a well-formed plan (no behavior change)", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({})] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).not.toThrow();
+  });
+});
+
+describe("T-07c run-id correlation (observability-003)", () => {
+  // #397 widened this from 6 hex chars to 16: the run id stopped being a
+  // cosmetic log label and became the name of the directory that holds a run's
+  // durable receipts, so a birthday collision now silently OVERWRITES a prior
+  // run's evidence. 64 bits of entropy puts a collision beyond any plausible
+  // number of runs in one `.farm/`.
+  it("mints a collision-resistant, non-empty, distinct run id", () => {
+    const a = mintRunId();
+    const b = mintRunId();
+    expect(a).toMatch(/^[0-9a-f]{16}$/);
+    expect(a).not.toBe(b); // overwhelmingly likely distinct
+  });
+
+  it("mints ids that are valid run-artifact directory names", () => {
+    for (let i = 0; i < 32; i++) expect(() => assertSafeRunId(mintRunId())).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-08a (dx-001) — parseChatCompletion must reject an unexpected shape with an
+// actionable, endpoint-naming error rather than a silent ok:true content:"".
+// ---------------------------------------------------------------------------
+describe("T-08a parseChatCompletion shape guard (dx-001)", () => {
+  it("returns ok:false for a body with no choices array, naming the endpoint", () => {
+    const r = parseChatCompletion(JSON.stringify({ error: "bad model" }), "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.error).toMatch(/opencode\.ai/);
+      expect(r.error).toMatch(/choices|unexpected shape/i);
+    }
+  });
+
+  it("returns ok:false for an array-wrapped body", () => {
+    const r = parseChatCompletion(JSON.stringify([{ choices: [] }]), "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+  });
+
+  it("returns ok:false for a non-object JSON body (a bare number)", () => {
+    const r = parseChatCompletion("42", "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+  });
+
+  it("still returns ok:true with content for a well-formed chat completion", () => {
+    const r = parseChatCompletion(JSON.stringify({ choices: [{ message: { content: "hi" } }] }), "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.content).toBe("hi");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-08b (dx-002) — parseMutationHookOutput rejects a non-object score.
+// ---------------------------------------------------------------------------
+describe("T-08b parseMutationHookOutput shape guard (dx-002)", () => {
+  it("returns null when score is emitted inside a JSON string (non-object after parse)", () => {
+    // The regex matches the {...} that contains the word score, but it parses to
+    // a string-bearing object whose .score is absent → null.
+    expect(parseMutationHookOutput('noise {"msg":"the score is 1"} noise')).toBeNull();
+  });
+
+  it("returns null when score is present but not a number (e.g. a string)", () => {
+    // The dx-002 failure mode: a matched object whose `score` is the wrong type.
+    // The number guard rejects it rather than coercing a bogus value.
+    expect(parseMutationHookOutput('{"score":"high"}')).toBeNull();
+  });
+
+  it("returns null when there is no score JSON at all", () => {
+    expect(parseMutationHookOutput("ran 10 mutants, all killed")).toBeNull();
+  });
+
+  it("returns a result for a well-formed {score} object", () => {
+    const r = parseMutationHookOutput('done\n{"score":0.8,"total":10,"survived":["a"]}');
+    expect(r).not.toBeNull();
+    expect(r!.score).toBe(0.8);
+    expect(r!.evaluated).toBe(10);
+    expect(r!.survivors).toEqual(["a"]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-08c (dx-003) — Map-miss on the mutant restore preserves the file rather
+// than writing the literal "undefined". The restore guard is internal to
+// mutationCheck; this proves the guard's CONTRACT via the same code path the
+// fix uses (Map.get → undefined → skip), expressed against the public
+// behavior: a candidate file absent from `originals` must not be clobbered.
+// ---------------------------------------------------------------------------
+describe("T-08c mutant-restore Map-miss preserves the file (dx-003)", () => {
+  it("Map.get on a missing key yields undefined (the guarded skip condition)", () => {
+    // The fix replaced `originals.get(c.file)!` with a guard that only writes
+    // when the value is defined. This asserts the precondition the guard relies
+    // on: a miss is `undefined`, never the string "undefined".
+    const originals = new Map<string, string>([["impl.ts", "real source"]]);
+    const orig = originals.get("not-in-map.ts");
+    expect(orig).toBeUndefined();
+    // The guard's effect: with orig === undefined, no write happens, so the
+    // worktree file keeps its real contents. We model that decision here.
+    let wrote: string | null = null;
+    if (orig !== undefined) wrote = orig;
+    expect(wrote).toBeNull(); // file preserved, never overwritten with "undefined"
+  });
+});
+
+describe("scrubbedEnv() deletes secrets LAST so a caller var cannot reintroduce one (CodeQL #5)", () => {
+  it("strips FARM_API_KEY / OAuth token even when they are passed in `extra`", () => {
+    // The delete-last ordering is the load-bearing defense: a caller that
+    // (accidentally or maliciously) puts a secret in `extra` must not be able
+    // to re-add it. A future reorder of the delete before the merge would pass
+    // every other test but silently break this; this test pins the ordering.
+    const env = scrubbedEnv({
+      FARM_API_KEY: "extra-should-be-deleted",
+      CLAUDE_CODE_OAUTH_TOKEN: "extra-tok-should-be-deleted",
+      FARM_MUTATION_FILES: "a.ts,b.ts", // a non-secret contract var survives
+    });
+    expect(env.FARM_API_KEY).toBeUndefined();
+    expect(env.CLAUDE_CODE_OAUTH_TOKEN).toBeUndefined();
+    expect(env.FARM_MUTATION_FILES).toBe("a.ts,b.ts");
+  });
+});
+
+describe("run() scrubs dispatcher secrets from the child env (least-privilege, CodeQL #5)", () => {
+  const PRINT = [
+    "-e",
+    "process.stdout.write(`KEY=${process.env.FARM_API_KEY ?? 'ABSENT'};TOK=${process.env.CLAUDE_CODE_OAUTH_TOKEN ?? 'ABSENT'};MODEL=${process.env.FARM_MODEL ?? 'ABSENT'}`)",
+  ];
+  it("hides FARM_API_KEY / OAuth token from a child command but still inherits non-secret config", async () => {
+    const prev = {
+      key: process.env.FARM_API_KEY,
+      tok: process.env.CLAUDE_CODE_OAUTH_TOKEN,
+      model: process.env.FARM_MODEL,
+    };
+    process.env.FARM_API_KEY = "sk-should-not-leak";
+    process.env.CLAUDE_CODE_OAUTH_TOKEN = "tok-should-not-leak";
+    process.env.FARM_MODEL = "passes-through";
+    try {
+      const r = await run(process.execPath, PRINT, undefined, {}, 5000);
+      expect(r.code).toBe(0);
+      expect(r.stdout).toContain("KEY=ABSENT"); // secret scrubbed
+      expect(r.stdout).toContain("TOK=ABSENT"); // secret scrubbed
+      expect(r.stdout).not.toContain("should-not-leak"); // value never reaches the child
+      expect(r.stdout).toContain("MODEL=passes-through"); // non-secret config still inherited
+    } finally {
+      const restore = (k: string, v: string | undefined) =>
+        v === undefined ? delete process.env[k] : (process.env[k] = v);
+      restore("FARM_API_KEY", prev.key);
+      restore("CLAUDE_CODE_OAUTH_TOKEN", prev.tok);
+      restore("FARM_MODEL", prev.model);
+    }
+  });
+});
+
+// ===========================================================================
+// Slice 1 — first-time-go accuracy (best-of-N + retry feedback)
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// F4 — sampling parameters in the chat request body. Today callApi posts only
+// {model, messages}; buildChatBody adds `temperature` (FARM_TEMPERATURE, default
+// 0) and `max_tokens` (only when FARM_MAX_TOKENS > 0, so today's unbounded
+// behavior is the default). Reads env LIVE so a test can set the knob and assert
+// the body, and accepts an explicit override (the seam best-of-N uses to vary
+// temperature per run).
+// ---------------------------------------------------------------------------
+describe("F4 — buildChatBody sampling params", () => {
+  const saved = { temp: process.env.FARM_TEMPERATURE, max: process.env.FARM_MAX_TOKENS };
+  afterEach(() => {
+    const restore = (k: string, v: string | undefined) =>
+      v === undefined ? delete process.env[k] : (process.env[k] = v);
+    restore("FARM_TEMPERATURE", saved.temp);
+    restore("FARM_MAX_TOKENS", saved.max);
+  });
+
+  it("includes temperature (default 0) and omits max_tokens by default", () => {
+    delete process.env.FARM_TEMPERATURE;
+    delete process.env.FARM_MAX_TOKENS;
+    const body = buildChatBody("m", [{ role: "user", content: "hi" }]);
+    expect(body.model).toBe("m");
+    expect(body.messages).toEqual([{ role: "user", content: "hi" }]);
+    expect(body.temperature).toBe(0);
+    expect("max_tokens" in body).toBe(false);
+  });
+
+  it("reads FARM_TEMPERATURE from the environment", () => {
+    process.env.FARM_TEMPERATURE = "0.7";
+    expect(buildChatBody("m", []).temperature).toBe(0.7);
+  });
+
+  it("includes max_tokens only when FARM_MAX_TOKENS > 0", () => {
+    process.env.FARM_MAX_TOKENS = "256";
+    expect(buildChatBody("m", []).max_tokens).toBe(256);
+    process.env.FARM_MAX_TOKENS = "0";
+    expect("max_tokens" in buildChatBody("m", [])).toBe(false);
+  });
+
+  it("honors an explicit sampling override (the best-of-N seam)", () => {
+    const body = buildChatBody("m", [], { temperature: 0.9, maxTokens: 100 });
+    expect(body.temperature).toBe(0.9);
+    expect(body.max_tokens).toBe(100);
+  });
+
+  it("readSampling reflects the live environment", () => {
+    process.env.FARM_TEMPERATURE = "0.3";
+    process.env.FARM_MAX_TOKENS = "512";
+    expect(readSampling()).toEqual({ temperature: 0.3, maxTokens: 512 });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F2 — iterative retries: the worker sees its OWN prior failed in-scope output,
+// not just the gate tail. buildPrompt renders prior-attempt files in a distinct
+// "previous attempt" section (redacted, via the same chokepoint); captureInScope
+// gathers the failed attempt's in-scope contents BEFORE the inter-attempt reset,
+// excluding the read-only test path and secret-bearing files (AC-F2.1/2.2/2.3).
+// ---------------------------------------------------------------------------
+describe("F2 — prior-attempt context in buildPrompt", () => {
+  const task: Task = {
+    id: "t",
+    description: "d",
+    filesInScope: ["src/a.ts"],
+    test: { path: "src/a.test.ts" },
+    gate: { commands: ["x"] },
+  };
+
+  it("renders prior-attempt files in a distinct section, redacted, alongside the current baseline", () => {
+    const injected: InjectedFile[] = [
+      { path: "src/a.ts", contents: "export const x = BASELINE;", readOnly: false },
+      { path: "src/a.ts", contents: "const k = 'sk-ant-leak';\nexport const x = 1;", readOnly: true, prior: true },
+    ];
+    const prompt = buildPrompt(task, injected);
+    expect(prompt).toMatch(/previous attempt/i);
+    // the prior code is redacted through the same chokepoint
+    expect(prompt).not.toContain("sk-ant-leak");
+    expect(prompt).toContain("[REDACTED");
+    // the current baseline is still present, in its own (non-prior) section
+    expect(prompt).toContain("BASELINE");
+  });
+
+  it("omits the previous-attempt section entirely when no prior files are present (today's prompt)", () => {
+    const prompt = buildPrompt(task, [{ path: "src/a.ts", contents: "export const x = 1;", readOnly: false }]);
+    expect(prompt).not.toMatch(/previous attempt/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F1 — shared concurrency limiter. Best-of-N draws N worker calls per task; the
+// limiter is the shared budget that keeps TOTAL in-flight worker calls (across
+// tasks AND samples) at or under FARM_CONCURRENCY (AC-F1.4). With FARM_SAMPLES=1
+// each task makes one call and the limiter never blocks.
+// ---------------------------------------------------------------------------
+describe("F1 — createLimiter caps concurrency", () => {
+  async function peakUnder(cap: number, jobs: number): Promise<number> {
+    const limit = createLimiter(cap);
+    let active = 0;
+    let peak = 0;
+    await Promise.all(
+      Array.from({ length: jobs }, () =>
+        limit.run(async () => {
+          active++;
+          peak = Math.max(peak, active);
+          await new Promise((r) => setTimeout(r, 10));
+          active--;
+        }),
+      ),
+    );
+    return peak;
+  }
+
+  it("never runs more than `max` jobs concurrently, and does parallelize up to it", async () => {
+    expect(await peakUnder(2, 6)).toBe(2);
+  });
+
+  it("clamps a max < 1 to 1 (never deadlocks, never unbounded)", async () => {
+    expect(await peakUnder(0, 4)).toBe(1);
+  });
+
+  it("returns each job's resolved value", async () => {
+    const limit = createLimiter(2);
+    const out = await Promise.all([1, 2, 3].map((n) => limit.run(async () => n * 10)));
+    expect(out).toEqual([10, 20, 30]);
+  });
+
+  it("releases the slot even when a job throws (no slot leak)", async () => {
+    const limit = createLimiter(1);
+    await expect(limit.run(async () => { throw new Error("boom"); })).rejects.toThrow("boom");
+    // if the slot had leaked, this second job would hang; a fast resolve proves release.
+    await expect(limit.run(async () => "ok")).resolves.toBe("ok");
+    expect(limit.active()).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F1 — best-of-N selection in runTask. With FARM_SAMPLES>1 the task draws N
+// candidates concurrently in isolated scratch worktrees, gates each, and accepts
+// the first green; no green seeds the existing retry from the best failure. The
+// stub deps are cwd-aware: a sample worktree path ends `__s<k>`, so the stub gate
+// can fail specific samples and the stub worker can record which worktree it ran
+// in. Worker writes are not materialized in stub-land (no real fs), which is fine
+// — selection is what's under test; the accepted Result reflects the winner.
+// ---------------------------------------------------------------------------
+describe("F1 — best-of-N in runTask", () => {
+  const saved = { samples: process.env.FARM_SAMPLES, temp: process.env.FARM_TEMPERATURE };
+  afterEach(() => {
+    const restore = (k: string, v: string | undefined) =>
+      v === undefined ? delete process.env[k] : (process.env[k] = v);
+    restore("FARM_SAMPLES", saved.samples);
+    restore("FARM_TEMPERATURE", saved.temp);
+  });
+
+  const task: Task = {
+    id: "bon",
+    description: "make the test pass",
+    filesInScope: ["src/bon.ts"],
+    test: { path: "src/bon.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  const sampleIdx = (cwd: string) => Number(cwd.match(/__s(\d+)$/)?.[1] ?? -1);
+
+  function bestOfNDeps(opts: {
+    gateFailSamples?: number[];
+    throwSamples?: number[];
+    workerTokens?: number;
+    onWorkerCwd?: (cwd: string) => void;
+    capturedSampling?: { value?: Sampling };
+  }): RunTaskDeps {
+    const tok = opts.workerTokens ?? 5;
+    return {
+      worker: {
+        async apply(ctx) {
+          opts.onWorkerCwd?.(ctx.cwd);
+          if (opts.capturedSampling) opts.capturedSampling.value = ctx.sampling;
+          if (opts.throwSamples?.includes(sampleIdx(ctx.cwd))) throw new Error(`boom s${sampleIdx(ctx.cwd)}`);
+          const k = ctx.cwd.match(/__s(\d+)$/)?.[1] ?? "main";
+          return { ok: true, filesWritten: [`src/s${k}.ts`], promptTokens: tok, completionTokens: tok * 2 } satisfies WorkerResult;
+        },
+      },
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async (cwd: string) => {
+        if (opts.gateFailSamples?.includes(sampleIdx(cwd))) return { ok: false as const, failed: "node -p 0", tail: "red" };
+        return { ok: true as const };
+      },
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  it("accepts the FIRST green sample by index and reports its files (AC-F1.2)", async () => {
+    process.env.FARM_SAMPLES = "3";
+    // sample 0 fails the gate; samples 1 and 2 pass → winner is index 1.
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ gateFailSamples: [0] }));
+    expect(r.status).toBe("green");
+    expect(r.filesWritten).toEqual(["src/s1.ts"]);
+  });
+
+  it("sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)", async () => {
+    process.env.FARM_SAMPLES = "3";
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ gateFailSamples: [0], workerTokens: 5 }));
+    expect(r.samples).toBe(3);
+    expect(r.promptTokens).toBe(15); // 3 samples × 5
+    expect(r.completionTokens).toBe(30); // 3 × 10
+    expect(r.acceptedPromptTokens).toBe(5); // winner only
+    expect(r.acceptedCompletionTokens).toBe(10);
+  });
+
+  it("escalates when no sample passes the gate and retries are spent (AC-F1.5)", async () => {
+    process.env.FARM_SAMPLES = "2";
+    const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", bestOfNDeps({ gateFailSamples: [0, 1] }));
+    expect(r.status).toBe("escalate");
+  });
+
+  it("auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)", async () => {
+    process.env.FARM_SAMPLES = "2";
+    delete process.env.FARM_TEMPERATURE;
+    const cap: { value?: Sampling } = {};
+    await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ capturedSampling: cap }));
+    expect(cap.value?.temperature).toBe(0.7);
+  });
+
+  it("does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)", async () => {
+    process.env.FARM_SAMPLES = "2";
+    process.env.FARM_TEMPERATURE = "0.2";
+    const cap: { value?: Sampling } = {};
+    await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ capturedSampling: cap }));
+    expect(cap.value?.temperature).toBe(0.2);
+    // explicit 0 means deterministic-on-purpose — must NOT be bumped to 0.7
+    process.env.FARM_TEMPERATURE = "0";
+    const cap0: { value?: Sampling } = {};
+    await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ capturedSampling: cap0 }));
+    expect(cap0.value?.temperature).toBe(0);
+  });
+
+  it("treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)", async () => {
+    process.env.FARM_SAMPLES = "not-a-number";
+    const cwds: string[] = [];
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ onWorkerCwd: (c) => cwds.push(c) }));
+    expect(r.status).toBe("green");
+    expect(r.samples).toBe(1);
+    expect(cwds).toHaveLength(1);
+    expect(cwds[0]).not.toMatch(/__s\d+$/);
+  });
+
+  it("survives a sample that THROWS — it resolves to a failure and a green sibling still wins (M1)", async () => {
+    process.env.FARM_SAMPLES = "3";
+    // sample 0 throws inside the worker; samples 1,2 are green → winner is index 1.
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ throwSamples: [0] }));
+    expect(r.status).toBe("green");
+    expect(r.filesWritten).toEqual(["src/s1.ts"]);
+  });
+
+  it("REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const cwds: string[] = [];
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ onWorkerCwd: (c) => cwds.push(c) }));
+    expect(r.status).toBe("green");
+    expect(cwds).toHaveLength(1);
+    expect(cwds[0]).not.toMatch(/__s\d+$/); // the task worktree, never a sample scratch
+    expect(r.samples).toBe(1);
+  });
+});
+
+describe("F2 — captureInScope (failed-attempt capture before reset)", () => {
+  it("returns in-scope file contents, excluding the test path and secret-bearing files", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-cap-"));
+    try {
+      await fsMkdir(path.join(dir, "src"), { recursive: true });
+      await fsWriteFile(path.join(dir, "src/a.ts"), "export const a = 1;");
+      await fsWriteFile(path.join(dir, "src/a.test.ts"), "the read-only test");
+      await fsWriteFile(path.join(dir, "deploy.key"), "PRIVATE-KEY-MATERIAL");
+      // test.path AND a secret-bearing file are both in filesInScope to prove
+      // they are excluded from the captured set; only src/a.ts survives.
+      const t: Task = {
+        id: "t",
+        description: "d",
+        filesInScope: ["src/a.ts", "src/a.test.ts", "deploy.key"],
+        test: { path: "src/a.test.ts" },
+        gate: { commands: ["x"] },
+      };
+      const captured = await captureInScope(dir, t);
+      expect(captured).toEqual([{ path: "src/a.ts", contents: "export const a = 1;" }]);
+    } finally {
+      await fsRm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("returns [] when no in-scope files exist on disk yet", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-cap-"));
+    try {
+      const t: Task = {
+        id: "t",
+        description: "d",
+        filesInScope: ["src/not-written-yet.ts"],
+        test: { path: "src/x.test.ts" },
+        gate: { commands: ["x"] },
+      };
+      expect(await captureInScope(dir, t)).toEqual([]);
+    } finally {
+      await fsRm(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #163 — worktree-root containment. The env-controlled FARM_WORKTREE_ROOT plus a
+// plan-controlled task id feed a recursive delete; these guard that a
+// misconfigured (out-of-repo) root is refused and no worktree path escapes it.
+// ---------------------------------------------------------------------------
+describe("validateWorktreeRoot — out-of-repo root refused (#163)", () => {
+  it("rejects a root outside the repo (the /Users/alice misconfig)", () => {
+    expect(() => validateWorktreeRoot("/Users/alice", "/Users/alice/proj", false)).toThrow(
+      /outside the repository root/,
+    );
+  });
+
+  it("accepts an in-repo relative root (the default)", () => {
+    const repo = path.resolve(".");
+    expect(() => validateWorktreeRoot(".farm/worktrees", repo, false)).not.toThrow();
+    expect(validateWorktreeRoot(".farm/worktrees", repo, false)).toBe(
+      path.resolve(".farm/worktrees"),
+    );
+  });
+
+  it("accepts an in-repo absolute root", () => {
+    expect(() => validateWorktreeRoot("/repo/.farm/wt", "/repo", false)).not.toThrow();
+  });
+
+  it("permits an out-of-repo root only with the explicit override", () => {
+    expect(() => validateWorktreeRoot("/tmp/wt", "/repo", true)).not.toThrow();
+  });
+});
+
+// #539 — the containment compare was LEXICAL, and `path.resolve` neither expands
+// a Windows 8.3 short name nor follows a link. Two spellings of ONE directory
+// therefore compared as different paths, and a root genuinely inside the repo was
+// refused with a message telling the operator to move it inside the repo.
+//
+// Found when #521's coverage-union job ran this tree on Windows CI for the first
+// time: 15 failures, all downstream of this one refusal, because the runner's
+// tmpdir is `C:\Users\RUNNER~1\...` while git reports `C:/Users/runneradmin/...`.
+// It does not reproduce on a developer box whose profile path is already 8.3-clean.
+//
+// A junction reproduces the same shape on any platform and is what these use: two
+// real, existing spellings of one directory.
+describe("validateWorktreeRoot — two spellings of one directory (#539)", () => {
+  let base: string;
+  let repo: string;
+  let linked: string;
+  let supported = true;
+
+  beforeEach(() => {
+    base = realpathSync.native(mkdtempSync(path.join(tmpdir(), "wt539-")));
+    repo = path.join(base, "real", "repo");
+    mkdirSync(path.join(repo, ".farm", "worktrees"), { recursive: true });
+    linked = path.join(base, "link");
+    try {
+      symlinkSync(path.join(base, "real"), linked, "junction");
+    } catch {
+      // Unprivileged Windows without developer mode cannot create one. Skip
+      // rather than assert nothing: a silently-passing test here would be worse
+      // than an absent one.
+      supported = false;
+    }
+  });
+
+  afterEach(() => rmSync(base, { recursive: true, force: true }));
+
+  it("accepts a root reached through a link when the repo is canonical", () => {
+    if (!supported) return;
+    const viaLink = path.join(linked, "repo", ".farm", "worktrees");
+    // The precondition: a purely lexical check REFUSES this.
+    expect(path.relative(repo, path.resolve(viaLink)).startsWith("..")).toBe(true);
+    expect(() => validateWorktreeRoot(viaLink, repo, false)).not.toThrow();
+  });
+
+  it("accepts a canonical root when the REPO is the side reached through a link", () => {
+    if (!supported) return;
+    const canonicalRoot = path.join(repo, ".farm", "worktrees");
+    expect(() => validateWorktreeRoot(canonicalRoot, path.join(linked, "repo"), false)).not.toThrow();
+  });
+
+  it("still refuses a genuinely outside root", () => {
+    if (!supported) return;
+    const outside = path.join(base, "outside");
+    mkdirSync(outside, { recursive: true });
+    expect(() => validateWorktreeRoot(outside, repo, false)).toThrow(/outside the repository root/);
+  });
+
+  it("now refuses a link INSIDE the repo whose target is outside it", () => {
+    if (!supported) return;
+    // The lexical check accepted this. Not exploitable — `fs.rm` removes the
+    // link rather than recursing through it, measured — but accepting it was
+    // still wrong, and canonicalizing makes the guard strictly tighter.
+    const outside = path.join(base, "outside");
+    mkdirSync(outside, { recursive: true });
+    const escape = path.join(repo, "escape");
+    symlinkSync(outside, escape, "junction");
+    expect(path.relative(repo, path.resolve(escape)).startsWith("..")).toBe(false);
+    expect(() => validateWorktreeRoot(escape, repo, false)).toThrow(/outside the repository root/);
+  });
+
+  it("accepts a not-yet-created root reached THROUGH the link", () => {
+    if (!supported) return;
+    // The root is created later, so a missing path is normal. It must be
+    // canonicalized by walking up to the deepest EXISTING ancestor — giving up
+    // at the first missing segment would leave the link unresolved and refuse
+    // it, which is the bug in a second costume.
+    //
+    // Deliberately routed through the link: a not-yet-created path under the
+    // CANONICAL repo is already lexically inside, so that version of this test
+    // passes whether or not the walk-up works, and proves nothing.
+    const notYet = path.join(linked, "repo", ".farm", "worktrees", "deep", "not", "created");
+    expect(path.relative(repo, path.resolve(notYet)).startsWith("..")).toBe(true);
+    expect(() => validateWorktreeRoot(notYet, repo, false)).not.toThrow();
+  });
+
+  it("keeps refusing an out-of-repo root that does not exist either", () => {
+    if (!supported) return;
+    expect(() => validateWorktreeRoot(path.join(base, "nope", "wt"), repo, false)).toThrow(
+      /outside the repository root/,
+    );
+  });
+});
+
+describe("canonicalize — fail-closed on a real realpath failure (#539/#163)", () => {
+  const err = (code: string) => {
+    const e = new Error(`simulated ${code}`) as NodeJS.ErrnoException;
+    e.code = code;
+    return e;
+  };
+
+  it("REFUSES when realpath fails for a reason other than absence", () => {
+    // EACCES and ELOOP cannot be induced portably, so the failure is injected.
+    // Without this the refusal branch never executes and #163's fail-closed
+    // stance is asserted in a comment rather than proven.
+    expect(() =>
+      canonicalize("/repo/wt", "FARM_WORKTREE_ROOT", () => { throw err("EACCES"); }),
+    ).toThrow(/could not be canonicalized \(EACCES\)/);
+  });
+
+  it("names the path and the label it could not canonicalize", () => {
+    expect(() =>
+      canonicalize("/repo/wt", "the repository root", () => { throw err("ELOOP"); }),
+    ).toThrow(/the repository root '.*' could not be canonicalized \(ELOOP\)/);
+  });
+
+  it("reports an errorless failure rather than passing it off as success", () => {
+    expect(() =>
+      canonicalize("/repo/wt", "FARM_WORKTREE_ROOT", () => { throw new Error("no code"); }),
+    ).toThrow(/could not be canonicalized \(unknown error\)/);
+  });
+
+  it("treats absence as normal and walks up to the deepest existing ancestor", () => {
+    const seen: string[] = [];
+    const out = canonicalize(path.join(path.sep, "a", "b", "c"), "x", (p) => {
+      seen.push(p);
+      if (p === path.resolve(path.sep, "a")) return path.resolve(path.sep, "REAL");
+      throw err("ENOENT");
+    });
+    expect(out).toBe(path.join(path.resolve(path.sep, "REAL"), "b", "c"));
+    expect(seen.length).toBeGreaterThan(1);
+  });
+
+  it("falls back to the lexical form when nothing on the path exists", () => {
+    const target = path.resolve(path.sep, "a", "b");
+    expect(canonicalize(target, "x", () => { throw err("ENOENT"); })).toBe(target);
+  });
+});
+
+describe("assertContainedWorktree — no path escapes the root (#163)", () => {
+  beforeEach(() => _resetAllowedWorktreeRoot());
+  afterEach(() => _resetAllowedWorktreeRoot());
+
+  it("allows a normal task worktree under the default root", () => {
+    const wt = path.resolve(allowedWorktreeRoot(), "task-a");
+    expect(assertContainedWorktree(wt)).toBe(wt);
+  });
+
+  it("refuses the root itself (a '.' id resolves here)", () => {
+    expect(() => assertContainedWorktree(allowedWorktreeRoot())).toThrow(/strictly inside/);
+  });
+
+  it("refuses a path outside the root (a '..' id / sibling escape)", () => {
+    expect(() => assertContainedWorktree(path.resolve(allowedWorktreeRoot(), "..", "evil"))).toThrow(
+      /strictly inside/,
+    );
+    expect(() => assertContainedWorktree("/etc")).toThrow(/strictly inside/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #397 — atomicWriteFile is the publication primitive: a reader of the
+// destination path only ever sees a COMPLETE artifact, and a failed
+// publication leaves the prior artifact untouched with no temp residue.
+// ---------------------------------------------------------------------------
+describe("atomicWriteFile — publish-or-preserve (#397)", () => {
+  it("writes the full payload to the destination", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-atomic-"));
+    const dest = path.join(dir, "report.json");
+    await atomicWriteFile(dest, '{"a":1}');
+    expect(await fsReadFile(dest, "utf8")).toBe('{"a":1}');
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  it("leaves no temporary residue behind on success", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-atomic-"));
+    await atomicWriteFile(path.join(dir, "report.json"), "x".repeat(4096));
+    expect(await fsReaddir(dir)).toEqual(["report.json"]);
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  it("preserves the prior complete artifact and cleans up when publication fails", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-atomic-"));
+    const dest = path.join(dir, "report.json");
+    await fsWriteFile(dest, '{"prior":true}');
+    // A directory at the destination makes the rename fail — the stand-in for
+    // any mid-publication failure.
+    const blocked = path.join(dir, "blocked");
+    await fsMkdir(blocked, { recursive: true });
+    await expect(atomicWriteFile(blocked, "new")).rejects.toThrow();
+    // The unrelated prior artifact is untouched and still parseable...
+    expect(JSON.parse(await fsReadFile(dest, "utf8"))).toEqual({ prior: true });
+    // ...and the aborted write left no partial temp file lying around.
+    expect((await fsReaddir(dir)).sort()).toEqual(["blocked", "report.json"]);
+    await fsRm(dir, { recursive: true, force: true });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 - what the run's PERMANENT receipt is allowed to contain.
+//
+// The run-scoped change did not create the exposure, it changed its shape:
+// `.farm/farm-report.json` used to be clobbered by the next run, and
+// `.farm/runs/<runId>/` now accumulates indefinitely with no prune path. A
+// secret that landed in the report used to be destroyed within one run; now it
+// persists.
+//
+// A CORRECTION to the issue's premise, which changes what the fix must be: the
+// issue says there is "no control - schema or runtime - on what meta carries
+// into the report". That is wrong. `checkPlanObject` is a CLOSED object check,
+// and plan-contract.test.ts already pins that an unknown `meta` property throws
+// at parse. An allowlist at the sink would be a second copy of a control that
+// already exists, and would have caught nothing.
+//
+// The real exposure is the opposite shape: the ALLOWED fields are the dangerous
+// ones. `meta.setup`, `meta.setupEachAttempt` and `meta.setupInputs` are raw
+// shell-command arrays, and `meta.apiBaseUrl` is a URL that can carry
+// credentials. A token in a setup command is a perfectly legal plan that parses
+// cleanly and lands verbatim in a permanently retained receipt. So the fix is
+// REDACTION of the free-text meta fields at the sink, not an allowlist.
+// ---------------------------------------------------------------------------
+describe("#439 - the permanent receipt redacts what it is allowed to carry", () => {
+  it("redacts a credential in meta.setup, the field an allowlist would have kept", () => {
+    const projected = projectPlanMetaForReport({
+      name: "p",
+      setup: ["export API_KEY=sk-ant-REDPROOF-must-not-persist", "npm ci"],
+    });
+    expect(JSON.stringify(projected)).not.toContain("sk-ant-REDPROOF-must-not-persist");
+    expect(JSON.stringify(projected)).toContain("REDACTED");
+    // The surrounding structure survives: this is redaction, not deletion. A
+    // receipt that silently drops the setup it ran is a worse receipt.
+    expect(projected.setup).toHaveLength(2);
+    expect(projected.setup?.[1]).toBe("npm ci");
+  });
+
+  it("redacts every free-text meta field, not just setup", () => {
+    const secret = "ghp_" + "a".repeat(36);
+    const projected = projectPlanMetaForReport({
+      name: "p",
+      apiBaseUrl: `https://token:${secret}@api.example.com`,
+      setup: [`echo ${secret}`],
+      setupEachAttempt: [`echo ${secret}`],
+      setupInputs: [`echo ${secret}`],
+    });
+    expect(JSON.stringify(projected)).not.toContain(secret);
+  });
+
+  it("leaves an ordinary plan's meta readable", () => {
+    // Over-redaction would make the receipt useless for the thing it exists
+    // for: telling an operator which plan produced this run.
+    const meta = { name: "nightly", repo: "acme/widgets", model: "gpt-test", setup: ["npm ci"] };
+    expect(projectPlanMetaForReport(meta)).toEqual(meta);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 AC-2 - the artifacts block is the one NEW class of report content that
+// skipped the file's own redaction chokepoint. Every other report-bound
+// free-text field is redacted at construction; `git diff failed: <raw git
+// output>` and `msgOf(e)` strings were not.
+// ---------------------------------------------------------------------------
+describe("#439 - artifact error text goes through the redaction chokepoint", () => {
+  it("redacts a credential that appears in an artifact error string", () => {
+    const bucket: string[] = [];
+    noteArtifactError(bucket, "git diff failed: fatal: could not read Password for 'https://x:sk-ant-ARTIFACT@h'");
+    expect(bucket).toHaveLength(1);
+    expect(bucket[0]).not.toContain("sk-ant-ARTIFACT");
+  });
+
+  it("still bounds the error list, and says so when it suppresses", () => {
+    // Redaction must not disturb the existing bound: an unusable diffs
+    // directory produces one entry per task, and an unbounded list would be
+    // echoed verbatim into the report.
+    const bucket: string[] = [];
+    for (let i = 0; i < 50; i++) noteArtifactError(bucket, `failure ${i}`);
+    expect(bucket.length).toBeLessThanOrEqual(MAX_RECORDED_ARTIFACT_ERRORS + 1);
+    expect(bucket[bucket.length - 1]).toContain("suppressed");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 AC-3/AC-4 - the publication primitive must not silently re-permission
+// the destination, and must not leave a payload-bearing temp file behind when
+// the WRITE fails (the existing test only exercised the RENAME path, so its
+// title read broader than its coverage).
+// ---------------------------------------------------------------------------
+describe("atomicWriteFile - mode preservation and write-path cleanup (#439)", () => {
+  it("preserves a hardened destination's mode instead of resetting it to 0644", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-mode-"));
+    const dest = path.join(dir, "report.json");
+    await fsWriteFile(dest, '{"prior":true}');
+    await fsChmod(dest, 0o600);
+    const before = (await fsStat(dest)).mode & 0o777;
+    // An adversarial pass caught this test passing against the UNFIXED
+    // implementation on Windows: NTFS does not honour POSIX mode bits, so
+    // chmod(0o600) reports back 0o666 and before === after no matter what
+    // atomicWriteFile does. A test that cannot fail is worse than no test, so
+    // it declares that rather than quietly proving nothing. It has teeth on
+    // POSIX CI, which is where the guarantee is real.
+    if (before !== 0o600) {
+      expect(process.platform).toBe("win32");
+      return;
+    }
+    await atomicWriteFile(dest, '{"new":true}');
+    const after = (await fsStat(dest)).mode & 0o777;
+    expect(after).toBe(before);
+    expect(JSON.parse(await fsReadFile(dest, "utf8"))).toEqual({ new: true });
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  it("leaves no temp residue when the WRITE fails, not just the rename", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-writefail-"));
+    const dest = path.join(dir, "report.json");
+    // The failure has to land AFTER the temp exists - that is the window the
+    // rename-only cleanup left uncovered. There is no "bad data" that forces
+    // it: Node substitutes U+FFFD for an unencodable payload rather than
+    // throwing. So the write is failed through the injectable open seam, which
+    // is how every other failure path in this file is exercised.
+    const failingOpen = (async (p: string, flags: string) => {
+      const real = await fsOpen(p, flags);
+      return Object.assign(Object.create(Object.getPrototypeOf(real)), real, {
+        writeFile: async () => { throw new Error("ENOSPC: no space left on device"); },
+        sync: () => real.sync(),
+        chmod: (m: number) => real.chmod(m),
+        close: () => real.close(),
+      });
+    }) as unknown as typeof fsOpen;
+    await expect(atomicWriteFile(dest, "payload", { open: failingOpen })).rejects.toThrow(/ENOSPC/);
+    expect(await fsReaddir(dir)).toEqual([]);
+    await fsRm(dir, { recursive: true, force: true });
+  });
+});
+
+
+
+// ---------------------------------------------------------------------------
+// #439 (adversarial pass) - the redactor's reach, measured rather than assumed.
+//
+// The first cut of the receipt fix claimed to "redact every free-text field".
+// An adversarial run proved four real credential shapes reached a permanently
+// retained receipt anyway, because SECRET_LINE is keyword/prefix driven. Three
+// are closed here. The fourth is deliberately NOT, and that is the interesting
+// one: `curl -u user:pass` shares its shape with `docker run -u 1000:1000`.
+// ---------------------------------------------------------------------------
+describe("#439 - redactor reach on shapes a farm plan actually carries", () => {
+  it("redacts the shapes an adversarial run found leaking", () => {
+    for (const line of [
+      'git clone https://ci-bot:glpat-LEAKLEAKLEAK123@gitlab.example.com/x/y.git',
+      'curl -H "Authorization: Bearer LEAKPAYLOADNOTAREALJWT123"',
+      "export OPENAI_KEY=sk-proj-LEAK1234567890",
+    ]) {
+      expect(redactSecrets(line), line).toContain("REDACTED");
+    }
+  });
+
+  it("does NOT fire on a uid:gid pair, which is why -u is unhandled", () => {
+    // The honest limit. A `-u user:pass` rule would catch the fourth shape and
+    // would also redact every `docker run -u 1000:1000`. Broad is the safe
+    // direction for this redactor, but not at the cost of ordinary container
+    // arguments - so the gap is recorded rather than papered over.
+    for (const line of ["docker run -u 1000:1000 alpine", "podman run -u 0:0 img"]) {
+      expect(redactSecrets(line)).toBe(line);
+    }
+    expect(redactSecrets("curl -u ci-bot:Hunter2 https://x")).not.toContain("REDACTED");
+  });
+
+  it("leaves ordinary plan setup commands and package URLs alone", () => {
+    for (const line of [
+      "npm ci",
+      "pip install -r requirements.txt",
+      "see https://example.com/@scope/pkg for details",
+      'node -e "0"',
+    ]) {
+      expect(redactSecrets(line), line).toBe(line);
+    }
+  });
+});
+
+
+// ---------------------------------------------------------------------------
+// #439 (adversarial pass) - BOTH receipts, not just the JSON.
+//
+// The first cut wrapped the JSON sink and left `farm-report.md` reading raw
+// plan.meta three lines later. An end-to-end run with
+// meta.name = "nightly sk-ant-MDPROOF-9999" produced a redacted JSON receipt
+// and a Markdown sibling whose first line was
+//   # Farm report - nightly sk-ant-MDPROOF-9999
+// verbatim, in the same never-pruned run directory, on a fully green run.
+// Redacting one of two tier-1 artifacts is not a fix, so the projection is now
+// computed once and both sinks read it.
+// ---------------------------------------------------------------------------
+describe("#439 - the Markdown receipt is redacted too", () => {
+  it("projects meta once so a second sink cannot be forgotten", () => {
+    // A unit-level guard on the source itself: `plan.meta` must not be read
+    // directly at either sink. This is deliberately a source assertion - the
+    // end-to-end proof is expensive, and the failure mode is precisely "someone
+    // added a third sink and read the raw object again".
+    const src = readFileSync(new URL("./farm.ts", import.meta.url), "utf8");
+    const reportSection = src.slice(src.indexOf("const reportMeta = projectPlanMetaForReport"));
+    const header = reportSection.slice(0, reportSection.indexOf("## Diff evidence"));
+    expect(header).toContain("reportMeta.name");
+    expect(header).not.toContain("plan.meta.name");
+  });
+
+  it("redacts a credential wherever it sits in meta, for both sinks", () => {
+    const projected = projectPlanMetaForReport({
+      name: "nightly sk-ant-MDPROOF-9999",
+      setup: ["npm ci"],
+    });
+    // The name is what the Markdown H1 interpolates.
+    expect(projected.name).not.toContain("sk-ant-MDPROOF-9999");
+    expect(projected.name).toContain("REDACTED");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 (adversarial pass) - the diff-evidence reasons are the strings the issue
+// actually named, and they went through a DIFFERENT function.
+//
+// `git diff failed: <raw git stderr>`, `diffs directory unavailable: <fs
+// error>` and `patch write failed: <msgOf(e)>` are all passed to
+// noteUnavailableDiff, not noteArtifactError. Redacting only the latter left
+// the cited example un-redacted in BOTH receipts: artifacts.diffs.unavailable
+// in the JSON and the "Diff evidence" list in the Markdown. Reproduced with a
+// blocked diffs directory in a repo whose path carried a token-shaped segment.
+// ---------------------------------------------------------------------------
+describe("#439 - diff-evidence reasons go through the chokepoint", () => {
+  it("redacts a credential in an unavailable-diff reason", () => {
+    const health = newRunArtifactHealth();
+    noteUnavailableDiff(
+      health.diffs,
+      "task-a",
+      "diffs directory unavailable: EEXIST: mkdir 'C:\\farm-ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\.farm'",
+    );
+    expect(health.diffs.unavailable).toHaveLength(1);
+    expect(health.diffs.unavailable[0]!.reason).not.toContain("ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  });
+
+  it("keeps the running total exact past the retention bound", () => {
+    // Redaction must not disturb the property that made this list trustworthy:
+    // the bounded list never understates how many tasks lack diff evidence.
+    const health = newRunArtifactHealth();
+    for (let i = 0; i < 40; i++) noteUnavailableDiff(health.diffs, `t${i}`, `reason ${i}`);
+    expect(health.diffs.unavailableTotal).toBe(40);
+    expect(health.diffs.unavailable.length).toBeLessThanOrEqual(MAX_RECORDED_ARTIFACT_ERRORS + 1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #397 — a caller-supplied run id becomes a directory name, so it must be a
+// single safe path segment.
+// ---------------------------------------------------------------------------
+describe("assertSafeRunId — run id is a path segment (#397)", () => {
+  it("accepts a minted-shaped id and ordinary slugs", () => {
+    expect(assertSafeRunId("a1b2c3")).toBe("a1b2c3");
+    expect(assertSafeRunId("nightly_2026-07-24.1")).toBe("nightly_2026-07-24.1");
+  });
+
+  it("rejects traversal, separators, dot ids and empty/oversized ids", () => {
+    for (const bad of ["..", ".", "../escape", "a/b", "a\\b", "", "x".repeat(65), "a b"])
+      expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
+  });
+
+  // #440. The character class above is necessary but not sufficient on Windows:
+  // NUL, CON, AUX, PRN, COM1-9 and LPT1-9 are DEVICE names, not filenames, and
+  // they match [A-Za-z0-9._-] perfectly. Since #397 the run id is both an
+  // ownership boundary and a directory name under `.farm/runs/<runId>/`, and
+  // `mkdir(runDir)` sits OUTSIDE the try/finally -- so a reserved name throws
+  // before the cleanup scope is even established, and the run's receipts, which
+  // are its recovery record, are lost.
+  //
+  // Refused on every platform, not only Windows: `FARM_RUN_ID` is set by an
+  // orchestrator whose config is routinely shared across machines, and a
+  // "works on my Linux box" id that detonates on a colleague's Windows one is
+  // the failure this prevents.
+  it("rejects Windows reserved device names (#440)", () => {
+    for (const bad of ["NUL", "CON", "AUX", "PRN", "COM1", "COM9", "LPT1", "LPT9"])
+      expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
+  });
+
+  it("rejects reserved names case-insensitively and with an extension (#440)", () => {
+    // Windows resolves the device before the extension, so `NUL.txt`,
+    // `nul.log.1` and `Com1.json` are all still the device.
+    for (const bad of ["nul", "Con", "cOm1", "NUL.txt", "nul.log.1", "Com1.json", "LPT9.tar.gz"])
+      expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
+  });
+
+  it("still accepts ordinary ids that merely resemble a reserved name (#440)", () => {
+    // The rule is exact-stem-only. Over-broad matching here would reject
+    // perfectly good ids -- and `.` is a legal id character, so the stem is the
+    // text before the FIRST dot, which is what Windows itself resolves.
+    for (const ok of [
+      "console",      // starts with CON
+      "nulls",        // starts with NUL
+      "COM0",         // COM0 is not reserved; only COM1-COM9 are
+      "COM10",        // two digits, not reserved
+      "LPT0",
+      "my-nul",
+      "nul-run",
+      "prn2",         // PRN takes no digit
+      "aux1",         // AUX takes no digit
+    ])
+      expect(assertSafeRunId(ok)).toBe(ok);
+  });
+
+  it("keeps minted ids acceptable under the reserved-name rule (#440)", () => {
+    // A minted id is 16 hex chars, so it can never collide with a reserved
+    // stem -- but pin it, because the day mintRunId's shape changes this is
+    // the assertion that notices.
+    for (let i = 0; i < 64; i++) expect(() => assertSafeRunId(mintRunId())).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #395 — farm timeout cleanup must own the ENTIRE child process tree.
+//
+// A gate/setup/mutation command that times out is killed, but the kill has to
+// reach the GRANDCHILDREN too: every gate command is `bash -c <cmd>` /
+// `cmd.exe /c <cmd>`, so the thing the operator actually named is a grandchild.
+// Before this fix `treeKill` SIGKILLed only the direct child off-Windows (the
+// grandchild survived, reparented to init) and on Windows fire-and-forgot an
+// unqualified `spawn("taskkill", ...)` whose exit was never awaited — `run()`
+// resolved exit 124 while the tree was still being torn down, or not at all.
+// ---------------------------------------------------------------------------
+describe("#395 — timeout kills and VERIFIES the whole child process tree", () => {
+  let dir: string;
+  beforeEach(async () => {
+    dir = await mkdtemp(path.join(tmpdir(), "farm-tree-"));
+  });
+  afterEach(async () => {
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  // libuv maps signal 0 to a liveness probe on every platform (on Windows it
+  // reports ESRCH for a terminated-but-not-yet-freed process), so this is a
+  // faithful cross-platform "is this pid still running?".
+  const alive = (pid: number) => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // A direct child that hangs forever AND spawns a hanging GRANDCHILD, writing
+  // the grandchild's pid where the test can read it. `node -e` runs as CJS.
+  const parentSrc = (pidFile: string) => `
+    const { spawn } = require("node:child_process");
+    const fs = require("node:fs");
+    const gc = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000);"], { stdio: "ignore" });
+    fs.writeFileSync(${JSON.stringify(pidFile)}, String(gc.pid));
+    setInterval(() => {}, 1000);
+  `;
+
+  const waitForPid = async (file: string, budgetMs: number): Promise<number> => {
+    const t0 = Date.now();
+    while (Date.now() - t0 < budgetMs) {
+      try {
+        const raw = (await fsReadFile(file, "utf8")).trim();
+        if (raw) return Number(raw);
+      } catch {
+        /* not written yet */
+      }
+      await new Promise((r) => setTimeout(r, 25));
+    }
+    throw new Error("grandchild pid file never appeared");
+  };
+
+  it("leaves NO grandchild behind — the tree is verified gone before run() resolves", async () => {
+    const pidFile = path.join(dir, "gc.pid");
+    const pending = run(process.execPath, ["-e", parentSrc(pidFile)], undefined, {}, 4000);
+    const gcPid = await waitForPid(pidFile, 3000);
+    expect(alive(gcPid)).toBe(true); // the grandchild really exists
+    const r = await pending;
+    expect(r.timedOut).toBe(true);
+    // The containment claim: when run() resolves, the descendant is GONE.
+    expect(alive(gcPid)).toBe(false);
+    // A clean kill stays the ordinary timeout result.
+    expect(r.code).toBe(124);
+    expect(r.cleanupFailed).toBeUndefined();
+  }, 30000);
+
+  it("treeKill resolves a verification result instead of firing and forgetting", async () => {
+    const c = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000);"], {
+      detached: process.platform !== "win32",
+      stdio: "ignore",
+    });
+    const k = await treeKill(c);
+    expect(k.ok).toBe(true);
+    expect(alive(c.pid!)).toBe(false);
+  }, 30000);
+
+  it("resolves taskkill absolutely from SystemRoot (an unqualified name is a PATH hazard)", () => {
+    const saved = process.env.SystemRoot;
+    try {
+      process.env.SystemRoot = path.join(path.sep, "WinDirForTest");
+      const p = taskkillPath();
+      expect(p).not.toBe("taskkill");
+      expect(path.isAbsolute(p)).toBe(true);
+      expect(p).toBe(path.join(path.sep, "WinDirForTest", "System32", "taskkill.exe"));
+    } finally {
+      if (saved === undefined) delete process.env.SystemRoot;
+      else process.env.SystemRoot = saved;
+    }
+  });
+
+  it("reports an UNVERIFIED cleanup distinctly from an ordinary timeout", async () => {
+    const r = await run(
+      process.execPath,
+      ["-e", "setInterval(() => {}, 1000);"],
+      undefined,
+      {},
+      200,
+      // Kill for real (no leak from the test), but report the kill as unverified.
+      async (child) => {
+        await treeKill(child);
+        return { ok: false, detail: "descendant pid 4242 still alive" };
+      },
+    );
+    expect(r.timedOut).toBe(true);
+    expect(r.cleanupFailed).toBe(true);
+    // Distinct from the ordinary 124 timeout: the caller can tell "killed" from
+    // "we could not prove it was killed".
+    expect(r.code).toBe(125);
+    expect(r.out).toMatch(/CLEANUP UNVERIFIED/);
+    expect(r.out).toMatch(/descendant pid 4242 still alive/);
+    expect(r.stderr).toMatch(/CLEANUP UNVERIFIED/);
+  }, 30000);
+});
+
+// ---------------------------------------------------------------------------
+// #398 — worktree teardown must be verified, retried, and REPORTED. Before this
+// fix every teardown site ended in a bare `.catch(() => {})` and the task
+// returned status "green" one line later, so a Windows lock / AV race left a
+// live worktree registration behind under a clean green report.
+// ---------------------------------------------------------------------------
+describe("#398 — verified, retried, reported worktree teardown", () => {
+  const res = (code: number, out = ""): RunResult => ({ code, out, stdout: out, stderr: "" });
+  const wt = path.resolve(".farm/worktrees/tt-398");
+
+  it("retries a transient remove failure and confirms git no longer registers the worktree", async () => {
+    const calls: string[][] = [];
+    let removes = 0;
+    const git = async (args: string[]): Promise<RunResult> => {
+      calls.push(args);
+      if (args[0] === "worktree" && args[1] === "remove") {
+        removes++;
+        return removes < 2 ? res(1, "fatal: failed to delete: Directory not empty") : res(0);
+      }
+      if (args[0] === "worktree" && args[1] === "list") return res(0, removes < 2 ? `worktree ${wt}\n` : "");
+      return res(0);
+    };
+    const r = await removeWorktreeVerified(git, wt, { attempts: 4, delayMs: 1 });
+    expect(r.ok).toBe(true);
+    expect(r.attempts).toBe(2);
+    // Re-verification actually happened — a list AND a prune are on the wire.
+    expect(calls.some((a) => a[0] === "worktree" && a[1] === "list")).toBe(true);
+    expect(calls.some((a) => a[0] === "worktree" && a[1] === "prune")).toBe(true);
+  });
+
+  it("returns ok:false with diagnostics when git still registers the worktree after every attempt", async () => {
+    const git = async (args: string[]): Promise<RunResult> => {
+      if (args[0] === "worktree" && args[1] === "remove") return res(1, "fatal: '.farm/worktrees/tt-398' is locked");
+      if (args[0] === "worktree" && args[1] === "list") return res(0, `worktree ${wt}\n`);
+      return res(0);
+    };
+    const r = await removeWorktreeVerified(git, wt, { attempts: 2, delayMs: 1 });
+    expect(r.ok).toBe(false);
+    expect(r.attempts).toBe(2);
+    expect(r.target).toBe(wt);
+    expect(r.detail).toMatch(/still registered/i);
+    expect(r.detail).toMatch(/is locked/);
+  });
+
+  // #515 — the shared `.git/worktrees/` registry is mutated non-atomically by
+  // git, so two registry commands in flight at once let one read a sibling
+  // entry that exists but is not finished. Measured directly against real git:
+  // 6 concurrent prepare sequences over 40 rounds produced 2 failures reading
+  // `.git/worktrees/<other>/commondir`, and 0 when serialized.
+  //
+  // These assert the PROPERTY (never two registry commands overlapping) rather
+  // than the absence of the flake. Asserting "the suite went green" would pass
+  // ~95% of the time on the unfixed dispatcher and prove nothing.
+  describe("#515 worktree registry serialization", () => {
+    /** A git runner that reports the maximum overlap it ever observed. */
+    function overlapTrackingGit() {
+      let inFlight = 0;
+      let maxInFlight = 0;
+      const isRegistryOp = (a: string[]) =>
+        a[0] === "worktree" && (a[1] === "remove" || a[1] === "add" || a[1] === "prune" || a[1] === "list");
+      const git = async (args: string[]): Promise<RunResult> => {
+        if (!isRegistryOp(args)) return res(0);
+        inFlight++;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        // Yield across a macrotask so a genuinely concurrent caller is given
+        // every chance to interleave. Without the lock it takes it.
+        await new Promise((r) => setTimeout(r, 0));
+        inFlight--;
+        return args[1] === "list" ? res(0, "") : res(0);
+      };
+      return { git, max: () => maxInFlight };
+    }
+
+    it("never runs two registry commands at once across concurrent removals", async () => {
+      const { git, max } = overlapTrackingGit();
+      await Promise.all(
+        Array.from({ length: 6 }, (_, i) =>
+          removeWorktreeVerified(git, path.resolve(`.farm/worktrees/par-${i}`), { attempts: 1, delayMs: 1 })),
+      );
+      expect(max()).toBe(1);
+    });
+
+    it("serializes callers in the order they arrive", async () => {
+      const order: number[] = [];
+      await Promise.all(
+        Array.from({ length: 5 }, (_, i) =>
+          withWorktreeLock(async () => {
+            order.push(i);
+            await new Promise((r) => setTimeout(r, 0));
+            order.push(i);
+          })),
+      );
+      // Each caller's pair is adjacent — nobody ran inside anybody else.
+      expect(order).toEqual([0, 0, 1, 1, 2, 2, 3, 3, 4, 4]);
+    });
+
+    it("never runs two registry commands at once across concurrent PREPARES", async () => {
+      // prepareWorktree is where the reported failure actually occurred
+      // ("worktree add failed: ... failed to read .git/worktrees/bulk0/
+      // commondir"). Testing only removeWorktreeVerified left the lock on this
+      // path unpinned — removing it entirely kept every other test in this
+      // block green.
+      const { git, max } = overlapTrackingGit();
+      const errs = await Promise.all(
+        Array.from({ length: 6 }, (_, i) =>
+          prepareWorktree(`farm/par-${i}`, path.resolve(`.farm/worktrees/par-${i}`), "main", git)),
+      );
+      expect(max()).toBe(1);
+      expect(errs.every((e) => e === null)).toBe(true);
+    });
+
+    it("a rejecting caller does not wedge the lock, and does not let the queue reorder", async () => {
+      // `worktree add` failing is the ORDINARY case this lock exists around, so
+      // a chain that stops draining after one rejection would convert the flake
+      // into a hang — strictly worse than the bug. Order is asserted too: a
+      // rejection must not let a queued caller overtake one that arrived first.
+      const order: string[] = [];
+      const failing = withWorktreeLock(async () => {
+        order.push("first");
+        throw new Error("boom");
+      });
+      const after = withWorktreeLock(async () => {
+        order.push("second");
+        return "after";
+      });
+      await expect(failing).rejects.toThrow("boom");
+      await expect(after).resolves.toBe("after");
+      expect(order).toEqual(["first", "second"]);
+    });
+  });
+
+  it("deleteBranchVerified reports a branch git still lists", async () => {
+    const git = async (args: string[]): Promise<RunResult> => {
+      if (args[0] === "branch" && args[1] === "-D") return res(1, "error: Cannot delete branch 'farm/x' checked out at ...");
+      if (args[0] === "branch" && args[1] === "--list") return res(0, "  farm/x\n");
+      return res(0);
+    };
+    const r = await deleteBranchVerified(git, "farm/x", { attempts: 2, delayMs: 1 });
+    expect(r.ok).toBe(false);
+    expect(r.target).toBe("farm/x");
+    expect(r.detail).toMatch(/still present/i);
+  });
+
+  // ---- wiring: the failures reach the task result and the run's exit code ----
+  const task: Task = {
+    id: "tt-398",
+    description: "make the test pass",
+    filesInScope: ["src/x.ts"],
+    test: { path: "src/x.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  const stubDeps = (git: RunTaskDeps["git"]): RunTaskDeps => ({
+    worker: {
+      async apply(ctx) {
+        const k = ctx.cwd.match(/__s(\d+)$/)?.[1] ?? "main";
+        return { ok: true, filesWritten: [`src/s${k}.ts`] } satisfies WorkerResult;
+      },
+    },
+    prepareWorktree: async () => null,
+    resetWorktree: async () => {},
+    fileHash: async () => null,
+    checkDrift: async () => [],
+    runGate: async () => ({ ok: true as const }),
+    antiGamingCheck: async () => ({ risk: "none" as const }),
+    mutationCheck: async () => null,
+    git,
+    withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+  });
+
+  it("a task whose worktree removal cannot be verified carries the failure — green is never unqualified", async () => {
+    const git: RunTaskDeps["git"] = async (args) => {
+      if (args[0] === "worktree" && args[1] === "remove") return res(1, "fatal: is locked");
+      if (args[0] === "worktree" && args[1] === "list") return res(0, `worktree ${wt}\n`);
+      return res(0);
+    };
+    const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", stubDeps(git));
+    expect(r.status).toBe("green");
+    const failed = (r.cleanup ?? []).filter((c) => !c.ok);
+    expect(failed).toHaveLength(1);
+    expect(failed[0].target).toBe(wt);
+    expect(runExitCode({ escalated: 0, blocked: 0, aborted: false, cleanupFailures: failed.length })).toBe(2);
+  });
+
+  it("best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers", async () => {
+    const savedSamples = process.env.FARM_SAMPLES;
+    process.env.FARM_SAMPLES = "3";
+    try {
+      const removed: string[] = [];
+      const git: RunTaskDeps["git"] = async (args) => {
+        if (args[0] === "worktree" && args[1] === "remove") {
+          removed.push(args[3]);
+          return args[3].endsWith("__s0") ? res(1, "fatal: is locked") : res(0);
+        }
+        if (args[0] === "worktree" && args[1] === "list")
+          return res(0, removed.some((p) => p.endsWith("__s0")) ? `worktree ${wt}__s0\n` : "");
+        return res(0);
+      };
+      const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", stubDeps(git));
+      expect(r.status).toBe("green");
+      // Every sample was attempted — the first failure did not abort the loop.
+      for (const k of [0, 1, 2]) expect(removed).toContain(`${wt}__s${k}`);
+      const failed = (r.cleanup ?? []).filter((c) => !c.ok);
+      expect(failed.some((c) => c.target.endsWith("__s0"))).toBe(true);
+    } finally {
+      if (savedSamples === undefined) delete process.env.FARM_SAMPLES;
+      else process.env.FARM_SAMPLES = savedSamples;
+    }
+  });
+
+  it("run exit code is non-zero when ownership could not be released, zero otherwise", () => {
+    expect(runExitCode({ escalated: 0, blocked: 0, aborted: false, cleanupFailures: 0 })).toBe(0);
+    expect(runExitCode({ escalated: 0, blocked: 0, aborted: false, cleanupFailures: 1 })).toBe(2);
+    expect(runExitCode({ escalated: 1, blocked: 0, aborted: false, cleanupFailures: 0 })).toBe(2);
+  });
+
+  it("integration-worktree teardown failure is carried on the run health and lands in the receipt", () => {
+    const health = newRunArtifactHealth();
+    expect(health.cleanup.failures).toEqual([]);
+    expect(cleanupReportLines(health, [])).toEqual([
+      `## Resource cleanup`,
+      `Every farm worktree and scratch branch was removed and re-verified.`,
+    ]);
+    health.cleanup.failures.push({ target: "/repo/.farm/integration-wt", detail: "still registered after 3 attempt(s)" });
+    const lines = cleanupReportLines(health, []);
+    expect(lines.join("\n")).toMatch(/CLEANUP DEGRADED/);
+    expect(lines.join("\n")).toMatch(/integration-wt/);
+    expect(lines.join("\n")).toMatch(/still registered after 3 attempt\(s\)/);
+  });
+});
