@@ -1,0 +1,455 @@
+"""Tests for taskwrite.py — the sanctioned task-board mutator behind /ca:task
+(#271 C-1/C-3). taskwrite.py has no other test coverage today; this file is
+the first.
+
+E-6 (pre-release-hardening): the original version of this file proved its
+contention properties with two THREADS inside one interpreter. That is the
+wrong instrument. #271's real bug is two SEPARATE /ca:task invocations — two
+OS PROCESSES — racing on the same `.codearbiter/open-tasks.md` + its lock
+sidecar. A thread harness shares one `_hooklib` module instance between both
+"writers", so it can silently pass for reasons that say nothing about the
+cross-process lock taskwrite.py actually depends on. This file now spawns
+REAL `taskwrite.py` subprocesses.
+
+To make two independent processes' critical sections *provably* overlap
+(not just "launched close together and hopefully raced"), each subprocess
+runs against a private copy of the hook sources with test-only instrumentation
+appended to copied `_hooklib.py`. The first process writes an acquired marker
+after the real OS lock succeeds and then waits on an explicit release marker.
+The second writes a contended marker only after its real nonblocking lock
+attempt fails and the production retry loop reaches its sleep. The harness
+releases the first only after observing that proven conflict, then requires the
+second acquired marker. This is an event handshake, not a wall-clock race.
+None of these knobs exists in real `core/pysrc/_hooklib.py`; the scaffolding
+lives only in the throwaway test copy.
+
+Portability fix (macOS CI flake): the copy also raises `LOCK_WAIT` (test-only,
+default 8s vs production's real 0.2s — see `_HOLD_HOOK`) so a genuinely
+contended second writer BLOCKS deterministically until the first releases,
+rather than racing production's own tight fail-soft retry budget against
+scheduler jitter on a loaded CI runner. Serialization is proven by the ORDER
+of real lock acquisitions (the marker timestamps / final-file assertions
+below), never by tuning a hold duration against the real 0.2s deadline.
+
+Covers the lock-free read-modify-write race that let two concurrent
+`taskwrite` invocations silently drop one writer's edit and mint a DUPLICATE
+dotted task ID (both readers saw the same stale board, so `next_seq`
+computed the same "next" number for both), plus the D-4 guarantee that an
+out-of-band Edit (the harvest/decompose path, which never takes this lock)
+is preserved rather than silently clobbered by a lock-holder writing back a
+stale in-memory snapshot.
+
+Stdlib only: subprocess + a temp-dir source copy, no third-party deps, no
+real ~/.codearbiter.
+"""
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import unittest
+from unittest import mock
+
+_HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+
+def _closure(entry):
+    """Every hooks-dir module `entry` needs, transitively, as basenames.
+
+    Derived by walking flat sibling imports (`import _x` / `from _x import ...`)
+    with ast, because the hook scripts are executed from their own directory and
+    resolve siblings that way. A module that is not a file in the hooks dir is a
+    stdlib import and is ignored.
+
+    Exists because a HARDCODED closure silently rots: see setUpClass.
+    """
+    import ast as _ast
+
+    seen, pending = set(), [entry]
+    while pending:
+        name = pending.pop()
+        if name in seen:
+            continue
+        path = os.path.join(_HOOKS_DIR, name)
+        if not os.path.isfile(path):
+            continue
+        seen.add(name)
+        with open(path, encoding="utf-8") as handle:
+            try:
+                tree = _ast.parse(handle.read())
+            except SyntaxError:
+                continue
+        for node in _ast.walk(tree):
+            mods = []
+            if isinstance(node, _ast.Import):
+                mods = [a.name for a in node.names]
+            elif isinstance(node, _ast.ImportFrom) and node.level == 0 and node.module:
+                mods = [node.module]
+            for mod in mods:
+                candidate = mod.split(".")[0] + ".py"
+                if os.path.isfile(os.path.join(_HOOKS_DIR, candidate)):
+                    pending.append(candidate)
+    return sorted(seen)
+
+
+if _HOOKS_DIR not in sys.path:
+    sys.path.insert(0, _HOOKS_DIR)
+
+CONCURRENCY_TEST_WAIT = 30.0
+
+BOARD = """\
+# Open tasks
+
+## In-flight
+- [ ] mvp1.store.0001 - existing queued task
+"""
+
+# Appended verbatim to the COPIED `_hooklib.py` only (never core/pysrc/ or the
+# vendored plugin copy). Guarded by an env var so importing the copy with no
+# env vars set behaves byte-identically to the real module.
+_HOLD_HOOK = '''
+
+# ---- test-only instrumentation (E-6 subprocess contention harness) ----
+# Appended by plugins/ca/hooks/tests/test_taskwrite.py to a private COPY of
+# this file. Never present in core/pysrc/_hooklib.py or any shipped plugin.
+import os as _ca_test_os
+import time as _ca_test_time
+
+_CA_TEST_HOLD_MS = float(_ca_test_os.environ.get("CA_TEST_LOCK_HOLD_MS", "0") or 0)
+_CA_TEST_MARKER = _ca_test_os.environ.get("CA_TEST_ACQUIRED_MARKER")
+_CA_TEST_CONTENDED_MARKER = _ca_test_os.environ.get("CA_TEST_CONTENDED_MARKER")
+_CA_TEST_RELEASE_MARKER = _ca_test_os.environ.get("CA_TEST_RELEASE_MARKER")
+_CA_TEST_RELEASE_WAIT = float(
+    _ca_test_os.environ.get("CA_TEST_RELEASE_WAIT", "30.0") or 30.0
+)
+
+# Portability fix (macOS CI flake, test-only — see test_taskwrite.py's class
+# docstring): production's LOCK_WAIT (0.2s, core/pysrc/_hooklib.py) is a
+# fail-soft retry BUDGET tuned for a real interactive /ca:task invocation, not
+# a contention-proof harness racing wall-clock scheduler jitter on a loaded CI
+# runner. This test-only copy raises it so a genuinely-contended second writer
+# BLOCKS deterministically until the first releases its real, OS-owned lock,
+# instead of occasionally exhausting a 0.2s budget under jitter and correctly
+# fail-hard exiting (never writing its acquired-marker, which is what made
+# `_wait_for_file(m2)` time out on a slow runner). The retry loop in
+# `acquire_lock` reads this module-level name dynamically on every iteration,
+# so this override reaches every call in this copy — wrapped (the hold-hook
+# below) or not. Never present in core/pysrc/_hooklib.py or any shipped
+# plugin copy.
+LOCK_WAIT = float(_ca_test_os.environ.get("CA_TEST_LOCK_WAIT", "8.0"))
+
+if (_CA_TEST_HOLD_MS > 0 or _CA_TEST_MARKER or
+        _CA_TEST_CONTENDED_MARKER or _CA_TEST_RELEASE_MARKER):
+    _ca_test_real_acquire_lock = acquire_lock
+
+    def acquire_lock(path):
+        # `acquire_lock` sleeps only after a real nonblocking lock attempt has
+        # failed. Observe that exact event in this private process, rather than
+        # emitting before the call and merely proving the child was scheduled.
+        _real_sleep = _ca_test_time.sleep
+        if _CA_TEST_CONTENDED_MARKER:
+            def _observe_contention(seconds):
+                if not _ca_test_os.path.exists(_CA_TEST_CONTENDED_MARKER):
+                    with open(_CA_TEST_CONTENDED_MARKER, "w", encoding="utf-8") as _wait_f:
+                        _wait_f.write("contended")
+                _real_sleep(seconds)
+            _ca_test_time.sleep = _observe_contention
+        try:
+            token = _ca_test_real_acquire_lock(path)
+        finally:
+            _ca_test_time.sleep = _real_sleep
+        if token is not None:
+            if _CA_TEST_MARKER:
+                with open(_CA_TEST_MARKER, "w", encoding="utf-8") as _marker_f:
+                    _marker_f.write("acquired")
+            if _CA_TEST_RELEASE_MARKER:
+                _release_deadline = _ca_test_time.monotonic() + _CA_TEST_RELEASE_WAIT
+                while not _ca_test_os.path.exists(_CA_TEST_RELEASE_MARKER):
+                    if _ca_test_time.monotonic() >= _release_deadline:
+                        break
+                    _ca_test_time.sleep(0.005)
+            elif _CA_TEST_HOLD_MS > 0:
+                _ca_test_time.sleep(_CA_TEST_HOLD_MS / 1000.0)
+        return token
+'''
+
+
+def _reap(process):
+    """Terminate and fully drain a test subprocess. Idempotent and never raises:
+    a cleanup helper must not be the thing that fails a suite (#462)."""
+    try:
+        if process.poll() is None:
+            process.terminate()
+        process.communicate(timeout=10)
+    except Exception:  # noqa: BLE001
+        try:
+            process.kill()
+            process.communicate(timeout=10)
+        except Exception:  # noqa: BLE001
+            pass
+    finally:
+        for stream in (process.stdout, process.stderr, process.stdin):
+            try:
+                if stream is not None:
+                    stream.close()
+            except Exception:  # noqa: BLE001
+                pass
+
+
+def _wait_for_file(path, timeout=CONCURRENCY_TEST_WAIT, process=None):
+    """Bounded poll for a marker file's existence. Returns True/False; never
+    raises, never blocks past `timeout`."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if os.path.exists(path):
+            return True
+        if process is not None and process.poll() is not None:
+            return False
+        time.sleep(0.005)
+    return False
+
+
+class TaskwriteContentionTest(unittest.TestCase):
+    """Cross-PROCESS contention proof for taskwrite.py's lock + re-read-under-
+    lock CAS (#271 C-2/C-3)."""
+
+    @classmethod
+    def setUpClass(cls):
+        # One instrumented source copy shared by every test in this class.
+        #
+        # The closure is DERIVED, not listed. It used to be the hardcoded set
+        # {taskwrite, hostapi, _gitexec, _taskboardlib, _hooklib} described as
+        # "the complete stdlib-only dependency closure" — and issue #321 made
+        # that comment false the moment _hooklib grew a sibling import
+        # (_sensitivelib, itself importing _pathnorm). The subprocesses this
+        # class spawns then died on ModuleNotFoundError, which surfaced as
+        # "process 1 never acquired the real lock" — a lock diagnosis for an
+        # import failure, three tests deep.
+        #
+        # Walking the imports instead means the remaining #321 slices cannot
+        # reintroduce this: a new sibling module is picked up because it is
+        # imported, not because somebody remembered to add it here.
+        cls._copy_dir = tempfile.mkdtemp(prefix="ca-taskwrite-hookscopy-")
+        for name in _closure("taskwrite.py"):
+            shutil.copy2(os.path.join(_HOOKS_DIR, name),
+                        os.path.join(cls._copy_dir, name))
+        hooklib_copy = os.path.join(cls._copy_dir, "_hooklib.py")
+        with open(hooklib_copy, "a", encoding="utf-8") as f:
+            f.write(_HOLD_HOOK)
+        cls._taskwrite_script = os.path.join(cls._copy_dir, "taskwrite.py")
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls._copy_dir, ignore_errors=True)
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        self.cad = os.path.join(self.root, ".codearbiter")
+        os.makedirs(self.cad)
+        self.board_path = os.path.join(self.cad, "open-tasks.md")
+        with open(self.board_path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(BOARD)
+        self._markers = tempfile.mkdtemp(prefix="ca-taskwrite-markers-")
+        # Register fixture cleanup before subprocess cleanups. TestCase runs
+        # cleanups LIFO, so any child left live by an early handshake assertion
+        # is reaped before Windows is asked to remove its open lock file.
+        self.addCleanup(self._tmp.cleanup)
+        self.addCleanup(shutil.rmtree, self._markers, True)
+
+    def _read(self):
+        with open(self.board_path, encoding="utf-8") as f:
+            return f.read()
+
+    def _marker(self, name):
+        return os.path.join(self._markers, name)
+
+    def _popen(self, argv, hold_ms=0, marker=None, contended=None, release=None):
+        """Launch a REAL taskwrite.py subprocess against the fixture board."""
+        env = dict(os.environ)
+        env["CLAUDE_PROJECT_DIR"] = self.root
+        # The private hook copy's retry budget is part of this harness, not an
+        # operator-tunable input. An inherited value (especially 0) can make a
+        # correctly contending writer fail soft before the event handshake.
+        env["CA_TEST_LOCK_WAIT"] = str(CONCURRENCY_TEST_WAIT)
+        if hold_ms:
+            env["CA_TEST_LOCK_HOLD_MS"] = str(hold_ms)
+        else:
+            env.pop("CA_TEST_LOCK_HOLD_MS", None)
+        if marker:
+            env["CA_TEST_ACQUIRED_MARKER"] = marker
+        else:
+            env.pop("CA_TEST_ACQUIRED_MARKER", None)
+        if contended:
+            env["CA_TEST_CONTENDED_MARKER"] = contended
+        else:
+            env.pop("CA_TEST_CONTENDED_MARKER", None)
+        if release:
+            env["CA_TEST_RELEASE_MARKER"] = release
+            env["CA_TEST_RELEASE_WAIT"] = str(CONCURRENCY_TEST_WAIT)
+        else:
+            env.pop("CA_TEST_RELEASE_MARKER", None)
+            env.pop("CA_TEST_RELEASE_WAIT", None)
+        process = subprocess.Popen(
+            [sys.executable, self._taskwrite_script] + argv,
+            cwd=self.root, env=env, text=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # #462: registered on the TestCase, not left to _finish(). An assertion
+        # that fires BEFORE _finish() would otherwise leave a live child holding
+        # the fixture's temp dir, and on Windows that turns the NEXT test's
+        # teardown into an ERROR rather than this test's FAILURE - exactly the
+        # intermittent shape the suite showed.
+        self.addCleanup(_reap, process)
+        return process
+
+    def _release(self, path):
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write("release")
+
+    def _serialized_add_pair(self):
+        """Start two real writers with a deterministic lock handshake."""
+        acquired1 = self._marker("acquired-1")
+        contended2 = self._marker("contended-2")
+        acquired2 = self._marker("acquired-2")
+        release1 = self._marker("release-1")
+        first = self._popen(
+            ["add", "first concurrent task", "--id", "mvp1.store"],
+            marker=acquired1,
+            release=release1,
+        )
+        self.assertTrue(
+            _wait_for_file(acquired1, process=first),
+            "process 1 never acquired the real lock",
+        )
+        second = self._popen(
+            ["add", "second concurrent task", "--id", "mvp1.store"],
+            marker=acquired2,
+            contended=contended2,
+        )
+        self.assertTrue(
+            _wait_for_file(contended2, process=second),
+            "process 2 never observed real lock contention",
+        )
+        self.assertFalse(
+            os.path.exists(acquired2),
+            "process 2 acquired while process 1 still held the real lock",
+        )
+        self._release(release1)
+        self.assertTrue(
+            _wait_for_file(acquired2, process=second),
+            "process 2 never acquired after release",
+        )
+        return first, second
+
+    def _finish(self, proc):
+        out, err = proc.communicate(timeout=CONCURRENCY_TEST_WAIT)
+        return proc.returncode, out, err
+
+    def test_concurrent_add_entries_both_survive_no_lost_update(self):
+        """Two concurrent `taskwrite add` PROCESSES must BOTH land — the
+        classic lost-update shape: without a lock + re-read, the second
+        os.replace() silently discards the first writer's edit.
+
+        Genuine overlap is proven by the contended/acquired/release marker
+        handshake in `_serialized_add_pair`, without scheduler timing."""
+        # A hostile inherited test knob must not shorten the private copy's
+        # retry budget; `_popen` owns and normalizes it for every child.
+        with mock.patch.dict(os.environ, {"CA_TEST_LOCK_WAIT": "0"}):
+            p1, p2 = self._serialized_add_pair()
+
+        rc1, out1, err1 = self._finish(p1)
+        rc2, out2, err2 = self._finish(p2)
+        self.assertEqual(rc1, 0, err1)
+        self.assertEqual(rc2, 0, err2)
+
+        text = self._read()
+        self.assertIn("first concurrent task", text,
+                      "the first writer's edit was silently lost")
+        self.assertIn("second concurrent task", text,
+                      "the second writer's edit was silently lost")
+
+    def test_concurrent_add_entries_do_not_mint_duplicate_dotted_id(self):
+        """Both concurrent adds mint a dotted ID in the SAME group.type
+        namespace. Reading the board fresh under the lock (not the stale
+        snapshot each process opened with) is what makes next_seq allocate
+        two DISTINCT ids instead of both computing the same 'max + 1'."""
+        p1, p2 = self._serialized_add_pair()
+        rc1, _out1, err1 = self._finish(p1)
+        rc2, _out2, err2 = self._finish(p2)
+        self.assertEqual(rc1, 0, err1)
+        self.assertEqual(rc2, 0, err2)
+
+        text = self._read()
+        ids = sorted(set(re.findall(r"mvp1\.store\.\d{4}", text)))
+        # The seed board already holds mvp1.store.0001; the two new adds must
+        # mint 0002 and 0003 — never the SAME id twice.
+        self.assertEqual(len(ids), 3, f"expected 3 distinct dotted ids, got {ids}")
+
+    def test_external_edit_while_lock_held_is_not_silently_clobbered(self):
+        """D-4: an out-of-band Edit (harvest/decompose writing the board
+        directly, never taking the lock) that lands WHILE a taskwrite process
+        holds the lock must still be present afterward — re-reading the
+        board under the lock, rather than writing back the stale snapshot the
+        process opened with, is what preserves it (a detected-loss-free
+        outcome, not a silent clobber).
+
+        The marker file pins the exact moment: the holder has the REAL lock
+        and (thanks to the injected hold) has not yet even called
+        `tb.read_board()` — so any write landing before the marker's hold
+        window closes is guaranteed to be visible to the holder's own
+        re-read, exactly the ordering C-3 exists to guarantee.
+
+        The explicit release marker keeps the holder inside the real critical
+        section until both the out-of-band edit and second writer's attempt are
+        observed, with no scheduler-dependent sleep window."""
+        m1 = self._marker("holder-acquired")
+        contended2 = self._marker("second-contended")
+        m2 = self._marker("second-acquired")
+        release1 = self._marker("holder-release")
+        p1 = self._popen(["add", "lock holder's task", "--id", "mvp1.store"],
+                         marker=m1, release=release1)
+        self.assertTrue(
+            _wait_for_file(m1, process=p1),
+            "lock holder never acquired the real lock",
+        )
+
+        # The out-of-band Edit: the host's own Edit tool writing the board
+        # directly (harvest/decompose), never taking taskwrite's lock.
+        current = self._read()
+        with open(self.board_path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(current + "- [ ] out-of-band harvested item\n")
+
+        # A second REAL taskwrite writer, contending for the same lock while
+        # the first is still (per the marker) inside its held window.
+        p2 = self._popen(
+            ["add", "second writer's task", "--id", "mvp1.store"],
+            marker=m2,
+            contended=contended2,
+        )
+        self.assertTrue(
+            _wait_for_file(contended2, process=p2),
+            "second writer never observed real lock contention",
+        )
+        self.assertFalse(os.path.exists(m2))
+        self._release(release1)
+        self.assertTrue(
+            _wait_for_file(m2, process=p2),
+            "second writer never acquired after release",
+        )
+
+        rc1, _out1, err1 = self._finish(p1)
+        rc2, _out2, err2 = self._finish(p2)
+        self.assertEqual(rc1, 0, err1)
+        self.assertEqual(rc2, 0, err2)
+
+        text = self._read()
+        self.assertIn("out-of-band harvested item", text,
+                      "an interleaved external Edit must not be silently clobbered")
+        self.assertIn("lock holder's task", text)
+        self.assertIn("second writer's task", text)
+
+
+if __name__ == "__main__":
+    unittest.main()
