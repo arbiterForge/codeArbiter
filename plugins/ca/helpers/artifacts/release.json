@@ -1,0 +1,38 @@
+{
+  "format": "codearbiter.artifact-release/0.1.0",
+  "version": "0.1.0",
+  "protocol": "codearbiter.artifact-api/0.1.0",
+  "schema_version": "0.3.1",
+  "binaries": {
+    "darwin/amd64": {
+      "file": "ca-artifact-darwin-amd64",
+      "sha256": "3c8d8deb48d85ba1c9a6cfaf1286543cc8193fc8db307fe35446f29e53d3ca7a",
+      "native_tested": true
+    },
+    "darwin/arm64": {
+      "file": "ca-artifact-darwin-arm64",
+      "sha256": "af3a36a6926532c6e0b4da10397aae17a472e300f50d5c0dc7886aa722046d28",
+      "native_tested": true
+    },
+    "linux/amd64": {
+      "file": "ca-artifact-linux-amd64",
+      "sha256": "83300e32dd6514b4716707091d900611f42454097b177443c9c47f464cad5065",
+      "native_tested": true
+    },
+    "linux/arm64": {
+      "file": "ca-artifact-linux-arm64",
+      "sha256": "47f1e529140642c7574f29664bb9adacc2755458a1cd9a30c6fdc0f9df447f24",
+      "native_tested": true
+    },
+    "windows/amd64": {
+      "file": "ca-artifact-windows-amd64.exe",
+      "sha256": "fa1a11489cc4521c945a59d2dce9f270ba9fcf6fcdc220011579326d5e97569a",
+      "native_tested": true
+    },
+    "windows/arm64": {
+      "file": "ca-artifact-windows-arm64.exe",
+      "sha256": "88e0e9c2cf7d5861ff1365d8aa4d9376f6fa1ff8cdf0eb708be78be88af45468",
+      "native_tested": true
+    }
+  }
+}
