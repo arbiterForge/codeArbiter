@@ -1,0 +1,155 @@
+# Farm dispatch — reference for subagent-driven-development's farm path
+
+Loaded from `subagent-driven-development` Phase 2 when `<slug>.plan.json` exists alongside the `.md`
+plan. The farm is a pluggable execution backend — its value is deterministic, gated, parallel, isolated
+execution. The farm path replaces only the *authoring* step for the plan's tasks — a worker implements
+under hard gates instead of a premium subagent. The `Worker` seam admits cheap, premium, and agentic
+implementations; only the cheap HTTP-chat worker ships today (premium and agentic are what the seam is
+designed for — roadmap, not built). It does **not** replace review: every task the farm reports green is
+still routed through Phases 3, 4, and 5 before acceptance. Swapping the worker only changes who *writes*
+the code, never whether it is *reviewed*. See [includes/farm.md](../../../includes/farm.md) for setup.
+
+**Current rollout gate:** HTML-backed farm use is disabled. Do not launch it in ordinary feature or
+sprint work until the fresh frontier/low-tier qualification matrix, native payload packaging and real
+authority integration are complete. The checks below define the real qualification boundary; the June
+2026 run has zero promotion credit. Legacy farm plans with no sibling HTML retain their existing path.
+
+## Step 1 — Model selection
+
+If `FARM_MODEL` env var is set, use it directly and skip selection. Otherwise, prefer a **measured**
+choice over web hearsay:
+
+1. Read `.farm/model-cache.json` if present. If it records a model chosen within the last 7 days whose
+   last canary pass-rate was acceptable, reuse it (skip to Step 2). Re-research only on a stale or
+   missing cache.
+2. Websearch `"OpenCode Zen free models <current month year>"` + the OpenCode model catalog to enumerate
+   the *candidate* free model ids (codenames included). This step is candidate **discovery**, not a
+   quality judgment.
+3. Run a canary probe to judge quality objectively: set `FARM_CANDIDATE_MODELS=<comma-separated ids>`
+   and invoke `node "tools/farm.js" --canary "<plan.json>"`. It runs the plan's
+   smallest task against each candidate and writes `.farm/canary-report.json` ranked by measured
+   pass-rate / attempts / latency. For an HTML projection, the shared backend first invokes the pinned
+   artifact engine's `farm-verify` canary phase. A missing/stale source binding blocks before worktree,
+   report or network activity. Pick the top passing model.
+4. Surface the choice with its measured basis: "Selected `<model-id>` — canary passed in `<n>` attempts,
+   `<ms>`ms (vs. `<alternatives>`). Proceed, or set `FARM_MODEL` to override." For any opaque codename,
+   add one line of websearched identity context (e.g. "community reports GLM4-based") for the audit log.
+5. Fallback ladder if the canary can't run or none pass: (a) the cached model from Step 1; (b) a
+   websearch-selected model with a clear warning that the choice is unmeasured; (c) only if all fail,
+   BLOCK and ask the user to set `FARM_MODEL`. Halting the whole feature on a noisy websearch is wrong —
+   exhaust the ladder first.
+6. Write only the chosen `meta.model` + `meta.apiBaseUrl` into `plan.json`. For an HTML projection,
+   immediately call the artifact protocol's `farm-seal` operation with the exact effective model,
+   API base URL, bounded selection source and caller-stated origin. These are auditable assertions,
+   not independently authenticated provenance. It rejects any other base-projection
+   change and seals the exact full execution bytes plus provider identity. Then update
+   `.farm/model-cache.json` (model + timestamp + canary pass-rate) before dispatching.
+
+## Step 2 — Farm dispatch
+
+Invoke the farm dispatcher:
+
+```
+node "tools/farm.js" "<project-root>/.codearbiter/plans/<slug>.plan.json"
+```
+
+
+Run it with cwd set to `<project-root>` (the dispatcher resolves `.farm/` and git worktrees
+against the current directory). It runs tasks concurrently (up to `FARM_CONCURRENCY`, default 4),
+enforces gates and a zero-token anti-gaming guard, and writes to `<project-root>/.farm/`:
+- `farm-report.json` / `farm-report.md` — per-task status, attempts, files, worker token spend, warnings
+- `farm-results.jsonl` — the incremental stream: one `Result` JSON object per line, appended the moment
+  each task settles (drives completion-order consumption — see Step 2.6)
+- `diffs/<task-id>.patch` — the actual change per task, for audit
+
+The built shared dispatcher resolves `ca-artifact` only from its manifest-verified sibling payload.
+It never consults PATH or repository configuration. Immediately before ordinary HTML dispatch it
+invokes `farm-verify` with the effective model and API base URL; missing or mismatched full-byte seals
+fail before creating `.farm/`, worktrees, branches, or network requests. Pi preview uses this same built
+backend and therefore the same guard. Do not bypass it with a source-tree or host-local dispatcher.
+
+Each of those is published twice: once under the run's own artifact directory
+`<project-root>/.farm/runs/<run-id>/` (the durable, attributable receipt — concurrent runs never
+overwrite each other's artifacts) and once at the top-level `.farm/` path above as a **latest**
+convenience pointer. The final summary line prints both. When two runs may share a repository, reconcile
+against the run directory; the pointer is last-writer-wins (always complete, never truncated).
+
+Isolated receipts are not a licence to run two farms on one repository unattended: the git state is
+still shared. Concurrent runs each need a distinct `FARM_INTEGRATION_BRANCH` and `FARM_WORKTREE_ROOT`,
+and non-overlapping task ids (each task branch is `farm/<task-id>`). At defaults the second run fails at
+startup on `cannot lock ref 'refs/heads/farm/integration'`.
+
+Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run was aborted;
+**exit code 3 = the run's authoritative, run-scoped report could not be published in full.** Exit 3 is a
+RECEIPT failure, not a task failure — the tasks may all have been green — and it means this run's
+durable record is missing or incomplete. Treat the run as unverified and re-dispatch; do not accept
+tasks off a run that exited 3. Inspect `.farm/runs/<run-id>/` for whatever did land before discarding.
+
+A failure to refresh the top-level **latest** pointer is *not* exit 3 — that pointer is explicitly
+non-authoritative. The run settles on its task outcome and prints a `WARNING:` naming what could not be
+refreshed; when you see it, `.farm/farm-report.json` describes some *other* run, so read the run
+directory.
+
+`farm-report.json` also carries an `artifacts` block: `artifacts.stream.complete` is `false` when a
+streaming-rail write failed (so a short `.jsonl` is not mistaken for a short run), and
+`artifacts.diffs.unavailable[]` names tasks whose patch could not be written, with the reason. That
+list is capped — `artifacts.diffs.unavailable_total` is the true count. Never assume a
+`diffs/<task-id>.patch` exists for a task listed there.
+
+## Step 2.5 — Circuit-breaker abort
+
+If `farm-report.json` has `aborted: true`, the dispatcher tripped its escalation-rate breaker — the
+chosen model is likely not capable of this slice. This is a hard-gate surface: STOP and tell the user,
+recommending the premium path or a different `FARM_MODEL`. Do not silently re-dispatch every task to
+premium Phase 2 (that defeats the backend's purpose and hides a bad signal).
+
+## Step 2.6 — Streaming consumption contract
+
+The dispatcher writes two artifacts (D7): the incremental `farm-results.jsonl` stream and the final
+`farm-report.json` summary. The escalation/acceptance handler (Step 3) MUST consume the stream in
+**completion order** — read `farm-results.jsonl` line by line (one `Result` JSON object per line) and
+process each task the moment it settles, rather than waiting to parse only the final report. Each
+`green` task is routed through **Phase 3 (spec-compliance) + Phase 5 (verification)** as it lands.
+
+- **Per-green-task = Phase 3 + Phase 5 only.** Only the spec-compliance and fresh-verification reviews
+  run per green task as it streams in.
+- **Phase 4 stays a once-per-scope barrier.** The quality review (Phase 4) MUST NOT be pipelined per
+  task — it still runs ONCE over the combined diff of the whole scope, after every task has cleared
+  Phase 3 and Phase 5. The streaming rail moves Phase 3 + Phase 5 earlier; it does NOT move Phase 4.
+- **`farm-report.json` is authority on abort (D7).** `farm-report.json` is always written in the
+  dispatcher's `finally` — even on a circuit-breaker abort or crash — and remains the AUTHORITATIVE
+  final summary. On an abort or crash, reconcile settled-task state against `farm-report.json`, NOT the
+  partial `.jsonl` stream. The stream is an append-only progress feed; the report is the source of truth.
+- **Temporal overlap is roadmap, not today.** `farm.js` runs in the foreground, so the consumer
+  processes the stream in completion order *after* the run returns — true *temporal* overlap (running
+  review WHILE the farm is still executing) requires backgrounding `farm.js` and is explicitly a
+  future/roadmap item. The streaming rail is the enabling primitive, not the full overlap yet.
+
+## Step 3 — Escalation handler (Phase 2.5)
+
+Consume `farm-results.jsonl` in completion order (Step 2.6); `farm-report.json` is the authoritative
+reconciliation source on abort. For each result:
+
+- **status `green`** — the test gate + anti-gaming guard passed, but it is NOT yet accepted. Route the
+  task through **Phase 3 (spec-compliance), Phase 4 (quality review), and Phase 5 (fresh verification)**
+  exactly as a premium subagent's output would be, measuring the merged change against the spec line the
+  task traces to. A green result carrying a `warning` (gaming-risk) gets extra attention in Phase 3.
+  Only after Phases 3–5 pass does the task reach Phase 6.
+- **status `escalate`, note starts with `"drift:"`** — the cheap model wrote outside `filesInScope`
+  even after a hardened-prompt retry. First occurrence on a task → treat as model incapacity, not a spec
+  gap: re-dispatch via premium Phase 2 (the worktree at `result.worktree` shows the attempt). Only when
+  **multiple tasks drift onto the same out-of-scope path** does it signal a genuine decomposition/spec
+  gap — then raise `[CONFIRM-NN]` and halt.
+- **status `escalate`, note starts with `"gaming:"`** — the model hard-coded the test's asserted value.
+  Re-dispatch via premium Phase 2; do not accept the farm output.
+- **status `escalate`, note starts with `"tampered test:"`** — the model altered the failing test.
+  Re-dispatch via premium Phase 2; the test is the gate's integrity anchor.
+- **status `escalate`, gate-failure note** — the model couldn't pass the test after retries. Re-dispatch
+  via premium Phase 2, seeding the brief with `result.worktree`, the gate note, and `test.path`.
+- **status `escalate`, note starts with `"merge failed"`** — re-order after the conflicting sibling and
+  re-dispatch via Phase 2.
+- **blocked** tasks (`farm-report.json` `blocked[]` array, each with a `reason`) — resolve the upstream
+  escalation first, then re-queue.
+
+Gate: every task is green AND passed Phases 3–5, or was re-dispatched via premium Phase 2 and accepted.
+No task advances to commit-gate while any sibling is unresolved.

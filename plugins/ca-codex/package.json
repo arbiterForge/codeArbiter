@@ -1,0 +1,13 @@
+{
+  "name": "@arbiterforge/ca-codex",
+  "version": "0.14.2",
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arbiterForge/codeArbiter.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
