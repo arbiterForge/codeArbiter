@@ -1,0 +1,529 @@
+#!/usr/bin/env python3
+# codeArbiter - the H-09b/H-10b sensitive-line scan: crypto/TLS and secret
+# detection, the pinned security diff argv, the path-aware diff walk, and the
+# digests that bind a recorded gate pass to the exact lines it reviewed.
+#
+# Extracted from _hooklib (issue #321, architecture-002) as the first slice.
+# Chosen first because it was the cleanest seam in the module, measured rather
+# than guessed: the cluster referenced exactly ONE symbol from the rest of
+# _hooklib (norm_path, now the _pathnorm floor), and NOTHING in the rest of
+# _hooklib referenced the cluster. A one-way edge with no back-reference is
+# what makes this safe to move without touching a single consumer.
+#
+# _hooklib re-exports every name below, so all 59 consuming files are
+# unchanged and the pre-existing hook suites prove behavioural parity - which
+# is the only proof that means anything for a refactor (the `refactor` skill's
+# Phase 2 rule: parity comes from tests that did not move).
+#
+# WHY THESE BELONG TOGETHER: they are one concern with one failure mode. The
+# regexes decide what counts as sensitive, the pinned argv decides what the
+# diff even looks like, the walk decides which FILE a line belongs to, and the
+# digests decide what a pass covered. #279 showed they fail as a unit: a
+# greedy header parse in the walk un-exempted an unrelated file, and an
+# unpinned prefix config silently re-opened it. Splitting them across modules
+# would let one move without the others.
+
+from __future__ import annotations
+
+import hashlib
+import io
+import json
+import re
+import tokenize
+from bisect import bisect_right
+from collections import namedtuple
+
+from _pathnorm import norm_path
+
+
+# Crypto/TLS and secret patterns — shared by the post-write reminder (H-09/H-10)
+# and the blocking pre-commit gate (H-09b/H-10b) so the two never drift.
+# Deliberately NOT matched: crypto.randomUUID / crypto.getRandomValues (benign
+# ID generation tripped the gate on routine commits) — the bare `crypto\.`
+# catch-all is narrowed to the members that actually sign, encrypt, derive
+# keys, or produce security-relevant randomness. bcrypt stays: approved or
+# not, a password-hashing change is exactly what crypto-compliance reviews.
+# Short names also occur as return-code variables and ordinary prose (#678).
+# Require configuration, known mode/padding suffixes, a crypto call/member, or
+# an import/crypto namespace. A standalone quoted value also matches when its
+# config key is outside the diff; unrelated quoted labels and prose do not.
+# Line-shape arms also work in joined content (the H-09b verdict/reminder read).
+_SHORT_CRYPTO_NAME = r"(?:rc2|rc4|des|rsa)"
+_CRYPTO_LINE_END = r"(?:[ \t]*[,;\])}])*[ \t]*(?:(?:\#|//)[^\r\n]*)?\r?$"
+CRYPTO_RE = re.compile(
+    r"(createHash|createCipher|createHmac|\bmd5\b|\bsha1\b|3des"
+    r"|\bblowfish\b|x509|bcrypt"
+    rf"""|(?m:^[ \t]*(?:-[ \t]*)?["']{_SHORT_CRYPTO_NAME}["']{_CRYPTO_LINE_END})"""
+    rf"|\b{_SHORT_CRYPTO_NAME}[-/](?:cbc|ecb|cfb|ofb|ctr|ede3?|oaep|pss|pkcs1)\b"
+    rf"|\b{_SHORT_CRYPTO_NAME}\s*\("
+    rf"|\b{_SHORT_CRYPTO_NAME}\s*\.\s*"
+    r"(?:new|create|generate|construct|import_?key|encrypt|decrypt|sign|verify"
+    r"|(?:rsa)?(?:public|private)(?:key|numbers)|rsakey|mode_)\w*\b"
+    rf"""|\b(?:cipher|algorithm)["']?\s*[:=]\s*["']?{_SHORT_CRYPTO_NAME}\b"""
+    r"""|\bkey_type["']?\s*[:=]\s*["']?rsa\b"""
+    rf"""|\b(?:Cipher|KeyFactory)\s*\.\s*getInstance\s*\(\s*["']{_SHORT_CRYPTO_NAME}\b"""
+    rf"|\b(?:Cipher|PublicKey|algorithms|asymmetric|Cryptography)\s*\.\s*{_SHORT_CRYPTO_NAME}\b"
+    rf"|\bcrypto/{_SHORT_CRYPTO_NAME}\b"
+    rf"|\b(?:from|import)(?:\s+(?:\(\s*)?|\(\s*)"
+    rf"(?:\w+(?:\.\w+)*(?:\s+as\s+\w+)?\s*,\s*)*"
+    rf"(?:\w+\.)*{_SHORT_CRYPTO_NAME}\b"
+    rf"|(?m:^[ \t]*{_SHORT_CRYPTO_NAME}[ \t]+as[ \t]+\w+{_CRYPTO_LINE_END})"
+    r"|crypto\.(subtle|sign|verify|createSign|createVerify|generateKey"
+    r"|publicEncrypt|privateDecrypt|pbkdf2|scrypt|randomBytes|createDiffieHellman)"
+    r"|InsecureSkipVerify|verify=False"
+    # Node/TS TLS-disable forms — all networked first-party code here is TS, so
+    # this is where a verification bypass would actually land (2026-06-22 HIGH).
+    r"|rejectUnauthorized\s*[:=]\s*false|NODE_TLS_REJECT_UNAUTHORIZED)",
+    re.I,
+)
+# Two branches: (1) a secret keyword assigned a quoted literal, via `=` OR `:`
+# (the colon/object form dominates this TS/JSON repo) — the quoted-value
+# requirement keeps it from firing on every bare `token:` reference; (2) known
+# high-entropy key prefixes, keyword-independent (AWS / GitHub / Anthropic).
+# No LEADING word boundary on the keyword group (secrets-002): a `\b` there
+# never fires when the keyword is the trailing segment of a compound identifier
+# (the char left of `api_key` in `FARM_API_KEY` is `_`, a word char), so a
+# hardcoded `FARM_API_KEY = "..."` silently passed the gate. The right-hand
+# quoted-assignment anchor still bounds the match — a bare `token:` reference
+# without a quoted value never matches.
+SECRET_RE = re.compile(
+    r"(?:password|secret|token|api_key|apikey|private_key|passphrase|credential"
+    r"|aws_secret_access_key|client_secret)"
+    r"""["']?\s*[:=]\s*["'][^"']{4,}"""
+    r"|AKIA[0-9A-Z]{16}"
+    r"|ghp_[A-Za-z0-9]{36}"
+    r"|sk-ant-[A-Za-z0-9_-]{16,}",
+    re.I,
+)
+
+
+# Sensitive-scan exemption (H-09b/H-10b, #279). gate-events.log is the durable
+# BLOCK/REMIND/WARN sink block()/remind()/warn() append to (observability-001,
+# #186) — it is machine-written, never source code, and structurally
+# guaranteed to echo the crypto/secret detector's OWN message text back at
+# itself the moment the gate ever fires a crypto/secret REMIND (e.g. "Crypto/
+# TLS pattern detected" itself matches CRYPTO_RE). That makes it a permanent,
+# self-perpetuating false positive with zero disclosure value: nothing
+# written there is a genuine crypto/secret USE, only a report ABOUT one.
+# Deliberately narrow — overrides.log/triage.log/sprint-log.md stay IN SCOPE:
+# they carry human-written prose (an override reason, a triage note) that
+# COULD legitimately contain a leaked secret worth catching. This set is
+# anchored on the REPO-RELATIVE PATH a line belongs to, never a substring
+# match on the line's own text — a secret cannot escape the scan by merely
+# mentioning gate-events.log on its line; only lines that actually LIVE in
+# that file are exempt.
+SENSITIVE_SCAN_EXEMPT_RELPATHS = frozenset({".codearbiter/gate-events.log"})
+
+
+def is_sensitive_scan_exempt(rel):
+    """True iff `rel` (a repo-relative path, as attributed by `diff_added_
+    lines` or as returned by a bare `git ls-files` listing) names a file
+    exempt from the H-09b/H-10b crypto/secret scan. The ONE predicate both
+    the diff walk and the untracked/unborn-branch file listings route
+    through (#279 review LOW) — deliberately strict: no case-folding, no
+    `./`/`//` collapsing. An identifier that isn't an exact, `norm_path`'d
+    match resolves toward IN SCOPE (not exempt), which is the safe
+    direction. See SENSITIVE_SCAN_EXEMPT_RELPATHS."""
+    return norm_path(rel) in SENSITIVE_SCAN_EXEMPT_RELPATHS
+
+
+# Every H-09b/H-10b sensitive-line reader (security-pass.py, pre-bash.py,
+# git-enforce.py) MUST run `git diff` through this pinned argv, never a bare
+# `["diff", ...]` (#279 review MEDIUM-1). Two independent user/global git
+# config knobs change the destination-path prefix `diff_added_lines` below
+# depends on: `diff.mnemonicPrefix=true` emits `c/`/`w/`/`i/`/`o/` instead of
+# `a/`/`b/`, and `diff.noprefix=true` emits no prefix at all. Either one, left
+# unpinned, silently un-exempts the REAL gate-events.log for any dev/CI runner
+# with that config set — bringing back the exact self-DoS this whole change
+# exists to close. `-c` overrides win over any config file (including repo,
+# global, and system config), so pinning both flags to false here forces the
+# standard `a/`/`b/` prefixes regardless of the caller's environment.
+# `--no-ext-diff` additionally blocks a configured `GIT_EXTERNAL_DIFF` /
+# `diff.external` from replacing git's own unified-diff output with something
+# this parser was never designed to read. Centralized so a call site cannot
+# forget to pin it (that was exactly how this hole would keep reopening).
+SECURITY_DIFF_GIT_ARGS = (
+    "-c", "diff.mnemonicPrefix=false", "-c", "diff.noprefix=false",
+    "diff", "--no-ext-diff", "--no-textconv", "--no-color",
+    "--src-prefix=a/", "--dst-prefix=b/", "--unified=2147483647",
+)
+
+# The fixed-width destination-path prefix `diff_added_lines` strips off a
+# preamble `+++ ` line. MUST be a fixed-length slice, never a search for a
+# separator: a greedy/`.+`-based parse of "diff --git a/<path> b/<path>" (the
+# prior approach) resolves ambiguously when <path> itself contains " b/" —
+# e.g. a real repo path `x b/.codearbiter/gate-events.log` renders that
+# header as `diff --git a/x b/.codearbiter/gate-events.log b/x
+# b/.codearbiter/gate-events.log`, and a greedy match backtracks group(1) to
+# `.codearbiter/gate-events.log`, exempting the WHOLE unrelated source file
+# (#279 review HIGH — reproduced end-to-end: an md5() call and a committed
+# password both passed H-09b with no marker). Stripping a FIXED 6-character
+# prefix has no such ambiguity: `"+++ b/x b/.codearbiter/gate-events.log"[6:]`
+# is unconditionally `"x b/.codearbiter/gate-events.log"`, the correct full
+# path, no matter what the path itself contains.
+_PLUS_B_PREFIX = "+++ b/"
+_PLUS_DEV_NULL = "+++ /dev/null"
+
+
+
+
+def diff_added_lines(diff_text):
+    """Added (`+`) lines of a unified `git diff`-style text (produced via
+    SECURITY_DIFF_GIT_ARGS — pinned `a/`/`b/` prefixes, no external diff), as
+    `(path, line)` tuples — a PATH-AWARE walk so a caller can exclude lines by
+    the FILE they live in, never by matching the line's own text (which a
+    hidden secret could otherwise dodge by naming the excluded file).
+
+    Two-phase state machine per file section, `path`/`in_hunk`/`seen_section`:
+
+    1. A bare, UNPREFIXED `diff ` line (`diff --git`, `diff --cc`, `diff
+       --combined`, ...) starts a new section: `path` resets to `None` and
+       `in_hunk` resets to False. Content can NEVER forge this line at column
+       0 — every diff-body line (context/added/removed) carries a leading
+       ' '/'+'/'-'/'\\' character, so a file whose own content is literally
+       "diff --git a/x b/y" renders as "+diff --git a/x b/y" (added), never as
+       a bare match. Resetting `path` to None (not inheriting the PREVIOUS
+       section's path) on ANY `diff ` spelling matters for combined/merge
+       diffs (#279 review MEDIUM-2): git-enforce.py's `git diff --cached` at a
+       merge commit emits `diff --cc <path>` sections, which the prior
+       `diff --git`-only reset missed, letting a `--cc` section's added lines
+       silently inherit whatever path the section before it had — failing
+       toward EXEMPTION if that was gate-events.log.
+    2. While NOT yet `in_hunk` (the section's preamble, before its first `@@`
+       / `@@@` hunk header), a `+++ b/<path>` line sets `path` by stripping
+       the FIXED 6-character prefix `_PLUS_B_PREFIX` — never a regex search
+       for a separator (see `_PLUS_B_PREFIX`'s comment for the ambiguity a
+       greedy `diff --git` parse had). `+++ /dev/null` (a deleted
+       destination) sets `path` back to None explicitly — no added lines are
+       expected in a deletion's hunk body anyway. Every other preamble line
+       (`--- a/<path>`, `index ...`, `new/deleted file mode`, `rename
+       from/to`, `similarity index`, `Binary files ... differ`) is inert
+       noise. A `+++ b/...`-shaped line can ONLY be trusted here, before the
+       section's first `@@`: once `in_hunk` is True, an apparently identical
+       `+++ b/...` string is body CONTENT (it carries the hunk body's own
+       leading `+`, i.e. the underlying source line was "++ b/..." or "+++
+       b/..." before diff-prefixing) and is captured as an added line like any
+       other, never re-parsed as an attribution header (closes the #279
+       review's own earlier finding: an added content line forging `+++
+       b/<path>` used to hijack attribution for the rest of the file).
+    3. Once `in_hunk`, `+`-prefixed lines are collected as `(path, content)`;
+       `-`/` `/`\\` (no-newline-marker) lines are skipped; anything else ends
+       the hunk (not producible by well-formed `git diff` output there, but
+       handled rather than guessed at).
+
+    FAILS SAFE: a `+` line seen before ANY `diff ` section header at all (not
+    producible by real `git diff` output) is attributed to `path=None` and
+    STILL COLLECTED, never silently dropped. `sensitive_scan_added_lines`
+    treats an unattributed (`None`) path as NOT exempt — in scope for
+    scanning. Exempting, or discarding, an unattributable line would be the
+    dangerous direction; over-scanning only risks a false positive, the
+    harmless failure mode here.
+
+    The shared primitive behind the H-09b/H-10b crypto/secret gate's producer
+    (security-pass.py) and both consumers (pre-bash.py, git-enforce.py) —
+    implemented once here so the gate-events.log exemption can never drift
+    between the three independent line-collectors that used to each do their
+    own flat `[ln[1:] for ln in text.splitlines() if ln.startswith("+") ...]`
+    walk with no path information (and no forgery-resistance) at all."""
+    path = None
+    in_hunk = False
+    seen_section = False  # True once the first `diff ` section header is seen
+    out = []
+    for line in diff_text.splitlines():
+        if line.startswith("diff "):
+            path = None
+            in_hunk = False
+            seen_section = True
+            continue
+        if line.startswith("@@"):
+            in_hunk = True
+            continue
+        if not in_hunk:
+            if not seen_section:
+                # No `diff ` section header seen yet at all: not producible
+                # by real `git diff` output. Fail SAFE (see docstring) rather
+                # than silently dropping a line that cannot be confidently
+                # classed as header noise either.
+                if line.startswith("+"):
+                    out.append((None, line[1:]))
+                continue
+            # Section preamble: only a genuine `+++ b/<path>` (or `+++
+            # /dev/null`) line here can set `path` — see point 2 above.
+            if line.startswith(_PLUS_B_PREFIX):
+                path = line[len(_PLUS_B_PREFIX):]
+            elif line == _PLUS_DEV_NULL:
+                path = None
+            continue
+        if line.startswith("+"):
+            out.append((path, line[1:]))
+        elif line.startswith(("-", " ", "\\")):
+            pass  # removed / context / "\ No newline at end of file"
+        else:
+            # Not producible by well-formed `git diff` output (a hunk body
+            # line is always one of the four prefixes above); treat it as the
+            # hunk having ended rather than guessing.
+            in_hunk = False
+    return out
+
+
+def sensitive_scan_added_lines(diff_text):
+    """`diff_added_lines(diff_text)` narrowed to the H-09b/H-10b crypto/secret
+    scan's candidate set: every added line EXCEPT those belonging to a
+    sensitive-scan-exempt path (currently only gate-events.log). Call this
+    instead of a raw `+`-line filter anywhere the crypto/secret scan reads a
+    diff, so the exemption is applied uniformly."""
+    return [ln for path, ln in diff_added_lines(diff_text)
+            if not (path and is_sensitive_scan_exempt(path))]
+
+
+# H-09b contextual additions (#678): raw line bindings stay compatible. Only
+# bare short-name import items require lexical destination context. Context
+# bindings use a separate marker namespace; a user-authored source string or
+# an old line-only approval cannot impersonate one of these records.
+# SecurityScan(crypto, digests): classification and exact approval identities.
+# security_scan_lines(lines) -> SecurityScan|None: line-bound scan or refusal.
+# security_scan_source(path, source, added_rows) -> SecurityScan|None.
+# security_scan_diff(text) -> SecurityScan|None: None means untrusted context.
+SecurityScan = namedtuple("SecurityScan", "crypto digests")
+_SHORT_CRYPTO_TOKEN_RE = re.compile(rf"\b{_SHORT_CRYPTO_NAME}\b", re.I)
+_IMPORT_ITEM = r"[^\W\d]\w*(?:[ \t]+as[ \t]+[^\W\d]\w*)?"
+_IMPORT_ITEM_LINE_RE = re.compile(
+    rf"[ \t]*{_IMPORT_ITEM}(?:[ \t]*,[ \t]*{_IMPORT_ITEM})*[ \t]*,?[ \t]*"
+    r"(?:\\|\)[ \t]*(?:;[^\r\n]*)?)?[ \t]*(?:\#[^\r\n]*)?", re.I)
+_FULL_HUNK_RE = re.compile(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(?: .*)?")
+_MAX_CRYPTO_CONTEXT_BYTES = 1_000_000
+
+
+def _is_context_item_line(line):
+    """Route bounded import-list syntax to context, never classify it alone."""
+    if not _SHORT_CRYPTO_TOKEN_RE.search(line):
+        return False
+    # Collapse only the temporary routing text, avoiding overlapping whitespace
+    # partitions. Tokenization and approval binding still use the original source.
+    candidate = re.sub(r"[ \t]+", " ", line)
+    return bool(_IMPORT_ITEM_LINE_RE.fullmatch(candidate))
+
+
+def _cross_line_crypto_spans(lines):
+    """Locate joined matches by zero-based row/column, without quadratic slicing."""
+    starts = [0]
+    for line in lines:
+        starts.append(starts[-1] + len(line) + 1)
+    spans = set()
+    for match in CRYPTO_RE.finditer("\n".join(lines)):
+        if "\n" not in match.group():
+            continue
+        first = bisect_right(starts, match.start()) - 1
+        last = bisect_right(starts, match.end()) - 1
+        spans.add((first, match.start() - starts[first],
+                   last, match.end() - starts[last]))
+    return spans
+
+
+def _scan_bound_lines(lines, contextual_bindings):
+    """Each cross-line match needs its own recognized contextual identity."""
+    spans = _cross_line_crypto_spans(lines)
+    if not spans <= contextual_bindings.keys():
+        return None
+    return SecurityScan(bool(spans) or any(CRYPTO_RE.search(line) for line in lines), {
+        line_digest(line) for line in lines
+        if CRYPTO_RE.search(line) or SECRET_RE.search(line)
+    } | set(contextual_bindings.values()))
+
+
+def security_scan_lines(lines):
+    """Preserve same-line bindings; refuse crypto spanning unbound lines."""
+    return _scan_bound_lines(lines, {})
+
+
+def security_scan_source(path, source, added_rows):
+    """Classify original added lines plus narrowly recognized Python imports.
+
+    `source` is ONE destination snapshot; rows are one-based positions in it.
+    Tokenization only separates import NAME/OP tokens from strings/comments;
+    this is not an expression, type, or general-language parser. Invalid or
+    unavailable required context returns None, never an ordinary exemption.
+    """
+    lines = source.splitlines()
+    if any(row < 1 or row > len(lines) for row in added_rows):
+        return None
+    added = [lines[row - 1] for row in added_rows]
+    result = security_scan_lines(added)
+    candidates = {row for row in added_rows
+                  if _is_context_item_line(lines[row - 1])}
+    if not candidates:
+        return result
+    if not path or len(source.encode("utf-8", "replace")) > _MAX_CRYPTO_CONTEXT_BYTES:
+        return None
+    # Replacement decoding can collapse distinct original bytes. Even a
+    # literal replacement character is ambiguous here: refuse contextual proof.
+    if "\ufffd" in source:
+        return None
+    try:
+        tokens = [token for token in tokenize.generate_tokens(io.StringIO(source).readline)
+                  if token.type not in (tokenize.COMMENT, tokenize.NL,
+                                        tokenize.INDENT, tokenize.DEDENT)]
+    except (tokenize.TokenError, SyntaxError):
+        return None
+    if any(token.type == tokenize.ERRORTOKEN and not token.string.isspace()
+           for token in tokens):
+        return None
+    matched = set()
+    import_spans = []
+    start = [(tokenize.NAME, "from"), (tokenize.NAME, "Crypto"),
+             (tokenize.OP, "."), (tokenize.NAME, "Cipher"),
+             (tokenize.NAME, "import"), (tokenize.OP, "(")]
+    for index in range(len(tokens) - len(start)):
+        if [(token.type, token.string) for token in tokens[index:index + len(start)]] != start:
+            continue
+        cursor = index + len(start)
+        while cursor < len(tokens) and tokens[cursor].string != ")":
+            item = tokens[cursor]
+            if item.type != tokenize.NAME:
+                return None
+            cursor += 1
+            if cursor < len(tokens) and tokens[cursor].string == "as":
+                cursor += 1
+                if cursor >= len(tokens) or tokens[cursor].type != tokenize.NAME:
+                    return None
+                cursor += 1
+            if item.start[0] in candidates and _SHORT_CRYPTO_TOKEN_RE.fullmatch(item.string):
+                matched.add(item.start[0])
+                import_spans.append((tokens[index + 4].start, item.end))
+            if cursor >= len(tokens) or tokens[cursor].string not in (",", ")"):
+                return None
+            if tokens[cursor].string == ",":
+                cursor += 1
+        if cursor >= len(tokens):
+            return None
+    # Preserve lexical whitespace; only transport CRLF decoding is normalized.
+    destination = hashlib.sha256(source.encode("utf-8", "replace")).hexdigest()
+    contexts = {row: "ctx-v1:" + hashlib.sha256(json.dumps(
+        [path, destination, row, lines[row - 1]], separators=(",", ":")
+    ).encode("utf-8")).hexdigest() for row in matched}
+    positions = {row: index for index, row in enumerate(added_rows)}
+    bindings = {(positions[first[0]], first[1], positions[last[0]], last[1]): contexts[last[0]]
+                for first, last in import_spans
+                if first[0] in positions and last[0] in positions}
+    result = _scan_bound_lines(added, bindings)
+    if result is None:
+        return None
+    return SecurityScan(result.crypto or bool(contexts), result.digests | set(contexts.values()))
+
+
+def _full_destination(section):
+    """Validate one whole-file Git hunk before using its destination context."""
+    path = None
+    hunk = None
+    for index, line in enumerate(section):
+        if line.startswith(_PLUS_B_PREFIX):
+            path = line[len(_PLUS_B_PREFIX):]
+        if line.startswith("@@"):
+            hunk = index
+            break
+    if not path or hunk is None:
+        return None
+    header = _FULL_HUNK_RE.fullmatch(section[hunk])
+    if header is None:
+        return None
+    old_start, old_count, new_start, new_count = header.groups()
+    old_start, new_start = int(old_start), int(new_start)
+    old_count, new_count = int(old_count or 1), int(new_count or 1)
+    if old_start != (1 if old_count else 0) or new_start != 1:
+        return None
+    destination, rows = [], []
+    old_seen = new_seen = 0
+    previous = None
+    for line in section[hunk + 1:]:
+        if line.startswith("\\"):
+            if line != "\\ No newline at end of file" or previous not in ("+", "-", " "):
+                return None
+            if previous != "-":
+                destination[-1] = destination[-1].removesuffix("\n")
+            previous = None
+            continue
+        if not line or line[0] not in ("+", "-", " "):
+            return None
+        previous = line[0]
+        if previous in ("-", " "):
+            old_seen += 1
+        if previous in ("+", " "):
+            new_seen += 1
+            destination.append(line[1:] + "\n")
+            if previous == "+":
+                rows.append(new_seen)
+    if (old_seen, new_seen) != (old_count, new_count):
+        return None
+    return path, "".join(destination), rows
+
+
+def security_scan_diff(diff_text):
+    """Shared producer/consumer scan; context comes from this one pinned diff.
+
+    Legacy classification and audit-path handling remain unchanged. Only a
+    section with an ambiguous bare added item pays the full-context/token cost.
+    Missing attribution, incomplete hunks and unsupported context fail closed.
+    """
+    # A flattened match may not borrow approval from a different file section.
+    cross_spans = _cross_line_crypto_spans(sensitive_scan_added_lines(diff_text))
+    covered_spans = set()
+    added_offset = 0
+    result = SecurityScan(False, set())
+    sections = []
+    for line in diff_text.splitlines():
+        if line.startswith("diff ") or not sections:
+            sections.append([])
+        sections[-1].append(line)
+    for section in sections:
+        attributed = diff_added_lines("\n".join(section))
+        if attributed and all(path and is_sensitive_scan_exempt(path)
+                              for path, _ in attributed):
+            continue
+        added = sensitive_scan_added_lines("\n".join(section))
+        # A damaged hunk header must not make an apparent added item disappear
+        # in the legacy permissive walker before context validation even runs.
+        if not any(line.startswith("+") and _is_context_item_line(line[1:])
+                   for line in section):
+            contextual = security_scan_lines(added)
+        else:
+            if not section[0].startswith("diff --git "):
+                return None
+            context = _full_destination(section)
+            if context is None:
+                return None
+            path, source, rows = context
+            source_lines = source.splitlines()
+            if attributed != [(path, source_lines[row - 1]) for row in rows]:
+                return None
+            contextual = security_scan_source(path, source, rows)
+        if contextual is None:
+            return None
+        covered_spans.update((first + added_offset, col, last + added_offset, end)
+                             for first, col, last, end in _cross_line_crypto_spans(added))
+        added_offset += len(added)
+        result = SecurityScan(result.crypto or contextual.crypto,
+                              result.digests | contextual.digests)
+    if not cross_spans <= covered_spans:
+        return None
+    return result
+
+
+def line_digest(line):
+    """Digest of one added diff line, for the security-gate binding
+    (H-09b/H-10b). The gate-pass marker stores these digests instead of being
+    an empty `touch`d file, so a recorded pass admits only the exact sensitive
+    lines it reviewed — not whatever lands in the next 30 minutes. Trailing
+    whitespace is stripped so CRLF translation between worktree and index
+    never breaks the match."""
+    return hashlib.sha256(line.rstrip().encode("utf-8", "replace")).hexdigest()
+
+
+def content_digest(text):
+    """Digest of a whole migration file's content, for the H-14 migration-gate
+    binding. Lines are rstripped and rejoined with \\n so CRLF translation
+    between worktree and index never breaks the match (same rationale as
+    line_digest). The producer (migration-pass.py) and the backstop
+    (pre-bash.py) both digest worktree content this way, so the two never
+    disagree on what a recorded pass covers."""
+    norm = "\n".join(line.rstrip() for line in text.splitlines())
+    return hashlib.sha256(norm.encode("utf-8", "replace")).hexdigest()
