@@ -1,43 +1,29 @@
 ---
-description: Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops.
+description: "Run an autonomous sprint from maintained specs and plans, with truthful verification and no duplicate artifact approval ceremonies."
 argument-hint: "[goal] [--farm]"
 ---
 
 # /ca:sprint — autonomous sprint
 
-The autonomy mode. Brainstorm a sprint spec with the user — the one interactive gate — then execute
-the approved plan end-to-end without per-batch checkpoints, deciding "as the user" via SMARTS on
-every non-hard-gate point. Every auto-decision lands in `.codearbiter/sprint-log.md` (append-only)
-with a confidence flag; the `low`-confidence entries are exactly what the user reviews afterward.
-Nothing is hidden behind autonomy.
+The user's requested sprint establishes its working scope. Use `brainstorming` to clarify genuinely missing outcomes, `writing-plans` to maintain a practical plan, and `subagent-driven-development` to execute through real task dependencies without per-batch permission questions. Record meaningful choices and honest evidence; do not invent approvals, clear user stops, or infer tests passed from progress labels.
 
 ## Flow
 
-Load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md` — it is the procedure. In brief:
+Load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`:
 
-1. **Sprint spec (STOP)** — `brainstorming` scoped to a sprint, then `writing-plans`. Explicit user
-   approval of spec AND plan before autonomy begins.
-2. **Autonomous execution (BLOCK)** — `subagent-driven-development` runs the plan; test-first via
-   `tdd`, two-pass reviewed, fresh-run verified. SMARTS decides non-hard-gate points; everything logs.
-3. **Land & summarize (BLOCK)** — `commit-gate`, then `finishing-a-development-branch`, which
-   auto-selects open-PR. `/ca:sprint` never merges and never discards; the merge decision is the user's.
+1. **Specify and plan:** build or resume the exact spec/plan representation. Ask about consequential missing choices, not about arbitrary approval hashes.
+2. **Execute:** work through task-scoped prerequisites and coherent batches, implement or delegate where useful, and check changed behavior. Retry affected failures without restarting a reviewer fleet.
+3. **Report and deliver:** show actual results, pending checks, and open choices. Use the existing authorized `commit-gate` and PR handoff; opening a PR does not authorize merging or publishing.
 
-Hard gates — `security-controls`, crypto/secrets/auth, irreversible ops, `/override`, an
-unresolvable `[CONFIRM-NN]`, merge-to-default — are NEVER auto-decided. They halt and surface.
+Real host/tool permissions, explicit security policy, irreversible operation limits and user stops remain intact. Artifact `DONE` means implementation reported complete, not independently verified acceptance.
 
 ## Arguments
 
-- **`"goal"`** — seed for the sprint-spec brainstorm.
-- **`--farm`** — cost-arbitrage backend: cheap workers implement under the same gates; Claude still
-  authors spec, failing tests, plan, and reviews everything. Pre-flights `FARM_API_KEY`.
+- **Goal:** intended sprint outcome and scope.
+- **`--farm`:** separately requested legacy Markdown preview backend; obey its provider, budget and circuit-breaker boundaries. HTML farm is disabled, and failure does not authorize a silent backend switch.
 
 ## Routes to
 
-`${CLAUDE_PLUGIN_ROOT}/SPRINT.md` (mode body), which routes through `brainstorming`,
-`writing-plans`, `subagent-driven-development`, `commit-gate`, `finishing-a-development-branch`.
+`${CLAUDE_PLUGIN_ROOT}/SPRINT.md` routes through `brainstorming`, `writing-plans`, `subagent-driven-development`, `commit-gate`, and `finishing-a-development-branch`.
 
-## When NOT to use
-
-- A single feature with human checkpoints → `/ca:feature`.
-- Work whose spec cannot be made concrete up front — the one interactive gate is load-bearing;
-  a thin spec makes hard-gate stops frequent instead of rare.
+For a single bounded feature, use `/ca:feature`. No repetitive initial spec approval interview is implied by either entry.

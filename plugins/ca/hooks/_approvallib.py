@@ -345,6 +345,38 @@ def cancel_user_approval(root: str | Path, artifact_id: str) -> dict[str, Any]:
     return {"artifact_id": artifact_id, "cancelled": True}
 
 
+def retire_unanswered_user_approval(
+    root: str | Path, artifact_id: str, *, reason: str,
+) -> dict[str, Any]:
+    """Retire only an unsubmitted historical paired prompt, not an approval.
+
+    The older single-artifact 0.1 marker cannot establish whether a reply
+    was captured and its write outcome lost. It is therefore not eligible
+    for this automatic cleanup. The paired adapter serializes cancellation
+    against the genuine reply consumer and checks the durable submission.
+    """
+    if (not isinstance(artifact_id, str) or re.fullmatch(r"[A-Z][A-Z0-9-]{1,79}", artifact_id) is None
+            or not isinstance(reason, str) or not reason.strip()
+            or len(reason.encode("utf-8")) > 2048):
+        raise ApprovalError("INVALID_RETIREMENT", "retirement requires a valid artifact ID and bounded nonblank reason")
+    root = Path(root).resolve(strict=True)
+    pending = _load_pending(root)
+    if pending is None or pending["artifact_id"] != artifact_id:
+        raise ApprovalError("NO_PENDING_APPROVAL", "no matching pending approval request")
+    if pending["format"] != "codearbiter.pending-user-approval/0.2.0":
+        raise ApprovalError("LEGACY_APPROVAL_RECOVERY_REQUIRED",
+                            "single-artifact pending state cannot prove a user reply was unsubmitted")
+    import _sprintapprovallib
+    # Uses the existing private per-repository lock and independently checks
+    # the current marker and durable submission before deleting either route.
+    _sprintapprovallib.cancel(root, pending)
+    return {
+        "artifact_id": artifact_id, "disposition": "unanswered_prompt_superseded",
+        "reason": reason.strip(), "authority_granted": False, "mutation_attempted": False,
+    }
+
+
+
 def consume_user_approval(
     root: str | Path,
     client: Any,
@@ -489,6 +521,10 @@ def main(argv: list[str] | None = None) -> int:
     cancel = sub.add_parser("cancel")
     cancel.add_argument("--root", required=True)
     cancel.add_argument("--artifact-id", required=True)
+    retire = sub.add_parser("retire")
+    retire.add_argument("--root", required=True)
+    retire.add_argument("--artifact-id", required=True)
+    retire.add_argument("--reason", required=True)
     pair = sub.add_parser("arm-sprint")
     pair.add_argument("--root", required=True)
     pair.add_argument("--spec-id", required=True)
@@ -503,6 +539,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "cancel":
         print(json.dumps(cancel_user_approval(args.root, args.artifact_id)))
+        return 0
+    if args.command == "retire":
+        print(json.dumps(retire_unanswered_user_approval(
+            args.root, args.artifact_id, reason=args.reason,
+        )))
         return 0
     client = _artifactlib.ArtifactClient(
         args.root, _artifactlib.helper_installation(__file__)

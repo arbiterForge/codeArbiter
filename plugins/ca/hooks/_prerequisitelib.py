@@ -847,6 +847,31 @@ def cancel_user_prerequisite(
         }
 
 
+def retire_unanswered_user_prerequisite(
+    root: str | Path, artifact_id: str, prerequisite_id: str, *, reason: str,
+) -> dict[str, Any]:
+    """Retire only an ARMED question, never an observed user decision.
+
+    Reuse the existing bounded pending reader, per-plan transition lock,
+    and the proven ARMED-only cancellation. CONFIRMED or CAPTURED must
+    follow their existing exact recovery paths; no receipt is synthesized.
+    """
+    if (not isinstance(reason, str) or not reason.strip()
+            or len(reason.encode("utf-8")) > 2048
+            or not isinstance(artifact_id, str) or ID_RE.fullmatch(artifact_id) is None
+            or not isinstance(prerequisite_id, str) or ID_RE.fullmatch(prerequisite_id) is None):
+        raise PrerequisiteError("INVALID_RETIREMENT", "retirement requires valid IDs and a bounded nonblank reason")
+    cancelled = cancel_user_prerequisite(root, artifact_id, prerequisite_id)
+    if cancelled.get("cancelled") is not True:
+        raise PrerequisiteError("INVALID_RETIREMENT", "the unanswered prerequisite was not cancelled")
+    return {
+        "artifact_id": artifact_id, "prerequisite_id": prerequisite_id,
+        "disposition": "unanswered_prompt_superseded", "reason": reason.strip(),
+        "authority_granted": False, "mutation_attempted": False,
+    }
+
+
+
 def supersede_user_prerequisite(
     root: str | Path,
     client: Any,
@@ -976,10 +1001,20 @@ def main(argv: list[str] | None = None) -> int:
     supersede.add_argument("--root", required=True)
     supersede.add_argument("--artifact-id", required=True)
     supersede.add_argument("--prerequisite-id", required=True)
+    retire = sub.add_parser("retire")
+    retire.add_argument("--root", required=True)
+    retire.add_argument("--artifact-id", required=True)
+    retire.add_argument("--prerequisite-id", required=True)
+    retire.add_argument("--reason", required=True)
     args = parser.parse_args(argv)
     if args.command == "cancel":
         print(json.dumps(cancel_user_prerequisite(
             args.root, args.artifact_id, args.prerequisite_id
+        )))
+        return 0
+    if args.command == "retire":
+        print(json.dumps(retire_unanswered_user_prerequisite(
+            args.root, args.artifact_id, args.prerequisite_id, reason=args.reason,
         )))
         return 0
     client = _artifactlib.ArtifactClient(
