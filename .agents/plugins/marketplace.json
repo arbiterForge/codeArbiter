@@ -1,0 +1,20 @@
+{
+  "name": "codearbiter",
+  "interface": {
+    "displayName": "codeArbiter"
+  },
+  "plugins": [
+    {
+      "name": "ca-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ca-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
