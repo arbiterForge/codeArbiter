@@ -10,8 +10,8 @@
         "source": "git-subdir",
         "url": "https://github.com/arbiterForge/codeArbiter.git",
         "path": "plugins/ca-codex",
-        "ref": "refs/tags/ca-codex-dist-v0.14.0",
-        "sha": "4791ea89af0d1788c8ddd07f11763036e25c9fcc"
+        "ref": "refs/tags/ca-codex-dist-v0.14.1",
+        "sha": "9c240f1945e5a3f2c2fb6583c52e8c8280d39e63"
       },
       "policy": {
         "installation": "AVAILABLE",
