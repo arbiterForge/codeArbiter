@@ -46,6 +46,10 @@ def main(argv=None) -> int:
         "--reviewer-model", choices=sorted(_artifactauthoritylib.CLAUDE_REVIEWER_MODELS),
         default="opus", help="Claude reviewer model pinned into the launch envelope",
     )
+    arm.add_argument(
+        "--codex-review-profile", choices=("native-v1",), default=None,
+        help="select only after qualifying the actual registered native V1 UUID interface",
+    )
     verify = sub.add_parser("verify")
     verify.add_argument("--root", required=True)
     verify.add_argument("--request-id", required=True)
@@ -68,10 +72,17 @@ def main(argv=None) -> int:
             raise _artifactauthoritylib.AuthorityError(
                 "UNSUPPORTED_HOST_SEAM", f"host {host} has no verification or review authority"
             )
+        if (host == "codex" and args.activity in _artifactauthoritylib.REVIEW_ACTIVITIES
+                and args.codex_review_profile is None):
+            raise _artifactauthoritylib.AuthorityError(
+                "UNSUPPORTED_HOST_SEAM",
+                "Codex review requires explicit --codex-review-profile native-v1 after live interface qualification",
+            )
         result = _artifactauthoritylib.arm_request(
             root, client, args.artifact_id, args.record_id, args.activity,
             workspace_roots=workspaces or None, host=host,
             reviewer_model=args.reviewer_model,
+            codex_review_profile=args.codex_review_profile,
         )
         if host == "claude" and args.activity == "verification":
             # The Claude verifier hook pins this exact shipped script and

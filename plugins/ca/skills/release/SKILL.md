@@ -1,6 +1,7 @@
 ---
 name: release
-description: The single permitted path to a version tag, for any target declared in the project's .codearbiter/release-targets.md. Routed to when the user invokes /release on a non-default branch with a green suite. Takes the declared target as its one argument, derives the next identity under its declared version policy from Conventional-Commits history, rolls the commits into that target's CHANGELOG, writes an annotated tag in that target's namespace, and on authorization publishes it as a GitHub Release with the changelog section and exact declared assets. A release commit, if needed, routes through commit-gate; the tag and Release are never published without explicit authorization.
+description: Prepare a declared release target, or preview it with --dry-run. Derive its version and require authorization before publication.
+argument-hint: "[target] | --dry-run"
 ---
 
 # release
