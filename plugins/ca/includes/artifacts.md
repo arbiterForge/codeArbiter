@@ -149,6 +149,19 @@ combined HTML sprint review uses the explicit paired path below instead of separ
 A normative change invalidates its approval. Rebinding is explicit and preserves
 history; it does not waive coverage or permit silent reinterpretation.
 
+When adversarial review revises a ready initial draft spec after its draft plan exists,
+query both current identities. The installed engine's explicit `plan-bind` request with
+`binding_mode: draft_preview` requires the plan's existing `expected` CAS and the spec's
+`spec_expected` revision/model CAS. It rebinds only that same-ID, same-slug initial pair:
+both artifacts must remain unapproved drafts, tasks pending and unevidenced, prerequisites
+unsatisfied and unevidenced, and scopes empty. Optional typed plan corrections must leave
+both drafts fully ready. The binding remains `draft_preview`; this operation grants no
+approval, delegation, prerequisite satisfaction, execution or acceptance. Revalidate both
+current drafts, repeat the affected review and arm the exact combined approval afterward.
+Inspect the installed operation schema first. An engine without this explicit draft
+request reports a capability gap; never edit HTML, recreate the pair, substitute sequential
+approval or use ordinary approved-source `plan-bind` to repair it.
+
 ## Initial sprint pair and delegated methods
 
 Only when preparing initial combined approval, replaying an observed reply, or revising a task's
