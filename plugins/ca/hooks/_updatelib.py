@@ -1,0 +1,458 @@
+#!/usr/bin/env python3
+# codeArbiter — update-available notifier: shared cache/compare/fetch logic.
+#
+# codeArbiter ships via a third-party marketplace, which Claude Code does NOT
+# auto-update by default (only official Anthropic marketplaces get that). This
+# module backs a lightweight notifier so a stale install is surfaced instead of
+# running forever unnoticed: it reads the installed plugin.json version, reads
+# a small user-global cache keyed by independently versioned release target,
+# and — when that target's cache says a newer version exists — hands back a
+# single host-native notice line. Both
+# SessionStart and the statusline render from that SAME cache; neither makes a
+# network call on its own hot path (issue #194's constraint).
+#
+# The only network call this module makes (fetch_latest_tag) is invoked from
+# the OFF-hot-path detached refresh (see hooks/update-refresh.py, spawned by
+# session-start.py). refresh_if_stale() gates that call to at most once per
+# day per target via the cached `checked_at`, and is fail-silent end to end:
+# any network
+# error, timeout, non-200, or unparseable body degrades to "keep the last-known
+# latest" — never a traceback, never a crash of the host hook.
+#
+# Design principles (mirroring _ledgerlib.py / _taskboardlib.py):
+#   - Stdlib only (urllib, json) — no third-party dependency, ever (ADR-0004).
+#   - HTTPS-only fetch target (ADR-0003); a non-https url is refused outright.
+#   - Zero side effects at import time — no network, no file I/O on import.
+#   - Never raise on malformed/absent input — degrade to "no notice".
+#
+# Public API:
+#   ONE_DAY                                  once-daily refresh interval (seconds)
+#   UPDATE_API_URL                           GitHub Releases API endpoint (module constant)
+#   state_path() -> str                      resolved cache file path (env-overridable)
+#   plugin_root(explicit=None) -> str        the running plugin's own root directory
+#   installed_version(root=None, host=None) -> str|None  the version in
+#                                             <root>/<host.manifest_relpath()>
+#                                             (host defaults to _hooklib.get_host())
+#   parse_version(s) -> tuple|None           numeric-tuple parse; None if malformed/absent
+#   version_gt(a, b) -> bool                 True iff semver a > b (numeric-tuple compare)
+#   update_available(installed, latest) -> bool   True iff latest > installed
+#   update_descriptor(host=None) -> dict|None validated host update descriptor
+#   target_state(state, host=None) -> dict    one target's cache row, or {}
+#   notice_line(installed, latest, host=None) -> str|None host-native notice text
+#   read_state(path=None) -> dict            target-keyed cache, or {} on any failure
+#   write_state(state, path=None) -> None    atomic cache write; best-effort, never raises
+#   is_stale(checked_at, now, interval=ONE_DAY) -> bool   True iff a refresh is due
+#   select_latest_tag(releases, tag_prefix) -> str|None target-series selection
+#   fetch_latest_tag(tag_prefix=None, url=..., timeout=3.0,
+#                    opener=None, host=None) -> str|None
+#   refresh_if_stale(now=None, fetcher=None, path=None, host=None) -> dict
+
+import json
+import math
+import os
+import re
+import sys
+import time
+import urllib.parse
+import urllib.request
+
+# Reuse the ONE atomic-write helper defined in _hooklib.py (same rationale as
+# _previewlib.py: _hooklib sits beside this file; mount its dir on sys.path the
+# same way the test harness does before importing by reference).
+_HOOKS_DIR = os.path.dirname(os.path.abspath(__file__))
+if _HOOKS_DIR not in sys.path:
+    sys.path.insert(0, _HOOKS_DIR)
+from _hooklib import (  # noqa: E402 — sys.path mount above
+    acquire_lock,
+    get_host,
+    release_lock,
+    write_text_atomic,
+)
+# hostapi is not imported directly here (#257): plugin_root()/installed_version()
+# resolve the Host via _hooklib.get_host() (the DI seam every entry script's
+# run(host) primes via set_host()), never a fresh hostapi.load_host().
+
+ONE_DAY = 24 * 60 * 60
+
+# The repo's GitHub Releases collection — unauthenticated GET, HTTPS only
+# (ADR-0003). A collection is required because each host publishes an
+# independent tag series; /releases/latest can represent only one of them.
+UPDATE_API_URL = "https://api.github.com/repos/arbiterForge/codeArbiter/releases?per_page=100"
+MAX_RELEASE_PAGES = 10
+
+_VERSION_STRIP_RE = re.compile(r"^[vV]")
+
+
+def state_path():
+    """Resolved cache file path. User-GLOBAL (~/.codearbiter/...), not project-scoped
+    — the notice concerns the plugin's own version, not any one project. Env-overridable
+    (CODEARBITER_UPDATE_STATE) for tests, mirroring _ledgerlib.ledger_path()."""
+    return os.environ.get("CODEARBITER_UPDATE_STATE") or \
+        os.path.join(os.path.expanduser("~"), ".codearbiter", "update-state.json")
+
+
+def plugin_root(explicit=None):
+    """The running plugin's own root directory (parent of hooks/). `explicit` wins
+    (tests); else CLAUDE_PLUGIN_ROOT; else derived from this file's own location —
+    always resolves to the ACTUAL running install, not a stale env pin. The env
+    + file-relative resolution lives on the host seam (hostapi, ADR-0011).
+    Resolves via get_host() (#257), not a direct hostapi.load_host(), so a
+    caller reached from an entry script's run(host) sees the SAME injected
+    Host instead of triggering a second disk load."""
+    return explicit or get_host().plugin_root()
+
+
+def installed_version(root=None, host=None):
+    """The `version` field from <root>/<host.manifest_relpath()>, or None on any
+    failure (missing file, corrupt JSON, missing/blank field). `host` defaults to
+    get_host() (#263, reliability-002/observability-003; #257 — get_host(), not
+    a direct hostapi.load_host(), so this resolves the SAME injected instance):
+    under Claude Code that resolves to `.claude-plugin/plugin.json` exactly as
+    before; a plugin whose manifest ships elsewhere (e.g. ca-codex's
+    `.codex-plugin/`) resolves the CORRECT path instead of silently reading
+    nothing and suppressing the update-available notice forever. No caller in
+    this repo threads a host through today (session-start.py calls
+    installed_version(plugin) positionally), so resolving it here — rather
+    than plumbing it through every call site — keeps the fix local to this
+    seam."""
+    root = root or plugin_root()
+    host = host or get_host()
+    try:
+        with open(os.path.join(root, host.manifest_relpath()),
+                  encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return None
+    v = data.get("version") if isinstance(data, dict) else None
+    return v if isinstance(v, str) and v.strip() else None
+
+
+def parse_version(s):
+    """Parse a version string into a numeric tuple, e.g. "v2.10.0+build.5" -> (2, 10, 0).
+    A leading 'v', build metadata (+...), and a prerelease suffix (-...) are tolerated
+    and stripped. Returns None for anything that isn't a dotted run of digits (AC-6:
+    malformed/absent -> None, so the caller yields no notice)."""
+    if not isinstance(s, str):
+        return None
+    s = _VERSION_STRIP_RE.sub("", s.strip())
+    s = s.split("+", 1)[0]
+    s = s.split("-", 1)[0]
+    if not s:
+        return None
+    parts = s.split(".")
+    if not parts or not all(p.isdigit() for p in parts):
+        return None
+    return tuple(int(p) for p in parts)
+
+
+def version_gt(a, b):
+    """True iff semver `a` > `b`, numeric-tuple compared (2.10.0 > 2.9.0, never a
+    lexicographic string compare). Either side malformed/absent -> False (AC-6)."""
+    ta, tb = parse_version(a), parse_version(b)
+    if ta is None or tb is None:
+        return False
+    n = max(len(ta), len(tb))
+    ta = ta + (0,) * (n - len(ta))
+    tb = tb + (0,) * (n - len(tb))
+    return ta > tb
+
+
+def update_available(installed, latest):
+    """True iff `latest` is a well-formed version strictly greater than `installed`."""
+    return version_gt(latest, installed)
+
+
+def update_descriptor(host=None):
+    """Validated update descriptor for `host` (or the active host), else None.
+    A partially defined or multi-line descriptor disables the notifier rather
+    than falling back to another host's release series or command."""
+    host = host or get_host()
+    target = getattr(host, "update_target", None)
+    prefix = getattr(host, "update_tag_prefix", None)
+    command = getattr(host, "update_command", None)
+    if not all(isinstance(value, str) and value.strip()
+               for value in (target, prefix, command)):
+        return None
+    if not re.fullmatch(r"[a-z][a-z0-9-]*", target.strip()):
+        return None
+    if "\n" in command or "\r" in command:
+        return None
+    return {
+        "target": target.strip(),
+        "tag_prefix": prefix.strip(),
+        "command": command.strip(),
+    }
+
+
+def target_state(state, host=None):
+    """The active host target's `{latest, checked_at}` row, or {}.
+    Legacy unkeyed cache data is deliberately not attributed to any host: its
+    `latest` may belong to an unrelated release series (the RA-02 defect)."""
+    descriptor = update_descriptor(host)
+    if descriptor is None or not isinstance(state, dict) or state.get("schema") != 1:
+        return {}
+    targets = state.get("targets")
+    if not isinstance(targets, dict):
+        return {}
+    row = targets.get(descriptor["target"])
+    return row if isinstance(row, dict) else {}
+
+
+def notice_line(installed, latest, host=None):
+    """The single-line SessionStart/statusline notice, or None when no update is due
+    (AC-1/AC-2): `codeArbiter: update available X -> Y (run <host command>)`.
+    Never multi-line; never emitted for equal, lesser, missing, or malformed
+    `latest`."""
+    descriptor = update_descriptor(host)
+    if descriptor is None or not update_available(installed, latest):
+        return None
+    return (f"codeArbiter: update available {installed} -> {latest} "
+            f"(run {descriptor['command']})")
+
+
+def read_state(path=None):
+    """The target-keyed cache state, or {} on ANY failure (missing file, corrupt
+    JSON, non-dict content) — a corrupt cache degrades to 'no notice', never a
+    crash of the host hook."""
+    path = path or state_path()
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def write_state(state, path=None):
+    """Atomically persist `state` to the cache file, creating parent dirs as needed.
+    Best-effort: ANY failure (permissions, missing/blocked parent) is swallowed — a
+    cache write must never crash the caller (the detached refresh, or a test)."""
+    path = path or state_path()
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        write_text_atomic(path, json.dumps(state), newline="\n")
+    except Exception:  # noqa: BLE001 — best-effort cache write, never raise
+        pass
+
+
+def is_stale(checked_at, now, interval=ONE_DAY):
+    """True iff a refresh is due: no prior check, or `interval` seconds have elapsed
+    since `checked_at`. A malformed `checked_at` is treated as stale (never crashes,
+    never wedges the gate closed)."""
+    if checked_at is None:
+        return True
+    try:
+        checked_at = float(checked_at)
+        if not math.isfinite(checked_at):
+            return True
+        return (now - checked_at) >= interval
+    except (TypeError, ValueError):
+        return True
+
+
+class _HTTPSOnlyRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Refuse to follow any redirect whose target isn't `https://` (ADR-0003,
+    defense-in-depth). The pre-connection scheme guard in fetch_latest_tag below
+    only covers the INITIAL url — urllib's default opener otherwise follows a
+    3xx transparently, including an https->http downgrade, without ever
+    re-checking the scheme. Returning None here means the redirect is NOT
+    handled, so urllib's error chain raises the original HTTPError instead of
+    silently continuing the chain over a downgraded (or otherwise non-https)
+    target; fetch_latest_tag's broad except then degrades that to None, same as
+    every other fetch failure (fail-silent, AC-5)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not (isinstance(newurl, str) and newurl.lower().startswith("https://")):
+            return None
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _build_opener():
+    """Factory for the HTTPS-only-redirect opener. A thin seam — not called
+    directly by fetch_latest_tag's default path only, but exposed as a factory
+    (rather than a module-level singleton) so `opener=` injection in tests never
+    has to touch real urllib internals."""
+    return urllib.request.build_opener(_HTTPSOnlyRedirectHandler())
+
+
+def select_latest_tag(releases, tag_prefix):
+    """Highest stable numeric version in `releases` for exact `tag_prefix`.
+    Drafts, prereleases, malformed rows, and every sibling series are ignored."""
+    if not isinstance(releases, list) or not isinstance(tag_prefix, str) or not tag_prefix:
+        return None
+    selected = None
+    selected_tuple = None
+    for release in releases:
+        if not isinstance(release, dict) or release.get("draft") or release.get("prerelease"):
+            continue
+        tag = release.get("tag_name")
+        if not isinstance(tag, str) or not tag.startswith(tag_prefix):
+            continue
+        version = tag[len(tag_prefix):]
+        if not re.fullmatch(r"\d+(?:\.\d+)*", version):
+            continue
+        parsed = parse_version(version)
+        if parsed is not None and (selected_tuple is None or parsed > selected_tuple):
+            selected = version
+            selected_tuple = parsed
+    return selected
+
+
+def fetch_latest_tag(tag_prefix=None, url=UPDATE_API_URL, timeout=3.0,
+                     opener=None, host=None):
+    """GET bounded pages of the GitHub Releases API and return the active
+    series' highest stable numeric version, or
+    None on ANY problem
+    (AC-5): non-https url, network error, timeout, non-200, an unparseable/absent
+    body, or a redirect to a non-https target. HTTPS-only per ADR-0003 — a
+    non-https INITIAL url is refused before any connection is attempted, and a
+    non-https REDIRECT target is refused too (via `_HTTPSOnlyRedirectHandler`,
+    since urllib's default opener would otherwise follow an https->http
+    downgrade transparently). `opener` is injectable (tests); production builds
+    the hardened opener via `_build_opener()`."""
+    if tag_prefix is None:
+        descriptor = update_descriptor(host)
+        tag_prefix = descriptor.get("tag_prefix") if descriptor else None
+    if (not isinstance(tag_prefix, str) or not tag_prefix
+            or not isinstance(url, str) or not url.lower().startswith("https://")):
+        return None
+    try:
+        op = opener or _build_opener()
+        parsed_url = urllib.parse.urlsplit(url)
+        query = dict(urllib.parse.parse_qsl(parsed_url.query, keep_blank_values=True))
+        try:
+            page_size = int(query.get("per_page", "100"))
+        except (TypeError, ValueError):
+            page_size = 100
+        if page_size < 1:
+            page_size = 100
+
+        releases = []
+        for page in range(1, MAX_RELEASE_PAGES + 1):
+            page_query = dict(query)
+            page_query["page"] = str(page)
+            page_url = urllib.parse.urlunsplit(parsed_url._replace(
+                query=urllib.parse.urlencode(page_query)))
+            req = urllib.request.Request(page_url, headers={
+                "User-Agent": "codeArbiter-update-check",
+                "Accept": "application/vnd.github+json",
+            })
+            with op.open(req, timeout=timeout) as resp:
+                status = getattr(resp, "status", None) or getattr(resp, "code", None)
+                if status != 200:
+                    return None
+                body = resp.read()
+            page_data = json.loads(body.decode("utf-8", "replace"))
+            if not isinstance(page_data, list):
+                return None
+            releases.extend(page_data)
+            if len(page_data) < page_size:
+                break
+        else:
+            # Every bounded page was full, so more releases may exist. Do not
+            # cache a result whose series enumeration is known to be incomplete.
+            return None
+        return select_latest_tag(releases, tag_prefix)
+    except Exception:  # noqa: BLE001 — AC-5: fail-silent on any network/parse error
+        return None
+
+
+def refresh_if_stale(now=None, fetcher=None, path=None, host=None):
+    """Best-effort, once-daily, fail-silent cache refresh (AC-3/AC-4/AC-5).
+
+    Reads the cache under the write lock; if `checked_at` is still fresh
+    (is_stale() False), returns it UNCHANGED and calls the fetcher NOT AT ALL.
+    Otherwise it reserves that target's daily refresh before releasing the lock,
+    so a concurrent same-target process observes a fresh row and also makes no
+    call (AC-4 — at most one fetch per day). It then calls `fetcher()` (default
+    fetch_latest_tag): on success the new
+    `latest` is cached; on ANY exception or a None/falsy return, the PRIOR `latest`
+    is preserved (fail-silent — a network hiccup never blanks a known-good notice)
+    and `checked_at` still advances, so a persistently-unreachable network is not
+    retried every single session that day. Never raises (AC-3)."""
+    now = time.time() if now is None else now
+    path = path or state_path()
+    descriptor = update_descriptor(host)
+    if descriptor is None:
+        return read_state(path)
+
+    # Reserve this target's refresh under the cache lock before any network
+    # work. Without the re-read and reservation here, concurrent detached
+    # SessionStart refreshes can all observe the same stale row and each issue
+    # a bounded release-page fetch before the later merge lock serializes them.
+    try:
+        reservation_at = float(now)
+    except (TypeError, ValueError):
+        return read_state(path)
+    if not math.isfinite(reservation_at):
+        return read_state(path)
+
+    lock = acquire_lock(path)
+    if lock is None:
+        return read_state(path)
+    try:
+        current = read_state(path)
+        current_row = target_state(current, host=host)
+        if not is_stale(current_row.get("checked_at"), reservation_at):
+            return current
+        prior_targets = current.get("targets") if isinstance(current, dict) else None
+        targets = dict(prior_targets) if isinstance(prior_targets, dict) else {}
+        targets[descriptor["target"]] = {
+            "latest": current_row.get("latest"),
+            "checked_at": reservation_at,
+        }
+        reserved_state = {"schema": 1, "targets": targets}
+        write_state(reserved_state, path)
+        confirmed_row = target_state(read_state(path), host=host)
+        if confirmed_row.get("checked_at") != reservation_at:
+            # A failed reservation cannot safely authorize network egress. The
+            # notifier remains fail-silent and will retry on a later session.
+            return read_state(path)
+    finally:
+        release_lock(lock)
+
+    fetch = fetcher or (lambda: fetch_latest_tag(
+        tag_prefix=descriptor["tag_prefix"], host=host))
+    try:
+        latest = fetch()
+    except Exception:  # noqa: BLE001 — AC-3/AC-5: never propagate a fetch failure
+        latest = None
+    lock = acquire_lock(path)
+    if lock is None:
+        return read_state(path)
+    try:
+        # Re-read under the write lock. Another independently versioned host
+        # may have refreshed while this process was waiting on GitHub; merging
+        # the pre-fetch snapshot would silently erase that target's row.
+        current = read_state(path)
+        current_row = target_state(current, host=host)
+        prior_targets = current.get("targets") if isinstance(current, dict) else None
+        targets = dict(prior_targets) if isinstance(prior_targets, dict) else {}
+
+        current_latest = current_row.get("latest")
+        if parse_version(latest) is None:
+            merged_latest = current_latest
+        elif (parse_version(current_latest) is not None
+              and version_gt(current_latest, latest)):
+            merged_latest = current_latest
+        else:
+            merged_latest = latest
+
+        current_checked_at = current_row.get("checked_at")
+        finite_checked_at = []
+        for value in (current_checked_at, now):
+            try:
+                value = float(value)
+            except (TypeError, ValueError):
+                continue
+            if math.isfinite(value):
+                finite_checked_at.append(value)
+        targets[descriptor["target"]] = {
+            "latest": merged_latest,
+            "checked_at": max(finite_checked_at) if finite_checked_at else None,
+        }
+        new_state = {"schema": 1, "targets": targets}
+        write_state(new_state, path)
+        return new_state
+    finally:
+        release_lock(lock)
