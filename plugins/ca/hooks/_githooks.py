@@ -801,6 +801,8 @@ def _shim(dropin_dir, phase):
         f"{_FRESHNESS_PY}"
         "CODEARBITER_556_FRESHNESS\n"
         ")\n"
+        # Match each line from the probe, including native Windows CRLF output.
+        "SKIP=$(printf '%s' \"$SKIP\" | tr '\\r\\n' '  ')\n"
         "SEEN=0\n"
         'for c in "$D"/*.path; do\n'
         '  [ -f "$c" ] || continue\n'
