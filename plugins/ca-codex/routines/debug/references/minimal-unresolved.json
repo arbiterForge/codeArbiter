@@ -1,0 +1,58 @@
+{
+  "protocol": "codearbiter.debug-handoff/1.0.0",
+  "case_id": "DBG-example-unresolved",
+  "request": {
+    "intent": "diagnosis_only",
+    "request_ref": "example:synthetic-request",
+    "scope": "Synthetic documentation example only.",
+    "restrictions": ["No repair or external operations."]
+  },
+  "snapshots": [],
+  "symptom": {
+    "observed": "An example operator reports a timeout without an accessible trace.",
+    "expected": null,
+    "expected_evidence_ids": []
+  },
+  "reproduction": {
+    "status": "not_yet_reproduced",
+    "recipe": null,
+    "evidence_ids": [],
+    "limitations": "No runtime was exercised; this is a synthetic example."
+  },
+  "hypotheses": [],
+  "checks": [],
+  "evidence": [
+    {
+      "id": "E-01",
+      "kind": "user_report",
+      "snapshot_id": null,
+      "locator": "example:synthetic-request",
+      "observation": "The example operator reports a timeout.",
+      "observed_at": null,
+      "check_id": null,
+      "coverage": "unknown",
+      "limitations": "Synthetic report; no independent execution evidence."
+    }
+  ],
+  "disposition": {
+    "kind": "unresolved",
+    "rationale": "The failure trace is unavailable; no cause is established.",
+    "evidence_ids": ["E-01"],
+    "cause_ids": [],
+    "blockers": [
+      {
+        "kind": "evidence",
+        "missing": "The trace from the reported failing attempt.",
+        "owner": null,
+        "resume_condition": "A sanitized trace bound to that attempt is available."
+      }
+    ]
+  },
+  "regression": null,
+  "next_step": {
+    "target": "evidence",
+    "owner": null,
+    "action": "Identify the trace owner and obtain the missing observation.",
+    "completion_evidence": "A sanitized trace bound to the reported failing attempt."
+  }
+}
