@@ -1,0 +1,136 @@
+{
+  "format": "codearbiter.artifact-release/0.1.0",
+  "version": "0.1.0",
+  "protocol": "codearbiter.artifact-api/0.1.0",
+  "schema_version": "0.3.1",
+  "binaries": {
+    "darwin/amd64": {
+      "file": "ca-artifact-darwin-amd64",
+      "sha256": "27fc51465a79c1525b1300b347cee4d09afde3c7b0d845414659302f5bbca2f7",
+      "native_tested": true
+    },
+    "darwin/arm64": {
+      "file": "ca-artifact-darwin-arm64",
+      "sha256": "3a3d61be18eba426db4f260b9cbae0d3d3c89f47efe184395d7f011cc3b4f59a",
+      "native_tested": true
+    },
+    "linux/amd64": {
+      "file": "ca-artifact-linux-amd64",
+      "sha256": "3b6178bb54d6a19fc56d99f8fced862ae151605a0373297a69e130d3857a8406",
+      "native_tested": true
+    },
+    "linux/arm64": {
+      "file": "ca-artifact-linux-arm64",
+      "sha256": "a5259074098932f815f33d3e1dea98e6d9a04277d1ada958469905da67d29437",
+      "native_tested": true
+    },
+    "windows/amd64": {
+      "file": "ca-artifact-windows-amd64.exe",
+      "sha256": "8339c077262f861631631de49bca7cdafec5e0730b9e3676fd2db36f3c119036",
+      "native_tested": true
+    },
+    "windows/arm64": {
+      "file": "ca-artifact-windows-arm64.exe",
+      "sha256": "f7b193cf0d1eb9ecd233bf1588f6290c2fb8bc41ad327918a740beb2099f719c",
+      "native_tested": true
+    }
+  },
+  "context_qualification": {
+    "darwin/amd64": {
+      "source_commit": "ed51f5030af5520d5ae67486c3c7776b76bcfae9",
+      "workflow": ".github/workflows/ci.yml",
+      "run_id": "37265481193",
+      "binary_sha256": "27fc51465a79c1525b1300b347cee4d09afde3c7b0d845414659302f5bbca2f7",
+      "observation_sha256": "d0fb266f27d266e247c38e806336d94f60581a32e6f84602bdcab2ca4caa3e20",
+      "module_sha256": "d5cccd13647e2c3a2a752b94b34dec4d4fc6aec5ced8fb0abce6ec9346ba1a7e",
+      "native_cases": [
+        "TestContextBoundedRender",
+        "TestContextDocumentContract",
+        "TestContextMarkdownPreservation",
+        "TestContextMutationAdmission",
+        "TestContextRecoveryAndPaths",
+        "TestContextRepresentationBoundary"
+      ]
+    },
+    "darwin/arm64": {
+      "source_commit": "ed51f5030af5520d5ae67486c3c7776b76bcfae9",
+      "workflow": ".github/workflows/ci.yml",
+      "run_id": "37265481193",
+      "binary_sha256": "3a3d61be18eba426db4f260b9cbae0d3d3c89f47efe184395d7f011cc3b4f59a",
+      "observation_sha256": "f90633dfe08215876ef5dbfd9ebddb2b20c48eb334dc52efb4e10af65216d9fa",
+      "module_sha256": "d5cccd13647e2c3a2a752b94b34dec4d4fc6aec5ced8fb0abce6ec9346ba1a7e",
+      "native_cases": [
+        "TestContextBoundedRender",
+        "TestContextDocumentContract",
+        "TestContextMarkdownPreservation",
+        "TestContextMutationAdmission",
+        "TestContextRecoveryAndPaths",
+        "TestContextRepresentationBoundary"
+      ]
+    },
+    "linux/amd64": {
+      "source_commit": "ed51f5030af5520d5ae67486c3c7776b76bcfae9",
+      "workflow": ".github/workflows/ci.yml",
+      "run_id": "37265481193",
+      "binary_sha256": "3b6178bb54d6a19fc56d99f8fced862ae151605a0373297a69e130d3857a8406",
+      "observation_sha256": "0a58c6c7a8e5673f602398c3a5ac477b00d0477e981e43aa0b36f1061683e412",
+      "module_sha256": "d5cccd13647e2c3a2a752b94b34dec4d4fc6aec5ced8fb0abce6ec9346ba1a7e",
+      "native_cases": [
+        "TestContextBoundedRender",
+        "TestContextDocumentContract",
+        "TestContextMarkdownPreservation",
+        "TestContextMutationAdmission",
+        "TestContextRecoveryAndPaths",
+        "TestContextRepresentationBoundary"
+      ]
+    },
+    "linux/arm64": {
+      "source_commit": "ed51f5030af5520d5ae67486c3c7776b76bcfae9",
+      "workflow": ".github/workflows/ci.yml",
+      "run_id": "37265481193",
+      "binary_sha256": "a5259074098932f815f33d3e1dea98e6d9a04277d1ada958469905da67d29437",
+      "observation_sha256": "9cccf649f682ee7c0d62ed6a0fb4336479eb7f24a9977027811954d77f3c2efe",
+      "module_sha256": "d5cccd13647e2c3a2a752b94b34dec4d4fc6aec5ced8fb0abce6ec9346ba1a7e",
+      "native_cases": [
+        "TestContextBoundedRender",
+        "TestContextDocumentContract",
+        "TestContextMarkdownPreservation",
+        "TestContextMutationAdmission",
+        "TestContextRecoveryAndPaths",
+        "TestContextRepresentationBoundary"
+      ]
+    },
+    "windows/amd64": {
+      "source_commit": "ed51f5030af5520d5ae67486c3c7776b76bcfae9",
+      "workflow": ".github/workflows/ci.yml",
+      "run_id": "37265481193",
+      "binary_sha256": "8339c077262f861631631de49bca7cdafec5e0730b9e3676fd2db36f3c119036",
+      "observation_sha256": "843fdcf7c1f8b171abbb3a6ed0d636a755ccd3898e24a33e7d651daaa1b233fc",
+      "module_sha256": "d5cccd13647e2c3a2a752b94b34dec4d4fc6aec5ced8fb0abce6ec9346ba1a7e",
+      "native_cases": [
+        "TestContextBoundedRender",
+        "TestContextDocumentContract",
+        "TestContextMarkdownPreservation",
+        "TestContextMutationAdmission",
+        "TestContextRecoveryAndPaths",
+        "TestContextRepresentationBoundary"
+      ]
+    },
+    "windows/arm64": {
+      "source_commit": "ed51f5030af5520d5ae67486c3c7776b76bcfae9",
+      "workflow": ".github/workflows/ci.yml",
+      "run_id": "37265481193",
+      "binary_sha256": "f7b193cf0d1eb9ecd233bf1588f6290c2fb8bc41ad327918a740beb2099f719c",
+      "observation_sha256": "72aa77d09842772a7918b1ebd3ba6d2d7ecfefc24256cd557fb66949fef7b0ec",
+      "module_sha256": "d5cccd13647e2c3a2a752b94b34dec4d4fc6aec5ced8fb0abce6ec9346ba1a7e",
+      "native_cases": [
+        "TestContextBoundedRender",
+        "TestContextDocumentContract",
+        "TestContextMarkdownPreservation",
+        "TestContextMutationAdmission",
+        "TestContextRecoveryAndPaths",
+        "TestContextRepresentationBoundary"
+      ]
+    }
+  }
+}
