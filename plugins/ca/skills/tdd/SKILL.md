@@ -16,8 +16,12 @@ and expected behavior for a fix, and the agreed surface plus existing behavior f
 refactor. Read applicable project instructions and the test, coverage, and lint
 commands in `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md`. Follow
 `${CLAUDE_PLUGIN_ROOT}/includes/verification-boundary.md` for local versus hosted checks.
-Read security controls when the affected behavior crosses a security boundary.
-Use `.codearbiter/code-map.md` on demand for source orientation when present.
+In an HTML-knowledge repository, `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/knowledge.py" relevant <paths>`
+(or the plan task's `task-context`) returns those commands with the constraints and
+components that govern the paths you will touch; otherwise read
+`${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md`, the security controls when the behavior
+crosses a security boundary, and `.codearbiter/code-map.md` on demand
+(`${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`). A missing unrelated fact does not hold this work.
 
 For artifact I/O, load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md`. Use the selected
 spec/plan identities and typed criterion records for HTML. Direct implementation

@@ -6,6 +6,13 @@ disable-model-invocation: true
 
 # security-architecture
 
+For every security policy reference below, follow `${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`
+("Read security policy before a security decision"): select the repository's
+context format, read the complete policy from exact `CTX-SECURITY-CONTROLS`
+records in HTML mode or the full Markdown controls in Markdown mode, and read
+operative scope blocks when applicable. Required policy that is missing or
+unreadable blocks a security decision; scope blocks alone are not full policy.
+
 Optional, lightweight threat-modeling pass over a design before it is built. Selected when the user deliberately requests threat modeling of a sensitive design, with or without `/ca:threat-model`. Never forced on an ordinary change. Reviews architectural intent before code exists; for code already written, dispatch `security-reviewer` instead.
 
 ## Entry boundaries
@@ -19,7 +26,7 @@ the severity of a finding. A lesser gap is a constraint, not blanket denied clea
 
 ## Pre-flight
 
-- Read `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — approved primitives, declared security boundaries and their permitted crossings, what is and is not allowed. If it cannot be read, STOP and surface the gap; do not guess the boundary model.
+- Read the complete format-selected `security-controls` policy — approved primitives, declared security boundaries and their permitted crossings, what is and is not allowed. If the required policy cannot be read, STOP and surface the gap; do not guess the boundary model.
 - Establish the scope from the user's request: the feature, component, or design under review.
 - Read relevant security ADRs under `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/`; do not invent decisions or interpret their absence as approval.
 

@@ -16,7 +16,7 @@ Load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` for artifact I/O and preserve
 
 ## 1. Orient and select actual work
 
-Read the selected spec/plan, relevant `.codearbiter/CONTEXT.md`, and the needed build/check commands from `.codearbiter/tech-stack.md`, when present. Read `security-controls.md` for work affecting its rules. Missing optional orientation is a diagnostic, not a blanket STOP; never guess an essential requirement or execute an unknown command.
+Read the selected spec/plan, relevant `.codearbiter/CONTEXT.md`, and the needed build/check commands from `.codearbiter/tech-stack.md`, when present. Read `security-controls.md` for work affecting its rules. In an HTML-knowledge repository a task's `task-context` packet already carries the knowledge records relevant to its paths (`${CLAUDE_PLUGIN_ROOT}/includes/knowledge.md`). Missing optional orientation is a diagnostic, not a blanket STOP; never guess an essential requirement or execute an unknown command.
 
 For HTML, use `identity`, `index`, `outline`, exact or batched symbol-scoped `read`, and `eligible`. The engine `eligible` response is **advisory scheduling**, not permission or evidence of a passing test. Read actual task dependencies and `waiting_prerequisites`; do not treat a checkpoint number or an unscoped legacy prerequisite as a universal dependency.
 
