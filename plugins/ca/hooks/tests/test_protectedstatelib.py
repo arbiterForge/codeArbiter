@@ -1,5 +1,7 @@
 import io
+import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -10,12 +12,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import _bashguardlib  # noqa: E402
 import _protectedlib  # noqa: E402
 import _protectedstatelib  # noqa: E402
+from _hooklib import audit_append_guidance  # noqa: E402
 from _protectedstatelib import (  # noqa: E402
     MARKER_FRESHNESS_MINUTES,
     ProtectedPolicy,
     lookup_policy,
     marker_gated_write_admitted,
     marker_name_for,
+    protected_state_recovery,
     resolve_registered_path,
 )
 
@@ -63,6 +67,415 @@ class TestPolicyEnum(unittest.TestCase):
         self.assertIs(ProtectedPolicy("append-only"), ProtectedPolicy.APPEND_ONLY)
         with self.assertRaises(ValueError):
             ProtectedPolicy("some-unrecognized-policy")
+
+
+class TestRecoveryDescriptors(unittest.TestCase):
+    def command_ref(self, name):
+        return "/ca:" + name
+
+    def recovery(self, path, policy):
+        return protected_state_recovery(path, policy, "C:/repo", "C:/plugin", self.command_ref)
+
+    def test_task_board_names_task_owner_and_helper(self):
+        text = self.recovery(".codearbiter/open-tasks.md", ProtectedPolicy.HELPER_ONLY)
+        self.assertIn("/ca:task", text)
+        self.assertIn("taskwrite.py", text)
+        self.assertNotIn("override", text.lower())
+
+    def test_archive_names_task_owner_and_append_operation(self):
+        text = self.recovery(".codearbiter/done-tasks.md", ProtectedPolicy.APPEND_ONLY)
+        self.assertIn("/ca:task", text)
+        self.assertIn("archive", text)
+
+    def test_release_targets_names_release_owner(self):
+        text = self.recovery(".codearbiter/release-targets.md", ProtectedPolicy.MARKER_GATED)
+        self.assertIn("/ca:release", text)
+        self.assertIn("authoring marker", text)
+
+    def test_context_names_preview_apply_writer(self):
+        text = self.recovery(".codearbiter/tech-stack.md", ProtectedPolicy.HELPER_ONLY)
+        self.assertIn("/ca:context-check", text)
+        self.assertIn("--context-draft", text)
+        self.assertIn("--context-apply", text)
+        encoded = text.split("exact invocation JSON: ", 1)[1].split(
+            ". Apply the returned preview", 1)[0]
+        self.assertEqual(json.loads(encoded)["argv"][2:4], ["--root", "C:/repo"])
+
+    def test_recovery_invocation_json_does_not_shell_interpolate_paths(self):
+        root = 'C:/repo/$(touch owned)`cmd`"\nnext'
+        plugin = 'C:/plugin/$(touch owned)`cmd`"\nnext'
+        text = protected_state_recovery(
+            ".codearbiter/tech-stack.md", ProtectedPolicy.HELPER_ONLY,
+            root, plugin, self.command_ref)
+        encoded = text.split("exact invocation JSON: ", 1)[1].split(
+            ". Apply the returned preview", 1)[0]
+        invocation = json.loads(encoded)
+        self.assertEqual(invocation["argv"][1], os.path.join(plugin, "hooks", "init-codearbiter.py"))
+        self.assertEqual(invocation["argv"][3], root)
+        self.assertNotIn('python "', text)
+
+    def test_audit_append_guidance_covers_supported_shells_without_rewrite(self):
+        text = audit_append_guidance()
+        for expected in ("PowerShell 5.1", "UTF8Encoding($false)", "PowerShell 7",
+                         "utf8NoBOM", "Git Bash", "printf", "tail-anchored Edit"):
+            self.assertIn(expected, text)
+        self.assertNotIn("Set-Content", text)
+
+    def test_declared_utf8_append_shapes_are_not_h05_rewrites(self):
+        commands = (
+            "[IO.File]::AppendAllText('.codearbiter/overrides.log', 'line', "
+            "(New-Object Text.UTF8Encoding($false)))",
+            "Add-Content -LiteralPath '.codearbiter/overrides.log' -Value 'line' "
+            "-Encoding utf8NoBOM",
+            "printf '%s\\n' 'line' >> .codearbiter/overrides.log",
+        )
+        for command in commands:
+            with self.subTest(command=command):
+                _bashguardlib._check_h05_audit_log(command)
+
+    def _assert_append_bytes(self, argv):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = os.path.join(temporary, "audit.log")
+            home = os.path.join(temporary, "home")
+            appdata = os.path.join(home, "AppData", "Roaming")
+            local_appdata = os.path.join(home, "AppData", "Local")
+            xdg_config = os.path.join(home, ".config")
+            xdg_cache = os.path.join(home, ".cache")
+            xdg_data = os.path.join(home, ".local", "share")
+            for directory in (home, appdata, local_appdata, xdg_config, xdg_cache, xdg_data):
+                os.makedirs(directory, exist_ok=True)
+            environment = os.environ.copy()
+            environment.update({
+                "HOME": home,
+                "USERPROFILE": home,
+                "APPDATA": appdata,
+                "LOCALAPPDATA": local_appdata,
+                "XDG_CONFIG_HOME": xdg_config,
+                "XDG_CACHE_HOME": xdg_cache,
+                "XDG_DATA_HOME": xdg_data,
+                "PSModuleAnalysisCachePath": os.path.join(xdg_cache, "ModuleAnalysisCache"),
+                "POWERSHELL_TELEMETRY_OPTOUT": "1",
+                "POWERSHELL_UPDATECHECK": "Off",
+            })
+            prefix = "existing café Ω\n".encode("utf-8")
+            with open(path, "wb") as stream:
+                stream.write(prefix)
+            result = subprocess.run(
+                [part.replace("{PATH}", path) for part in argv],
+                capture_output=True, timeout=30, env=environment)
+            self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
+            with open(path, "rb") as stream:
+                data = stream.read()
+            self.assertEqual(data[:len(prefix)], prefix)
+            self.assertFalse(data.startswith(b"\xef\xbb\xbf"))
+            self.assertNotIn(b"\x00", data)
+            self.assertIn("appended Δ".encode("utf-8"), data)
+            data.decode("utf-8", "strict")
+
+    @unittest.skipUnless(shutil.which("powershell.exe"), "Windows PowerShell 5.1 unavailable")
+    def test_powershell_51_append_is_utf8_no_bom_and_preserves_prefix(self):
+        script = ("[IO.File]::AppendAllText('{PATH}', 'appended Δ' + "
+                  "[Environment]::NewLine, (New-Object Text.UTF8Encoding($false)))")
+        self._assert_append_bytes(["powershell.exe", "-NoProfile", "-Command", script])
+
+    @unittest.skipUnless(shutil.which("pwsh"), "PowerShell 7 unavailable")
+    def test_powershell_7_append_is_utf8_no_bom_and_preserves_prefix(self):
+        script = ("Add-Content -LiteralPath '{PATH}' -Value 'appended Δ' "
+                  "-Encoding utf8NoBOM")
+        self._assert_append_bytes(["pwsh", "-NoProfile", "-Command", script])
+
+    def test_git_bash_append_is_utf8_and_preserves_prefix(self):
+        bash = (r"C:\Program Files\Git\bin\bash.exe" if os.name == "nt" else
+                shutil.which("bash"))
+        if not bash or not os.path.isfile(bash):
+            self.skipTest("Git Bash unavailable")
+        script = 'target=$(cygpath -u "$1" 2>/dev/null || printf "%s" "$1"); printf "%s\\n" "appended Δ" >> "$target"'
+        self._assert_append_bytes([bash, "-lc", script, "append-test", "{PATH}"])
+
+    def test_block_comment_after_comma_cannot_hide_write_access(self):
+        command = ("[IO.File]::Open('.codearbiter/gate-events.log','Open',"
+                   "<# access #> 'Write')")
+        with self.assertRaises(SystemExit):
+            _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
+
+    def test_bash_punctuation_cannot_enable_powershell_comment_stripping(self):
+        command = ("echo a::b,# ordinary-bash-text; "
+                   "rm .codearbiter/overrides.log")
+        with self.assertRaises(SystemExit):
+            _bashguardlib._check_h05_audit_log(command, powershell_tool=False)
+
+    def test_rewrite_truncate_and_utf16_shapes_remain_blocked(self):
+        commands = (
+            "Set-Content -LiteralPath .codearbiter/overrides.log -Value line -Encoding Unicode",
+            "[IO.File]::WriteAllText('.codearbiter/overrides.log', 'line', [Text.Encoding]::Unicode)",
+            "[IO.File]::WriteAllText(\n'.codearbiter/gate-events.log', 'line')",
+            "[IO.File]::WriteAllText(" + (" " * 4097) +
+            "'.codearbiter/gate-events.log', 'line')",
+            "[IO.File]::WriteAllTextAsync('.codearbiter/gate-events.log', 'line')",
+            "[IO.File]::WriteAllBytes('.codearbiter/overrides.log', [byte[]](1,2))",
+            "[IO.File]::WriteAllBytesAsync('.codearbiter/overrides.log', [byte[]](1,2))",
+            "[IO.File]::WriteAllLines('.codearbiter/overrides.log', @('line'))",
+            "[IO.File]::WriteAllLinesAsync('.codearbiter/overrides.log', @('line'))",
+            "[IO.File]::CreateText('.codearbiter/overrides.log')",
+            "[IO.File]::OpenWrite('.codearbiter/overrides.log')",
+            "[IO.File]::Create('.codearbiter/overrides.log')",
+            "[IO.File]::Delete('.codearbiter/overrides.log')",
+            "[IO.File]::Replace('replacement', '.codearbiter/overrides.log', 'backup')",
+            "[IO.File]::Open('.codearbiter/gate-events.log', [IO.FileMode]::Truncate)",
+            "[IO.File]::Open('.codearbiter/gate-events.log', 'Truncate')",
+            "[IO.File]::OpenHandle('.codearbiter/gate-events.log', [IO.FileMode]::Create)",
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log')).Open([IO.FileMode]::Truncate)",
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log')).Create()",
+            "[IO.FileStream]::new('.codearbiter/gate-events.log', [IO.FileMode]::Truncate)",
+            "[IO.FileStream]::new('.codearbiter/gate-events.log', 'Create')",
+            ("([IO.FileStream]::new('.codearbiter/gate-events.log',"
+             "[IO.FileMode]::Open,[IO.FileAccess]::Write)).SetLength(0)"),
+            ("([IO.FileStream]::new('.codearbiter/gate-events.log',"
+             "[IO.FileMode]::Open,[IO.FileAccess]::Write)).Write(@(1),0,1)"),
+            "[IO.FileStream ]::new('.codearbiter/gate-events.log','Create')",
+            "[ IO.File]::Open('.codearbiter/gate-events.log','Truncate')",
+            "[IO.File]:: # member\n Open('.codearbiter/gate-events.log','Create')",
+            ("[IO.FileStream]:: # member\n new("
+             "'.codearbiter/gate-events.log','Create')"),
+            ("[IO.File]::Open('.codearbiter/gate-events.log',[IO.FileMode]::Open,"
+             "[IO.FileAccess]::Write,[IO.FileShare]::Read)"),
+            ("[IO.File]::Open('.codearbiter/gate-events.log','Open',"
+             "<# access #> 'Write')"),
+            ("[IO.FileStream]::new('.codearbiter/gate-events.log','Open',"
+             "'Write','Read')"),
+            ("([IO.FileInfo]::new('.codearbiter/gate-events.log')).Open("
+             "[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::Read)"),
+            ("$Read=[IO.FileShare]::None; [IO.File]::Open("
+             "'.codearbiter/gate-events.log','Open','Write',$Read)"),
+            ("$Append=[IO.FileAccess]::Write; [IO.FileStream]::new("
+             "'.codearbiter/gate-events.log','Open',$Append)"),
+            ("$Read=[IO.FileAccess]::Write; "
+             "([IO.FileInfo]::new('.codearbiter/gate-events.log'))"
+             ".Open('Open',$Read)"),
+            "New-Object IO.FileStream('.codearbiter/gate-events.log', [IO.FileMode]::Create)",
+            ("New-Object -TypeName System.IO.FileStream -ArgumentList "
+             "'.codearbiter/gate-events.log', [IO.FileMode]::Create"),
+            ("New-Object -ArgumentList '.codearbiter/gate-events.log', 'Truncate' "
+             "-TypeName 'System.IO.FileStream'"),
+            "[IO.StreamWriter]::new('.codearbiter/gate-events.log', $false)",
+            ("New-Object -TypeName System.IO.StreamWriter -ArgumentList "
+             "'.codearbiter/gate-events.log', $false"),
+            ("New-Object System.IO.StreamWriter -ArgumentList "
+             "'.codearbiter/gate-events.log', $false"),
+            ("New-Object -ArgumentList '.codearbiter/gate-events.log', $false "
+             "-TypeName 'System.IO.StreamWriter'"),
+            ("(New-Object -ArgumentList '.codearbiter/gate-events.log' "
+             "-TypeName 'System.IO.FileInfo').Create()"),
+            ("(New-Object -TypeName System.IO.FileInfo -ArgumentList "
+             "'.codearbiter/gate-events.log').Open('Truncate')"),
+            ("New-Object -Type System.IO.FileStream -Arg "
+             "'.codearbiter/gate-events.log', 'Create'"),
+            ("New-Object -T System.IO.StreamWriter -A "
+             "'.codearbiter/gate-events.log', $false"),
+            ("(New-Object -Type System.IO.FileInfo -Arg "
+             "'.codearbiter/gate-events.log').Delete()"),
+            ("New-Object -TypeName:System.IO.FileStream "
+             "-ArgumentList:'.codearbiter/gate-events.log','Create'"),
+            ("(New-Object -TypeName ([System.IO.FileInfo]) -ArgumentList "
+             "'.codearbiter/gate-events.log').Delete()"),
+            ("(New-Object -TypeName ([type]'System.IO.FileInfo') -ArgumentList "
+             "'.codearbiter/gate-events.log').Delete()"),
+            ("(New-Object -TypeName System.IO.FileInfo "
+             "<# -ArgumentList 'fake' #> -ArgumentList "
+             "'.codearbiter/gate-events.log').Delete()"),
+            ("New-Object -TypeName System.IO.FileStream "
+             "<# -ArgumentList 'fake' #> -ArgumentList "
+             "'.codearbiter/gate-events.log','Create'"),
+            ("New-Object -TypeName <# type #> System.IO.FileStream "
+             "-ArgumentList '.codearbiter/gate-events.log','Create'"),
+            ("(New-Object -TypeName ([type] <# type #> "
+             "'System.IO.FileInfo') -ArgumentList "
+             "'.codearbiter/gate-events.log').Delete()"),
+            ("New-Object -TypeName System.Text.StringBuilder && "
+             "New-Object -TypeName System.IO.FileStream -ArgumentList "
+             "'.codearbiter/gate-events.log','Create'"),
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log')).Delete()",
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log'))?.Delete()",
+            ("([IO.FileInfo]::new('.codearbiter/gate-events.log')). "
+             "<# member #> Delete()"),
+            ("(New-Object -TypeName IO.FileInfo -ArgumentList "
+             "'.codearbiter/gate-events.log')?.Delete()"),
+            ("(New-Object -TypeName IO.FileInfo -ArgumentList "
+             "'.codearbiter/gate-events.log'). <# member #> Delete()"),
+            ("New-Obje`ct -TypeName System.IO.FileStream -ArgumentList "
+             "'.codearbiter/gate-events.log','Create'"),
+            ('"$(New-Object -TypeName System.IO.FileStream -ArgumentList '
+             "'.codearbiter/gate-events.log','Create')\""),
+            ('"$([IO.FileStream]::new('
+             "'.codearbiter/gate-events.log','Create'))\""),
+            ('"$([IO.File]::WriteAllText('
+             "'.codearbiter/gate-events.log','x'))\""),
+            "\"$([IO.File]::WriteAllText(\".codearbiter/gate-events.log\","
+            "\"x\"))\"",
+            ('@"\n$([IO.File]::WriteAllText('
+             "'.codearbiter/gate-events.log','x'))\n\"@"),
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log')).MoveTo('tmp.log')",
+            ("([IO.FileInfo]::new('.codearbiter/gate-events.log'))"
+             ".Replace('tmp.log','backup.log')"),
+            "> .codearbiter/overrides.log",
+        )
+        for command in commands:
+            with self.subTest(command=command), self.assertRaises(SystemExit):
+                _bashguardlib._check_h05_audit_log(command)
+
+    def test_dotnet_audit_matching_is_call_scoped_and_append_aware(self):
+        allowed = (
+            "[IO.File]::WriteAllText('tmp.txt', 'x'); "
+            "Get-Content '.codearbiter/gate-events.log'",
+            "[IO.StreamWriter]::new('.codearbiter/gate-events.log', $true)",
+            ("New-Object -TypeName System.IO.StreamWriter -ArgumentList "
+             "'.codearbiter/gate-events.log', $true"),
+            ("New-Object -T System.IO.StreamWriter -A "
+             "'.codearbiter/gate-events.log', $true"),
+            ("New-Object -TypeName:System.IO.FileStream "
+             "-ArgumentList:'.codearbiter/gate-events.log','Append'"),
+            ("New-Object -TypeName ([System.IO.FileStream]) -ArgumentList "
+             "'.codearbiter/gate-events.log','Append'"),
+            ("New-Object -TypeName <# type #> System.IO.FileStream "
+             "-ArgumentList <# args #> "
+             "'.codearbiter/gate-events.log','Append'"),
+            ("[IO.FileStream]::new('tmp.bin', "
+             "<# .codearbiter/gate-events.log #> [IO.FileMode]::Create)"),
+            ("[IO.File]::Open('.codearbiter/gate-events.log','Open',"
+             "<# Truncate #>'Read')"),
+            ("New-Object -TypeName System.IO.FileStream -ArgumentList "
+             "'.codearbiter/gate-events.log','Append' <# Truncate #>"),
+            ("New-Object -TypeName System.IO.FileStream -ArgumentList "
+             "'.codearbiter/gate-events.log', <# note #> 'Append'"),
+            ("New-Object -TypeName System.IO.StreamWriter "
+             "<# -ArgumentList 'fake' #> -ArgumentList "
+             "'.codearbiter/gate-events.log',$true"),
+            ("New-Object -TypeName System.Text.StringBuilder && "
+             "New-Object -TypeName System.IO.StreamWriter -ArgumentList "
+             "'.codearbiter/gate-events.log',$true"),
+            ("[IO.File]::Open('.codearbiter/gate-events.log',"
+             "[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Write)"),
+            ("[IO.FileStream]::new('.codearbiter/gate-events.log',"
+             "[IO.FileMode]::Open,[IO.FileAccess]::Read)"),
+            ("[IO.FileStream]::new('.codearbiter/gate-events.log',"
+             "[IO.FileMode]::Append)"),
+            ("[ IO.File]::Open('.codearbiter/gate-events.log',"
+             "[ IO.FileMode ]::Open,[ IO.FileAccess ]::Read)"),
+            ("[IO.FileStream ]::new('.codearbiter/gate-events.log',"
+             "[IO.FileMode ]::Append)"),
+            ("[IO.FileStream]::new('.codearbiter/gate-events.log',"
+             "([IO.FileMode]::Open),([IO.FileAccess]::Read))"),
+            ("[IO.File]::Open('.codearbiter/gate-events.log',"
+             "('Open'),('Read'))"),
+            ("[IO.File]:: # member\n Open('.codearbiter/gate-events.log',"
+             "'Open','Read')"),
+            ("[IO.FileStream]:: # member\n new("
+             "'.codearbiter/gate-events.log','Append')"),
+            ('"$([IO.File]::Open('
+             "'.codearbiter/gate-events.log','Open','Read'))\""),
+            ('"$(Get-Content '
+             "'.codearbiter/gate-events.log')\""),
+            ('"$([IO.File]::Exists(\"[IO.File]::WriteAllText('
+             "'.codearbiter/gate-events.log','x')\"))\""),
+            ('@"\n$([IO.File]::Open('
+             "'.codearbiter/gate-events.log','Open','Read'))\n\"@"),
+            ("Write-Host ok <# \"$([IO.File]::WriteAllText("
+             "'.codearbiter/gate-events.log','x'))\" #>"),
+            ("Write-Host ok # \"$([IO.File]::WriteAllText("
+             "'.codearbiter/gate-events.log','x'))\""),
+            ('Write-Output "New-Obje`ct '
+             '.codearbiter/gate-events.log"'),
+            ('Write-Output foo`bar "New-Obje`ct '
+             '.codearbiter/gate-events.log"'),
+            ('"before `$([IO.File]::WriteAllText('
+             "'.codearbiter/gate-events.log','x')) after\""),
+            ('@"\nbefore `$([IO.File]::WriteAllText('
+             "'.codearbiter/gate-events.log','x')) after\n\"@"),
+            ("'\"$([IO.File]::WriteAllText(\".codearbiter/gate-events.log\","
+             "\"x\"))\"'"),
+            ("@'\n\"$([IO.File]::WriteAllText(\".codearbiter/gate-events.log\","
+             "\"x\"))\"\n'@"),
+            ("@'\nunmatched ' apostrophe [IO.File]::WriteAllText("
+             "'.codearbiter/gate-events.log','x')\n'@"),
+            ('@"\nunmatched " quote [IO.File]::WriteAllText('
+             "'.codearbiter/gate-events.log','x')\n\"@"),
+            ("<# @\"\n$([IO.File]::WriteAllText("
+             "'.codearbiter/gate-events.log','x'))\n\"@ #>"),
+            "[IO.FileStream]::new('.codearbiter/gate-events.log','Open','Read','Write')",
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log')).OpenRead()",
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log')).OpenText()",
+            "([IO.FileInfo]::new('.codearbiter/gate-events.log')).Refresh()",
+            "([IO.FileInfo ]::new('.codearbiter/gate-events.log'))?.Refresh()",
+            ("([IO.FileInfo]::new('.codearbiter/gate-events.log')). "
+             "<# member #> Refresh()"),
+            ("(New-Object -Type System.IO.FileInfo -Arg "
+             "'.codearbiter/gate-events.log').Refresh()"),
+            ("(New-Object -TypeName IO.FileInfo -ArgumentList "
+             "'.codearbiter/gate-events.log')?.Refresh()"),
+            ("(New-Object -TypeName IO.FileInfo -ArgumentList "
+             "'.codearbiter/gate-events.log'). <# member #> Refresh()"),
+            ("(New-Object -TypeName ([type] <# type #> "
+             "'System.IO.FileInfo') -ArgumentList "
+             "'.codearbiter/gate-events.log').Refresh()"),
+            ("([IO.FileInfo]::new('.codearbiter/gate-events.log'))"
+             ".Open([IO.FileMode]::Open,[IO.FileAccess]::Read)"),
+            ("([IO.FileInfo]::new('.codearbiter/gate-events.log'))"
+             ".Open(('Open'),('Read'))"),
+            ("New-Object -TypeName System.IO.FileStream -ArgumentList "
+             "'.codearbiter/gate-events.log',('Append')"),
+            ("Open(" * 5000) + ")" * 5000 +
+            "; Get-Content '.codearbiter/gate-events.log'",
+            ("WriteAllText('tmp.txt','x');" * 5000) +
+            "Get-Content '.codearbiter/gate-events.log'",
+        )
+        for command in allowed:
+            with self.subTest(length=len(command)):
+                _bashguardlib._check_h05_audit_log(
+                    command, powershell_tool=True)
+
+    def test_dotnet_nested_calls_are_bounded(self):
+        command = ("[IO.FileInfo]::new(" * 6000
+                   + "'.codearbiter/gate-events.log'"
+                   + ")" * 6000)
+        started = time.perf_counter()
+        _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
+        self.assertLess(time.perf_counter() - started, 4.0)
+
+    def test_parenthesized_safe_arguments_are_bounded(self):
+        depth = 4000
+        mode = "(" * depth + "'Open'" + ")" * depth
+        access = "(" * depth + "'Read'" + ")" * depth
+        command = ("[IO.File]::Open('.codearbiter/gate-events.log',"
+                   f"{mode},{access})")
+        started = time.perf_counter()
+        _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
+        self.assertLess(time.perf_counter() - started, 4.0)
+
+    def test_repeated_new_object_tokens_are_bounded(self):
+        command = (("New-Object PSObject -Property @{Name='safe'};" * 10000)
+                   + "Get-Content '.codearbiter/gate-events.log'")
+        started = time.perf_counter()
+        _bashguardlib._check_h05_audit_log(command, powershell_tool=True)
+        self.assertLess(time.perf_counter() - started, 4.0)
+
+    def test_nested_new_object_tokens_are_bounded(self):
+        command = (
+            "(New-Object -TypeName System.IO.FileStream -ArgumentList " * 4000
+            + "'.codearbiter/gate-events.log','Append'"
+            + ")" * 4000
+        )
+        started = time.perf_counter()
+        self.assertTrue(_bashguardlib._dotnet_audit_rewrite(command))
+        self.assertLess(time.perf_counter() - started, 4.0)
+
+    def test_deep_expandable_subexpressions_fail_closed_without_recursion_error(self):
+        command = ("[IO.File]::WriteAllText("
+                   "'.codearbiter/gate-events.log','x')")
+        for _ in range(1100):
+            command = f'Write-Output "$({command})"'
+        started = time.perf_counter()
+        self.assertTrue(_bashguardlib._dotnet_audit_rewrite(command))
+        self.assertLess(time.perf_counter() - started, 4.0)
 
     def test_policy_enum_members_are_str_and_compare_equal_to_plain_values(self):
         # Pins the `str` mixin itself (M4): dropping `class ProtectedPolicy(Enum)`
@@ -963,6 +1376,13 @@ class TestStateShellHelperOnly(_StateShellFixture):
     def test_tee_blocks_unconditionally(self):
         # B-09 non-regression.
         self.assertShellBlocked("tee open-tasks.md")
+
+    def test_block_names_the_task_owner_and_helper_continuation(self):
+        exc, err = self._run_check("tee open-tasks.md")
+        self.assertIsNotNone(exc)
+        self.assertIn("[H-22]", err)
+        self.assertIn("/ca:task", err)
+        self.assertIn("taskwrite.py", err)
 
     def test_marker_never_admits_helper_only(self):
         # helper-only has NO marker path at all — minting a marker, even

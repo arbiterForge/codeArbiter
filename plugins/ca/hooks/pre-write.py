@@ -31,12 +31,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import (  # noqa: E402
-    MARKER_FRESHNESS_MINUTES, arbiter_active, block, classify_protected,
-    frontmatter_enabled_text, get_host, marker_fresh, project_root,
+    MARKER_FRESHNESS_MINUTES, arbiter_active, audit_append_guidance, block,
+    classify_protected,
+    frontmatter_enabled_text, gate_marker_producer_guidance, get_host,
+    marker_fresh, project_root,
     read_input, set_host, utf8_stdio,
 )
 from _protectedstatelib import (  # noqa: E402
-    ProtectedPolicy, marker_gated_write_admitted, resolve_registered_path,
+    ProtectedPolicy, marker_gated_write_admitted, protected_state_recovery,
+    resolve_registered_path,
 )
 
 
@@ -71,9 +74,11 @@ def _guard_op(root, op):
     # (security-pass.py / migration-pass.py) and the /adr `touch` — a Write here
     # is a hand-forged marker. Block outright (any kind: write, edit, delete).
     if "marker" in classes:
+        guidance = gate_marker_producer_guidance(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), root)
         block("H-19", "The .codearbiter/.markers/ gate tokens are not writable via the Write "
                       "tool (#160) — a hand-written marker forges a security/migration/ADR gate "
-                      "pass. Markers are recorded only by the sanctioned gate producers.")
+                      f"pass. {guidance}")
 
     # H-18: CONTEXT.md is the master switch arbiter_active() reads (#159). A Write
     # is a full overwrite, so vet the RESULTING content: allow only if it still
@@ -93,24 +98,27 @@ def _guard_op(root, op):
             # hunks, and a delete removes the activation switch outright —
             # ambiguity resolves CLOSED (ORCHESTRATOR §2). /ca:override is the
             # sanctioned escape hatch.
+            recovery = protected_state_recovery(
+                ".codearbiter/CONTEXT.md", ProtectedPolicy.HELPER_ONLY, root,
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                get_host().cmd_ref)
             block("H-18", "This patch operation edits or deletes .codearbiter/CONTEXT.md (#159) — "
                           "the activation switch every enforcement hook reads — and its resulting "
-                          "frontmatter cannot be verified from patch hunks. Failing closed; use the "
-                          "sanctioned init path (or "
-                          + get_host().cmd_ref("override") + ").")
+                          f"frontmatter cannot be verified from patch hunks. Failing closed. {recovery}")
 
     # H-05: the audit logs (and the /sprint decision record) are append-only —
     # a Write is a full overwrite. (path set: _hooklib.is_audit_log)
     if "audit" in classes:
         if kind == "write":
             block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) "
-                          "are append-only (ORCHESTRATOR §7). Append with Edit or '>>', never Write.")
+                          "are append-only (ORCHESTRATOR §7); Write would replace history. "
+                          + audit_append_guidance())
         # A patch edit is positional (it can rewrite interior lines) and a
         # patch delete destroys the trail — neither can be a verifiable pure
         # append the way pre-edit.py's tail-anchored Edit can.
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) "
-                      "are append-only (ORCHESTRATOR §7). A patch cannot express a verifiable "
-                      "pure append; append with '>>' instead.")
+                      "are append-only (ORCHESTRATOR §7). This patch cannot prove a pure append. "
+                      + audit_append_guidance())
 
     # H-11: ADRs may only be authored via /adr (the skill drops the marker first).
     # Any .md anywhere under decisions/ is covered — a non-numbered draft or a
@@ -152,14 +160,21 @@ def _guard_op(root, op):
                           + get_host().cmd_ref("override") + " if this is deliberate.")
         if policy == ProtectedPolicy.MARKER_GATED:
             if not marker_gated_write_admitted(rel, root):
+                recovery = protected_state_recovery(
+                    rel, policy, root,
+                    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    get_host().cmd_ref)
                 block("H-22", f"'{rel}' is marker-gated protected project state (#564) — a "
-                              f"Write is admitted only under a fresh authoring marker. Run "
-                              f"the sanctioned authoring lane, or "
-                              + get_host().cmd_ref("override") + ".")
+                              f"Write is admitted only under a fresh authoring marker. "
+                              f"{recovery}")
         else:
+            recovery = protected_state_recovery(
+                rel, policy, root,
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                get_host().cmd_ref)
             block("H-22", f"'{rel}' is protected project state (#564) — the Write tool may "
-                          f"never target it; there is no marker path for this policy. Use "
-                          f"the sanctioned helper.")
+                          f"never target it; there is no marker path for this policy. "
+                          f"{recovery}")
 
 
 def _run(root):
