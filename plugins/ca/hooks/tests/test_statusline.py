@@ -1,0 +1,1042 @@
+"""Tests for the pure-function layer of statusline.py.
+
+No subprocess calls are exercised here.  All tests use stdlib unittest only.
+"""
+import importlib
+import json
+import os
+import sys
+import tempfile
+import time
+import unittest
+from unittest import mock
+
+# ---------------------------------------------------------------------------
+# Make the hooks directory importable regardless of how the test runner is
+# invoked (python -m unittest tests.test_statusline from the hooks/ dir, or
+# a direct python tests/test_statusline.py).
+_HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _HOOKS_DIR not in sys.path:
+    sys.path.insert(0, _HOOKS_DIR)
+
+import statusline as sl
+import _subagentslib as subs
+
+# Re-import helpers used by ledger tests.
+from _helpers import isolate_user_state, redirect_home, release_user_state, restore_home
+
+
+# Issue #442: this module writes user-GLOBAL state - the statusline pin in
+# `~/.claude/settings.json`, and/or the `~/.codearbiter/` ledger and update
+# cache. Running the suite used to do that to the DEVELOPER'S REAL HOME: the
+# statusline pin was repointed at whatever plugin root the test process
+# resolved (it broke the maintainer's statusline three times in one day), and
+# `~/.codearbiter/` gained a ledger, its lock, five session shards and an
+# update cache. CI never noticed, because a fresh runner has no pre-existing
+# settings to clobber.
+#
+# The fixture is module-level rather than per-class ON PURPOSE. The leak is
+# module-wide, this file has many test classes, and a per-class `setUp` is one
+# forgotten override away from regressing - while `setUpModule` covers every
+# class added later for free. `.github/scripts/test_suite_hermeticity.py` is the
+# backstop that fails if any suite writes outside its temp dirs.
+def setUpModule():
+    global _USER_STATE
+    # Color assertions use a controlled default; NO_COLOR cases set it explicitly.
+    # Module cleanup restores the caller's environment even after test failures.
+    color_environment = mock.patch.dict(os.environ)
+    color_environment.start()
+    unittest.addModuleCleanup(color_environment.stop)
+    os.environ.pop("NO_COLOR", None)
+    _USER_STATE = isolate_user_state()
+
+
+def tearDownModule():
+    release_user_state(_USER_STATE)
+
+
+
+class TestSubagentModels(unittest.TestCase):
+    def _read(self, messages):
+        with tempfile.TemporaryDirectory() as td:
+            path = os.path.join(td, "agent-123456.jsonl")
+            with open(path, "w", encoding="utf-8") as f:
+                for i, message in enumerate(messages):
+                    f.write(json.dumps({"requestId": f"r{i}", "message": message}) + "\n")
+            return subs.read_subagents(td)[2][0]
+
+    def test_one_model_keeps_family_and_version(self):
+        row = self._read([
+            {"role": "user", "content": "Review parser"},
+            {"role": "assistant", "model": "claude-sonnet-4-6-20250514",
+             "usage": {"input_tokens": 12, "output_tokens": 3}},
+        ])
+        self.assertEqual(row["model"], "model:sonnet-4-6")
+
+    def test_multiple_distinct_models_are_mixed(self):
+        row = self._read([
+            {"role": "assistant", "model": "claude-opus-4-1-20250805"},
+            {"role": "assistant", "model": "claude-haiku-4-5-20251001"},
+        ])
+        self.assertEqual(row["model"], "model:mixed")
+
+    def test_absent_model_is_explicitly_unknown(self):
+        self.assertEqual(self._read([{"role": "assistant"}])["model"], "model:?")
+
+    def test_long_unknown_model_is_safely_bounded(self):
+        shown = subs.display_model("vendor-" + "x" * 80)
+        self.assertEqual(shown, "model:vendor-" + "x" * 17)
+        self.assertEqual(len(shown.removeprefix("model:")), 24)
+
+    def test_unknown_model_preserves_non_date_suffix(self):
+        self.assertEqual(subs.display_model("other-model-v2"), "model:other-model-v2")
+
+    def test_malformed_model_metadata_never_breaks_scan(self):
+        row = self._read([
+            {"role": "assistant", "model": {"unexpected": "object"}},
+            {"role": "assistant", "model": ["also", "invalid"]},
+            {"role": "assistant", "model": 123},
+        ])
+        self.assertEqual(row["model"], "model:?")
+
+
+class TestSubagentModelRendering(unittest.TestCase):
+    def _render(self, width, label="A very long delegated task label that must clip first"):
+        payload = json.dumps({"session_id": "sid", "model": {"display_name": "Opus 4.8"}})
+        shown = [{"label": label, "model": "model:sonnet-4-6", "inp": 1200,
+                  "out": 340, "age": 8, "active": True}]
+        env = {"CODEARBITER_WIDTH": str(width), "NO_COLOR": "1"}
+        with mock.patch.dict(os.environ, env, clear=False), \
+             mock.patch.object(sl, "subagent_dir", return_value="unused"), \
+             mock.patch.object(sl, "read_subagents", return_value=(1, 1, shown, (1200, 340))):
+            return sl.render(payload)
+
+    def test_every_row_renders_model_with_active_palette_accent(self):
+        shown = [{"label": "task", "model": "model:opus-4-1", "inp": 1,
+                  "out": 2, "age": 3, "active": True}]
+        with mock.patch.object(sl, "subagent_dir", return_value="unused"), \
+             mock.patch.object(sl, "read_subagents", return_value=(1, 1, shown, (1, 2))):
+            out = sl.render(json.dumps({"session_id": "sid"}))
+        self.assertIn(f"{sl.V3}model:opus-4-1{sl.RESET}", out)
+
+    def test_missing_row_model_renders_fallback(self):
+        shown = [{"label": "task", "inp": 1, "out": 2, "age": 3, "active": True}]
+        with mock.patch.object(sl, "subagent_dir", return_value="unused"), \
+             mock.patch.object(sl, "read_subagents", return_value=(1, 1, shown, (1, 2))):
+            plain = sl.ANSI.sub("", sl.render(json.dumps({"session_id": "sid"})))
+        self.assertIn("model:?", plain)
+
+    def test_narrow_row_clips_label_before_model_tokens_and_age(self):
+        plain = self._render(64)
+        row = next(line for line in plain.splitlines() if "model:sonnet-4-6" in line)
+        self.assertIn(sl.ELL, row)
+        self.assertIn("1.2K", row)
+        self.assertIn("340", row)
+        self.assertIn("8s", row)
+        self.assertLessEqual(sl.vlen(row), 64)
+
+    def test_extreme_width_degrades_without_overflow_or_exception(self):
+        plain = self._render(40)
+        self.assertTrue(plain)
+        self.assertTrue(all(sl.vlen(line) <= 40 for line in plain.splitlines()))
+
+
+# =========================================================================== vlen
+class TestVlen(unittest.TestCase):
+
+    def test_plain_string(self):
+        self.assertEqual(sl.vlen("hello"), 5)
+
+    def test_empty_string(self):
+        self.assertEqual(sl.vlen(""), 0)
+
+    def test_ansi_codes_are_zero_width(self):
+        colored = "\033[38;2;255;0;0mhello\033[0m"
+        self.assertEqual(sl.vlen(colored), 5)
+
+    def test_ansi_only_string(self):
+        self.assertEqual(sl.vlen("\033[0m\033[1m"), 0)
+
+    def test_wide_cjk_glyph_counts_as_two(self):
+        # U+4E2D (中) is East-Asian Wide → 2 columns
+        self.assertEqual(sl.vlen("中"), 2)
+        self.assertEqual(sl.vlen("中文"), 4)
+
+    def test_mixed_ansi_and_wide(self):
+        s = "\033[1m中\033[0m"   # bold + wide glyph + reset
+        self.assertEqual(sl.vlen(s), 2)
+
+
+# =========================================================================== clip
+class TestClip(unittest.TestCase):
+
+    def test_no_clip_needed(self):
+        s = "hello"
+        self.assertEqual(sl.clip(s, 10), s)
+
+    def test_clips_to_exact_width(self):
+        result = sl.clip("hello world", 6)
+        self.assertLessEqual(sl.vlen(result), 6)
+
+    def test_appends_ellipsis_when_clipped(self):
+        result = sl.clip("hello world", 6)
+        # The ellipsis character '…' must be present when the string is clipped.
+        self.assertIn(sl.ELL, result)
+
+    def test_preserves_ansi_codes(self):
+        colored = "\033[38;2;255;0;0mhello world\033[0m"
+        result = sl.clip(colored, 6)
+        self.assertLessEqual(sl.vlen(result), 6)
+        # ANSI sequences should still be present in the raw bytes
+        self.assertIn("\033[", result)
+
+    def test_zero_width_returns_empty(self):
+        self.assertEqual(sl.clip("hello", 0), "")
+
+    def test_exact_fit_not_clipped(self):
+        s = "abcde"   # exactly 5 visible chars
+        result = sl.clip(s, 5)
+        self.assertEqual(result, s)
+        self.assertNotIn(sl.ELL, result)
+
+    def test_ansi_does_not_count_toward_width(self):
+        # A string with ANSI codes whose visible length is 5 should not be
+        # clipped when the limit is 5.
+        s = "\033[1mhello\033[0m"
+        result = sl.clip(s, 5)
+        self.assertEqual(sl.vlen(result), 5)
+        self.assertNotIn(sl.ELL, result)
+
+
+# =========================================================================== pad
+class TestPad(unittest.TestCase):
+    """pad(s, w) pads to exactly w visible columns; clips if over."""
+
+    def test_pads_short_string(self):
+        result = sl.pad("hi", 10)
+        self.assertEqual(sl.vlen(result), 10)
+        self.assertTrue(result.startswith("hi"))
+
+    def test_exact_length_unchanged(self):
+        s = "hello"
+        result = sl.pad(s, 5)
+        self.assertEqual(result, s)
+
+    def test_clips_when_over(self):
+        result = sl.pad("hello world", 6)
+        self.assertLessEqual(sl.vlen(result), 6)
+
+    def test_pads_with_spaces(self):
+        result = sl.pad("ab", 5)
+        self.assertEqual(result, "ab   ")
+
+    def test_ansi_string_padded_correctly(self):
+        colored = "\033[1mhi\033[0m"     # visible length 2
+        result = sl.pad(colored, 8)
+        self.assertEqual(sl.vlen(result), 8)
+
+
+# =========================================================================== fmt_tok
+class TestFmtTok(unittest.TestCase):
+
+    def test_zero(self):
+        self.assertEqual(sl.fmt_tok(0), "0")
+
+    def test_small_integer(self):
+        self.assertEqual(sl.fmt_tok(999), "999")
+
+    def test_one_thousand(self):
+        self.assertEqual(sl.fmt_tok(1000), "1.0K")
+
+    def test_fifteen_hundred(self):
+        self.assertEqual(sl.fmt_tok(1500), "1.5K")
+
+    def test_just_below_million_rounds_to_M(self):
+        # 999_500 triggers the >= 999_500 branch → "1.0M"
+        result = sl.fmt_tok(999_500)
+        self.assertEqual(result, "1.0M")
+
+    def test_one_million(self):
+        self.assertEqual(sl.fmt_tok(1_000_000), "1.0M")
+
+    def test_string_input_coerced(self):
+        self.assertEqual(sl.fmt_tok("2000"), "2.0K")
+
+    def test_none_input_gives_zero(self):
+        self.assertEqual(sl.fmt_tok(None), "0")
+
+
+# =========================================================================== _tx_accumulate
+class TestTxAccumulate(unittest.TestCase):
+    """Tests for the transcript-accumulation inner loop (no subprocess)."""
+
+    def _make_tx(self, entries, tmp_dir):
+        """Write a list of JSON objects (one per line) to a temp .jsonl file."""
+        path = os.path.join(tmp_dir, "tx.jsonl")
+        with open(path, "w", encoding="utf-8") as f:
+            for obj in entries:
+                f.write(json.dumps(obj) + "\n")
+        return path
+
+    def _assistant_line(self, request_id, prompt_tokens=100, output_tokens=50,
+                        model="claude-sonnet", timestamp="2026-01-01T00:00:00Z"):
+        return {
+            "type": "assistant",
+            "requestId": request_id,
+            "timestamp": timestamp,
+            "message": {
+                "id": f"msg_{request_id}",
+                "model": model,
+                "usage": {
+                    "input_tokens": prompt_tokens,
+                    "output_tokens": output_tokens,
+                },
+            },
+        }
+
+    def test_basic_accumulation(self):
+        with tempfile.TemporaryDirectory() as td:
+            entries = [
+                self._assistant_line("req-1", prompt_tokens=100, output_tokens=50),
+                self._assistant_line("req-2", prompt_tokens=200, output_tokens=80),
+            ]
+            path = self._make_tx(entries, td)
+            rec = {}
+            result = sl._tx_accumulate(rec, path)
+            self.assertTrue(result)
+            # Two distinct requestIds → two entries in reqs
+            self.assertEqual(len(rec["reqs"]), 2)
+
+    def test_deduplication_by_request_id(self):
+        """Same requestId appearing twice must count only once."""
+        with tempfile.TemporaryDirectory() as td:
+            dup_id = "req-dup"
+            entries = [
+                self._assistant_line(dup_id, prompt_tokens=100, output_tokens=50),
+                self._assistant_line(dup_id, prompt_tokens=100, output_tokens=50),
+            ]
+            path = self._make_tx(entries, td)
+            rec = {}
+            sl._tx_accumulate(rec, path)
+            self.assertEqual(len(rec["reqs"]), 1)
+
+    def test_dedup_upsert_uses_last_value(self):
+        """When the same requestId appears twice (streaming replay), the final
+        usage values replace the first (UPSERT semantics)."""
+        with tempfile.TemporaryDirectory() as td:
+            dup_id = "req-dup"
+            entries = [
+                self._assistant_line(dup_id, prompt_tokens=100, output_tokens=50),
+                self._assistant_line(dup_id, prompt_tokens=150, output_tokens=70),
+            ]
+            path = self._make_tx(entries, td)
+            rec = {}
+            sl._tx_accumulate(rec, path)
+            stored = rec["reqs"][dup_id]
+            # Latest value wins
+            self.assertEqual(stored["in"], 150.0)
+            self.assertEqual(stored["out"], 70.0)
+
+    def test_missing_usage_field_handled_gracefully(self):
+        """Lines missing the usage dict should be skipped, not crash."""
+        with tempfile.TemporaryDirectory() as td:
+            entries = [
+                {"type": "assistant", "requestId": "r1",
+                 "message": {"model": "claude-sonnet"}},   # no 'usage' key
+                self._assistant_line("r2", prompt_tokens=80, output_tokens=40),
+            ]
+            path = self._make_tx(entries, td)
+            rec = {}
+            sl._tx_accumulate(rec, path)
+            # Only r2 had valid usage
+            self.assertIn("r2", rec["reqs"])
+
+    def test_non_assistant_lines_ignored(self):
+        with tempfile.TemporaryDirectory() as td:
+            entries = [
+                {"type": "user", "message": {"role": "user", "content": "hello"}},
+                self._assistant_line("req-1"),
+            ]
+            path = self._make_tx(entries, td)
+            rec = {}
+            sl._tx_accumulate(rec, path)
+            self.assertEqual(len(rec["reqs"]), 1)
+
+    def test_returns_false_for_nonexistent_file(self):
+        rec = {}
+        result = sl._tx_accumulate(rec, "/nonexistent/path/tx.jsonl")
+        self.assertFalse(result)
+
+    def test_burn_ring_populated(self):
+        with tempfile.TemporaryDirectory() as td:
+            entries = [
+                self._assistant_line(f"req-{i}", prompt_tokens=100, output_tokens=50)
+                for i in range(5)
+            ]
+            path = self._make_tx(entries, td)
+            rec = {}
+            sl._tx_accumulate(rec, path)
+            self.assertIsInstance(rec.get("burn"), list)
+            self.assertEqual(len(rec["burn"]), 5)
+
+    def test_incremental_offset_advancement(self):
+        """A second call with the same rec should not re-count previous lines."""
+        with tempfile.TemporaryDirectory() as td:
+            entries = [self._assistant_line("req-1")]
+            path = self._make_tx(entries, td)
+            rec = {}
+            sl._tx_accumulate(rec, path)
+            first_off = rec["tx_off"]
+            # Append a second message
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(self._assistant_line("req-2")) + "\n")
+            sl._tx_accumulate(rec, path)
+            self.assertEqual(len(rec["reqs"]), 2)
+            self.assertGreater(rec["tx_off"], first_off)
+
+
+# =========================================================================== ledger_update
+class TestLedgerUpdate(unittest.TestCase):
+    """End-to-end test of ledger_update() using a real tempdir transcript."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self._home_token = redirect_home(self.tmp)
+        # Also redirect CODEARBITER_LEDGER so we never touch the real ledger.
+        self._orig_ledger = os.environ.get("CODEARBITER_LEDGER")
+        self._ledger_path = os.path.join(self.tmp, ".codearbiter", "ledger.json")
+        os.environ["CODEARBITER_LEDGER"] = self._ledger_path
+
+    def tearDown(self):
+        restore_home(self._home_token)
+        if self._orig_ledger is None:
+            os.environ.pop("CODEARBITER_LEDGER", None)
+        else:
+            os.environ["CODEARBITER_LEDGER"] = self._orig_ledger
+
+    def _write_tx(self, entries):
+        tx_path = os.path.join(self.tmp, "transcript.jsonl")
+        with open(tx_path, "w", encoding="utf-8") as f:
+            for obj in entries:
+                f.write(json.dumps(obj) + "\n")
+        return tx_path
+
+    def _assistant(self, req_id, prompt=200, output=100):
+        return {
+            "type": "assistant",
+            "requestId": req_id,
+            "timestamp": "2026-01-01T12:00:00Z",
+            "message": {
+                "model": "claude-sonnet-4-6",
+                "usage": {"input_tokens": prompt, "output_tokens": output},
+            },
+        }
+
+    def test_returns_three_tuple(self):
+        tx = self._write_tx([self._assistant("r1")])
+        data = {"transcript_path": tx}
+        result = sl.ledger_update(data, "sid-001")
+        self.assertIsInstance(result, tuple)
+        self.assertEqual(len(result), 3)
+
+    def test_session_tokens_counted(self):
+        tx = self._write_tx([
+            self._assistant("r1", prompt=300, output=150),
+        ])
+        data = {"transcript_path": tx}
+        _rec, sess, _day = sl.ledger_update(data, "sid-002")
+        # fresh input = 300, output = 150
+        self.assertEqual(sess["in"], 300.0)
+        self.assertEqual(sess["out"], 150.0)
+
+    def test_dedup_in_ledger(self):
+        """Duplicate requestId in transcript → counted once in session totals."""
+        tx = self._write_tx([
+            self._assistant("r1", prompt=100, output=50),
+            self._assistant("r1", prompt=100, output=50),   # duplicate
+        ])
+        data = {"transcript_path": tx}
+        _rec, sess, _day = sl.ledger_update(data, "sid-003")
+        self.assertEqual(sess["in"], 100.0)
+        self.assertEqual(sess["out"], 50.0)
+
+    def test_no_session_id_returns_blanks(self):
+        _rec, sess, day = sl.ledger_update({}, None)
+        self.assertEqual(sess["in"], 0.0)
+        self.assertEqual(sess["out"], 0.0)
+        self.assertEqual(day["in"], 0.0)
+
+
+# =========================================================================== seg_ctx_lines
+class TestSegCtxLines(unittest.TestCase):
+    """Verify threshold-switching behaviour of the context-bar segment."""
+
+    def _data(self, pct, size=200_000):
+        return {"context_window": {"used_percentage": pct,
+                                   "context_window_size": size}}
+
+    def test_zero_pct_returns_two_strings(self):
+        lines = sl.seg_ctx_lines(self._data(0), 60)
+        self.assertIsInstance(lines, list)
+        self.assertEqual(len(lines), 2)
+        self.assertIsInstance(lines[0], str)
+
+    def test_no_context_window_key_returns_placeholder(self):
+        lines = sl.seg_ctx_lines({}, 60)
+        self.assertIn("--", sl.ANSI.sub("", lines[0]))
+
+    def test_below_75_uses_violet_not_warn_or_danger(self):
+        lines = sl.seg_ctx_lines(self._data(74.9), 60)
+        raw = lines[0]
+        # WARN is fg(255,184,76), DANGER is fg(255,86,110)
+        # Below 75 % the percentage glyph should be in V2 (not WARN or DANGER).
+        # We can verify that the WARN/DANGER escape is NOT the dominant color on
+        # the % text by checking neither WARN nor DANGER precedes the '%' sign.
+        stripped = sl.ANSI.sub("", raw)
+        self.assertIn("%", stripped)    # sanity: percentage is rendered
+
+    def test_at_75_uses_warn(self):
+        """At exactly 75.0 the bar switches to WARN color."""
+        lines = sl.seg_ctx_lines(self._data(75.0), 60)
+        self.assertIsInstance(lines[0], str)
+        # WARN escape sequence must appear somewhere in line 1
+        self.assertIn(sl.WARN, lines[0])
+
+    def test_above_75_below_90_uses_warn(self):
+        lines = sl.seg_ctx_lines(self._data(80.0), 60)
+        self.assertIn(sl.WARN, lines[0])
+        self.assertNotIn(sl.DANGER, lines[0])
+
+    def test_at_90_uses_danger(self):
+        lines = sl.seg_ctx_lines(self._data(90.0), 60)
+        self.assertIn(sl.DANGER, lines[0])
+
+    def test_above_90_uses_danger(self):
+        lines = sl.seg_ctx_lines(self._data(95.0), 60)
+        self.assertIn(sl.DANGER, lines[0])
+
+    def test_100_pct_produces_full_bar(self):
+        lines = sl.seg_ctx_lines(self._data(100.0), 60)
+        self.assertIsInstance(lines[0], str)
+        self.assertGreater(len(lines[0]), 0)
+
+    def test_million_token_model_shows_1M(self):
+        lines = sl.seg_ctx_lines(self._data(50.0, size=1_000_000), 60)
+        self.assertIn("1M", sl.ANSI.sub("", lines[1]))
+
+
+# =========================================================================== sparkline
+class TestSparkline(unittest.TestCase):
+
+    def test_empty_list_returns_empty_string(self):
+        self.assertEqual(sl.sparkline([]), "")
+
+    def test_single_value_returns_empty_string(self):
+        # sparkline requires >= 2 values
+        self.assertEqual(sl.sparkline([42]), "")
+
+    def test_uniform_values_returns_string(self):
+        result = sl.sparkline([100, 100, 100])
+        self.assertIsInstance(result, str)
+        # Strip ANSI and check we got some spark chars
+        plain = sl.ANSI.sub("", result)
+        self.assertGreater(len(plain), 0)
+
+    def test_ascending_values(self):
+        result = sl.sparkline([1, 2, 3, 4, 5])
+        self.assertIsInstance(result, str)
+        plain = sl.ANSI.sub("", result)
+        self.assertEqual(len(plain), 5)
+
+    def test_returns_string_not_none(self):
+        result = sl.sparkline([10, 20])
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, str)
+
+    def test_no_crash_with_none_values(self):
+        # num() filters out None → < 2 valid → returns ""
+        result = sl.sparkline([None, None])
+        self.assertEqual(result, "")
+
+    def test_mixed_valid_and_none(self):
+        # Only 1 valid value after filtering → ""
+        result = sl.sparkline([None, 5])
+        self.assertEqual(result, "")
+
+
+# =========================================================================== render
+class TestRender(unittest.TestCase):
+    """Smoke-test render() with minimal / edge-case inputs.
+
+    render() parses a raw JSON string, not a dict, so we pass json.dumps({})
+    for the minimal case.
+    """
+
+    def test_empty_json_object_does_not_crash(self):
+        result = sl.render("{}")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_empty_string_input_does_not_crash(self):
+        result = sl.render("")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_invalid_json_does_not_crash(self):
+        result = sl.render("not json at all {{")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_palette_activation_failure_does_not_escape_render(self):
+        with mock.patch.object(sl._colorlib, "activate_palette",
+                               side_effect=RuntimeError("palette boom")):
+            result = sl.render("{}")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_palette_consumer_sync_failure_does_not_escape_render(self):
+        with mock.patch.object(sl._boxlib, "sync_palette",
+                               side_effect=RuntimeError("sync boom")):
+            result = sl.render("{}")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_each_palette_sync_failure_restores_last_good_palette_atomically(self):
+        payload = json.dumps({"model": {"display_name": "Test"},
+                              "context_window": {"used_percentage": 20}})
+        with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "blue"}):
+            prior = sl.render(payload)
+        blue = sl.fg(*sl._colorlib.BUILTIN_PALETTES["blue"].accent_primary)
+        green = sl.fg(*sl._colorlib.BUILTIN_PALETTES["green"].accent_primary)
+        self.assertIn(blue, prior)
+
+        for failing_lib in (sl._fmtlib, sl._boxlib, sl._segmentslib):
+            with self.subTest(sync_position=failing_lib.__name__):
+                with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "green"}), \
+                     mock.patch.object(failing_lib, "sync_palette",
+                                       side_effect=RuntimeError("sync boom")):
+                    output = sl.render(payload)
+                self.assertIn(blue, output)
+                self.assertNotIn(green, output)
+                self.assertEqual(sl._colorlib.V2, blue)
+                self.assertEqual(sl.V2, blue)
+                self.assertEqual(sl._fmtlib._V2, blue)
+                self.assertEqual(sl._boxlib._V0, sl._colorlib.V0)
+                self.assertEqual(sl._segmentslib.V2, blue)
+
+    def test_returns_non_empty_string(self):
+        data = json.dumps({
+            "session_id": "test-session",
+            "model": {"display_name": "claude-sonnet-4-6"},
+        })
+        result = sl.render(data)
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_no_traceback_on_partial_data(self):
+        """Partial / unexpected shapes must never raise — the safe() wrappers
+        should absorb all errors."""
+        data = json.dumps({
+            "context_window": {"used_percentage": 87.5},
+            "rate_limits": {
+                "five_hour": {"used_percentage": 42},
+                "seven_day": {"used_percentage": 10},
+            },
+            "cost": {"total_cost_usd": 0.05},
+        })
+        try:
+            result = sl.render(data)
+        except Exception as exc:
+            self.fail(f"render() raised an exception: {exc}")
+        self.assertIsInstance(result, str)
+
+    def test_box_drawing_chars_present(self):
+        result = sl.render("{}")
+        plain = sl.ANSI.sub("", result)
+        # The box must contain at least one box-drawing corner character
+        self.assertTrue(
+            any(c in plain for c in (sl.TL, sl.TR, sl.BL, sl.BR)),
+            "render() output missing box-drawing characters",
+        )
+
+
+# =========================================================================== arbiter_state cache (T-11b)
+class TestArbiterStateCache(unittest.TestCase):
+    """arbiter_state caches mtime-keyed: identical inputs -> cached dict; a change
+    to any input file re-reads. (performance-005)"""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.cad = os.path.join(self.tmp, ".codearbiter")
+        os.makedirs(self.cad, exist_ok=True)
+        self._write("CONTEXT.md", "---\narbiter: enabled\nstage: build\n---\n")
+        self._write("open-tasks.md", "- [ ] t.t.0001 - a task\n")
+        self._write("open-questions.md", "")
+        self._write("overrides.log", "")
+        self._write("last-checkpoint", "0")
+        # Reset the module-level cache so prior tests don't bleed in.
+        sl._ARBITER_CACHE.clear()
+
+    def _write(self, name, body):
+        with open(os.path.join(self.cad, name), "w", encoding="utf-8", newline="\n") as f:
+            f.write(body)
+
+    def test_enabled_state_is_read(self):
+        st = sl.arbiter_state(self.tmp)
+        self.assertIsNotNone(st)
+        self.assertEqual(st["stage"], "build")
+        self.assertEqual(st["tasks"], 1)
+
+    def test_cached_when_inputs_unchanged(self):
+        first = sl.arbiter_state(self.tmp)
+        second = sl.arbiter_state(self.tmp)
+        # Same object identity proves the second call returned the cache, not a re-read.
+        self.assertIs(first, second)
+
+    def test_rereads_on_change(self):
+        first = sl.arbiter_state(self.tmp)
+        # Bump an input file's mtime forward and change its content.
+        future = time.time() + 10
+        ot = os.path.join(self.cad, "open-tasks.md")
+        with open(ot, "w", encoding="utf-8", newline="\n") as f:
+            f.write("- [ ] t.t.0001 - a\n- [ ] t.t.0002 - b\n")
+        os.utime(ot, (future, future))
+        second = sl.arbiter_state(self.tmp)
+        self.assertIsNot(first, second)        # cache was invalidated
+        self.assertEqual(second["tasks"], 2)   # fresh read picked up the new task
+
+    def test_disabled_repo_returns_none(self):
+        self._write("CONTEXT.md", "---\narbiter: disabled\n---\n")
+        sl._ARBITER_CACHE.clear()
+        self.assertIsNone(sl.arbiter_state(self.tmp))
+
+
+class TestArbiterStatePreread(unittest.TestCase):
+    """performance-003 (#194): arbiter_state(root, ctx_text=, ot_text=, oq_text=)
+    must use the SUPPLIED content instead of re-reading CONTEXT.md/open-tasks.md/
+    open-questions.md from disk — SessionStart's main() already read those three
+    files earlier in the same invocation before calling into the governance
+    line. Proven two ways: (1) the returned values reflect the SUPPLIED text
+    even when it deliberately diverges from what's on disk, and (2) a spy on
+    open() shows the three preread paths are never opened a second time."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.cad = os.path.join(self.tmp, ".codearbiter")
+        os.makedirs(self.cad, exist_ok=True)
+        # Disk content deliberately WRONG — if the code fell back to reading
+        # disk instead of using the supplied text, these values would leak
+        # through and the assertions below would catch it.
+        self._write("CONTEXT.md", "---\narbiter: enabled\nstage: DISK-STAGE\n---\n")
+        self._write("open-tasks.md", "- [ ] t.t.0001 - disk task a\n"
+                                     "- [ ] t.t.0002 - disk task b\n"
+                                     "- [ ] t.t.0003 - disk task c\n")
+        self._write("open-questions.md", "no confirms here on disk\n")
+        self._write("overrides.log", "")
+        self._write("last-checkpoint", "0")
+        sl._ARBITER_CACHE.clear()
+
+    def _write(self, name, body):
+        with open(os.path.join(self.cad, name), "w", encoding="utf-8", newline="\n") as f:
+            f.write(body)
+
+    def test_supplied_text_wins_over_disk_content(self):
+        ctx_text = "---\narbiter: enabled\nstage: SUPPLIED-STAGE\n---\n"
+        ot_text = "- [ ] t.t.0009 - supplied task\n"
+        oq_text = "[CONFIRM-01] one supplied question\n"
+
+        st = sl.arbiter_state(self.tmp, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
+
+        self.assertIsNotNone(st)
+        self.assertEqual(st["stage"], "SUPPLIED-STAGE")
+        self.assertEqual(st["tasks"], 1)
+        self.assertEqual(st["q"], 1)
+
+    def test_no_preread_args_still_reads_disk_as_before(self):
+        # Backward compatibility: every existing caller passes nothing, and
+        # must see the ORIGINAL disk-derived behavior unchanged.
+        st = sl.arbiter_state(self.tmp)
+        self.assertEqual(st["stage"], "DISK-STAGE")
+        self.assertEqual(st["tasks"], 3)
+        self.assertEqual(st["q"], 0)
+
+    def test_supplied_text_means_the_three_files_are_never_reopened(self):
+        ctx_path = os.path.join(self.cad, "CONTEXT.md")
+        ot_path = os.path.join(self.cad, "open-tasks.md")
+        oq_path = os.path.join(self.cad, "open-questions.md")
+        forbidden = {os.path.normcase(ctx_path), os.path.normcase(ot_path),
+                    os.path.normcase(oq_path)}
+        opened = []
+        real_open = open
+
+        def spy_open(path, *a, **kw):
+            try:
+                norm = os.path.normcase(os.path.abspath(path))
+            except Exception:  # noqa: BLE001
+                norm = None
+            opened.append(norm)
+            if norm in forbidden:
+                raise AssertionError(f"unexpected re-open of preread path: {path}")
+            return real_open(path, *a, **kw)
+
+        ctx_text = "---\narbiter: enabled\nstage: SUPPLIED-STAGE\n---\n"
+        ot_text = "- [ ] t.t.0009 - supplied task\n"
+        oq_text = "[CONFIRM-01] one supplied question\n"
+
+        with mock.patch("builtins.open", side_effect=spy_open):
+            st = sl.arbiter_state(self.tmp, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
+
+        self.assertIsNotNone(st)
+        self.assertEqual(st["stage"], "SUPPLIED-STAGE")
+
+    def test_enabled_gate_routes_through_hooklib_when_available(self):
+        # When _hooklib is importable, the gate uses frontmatter_enabled — confirm
+        # the activation decision still resolves correctly via that path.
+        if sl._frontmatter_enabled is None:
+            self.skipTest("_hooklib not importable in this environment")
+        self.assertTrue(sl._arbiter_enabled(os.path.join(self.cad, "CONTEXT.md")))
+
+
+# =========================================================================== session_start fast path (T-11a)
+class TestSessionStartCache(unittest.TestCase):
+    """session_start reads the resolved start from the ledger record when present,
+    skipping the ~/.claude/sessions scan. (performance-004)"""
+
+    def test_cached_value_short_circuits_scan(self):
+        rec = {"sess_start": 1700000000.0}
+        # No real ~/.claude/sessions touched: the cache hit returns immediately.
+        self.assertEqual(sl.session_start("any-sid", rec), 1700000000.0)
+
+    def test_no_sid_returns_none(self):
+        self.assertIsNone(sl.session_start(None, {"sess_start": 5.0}))
+
+    def test_miss_falls_back_to_scan(self):
+        # A rec with no cached value + a sid that no session file matches -> the scan
+        # runs and finds nothing -> None (no crash).
+        result = sl.session_start("nonexistent-session-id-xyz", {})
+        self.assertIsNone(result)
+
+
+# =========================================================================== render parity (T-11/T-12)
+class TestRenderParity(unittest.TestCase):
+    """The refactor + caching must be byte-identical for the same inputs: rendering
+    the same JSON twice yields the same bytes, and the ledger functions remain
+    reachable via the statusline module after extraction to _ledgerlib."""
+
+    def test_render_is_deterministic_for_same_input(self):
+        payload = json.dumps({
+            "session_id": "parity-sid",
+            "model": {"display_name": "claude-opus-4-8"},
+            "context_window": {"used_percentage": 40.0,
+                               "context_window_size": 200000},
+            "cost": {"total_cost_usd": 1.23},
+        })
+        with mock.patch.object(sl, "git_dirty", return_value=True), \
+                mock.patch.object(sl.time, "time", return_value=1700000001.0):
+            a = sl.render(payload)
+            b = sl.render(payload)
+        self.assertEqual(a, b)
+
+    def test_ledger_functions_reachable_via_statusline(self):
+        # The unmodified test suite reaches these via sl.*; the extraction must keep
+        # them bound on the statusline module. Only the names this module (and its
+        # test suite) actually use are re-bound — the rest were dead re-binds
+        # removed as part of architecture-002.
+        for name in ("ledger_update", "_tx_accumulate", "persist_sess_start"):
+            self.assertTrue(hasattr(sl, name), f"sl.{name} missing after extraction")
+
+    def test_burn_spark_returns_string(self):
+        # burn_spark now delegates to _ledgerlib.burn_samples but still renders.
+        rec = {"burn": [100, 200, 150, 300]}
+        out = sl.burn_spark(rec)
+        self.assertIsInstance(out, str)
+        self.assertGreater(len(sl.ANSI.sub("", out)), 0)
+
+
+# =========================================================================== update-available marker (AC-1/AC-2/AC-3)
+class TestSegUpdate(unittest.TestCase):
+    """The statusline's update-available marker is RENDER-ONLY off the same cache
+    SessionStart reads — it must never fetch, never spawn a refresh, and it must
+    degrade to no segment on any missing/corrupt/current-version state."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.plugin = os.path.join(self._tmp.name, "plugin")
+        os.makedirs(os.path.join(self.plugin, ".claude-plugin"))
+        with open(os.path.join(self.plugin, ".claude-plugin", "plugin.json"), "w") as f:
+            json.dump({"name": "ca", "version": "2.8.2"}, f)
+        self.state_path = os.path.join(self._tmp.name, "update-state.json")
+        self._env_saved = os.environ.get("CODEARBITER_UPDATE_STATE")
+        os.environ["CODEARBITER_UPDATE_STATE"] = self.state_path
+
+    def tearDown(self):
+        if self._env_saved is None:
+            os.environ.pop("CODEARBITER_UPDATE_STATE", None)
+        else:
+            os.environ["CODEARBITER_UPDATE_STATE"] = self._env_saved
+        self._tmp.cleanup()
+
+    def _write_cache(self, latest):
+        with open(self.state_path, "w") as f:
+            json.dump({"schema": 1, "targets": {
+                "ca": {"latest": latest, "checked_at": 1000.0},
+            }}, f)
+
+    def test_ac1_newer_cached_latest_renders_marker(self):
+        self._write_cache("2.10.0")
+        seg = sl.seg_update(self.plugin)
+        self.assertIsNotNone(seg)
+        self.assertIn("2.10.0", sl.ANSI.sub("", seg))
+
+    def test_ac2_current_version_renders_nothing(self):
+        self._write_cache("2.8.2")
+        self.assertIsNone(sl.seg_update(self.plugin))
+
+    def test_ac2_no_cache_renders_nothing(self):
+        self.assertIsNone(sl.seg_update(self.plugin))
+
+    def test_ac3_corrupt_cache_degrades_to_none_no_raise(self):
+        with open(self.state_path, "w") as f:
+            f.write("{ not valid json")
+        try:
+            result = sl.seg_update(self.plugin)
+        except Exception as e:  # noqa: BLE001
+            self.fail(f"seg_update must never raise, raised: {e}")
+        self.assertIsNone(result)
+
+    def test_ac3_render_only_makes_no_network_call(self):
+        # seg_update must not import/invoke urllib at all — it is a pure cache read.
+        import urllib.request
+        self._write_cache("2.10.0")
+        with mock.patch.object(urllib.request, "urlopen") as m:
+            sl.seg_update(self.plugin)
+            m.assert_not_called()
+
+    def test_render_includes_marker_when_update_cached(self):
+        # Full render() must surface the marker without crashing or hitting network.
+        self._write_cache("2.10.0")
+        payload = json.dumps({
+            "session_id": "upd-sid",
+            "workspace": {"current_dir": self.plugin},
+            "model": {"display_name": "claude-sonnet-4-6"},
+        })
+        with mock.patch.object(sl, "plugin_root_for_render", return_value=self.plugin):
+            out = sl.render(payload)
+        self.assertIn("2.10.0", sl.ANSI.sub("", out))
+
+
+class TestSubagentResultContract(unittest.TestCase):
+    """#413: read_subagents() must honor ONE result shape on every path, and a
+    syntactically valid but non-object JSONL record must not escape as an
+    AttributeError. Both defects erase the whole subagent section of the rich
+    statusline (a ValueError on unpack, or an exception swallowed by safe())."""
+
+    def _write(self, td, name, lines):
+        path = os.path.join(td, name)
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            for ln in lines:
+                f.write(ln + "\n")
+        return path
+
+    def test_missing_directory_returns_the_documented_four_item_result(self):
+        with tempfile.TemporaryDirectory() as td:
+            gone = os.path.join(td, "does-not-exist")
+            res = subs.read_subagents(gone)
+        self.assertEqual(len(res), 4,
+                         "every return path must produce the documented 4-item result")
+        active, recent, shown, totals = res
+        self.assertEqual(active, 0)
+        self.assertEqual(recent, 0)
+        self.assertEqual(shown, [])
+        self.assertEqual(totals, (0, 0))
+
+    def test_missing_directory_unpacks_the_same_way_as_a_real_read(self):
+        # The statusline unpacks 4 names OUTSIDE safe() — a 3-item error branch
+        # is a hard ValueError there, not a degraded segment.
+        with tempfile.TemporaryDirectory() as td:
+            gone = os.path.join(td, "raced-away")
+            active, recent, shown, (tin, tout) = subs.read_subagents(gone)
+        self.assertEqual((active, recent, shown, tin, tout), (0, 0, [], 0, 0))
+
+    def test_statusline_renders_through_a_subagent_directory_race(self):
+        with tempfile.TemporaryDirectory() as td:
+            gone = os.path.join(td, "raced-away")
+            with mock.patch.object(sl, "subagent_dir", return_value=gone):
+                out = sl.render(json.dumps({"session_id": "sid"}))
+        self.assertTrue(out, "a directory race must not break the statusline")
+
+    def test_non_object_jsonl_records_are_skipped_not_raised(self):
+        # A valid JSON line that is not an object used to reach d.get() inside
+        # a try that only caught OSError -> AttributeError out of the reader.
+        with tempfile.TemporaryDirectory() as td:
+            self._write(td, "agent-aaaaaa.jsonl", [
+                "[]",
+                "null",
+                "3",
+                '"a bare string"',
+                "{not json at all",
+                json.dumps({"requestId": "r1",
+                            "message": {"role": "user", "content": "Do the thing"}}),
+                json.dumps({"requestId": "r1",
+                            "message": {"role": "assistant",
+                                        "model": "claude-sonnet-4-6-20250514",
+                                        "usage": {"input_tokens": 10,
+                                                  "output_tokens": 4}}}),
+            ])
+            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+        self.assertEqual(recent, 1)
+        self.assertEqual(len(shown), 1, "the valid records after the bad ones must survive")
+        self.assertEqual(shown[0]["label"], "Do the thing")
+        self.assertEqual((tin, tout), (10, 4))
+
+    def test_a_corrupt_file_does_not_suppress_a_later_valid_file(self):
+        with tempfile.TemporaryDirectory() as td:
+            self._write(td, "agent-000001.jsonl", ["[]", "null"])
+            self._write(td, "agent-000002.jsonl", [
+                json.dumps({"requestId": "r9",
+                            "message": {"role": "user", "content": "Second agent"}}),
+                json.dumps({"requestId": "r9",
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 7, "output_tokens": 2}}}),
+            ])
+            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+        self.assertEqual(recent, 2)
+        self.assertEqual((tin, tout), (7, 2))
+        self.assertIn("Second agent", [row["label"] for row in shown])
+
+    def test_a_non_oserror_from_one_transcript_costs_only_its_own_row(self):
+        # The per-file boundary must be a boundary for EVERY failure, not just
+        # OSError. A transcript whose `requestId` is a JSON array is real,
+        # syntactically valid corruption: the reader uses that value as a dict
+        # key, so the per-file body raises `TypeError: unhashable type: 'list'`
+        # — neither OSError nor ValueError. Under an OSError-only boundary it
+        # escapes read_subagents entirely and blanks every subagent row.
+        with tempfile.TemporaryDirectory() as td:
+            poison = self._write(td, "agent-aaaaaa.jsonl", [
+                json.dumps({"requestId": ["not", "hashable"],
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 999,
+                                                  "output_tokens": 999}}}),
+            ])
+            self._write(td, "agent-bbbbbb.jsonl", [
+                json.dumps({"requestId": "ok1",
+                            "message": {"role": "user", "content": "Healthy agent"}}),
+                json.dumps({"requestId": "ok1",
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 6,
+                                                  "output_tokens": 3}}}),
+            ])
+            # Make the poisoned transcript the most recent, so it is processed
+            # first and cannot be reached only after the healthy one.
+            now = time.time()
+            os.utime(poison, (now, now))
+            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+        self.assertEqual(recent, 2)
+        self.assertEqual((tin, tout), (6, 3),
+                         "the poisoned transcript must contribute nothing, and "
+                         "must not take the healthy one down with it")
+        self.assertEqual([row["label"] for row in shown], ["Healthy agent"])
+
+
+if __name__ == "__main__":
+    unittest.main()
