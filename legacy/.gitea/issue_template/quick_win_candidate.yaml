@@ -1,0 +1,23 @@
+name: Quick-Win Candidate
+about: Propose a solution deliverable in ≤5 business days
+labels: [quick-win]
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope (what it does, what it doesn't)
+      placeholder: "Automates X for Y environment. Does not cover Z."
+    validations:
+      required: true
+  - type: textarea
+    id: day_estimate
+    attributes:
+      label: Day Estimate Breakdown
+      placeholder: "Day 1: scaffold + research. Day 2–3: build. Day 4: test. Day 5: doc + release."
+    validations:
+      required: true
+  - type: input
+    id: category
+    attributes:
+      label: Solution Category
+      placeholder: "infra / automation / security / ..."

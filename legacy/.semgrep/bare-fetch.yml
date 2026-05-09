@@ -1,0 +1,38 @@
+# FUSION custom Semgrep rule — trust zone enforcement
+# Control: SC-8 (transmission confidentiality), AU-12 (audit hook point)
+# Scope: backend/src/** only — frontend uses fetch() natively in the browser.
+#
+# All outbound HTTP calls from Z-API MUST use httpPost() or httpGet() from
+# backend/src/common/http.ts. That module is the single point where:
+#   - AbortController timeout is applied (SC-8)
+#   - A future AU-12 hook can intercept all egress (S3 payback)
+#   - TLS enforcement will be added (S2 requirement)
+#
+# Allowed exception: backend/src/common/http.ts itself.
+# Test files are excluded — fetch is mocked there via vi.spyOn(globalThis, 'fetch').
+
+rules:
+  - id: fusion-bare-fetch-backend
+    message: >
+      Direct fetch() call detected in Z-API backend. Use httpPost() or httpGet()
+      from backend/src/common/http.ts instead (SC-8, AU-12, trust-zone rule).
+      See docs/architecture/trust-zones.md.
+    severity: ERROR
+    languages: [typescript, javascript]
+    pattern: fetch(...)
+    paths:
+      include:
+        - backend/src
+      exclude:
+        - backend/src/common/http.ts
+        - backend/src/__tests__
+    metadata:
+      category: security
+      subcategory: [audit]
+      technology: [typescript, node]
+      nist: ["SC-8", "AU-12"]
+      cwe: ["CWE-918"]
+      references:
+        - docs/architecture/trust-zones.md
+        - docs/audit-spec.md
+      shortlink: F-004

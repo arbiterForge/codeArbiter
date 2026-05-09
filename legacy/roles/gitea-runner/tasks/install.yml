@@ -1,0 +1,72 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+# ── Docker CE ────────────────────────────────────────────────────────────────
+# Installed before the runner binary so the docker group exists when we add
+# the runner user to it at the end of this file.
+
+- name: Add Docker CE repository
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/rhel/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Install Docker CE, CLI, containerd, and SELinux support
+  ansible.builtin.dnf:
+    name:
+      - container-selinux
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+    state: present
+  become: true
+  notify: restart docker
+
+- name: Enable and start Docker
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+
+# ── act_runner binary ─────────────────────────────────────────────────────────
+
+- name: Set act_runner binary URL fact
+  ansible.builtin.set_fact:
+    _act_runner_url: >-
+      {{ act_runner_download_base_url }}/v{{ act_runner_version }}/act_runner-{{ act_runner_version }}-linux-{{ act_runner_arch }}
+
+- name: Check currently installed act_runner version
+  ansible.builtin.command:
+    cmd: "{{ act_runner_install_dir }}/act_runner --version"
+  register: _installed_version
+  changed_when: false
+  failed_when: false
+
+- name: Download act_runner binary
+  ansible.builtin.get_url:
+    url: "{{ _act_runner_url }}"
+    dest: "{{ act_runner_install_dir }}/act_runner"
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  when: >
+    _installed_version.rc != 0 or
+    act_runner_version not in _installed_version.stdout
+  notify: restart act_runner
+
+# ── Docker group membership ───────────────────────────────────────────────────
+# Must come after Docker CE is installed (docker group created by the package).
+
+- name: Add runner user to docker group
+  ansible.builtin.user:
+    name: "{{ act_runner_user }}"
+    groups: docker
+    append: true
+  become: true

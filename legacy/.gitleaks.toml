@@ -1,0 +1,98 @@
+# .gitleaks.toml — gitleaks configuration for COVE solution repos
+# =================================================================
+# gitleaks scans Git repos for accidentally committed secrets: API keys,
+# passwords, tokens, private keys, and other credentials.
+#
+# HOW TO RUN:
+#   Pre-commit (automatic on every commit):
+#     pre-commit run gitleaks
+#
+#   Standalone (scan full history):
+#     gitleaks detect --source . --log-opts="--all" -v
+#
+#   Standalone (scan staged files only):
+#     gitleaks protect --staged -v
+#
+#   CI (see .gitea/workflows/ci-linux.yml scan job):
+#     Runs via gitleaks-action in the workflow
+#
+# This config extends gitleaks' built-in rules and adds COVE-specific
+# patterns. The built-in rules already catch AWS keys, GitHub tokens,
+# Slack tokens, private keys, and 100+ other common secret patterns.
+# =================================================================
+
+title = "COVE gitleaks configuration"
+
+# Extend the default ruleset — do not replace it.
+# The default rules are comprehensive and well-maintained.
+# We only ADD rules for COVE-specific patterns.
+[extend]
+# useDefault = true is implied; gitleaks always includes defaults.
+
+# --- COVE-specific rules ---
+
+[[rules]]
+id = "cove-internal-domain"
+description = "Internal domain detected — should be parameterized, not hardcoded"
+# Catches hardcoded references to the internal Gitea domain.
+# Code should reference this via an environment variable, not literally.
+regex = '''gitea\.cove\.gdit'''
+tags = ["cove", "internal"]
+
+[[rules]]
+id = "cove-internal-ip-range"
+description = "Internal IP address detected — should be parameterized, not hardcoded"
+# Matches common private network ranges used in AWS VPCs and lab networks.
+# May produce false positives in documentation — use allowlist below.
+regex = '''(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})'''
+tags = ["cove", "internal", "ip"]
+entropy = 0
+
+[[rules]]
+id = "cove-gitea-token"
+description = "Gitea personal access token detected"
+# Gitea tokens are 40-character hex strings.
+regex = '''(?i)(gitea[_-]?token|gitea[_-]?pat|GITEA_TOKEN)\s*[:=]\s*['\"]?([0-9a-f]{40})['\"]?'''
+tags = ["cove", "token"]
+
+[[rules]]
+id = "cove-env-real-value"
+description = "Possible real AWS key in .env.example — should be a placeholder"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["cove", "aws"]
+
+# --- Allowlists ---
+# Paths and patterns that are known false positives.
+# Use allowlists instead of disabling rules entirely.
+
+[allowlist]
+description = "Global allowlist for known false positives"
+paths = [
+  # .env.example contains placeholder strings that look like secrets.
+  '''\.env\.example$''',
+  # Test fixtures may contain mock credentials for unit tests.
+  '''tests/fixtures/''',
+  # Documentation may reference example values in instructional context.
+  '''docs/.*\.md$''',
+  # Root-level markdown docs reference internal URLs and hostnames for context.
+  '''README\.md$''',
+  '''CONTRIBUTING\.md$''',
+  # gitleaks config contains regex patterns that match secret-like strings.
+  '''\.gitleaks\.toml$''',
+  # Ansible roles and bootstrap scripts legitimately reference the internal
+  # Gitea URL and hostnames — these ARE the parameterization layer.
+  '''roles/''',
+  '''scripts/''',
+  # Inventory examples document the expected format; real hosts are gitignored.
+  '''inventory/hosts\.example$''',
+  # auditLoader.ts uses mock IP fixtures for UI development and tests.
+  '''frontend/src/loaders/auditLoader\.ts$''',
+]
+
+regexes = [
+  # Standard placeholder strings used in COVE templates
+  '''your-.*-here''',
+  '''REPLACE_ME''',
+  '''changeme''',
+  '''placeholder''',
+]

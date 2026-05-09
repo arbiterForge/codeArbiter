@@ -1,0 +1,60 @@
+PROPRIETARY SOFTWARE LICENSE
+(DRAFT — PENDING LEGAL REVIEW)
+
+Copyright (c) 2026 GDIT. All rights reserved.
+
+This software and associated documentation files (the "Software") are the
+exclusive property of GDIT. The Software is provided for INTERNAL USE and
+CONTROLLED DISTRIBUTION ONLY as defined below.
+
+PERMITTED USE:
+
+1. INTERNAL USE. Employees and authorized contractors of GDIT may use,
+   modify, and build upon the Software solely for the purpose of developing,
+   testing, and delivering solutions within the scope of GDIT's business
+   operations.
+
+2. CONTROLLED DISTRIBUTION TO PROGRAM PARTNERS. The Software, or derivative
+   works thereof, may be distributed to U.S. Government customers and
+   authorized program partners ONLY under the following conditions:
+   a. Distribution is authorized in writing by a GDIT program manager.
+   b. The recipient is bound by a written agreement (contract, subcontract,
+      or teaming agreement) that imposes restrictions no less protective
+      than those in this license.
+   c. All internal references, customer attribution, and CUI markings are
+      reviewed and sanitized prior to handoff per GDIT data handling policy.
+
+RESTRICTIONS:
+
+3. NO UNRESTRICTED REDISTRIBUTION. The Software may not be copied,
+   distributed, sublicensed, sold, or transferred to any third party
+   except as expressly permitted under Section 2 above.
+
+4. NO PUBLIC DISCLOSURE. The Software, including source code, compiled
+   binaries, documentation, and configuration files, may not be published
+   to any public repository, website, or file-sharing service under
+   any circumstances.
+
+5. NO CUSTOMER ATTRIBUTION IN SOURCE. No customer names, program
+   codenames, contract numbers, or engagement identifiers shall appear
+   in the Software or its metadata. This restriction applies to both
+   internal use and any controlled distribution.
+
+6. GOVERNMENT RIGHTS NOTICE. To the extent this Software is delivered
+   to or used in performance of a U.S. Government contract, the
+   Government's rights in the Software are governed by the applicable
+   contract and relevant FAR/DFARS clauses (including but not limited to
+   DFARS 252.227-7014). Nothing in this license supersedes or modifies
+   rights established by contract with the U.S. Government.
+   [PLACEHOLDER — GDIT Legal to confirm applicable DFARS clause and
+   rights category prior to any government delivery.]
+
+7. NO WARRANTY. THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+   ANY KIND. GDIT SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+   LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+DRAFT STATUS: This license is a working placeholder. It must be reviewed
+and approved by GDIT Legal before any external distribution or government
+delivery occurs.
+
+For licensing inquiries, contact: Darren.Wolf@gdit.com

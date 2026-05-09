@@ -1,0 +1,27 @@
+# Glossary
+
+- **Adapter** — typed A→B integration between two specific node types. Never "connector".
+- **ATO** — Authorization to Operate (RMF artifact).
+- **CMMC** — Cybersecurity Maturity Model Certification.
+- **CODEOWNER** — entry in `.github/CODEOWNERS` mapping paths to required reviewers.
+- **Cove.GDIT** — GDIT's Cove lab AWS sub-environment.
+- **CUI** — Controlled Unclassified Information (32 CFR 2002).
+- **DA** — Digital Accelerator (GDIT solution category).
+- **DAST** — Dynamic Application Security Testing.
+- **DoDAF** — Department of Defense Architecture Framework.
+- **FIPS 140-3** — Federal cryptographic module validation standard.
+- **FUSION** — this platform.
+- **IRSA** — IAM Roles for Service Accounts (EKS pattern).
+- **K3s** — lightweight Kubernetes distribution (Rancher).
+- **Node** — self-contained deployable unit.
+- **OIDC** — OpenID Connect.
+- **POA&M** — Plan of Action & Milestones.
+- **RMF** — Risk Management Framework (NIST 800-37).
+- **SAST** — Static Application Security Testing.
+- **SBOM** — Software Bill of Materials.
+- **SLSA** — Supply-chain Levels for Software Artifacts.
+- **Solution** — canvas of nodes wired by adapters.
+- **SSDF** — Secure Software Development Framework (NIST 800-218).
+- **STIG** — Security Technical Implementation Guide (DISA).
+- **WORM** — Write Once Read Many.
+- **Z-\*** — trust zone (see `docs/architecture/trust-zones.md`).

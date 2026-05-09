@@ -1,0 +1,65 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# This file is proprietary and confidential. See LICENSE for terms.
+
+# .ansible-lint — Ansible Lint configuration for COVE solution repos
+# ===================================================================
+# ansible-lint checks Ansible playbooks, roles, and task files for
+# best practices, potential bugs, and style issues.
+#
+# Profile: "moderate" is the recommended starting point. It includes
+# important correctness checks without being as strict as "production"
+# (which requires full metadata, changelogs, etc. that are overkill for
+# internal automation).
+#
+# Usage:
+#   ansible-lint                        # Lint all detected files
+#   ansible-lint playbooks/site.yml     # Lint a specific file
+#   ansible-lint --fix                  # Auto-fix what it can
+
+# Profile level: basic < moderate < safety < shared < production
+# "moderate" catches real bugs and anti-patterns without drowning
+# the team in style nitpicks during adoption.
+profile: moderate
+
+# Paths to exclude from linting.
+exclude_paths:
+  # Roles from Galaxy or external sources — we don't control their style.
+  - .cache/
+  # Test artifacts and temporary files.
+  - tests/output/
+  # Node modules if the repo has a Node.js component alongside Ansible.
+  - node_modules/
+  # Distribution/build artifacts.
+  - dist/
+  # Virtual environments.
+  - .venv/
+  - venv/
+
+# Warn list: these rules produce warnings instead of errors.
+# The team should FIX warnings over time, but they don't block commits.
+warn_list:
+  # experimental rules may change between ansible-lint versions;
+  # warn so the team sees them but don't break builds on upgrades.
+  - experimental
+
+  # role-name: flags roles that don't follow Galaxy naming conventions.
+  # COVE roles are internal and don't publish to Galaxy, so the strict
+  # naming format is unnecessary.
+  - role-name[path]
+
+# Skip list: these rules are completely disabled.
+# Every skip has a rationale — do not add rules here without one.
+skip_list:
+  # yaml[truthy]: flags YAML values like `yes` and `no` instead of
+  # `true` and `false`. While `true`/`false` is technically correct YAML,
+  # Ansible's own documentation and many community roles use `yes`/`no`
+  # extensively. Skip for pragmatism.
+  - yaml[truthy]
+
+  # no-changed-when: requires every command/shell task to have a
+  # `changed_when` condition. Good practice for idempotency, but
+  # enforcing it on day one overwhelms engineers who are just
+  # starting to lint their playbooks. Move to warn_list after
+  # the team has adopted linting for 2-3 months.
+  - no-changed-when

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fusion.gdit.internal/schemas/adapter/1.0.0",
+  "title": "FUSION Adapter Definition",
+  "description": "Validates fusion-adapters/<src>--<tgt>/definition.yaml. See docs/domain.md for the full directory contract.",
+  "type": "object",
+  "required": [
+    "kind",
+    "name",
+    "version",
+    "source_type",
+    "target_type",
+    "variables_schema",
+    "priority_tier"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "type": "string",
+      "const": "adapter",
+      "description": "Must be 'adapter'. Discriminates against node definitions."
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*--[a-z][a-z0-9-]*$",
+      "maxLength": 128,
+      "description": "Kebab-case adapter identifier in the form <source>--<target>. Used as the directory name under fusion-adapters/."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver of this adapter definition."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "source_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "maxLength": 64,
+      "description": "The node type name on the source side of the integration."
+    },
+    "target_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "maxLength": 64,
+      "description": "The node type name on the target side of the integration."
+    },
+    "variables_schema": {
+      "type": "object",
+      "description": "Maps variable names to their type descriptors. Values must declare at minimum a 'type' field.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string" },
+          "required": { "type": "boolean" },
+          "default": {},
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "priority_tier": {
+      "type": "integer",
+      "enum": [1, 2, 3],
+      "description": "1=infra (runs first), 2=service, 3=post-integration (runs last). Global ordering across the full solution deployment."
+    },
+    "maturity": {
+      "type": "string",
+      "enum": ["prototype", "mvp", "hardened", "production"],
+      "description": "Lifecycle stage of this adapter artifact."
+    }
+  }
+}

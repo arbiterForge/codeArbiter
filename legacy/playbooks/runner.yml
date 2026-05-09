@@ -1,0 +1,23 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+
+# playbooks/runner.yml — Install and register a Gitea Act Runner.
+# ================================================================
+# Run this playbook against the server that will host the CI runner.
+# It can be the same host as the FUSION app or a dedicated runner host.
+#
+# Usage:
+#   ansible-playbook playbooks/runner.yml \
+#     -i inventory/hosts \
+#     --extra-vars "gitea_runner_token=<token>"
+#
+# Get the token from: Gitea → Site Administration → Runners → Create new runner
+# The token is single-use — once the runner is registered it is no longer needed.
+---
+- name: Install and register Gitea Act Runner
+  hosts: targets
+  gather_facts: true
+  become: false
+
+  roles:
+    - role: gitea-runner

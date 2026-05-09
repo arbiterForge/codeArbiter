@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:xyflow.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:osv.dev)"
+    ]
+  },
+  "outputStyle": "Explanatory"
+}

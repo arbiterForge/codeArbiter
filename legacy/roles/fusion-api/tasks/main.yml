@@ -1,0 +1,19 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Validate required secrets are provided
+  ansible.builtin.assert:
+    that:
+      - fusion_database_url | length > 0
+      - fusion_oidc_jwks_uri | length > 0
+      - fusion_oidc_issuer | length > 0
+      - fusion_audit_sink_url | length > 0
+      - not fusion_auth_bypass | bool
+    fail_msg: >
+      Required variables are missing or AUTH_BYPASS is true.
+      Pass secrets via --extra-vars "@secrets.yml" (Ansible Vault recommended).
+      fusion_auth_bypass MUST be false in all non-CI environments.
+
+- import_tasks: user.yml
+- import_tasks: deploy.yml
+- import_tasks: service.yml

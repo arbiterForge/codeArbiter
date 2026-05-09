@@ -1,0 +1,27 @@
+# fusion-api systemd unit — managed by Ansible; do not edit manually.
+# Template: roles/fusion-api/templates/fusion-api.service.j2
+[Unit]
+Description=FUSION Platform API (Fastify)
+Documentation=https://gitea.cove.gdit/cove/cove-apps-fusion
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ fusion_api_user }}
+Group={{ fusion_api_group }}
+WorkingDirectory={{ fusion_current_link }}/backend
+EnvironmentFile={{ fusion_shared_dir }}/.env
+ExecStart=/usr/bin/node dist/main.js
+Restart=always
+RestartSec=5s
+
+# Security hardening (docs/hardening-guide.md)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths={{ fusion_shared_dir }}
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

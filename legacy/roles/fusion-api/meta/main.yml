@@ -1,0 +1,15 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+galaxy_info:
+  role_name: fusion-api
+  author: GDIT CTO Digital Accelerator
+  description: Deploy the FUSION platform backend (Fastify/Node.js) to RHEL 9
+  min_ansible_version: "2.15"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+
+dependencies:
+  - role: nodejs

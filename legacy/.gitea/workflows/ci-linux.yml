@@ -1,0 +1,290 @@
+# =============================================================================
+# FUSION Core — CI Pipeline (Gitea Actions, Linux runner)
+# =============================================================================
+#
+# Stack: Node.js 22 LTS · TypeScript · Fastify · Vitest · React · Vite
+# ADR reference: docs/decisions/0004-adopt-nodejs-typescript-backend.md
+#
+# Runner requirements (label: self-hosted):
+#   - RHEL 9+ (or Ubuntu 22.04+)
+#   - Node.js 22, npm, git, make, pip3, openssl pre-installed
+#   - gitleaks 8.18.4 and syft 1.17.0 pre-installed in /usr/local/bin
+#   - semgrep pre-installed (pip3 install semgrep as root, or pre-baked)
+#
+# Required Gitea secrets (Repo → Settings → Actions → Secrets):
+#   - GITEA_RELEASE_TOKEN  PAT with write:repo scope (publish job only)
+#
+# Non-bypass gates (MUST NOT have continue-on-error — CM-3, CM-5):
+#   secrets, license, lockfile, lint, test
+#   sast / deps / fips are advisory at S1 but the Makefile enforces at S2+.
+#   Adding continue-on-error here would bypass that enforcement permanently.
+#
+# To enable: register a runner with label self-hosted and push any commit.
+# =============================================================================
+
+name: CI — FUSION Core
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "22"
+  # AUTH_BYPASS allows tests to run without a real OIDC server in CI.
+  # It is explicitly scoped to the test job only (not exported globally).
+  GITLEAKS_VERSION: "8.18.4"
+  SYFT_VERSION: "1.17.0"
+  # Extend Node.js CA bundle with the internal COVE CA so that JS actions
+  # (upload-artifact, checkout) can verify the self-signed Gitea TLS cert.
+  # Service-level NODE_EXTRA_CA_CERTS in the systemd drop-in covers run: steps
+  # but is not inherited by the act_runner JS action executor — must be explicit.
+  NODE_EXTRA_CA_CERTS: /etc/pki/ca-trust/source/anchors/cove-dev-ca.crt
+
+# ---------------------------------------------------------------------------
+# Job: lockfile
+# Verifies package-lock.json files are committed and all deps come from the
+# approved npm registry. Fast, no Node install needed.
+# ---------------------------------------------------------------------------
+jobs:
+  lockfile:
+    name: Lockfile integrity
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: make lockfile-check
+        run: make lockfile-check
+
+      - name: make deps-source-check
+        run: make deps-source-check
+
+  # ---------------------------------------------------------------------------
+  # Job: secrets
+  # Full-history gitleaks scan. Enforced at all stages — no advisory mode.
+  # Fetch-depth 0 is required so gitleaks sees all commits, not just HEAD.
+  # ---------------------------------------------------------------------------
+  secrets:
+    name: Secrets scan (gitleaks)
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify gitleaks pre-installed
+        run: gitleaks version
+
+      - name: make secrets-scan
+        run: make secrets-scan
+
+  # ---------------------------------------------------------------------------
+  # Job: lint
+  # ESLint + tsc --noEmit for both frontend and backend.
+  # Fast failure surface — runs before tests to avoid paying test time on
+  # type errors.
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint (ESLint + tsc)
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Node.js ${{ env.NODE_VERSION }}
+        run: node --version && npm --version && pwd && ls -la
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: make frontend-lint
+        run: make frontend-lint
+
+      - name: make backend-lint
+        run: make backend-lint
+
+  # ---------------------------------------------------------------------------
+  # Job: test
+  # Vitest with coverage enforcement (≥60% at S1, threshold rises per stage).
+  # AUTH_BYPASS=true scoped to this job — tests mock OIDC, never hit a real IdP.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test (Vitest + coverage)
+    runs-on: [self-hosted]
+    needs: [lint]
+    env:
+      AUTH_BYPASS: "true"
+      NODE_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Node.js ${{ env.NODE_VERSION }}
+        run: node --version && npm --version
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: make frontend-test
+        run: make frontend-test
+
+      - name: make backend-test
+        run: make backend-test
+
+  # ---------------------------------------------------------------------------
+  # Job: license
+  # BSL prohibition check (Terraform) + npm license allow-list.
+  # Enforced at all stages. Blocked licenses: AGPL-3.0, SSPL, BSL, Commons Clause.
+  # ---------------------------------------------------------------------------
+  license:
+    name: License scan
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Node.js ${{ env.NODE_VERSION }}
+        run: node --version && npm --version
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Verify license-checker pre-installed
+        run: which license-checker && license-checker --version || true
+
+      - name: make license-scan
+        run: make license-scan
+
+  # ---------------------------------------------------------------------------
+  # Job: deps
+  # npm audit for frontend and backend. Advisory at S1 (Makefile exits 0 with
+  # WARN on non-critical findings); blocking at S2+ for High/Critical.
+  # ---------------------------------------------------------------------------
+  deps:
+    name: Dependency audit (npm audit)
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Node.js ${{ env.NODE_VERSION }}
+        run: node --version && npm --version
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: make deps-scan
+        run: make deps-scan
+
+  # ---------------------------------------------------------------------------
+  # Job: sast
+  # Semgrep static analysis — Node.js + frontend rulesets.
+  # Advisory at S1 (Makefile exits 0 with WARN); blocking at S2+.
+  # ---------------------------------------------------------------------------
+  sast:
+    name: SAST (Semgrep)
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify semgrep pre-installed
+        run: semgrep --version
+
+      - name: make sast
+        run: make sast
+
+  # ---------------------------------------------------------------------------
+  # Job: validate
+  # JSON Schema validation of definition.yaml files (no-op at S1 — no
+  # fusion-nodes or fusion-adapters exist yet).
+  # FIPS advisory check — warns at S1, blocks at S2+.
+  # ---------------------------------------------------------------------------
+  validate:
+    name: Validate definitions + FIPS check
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Node.js ${{ env.NODE_VERSION }}
+        run: node --version && npm --version
+
+      - name: make validate-definitions
+        run: make validate-definitions
+
+      - name: make fips-check
+        run: make fips-check
+
+  # ---------------------------------------------------------------------------
+  # Job: sbom
+  # Generates a CycloneDX SBOM via syft and uploads it as a workflow artifact.
+  # Retained for 90 days. At S3+, this artifact is signed (make sign).
+  # Runs after test passes so the SBOM reflects a verified build state.
+  # ---------------------------------------------------------------------------
+  sbom:
+    name: SBOM (syft → CycloneDX)
+    runs-on: [self-hosted]
+    needs: [test, lockfile]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify syft pre-installed
+        run: syft version
+
+      - name: make sbom
+        run: make sbom
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom-cyclonedx-${{ github.sha }}
+          path: sbom.cyclonedx.json
+          retention-days: 90
+
+  # ---------------------------------------------------------------------------
+  # Job: all-passed
+  # Sentinel job that Gitea branch protection rules require by name.
+  # If any upstream job fails, this job never runs and the PR cannot merge.
+  # Add "Require status check: all-passed" in branch protection settings.
+  # ---------------------------------------------------------------------------
+  all-passed:
+    name: All gates passed
+    runs-on: [self-hosted]
+    needs:
+      - lockfile
+      - secrets
+      - lint
+      - test
+      - license
+      - deps
+      - sast
+      - validate
+      - sbom
+    steps:
+      - name: All CI gates passed
+        run: echo "Stage $(cat .fusion/stage 2>/dev/null || echo 1) gate set complete."

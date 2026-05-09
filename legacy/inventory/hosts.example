@@ -1,0 +1,39 @@
+# inventory/hosts.example — Ansible inventory template
+# =====================================================
+# Copy this file to hosts and fill in your target hostnames or IPs.
+# The hosts file itself should NOT be committed if it contains
+# environment-specific IPs or hostnames — add it to .gitignore.
+#
+# Format: INI-style groups with hostnames or IPs as members.
+# Variables can be set per-host or per-group.
+#
+# Documentation: https://docs.ansible.com/ansible/latest/inventory_guide/
+
+# --- Primary target group ---
+# Replace with your actual hostnames or IPs.
+[targets]
+rhel-host-01.your-domain.internal
+rhel-host-02.your-domain.internal
+# 10.0.1.10   # IP address works too — use hostnames when possible
+
+# --- Group variables ---
+# Variables set here apply to all hosts in the [targets] group.
+[targets:vars]
+# SSH user — use a service account, not root
+ansible_user=ansible-svc
+# Python interpreter path — explicit is better than auto-detect on RHEL
+ansible_python_interpreter=/usr/bin/python3
+# SSH private key — override if not using the default ~/.ssh/id_ed25519
+# ansible_ssh_private_key_file=~/.ssh/cove-ansible
+
+# --- Windows hosts (if applicable) ---
+# Uncomment and populate if this solution targets Windows Server.
+# [windows]
+# win-host-01.your-domain.internal
+
+# [windows:vars]
+# ansible_user=Administrator
+# ansible_password={{ lookup('env', 'ANSIBLE_WIN_PASSWORD') }}
+# ansible_connection=winrm
+# ansible_winrm_transport=ntlm
+# ansible_port=5985

@@ -1,0 +1,60 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Install Node.js via dnf module stream
+  when: nodejs_install_method == "dnf-module"
+  block:
+    - name: Enable nodejs:{{ nodejs_major_version }} module stream
+      ansible.builtin.dnf:
+        name: "@nodejs:{{ nodejs_major_version }}"
+        state: present
+      become: true
+
+- name: Install Node.js via NodeSource RPM repository
+  when: nodejs_install_method == "nodesource"
+  block:
+    - name: Download NodeSource setup script
+      ansible.builtin.get_url:
+        url: "https://rpm.nodesource.com/setup_{{ nodejs_major_version }}.x"
+        dest: /tmp/nodesource_setup.sh
+        mode: "0700"
+
+    - name: Run NodeSource setup script
+      ansible.builtin.command:
+        cmd: bash /tmp/nodesource_setup.sh
+      changed_when: true
+      become: true
+
+    - name: Install nodejs package via NodeSource repo
+      ansible.builtin.dnf:
+        name: nodejs
+        state: present
+      become: true
+
+    - name: Remove NodeSource setup script
+      ansible.builtin.file:
+        path: /tmp/nodesource_setup.sh
+        state: absent
+
+- name: Install Node.js from local package (air-gapped)
+  when: nodejs_install_method == "package"
+  ansible.builtin.dnf:
+    name: "nodejs{{ nodejs_major_version }}"
+    state: present
+  become: true
+
+- name: Verify Node.js major version
+  ansible.builtin.command:
+    cmd: node --version
+  register: _node_version
+  changed_when: false
+
+- name: Assert correct Node.js major version is installed
+  ansible.builtin.assert:
+    that:
+      - _node_version.stdout is match("^v" + nodejs_major_version + "\\..*")
+    fail_msg: >
+      Node.js version mismatch: installed {{ _node_version.stdout }},
+      expected major version {{ nodejs_major_version }}.
+      Check nodejs_install_method or repository availability.
+    success_msg: "Node.js {{ _node_version.stdout }} — OK"

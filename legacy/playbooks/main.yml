@@ -1,0 +1,22 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+
+# playbooks/main.yml — Deploy the FUSION platform to target hosts.
+# =================================================================
+# Called by playbooks/site.yml after pre-check.yml passes.
+# Run standalone: ansible-playbook playbooks/main.yml -i inventory/hosts \
+#   --extra-vars "fusion_deploy_ref=<tag> fusion_database_url=<url> ..."
+#
+# Required --extra-vars (or Ansible Vault vars file):
+#   fusion_database_url    — PostgreSQL connection string
+#   fusion_oidc_jwks_uri   — OIDC JWKS endpoint
+#   fusion_oidc_issuer     — OIDC issuer
+#   fusion_audit_sink_url  — Audit sink HTTP endpoint
+---
+- name: Deploy FUSION platform
+  hosts: targets
+  gather_facts: true
+  become: false
+
+  roles:
+    - role: fusion-api

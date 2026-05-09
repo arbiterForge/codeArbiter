@@ -1,0 +1,14 @@
+name: Documentation Request
+about: Request missing, unclear, or outdated documentation
+labels: [documentation]
+body:
+  - type: textarea
+    id: gap
+    attributes:
+      label: What documentation is missing or unclear?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context (who needs it, what use case?)

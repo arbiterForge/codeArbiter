@@ -1,0 +1,32 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+# Gitea instance hosting this repo — used for git clone
+gitea_url: "https://gitea.cove.gdit"
+fusion_repo_path: "cove/cove-apps-fusion"
+
+# Git ref to deploy (tag, branch, or SHA)
+fusion_deploy_ref: "main"
+
+# Filesystem layout
+fusion_install_dir: "/opt/cove-apps-fusion"
+fusion_releases_dir: "/opt/cove-apps-fusion/releases"
+fusion_current_link: "/opt/cove-apps-fusion/current"
+fusion_shared_dir: "/opt/cove-apps-fusion/shared"
+
+# Service account (matches hardening-guide.md)
+fusion_api_user: "fusion-api"
+fusion_api_group: "fusion-api"
+
+# Fastify listen settings
+fusion_api_port: 3000
+fusion_api_host: "127.0.0.1"
+
+# Required at runtime — pass via --extra-vars "@/path/to/secrets.yml" or Ansible Vault
+fusion_database_url: ""
+fusion_oidc_jwks_uri: ""
+fusion_oidc_issuer: ""
+fusion_audit_sink_url: ""
+
+# Set true only in CI/test environments — MUST NOT be true in production
+fusion_auth_bypass: false

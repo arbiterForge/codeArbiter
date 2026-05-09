@@ -1,0 +1,9 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: restart fusion-api
+  ansible.builtin.systemd:
+    name: fusion-api
+    state: restarted
+    daemon_reload: true
+  become: true

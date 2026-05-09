@@ -1,0 +1,20 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Template act_runner systemd unit
+  ansible.builtin.template:
+    src: act_runner.service.j2
+    dest: /etc/systemd/system/act_runner.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart act_runner
+
+- name: Enable and start act_runner service
+  ansible.builtin.systemd:
+    name: act_runner
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true

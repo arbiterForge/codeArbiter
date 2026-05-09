@@ -1,0 +1,14 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+galaxy_info:
+  role_name: nodejs
+  author: GDIT CTO Digital Accelerator
+  description: Install Node.js on RHEL 9 via dnf module stream or NodeSource
+  min_ansible_version: "2.15"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+
+dependencies: []

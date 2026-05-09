@@ -1,0 +1,21 @@
+name: Feature Request
+about: Propose new functionality or an enhancement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Opportunity
+      placeholder: "Today I have to ... which takes ... and causes ..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered

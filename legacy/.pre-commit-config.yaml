@@ -1,0 +1,131 @@
+# .pre-commit-config.yaml — Pre-commit hook configuration for FUSION Core
+# =========================================================================
+# Stack: Node.js 22 · TypeScript · Fastify · Vitest · React · Vite
+# ADR reference: docs/decisions/0004-adopt-nodejs-typescript-backend.md
+#
+# HOW TO INSTALL:
+#   make install-hooks
+#
+# HOW TO RUN MANUALLY:
+#   pre-commit run --all-files        # all hooks on all files
+#   pre-commit run <hook-id>          # one hook only
+#
+# HOW TO SKIP A HOOK TEMPORARILY:
+#   SKIP=gitleaks git commit -m "..."     # skip one hook (document reason)
+#   git commit --no-verify -m "..."      # skip all hooks (never use in CI)
+#
+# TDD Contract (§9):
+#   Every commit MUST pass: lint → typecheck → tests → secrets scan.
+#   These hooks enforce that contract at the workstation, before CI runs.
+# =========================================================================
+
+default_stages: [commit]
+default_language_version:
+  node: "22.0.0"
+
+repos:
+  # ==============================
+  # General file hygiene
+  # ==============================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      # Trailing whitespace causes noisy diffs.
+      - id: trailing-whitespace
+
+      # POSIX requires files to end with a newline.
+      - id: end-of-file-fixer
+
+      # YAML is used extensively (CI workflows, Ansible, solution.yaml).
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+
+      # JSON validation (schemas, package.json).
+      - id: check-json
+
+      # Prevent accidentally committing binaries or build artifacts to git.
+      - id: check-added-large-files
+        args: [--maxkb=500]
+
+      # RHEL is case-sensitive; Windows is not — catch conflicts early.
+      - id: check-case-conflict
+
+      # Catch accidentally staged private keys.
+      - id: detect-private-key
+
+      # All changes go through PRs — direct commits to main are blocked.
+      - id: no-commit-to-branch
+        args: [--branch, main]
+
+  # ==============================
+  # Ansible: ansible-lint
+  # Deployment playbooks still use Ansible (infrastructure, not app code).
+  # ==============================
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.5.0
+    hooks:
+      - id: ansible-lint
+        files: ^(ansible|playbooks|roles)/
+        additional_dependencies:
+          - ansible-core>=2.15
+
+  # ==============================
+  # PowerShell: PSScriptAnalyzer (local hook)
+  # No-op unless .ps1 files are staged. Kept for future Windows scripts.
+  # ==============================
+  - repo: local
+    hooks:
+      - id: psscriptanalyzer
+        name: PSScriptAnalyzer
+        entry: pwsh -NoProfile -Command "Invoke-ScriptAnalyzer -Path . -Settings ./PSScriptAnalyzerSettings.psd1 -Recurse -EnableExit"
+        language: system
+        files: \.ps1$
+        pass_filenames: false
+        verbose: true
+
+  # ==============================
+  # TypeScript — TDD gate (§9 contract)
+  # Hooks run in the order defined. Lint first (fast fail), then tests.
+  # AUTH_BYPASS=true allows backend tests to run without a real OIDC server.
+  # ==============================
+  - repo: local
+    hooks:
+      - id: frontend-lint
+        name: Frontend lint (ESLint + tsc)
+        entry: bash -c 'cd frontend && npm run lint && npm run typecheck'
+        language: system
+        files: ^frontend/src/
+        pass_filenames: false
+
+      - id: backend-lint
+        name: Backend lint (ESLint + tsc)
+        entry: bash -c 'cd backend && npm run lint && npm run typecheck'
+        language: system
+        files: ^backend/src/
+        pass_filenames: false
+
+      - id: frontend-test
+        name: Frontend tests (Vitest + coverage ≥60%)
+        entry: bash -c 'cd frontend && npm run test:coverage'
+        language: system
+        files: ^frontend/
+        pass_filenames: false
+
+      - id: backend-test
+        name: Backend tests (Vitest + coverage ≥60%)
+        entry: bash -c 'cd backend && AUTH_BYPASS=true npm run test:coverage'
+        language: system
+        files: ^backend/
+        pass_filenames: false
+
+  # ==============================
+  # Secrets: gitleaks — BLOCKING (enforced at all stages, CM-3, AU-12)
+  # ==============================
+  # gitleaks exits 1 when secrets are found, which pre-commit treats as a
+  # hard failure and aborts the commit. No continue-on-error equivalent exists.
+  # To skip for a single commit: SKIP=gitleaks git commit -m "..."
+  # (document the reason in the commit message; audited by maintainers).
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks

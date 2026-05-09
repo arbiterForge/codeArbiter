@@ -1,0 +1,44 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Template act_runner config file
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ act_runner_config_dir }}/config.yaml"
+    owner: root
+    group: "{{ act_runner_group }}"
+    mode: "0640"
+  become: true
+  notify: restart act_runner
+
+- name: Check if runner is already registered
+  ansible.builtin.stat:
+    path: "{{ act_runner_data_dir }}/.runner"
+  register: _runner_reg_file
+
+- name: Register runner with Gitea
+  ansible.builtin.command:
+    cmd: >
+      {{ act_runner_install_dir }}/act_runner register
+      --no-interactive
+      --config {{ act_runner_config_dir }}/config.yaml
+      --instance {{ gitea_url }}
+      --token {{ gitea_runner_token }}
+      --name {{ act_runner_name }}
+      --labels {{ act_runner_labels }}
+    chdir: "{{ act_runner_data_dir }}"
+  become: true
+  become_user: "{{ act_runner_user }}"
+  when: not _runner_reg_file.stat.exists
+  # Token is consumed once to generate .runner — it is not stored in any file.
+  # .runner contains a derived secret; it is protected by 0600 permissions set below.
+  no_log: true
+
+- name: Secure the .runner registration file
+  ansible.builtin.file:
+    path: "{{ act_runner_data_dir }}/.runner"
+    owner: "{{ act_runner_user }}"
+    group: "{{ act_runner_group }}"
+    mode: "0600"
+  become: true
+  when: not _runner_reg_file.stat.exists

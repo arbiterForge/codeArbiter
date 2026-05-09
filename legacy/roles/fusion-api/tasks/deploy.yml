@@ -1,0 +1,95 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Set release directory fact
+  ansible.builtin.set_fact:
+    _release_dir: "{{ fusion_releases_dir }}/{{ ansible_date_time.epoch }}"
+
+- name: Clone repo at target ref into release directory
+  ansible.builtin.git:
+    repo: "{{ gitea_url }}/{{ fusion_repo_path }}.git"
+    dest: "{{ _release_dir }}"
+    version: "{{ fusion_deploy_ref }}"
+    depth: 1
+    force: false
+  become: true
+  become_user: "{{ fusion_api_user }}"
+
+- name: Install backend production dependencies
+  ansible.builtin.command:
+    cmd: npm ci --omit=dev --ignore-scripts
+    chdir: "{{ _release_dir }}/backend"
+  become: true
+  become_user: "{{ fusion_api_user }}"
+  changed_when: true
+
+- name: Compile TypeScript backend
+  ansible.builtin.command:
+    cmd: npm run build
+    chdir: "{{ _release_dir }}/backend"
+  become: true
+  become_user: "{{ fusion_api_user }}"
+  changed_when: true
+
+- name: Build frontend production bundle
+  ansible.builtin.command:
+    cmd: npm ci --ignore-scripts
+    chdir: "{{ _release_dir }}/frontend"
+  become: true
+  become_user: "{{ fusion_api_user }}"
+  changed_when: true
+
+- name: Compile frontend
+  ansible.builtin.command:
+    cmd: npm run build
+    chdir: "{{ _release_dir }}/frontend"
+  become: true
+  become_user: "{{ fusion_api_user }}"
+  changed_when: true
+
+- name: Template .env file into shared directory
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ fusion_shared_dir }}/.env"
+    owner: "{{ fusion_api_user }}"
+    group: "{{ fusion_api_group }}"
+    mode: "0640"
+  become: true
+  no_log: true
+  notify: restart fusion-api
+
+- name: Symlink shared .env into release
+  ansible.builtin.file:
+    src: "{{ fusion_shared_dir }}/.env"
+    dest: "{{ _release_dir }}/backend/.env"
+    state: link
+    owner: "{{ fusion_api_user }}"
+    group: "{{ fusion_api_group }}"
+  become: true
+
+- name: Run database migrations
+  ansible.builtin.command:
+    cmd: npx drizzle-kit migrate
+    chdir: "{{ _release_dir }}/backend"
+  become: true
+  become_user: "{{ fusion_api_user }}"
+  environment:
+    DATABASE_URL: "{{ fusion_database_url }}"
+  changed_when: true
+
+- name: Switch current symlink to new release
+  ansible.builtin.file:
+    src: "{{ _release_dir }}"
+    dest: "{{ fusion_current_link }}"
+    state: link
+    owner: "{{ fusion_api_user }}"
+    group: "{{ fusion_api_group }}"
+  become: true
+  notify: restart fusion-api
+
+- name: Remove releases older than 3 (keep last 3 for rollback)
+  ansible.builtin.shell:
+    cmd: >
+      ls -1dt {{ fusion_releases_dir }}/*/  | tail -n +4 | xargs rm -rf
+  become: true
+  changed_when: false

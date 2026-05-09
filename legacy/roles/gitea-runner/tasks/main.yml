@@ -1,0 +1,16 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Validate required variables
+  ansible.builtin.assert:
+    that:
+      - gitea_runner_token | length > 0
+    fail_msg: >
+      gitea_runner_token is required and must not be empty.
+      Pass it at runtime: --extra-vars "gitea_runner_token=<token>"
+      Token found in Gitea: Site Admin -> Runners -> Create new runner.
+
+- import_tasks: user.yml
+- import_tasks: install.yml
+- import_tasks: configure.yml
+- import_tasks: service.yml

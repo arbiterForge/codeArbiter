@@ -1,0 +1,39 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Create gitea-runner system group
+  ansible.builtin.group:
+    name: "{{ act_runner_group }}"
+    system: true
+    state: present
+  become: true
+
+- name: Create gitea-runner system user
+  ansible.builtin.user:
+    name: "{{ act_runner_user }}"
+    group: "{{ act_runner_group }}"
+    system: true
+    shell: /sbin/nologin
+    home: "{{ act_runner_data_dir }}"
+    create_home: false
+    comment: "Gitea Act Runner service account"
+    state: present
+  become: true
+
+- name: Create runner data directory
+  ansible.builtin.file:
+    path: "{{ act_runner_data_dir }}"
+    state: directory
+    owner: "{{ act_runner_user }}"
+    group: "{{ act_runner_group }}"
+    mode: "0750"
+  become: true
+
+- name: Create runner config directory
+  ansible.builtin.file:
+    path: "{{ act_runner_config_dir }}"
+    state: directory
+    owner: root
+    group: "{{ act_runner_group }}"
+    mode: "0750"
+  become: true

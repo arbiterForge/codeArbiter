@@ -1,0 +1,45 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: Create fusion-api system group
+  ansible.builtin.group:
+    name: "{{ fusion_api_group }}"
+    system: true
+    state: present
+  become: true
+
+- name: Create fusion-api system user
+  ansible.builtin.user:
+    name: "{{ fusion_api_user }}"
+    group: "{{ fusion_api_group }}"
+    system: true
+    shell: /sbin/nologin
+    home: "{{ fusion_install_dir }}"
+    create_home: false
+    comment: "FUSION API service account"
+    state: present
+  become: true
+
+- name: Create install directory tree
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ fusion_api_user }}"
+    group: "{{ fusion_api_group }}"
+    mode: "0750"
+  loop:
+    - "{{ fusion_install_dir }}"
+    - "{{ fusion_releases_dir }}"
+    - "{{ fusion_shared_dir }}"
+  become: true
+
+- name: Create shared .env file location
+  ansible.builtin.file:
+    path: "{{ fusion_shared_dir }}/.env"
+    state: touch
+    owner: "{{ fusion_api_user }}"
+    group: "{{ fusion_api_group }}"
+    mode: "0640"
+    modification_time: preserve
+    access_time: preserve
+  become: true

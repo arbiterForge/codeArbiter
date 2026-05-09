@@ -1,0 +1,52 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+# act_runner version — pin this and update deliberately.
+# Check compatible version against your Gitea server version before changing.
+# Releases: https://gitea.com/gitea/act_runner/releases
+act_runner_version: "0.2.11"
+
+# Gitea instance the runner registers against
+gitea_url: "https://gitea.cove.gdit"
+
+# Registration token — NEVER store in repo or defaults.
+# Pass at runtime: ansible-playbook ... --extra-vars "gitea_runner_token=<token>"
+# Token is found in Gitea → Site Admin → Runners → Create new runner.
+gitea_runner_token: ""
+
+# Display name shown in Gitea UI (defaults to inventory hostname)
+act_runner_name: "{{ inventory_hostname }}"
+
+# Comma-separated labels that must match `runs-on:` in workflow files
+# ci-linux.yml uses: [self-hosted, os:linux]
+# Labels must use act_runner schema format: name:host for native, name:docker://image for container.
+# Workflow runs-on values must match these label names exactly.
+act_runner_labels: "self-hosted:host,linux:host"
+
+# System account for the runner process
+act_runner_user: "gitea-runner"
+act_runner_group: "gitea-runner"
+
+# Filesystem paths
+act_runner_install_dir: "/usr/local/bin"
+act_runner_config_dir: "/etc/act_runner"
+act_runner_data_dir: "/var/lib/act_runner"
+
+# Number of concurrent jobs the runner can handle.
+# t3.large (8 GB): 2 is safe. Reduce to 1 if Semgrep OOMs mid-job.
+act_runner_capacity: 2
+
+# Set true only if Gitea uses a self-signed cert with no trusted CA
+act_runner_insecure: false
+
+# Binary download base URL — override for air-gapped environments
+# Full URL built as: {{ base }}/v{{ version }}/act_runner-{{ version }}-linux-{{ arch }}
+act_runner_download_base_url: "https://gitea.com/gitea/act_runner/releases/download"
+act_runner_arch: "amd64"
+
+# Container executor settings
+# docker_host: path to the Docker socket on the runner host
+# force_pull: true = always pull the job image; false = use local cache if present
+act_runner_docker_host: "unix:///var/run/docker.sock"
+act_runner_container_network: "bridge"
+act_runner_force_pull: false

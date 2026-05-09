@@ -1,0 +1,95 @@
+# CODEOWNERS — GDIT FUSION (fusion-core)
+# =======================================
+#
+# Gitea reads this file to auto-suggest reviewers on PRs that touch matching
+# paths. As of Gitea 1.24.x, CODEOWNERS is INFORMATIONAL only — it suggests
+# reviewers but does NOT block merges.
+#
+# To enforce it:
+#   Repo → Settings → Branches → Branch Protection for main
+#   → Enable "Require review from code owners."
+#
+# Syntax: <pattern>  <@org/team or @username>
+# Patterns are matched top-to-bottom; LAST match wins (Gitea / GitHub behavior).
+# All patterns are anchored to the repository root.
+#
+# Owner legend:
+#   @cove/maintainers  — core platform team; required on all PRs at Stage 1
+#
+# When a second maintainer is added, assign narrower sub-team owners to the
+# security, migration, and CI sections below.
+
+# ── Default ──────────────────────────────────────────────────────────────────
+# Every file not matched by a more specific rule below.
+*                                               @cove/maintainers
+
+# ── Source of truth ──────────────────────────────────────────────────────────
+# Any agent or human MUST read CLAUDE.md before acting. Accidental drift here
+# is high-impact. (CM-3, PM-9)
+CLAUDE.md                                       @cove/maintainers
+
+# ── ADRs — append-only ───────────────────────────────────────────────────────
+# Decisions are immutable once merged. Edits require maintainer sign-off to
+# prevent silent retcons. (PM-7, CM-3)
+docs/decisions/                                 @cove/maintainers
+
+# ── Schema contracts ─────────────────────────────────────────────────────────
+# These files define the wire format between zones and repos. Breaking changes
+# here propagate to solution repos and the frontend. (SA-10, CM-4)
+schemas/                                        @cove/maintainers
+backend/src/db/schema.ts                        @cove/maintainers
+backend/src/schemas/                            @cove/maintainers
+
+# ── Database migrations ───────────────────────────────────────────────────────
+# Drizzle-generated migrations are irreversible in production once applied.
+# Every migration file must pass migration-reviewer checks. (CM-3, CM-5)
+backend/drizzle/                                @cove/maintainers
+
+# ── Auth & cryptography ───────────────────────────────────────────────────────
+# OIDC verification, bypass logic, JWT handling. Must satisfy SC-8, IA-2,
+# IA-5, SC-13 (FIPS-only primitives). Any change here requires security review.
+backend/src/middleware/auth.ts                  @cove/maintainers
+docs/security-controls.md                      @cove/maintainers
+docs/secrets-and-keys.md                       @cove/maintainers
+
+# ── Audit pipeline ───────────────────────────────────────────────────────────
+# Changes to audit emit logic must not reduce field coverage or weaken
+# fail-open/fail-closed posture. (AU-2, AU-3, AU-9, AU-12)
+backend/src/lib/audit/                          @cove/maintainers
+frontend/src/lib/audit/                        @cove/maintainers
+schemas/audit-event.schema.json                 @cove/maintainers
+
+# ── Secrets & license allow-list ─────────────────────────────────────────────
+# Adding a license or loosening the allow-list is a supply-chain risk.
+# Changing gitleaks config could suppress secret detection. (RA-3, SR-3)
+ALLOWED_LICENSES.md                             @cove/maintainers
+.gitleaks.toml                                  @cove/maintainers
+
+# ── Dependency manifests ──────────────────────────────────────────────────────
+# New or updated dependencies require dependency-reviewer sign-off per
+# docs/dependency-policy.md. (SR-3, SR-4, CM-3)
+package.json                                    @cove/maintainers
+package-lock.json                               @cove/maintainers
+backend/package.json                            @cove/maintainers
+backend/package-lock.json                       @cove/maintainers
+frontend/package.json                           @cove/maintainers
+frontend/package-lock.json                      @cove/maintainers
+
+# ── CI/CD pipelines ───────────────────────────────────────────────────────────
+# Must be changed via a PR labeled `ci-change`. No gates may be skipped,
+# disabled, or set to `continue-on-error`. (CM-3, CM-5, AC-3)
+# Includes the Makefile because make targets ARE the CI contract.
+.gitea/workflows/                               @cove/maintainers
+Makefile                                        @cove/maintainers
+
+# ── Deployment & infrastructure ───────────────────────────────────────────────
+# Changes here affect the live environment. (CM-2, CM-4, AC-6)
+ansible/                                        @cove/maintainers
+playbooks/                                      @cove/maintainers
+roles/                                          @cove/maintainers
+terraform/                                      @cove/maintainers
+inventory/                                      @cove/maintainers
+
+# ── This file ────────────────────────────────────────────────────────────────
+# Modifying CODEOWNERS itself must be reviewed by maintainers. (AC-3, CM-3)
+CODEOWNERS                                      @cove/maintainers

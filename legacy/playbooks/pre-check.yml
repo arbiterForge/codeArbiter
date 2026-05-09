@@ -1,0 +1,91 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+
+# playbooks/pre-check.yml — Environment validation before any deployment.
+# =======================================================================
+# Run standalone: ansible-playbook playbooks/pre-check.yml -i inventory/hosts
+# All tasks are read-only. Fails fast before touching anything on the target.
+---
+- name: Pre-check — validate target environment
+  hosts: targets
+  gather_facts: true
+  become: false
+
+  tasks:
+    - name: Assert target OS is RHEL 9 or compatible
+      ansible.builtin.assert:
+        that:
+          - ansible_distribution in ["RedHat", "CentOS", "Rocky", "AlmaLinux"]
+          - ansible_distribution_major_version == "9"
+        fail_msg: >
+          Unsupported OS: {{ ansible_distribution }} {{ ansible_distribution_major_version }}.
+          FUSION targets RHEL 9 (or compatible EL9). Ubuntu 22.04 is acceptable for
+          Stage 1 dev — if using Ubuntu, override this assertion via group_vars.
+        success_msg: "OS check passed: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Assert target architecture is x86_64
+      ansible.builtin.assert:
+        that:
+          - ansible_architecture == "x86_64"
+        fail_msg: "Unsupported architecture: {{ ansible_architecture }}. FUSION targets x86_64."
+        success_msg: "Architecture check passed: {{ ansible_architecture }}"
+
+    - name: Check available disk space on /opt (>= 5 GB required)
+      ansible.builtin.assert:
+        that:
+          - (ansible_mounts | selectattr('mount', 'equalto', '/') | list | first).size_available > 5368709120
+        fail_msg: >
+          Insufficient disk space on /. At least 5 GB free is required.
+          Available: {{ (ansible_mounts | selectattr('mount', 'equalto', '/') | list | first).size_available | filesizeformat }}
+        success_msg: "Disk space check passed"
+
+    - name: Check sudo / become works
+      ansible.builtin.command:
+        cmd: id
+      become: true
+      changed_when: false
+      register: _sudo_check
+
+    - name: Assert become succeeded
+      ansible.builtin.assert:
+        that:
+          - "'uid=0' in _sudo_check.stdout"
+        fail_msg: "become (sudo) failed — verify ansible_user has passwordless sudo or configure ansible_become_password."
+        success_msg: "sudo access confirmed"
+
+    - name: Check that port 3000 is not already in use
+      ansible.builtin.wait_for:
+        port: 3000
+        state: stopped
+        timeout: 3
+      ignore_errors: true
+      register: _port_3000
+
+    - name: Warn if port 3000 is already occupied
+      ansible.builtin.debug:
+        msg: "WARN: Port 3000 is already in use. The fusion-api service may fail to start."
+      when: _port_3000 is failed
+
+    - name: Check systemd is available
+      ansible.builtin.command:
+        cmd: systemctl --version
+      changed_when: false
+      register: _systemd_check
+
+    - name: Assert systemd version is sufficient
+      ansible.builtin.assert:
+        that:
+          - _systemd_check.rc == 0
+        fail_msg: "systemd not available — FUSION services require systemd."
+        success_msg: "systemd check passed"
+
+    - name: Check dnf package manager is available
+      ansible.builtin.command:
+        cmd: dnf --version
+      changed_when: false
+
+    - name: Pre-check passed
+      ansible.builtin.debug:
+        msg: >
+          Pre-check complete. Target {{ inventory_hostname }} ({{ ansible_distribution }}
+          {{ ansible_distribution_version }}, {{ ansible_architecture }}) is ready for deployment.

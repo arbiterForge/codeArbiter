@@ -1,0 +1,15 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+galaxy_info:
+  role_name: gitea-runner
+  author: GDIT CTO Digital Accelerator
+  description: Install and register a Gitea Act Runner on RHEL 9
+  min_ansible_version: "2.15"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+
+dependencies:
+  - role: nodejs

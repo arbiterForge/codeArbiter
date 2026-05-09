@@ -1,0 +1,11 @@
+{
+  "name": "@cove/cove-apps-fusion",
+  "version": "0.1.0",
+  "description": "GDIT FUSION — redeployable platform for Digital Accelerator solutions",
+  "private": true,
+  "scripts": {
+    "test":         "make ci",
+    "frontend:dev": "make frontend-dev",
+    "backend:dev":  "make backend-dev"
+  }
+}

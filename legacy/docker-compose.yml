@@ -1,0 +1,80 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+#
+# Local development stack — NOT for production use.
+# Usage: make up   (after: cp .env.example .env && fill in values)
+#
+# Services:
+#   postgres     — Z-DB: PostgreSQL 16
+#   backend      — Z-API: Fastify on port 3000
+#   audit-sink   — Z-AUDIT stub: echoes POSTs to stdout for local inspection
+#
+# Frontend runs via Vite dev server on the host (make frontend-dev) — not here.
+---
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fusion
+      POSTGRES_USER: fusion
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev-only-change-in-prod}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fusion -d fusion"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://fusion:${POSTGRES_PASSWORD:-dev-only-change-in-prod}@postgres:5432/fusion"
+      OIDC_JWKS_URI: "${OIDC_JWKS_URI}"
+      OIDC_ISSUER: "${OIDC_ISSUER}"
+      AUDIT_SINK_URL: "http://audit-sink:4000"
+      AUTH_BYPASS: "${AUTH_BYPASS:-false}"
+      NODE_ENV: "development"
+      PORT: "3000"
+      HOST: "0.0.0.0"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # Minimal audit sink for local dev — logs every incoming POST to stdout.
+  # Replace with a real sink URL (AUDIT_SINK_URL) in all non-local environments.
+  audit-sink:
+    image: node:22-slim
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    command: >
+      node -e "
+      const http=require('http');
+      http.createServer((req,res)=>{
+        let b='';
+        req.on('data',c=>b+=c);
+        req.on('end',()=>{
+          console.log('[audit-sink]',new Date().toISOString(),req.method,req.url);
+          try{console.log(JSON.stringify(JSON.parse(b),null,2))}catch{console.log(b)}
+          res.writeHead(200,{'Content-Type':'application/json'});
+          res.end('{\"status\":\"ok\"}');
+        });
+      }).listen(4000,'0.0.0.0',()=>console.log('audit-sink listening on :4000'));
+      "
+
+volumes:
+  postgres_data:

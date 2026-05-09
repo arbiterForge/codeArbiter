@@ -1,0 +1,44 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# This file is proprietary and confidential. See LICENSE for terms.
+
+# playbooks/site.yml — Top-level entry point playbook
+# =====================================================
+# This is the primary playbook engineers run to execute the solution.
+# It imports sub-playbooks in execution order rather than containing
+# tasks directly — this keeps the top level readable and allows
+# individual phases to be run independently when needed.
+#
+# Usage:
+#   ansible-playbook playbooks/site.yml -i inventory/hosts
+#   ansible-playbook playbooks/site.yml -i inventory/hosts --check  # dry run
+#   ansible-playbook playbooks/site.yml -i inventory/hosts --tags pre-check
+#
+# Add --extra-vars "@.env" to pass environment variables from .env file.
+# Add -v / -vv / -vvv for increasing verbosity.
+---
+
+# --- Pre-check phase ---
+# Validates the target environment before making any changes.
+# If pre-check fails, the run stops before touching anything.
+- name: Import pre-check playbook
+  ansible.builtin.import_playbook: pre-check.yml
+  tags:
+    - pre-check
+    - always
+
+# --- Main execution phase ---
+# Replace this import with your solution's primary playbook.
+# Example: patching, configuration, deployment, etc.
+- name: Import main execution playbook
+  ansible.builtin.import_playbook: main.yml
+  tags:
+    - main
+
+# --- Verification phase ---
+# Validates the solution ran correctly after execution.
+# Uncomment when you have a verify playbook.
+# - name: Import verification playbook
+#   ansible.builtin.import_playbook: verify.yml
+#   tags:
+#     - verify

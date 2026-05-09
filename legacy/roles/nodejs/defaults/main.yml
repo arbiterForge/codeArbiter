@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+# Major version to install — must match backend/package.json engines.node
+nodejs_major_version: "22"
+
+# Install method:
+#   nodesource  — downloads setup script from rpm.nodesource.com (requires internet)
+#   dnf-module  — uses RHEL AppStream module stream (preferred when available)
+#   package     — installs a pre-named package (air-gapped: populate a local repo first)
+nodejs_install_method: "dnf-module"

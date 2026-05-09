@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fusion.gdit.internal/schemas/node/1.0.0",
+  "title": "FUSION Node Definition",
+  "description": "Validates fusion-nodes/<node-name>/definition.yaml. See docs/domain.md for the full directory contract.",
+  "type": "object",
+  "required": [
+    "kind",
+    "name",
+    "version",
+    "variables_schema",
+    "valid_connections",
+    "criticality",
+    "teardown_procedure"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "type": "string",
+      "const": "node",
+      "description": "Must be 'node'. Discriminates against adapter definitions."
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "maxLength": 64,
+      "description": "Kebab-case node identifier. Used as the directory name under fusion-nodes/."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver of this node definition."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "variables_schema": {
+      "type": "object",
+      "description": "Maps variable names to their type descriptors. Values must declare at minimum a 'type' field.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string" },
+          "required": { "type": "boolean" },
+          "default": {},
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "valid_connections": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of node-type names this node can be adapted to. The Canvas enforces this allow-list at onConnect."
+    },
+    "criticality": {
+      "type": "string",
+      "enum": ["critical_path", "non_critical"],
+      "description": "critical_path: failure of this node fails the whole solution. non_critical: degraded but operational."
+    },
+    "teardown_procedure": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable instructions for destroying what this node provisioned. Required for AU-12 teardown audit events."
+    },
+    "maturity": {
+      "type": "string",
+      "enum": ["prototype", "mvp", "hardened", "production"],
+      "description": "Lifecycle stage of this node artifact."
+    }
+  }
+}

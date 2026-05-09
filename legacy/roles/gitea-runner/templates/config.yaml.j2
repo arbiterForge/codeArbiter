@@ -1,0 +1,28 @@
+# act_runner config — managed by Ansible; do not edit manually.
+# Template: roles/gitea-runner/templates/config.yaml.j2
+log:
+  level: info
+
+runner:
+  file: {{ act_runner_data_dir }}/.runner
+  capacity: {{ act_runner_capacity }}
+  timeout: 3h
+  insecure: {{ act_runner_insecure | lower }}
+  fetch_timeout: 5s
+  fetch_interval: 2s
+
+cache:
+  enabled: true
+  dir: {{ act_runner_data_dir }}/cache
+
+container:
+  network: {{ act_runner_container_network }}
+  enable_ipv6: false
+  valid_volumes: []
+  docker_host: {{ act_runner_docker_host }}
+  # Pull the image on each job run — set false to use local cache aggressively.
+  force_pull: {{ act_runner_force_pull | lower }}
+  force_rebuild: false
+
+host:
+  workdir_parent: {{ act_runner_data_dir }}/workdir

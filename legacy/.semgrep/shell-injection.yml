@@ -1,0 +1,73 @@
+# FUSION custom Semgrep rule — command injection prevention
+# Control: SI-10 (information input validation)
+# Scope: all TypeScript/JavaScript source (backend + frontend + scripts)
+#
+# child_process.exec() and spawn(..., {shell: true}) are banned at all stages.
+# Both open a shell interpreter, making every argument a potential injection
+# vector. Use spawn() with an explicit argv array and shell: false (the default).
+#
+# Reference: CLAUDE.md §3 Hard Rules, OWASP A03:2021 Injection
+
+rules:
+  - id: fusion-no-exec
+    message: >
+      child_process.exec() is banned — it opens a shell and is trivially
+      injectable (SI-10). Use spawn() with an explicit argument array instead.
+      See CLAUDE.md §3.
+    severity: ERROR
+    languages: [typescript, javascript]
+    pattern-either:
+      - pattern: child_process.exec(...)
+      - pattern: require('child_process').exec(...)
+      - pattern: |
+          import $CP from 'child_process'
+          ...
+          $CP.exec(...)
+    metadata:
+      category: security
+      subcategory: [vuln]
+      technology: [typescript, node]
+      nist: ["SI-10"]
+      cwe: ["CWE-78"]
+      owasp: ["A03:2021"]
+
+  - id: fusion-no-spawn-shell
+    message: >
+      spawn() with shell: true is banned — it negates the safety of the argv
+      array and reintroduces injection risk (SI-10). Remove shell: true or
+      restructure the call to pass arguments individually. See CLAUDE.md §3.
+    severity: ERROR
+    languages: [typescript, javascript]
+    pattern-either:
+      - pattern: child_process.spawn($CMD, $ARGS, {shell: true, ...})
+      - pattern: child_process.spawn($CMD, $ARGS, {shell: true})
+      - pattern: require('child_process').spawn($CMD, $ARGS, {shell: true, ...})
+      - pattern: require('child_process').spawn($CMD, $ARGS, {shell: true})
+      - pattern: |
+          import $CP from 'child_process'
+          ...
+          $CP.spawn($CMD, $ARGS, {shell: true, ...})
+    metadata:
+      category: security
+      subcategory: [vuln]
+      technology: [typescript, node]
+      nist: ["SI-10"]
+      cwe: ["CWE-78"]
+      owasp: ["A03:2021"]
+
+  - id: fusion-no-execsync
+    message: >
+      child_process.execSync() is banned — same injection risk as exec(), with
+      the added hazard of blocking the event loop (SI-10). Use spawnSync() with
+      an explicit argument array. See CLAUDE.md §3.
+    severity: ERROR
+    languages: [typescript, javascript]
+    pattern-either:
+      - pattern: child_process.execSync(...)
+      - pattern: require('child_process').execSync(...)
+    metadata:
+      category: security
+      subcategory: [vuln]
+      technology: [typescript, node]
+      nist: ["SI-10"]
+      cwe: ["CWE-78"]

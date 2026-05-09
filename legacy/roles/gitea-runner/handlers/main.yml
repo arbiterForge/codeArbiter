@@ -1,0 +1,15 @@
+# Copyright (c) 2026 GDIT. All rights reserved.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+---
+- name: restart act_runner
+  ansible.builtin.systemd:
+    name: act_runner
+    state: restarted
+    daemon_reload: true
+  become: true
+
+- name: restart docker
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+  become: true

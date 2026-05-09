@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fusion.gdit.internal/schemas/audit-event/1.0.0",
+  "title": "FUSION Audit Event",
+  "description": "Z-AUDIT event schema. OCSF-aligned structure, ECS-compatible field naming. See docs/decisions/0003-adopt-ocsf-audit-schema.md.",
+  "type": "object",
+  "required": [
+    "ts",
+    "event_id",
+    "action",
+    "actor",
+    "subject",
+    "outcome",
+    "source",
+    "classification",
+    "metadata"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp with millisecond precision. Example: 2026-05-04T14:32:01.123Z"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUIDv7 — monotonically increasing, time-ordered. Globally unique per event."
+    },
+    "action": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$",
+      "maxLength": 64,
+      "description": "verb.noun identifying the auditable action. Examples: deploy.solution, read.secret, authn.success.",
+      "examples": [
+        "deploy.solution",
+        "teardown.solution",
+        "read.secret",
+        "authn.success",
+        "authn.failure",
+        "authz.denied",
+        "schema.migrate",
+        "config.change",
+        "role.change",
+        "key.rotate",
+        "signature.verify"
+      ]
+    },
+    "class_uid": {
+      "type": "integer",
+      "description": "OCSF class identifier. Provides a stable machine-readable event class contract for SIEM detection rules.",
+      "enum": [
+        3001,
+        3002,
+        6001,
+        6002,
+        6003,
+        6004
+      ],
+      "x-ocsf-class-map": {
+        "3001": "Authentication (authn.success, authn.failure)",
+        "3002": "Authorization (authz.denied)",
+        "6001": "Application Activity — deploy (deploy.solution, teardown.solution)",
+        "6002": "Application Activity — secret (read.secret)",
+        "6003": "Application Activity — config (config.change, role.change, key.rotate)",
+        "6004": "Application Activity — schema (schema.migrate, signature.verify)"
+      }
+    },
+    "severity_id": {
+      "type": "integer",
+      "description": "OCSF severity. 1=Informational 2=Low 3=Medium 4=High 5=Critical.",
+      "enum": [1, 2, 3, 4, 5],
+      "default": 1
+    },
+    "actor": {
+      "type": "object",
+      "required": ["id", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "OIDC subject claim (sub) of the entity that triggered the action."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["user", "service", "agent"],
+          "description": "user = human via OIDC; service = machine identity; agent = AI coding agent."
+        },
+        "session_id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "OIDC session ID when available. Enables session-level audit correlation."
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "required": ["type", "id"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["solution", "node", "adapter", "secret_ref", "role", "schema", "key", "config"],
+          "description": "Resource type the action was performed on."
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Stable identifier of the subject resource."
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Human-readable name of the subject at the time of the event. Denormalized for readability."
+        }
+      }
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["success", "failure", "denied"],
+      "description": "Terminal result of the action."
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 512,
+      "description": "Required when outcome is failure or denied. Human-readable explanation. MUST NOT contain secrets or PII."
+    },
+    "source": {
+      "type": "object",
+      "required": ["request_id"],
+      "additionalProperties": false,
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Correlation ID propagated end-to-end via X-Request-ID header. Ties the audit event to application logs."
+        },
+        "ip": {
+          "type": "string",
+          "description": "IP address of the caller as seen by Z-API. May be a load balancer IP in proxied environments."
+        },
+        "user_agent": {
+          "type": "string",
+          "maxLength": 512,
+          "description": "HTTP User-Agent of the caller. Aids in distinguishing browser, CLI, and service clients."
+        }
+      }
+    },
+    "classification": {
+      "type": "string",
+      "enum": ["none", "cui", "secret_ref"],
+      "description": "Data classification of the subject resource at the time of the action. Aligns with Z-AUDIT data classification policy."
+    },
+    "git_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "Full 40-character Git SHA of the artifact being deployed or verified. Required for deploy.* and signature.verify actions."
+    },
+    "environment": {
+      "type": "string",
+      "enum": ["prototype", "internal-mvp", "hardened-pilot", "production"],
+      "description": "FUSION stage environment. Enables filtering across multi-stage sink configurations."
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["schema_version", "product"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semver of this schema. Consumers MUST reject events where the major version does not match their compiled expectation.",
+          "const": "1.0.0"
+        },
+        "product": {
+          "type": "string",
+          "const": "fusion-core",
+          "description": "Identifies the emitting system. Constant for all FUSION audit events."
+        },
+        "emit_version": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Version of the audit emit library that produced this event. Aids in diagnosing schema drift."
+        }
+      }
+    }
+  },
+  "if": {
+    "properties": {
+      "outcome": { "enum": ["failure", "denied"] }
+    },
+    "required": ["outcome"]
+  },
+  "then": {
+    "required": ["reason"]
+  },
+  "x-fusion-rules": {
+    "git_sha_required_for": ["deploy.solution", "teardown.solution", "signature.verify"],
+    "class_uid_required_at_stage": 2,
+    "severity_id_required_at_stage": 2,
+    "environment_required_at_stage": 2
+  }
+}

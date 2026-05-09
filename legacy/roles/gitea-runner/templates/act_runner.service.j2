@@ -1,0 +1,25 @@
+# act_runner systemd unit — managed by Ansible; do not edit manually.
+# Template: roles/gitea-runner/templates/act_runner.service.j2
+[Unit]
+Description=Gitea Act Runner
+Documentation=https://gitea.com/gitea/act_runner
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ act_runner_user }}
+Group={{ act_runner_group }}
+WorkingDirectory={{ act_runner_data_dir }}
+ExecStart={{ act_runner_install_dir }}/act_runner daemon --config {{ act_runner_config_dir }}/config.yaml
+Restart=always
+RestartSec=5s
+
+# Hardening — runner executes arbitrary CI job commands; constrain what it can reach.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths={{ act_runner_data_dir }}
+
+[Install]
+WantedBy=multi-user.target
