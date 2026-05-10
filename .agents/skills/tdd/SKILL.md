@@ -9,7 +9,7 @@ without this skill completing Phase 1 first.
 Triggers:
 - User requests a new feature, bug fix, or refactor
 - Any file under a source or library path is about to be modified with non-test code
-- The `fusion-tdd` or `tdd` skill is referenced in the routing table
+- The `tdd` skill is referenced in the routing table
 
 ---
 
