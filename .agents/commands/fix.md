@@ -35,7 +35,7 @@ Phase 1 is specifically framed as:
 3. **Write a regression test** — a test that fails in the current state for the exact wrong reason the bug causes (not just any failure)
 4. **Confirm the regression test fails for the right reason** — the failure message must match the described bug, not an unrelated error
 
-Only after steps 1-4 are complete does implementation begin.
+Only after steps 1–4 are complete does implementation begin.
 
 ## What Happens Step by Step
 
