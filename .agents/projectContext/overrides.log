@@ -1,0 +1,4 @@
+# codeArbiter Override Log
+# Format: [ISO-8601 timestamp] | BY: <name> <<email>> | PLATFORM: <github|gitea|unknown> | GATE: <gate> | REASON: <reason>
+# This file is APPEND-ONLY. Entries are NEVER edited or deleted.
+# Committed to repo — permanent audit artifact visible to all reviewers.
