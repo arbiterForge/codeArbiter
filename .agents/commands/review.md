@@ -23,7 +23,7 @@ Path-conditional (invoked when the scope matches):
 - `auth-crypto-reviewer` + `security-reviewer` — if path includes auth, crypto, middleware, secrets handling, or audit libraries
 - `migration-reviewer` — if path includes database migration files
 - `audit-emitter` — if path includes code that performs or should perform auditable actions
-- `dependency-reviewer` — if path includes `package.json` or lock files
+- `dependency-reviewer` — if path includes `package.json`, lock files, or dependency manifests
 - `trust-zone-reviewer` — if path includes HTTP clients, network configuration, or zone-crossing code
 - `standards-compliance-reviewer` — for all code paths (naming, conventions, banned patterns)
 
