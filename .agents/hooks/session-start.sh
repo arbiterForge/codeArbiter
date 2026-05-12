@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 CONTEXT_FILE=".agents/projectContext/CONTEXT.md"
 
-if [ ! -f "$CONTEXT_FILE" ] || ! grep -q '<!--INITIALIZED-->' "$CONTEXT_FILE" 2>/dev/null; then
+if [ ! -f "$CONTEXT_FILE" ] || ! grep -qE '^[[:space:]]*<!--INITIALIZED-->[[:space:]]*$' "$CONTEXT_FILE" 2>/dev/null; then
   SRC=$(find . \
     -not -path './.agents/*' \
     -not -name 'AGENTS.md' \
