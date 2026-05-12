@@ -2,31 +2,38 @@
 
 All user intent flows through these commands. No direct instructions accepted outside a command channel.
 
+## Read-on-invocation guarantee
+
+This Quick Reference table is the surface scan for commands. Command body specs (`.agents/commands/*.md`) are read ONLY when the corresponding `/command` is invoked. Routine flows MUST NOT bulk-read `.agents/commands/` (see AGENTS.md §3).
+
 ---
 
 ## Quick Reference
 
-| Command | Argument | What it does |
-|---|---|---|
-| `/feature` | `"description"` | Start a new feature — runs full TDD skill (6 phases) |
-| `/fix` | `"bug description"` | Fix a bug — same TDD workflow, bug framing |
-| `/commit` | _(none)_ | Commit staged changes — runs full commit-gate skill |
-| `/pr` | `["title"]` | Open a pull request — runs all gates first |
-| `/review` | `[path or scope]` | Security + code review of a path or scope |
-| `/threat-model` | `"scope"` | Pre-implementation threat model for a proposed change |
-| `/adr` | `"decision title"` | Record a new architectural decision |
-| `/adr-status` | `[--adr N]` | Check ADR health — aged, unchallenged, unresolved CONFIRM-NN |
-| `/checkpoint` | `[focus]` | Full checkpoint review — all 7 agents in parallel |
-| `/stage` | `[target]` | Report current stage or promote to target stage |
-| `/add-dep` | `"package"` | Add a dependency — full vetting before install |
-| `/surface-conflict` | `"description"` | Stop all work and surface a rule conflict |
-| `/btw` | `"question"` | Ask a quick question — no state change, lightweight |
-| `/status` | _(none)_ | Show open tasks and unresolved decisions |
-| `/init` | _(none)_ | Re-run initialization detection (repair only) |
-| `/override` | `"reason"` | Bypass a gate — auto-detects identity, appends to overrides.log |
-| `/onboard` | `["scope"]` | Engineer onboarding tour — full or targeted scope |
-| `/new-skill` | `"gap description"` | Author a new skill after gap validation |
-| `/commands` | _(none)_ | Show this quick-reference table |
+Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when the user invokes the command.
+
+| Command | Argument | One-line purpose | Body |
+|---|---|---|---|
+| `/feature` | `"description"` | Start a new feature; runs full TDD skill (6 phases) | [body](.agents/commands/feature.md) |
+| `/fix` | `"bug description"` | Fix a bug using the same TDD workflow, bug-framed | [body](.agents/commands/fix.md) |
+| `/commit` | _(none)_ | Commit staged changes; runs full commit-gate skill | [body](.agents/commands/commit.md) |
+| `/pr` | `["title"]` | Open a pull request after all gates pass | [body](.agents/commands/pr.md) |
+| `/review` | `[path or scope]` | Security + code review of a path or scope | [body](.agents/commands/review.md) |
+| `/threat-model` | `"scope"` | Pre-implementation threat model for a proposed change | [body](.agents/commands/threat-model.md) |
+| `/adr` | `"decision title"` | Record a new architectural decision with user attribution | [body](.agents/commands/adr.md) |
+| `/adr-status` | `[--adr N]` | Check ADR health — aged, unchallenged, unresolved CONFIRM-NN | [body](.agents/commands/adr-status.md) |
+| `/checkpoint` | `[focus]` | Full checkpoint review — all 7 reviewers in parallel | [body](.agents/commands/checkpoint.md) |
+| `/stage` | `[target]` | Report current stage or promote to target stage | [body](.agents/commands/stage.md) |
+| `/add-dep` | `"package"` | Add a dependency with full vetting before install | [body](.agents/commands/add-dep.md) |
+| `/surface-conflict` | `"description"` | Stop all work and surface a rule conflict | [body](.agents/commands/surface-conflict.md) |
+| `/ticket` | `"title" \| <sub>` | Optional scope-overflow inbox; in-repo or Plane variant | [body](.agents/commands/ticket.md) |
+| `/btw` | `"question"` | Ask a quick question; no state change, lightweight | [body](.agents/commands/btw.md) |
+| `/status` | _(none)_ | Show open tasks and unresolved decisions | [body](.agents/commands/status.md) |
+| `/init` | _(none)_ | Re-run initialization detection (repair only) | [body](.agents/commands/init.md) |
+| `/override` | `"reason"` | Bypass a gate with auto-identity audit log entry | [body](.agents/commands/override.md) |
+| `/onboard` | `["scope"]` | Engineer onboarding tour, full or targeted | [body](.agents/commands/onboard.md) |
+| `/new-skill` | `"gap description"` | Author a new skill after rigorous gap validation | [body](.agents/commands/new-skill.md) |
+| `/commands` | _(none)_ | Show this quick-reference table | [body](.agents/commands/commands.md) |
 
 ---
 
@@ -180,6 +187,32 @@ All user intent flows through these commands. No direct instructions accepted ou
 **Hard gate:** This command overrides all other active work. Nothing proceeds while a conflict is open.
 
 **When to use:** Any time you observe a rule in AGENTS.md contradicted by code, by a projectContext doc, or by another rule. Do not silently resolve — always surface.
+
+---
+
+### `/ticket "title" | <subcommand>`
+
+**Purpose:** Optional scope-overflow inbox for subagent findings (in-repo mode) OR project management bridge to Plane (Plane mode). Disabled by default; opt in by editing `projectContext/ticketing-config.md`.
+
+**What triggers:** `ticketing` skill router (`.agents/skills/ticketing/SKILL.md`) — reads `mode` from config and `@`-imports only the active variant (`in-repo/` or `plane/`).
+
+**Subcommands:**
+- `/ticket "title" -- "body"` — file a new ticket (subagent or user)
+- `/ticket close <id>` — interactive close with disposition prompt
+- `/ticket show <id>` — read a ticket body explicitly
+- `/ticket list` — surface scan via INDEX (in-repo) or `mcp__plane__list_issues` (Plane)
+- `/ticket move <id> <state>` — Plane-only manual transition
+- `/ticket config` — edit `ticketing-config.md`
+
+**Hard gates:**
+- BLOCK on any `adr-*` disposition. ADRs require user attribution and are authored only via `/adr`.
+- BLOCK if `incorporated-to:*` close is recorded without the target doc having been edited in the current session.
+- Plane mode never falls back to direct REST. MCP failures append to `ticketing-sync-failures.md` and continue.
+
+**When NOT to use:**
+- Decision-worthy concerns: use `/adr` instead of filing a ticket
+- Confirmed bugs: use `/fix` instead
+- Quick questions: use `/btw`
 
 ---
 

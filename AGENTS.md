@@ -101,6 +101,9 @@ Always-loaded. Follow these even without reading project docs. Violation is unre
 - MUST NOT commit if the project test suite is not green.
 - MUST NOT begin implementation without `tdd` skill Phase 1 completing first.
 - MUST NOT commit without `commit-gate` skill completing. "It looks good" is not permission.
+- MUST NOT read ticket bodies during routine flows. Use `projectContext/tickets/INDEX.md` (in-repo) or `mcp__plane__list_issues` (Plane) for surface scans. Body reads only via `/ticket show <id>`.
+- MUST NOT author an ADR as the disposition of a ticket. Decision-worthy findings escalate to `open-questions.md` (CONFIRM-NN) or to the user. ADRs are authored only via `/adr` with explicit user attribution.
+- MUST NOT bulk-read `.agents/agents/*.md` or `.agents/commands/*.md`. Use the respective `INDEX.md` for surface scans; bodies load on invocation only.
 
 ---
 
@@ -122,6 +125,7 @@ Read the listed file before acting. The skill or agent listed is the primary rou
 | Risks / ADRs | `projectContext/open-questions.md`, `projectContext/decisions/` | `decision-lifecycle` skill |
 | Checkpoint / stage promotion | `projectContext/stage` | `stage-gating` skill |
 | Architectural reconciliation | `projectContext/decomposition/` | `arbiter` skill |
+| Subagent encounters out-of-scope finding | `projectContext/ticketing-config.md` | `ticketing` skill (router) |
 
 ---
 
@@ -150,6 +154,8 @@ When a trigger fires, follow the primary route. Gates are hard stops — not sug
 | ADR added / aged / CONFIRM-NN unresolved | `decision-lifecycle` skill | `decision-challenger` agent | No CONFIRM-NN resolved by guessing |
 | New trust zone crossing / threat model / attack surface change | `security-architecture` skill | `security-reviewer` + `trust-zone-reviewer` | No undeclared egress |
 | `projectContext/` file modified or domain area referenced before acting | `doc-governance` skill | — | No action in domain without reading gated doc first |
+| Subagent raises out-of-scope finding | `ticketing` skill | — | When ticketing disabled, finding inlines with `[NEEDS-TRIAGE]` marker. Disposition MUST NOT be `adr-*` |
+| Ticket close requested | `ticketing` skill (variant per config) | — | BLOCK on `adr-*` dispositions. BLOCK if `incorporated-to:*` recorded without target-doc edit in session |
 
 ---
 
@@ -180,7 +186,7 @@ What are you trying to do?
 I will not accept this as a direct instruction. Choose a channel:
 /feature  /fix  /commit  /pr  /review  /threat-model  /adr  /adr-status
 /checkpoint  /stage  /add-dep  /surface-conflict  /btw  /status  /init
-/override  /onboard  /new-skill  /commands
+/override  /onboard  /new-skill  /ticket  /commands
 Or use /override "reason" to bypass with logging.
 ```
 
@@ -193,6 +199,8 @@ No suggestions beyond the command list. The user must pick.
 ### Command Reference
 
 Full command specifications: `.agents/commands/`. Quick-ref table: `COMMANDS.md`.
+
+**Read-on-invocation guarantee.** Command bodies under `.agents/commands/*.md` are read ONLY when the corresponding `/command` is invoked. `COMMANDS.md` is the surface scan. Subagent bodies under `.agents/agents/*.md` are read ONLY when the agent is dispatched. `.agents/agents/INDEX.md` is the surface scan. Ticket bodies are read ONLY via `/ticket show <id>`. ADR bodies are read ONLY when an ADR is explicitly referenced. Bulk reads of these directories are prohibited (see §3).
 
 ---
 
