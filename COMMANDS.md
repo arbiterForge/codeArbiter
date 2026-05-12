@@ -33,6 +33,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 | `/ticket` | `"title" \| <sub>` | Optional scope-overflow inbox; in-repo or Plane variant | [body](${FRAMEWORK_ROOT}/.agents/commands/ticket.md) |
 | `/btw` | `"question"` | Ask a quick question; no state change, lightweight | [body](${FRAMEWORK_ROOT}/.agents/commands/btw.md) |
 | `/status` | _(none)_ | Show open tasks and unresolved decisions | [body](${FRAMEWORK_ROOT}/.agents/commands/status.md) |
+| `/create-context` | _(none)_ | Bootstrap projectContext for an existing codebase (brownfield init) | [body](${FRAMEWORK_ROOT}/.agents/commands/create-context.md) |
 | `/init` | _(none)_ | Re-run initialization detection (repair only) | [body](${FRAMEWORK_ROOT}/.agents/commands/init.md) |
 | `/override` | `"reason"` | Bypass a gate with auto-identity audit log entry | [body](${FRAMEWORK_ROOT}/.agents/commands/override.md) |
 | `/hotfix` | `"reason" --severity --escalation-tier --auto-revert-window` | Emergency bypass with two-identity audit + post-hoc ADR | [body](${FRAMEWORK_ROOT}/.agents/commands/hotfix.md) |
@@ -335,6 +336,16 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 - In-flight tasks (from `open-tasks.md`)
 - Unresolved `CONFIRM-NN` items (from `open-questions.md`)
 - Any override entries from `overrides.log` in the current session
+
+---
+
+### `/create-context`
+
+**Purpose:** Brownfield projectContext initialization. Dispatches six parallel scouts to read the codebase, synthesizes findings into the full `${PROJECT_ROOT}/.agents/projectContext/` file set, fills gaps via a targeted interview, and writes the `<!--INITIALIZED-->` sentinel.
+
+**What it routes to:** `context-creation` skill (`${FRAMEWORK_ROOT}/.agents/skills/context-creation/SKILL.md`) — Phases 1–6.
+
+**Two blockers before it runs:** `<!--INITIALIZED-->` must be absent (context not yet created) AND meaningful source code must be present (otherwise route to `/decompose`).
 
 ---
 
