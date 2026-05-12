@@ -16,4 +16,18 @@ if [ ! -f "$CONTEXT_FILE" ] || ! grep -q '<!--INITIALIZED-->' "$CONTEXT_FILE" 2>
   fi
 fi
 
+# H-15: surface tickets open more than 7 days
+TICKET_DIR=".agents/projectContext/tickets/open"
+if [ -d "$TICKET_DIR" ]; then
+  STALE=$(find "$TICKET_DIR" -maxdepth 1 -name '*.md' -mtime +7 2>/dev/null | sort)
+  if [ -n "$STALE" ]; then
+    COUNT=$(echo "$STALE" | wc -l | tr -d ' ')
+    echo "STARTUP [H-15]: $COUNT open ticket(s) idle >7 days. Run '/ticket list' to triage:"
+    echo "$STALE" | while read -r f; do
+      ID=$(basename "$f" .md)
+      echo "  - $ID"
+    done
+  fi
+fi
+
 exit 0

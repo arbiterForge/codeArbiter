@@ -18,6 +18,13 @@ The title should name the decision clearly: what was decided, not what was consi
 
 ## What Happens Step by Step
 
+0. **Activate authoring marker.** Before any other step, run
+   `mkdir -p .agents/.markers && touch .agents/.markers/adr-authoring-active`.
+   The H-11 PreToolUse hook (`.agents/hooks/pre-write.sh`, `.agents/hooks/pre-edit.sh`)
+   blocks Writes and Edits to `.agents/projectContext/decisions/*.md` unless this
+   marker is present and fresh (modified within the last 30 minutes). The marker
+   is removed at Step 7 below; if /adr aborts midway the marker may persist
+   until cleaned up or ages out.
 1. `decision-lifecycle` skill opens — collects context from the user:
    - What decision needs to be made or was just made?
    - What context forced this decision?
@@ -33,6 +40,7 @@ The title should name the decision clearly: what was decided, not what was consi
 4. ADR registered in `projectContext/decisions/README.md` — index entry added
 5. ADR queued for challenge — `decision-challenger` agent is notified at next `/checkpoint`
 6. Any `[CONFIRM-NN]` placeholders left open are registered in `projectContext/open-questions.md`
+7. **Deactivate authoring marker.** Run `rm -f .agents/.markers/adr-authoring-active` to close the authoring window. Subsequent ADR file edits will be blocked by H-11 until another `/adr` invocation refreshes the marker.
 
 ## ADR File Structure
 
