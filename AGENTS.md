@@ -55,17 +55,11 @@ Full specification: `.agents/skills/context-creation/SKILL.md`.
 
 ### Phase 3 — Normal Operation
 
-projectContext complete (sentinel `<!--INITIALIZED-->` present).
+Sentinel `<!--INITIALIZED-->` present in `projectContext/CONTEXT.md`. Startup sequence:
 
-Startup sequence:
-1. Silently load all `.agents/projectContext/` files.
-2. Read `open-tasks.md` for in-flight items.
-3. Read `open-questions.md` for unresolved `CONFIRM-NN` items.
-4. Present to the user:
-   - Current stage (from `projectContext/stage`)
-   - Any blocking open questions (CONFIRM-NN)
-   - In-flight tasks (if any)
-   - Available commands (from `/commands`)
+1. Silently load `.agents/projectContext/` files.
+2. Read `open-tasks.md` and `open-questions.md`.
+3. Present: current stage (`projectContext/stage`), blocking CONFIRM-NN items, in-flight tasks, available commands.
 
 ---
 
@@ -165,32 +159,7 @@ When a trigger fires, follow the primary route. Gates are hard stops — not sug
 
 ### Escalating Redirect
 
-**Strike 1** — first direct message not via `/command`:
-
-```
-Process required. I don't accept direct instructions or questions outside of a
-skill channel — that path bypasses the gates that keep the project healthy.
-
-What are you trying to do?
-→ Start a feature:          /feature "describe it"
-→ Ask a question:           /btw "your question"
-→ Fix a bug:                /fix "describe it"
-→ Bypass with audit trail:  /override "reason"
-→ See everything open:      /status
-→ See all commands:         /commands
-```
-
-**Strike 2** — user insists after Strike 1:
-
-```
-I will not accept this as a direct instruction. Choose a channel:
-/feature  /fix  /commit  /pr  /review  /threat-model  /adr  /adr-status
-/checkpoint  /stage  /add-dep  /surface-conflict  /btw  /status  /init
-/override  /onboard  /new-skill  /ticket  /commands
-Or use /override "reason" to bypass with logging.
-```
-
-No suggestions beyond the command list. The user must pick.
+On the first direct message not via `/command`, emit the **Strike 1** message. If the user insists, emit the **Strike 2** message. Both message bodies live in `.agents/commands/_redirect.md` (loaded on demand). No suggestions beyond the command list — the user must pick.
 
 ### `/btw` Exception
 
@@ -206,23 +175,6 @@ Full command specifications: `.agents/commands/`. Quick-ref table: `COMMANDS.md`
 
 ## §7 Override Protocol
 
-`/override "reason"` is the sanctioned escape hatch. It permits bypass with mandatory audit logging.
+`/override "reason"` is the sanctioned escape hatch — permits bypass with mandatory audit logging. Full identity-detection sequence and log-entry format live in `.agents/commands/override.md` (loaded when `/override` is invoked).
 
-### Identity Detection (in priority order — never ask if any succeeds)
-
-1. `git config user.email` and `git config user.name` — always try first
-2. `GITHUB_ACTOR`, `GITEA_TOKEN`, `GITEA_ACTOR` environment variables
-3. GitHub CLI: `gh auth status` — extract logged-in username
-4. If ALL detection fails → ask: "Please state your name for the override log."
-
-### Log Entry Format
-
-Appends to `.agents/projectContext/overrides.log` (append-only, never modified):
-
-```
-[ISO-8601 timestamp] | BY: <git-user-name> <<git-user-email>> | PLATFORM: <github|gitea|unknown> | GATE: <gate bypassed> | REASON: <user's reason>
-```
-
-`overrides.log` is append-only. No entry is ever edited or deleted. This file is committed to the repo — it is a permanent audit artifact.
-
-After appending, proceed with the overridden action and note in the response that the override is logged and visible to all reviewers.
+The log file `.agents/projectContext/overrides.log` is append-only — never edited or deleted. It is committed to the repo as a permanent audit artifact. After appending, proceed with the overridden action and note in the response that the override is logged.

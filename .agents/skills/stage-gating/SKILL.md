@@ -55,6 +55,8 @@ Every active rule must appear. SATISFIED means the rule applies and the code com
 - MUST NOT infer stage from anything other than `cat .agents/projectContext/stage`.
 - MUST NOT allow stage-conditional security bypasses without invoking /surface-conflict.
 - MUST NOT skip the rule inventory — every tagged rule must be checked.
+- MUST NOT skip stages on promotion — target stage MUST be current + 1.
+- MUST NOT accept "codeArbiter", "automated", or any non-human identity as the named approver — approver MUST be a person.
 
 ## Reference: Stage Table
 

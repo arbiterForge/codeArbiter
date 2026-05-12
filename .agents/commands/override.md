@@ -1,8 +1,10 @@
-# /override "description of what is being overridden and why"
+# /override "reason"
 
 ## Purpose
 
-Explicitly override a codeArbiter gate or hard rule. Overrides are always logged, always visible, and never silent. This command implements the full override protocol from `AGENTS.md` §7. It does not bypass logging — using `/override` is a deliberate, traceable act.
+Sanctioned escape hatch from a codeArbiter gate or hard rule. Bypass is permitted
+only with mandatory audit logging. Overrides are always logged, always visible,
+never silent. Using `/override` is a deliberate, traceable act.
 
 ## Usage
 
@@ -15,44 +17,56 @@ The description MUST include:
 - Why the override is justified
 - Who is authorizing it (a person, not "codeArbiter")
 
-Vague overrides ("just skip it") are rejected — codeArbiter will ask for a specific justification.
+Vague overrides ("just skip it") are rejected — codeArbiter will ask for a specific
+justification.
 
-## What Happens Step by Step
+## Routes To
 
-1. **Identity detection** — codeArbiter auto-detects the authorizing identity in this order:
-   - `git config user.name` / `git config user.email`
-   - Environment variable (e.g., `$OVERRIDE_IDENTITY` or `$USER`)
-   - CLI session identity if available
-   - Prompt: asks the user to confirm their name if none of the above resolves
-2. **Override record written** — appended to `projectContext/overrides.log`:
-   ```
-   [YYYY-MM-DD HH:MM] <identity> — override: <what was overridden> — reason: <justification>
-   ```
-3. **Overridden action proceeds** — the specified gate or check is bypassed for this action only
-4. **User notified** — codeArbiter confirms the override is logged and visible to reviewers
+Override protocol implemented in this command body (no skill). Reads/writes
+`.agents/projectContext/overrides.log`.
 
-## Override Log Format
+## Identity Detection (in priority order — never ask if any succeeds)
 
-Each entry in `projectContext/overrides.log`:
+1. `git config user.email` and `git config user.name` — always try first
+2. `GITHUB_ACTOR`, `GITEA_TOKEN`, `GITEA_ACTOR` environment variables
+3. GitHub CLI: `gh auth status` — extract logged-in username
+4. If ALL detection fails → ask: "Please state your name for the override log."
+
+## Log Entry Format
+
+Appends to `.agents/projectContext/overrides.log` (append-only, never modified):
 
 ```
-[2024-01-15 14:32] Jane Smith (jane@example.com) — override: security-reviewer gate on /pr — reason: reviewed manually, see PR comment thread — authorized by: Jane Smith
+[ISO-8601 timestamp] | BY: <git-user-name> <<git-user-email>> | PLATFORM: <github|gitea|unknown> | GATE: <gate bypassed> | REASON: <user's reason>
 ```
+
+`overrides.log` is append-only. No entry is ever edited or deleted. This file is
+committed to the repo — it is a permanent audit artifact.
 
 ## Hard Gates
 
-- MUST write to `projectContext/overrides.log` before proceeding — the log entry is not optional
-- MUST include an authorizing identity — "codeArbiter" or "automated" are not valid identities
+- MUST write to `.agents/projectContext/overrides.log` before proceeding — the log
+  entry is not optional
+- MUST include an authorizing identity — "codeArbiter" or "automated" are not valid
+  identities
 - MUST include a justification — "because I said so" is not accepted
-- The override is scoped to the immediate action only — it does not create a standing exception
-- If the override involves a security-critical gate (auth, crypto, secrets): codeArbiter surfaces a warning before proceeding and asks for confirmation a second time
+- The override is scoped to the immediate action only — it does not create a
+  standing exception
+- If the override involves a security-critical gate (auth, crypto, secrets):
+  surface a warning before proceeding and ask for confirmation a second time
+
+## After Appending
+
+Proceed with the overridden action. Note in the response that the override is
+logged and visible to all reviewers.
 
 ## Visibility
 
 Override log entries are:
 - Visible to all reviewers at the next `/checkpoint`
-- Included in PR descriptions when the override affects a gate that `/pr` would normally enforce
-- Permanent — entries are never deleted from `projectContext/overrides.log`
+- Included in PR descriptions when the override affects a gate that `/pr` would
+  normally enforce
+- Permanent — entries are never deleted from `.agents/projectContext/overrides.log`
 
 ## When NOT to Use
 

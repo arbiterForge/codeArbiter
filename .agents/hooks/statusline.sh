@@ -10,8 +10,9 @@ fi
 
 ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 
-# Drain stdin; Claude pipes a JSON session blob we don't need.
-cat >/dev/null 2>&1 || true
+# Claude pipes a JSON session blob (model, context_window, cost, rate_limits, …).
+# Capture once so we can fan it out to the usage helper.
+STDIN=$(cat 2>/dev/null || true)
 
 GREEN=$'\033[32m'
 YELLOW=$'\033[33m'
@@ -84,8 +85,22 @@ else
 fi
 
 SEP=" ${DIM}│${RESET} "
-printf '%s stage:%s%s%s %s%s%s%s%s\n' \
-  "$INIT" "$STAGE" "$SEP" \
-  "$TASKS_OUT" "$QS_OUT" "$SEP" \
-  "$BRANCH_OUT" "$SEP" \
-  "$OV_OUT"
+
+USAGE_OUT=""
+if [ -n "$STDIN" ] && command -v python3 >/dev/null 2>&1; then
+  USAGE_OUT=$(printf '%s' "$STDIN" | python3 "$ROOT/.agents/hooks/statusline-tokens.py" 2>/dev/null || true)
+fi
+
+if [ -n "$USAGE_OUT" ]; then
+  printf '%s stage:%s%s%s %s%s%s%s%s%s%s\n' \
+    "$INIT" "$STAGE" "$SEP" \
+    "$TASKS_OUT" "$QS_OUT" "$SEP" \
+    "$BRANCH_OUT" "$SEP" \
+    "$OV_OUT" "$SEP" "$USAGE_OUT"
+else
+  printf '%s stage:%s%s%s %s%s%s%s%s\n' \
+    "$INIT" "$STAGE" "$SEP" \
+    "$TASKS_OUT" "$QS_OUT" "$SEP" \
+    "$BRANCH_OUT" "$SEP" \
+    "$OV_OUT"
+fi
