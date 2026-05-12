@@ -1,10 +1,10 @@
-# Skill: ticketing (Plane variant — on-prem)
+# Skill: ticketing-router (Plane variant — on-prem)
 
 ## Trigger
 
 > *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
 
-Loaded by the `ticketing` router when `mode: plane`. This file is never read
+Loaded by the `ticketing-router` skill when `mode: plane`. This file is never read
 directly — invoke via the router.
 
 This variant uses the **official Plane MCP server** (`@makeplane/plane-mcp-server`)

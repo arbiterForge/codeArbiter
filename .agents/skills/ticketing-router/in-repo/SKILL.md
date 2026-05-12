@@ -1,10 +1,10 @@
-# Skill: ticketing (in-repo variant)
+# Skill: ticketing-router (in-repo variant)
 
 ## Trigger
 
 > *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
 
-Loaded by the `ticketing` router when `mode: in-repo`. This file is never read
+Loaded by the `ticketing-router` skill when `mode: in-repo`. This file is never read
 directly — invoke via the router.
 
 ## Pre-Flight

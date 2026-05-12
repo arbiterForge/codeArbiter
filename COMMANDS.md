@@ -292,7 +292,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Optional scope-overflow inbox for subagent findings (in-repo mode) OR project management bridge to Plane (Plane mode). Disabled by default; opt in by editing `projectContext/ticketing-config.md`.
 
-**What it routes to:** `ticketing` skill router (`.agents/skills/ticketing/SKILL.md`) — reads `mode` from config and `@`-imports only the active variant (`in-repo/` or `plane/`).
+**What it routes to:** `ticketing-router` skill (`.agents/skills/ticketing-router/SKILL.md`) — reads `mode` from config and `@`-imports only the active variant (`in-repo/` or `plane/`).
 
 **Subcommands:**
 - `/ticket "title" -- "body"` — file a new ticket (subagent or user)

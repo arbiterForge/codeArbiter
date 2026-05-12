@@ -165,7 +165,7 @@ Read the listed file before acting. The skill or agent listed is the primary rou
 | Risks / ADRs | `projectContext/open-questions.md`, `projectContext/decisions/` | `decision-lifecycle` skill |
 | Checkpoint / stage promotion | `projectContext/stage` | `stage-gating` skill |
 | Architectural reconciliation | `projectContext/decomposition/` | `arbiter` skill |
-| Subagent encounters out-of-scope finding | `projectContext/ticketing-config.md` | `ticketing` skill (router) |
+| Subagent encounters out-of-scope finding | `projectContext/ticketing-config.md` | `ticketing-router` skill (router) |
 
 ---
 
@@ -199,8 +199,8 @@ When a trigger fires, follow the primary route. Gates are hard stops — not sug
 | ADR added / aged / CONFIRM-NN unresolved | `decision-lifecycle` skill | `decision-challenger` agent | No CONFIRM-NN resolved by guessing |
 | New trust zone crossing / threat model / attack surface change | `security-architecture` skill | `security-reviewer` + `trust-zone-reviewer` | No undeclared egress |
 | `projectContext/` file modified or domain area referenced before acting | `doc-review-gate` skill | — | No action in domain without reading gated doc first |
-| Subagent raises out-of-scope finding | `ticketing` skill | — | When ticketing disabled, finding inlines with `[NEEDS-TRIAGE]` marker. Disposition MUST NOT be `adr-*` |
-| Ticket close requested | `ticketing` skill (variant per config) | — | BLOCK on `adr-*` dispositions. BLOCK if `incorporated-to:*` recorded without target-doc edit in session |
+| Subagent raises out-of-scope finding | `ticketing-router` skill | — | When ticketing disabled, finding inlines with `[NEEDS-TRIAGE]` marker. Disposition MUST NOT be `adr-*` |
+| Ticket close requested | `ticketing-router` skill (variant per config) | — | BLOCK on `adr-*` dispositions. BLOCK if `incorporated-to:*` recorded without target-doc edit in session |
 
 ---
 
