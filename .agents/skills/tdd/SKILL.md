@@ -142,7 +142,7 @@ no obligation was silently dropped.
 
 1. Walk the Phase 1 obligation list item by item. For each item, confirm a
    corresponding test exists and is green.
-2. For features with complex audit emit logic, invoke the `test-audit-reviewer`
+2. For features with complex audit emit logic, invoke the `coverage-auditor`
    agent to verify emit correctness before marking audit obligations complete.
 3. Update checklist: each obligation moves from OPEN to COVERED (with test ID)
    or to MISSING (if no test covers it).

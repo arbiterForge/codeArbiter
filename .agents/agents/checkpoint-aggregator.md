@@ -52,7 +52,7 @@ After writing, report: "Checkpoint document written to `projectContext/checkpoin
 | Reviewer | CRITICAL | HIGH | MEDIUM | LOW |
 |----------|----------|------|--------|-----|
 | architecture-drift-reviewer | N | N | N | N |
-| test-audit-reviewer | N | N | N | N |
+| coverage-auditor | N | N | N | N |
 | security-reviewer | N | N | N | N |
 | standards-compliance-reviewer | N | N | N | N |
 | scaffold-completeness-reviewer | N | N | N | N |

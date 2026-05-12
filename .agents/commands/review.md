@@ -17,7 +17,7 @@ Run a targeted review of a specific file, path, or the current diff. Routes to t
 `security-architecture` skill, plus reviewer agents determined by path matrix (see below).
 
 Always invoked:
-- `test-audit-reviewer` — audits test coverage and audit event emission for the reviewed scope
+- `coverage-auditor` — audits test coverage and audit event emission for the reviewed scope
 
 Path-conditional (invoked when the scope matches):
 - `auth-crypto-reviewer` + `security-reviewer` — if path includes auth, crypto, middleware, secrets handling, or audit libraries

@@ -1,4 +1,4 @@
-# Skill: doc-governance
+# Skill: doc-review-gate
 
 ## Trigger
 
@@ -15,7 +15,7 @@ Triggers:
 - A `projectContext/` reference in AGENTS.md or a skill file appears stale
 - A new capability is added to the project without a corresponding
   `projectContext/CONTEXT.md` entry
-- The `doc-governance` skill is referenced in the routing table
+- The `doc-review-gate` skill is referenced in the routing table
 
 ---
 

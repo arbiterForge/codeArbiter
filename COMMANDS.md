@@ -149,7 +149,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Security and compliance review of existing code at a given path or scope.
 
-**What it routes to:** `security-architecture` skill, which dispatches the applicable reviewer agents (`security-reviewer`, `auth-crypto-reviewer`, `standards-compliance-reviewer`, `test-audit-reviewer`).
+**What it routes to:** `security-architecture` skill, which dispatches the applicable reviewer agents (`security-reviewer`, `auth-crypto-reviewer`, `standards-compliance-reviewer`, `coverage-auditor`).
 
 **When to use:** Before merging any security-sensitive change; when a reviewer requests a specific area be checked; as part of checkpoint preparation.
 
@@ -191,7 +191,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **What it dispatches:** All checkpoint agents simultaneously:
 1. `architecture-drift-reviewer`
-2. `test-audit-reviewer`
+2. `coverage-auditor`
 3. `security-reviewer`
 4. `standards-compliance-reviewer`
 5. `scaffold-completeness-reviewer`
@@ -229,7 +229,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 **Args:**
 - `--auto` (default) — version is derived mechanically from `LAST_TAG..HEAD` via Conventional Commits
 - `"X.Y.Z"` — explicit version; Phase 3 still classifies the commit log and BLOCKS on disagreement
-- `--dry-run` — runs all gates, surfaces the readiness report, STOPS before tag composition
+- `--dry-run` — evaluates all gates, surfaces the readiness report, STOPS before tag composition
 
 **Example invocations:**
 - `/release` — default flow, auto-derive version, compose tag if all gates green

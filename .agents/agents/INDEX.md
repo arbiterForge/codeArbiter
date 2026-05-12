@@ -28,5 +28,5 @@ This `INDEX.md` is the only sanctioned surface scan of `.agents/agents/`. Routin
 | scout | INTERNAL: scans codebase sections for arbiter / context-creation skills — never invoke directly | — | [body](scout.md) |
 | security-reviewer | PROACTIVE diff review for security-sensitive paths | any CRITICAL or HIGH finding | [body](security-reviewer.md) |
 | standards-compliance-reviewer | Reviews against coding standards, lint, type safety | — (read-only checkpoint reviewer) | [body](standards-compliance-reviewer.md) |
-| test-audit-reviewer | Audits test coverage vs. TDD obligations | untested source files, missing audit emit tests | [body](test-audit-reviewer.md) |
+| coverage-auditor | Audits test coverage vs. TDD obligations | untested source files, missing audit emit tests | [body](coverage-auditor.md) |
 | trust-zone-reviewer | Reviews zone boundary enforcement and HTTP client usage | undeclared zone crossings | [body](trust-zone-reviewer.md) |

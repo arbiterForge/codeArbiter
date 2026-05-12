@@ -159,7 +159,7 @@ Read the listed file before acting. The skill or agent listed is the primary rou
 | Metrics / traces / alerts / SLOs | `projectContext/observability-spec.md` | `observability-emit` skill |
 | Data model / migrations | `projectContext/tech-stack.md` | `migration-reviewer` agent |
 | Networking / deployment | `projectContext/trust-zones.md` | `security-architecture` skill |
-| New domain concept or component | `projectContext/CONTEXT.md` | `doc-governance` skill |
+| New domain concept or component | `projectContext/CONTEXT.md` | `doc-review-gate` skill |
 | Failure / retry logic | `projectContext/tech-stack.md` | — |
 | CI/CD / branch settings | `projectContext/tech-stack.md` | — |
 | Risks / ADRs | `projectContext/open-questions.md`, `projectContext/decisions/` | `decision-lifecycle` skill |
@@ -198,7 +198,7 @@ When a trigger fires, follow the primary route. Gates are hard stops — not sug
 | Rule conflict (AGENTS.md vs. code or docs) | `/surface-conflict` command | — | STOP all other work immediately |
 | ADR added / aged / CONFIRM-NN unresolved | `decision-lifecycle` skill | `decision-challenger` agent | No CONFIRM-NN resolved by guessing |
 | New trust zone crossing / threat model / attack surface change | `security-architecture` skill | `security-reviewer` + `trust-zone-reviewer` | No undeclared egress |
-| `projectContext/` file modified or domain area referenced before acting | `doc-governance` skill | — | No action in domain without reading gated doc first |
+| `projectContext/` file modified or domain area referenced before acting | `doc-review-gate` skill | — | No action in domain without reading gated doc first |
 | Subagent raises out-of-scope finding | `ticketing` skill | — | When ticketing disabled, finding inlines with `[NEEDS-TRIAGE]` marker. Disposition MUST NOT be `adr-*` |
 | Ticket close requested | `ticketing` skill (variant per config) | — | BLOCK on `adr-*` dispositions. BLOCK if `incorporated-to:*` recorded without target-doc edit in session |
 
