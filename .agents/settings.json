@@ -41,7 +41,7 @@
         "hooks": [{ "type": "command", "command": "bash .agents/hooks/post-write-edit.sh" }]
       }
     ],
-    "UserPromptSubmit": [
+    "SessionStart": [
       {
         "hooks": [{ "type": "command", "command": "bash .agents/hooks/session-start.sh" }]
       }
