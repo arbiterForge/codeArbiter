@@ -2,9 +2,9 @@
 
 ## Purpose
 
-The user- and subagent-facing surface for the optional ticketing skill. Files
+The user- and subagent-facing surface for the optional ticketing-router skill. Files
 out-of-scope findings, lists open tickets, and closes them with a triage
-disposition. Routes through the `ticketing` skill, which dispatches to the
+disposition. Routes through the `ticketing-router` skill, which dispatches to the
 in-repo or Plane variant based on `projectContext/ticketing-config.md`.
 
 When ticketing is disabled (default), this command returns a disabled response
@@ -27,7 +27,7 @@ and otherwise has no effect.
 
 Files a new ticket. The body MUST contain the four sections required by the
 variant: Context, Finding, Why it's out of scope, Suggested handling. Subagents
-invoke this via the ticketing skill rather than as a slash command; the
+invoke this via the ticketing-router skill rather than as a slash command; the
 command surface is primarily for user-initiated triage.
 
 ### `/ticket close <id>`
@@ -74,7 +74,7 @@ skill on/off, switch modes, or update Plane workspace/project settings here.
 
 ## Routes To
 
-`ticketing` skill router (`.agents/skills/ticketing/SKILL.md`) → in-repo or
+`ticketing-router` skill (`.agents/skills/ticketing-router/SKILL.md`) → in-repo or
 Plane variant per `ticketing-config.md`.
 
 ## Hard Gates

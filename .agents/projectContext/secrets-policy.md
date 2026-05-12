@@ -36,9 +36,9 @@ _Rotation schedule and what events must be emitted on rotation._
 
 _If secret references must be persisted in DB, only the store reference (ARN, path, etc.) is permitted — never the secret value._
 
-## External Ticketing Credentials (ticketing skill, Plane mode)
+## External Ticketing Credentials (ticketing-router skill, Plane mode)
 
-When the optional `ticketing` skill operates in `mode: plane` against an on-prem Plane instance, API keys live in shell environment variables only. Specifically:
+When the optional `ticketing-router` skill operates in `mode: plane` against an on-prem Plane instance, API keys live in shell environment variables only. Specifically:
 
 - API key MUST be set as a shell env var (default name: `PLANE_API_KEY`). The variable name is configurable in `projectContext/ticketing-config.md`.
 - The env var value MUST NEVER appear in any committed file, including:

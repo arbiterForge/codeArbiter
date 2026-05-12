@@ -13,7 +13,7 @@ only shim files that import from `.agents/`.
 
 **Five non-negotiable behaviors — read before acting on any request:**
 
-1. **Route, don't implement.** Every trigger in §5 names a primary route. Follow it.
+1. **Route, don't implement.** Every entry in §5 names a primary route. Follow it.
 2. **MUST NOT begin implementation** without the `tdd` skill Phase 1 completing first.
 3. **MUST NOT commit** without the `commit-gate` skill completing. "It looks good" is not permission.
 4. **MUST NOT resolve a `[CONFIRM-NN]` placeholder** by guessing. Surface the question and stop.
@@ -22,6 +22,47 @@ only shim files that import from `.agents/`.
 **codeArbiter is an orchestrator, never a coder.** The user ONLY interacts via slash commands.
 Direct instructions or freeform questions outside of a slash command receive an escalating redirect
 (see §6).
+
+---
+
+## §0.1 Terminology Lock
+
+These terms have one meaning each. Do not mix usage anywhere downstream — in skill bodies, agent
+bodies, command bodies, or this document. Drift here cascades through every gate.
+
+| Term | Definition |
+|---|---|
+| **skill** | An orchestrator routine encoding a process or compliance workflow. Lives in `.agents/skills/<name>/SKILL.md`. Has phases. A skill is invoked or routed, never "triggered." |
+| **agent** | A specialized reviewer or author dispatched by a skill or by a command. Lives in `.agents/agents/<name>.md`. Agents are not skills. Agents are dispatched, never invoked. |
+| **phase** | A workflow step inside a skill (e.g., TDD Phase 1–6, commit-gate Phase 1–8). Phases are sequential and gate-bounded. |
+| **stage** | A project lifecycle position 1–4, stored in `.agents/projectContext/stage`. Global. Not per-skill. |
+| **layer** | Decomposition-interview structure only (`decompose` skill, Layers 1–6). Do not use "layer" elsewhere. |
+| **gate** | An exit condition on a phase. STOP / BLOCK gates halt all work in the skill. Gates are separate from findings. |
+| **severity** | A finding classification: CRITICAL / HIGH / MEDIUM / LOW. Severity is separate from gate action — a HIGH finding can be informational, a MEDIUM can BLOCK. |
+
+### Dispatch verbs (locked)
+
+| Verb | Meaning |
+|---|---|
+| **invoke** | The user fires `/command` (e.g., the user invokes `/feature`). |
+| **route** | The orchestrator hands work to a skill (e.g., `/feature` routes to the `tdd` skill). |
+| **dispatch** | A skill spawns one or more parallel agents (e.g., `/checkpoint` dispatches reviewer agents). |
+
+Do not use "trigger," "runs," or "fires" as substitutes for these verbs. `## Trigger` headings in
+skill bodies list *conditions under which the orchestrator routes to the skill* — the skill itself
+does not "trigger."
+
+### Modal convention
+
+MUST / MUST NOT / MAY / SHOULD are reserved for hard gates and policy invariants. `do not` and
+`never` are reserved for guidance and operating principles. Within any Hard Rules section, use
+MUST / MUST NOT exclusively.
+
+### Placeholder convention
+
+`[CONFIRM-NN]` is the single placeholder system for unresolved unknowns — interview gaps, inferred
+facts, deferred decisions. Numbers are sequential with `projectContext/open-questions.md`. Do not
+introduce parallel placeholder schemes (`[OPEN-DECISION]`, `[NEEDS-INPUT]`, etc.).
 
 ---
 
@@ -98,6 +139,10 @@ Always-loaded. Follow these even without reading project docs. Violation is unre
 - MUST NOT read ticket bodies during routine flows. Use `projectContext/tickets/INDEX.md` (in-repo) or `mcp__plane__list_issues` (Plane) for surface scans. Body reads only via `/ticket show <id>`.
 - MUST NOT author an ADR as the disposition of a ticket. Decision-worthy findings escalate to `open-questions.md` (CONFIRM-NN) or to the user. ADRs are authored only via `/adr` with explicit user attribution.
 - MUST NOT bulk-read `.agents/agents/*.md` or `.agents/commands/*.md`. Use the respective `INDEX.md` for surface scans; bodies load on invocation only.
+- MUST NOT emit an unregistered observability signal. Register in projectContext/observability-spec.md first.
+- MUST NOT emit observability signals with unbounded label cardinality.
+- MUST NOT close a hotfix log entry without an authoring ADR referenced by ADR-ID within 72 hours.
+- MUST NOT issue a /hotfix using a single identity — the escalation-tier identity must differ from the operator identity.
 
 ---
 
@@ -111,15 +156,16 @@ Read the listed file before acting. The skill or agent listed is the primary rou
 | Stack / dependencies | `projectContext/tech-stack.md`, `projectContext/dependency-policy.md` | `dependency-reviewer` agent |
 | Auth, crypto, secrets | `projectContext/security-controls.md`, `projectContext/secrets-policy.md` | `crypto-compliance` skill; `secret-handling` skill |
 | Logging / telemetry | `projectContext/audit-spec.md` | `audit-emit` skill |
+| Metrics / traces / alerts / SLOs | `projectContext/observability-spec.md` | `observability-emit` skill |
 | Data model / migrations | `projectContext/tech-stack.md` | `migration-reviewer` agent |
 | Networking / deployment | `projectContext/trust-zones.md` | `security-architecture` skill |
-| New domain concept or component | `projectContext/CONTEXT.md` | `doc-governance` skill |
+| New domain concept or component | `projectContext/CONTEXT.md` | `doc-review-gate` skill |
 | Failure / retry logic | `projectContext/tech-stack.md` | — |
 | CI/CD / branch settings | `projectContext/tech-stack.md` | — |
 | Risks / ADRs | `projectContext/open-questions.md`, `projectContext/decisions/` | `decision-lifecycle` skill |
 | Checkpoint / stage promotion | `projectContext/stage` | `stage-gating` skill |
-| Architectural reconciliation | `projectContext/decomposition/` | `arbiter` skill |
-| Subagent encounters out-of-scope finding | `projectContext/ticketing-config.md` | `ticketing` skill (router) |
+| Architectural reconciliation | `projectContext/decomposition/` | `decision-variance` skill |
+| Subagent encounters out-of-scope finding | `projectContext/ticketing-config.md` | `ticketing-router` skill (router) |
 
 ---
 
@@ -127,29 +173,34 @@ Read the listed file before acting. The skill or agent listed is the primary rou
 
 When a trigger fires, follow the primary route. Gates are hard stops — not suggestions.
 
-| Trigger | Primary Route | Also Invoke | Hard Gate |
+| Invocation cue | Primary Route | Also Dispatch | Hard Gate |
 |---|---|---|---|
 | New feature | `tdd` skill | `backend-author`, `frontend-author`, or `infra-author` agent | No implementation before Phase 1 checklist complete |
 | Bug fix | `tdd` skill (bug variant) | Same implementation agents | No implementation before Phase 1 checklist complete |
+| Refactor (behavior-preserving) | `refactor` skill | `tdd` skill (Phase 1 only, for new test seams) | No refactor without behavioral-parity coverage proof |
+| Unknown defect / investigation | `debug` skill | (Phase 4 routes to `/fix`, `/ticket`, or `/adr`) | No code change inside debug skill; investigation only |
 | "commit" / "commit this" / "go ahead and commit" | `commit-gate` skill | — | No commit without all phase gates green |
 | "PR" / "open a PR" / "pull request" | `/pr` command | Reviewer agents per path matrix | No PR draft until all BLOCK-level reviews clear |
 | Stage promotion | `/stage` command | — | No `projectContext/stage` change without named approver |
+| Release / version bump / tag | `/release` command | `commit-gate`, `decision-lifecycle`, `stage-gating` skills | No tag without all 7 release-skill phases green |
 | "checkpoint" | `/checkpoint` command | — | All 7 reviewers must complete; no skipping |
 | Code touches auth, crypto, keys, audit | `auth-crypto-reviewer` agent | `security-reviewer` agent | BLOCK on any CRITICAL finding |
 | Migration file added or changed | `migration-reviewer` agent | `audit-emitter` agent | BLOCK if classification annotation missing |
 | `package.json` or lock file modified | `dependency-reviewer` agent | — | BLOCK on denied license |
 | Schema definition file added or modified | `schema-validator` agent (if present in plugins) | — | BLOCK if schema validation fails |
 | Code emits or should emit an audit event | `audit-emit` skill | `audit-emitter` agent | BLOCK if emit missing or fields wrong |
+| Code emits or should emit an observability signal (metric/trace/alert/SLO) | `observability-emit` skill | `observability-emitter` agent (if defined) | BLOCK if emit missing, labels wrong, or cardinality unbounded |
 | Code uses crypto / hashing / signing / TLS / random | `crypto-compliance` skill | `auth-crypto-reviewer` agent | BLOCK on any banned primitive |
 | Code reads / writes / passes a secret | `secret-handling` skill | `auth-crypto-reviewer` agent | BLOCK if secret outside approved store path |
+| Rotation due / signing key, OIDC secret, TLS cert, service token | `rotation` skill | `secret-handling`, `crypto-compliance` skills; `audit-emit` skill | BLOCK on rotation past cadence, missing archival, or missing rotate audit emit |
 | Code has stage-conditional behavior | `stage-gating` skill | — | Read `projectContext/stage` first; no exceptions |
-| Arbitration / variance / ADR reconciliation | `arbiter` skill | `decision-challenger` agent | No decisions without user attribution |
+| Arbitration / variance / ADR reconciliation | `decision-variance` skill | `decision-challenger` agent | No decisions without user attribution |
 | Rule conflict (AGENTS.md vs. code or docs) | `/surface-conflict` command | — | STOP all other work immediately |
 | ADR added / aged / CONFIRM-NN unresolved | `decision-lifecycle` skill | `decision-challenger` agent | No CONFIRM-NN resolved by guessing |
 | New trust zone crossing / threat model / attack surface change | `security-architecture` skill | `security-reviewer` + `trust-zone-reviewer` | No undeclared egress |
-| `projectContext/` file modified or domain area referenced before acting | `doc-governance` skill | — | No action in domain without reading gated doc first |
-| Subagent raises out-of-scope finding | `ticketing` skill | — | When ticketing disabled, finding inlines with `[NEEDS-TRIAGE]` marker. Disposition MUST NOT be `adr-*` |
-| Ticket close requested | `ticketing` skill (variant per config) | — | BLOCK on `adr-*` dispositions. BLOCK if `incorporated-to:*` recorded without target-doc edit in session |
+| `projectContext/` file modified or domain area referenced before acting | `doc-review-gate` skill | — | No action in domain without reading gated doc first |
+| Subagent raises out-of-scope finding | `ticketing-router` skill | — | When ticketing disabled, finding inlines with `[NEEDS-TRIAGE]` marker. Disposition MUST NOT be `adr-*` |
+| Ticket close requested | `ticketing-router` skill (variant per config) | — | BLOCK on `adr-*` dispositions. BLOCK if `incorporated-to:*` recorded without target-doc edit in session |
 
 ---
 
@@ -178,3 +229,21 @@ Full command specifications: `.agents/commands/`. Quick-ref table: `COMMANDS.md`
 `/override "reason"` is the sanctioned escape hatch — permits bypass with mandatory audit logging. Full identity-detection sequence and log-entry format live in `.agents/commands/override.md` (loaded when `/override` is invoked).
 
 The log file `.agents/projectContext/overrides.log` is append-only — never edited or deleted. It is committed to the repo as a permanent audit artifact. After appending, proceed with the overridden action and note in the response that the override is logged.
+
+### §7.1 Hotfix Protocol
+
+`/hotfix "reason" --severity P0|P1 --escalation-tier <user> --auto-revert-window 24h|72h|7d`
+is the stricter emergency variant of `/override`. Differences from /override:
+
+- Two-identity attestation required (operator + named escalation-tier approver,
+  must be distinct identities)
+- Auto-revert window mandatory; expiration tracked by `/checkpoint`, which BLOCKs
+  promotion if window passes without follow-up
+- Post-hoc ADR required within 72h documenting bypass rationale; log entry is
+  updated with the ADR ID. Missing ADR = BLOCK on stage promotion.
+- Logged to `.agents/projectContext/hotfixes.log` (separate from
+  `overrides.log`) — append-only, never edited or deleted, committed as a
+  permanent audit artifact.
+
+Full workflow specification: `.agents/commands/hotfix.md` (loaded only when
+`/hotfix` is invoked).

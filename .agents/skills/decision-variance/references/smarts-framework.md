@@ -1,10 +1,10 @@
 # SMARTS Framework
 
-The SMARTS framework is the standardized evaluation framework for architectural decisions. The arbiter applies SMARTS evenhandedly when comparing options.
+The SMARTS framework is the standardized evaluation framework for architectural decisions. This skill applies SMARTS evenhandedly when comparing options.
 
 SMARTS stands for: **S**calable, **M**aintainable, **A**vailable, **R**eliable, **T**estable, **S**ecurable.
 
-This is the project's chosen framework. The arbiter does not propose alternatives.
+This is the project's chosen framework. This skill does not propose alternatives.
 
 ## The Six Lenses
 
@@ -92,7 +92,7 @@ Does the option enable the project's security posture — as defined in `project
 
 ## Hard Format Constraints for SMARTS Cells
 
-When the arbiter (or grader subagent) produces a SMARTS analysis table, every cell follows these rules. These are not guidelines — they are constraints. Cells that violate them are non-conformant.
+When this skill (or grader subagent) produces a SMARTS analysis table, every cell follows these rules. These are not guidelines — they are constraints. Cells that violate them are non-conformant.
 
 **Rule 1 — Length cap:** Each cell is at most 25 words. No exceptions. Counting tools welcome.
 
@@ -130,7 +130,7 @@ When the arbiter (or grader subagent) produces a SMARTS analysis table, every ce
 
 ## Strength of Recommendation Levels
 
-When the arbiter (or grader) finishes a SMARTS analysis, the recommendation has exactly one strength label:
+When this skill (or grader) finishes a SMARTS analysis, the recommendation has exactly one strength label:
 
 - **strong** — multiple dominant lenses align cleanly toward one option; non-SMARTS considerations confirm
 - **moderate** — dominant lenses align toward one option but with caveats, or with a single lens dominating
@@ -138,7 +138,7 @@ When the arbiter (or grader) finishes a SMARTS analysis, the recommendation has 
 
 There is no `weak` level. If the analysis is close but a slight edge exists, the strength is `moderate`. If the analysis is genuinely tied, the strength is `tied` and the user is told plainly that this is a coin flip under SMARTS.
 
-This forces commitment when commitment is warranted and explicit acknowledgment when it is not. The arbiter never hides behind hedged language.
+This forces commitment when commitment is warranted and explicit acknowledgment when it is not. This skill never hides behind hedged language.
 
 ## When SMARTS Doesn't Resolve
 
@@ -150,7 +150,7 @@ If lenses pull in different directions and no clear winner emerges:
 4. Mark strength as `tied`
 5. Recommend the option that aligns with prior emphasis, with explicit acknowledgment that the choice is contestable
 
-`Tied` strength is a valid outcome. "This is a coin flip under SMARTS — your call" is a legitimate arbiter output.
+`Tied` strength is a valid outcome. "This is a coin flip under SMARTS — your call" is a legitimate output from this skill.
 
 ## SMARTS Limitations
 
@@ -162,4 +162,4 @@ The framework does not directly cover:
 - Vendor lock-in
 - Political acceptability (cross-team or cross-stakeholder dynamics)
 
-When these matter, the arbiter calls them out as **non-SMARTS considerations** alongside the SMARTS analysis. They are evaluated qualitatively and presented to the user. They do not replace SMARTS; they supplement it.
+When these matter, this skill calls them out as **non-SMARTS considerations** alongside the SMARTS analysis. They are evaluated qualitatively and presented to the user. They do not replace SMARTS; they supplement it.

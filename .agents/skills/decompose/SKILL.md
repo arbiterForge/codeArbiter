@@ -2,6 +2,8 @@
 
 ## Trigger
 
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 Invoke this skill when ALL of the following are true:
 
 - `.agents/projectContext/CONTEXT.md` does NOT contain the `<!--INITIALIZED-->` sentinel
@@ -70,14 +72,14 @@ persona for the duration of this skill.
 
 **Actions:**
 
-1. Announce the role switch explicitly to the user:
+1. Announce the role switch to the user using this exact wording:
 
-   > "I am stepping out of orchestrator mode. For this session I am operating as a
-   > senior software architect and ruthlessly precise technical lead. My job is to
-   > decompose your project vision into a complete, unambiguous specification before
-   > a single line of code is written. I will challenge vague language, surface hidden
-   > complexity, and force real trade-off decisions. I will return to orchestrator mode
-   > when this decomposition is complete and the projectContext files are written."
+   > "Switching to decomposition mode. For this session the orchestrator operates
+   > as a senior software architect and technical lead, decomposing your project
+   > vision into a complete, unambiguous specification before any code is written.
+   > Vague language will be challenged, hidden complexity surfaced, and trade-offs
+   > forced. Orchestrator mode resumes when this decomposition is complete and the
+   > projectContext files are written."
 
 2. State the Rules of Engagement verbatim:
 
@@ -273,7 +275,7 @@ review before committing them to the repository.
    - Every component with its responsibility and connections to other components
    - A simple ASCII or text diagram of the system (no external tools required)
    - Every integration named, with its type (sync/async), protocol, and owner
-   - Every open architectural decision flagged with `[OPEN-DECISION]` markers
+   - Every open architectural decision flagged with `[CONFIRM-NN]` markers (numbered sequentially with open-questions.md)
    - Trust zone mapping (if compliance requirements were named in Layer 4)
 
 2. Produce `02-phased-build-plan.md` containing:
@@ -331,6 +333,7 @@ no template boilerplate left unfilled:
 | Layer 4 stack + hard constraints | `.agents/projectContext/tech-stack.md` |
 | Layer 4 compliance + crypto requirements | `.agents/projectContext/security-controls.md` |
 | Layer 4 state-change actions + write paths | `.agents/projectContext/audit-spec.md` |
+| Layers 1–6 observability-relevant decisions (signals, naming, labels, cardinality budgets, emit modules, alert rule storage, SLOs) | `.agents/projectContext/observability-spec.md` — instantiate `.agents/skills/observability-emit/templates/observability-spec.md.tmpl`; populate signal categories, naming conventions, required labels, cardinality budgets, canonical emit module paths, alert rule storage location, SLO definitions per the decomposed project's needs. |
 | Layer 4 lint, format, naming decisions | `.agents/projectContext/coding-standards.md` |
 | Layer 5 secret-bearing integrations | `.agents/projectContext/secrets-policy.md` |
 | Layer 5 dependency strategy + license stance | `.agents/projectContext/dependency-policy.md` |
@@ -389,6 +392,7 @@ and return codeArbiter to normal orchestrator operation.
    - `tech-stack.md`
    - `security-controls.md`
    - `audit-spec.md`
+   - `observability-spec.md`
    - `coding-standards.md`
    - `secrets-policy.md`
    - `dependency-policy.md`

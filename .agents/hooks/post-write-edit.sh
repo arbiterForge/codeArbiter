@@ -4,9 +4,9 @@ INPUT=$(cat)
 FPATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
 CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.new_string // ""')
 
-# H-06: projectContext file modified — remind doc-governance
+# H-06: projectContext file modified — remind doc-review-gate
 if echo "$FPATH" | grep -qE '\.agents/projectContext/'; then
-  echo "REMINDER [H-06]: projectContext file modified. Run doc-governance Phase 2 (freshness check) and Phase 3 (conflict detection) before committing." >&2
+  echo "REMINDER [H-06]: projectContext file modified. Run doc-review-gate Phase 2 (freshness check) and Phase 3 (conflict detection) before committing." >&2
 fi
 
 # H-07: dependency file changed — remind dependency-reviewer

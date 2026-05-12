@@ -21,12 +21,12 @@ This `INDEX.md` is the only sanctioned surface scan of `.agents/agents/`. Routin
 | dependency-reviewer | Reviews package.json / lockfile / base image changes | denied license, supply-chain concerns | [body](dependency-reviewer.md) |
 | finding-triage | Assigns stage promotion impact to checkpoint findings | — (sequential post-processor) | [body](finding-triage.md) |
 | frontend-author | Implements UI code via TDD workflow | failing tests, lint errors, missing UI security checks | [body](frontend-author.md) |
-| grader | INTERNAL: SMARTS analysis for arbiter skill — never invoke directly | — | [body](grader.md) |
+| grader | INTERNAL: SMARTS analysis for decision-variance skill — never invoke directly | — | [body](grader.md) |
 | infra-author | Implements IaC, containers, CI/CD manifests, deploy config | missing threat model on zone-crossing change | [body](infra-author.md) |
 | migration-reviewer | Reviews DB migration files for safety and classification | classification annotation missing, irreversible destructive op | [body](migration-reviewer.md) |
 | scaffold-completeness-reviewer | Identifies planned-but-missing artifacts | — (read-only checkpoint reviewer) | [body](scaffold-completeness-reviewer.md) |
-| scout | INTERNAL: scans codebase sections for arbiter / context-creation skills — never invoke directly | — | [body](scout.md) |
+| scout | INTERNAL: scans codebase sections for decision-variance / context-creation skills — never invoke directly | — | [body](scout.md) |
 | security-reviewer | PROACTIVE diff review for security-sensitive paths | any CRITICAL or HIGH finding | [body](security-reviewer.md) |
 | standards-compliance-reviewer | Reviews against coding standards, lint, type safety | — (read-only checkpoint reviewer) | [body](standards-compliance-reviewer.md) |
-| test-audit-reviewer | Audits test coverage vs. TDD obligations | untested source files, missing audit emit tests | [body](test-audit-reviewer.md) |
+| coverage-auditor | Audits test coverage vs. TDD obligations | untested source files, missing audit emit tests | [body](coverage-auditor.md) |
 | trust-zone-reviewer | Reviews zone boundary enforcement and HTTP client usage | undeclared zone crossings | [body](trust-zone-reviewer.md) |

@@ -40,7 +40,7 @@ Example format:
 | /adr-status     | Report ADR health — aged, unchallenged, placeholders | decision-lifecycle skill |
 | /checkpoint     | Full cross-cutting codebase review                 | all 7 checkpoint agents |
 | /stage [N]      | Report or advance project stage                    | stage-gating skill |
-| /btw "question" | Lightweight Q&A — no routing fires                 | (none) |
+| /btw "question" | Lightweight Q&A — no routing occurs                | (none) |
 | /status         | Formatted project status report                    | (none) |
 | /surface-conflict | Stop all work and surface a contradiction        | (none) |
 | /add-dep "pkg"  | Vet and add a dependency                           | dependency-reviewer agent |

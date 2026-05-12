@@ -2,6 +2,8 @@
 
 ## Trigger
 
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 Invoke this skill when the user runs `/new-skill "<gap description>"`.
 
 Triggers:
@@ -268,7 +270,7 @@ correct triggers and discoverable by contributors.
 3. Update `AGENTS.md`:
    - Add a row to Section 4 (Reference Map) if the skill covers a new domain
    - Add a row to Section 5 (Routing Table) with:
-     - Trigger pattern (what user action fires it)
+     - Trigger pattern (what user action routes to it)
      - Primary route (`skill-name` skill)
      - Also Invoke (any co-invoked skills or agents)
      - Hard Gate (the blocking condition)

@@ -19,5 +19,5 @@ No arguments. The skill reads current git state (staged files, diff, test result
 ## When NOT to Use
 
 - Before writing code: use `/feature` or `/fix` first
-- To check PR readiness: use `/pr` — runs additional BLOCK-level reviews
+- To check PR readiness: use `/pr` — dispatches additional BLOCK-level reviewers
 - To run tests without committing: run the test command from `projectContext/tech-stack.md` directly

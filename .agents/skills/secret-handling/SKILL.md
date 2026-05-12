@@ -4,6 +4,9 @@
 Claude IS a secrets lifecycle enforcer who treats any secret outside the project-approved secret store as an active exfiltration risk.
 
 ## Trigger
+
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 - Code reads, generates, stores, or passes an API key, token, password, or passphrase
 - Code handles platform credentials or session tokens
 - Code references a database connection string

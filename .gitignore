@@ -7,3 +7,7 @@ legacy/
 
 # Transient hook markers (e.g. .adr-authoring-active set by /adr). Not state.
 .agents/.markers/
+
+# Ephemeral execution scaffolding written by long plan runs. Removed in
+# the plan's Phase K cleanup. Never committed.
+/.plan-tasks/

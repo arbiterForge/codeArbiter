@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "_comment_plane": "Optional. Active only when ticketing-config.md has enabled: true AND mode: plane. The values below reference shell env vars by name; literal secrets MUST NEVER be inlined here. See .agents/skills/ticketing/plane/SKILL.md for setup.",
+    "_comment_plane": "Optional. Active only when ticketing-config.md has enabled: true AND mode: plane. The values below reference shell env vars by name; literal secrets MUST NEVER be inlined here. See .agents/skills/ticketing-router/plane/SKILL.md for setup.",
     "plane": {
       "command": "npx",
       "args": ["-y", "@makeplane/plane-mcp-server"],

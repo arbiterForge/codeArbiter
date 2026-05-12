@@ -17,7 +17,7 @@ No arguments. Checkpoint reviews the entire codebase against all projectContext 
 All 7 checkpoint agents run in parallel (no ordering dependency between them):
 
 1. `architecture-drift-reviewer` — reads `projectContext/decisions/` and scans for code that contradicts accepted ADRs
-2. `test-audit-reviewer` — reads `projectContext/audit-spec.md` and `projectContext/tech-stack.md`; audits test coverage and audit event emission
+2. `coverage-auditor` — reads `projectContext/audit-spec.md` and `projectContext/tech-stack.md`; audits test coverage and audit event emission
 3. `security-reviewer` — reads `projectContext/security-controls.md` and `projectContext/trust-zones.md`; reviews security posture
 4. `standards-compliance-reviewer` — reads `projectContext/coding-standards.md`; checks naming, banned patterns, type safety
 5. `scaffold-completeness-reviewer` — reads `projectContext/open-tasks.md`; identifies planned artifacts that don't yet exist

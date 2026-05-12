@@ -17,7 +17,7 @@ A separate but related concern: existing artifacts under `.agents/agents/`, `.ag
 
 ## Decision
 
-Introduce an optional `ticketing` skill with two modes selectable via `projectContext/ticketing-config.md`:
+Introduce an optional `ticketing-router` skill with two modes selectable via `projectContext/ticketing-config.md`:
 
 1. **`in-repo`** — a lightweight scope-overflow inbox. Subagents file tickets (four-section markdown files) in `projectContext/tickets/open/`. The codeArbiter parent triages each ticket by filing the substance into the correct existing artifact (`03-task-backlog.md`, `open-questions.md` as a `CONFIRM-NN`, a gap doc, or by surfacing to the user) and then closing the ticket with a disposition note. The ticket itself is an inbox, not a project tracker.
 
@@ -56,11 +56,11 @@ This tradeoff sits at §2 level 3 (Maintainability and reviewability) for the di
 
 ## Implementation Notes
 
-- New files: `ticketing-config.md`, `.agents/skills/ticketing/{SKILL.md,in-repo/SKILL.md,plane/SKILL.md}`, `.agents/projectContext/tickets/{INDEX.md,open/,closed/}`, `.agents/commands/ticket.md`, `.claude/commands/ticket.md`, `.agents/agents/INDEX.md`.
+- New files: `ticketing-config.md`, `.agents/skills/ticketing-router/{SKILL.md,in-repo/SKILL.md,plane/SKILL.md}`, `.agents/projectContext/tickets/{INDEX.md,open/,closed/}`, `.agents/commands/ticket.md`, `.claude/commands/ticket.md`, `.agents/agents/INDEX.md`.
 - Modified: AGENTS.md (§3 hard rules, §4 map, §5 routing, §6 read-on-invocation note), `secrets-policy.md` (env-var approved location), `.gitignore` (`.env`, `.env.local`), `.agents/settings.json` (`mcpServers.plane`), 9 subagent definitions (out-of-scope clause), `decisions/README.md` (this ADR row), `COMMANDS.md` (normalized + `/ticket` row).
 - Default ships disabled: `enabled: false` in `ticketing-config.md`. Users opt in.
 
 ## Followups
 
 - First in-repo ticket once enabled: audit any code paths that read `.agents/agents/*.md` in bulk and update them to consult `INDEX.md` first.
-- Validate that `@makeplane/plane-mcp-server` tool names match the names referenced in `.agents/skills/ticketing/plane/SKILL.md` on first real setup; correct any mismatches.
+- Validate that `@makeplane/plane-mcp-server` tool names match the names referenced in `.agents/skills/ticketing-router/plane/SKILL.md` on first real setup; correct any mismatches.

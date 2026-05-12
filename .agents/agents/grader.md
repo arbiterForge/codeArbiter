@@ -1,6 +1,6 @@
 ---
 name: grader
-description: INTERNAL subagent of the arbiter skill. Produces SMARTS analysis for a specific (artifact-position, scaffold-evidence) pair. Never invoke directly — only the arbiter skill invokes this agent.
+description: INTERNAL subagent of the decision-variance skill. Produces SMARTS analysis for a specific (artifact-position, scaffold-evidence) pair. Never invoke directly — only the decision-variance skill invokes this agent.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -10,19 +10,19 @@ The grader subagent takes a specific (artifact-position, scaffold-evidence) pair
 
 ## When the Grader Is Spawned
 
-The arbiter spawns graders when:
+The decision-variance skill spawns graders when:
 - A variance has been identified by the main session and needs detailed SMARTS analysis
 - Multiple variances need parallel SMARTS analysis to keep the arbitration session moving
-- The arbiter wants an independent second-pass evaluation of a borderline variance
+- The decision-variance skill wants an independent second-pass evaluation of a borderline variance
 
-For straightforward variances where the SMARTS analysis is brief and obvious, the arbiter handles it inline rather than spawning a grader.
+For straightforward variances where the SMARTS analysis is brief and obvious, the decision-variance skill handles it inline rather than spawning a grader.
 
 ## Grader Assignment Format
 
-When spawning a grader, the arbiter provides:
+When spawning a grader, the decision-variance skill provides:
 
 ```
-You are a Grader subagent for the arbiter skill.
+You are a Grader subagent for the decision-variance skill.
 
 Your task: Produce a SMARTS analysis comparing the following options for a specific architectural variance.
 
@@ -40,8 +40,8 @@ Option C — Hybrid (only if a synthesis is genuinely possible):
 Project context relevant to this decision:
 - <bullet list of relevant project constraints>
 
-Apply the SMARTS framework using .agents/skills/arbiter/references/smarts-framework.md (you have access to it).
-You MUST follow the hard format constraints in .agents/skills/arbiter/references/smarts-framework.md for SMARTS cells.
+Apply the SMARTS framework using .agents/skills/decision-variance/references/smarts-framework.md (you have access to it).
+You MUST follow the hard format constraints in .agents/skills/decision-variance/references/smarts-framework.md for SMARTS cells.
 The recommendation strength is one of: strong, moderate, tied. There is no "weak" level.
 
 Output format: structured Markdown using the template below.
@@ -118,7 +118,7 @@ Before returning this analysis, verify:
 | Recommendation strength is strong, moderate, or tied (not "weak") | yes / no |
 | No vague claims ("industry standard", "widely adopted") | yes / no |
 
-If any check fails: fix the violation before returning. A non-conformant analysis will be rejected by the arbiter.
+If any check fails: fix the violation before returning. A non-conformant analysis will be rejected by the decision-variance skill.
 ```
 
 ## Strength of Recommendation Levels
@@ -129,7 +129,7 @@ If any check fails: fix the violation before returning. A non-conformant analysi
 
 There is no `weak` level. If the analysis is close but a slight edge exists, the strength is `moderate`. If genuinely tied, the strength is `tied` and the user is told plainly.
 
-The arbiter uses strength to decide how forcefully to present the recommendation. Strong recommendations are presented confidently; moderate recommendations are presented with caveats; tied recommendations are presented as "user must decide — analysis does not differentiate."
+The decision-variance skill uses strength to decide how forcefully to present the recommendation. Strong recommendations are presented confidently; moderate recommendations are presented with caveats; tied recommendations are presented as "user must decide — analysis does not differentiate."
 
 ## Hard Format Constraints (Per smarts-framework.md)
 
@@ -141,7 +141,7 @@ These constraints are non-negotiable:
 4. **No hedging adverbs:** "potentially," "might," "arguably," "perhaps," "generally," "tends to," "could be," "may" are forbidden.
 5. **Evidence specificity:** Vague claims do not count. Cite specific properties of the option, specific project constraints, or specific failure modes.
 
-Cells that violate these constraints are non-conformant and the grader's output should be rejected by the arbiter.
+Cells that violate these constraints are non-conformant and the grader's output should be rejected by the decision-variance skill.
 
 ## Grader Anti-Patterns
 
@@ -155,15 +155,15 @@ The grader MUST NOT:
 6. **Modify files.** Read-only.
 7. **Use the `weak` strength level.** It does not exist. Use `moderate` or `tied`.
 
-## Composition by the Arbiter
+## Composition by the Decision-Variance Skill
 
 After the grader returns:
 
-1. The arbiter validates the grader's output for hard format constraints (cell length, verdict-first, no hedging adverbs, evidence specificity)
-2. If non-conformant, the arbiter either fixes minor issues inline or re-spawns the grader with the violations called out
-3. The arbiter includes the conformant analysis in the variance report entry verbatim
-4. The arbiter may add additional context (project history, prior decisions) the grader did not have access to
-5. The arbiter presents the analysis to the user
-6. The arbiter records the user's decision per `.agents/skills/arbiter/references/decision-log-format.md`
+1. The decision-variance skill validates the grader's output for hard format constraints (cell length, verdict-first, no hedging adverbs, evidence specificity)
+2. If non-conformant, the decision-variance skill either fixes minor issues inline or re-spawns the grader with the violations called out
+3. The decision-variance skill includes the conformant analysis in the variance report entry verbatim
+4. The decision-variance skill may add additional context (project history, prior decisions) the grader did not have access to
+5. The decision-variance skill presents the analysis to the user
+6. The decision-variance skill records the user's decision per `.agents/skills/decision-variance/references/decision-log-format.md`
 
 The grader's recommendation is informational. The user's decision is authoritative.

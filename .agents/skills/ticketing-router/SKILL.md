@@ -1,6 +1,8 @@
-# Skill: ticketing (router)
+# Skill: ticketing-router (router)
 
 ## Trigger
+
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
 
 Invoke this skill when:
 
@@ -47,13 +49,13 @@ malformed YAML), STOP and surface the gap to the user. Do not guess defaults.
    > edit `.agents/projectContext/ticketing-config.md` and set `enabled: true`.
 
 2. If `enabled: true` and `mode: in-repo`: `@`-import
-   `.agents/skills/ticketing/in-repo/SKILL.md` and hand off the caller's request
+   `.agents/skills/ticketing-router/in-repo/SKILL.md` and hand off the caller's request
    to that variant. Do not read the plane variant.
 
 3. If `enabled: true` and `mode: plane`: confirm `plane_base_url`,
    `plane_workspace_slug`, and `plane_project_id` are populated. If any is
    missing, STOP and instruct the user to complete the config. Then `@`-import
-   `.agents/skills/ticketing/plane/SKILL.md` and hand off. Do not read the
+   `.agents/skills/ticketing-router/plane/SKILL.md` and hand off. Do not read the
    in-repo variant.
 
 4. If `mode` is any other value: STOP and surface as a config error. Do not

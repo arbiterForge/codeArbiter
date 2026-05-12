@@ -25,10 +25,10 @@ No arguments. codeArbiter reads the current branch, its diff against the base br
    - Migration files → `migration-reviewer` (BLOCK-level)
    - Dependency files → `dependency-reviewer` (BLOCK-level)
    - Trust zone crossing code → `trust-zone-reviewer` (BLOCK-level)
-   - All paths → `test-audit-reviewer` + `standards-compliance-reviewer` (BLOCK-level)
+   - All paths → `coverage-auditor` + `standards-compliance-reviewer` (BLOCK-level)
 3. **All reviewer agents run** — in parallel where there are no dependencies
 4. **BLOCK finding check** — if any CRITICAL or HIGH finding is raised: STOP, present finding to user, do not proceed to PR draft
-5. **User resolves BLOCK findings** — user addresses each finding and re-runs `/commit`, then `/pr`
+5. **User resolves BLOCK findings** — user addresses each finding and re-invokes `/commit`, then `/pr`
 6. **PR draft staged** — after all BLOCK findings cleared:
    - Title: concise, describes the change
    - Summary: what changed, why, what was tested

@@ -2,6 +2,8 @@
 
 ## Trigger
 
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 Invoke this skill before writing any implementation code. This skill MUST complete
 Phase 1 before any code is written. No feature code, no bug fix, no refactor begins
 without this skill completing Phase 1 first.
@@ -19,14 +21,21 @@ Before Phase 1 begins, confirm:
 
 1. `.agents/projectContext/tech-stack.md` is readable — stop if missing.
 2. `.agents/projectContext/audit-spec.md` is readable — stop if missing.
-3. `.agents/projectContext/trust-zones.md` is readable — stop if missing.
-4. Current stage is known — read `cat .agents/projectContext/stage`.
+3. `.agents/projectContext/observability-spec.md` is readable — stop if missing.
+4. `.agents/projectContext/trust-zones.md` is readable — stop if missing.
+5. Current stage is known — read `cat .agents/projectContext/stage`.
 
 If any file is missing, surface the gap and stop. Do not guess at commands or thresholds.
 
 ---
 
 ## Phase 1: Obligation Scan
+
+> **Definition — obligation.** A single verifiable claim about the planned change
+> that becomes a required test in Phase 2. Each obligation has (a) a unique ID,
+> (b) a source citation (`audit-spec`, `trust-zones`, API contract, or
+> `observability-spec`), and (c) a status (OPEN → MAPPED → COVERED). Hand-wavy
+> "we should test X" items are not obligations.
 
 **Goal:** Identify every auditable action, API boundary, and trust zone crossing
 introduced or modified by the planned change before any code is written.
@@ -35,6 +44,7 @@ introduced or modified by the planned change before any code is written.
 - Description of the planned change (feature, fix, or refactor)
 - `.agents/projectContext/audit-spec.md` — authoritative list of auditable action
   categories, required emit fields, and sink routing rules
+- `.agents/projectContext/observability-spec.md` — authoritative list of observability signal categories, required labels, cardinality budgets, and emit module paths
 - `.agents/projectContext/trust-zones.md` — zone topology and crossing rules
 
 **Actions:**
@@ -43,11 +53,14 @@ introduced or modified by the planned change before any code is written.
    categories apply to the planned change.
 2. Read `.agents/projectContext/trust-zones.md`. Flag every zone boundary the
    change will cross.
+2b. Read `.agents/projectContext/observability-spec.md` in full. Identify which signal categories apply to the planned change.
 3. List every obligation produced:
    - Auditable actions that must emit (with required fields from audit-spec)
    - Trust zone assertions that must be tested
    - API contract invariants that must be covered
-4. Record the obligation list. Every item becomes a required test in Phase 2.
+   - Observability signals that must emit (with required labels from observability-spec)
+4. For each obligation, write its ID, source citation, and OPEN status. In
+   Phase 2 author one failing test per obligation.
 
 **Output:** Signed obligation checklist — every item has an ID and a status of OPEN.
 
@@ -129,7 +142,7 @@ no obligation was silently dropped.
 
 1. Walk the Phase 1 obligation list item by item. For each item, confirm a
    corresponding test exists and is green.
-2. For features with complex audit emit logic, invoke the `test-audit-reviewer`
+2. For features with complex audit emit logic, invoke the `coverage-auditor`
    agent to verify emit correctness before marking audit obligations complete.
 3. Update checklist: each obligation moves from OPEN to COVERED (with test ID)
    or to MISSING (if no test covers it).

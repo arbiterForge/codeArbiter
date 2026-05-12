@@ -2,6 +2,8 @@
 
 ## Trigger
 
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 Invoke this skill whenever code emits, should emit, or modifies the emission of
 an auditable event. This skill MUST complete before any audit-related code is
 committed.

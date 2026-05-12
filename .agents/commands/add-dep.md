@@ -25,5 +25,5 @@ After the reviewer clears the package, codeArbiter shows the install command for
 ## When NOT to Use
 
 - To remove a dependency: use `/feature` or `/fix` with the change described
-- To update an existing dependency: same — changes to `package.json` trigger `dependency-reviewer` automatically via `/pr`
+- To update an existing dependency: same — changes to `package.json` route to `dependency-reviewer` automatically via `/pr`
 - To ask about a package without installing it: use `/btw`
