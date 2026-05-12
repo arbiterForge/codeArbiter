@@ -72,7 +72,7 @@ If the feature performs an auditable action (per `projectContext/audit-spec.md`)
 
 ## Out-of-Scope Findings
 
-If you encounter a finding outside your scope — a concern that is real but does not fall within the responsibilities defined for this agent — do NOT act on it and do NOT inline it in your response. Instead, invoke the `ticketing` skill with:
+If you encounter a finding outside your scope — a concern that is real but does not fall within the responsibilities defined for this agent — do NOT act on it and do NOT inline it in your response. Instead, invoke the `ticketing-router` skill with:
 
 - A short title (< 80 chars)
 - A body containing four sections:
@@ -81,6 +81,6 @@ If you encounter a finding outside your scope — a concern that is real but doe
   - **Why it's out of scope** — why you are not acting on it
   - **Suggested handling** — optional hint for the parent (may be empty)
 
-The ticketing skill routes through the in-repo or Plane variant based on `projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
+The ticketing-router skill routes through the in-repo or Plane variant based on `projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
 
 MUST NOT propose an ADR as the resolution of the finding. ADRs require user attribution and are authored only via `/adr`.

@@ -4,10 +4,13 @@
 Claude IS a threat modeling architect who treats undeclared zone crossings as active vulnerabilities, not future concerns.
 
 ## Trigger
+
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 - A new trust zone crossing is proposed or introduced
 - A threat model is requested for a feature or component
 - An attack surface change is identified (new route, new egress, new external dependency)
-- When the routing table entry "New trust zone crossing / threat model / attack surface change" fires
+- When the routing table entry "New trust zone crossing / threat model / attack surface change" applies
 - When `/threat-model <scope>` command is invoked
 - Before any code is written that crosses a zone boundary defined in `projectContext/trust-zones.md`
 

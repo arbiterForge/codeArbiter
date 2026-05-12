@@ -1,14 +1,14 @@
 # Decision Log Format
 
-This file defines the exact format used in `projectContext/arbiter-decisions.md`. The format is non-negotiable so the log remains machine-parseable on future arbiter invocations.
+This file defines the exact format used in `projectContext/arbiter-decisions.md`. The format is non-negotiable so the log remains machine-parseable on future invocations of this skill.
 
 ## Append-Only — No Edits Permitted
 
-The decision log is **strictly append-only**. The arbiter MUST NOT edit any prior entry. Not even small edits. Not "fixing typos." Not "cleaning up formatting." Not "improving clarity." Not adding fields to old entries.
+The decision log is **strictly append-only**. This skill MUST NOT edit any prior entry. Not even small edits. Not "fixing typos." Not "cleaning up formatting." Not "improving clarity." Not adding fields to old entries.
 
 The only operation permitted on prior entries is **reading** them.
 
-To supersede a prior decision, the arbiter appends a new entry whose `Supersedes:` field references the prior entry. Traversal from old to new is **forward-only**: readers scan forward in the log to find any entry whose `Supersedes:` field references the entry of interest. There is no backward-pointing `Superseded by:` field maintained on the prior entry. This makes append-only literally true with no exceptions.
+To supersede a prior decision, this skill appends a new entry whose `Supersedes:` field references the prior entry. Traversal from old to new is **forward-only**: readers scan forward in the log to find any entry whose `Supersedes:` field references the entry of interest. There is no backward-pointing `Superseded by:` field maintained on the prior entry. This makes append-only literally true with no exceptions.
 
 ## File Header
 
@@ -21,7 +21,7 @@ This file is the persistent, strictly append-only record of arbitration decision
 
 **Append-only with no exceptions.** Prior entries are never edited. To supersede a prior decision, append a new entry whose `Supersedes:` field references the prior entry. Forward traversal from old to new entries is the only supported lookup pattern.
 
-**Maintained by:** the `arbiter` skill, in collaboration with the user.
+**Maintained by:** the `decision-variance` skill, in collaboration with the user.
 
 ---
 ```
@@ -85,11 +85,11 @@ Every decision entry records the SHA-256 hash of the artifact section that defin
 - Decisions for `artifact-silent` variances (the artifact has no position)
 - Decisions for `META.*` categories (process decisions, not artifact-driven)
 
-**Stale detection:** On subsequent arbiter invocations, Stage 1.5 recomputes hashes for the cited sections and flags any decision whose hash has changed.
+**Stale detection:** On subsequent invocations of this skill, Stage 1.5 recomputes hashes for the cited sections and flags any decision whose hash has changed.
 
 ## Decision Numbering
 
-Entries are numbered sequentially as `DECISION-0001`, `DECISION-0002`, etc. The arbiter maintains the next number by reading the existing log. Numbers never gap and never skip.
+Entries are numbered sequentially as `DECISION-0001`, `DECISION-0002`, etc. This skill maintains the next number by reading the existing log. Numbers never gap and never skip.
 
 If two arbitration sessions race to write decisions, the later session uses the next available number — there is no merge conflict semantics defined for this case (single-user assumption holds for the prototype phase).
 
@@ -175,23 +175,23 @@ To find that DECISION-0001 was superseded, a reader scans forward and finds DECI
 - **Compressing multiple decisions into one entry.** Each variance gets its own decision entry. If a single user response covers multiple variances, write multiple entries.
 - **Recording "no decision needed."** If artifacts and scaffold concur, no decision entry is written. The decision log records actual arbitrations.
 - **Omitting the SMARTS rationale.** The rationale is what makes the decision auditable later. "User decided" without rationale is insufficient.
-- **Generating decisions without explicit user input.** The arbiter never writes a decision entry on its own initiative. Every entry is the record of an explicit user choice.
+- **Generating decisions without explicit user input.** This skill never writes a decision entry on its own initiative. Every entry is the record of an explicit user choice.
 - **Omitting the artifact-section-hash field.** The hash is required for stale-artifact detection. If the field is genuinely `n/a`, write `n/a` — do not omit the field.
 - **Maintaining backward `Superseded by:` links on prior entries.** Forward-only links from new entries. No exceptions.
 
 ## Reading the Log on Future Invocations
 
-When the arbiter starts a new session, it reads `projectContext/arbiter-decisions.md` from top to bottom and indexes:
+When this skill starts a new session, it reads `projectContext/arbiter-decisions.md` from top to bottom and indexes:
 
 - Every entry by its `DECISION-NNNN` ID
 - For each entry, its current `Status` and any `Supersedes` reference
 - The recorded `Artifact-section-hash` for each entry
 
-For each `accepted` entry, the arbiter checks whether a later entry supersedes it (forward scan). If yes, the later entry is authoritative. If no, the entry remains in force.
+For each `accepted` entry, this skill checks whether a later entry supersedes it (forward scan). If yes, the later entry is authoritative. If no, the entry remains in force.
 
-For each `accepted` or `deferred` entry whose `Artifact-section-hash` is not `n/a`, the arbiter recomputes the current hash of the referenced section. If the hash has changed, the entry is flagged for re-evaluation per Stage 1.5 of the workflow.
+For each `accepted` or `deferred` entry whose `Artifact-section-hash` is not `n/a`, this skill recomputes the current hash of the referenced section. If the hash has changed, the entry is flagged for re-evaluation per Stage 1.5 of the workflow.
 
-For each variance discovered in Stage 2, the arbiter checks whether a prior decision exists for that Decision ID:
+For each variance discovered in Stage 2, this skill checks whether a prior decision exists for that Decision ID:
 
 - If `accepted` and not flagged stale: the variance is already resolved; do not re-arbitrate unless the user explicitly asks
 - If `accepted` and flagged stale: surface to the user during Stage 1.5 for re-evaluation

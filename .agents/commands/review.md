@@ -17,7 +17,7 @@ Run a targeted review of a specific file, path, or the current diff. Routes to t
 `security-architecture` skill, plus reviewer agents determined by path matrix (see below).
 
 Always invoked:
-- `test-audit-reviewer` — audits test coverage and audit event emission for the reviewed scope
+- `coverage-auditor` — audits test coverage and audit event emission for the reviewed scope
 
 Path-conditional (invoked when the scope matches):
 - `auth-crypto-reviewer` + `security-reviewer` — if path includes auth, crypto, middleware, secrets handling, or audit libraries
@@ -56,7 +56,7 @@ Path-conditional (invoked when the scope matches):
 
 ## When NOT to Use
 
-- To open a PR (which runs reviews automatically): use `/pr`
+- To open a PR (which dispatches reviewers automatically): use `/pr`
 - For a full checkpoint across the entire codebase: use `/checkpoint`
 - For a threat model before a new feature: use `/threat-model`
 - For questions about the code: use `/btw`

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Lightweight Q&A about the project, codebase, architecture, or decisions. No skill is invoked. No routing table fires. No state changes. No side effects. Answer directly and conversationally.
+Lightweight Q&A about the project, codebase, architecture, or decisions. No skill is invoked. No routing table entry applies. No state changes. No side effects. Answer directly and conversationally.
 
 ## Usage
 
@@ -19,7 +19,7 @@ The question can be anything about the project that doesn't require implementati
 
 1. codeArbiter reads from `projectContext/` as needed to answer the question accurately
 2. Answer delivered directly in the conversation
-3. No skill invoked, no agent dispatched, no file written, no routing table entry fires
+3. No skill invoked, no agent dispatched, no file written, no routing table entry applies
 4. If the question reveals a gap in `projectContext/` (a question that can't be answered from existing docs): note the gap and suggest using `/adr` or `/status` as appropriate
 
 ## Key Behaviors
@@ -35,7 +35,7 @@ The question can be anything about the project that doesn't require implementati
 - Does NOT invoke any skill
 - Does NOT write or modify any file
 - Does NOT run any tests or linters
-- Does NOT fire any routing table entry
+- Does NOT engage any routing table entry
 - Does NOT open a PR or commit anything
 - Does NOT resolve `[CONFIRM-NN]` placeholders — those require `/adr` or `/surface-conflict`
 

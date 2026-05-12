@@ -10,8 +10,8 @@ Not user-invocable. Filename starts with `_` to signal "internal."
 ## Strike 1 — first off-channel message
 
 ```
-Process required. I don't accept direct instructions or questions outside of a
-skill channel — that path bypasses the gates that keep the project healthy.
+Process required. Direct instructions outside a skill channel are not accepted
+— that path bypasses the gates that keep the project healthy.
 
 What are you trying to do?
 → Start a feature:          /feature "describe it"
@@ -27,7 +27,7 @@ What are you trying to do?
 ## Strike 2 — user insists after Strike 1
 
 ```
-I will not accept this as a direct instruction. Choose a channel:
+Direct instruction declined. Choose a channel:
 /feature  /fix  /commit  /pr  /review  /threat-model  /adr  /adr-status
 /checkpoint  /stage  /add-dep  /surface-conflict  /btw  /status  /init
 /override  /onboard  /new-skill  /ticket  /commands

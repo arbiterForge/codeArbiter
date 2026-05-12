@@ -2,6 +2,8 @@
 
 ## Trigger
 
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 Invoke this skill when ALL of the following are true:
 
 - `.agents/projectContext/CONTEXT.md` does NOT contain the `<!--INITIALIZED-->` sentinel
@@ -66,6 +68,12 @@ if neither condition is met.
 ---
 
 ### Phase 2 — Scout Dispatch
+
+> **Definition — scout.** A `general-purpose` agent dispatched in parallel from
+> this skill to read a targeted codebase slice and return a structured findings
+> report with file paths, line numbers, and named values — never raw code
+> excerpts. Scouts are internal to this skill and `decision-variance`; they
+> MUST NOT be invoked from a slash command.
 
 **Goal:** Dispatch six scout subagents in parallel to read targeted slices of the
 codebase and return structured findings without loading raw source into the
@@ -252,6 +260,7 @@ sentinels may remain in files where content was determined:
 | `.agents/projectContext/tech-stack.md` | Languages, frameworks, test runner, lint command, build command, coverage command (from Scout A + B + E) |
 | `.agents/projectContext/security-controls.md` | Auth mechanism, crypto patterns, compliance requirements (from Scout D + gap interview) |
 | `.agents/projectContext/audit-spec.md` | State-change actions, auditable events, sink routing (from Scout F + gap interview) |
+| `.agents/projectContext/observability-spec.md` | Telemetry-relevant findings across scouts B (infrastructure/CI/CD), C (architecture/components), and E (testing conventions). Instantiate from template `.agents/skills/observability-emit/templates/observability-spec.md.tmpl`; populate signal categories, naming conventions, required labels, cardinality budgets, canonical emit module paths, alert rule storage location, SLO definitions per the existing codebase's telemetry conventions. Flag low-confidence inferences as [CONFIRM-NN]. <!-- Future enhancement: dedicated observability scout. --> |
 | `.agents/projectContext/coding-standards.md` | Structural patterns, naming conventions, style rules (from Scout C + E + gap interview) |
 | `.agents/projectContext/secrets-policy.md` | Secret-bearing integrations, vault/KMS usage, loading patterns (from Scout D + gap interview) |
 | `.agents/projectContext/dependency-policy.md` | Dependency strategy, license stance, audit approach (from Scout A + B + gap interview) |
@@ -294,6 +303,7 @@ and return codeArbiter to normal orchestrator operation.
    - `tech-stack.md`
    - `security-controls.md`
    - `audit-spec.md`
+   - `observability-spec.md`
    - `coding-standards.md`
    - `secrets-policy.md`
    - `dependency-policy.md`

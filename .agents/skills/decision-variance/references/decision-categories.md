@@ -1,10 +1,10 @@
 # Decision Categories — Canonical Scan List
 
-This is the canonical list of decision categories the arbiter scans for during Stage 2 evidence indexing. The list is organized by area and prioritized within each area.
+This is the canonical list of decision categories this skill scans for during Stage 2 evidence indexing. The list is organized by area and prioritized within each area.
 
-**This list is closed.** The arbiter MUST NOT invent new categories.
+**This list is closed.** This skill MUST NOT invent new categories.
 
-If the arbiter encounters a decision that does not fit any category here:
+If this skill encounters a decision that does not fit any category here:
 
 1. Note the decision in the evidence index with `category: UNKNOWN`
 2. Describe what makes it not fit any existing category

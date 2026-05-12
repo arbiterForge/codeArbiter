@@ -28,7 +28,7 @@ No arguments. This command is invoked when:
    **Path B — Sentinel missing from existing CONTEXT.md:**
    - Presents two options to the user:
      1. **Restore sentinel only** (non-destructive) — appends the sentinel to the existing `CONTEXT.md` without changing any other content
-     2. **Full re-initialize** (destructive) — re-runs the context creation workflow from scratch, overwriting `CONTEXT.md`
+     2. **Full re-initialize** (destructive) — re-routes to the context-creation workflow from scratch, overwriting `CONTEXT.md`
    - **Waits for user to choose explicitly** — does not proceed without a clear selection
    - If the user chooses option 2 (destructive): confirms a second time ("This will overwrite CONTEXT.md. Confirm?")
 

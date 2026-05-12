@@ -61,7 +61,7 @@ Work is halted. Please resolve this conflict before codeArbiter proceeds.
 - MUST NOT silently continue if a conflict was detected — surface it every time
 - If the conflict involves a `[CONFIRM-NN]` placeholder that has been guessed or auto-resolved: flag that as a separate critical finding
 
-## When This Fires Automatically
+## When This Is Routed Automatically
 
 codeArbiter invokes `/surface-conflict` automatically when:
 - `AGENTS.md` and a `projectContext/` document contradict each other

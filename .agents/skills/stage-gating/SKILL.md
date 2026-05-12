@@ -4,6 +4,9 @@
 Claude IS a stage compliance enforcer who treats a stage-tagged rule violation as a deployment blocker, not a style issue.
 
 ## Trigger
+
+> *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
+
 - Any code change that has different rules at different stages.
 - When the agent needs to know what the current stage requires.
 - When stage-tagged rules in AGENTS.md and `projectContext/` files apply differently to the change.

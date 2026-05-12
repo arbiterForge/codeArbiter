@@ -1,0 +1,190 @@
+<!--PLACEHOLDER-->
+<!-- Populated by decompose/context-creation skill. -->
+
+# Observability Specification
+
+This file is the authoritative source for the `observability-emit` skill. It
+declares every observability signal the project emits, the naming convention for
+each category, the required labels/attributes/fields, the cardinality budgets,
+the canonical emit module or function paths, and the storage locations for
+alert rules and SLO definitions.
+
+This template uses angle-bracket placeholders (e.g., `<like-this>`) for values
+that downstream projects fill in during the `decompose` or `context-creation`
+skill's Phase 5 stub-write.
+
+---
+
+## Signal Categories
+
+The project emits observability signals in the following categories. Each
+category has its own naming convention, required label set, cardinality budget,
+and canonical emit path.
+
+| Category | In scope? | Notes |
+|---|---|---|
+| **metrics** | <yes / no> | <e.g., Prometheus counters, gauges, histograms> |
+| **traces** | <yes / no> | <e.g., OpenTelemetry spans> |
+| **logs** | <yes / no> | <e.g., structured JSON logs to stdout> |
+| **alerts** | <yes / no> | <alert rules paired with alert-relevant metrics> |
+| **SLOs** | <yes / no> | <service-level objectives paired with alerts> |
+
+Audit events are NOT covered here — they route through the `audit-emit` skill
+and are governed by `projectContext/audit-spec.md`.
+
+---
+
+## Naming Conventions per Category
+
+Each category has a fixed naming pattern. New signals MUST conform.
+
+| Category | Pattern | Example |
+|---|---|---|
+| metrics | `<domain>.<subsystem>.<metric_name>_<unit>` | `<api.requests.total>` |
+| traces (span names) | `<domain>.<operation>` | `<orders.checkout>` |
+| logs (event field) | `<domain>.<event_name>` | `<orders.checkout_failed>` |
+| alerts (rule name) | `<domain>_<condition>_<severity>` | `<api_high_error_rate_critical>` |
+| SLOs (objective name) | `<domain>_<sli>_<target>` | `<api_availability_99_9>` |
+
+Replace the patterns above with the project's actual convention. If the project
+uses a different convention (e.g., flat snake_case), declare it here explicitly.
+
+---
+
+## Required Labels per Category
+
+Every signal in a category MUST carry the required labels for that category.
+
+### Metrics — required labels
+
+| Label | Type | Value source | Notes |
+|---|---|---|---|
+| `<service>` | enum | <runtime constant> | <e.g., service name> |
+| `<environment>` | enum | <runtime constant> | <e.g., prod, staging> |
+| `<...>` | <type> | <source> | <notes> |
+
+### Traces (span attributes) — required
+
+| Attribute | Type | Value source | Notes |
+|---|---|---|---|
+| `<service.name>` | enum | <runtime constant> | <OTel semantic convention> |
+| `<...>` | <type> | <source> | <notes> |
+
+### Logs — required structured fields
+
+| Field | Type | Value source | Notes |
+|---|---|---|---|
+| `<timestamp>` | ISO-8601 | <runtime> | <UTC, RFC 3339> |
+| `<level>` | enum | <runtime> | <DEBUG, INFO, WARN, ERROR> |
+| `<service>` | enum | <runtime constant> | <service name> |
+| `<...>` | <type> | <source> | <notes> |
+
+### Alerts — required fields per rule
+
+| Field | Notes |
+|---|---|
+| `<name>` | <follows naming convention above> |
+| `<expr>` | <query against the underlying metric> |
+| `<for>` | <duration before alert fires> |
+| `<severity>` | <critical / high / medium / low> |
+| `<runbook>` | <link to runbook> |
+| `<paired_slo>` | <name of the paired SLO; required> |
+
+### SLOs — required fields per objective
+
+| Field | Notes |
+|---|---|
+| `<name>` | <follows naming convention above> |
+| `<sli>` | <how the SLI is computed from underlying signals> |
+| `<target>` | <objective, e.g., 99.9% over 30d> |
+| `<error_budget>` | <derived from target> |
+| `<paired_alert>` | <name of the paired alert rule; required> |
+
+---
+
+## Cardinality Budgets
+
+Cardinality budgets prevent label-explosion incidents. Each metric and span
+has a declared maximum combined label cardinality. Unbounded identifiers MUST
+NOT appear as labels.
+
+| Signal pattern | Max combined cardinality | Forbidden label values |
+|---|---|---|
+| <`api.requests.total_total`> | <10,000> | <raw user_id, request_id, full URL path> |
+| <default for all metrics> | <1,000> | <raw user_id, request_id, free-text input> |
+| <default for all spans> | <attributes follow same forbidden-value rules> | <as above> |
+
+Forbidden values that must NEVER appear as labels or indexed span attributes
+(may appear as span events or log fields only):
+
+- <raw user identifiers (user_id, email, IP address)>
+- <raw request identifiers (request_id, session_id)>
+- <free-text user input>
+- <full URL paths with embedded identifiers>
+- <any value listed in `projectContext/secrets-policy.md`>
+
+---
+
+## Canonical Emit Module / Function Paths
+
+Code MUST emit signals only through these canonical paths. Bare logger writes,
+ad-hoc HTTP calls to telemetry backends, and alternative shims are forbidden.
+
+| Category | Module / function path | Notes |
+|---|---|---|
+| metrics | `<src/observability/metrics.ts → emitCounter / emitGauge / emitHistogram>` | <wraps the underlying client> |
+| traces | `<src/observability/tracing.ts → startSpan / addSpanEvent>` | <OTel SDK wrapper> |
+| logs | `<src/observability/log.ts → log.info / log.warn / log.error>` | <structured logger; JSON output> |
+| alerts | `<infra/alerts/*.yaml — declarative, not code-emitted>` | <see storage location below> |
+| SLOs | `<infra/slos/*.yaml — declarative, not code-emitted>` | <see storage location below> |
+
+---
+
+## Alert Rule Storage Location
+
+Alert rules are declarative and live in version control alongside infrastructure
+definitions. They MUST NOT be authored ad-hoc in dashboards.
+
+- **Path:** `<infra/alerts/>`
+- **Format:** `<Prometheus rule YAML / Alertmanager YAML / equivalent>`
+- **One file per:** `<domain>` (e.g., `<infra/alerts/api.yaml>`)
+- **Required pairing:** every alert rule MUST reference a paired SLO by name in
+  the rule's `paired_slo` field.
+
+---
+
+## SLO Definitions
+
+SLOs are declarative and live alongside alert rules. Each SLO MUST be paired
+with at least one alert rule that protects its error budget.
+
+- **Path:** `<infra/slos/>`
+- **Format:** `<YAML following the project's SLO schema>`
+- **One file per:** `<domain>` (e.g., `<infra/slos/api.yaml>`)
+- **Required pairing:** every SLO MUST reference a paired alert rule by name in
+  the SLO's `paired_alert` field.
+
+### Alert-relevant signal set
+
+The following signals are designated alert-relevant. Introducing or modifying any
+of them invokes Phase 4 of the `observability-emit` skill (Alert / SLO Wiring).
+
+| Signal | Paired alert | Paired SLO |
+|---|---|---|
+| <`api.requests.errors_total`> | <`api_high_error_rate_critical`> | <`api_availability_99_9`> |
+| <`api.requests.duration_seconds`> | <`api_high_latency_high`> | <`api_latency_p99_500ms`> |
+| <...> | <...> | <...> |
+
+---
+
+## Test Obligation
+
+Every signal declared in this file MUST have a corresponding test, per Phase 5
+of the `observability-emit` skill. Tests confirm:
+
+- The canonical emit function is called when the observed event occurs.
+- All required labels/attributes/fields are present on the emitted signal.
+- No forbidden high-cardinality label appears.
+- The emit is not called when the observed event does not occur.
+
+Test runner and mock/stub conventions: see `projectContext/tech-stack.md`.

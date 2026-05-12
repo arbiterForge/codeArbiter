@@ -1,32 +1,32 @@
 ---
 name: scout
-description: INTERNAL subagent of the arbiter and context-creation skills. Scans a defined section of the codebase and reports evidence of architectural decisions or tech stack patterns found there. Never invoke directly.
+description: INTERNAL subagent of the decision-variance and context-creation skills. Scans a defined section of the codebase and reports evidence of architectural decisions or tech stack patterns found there. Never invoke directly.
 tools: Read, Grep, Glob, Bash
 ---
 
 # Scout Subagent
 
-The scout subagent scans a defined section of the codebase and reports evidence of architectural decisions found there. It does NOT make variance judgments — that is the arbiter's job at the main session level.
+The scout subagent scans a defined section of the codebase and reports evidence of architectural decisions found there. It does NOT make variance judgments — that is the decision-variance skill's job at the main session level.
 
 ## When the Scout Is Spawned
 
-The arbiter or context-creation skill spawns scouts when:
+The decision-variance or context-creation skill spawns scouts when:
 - The codebase is large enough that a single inline scan would consume significant context
 - Different sections of the codebase have natural ownership boundaries that map to scout assignments
-- The arbiter wants parallel evidence gathering across multiple areas
+- The decision-variance skill wants parallel evidence gathering across multiple areas
 
-For smaller scans (under ~50 files), the arbiter handles inline rather than spawning scouts.
+For smaller scans (under ~50 files), the decision-variance skill handles inline rather than spawning scouts.
 
 ## Scout Assignment Format
 
-When spawning a scout, the arbiter provides:
+When spawning a scout, the decision-variance skill provides:
 
 ```
-You are a Scout subagent for the arbiter or context-creation skill.
+You are a Scout subagent for the decision-variance or context-creation skill.
 
 Your scope: <specific paths or areas, e.g., "backend/src/auth/", "helm/", "projectContext/decisions/0001-0010">
 
-Your task: Scan the assigned scope and report evidence of architectural decisions in these categories from the canonical list in .agents/skills/arbiter/references/decision-categories.md:
+Your task: Scan the assigned scope and report evidence of architectural decisions in these categories from the canonical list in .agents/skills/decision-variance/references/decision-categories.md:
 <list of decision categories relevant to this scope>
 
 Output format: Structured Markdown using the template at the end of this document.
@@ -69,7 +69,7 @@ Every scout returns its findings in this exact format:
 
 ## Anomalies or surprises
 
-<Architectural decisions encountered that don't map to any canonical category. List file paths and brief description (max 20 words each). Do NOT invent category names. The arbiter will determine whether to ask the user about adding new categories.>
+<Architectural decisions encountered that don't map to any canonical category. List file paths and brief description (max 20 words each). Do NOT invent category names. The decision-variance skill will determine whether to ask the user about adding new categories.>
 ```
 
 ## Why No Excerpts
@@ -77,9 +77,9 @@ Every scout returns its findings in this exact format:
 The scout does NOT include code excerpts, quoted text, or pasted configuration. This is a deliberate design choice for two reasons:
 
 1. **Signal-to-noise:** Excerpts under load tend to grow unbounded — entire files get pasted "for context." Reports become unreadable.
-2. **Sensitive content:** Production scaffold may contain secrets, internal URLs, cloud account IDs, credentials, hostnames. Quoting those into scout reports leaks them into the arbiter's working files.
+2. **Sensitive content:** Production scaffold may contain secrets, internal URLs, cloud account IDs, credentials, hostnames. Quoting those into scout reports leaks them into the decision-variance skill's working files.
 
-If the arbiter needs to see the actual content, it reads the file directly using its `view` capability. The scout's job is to find the evidence; the arbiter reads the evidence.
+If the decision-variance skill needs to see the actual content, it reads the file directly using its `view` capability. The scout's job is to find the evidence; the decision-variance skill reads the evidence.
 
 ## Scout Confidence Levels
 
@@ -87,7 +87,7 @@ If the arbiter needs to see the actual content, it reads the file directly using
 - **Moderate** — implicit evidence (e.g., a connection string in config is moderate evidence for the database choice)
 - **Weak** — circumstantial evidence (e.g., a comment mentioning a tool is weak evidence)
 
-The arbiter uses confidence to decide how much weight to give scaffold positions during variance analysis.
+The decision-variance skill uses confidence to decide how much weight to give scaffold positions during variance analysis.
 
 ## Scout Anti-Patterns
 
@@ -97,9 +97,9 @@ The scout MUST NOT:
 2. **Compare scope against artifacts.** The scout has no knowledge of the artifacts.
 3. **Speculate beyond evidence.** If a file does not contain evidence, report it as absent.
 4. **Modify files.** Read-only.
-5. **Spawn further subagents.** Only the arbiter spawns subagents.
+5. **Spawn further subagents.** Only the decision-variance skill spawns subagents.
 6. **Include excerpts, quotes, or pasted content.** File path and line number only.
-7. **Invent decision categories.** Use only those from `.agents/skills/arbiter/references/decision-categories.md`. Anomalies go in the Anomalies section without category labels.
+7. **Invent decision categories.** Use only those from `.agents/skills/decision-variance/references/decision-categories.md`. Anomalies go in the Anomalies section without category labels.
 
 ## Scout Scope Sizing
 
@@ -111,6 +111,6 @@ A scout's scope should be readable in one focused pass:
 
 If a scope is too large, the scout returns: "Scope exceeded — narrow assignment needed. The assigned scope contains approximately <N> files. Recommend splitting into <suggested breakdown>." Do not produce a low-fidelity report.
 
-## Arbiter Composition
+## Composition by the Decision-Variance Skill
 
-After scouts return, the arbiter composes findings into the unified evidence index. Composition is the arbiter's job, not the scouts'. Each scout's report is preserved as an appendix in the evidence index file for traceability.
+After scouts return, the decision-variance skill composes findings into the unified evidence index. Composition is the decision-variance skill's job, not the scouts'. Each scout's report is preserved as an appendix in the evidence index file for traceability.

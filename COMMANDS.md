@@ -14,9 +14,11 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 | Command | Argument | One-line purpose | Body |
 |---|---|---|---|
-| `/feature` | `"description"` | Start a new feature; runs full TDD skill (6 phases) | [body](.agents/commands/feature.md) |
+| `/feature` | `"description"` | Start a new feature; routes to TDD skill (6 phases) | [body](.agents/commands/feature.md) |
 | `/fix` | `"bug description"` | Fix a bug using the same TDD workflow, bug-framed | [body](.agents/commands/fix.md) |
-| `/commit` | _(none)_ | Commit staged changes; runs full commit-gate skill | [body](.agents/commands/commit.md) |
+| `/refactor` | `"surface and motivation"` | Behavior-preserving change; routes to refactor skill (6 phases) | [body](.agents/commands/refactor.md) |
+| `/debug` | `"symptom description"` | Investigate-then-decide RCA; outcomes: /fix, /ticket, or close | [body](.agents/commands/debug.md) |
+| `/commit` | _(none)_ | Commit staged changes; routes to commit-gate skill | [body](.agents/commands/commit.md) |
 | `/pr` | `["title"]` | Open a pull request after all gates pass | [body](.agents/commands/pr.md) |
 | `/review` | `[path or scope]` | Security + code review of a path or scope | [body](.agents/commands/review.md) |
 | `/threat-model` | `"scope"` | Pre-implementation threat model for a proposed change | [body](.agents/commands/threat-model.md) |
@@ -24,13 +26,16 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 | `/adr-status` | `[--adr N]` | Check ADR health — aged, unchallenged, unresolved CONFIRM-NN | [body](.agents/commands/adr-status.md) |
 | `/checkpoint` | `[focus]` | Full checkpoint review — all 7 reviewers in parallel | [body](.agents/commands/checkpoint.md) |
 | `/stage` | `[target]` | Report current stage or promote to target stage | [body](.agents/commands/stage.md) |
+| `/release` | `["version" \| --auto \| --dry-run]` | SemVer bump, changelog, tag; deployment readiness gate | [body](.agents/commands/release.md) |
 | `/add-dep` | `"package"` | Add a dependency with full vetting before install | [body](.agents/commands/add-dep.md) |
+| `/rotate` | `"artifact-id"` | Rotate a secret/key with cadence + audit + archival gates | [body](.agents/commands/rotate.md) |
 | `/surface-conflict` | `"description"` | Stop all work and surface a rule conflict | [body](.agents/commands/surface-conflict.md) |
 | `/ticket` | `"title" \| <sub>` | Optional scope-overflow inbox; in-repo or Plane variant | [body](.agents/commands/ticket.md) |
 | `/btw` | `"question"` | Ask a quick question; no state change, lightweight | [body](.agents/commands/btw.md) |
 | `/status` | _(none)_ | Show open tasks and unresolved decisions | [body](.agents/commands/status.md) |
 | `/init` | _(none)_ | Re-run initialization detection (repair only) | [body](.agents/commands/init.md) |
 | `/override` | `"reason"` | Bypass a gate with auto-identity audit log entry | [body](.agents/commands/override.md) |
+| `/hotfix` | `"reason" --severity --escalation-tier --auto-revert-window` | Emergency bypass with two-identity audit + post-hoc ADR | [body](.agents/commands/hotfix.md) |
 | `/onboard` | `["scope"]` | Engineer onboarding tour, full or targeted | [body](.agents/commands/onboard.md) |
 | `/new-skill` | `"gap description"` | Author a new skill after rigorous gap validation | [body](.agents/commands/new-skill.md) |
 | `/commands` | _(none)_ | Show this quick-reference table | [body](.agents/commands/commands.md) |
@@ -43,7 +48,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Start any new feature. This is the only way to begin implementation work.
 
-**What triggers:** `tdd` skill (`.agents/skills/tdd/SKILL.md`) Phases 1–6, then routes to `backend-author`, `frontend-author`, or `infra-author` agent based on scope.
+**What it routes to:** `tdd` skill (`.agents/skills/tdd/SKILL.md`) Phases 1–6, which then dispatches `backend-author`, `frontend-author`, or `infra-author` agent based on scope.
 
 **Hard gate:** No implementation code before Phase 1 (obligation checklist) is complete.
 
@@ -57,7 +62,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Fix a bug with the same rigor as a feature — test written first, root cause confirmed.
 
-**What triggers:** `tdd` skill (bug variant) — same 6-phase workflow, framed around confirming the bug with a failing regression test before touching implementation.
+**What it routes to:** `tdd` skill (bug variant) — same 6-phase workflow, framed around confirming the bug with a failing regression test before touching implementation.
 
 **Hard gate:** Regression test must fail before fix is written (proof the test covers the actual bug).
 
@@ -65,11 +70,58 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 ---
 
+### `/refactor "surface and motivation"`
+
+**Purpose:** Restructure existing code without changing observable behavior. The only permitted path to begin a refactor.
+
+**What it routes to:** `refactor` skill (`.agents/skills/refactor/SKILL.md`) — Phases 1–6: surface identification, behavioral-parity coverage proof, red parity tests (conditional), implementation, parity verification, lint/coverage gate.
+
+**Hard gate:** No refactor proceeds without behavioral-parity coverage proof in Phase 2. If the named surface is below the stage coverage threshold or any public method has zero direct tests, the skill halts and routes to `tdd` Phase 1 to backfill. A Phase 4 diff that classifies as `feat` or a Phase 5 verification that depends on edits to a pre-existing test re-routes to `/feature` or `/fix`.
+
+**Args:** `"surface and motivation"` — two required parts. The surface MUST name exact files/symbols (a reader can grep and arrive at the same set). The motivation MUST state why the restructure is worth doing.
+
+**When NOT to use:** New behavior, branches, or error paths → `/feature`. A change motivated by "the current behavior is wrong" → `/fix`. Questions → `/btw`.
+
+**Example invocations:**
+- `/refactor "extract signToken, verifyToken, rotateKey from src/auth/index.ts into src/auth/tokens.ts so the next rotation feature has a clean seam"`
+- `/refactor "collapse duplicated retry-with-backoff in src/http/client.ts and src/ws/client.ts into a shared src/net/retry.ts"`
+- `/refactor "split src/payments/processor.ts into processor.ts, validation.ts, settlement.ts without changing the exported Processor signature"`
+
+**See also:** `/feature`, `/fix`, `/commit`.
+
+---
+
+### `/debug "symptom description"`
+
+**Purpose:** Investigate-then-decide root-cause analysis for situations where the cause of a defect is **not yet known**. Distinct from `/fix`, which assumes a known bug with a named regression test obligation.
+
+**What it routes to:** `debug` skill (`.agents/skills/debug/SKILL.md`) — Phases 1–5: symptom capture, hypothesis generation, evidence gathering, exit decision, handoff.
+
+**Hard gate:** The skill MUST NOT modify code. Code edits belong to `/fix` and `/fix` is only reached after `debug` has named a confirmed bug and a regression test obligation. Phase 1 BLOCKS on missing minimal repro.
+
+**Phase 4 exits (one of three):**
+- **Confirmed bug** — handoff to `/fix` with named regression test obligation
+- **Design/behavior ambiguity** — escalation to `/ticket` or `/adr`
+- **No-action close** — recorded findings, no further work
+
+**Args:** `"symptom description"` — at minimum one sentence stating what the system did. Causes are recorded in Phase 2, not in the invocation.
+
+**When NOT to use:** Known bug with named regression test → `/fix` directly. Design discussion with no failing behavior → `/adr` or `/ticket`. New feature → `/feature`.
+
+**Example invocations:**
+- `/debug "auth endpoints returning 500 intermittently since yesterday's deploy — repro unclear"`
+- `/debug "payment settlement totals drift by cents under load; off-by-one suspected but unverified"`
+- `/debug "users report they cannot log in after password reset, but staging passes end-to-end"`
+
+**See also:** `/fix`, `/ticket`, `/adr`.
+
+---
+
 ### `/commit`
 
 **Purpose:** The only permitted path to creating a commit.
 
-**What triggers:** `commit-gate` skill (`.agents/skills/commit-gate/SKILL.md`) — 8 phases including permission gate, branch gate, classification, verification, diff review, selective staging, message, and commit.
+**What it routes to:** `commit-gate` skill (`.agents/skills/commit-gate/SKILL.md`) — 8 phases including permission gate, branch gate, classification, verification, diff review, selective staging, message, and commit.
 
 **Hard gates:**
 - Explicit user instruction required (no speculative commits)
@@ -85,7 +137,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Open a pull request after all gates pass.
 
-**What triggers:** pr-ready sequence — runs all BLOCK-level reviews, confirms no open findings, then creates the PR.
+**What it routes to:** pr-ready sequence — dispatches all BLOCK-level reviewer agents, confirms no open findings, then creates the PR.
 
 **Hard gate:** No PR draft until all BLOCK-level review findings are cleared.
 
@@ -97,7 +149,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Security and compliance review of existing code at a given path or scope.
 
-**What triggers:** `security-architecture` skill + applicable reviewer agents (`security-reviewer`, `auth-crypto-reviewer`, `standards-compliance-reviewer`, `test-audit-reviewer`).
+**What it routes to:** `security-architecture` skill, which dispatches the applicable reviewer agents (`security-reviewer`, `auth-crypto-reviewer`, `standards-compliance-reviewer`, `coverage-auditor`).
 
 **When to use:** Before merging any security-sensitive change; when a reviewer requests a specific area be checked; as part of checkpoint preparation.
 
@@ -107,7 +159,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Pre-implementation security architecture review for a proposed zone crossing, feature, or attack surface change.
 
-**What triggers:** `security-architecture` skill (`.agents/skills/security-architecture/SKILL.md`).
+**What it routes to:** `security-architecture` skill (`.agents/skills/security-architecture/SKILL.md`).
 
 **When to use:** Before writing code for any change that crosses a trust zone boundary, adds a new external dependency, or modifies authentication/cryptographic behavior. Run BEFORE implementation, not after.
 
@@ -117,7 +169,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Record a new architectural decision.
 
-**What triggers:** `decision-lifecycle` skill — creates a new ADR file in `projectContext/decisions/`, writes frontmatter, queues for challenge.
+**What it routes to:** `decision-lifecycle` skill — creates a new ADR file in `projectContext/decisions/`, writes frontmatter, queues for challenge.
 
 **When to use:** Any time a significant architectural, technology, security, or process decision is made that should be durable and auditable.
 
@@ -127,7 +179,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Check the health of all ADRs or a specific one.
 
-**What triggers:** `decision-lifecycle` skill — scans for aged ADRs (>12 weeks since challenge), unchallenged ADRs, supersession candidates, and unresolved `CONFIRM-NN` items.
+**What it routes to:** `decision-lifecycle` skill — scans for aged ADRs (>12 weeks since challenge), unchallenged ADRs, supersession candidates, and unresolved `CONFIRM-NN` items.
 
 **When to use:** Before any stage promotion; at start of a checkpoint; when a `CONFIRM-NN` is encountered.
 
@@ -137,9 +189,9 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Full checkpoint review of the codebase — all 7 reviewer agents run in parallel.
 
-**What triggers:** All checkpoint agents simultaneously:
+**What it dispatches:** All checkpoint agents simultaneously:
 1. `architecture-drift-reviewer`
-2. `test-audit-reviewer`
+2. `coverage-auditor`
 3. `security-reviewer`
 4. `standards-compliance-reviewer`
 5. `scaffold-completeness-reviewer`
@@ -156,7 +208,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Report the current project stage or run the promotion checklist to advance to the next stage.
 
-**What triggers:** `stage-gating` skill (`.agents/skills/stage-gating/SKILL.md`).
+**What it routes to:** `stage-gating` skill (`.agents/skills/stage-gating/SKILL.md`).
 
 **Without argument:** Reports current stage and what gates are satisfied vs. outstanding for the next stage.
 
@@ -166,11 +218,33 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 ---
 
+### `/release ["version" | --auto | --dry-run]`
+
+**Purpose:** Compose a tagged, announceable release. The only permitted path to a version tag. A release is a deployment-readiness assertion: the codebase at this SHA satisfies every published threshold for shipping.
+
+**What it routes to:** `release` skill (`.agents/skills/release/SKILL.md`) — Phases 1–7: pre-flight readiness, checkpoint gate, SemVer version bump, changelog generation, ADR currency check, stage threshold verification, tag and announce. The skill is a gate aggregator and routes to `/checkpoint`, `decision-lifecycle`, and `stage-gating`.
+
+**Hard gate:** No tag is composed without all 7 phases recording PASS. DEFERRED is not PASS. MUST NOT silently downgrade or upgrade SemVer classification. MUST NOT push the tag to a remote without explicit user authorization. Any BLOCK is bypassable only via `/override`.
+
+**Args:**
+- `--auto` (default) — version is derived mechanically from `LAST_TAG..HEAD` via Conventional Commits
+- `"X.Y.Z"` — explicit version; Phase 3 still classifies the commit log and BLOCKS on disagreement
+- `--dry-run` — evaluates all gates, surfaces the readiness report, STOPS before tag composition
+
+**Example invocations:**
+- `/release` — default flow, auto-derive version, compose tag if all gates green
+- `/release "2.0.0"` — explicit version; Phase 3 BLOCKS if commit log classifies differently
+- `/release --dry-run` — full gate evaluation, no tag composed, useful as a pre-flight
+
+**See also:** `/checkpoint`, `/stage`, `/adr-status`.
+
+---
+
 ### `/add-dep "package"`
 
 **Purpose:** Add a new dependency after full vetting.
 
-**What triggers:** `dependency-reviewer` agent — checks license, provenance, maintenance signal, and supply-chain posture before any install command runs.
+**What it dispatches:** `dependency-reviewer` agent — checks license, provenance, maintenance signal, and supply-chain posture before any install command runs.
 
 **Hard gate:** BLOCK on any denied license. BLOCK on supply-chain concerns. Package is not installed until the reviewer clears it.
 
@@ -178,11 +252,35 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 ---
 
+### `/rotate "artifact-id"`
+
+**Purpose:** Rotate a single rotation-bearing artifact — signing key, OIDC client secret, TLS certificate, API token, or service-account credential — through the full inventory → cadence → plan → audit-emit → archival lifecycle. A rotation without an archival record is treated as credential loss.
+
+**What it routes to:** `rotation` skill (`.agents/skills/rotation/SKILL.md`) — Phases 1–5: inventory, cadence check, rotation plan, audit emit, archival. Phase 3 routes the proposed replacement primitive through `crypto-compliance` before issuance. Phase 4 routes the rotation event through `audit-emit` in full.
+
+**Hard gates:**
+- **Cadence** — past-cadence artifacts MUST enter the rotation plan or be recorded as a `CONFIRM-NN` exception. Silent reconciliation is prohibited.
+- **Audit-emit** — `audit-emit` Phase 5 (Test Obligation) MUST complete before Phase 4 exits. Emit MUST route through the canonical sink in `audit-spec.md`.
+- **Archival** — the four-fact record (which / when / what / who) MUST be written and the last-rotation timestamp updated before the rotation is marked complete.
+
+**Args:** `"artifact-id"` — the artifact's store reference from `secrets-policy.md`. Never the credential value or a fingerprint of it.
+
+**Default cadences** are defined in `projectContext/secrets-policy.md` per artifact category (signing keys, OIDC client secrets, TLS certs, API tokens, service accounts).
+
+**Example invocations:**
+- `/rotate "jwt-signer-2025"`
+- `/rotate "oidc-client-partner-portal"`
+- `/rotate "CN=api.example.internal"`
+
+**See also:** `/add-dep`, `/checkpoint` (may auto-route to `/rotate` for aged artifacts).
+
+---
+
 ### `/surface-conflict "description"`
 
 **Purpose:** Stop all work and surface a conflict between AGENTS.md (or projectContext docs) and on-disk code or instructions.
 
-**What triggers:** Immediate STOP. Presents the conflicting sources, quoted passages, and which is more recently updated. All other work halts until the user resolves.
+**What it routes to:** Immediate STOP handler. Presents the conflicting sources, quoted passages, and which is more recently updated. All other work halts until the user resolves.
 
 **Hard gate:** This command overrides all other active work. Nothing proceeds while a conflict is open.
 
@@ -194,7 +292,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Optional scope-overflow inbox for subagent findings (in-repo mode) OR project management bridge to Plane (Plane mode). Disabled by default; opt in by editing `projectContext/ticketing-config.md`.
 
-**What triggers:** `ticketing` skill router (`.agents/skills/ticketing/SKILL.md`) — reads `mode` from config and `@`-imports only the active variant (`in-repo/` or `plane/`).
+**What it routes to:** `ticketing-router` skill (`.agents/skills/ticketing-router/SKILL.md`) — reads `mode` from config and `@`-imports only the active variant (`in-repo/` or `plane/`).
 
 **Subcommands:**
 - `/ticket "title" -- "body"` — file a new ticket (subagent or user)
@@ -220,7 +318,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Lightweight Q&A channel for quick questions that don't require the full state machine.
 
-**What triggers:** Direct answer from projectContext context. No skill invoked. No state change. No routing table entries fire.
+**What it routes to:** Direct answer from projectContext context. No skill invoked. No state change. No routing table entries apply.
 
 **When to use:** Clarifying questions, quick lookups, asking about a concept, checking a value. NOT for starting work, making decisions, or bypassing gates.
 
@@ -230,7 +328,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Show everything currently open — in-flight tasks and unresolved decisions.
 
-**What triggers:** Reads `projectContext/open-tasks.md` and `projectContext/open-questions.md`. Read-only. No side effects.
+**What it routes to:** Reads `projectContext/open-tasks.md` and `projectContext/open-questions.md`. Read-only. No side effects.
 
 **Output:**
 - Current stage
@@ -254,7 +352,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Bypass a gate or process requirement with a mandatory, append-only audit log entry.
 
-**What triggers:** Identity detection (git config → env vars → CLI → manual prompt), log append to `projectContext/overrides.log`, then proceeds with the overridden action.
+**What it routes to:** Identity detection (git config → env vars → CLI → manual prompt), log append to `projectContext/overrides.log`, then proceeds with the overridden action.
 
 **Auto-detected identity:** `git config user.name` + `git config user.email` (tried first). Falls through to env vars, then CLI, then prompt only if all else fails.
 
@@ -264,11 +362,40 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 ---
 
+### `/hotfix "reason" --severity --escalation-tier --auto-revert-window`
+
+**Purpose:** Emergency-bypass channel for P0/P1 incidents where waiting on the full gate suite would extend production harm. Unlike `/override` (a per-action escape hatch), `/hotfix` is a **two-person, time-boxed, post-hoc-audited** bypass.
+
+**What it dispatches (inline workflow — no backing skill):** identity detection → second-identity attestation check → log entry written to `.agents/projectContext/hotfixes.log` (BEFORE bypass applied) → bypass applied → auto-revert deadline recorded → operator surfaced with deadline and post-hoc-ADR obligation.
+
+**Hard gates:**
+- **Two-identity** — `--escalation-tier` MUST differ from the auto-detected operator identity. BLOCK on match; there is no flag to disable.
+- **Pre-bypass logging** — `hotfixes.log` append MUST precede the bypass action; no silent bypasses.
+- **Post-hoc ADR within 72h** — independent of `--auto-revert-window`. `/checkpoint` BLOCKS stage promotion on any entry past `EXPIRES:` with `ADR: pending` or any entry past 72h without an authored ADR.
+- **Severity gate** — anything lower than P1 MUST use `/override`, not `/hotfix`.
+
+**Args:**
+- `"reason"` — what gate is bypassed and why the incident justifies skipping; vague reasons rejected
+- `--severity P0|P1` — required; P0 = customer-facing outage / data integrity event, P1 = severe degradation
+- `--escalation-tier <identity>` — the attesting second human (email or username); MUST differ from operator
+- `--auto-revert-window 24h|72h|7d` — wall-clock deadline after which `/checkpoint` flags expired-without-followup
+
+**Differences from `/override`:** two identities required (not one); severity flag mandatory; time-boxed; post-hoc ADR mandatory within 72h; separate log file (`hotfixes.log` vs `overrides.log`); BLOCKS stage promotion if expired or ADR-missing.
+
+**Example invocations:**
+- `/hotfix "auth service returning 500 for all tenants — rollback blocked by failing migration-reviewer" --severity P0 --escalation-tier "j.smith@example.com" --auto-revert-window 72h`
+- `/hotfix "payment webhook signature verification failing after dependency CVE patch — partner traffic dropping" --severity P1 --escalation-tier "ops-lead@example.com" --auto-revert-window 24h`
+- `/hotfix "DB connection pool exhausted under unexpected load; need to ship raised limit without standard review window" --severity P1 --escalation-tier "dba@example.com" --auto-revert-window 7d`
+
+**See also:** `/override`, `/adr` (authors the mandatory post-hoc decision record and updates the `hotfixes.log` entry's `ADR:` field), `/checkpoint` (enforces expiration and post-hoc-ADR gates).
+
+---
+
 ### `/onboard ["scope"]`
 
 **Purpose:** Engineer onboarding tour — walks a new team member (or re-explains to a returning one) through the project context, architecture, stage, key ADRs, open questions, and the codeArbiter skill system.
 
-**What triggers:** `onboard` skill (`.agents/skills/onboard/SKILL.md`).
+**What it routes to:** `onboard` skill (`.agents/skills/onboard/SKILL.md`).
 
 **Two modes:**
 - No scope argument: full tour — project overview, architecture, stage, key ADRs, open questions, command system.
@@ -282,7 +409,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Author a new skill after rigorous gap validation — ensures new skills address real, recurring gaps.
 
-**What triggers:** `skill-author` skill (`.agents/skills/skill-author/SKILL.md`) — 5-phase process: gap challenge, scope decision, skill authoring, routing integration, validation.
+**What it routes to:** `skill-author` skill (`.agents/skills/skill-author/SKILL.md`) — 5-phase process: gap challenge, scope decision, skill authoring, routing integration, validation.
 
 **Hard gate:** Gap must be confirmed real before any skill is written. "I want a skill that..." is not a confirmed gap.
 
@@ -294,6 +421,6 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 
 **Purpose:** Display the quick-reference command table (the section at the top of this file).
 
-**What triggers:** Reads `COMMANDS.md` and outputs the Quick Reference table only. No state change.
+**What it routes to:** Reads `COMMANDS.md` and outputs the Quick Reference table only. No state change.
 
 **When to use:** When you can't remember the exact command syntax or want to see all available commands at a glance.

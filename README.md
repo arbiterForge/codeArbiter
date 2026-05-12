@@ -24,7 +24,7 @@ The full specification is in [`AGENTS.md`](./AGENTS.md). The command catalog is 
 │   ├── decisions/          # ADRs
 │   ├── tickets/            # Optional scope-overflow inbox
 │   └── …                   # tech-stack, security-controls, audit-spec, etc.
-├── skills/           # Orchestration skills (tdd, commit-gate, ticketing, …)
+├── skills/           # Orchestration skills (tdd, commit-gate, ticketing-router, …)
 └── settings.json     # Claude Code config: MCP servers, hooks, statusline
 
 .claude/              # Shim layer — symlinks back into .agents/

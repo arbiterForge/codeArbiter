@@ -1,7 +1,7 @@
 # Ticketing Configuration
 
-<!-- Read by the `ticketing` router skill. -->
-<!-- If this file is absent OR `enabled: false`, the ticketing skill is a no-op. -->
+<!-- Read by the `ticketing-router` skill. -->
+<!-- If this file is absent OR `enabled: false`, the ticketing-router skill is a no-op. -->
 <!-- Default ships with `enabled: false`; users opt in by editing the frontmatter below. -->
 
 ---
@@ -19,7 +19,7 @@ plane_env_var_workspace_slug: PLANE_WORKSPACE_SLUG
 
 | Field | Required when | Purpose |
 |---|---|---|
-| `enabled` | always | `true` activates the ticketing skill. `false` makes it a no-op. |
+| `enabled` | always | `true` activates the ticketing-router skill. `false` makes it a no-op. |
 | `mode` | `enabled: true` | `in-repo` or `plane`. Selects which variant the router `@`-imports. |
 | `plane_base_url` | `mode: plane` | On-prem Plane URL, e.g. `https://plane.internal.example.com`. |
 | `plane_workspace_slug` | `mode: plane` | Plane workspace slug the variant targets. |
@@ -40,7 +40,7 @@ Required environment variables (names configurable above; values live in the use
 - `PLANE_API_KEY` — API key issued by the Plane admin UI
 - `PLANE_WORKSPACE_SLUG` — workspace slug
 
-See `.agents/skills/ticketing/plane/SKILL.md` for setup steps.
+See `.agents/skills/ticketing-router/plane/SKILL.md` for setup steps.
 
 ## Read-on-invocation guarantee
 

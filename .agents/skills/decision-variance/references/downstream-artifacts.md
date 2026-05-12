@@ -1,16 +1,16 @@
 # Downstream Artifacts Catalog
 
-This file catalogs the architectural artifacts that the arbiter can recommend producing once enough information is available. For each artifact, the catalog defines:
+This file catalogs the architectural artifacts that this skill can recommend producing once enough information is available. For each artifact, the catalog defines:
 
 - **Purpose** — what the artifact is for
 - **Readiness criteria** — explicit decision-ID lists that determine `ready` vs `partial` vs `blocked`
-- **Production guidance** — how to produce the artifact (handed to the user; arbiter does not auto-produce)
+- **Production guidance** — how to produce the artifact (handed to the user; this skill does not auto-produce)
 
-## How the Arbiter Uses This File
+## How This Skill Uses This File
 
-During Stage 5, the arbiter walks this catalog and assesses readiness for each artifact using the explicit criteria below. Output goes to `projectContext/arbiter-readiness.md` as a menu the user can select from.
+During Stage 5, this skill walks this catalog and assesses readiness for each artifact using the explicit criteria below. Output goes to `projectContext/arbiter-readiness.md` as a menu the user can select from.
 
-The arbiter does NOT produce these artifacts unless the user explicitly selects them.
+This skill does NOT produce these artifacts unless the user explicitly selects them.
 
 ## Readiness Evaluation Algorithm
 
@@ -214,7 +214,7 @@ Per-spike document with: context (full reasoning from artifacts), questions to a
 - No clear ADR convention exists in the project
 
 **Production guidance:**
-One ADR per major decision in the arbiter log. Use the project's existing ADR format. Cross-reference each ADR to the originating arbiter decision entry by DECISION-NNNN.
+One ADR per major decision in the decision log. Use the project's existing ADR format. Cross-reference each ADR to the originating decision-log entry by DECISION-NNNN.
 
 ---
 
@@ -225,19 +225,19 @@ One ADR per major decision in the arbiter log. Use the project's existing ADR fo
 **ready_criteria:**
 - All three architectural artifacts present (per Rule 2)
 - Scaffold codebase accessible
-- The arbiter has completed Stage 1 through Stage 4 at least once
+- This skill has completed Stage 1 through Stage 4 at least once
 
 **blocked_criteria:**
 - Three artifacts not located
 
 **Production guidance:**
-This is the variance report Stage 3 produces, framed as the bridging deliverable. After this report is processed, the arbiter operates on a unified context.
+This is the variance report Stage 3 produces, framed as the bridging deliverable. After this report is processed, this skill operates on a unified context.
 
 ---
 
 ## How to Recommend
 
-For each artifact in this catalog, the arbiter's Stage 5 output uses this exact format:
+For each artifact in this catalog, this skill's Stage 5 output uses this exact format:
 
 ```markdown
 ## Downstream Artifact Readiness
