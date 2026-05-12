@@ -1,5 +1,5 @@
 # TASK-02: Skills sweep — all SKILL.md files
-<!-- TASK-02: OPEN -->
+<!-- TASK-02: CLOSED -->
 ## Owner: SUBAGENT-A
 ## Files
 All files under /home/user/arbiterRebuild/.agents/skills/ (recursive, all SKILL.md):

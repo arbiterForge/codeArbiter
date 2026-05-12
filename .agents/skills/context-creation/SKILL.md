@@ -6,7 +6,7 @@
 
 Invoke this skill when ALL of the following are true:
 
-- `.agents/projectContext/CONTEXT.md` does NOT contain the `<!--INITIALIZED-->` sentinel
+- `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` does NOT contain the `<!--INITIALIZED-->` sentinel
 - Meaningful source code DOES exist in the repository (defined as: files outside
   `.agents/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `.gitignore`, and standard
   dotfiles/tooling configs)
@@ -25,14 +25,14 @@ Triggers:
 
 Before Phase 1 begins, confirm in order:
 
-1. Read `.agents/projectContext/CONTEXT.md`. If the file contains `<!--INITIALIZED-->`,
+1. Read `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`. If the file contains `<!--INITIALIZED-->`,
    stop immediately — context already exists. Inform the user and route to normal
    operation (Phase 3 of the startup protocol).
 2. Check for meaningful source code: scan the repository root for files or directories
    that are not `.agents/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `.gitignore`, or
    standard tooling dotfiles (`.editorconfig`, `.prettierrc`, etc.). Meaningful source
    code MUST be present. If none is found, stop and route to the `decompose` skill.
-3. Confirm `.agents/projectContext/` directory exists and is writable. If not, surface
+3. Confirm `${PROJECT_ROOT}/.agents/projectContext/` directory exists and is writable. If not, surface
    the gap and stop.
 
 If all three pass silently, proceed to Phase 1.
@@ -46,13 +46,13 @@ If all three pass silently, proceed to Phase 1.
 **Goal:** Confirm meaningful source code exists and the repository is safe for
 scout-based context extraction.
 
-**Inputs:** Repository root file listing; `.agents/projectContext/CONTEXT.md` contents.
+**Inputs:** Repository root file listing; `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` contents.
 
 **Actions:**
 
 1. Run a file listing of the repository root (one level deep).
 2. Confirm meaningful source code is present beyond the excluded set.
-3. Confirm `<!--INITIALIZED-->` is absent from `CONTEXT.md`.
+3. Confirm `<!--INITIALIZED-->` is absent from `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
 4. Identify the project root and primary source directories (e.g., `src/`, `backend/`,
    `frontend/`, `lib/`, `app/`, or equivalent).
 5. Report findings to the user: "Existing source code detected. Beginning scout-based
@@ -167,15 +167,15 @@ For each projectContext file, derive content from the scout reports using this m
 
 | Scout Source | Destination File |
 |---|---|
-| Scout A (tech stack) | `.agents/projectContext/tech-stack.md` |
-| Scout B (infra) | `.agents/projectContext/tech-stack.md` (test/lint/build commands) |
-| Scout C (architecture) | `.agents/projectContext/trust-zones.md` |
-| Scout D (security) | `.agents/projectContext/security-controls.md`, `.agents/projectContext/secrets-policy.md` |
-| Scout E (testing) | `.agents/projectContext/tech-stack.md` (test runner section) |
-| Scout F (data model) | `.agents/projectContext/audit-spec.md` (state-change entities) |
-| All scouts combined | `.agents/projectContext/CONTEXT.md` (project identity, purpose, scope) |
-| Scout A + B | `.agents/projectContext/dependency-policy.md` |
-| Scout C + D | `.agents/projectContext/coding-standards.md` (structural patterns observed) |
+| Scout A (tech stack) | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` |
+| Scout B (infra) | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` (test/lint/build commands) |
+| Scout C (architecture) | `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` |
+| Scout D (security) | `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`, `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` |
+| Scout E (testing) | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` (test runner section) |
+| Scout F (data model) | `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` (state-change entities) |
+| All scouts combined | `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` (project identity, purpose, scope) |
+| Scout A + B | `${PROJECT_ROOT}/.agents/projectContext/dependency-policy.md` |
+| Scout C + D | `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` (structural patterns observed) |
 
 Confidence rules:
 - **HIGH confidence**: Finding is directly and unambiguously present in scout report
@@ -223,18 +223,18 @@ scouts could not answer with high confidence.
    - If the answer resolves the gap: remove the `[CONFIRM-NN]` placeholder and
      write the actual content into the appropriate projectContext file draft.
    - If the user explicitly defers the answer: keep the `[CONFIRM-NN]` placeholder,
-     mark it as "Deferred by user on [date]", and record it in `open-questions.md`.
+     mark it as "Deferred by user on [date]", and record it in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`.
    - If the user's answer is vague: apply the decompose skill's vague-requirements
      lens — challenge the vagueness and ask for a concrete answer before moving on.
 4. After all CONFIRM-NN items have been addressed (resolved or explicitly deferred),
    confirm with the user that no additional context is needed.
 
 **Output:** Updated projectContext file drafts with resolved CONFIRM-NN items filled in.
-Deferred CONFIRM-NN items recorded in `open-questions.md`.
+Deferred CONFIRM-NN items recorded in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`.
 
 **Gate:** BLOCK. Every CONFIRM-NN item must have one of two outcomes: resolved (replaced
 with content) or explicitly deferred (marked as deferred and recorded in
-`open-questions.md`). No CONFIRM-NN item may be silently dropped. Do not proceed to
+`${PROJECT_ROOT}/.agents/projectContext/open-questions.md`). No CONFIRM-NN item may be silently dropped. Do not proceed to
 Phase 5 with unacknowledged gaps.
 
 ---
@@ -246,7 +246,7 @@ scouts and the gap interview.
 
 **Inputs:**
 - Finalized projectContext file drafts from Phase 4
-- Deferred CONFIRM-NN items for `open-questions.md`
+- Deferred CONFIRM-NN items for `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`
 
 **Actions:**
 
@@ -255,30 +255,30 @@ sentinels may remain in files where content was determined:
 
 | File | Content Source |
 |---|---|
-| `.agents/projectContext/CONTEXT.md` | Project identity, purpose, scope, primary users, NOT-building (from scouts + gap interview) |
-| `.agents/projectContext/trust-zones.md` | Components, trust boundaries, zone topology (from Scout C + Scout D + gap interview) |
-| `.agents/projectContext/tech-stack.md` | Languages, frameworks, test runner, lint command, build command, coverage command (from Scout A + B + E) |
-| `.agents/projectContext/security-controls.md` | Auth mechanism, crypto patterns, compliance requirements (from Scout D + gap interview) |
-| `.agents/projectContext/audit-spec.md` | State-change actions, auditable events, sink routing (from Scout F + gap interview) |
-| `.agents/projectContext/observability-spec.md` | Telemetry-relevant findings across scouts B (infrastructure/CI/CD), C (architecture/components), and E (testing conventions). Instantiate from template `.agents/skills/observability-emit/templates/observability-spec.md.tmpl`; populate signal categories, naming conventions, required labels, cardinality budgets, canonical emit module paths, alert rule storage location, SLO definitions per the existing codebase's telemetry conventions. Flag low-confidence inferences as [CONFIRM-NN]. <!-- Future enhancement: dedicated observability scout. --> |
-| `.agents/projectContext/coding-standards.md` | Structural patterns, naming conventions, style rules (from Scout C + E + gap interview) |
-| `.agents/projectContext/secrets-policy.md` | Secret-bearing integrations, vault/KMS usage, loading patterns (from Scout D + gap interview) |
-| `.agents/projectContext/dependency-policy.md` | Dependency strategy, license stance, audit approach (from Scout A + B + gap interview) |
-| `.agents/projectContext/open-questions.md` | All deferred CONFIRM-NN items in `CONFIRM-NN: <description>` format |
-| `.agents/projectContext/open-tasks.md` | Stub if no task backlog found by scouts; note: "Populated by user — no backlog source detected." |
-| `.agents/projectContext/stage` | `1` (default; user may override if project is further along) |
+| `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` | Project identity, purpose, scope, primary users, NOT-building (from scouts + gap interview) |
+| `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` | Components, trust boundaries, zone topology (from Scout C + Scout D + gap interview) |
+| `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` | Languages, frameworks, test runner, lint command, build command, coverage command (from Scout A + B + E) |
+| `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` | Auth mechanism, crypto patterns, compliance requirements (from Scout D + gap interview) |
+| `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` | State-change actions, auditable events, sink routing (from Scout F + gap interview) |
+| `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` | Telemetry-relevant findings across scouts B (infrastructure/CI/CD), C (architecture/components), and E (testing conventions). Instantiate from template `${FRAMEWORK_ROOT}/.agents/skills/observability-emit/templates/observability-spec.md.tmpl`; populate signal categories, naming conventions, required labels, cardinality budgets, canonical emit module paths, alert rule storage location, SLO definitions per the existing codebase's telemetry conventions. Flag low-confidence inferences as [CONFIRM-NN]. <!-- Future enhancement: dedicated observability scout. --> |
+| `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` | Structural patterns, naming conventions, style rules (from Scout C + E + gap interview) |
+| `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` | Secret-bearing integrations, vault/KMS usage, loading patterns (from Scout D + gap interview) |
+| `${PROJECT_ROOT}/.agents/projectContext/dependency-policy.md` | Dependency strategy, license stance, audit approach (from Scout A + B + gap interview) |
+| `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` | All deferred CONFIRM-NN items in `CONFIRM-NN: <description>` format |
+| `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md` | Stub if no task backlog found by scouts; note: "Populated by user — no backlog source detected." |
+| `${PROJECT_ROOT}/.agents/projectContext/stage` | `1` (default; user may override if project is further along) |
 
-If scouts identified existing ADRs or decision records in the codebase (e.g., `docs/decisions/`, `adr/`), summarize them as entries in `.agents/projectContext/decisions/` using the standard ADR format.
+If scouts identified existing ADRs or decision records in the codebase (e.g., `docs/decisions/`, `adr/`), summarize them as entries in `${PROJECT_ROOT}/.agents/projectContext/decisions/` using the standard ADR format.
 
-If no task backlog was found by scouts, write `open-tasks.md` as a stub with a note
+If no task backlog was found by scouts, write `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md` as a stub with a note
 directing the user to populate it.
 
 **Output:** All projectContext files written with content derived from the interview and
-scout reports. `open-questions.md` populated with all deferred CONFIRM-NN items.
+scout reports. `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` populated with all deferred CONFIRM-NN items.
 
 **Gate:** BLOCK. All projectContext files must be written. No PLACEHOLDER sentinels
 may remain in any file where content was determined. Deferred CONFIRM-NN items are
-acceptable in `open-questions.md`. Do not proceed to Phase 6 until all files are written.
+acceptable in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`. Do not proceed to Phase 6 until all files are written.
 
 ---
 
@@ -289,13 +289,13 @@ and return codeArbiter to normal orchestrator operation.
 
 **Inputs:**
 - All projectContext files written in Phase 5
-- `.agents/projectContext/CONTEXT.md`
+- `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`
 
 **Actions:**
 
 1. Write the `<!--INITIALIZED-->` sentinel as the final line of
-   `.agents/projectContext/CONTEXT.md`.
-2. Run a directory listing of `.agents/projectContext/` and display the full
+   `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
+2. Run a directory listing of `${PROJECT_ROOT}/.agents/projectContext/` and display the full
    populated tree to the user.
 3. Confirm each required file is present and non-empty:
    - `CONTEXT.md` (with `<!--INITIALIZED-->`)
@@ -315,13 +315,13 @@ and return codeArbiter to normal orchestrator operation.
    > returning to normal codeArbiter orchestrator mode. You can now use `/tdd` to
    > begin implementation, `/onboard` to bring in team members, or any other command
    > in the skill system. Deferred questions are recorded in
-   > `.agents/projectContext/open-questions.md` and must be resolved before stage
+   > `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` and must be resolved before stage
    > promotion."
 
-**Output:** `<!--INITIALIZED-->` sentinel present in `CONTEXT.md`. Full file tree
+**Output:** `<!--INITIALIZED-->` sentinel present in `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`. Full file tree
 displayed. Return to orchestrator mode announced.
 
-**Gate:** BLOCK. `<!--INITIALIZED-->` sentinel must be present in `CONTEXT.md`.
+**Gate:** BLOCK. `<!--INITIALIZED-->` sentinel must be present in `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
 All files listed above must be present and non-empty. Do not close this skill without
 confirming the sentinel is written.
 
@@ -337,8 +337,8 @@ confirming the sentinel is written.
 | A scout fails to return a report | Re-dispatch the failing scout before proceeding to Phase 3 |
 | Multiple scouts return conflicting signals about the same domain | Record the conflict as CONFIRM-NN; ask the user in Phase 4 |
 | User gives a vague answer in Phase 4 | Apply vague-requirements lens; challenge the answer; do not record vague content |
-| A CONFIRM-NN item cannot be resolved (user does not know) | Mark as deferred; record in `open-questions.md`; do not block initialization |
-| A projectContext file cannot be derived from scouts or gap interview | Write file with CONFIRM-NN for the entire section; record in open-questions.md |
+| A CONFIRM-NN item cannot be resolved (user does not know) | Mark as deferred; record in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`; do not block initialization |
+| A projectContext file cannot be derived from scouts or gap interview | Write file with CONFIRM-NN for the entire section; record in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` |
 | Existing ADRs found in codebase but cannot be fully parsed | Summarize what is known; flag uncertainty; note file path for user review |
 
 ---

@@ -6,7 +6,7 @@
 
 Invoke this skill when ALL of the following are true:
 
-- `.agents/projectContext/CONTEXT.md` does NOT contain the `<!--INITIALIZED-->` sentinel
+- `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` does NOT contain the `<!--INITIALIZED-->` sentinel
 - No meaningful source code exists in the repository (defined as: no files outside
   `.agents/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `.gitignore`, and standard
   dotfiles/tooling configs)
@@ -25,7 +25,7 @@ Triggers:
 
 Before Phase 1 begins, confirm in order:
 
-1. Read `.agents/projectContext/CONTEXT.md`. If the file contains `<!--INITIALIZED-->`,
+1. Read `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`. If the file contains `<!--INITIALIZED-->`,
    stop immediately — context already exists. Inform the user and route to normal
    operation (Phase 3 of the startup protocol).
 2. Check for meaningful source code: scan the repository root for files or directories
@@ -33,7 +33,7 @@ Before Phase 1 begins, confirm in order:
    standard tooling dotfiles (`.editorconfig`, `.prettierrc`, etc.). If any such files
    exist, stop. Do not proceed. Inform the user that source code was detected and route
    to the `context-creation` skill.
-3. Confirm `.agents/projectContext/` directory exists and is writable. If not, surface
+3. Confirm `${PROJECT_ROOT}/.agents/projectContext/` directory exists and is writable. If not, surface
    the gap and stop.
 
 If all three pass silently, proceed to Phase 1.
@@ -46,13 +46,13 @@ If all three pass silently, proceed to Phase 1.
 
 **Goal:** Confirm the repository is genuinely greenfield and safe to begin decomposition.
 
-**Inputs:** Repository root file listing; `.agents/projectContext/CONTEXT.md` contents.
+**Inputs:** Repository root file listing; `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` contents.
 
 **Actions:**
 
 1. Run a file listing of the repository root (one level deep).
 2. Confirm no source files are present beyond the excluded set.
-3. Confirm `<!--INITIALIZED-->` is absent from `CONTEXT.md`.
+3. Confirm `<!--INITIALIZED-->` is absent from `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
 4. Report findings to the user: "No existing context or source code detected. Beginning
    greenfield decomposition."
 
@@ -328,20 +328,20 @@ no template boilerplate left unfilled:
 
 | Source | Destination |
 |--------|-------------|
-| Layer 1 problem + users + NOT-building list | `.agents/projectContext/CONTEXT.md` |
-| Layer 4 components + trust boundaries | `.agents/projectContext/trust-zones.md` |
-| Layer 4 stack + hard constraints | `.agents/projectContext/tech-stack.md` |
-| Layer 4 compliance + crypto requirements | `.agents/projectContext/security-controls.md` |
-| Layer 4 state-change actions + write paths | `.agents/projectContext/audit-spec.md` |
-| Layers 1–6 observability-relevant decisions (signals, naming, labels, cardinality budgets, emit modules, alert rule storage, SLOs) | `.agents/projectContext/observability-spec.md` — instantiate `.agents/skills/observability-emit/templates/observability-spec.md.tmpl`; populate signal categories, naming conventions, required labels, cardinality budgets, canonical emit module paths, alert rule storage location, SLO definitions per the decomposed project's needs. |
-| Layer 4 lint, format, naming decisions | `.agents/projectContext/coding-standards.md` |
-| Layer 5 secret-bearing integrations | `.agents/projectContext/secrets-policy.md` |
-| Layer 5 dependency strategy + license stance | `.agents/projectContext/dependency-policy.md` |
-| Each Layer 4 major architectural decision | `.agents/projectContext/decisions/000N-<title>.md` (one file per decision, ADR format) |
-| Layer 6 unknowns + spike candidates | `.agents/projectContext/open-questions.md` (CONFIRM-NN format) |
-| Phase 1 of the Phased Build Plan | `.agents/projectContext/stage` = `1` |
-| Task Backlog | `.agents/projectContext/open-tasks.md` |
-| All three artifacts | `.agents/projectContext/decomposition/01-architecture-breakdown.md`, `02-phased-build-plan.md`, `03-task-backlog.md` |
+| Layer 1 problem + users + NOT-building list | `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` |
+| Layer 4 components + trust boundaries | `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` |
+| Layer 4 stack + hard constraints | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` |
+| Layer 4 compliance + crypto requirements | `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` |
+| Layer 4 state-change actions + write paths | `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` |
+| Layers 1–6 observability-relevant decisions (signals, naming, labels, cardinality budgets, emit modules, alert rule storage, SLOs) | `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` — instantiate `${FRAMEWORK_ROOT}/.agents/skills/observability-emit/templates/observability-spec.md.tmpl`; populate signal categories, naming conventions, required labels, cardinality budgets, canonical emit module paths, alert rule storage location, SLO definitions per the decomposed project's needs. |
+| Layer 4 lint, format, naming decisions | `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` |
+| Layer 5 secret-bearing integrations | `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` |
+| Layer 5 dependency strategy + license stance | `${PROJECT_ROOT}/.agents/projectContext/dependency-policy.md` |
+| Each Layer 4 major architectural decision | `${PROJECT_ROOT}/.agents/projectContext/decisions/000N-<title>.md` (one file per decision, ADR format) |
+| Layer 6 unknowns + spike candidates | `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` (CONFIRM-NN format) |
+| Phase 1 of the Phased Build Plan | `${PROJECT_ROOT}/.agents/projectContext/stage` = `1` |
+| Task Backlog | `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md` |
+| All three artifacts | `${PROJECT_ROOT}/.agents/projectContext/decomposition/01-architecture-breakdown.md`, `02-phased-build-plan.md`, `03-task-backlog.md` |
 
 ADR format for each decision file:
 ```
@@ -362,11 +362,11 @@ ADR format for each decision file:
 ```
 
 **Output:** All projectContext files written with content derived from the interview.
-Every ADR written. `open-questions.md` populated with all CONFIRM-NN items.
+Every ADR written. `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` populated with all CONFIRM-NN items.
 
 **Gate:** BLOCK. All projectContext files must be written with actual content.
 No PLACEHOLDER sentinels may remain in any file where content was determined during
-the interview. CONFIRM-NN items are acceptable in `open-questions.md` for genuinely
+the interview. CONFIRM-NN items are acceptable in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` for genuinely
 unresolved items. Do not proceed to Phase 6 until all files are written.
 
 ---
@@ -378,13 +378,13 @@ and return codeArbiter to normal orchestrator operation.
 
 **Inputs:**
 - All projectContext files written in Phase 5
-- `.agents/projectContext/CONTEXT.md`
+- `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`
 
 **Actions:**
 
 1. Write the `<!--INITIALIZED-->` sentinel as the final line of
-   `.agents/projectContext/CONTEXT.md`.
-2. Run a directory listing of `.agents/projectContext/` and display the full
+   `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
+2. Run a directory listing of `${PROJECT_ROOT}/.agents/projectContext/` and display the full
    populated tree to the user.
 3. Confirm each required file is present and non-empty:
    - `CONTEXT.md` (with `<!--INITIALIZED-->`)
@@ -407,13 +407,13 @@ and return codeArbiter to normal orchestrator operation.
    > "Decomposition complete. projectContext is initialized and locked. I am returning
    > to normal codeArbiter orchestrator mode. You can now use `/tdd` to begin
    > implementation, `/onboard` to bring in team members, or any other command in the
-   > skill system. Open questions are recorded in `.agents/projectContext/open-questions.md`
+   > skill system. Open questions are recorded in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`
    > and must be resolved before stage promotion."
 
-**Output:** `<!--INITIALIZED-->` sentinel present in `CONTEXT.md`. Full file tree
+**Output:** `<!--INITIALIZED-->` sentinel present in `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`. Full file tree
 displayed. Return to orchestrator mode announced.
 
-**Gate:** BLOCK. `<!--INITIALIZED-->` sentinel must be present in `CONTEXT.md`.
+**Gate:** BLOCK. `<!--INITIALIZED-->` sentinel must be present in `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
 All files listed above must be present and non-empty. Do not close this skill without
 confirming the sentinel is written.
 
@@ -429,7 +429,7 @@ confirming the sentinel is written.
 | "We'll figure it out later" on a blocking architectural decision | Record as CONFIRM-NN; inform user it will block stage promotion; do not advance layer until user acknowledges |
 | User rejects a synthesized artifact in Phase 4 | Revise and re-present; do not proceed to Phase 5 until explicit approval |
 | A projectContext file cannot be derived (insufficient interview data) | Re-open the relevant layer; ask the missing questions before writing the file |
-| `open-questions.md` has CONFIRM-NN items remaining | This is expected and acceptable; record them; note they block stage promotion |
+| `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` has CONFIRM-NN items remaining | This is expected and acceptable; record them; note they block stage promotion |
 | User attempts to skip a layer | Refuse; explain that skipped layers produce CONFIRM-NN items that block stage promotion |
 
 ---
