@@ -26,26 +26,37 @@ This command is idempotent — safe to re-run. By default it skips shims that al
 ## Behavior
 
 1. Resolve `${FRAMEWORK_ROOT}` from `--vendor-path` (default: `vendor/codearbiter/`).
-2. List all command bodies at `${FRAMEWORK_ROOT}/.agents/commands/*.md` — exclude `_redirect.md` (internal only).
-3. For each `<name>.md` found, generate `${PROJECT_ROOT}/.claude/commands/<name>.md` containing exactly:
+2. **Copy `AGENTS.md` to project root.** Copy `${FRAMEWORK_ROOT}/AGENTS.md` → `${PROJECT_ROOT}/AGENTS.md`. Skip if `${PROJECT_ROOT}/AGENTS.md` already exists and `--force` is not set; overwrite if `--force`.
+3. **Write `CLAUDE.md` at project root.** Write `${PROJECT_ROOT}/CLAUDE.md` containing exactly:
+   ```
+   @AGENTS.md
+   ```
+   Skip if `${PROJECT_ROOT}/CLAUDE.md` already exists and `--force` is not set; overwrite if `--force`.
+4. List all command bodies at `${FRAMEWORK_ROOT}/.agents/commands/*.md` — exclude `_redirect.md` (internal only).
+5. For each `<name>.md` found, generate `${PROJECT_ROOT}/.claude/commands/<name>.md` containing exactly:
    ```
    @<vendor-path>/.agents/commands/<name>.md
    ```
-4. Check `${PROJECT_ROOT}/.gitignore` for entries `/.plan-tasks/` and `/revendor/`. Append missing entries (skipped if `--dry-run`).
-5. Report:
+   Skip if the shim already exists and `--force` is not set; overwrite if `--force`.
+6. Check `${PROJECT_ROOT}/.gitignore` for entries `/.plan-tasks/` and `/revendor/`. Append missing entries (skipped if `--dry-run`).
+7. Report:
+   - Whether `AGENTS.md` was copied, skipped, or overwritten
+   - Whether `CLAUDE.md` was written, skipped, or overwritten
    - List of shims written (or would be written, in `--dry-run`)
    - List of shims skipped because they already exist (unless `--force`)
    - List of `.gitignore` entries added
 
 ## Monolith dogfood mode
 
-With `--vendor-path=.`, generated shims contain `@./.agents/commands/<name>.md`. This is equivalent to the current `@.agents/commands/<name>.md` format and resolves correctly.
+With `--vendor-path=.`, the AGENTS.md copy and CLAUDE.md write are skipped (both files already exist at the project root and are the source of truth). Generated shims contain `@./.agents/commands/<name>.md`, equivalent to the existing `@.agents/commands/<name>.md` format.
 
 ## Hard Rules
 
+- MUST NOT overwrite `${PROJECT_ROOT}/AGENTS.md` unless `--force` is passed.
+- MUST NOT overwrite `${PROJECT_ROOT}/CLAUDE.md` unless `--force` is passed.
 - MUST NOT overwrite existing shims unless `--force` is passed.
 - MUST print the dry-run report before writing anything when `--dry-run` is passed.
-- MUST NOT modify any framework files (only writes to `${PROJECT_ROOT}/.claude/commands/`).
+- MUST NOT modify any framework files (only writes to `${PROJECT_ROOT}/AGENTS.md`, `${PROJECT_ROOT}/CLAUDE.md`, and `${PROJECT_ROOT}/.claude/commands/`).
 - MUST NOT auto-invoke — this command is user-driven. `/onboard` does not call it automatically.
 
 ## Not in monolith mode

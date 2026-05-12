@@ -89,7 +89,7 @@ Two explicit roots govern every file path in framework files:
 
 **Sentinel file:** `${FRAMEWORK_ROOT}/.agents/AGENTS-CODEARBITER-ROOT` — an empty marker file placed at the codeArbiter installation root. Shell hooks locate `FRAMEWORK_ROOT` at runtime by walking up from their script location until they find a directory containing `AGENTS-CODEARBITER-ROOT`.
 
-**Consumer install:** Run `/init-vendor [--vendor-path=vendor/codearbiter/]` to generate the `.claude/commands/*.md` shim layer with the vendor path baked in. Default vendor path is `vendor/codearbiter/`.
+**Consumer install:** After adding codeArbiter as a submodule, run `/init-vendor [--vendor-path=vendor/codearbiter/]`. This copies `AGENTS.md` to `${PROJECT_ROOT}/AGENTS.md`, writes `${PROJECT_ROOT}/CLAUDE.md` containing `@AGENTS.md`, and generates the `.claude/commands/*.md` shim layer with the vendor path baked in. Re-run after every codeArbiter upgrade to keep `AGENTS.md` current. Default vendor path is `vendor/codearbiter/`.
 
 ---
 
