@@ -20,11 +20,11 @@ Before Phase 1 begins, confirm:
 1. The user has provided a gap description argument. If `/new-skill` was invoked
    with no argument, stop and ask: "Please describe the gap this skill would fill.
    What situation or trigger does not have a skill today?"
-2. `.agents/projectContext/CONTEXT.md` exists and contains `<!--INITIALIZED-->`. If
+2. `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` exists and contains `<!--INITIALIZED-->`. If
    not, inform the user that projectContext must be initialized before new skills can
    be authored (they may need project-specific paths). Do not block if the skill is
    clearly generic and requires no project-specific context.
-3. Read `.agents/skills/` directory listing to understand what skills already exist.
+3. Read `${FRAMEWORK_ROOT}/.agents/skills/` directory listing to understand what skills already exist.
    If an existing skill already covers the described gap, stop and inform the user:
    > "This gap appears to already be covered by the `<skill-name>` skill. Please
    > review that skill before requesting a new one."
@@ -110,13 +110,13 @@ with explicit user agreement before authoring begins.
    >
    > Based on the cases you described, this gap appears to be [generic / project-specific].
    >
-   > - **Generic skill** (`skills/<name>/SKILL.md`): Applies to any project using
-   >   codeArbiter. Lives in `.agents/skills/`. Referenced in the routing table.
+   > - **Generic skill** (`${FRAMEWORK_ROOT}/.agents/skills/<name>/SKILL.md`): Applies to any project using
+   >   codeArbiter. Lives in `${FRAMEWORK_ROOT}/.agents/skills/`. Referenced in the routing table.
    >   Any project using codeArbiter benefits from it. Paths reference
-   >   `projectContext/` files generically, not hardcoded project paths.
+   >   `${PROJECT_ROOT}/.agents/projectContext/` files generically, not hardcoded project paths.
    >
-   > - **Project plugin** (`projectContext/plugins/<name>/SKILL.md`): Specific to
-   >   this project only. Lives in `.agents/projectContext/plugins/`. Not part of
+   > - **Project plugin** (`${PROJECT_ROOT}/.agents/projectContext/plugins/<name>/SKILL.md`): Specific to
+   >   this project only. Lives in `${PROJECT_ROOT}/.agents/projectContext/plugins/`. Not part of
    >   the shared skill system. Can reference hardcoded paths and project-specific
    >   concepts.
    >
@@ -131,7 +131,7 @@ with explicit user agreement before authoring begins.
    > skill as part of a larger workflow?
    >
    > - **New command needed**: A user will type `/<command-name>` to trigger this
-   >   skill directly. This requires creating `.agents/commands/<name>.md` and the
+   >   skill directly. This requires creating `${FRAMEWORK_ROOT}/.agents/commands/<name>.md` and the
    >   `.claude/commands/<name>.md` shim, and updating `COMMANDS.md`.
    >
    > - **Internal invocation only**: This skill is called from within another skill
@@ -143,7 +143,7 @@ with explicit user agreement before authoring begins.
 
 4. Confirm the agreed scope:
    > "Agreed. I will write a [generic skill / project plugin] at
-   > [`.agents/skills/<name>/SKILL.md` / `.agents/projectContext/plugins/<name>/SKILL.md`].
+   > [`${FRAMEWORK_ROOT}/.agents/skills/<name>/SKILL.md` / `${PROJECT_ROOT}/.agents/projectContext/plugins/<name>/SKILL.md`].
    > [A new `/<command-name>` command will be created. / No new command will be created.]
    > Proceeding to authoring."
 
@@ -163,14 +163,14 @@ before presenting to the user.
 **Inputs:**
 - Gap description and confirmed cases from Phase 1
 - Scope and placement decisions from Phase 2
-- Existing skills in `.agents/skills/` as structural examples
+- Existing skills in `${FRAMEWORK_ROOT}/.agents/skills/` as structural examples
 - Skill Structure Standard (from `AGENTS.md`)
 
 **Actions:**
 
 1. Read the Skill Structure Standard from `AGENTS.md` in full before writing.
 
-2. Read 2–3 existing skill files from `.agents/skills/` as structural examples.
+2. Read 2–3 existing skill files from `${FRAMEWORK_ROOT}/.agents/skills/` as structural examples.
    Prefer skills with similar characteristics to the one being authored (e.g., if
    authoring a multi-phase skill with subagents, read a skill that uses subagents).
 
@@ -205,8 +205,8 @@ before presenting to the user.
 4. Authoring rules:
    - Every phase must have a Gate. "No gate" is only acceptable for purely declarative
      phases with no output that could be wrong.
-   - All project-specific paths MUST reference `projectContext/` files, not hardcoded
-     values. Example: "Read `.agents/projectContext/tech-stack.md`" not
+   - All project-specific paths MUST reference `${PROJECT_ROOT}/.agents/projectContext/` files, not hardcoded
+     values. Example: "Read `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`" not
      "Read `backend/package.json`".
    - All subagents must be declared in the Subagents Invoked section with: type,
      purpose, constraints, and return format.
@@ -219,7 +219,7 @@ before presenting to the user.
    - Missing sections (Trigger, Pre-Flight, Phases, Failure Modes, Subagents Invoked)
    - Phases with missing Gate declarations
    - Subagents mentioned in actions but not declared in Subagents Invoked
-   - Hardcoded project-specific paths that should reference `projectContext/`
+   - Hardcoded project-specific paths that should reference `${PROJECT_ROOT}/.agents/projectContext/`
    - Ambiguous gates ("if it looks wrong", "if something is off")
    - Triggers that do not clearly specify when to invoke vs. when not to invoke
    - Failure modes that block without a recovery path
@@ -255,7 +255,7 @@ correct triggers and discoverable by contributors.
 
 **If a new command was agreed in Phase 2:**
 
-1. Write `.agents/commands/<name>.md`:
+1. Write `${FRAMEWORK_ROOT}/.agents/commands/<name>.md`:
    - One-paragraph description of when to invoke the command
    - Arguments (name, type, required/optional, description)
    - What the command does (brief)
@@ -263,7 +263,7 @@ correct triggers and discoverable by contributors.
 
 2. Write `.claude/commands/<name>.md` shim:
    ```
-   @.agents/commands/<name>.md
+   @${FRAMEWORK_ROOT}/.agents/commands/<name>.md
    ```
    This single line delegates to the agents command file. No other content.
 
@@ -287,8 +287,8 @@ correct triggers and discoverable by contributors.
 2. Update the parent skill's `Subagents Invoked` section or `Actions` to reference
    the new skill by name.
 3. If the skill is private to a specific agent, write it to
-   `.agents/skills/subagents/<agent-name>/<skill-name>.md` instead of
-   `.agents/skills/<name>/SKILL.md`.
+   `${FRAMEWORK_ROOT}/.agents/skills/subagents/<agent-name>/<skill-name>.md` instead of
+   `${FRAMEWORK_ROOT}/.agents/skills/<name>/SKILL.md`.
 4. Update the parent agent's definition to reference the new skill.
 
 **Output:** All routing integration points updated. No broken references. New skill
@@ -348,7 +348,7 @@ initiated. Commit MUST go through the commit-gate skill, never directly.
 | User provides hypothetical cases only | Treat as insufficient; explain that hypotheticals do not demonstrate a real gap |
 | User does not answer scope questions explicitly | Re-ask; do not assume an answer |
 | Self-review finds a missing section | Add the section before presenting to user |
-| Self-review finds hardcoded paths | Replace with projectContext/ references before presenting |
+| Self-review finds hardcoded paths | Replace with `${PROJECT_ROOT}/.agents/projectContext/` references before presenting |
 | Routing integration file (AGENTS.md, COMMANDS.md) is missing | Surface the gap; note what file is missing; ask user how to proceed |
 | User requests a change in Phase 5 | Implement the change; re-present; re-confirm before committing |
 | User says "commit it" without explicit skill confirmation | Stop; re-ask for explicit skill confirmation first; then invoke commit-gate |

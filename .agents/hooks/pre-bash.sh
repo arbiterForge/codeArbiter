@@ -20,7 +20,7 @@ fi
 
 # H-03: no wildcard git staging
 if echo "$CMD" | grep -qE 'git\s+add\s+(-A|\.)(\s|$)'; then
-  echo "BLOCKED [H-03]: git add -A and git add . are prohibited. Stage files explicitly (commit-gate/SKILL.md Phase 6)." >&2
+  echo "BLOCKED [H-03]: git add -A and git add . are prohibited. Stage files explicitly (${FRAMEWORK_ROOT}/.agents/skills/commit-gate/SKILL.md Phase 6)." >&2
   exit 1
 fi
 

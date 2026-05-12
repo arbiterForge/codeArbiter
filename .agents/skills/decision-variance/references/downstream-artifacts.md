@@ -8,7 +8,7 @@ This file catalogs the architectural artifacts that this skill can recommend pro
 
 ## How This Skill Uses This File
 
-During Stage 5, this skill walks this catalog and assesses readiness for each artifact using the explicit criteria below. Output goes to `projectContext/arbiter-readiness.md` as a menu the user can select from.
+During Stage 5, this skill walks this catalog and assesses readiness for each artifact using the explicit criteria below. Output goes to `${PROJECT_ROOT}/.agents/projectContext/arbiter-readiness.md` as a menu the user can select from.
 
 This skill does NOT produce these artifacts unless the user explicitly selects them.
 
@@ -23,7 +23,7 @@ For each downstream artifact:
 A criterion is "met" when:
 - For `<DECISION-ID> = locked`: the decision exists in the artifacts as a clear position OR exists as an `accepted` entry in the decision log
 - For `<DECISION-ID> = locked-and-implemented`: the decision exists AND scaffold evidence demonstrates implementation
-- For `<spike-ID> = complete`: the spike's deliverable ADR exists in `projectContext/decisions/`
+- For `<spike-ID> = complete`: the spike's deliverable ADR exists in `${PROJECT_ROOT}/.agents/projectContext/decisions/`
 - For `<file-or-pattern>`: the file or pattern exists in the project
 
 ---
@@ -174,14 +174,14 @@ Same structure as node authoring guide but covering adapter-specific concerns: s
 **ready_criteria:**
 - `SCHEMA.AUDIT-EVENT = locked`
 - `API.AUDIT.EMIT = locked-and-implemented`
-- An ADR capturing the audit event schema decision exists in `projectContext/decisions/`
+- An ADR capturing the audit event schema decision exists in `${PROJECT_ROOT}/.agents/projectContext/decisions/`
 
 **blocked_criteria:**
 - `SCHEMA.AUDIT-EVENT` is divergent and unresolved
 - No ADR capturing the audit schema decision can be located
 
 **Production guidance:**
-Markdown reference enumerating every audit event by identifier. Each entry: name, trigger description, required fields, example payload. Group by category (auth, deployment, secrets, etc.). Cross-reference with the compliance control framework from `projectContext/security-controls.md`.
+Markdown reference enumerating every audit event by identifier. Each entry: name, trigger description, required fields, example payload. Group by category (auth, deployment, secrets, etc.). Cross-reference with the compliance control framework from `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`.
 
 ---
 
@@ -207,8 +207,8 @@ Per-spike document with: context (full reasoning from artifacts), questions to a
 
 **ready_criteria:**
 - `DOCS.ADR-CONVENTION = locked` (template exists or this artifact will produce it first)
-- At least 5 decisions exist in `projectContext/arbiter-decisions.md`
-- An existing ADR pattern is identifiable in `projectContext/decisions/`
+- At least 5 decisions exist in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md`
+- An existing ADR pattern is identifiable in `${PROJECT_ROOT}/.agents/projectContext/decisions/`
 
 **blocked_criteria:**
 - No clear ADR convention exists in the project

@@ -39,10 +39,10 @@ change in disguise and MUST be routed back through the `tdd` skill.
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/tech-stack.md` is readable — stop if missing.
-2. `.agents/projectContext/coding-standards.md` is readable — stop if missing.
-3. `.agents/projectContext/stage` exists and the current stage is known —
-   `cat .agents/projectContext/stage`.
+1. `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` is readable — stop if missing.
+2. `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` is readable — stop if missing.
+3. `${PROJECT_ROOT}/.agents/projectContext/stage` exists and the current stage is known —
+   `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 4. A test runner, lint command, and coverage command are documented in
    `tech-stack.md`. If any of the three is undocumented, stop and surface the gap.
 5. The working tree is clean (no unstaged changes overlapping the named surface).
@@ -177,7 +177,7 @@ tests. A new-behavior seam test is a feature, not a refactor.
 - The surface table from Phase 1
 - The parity coverage report from Phase 2
 - Any seam tests from Phase 3
-- `.agents/projectContext/coding-standards.md`
+- `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`
 
 **Actions:**
 
@@ -245,7 +245,7 @@ exit conditions of `tdd` Phase 5 and Phase 6.
 
 **Inputs:**
 - `tech-stack.md` — lint, type-check, and coverage commands
-- `.agents/projectContext/stage` — for the coverage threshold
+- `${PROJECT_ROOT}/.agents/projectContext/stage` — for the coverage threshold
 
 **Actions:**
 
@@ -284,7 +284,7 @@ named surface. Coverage MUST NOT decrease as a side effect of restructure.
   user-approved amendment to the Phase 1 surface table.
 - MUST NOT inline-suppress lint rules to clear Phase 6.
 - MUST NOT guess test runner, lint, or coverage commands — always read
-  `.agents/projectContext/tech-stack.md`.
+  `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
 
 ---
 

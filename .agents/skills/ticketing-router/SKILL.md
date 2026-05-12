@@ -11,7 +11,7 @@ Invoke this skill when:
 - The user runs any `/ticket` subcommand (`open`, `close`, `show`, `list`, `config`).
 - The codeArbiter parent needs to file, triage, or close a scope-overflow inbox item.
 
-This skill is a **thin router**. It reads `projectContext/ticketing-config.md`,
+This skill is a **thin router**. It reads `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`,
 selects the variant by `mode`, and `@`-imports only that variant's `SKILL.md`. It
 never loads both variants in the same session. When ticketing is disabled, no
 variant is loaded.
@@ -22,7 +22,7 @@ variant is loaded.
 
 Before any routing decision, confirm:
 
-1. `.agents/projectContext/ticketing-config.md` is readable. If absent, treat
+1. `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md` is readable. If absent, treat
    ticketing as disabled and return the disabled response below.
 2. Read only the frontmatter (top YAML block) of the config file. Do not read
    the prose body — the field reference is for humans, not for routing.
@@ -37,7 +37,7 @@ malformed YAML), STOP and surface the gap to the user. Do not guess defaults.
 **Goal:** Determine whether to invoke a variant and which one.
 
 **Inputs:**
-- Frontmatter of `projectContext/ticketing-config.md`
+- Frontmatter of `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`
 
 **Actions:**
 
@@ -46,16 +46,16 @@ malformed YAML), STOP and surface the gap to the user. Do not guess defaults.
 
    > Ticketing is disabled. Findings that would normally be filed as tickets
    > are inlined in agent output with a `[NEEDS-TRIAGE]` marker. To enable,
-   > edit `.agents/projectContext/ticketing-config.md` and set `enabled: true`.
+   > edit `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md` and set `enabled: true`.
 
 2. If `enabled: true` and `mode: in-repo`: `@`-import
-   `.agents/skills/ticketing-router/in-repo/SKILL.md` and hand off the caller's request
+   `${FRAMEWORK_ROOT}/.agents/skills/ticketing-router/in-repo/SKILL.md` and hand off the caller's request
    to that variant. Do not read the plane variant.
 
 3. If `enabled: true` and `mode: plane`: confirm `plane_base_url`,
    `plane_workspace_slug`, and `plane_project_id` are populated. If any is
    missing, STOP and instruct the user to complete the config. Then `@`-import
-   `.agents/skills/ticketing-router/plane/SKILL.md` and hand off. Do not read the
+   `${FRAMEWORK_ROOT}/.agents/skills/ticketing-router/plane/SKILL.md` and hand off. Do not read the
    in-repo variant.
 
 4. If `mode` is any other value: STOP and surface as a config error. Do not

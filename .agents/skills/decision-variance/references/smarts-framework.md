@@ -75,7 +75,7 @@ Can the option be validated through tests that are deterministic, fast, and cove
 
 ### Securable
 
-Does the option enable the project's security posture — as defined in `projectContext/security-controls.md` and `projectContext/trust-zones.md` — without retrofit?
+Does the option enable the project's security posture — as defined in `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` and `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` — without retrofit?
 
 **Considerations:**
 - Authentication boundary (who is the actor)

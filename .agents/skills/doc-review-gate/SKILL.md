@@ -5,16 +5,16 @@
 > *"This section lists conditions under which the orchestrator routes work to this skill. The skill itself does not 'trigger' — it is routed to."*
 
 Invoke this skill before acting in any domain listed in AGENTS.md §4 Reference
-Map, and whenever a file under `.agents/projectContext/` is modified or
+Map, and whenever a file under `${PROJECT_ROOT}/.agents/projectContext/` is modified or
 referenced.
 
 Triggers:
 - Agent is about to act in a gated domain (any domain listed in AGENTS.md §4)
   without having read the relevant doc in the current session
-- A file under `.agents/projectContext/` is added or modified
-- A `projectContext/` reference in AGENTS.md or a skill file appears stale
+- A file under `${PROJECT_ROOT}/.agents/projectContext/` is added or modified
+- A `${PROJECT_ROOT}/.agents/projectContext/` reference in AGENTS.md or a skill file appears stale
 - A new capability is added to the project without a corresponding
-  `projectContext/CONTEXT.md` entry
+  `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` entry
 - The `doc-review-gate` skill is referenced in the routing table
 
 ---
@@ -25,7 +25,7 @@ Before Phase 1 begins, confirm:
 
 1. `AGENTS.md` is readable — specifically the §4 Reference Map section that
    lists gated domains and their required docs.
-2. `.agents/projectContext/CONTEXT.md` is readable.
+2. `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` is readable.
 
 If either file is missing, surface the gap and stop.
 
@@ -68,20 +68,20 @@ satisfy this gate.
 
 ## Phase 2: Freshness Check
 
-**Goal:** When a `projectContext/` file is modified, identify any agent or skill
+**Goal:** When a `${PROJECT_ROOT}/.agents/projectContext/` file is modified, identify any agent or skill
 files that reference it and flag potentially stale references.
 
 **Inputs:**
-- The modified `projectContext/` file path
-- All files under `.agents/agents/` (agent definitions)
-- All files under `.agents/skills/*/SKILL.md` (skill definitions)
+- The modified `${PROJECT_ROOT}/.agents/projectContext/` file path
+- All files under `${FRAMEWORK_ROOT}/.agents/agents/` (agent definitions)
+- All files under `${FRAMEWORK_ROOT}/.agents/skills/*/SKILL.md` (skill definitions)
 
 **Actions:**
 
-1. Record the name and path of the modified `projectContext/` file.
-2. Search all files under `.agents/agents/` for references to the modified
+1. Record the name and path of the modified `${PROJECT_ROOT}/.agents/projectContext/` file.
+2. Search all files under `${FRAMEWORK_ROOT}/.agents/agents/` for references to the modified
    file's name or path.
-3. Search all files under `.agents/skills/*/SKILL.md` for references to the
+3. Search all files under `${FRAMEWORK_ROOT}/.agents/skills/*/SKILL.md` for references to the
    modified file's name or path.
 4. For each reference found, determine whether the referencing file's usage of
    the document is still consistent with the modified content:
@@ -96,29 +96,29 @@ files that reference it and flag potentially stale references.
 affected section.
 
 **Gate:** BLOCK if any STALE reference is found. The referencing file must be
-updated before the modified `projectContext/` change is committed.
+updated before the modified `${PROJECT_ROOT}/.agents/projectContext/` change is committed.
 
 ---
 
 ## Phase 3: Conflict Detection
 
-**Goal:** When a `projectContext/` change contradicts AGENTS.md or another
+**Goal:** When a `${PROJECT_ROOT}/.agents/projectContext/` change contradicts AGENTS.md or another
 project-context file, surface the conflict and stop all other work.
 
 **Inputs:**
-- The modified `projectContext/` file and its content
+- The modified `${PROJECT_ROOT}/.agents/projectContext/` file and its content
 - `AGENTS.md` — the project-level authority document
-- Other `projectContext/` files that share subject matter with the modified file
+- Other `${PROJECT_ROOT}/.agents/projectContext/` files that share subject matter with the modified file
 
 **Actions:**
 
-1. Read the modified `projectContext/` file in full.
+1. Read the modified `${PROJECT_ROOT}/.agents/projectContext/` file in full.
 2. Compare its content against the relevant sections of `AGENTS.md`. Check for:
-   - Contradictions in policy (e.g., a `projectContext/` file permitting
+   - Contradictions in policy (e.g., a `${PROJECT_ROOT}/.agents/projectContext/` file permitting
      something AGENTS.md prohibits)
    - Contradictions in naming or terminology
    - Contradictions in stage-gating rules or promotion criteria
-3. Compare its content against other `projectContext/` files in the same domain.
+3. Compare its content against other `${PROJECT_ROOT}/.agents/projectContext/` files in the same domain.
    Check for:
    - Contradictions in architecture or zone definitions
    - Contradictions in classification rules or required fields
@@ -138,25 +138,25 @@ further work in the domain proceeds until the conflict is resolved by the user.
 ## Phase 4: Coverage Gap
 
 **Goal:** Confirm that newly added capabilities are reflected in
-`projectContext/CONTEXT.md`.
+`${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
 
 **Inputs:**
 - Description of the new capability just added to the project
-- `.agents/projectContext/CONTEXT.md` — the project context index
+- `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` — the project context index
 
 **Actions:**
 
-1. Read `.agents/projectContext/CONTEXT.md`.
+1. Read `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`.
 2. Search for an entry corresponding to the new capability. An entry should
    describe what the capability is, what domain it belongs to, and any relevant
-   cross-references to other `projectContext/` files.
+   cross-references to other `${PROJECT_ROOT}/.agents/projectContext/` files.
 3. If no entry exists for the new capability, flag this as a MEDIUM finding:
    COVERAGE-GAP.
 4. A COVERAGE-GAP finding does not block the current task but must be surfaced
    to the user with a recommendation to add the entry before the next
    checkpoint review.
 5. If the new capability touches an area already documented in
-   `projectContext/CONTEXT.md`, verify the existing entry is still accurate
+   `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`, verify the existing entry is still accurate
    after the change.
 
 **Output:** Coverage gap finding (COVERAGE-GAP or COVERED) for the new
@@ -175,7 +175,7 @@ BLOCK for stage promotion.
 | Phase 1 exit | Required doc not read in current session                     | Read the doc now; then proceed             |
 | Phase 1 exit | Required doc does not exist on disk                          | Surface missing doc as gap; stop           |
 | Phase 2 exit | STALE reference found in agent or skill file                 | Update referencing file before committing  |
-| Phase 3 exit | Contradiction found between `projectContext/` and AGENTS.md  | Invoke `/surface-conflict`; stop all work  |
+| Phase 3 exit | Contradiction found between `${PROJECT_ROOT}/.agents/projectContext/` and AGENTS.md  | Invoke `/surface-conflict`; stop all work  |
 | Phase 4 exit | New capability has no `CONTEXT.md` entry (COVERAGE-GAP)      | Surface to user; recommend adding entry    |
 
 ---
@@ -186,7 +186,7 @@ BLOCK for stage promotion.
   Prior session memory does not substitute for a current-session read.
 - MUST NOT act in a gated domain without reading the gated doc, even if the
   domain appears familiar.
-- MUST NOT silently reconcile a contradiction between a `projectContext/` file
+- MUST NOT silently reconcile a contradiction between a `${PROJECT_ROOT}/.agents/projectContext/` file
   and AGENTS.md. Invoke `/surface-conflict` and stop.
 - MUST NOT allow a STALE reference to be committed. Update the referencing
   file first.
@@ -202,8 +202,8 @@ BLOCK for stage promotion.
 | Failure                                              | Response                                                              |
 |------------------------------------------------------|-----------------------------------------------------------------------|
 | `AGENTS.md` missing or §4 Reference Map absent       | Stop; surface gap; cannot determine which docs are required           |
-| Required `projectContext/` doc does not exist        | Stop; surface missing doc; do not act in the domain without it        |
-| `projectContext/CONTEXT.md` missing                  | Surface gap; Phase 4 cannot run; recommend creating the file          |
-| Contradiction found between `projectContext/` files  | Invoke `/surface-conflict`; stop all other work immediately           |
+| Required `${PROJECT_ROOT}/.agents/projectContext/` doc does not exist        | Stop; surface missing doc; do not act in the domain without it        |
+| `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` missing                  | Surface gap; Phase 4 cannot run; recommend creating the file          |
+| Contradiction found between `${PROJECT_ROOT}/.agents/projectContext/` files  | Invoke `/surface-conflict`; stop all other work immediately           |
 | STALE reference found but referencing file is locked | Surface the staleness finding; do not commit until resolved           |
 | COVERAGE-GAP persists through checkpoint review      | Upgrade to BLOCK for stage promotion; surface to user                 |

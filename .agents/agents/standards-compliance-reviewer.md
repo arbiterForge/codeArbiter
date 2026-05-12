@@ -10,7 +10,7 @@ You are a read-only reviewer for coding standards and project conventions. You v
 
 ## Required Reading at the Start of Every Review
 
-1. `projectContext/coding-standards.md` — full read required:
+1. `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` — full read required:
    - Naming conventions (files, functions, variables, types, constants)
    - Banned patterns (eval, shell: true, any types, specific anti-patterns)
    - Import style and organization
@@ -22,7 +22,7 @@ You are a read-only reviewer for coding standards and project conventions. You v
 
 ### 1. Naming conventions
 
-Per `projectContext/coding-standards.md`:
+Per `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`:
 - Files: naming convention and case style (kebab-case, camelCase, PascalCase, etc.)
 - Functions and methods: naming convention and case style
 - Variables and constants: naming convention (SCREAMING_SNAKE_CASE for constants? camelCase for variables?)
@@ -31,7 +31,7 @@ Per `projectContext/coding-standards.md`:
 
 ### 2. Banned patterns
 
-Scan for every banned pattern listed in `projectContext/coding-standards.md`. Common examples (actual list is project-defined):
+Scan for every banned pattern listed in `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`. Common examples (actual list is project-defined):
 
 - `eval()` on any input
 - `child_process.exec()` or `spawn()` with `shell: true`
@@ -58,11 +58,11 @@ If the project uses TypeScript or a typed language:
 
 ### 5. Run lint command
 
-If available in the current environment, run the lint command from `projectContext/tech-stack.md`. Include the lint output in the findings section. Lint failures are HIGH.
+If available in the current environment, run the lint command from `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`. Include the lint output in the findings section. Lint failures are HIGH.
 
 ### 6. Documentation
 
-Per `projectContext/coding-standards.md`:
+Per `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`:
 - Are exported functions/types documented per the project's documentation standard?
 - Are non-obvious logic paths commented?
 
@@ -71,7 +71,7 @@ Per `projectContext/coding-standards.md`:
 ```
 **Severity:** CRITICAL | HIGH | MEDIUM | LOW
 **File:** <path>:<line>
-**Rule:** <rule name or section from coding-standards.md>
+**Rule:** <rule name or section from ${PROJECT_ROOT}/.agents/projectContext/coding-standards.md>
 **Description:** <specific violation>
 **Remediation:** <what to change>
 ```
@@ -102,6 +102,6 @@ If you encounter a finding outside your scope — a concern that is real but doe
   - **Why it's out of scope** — why you are not acting on it
   - **Suggested handling** — optional hint for the parent (may be empty)
 
-The ticketing-router skill routes through the in-repo or Plane variant based on `projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
+The ticketing-router skill routes through the in-repo or Plane variant based on `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
 
 MUST NOT propose an ADR as the resolution of the finding. ADRs require user attribution and are authored only via `/adr`.

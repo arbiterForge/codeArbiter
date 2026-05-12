@@ -23,7 +23,7 @@ justification.
 ## Routes To
 
 Override protocol implemented in this command body (no skill). Reads/writes
-`.agents/projectContext/overrides.log`.
+`${PROJECT_ROOT}/.agents/projectContext/overrides.log`.
 
 ## Identity Detection (in priority order — never ask if any succeeds)
 
@@ -34,7 +34,7 @@ Override protocol implemented in this command body (no skill). Reads/writes
 
 ## Log Entry Format
 
-Appends to `.agents/projectContext/overrides.log` (append-only, never modified):
+Appends to `${PROJECT_ROOT}/.agents/projectContext/overrides.log` (append-only, never modified):
 
 ```
 [ISO-8601 timestamp] | BY: <git-user-name> <<git-user-email>> | PLATFORM: <github|gitea|unknown> | GATE: <gate bypassed> | REASON: <user's reason>
@@ -45,7 +45,7 @@ committed to the repo — it is a permanent audit artifact.
 
 ## Hard Gates
 
-- MUST write to `.agents/projectContext/overrides.log` before proceeding — the log
+- MUST write to `${PROJECT_ROOT}/.agents/projectContext/overrides.log` before proceeding — the log
   entry is not optional
 - MUST include an authorizing identity — "codeArbiter" or "automated" are not valid
   identities
@@ -66,7 +66,7 @@ Override log entries are:
 - Visible to all reviewers at the next `/checkpoint`
 - Included in PR descriptions when the override affects a gate that `/pr` would
   normally enforce
-- Permanent — entries are never deleted from `.agents/projectContext/overrides.log`
+- Permanent — entries are never deleted from `${PROJECT_ROOT}/.agents/projectContext/overrides.log`
 
 ## When NOT to Use
 

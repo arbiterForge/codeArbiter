@@ -36,9 +36,9 @@ Output: list of identified secrets with source and sink for each. No candidate m
 ---
 
 ### Phase 2 — Source Verification
-Read `projectContext/secrets-policy.md` to determine the approved secret store for this project. Secrets MUST originate from the store specified there.
+Read `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` to determine the approved secret store for this project. Secrets MUST originate from the store specified there.
 
-Access MUST use the authentication method specified in `projectContext/secrets-policy.md` (e.g., IAM role, workload identity, service account token) — never long-lived static credential keys.
+Access MUST use the authentication method specified in `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` (e.g., IAM role, workload identity, service account token) — never long-lived static credential keys.
 
 **BLOCK conditions at all stages (regardless of project):**
 
@@ -48,12 +48,12 @@ Access MUST use the authentication method specified in `projectContext/secrets-p
 | `.env` files for secrets | BLOCK — `.env` is for non-sensitive local-dev config only |
 | Hardcoded string literal | BLOCK — caught by secrets scanner |
 | Database column value (non-reference) | BLOCK |
-| Any secret store endpoint not specified in `projectContext/secrets-policy.md` | BLOCK |
+| Any secret store endpoint not specified in `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` | BLOCK |
 | Container env var on long-lived process [S2+] | BLOCK |
 
 `.env` files MUST be in `.gitignore` AND scanned by the project's secrets scanner on every PR.
 
-**Gate:** All secrets sourced from the store specified in `projectContext/secrets-policy.md` via the approved authentication method.
+**Gate:** All secrets sourced from the store specified in `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` via the approved authentication method.
 
 ---
 
@@ -79,11 +79,11 @@ Note: if the project uses a log redaction backstop, that backstop is not an excu
 ### Phase 4 — DB Storage Check
 If a secret reference must be persisted in the database, only the store reference (path, ID, ARN, or whatever identifier format the approved store uses) may be stored — never the secret value itself.
 
-The reference-storing column MUST have a check constraint verifying the reference format. Read the expected reference format from `projectContext/secrets-policy.md`. The constraint must verify that the stored value matches the format of the approved store's reference (e.g., a path prefix, an ARN pattern, a UUID prefix).
+The reference-storing column MUST have a check constraint verifying the reference format. Read the expected reference format from `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`. The constraint must verify that the stored value matches the format of the approved store's reference (e.g., a path prefix, an ARN pattern, a UUID prefix).
 
 If a migration adds a column that stores a secret reference without this constraint, that is a BLOCK condition.
 
-**Gate:** Database columns store the store reference only. Check constraint present, verified against the format from `projectContext/secrets-policy.md`.
+**Gate:** Database columns store the store reference only. Check constraint present, verified against the format from `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`.
 
 ---
 
@@ -99,7 +99,7 @@ Secrets MUST NOT persist beyond the request boundary in which they are used. Che
 | Worker job credential persisted across deployments | MUST NOT — worker credentials MUST be one-time scoped tokens generated at deploy start, expired at deploy end [S2+] |
 | Signing keys or OIDC client secrets unrotated > 1 year | MUST NOT — rotation MUST emit a `key.rotate` audit event |
 
-Rotation MUST emit an audit event per `projectContext/audit-spec.md` — route to the `audit-emit` skill for that event's test obligation.
+Rotation MUST emit an audit event per `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — route to the `audit-emit` skill for that event's test obligation.
 
 **Gate:** Secret lifetime is bounded to request scope. No cross-request persistence without CODEOWNER approval.
 
@@ -113,7 +113,7 @@ Every `read.secret` action MUST emit an audit event. The event MUST include:
 - `actor.id`: the service identity or authenticated identity claim
 - `outcome`: `success` or `failure`
 
-Route to the `audit-emit` skill and complete through Phase 5 (Test Obligation) for this event. The audit event schema is defined in `projectContext/audit-spec.md`.
+Route to the `audit-emit` skill and complete through Phase 5 (Test Obligation) for this event. The audit event schema is defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 
 **Gate:** `read.secret` audit event emitted with store reference in `subject.id`. `audit-emit` skill Phase 5 complete.
 
@@ -138,7 +138,7 @@ Route to the `audit-emit` skill and complete through Phase 5 (Test Obligation) f
 ---
 
 ## Hard Rules
-- MUST read `projectContext/secrets-policy.md` before Phase 2 to identify the approved secret store. BLOCK if the file cannot be read and no cached policy exists.
+- MUST read `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` before Phase 2 to identify the approved secret store. BLOCK if the file cannot be read and no cached policy exists.
 - MUST NOT read secrets from `process.env`, `.env` files, or hardcoded values.
 - MUST NOT allow secrets to flow to loggers, error messages, telemetry, tracing, or LLM prompts.
 - MUST NOT store secret values in the database — store reference only, with check constraint.

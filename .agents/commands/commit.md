@@ -14,10 +14,10 @@ No arguments. The skill reads current git state (staged files, diff, test result
 
 ## Routes To
 
-`commit-gate` skill (`.agents/skills/commit-gate/SKILL.md`) — all phases. Skill is canonical for phases, gates, and output format.
+`commit-gate` skill (`${FRAMEWORK_ROOT}/.agents/skills/commit-gate/SKILL.md`) — all phases. Skill is canonical for phases, gates, and output format.
 
 ## When NOT to Use
 
 - Before writing code: use `/feature` or `/fix` first
 - To check PR readiness: use `/pr` — dispatches additional BLOCK-level reviewers
-- To run tests without committing: run the test command from `projectContext/tech-stack.md` directly
+- To run tests without committing: run the test command from `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` directly

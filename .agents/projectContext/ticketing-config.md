@@ -28,7 +28,7 @@ plane_env_var_workspace_slug: PLANE_WORKSPACE_SLUG
 
 ## Mode: `in-repo`
 
-A lightweight scope-overflow inbox. Subagents file findings as tickets in `projectContext/tickets/open/`. The parent reads each ticket, decides where the substance belongs (a task backlog entry, a `CONFIRM-NN` in `open-questions.md`, a gap doc, or a synchronous user escalation), files the substance there, and closes the ticket with a disposition note. The ticket itself is not a project tracker — it's an inbox.
+A lightweight scope-overflow inbox. Subagents file findings as tickets in `${PROJECT_ROOT}/.agents/projectContext/tickets/open/`. The parent reads each ticket, decides where the substance belongs (a task backlog entry, a `CONFIRM-NN` in `open-questions.md`, a gap doc, or a synchronous user escalation), files the substance there, and closes the ticket with a disposition note. The ticket itself is not a project tracker — it's an inbox.
 
 ## Mode: `plane`
 
@@ -40,7 +40,7 @@ Required environment variables (names configurable above; values live in the use
 - `PLANE_API_KEY` — API key issued by the Plane admin UI
 - `PLANE_WORKSPACE_SLUG` — workspace slug
 
-See `.agents/skills/ticketing-router/plane/SKILL.md` for setup steps.
+See `${FRAMEWORK_ROOT}/.agents/skills/ticketing-router/plane/SKILL.md` for setup steps.
 
 ## Read-on-invocation guarantee
 

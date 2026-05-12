@@ -22,7 +22,7 @@ Triggers:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/CONTEXT.md` exists and is readable.
+1. `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` exists and is readable.
 2. If `CONTEXT.md` does NOT contain `<!--INITIALIZED-->`, stop immediately and inform
    the user:
    > "The projectContext has not been initialized. Before I can onboard you, the project
@@ -43,13 +43,13 @@ If pre-flight passes, proceed to Phase 1.
 **Goal:** Confirm initialized context exists and operating mode is determined.
 
 **Inputs:**
-- `.agents/projectContext/CONTEXT.md` — check for `<!--INITIALIZED-->` sentinel
+- `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` — check for `<!--INITIALIZED-->` sentinel
 - Invocation arguments — presence or absence of scope argument
 
 **Actions:**
 
-1. Read `.agents/projectContext/CONTEXT.md`. Confirm `<!--INITIALIZED-->` is present.
-2. Note the current stage: `cat .agents/projectContext/stage`.
+1. Read `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`. Confirm `<!--INITIALIZED-->` is present.
+2. Note the current stage: `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 3. Determine and record operating mode (FULL or TARGETED).
 4. If TARGETED mode: record the scope argument for use in Phase 2.
 5. Confirm the user's intent: "I'll give you a [full project tour / deep-dive on
@@ -73,30 +73,30 @@ If pre-flight passes, proceed to Phase 1.
 **Actions:**
 
 **Full mode — load and summarize:**
-1. Read `.agents/projectContext/CONTEXT.md` — project identity, purpose, scope, NOT-building
-2. Read `.agents/projectContext/stage` — current stage value
-3. Read `.agents/projectContext/trust-zones.md` — architecture, components, zone topology
-4. Read `.agents/projectContext/tech-stack.md` — languages, frameworks, tools, commands
-5. Read `.agents/projectContext/decisions/` directory — list all ADR files, read the
+1. Read `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` — project identity, purpose, scope, NOT-building
+2. Read `${PROJECT_ROOT}/.agents/projectContext/stage` — current stage value
+3. Read `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` — architecture, components, zone topology
+4. Read `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — languages, frameworks, tools, commands
+5. Read `${PROJECT_ROOT}/.agents/projectContext/decisions/` directory — list all ADR files, read the
    5 most recently dated ones in full
-6. Read `.agents/projectContext/open-questions.md` — all CONFIRM-NN items
-7. Read `.agents/projectContext/open-tasks.md` — in-flight and pending tasks
-8. Read `.agents/skills/` directory listing — enumerate available skills and commands
+6. Read `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` — all CONFIRM-NN items
+7. Read `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md` — in-flight and pending tasks
+8. Read `${FRAMEWORK_ROOT}/.agents/skills/` directory listing — enumerate available skills and commands
 
 **Targeted mode — load only files relevant to scope:**
 Determine which projectContext files are relevant to the provided scope argument.
 Examples:
-- Scope "auth" or "security": load `security-controls.md`, `secrets-policy.md`,
-  `trust-zones.md`, relevant ADRs with auth/crypto/secrets in title
-- Scope "data model" or "database": load `audit-spec.md`, relevant ADRs, Scout F
+- Scope "auth" or "security": load `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`, `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`,
+  `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`, relevant ADRs with auth/crypto/secrets in title
+- Scope "data model" or "database": load `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`, relevant ADRs, Scout F
   findings if available
-- Scope "tech stack" or "dependencies": load `tech-stack.md`, `dependency-policy.md`
-- Scope "architecture": load `trust-zones.md`, `CONTEXT.md`, relevant ADRs
-- Scope "tasks" or "backlog": load `open-tasks.md`, `open-questions.md`
-- Scope "decisions" or "ADRs": load all files in `decisions/`
-- Scope "skills" or "commands": enumerate `.agents/skills/` and `.agents/commands/`
+- Scope "tech stack" or "dependencies": load `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`, `${PROJECT_ROOT}/.agents/projectContext/dependency-policy.md`
+- Scope "architecture": load `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`, `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md`, relevant ADRs
+- Scope "tasks" or "backlog": load `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md`, `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`
+- Scope "decisions" or "ADRs": load all files in `${PROJECT_ROOT}/.agents/projectContext/decisions/`
+- Scope "skills" or "commands": enumerate `${FRAMEWORK_ROOT}/.agents/skills/` and `${FRAMEWORK_ROOT}/.agents/commands/`
 
-If the scope does not map to a clear set of files, load `CONTEXT.md` as a base and
+If the scope does not map to a clear set of files, load `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` as a base and
 ask the user to clarify before proceeding to Phase 3.
 
 **Output:** Relevant projectContext files loaded and ready for presentation.
@@ -120,48 +120,48 @@ to the operating mode.
 
 1. **Project identity and purpose**
    - What this project is, what problem it solves, and for whom
-   - Source: `CONTEXT.md` (Identity, Purpose sections)
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` (Identity, Purpose sections)
 
 2. **What it is NOT**
    - Explicit scope exclusions — the things this project deliberately does not do
-   - Source: `CONTEXT.md` (NOT This Project section)
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` (NOT This Project section)
    - Why it matters: scope clarity prevents wasted work and misaligned PRs
 
 3. **Current stage and what that means**
    - Current stage number and name
    - What the stage allows and restricts (user count, external access, compliance posture)
    - What the promotion criteria are for the next stage
-   - Source: `stage` file, stage table in `AGENTS.md` or `CLAUDE.md`
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/stage` file, stage table in `AGENTS.md` or `CLAUDE.md`
 
 4. **Architecture overview**
    - Trust zones and their relationships
    - Component list and responsibilities
    - Key integration points
-   - Source: `trust-zones.md`
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`
 
 5. **Tech stack**
    - Languages and runtimes in use
    - Primary frameworks
    - Test runner and how to run tests locally
    - Key make/npm/etc. commands for daily development
-   - Source: `tech-stack.md`
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`
 
 6. **Key ADRs**
    - Present the 5 most recent accepted decisions
    - For each: decision title, what was decided, and the primary consequence
    - Note any decisions that are still in PROPOSED or SUPERSEDED status
-   - Source: `decisions/` directory
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/decisions/` directory
 
 7. **Open questions**
    - All CONFIRM-NN items currently unresolved
    - For each: what is unknown and why it matters
    - Which ones block stage promotion
-   - Source: `open-questions.md`
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`
 
 8. **In-flight tasks**
    - Summary of current open tasks
    - Any tasks flagged as blocked
-   - Source: `open-tasks.md`
+   - Source: `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md`
 
 9. **The codeArbiter skill system**
    - How to start a new feature: `/tdd "<description>"`
@@ -214,7 +214,7 @@ projectContext knowledge without making decisions or overstepping into implement
    - If the question implies a decision needs to be made, redirect:
      > "That's a decision that should go through the proper channel. Use
      > `/surface-conflict` if there's a conflict, or raise it as a CONFIRM-NN in
-     > `open-questions.md`."
+     > `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`."
    - If the question implies implementation work, redirect:
      > "When you're ready to implement that, start with `/tdd '<description>'` and
      > I'll walk you through the TDD process."
@@ -242,13 +242,13 @@ appropriate commands for decisions and implementation.
 
 | Failure | Response |
 |---|---|
-| `<!--INITIALIZED-->` missing from `CONTEXT.md` | Stop; inform user; direct to `/decompose` or `/create-context` |
+| `<!--INITIALIZED-->` missing from `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` | Stop; inform user; direct to `/decompose` or `/create-context` |
 | A projectContext file is missing or empty | Note the gap during the relevant tour section; do not block entire tour |
-| `decisions/` directory is empty or has no ADRs | Note that no decisions have been recorded yet; proceed with tour |
-| Scope argument not recognized in targeted mode | Load `CONTEXT.md` as base; ask user to clarify the scope before proceeding |
+| `${PROJECT_ROOT}/.agents/projectContext/decisions/` directory is empty or has no ADRs | Note that no decisions have been recorded yet; proceed with tour |
+| Scope argument not recognized in targeted mode | Load `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` as base; ask user to clarify the scope before proceeding |
 | User asks a question that implies a decision | Redirect to appropriate command; do not decide on their behalf |
 | User asks for implementation guidance | Redirect to `/tdd`; do not write code during onboard |
-| `open-tasks.md` is empty or stub | Note it during the in-flight tasks section; direct user to populate it |
+| `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md` is empty or stub | Note it during the in-flight tasks section; direct user to populate it |
 
 ---
 

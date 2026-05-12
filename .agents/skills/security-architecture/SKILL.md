@@ -12,7 +12,7 @@ Claude IS a threat modeling architect who treats undeclared zone crossings as ac
 - An attack surface change is identified (new route, new egress, new external dependency)
 - When the routing table entry "New trust zone crossing / threat model / attack surface change" applies
 - When `/threat-model <scope>` command is invoked
-- Before any code is written that crosses a zone boundary defined in `projectContext/trust-zones.md`
+- Before any code is written that crosses a zone boundary defined in `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`
 
 ## Distinction from security-reviewer
 This skill reviews **architectural intent before code is written**. `security-reviewer` reviews code that already exists. If code is already written and under review, use `security-reviewer`. If a design is being evaluated before implementation begins, use this skill.
@@ -20,9 +20,9 @@ This skill reviews **architectural intent before code is written**. `security-re
 ## Phases
 
 ### Phase 1 — Scope Definition
-Read `projectContext/trust-zones.md` before taking any other action. BLOCK if this file cannot be read. Identify:
+Read `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` before taking any other action. BLOCK if this file cannot be read. Identify:
 
-- Which trust zones are in scope (zones are defined in `projectContext/trust-zones.md`).
+- Which trust zones are in scope (zones are defined in `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`).
 - Every zone boundary the proposed change crosses.
 - Every new egress path the change introduces.
 
@@ -35,7 +35,7 @@ Flag every crossing as `NEW` (first time this path is used) or `EXISTING` (path 
 
 "Out of scope" is not a valid classification for any zone crossing. Every crossing must appear in the scope table.
 
-**Gate:** `projectContext/trust-zones.md` read. Scope table complete. No zone crossing marked "out of scope."
+**Gate:** `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` read. Scope table complete. No zone crossing marked "out of scope."
 
 ### Phase 2 — Threat Model
 For every zone crossing in the scope table, perform a STRIDE analysis:
@@ -57,7 +57,7 @@ A `GAP` finding with High likelihood or High impact is automatically a BLOCK. A 
 Verify that default-deny is maintained across every zone boundary in the scope.
 
 For every NEW crossing identified in Phase 1:
-1. Check whether the path exists in the egress allowlist. The location of the egress allowlist is defined in `projectContext/trust-zones.md` (look for an `egress-allowlist` path or similar reference in that file; if the file is silent, use `deploy/egress-allowlist.yaml` as the default).
+1. Check whether the path exists in the egress allowlist. The location of the egress allowlist is defined in `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` (look for an `egress-allowlist` path or similar reference in that file; if the file is silent, use `deploy/egress-allowlist.yaml` as the default).
 2. If the path is not in the allowlist: this is an **undeclared egress**. BLOCK immediately. Do not proceed to Phase 4 until the egress is declared and the allowlist is updated with CODEOWNER approval.
 3. If the path is in the allowlist: verify the entry specifies destination, port, protocol, and justification.
 
@@ -68,14 +68,14 @@ New allowed paths added to the egress allowlist MUST have a CODEOWNER approval c
 **Gate:** Every NEW crossing is in the egress allowlist with CODEOWNER approval. No undeclared egress. Every EXISTING crossing verified against current allowlist entry.
 
 ### Phase 4 — Control Family Mapping
-Read `projectContext/security-controls.md` to determine the compliance framework in use for this project (e.g., NIST SP 800-53, ISO 27001, SOC 2). Map every threat identified in Phase 2 to the applicable control families. For each threat:
+Read `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` to determine the compliance framework in use for this project (e.g., NIST SP 800-53, ISO 27001, SOC 2). Map every threat identified in Phase 2 to the applicable control families. For each threat:
 
 | Threat | Control Family | Control ID(s) | Status |
 |---|---|---|---|
 
 Status options: `SATISFIED` (control implemented and verified), `PARTIAL` (control partially implemented — describe what is missing), `GAP` (control not implemented).
 
-Reference the control family identifiers from the compliance framework specified in `projectContext/security-controls.md`. If the file specifies no framework, use control categories generically (Access Control, Audit and Accountability, Identification and Authentication, System and Communications Protection, System and Information Integrity) and note that no specific compliance framework is declared.
+Reference the control family identifiers from the compliance framework specified in `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`. If the file specifies no framework, use control categories generically (Access Control, Audit and Accountability, Identification and Authentication, System and Communications Protection, System and Information Integrity) and note that no specific compliance framework is declared.
 
 Every `GAP` in this table that maps to access control, identity and authentication, or system and communications protection is a hard BLOCK. Every `PARTIAL` is a CONSTRAINT that requires a resolution plan before the next stage promotion.
 
@@ -87,7 +87,7 @@ Determine whether the proposed change requires a new ADR or must modify an exist
 - Introduces a new trust zone or modifies a zone boundary definition.
 - Changes a cryptographic primitive, TLS version, or key management approach.
 - Adds a new external dependency that crosses a zone boundary.
-- Contradicts or supersedes an existing ADR in `projectContext/decisions/`.
+- Contradicts or supersedes an existing ADR in `${PROJECT_ROOT}/.agents/projectContext/decisions/`.
 
 If a new ADR is required: do not proceed to Phase 6 until the ADR is drafted. Route to `decision-lifecycle` skill Phase 1 to register the new ADR in the index.
 
@@ -127,7 +127,7 @@ One of three verdicts:
 
 | Gate | Condition | Action |
 |---|---|---|
-| Trust-zones doc unread | Phase 1 begins without reading `projectContext/trust-zones.md` | BLOCK |
+| Trust-zones doc unread | Phase 1 begins without reading `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` | BLOCK |
 | Zone crossing out of scope | Any crossing classified as "out of scope" | BLOCK |
 | Undeclared egress | NEW crossing not in the project egress allowlist | BLOCK — do not proceed to Phase 4 |
 | No CODEOWNER approval | New allowlist entry without approval comment | BLOCK Phase 3 gate |
@@ -140,5 +140,5 @@ One of three verdicts:
 - MUST NOT proceed past Phase 3 if undeclared egress is present.
 - MUST NOT proceed to Phase 6 if a required ADR from Phase 5 is not drafted.
 - MUST NOT approve a new egress path without CODEOWNER approval on the allowlist entry.
-- MUST read `projectContext/trust-zones.md` before any other action. BLOCK if the file cannot be read.
-- MUST read `projectContext/security-controls.md` before Phase 4 to determine the applicable compliance framework.
+- MUST read `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` before any other action. BLOCK if the file cannot be read.
+- MUST read `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` before Phase 4 to determine the applicable compliance framework.

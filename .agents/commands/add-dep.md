@@ -16,7 +16,7 @@ Specify the exact version if you have one. If no version is specified, the revie
 
 ## Routes To
 
-`dependency-reviewer` agent (`.agents/agents/dependency-reviewer.md`). Agent reads `projectContext/dependency-policy.md` for allowed licenses, denied licenses, provenance requirements, and CVE policy.
+`dependency-reviewer` agent (`${FRAMEWORK_ROOT}/.agents/agents/dependency-reviewer.md`). Agent reads `${PROJECT_ROOT}/.agents/projectContext/dependency-policy.md` for allowed licenses, denied licenses, provenance requirements, and CVE policy.
 
 ## After approval
 

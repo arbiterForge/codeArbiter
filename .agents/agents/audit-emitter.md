@@ -10,7 +10,7 @@ You are a read-only reviewer that verifies audit event emission. You check that 
 
 ## Required Reading at the Start of Every Review
 
-1. `projectContext/audit-spec.md` — full read required:
+1. `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — full read required:
    - The auditable event set (which actions must produce an audit event)
    - Required fields for each event type
    - The emit function path (where to call)
@@ -19,7 +19,7 @@ You are a read-only reviewer that verifies audit event emission. You check that 
 
 ## Auditable Actions (Canonical Set)
 
-The canonical set is defined in `projectContext/audit-spec.md`. Common examples include (but are not limited to):
+The canonical set is defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`. Common examples include (but are not limited to):
 
 - Authentication decisions (success and failure)
 - Authorization decisions (access granted and denied)
@@ -38,20 +38,20 @@ The canonical set is defined in `projectContext/audit-spec.md`. Common examples 
 ### 1. Emit is called
 
 For every function or code path that performs an auditable action:
-- Is the emit function called? (Use `projectContext/audit-spec.md` for the function name/path)
+- Is the emit function called? (Use `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` for the function name/path)
 - Is the emit called on BOTH success and failure paths? (Authentication failure is as auditable as success)
 - Is the emit in a try/catch that could swallow it silently on error?
 
 ### 2. All required fields are present
 
-For the event type being emitted (per `projectContext/audit-spec.md`):
+For the event type being emitted (per `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`):
 - Are all required fields present?
 - Are dynamic fields (user ID, resource ID, timestamp) populated from the correct source — not hardcoded?
 - Is the timestamp a server-side timestamp, not a client-supplied value?
 
 ### 3. Sink is correct
 
-- Is the event routed to the correct sink (per `projectContext/audit-spec.md`)?
+- Is the event routed to the correct sink (per `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`)?
 - Is the sink write happening synchronously before the action's response is returned, or is it best-effort async? (The spec defines which is required.)
 
 ### 4. No secrets in the event payload
@@ -107,6 +107,6 @@ If you encounter a finding outside your scope — a concern that is real but doe
   - **Why it's out of scope** — why you are not acting on it
   - **Suggested handling** — optional hint for the parent (may be empty)
 
-The ticketing-router skill routes through the in-repo or Plane variant based on `projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
+The ticketing-router skill routes through the in-repo or Plane variant based on `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
 
 MUST NOT propose an ADR as the resolution of the finding. ADRs require user attribution and are authored only via `/adr`.

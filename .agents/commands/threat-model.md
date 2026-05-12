@@ -14,11 +14,11 @@ Description should include: what the component does, which trust zones it touche
 
 ## Routes To
 
-`security-architecture` skill (`.agents/skills/security-architecture/SKILL.md`). Skill reads:
+`security-architecture` skill (`${FRAMEWORK_ROOT}/.agents/skills/security-architecture/SKILL.md`). Skill reads:
 
-- `projectContext/trust-zones.md` — required before any analysis begins
-- `projectContext/security-controls.md` — compliance requirements
-- `projectContext/decisions/` — existing security-relevant ADRs
+- `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` — required before any analysis begins
+- `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` — compliance requirements
+- `${PROJECT_ROOT}/.agents/projectContext/decisions/` — existing security-relevant ADRs
 
 ## Output format
 

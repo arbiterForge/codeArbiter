@@ -40,8 +40,8 @@ Option C — Hybrid (only if a synthesis is genuinely possible):
 Project context relevant to this decision:
 - <bullet list of relevant project constraints>
 
-Apply the SMARTS framework using .agents/skills/decision-variance/references/smarts-framework.md (you have access to it).
-You MUST follow the hard format constraints in .agents/skills/decision-variance/references/smarts-framework.md for SMARTS cells.
+Apply the SMARTS framework using ${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/smarts-framework.md (you have access to it).
+You MUST follow the hard format constraints in ${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/smarts-framework.md for SMARTS cells.
 The recommendation strength is one of: strong, moderate, tied. There is no "weak" level.
 
 Output format: structured Markdown using the template below.
@@ -164,6 +164,6 @@ After the grader returns:
 3. The decision-variance skill includes the conformant analysis in the variance report entry verbatim
 4. The decision-variance skill may add additional context (project history, prior decisions) the grader did not have access to
 5. The decision-variance skill presents the analysis to the user
-6. The decision-variance skill records the user's decision per `.agents/skills/decision-variance/references/decision-log-format.md`
+6. The decision-variance skill records the user's decision per `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-log-format.md`
 
 The grader's recommendation is informational. The user's decision is authoritative.

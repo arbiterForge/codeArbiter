@@ -5,7 +5,7 @@
 The user- and subagent-facing surface for the optional ticketing-router skill. Files
 out-of-scope findings, lists open tickets, and closes them with a triage
 disposition. Routes through the `ticketing-router` skill, which dispatches to the
-in-repo or Plane variant based on `projectContext/ticketing-config.md`.
+in-repo or Plane variant based on `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`.
 
 When ticketing is disabled (default), this command returns a disabled response
 and otherwise has no effect.
@@ -69,12 +69,12 @@ mode (the in-repo model has only `open` and `closed`).
 
 ### `/ticket config`
 
-Opens `.agents/projectContext/ticketing-config.md` for editing. Toggle the
+Opens `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md` for editing. Toggle the
 skill on/off, switch modes, or update Plane workspace/project settings here.
 
 ## Routes To
 
-`ticketing-router` skill (`.agents/skills/ticketing-router/SKILL.md`) → in-repo or
+`ticketing-router` skill (`${FRAMEWORK_ROOT}/.agents/skills/ticketing-router/SKILL.md`) → in-repo or
 Plane variant per `ticketing-config.md`.
 
 ## Hard Gates
@@ -102,4 +102,4 @@ subcommand returns:
 
 > Ticketing is disabled. Findings that would normally be filed as tickets are
 > inlined in agent output with a `[NEEDS-TRIAGE]` marker. To enable, edit
-> `.agents/projectContext/ticketing-config.md` and set `enabled: true`.
+> `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md` and set `enabled: true`.

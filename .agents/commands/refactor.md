@@ -26,7 +26,7 @@ The description has two required parts:
 
 ## What it routes to
 
-`refactor` skill (`.agents/skills/refactor/SKILL.md`) — all six phases:
+`refactor` skill (`${FRAMEWORK_ROOT}/.agents/skills/refactor/SKILL.md`) — all six phases:
 
 1. **Phase 1 — Surface Identification:** lock the exact files, symbols, and public signatures.
 2. **Phase 2 — Behavioral Parity Coverage Proof:** demonstrate pre-existing tests already cover the

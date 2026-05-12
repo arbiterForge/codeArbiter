@@ -14,7 +14,7 @@ The argument must describe the symptom with enough fidelity that a different ope
 
 ## Routes To
 
-`debug` skill (`.agents/skills/debug/SKILL.md`) — all five phases:
+`debug` skill (`${FRAMEWORK_ROOT}/.agents/skills/debug/SKILL.md`) — all five phases:
 
 1. **Symptom Capture** — record observed vs. expected behavior, minimal repro, environment, evidence in hand.
 2. **Hypothesis Generation** — produce at least three distinct ranked candidate causes, including at least one "boring" environmental / configuration / dependency hypothesis.
@@ -22,7 +22,7 @@ The argument must describe the symptom with enough fidelity that a different ope
 4. **Root Cause Decision** — exit to exactly one of:
    - **(a) Confirmed bug** → emit `/fix` invocation carrying the confirmed bug statement, cited evidence, and a named regression test obligation.
    - **(b) Behavior / design ambiguity** → emit `/ticket` (open work item) or `/adr` (architectural decision, with user attribution) with the symptom record and evidence ledger attached.
-   - **(c) No-action close** → record symptom and rationale to `.agents/projectContext/debug-log.md`.
+   - **(c) No-action close** → record symptom and rationale to `${PROJECT_ROOT}/.agents/projectContext/debug-log.md`.
 5. **Handoff** — emit summary block and route the chosen exit.
 
 ## Phase Gates (hard stops)

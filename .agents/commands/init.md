@@ -12,7 +12,7 @@ Re-run the codeArbiter initialization detection. For repair only — not for rou
 
 No arguments. This command is invoked when:
 - The initialization sentinel is missing from an existing `CONTEXT.md`
-- `projectContext/` appears partially populated but the system behaves as if uninitialized
+- `${PROJECT_ROOT}/.agents/projectContext/` appears partially populated but the system behaves as if uninitialized
 - A new AI session cannot locate the project context after a reset
 
 ## What Happens
@@ -47,5 +47,5 @@ No arguments. This command is invoked when:
 ## When NOT to Use
 
 - During normal development: this command is for repair only
-- If you want to update project context (e.g., add a new tech stack entry): edit `projectContext/` files directly via `/feature` or by hand
+- If you want to update project context (e.g., add a new tech stack entry): edit `${PROJECT_ROOT}/.agents/projectContext/` files directly via `/feature` or by hand
 - If `CONTEXT.md` is intentionally absent (project is not yet initialized): run the project setup flow, not `/init`

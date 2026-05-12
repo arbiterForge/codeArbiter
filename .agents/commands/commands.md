@@ -14,7 +14,7 @@ No arguments.
 
 ## What Happens
 
-1. Reads `COMMANDS.md` (or `.agents/COMMANDS.md` if that is the canonical location)
+1. Reads `COMMANDS.md` (or `${FRAMEWORK_ROOT}/.agents/COMMANDS.md` if that is the canonical location)
 2. Outputs the Quick Reference table only — not the full document
 3. Done. No side effects.
 

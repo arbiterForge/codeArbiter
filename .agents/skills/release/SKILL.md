@@ -30,13 +30,13 @@ The orchestrator routes to this skill when:
   green main and an authorized release window.
 - A stage promotion is queued and the promotion criteria require a release tag at the current stage
   before promotion proceeds.
-- A scheduled release window has been declared in `projectContext/` and the current SHA is the
+- A scheduled release window has been declared in `${PROJECT_ROOT}/.agents/projectContext/` and the current SHA is the
   candidate.
 - The routing table in `AGENTS.md` references this skill for a release-class workflow.
 
 This skill MUST NOT be invoked to produce a "hotfix tag" without running every phase. There are no
 abbreviated releases. A hotfix that requires bypassing a gate is an `/override` event, logged
-permanently to `.agents/projectContext/overrides.log`.
+permanently to `${PROJECT_ROOT}/.agents/projectContext/overrides.log`.
 
 ---
 
@@ -45,9 +45,9 @@ permanently to `.agents/projectContext/overrides.log`.
 Before Phase 1 begins, confirm the following. Each check either passes silently or hard-stops with
 a specific error message.
 
-1. `.agents/projectContext/stage` is readable and contains a valid integer 1–4. If missing or
+1. `${PROJECT_ROOT}/.agents/projectContext/stage` is readable and contains a valid integer 1–4. If missing or
    non-numeric, STOP and surface the error — the release cannot proceed without a known stage.
-2. `.agents/projectContext/audit-spec.md` is readable. If missing, STOP — fail-closed audit policy
+2. `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` is readable. If missing, STOP — fail-closed audit policy
    verification in Phase 6 has no source of truth.
 3. The working tree is clean. Run `git status` and confirm there are no uncommitted changes. If
    the tree is dirty, STOP and instruct the user to commit or stash via the `commit-gate` skill.
@@ -70,7 +70,7 @@ commit-gate clean, no blocking CONFIRM placeholders, ADR health within tolerance
 **Inputs:**
 - The most recent `tdd` skill run result (specifically, Phase 6 green/red on `LAST_TAG..HEAD`).
 - The most recent `commit-gate` skill run on the HEAD commit.
-- `.agents/projectContext/open-questions.md` — for any `[CONFIRM-NN]` entries flagged as blocking
+- `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` — for any `[CONFIRM-NN]` entries flagged as blocking
   the target stage.
 - The ADR health table from the most recent `decision-lifecycle` run, or the requirement to run it.
 
@@ -82,7 +82,7 @@ commit-gate clean, no blocking CONFIRM placeholders, ADR health within tolerance
    Read the most recent commit message footer and verify it was not produced via `/override`. An
    override-tagged HEAD commit BLOCKS Phase 1 unless the user explicitly re-authorizes the release
    via a new `/override`.
-3. Read `.agents/projectContext/open-questions.md`. Identify every `[CONFIRM-NN]` entry whose
+3. Read `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`. Identify every `[CONFIRM-NN]` entry whose
    target stage equals or exceeds the current stage. If any are still in OPEN or
    PARTIALLY-EVIDENCED status (per the `decision-lifecycle` taxonomy), record `READINESS=BLOCK`
    with the entry IDs.
@@ -104,18 +104,18 @@ an override-tagged HEAD, an unresolved blocking `[CONFIRM-NN]`, or a missing ADR
 without a fresh checkpoint is a release without a baseline.
 
 **Inputs:**
-- `projectContext/checkpoints/` — for the most recent checkpoint document.
-- The current value of `.agents/projectContext/stage` — to compute stage-appropriate BLOCKS
+- `${PROJECT_ROOT}/.agents/projectContext/checkpoints/` — for the most recent checkpoint document.
+- The current value of `${PROJECT_ROOT}/.agents/projectContext/stage` — to compute stage-appropriate BLOCKS
   classifications.
 
 **Actions:**
 
 1. Determine whether a checkpoint document dated within the release window
-   (`LAST_TAG..HEAD` time range) already exists in `projectContext/checkpoints/`. If yes and it
+   (`LAST_TAG..HEAD` time range) already exists in `${PROJECT_ROOT}/.agents/projectContext/checkpoints/`. If yes and it
    is signed off by a named approver, capture it. If no, route to the `/checkpoint` command and
    wait for completion.
 2. The `/checkpoint` command dispatches all seven checkpoint agents and writes
-   `projectContext/checkpoints/YYYY-MM-DD.md`. The release skill does not re-implement that work —
+   `${PROJECT_ROOT}/.agents/projectContext/checkpoints/YYYY-MM-DD.md`. The release skill does not re-implement that work —
    it routes to it and reads the output.
 3. After `/checkpoint` returns, parse the checkpoint document and tabulate:
    - Total CRITICAL findings.
@@ -251,12 +251,12 @@ defer aged-and-unchallenged ADRs; the gate is binary.
 ## Phase 6 — Stage Threshold Verification
 
 **Goal:** Confirm that the project, at this SHA, meets the published thresholds for the current
-stage as recorded in `.agents/projectContext/stage` and its supporting policy documents.
+stage as recorded in `${PROJECT_ROOT}/.agents/projectContext/stage` and its supporting policy documents.
 
 **Inputs:**
-- `.agents/projectContext/stage` — the integer 1–4.
-- `.agents/projectContext/audit-spec.md` — for stage-specific fail-closed audit policy.
-- Project-specific stage policy in `projectContext/decisions/` or `projectContext/open-questions.md`
+- `${PROJECT_ROOT}/.agents/projectContext/stage` — the integer 1–4.
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — for stage-specific fail-closed audit policy.
+- Project-specific stage policy in `${PROJECT_ROOT}/.agents/projectContext/decisions/` or `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`
   (per the `stage-gating` skill's reference table).
 
 **Actions:**
@@ -267,13 +267,13 @@ stage as recorded in `.agents/projectContext/stage` and its supporting policy do
    release artifact does not violate it.
 3. Verify stage-specific release thresholds:
    - **Coverage threshold.** Read the threshold for the current stage from the project's coverage
-     policy (typically declared in `projectContext/coding-standards.md` or `tech-stack.md`). Run
+     policy (typically declared in `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` or `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`). Run
      the coverage report. If coverage is below the threshold, record `STAGE=BLOCK`.
    - **Fail-closed audit policy.** Read the stage's required audit posture from
-     `audit-spec.md`. Confirm the deployed audit configuration is fail-closed at or above the
+     `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`. Confirm the deployed audit configuration is fail-closed at or above the
      stage's required level. If not, record `STAGE=BLOCK`.
    - **Trust-zone declarations.** If the current stage requires declared egress points (typically
-     S3+), confirm `projectContext/trust-zones.md` declares every outbound integration present in
+     S3+), confirm `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` declares every outbound integration present in
      the code at HEAD.
 4. The `stage-gating` skill is authoritative on what rules apply at the current stage. The release
    skill MUST NOT infer a different set.
@@ -319,15 +319,15 @@ the user. This phase only runs if every prior phase returned PASS — there are 
    - Stage threshold checks (coverage %, audit policy, trust-zone declarations).
    - Tag composition (tag name, tag SHA, tag message preview).
 4. Deliver the report to the user. The report is the release artifact — preserve it. Write it to
-   `projectContext/releases/vMAJOR.MINOR.PATCH.md` for permanent record.
+   `${PROJECT_ROOT}/.agents/projectContext/releases/vMAJOR.MINOR.PATCH.md` for permanent record.
 5. MUST NOT push the tag to a remote without explicit user instruction. Tag publication is a
    separate decision the user MUST authorize after reviewing the report.
 
 **Output:** Annotated tag in the local repository, plus the deployment-readiness report at
-`projectContext/releases/vMAJOR.MINOR.PATCH.md`.
+`${PROJECT_ROOT}/.agents/projectContext/releases/vMAJOR.MINOR.PATCH.md`.
 
 **Gate:** BLOCK if any prior phase recorded DEFERRED rather than PASS. BLOCK if tag composition
-fails for any reason (e.g., tag already exists). BLOCK if `projectContext/releases/` cannot be
+fails for any reason (e.g., tag already exists). BLOCK if `${PROJECT_ROOT}/.agents/projectContext/releases/` cannot be
 written. MUST NOT push the tag without explicit user authorization.
 
 ---
@@ -375,7 +375,7 @@ The release skill is the most-interacting skill in the framework. It does not du
 the skills it depends on — it routes to them, reads their outputs, and BLOCKS on their verdicts.
 
 - **`/checkpoint` command (Phase 2).** The release skill invokes `/checkpoint` directly (or reads
-  a fresh signed-off checkpoint document already present in `projectContext/checkpoints/`). The
+  a fresh signed-off checkpoint document already present in `${PROJECT_ROOT}/.agents/projectContext/checkpoints/`). The
   `/checkpoint` command dispatches all seven checkpoint reviewer agents. The release skill MUST
   NOT re-implement that work; it reads the resulting checkpoint document and gates on
   finding counts.
@@ -395,7 +395,7 @@ the skills it depends on — it routes to them, reads their outputs, and BLOCKS 
   resolves it via `/adr` with explicit attribution. The release skill MUST NOT modify ADR status
   on its own.
 - **`/override` command (any phase).** Any phase BLOCK can be bypassed only via `/override`,
-  which logs the bypass to `.agents/projectContext/overrides.log`. The release skill itself MUST
+  which logs the bypass to `${PROJECT_ROOT}/.agents/projectContext/overrides.log`. The release skill itself MUST
   NOT silently lower a gate.
 
 ---
@@ -404,7 +404,7 @@ the skills it depends on — it routes to them, reads their outputs, and BLOCKS 
 
 | Failure                                              | Response                                                                  |
 |------------------------------------------------------|---------------------------------------------------------------------------|
-| `.agents/projectContext/stage` missing               | STOP in Pre-Flight; surface gap; the release cannot proceed               |
+| `${PROJECT_ROOT}/.agents/projectContext/stage` missing               | STOP in Pre-Flight; surface gap; the release cannot proceed               |
 | `audit-spec.md` missing                              | STOP in Pre-Flight; Phase 6 has no source of truth                        |
 | Empty commit window (`LAST_TAG..HEAD`)               | STOP in Pre-Flight; there is nothing to release                           |
 | Tests red                                            | BLOCK in Phase 1; surface failing tests; route user to `tdd` skill        |
@@ -418,7 +418,7 @@ the skills it depends on — it routes to them, reads their outputs, and BLOCKS 
 | Coverage below stage threshold                       | BLOCK in Phase 6; user remediates coverage; no release on sub-threshold   |
 | Fail-closed audit policy not met for current stage   | BLOCK in Phase 6; user remediates audit config; no release on open policy |
 | Tag already exists                                   | BLOCK in Phase 7; surface conflict; user resolves before retry            |
-| `projectContext/releases/` not writable              | BLOCK in Phase 7; surface filesystem issue; the report MUST be preserved  |
+| `${PROJECT_ROOT}/.agents/projectContext/releases/` not writable              | BLOCK in Phase 7; surface filesystem issue; the report MUST be preserved  |
 | Any prior gate DEFERRED                              | BLOCK in Phase 7; MUST NOT promote DEFERRED into PASS                     |
 
 ---

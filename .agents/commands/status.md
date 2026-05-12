@@ -14,11 +14,11 @@ No arguments.
 
 ## What Happens
 
-1. Reads `projectContext/stage` — current stage number and name
-2. Reads `projectContext/open-tasks.md` — all tasks, grouped by status (IN-FLIGHT, BACKLOG, DONE)
-3. Reads `projectContext/open-questions.md` — all unresolved `[CONFIRM-NN]` placeholders and open questions
-4. Reads `projectContext/checkpoints/` — most recent checkpoint file (if any), sign-off status, unresolved findings
-5. Reads `projectContext/decisions/README.md` — count of proposed vs. accepted ADRs
+1. Reads `${PROJECT_ROOT}/.agents/projectContext/stage` — current stage number and name
+2. Reads `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md` — all tasks, grouped by status (IN-FLIGHT, BACKLOG, DONE)
+3. Reads `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` — all unresolved `[CONFIRM-NN]` placeholders and open questions
+4. Reads `${PROJECT_ROOT}/.agents/projectContext/checkpoints/` — most recent checkpoint file (if any), sign-off status, unresolved findings
+5. Reads `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` — count of proposed vs. accepted ADRs
 6. Outputs a formatted status report
 
 ## Output Structure

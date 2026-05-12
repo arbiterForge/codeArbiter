@@ -14,7 +14,7 @@ The description must be specific enough to determine scope (backend, frontend, i
 
 ## Routes To
 
-`tdd` skill (`.agents/skills/tdd/SKILL.md`) — all phases. After Phase 1, codeArbiter routes to one of:
+`tdd` skill (`${FRAMEWORK_ROOT}/.agents/skills/tdd/SKILL.md`) — all phases. After Phase 1, codeArbiter routes to one of:
 
 - `backend-author` — backend / API / service code
 - `frontend-author` — UI / frontend code

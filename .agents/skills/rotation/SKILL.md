@@ -29,7 +29,7 @@ Routed when:
 - A change touches the issuance path of any rotation-bearing artifact (new
   issuer, new key store binding, new dual-running window).
 - A scheduled rotation review fires (cadence audit against
-  `projectContext/secrets-policy.md`).
+  `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`).
 - A subagent or skill detects an artifact with no recorded last-rotation
   timestamp.
 - The routing table references this skill (lifecycle dimension of any
@@ -48,17 +48,17 @@ Not routed for:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/secrets-policy.md` is readable. This file is the
+1. `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` is readable. This file is the
    authoritative source for the project's rotation-bearing artifact list,
    cadence values, issuance paths, and archival location. Stop if missing.
-2. `.agents/projectContext/security-controls.md` is readable. This file
+2. `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` is readable. This file
    provides the approved key store, approved primitives, and any compliance
    mode (FIPS, internal CA) constraints that govern rotation issuance. Stop
    if missing.
-3. `.agents/projectContext/audit-spec.md` is readable. Rotation MUST emit an
+3. `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` is readable. Rotation MUST emit an
    audit event; the action string and required fields come from this file.
    Stop if missing.
-4. Current stage is known — `cat .agents/projectContext/stage`.
+4. Current stage is known — `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 
 If any file is missing, surface the gap and stop. Do not guess at cadence
 defaults, store references, or audit action strings without confirming the
@@ -73,14 +73,14 @@ has a recorded last-rotation timestamp.
 
 **Inputs:**
 - The set of artifacts touched or implied by the change.
-- `.agents/projectContext/secrets-policy.md` — authoritative artifact list and
+- `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` — authoritative artifact list and
   recorded last-rotation timestamps per artifact.
-- `.agents/projectContext/security-controls.md` — approved key store reference
+- `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` — approved key store reference
   format (used to identify artifacts by reference, not value).
 
 **Actions:**
 
-1. Read `projectContext/secrets-policy.md` in full. Extract the project's
+1. Read `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` in full. Extract the project's
    authoritative list of rotation-bearing artifacts. The default categories
    that MUST be considered if the file does not narrow the list:
    - Signing keys (JWT signers, request signers, code signers)
@@ -89,13 +89,13 @@ has a recorded last-rotation timestamp.
    - TLS certificates (public-facing and internal)
    - Service account credentials (workload identity bindings, machine accounts)
 2. For each artifact in scope, record:
-   - Artifact identifier (reference format per `security-controls.md` — never
+   - Artifact identifier (reference format per `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` — never
      the value).
    - Artifact category.
-   - Last-rotation timestamp (ISO 8601, from `secrets-policy.md` or the
+   - Last-rotation timestamp (ISO 8601, from `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` or the
      approved key store).
    - Issuance path (where the next replacement comes from).
-3. If `secrets-policy.md` does not record a last-rotation timestamp for an
+3. If `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` does not record a last-rotation timestamp for an
    artifact in scope, mark that artifact `UNROTATED-UNKNOWN`. This is a BLOCK
    condition — an artifact with no recorded rotation history cannot be audited
    for cadence compliance.
@@ -119,12 +119,12 @@ flag every artifact past its cadence as a BLOCK.
 
 **Inputs:**
 - Inventory from Phase 1.
-- `.agents/projectContext/secrets-policy.md` — project-specific cadence values
+- `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` — project-specific cadence values
   per artifact category.
 
 **Actions:**
 
-1. Read cadence values from `projectContext/secrets-policy.md`. If the file
+1. Read cadence values from `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`. If the file
    specifies a cadence per category, use that. If the file is silent on a
    category, apply the defaults below:
 
@@ -133,8 +133,8 @@ flag every artifact past its cadence as a BLOCK.
    | Signing keys | 1 year |
    | OIDC client secrets | 6 months |
    | TLS certificates | 90 days |
-   | API tokens | per `secrets-policy.md`; if silent, treat as signing-key cadence (1 year) |
-   | Service account credentials | per `secrets-policy.md`; if silent, treat as signing-key cadence (1 year) |
+   | API tokens | per `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`; if silent, treat as signing-key cadence (1 year) |
+   | Service account credentials | per `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`; if silent, treat as signing-key cadence (1 year) |
 
 2. For each artifact, compute age = (today − last-rotation timestamp).
 3. Compare age to the applicable cadence. Mark each artifact:
@@ -144,8 +144,8 @@ flag every artifact past its cadence as a BLOCK.
    - `PAST-CADENCE` — age ≥ cadence (BLOCK).
 4. If the project applies stage-dependent cadence (e.g., tighter cadence at
    Stage 3+), apply the stage-appropriate value read from
-   `secrets-policy.md`.
-5. Do not silently reconcile a cadence ambiguity. If `secrets-policy.md` is
+   `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`.
+5. Do not silently reconcile a cadence ambiguity. If `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` is
    silent on a category AND a default would not clearly apply, invoke
    `/surface-conflict` and stop.
 
@@ -154,7 +154,7 @@ flag every artifact past its cadence as a BLOCK.
 
 **Gate:** BLOCK on any artifact tagged `PAST-CADENCE`. No Phase 3 until every
 `PAST-CADENCE` artifact either enters the rotation plan in Phase 3 or has a
-documented exception in `projectContext/open-questions.md` with a CONFIRM
+documented exception in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` with a CONFIRM
 placeholder.
 
 ---
@@ -167,9 +167,9 @@ rotation begins.
 
 **Inputs:**
 - Artifacts tagged `PAST-CADENCE` or otherwise scheduled for rotation.
-- `.agents/projectContext/secrets-policy.md` — issuance paths, dual-running
+- `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` — issuance paths, dual-running
   policy, archival location.
-- `.agents/projectContext/security-controls.md` — approved key store and
+- `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` — approved key store and
   primitive constraints for new credential issuance.
 
 **Actions:**
@@ -178,13 +178,13 @@ rotation begins.
 
    - **New-credential issuance path** — the exact store and procedure that
      produces the replacement credential. Must reference the approved key
-     store from `security-controls.md`. Primitive (algorithm, key size, curve)
+     store from `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`. Primitive (algorithm, key size, curve)
      must satisfy `crypto-compliance` — do not propose a primitive without
      routing the primitive choice through the `crypto-compliance` skill.
    - **Dual-running window** — start time, end time, and the policy for
      accepting both old and new credentials during the window. Must be long
      enough for every consumer to cut over and short enough to bound exposure
-     if the old credential is compromised. If `secrets-policy.md` specifies a
+     if the old credential is compromised. If `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` specifies a
      window, use that; otherwise propose one and surface it for confirmation.
    - **Consumer cutover plan** — the list of consumers that hold or verify
      this credential, the order they cut over in, and how cutover is
@@ -193,7 +193,7 @@ rotation begins.
      dependency and a future incident.
    - **Archival path** — the destination where the old credential's record
      (not its value) is written when the rotation completes. Must match the
-     archival location specified in `secrets-policy.md`. If no archival path
+     archival location specified in `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`. If no archival path
      is defined for this category, surface and stop — do not invent one.
 
 2. The plan MUST identify the approver. Rotation without a named human
@@ -210,7 +210,7 @@ approver named.
 with no archival cannot be audited and is treated as credential loss. BLOCK if
 no approver is named at Stage 3+. BLOCK if the proposed primitive has not
 been validated through `crypto-compliance`. BLOCK if the issuance path does
-not use the approved key store from `security-controls.md`.
+not use the approved key store from `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`.
 
 ---
 
@@ -221,7 +221,7 @@ through the canonical audit sink, routed via the `audit-emit` skill.
 
 **Inputs:**
 - Rotation plans from Phase 3.
-- `.agents/projectContext/audit-spec.md` — action naming convention, required
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — action naming convention, required
   fields, canonical sink.
 - The `audit-emit` skill — primary handler for the emit construction, sink
   routing, fail-closed, and test obligation phases.
@@ -229,7 +229,7 @@ through the canonical audit sink, routed via the `audit-emit` skill.
 **Actions:**
 
 1. For each rotation, classify the action string per
-   `projectContext/audit-spec.md`. The default action is `key.rotate`; if the
+   `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`. The default action is `key.rotate`; if the
    project's spec defines a different convention (for example
    `credential.rotate`, `cert.rotate`, or `secret.rotate` for distinct
    categories), use the spec's strings. Do not invent an action name.
@@ -259,7 +259,7 @@ constructed, routed, fail-closed-validated, and test-covered through the
 **Gate:** BLOCK if the `audit-emit` skill's Phase 5 (Test Obligation) is
 incomplete for the rotation event. BLOCK if the action name is unregistered.
 BLOCK if the emit routes through any path other than the canonical sink
-defined in `projectContext/audit-spec.md`.
+defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 
 ---
 
@@ -270,7 +270,7 @@ the four facts that allow a future auditor to reconstruct the rotation chain.
 
 **Inputs:**
 - Completed rotation event(s) from Phase 4.
-- `.agents/projectContext/secrets-policy.md` — archival destination and
+- `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` — archival destination and
   record format.
 
 **Actions:**
@@ -284,10 +284,10 @@ the four facts that allow a future auditor to reconstruct the rotation chain.
    - **What replaced it** — the replacement credential's store reference.
    - **Who approved** — the named human approver from Phase 3.
 2. Write the record to the archival destination specified in
-   `projectContext/secrets-policy.md`. If the destination is append-only,
+   `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`. If the destination is append-only,
    confirm append-only semantics (no edit or delete) before writing. If the
    destination is missing, surface and stop — do not improvise.
-3. Update `secrets-policy.md` (or the project's authoritative timestamp
+3. Update `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` (or the project's authoritative timestamp
    register) to record the new last-rotation timestamp for the artifact. This
    feeds Phase 1 of the next rotation cycle. An unupdated register makes the
    next cadence check fire incorrectly.
@@ -301,7 +301,7 @@ authoritative register.
 
 **Gate:** BLOCK if the archival record is missing any of the four facts
 (which / when / what / who). BLOCK if the last-rotation timestamp in
-`secrets-policy.md` (or equivalent register) has not been updated. BLOCK if
+`${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` (or equivalent register) has not been updated. BLOCK if
 the archival destination cannot be confirmed append-only when policy requires
 it.
 
@@ -309,24 +309,24 @@ it.
 
 ## Hard Rules
 
-- MUST read `projectContext/secrets-policy.md` and
-  `projectContext/security-controls.md` before Phase 1. BLOCK if either file
+- MUST read `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` and
+  `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` before Phase 1. BLOCK if either file
   is missing.
 - MUST NOT proceed with a rotation against an artifact that has no recorded
   last-rotation timestamp. Inventory is a precondition, not an outcome.
 - MUST NOT use cadence defaults without first checking whether
-  `secrets-policy.md` defines project-specific cadence values.
+  `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` defines project-specific cadence values.
 - MUST NOT propose a rotation primitive without routing the primitive through
   the `crypto-compliance` skill.
 - MUST NOT issue a replacement credential through any store other than the
-  one approved in `security-controls.md`.
+  one approved in `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`.
 - MUST NOT skip the dual-running window for a credential with multiple
   consumers. A hard cutover without dual-running guarantees an outage and
   hides cutover bugs.
 - MUST NOT delete the retired credential's archival record. MUST NOT
   overwrite a prior archival record.
 - MUST NOT emit the rotation event through any path other than the canonical
-  audit sink defined in `projectContext/audit-spec.md`.
+  audit sink defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 - MUST NOT include the credential value, key material, or any reversible
   derivation in the audit event or archival record. Store references only.
 - MUST NOT mark a rotation complete until Phase 5 has written the archival
@@ -340,17 +340,17 @@ it.
 
 | Gate | Condition | Action if blocked |
 |---|---|---|
-| Phase 1 exit | Any artifact in scope has no recorded last-rotation timestamp | Record timestamp in `secrets-policy.md` or mark artifact for first-rotation flow before proceeding |
+| Phase 1 exit | Any artifact in scope has no recorded last-rotation timestamp | Record timestamp in `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` or mark artifact for first-rotation flow before proceeding |
 | Phase 1 exit | Inventory contains raw key material rather than store references | Replace with store references; never log or persist values |
-| Phase 2 exit | Any artifact tagged `PAST-CADENCE` | Move artifact into Phase 3 rotation plan or open a CONFIRM in `open-questions.md` |
-| Phase 2 exit | Cadence ambiguity not resolvable from `secrets-policy.md` | Invoke `/surface-conflict`; do not apply defaults silently |
-| Phase 3 exit | Rotation plan missing archival step | Add archival path from `secrets-policy.md`; do not invent one |
+| Phase 2 exit | Any artifact tagged `PAST-CADENCE` | Move artifact into Phase 3 rotation plan or open a CONFIRM in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` |
+| Phase 2 exit | Cadence ambiguity not resolvable from `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` | Invoke `/surface-conflict`; do not apply defaults silently |
+| Phase 3 exit | Rotation plan missing archival step | Add archival path from `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`; do not invent one |
 | Phase 3 exit | No named approver at Stage 3+ | Name an approver; rotation cannot proceed |
 | Phase 3 exit | Proposed primitive not validated through `crypto-compliance` | Route primitive through `crypto-compliance` first |
 | Phase 4 exit | `audit-emit` Phase 5 (Test Obligation) incomplete | Complete test coverage of the rotation emit before proceeding |
-| Phase 4 exit | Action name unregistered or emit bypasses canonical sink | Register action in `audit-spec.md`; reroute through canonical sink |
+| Phase 4 exit | Action name unregistered or emit bypasses canonical sink | Register action in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`; reroute through canonical sink |
 | Phase 5 exit | Archival record missing any of which / when / what / who | Add missing fact before recording rotation complete |
-| Phase 5 exit | Last-rotation timestamp not updated in `secrets-policy.md` register | Update register; without it the next cadence check is wrong |
+| Phase 5 exit | Last-rotation timestamp not updated in `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` register | Update register; without it the next cadence check is wrong |
 
 ---
 
@@ -378,7 +378,7 @@ it.
 - **`stage-gating`** — Stage value read in Pre-Flight feeds cadence selection
   (Phase 2) and approver requirement (Phase 3). Stage 3+ tightens both.
 - **`decision-lifecycle`** — A `PAST-CADENCE` artifact with a justified
-  exception is recorded as a CONFIRM in `open-questions.md`, not silently
+  exception is recorded as a CONFIRM in `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`, not silently
   reconciled here. An exception that becomes permanent is an ADR candidate
   authored only via `/adr`.
 

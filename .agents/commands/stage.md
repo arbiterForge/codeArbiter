@@ -7,21 +7,21 @@ Report the current project stage, or run the promotion checklist to advance to a
 ## Usage
 
 ```
-/stage          # report current stage from projectContext/stage
+/stage          # report current stage from ${PROJECT_ROOT}/.agents/projectContext/stage
 /stage 2        # run promotion checklist: current → Stage 2
 /stage 3        # run promotion checklist: current → Stage 3
 ```
 
 ## Routes To
 
-`stage-gating` skill (`.agents/skills/stage-gating/SKILL.md`).
+`stage-gating` skill (`${FRAMEWORK_ROOT}/.agents/skills/stage-gating/SKILL.md`).
 
-- **No argument:** status-report mode. Reads `projectContext/stage` and most recent `projectContext/checkpoints/*` doc; reports stage, last checkpoint date, unresolved `BLOCKS_S[N+1]` findings.
-- **With target N:** promotion mode. Skill verifies sign-off, resolves blocks, then requires user confirmation before updating `projectContext/stage`.
+- **No argument:** status-report mode. Reads `${PROJECT_ROOT}/.agents/projectContext/stage` and most recent `${PROJECT_ROOT}/.agents/projectContext/checkpoints/*` doc; reports stage, last checkpoint date, unresolved `BLOCKS_S[N+1]` findings.
+- **With target N:** promotion mode. Skill verifies sign-off, resolves blocks, then requires user confirmation before updating `${PROJECT_ROOT}/.agents/projectContext/stage`.
 
 ## Command-owned reference
 
-Generic stage progression (project-specific criteria in `projectContext/stage-definitions.md`):
+Generic stage progression (project-specific criteria in `${PROJECT_ROOT}/.agents/projectContext/stage-definitions.md`):
 
 | Stage | Typical Promotion Trigger |
 |-------|--------------------------|

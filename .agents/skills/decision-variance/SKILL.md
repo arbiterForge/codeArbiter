@@ -41,14 +41,14 @@ Before running any arbitration logic, this skill must check whether the artifact
 
 **Mechanism:** When a decision is recorded in the decision log, this skill also records the SHA-256 hash of the artifact section that defined the artifact's position at decision time. On subsequent invocations, this skill:
 
-1. Reads `projectContext/arbiter-decisions.md` and extracts the recorded artifact-section hashes for each prior decision
+1. Reads `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` and extracts the recorded artifact-section hashes for each prior decision
 2. Computes current hashes of the relevant artifact sections
 3. Compares — any prior decision whose artifact-section hash has changed is flagged with `requires-re-evaluation`
 4. Surfaces the flagged decisions to the user before running new variance analysis: "These prior decisions reference artifact sections that have changed. Should they be re-evaluated?"
 
 If the decision log does not yet exist (first arbitration session), this step is skipped — there is nothing to compare.
 
-The hash field is added to every decision entry in the format defined in `references/decision-log-format.md`.
+The hash field is added to every decision entry in the format defined in `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-log-format.md`.
 
 ---
 
@@ -68,7 +68,7 @@ The hash field is added to every decision entry in the format defined in `refere
 - Modifying the three architectural artifacts (artifacts are read-only inputs)
 - Modifying scaffold or codebase to "fix" variance — this skill records and recommends; the user implements
 - Speculating on intent when evidence is missing — flag the gap, do not invent
-- Operational decisions like spike ownership assignments or cross-team engagement timing (see `references/known-open-decisions.md`)
+- Operational decisions like spike ownership assignments or cross-team engagement timing (see `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/known-open-decisions.md`)
 
 ---
 
@@ -76,7 +76,7 @@ The hash field is added to every decision entry in the format defined in `refere
 
 Before running the workflow, verify the three canonical artifact filenames are present somewhere in the project:
 
-1. Look for the three canonical artifact files in `projectContext/decomposition/` first, then in the project root, then in `docs/` and similar documentation directories.
+1. Look for the three canonical artifact files in `${PROJECT_ROOT}/.agents/projectContext/decomposition/` first, then in the project root, then in `docs/` and similar documentation directories.
 2. If none of the three artifact files can be located, ask the user for their paths. Do NOT proceed by inference.
 
 ---
@@ -89,25 +89,25 @@ When this skill is invoked, work through these stages in order. Do not skip stag
 
 Find these in the project:
 
-1. **The three architectural artifacts** — by exact filename per Rule 2. Look first in `projectContext/decomposition/`, then the project root, `docs/`, `docs/architecture/`. Use `find` or equivalent to locate by exact filename. If any are missing, ask the user.
+1. **The three architectural artifacts** — by exact filename per Rule 2. Look first in `${PROJECT_ROOT}/.agents/projectContext/decomposition/`, then the project root, `docs/`, `docs/architecture/`. Use `find` or equivalent to locate by exact filename. If any are missing, ask the user.
 
-2. **Existing decision records** — look for `projectContext/decisions/`, `docs/adr/`, `docs/decisions/`, `ADRs/`, or similar paths. Index every ADR found with its number, title, status, and decision summary.
+2. **Existing decision records** — look for `${PROJECT_ROOT}/.agents/projectContext/decisions/`, `docs/adr/`, `docs/decisions/`, `ADRs/`, or similar paths. Index every ADR found with its number, title, status, and decision summary.
 
-3. **Existing decision log** — `projectContext/arbiter-decisions.md`. If it exists, this is the persistent record. Read it before generating new variance reports.
+3. **Existing decision log** — `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md`. If it exists, this is the persistent record. Read it before generating new variance reports.
 
 4. **The scaffold/codebase itself** — `package.json` or equivalent manifests, dependency files, source directories, configuration files, CI configuration.
 
 5. **This skill's working files (created if missing):**
-   - `projectContext/arbiter-evidence.md` — working evidence index, rebuilt every full scan
-   - `projectContext/arbiter-variance-report.md` — current variance report, overwritten every scan
-   - `projectContext/arbiter-decisions.md` — persistent decision log, append-only (per Rule 3 hashing)
-   - `projectContext/arbiter-readiness.md` — downstream artifact readiness, overwritten
+   - `${PROJECT_ROOT}/.agents/projectContext/arbiter-evidence.md` — working evidence index, rebuilt every full scan
+   - `${PROJECT_ROOT}/.agents/projectContext/arbiter-variance-report.md` — current variance report, overwritten every scan
+   - `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` — persistent decision log, append-only (per Rule 3 hashing)
+   - `${PROJECT_ROOT}/.agents/projectContext/arbiter-readiness.md` — downstream artifact readiness, overwritten
 
 If the user's request mentions specific files or sections, prioritize those.
 
 ### Stage 1.5 — Stale-Artifact Check (Per Rule 3)
 
-If `projectContext/arbiter-decisions.md` exists:
+If `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` exists:
 
 1. Extract recorded artifact-section hashes from prior decision entries
 2. Compute current hashes of the corresponding artifact sections (use SHA-256 of the section content, including the section heading and excluding any HTML comments)
@@ -116,7 +116,7 @@ If `projectContext/arbiter-decisions.md` exists:
 5. Wait for the user's choice for each. Record outcomes:
    - **Re-evaluate:** treat as a new variance in the upcoming variance report
    - **Keep as-is:** update the recorded hash to current (the user is asserting the decision still applies despite the change)
-   - **Superseded:** prompt the user for a new decision; record per the supersession protocol in `references/decision-log-format.md`
+   - **Superseded:** prompt the user for a new decision; record per the supersession protocol in `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-log-format.md`
 
 If the decision log does not exist, skip Stage 1.5.
 
@@ -124,7 +124,7 @@ If the decision log does not exist, skip Stage 1.5.
 
 For each architectural decision in the three artifacts, record:
 
-- **Decision ID** — must come from the canonical list in `references/decision-categories.md`. Ad-hoc category creation is forbidden — see Rule 5 below.
+- **Decision ID** — must come from the canonical list in `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-categories.md`. Ad-hoc category creation is forbidden — see Rule 5 below.
 - **Artifact source** — which document, which section anchor, which paragraph
 - **Stated position** — what the artifact says is the decision
 - **Scaffold evidence** — what the codebase/ADRs/configuration actually demonstrate
@@ -135,13 +135,13 @@ For each architectural decision in the three artifacts, record:
   - `artifact-silent` — scaffold has implementation, artifact has no position
   - `both-silent` — neither has evidence (informational only)
 
-**Rule 5 — No ad-hoc category creation:** If this skill encounters a decision that does not fit any category in `references/decision-categories.md`, it MUST:
+**Rule 5 — No ad-hoc category creation:** If this skill encounters a decision that does not fit any category in `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-categories.md`, it MUST:
 1. Note the decision in the evidence index with `category: UNKNOWN`
 2. Describe what makes it not fit
 3. Ask the user to either map it to an existing category or explicitly add a new category to the canonical list
 4. Do NOT invent category names
 
-Save the evidence index to `projectContext/arbiter-evidence.md`. This is a working file, rebuilt on every invocation.
+Save the evidence index to `${PROJECT_ROOT}/.agents/projectContext/arbiter-evidence.md`. This is a working file, rebuilt on every invocation.
 
 ### Stage 3 — Generate the Variance Report
 
@@ -168,7 +168,7 @@ For every `divergent`, `scaffold-silent`, or `artifact-silent` variance from Sta
 4. **Defer with reason** — if acceptable for now, document why
 
 **SMARTS analysis of each option:**
-[Per `references/smarts-framework.md` — table format with hard length limits per cell]
+[Per `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/smarts-framework.md` — table format with hard length limits per cell]
 
 **Recommendation:** [Which option is preferable, and the strength: strong / moderate / tied]
 
@@ -179,7 +179,7 @@ For every `divergent`, `scaffold-silent`, or `artifact-silent` variance from Sta
 
 For high-variance situations (more than 10 `divergent`/`scaffold-silent`/`artifact-silent` cases), generate the report incrementally — group by area and present area-by-area to avoid overwhelming the user.
 
-Save the variance report to `projectContext/arbiter-variance-report.md`. This file is overwritten on every full scan.
+Save the variance report to `${PROJECT_ROOT}/.agents/projectContext/arbiter-variance-report.md`. This file is overwritten on every full scan.
 
 ### Stage 4 — Present Variances and Capture Decisions
 
@@ -188,7 +188,7 @@ Save the variance report to `projectContext/arbiter-variance-report.md`. This fi
 1. Group variances by area (auth, data, frontend, deployment, etc.)
 2. Within each area, present variances in dependency order — decisions that block other decisions go first
 3. Present one area at a time
-4. After each user decision, immediately append the decision to `projectContext/arbiter-decisions.md` — do NOT batch decisions in memory
+4. After each user decision, immediately append the decision to `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` — do NOT batch decisions in memory
 
 For each variance:
 
@@ -196,7 +196,7 @@ For each variance:
 2. Present the recommendation (recommend, do not push)
 3. Wait for the user's choice
 4. Confirm by repeating the decision back in one sentence
-5. Record the decision in `projectContext/arbiter-decisions.md` per `references/decision-log-format.md`
+5. Record the decision in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` per `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-log-format.md`
 6. Move to the next variance
 
 **Pause/Resume protocol:**
@@ -224,7 +224,7 @@ For any ADR referenced in this variance session that has not been challenged sin
 
 ### Stage 5 — Recommend Downstream Artifacts
 
-After the variance report is processed (or in parallel if the user requests), evaluate which downstream architectural artifacts can be produced. Use `references/downstream-artifacts.md` for the canonical list and the readiness criteria.
+After the variance report is processed (or in parallel if the user requests), evaluate which downstream architectural artifacts can be produced. Use `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/downstream-artifacts.md` for the canonical list and the readiness criteria.
 
 For each candidate artifact, report:
 
@@ -238,7 +238,7 @@ For each candidate artifact, report:
 - **Recommendation:** produce now | produce after specific variances resolved | do not produce yet
 ```
 
-Save to `projectContext/arbiter-readiness.md`. Present the recommendations as a menu. The user picks which to produce.
+Save to `${PROJECT_ROOT}/.agents/projectContext/arbiter-readiness.md`. Present the recommendations as a menu. The user picks which to produce.
 
 This skill does NOT produce downstream artifacts unless the user explicitly requests them. This skill recommends; production happens only after explicit user direction.
 
@@ -251,7 +251,7 @@ This skill does NOT produce downstream artifacts unless the user explicitly requ
 When evidence conflicts, this is the resolution order:
 
 1. **Explicit user decision in the current session** — overrides everything else
-2. **Decision recorded in `projectContext/arbiter-decisions.md`** — prior arbitration that has not been superseded
+2. **Decision recorded in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md`** — prior arbitration that has not been superseded
 3. **Existing ADR with status `accepted`** — formally captured project decision
 4. **The three architectural artifacts** — authoritative-by-default but not blindly adopted
 5. **Scaffold/codebase implementation** — strong evidence of intent, but may represent expedience rather than decision
@@ -274,10 +274,10 @@ The artifacts are authoritative-by-default but not infallible. If scaffold work 
 
 All files this skill writes go to predictable locations:
 
-- `projectContext/arbiter-evidence.md` — working evidence index, rebuilt every full scan
-- `projectContext/arbiter-variance-report.md` — current variance report, overwritten every scan
-- `projectContext/arbiter-decisions.md` — persistent decision log, append-only with hash tracking per Rule 3
-- `projectContext/arbiter-readiness.md` — downstream artifact readiness, overwritten
+- `${PROJECT_ROOT}/.agents/projectContext/arbiter-evidence.md` — working evidence index, rebuilt every full scan
+- `${PROJECT_ROOT}/.agents/projectContext/arbiter-variance-report.md` — current variance report, overwritten every scan
+- `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` — persistent decision log, append-only with hash tracking per Rule 3
+- `${PROJECT_ROOT}/.agents/projectContext/arbiter-readiness.md` — downstream artifact readiness, overwritten
 
 Do not write outside these paths without explicit user direction.
 
@@ -285,7 +285,7 @@ Do not write outside these paths without explicit user direction.
 
 ## When to Use Subagents
 
-For large reconciliation passes (more than ~20 decision categories or more than ~50 files in scaffold), spawn subagents per `agents/scout.md` and `agents/grader.md`:
+For large reconciliation passes (more than ~20 decision categories or more than ~50 files in scaffold), spawn subagents per `${FRAMEWORK_ROOT}/.agents/agents/scout.md` and `${FRAMEWORK_ROOT}/.agents/agents/grader.md`:
 
 - **Scout subagent** — scans a defined section of the codebase and reports evidence found, without making variance judgments
 - **Grader subagent** — takes a specific (artifact-position, scaffold-evidence) pair and produces a SMARTS analysis with recommendation
@@ -322,7 +322,7 @@ When the user has just answered a variance, confirm by repeating back what was d
 
 8. **Producing downstream artifacts without user request.** Stage 5 recommends; it does not produce.
 
-9. **Treating open decisions as variances.** See `references/known-open-decisions.md` for decisions deliberately left open by the artifacts.
+9. **Treating open decisions as variances.** See `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/known-open-decisions.md` for decisions deliberately left open by the artifacts.
 
 10. MUST NOT capitulate to delegation requests. Rule 1's exception applies only to explicit "accept your recommendation" — never to "you decide."
 
@@ -330,13 +330,13 @@ When the user has just answered a variance, confirm by repeating back what was d
 
 ## Reference Files
 
-- `references/decision-categories.md` — canonical list of decision categories (no ad-hoc additions)
-- `references/decision-log-format.md` — exact format for entries in the decision log, including hash field per Rule 3
-- `references/downstream-artifacts.md` — catalog of downstream artifacts this skill can recommend, with explicit readiness criteria
-- `references/smarts-framework.md` — SMARTS lens definitions and hard format constraints for analyses
-- `references/known-open-decisions.md` — decisions explicitly left open by the artifacts; not variances; standardized handling rules
+- `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-categories.md` — canonical list of decision categories (no ad-hoc additions)
+- `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-log-format.md` — exact format for entries in the decision log, including hash field per Rule 3
+- `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/downstream-artifacts.md` — catalog of downstream artifacts this skill can recommend, with explicit readiness criteria
+- `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/smarts-framework.md` — SMARTS lens definitions and hard format constraints for analyses
+- `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/known-open-decisions.md` — decisions explicitly left open by the artifacts; not variances; standardized handling rules
 
 ## Subagent Files
 
-- `agents/scout.md` — instructions for code-scanning subagents
-- `agents/grader.md` — instructions for SMARTS analysis subagents
+- `${FRAMEWORK_ROOT}/.agents/agents/scout.md` — instructions for code-scanning subagents
+- `${FRAMEWORK_ROOT}/.agents/agents/grader.md` — instructions for SMARTS analysis subagents

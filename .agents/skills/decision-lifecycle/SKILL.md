@@ -10,7 +10,7 @@ added, an ADR ages past review threshold, or a CONFIRM-NN is encountered.
 
 Triggers:
 - User requests an ADR status review or decision health check
-- A new ADR file is added to `.agents/projectContext/decisions/`
+- A new ADR file is added to `${PROJECT_ROOT}/.agents/projectContext/decisions/`
 - A CONFIRM-NN placeholder is found in any document or code
 - The `decision-lifecycle` skill is referenced in the routing table
 - Stage promotion is requested (decision health is a gate)
@@ -21,8 +21,8 @@ Triggers:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/decisions/README.md` is readable — stop if missing.
-2. `.agents/projectContext/open-questions.md` is readable — stop if missing.
+1. `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` is readable — stop if missing.
+2. `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` is readable — stop if missing.
 3. The agent has NOT resolved any CONFIRM-NN by assumption in the current
    session. If a guess was made, surface it immediately and stop.
 
@@ -36,12 +36,12 @@ If any file is missing, surface the gap and stop.
 attention.
 
 **Inputs:**
-- `.agents/projectContext/decisions/README.md` — ADR index
-- All ADR files under `.agents/projectContext/decisions/`
+- `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` — ADR index
+- All ADR files under `${PROJECT_ROOT}/.agents/projectContext/decisions/`
 
 **Actions:**
 
-1. Read `.agents/projectContext/decisions/README.md` to obtain the ADR index.
+1. Read `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` to obtain the ADR index.
 2. For each ADR listed, read the corresponding file and record:
    - ADR ID and title
    - Status (`proposed`, `accepted`, `superseded`, `deprecated`, or project-defined)
@@ -74,14 +74,14 @@ partial scan is not acceptable — every ADR in the index must be reviewed.
 to the user. MUST NOT guess resolutions.
 
 **Inputs:**
-- `.agents/projectContext/open-questions.md` — authoritative list of CONFIRM-NN
+- `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` — authoritative list of CONFIRM-NN
   placeholders
-- All ADR files under `.agents/projectContext/decisions/`
+- All ADR files under `${PROJECT_ROOT}/.agents/projectContext/decisions/`
 - Any other project documents that may contain CONFIRM-NN references
 
 **Actions:**
 
-1. Read `.agents/projectContext/open-questions.md` in full.
+1. Read `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` in full.
 2. For each CONFIRM-NN entry, search for evidence of resolution:
    - An ADR that explicitly closes the question with a cited decision
    - A documented user decision recorded in the session or commit history
@@ -115,7 +115,7 @@ newer ADRs, without silently changing their status.
 
 **Inputs:**
 - ADR health table from Phase 1
-- All ADR files under `.agents/projectContext/decisions/`
+- All ADR files under `${PROJECT_ROOT}/.agents/projectContext/decisions/`
 
 **Actions:**
 
@@ -235,7 +235,7 @@ rating of ≤ 2 must be surfaced as a stage promotion blocker.
 
 ## Hard Rules
 
-- MUST read `.agents/projectContext/decisions/README.md` before Phase 1.
+- MUST read `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` before Phase 1.
 - MUST NOT resolve a CONFIRM-NN by guessing. Surface OPEN items and stop.
 - MUST NOT silently change the status of any ADR. Status changes require user
   attribution or a recorded decision.

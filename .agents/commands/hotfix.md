@@ -9,7 +9,7 @@ second-identity attestation, records an auto-revert deadline, and mandates a
 post-hoc ADR within 72 hours.
 
 Hotfixes are never silent. Every invocation appends to
-`.agents/projectContext/hotfixes.log` and is surfaced at the next `/checkpoint`.
+`${PROJECT_ROOT}/.agents/projectContext/hotfixes.log` and is surfaced at the next `/checkpoint`.
 
 ## Usage
 
@@ -33,7 +33,7 @@ Hotfixes are never silent. Every invocation appends to
 
 Workflow implemented inline in this command body — no backing skill. The command
 dispatches its own steps (see Inline Workflow below) and reads/writes
-`.agents/projectContext/hotfixes.log`.
+`${PROJECT_ROOT}/.agents/projectContext/hotfixes.log`.
 
 ## Identity Detection (in priority order — never ask if any succeeds)
 
@@ -69,7 +69,7 @@ follow-up ADR — not a forged second identity.
 
 ## Log File
 
-Appends to `.agents/projectContext/hotfixes.log` (append-only, never modified,
+Appends to `${PROJECT_ROOT}/.agents/projectContext/hotfixes.log` (append-only, never modified,
 parallel to `overrides.log`).
 
 The meta-framework does NOT pre-place `hotfixes.log`. It is created at first
@@ -130,7 +130,7 @@ failure halts the command.
    via the priority sequence above. Compare to `--escalation-tier`. BLOCK if
    they are the same identity.
 2. **Hotfix log entry written.** Append a new line to
-   `.agents/projectContext/hotfixes.log` with `ADR: pending` and the computed
+   `${PROJECT_ROOT}/.agents/projectContext/hotfixes.log` with `ADR: pending` and the computed
    `EXPIRES:` timestamp. The log write happens BEFORE the bypass is applied —
    no silent bypasses.
 3. **Apply the bypass.** Proceed with the gated action that triggered the
@@ -142,7 +142,7 @@ failure halts the command.
 
    ```
    Hotfix recorded.
-     log:      .agents/projectContext/hotfixes.log
+     log:      ${PROJECT_ROOT}/.agents/projectContext/hotfixes.log
      attested: <escalation-tier>
      expires:  <ISO-8601 deadline>
    Post-hoc ADR required by <ISO-8601 72h-deadline>.
@@ -154,7 +154,7 @@ failure halts the command.
 - MUST detect operator identity before writing the log entry.
 - MUST verify `--escalation-tier` differs from operator identity. BLOCK on
   match.
-- MUST write to `.agents/projectContext/hotfixes.log` BEFORE applying the
+- MUST write to `${PROJECT_ROOT}/.agents/projectContext/hotfixes.log` BEFORE applying the
   bypass.
 - MUST include severity, escalation-tier, and a justification. Vague reasons
   are rejected.
@@ -171,7 +171,7 @@ failure halts the command.
 | Severity flag | None | `--severity P0\|P1` required |
 | Time-boxed | No | Yes — `--auto-revert-window` (24h/72h/7d) |
 | Post-hoc ADR | Optional | **Mandatory within 72h** |
-| Log file | `.agents/projectContext/overrides.log` | `.agents/projectContext/hotfixes.log` |
+| Log file | `${PROJECT_ROOT}/.agents/projectContext/overrides.log` | `${PROJECT_ROOT}/.agents/projectContext/hotfixes.log` |
 | Checkpoint behavior | Surfaced at next checkpoint | Surfaced + BLOCKS stage promotion if expired or ADR-missing |
 | Reversibility framing | Justification-based | Deadline-based; expiration forces resolution |
 

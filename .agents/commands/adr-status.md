@@ -7,17 +7,17 @@ Report the health of Architecture Decision Records. Invokes the `decision-lifecy
 ## Usage
 
 ```
-/adr-status            # scans all ADRs in projectContext/decisions/
+/adr-status            # scans all ADRs in ${PROJECT_ROOT}/.agents/projectContext/decisions/
 /adr-status --adr 4    # focuses the scan on ADR-0004 specifically
 ```
 
 ## Routes To
 
-`decision-lifecycle` skill (`.agents/skills/decision-lifecycle/SKILL.md`) — health scan mode.
+`decision-lifecycle` skill (`${FRAMEWORK_ROOT}/.agents/skills/decision-lifecycle/SKILL.md`) — health scan mode.
 
 ## What Happens Step by Step
 
-1. `decision-lifecycle` skill reads `projectContext/decisions/README.md` for the full ADR index
+1. `decision-lifecycle` skill reads `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` for the full ADR index
 2. For each ADR (or the targeted ADR if `--adr N` supplied):
    - **Age check** — flag if last status change or authoring date is older than 12 weeks without an accepted status
    - **Challenge check** — flag if status is `proposed` but the ADR has never been through a `/checkpoint` challenge

@@ -1,0 +1,2 @@
+codeArbiter framework root marker. Do not delete or move this file.
+Hooks locate FRAMEWORK_ROOT at runtime by walking up from their script location until they find a directory containing this file (specifically, until they find .agents/AGENTS-CODEARBITER-ROOT).

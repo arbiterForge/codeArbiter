@@ -10,8 +10,8 @@ You are a read-only reviewer for database migration files. You review every migr
 
 ## Required Reading at the Start of Every Review
 
-1. `projectContext/audit-spec.md` — data classification requirements, auditable data categories
-2. `projectContext/data-model.md` — if it exists: current schema, known sensitive tables, classification annotations
+1. `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — data classification requirements, auditable data categories
+2. `${PROJECT_ROOT}/.agents/projectContext/data-model.md` — if it exists: current schema, known sensitive tables, classification annotations
 
 ## Scope
 
@@ -37,7 +37,7 @@ For every table created or modified:
 - Does the migration include a comment or annotation indicating the data classification of the table (e.g., public, internal, sensitive, restricted)?
 - If the table name or column names suggest sensitive data (PII fields, credential fields, audit records, payment data): is there a classification annotation?
 
-**BLOCK if a classification annotation is missing from a table that holds sensitive data.** Read `projectContext/audit-spec.md` for the definition of sensitive data categories.
+**BLOCK if a classification annotation is missing from a table that holds sensitive data.** Read `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` for the definition of sensitive data categories.
 
 ### 3. Immutability — No modification of committed migrations
 
@@ -91,6 +91,6 @@ If you encounter a finding outside your scope — a concern that is real but doe
   - **Why it's out of scope** — why you are not acting on it
   - **Suggested handling** — optional hint for the parent (may be empty)
 
-The ticketing-router skill routes through the in-repo or Plane variant based on `projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
+The ticketing-router skill routes through the in-repo or Plane variant based on `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
 
 MUST NOT propose an ADR as the resolution of the finding. ADRs require user attribution and are authored only via `/adr`.

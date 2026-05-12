@@ -12,15 +12,15 @@ You are invoked after `finding-triage` completes.
 
 ## Required Reading at the Start of Every Aggregation Run
 
-1. `projectContext/stage` — current stage number and name
+1. `${PROJECT_ROOT}/.agents/projectContext/stage` — current stage number and name
 2. The finding-triage report from the current checkpoint run
-3. `projectContext/checkpoints/` — check for existing checkpoint documents (to confirm today's is not a duplicate)
+3. `${PROJECT_ROOT}/.agents/projectContext/checkpoints/` — check for existing checkpoint documents (to confirm today's is not a duplicate)
 
 ## Process
 
 ### Step 1 — Verify the checkpoints directory exists
 
-Check whether `projectContext/checkpoints/` exists. If it does not exist, create it. The checkpoint document must be written there.
+Check whether `${PROJECT_ROOT}/.agents/projectContext/checkpoints/` exists. If it does not exist, create it. The checkpoint document must be written there.
 
 ### Step 2 — Determine the checkpoint date
 
@@ -28,11 +28,11 @@ Use the current date (YYYY-MM-DD format). If a checkpoint document for today alr
 
 ### Step 3 — Write the checkpoint document
 
-Write `projectContext/checkpoints/YYYY-MM-DD.md` with the structure below.
+Write `${PROJECT_ROOT}/.agents/projectContext/checkpoints/YYYY-MM-DD.md` with the structure below.
 
 ### Step 4 — Report the path
 
-After writing, report: "Checkpoint document written to `projectContext/checkpoints/YYYY-MM-DD.md`. Sign-off is required before stage promotion."
+After writing, report: "Checkpoint document written to `${PROJECT_ROOT}/.agents/projectContext/checkpoints/YYYY-MM-DD.md`. Sign-off is required before stage promotion."
 
 ## Checkpoint Document Structure
 
@@ -117,4 +117,4 @@ codeArbiter cannot sign off on its own behalf.
 - MUST NOT overwrite an existing checkpoint document
 - The sign-off block MUST be written as PENDING — the aggregator does not sign off on its own
 - Every finding from the triage report MUST appear in the checkpoint document — nothing omitted
-- The checkpoints directory MUST be created if it does not exist (do not fail silently)
+- The `${PROJECT_ROOT}/.agents/projectContext/checkpoints/` directory MUST be created if it does not exist (do not fail silently)

@@ -10,14 +10,14 @@ You are a read-only reviewer that checks the codebase for drift from accepted ar
 
 ## Required Reading at the Start of Every Review
 
-1. `projectContext/decisions/` — read every ADR with status `accepted`
-2. `projectContext/decisions/README.md` — the ADR index (start here to enumerate all ADRs)
+1. `${PROJECT_ROOT}/.agents/projectContext/decisions/` — read every ADR with status `accepted`
+2. `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` — the ADR index (start here to enumerate all ADRs)
 
 ## Process
 
 ### Step 1 — Enumerate accepted ADRs
 
-Read `projectContext/decisions/README.md`. Collect all ADRs with status `accepted`. For each accepted ADR, note:
+Read `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md`. Collect all ADRs with status `accepted`. For each accepted ADR, note:
 - The ADR number and title
 - The core decision statement (one sentence)
 - The key observable evidence that would confirm the decision is being followed
@@ -94,6 +94,6 @@ If you encounter a finding outside your scope — a concern that is real but doe
   - **Why it's out of scope** — why you are not acting on it
   - **Suggested handling** — optional hint for the parent (may be empty)
 
-The ticketing-router skill routes through the in-repo or Plane variant based on `projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
+The ticketing-router skill routes through the in-repo or Plane variant based on `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
 
 MUST NOT propose an ADR as the resolution of the finding. ADRs require user attribution and are authored only via `/adr`.

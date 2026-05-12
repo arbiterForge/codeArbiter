@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Stop ALL other work immediately and surface a conflict between two sources of truth. Used when `AGENTS.md`, a `projectContext/` document, and code contradict each other, or when two `projectContext/` documents contradict each other. codeArbiter does not pick a side — it presents both positions and waits for the user to resolve.
+Stop ALL other work immediately and surface a conflict between two sources of truth. Used when `AGENTS.md`, a `${PROJECT_ROOT}/.agents/projectContext/` document, and code contradict each other, or when two `${PROJECT_ROOT}/.agents/projectContext/` documents contradict each other. codeArbiter does not pick a side — it presents both positions and waits for the user to resolve.
 
 ## Usage
 
@@ -64,8 +64,8 @@ Work is halted. Please resolve this conflict before codeArbiter proceeds.
 ## When This Is Routed Automatically
 
 codeArbiter invokes `/surface-conflict` automatically when:
-- `AGENTS.md` and a `projectContext/` document contradict each other
-- Two `projectContext/` documents contradict each other
+- `AGENTS.md` and a `${PROJECT_ROOT}/.agents/projectContext/` document contradict each other
+- Two `${PROJECT_ROOT}/.agents/projectContext/` documents contradict each other
 - Code contradicts an accepted ADR
 - A new ADR being authored contradicts an existing accepted ADR
 - An instruction in the current task contradicts a hard gate in `AGENTS.md`

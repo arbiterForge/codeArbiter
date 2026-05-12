@@ -19,7 +19,7 @@ environment variables, never in the repo.
 Before any operation:
 
 1. Confirm the MCP server is registered in `.claude/settings.json` (or
-   `.agents/settings.json` — they are symlinked) under
+   `${FRAMEWORK_ROOT}/.agents/settings.json` — they are symlinked) under
    `mcpServers.plane`. If absent, STOP and instruct the user to follow the
    setup steps below.
 
@@ -175,14 +175,14 @@ URL or `mcp__plane__get_issue` invoked explicitly.
 |---|---|
 | MCP server not running / not registered | STOP; instruct user to run setup steps |
 | `ToolSearch` returns no `mcp__plane__*` matches | STOP; same as above |
-| Auth error from MCP (401 / 403) | Append entry to `projectContext/ticketing-sync-failures.md`; instruct user to verify `PLANE_API_KEY` env var |
+| Auth error from MCP (401 / 403) | Append entry to `${PROJECT_ROOT}/.agents/projectContext/ticketing-sync-failures.md`; instruct user to verify `PLANE_API_KEY` env var |
 | Network / Plane on-prem unreachable | Append to `ticketing-sync-failures.md`; do NOT block the calling workflow |
 | Issue ID not found on comment/transition | Append to `ticketing-sync-failures.md`; surface to caller as a warning |
 | Workspace or project ID missing in config | STOP; instruct user to populate `ticketing-config.md` |
 
 ### `ticketing-sync-failures.md` format
 
-Append-only at `.agents/projectContext/ticketing-sync-failures.md`:
+Append-only at `${PROJECT_ROOT}/.agents/projectContext/ticketing-sync-failures.md`:
 
 ```
 [ISO-8601] | OP: <create_issue|comment|transition|list|move> | ARGS: <short summary> | ERROR: <short error text>

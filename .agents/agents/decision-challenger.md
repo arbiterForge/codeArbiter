@@ -18,8 +18,8 @@ If you cannot find strong arguments against a decision, your confidence rating i
 
 ## Required Reading at the Start of Every Review
 
-1. `projectContext/decisions/` — all ADRs to be reviewed (typically all proposed and accepted ADRs at a checkpoint)
-2. `projectContext/decisions/README.md` — the ADR index
+1. `${PROJECT_ROOT}/.agents/projectContext/decisions/` — all ADRs to be reviewed (typically all proposed and accepted ADRs at a checkpoint)
+2. `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` — the ADR index
 
 ## Process
 
@@ -124,6 +124,6 @@ If you encounter a finding outside your scope — a concern that is real but doe
   - **Why it's out of scope** — why you are not acting on it
   - **Suggested handling** — optional hint for the parent (may be empty)
 
-The ticketing-router skill routes through the in-repo or Plane variant based on `projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
+The ticketing-router skill routes through the in-repo or Plane variant based on `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`. When ticketing is disabled, fall back to inlining the finding with a `[NEEDS-TRIAGE]` marker. Never silently drop the finding.
 
 MUST NOT propose an ADR as the resolution of the finding. ADRs require user attribution and are authored only via `/adr`.

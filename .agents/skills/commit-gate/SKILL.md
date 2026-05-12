@@ -20,7 +20,7 @@ Triggers:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/tech-stack.md` is readable — stop if missing.
+1. `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` is readable — stop if missing.
 2. A git repository is present and `git status` is available.
 3. The tdd skill has completed all six phases for any new or modified
    feature code in the staged set. If tdd phases are incomplete, stop and
@@ -114,18 +114,18 @@ each type separately.
 **Goal:** Confirm all automated quality gates pass before committing.
 
 **Inputs:**
-- `.agents/projectContext/tech-stack.md` — test, lint, and secrets-scan commands
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — test, lint, and secrets-scan commands
 
 **Actions:**
 
-1. Read `.agents/projectContext/tech-stack.md` to identify:
+1. Read `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` to identify:
    - The test command
    - The lint command
    - The secrets-scan command
 2. Run the test command. ALL tests must be green. Any failure blocks the commit.
 3. Run the lint command. Zero errors permitted. Warnings that escalate to errors
    under the project's configuration must be resolved.
-4. Run the secrets scan as specified in `.agents/projectContext/tech-stack.md`
+4. Run the secrets scan as specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`
    on ALL staged files, regardless of commit type. A secrets finding always
    blocks the commit.
 5. Record the result of each gate (PASS / BLOCK) in the commit report.
@@ -277,7 +277,7 @@ commit. Report the discrepancy before closing.
 - MUST NOT skip, disable, or work around any automated gate.
 - MUST NOT use `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess test, lint, or secrets-scan commands — always read
-  `.agents/projectContext/tech-stack.md`.
+  `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
 - MUST NOT commit if any secrets finding is present.
 - MUST NOT commit if any test is failing.
 

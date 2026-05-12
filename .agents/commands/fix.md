@@ -14,7 +14,7 @@ Include observed behavior and expected behavior. Include a stack trace or reprod
 
 ## Routes To
 
-`tdd` skill (`.agents/skills/tdd/SKILL.md`) — all phases, Phase 1 framed for bug confirmation. Implementation agent (`backend-author`, `frontend-author`, or `infra-author`) selected by where the bug lives.
+`tdd` skill (`${FRAMEWORK_ROOT}/.agents/skills/tdd/SKILL.md`) — all phases, Phase 1 framed for bug confirmation. Implementation agent (`backend-author`, `frontend-author`, or `infra-author`) selected by where the bug lives.
 
 ## Phase 1 framing for bug fixes (differs from /feature)
 

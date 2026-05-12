@@ -17,9 +17,9 @@ Interactive onboarding tour of the project for new contributors or new AI sessio
 
 ## Routes To
 
-`onboard` skill (`.agents/skills/onboard/SKILL.md`).
+`onboard` skill (`${FRAMEWORK_ROOT}/.agents/skills/onboard/SKILL.md`).
 
-The topic argument scopes which `projectContext/` documents the skill reads. Without an argument, the skill walks the full set with a pause-and-confirm rhythm between topics.
+The topic argument scopes which `${PROJECT_ROOT}/.agents/projectContext/` documents the skill reads. Without an argument, the skill walks the full set with a pause-and-confirm rhythm between topics.
 
 ## When NOT to Use
 

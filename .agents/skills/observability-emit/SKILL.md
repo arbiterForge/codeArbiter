@@ -8,7 +8,7 @@ name: observability-emit
 
 Govern the emission of operational observability signals — metrics, traces (spans),
 structured logs, alert rules, and SLO definitions — so that every signal is
-registered in `projectContext/observability-spec.md`, named per project convention,
+registered in `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`, named per project convention,
 labeled within cardinality budget, free of secret-shaped values, and (when
 alert-relevant) wired to a paired alert rule and SLO. This skill is the parallel of
 `audit-emit`: where `audit-emit` governs the compliance event stream, this skill
@@ -23,7 +23,7 @@ governs the operational telemetry stream.
 Routing conditions:
 - Code introduces, modifies, or removes the emission of a metric, span, structured
   log, alert rule, or SLO definition.
-- A new code path that should be observable per `projectContext/observability-spec.md`
+- A new code path that should be observable per `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`
   is added (presumptive observability obligation until Phase 1 rules otherwise).
 - A label, attribute, or field on an existing observability signal is added,
   renamed, or removed.
@@ -35,12 +35,12 @@ Routing conditions:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/observability-spec.md` is readable — stop if missing.
+1. `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` is readable — stop if missing.
    This file is the authoritative source for signal categories, naming conventions,
    required labels, cardinality budgets, canonical emit paths, and alert/SLO
    storage locations.
-2. `.agents/projectContext/tech-stack.md` is readable — stop if missing.
-3. Current stage is known — read `cat .agents/projectContext/stage`.
+2. `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` is readable — stop if missing.
+3. Current stage is known — read `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 
 If any file is missing, surface the gap and stop. Do not guess at signal names,
 label sets, emit signatures, or storage paths.
@@ -51,16 +51,16 @@ label sets, emit signatures, or storage paths.
 
 **Goal:** Identify which observability signal category applies to the code change
 and confirm the signal name is registered in
-`projectContext/observability-spec.md` under the correct category.
+`${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` under the correct category.
 
 **Inputs:**
 - Description of the code change.
-- `.agents/projectContext/observability-spec.md` — authoritative signal categories,
+- `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` — authoritative signal categories,
   naming conventions, and per-category registries.
 
 **Actions:**
 
-1. Read `.agents/projectContext/observability-spec.md` in full.
+1. Read `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` in full.
 2. Classify the signal into exactly one category per the spec:
    - **metric** — a counter, gauge, histogram, or summary.
    - **span** — a trace span (distributed tracing).
@@ -69,10 +69,10 @@ and confirm the signal name is registered in
    - **alert** — an alert rule definition.
    - **SLO** — a service-level objective definition.
 3. Confirm the signal name follows the naming convention defined in
-   `projectContext/observability-spec.md` for the chosen category. If the spec
+   `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` for the chosen category. If the spec
    defines a `domain.subsystem.metric_name` pattern (or any other), enforce it.
 4. If the signal name is not present in the registered set for its category, add
-   it to the registry in `projectContext/observability-spec.md` before proceeding.
+   it to the registry in `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` before proceeding.
    Do not emit an unregistered signal.
 5. If the code change introduces multiple distinct signals, classify and register
    each one separately.
@@ -89,38 +89,38 @@ violation.
 ## Phase 2: Emit Construction
 
 **Goal:** Build a correct emit call with all required labels, attributes, or
-fields populated from `projectContext/observability-spec.md`, and free of
+fields populated from `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`, and free of
 secret-shaped values.
 
 **Inputs:**
 - Signal classification from Phase 1.
-- `.agents/projectContext/observability-spec.md` — required labels/attributes per
+- `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` — required labels/attributes per
   category, canonical emit module or function path.
-- `.agents/projectContext/secrets-policy.md` — secret patterns to exclude
+- `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` — secret patterns to exclude
   (consulted via the `secret-handling` cross-route).
 
 **Actions:**
 
 1. Read the canonical emit module or function path defined in
-   `projectContext/observability-spec.md` for the signal's category. Use that
+   `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` for the signal's category. Use that
    path exclusively — do not write directly to a logger, bare HTTP client, or
    alternative telemetry shim.
 2. Populate every required label, attribute, or field for the signal's category
-   as defined in `projectContext/observability-spec.md`. Required label sets are
+   as defined in `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`. Required label sets are
    declared per category; do not invent fields not declared in the spec.
 3. Inspect every label, attribute, or field value for secret-shaped content
-   (tokens, keys, credentials, raw PII per `projectContext/secrets-policy.md`).
+   (tokens, keys, credentials, raw PII per `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`).
    If any value could carry secret data, cross-route to the `secret-handling`
    skill Phase 3 before continuing.
 4. Do not hard-code environment-specific or deployment-specific constants
    (region, cluster name) as label values unless
-   `projectContext/observability-spec.md` declares them required constants. Use
+   `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` declares them required constants. Use
    runtime-resolved values where the spec calls for dynamic labels.
 5. If the change touches multiple emit sites, verify each site populates the full
    required set for its category.
 
 **Output:** Emit call constructed with all required labels/attributes/fields,
-sourced from `projectContext/observability-spec.md`, with no secret-shaped values.
+sourced from `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`, with no secret-shaped values.
 
 **Gate:** BLOCK if any required label, attribute, or field is missing. BLOCK on
 any value that could carry secret data — cross-route to `secret-handling` Phase 3
@@ -132,11 +132,11 @@ and do not return to Phase 3 of this skill until cleared.
 
 **Goal:** For metrics and spans, confirm that no label dimension is unbounded and
 that the combined cardinality of the label set fits the per-signal budget defined
-in `projectContext/observability-spec.md`.
+in `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`.
 
 **Inputs:**
 - Emit call from Phase 2.
-- `.agents/projectContext/observability-spec.md` — per-signal cardinality budgets
+- `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` — per-signal cardinality budgets
   and forbidden label patterns.
 
 **Actions:**
@@ -147,11 +147,11 @@ in `projectContext/observability-spec.md`.
 2. For each label or span attribute, identify its value domain:
    - **Bounded enum** (e.g., HTTP method, status class) — acceptable.
    - **Bounded identifier set** (e.g., tenant_id with a known small N) —
-     acceptable if within the budget declared in `observability-spec.md`.
+     acceptable if within the budget declared in `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`.
    - **Unbounded identifier** (e.g., raw user_id, request_id, email, URL path
      with embedded IDs, free-text input) — NOT acceptable as a label or indexed
      attribute. Such values belong in span events or log fields, not labels.
-3. If `projectContext/observability-spec.md` declares a numeric cardinality
+3. If `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` declares a numeric cardinality
    budget for the signal (e.g., "total combined label cardinality ≤ 10k"),
    estimate the combined cardinality and confirm it fits the budget.
 4. If a label is borderline, surface the question to the user; do not silently
@@ -162,31 +162,31 @@ bounded value domain and fits the declared cardinality budget.
 
 **Gate:** BLOCK if any label value domain is unbounded. BLOCK if the estimated
 combined cardinality exceeds the per-signal budget declared in
-`projectContext/observability-spec.md`.
+`${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`.
 
 ---
 
 ## Phase 4: Alert / SLO Wiring
 
-**Goal:** If the signal is alert-relevant per `projectContext/observability-spec.md`,
+**Goal:** If the signal is alert-relevant per `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`,
 confirm that a paired alert rule and SLO are defined together. No
 signal-without-monitoring.
 
 **Inputs:**
 - Signal classification from Phase 1.
-- `.agents/projectContext/observability-spec.md` — list of alert-relevant signals,
+- `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` — list of alert-relevant signals,
   alert rule storage location, SLO definition location.
 
 **Actions:**
 
-1. Consult `projectContext/observability-spec.md` to determine whether the signal
+1. Consult `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` to determine whether the signal
    is in the alert-relevant set. Examples of alert-relevant signals: error-rate
    counters, latency histograms used in SLI calculation, saturation gauges.
 2. If the signal is alert-relevant:
    - Confirm an alert rule exists at the alert rule storage location defined in
-     `projectContext/observability-spec.md`, referencing this signal.
+     `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`, referencing this signal.
    - Confirm a paired SLO is defined at the SLO definition location defined in
-     `projectContext/observability-spec.md`, expressing the objective that the
+     `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md`, expressing the objective that the
      alert protects.
    - If either is missing, author both before proceeding. Do not author only one.
 3. If the signal is NOT alert-relevant per the spec, no alert/SLO wiring is
@@ -212,8 +212,8 @@ correctness.
 **Inputs:**
 - Signal classification from Phase 1.
 - Emit construction from Phase 2.
-- `.agents/projectContext/tech-stack.md` — test runner and mock/stub conventions.
-- `.agents/projectContext/observability-spec.md` — test obligation section, if
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — test runner and mock/stub conventions.
+- `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` — test obligation section, if
   present.
 
 **Actions:**
@@ -228,11 +228,11 @@ correctness.
      (per Phase 3) appears.
    - Confirms the emit is not called when the observed event does not occur.
 2. Use the test framework and mock/stub patterns specified in
-   `projectContext/tech-stack.md`. Do not hard-code library-specific imports
-   unless that library is named in `projectContext/tech-stack.md`.
-3. Run the test command specified in `projectContext/tech-stack.md` and confirm
+   `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`. Do not hard-code library-specific imports
+   unless that library is named in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
+3. Run the test command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` and confirm
    all observability-related tests are green.
-4. Run the lint command specified in `projectContext/tech-stack.md` and confirm
+4. Run the lint command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` and confirm
    zero errors.
 
 **Output:** Passing tests covering every observability signal introduced or
@@ -245,10 +245,10 @@ label coverage. BLOCK if the test runner or lint command reports any error.
 
 ## Hard Rules
 
-- MUST read `projectContext/observability-spec.md` before Phase 1. Do not guess
+- MUST read `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` before Phase 1. Do not guess
   signal names, label sets, cardinality budgets, or canonical emit paths.
 - MUST NOT emit to any path other than the canonical emit module defined in
-  `projectContext/observability-spec.md` for the signal's category.
+  `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` for the signal's category.
 - MUST NOT emit an unregistered signal name. Add it to the registry first.
 - MUST NOT include secret-shaped values in any label, attribute, or field;
   cross-route to `secret-handling` Phase 3 if in doubt.
@@ -258,10 +258,10 @@ label coverage. BLOCK if the test runner or lint command reports any error.
 - MUST NOT introduce an alert rule without a paired SLO, or an SLO without the
   underlying signal and alert rule.
 - MUST NOT hard-code environment- or deployment-specific constants as label
-  values unless `projectContext/observability-spec.md` declares them required
+  values unless `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` declares them required
   constants.
 - MUST NOT guess test runner or lint commands — always read
-  `projectContext/tech-stack.md`.
+  `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
 - MUST NOT proceed to the commit-gate skill until all five phases are complete.
 
 ---
@@ -270,10 +270,10 @@ label coverage. BLOCK if the test runner or lint command reports any error.
 
 | Gate         | Condition                                                                | Action if blocked                                                                  |
 |--------------|--------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| Phase 1 exit | Unregistered signal name or signal name violates naming convention       | Register signal in `observability-spec.md` under correct category; rename if needed |
+| Phase 1 exit | Unregistered signal name or signal name violates naming convention       | Register signal in `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` under correct category; rename if needed |
 | Phase 2 exit | Required label/attribute/field missing, or value carries secret-shaped data | Add missing field; cross-route to `secret-handling` Phase 3 for any secret risk     |
 | Phase 3 exit | Unbounded label value domain, or estimated cardinality exceeds budget    | Demote unbounded value to span event or log field; tighten label set                |
-| Phase 4 exit | Alert-relevant signal lacks paired alert rule or SLO                     | Author the missing alert rule and/or SLO before proceeding                          |
+| Phase 4 exit | Alert-relevant signal lacks paired alert rule or SLO                     | Author the missing alert rule and SLO together before proceeding                    |
 | Phase 5 exit | Signal lacks emit-presence/label test, or test/lint fails                | Write missing test; fix lint errors                                                 |
 
 ---
@@ -309,10 +309,10 @@ label coverage. BLOCK if the test runner or lint command reports any error.
 
 | Failure                                                  | Response                                                                       |
 |----------------------------------------------------------|--------------------------------------------------------------------------------|
-| `observability-spec.md` missing or unreadable            | Stop; surface gap to user; do not guess signal names, labels, or emit paths    |
-| `tech-stack.md` missing or unreadable                    | Stop; surface gap; do not guess test or lint commands                          |
-| Signal name not in registered set for its category       | Add signal to registry in `observability-spec.md` before emitting              |
-| Required label missing from emit                         | Add label; re-read `observability-spec.md` for correct value source            |
+| `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` missing or unreadable            | Stop; surface gap to user; do not guess signal names, labels, or emit paths    |
+| `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` missing or unreadable                    | Stop; surface gap; do not guess test or lint commands                          |
+| Signal name not in registered set for its category       | Add signal to registry in `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` before emitting              |
+| Required label missing from emit                         | Add label; re-read `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` for correct value source            |
 | Label value carries secret-shaped data                   | Cross-route to `secret-handling` Phase 3; do not return until cleared          |
 | Unbounded identifier used as metric label                | Demote to span event or log field; tighten the label set                       |
 | Alert-relevant signal lacks paired alert rule or SLO     | Author the missing alert rule and SLO together before proceeding               |

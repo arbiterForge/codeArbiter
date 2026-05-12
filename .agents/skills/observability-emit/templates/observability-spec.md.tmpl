@@ -30,7 +30,7 @@ and canonical emit path.
 | **SLOs** | <yes / no> | <service-level objectives paired with alerts> |
 
 Audit events are NOT covered here — they route through the `audit-emit` skill
-and are governed by `projectContext/audit-spec.md`.
+and are governed by `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 
 ---
 
@@ -121,7 +121,7 @@ Forbidden values that must NEVER appear as labels or indexed span attributes
 - <raw request identifiers (request_id, session_id)>
 - <free-text user input>
 - <full URL paths with embedded identifiers>
-- <any value listed in `projectContext/secrets-policy.md`>
+- <any value listed in `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md`>
 
 ---
 
@@ -187,4 +187,4 @@ of the `observability-emit` skill. Tests confirm:
 - No forbidden high-cardinality label appears.
 - The emit is not called when the observed event does not occur.
 
-Test runner and mock/stub conventions: see `projectContext/tech-stack.md`.
+Test runner and mock/stub conventions: see `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.

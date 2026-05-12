@@ -16,24 +16,24 @@ No arguments. Checkpoint reviews the entire codebase against all projectContext 
 
 All 7 checkpoint agents run in parallel (no ordering dependency between them):
 
-1. `architecture-drift-reviewer` — reads `projectContext/decisions/` and scans for code that contradicts accepted ADRs
-2. `coverage-auditor` — reads `projectContext/audit-spec.md` and `projectContext/tech-stack.md`; audits test coverage and audit event emission
-3. `security-reviewer` — reads `projectContext/security-controls.md` and `projectContext/trust-zones.md`; reviews security posture
-4. `standards-compliance-reviewer` — reads `projectContext/coding-standards.md`; checks naming, banned patterns, type safety
-5. `scaffold-completeness-reviewer` — reads `projectContext/open-tasks.md`; identifies planned artifacts that don't yet exist
-6. `decision-challenger` — reads `projectContext/decisions/`; adversarially challenges every accepted ADR
+1. `architecture-drift-reviewer` — reads `${PROJECT_ROOT}/.agents/projectContext/decisions/` and scans for code that contradicts accepted ADRs
+2. `coverage-auditor` — reads `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` and `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`; audits test coverage and audit event emission
+3. `security-reviewer` — reads `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` and `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`; reviews security posture
+4. `standards-compliance-reviewer` — reads `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`; checks naming, banned patterns, type safety
+5. `scaffold-completeness-reviewer` — reads `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md`; identifies planned artifacts that don't yet exist
+6. `decision-challenger` — reads `${PROJECT_ROOT}/.agents/projectContext/decisions/`; adversarially challenges every accepted ADR
 
 Then sequentially:
 
 7. `finding-triage` — reads all 6 reviewer reports; assigns stage promotion impact to each finding (`BLOCKS_S2`, `DEFERRED_S3`, `NON_BLOCKING`)
-8. `checkpoint-aggregator` — reads triage report and `projectContext/stage`; writes dated checkpoint to `projectContext/checkpoints/YYYY-MM-DD.md`
+8. `checkpoint-aggregator` — reads triage report and `${PROJECT_ROOT}/.agents/projectContext/stage`; writes dated checkpoint to `${PROJECT_ROOT}/.agents/projectContext/checkpoints/YYYY-MM-DD.md`
 
 ## What Happens Step by Step
 
 1. All 6 reviewer agents dispatched in parallel
 2. Each agent returns a structured findings report
 3. `finding-triage` reads all 6 reports, classifies each finding by stage promotion impact
-4. `checkpoint-aggregator` writes `projectContext/checkpoints/YYYY-MM-DD.md` containing:
+4. `checkpoint-aggregator` writes `${PROJECT_ROOT}/.agents/projectContext/checkpoints/YYYY-MM-DD.md` containing:
    - All findings by severity
    - Triage classification for each finding
    - Current stage status

@@ -11,7 +11,7 @@ directly — invoke via the router.
 
 Before any operation:
 
-1. Confirm `.agents/projectContext/tickets/` exists. If absent, create it on
+1. Confirm `${PROJECT_ROOT}/.agents/projectContext/tickets/` exists. If absent, create it on
    first ticket open: `tickets/`, `tickets/open/`, `tickets/closed/`,
    `tickets/INDEX.md`.
 2. For close/show/list: confirm `INDEX.md` exists; refuse with a clear message
@@ -82,12 +82,12 @@ specifies a disposition.
 2. Prompt the parent for a disposition from this exact set:
 
    - `incorporated-to:03-task-backlog` — substance filed into
-     `projectContext/decomposition/03-task-backlog.md`
+     `${PROJECT_ROOT}/.agents/projectContext/decomposition/03-task-backlog.md`
    - `incorporated-to:open-tasks` — substance filed into
-     `projectContext/open-tasks.md`
+     `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md`
    - `incorporated-to:gap-doc` — recorded as a known gap (no immediate action)
    - `escalated-to:open-questions` — a `CONFIRM-NN` was appended to
-     `projectContext/open-questions.md`
+     `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`
    - `escalated-to:user` — surfaced synchronously to the user
    - `duplicate-of:<other-ticket-id>`
    - `rejected`

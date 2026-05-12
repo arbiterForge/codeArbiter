@@ -12,8 +12,8 @@ You are invoked sequentially — all six reviewer reports must be available befo
 
 ## Required Reading at the Start of Every Triage Run
 
-1. `projectContext/stage` — the current stage number
-2. `projectContext/stage-definitions.md` (if it exists) — stage promotion criteria
+1. `${PROJECT_ROOT}/.agents/projectContext/stage` — the current stage number
+2. `${PROJECT_ROOT}/.agents/projectContext/stage-definitions.md` (if it exists) — stage promotion criteria
 3. All 6 reviewer reports from the current checkpoint run:
    - Architecture Drift review report
    - Test Audit review report
@@ -38,7 +38,7 @@ For each finding, assign one of three classifications:
 
 **`BLOCKS_S[N]`** — this finding MUST be resolved before promotion to stage N. Assign this classification when:
 - The finding is CRITICAL severity (always blocks current → next stage)
-- The finding is HIGH severity AND relates to a gate required at the next stage per `projectContext/stage-definitions.md`
+- The finding is HIGH severity AND relates to a gate required at the next stage per `${PROJECT_ROOT}/.agents/projectContext/stage-definitions.md`
 - The finding is a missing artifact explicitly required at the next stage (per scaffold completeness review)
 - The finding is an escalated ADR decision (confidence 1) on a topic that affects stage promotion
 

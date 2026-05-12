@@ -1,7 +1,7 @@
 <!--PLACEHOLDER-->
 <!-- Populated by decompose / context-creation skill, or backfilled when
      observability obligations first land. Template source:
-     .agents/skills/observability-emit/templates/observability-spec.md.tmpl -->
+     ${FRAMEWORK_ROOT}/.agents/skills/observability-emit/templates/observability-spec.md.tmpl -->
 
 # Observability Specification
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-CONTEXT_FILE=".agents/projectContext/CONTEXT.md"
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+CONTEXT_FILE="$PROJECT_ROOT/.agents/projectContext/CONTEXT.md"
 
 if [ ! -f "$CONTEXT_FILE" ] || ! grep -qE '^[[:space:]]*<!--INITIALIZED-->[[:space:]]*$' "$CONTEXT_FILE" 2>/dev/null; then
-  SRC=$(find . \
-    -not -path './.agents/*' \
+  SRC=$(find "$PROJECT_ROOT" \
+    -not -path "$PROJECT_ROOT/.agents/*" \
     -not -name 'AGENTS.md' \
     -not -name 'CLAUDE.md' \
     -not -name 'README.md' \
@@ -17,7 +18,7 @@ if [ ! -f "$CONTEXT_FILE" ] || ! grep -qE '^[[:space:]]*<!--INITIALIZED-->[[:spa
 fi
 
 # H-15: surface tickets open more than 7 days
-TICKET_DIR=".agents/projectContext/tickets/open"
+TICKET_DIR="$PROJECT_ROOT/.agents/projectContext/tickets/open"
 if [ -d "$TICKET_DIR" ]; then
   STALE=$(find "$TICKET_DIR" -maxdepth 1 -name '*.md' -mtime +7 2>/dev/null | sort)
   if [ -n "$STALE" ]; then

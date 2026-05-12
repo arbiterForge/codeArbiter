@@ -26,7 +26,7 @@ You are a Scout subagent for the decision-variance or context-creation skill.
 
 Your scope: <specific paths or areas, e.g., "backend/src/auth/", "helm/", "projectContext/decisions/0001-0010">
 
-Your task: Scan the assigned scope and report evidence of architectural decisions in these categories from the canonical list in .agents/skills/decision-variance/references/decision-categories.md:
+Your task: Scan the assigned scope and report evidence of architectural decisions in these categories from the canonical list in ${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-categories.md:
 <list of decision categories relevant to this scope>
 
 Output format: Structured Markdown using the template at the end of this document.
@@ -99,7 +99,7 @@ The scout MUST NOT:
 4. **Modify files.** Read-only.
 5. **Spawn further subagents.** Only the decision-variance skill spawns subagents.
 6. **Include excerpts, quotes, or pasted content.** File path and line number only.
-7. **Invent decision categories.** Use only those from `.agents/skills/decision-variance/references/decision-categories.md`. Anomalies go in the Anomalies section without category labels.
+7. **Invent decision categories.** Use only those from `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-categories.md`. Anomalies go in the Anomalies section without category labels.
 
 ## Scout Scope Sizing
 

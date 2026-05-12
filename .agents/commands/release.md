@@ -34,7 +34,7 @@ SHA, under the current stage, satisfies every published threshold for shipping.
   default when no version argument is supplied.
 - **`--dry-run`.** Runs Phases 1 through 6 in full, surfaces the deployment-readiness report
   as it stands, and STOPS before Phase 7 — no tag is composed, no changelog is appended, no
-  release report is written to `projectContext/releases/`. Use this to confirm the release
+  release report is written to `${PROJECT_ROOT}/.agents/projectContext/releases/`. Use this to confirm the release
   would be green without committing the artifact.
 
 The `--auto` and `--dry-run` flags MAY be combined. An explicit version MAY be combined with
@@ -45,7 +45,7 @@ exclusive.
 
 ## Routes To
 
-`release` skill (`.agents/skills/release/SKILL.md`) — Phases 1 through 7. The skill is a gate
+`release` skill (`${FRAMEWORK_ROOT}/.agents/skills/release/SKILL.md`) — Phases 1 through 7. The skill is a gate
 aggregator; it routes to other skills and reads their verdicts. The command itself does not
 dispatch agents directly.
 
@@ -65,7 +65,7 @@ dispatch agents directly.
 
 ## What Happens Step by Step
 
-1. **Pre-flight checks.** Verify `.agents/projectContext/stage` is readable and numeric. Verify
+1. **Pre-flight checks.** Verify `${PROJECT_ROOT}/.agents/projectContext/stage` is readable and numeric. Verify
    `audit-spec.md` is present. Verify the working tree is clean. Verify the current branch is
    the configured release branch. Identify `LAST_TAG` and the release window.
 2. **Phase 1 readiness.** Confirm the most recent `tdd` Phase 6 was PASS, the HEAD commit was
@@ -85,7 +85,7 @@ dispatch agents directly.
    codebase scope. Confirm coverage threshold, fail-closed audit posture, and trust-zone
    declarations meet the current stage's requirements.
 8. **Phase 7 tag and announce.** If every prior phase recorded PASS, compose the annotated tag
-   and write the deployment-readiness report to `projectContext/releases/vMAJOR.MINOR.PATCH.md`.
+   and write the deployment-readiness report to `${PROJECT_ROOT}/.agents/projectContext/releases/vMAJOR.MINOR.PATCH.md`.
    If `--dry-run` was supplied, STOP here without composing the tag.
 9. Surface the deployment-readiness report path to the user. MUST NOT push the tag to a remote
    without explicit user authorization.
@@ -110,7 +110,7 @@ dispatch agents directly.
 - MUST NOT push the composed tag to a remote without explicit user instruction. Tag publication
   is a separate decision after the user reviews the deployment-readiness report.
 - Any phase BLOCK may be bypassed only via `/override`, which appends to
-  `.agents/projectContext/overrides.log`.
+  `${PROJECT_ROOT}/.agents/projectContext/overrides.log`.
 
 ---
 

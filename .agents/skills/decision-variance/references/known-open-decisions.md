@@ -18,13 +18,13 @@ For every arbiter-scope open decision, this skill applies this exact rule table:
 | Silent — no implementation yet | Note as consistent with deferral; no variance |
 | Implements something not listed in the artifact's options | Surface as scope creep; verify with user before treating as a closure |
 
-If the user decides to close the open decision during the arbitration session, the closure is recorded in `projectContext/arbiter-decisions.md` with `Status type: open-decision-closure` per the format in `references/decision-log-format.md`.
+If the user decides to close the open decision during the arbitration session, the closure is recorded in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` with `Status type: open-decision-closure` per the format in `${FRAMEWORK_ROOT}/.agents/skills/decision-variance/references/decision-log-format.md`.
 
 ---
 
 ## Arbiter-Scope Open Decisions
 
-This section is populated from the project's `projectContext/open-questions.md` and the open decisions explicitly documented in the three architectural artifacts. The entries below are template examples showing the format — replace with the actual open decisions from the current project's artifacts.
+This section is populated from the project's `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` and the open decisions explicitly documented in the three architectural artifacts. The entries below are template examples showing the format — replace with the actual open decisions from the current project's artifacts.
 
 ### Open Decision Template
 
@@ -83,7 +83,7 @@ For arbiter-scope open decisions, if the user wants to close one during the arbi
 
 1. Confirm with the user that they want to close an artifact-deferred decision
 2. Apply the SMARTS framework to the artifact-listed options
-3. Record the decision in `projectContext/arbiter-decisions.md` with `Status type: open-decision-closure` and a note that this closes an artifact-deferred decision
+3. Record the decision in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` with `Status type: open-decision-closure` and a note that this closes an artifact-deferred decision
 4. Update the readiness assessment to reflect the now-closed decision
 
 For out-of-scope open decisions, this skill declines: "This is operational/strategic, not architectural — outside this skill's scope. The resolution mechanism is <X>."
@@ -93,7 +93,7 @@ For out-of-scope open decisions, this skill declines: "This is operational/strat
 When this skill first runs on a project, it should:
 
 1. Read the three architectural artifacts for any sections explicitly labeled as open, deferred, or TBD
-2. Read `projectContext/open-questions.md` for items explicitly flagged as unresolved
+2. Read `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` for items explicitly flagged as unresolved
 3. Add each identified open decision to this file in the arbiter-scope or out-of-scope section as appropriate
 4. Present the populated list to the user for confirmation before proceeding with variance analysis
 

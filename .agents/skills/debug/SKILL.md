@@ -47,12 +47,12 @@ Do NOT route to `debug` when:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/tech-stack.md` is readable — stop if missing. The skill needs to know
+1. `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` is readable — stop if missing. The skill needs to know
    the project's log paths, trace tooling, and test runner conventions before it can gather
    evidence.
-2. `.agents/projectContext/audit-spec.md` is readable — stop if missing. Audit events are a primary
+2. `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` is readable — stop if missing. Audit events are a primary
    evidence source for RCA on auditable actions.
-3. Current stage is known — read `cat .agents/projectContext/stage`. Stage influences how much
+3. Current stage is known — read `cat ${PROJECT_ROOT}/.agents/projectContext/stage`. Stage influences how much
    evidence the skill requires before exiting (higher stages demand more rigorous evidence).
 4. The invoking user has provided at least a one-sentence symptom statement. If not, ask for one
    before proceeding. Do not guess at the symptom.
@@ -69,7 +69,7 @@ reproduce the situation without further questions.
 
 **Inputs:**
 - The user's symptom description
-- `.agents/projectContext/tech-stack.md` — environment and runtime conventions
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — environment and runtime conventions
 - Current stage (from Pre-Flight)
 
 **Actions:**
@@ -106,7 +106,7 @@ gathered against them.
 
 **Inputs:**
 - Symptom record from Phase 1
-- `.agents/projectContext/CONTEXT.md` — domain vocabulary and system structure
+- `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` — domain vocabulary and system structure
 - Recent commit log (read-only) — surface candidate recent changes
 
 **Actions:**
@@ -145,8 +145,8 @@ evidence by reading existing artifacts only. No code is modified in this phase.
 
 **Inputs:**
 - Hypothesis list from Phase 2
-- `.agents/projectContext/audit-spec.md` — audit event field definitions and sink paths
-- `.agents/projectContext/tech-stack.md` — log paths, trace tooling, test runner conventions
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — audit event field definitions and sink paths
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — log paths, trace tooling, test runner conventions
 - Git history (read-only)
 - Application logs, traces, audit event records, metrics dashboards
 
@@ -158,9 +158,9 @@ evidence by reading existing artifacts only. No code is modified in this phase.
    - The source where that evidence lives (log file, trace tool, audit sink, commit range, metric
      dashboard)
 2. Gather the evidence by reading:
-   - Application logs at the paths defined in `projectContext/tech-stack.md`
-   - Traces from the trace tool defined in `projectContext/tech-stack.md`
-   - Audit events from the sink defined in `projectContext/audit-spec.md`
+   - Application logs at the paths defined in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`
+   - Traces from the trace tool defined in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`
+   - Audit events from the sink defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`
    - Recent commits (`git log`, `git diff`) on suspect paths
    - Configuration files, environment variables, and feature flags (read-only)
 3. Record evidence findings against each hypothesis: CONFIRMED, REFUTED, or INCONCLUSIVE.
@@ -261,7 +261,7 @@ without re-reading the entire debug session.
      the symptom record, and the evidence ledger attached as context. The orchestrator routes
      accordingly.
    - **Exit (c) — no-action close:** Append the symptom record and "no action" rationale to
-     `.agents/projectContext/debug-log.md` (create if missing) for future reference. No further
+     `${PROJECT_ROOT}/.agents/projectContext/debug-log.md` (create if missing) for future reference. No further
      handoff.
 
 3. Surface the summary block and handoff to the user. Confirm the handoff before the skill exits.
@@ -290,7 +290,7 @@ skill in exit (c) without recording the symptom and rationale to the debug log.
 - MUST NOT route to `/fix` for situations where the bug is not yet confirmed by cited evidence —
   `/fix` is for known bugs.
 - MUST NOT guess at log paths, trace tooling, or audit field names — always read
-  `.agents/projectContext/tech-stack.md` and `.agents/projectContext/audit-spec.md`.
+  `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` and `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 - MUST cite the source of every piece of evidence (log path + timestamp, commit SHA, audit event
   ID, trace ID).
 - MUST include at least one "boring" environmental / configuration / dependency hypothesis in
@@ -334,7 +334,7 @@ commands as follows:
   `debug` MUST NOT author an ADR autonomously as the disposition of a debug session.
 
 - **Exit (c) → no-action close.** No downstream skill is invoked. The symptom record and rationale
-  are appended to `.agents/projectContext/debug-log.md`. Future debug sessions that encounter a
+  are appended to `${PROJECT_ROOT}/.agents/projectContext/debug-log.md`. Future debug sessions that encounter a
   similar symptom may reference the prior close as evidence (cited in Phase 3).
 
 `debug` MUST NOT be invoked from inside `/fix`, `/ticket`, or `/adr` — that would create a routing

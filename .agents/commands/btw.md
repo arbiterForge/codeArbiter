@@ -17,17 +17,17 @@ The question can be anything about the project that doesn't require implementati
 
 ## What Happens
 
-1. codeArbiter reads from `projectContext/` as needed to answer the question accurately
+1. codeArbiter reads from `${PROJECT_ROOT}/.agents/projectContext/` as needed to answer the question accurately
 2. Answer delivered directly in the conversation
 3. No skill invoked, no agent dispatched, no file written, no routing table entry applies
-4. If the question reveals a gap in `projectContext/` (a question that can't be answered from existing docs): note the gap and suggest using `/adr` or `/status` as appropriate
+4. If the question reveals a gap in `${PROJECT_ROOT}/.agents/projectContext/` (a question that can't be answered from existing docs): note the gap and suggest using `/adr` or `/status` as appropriate
 
 ## Key Behaviors
 
 - **Conversational** — responses are direct and human-readable, not formatted as reports
 - **Read-only** — `/btw` never modifies a file
 - **No gates** — no hard gates apply; this command is always safe to invoke
-- **Honest about gaps** — if the answer isn't in `projectContext/`, say so rather than guessing
+- **Honest about gaps** — if the answer isn't in `${PROJECT_ROOT}/.agents/projectContext/`, say so rather than guessing
 - **Does not start implementation** — if the question sounds like it might be leading toward code, confirm with the user before routing to `/feature` or `/fix`
 
 ## What It Does NOT Do

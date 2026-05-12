@@ -19,11 +19,11 @@ Triggers:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/tech-stack.md` is readable — stop if missing.
-2. `.agents/projectContext/audit-spec.md` is readable — stop if missing.
-3. `.agents/projectContext/observability-spec.md` is readable — stop if missing.
-4. `.agents/projectContext/trust-zones.md` is readable — stop if missing.
-5. Current stage is known — read `cat .agents/projectContext/stage`.
+1. `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` is readable — stop if missing.
+2. `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` is readable — stop if missing.
+3. `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` is readable — stop if missing.
+4. `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` is readable — stop if missing.
+5. Current stage is known — read `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 
 If any file is missing, surface the gap and stop. Do not guess at commands or thresholds.
 
@@ -42,18 +42,18 @@ introduced or modified by the planned change before any code is written.
 
 **Inputs:**
 - Description of the planned change (feature, fix, or refactor)
-- `.agents/projectContext/audit-spec.md` — authoritative list of auditable action
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — authoritative list of auditable action
   categories, required emit fields, and sink routing rules
-- `.agents/projectContext/observability-spec.md` — authoritative list of observability signal categories, required labels, cardinality budgets, and emit module paths
-- `.agents/projectContext/trust-zones.md` — zone topology and crossing rules
+- `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` — authoritative list of observability signal categories, required labels, cardinality budgets, and emit module paths
+- `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` — zone topology and crossing rules
 
 **Actions:**
 
-1. Read `.agents/projectContext/audit-spec.md` in full. Identify which action
+1. Read `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` in full. Identify which action
    categories apply to the planned change.
-2. Read `.agents/projectContext/trust-zones.md`. Flag every zone boundary the
+2. Read `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`. Flag every zone boundary the
    change will cross.
-2b. Read `.agents/projectContext/observability-spec.md` in full. Identify which signal categories apply to the planned change.
+2b. Read `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` in full. Identify which signal categories apply to the planned change.
 3. List every obligation produced:
    - Auditable actions that must emit (with required fields from audit-spec)
    - Trust zone assertions that must be tested
@@ -76,7 +76,7 @@ implementation code is written in this phase.
 
 **Inputs:**
 - Phase 1 obligation checklist
-- `.agents/projectContext/tech-stack.md` — test runner invocation, file layout
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — test runner invocation, file layout
   conventions, and mock/stub patterns for this project
 
 **Actions:**
@@ -87,7 +87,7 @@ implementation code is written in this phase.
    - All auditable actions identified (emit called, required fields present)
    - All trust zone crossings (correct zone origin, correct destination)
    - All API contract invariants (input validation, error responses)
-3. Run the test command specified in `.agents/projectContext/tech-stack.md`.
+3. Run the test command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
    All new tests MUST fail (red). If a new test passes without implementation,
    the test is incorrect — fix it before continuing.
 4. Existing tests MUST remain green. If any pre-existing test breaks at this
@@ -108,16 +108,16 @@ No gold-plating, no speculative code.
 
 **Inputs:**
 - Failing tests from Phase 2
-- `.agents/projectContext/tech-stack.md` — build and test commands
-- `.agents/projectContext/coding-standards.md` — style, structure, and naming rules
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — build and test commands
+- `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` — style, structure, and naming rules
 
 **Actions:**
 
-1. Read `.agents/projectContext/coding-standards.md` before writing any code.
+1. Read `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` before writing any code.
 2. Write implementation code sufficient to satisfy the Phase 2 tests. No additional
    logic beyond what the tests require.
 3. Run the full test suite using the test command from
-   `.agents/projectContext/tech-stack.md`. ALL tests (new and pre-existing) MUST be green.
+   `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`. ALL tests (new and pre-existing) MUST be green.
 4. If a pre-existing test breaks, treat it as a regression — fix before continuing,
    do not suppress or skip the failing test.
 
@@ -161,12 +161,12 @@ MUST NOT mark an obligation COVERED without an actual passing test.
 **Goal:** Confirm test coverage meets the threshold for the current project stage.
 
 **Inputs:**
-- `.agents/projectContext/stage` — current stage value
-- `.agents/projectContext/tech-stack.md` — coverage command and report format
+- `${PROJECT_ROOT}/.agents/projectContext/stage` — current stage value
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — coverage command and report format
 
 **Actions:**
 
-1. Read the current stage: `cat .agents/projectContext/stage`.
+1. Read the current stage: `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 2. Determine the required coverage threshold:
 
    | Stage | Minimum Coverage |
@@ -176,7 +176,7 @@ MUST NOT mark an obligation COVERED without an actual passing test.
    | 3     | ≥ 85%           |
    | 4     | ≥ 90%           |
 
-3. Run the coverage command specified in `.agents/projectContext/tech-stack.md`.
+3. Run the coverage command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
 4. Check the reported coverage against the threshold for the current stage.
 5. If coverage is below threshold, identify uncovered lines and add tests until
    the threshold is met. Do not adjust the threshold.
@@ -194,12 +194,12 @@ negotiable without a stage-recorded decision.
 **Goal:** Confirm the codebase passes all lint and type-check rules with no errors.
 
 **Inputs:**
-- `.agents/projectContext/tech-stack.md` — lint and type-check commands
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — lint and type-check commands
 
 **Actions:**
 
-1. Run the lint command specified in `.agents/projectContext/tech-stack.md`.
-2. Run the type-check command specified in `.agents/projectContext/tech-stack.md`
+1. Run the lint command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
+2. Run the type-check command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`
    (if the project uses static typing).
 3. All errors MUST be resolved. Warnings that escalate to errors under the
    project's lint configuration MUST also be resolved.
@@ -234,7 +234,7 @@ negotiable without a stage-recorded decision.
 - MUST NOT skip, suppress, or comment out a failing test to clear a gate.
 - MUST NOT lower the coverage threshold without a recorded stage decision.
 - MUST NOT inline-suppress a lint rule to pass Phase 6 without a documented reason.
-- MUST NOT guess test runner or lint commands — always read `.agents/projectContext/tech-stack.md`.
+- MUST NOT guess test runner or lint commands — always read `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
 - MUST NOT proceed to the commit-gate skill until all six phases are green.
 
 ---

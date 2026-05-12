@@ -9,18 +9,18 @@ Claude IS a stage compliance enforcer who treats a stage-tagged rule violation a
 
 - Any code change that has different rules at different stages.
 - When the agent needs to know what the current stage requires.
-- When stage-tagged rules in AGENTS.md and `projectContext/` files apply differently to the change.
+- When stage-tagged rules in AGENTS.md and `${PROJECT_ROOT}/.agents/projectContext/` files apply differently to the change.
 - When code contains stage-conditional logic.
 
 ## Phases
 
 ### Phase 1 — Stage Read
-Run `cat .agents/projectContext/stage` and record the integer value. This is the authoritative current stage — do not infer it from code, comments, or config files. If `.agents/projectContext/stage` is absent or non-numeric, STOP and surface the error.
+Run `cat ${PROJECT_ROOT}/.agents/projectContext/stage` and record the integer value. This is the authoritative current stage — do not infer it from code, comments, or config files. If `${PROJECT_ROOT}/.agents/projectContext/stage` is absent or non-numeric, STOP and surface the error.
 
-**Gate:** `.agents/projectContext/stage` read successfully. Integer value recorded.
+**Gate:** `${PROJECT_ROOT}/.agents/projectContext/stage` read successfully. Integer value recorded.
 
 ### Phase 2 — Rule Inventory
-List all stage-tagged rules from AGENTS.md and all `projectContext/` files that apply at or below the current stage. Rules tagged `[Sn]` apply when current stage ≥ n. Rules tagged `[Sn+]` apply starting at stage n. Untagged rules always apply. Output: table of active rules with their source file.
+List all stage-tagged rules from AGENTS.md and all `${PROJECT_ROOT}/.agents/projectContext/` files that apply at or below the current stage. Rules tagged `[Sn]` apply when current stage ≥ n. Rules tagged `[Sn+]` apply starting at stage n. Untagged rules always apply. Output: table of active rules with their source file.
 
 **Gate:** Rule inventory complete. Every active rule identified with source.
 
@@ -49,13 +49,13 @@ Every active rule must appear. SATISFIED means the rule applies and the code com
 
 | Gate | Condition | Action |
 |---|---|---|
-| Stage file missing | `.agents/projectContext/stage` absent or non-numeric | BLOCK |
+| Stage file missing | `${PROJECT_ROOT}/.agents/projectContext/stage` absent or non-numeric | BLOCK |
 | Active rule violation | Any `[Sn]` rule violated at current stage | BLOCK |
 | Security bypass | Stage-conditional security skip detected | BLOCK — invoke /surface-conflict |
 | Deferred violations | Next-stage rules violated | FLAG as DEFERRED |
 
 ## Hard Rules
-- MUST NOT infer stage from anything other than `cat .agents/projectContext/stage`.
+- MUST NOT infer stage from anything other than `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 - MUST NOT allow stage-conditional security bypasses without invoking /surface-conflict.
 - MUST NOT skip the rule inventory — every tagged rule must be checked.
 - MUST NOT skip stages on promotion — target stage MUST be current + 1.
@@ -63,7 +63,7 @@ Every active rule must appear. SATISFIED means the rule applies and the code com
 
 ## Reference: Stage Table
 
-The generic stage table. Project-specific promotion criteria are in `projectContext/decisions/` or `projectContext/open-questions.md`.
+The generic stage table. Project-specific promotion criteria are in `${PROJECT_ROOT}/.agents/projectContext/decisions/` or `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`.
 
 | Stage | Name | Generic Promotion Criteria |
 |---|---|---|
@@ -75,19 +75,19 @@ The generic stage table. Project-specific promotion criteria are in `projectCont
 ## Reference: Reading the Current Stage
 
 ```bash
-cat .agents/projectContext/stage
+cat ${PROJECT_ROOT}/.agents/projectContext/stage
 # => 1
 ```
 
 In code:
 
 ```typescript
-const stage = parseInt(await fs.readFile('.agents/projectContext/stage', 'utf8').then(s => s.trim()));
+const stage = parseInt(await fs.readFile('${PROJECT_ROOT}/.agents/projectContext/stage', 'utf8').then(s => s.trim()));
 ```
 
 ## Reference: Tag Conventions
 
-Rules in AGENTS.md and `projectContext/` files carry tags:
+Rules in AGENTS.md and `${PROJECT_ROOT}/.agents/projectContext/` files carry tags:
 
 - `[S1]` — applies only at Stage 1
 - `[S2+]` — applies at Stage 2 and later
@@ -110,11 +110,11 @@ Rules in AGENTS.md and `projectContext/` files carry tags:
 
 ## Reference: What Promotes a Stage
 
-ONLY the `/promote-stage` command modifies `.agents/projectContext/stage`. The agent MUST NOT edit this file directly. Promotion requires:
+ONLY the `/promote-stage` command modifies `${PROJECT_ROOT}/.agents/projectContext/stage`. The agent MUST NOT edit this file directly. Promotion requires:
 
 1. All gates that become enforcing at the target stage currently pass.
 2. All `[CONFIRM-NN]` items blocking the target stage are resolved.
 3. All risks with `Target Closure: Stage <target>` are closed with an ADR.
 4. Named approver posts the literal approval comment.
 
-Consult `projectContext/decisions/` and `projectContext/open-questions.md` for project-specific promotion criteria.
+Consult `${PROJECT_ROOT}/.agents/projectContext/decisions/` and `${PROJECT_ROOT}/.agents/projectContext/open-questions.md` for project-specific promotion criteria.

@@ -1,6 +1,6 @@
 # Decision Log Format
 
-This file defines the exact format used in `projectContext/arbiter-decisions.md`. The format is non-negotiable so the log remains machine-parseable on future invocations of this skill.
+This file defines the exact format used in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md`. The format is non-negotiable so the log remains machine-parseable on future invocations of this skill.
 
 ## Append-Only — No Edits Permitted
 
@@ -181,7 +181,7 @@ To find that DECISION-0001 was superseded, a reader scans forward and finds DECI
 
 ## Reading the Log on Future Invocations
 
-When this skill starts a new session, it reads `projectContext/arbiter-decisions.md` from top to bottom and indexes:
+When this skill starts a new session, it reads `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` from top to bottom and indexes:
 
 - Every entry by its `DECISION-NNNN` ID
 - For each entry, its current `Status` and any `Supersedes` reference

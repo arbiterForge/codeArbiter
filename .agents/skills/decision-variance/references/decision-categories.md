@@ -11,7 +11,7 @@ If this skill encounters a decision that does not fit any category here:
 3. Ask the user to either map it to an existing category or explicitly add a new category to this file
 4. Wait for the user's choice
 
-The user adding a new category is itself a decision logged in `projectContext/arbiter-decisions.md` with `Decision category: META.CATEGORY-CREATION`. This makes category list growth an explicit, auditable event rather than ad-hoc accumulation.
+The user adding a new category is itself a decision logged in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md` with `Decision category: META.CATEGORY-CREATION`. This makes category list growth an explicit, auditable event rather than ad-hoc accumulation.
 
 ## Stack Decisions
 

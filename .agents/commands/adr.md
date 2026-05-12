@@ -14,27 +14,27 @@ Title should name the decision clearly: what was decided, not what was considere
 
 ## Routes To
 
-`decision-lifecycle` skill (`.agents/skills/decision-lifecycle/SKILL.md`).
+`decision-lifecycle` skill (`${FRAMEWORK_ROOT}/.agents/skills/decision-lifecycle/SKILL.md`).
 
 ## Command-owned mechanics
 
 **Authoring marker (H-11).** Before invoking the skill, run:
 
 ```
-mkdir -p .agents/.markers && touch .agents/.markers/adr-authoring-active
+mkdir -p ${FRAMEWORK_ROOT}/.agents/.markers && touch ${FRAMEWORK_ROOT}/.agents/.markers/adr-authoring-active
 ```
 
-The H-11 PreToolUse hook (`.agents/hooks/pre-write.sh`, `.agents/hooks/pre-edit.sh`) blocks Writes and Edits to `.agents/projectContext/decisions/*.md` unless this marker is present and fresh (modified within the last 30 minutes).
+The H-11 PreToolUse hook (`${FRAMEWORK_ROOT}/.agents/hooks/pre-write.sh`, `${FRAMEWORK_ROOT}/.agents/hooks/pre-edit.sh`) blocks Writes and Edits to `${PROJECT_ROOT}/.agents/projectContext/decisions/*.md` unless this marker is present and fresh (modified within the last 30 minutes).
 
 After the skill completes Step 7 (or if `/adr` aborts), remove the marker:
 
 ```
-rm -f .agents/.markers/adr-authoring-active
+rm -f ${FRAMEWORK_ROOT}/.agents/.markers/adr-authoring-active
 ```
 
 If the command aborts midway, the marker may persist until cleaned up or ages out.
 
-**ADR file path.** Created at `projectContext/decisions/000N-<slugified-title>.md` with sequential numbering — check `projectContext/decisions/README.md` for the next number.
+**ADR file path.** Created at `${PROJECT_ROOT}/.agents/projectContext/decisions/000N-<slugified-title>.md` with sequential numbering — check `${PROJECT_ROOT}/.agents/projectContext/decisions/README.md` for the next number.
 
 **ADR file template.**
 

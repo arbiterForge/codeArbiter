@@ -55,46 +55,101 @@ Once `projectContext/CONTEXT.md` contains the `<!--INITIALIZED-->` marker, you'r
 
 ---
 
-## Importing codeArbiter into another project
+## Installing codeArbiter into a host project
 
-codeArbiter is designed to be lifted into a host project. Three options:
+codeArbiter is designed to live inside another repo. The `/init-vendor` command handles the wiring after you bring it in.
 
-### Option A — `git submodule` (recommended for upstream tracking)
+### How the path model works
+
+Two roots govern every file path in the framework:
+
+| Root | What it is |
+|---|---|
+| `${FRAMEWORK_ROOT}` | The codeArbiter installation (e.g. `vendor/codearbiter/`) — contains skills, agents, commands, and hooks |
+| `${PROJECT_ROOT}` | Your repo root — where `AGENTS.md`, `CLAUDE.md`, and `.agents/projectContext/` live |
+
+Your project state (`projectContext/`, ADRs, tickets, overrides log) always lives at `${PROJECT_ROOT}/.agents/projectContext/`, separate from the framework files.
+
+### What `/init-vendor` does
+
+Running `/init-vendor --vendor-path=vendor/codearbiter/` inside Claude Code:
+
+1. **Copies `AGENTS.md`** from the vendor path to your repo root — Claude Code must be able to find `AGENTS.md` at `$CLAUDE_PROJECT_DIR` to load the orchestrator
+2. **Writes `CLAUDE.md`** at your repo root containing `@AGENTS.md` — the standard Claude Code project-instructions shim
+3. **Generates `.claude/commands/*.md` shims** pointing into the vendor path so every `/command` resolves correctly
+
+Re-run with `--force` after every codeArbiter upgrade to keep `AGENTS.md` and all shims current.
+
+---
+
+### Option A — `git submodule` (recommended)
 
 ```sh
-cd my-host-project
-git submodule add <repo-url> vendor/codeArbiter
-ln -s vendor/codeArbiter/.agents .agents
-ln -s vendor/codeArbiter/.claude .claude
-git add .gitmodules vendor/codeArbiter .agents .claude
-git commit -m "vendor codeArbiter as submodule"
+# 1. Vendor codeArbiter
+git submodule add <repo-url> vendor/codearbiter
+git commit -m "vendor: add codeArbiter submodule"
+
+# 2. Symlink .agents/ so hook commands (bash .agents/hooks/…) resolve at repo root
+ln -s vendor/codearbiter/.agents .agents
+
+# 3. Symlink .claude/settings.json so Claude Code picks up hooks and MCP config
+mkdir -p .claude
+ln -s ../vendor/codearbiter/.agents/settings.json .claude/settings.json
+
+git add .agents .claude
+git commit -m "vendor: wire codeArbiter hooks and settings"
+
+# 4. Open Claude Code and run /init-vendor
+claude
+# → /init-vendor --vendor-path=vendor/codearbiter/
+# This writes AGENTS.md and CLAUDE.md at your repo root and generates .claude/commands/ shims.
+
+# 5. Initialize project context
+# → /create-context   (existing codebase)
+# → /decompose        (new project, no code yet)
 ```
 
-The symlinks keep `$CLAUDE_PROJECT_DIR` (the host repo root) as the working dir while letting hooks find `.agents/projectContext/` at the expected relative path. To update later: `git -C vendor/codeArbiter pull && git commit vendor/codeArbiter`.
+To upgrade codeArbiter later:
+```sh
+git -C vendor/codearbiter pull origin main
+git add vendor/codearbiter
+git commit -m "vendor: upgrade codeArbiter"
+# Then in Claude Code: /init-vendor --vendor-path=vendor/codearbiter/ --force
+```
 
-### Option B — `git subtree` (vendored into your history)
+### Option B — `git subtree` (vendored into your history, no submodule overhead)
 
 ```sh
-cd my-host-project
-git subtree add --prefix=vendor/codeArbiter <repo-url> main --squash
-ln -s vendor/codeArbiter/.agents .agents
-ln -s vendor/codeArbiter/.claude .claude
+git subtree add --prefix=vendor/codearbiter <repo-url> main --squash
+ln -s vendor/codearbiter/.agents .agents
+mkdir -p .claude
+ln -s ../vendor/codearbiter/.agents/settings.json .claude/settings.json
+git add .agents .claude && git commit -m "vendor: wire codeArbiter"
+# Then in Claude Code: /init-vendor --vendor-path=vendor/codearbiter/
 ```
 
-Same symlink pattern. Updates with `git subtree pull --prefix=vendor/codeArbiter <repo-url> main --squash`.
+To upgrade:
+```sh
+git subtree pull --prefix=vendor/codearbiter <repo-url> main --squash
+# Then in Claude Code: /init-vendor --vendor-path=vendor/codearbiter/ --force
+```
 
 ### Option C — Plain copy (no upstream linkage)
 
 ```sh
-cp -r path/to/codeArbiter/.agents ./.agents
-cp -r path/to/codeArbiter/.claude ./.claude
+cp -r path/to/codearbiter/.agents ./.agents
+cp -r path/to/codearbiter/.claude ./.claude
+cp path/to/codearbiter/AGENTS.md ./AGENTS.md
+echo "@AGENTS.md" > CLAUDE.md
 ```
 
-Easiest. No way to pull future updates without manually re-copying.
+Everything is already at the root so `/init-vendor` is not needed. No path to pull future updates without manually re-copying.
 
-**Important in all three cases:** Claude Code resolves hook commands relative to `$CLAUDE_PROJECT_DIR`, which is your host repo root. The symlink pattern (Options A and B) puts `.agents/` at the expected location while the actual files live under `vendor/codeArbiter/`. If you skip the symlinks, you'll need to edit `.claude/settings.json` to use prefixed paths like `bash vendor/codeArbiter/.agents/hooks/...`.
+---
 
-**Note on the root README/LICENSE:** these files are not part of `.agents/` and do not travel via submodule/subtree imports. That's intentional — your host project has its own README and license. Authoritative docs for shipped components (like the statusline) live under `.agents/` so they follow the framework. See [`.agents/hooks/STATUSLINE.md`](./.agents/hooks/STATUSLINE.md) for an example.
+**Why the `.agents/` symlink?** Hook commands in `settings.json` are resolved relative to `$CLAUDE_PROJECT_DIR` (your repo root) and reference bare paths like `bash .agents/hooks/session-start.sh`. The symlink makes those paths resolve without modifying `settings.json`. Your project state (`projectContext/`) is written by `/create-context` into the symlinked `.agents/` — if you want strict separation, copy instead of symlinking and point the hook paths at the vendor location manually.
+
+**Note on README/LICENSE:** these root files don't travel with the framework. Your host project has its own. Authoritative docs for framework components (statusline, etc.) live under `.agents/` so they follow the code. See [`.agents/hooks/STATUSLINE.md`](./.agents/hooks/STATUSLINE.md).
 
 ---
 
@@ -143,6 +198,8 @@ Full docs, including troubleshooting and the segment-by-segment color logic, liv
 | `/surface-conflict "..."` | Stop everything and surface a rule conflict. |
 | `/btw "question"` | Lightweight Q&A — no state change. |
 | `/override "reason"` | Sanctioned bypass with mandatory audit logging. |
+| `/create-context` | Back-fill `projectContext/` for an existing codebase (brownfield init). |
+| `/decompose` | Scaffold `projectContext/` for a new project with no code yet. |
 | `/onboard` | Tour the framework. |
 | `/status` | Show stage, open tasks, open questions, available commands. |
 

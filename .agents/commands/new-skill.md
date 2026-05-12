@@ -14,7 +14,7 @@ The skill name should describe what the skill does in verb-noun form. Examples: 
 
 ## Routes To
 
-`skill-author` skill (`.agents/skills/skill-author/SKILL.md`) — all 5 phases.
+`skill-author` skill (`${FRAMEWORK_ROOT}/.agents/skills/skill-author/SKILL.md`) — all 5 phases.
 
 ## The 5 Phases
 
@@ -32,28 +32,28 @@ Produces a SKILL.md outline:
 - Skill name, trigger, purpose
 - Phase list with inputs, outputs, and gates for each phase
 - Which agents the skill invokes
-- What `projectContext/` documents it reads
+- What `${PROJECT_ROOT}/.agents/projectContext/` documents it reads
 
 **Phase 3 — User Review**
 Presents the specification to the user. Work does not proceed until the user approves the specification. If the user requests changes, Phase 2 is revised.
 
 **Phase 4 — Authoring**
 Writes the skill files:
-- `.agents/skills/<name>/SKILL.md` — full skill definition
-- Updates `.agents/skills/` index if one exists
+- `${FRAMEWORK_ROOT}/.agents/skills/<name>/SKILL.md` — full skill definition
+- Updates `${FRAMEWORK_ROOT}/.agents/skills/` index if one exists
 - Creates any reference files the skill needs (e.g., templates, decision category lists)
 
 **Phase 5 — Verification**
 - Reads the authored skill file back to verify it is internally consistent
 - Checks that every gate referenced in the skill has a corresponding check described
-- Checks that every `projectContext/` document the skill reads actually exists (or notes it as a gap to create)
+- Checks that every `${PROJECT_ROOT}/.agents/projectContext/` document the skill reads actually exists (or notes it as a gap to create)
 
 ## Hard Gates
 
 - MUST confirm the gap is real in Phase 1 before writing any skill content
 - MUST get user approval on the specification (Phase 3) before authoring (Phase 4)
 - MUST NOT create a skill that duplicates an existing skill's purpose — surface the overlap instead
-- Skill files live in `.agents/skills/<name>/` — MUST NOT be placed elsewhere
+- Skill files live in `${FRAMEWORK_ROOT}/.agents/skills/<name>/` — MUST NOT be placed elsewhere
 
 ## When NOT to Use
 

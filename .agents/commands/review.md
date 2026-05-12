@@ -36,7 +36,7 @@ Path-conditional (invoked when the scope matches):
    - Description
    - File and line
    - Remediation recommendation
-   - Applicable control from `projectContext/security-controls.md` (for security findings)
+   - Applicable control from `${PROJECT_ROOT}/.agents/projectContext/security-controls.md` (for security findings)
 4. Findings summary presented to user
 5. BLOCK-level findings (CRITICAL / HIGH) highlighted — these MUST be resolved before `/pr`
 

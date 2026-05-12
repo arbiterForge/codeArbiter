@@ -13,19 +13,19 @@ authors: SUaDtL (user)
 
 codeArbiter previously had no clean channel for a subagent to log a finding that fell outside its scope. Such findings either inlined into the agent's response (lost in transcript), got tossed into `open-tasks.md` (which is general task tracking, not provenance-stamped overflow), or were silently dropped. The framework needed a sanctioned inbox for these out-of-scope observations.
 
-A separate but related concern: existing artifacts under `.agents/agents/`, `.agents/commands/`, and `.agents/projectContext/decisions/` are routinely read by agents during routing, even when only a one-line description is required. Eagerly loading bodies of artifacts that are only invoked occasionally is context-wasteful.
+A separate but related concern: existing artifacts under `${FRAMEWORK_ROOT}/.agents/agents/`, `${FRAMEWORK_ROOT}/.agents/commands/`, and `${PROJECT_ROOT}/.agents/projectContext/decisions/` are routinely read by agents during routing, even when only a one-line description is required. Eagerly loading bodies of artifacts that are only invoked occasionally is context-wasteful.
 
 ## Decision
 
-Introduce an optional `ticketing-router` skill with two modes selectable via `projectContext/ticketing-config.md`:
+Introduce an optional `ticketing-router` skill with two modes selectable via `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md`:
 
-1. **`in-repo`** — a lightweight scope-overflow inbox. Subagents file tickets (four-section markdown files) in `projectContext/tickets/open/`. The codeArbiter parent triages each ticket by filing the substance into the correct existing artifact (`03-task-backlog.md`, `open-questions.md` as a `CONFIRM-NN`, a gap doc, or by surfacing to the user) and then closing the ticket with a disposition note. The ticket itself is an inbox, not a project tracker.
+1. **`in-repo`** — a lightweight scope-overflow inbox. Subagents file tickets (four-section markdown files) in `${PROJECT_ROOT}/.agents/projectContext/tickets/open/`. The codeArbiter parent triages each ticket by filing the substance into the correct existing artifact (`03-task-backlog.md`, `open-questions.md` as a `CONFIRM-NN`, a gap doc, or by surfacing to the user) and then closing the ticket with a disposition note. The ticket itself is an inbox, not a project tracker.
 
 2. **`plane`** — uses the official Plane MCP server (`@makeplane/plane-mcp-server`) to write to a self-hosted Plane instance. Tickets become Plane work items; `/feature` and `/fix` auto-create work items; `commit-gate` Phase 8 auto-comments with the commit SHA; PR merge auto-transitions to done.
 
 The skill is structured as a **thin router** that reads `mode` from config and `@`-imports only the variant in use. The unused variant is never loaded.
 
-A strict **no-read-without-reason** rule applies. The router exposes `INDEX.md` (in-repo) or `mcp__plane__list_issues` (Plane) for cheap surface scans; ticket bodies open only via explicit `/ticket show <id>`. This same pattern is retrofitted to `.agents/agents/` (new `INDEX.md`), `.agents/commands/` (existing `COMMANDS.md` formalized as the index), and `.agents/projectContext/decisions/` (existing `README.md` index schema populated).
+A strict **no-read-without-reason** rule applies. The router exposes `INDEX.md` (in-repo) or `mcp__plane__list_issues` (Plane) for cheap surface scans; ticket bodies open only via explicit `/ticket show <id>`. This same pattern is retrofitted to `${FRAMEWORK_ROOT}/.agents/agents/` (new `INDEX.md`), `${FRAMEWORK_ROOT}/.agents/commands/` (existing `COMMANDS.md` formalized as the index), and `${PROJECT_ROOT}/.agents/projectContext/decisions/` (existing `README.md` index schema populated).
 
 **Disposition vocabulary explicitly excludes ADR authoring.** A ticket close cannot result in a new ADR. Decision-worthy findings escalate to `open-questions.md` (as a `CONFIRM-NN`) or to the user. ADRs are authored only via `/adr` with explicit user attribution, consistent with AGENTS.md §5's existing "No decisions without user attribution" gate.
 
@@ -56,11 +56,11 @@ This tradeoff sits at §2 level 3 (Maintainability and reviewability) for the di
 
 ## Implementation Notes
 
-- New files: `ticketing-config.md`, `.agents/skills/ticketing-router/{SKILL.md,in-repo/SKILL.md,plane/SKILL.md}`, `.agents/projectContext/tickets/{INDEX.md,open/,closed/}`, `.agents/commands/ticket.md`, `.claude/commands/ticket.md`, `.agents/agents/INDEX.md`.
-- Modified: AGENTS.md (§3 hard rules, §4 map, §5 routing, §6 read-on-invocation note), `secrets-policy.md` (env-var approved location), `.gitignore` (`.env`, `.env.local`), `.agents/settings.json` (`mcpServers.plane`), 9 subagent definitions (out-of-scope clause), `decisions/README.md` (this ADR row), `COMMANDS.md` (normalized + `/ticket` row).
+- New files: `ticketing-config.md`, `${FRAMEWORK_ROOT}/.agents/skills/ticketing-router/{SKILL.md,in-repo/SKILL.md,plane/SKILL.md}`, `${PROJECT_ROOT}/.agents/projectContext/tickets/{INDEX.md,open/,closed/}`, `${FRAMEWORK_ROOT}/.agents/commands/ticket.md`, `.claude/commands/ticket.md`, `${FRAMEWORK_ROOT}/.agents/agents/INDEX.md`.
+- Modified: AGENTS.md (§3 hard rules, §4 map, §5 routing, §6 read-on-invocation note), `secrets-policy.md` (env-var approved location), `.gitignore` (`.env`, `.env.local`), `${FRAMEWORK_ROOT}/.agents/settings.json` (`mcpServers.plane`), 9 subagent definitions (out-of-scope clause), `decisions/README.md` (this ADR row), `COMMANDS.md` (normalized + `/ticket` row).
 - Default ships disabled: `enabled: false` in `ticketing-config.md`. Users opt in.
 
 ## Followups
 
-- First in-repo ticket once enabled: audit any code paths that read `.agents/agents/*.md` in bulk and update them to consult `INDEX.md` first.
-- Validate that `@makeplane/plane-mcp-server` tool names match the names referenced in `.agents/skills/ticketing-router/plane/SKILL.md` on first real setup; correct any mismatches.
+- First in-repo ticket once enabled: audit any code paths that read `${FRAMEWORK_ROOT}/.agents/agents/*.md` in bulk and update them to consult `INDEX.md` first.
+- Validate that `@makeplane/plane-mcp-server` tool names match the names referenced in `${FRAMEWORK_ROOT}/.agents/skills/ticketing-router/plane/SKILL.md` on first real setup; correct any mismatches.

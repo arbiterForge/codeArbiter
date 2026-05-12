@@ -10,7 +10,7 @@ committed.
 
 Triggers:
 - Code introduces a new action that falls within the auditable event set defined
-  in `projectContext/audit-spec.md`
+  in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`
 - An existing emit call is modified or removed
 - A new API endpoint, data write path, or authentication step is added (all are
   presumptive audit obligations until Phase 1 rules otherwise)
@@ -22,11 +22,11 @@ Triggers:
 
 Before Phase 1 begins, confirm:
 
-1. `.agents/projectContext/audit-spec.md` is readable — stop if missing. This
+1. `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` is readable — stop if missing. This
    file is the authoritative source for action categories, required fields, sink
    routing, and fail-closed policy.
-2. `.agents/projectContext/tech-stack.md` is readable — stop if missing.
-3. Current stage is known — read `cat .agents/projectContext/stage`.
+2. `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` is readable — stop if missing.
+3. Current stage is known — read `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
 
 If any file is missing, surface the gap and stop. Do not guess at field names,
 emit signatures, or routing targets.
@@ -40,16 +40,16 @@ it is registered in the project's auditable event set.
 
 **Inputs:**
 - Description of the code change
-- `.agents/projectContext/audit-spec.md` — authoritative auditable event set,
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — authoritative auditable event set,
   action naming conventions, and category definitions
 
 **Actions:**
 
-1. Read `.agents/projectContext/audit-spec.md` in full.
+1. Read `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` in full.
 2. Identify which action category from the auditable event set applies to the
    code change.
 3. Confirm the action string follows the naming convention defined in
-   `projectContext/audit-spec.md`. If the file specifies a `verb.noun` pattern
+   `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`. If the file specifies a `verb.noun` pattern
    (or another convention), enforce that pattern for all new action strings.
 4. If the action is not present in the registered auditable event set, add it
    to the registry before using it. Do not emit an unregistered action name.
@@ -71,28 +71,28 @@ policy violation.
 
 **Inputs:**
 - Action classification from Phase 1
-- `.agents/projectContext/audit-spec.md` — required always-present fields,
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — required always-present fields,
   action-conditional fields, and the emit function or module to call
 
 **Actions:**
 
-1. Read the emit function or module defined in `projectContext/audit-spec.md`.
+1. Read the emit function or module defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
    Use that function exclusively — do not construct a bare HTTP call, write
    directly to a logger, or invent an alternative emit path.
-2. Populate all always-present fields defined in `projectContext/audit-spec.md`.
+2. Populate all always-present fields defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
    These fields must appear on every audit event regardless of action type.
 3. Populate all action-conditional fields applicable to the classified action.
    These are fields required only for specific action categories, as defined in
-   `projectContext/audit-spec.md`.
+   `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 4. Do not hard-code project-specific metadata values (such as a product name or
-   environment identifier) unless `projectContext/audit-spec.md` specifies them
+   environment identifier) unless `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` specifies them
    as required constants. Use runtime-resolved values where the spec calls for
    dynamic fields.
-5. Do not include fields that are not defined in `projectContext/audit-spec.md`.
+5. Do not include fields that are not defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
    Undeclared fields create schema drift and complicate downstream consumers.
 
 **Output:** Emit call constructed with all required fields, sourced from
-`projectContext/audit-spec.md`.
+`${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 
 **Gate:** BLOCK if any required always-present field is missing. BLOCK if any
 required action-conditional field for the classified action is missing.
@@ -106,25 +106,25 @@ does not bypass it.
 
 **Inputs:**
 - Emit call from Phase 2
-- `.agents/projectContext/audit-spec.md` — sink definition and routing rules
-- `.agents/projectContext/trust-zones.md` — zone topology and crossing rules
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — sink definition and routing rules
+- `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` — zone topology and crossing rules
   (if the project defines trust zones)
 
 **Actions:**
 
 1. Confirm the emit call invokes only the canonical audit module or function
-   defined in `projectContext/audit-spec.md`.
+   defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 2. MUST NOT route an audit event through a general-purpose logger, a bare HTTP
    client, a message queue client, or any path not designated as the canonical
    audit sink.
-3. If the project defines trust zones in `projectContext/trust-zones.md`, confirm
+3. If the project defines trust zones in `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md`, confirm
    the emit call originates from a permitted zone and targets the audit sink's
    declared zone. Flag any undeclared zone crossing as a blocking finding.
 4. If the code change involves multiple emit points, verify each one routes
    through the canonical sink.
 
 **Output:** Confirmed that all emit calls route through the canonical audit
-module defined in `projectContext/audit-spec.md`.
+module defined in `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 
 **Gate:** BLOCK if any emit bypasses the canonical sink. BLOCK if any undeclared
 trust zone crossing is introduced.
@@ -137,13 +137,13 @@ trust zone crossing is introduced.
 project stage.
 
 **Inputs:**
-- `.agents/projectContext/stage` — current stage value
-- `.agents/projectContext/audit-spec.md` — fail-closed policy section
+- `${PROJECT_ROOT}/.agents/projectContext/stage` — current stage value
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — fail-closed policy section
 
 **Actions:**
 
-1. Read the current stage: `cat .agents/projectContext/stage`.
-2. Read the fail-closed policy from `projectContext/audit-spec.md`. If the file
+1. Read the current stage: `cat ${PROJECT_ROOT}/.agents/projectContext/stage`.
+2. Read the fail-closed policy from `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`. If the file
    defines a project-specific policy, enforce that. If the file is silent, apply
    the stage-based defaults below:
 
@@ -175,8 +175,8 @@ has a corresponding test.
 **Inputs:**
 - Action classification from Phase 1
 - Emit construction from Phase 2
-- `.agents/projectContext/tech-stack.md` — test runner and mock/stub conventions
-- `.agents/projectContext/audit-spec.md` — test obligation section
+- `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` — test runner and mock/stub conventions
+- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` — test obligation section
 
 **Actions:**
 
@@ -186,14 +186,14 @@ has a corresponding test.
    - Confirms all required fields from Phase 2 are present in the emitted event
    - Confirms the emit is not called when the action does not occur
 2. Use the test framework and mock/stub patterns specified in
-   `projectContext/tech-stack.md`. Do not hard-code library-specific imports
-   unless that library is named in `projectContext/tech-stack.md`.
+   `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`. Do not hard-code library-specific imports
+   unless that library is named in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
 3. For complex emit logic or multi-step action sequences, invoke the
    `audit-emitter` agent to review emit correctness before marking the
    obligation complete.
-4. Run the test command specified in `projectContext/tech-stack.md` and confirm
+4. Run the test command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` and confirm
    all audit-related tests are green.
-5. Run the lint command specified in `projectContext/tech-stack.md` and confirm
+5. Run the lint command specified in `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` and confirm
    zero errors.
 
 **Output:** Passing tests covering every auditable action, confirmed by the
@@ -219,17 +219,17 @@ error.
 
 ## Hard Rules
 
-- MUST read `projectContext/audit-spec.md` before Phase 1. Do not guess field
+- MUST read `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` before Phase 1. Do not guess field
   names, action strings, or the emit function path.
 - MUST NOT emit to any path other than the canonical audit module defined in
-  `projectContext/audit-spec.md`.
+  `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md`.
 - MUST NOT emit an unregistered action name. Add it to the registry first.
 - MUST NOT silently swallow an emit error at any stage.
 - MUST NOT hard-code project-specific metadata constants unless
-  `projectContext/audit-spec.md` explicitly specifies them as required constants.
+  `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` explicitly specifies them as required constants.
 - MUST NOT bypass the `audit-emitter` agent review for complex audit logic.
 - MUST NOT guess test runner or lint commands — always read
-  `projectContext/tech-stack.md`.
+  `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`.
 - MUST NOT proceed to the commit-gate skill until all five phases are complete.
 
 ---
