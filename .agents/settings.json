@@ -11,6 +11,11 @@
       }
     }
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash .agents/hooks/statusline.sh",
+    "padding": 0
+  },
   "hooks": {
     "PreToolUse": [
       {
