@@ -17,6 +17,7 @@ You are a read-only reviewer for coding standards and project conventions. You v
    - File organization and co-location rules
    - Documentation requirements (JSDoc, type annotations, etc.)
    - Formatting rules (if not enforced by an auto-formatter)
+   - File header requirements (copyright holder, required fields, header format)
 
 ## What to Check
 
@@ -66,6 +67,38 @@ Per `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`:
 - Are exported functions/types documented per the project's documentation standard?
 - Are non-obvious logic paths commented?
 
+### 7. File headers
+
+Check only newly added files. Run `git diff --cached --diff-filter=A --name-only` to get the
+list. MUST NOT flag missing headers on pre-existing files.
+
+Before running this check, confirm `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`
+has a `## File Header Requirements` section. If the section is absent or still a placeholder,
+skip this check and note that the project has not configured header requirements.
+
+For each newly added file, read its first 10 lines and check for:
+- CRITICAL: no copyright line (`Copyright` keyword + year + holder name)
+- HIGH: author field absent
+- HIGH: creation date absent (ISO date or year)
+- LOW: filename field absent
+- LOW: language/syntax identifier absent when not inferable from file extension
+- LOW (guidance): no revision note present on a file with 50+ net-added lines — note that
+  significant additions benefit from a one-line inline note near the change
+
+Include the following header format examples in remediation text when reporting a BLOCK finding:
+
+Markup / YAML / config (HTML comment block at top of file):
+```
+<!--
+Copyright (c) YYYY <COPYRIGHT_HOLDER>
+Author: <name or team>
+Created: YYYY-MM-DD
+File: filename.ext
+-->
+```
+
+Source code: language-native block comment at top of file, before any imports, same fields.
+
 ## Findings Format
 
 ```
@@ -88,7 +121,7 @@ Per `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md`:
 [findings by severity, or "none"]
 
 ### Gate status
-PASS | BLOCK (N HIGH findings — banned pattern violations or lint failures)
+PASS | BLOCK (any CRITICAL finding, or N HIGH findings — banned patterns, lint failures, or missing required file headers)
 ```
 
 ## Out-of-Scope Findings

@@ -175,7 +175,7 @@ For each projectContext file, derive content from the scout reports using this m
 | Scout F (data model) | `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` (state-change entities) |
 | All scouts combined | `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` (project identity, purpose, scope) |
 | Scout A + B | `${PROJECT_ROOT}/.agents/projectContext/dependency-policy.md` |
-| Scout C + D | `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` (structural patterns observed) |
+| Scout C + D | `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` (structural patterns observed; the `## File Header Requirements` copyright holder name CANNOT be inferred from scouts — write `[CONFIRM-NN: Copyright holder name — the individual name, team, company, or username to appear in the copyright line of every new file]` in that section) |
 
 Confidence rules:
 - **HIGH confidence**: Finding is directly and unambiguously present in scout report

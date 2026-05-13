@@ -203,6 +203,10 @@ Unlock and confirm:
 - Hard constraints: stack (language, framework, runtime), cloud provider,
   compliance requirements (data residency, HIPAA, FedRAMP, etc.), budget ceiling,
   team size and skill set, existing systems to integrate with.
+- Copyright holder: who or what entity owns the copyright on this codebase
+  (individual name, company name, team name, or username). Recorded in
+  `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` File Header Requirements and applied
+  to every new file. If unknown or undecided, record as CONFIRM-NN.
 - Trade-off forcing for every major architectural decision. Examples:
   - Monolith vs. services: "Monolith ships faster and is simpler to operate but
     limits independent scaling and team autonomy. Services enable scale but require
