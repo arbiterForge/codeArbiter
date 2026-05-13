@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: README.md
+-->
+
 # Architectural Decision Records
 
 <!-- ADRs live in this directory. Each file is named NNN-short-title.md where NNN is zero-padded. -->

@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: decision-log-format.md
+-->
+
 # Decision Log Format
 
 This file defines the exact format used in `${PROJECT_ROOT}/.agents/projectContext/arbiter-decisions.md`. The format is non-negotiable so the log remains machine-parseable on future invocations of this skill.

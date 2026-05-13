@@ -4,6 +4,14 @@ description: INTERNAL subagent of the decision-variance and context-creation ski
 tools: Read, Grep, Glob, Bash
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: scout.md
+-->
+
+
 # Scout Subagent
 
 The scout subagent scans a defined section of the codebase and reports evidence of architectural decisions found there. It does NOT make variance judgments — that is the decision-variance skill's job at the main session level.

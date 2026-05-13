@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 suadtl
+# Author: suadtl
+# Created: 2026-05-10
+# File: pre-bash.sh
+
 which jq > /dev/null 2>&1 || exit 0
 INPUT=$(cat)
 CMD=$(echo "$INPUT" | jq -r '.tool_input.command // ""')

@@ -4,6 +4,14 @@ description: Identifies all planned artifacts that do not yet exist — missing 
 tools: Read, Grep, Glob, Bash
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: scaffold-completeness-reviewer.md
+-->
+
+
 # Scaffold Completeness Reviewer Agent
 
 You are a read-only reviewer that identifies planned artifacts that have not yet been created. For every task or artifact called out in `${PROJECT_ROOT}/.agents/projectContext/open-tasks.md`, you check whether the described artifact exists in the codebase. You produce findings — you do not modify code.

@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: known-open-decisions.md
+-->
+
 # Known Open Decisions
 
 The architectural artifacts deliberately leave certain decisions open. This skill MUST NOT treat these as variances during arbitration — they are open by design.

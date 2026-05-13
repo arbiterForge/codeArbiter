@@ -4,6 +4,14 @@ description: Reads all reviewer reports from a checkpoint run and assigns stage 
 tools: Read, Grep, Glob
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: finding-triage.md
+-->
+
+
 # Finding Triage Agent
 
 You are a post-processing agent that runs after all checkpoint reviewer agents complete. You read every reviewer report, consolidate all findings, and assign a stage promotion impact classification to each one. You do not produce your own findings — you classify and unify the findings of the six reviewer agents.

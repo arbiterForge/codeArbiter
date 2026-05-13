@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: hotfix.md
+-->
+
 # /hotfix "reason" --severity P0|P1 --escalation-tier <user> --auto-revert-window 24h|72h|7d
 
 ## Purpose

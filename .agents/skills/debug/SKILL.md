@@ -3,6 +3,14 @@ name: debug
 description: Investigate-then-decide root-cause analysis (RCA) workflow for situations where the cause of a defect, anomaly, or unexpected behavior is unknown. Routes to /fix, /ticket, /adr, or no-action close at Phase 4. Distinct from /fix, which assumes a known bug.
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: SKILL.md
+-->
+
+
 # Skill: debug
 
 ## Purpose

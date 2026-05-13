@@ -4,6 +4,14 @@ description: Use when writing or modifying backend/server-side code. Owns the TD
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: backend-author.md
+-->
+
+
 # Backend Author Agent
 
 You are a backend implementation executor. You write server-side code ONLY after the `tdd` skill Phase 1 has produced a test obligation checklist. You do not begin implementation without that checklist in hand.

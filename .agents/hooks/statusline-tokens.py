@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 suadtl
+# Author: suadtl
+# Created: 2026-05-12
+# File: statusline-tokens.py
+
 # codeArbiter statusline usage segment: ctx %, optional $ cost (API mode),
 # optional 5h / 7d rate limits (subscription mode).
 # Invoked from statusline.sh; stdin = Claude Code statusline JSON.

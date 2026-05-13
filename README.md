@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: README.md
+-->
+
 # codeArbiter
 
 **An orchestration framework for Claude Code that routes work through skills and agents, enforces TDD and commit gates, surfaces rule conflicts, and keeps a permanent audit trail.**

@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: downstream-artifacts.md
+-->
+
 # Downstream Artifacts Catalog
 
 This file catalogs the architectural artifacts that this skill can recommend producing once enough information is available. For each artifact, the catalog defines:

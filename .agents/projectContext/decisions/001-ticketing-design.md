@@ -7,6 +7,14 @@ last_challenged:
 authors: SUaDtL (user)
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: 001-ticketing-design.md
+-->
+
+
 # ADR-001: Ticketing Design
 
 ## Context

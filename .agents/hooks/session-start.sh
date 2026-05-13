@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 suadtl
+# Author: suadtl
+# Created: 2026-05-10
+# File: session-start.sh
+
 PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 CONTEXT_FILE="$PROJECT_ROOT/.agents/projectContext/CONTEXT.md"
 

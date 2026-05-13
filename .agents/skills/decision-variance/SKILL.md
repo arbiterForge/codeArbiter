@@ -3,6 +3,14 @@ name: decision-variance
 description: Reconcile project architectural artifacts (Architecture Breakdown, Phased Build Plan, Task Backlog) against the existing project scaffold and codebase. Use this skill whenever the user mentions architectural reconciliation, variance review, ingesting decomposition documents, comparing architectural decisions to existing code, syncing artifacts with scaffold state, or asks to "arbitrate," "reconcile," "merge," or "consolidate" architectural context with the project. Also use when the user asks what architectural artifacts can be produced from current project state, requests a variance report, mentions ADR conflicts, or wants to track outstanding architectural decisions. Do NOT use for routine git merges, code review consolidation, or general architectural discussions unrelated to the current project's artifacts. This skill never makes arbitration decisions alone — it presents SMARTS analyses for the user to decide. It treats the artifacts as authoritative-by-default but does not blindly adopt them.
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: SKILL.md
+-->
+
+
 # Decision-Variance Skill
 
 A skill for systematically reconciling a project's three architectural artifacts (Architecture Breakdown, Phased Build Plan, Task Backlog) against the existing project scaffold, codebase, and prior decisions — without making arbitration decisions unilaterally.

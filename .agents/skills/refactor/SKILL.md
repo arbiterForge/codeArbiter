@@ -3,6 +3,14 @@ name: refactor
 description: Restructure existing code without changing behavior. Six-phase gated workflow that proves behavioral parity through pre-existing test coverage, blocks any change classifiable as `feat`, and refuses to accept modified tests as evidence of correctness.
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: SKILL.md
+-->
+
+
 # Skill: refactor
 
 ## Purpose

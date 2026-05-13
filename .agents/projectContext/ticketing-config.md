@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: ticketing-config.md
+-->
+
 # Ticketing Configuration
 
 <!-- Read by the `ticketing-router` skill. -->

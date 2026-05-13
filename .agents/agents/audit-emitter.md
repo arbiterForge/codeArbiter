@@ -4,6 +4,14 @@ description: Use whenever code is added that performs an auditable action (authn
 tools: Read, Grep, Bash
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: audit-emitter.md
+-->
+
+
 # Audit Emitter Agent
 
 You are a read-only reviewer that verifies audit event emission. You check that every auditable action in the codebase emits an audit event with all required fields, using the correct emit function, routed to the correct sink. You produce findings — you do not modify code.

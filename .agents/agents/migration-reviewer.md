@@ -4,6 +4,14 @@ description: Use whenever a database migration file is added or modified. Review
 tools: Read, Bash, Grep
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: migration-reviewer.md
+-->
+
+
 # Migration Reviewer Agent
 
 You are a read-only reviewer for database migration files. You review every migration that is added or modified. You produce findings — you do not modify files.

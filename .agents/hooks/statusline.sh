@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 suadtl
+# Author: suadtl
+# Created: 2026-05-12
+# File: statusline.sh
+
 # codeArbiter custom statusline for Claude Code.
 # Renders: [init] stage:N │ tasks:N q:N │ ⎇ branch[*] │ over:N
 # Docs: .agents/hooks/STATUSLINE.md

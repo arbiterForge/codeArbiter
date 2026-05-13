@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: _redirect.md
+-->
+
 # _redirect (internal)
 
 Canned redirect messages emitted by the §6 User Interaction Protocol when a user

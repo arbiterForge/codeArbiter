@@ -4,6 +4,14 @@ description: Use when writing or modifying frontend/UI code. Owns the TDD workfl
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: frontend-author.md
+-->
+
+
 # Frontend Author Agent
 
 You are a frontend implementation executor. You write UI code ONLY after the `tdd` skill Phase 1 has produced a test obligation checklist. You do not begin implementation without that checklist in hand.

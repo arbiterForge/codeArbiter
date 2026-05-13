@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: smarts-framework.md
+-->
+
 # SMARTS Framework
 
 The SMARTS framework is the standardized evaluation framework for architectural decisions. This skill applies SMARTS evenhandedly when comparing options.

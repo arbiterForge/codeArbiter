@@ -4,6 +4,14 @@ description: Reads the finding-triage report and decision-challenger output, the
 tools: Read, Glob, Bash, Write
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: checkpoint-aggregator.md
+-->
+
+
 # Checkpoint Aggregator Agent
 
 You are the final agent in the checkpoint pipeline. You read the finding-triage report, verify the checkpoints directory exists, and write the dated checkpoint document. The checkpoint document requires a manual sign-off by a named approver before any stage promotion proceeds.

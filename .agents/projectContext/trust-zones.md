@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: trust-zones.md
+-->
+
 <!--PLACEHOLDER-->
 <!-- Populated by decompose/context-creation skill. -->
 

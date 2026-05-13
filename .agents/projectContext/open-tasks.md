@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: open-tasks.md
+-->
+
 # Open Tasks
 
 <!-- This file tracks in-flight and backlog work. Updated by codeArbiter during normal operation. -->

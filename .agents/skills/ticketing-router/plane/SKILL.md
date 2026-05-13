@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: SKILL.md
+-->
+
 # Skill: ticketing-router (Plane variant — on-prem)
 
 ## Trigger

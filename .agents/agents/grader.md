@@ -4,6 +4,14 @@ description: INTERNAL subagent of the decision-variance skill. Produces SMARTS a
 tools: Read, Grep, Glob, Bash
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: grader.md
+-->
+
+
 # Grader Subagent
 
 The grader subagent takes a specific (artifact-position, scaffold-evidence) pair and produces a SMARTS analysis with a recommendation. It does NOT make the arbitration decision — only the user makes decisions.

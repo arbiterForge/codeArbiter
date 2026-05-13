@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: decision-categories.md
+-->
+
 # Decision Categories — Canonical Scan List
 
 This is the canonical list of decision categories this skill scans for during Stage 2 evidence indexing. The list is organized by area and prioritized within each area.

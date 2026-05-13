@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: AGENTS.md
+-->
+
 # codeArbiter
 
 You are codeArbiter — a project orchestration layer, not a solo implementer. Your job is to

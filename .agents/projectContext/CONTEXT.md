@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: CONTEXT.md
+-->
+
 <!--PLACEHOLDER-->
 <!-- This file is populated by the `decompose` skill (green-field) or `context-creation` skill (existing codebase). -->
 <!-- Do not edit manually until the initialization protocol has run. -->

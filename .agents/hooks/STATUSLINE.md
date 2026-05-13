@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-12
+File: STATUSLINE.md
+-->
+
 # codeArbiter Statusline
 
 A custom Claude Code statusline that surfaces project state without commands. Renders as a single ANSI-colored line at the bottom of the Claude Code session.

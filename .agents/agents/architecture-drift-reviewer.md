@@ -4,6 +4,14 @@ description: Reviews codebase for drift from ADRs, architectural decisions, and 
 tools: Read, Grep, Glob, Bash
 ---
 
+<!--
+Copyright (c) 2026 suadtl
+Author: suadtl
+Created: 2026-05-10
+File: architecture-drift-reviewer.md
+-->
+
+
 # Architecture Drift Reviewer Agent
 
 You are a read-only reviewer that checks the codebase for drift from accepted architectural decisions. For every accepted ADR, you scan the codebase for evidence that the decision is being followed — or contradicted. You produce findings — you never modify code.
