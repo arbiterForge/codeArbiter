@@ -73,36 +73,33 @@ introduce parallel placeholder schemes (`[OPEN-DECISION]`, `[NEEDS-INPUT]`, etc.
 
 ### §0.1.1 Path Resolution
 
-Two explicit roots govern every file path in framework files:
+`${FRAMEWORK_ROOT}` (codeArbiter installation root, contains `.agents/skills/`, `.agents/agents/`, `.agents/commands/`, `.agents/hooks/`, and `AGENTS.md`) and `${PROJECT_ROOT}` (consuming project's git toplevel) are the two roots that govern every path in framework files. Framework source uses `${FRAMEWORK_ROOT}`; populated project state uses `${PROJECT_ROOT}`. In monolith dogfood mode they collapse to the same path; in vendored mode they diverge.
 
-| Root | Definition | Monolith dogfood value | Vendored value (example) |
-|---|---|---|---|
-| **`${FRAMEWORK_ROOT}`** | The codeArbiter installation root — the directory that contains `.agents/skills/`, `.agents/agents/`, `.agents/commands/`, `.agents/hooks/`, and `AGENTS.md`. | `.` (the repo root) | `vendor/codearbiter/` |
-| **`${PROJECT_ROOT}`** | The consuming project's repository root — the git toplevel. | `.` (the repo root) | `.` (the consumer's repo root) |
-
-**Rule of thumb:**
-- *Anything that is part of the framework source* (skill bodies, agent bodies, command bodies, hooks, AGENTS.md itself, templates) uses `${FRAMEWORK_ROOT}`.
-- *Anything generated, populated, or referenced as project state* (projectContext/, ADRs, tickets, overrides.log, hotfixes.log, open-questions.md) uses `${PROJECT_ROOT}`.
-
-**Worked example — monolith dogfood mode** (this repo dogfoods its own framework):
-- `${FRAMEWORK_ROOT}/.agents/skills/tdd/SKILL.md` resolves to `./.agents/skills/tdd/SKILL.md`
-- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` resolves to `./.agents/projectContext/audit-spec.md`
-- Both prefixes point to the same physical root; behavior is identical to the pre-vendoring layout.
-
-**Worked example — vendored mode** (consumer mounts codeArbiter at `vendor/codearbiter/`):
-- `${FRAMEWORK_ROOT}/.agents/skills/tdd/SKILL.md` resolves to `vendor/codearbiter/.agents/skills/tdd/SKILL.md`
-- `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` resolves to `./.agents/projectContext/audit-spec.md` (the consumer's own projectContext)
-- The prefixes diverge; skills read from the framework installation while project data is read from the consumer's repo root.
-
-**Sentinel file:** `${FRAMEWORK_ROOT}/.agents/AGENTS-CODEARBITER-ROOT` — an empty marker file placed at the codeArbiter installation root. Shell hooks locate `FRAMEWORK_ROOT` at runtime by walking up from their script location until they find a directory containing `AGENTS-CODEARBITER-ROOT`.
-
-**Consumer install:** After adding codeArbiter as a submodule, run `/init-vendor [--vendor-path=vendor/codearbiter/]`. This copies `AGENTS.md` to `${PROJECT_ROOT}/AGENTS.md`, writes `${PROJECT_ROOT}/CLAUDE.md` containing `@AGENTS.md`, and generates the `.claude/commands/*.md` shim layer with the vendor path baked in. Re-run after every codeArbiter upgrade to keep `AGENTS.md` current. Default vendor path is `vendor/codearbiter/`.
+> **Loaded when:** vendor setup (`/init-vendor`), brownfield init, hook authoring, or any time `${FRAMEWORK_ROOT}` vs `${PROJECT_ROOT}` resolution is ambiguous. Full body — definitions table, monolith and vendored worked examples, `AGENTS-CODEARBITER-ROOT` sentinel mechanics, consumer-install instructions, self-edit-mode cross-reference: `${FRAMEWORK_ROOT}/.agents/commands/_paths.md`.
 
 ---
 
 ## §1 Initialization Protocol
 
 On every startup, run this detection sequence BEFORE doing anything else.
+
+### Phase 0 — Monolith Self-Edit Detection
+
+Before the standard detection sequence runs, check whether this session is editing the framework SOURCE rather than building on top of an installed framework. Self-edit mode is active when ALL of:
+
+1. `${FRAMEWORK_ROOT} == ${PROJECT_ROOT}` (monolith layout — the framework's own repo, not a vendored install where the prefixes diverge).
+2. `${FRAMEWORK_ROOT}/.agents/SELF-EDIT-MODE` sentinel file exists. This file is gitignored and per-developer (each clone of the codearbiter repo starts WITHOUT it; touch the file to opt in).
+3. `${FRAMEWORK_ROOT}/.agents/AGENTS-CODEARBITER-ROOT` sentinel exists (proves this is the codeArbiter installation root, not an unrelated repo with an `.agents/` directory).
+
+When self-edit mode is active:
+- The H-08 startup hook is suppressed. The framework's own `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` was hand-populated during initial bootstrap and does not carry the formal `<!--INITIALIZED-->` sentinel; that is by design for the framework source repo. Running `/create-context` against the framework source would treat its own `.agents/` tree as a consumer codebase to wrap, which is wrong.
+- The Detection Sequence below is skipped entirely. Routing decisions favor framework-development flows: edits to skill bodies, agent bodies, command bodies, hooks, AGENTS.md, COMMANDS.md route through `/feature` → `tdd` against the framework's own projectContext (treating those files as in-scope code), not against a consumer's projectContext.
+- Hook output: `STARTUP [SELF-EDIT]: Framework self-edit mode active. H-08 bootstrap nag suppressed.`
+
+To enter self-edit mode: `touch ${FRAMEWORK_ROOT}/.agents/SELF-EDIT-MODE`.
+To exit: `rm ${FRAMEWORK_ROOT}/.agents/SELF-EDIT-MODE`.
+
+When self-edit mode is INACTIVE, proceed to the standard Detection Sequence below.
 
 ### Detection Sequence
 
@@ -185,59 +182,17 @@ Always-loaded. Follow these even without reading project docs. Violation is unre
 
 ## §4 Reference Map
 
-Read the listed file before acting. The skill or agent listed is the primary route when scope applies.
+Per-scope mapping of "what doc to read first" and "which skill or agent is the primary route" — twelve rows covering code change, stack/dependencies, auth/crypto, telemetry, migrations, networking, ADRs, stage promotion, architectural reconciliation, and out-of-scope findings.
 
-| If task touches… | Read first | Invoke |
-|---|---|---|
-| Any code change | `${PROJECT_ROOT}/.agents/projectContext/coding-standards.md` | `tdd` skill |
-| Stack / dependencies | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md`, `${PROJECT_ROOT}/.agents/projectContext/dependency-policy.md` | `dependency-reviewer` agent |
-| Auth, crypto, secrets | `${PROJECT_ROOT}/.agents/projectContext/security-controls.md`, `${PROJECT_ROOT}/.agents/projectContext/secrets-policy.md` | `crypto-compliance` skill; `secret-handling` skill |
-| Logging / telemetry | `${PROJECT_ROOT}/.agents/projectContext/audit-spec.md` | `audit-emit` skill |
-| Metrics / traces / alerts / SLOs | `${PROJECT_ROOT}/.agents/projectContext/observability-spec.md` | `observability-emit` skill |
-| Data model / migrations | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` | `migration-reviewer` agent |
-| Networking / deployment | `${PROJECT_ROOT}/.agents/projectContext/trust-zones.md` | `security-architecture` skill |
-| New domain concept or component | `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` | `doc-review-gate` skill |
-| Failure / retry logic | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` | — |
-| CI/CD / branch settings | `${PROJECT_ROOT}/.agents/projectContext/tech-stack.md` | — |
-| Risks / ADRs | `${PROJECT_ROOT}/.agents/projectContext/open-questions.md`, `${PROJECT_ROOT}/.agents/projectContext/decisions/` | `decision-lifecycle` skill |
-| Checkpoint / stage promotion | `${PROJECT_ROOT}/.agents/projectContext/stage` | `stage-gating` skill |
-| Architectural reconciliation | `${PROJECT_ROOT}/.agents/projectContext/decomposition/` | `decision-variance` skill |
-| Subagent encounters out-of-scope finding | `${PROJECT_ROOT}/.agents/projectContext/ticketing-config.md` | `ticketing-router` skill (router) |
+> **Loaded when:** any scope-touch decision — i.e. before acting on code that falls into one of the rows, look up which `${PROJECT_ROOT}/.agents/projectContext/*.md` doc must be read first and which skill/agent to route to. Full body: `${FRAMEWORK_ROOT}/.agents/commands/_reference-map.md`.
 
 ---
 
 ## §5 Routing Table
 
-When a trigger fires, follow the primary route. Gates are hard stops — not suggestions.
+Twenty-five rows mapping invocation cues (user `/commands` and condition-triggered scope changes) to their primary skill or agent route, also-dispatched dependencies, and hard gate. Annotates each row with invocation class: `(/cmd)`, `(condition-triggered, no command)`, or `[OPTIONAL PLUGIN]`.
 
-| Invocation cue | Primary Route | Also Dispatch | Hard Gate |
-|---|---|---|---|
-| New feature | `tdd` skill | `backend-author`, `frontend-author`, or `infra-author` agent | No implementation before Phase 1 checklist complete |
-| Bug fix | `tdd` skill (bug variant) | Same implementation agents | No implementation before Phase 1 checklist complete |
-| Refactor (behavior-preserving) | `refactor` skill | `tdd` skill (Phase 1 only, for new test seams) | No refactor without behavioral-parity coverage proof |
-| Unknown defect / investigation | `debug` skill | (Phase 4 routes to `/fix`, `/ticket`, or `/adr`) | No code change inside debug skill; investigation only |
-| "commit" / "commit this" / "go ahead and commit" | `commit-gate` skill | — | No commit without all phase gates green |
-| "PR" / "open a PR" / "pull request" | `/pr` command | Reviewer agents per path matrix | No PR draft until all BLOCK-level reviews clear |
-| Stage promotion | `/stage` command | — | No `${PROJECT_ROOT}/.agents/projectContext/stage` change without named approver |
-| Release / version bump / tag | `/release` command | `commit-gate`, `decision-lifecycle`, `stage-gating` skills | No tag without all 7 release-skill phases green |
-| "checkpoint" | `/checkpoint` command | — | All 7 reviewers must complete; no skipping |
-| Code touches auth, crypto, keys, audit | `auth-crypto-reviewer` agent | `security-reviewer` agent | BLOCK on any CRITICAL finding |
-| Migration file added or changed | `migration-reviewer` agent | `audit-emitter` agent | BLOCK if classification annotation missing |
-| `package.json` or lock file modified | `dependency-reviewer` agent | — | BLOCK on denied license |
-| Schema definition file added or modified | `schema-validator` agent (if present in plugins) | — | BLOCK if schema validation fails |
-| Code emits or should emit an audit event | `audit-emit` skill | `audit-emitter` agent | BLOCK if emit missing or fields wrong |
-| Code emits or should emit an observability signal (metric/trace/alert/SLO) | `observability-emit` skill | `observability-emitter` agent (if defined) | BLOCK if emit missing, labels wrong, or cardinality unbounded |
-| Code uses crypto / hashing / signing / TLS / random | `crypto-compliance` skill | `auth-crypto-reviewer` agent | BLOCK on any banned primitive |
-| Code reads / writes / passes a secret | `secret-handling` skill | `auth-crypto-reviewer` agent | BLOCK if secret outside approved store path |
-| Rotation due / signing key, OIDC secret, TLS cert, service token | `rotation` skill | `secret-handling`, `crypto-compliance` skills; `audit-emit` skill | BLOCK on rotation past cadence, missing archival, or missing rotate audit emit |
-| Code has stage-conditional behavior | `stage-gating` skill | — | Read `${PROJECT_ROOT}/.agents/projectContext/stage` first; no exceptions |
-| Arbitration / variance / ADR reconciliation | `decision-variance` skill | `decision-challenger` agent | No decisions without user attribution |
-| Rule conflict (AGENTS.md vs. code or docs) | `/surface-conflict` command | — | STOP all other work immediately |
-| ADR added / aged / CONFIRM-NN unresolved | `decision-lifecycle` skill | `decision-challenger` agent | No CONFIRM-NN resolved by guessing |
-| New trust zone crossing / threat model / attack surface change | `security-architecture` skill | `security-reviewer` + `trust-zone-reviewer` | No undeclared egress |
-| `projectContext/` file modified or domain area referenced before acting | `doc-review-gate` skill | — | No action in domain without reading gated doc first |
-| Subagent raises out-of-scope finding | `ticketing-router` skill | — | When ticketing disabled, finding inlines with `[NEEDS-TRIAGE]` marker. Disposition MUST NOT be `adr-*` |
-| Ticket close requested | `ticketing-router` skill (variant per config) | — | BLOCK on `adr-*` dispositions. BLOCK if `incorporated-to:*` recorded without target-doc edit in session |
+> **Loaded when:** any user `/command` invocation OR any condition-triggered scope match (code touches auth, migration file added, secret read/write, audit event emit, etc.). Gates are hard stops — not suggestions. Full body: `${FRAMEWORK_ROOT}/.agents/commands/_routing-table.md`.
 
 ---
 

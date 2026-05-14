@@ -2,3 +2,4 @@
 # Format: [ISO-8601 timestamp] | BY: <name> <<email>> | PLATFORM: <github|gitea|unknown> | GATE: <gate> | REASON: <reason>
 # This file is APPEND-ONLY. Entries are NEVER edited or deleted.
 # Committed to repo — permanent audit artifact visible to all reviewers.
+2026-05-14T05:31:30Z | BY: suadtl <noreply@anthropic.com> | PLATFORM: unknown | GATE: §1 Phase 2 (H-08 startup-hook bootstrap demand) | REASON: meta-edit on framework source — codeArbiter is editing itself, not being consumed by a downstream project. CONTEXT.md sentinel <!--INITIALIZED--> is already present and projectContext/ is fully populated; H-08 hook fired a false positive. Applying user-approved 3-workstream plan: (1) decompose checkpoint persistence, (2) skill↔command coupling, (3) AGENTS.md modularization. Authorizing identity: suadtl (project author, live invoker of /override).
