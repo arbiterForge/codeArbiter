@@ -7,19 +7,23 @@
 PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 CONTEXT_FILE="$PROJECT_ROOT/.agents/projectContext/CONTEXT.md"
 
-# Derive FRAMEWORK_ROOT. In vendored mode .agents is a symlink into the
-# framework submodule (e.g. vendor/codearbiter/.agents); in monolith mode
-# .agents is a real directory at PROJECT_ROOT and FRAMEWORK_ROOT collapses to
-# PROJECT_ROOT. The vendor tree is framework-owned, not consumer source, so it
-# must not satisfy the "meaningful source code" check.
-FRAMEWORK_ROOT="$PROJECT_ROOT"
-if [ -L "$PROJECT_ROOT/.agents" ]; then
-  LINK_TARGET=$(readlink "$PROJECT_ROOT/.agents")
-  case "$LINK_TARGET" in
-    /*) AGENTS_DIR="$LINK_TARGET" ;;
-    *)  AGENTS_DIR="$PROJECT_ROOT/$LINK_TARGET" ;;
-  esac
-  FRAMEWORK_ROOT=$(dirname "$AGENTS_DIR")
+# Derive FRAMEWORK_ROOT by resolving this script's physical location.
+#
+# Vendored install (per /init-vendor): ${PROJECT_ROOT}/.agents/ is a REAL
+# directory whose subdirs (skills/, agents/, commands/, hooks/, settings.json)
+# are individually symlinked into vendor/codearbiter/.agents/. projectContext/
+# is a real directory consumer-owned at PROJECT_ROOT — never in the vendor
+# tree. So ${BASH_SOURCE[0]} is e.g. ${PROJECT_ROOT}/.agents/hooks/session-start.sh
+# (the symlink path); `pwd -P` after cd resolves it to the physical path under
+# vendor/codearbiter/.agents/hooks/ and we strip two levels to get FRAMEWORK_ROOT.
+#
+# Monolith install (this repo): no symlinks; physical path == invocation path
+# and FRAMEWORK_ROOT collapses to PROJECT_ROOT.
+HOOKS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd -P)
+if [ -n "$HOOKS_DIR" ] && [ -f "$(dirname "$(dirname "$HOOKS_DIR")")/.agents/AGENTS-CODEARBITER-ROOT" ]; then
+  FRAMEWORK_ROOT=$(dirname "$(dirname "$HOOKS_DIR")")
+else
+  FRAMEWORK_ROOT="$PROJECT_ROOT"
 fi
 
 # Phase 0 — Monolith Self-Edit Detection (per AGENTS.md §1 Phase 0).
