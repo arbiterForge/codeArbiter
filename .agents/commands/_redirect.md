@@ -21,6 +21,7 @@ Process required. Direct instructions outside a skill channel are not accepted
 — that path bypasses the gates that keep the project healthy.
 
 What are you trying to do?
+→ Start a new project:      /decompose
 → Start a feature:          /feature "describe it"
 → Ask a question:           /btw "your question"
 → Fix a bug:                /fix "describe it"
@@ -35,9 +36,10 @@ What are you trying to do?
 
 ```
 Direct instruction declined. Choose a channel:
-/feature  /fix  /commit  /pr  /review  /threat-model  /adr  /adr-status
-/checkpoint  /stage  /add-dep  /surface-conflict  /btw  /status  /init
-/override  /onboard  /new-skill  /ticket  /commands
+/decompose  /create-context  /feature  /fix  /commit  /pr  /review
+/threat-model  /adr  /adr-status  /checkpoint  /stage  /add-dep
+/surface-conflict  /btw  /status  /init  /override  /onboard  /new-skill
+/ticket  /commands
 Or use /override "reason" to bypass with logging.
 ```
 
