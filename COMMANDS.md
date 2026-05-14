@@ -31,6 +31,7 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 | `/threat-model` | `"scope"` | Pre-implementation threat model for a proposed change | [body](${FRAMEWORK_ROOT}/.agents/commands/threat-model.md) |
 | `/adr` | `"decision title"` | Record a new architectural decision with user attribution | [body](${FRAMEWORK_ROOT}/.agents/commands/adr.md) |
 | `/adr-status` | `[--adr N]` | Check ADR health — aged, unchallenged, unresolved CONFIRM-NN | [body](${FRAMEWORK_ROOT}/.agents/commands/adr-status.md) |
+| `/decision-variance` | `["scope"]` | Reconcile artifacts vs. scaffold; arbitrate ADR conflicts via SMARTS (user-attributed) | [body](${FRAMEWORK_ROOT}/.agents/commands/decision-variance.md) |
 | `/checkpoint` | `[focus]` | Full checkpoint review — all 7 reviewers in parallel | [body](${FRAMEWORK_ROOT}/.agents/commands/checkpoint.md) |
 | `/stage` | `[target]` | Report current stage or promote to target stage | [body](${FRAMEWORK_ROOT}/.agents/commands/stage.md) |
 | `/release` | `["version" \| --auto \| --dry-run]` | SemVer bump, changelog, tag; deployment readiness gate | [body](${FRAMEWORK_ROOT}/.agents/commands/release.md) |
@@ -191,6 +192,20 @@ Row shape: `Command | Argument | One-line purpose | Body`. Open a body only when
 **What it routes to:** `decision-lifecycle` skill — scans for aged ADRs (>12 weeks since challenge), unchallenged ADRs, supersession candidates, and unresolved `CONFIRM-NN` items.
 
 **When to use:** Before any stage promotion; at start of a checkpoint; when a `CONFIRM-NN` is encountered.
+
+---
+
+### `/decision-variance ["scope"]`
+
+**Purpose:** Reconcile project artifacts against the existing scaffold OR challenge a specific ADR you suspect is wrong, stale, or in conflict with another ADR.
+
+**What it routes to:** `decision-variance` skill — produces SMARTS analyses for each variance and dispatches `decision-challenger` agent for adversarial review. Outcomes per variance: ratify existing ADR, supersede via `/adr` handoff, or surface as `[CONFIRM-NN]`.
+
+**Hard gate:** No arbitration decision is recorded without explicit user attribution. Phrases that delegate the choice ("you decide," "use your best judgment") are structurally declined — the only sanctioned delegation is the verbatim "accept your recommendation" fast-path.
+
+**When to use:** ADR conflicts; ingesting new decomposition artifacts that disagree with current scaffold; any "is this still the right call?" review of an existing ADR.
+
+**When NOT to use:** Authoring a brand-new ADR with no prior conflict — use `/adr`. ADR health check — use `/adr-status`.
 
 ---
 

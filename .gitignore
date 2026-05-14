@@ -8,6 +8,17 @@ legacy/
 # Transient hook markers (e.g. .adr-authoring-active set by /adr). Not state.
 .agents/.markers/
 
+# Self-edit mode sentinel — opts the framework source repo out of consumer-
+# bootstrap nags (H-08) and routes framework-source edits as in-scope code.
+# Per-developer toggle, never committed. See .agents/SELF-EDIT-MODE for full
+# semantics and AGENTS.md §1 Phase 0 for the detection clause.
+.agents/SELF-EDIT-MODE
+
+# Decompose draft directory — per-layer compaction-resilience drafts written
+# by the `decompose` skill (Phase 2.5 + Phase 3). Auto-deleted in Phase 6;
+# resumable via /decompose if a session is interrupted. Never committed.
+.agents/projectContext/.decompose-draft/
+
 # Ephemeral execution scaffolding written by long plan runs. Removed in
 # the plan's Phase K cleanup. Never committed.
 /.plan-tasks/

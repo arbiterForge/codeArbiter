@@ -22,7 +22,24 @@ if [ -L "$PROJECT_ROOT/.agents" ]; then
   FRAMEWORK_ROOT=$(dirname "$AGENTS_DIR")
 fi
 
-if [ ! -f "$CONTEXT_FILE" ] || ! grep -qE '^[[:space:]]*<!--INITIALIZED-->[[:space:]]*$' "$CONTEXT_FILE" 2>/dev/null; then
+# Phase 0 — Monolith Self-Edit Detection (per AGENTS.md §1 Phase 0).
+# When the framework is being edited as source (not consumed as a vendored
+# dependency), suppress the H-08 bootstrap nag. Validity requires BOTH:
+#   (a) FRAMEWORK_ROOT == PROJECT_ROOT (this is the framework's own monolith
+#       layout, not a vendored install where FRAMEWORK_ROOT diverges)
+#   (b) ${FRAMEWORK_ROOT}/.agents/SELF-EDIT-MODE sentinel present
+#       (gitignored; per-developer opt-in)
+#   (c) ${FRAMEWORK_ROOT}/.agents/AGENTS-CODEARBITER-ROOT sentinel present
+#       (committed; verifies this IS the codeArbiter installation root)
+SELF_EDIT_ACTIVE=0
+if [ "$FRAMEWORK_ROOT" = "$PROJECT_ROOT" ] \
+   && [ -f "$FRAMEWORK_ROOT/.agents/SELF-EDIT-MODE" ] \
+   && [ -f "$FRAMEWORK_ROOT/.agents/AGENTS-CODEARBITER-ROOT" ]; then
+  SELF_EDIT_ACTIVE=1
+  echo "STARTUP [SELF-EDIT]: Framework self-edit mode active. H-08 bootstrap nag suppressed. Routing treats \${FRAMEWORK_ROOT}/.agents/** as in-scope code (AGENTS.md §1 Phase 0)."
+fi
+
+if [ "$SELF_EDIT_ACTIVE" -eq 0 ] && { [ ! -f "$CONTEXT_FILE" ] || ! grep -qE '^[[:space:]]*<!--INITIALIZED-->[[:space:]]*$' "$CONTEXT_FILE" 2>/dev/null; }; then
   FIND_ARGS=(
     -not -path "$PROJECT_ROOT/.git/*"
     -not -path "$PROJECT_ROOT/.agents/*"
