@@ -112,7 +112,9 @@ On every startup, run this detection sequence BEFORE doing anything else.
 
         YES → go to Phase 3 (Normal Operation)
         NO  → does meaningful source code exist?
-              (files outside .agents/, AGENTS.md, CLAUDE.md, README.md, .gitignore)
+              (files outside .git/, .agents/, .claude/, the vendored framework
+              tree if any, AGENTS.md, CLAUDE.md, README.md, LICENSE,
+              .gitignore, .gitmodules)
 
               YES → Phase 2 (Context Creation)
               NO  → Phase 1 (Decompose)

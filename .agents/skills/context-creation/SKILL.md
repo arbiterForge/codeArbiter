@@ -15,8 +15,9 @@ Invoke this skill when ALL of the following are true:
 
 - `${PROJECT_ROOT}/.agents/projectContext/CONTEXT.md` does NOT contain the `<!--INITIALIZED-->` sentinel
 - Meaningful source code DOES exist in the repository (defined as: files outside
-  `.agents/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `.gitignore`, and standard
-  dotfiles/tooling configs)
+  `.git/`, `.agents/`, `.claude/`, the vendored framework tree if any (e.g.
+  `vendor/codearbiter/`), `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`,
+  `.gitignore`, `.gitmodules`, and standard dotfiles/tooling configs)
 
 This is the brownfield path. When no meaningful source code exists, route to the
 `decompose` skill instead.
@@ -36,9 +37,11 @@ Before Phase 1 begins, confirm in order:
    stop immediately — context already exists. Inform the user and route to normal
    operation (Phase 3 of the startup protocol).
 2. Check for meaningful source code: scan the repository root for files or directories
-   that are not `.agents/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `.gitignore`, or
-   standard tooling dotfiles (`.editorconfig`, `.prettierrc`, etc.). Meaningful source
-   code MUST be present. If none is found, stop and route to the `decompose` skill.
+   that are not `.git/`, `.agents/`, `.claude/`, the vendored framework tree if any
+   (e.g. `vendor/codearbiter/`), `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`,
+   `.gitignore`, `.gitmodules`, or standard tooling dotfiles (`.editorconfig`,
+   `.prettierrc`, etc.). Meaningful source code MUST be present. If none is found,
+   stop and route to the `decompose` skill.
 3. Confirm `${PROJECT_ROOT}/.agents/projectContext/` directory exists and is writable. If not, surface
    the gap and stop.
 
