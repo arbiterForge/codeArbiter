@@ -11,7 +11,7 @@ File: README.md
 
 codeArbiter is opinionated infrastructure that sits on top of Claude Code. Instead of letting an AI assistant freelance across your repo, every user intent flows through a slash command that fans out to specialized skills (TDD, commit-gate, decision-lifecycle, etc.) and reviewer agents (security, migration, dependency, etc.). The framework refuses to commit without all gates green, refuses to resolve open questions by guessing, and refuses to silently reconcile contradictions between docs and code.
 
-The full specification is in [`AGENTS.md`](./AGENTS.md). The command catalog is in [`COMMANDS.md`](./COMMANDS.md).
+The full specification is in [`AGENTS.md`](./AGENTS.md). The command catalog is in [`COMMANDS.md`](./COMMANDS.md). Notable changes are tracked in [`CHANGELOG.md`](./CHANGELOG.md).
 
 ---
 
@@ -34,13 +34,13 @@ The full specification is in [`AGENTS.md`](./AGENTS.md). The command catalog is 
 ├── skills/           # Orchestration skills (tdd, commit-gate, ticketing-router, …)
 └── settings.json     # Claude Code config: MCP servers, hooks, statusline
 
-.claude/              # Shim layer — symlinks back into .agents/
-├── settings.json   → ../.agents/settings.json
-├── agents/         → ../.agents/agents/
-└── commands/       → ../.agents/commands/
+.claude/              # Shim layer — what Claude Code natively reads
+├── settings.json   → ../.agents/settings.json   (always a symlink)
+├── agents/         → ../.agents/agents/         (symlink in monolith; per-file @path shims after /init-vendor)
+└── commands/       → ../.agents/commands/       (symlink in monolith; per-file @path shims after /init-vendor)
 ```
 
-The `.claude/` directory is what Claude Code natively reads. All real content lives under `.agents/` so the framework can be lifted into another project as a single unit.
+The `.claude/` directory is what Claude Code natively reads. All real content lives under `.agents/` so the framework can be lifted into another project as a single unit. **In a consuming host project**, `/init-vendor` generates per-file shim files in `.claude/commands/` and `.claude/agents/` containing a single `@vendor/codearbiter/.agents/commands/<name>.md` import line — so every `/command` resolves into the vendored framework without modifying `settings.json`.
 
 ---
 
@@ -116,13 +116,37 @@ claude
 # → /decompose        (new project, no code yet)
 ```
 
-To upgrade codeArbiter later:
+#### Submodule semantics — required reading for the team
+
+When your host project lists codeArbiter as a submodule, anyone cloning or pulling the host project has to recurse into submodules explicitly, or the `vendor/codearbiter/` directory shows up empty (and Claude Code can't find any of the framework). Standard git submodule footguns; not codeArbiter-specific. Patterns that work:
+
 ```sh
-git -C vendor/codearbiter pull origin main
-git add vendor/codearbiter
+# Fresh clone of a host project that uses codeArbiter
+git clone --recurse-submodules <host-repo-url>
+
+# Forgot --recurse-submodules at clone time? Fix retroactively:
+git submodule update --init --recursive
+
+# Day-to-day pulls — fetch host commits AND update submodule SHAs in one go
+git pull --recurse-submodules
+
+# Make recurse the default for this clone (run once per developer):
+git config submodule.recurse true
+#   → after this, plain `git pull` / `git checkout` / `git switch` recurse automatically
+```
+
+If a teammate bumps the codeArbiter submodule SHA on `main`, your `git pull` (without `--recurse-submodules` or the config above) will pull the host commit but leave your local `vendor/codearbiter/` at the old SHA — leading to confusing "but the docs say feature X exists" debugging. The `submodule.recurse = true` config makes this Just Work.
+
+#### Upgrading codeArbiter in your host project
+
+```sh
+git -C vendor/codearbiter pull origin main      # fetch latest codeArbiter
+git add vendor/codearbiter                      # stage the new submodule SHA in host
 git commit -m "vendor: upgrade codeArbiter"
 # Then in Claude Code: /init-vendor --vendor-path=vendor/codearbiter/ --force
 ```
+
+After you push that host commit, teammates pick it up via `git pull --recurse-submodules` (or plain `git pull` if they set `submodule.recurse = true`).
 
 ### Option B — `git subtree` (vendored into your history, no submodule overhead)
 
@@ -154,7 +178,7 @@ Everything is already at the root so `/init-vendor` is not needed. No path to pu
 
 ---
 
-**Why the `.agents/` symlink?** Hook commands in `settings.json` are resolved relative to `$CLAUDE_PROJECT_DIR` (your repo root) and reference bare paths like `bash .agents/hooks/session-start.sh`. The symlink makes those paths resolve without modifying `settings.json`. Your project state (`projectContext/`) is written by `/create-context` into the symlinked `.agents/` — if you want strict separation, copy instead of symlinking and point the hook paths at the vendor location manually.
+**Why the `.agents/` symlink?** Hook commands in `settings.json` reference bare paths like `bash .agents/hooks/session-start.sh`, resolved relative to your repo root. The symlink lets those resolve into the vendored tree without modifying `settings.json`. At runtime the hooks themselves walk up from their script location until they find the `${FRAMEWORK_ROOT}/.agents/AGENTS-CODEARBITER-ROOT` sentinel to discover `FRAMEWORK_ROOT` (vendored or monolith), then derive `PROJECT_ROOT` from the git toplevel. Your project state (`projectContext/`) is written into the symlinked `.agents/` and ends up in the vendored tree — if you want strict separation, copy instead of symlinking and point the hook paths at the vendor location manually.
 
 **Note on README/LICENSE:** these root files don't travel with the framework. Your host project has its own. Authoritative docs for framework components (statusline, etc.) live under `.agents/` so they follow the code. See [`.agents/hooks/STATUSLINE.md`](./.agents/hooks/STATUSLINE.md).
 
@@ -189,28 +213,81 @@ Full docs, including troubleshooting and the segment-by-segment color logic, liv
 
 ## Slash commands (quick reference)
 
+Grouped by intent. Full catalog with body links: [`COMMANDS.md`](./COMMANDS.md).
+
+**Implementation:**
+
 | Command | Purpose |
 |---|---|
 | `/feature "description"` | Start a new feature; runs the full TDD skill (6 phases). |
 | `/fix "bug"` | Same workflow, bug-framed. |
+| `/refactor "surface and motivation"` | Behavior-preserving change with parity-coverage proof gate. |
+| `/debug "symptom"` | Investigate-then-decide RCA; outcomes route to `/fix`, `/ticket`, or `/adr`. |
+
+**Pre-implementation review:**
+
+| Command | Purpose |
+|---|---|
+| `/threat-model "scope"` | Pre-implementation threat model for a proposed change. |
+
+**Commit / PR / review:**
+
+| Command | Purpose |
+|---|---|
 | `/commit` | Commit staged changes after the full commit-gate runs green. |
 | `/pr [title]` | Open a PR once all reviewer gates clear. |
-| `/review [scope]` | Security + code review of a path. |
-| `/threat-model "scope"` | Pre-implementation threat model. |
+| `/review [scope]` | Security + code review of a path or scope. |
+
+**Architectural decisions:**
+
+| Command | Purpose |
+|---|---|
 | `/adr "title"` | Record a new architectural decision (with user attribution). |
+| `/adr-status [--adr N]` | Check ADR health — aged, unchallenged, unresolved CONFIRM-NN. |
+| `/decision-variance ["scope"]` | Reconcile artifacts vs. scaffold; arbitrate ADR conflicts via SMARTS (user-attributed). |
+
+**Checkpoints & promotions:**
+
+| Command | Purpose |
+|---|---|
 | `/checkpoint [focus]` | Full 7-reviewer parallel checkpoint. |
 | `/stage [target]` | Show current stage or promote to a target stage. |
-| `/add-dep "package"` | Add a dependency after full vetting. |
-| `/ticket "title"` | Optional scope-overflow inbox (in-repo or Plane). |
-| `/surface-conflict "..."` | Stop everything and surface a rule conflict. |
-| `/btw "question"` | Lightweight Q&A — no state change. |
-| `/override "reason"` | Sanctioned bypass with mandatory audit logging. |
-| `/create-context` | Back-fill `projectContext/` for an existing codebase (brownfield init). |
-| `/decompose` | Scaffold `projectContext/` for a new project with no code yet. |
-| `/onboard` | Tour the framework. |
-| `/status` | Show stage, open tasks, open questions, available commands. |
+| `/release ["ver" \| --auto \| --dry-run]` | SemVer bump, changelog, tag; deployment readiness gate (7 phases). |
 
-Full catalog with body links: [`COMMANDS.md`](./COMMANDS.md).
+**Lifecycle ops:**
+
+| Command | Purpose |
+|---|---|
+| `/add-dep "package"` | Add a dependency after full vetting. |
+| `/rotate "artifact-id"` | Rotate a secret / key / OIDC client / TLS cert / service token with audit + archival gates. |
+| `/ticket "title" \| <sub>` | Optional scope-overflow inbox (in-repo or Plane variant). |
+
+**Init / bootstrap:**
+
+| Command | Purpose |
+|---|---|
+| `/init` | Re-run initialization detection (repair only). |
+| `/init-vendor [--vendor-path=…]` | Wire codeArbiter into a host project after submoduling it (run once per install + on upgrades with `--force`). |
+| `/decompose` | Scaffold `projectContext/` for a new project with no code yet. |
+| `/create-context` | Back-fill `projectContext/` for an existing codebase (brownfield init). |
+
+**Escapes & safety valves:**
+
+| Command | Purpose |
+|---|---|
+| `/surface-conflict "..."` | Stop everything and surface a rule conflict between AGENTS.md and code/docs. |
+| `/override "reason"` | Sanctioned bypass with mandatory audit logging. |
+| `/hotfix "reason" --severity --escalation-tier --auto-revert-window` | Emergency bypass with two-identity audit and post-hoc ADR. |
+
+**Developer aids:**
+
+| Command | Purpose |
+|---|---|
+| `/onboard ["scope"]` | Engineer onboarding tour, full or scoped to one domain area. |
+| `/new-skill "gap description"` | Author a new skill after gap validation. |
+| `/commands` | Show the full quick-reference table from `COMMANDS.md`. |
+| `/status` | Show stage, open tasks, open questions, available commands. |
+| `/btw "question"` | Lightweight Q&A — no state change. |
 
 ---
 
