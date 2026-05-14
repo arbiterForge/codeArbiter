@@ -13,7 +13,7 @@ The framework is the contents of `${FRAMEWORK_ROOT}/.agents/` plus `AGENTS.md`, 
 
 ---
 
-## [Unreleased] — branch `claude/edit-arbiter-meta-pKkTP`
+## [2026-05-13] — token efficiency pass, added missing slash commands, added local context caching to decompose 
 
 Meta-review of the framework: a four-workstream pass on the decompose skill, skill↔command coupling, AGENTS.md preamble weight, and a sanctioned self-edit mode. Plus follow-up commits addressing an independent consistency review and a vendor-pollution cleanup.
 
