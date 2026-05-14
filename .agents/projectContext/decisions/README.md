@@ -19,7 +19,9 @@ This README is the surface scan. ADR bodies are read ONLY when an ADR is explici
 
 | ADR | Title | Status | Date | Last Challenged | Body |
 |---|---|---|---|---|---|
-| ADR-001 | Ticketing design — in-repo scope-overflow inbox + optional Plane on-prem | proposed | 2026-05-12 | — | [body](001-ticketing-design.md) |
+| _no ADRs yet_ | | | | | |
+
+_Consumer projects accumulate their own ADRs here via `/adr`. The framework's own design ADRs live at `${FRAMEWORK_ROOT}/docs/decisions/` — they are NOT inherited into this directory._
 
 ## Status Values
 
