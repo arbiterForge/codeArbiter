@@ -18,11 +18,8 @@ The full specification is in [`AGENTS.md`](./AGENTS.md). The command catalog is 
 ## How it works
 
 ```
-.agents/
-├── agents/           # Reviewer subagent definitions (auth-crypto, migration, dependency, …)
-├── commands/         # Slash command bodies (/feature, /fix, /commit, /pr, /stage, …)
-├── hooks/            # Pre/post tool-use hooks + statusline + session-start
-├── projectContext/   # The single source of truth for project state
+.agents/                              (real directory, lives at ${PROJECT_ROOT})
+├── projectContext/   # Consumer-owned state — REAL directory, never symlinked into the vendor tree
 │   ├── CONTEXT.md          # Identity, scope, NOT-this-project (sentinel: <!--INITIALIZED-->)
 │   ├── stage               # Single integer: current stage
 │   ├── open-tasks.md       # In-flight, backlog, blocked
@@ -31,16 +28,19 @@ The full specification is in [`AGENTS.md`](./AGENTS.md). The command catalog is 
 │   ├── decisions/          # ADRs
 │   ├── tickets/            # Optional scope-overflow inbox
 │   └── …                   # tech-stack, security-controls, audit-spec, etc.
-├── skills/           # Orchestration skills (tdd, commit-gate, ticketing-router, …)
-└── settings.json     # Claude Code config: MCP servers, hooks, statusline
+├── agents/        → vendor/codearbiter/.agents/agents/      (symlink — framework code)
+├── commands/      → vendor/codearbiter/.agents/commands/    (symlink — framework code)
+├── hooks/         → vendor/codearbiter/.agents/hooks/       (symlink — framework code)
+├── skills/        → vendor/codearbiter/.agents/skills/      (symlink — framework code)
+└── settings.json  → vendor/codearbiter/.agents/settings.json (symlink — framework config)
 
 .claude/              # Shim layer — what Claude Code natively reads
-├── settings.json   → ../.agents/settings.json   (always a symlink)
+├── settings.json   → ../.agents/settings.json   (symlink — resolves into the vendor tree)
 ├── agents/         → ../.agents/agents/         (symlink in monolith; per-file @path shims after /init-vendor)
 └── commands/       → ../.agents/commands/       (symlink in monolith; per-file @path shims after /init-vendor)
 ```
 
-The `.claude/` directory is what Claude Code natively reads. All real content lives under `.agents/` so the framework can be lifted into another project as a single unit. **In a consuming host project**, `/init-vendor` generates per-file shim files in `.claude/commands/` and `.claude/agents/` containing a single `@vendor/codearbiter/.agents/commands/<name>.md` import line — so every `/command` resolves into the vendored framework without modifying `settings.json`.
+The `.claude/` directory is what Claude Code natively reads. The `.agents/` directory at the project root is **real** — only its framework-owned subdirs are symlinked into the vendor tree. `projectContext/` is always a real, consumer-owned directory at `${PROJECT_ROOT}/.agents/projectContext/` so consumer project state commits to the consumer repo, not the framework submodule. **In a consuming host project**, `/init-vendor` creates this entire structure: the real `.agents/` directory, the per-subdir symlinks, the empty `projectContext/`, and the per-file `.claude/commands/*.md` shims (`@vendor/codearbiter/.agents/commands/<name>.md` import lines) — so every `/command` resolves into the vendored framework without modifying `settings.json`.
 
 ---
 
@@ -81,11 +81,15 @@ Your project state (`projectContext/`, ADRs, tickets, overrides log) always live
 
 Running `/init-vendor --vendor-path=vendor/codearbiter/` inside Claude Code:
 
-1. **Copies `AGENTS.md`** from the vendor path to your repo root — Claude Code must be able to find `AGENTS.md` at `$CLAUDE_PROJECT_DIR` to load the orchestrator
-2. **Writes `CLAUDE.md`** at your repo root containing `@AGENTS.md` — the standard Claude Code project-instructions shim
-3. **Generates `.claude/commands/*.md` shims** pointing into the vendor path so every `/command` resolves correctly
+1. **Creates a real `${PROJECT_ROOT}/.agents/` directory** at your repo root (if it doesn't already exist as a real dir).
+2. **Symlinks the framework-owned subdirs** inside it — `skills/`, `agents/`, `commands/`, `hooks/`, `settings.json` — into the vendor path. Upgrades to codeArbiter are then just `git submodule update`; no re-copying.
+3. **Creates `${PROJECT_ROOT}/.agents/projectContext/` as a real directory** owned by the consumer. Your CONTEXT.md, ADRs, tickets, overrides log, etc. all live here, in your repo — never in the framework submodule.
+4. **Symlinks `${PROJECT_ROOT}/.claude/settings.json`** to `../.agents/settings.json` so Claude Code picks up the framework's hooks and MCP config.
+5. **Copies `AGENTS.md`** from the vendor path to your repo root — Claude Code must be able to find `AGENTS.md` at `$CLAUDE_PROJECT_DIR` to load the orchestrator.
+6. **Writes `CLAUDE.md`** at your repo root containing `@AGENTS.md` — the standard Claude Code project-instructions shim.
+7. **Generates `.claude/commands/*.md` shims** pointing into the vendor path so every `/command` resolves correctly.
 
-Re-run with `--force` after every codeArbiter upgrade to keep `AGENTS.md` and all shims current.
+Re-run with `--force` after every codeArbiter upgrade to keep `AGENTS.md` and all shims current. The framework subdir symlinks are stable — they don't need refreshing on upgrade since they always resolve into the current submodule SHA.
 
 ---
 
@@ -96,22 +100,18 @@ Re-run with `--force` after every codeArbiter upgrade to keep `AGENTS.md` and al
 git submodule add <repo-url> vendor/codearbiter
 git commit -m "vendor: add codeArbiter submodule"
 
-# 2. Symlink .agents/ so hook commands (bash .agents/hooks/…) resolve at repo root
-ln -s vendor/codearbiter/.agents .agents
-
-# 3. Symlink .claude/settings.json so Claude Code picks up hooks and MCP config
-mkdir -p .claude
-ln -s ../vendor/codearbiter/.agents/settings.json .claude/settings.json
-
-git add .agents .claude
-git commit -m "vendor: wire codeArbiter hooks and settings"
-
-# 4. Open Claude Code and run /init-vendor
+# 2. Open Claude Code and run /init-vendor. This creates the real .agents/
+#    directory at your repo root, symlinks the framework subdirs into the
+#    vendor path, creates the real consumer-owned .agents/projectContext/,
+#    copies AGENTS.md, writes CLAUDE.md, and generates .claude/commands/ shims.
 claude
 # → /init-vendor --vendor-path=vendor/codearbiter/
-# This writes AGENTS.md and CLAUDE.md at your repo root and generates .claude/commands/ shims.
 
-# 5. Initialize project context
+# 3. Commit the wiring (.agents/ subdir symlinks + projectContext placeholder + AGENTS.md + CLAUDE.md + .claude/)
+git add .agents .claude AGENTS.md CLAUDE.md
+git commit -m "vendor: wire codeArbiter"
+
+# 4. Initialize project context
 # → /create-context   (existing codebase)
 # → /decompose        (new project, no code yet)
 ```
@@ -152,11 +152,10 @@ After you push that host commit, teammates pick it up via `git pull --recurse-su
 
 ```sh
 git subtree add --prefix=vendor/codearbiter <repo-url> main --squash
-ln -s vendor/codearbiter/.agents .agents
-mkdir -p .claude
-ln -s ../vendor/codearbiter/.agents/settings.json .claude/settings.json
-git add .agents .claude && git commit -m "vendor: wire codeArbiter"
 # Then in Claude Code: /init-vendor --vendor-path=vendor/codearbiter/
+# (creates .agents/ with per-subdir symlinks, real .agents/projectContext/,
+#  AGENTS.md, CLAUDE.md, and .claude/ shims)
+git add .agents .claude AGENTS.md CLAUDE.md && git commit -m "vendor: wire codeArbiter"
 ```
 
 To upgrade:
@@ -178,7 +177,9 @@ Everything is already at the root so `/init-vendor` is not needed. No path to pu
 
 ---
 
-**Why the `.agents/` symlink?** Hook commands in `settings.json` reference bare paths like `bash .agents/hooks/session-start.sh`, resolved relative to your repo root. The symlink lets those resolve into the vendored tree without modifying `settings.json`. At runtime the hooks themselves walk up from their script location until they find the `${FRAMEWORK_ROOT}/.agents/AGENTS-CODEARBITER-ROOT` sentinel to discover `FRAMEWORK_ROOT` (vendored or monolith), then derive `PROJECT_ROOT` from the git toplevel. Your project state (`projectContext/`) is written into the symlinked `.agents/` and ends up in the vendored tree — if you want strict separation, copy instead of symlinking and point the hook paths at the vendor location manually.
+**Why per-subdir symlinks instead of one big `.agents/` symlink?** Earlier versions of these install instructions had you `ln -s vendor/codearbiter/.agents .agents`. That looked simpler, but every write to `${PROJECT_ROOT}/.agents/projectContext/...` then physically landed inside `vendor/codearbiter/.agents/projectContext/` — i.e. inside the framework submodule. Consumer state (CONTEXT.md, ADRs, tickets, overrides.log) would not commit to the consumer's repo and would silently pollute the submodule. The current wiring keeps `.agents/` itself a real directory at the project root and only symlinks the framework-owned subdirs (`skills/`, `agents/`, `commands/`, `hooks/`, `settings.json`), so `projectContext/` is always a real consumer-owned directory. At runtime hooks resolve their own physical path via `pwd -P` and verify they sit under a directory containing the `${FRAMEWORK_ROOT}/.agents/AGENTS-CODEARBITER-ROOT` sentinel to discover `FRAMEWORK_ROOT`; `PROJECT_ROOT` comes from `git rev-parse --show-toplevel`.
+
+**Migrating an existing install** that used the legacy whole-tree symlink: see the "Migrating from legacy whole-tree symlink" section in [`.agents/commands/init-vendor.md`](./.agents/commands/init-vendor.md). The short version: rescue any consumer projectContext that landed in the vendor tree, remove the `.agents` symlink, re-run `/init-vendor`, move the rescued content into the new real `${PROJECT_ROOT}/.agents/projectContext/`.
 
 **Note on README/LICENSE:** these root files don't travel with the framework. Your host project has its own. Authoritative docs for framework components (statusline, etc.) live under `.agents/` so they follow the code. See [`.agents/hooks/STATUSLINE.md`](./.agents/hooks/STATUSLINE.md).
 

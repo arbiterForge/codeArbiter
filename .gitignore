@@ -19,6 +19,17 @@ legacy/
 # resumable via /decompose if a session is interrupted. Never committed.
 .agents/projectContext/.decompose-draft/
 
+# Framework dogfood projectContext — local-only state for developers working
+# ON the framework itself. The framework's own AGENTS.md, skills, and commands
+# encode its design; projectContext here is per-developer dogfood usage state
+# and would otherwise travel with the submodule into consumer vendor trees as
+# noise. Consumer projects have their own real .agents/projectContext/ at
+# their PROJECT_ROOT (created by /init-vendor), wired via the per-subdir
+# symlink layout — so this directory in the framework repo is irrelevant to
+# them by construction. NOTE: files that were tracked before this rule was
+# added remain tracked until explicitly removed with `git rm --cached`.
+.agents/projectContext/
+
 # Ephemeral execution scaffolding written by long plan runs. Removed in
 # the plan's Phase K cleanup. Never committed.
 /.plan-tasks/
