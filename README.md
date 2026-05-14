@@ -88,8 +88,9 @@ Running `/init-vendor --vendor-path=vendor/codearbiter/` inside Claude Code:
 5. **Copies `AGENTS.md`** from the vendor path to your repo root — Claude Code must be able to find `AGENTS.md` at `$CLAUDE_PROJECT_DIR` to load the orchestrator.
 6. **Writes `CLAUDE.md`** at your repo root containing `@AGENTS.md` — the standard Claude Code project-instructions shim.
 7. **Generates `.claude/commands/*.md` shims** pointing into the vendor path so every `/command` resolves correctly.
+8. **Generates `.claude/agents/*.md` shims** for every dispatchable agent so subagents resolve into the vendor path too.
 
-Re-run with `--force` after every codeArbiter upgrade to keep `AGENTS.md` and all shims current. The framework subdir symlinks are stable — they don't need refreshing on upgrade since they always resolve into the current submodule SHA.
+Re-run with `--force` after every codeArbiter upgrade to keep `AGENTS.md` and all shims current (the framework may add new commands or agents that need fresh shims). The framework subdir symlinks themselves are stable — they don't need refreshing on upgrade since they always resolve into the current submodule SHA.
 
 ---
 
