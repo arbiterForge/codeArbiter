@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
-# codeArbiter v2 statusline — original, dependency-free.
+# codeArbiter statusline — dependency-free (Python stdlib only, no Nerd Font).
 #
-# A clean-room implementation: no third-party code, no Nerd Font, stdlib only.
-# It reproduces a YAS-style sectioned, full-width box (a layout codeArbiter
-# admires) but owes it nothing — and adds codeArbiter's own changes:
-#   - single neon-violet palette (a subtle dark->bright violet sheen, no rainbow)
+# Renders a sectioned, full-width box. The usage segments (folder, git, model,
+# rate limits, context, tokens, cost) render in every repo. The arbiter segments
+# (stage / tasks / open-questions / overrides-since-checkpoint) render only when
+# the repo's .codearbiter/CONTEXT.md frontmatter is `arbiter: enabled`.
+#
+# Design:
+#   - single neon-violet palette (a subtle dark->bright sheen, no rainbow)
 #   - native-font glyphs only: box-drawing, block elements, arrows, ASCII labels
 #   - top line = active folder; second line = git project (owner/name + branch),
 #     with a no-git fallback
-#   - cost trusts Claude Code's cost.total_cost_usd (prices each call at the
-#     model used when burned; includes subagents) — no token*price recompute
+#   - cost trusts Claude Code's cost.total_cost_usd (each call priced at the
+#     model used when burned; subagents included) — no token*price recompute
 #   - context trusts context_window.used_percentage + context_window_size
-#     (1M for Opus 4.8 / Sonnet 4.6, 200K otherwise) — no bogus >100%
-#   - arbiter segments (stage / tasks / open-questions / overrides-since-
-#     checkpoint) render ONLY when .codearbiter/CONTEXT.md is `arbiter: enabled`;
-#     the usage box renders everywhere (a YAS replacement)
+#     (1M for Opus 4.8 / Sonnet 4.6, 200K otherwise) — never exceeds 100%
 #   - excitement: [ultra] on xhigh/max effort, [SPRINT] on an active sprint
 #
-# Stage 1 of the port: box + folder/git + rate-limits + model + context + token
-# in/out + cost + arbiter line. Still to come (YAS parity): burn-rate sparkline,
-# day-cost row, burndown trend, subagent rows, task rows, skills/plugins line.
+# Implemented: box + folder/git + rate-limits + model + context + token in/out
+# + cost + arbiter line. Planned: burn-rate sparkline, day-cost row, burndown
+# trend, subagent rows, task rows, skills/plugins line, model pill, reset
+# countdown.
 #
 # Toggle off with CODEARBITER_STATUSLINE=off. Width via CODEARBITER_WIDTH/COLUMNS.
 
