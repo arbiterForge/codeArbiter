@@ -787,8 +787,7 @@ def detect_box_width():
     return max(60, min(160, raw - WIDTH_MARGIN))
 
 
-def render():
-    raw = sys.stdin.read() if not sys.stdin.isatty() else ""
+def render(raw):
     try:
         data = json.loads(raw) if raw.strip() else {}
     except (ValueError, TypeError):
@@ -897,14 +896,7 @@ def render():
                     tail_tees = []
 
     box.bottom(tees=tail_tees)
-
-    out = box.render().encode("utf-8", "replace")
-    buf = getattr(sys.stdout, "buffer", None)
-    if buf is not None:
-        buf.write(out)
-        buf.flush()
-    else:
-        sys.stdout.write(out.decode("utf-8", "replace"))
+    return box.render()
 
 
 def main():
@@ -915,8 +907,20 @@ def main():
             s.reconfigure(encoding="utf-8", errors="replace")
         except (AttributeError, ValueError):
             pass
+    raw = ""
     try:
-        render()
+        raw = sys.stdin.read() if not sys.stdin.isatty() else ""
+    except Exception:
+        raw = ""
+    try:
+        out = render(raw)
+        b = out.encode("utf-8", "replace")
+        buf = getattr(sys.stdout, "buffer", None)
+        if buf is not None:
+            buf.write(b)
+            buf.flush()
+        else:
+            sys.stdout.write(out)
     except Exception:
         # A statusline must never emit a traceback. Degrade to no output.
         return
