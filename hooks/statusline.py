@@ -37,6 +37,7 @@
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -595,7 +596,10 @@ class Box:
         self.lines.append(f"{V0}{BL}{''.join(mid)}{BR}{RESET}")
 
     def render(self):
-        return "\n".join(self.lines) + "\n"
+        # No trailing newline: a multi-line statusline that ends in '\n' adds a
+        # phantom row, so the host's height accounting drifts on re-render and the
+        # bar eventually clears itself. Lines are separated, not terminated.
+        return "\n".join(self.lines)
 
 
 def lr(left, right, inner):
@@ -748,6 +752,41 @@ def seg_trends(data, m):
 
 
 # --------------------------------------------------------------------------- main
+WIDTH_MARGIN = 6   # columns kept clear of the terminal's right edge
+
+
+def detect_box_width():
+    """Fit the box to the terminal, leaving a margin so the right border never
+    lands in the final column — writing there auto-wraps and corrupts a
+    multi-line statusline. The host runs this command with stdout as a pipe (no
+    tty), so COLUMNS (which the host sets) is the primary source; terminal-size
+    probes are a fallback. Explicit CODEARBITER_WIDTH wins and is used verbatim."""
+    env = os.environ.get("CODEARBITER_WIDTH")
+    if env:
+        try:
+            return max(40, min(200, int(env)))
+        except ValueError:
+            pass
+    raw = 0
+    try:
+        raw = int(os.environ.get("COLUMNS") or 0)
+    except ValueError:
+        raw = 0
+    if raw <= 0:
+        raw = shutil.get_terminal_size(fallback=(0, 0)).columns
+    if raw <= 0:
+        for fd in (1, 2, 0):
+            try:
+                raw = os.get_terminal_size(fd).columns
+                if raw > 0:
+                    break
+            except OSError:
+                pass
+    if raw <= 0:
+        raw = 140   # wide default when nothing reports a width
+    return max(60, min(160, raw - WIDTH_MARGIN))
+
+
 def render():
     raw = sys.stdin.read() if not sys.stdin.isatty() else ""
     try:
@@ -757,11 +796,7 @@ def render():
     if not isinstance(data, dict):
         data = {}
 
-    try:
-        W = int(os.environ.get("CODEARBITER_WIDTH") or os.environ.get("COLUMNS") or 100)
-    except ValueError:
-        W = 100
-    W = max(70, min(160, W))
+    W = detect_box_width()
     compact = os.environ.get("CODEARBITER_COMPACT", "").lower() in ("1", "true", "on", "yes")
 
     root = safe(project_root, data) or os.getcwd()
@@ -795,6 +830,9 @@ def render():
     if branch:
         dirty = "*" if safe(git_dirty, root) else ""
         gp += f" {V0}{V}{RESET} {(WARN if dirty else OK)}{branch}{dirty}{RESET}"
+    ln = safe(seg_lines, data)   # churn sits up here, next to the repo
+    if ln:
+        gp += f"  {ln}"
     model = get(data, "model", "display_name") or get(data, "model", "id") or "?"
     right = safe(seg_rates, data) or ""
     right = (right + "   " if right else "") + f"{V2}{model}{RESET}"
@@ -819,11 +857,8 @@ def render():
     comp = safe(seg_compaction, data)
     box.row(lr(ctx, comp, inner) if comp else ctx)
 
-    # tokens │ lines │ PR
+    # tokens │ PR  (lines churn moved up to the repo row)
     cells = [safe(seg_tokens, data) or f"{V2}{DN}{RESET} {WHITE}--{RESET}"]
-    ln = safe(seg_lines, data)
-    if ln:
-        cells.append(ln)
     pr = safe(seg_pr, data)
     if pr:
         cells.append(pr)
