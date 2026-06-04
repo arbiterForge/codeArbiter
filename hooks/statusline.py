@@ -49,6 +49,10 @@ def fg(r, g, b):
 
 RESET, BOLD, DIM, ITAL = "\033[0m", "\033[1m", "\033[2m", "\033[3m"
 
+
+def bg(r, g, b):
+    return f"\033[48;2;{r};{g};{b}m"
+
 # neon-violet ramp (dark -> bright) — used for the box sheen and accents
 V0 = fg(108, 70, 180)     # deep violet (border base)
 V1 = fg(150, 92, 230)     # mid violet
@@ -59,6 +63,7 @@ WHITE = fg(232, 232, 240)
 OK = fg(120, 220, 150)
 WARN = fg(255, 184, 76)
 DANGER = fg(255, 86, 110)
+PILL_FG = fg(18, 14, 26)   # near-black text for contrast on a colored pill bg
 
 # native-safe glyphs only
 TL, TR, BL, BR = "╭", "╮", "╰", "╯"
@@ -229,6 +234,19 @@ def parse_iso(s):
         return None
 
 
+def to_epoch(v):
+    """A reset timestamp may arrive as an ISO-8601 string OR a numeric epoch
+    (seconds or milliseconds). Normalize to epoch seconds; None if unusable."""
+    if v is None or isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        v = float(v)
+        if v > 1e12:        # milliseconds
+            v /= 1000.0
+        return v if v > 0 else None
+    return parse_iso(v)
+
+
 def sparkline(vals, grad=True):
     vals = [num(v, None) for v in vals]
     vals = [v for v in vals if v is not None]
@@ -353,7 +371,7 @@ def ledger_update(data, sid):
     total cost across sessions). Best-effort; ({}, 0.0) on any failure. Corrupt
     sample rows are dropped on load and the file self-heals on the next write."""
     if not sid:
-        return {}, 0.0
+        return {}, 0.0, 0.0, 0.0
     path = ledger_path()
     now = time.time()
     today = datetime.now().strftime("%Y-%m-%d")
@@ -384,6 +402,8 @@ def ledger_update(data, sid):
     rec["date"] = today
     rec["last_ts"] = now
     rec["last_cost"] = cost
+    rec["last_in"] = num(cw.get("total_input_tokens"))
+    rec["last_out"] = num(cw.get("total_output_tokens"))
 
     samples = rec.get("samples")
     samples = [r for r in samples if _valid_sample(r)] if isinstance(samples, list) else []
@@ -417,11 +437,13 @@ def ledger_update(data, sid):
         except OSError:
             pass
 
-    day_cost = 0.0
+    day_cost = day_in = day_out = 0.0
     for v in sessions.values():
         if isinstance(v, dict) and v.get("date") == today:
             day_cost += num(v.get("last_cost"))
-    return rec, day_cost
+            day_in += num(v.get("last_in"))
+            day_out += num(v.get("last_out"))
+    return rec, day_cost, day_in, day_out
 
 
 def ledger_metrics(rec, dur_ms=None):
@@ -431,10 +453,13 @@ def ledger_metrics(rec, dur_ms=None):
     s = [r for r in (rec.get("samples") or []) if _valid_sample(r)]
     m = {"burn_hr": None, "cost_spark": "", "tok_rate": None,
          "fh_spark": "", "sd_spark": "", "session_cost": num(rec.get("last_cost"))}
-    if len(s) >= 2 and s[-1][0] > s[0][0]:
-        dc = max(0.0, (s[-1][1] or 0) - (s[0][1] or 0))
-        dt = max(BURN_MIN_DT, s[-1][0] - s[0][0])
-        m["burn_hr"] = dc / (dt / 3600.0)
+    # $/hr = session total cost over wall-clock elapsed (first seen -> last seen).
+    # Honest and matches "total / time"; NOT a recent-window extrapolation, which
+    # over-reads during a burst and looks wrong against the running total.
+    first = num(rec.get("first_ts"), None)
+    last = num(rec.get("last_ts"), None)
+    if first is not None and last is not None and (last - first) >= BURN_MIN_DT:
+        m["burn_hr"] = m["session_cost"] / ((last - first) / 3600.0)
     elif dur_ms:
         hrs = num(dur_ms) / 1000.0 / 3600.0
         if hrs > 0:
@@ -635,42 +660,40 @@ def cols(cells, inner):
 
 
 # --------------------------------------------------------------------------- segments
-def seg_context(data):
+def seg_ctx_lines(data, w):
+    """Two lines of context-window detail for the right column: a gradient bar +
+    used% on top, then resident/window + headroom-to-compaction below. The bar
+    scales to the available width w."""
     cw = get(data, "context_window", default={}) or {}
-    pct = cw.get("used_percentage")
-    if pct is None:
-        return f"{GREY}ctx --{RESET}"
-    pf = num(pct, None)
+    pf = num(cw.get("used_percentage"), None)
     if pf is None:
-        return f"{GREY}ctx --{RESET}"
+        return [f"{GREY}ctx --{RESET}", ""]
     pctf = max(0.0, min(100.0, pf))
     size = int(num(cw.get("context_window_size"), 200000)) or 200000
     win = "1M" if size >= 1_000_000 else f"{size // 1000}K"
-    resident = round(pctf / 100.0 * size)   # tracks the bar; not cumulative throughput
+    resident = round(pctf / 100.0 * size)
     col = V2 if pctf < 75 else (WARN if pctf < 90 else DANGER)
-    barw = 22
+    barw = max(10, min(46, w - 12))
     filled = max(0, min(barw, round(pctf / 100 * barw)))
     bar = gradient_h(BFULL * filled, max(1, filled)) + f"{V0}" + BEMPTY * (barw - filled) + RESET
-    return f"{GREY}ctx{RESET} {bar} {col}{pctf:.0f}%{RESET} {DIM}{fmt_tok(resident)}/{win}{RESET}"
-
-
-def seg_compaction(data):
-    pct = get(data, "context_window", "used_percentage")
-    if pct is None:
-        return None
-    pf = num(pct, None)
-    if pf is None:
-        return None
+    line1 = f"{GREY}ctx{RESET} {bar} {col}{pctf:.0f}%{RESET}"
     thresh = num(os.environ.get("CODEARBITER_COMPACT_AT"), 92.0)
-    head = thresh - pf
+    head = thresh - pctf
     if head <= 0:
-        return f"{DANGER}{BOLT} compact imminent{RESET}"
-    col = OK if head > 30 else (WARN if head > 12 else DANGER)
-    return f"{GREY}{BOLT} compact{RESET} {col}~{head:.0f}%{RESET}"
+        comp = f"{DANGER}{BOLT} compact imminent{RESET}"
+    else:
+        ccol = OK if head > 30 else (WARN if head > 12 else DANGER)
+        comp = f"{GREY}{BOLT} compact{RESET} {ccol}~{head:.0f}%{RESET}"
+    line2 = f"{DIM}{fmt_tok(resident)} / {win}{RESET}   {comp}"
+    return [line1, line2]
 
 
-def seg_rates(data):
-    out = []
+def seg_window_cells(data):
+    """5h / 7d rate-limit cells: used% + reset countdown. The countdown shows when
+    the host sends rate_limits.*.resets_at (ISO string or epoch); absent that, the
+    cell still shows the used%. Rendered wherever rate_limits exists."""
+    cells = []
+    now = time.time()
     for key, lbl in (("five_hour", "5h"), ("seven_day", "7d")):
         p = get(data, "rate_limits", key, "used_percentage")
         if p is None:
@@ -679,22 +702,44 @@ def seg_rates(data):
         if pf is None:
             continue
         c = V2 if pf < 75 else (WARN if pf < 90 else DANGER)
-        out.append(f"{GREY}{lbl}{RESET} {c}{pf:.0f}%{RESET}")
-    return "  ".join(out)
+        cell = f"{GREY}{lbl}{RESET} {c}{pf:.0f}%{RESET}"
+        r = to_epoch(get(data, "rate_limits", key, "resets_at"))
+        if r:
+            cell += f" {GREY}{ARR}{RESET} {WHITE}{human_dur(r - now)}{RESET}"
+        cells.append(cell)
+    return cells
 
 
-def seg_tokens(data):
-    cu = get(data, "context_window", "current_usage", default={}) or {}
-    # keep in/out/cache on one basis: current_usage when present, else the totals
-    if isinstance(cu, dict) and ("input_tokens" in cu or "output_tokens" in cu):
-        tin, tout = num(cu.get("input_tokens")), num(cu.get("output_tokens"))
-        cache = num(cu.get("cache_read_input_tokens"))
+def seg_window_inline(data):
+    """Compact single-string rate-limit readout for the header line."""
+    cells = seg_window_cells(data)
+    return f" {V0}·{RESET} ".join(cells) if cells else ""
+
+
+def model_pill(model):
+    """A colored pill behind the model name, keyed by family — Opus pops violet,
+    Sonnet reads blue (the daily driver), Haiku green — so the active model is
+    obvious at a glance instead of plain text."""
+    m = str(model)
+    ml = m.lower()
+    if "opus" in ml:
+        b = bg(178, 102, 255)     # neon violet
+    elif "sonnet" in ml:
+        b = bg(96, 174, 235)      # blue
+    elif "haiku" in ml:
+        b = bg(120, 220, 150)     # green
     else:
-        tin = num(get(data, "context_window", "total_input_tokens"))
-        tout = num(get(data, "context_window", "total_output_tokens"))
-        cache = num(cu.get("cache_read_input_tokens")) if isinstance(cu, dict) else 0
-    return (f"{V2}{DN}{RESET} {WHITE}{fmt_tok(tin)}{RESET} {DIM}({fmt_tok(cache)}){RESET} "
-            f"{V2}{UP}{RESET} {WHITE}{fmt_tok(tout)}{RESET}")
+        b = bg(150, 150, 162)     # grey (unknown)
+    return f"{b}{PILL_FG}{BOLD} {m} {RESET}"
+
+
+def usage_row(label, tin, tout, cost):
+    """One row of the Session/Total mini-table: label │ ↓ in  ↑ out │ $cost, with
+    fixed-width numeric fields so Session and Total align vertically."""
+    return (f"{GREY}{label:<7}{RESET} {V0}{V}{RESET} "
+            f"{V2}{DN}{RESET} {WHITE}{fmt_tok(tin):>7}{RESET} "
+            f"{V2}{UP}{RESET} {WHITE}{fmt_tok(tout):>7}{RESET} {V0}{V}{RESET} "
+            f"{OK}{usd_fine(cost):>6}{RESET}")
 
 
 def seg_lines(data):
@@ -721,34 +766,6 @@ def seg_pr(data):
     scol = OK if state == "open" else (V3 if state == "merged" else GREY)
     tail = f" {col}{mark}{RESET}" if mark else ""
     return f"{GREY}PR{RESET} {scol}#{num_}{RESET}{tail}"
-
-
-def seg_daycost(day_cost, m):
-    parts = [f"{OK}{usd_fine(day_cost)}{RESET} {GREY}today{RESET}"]
-    if m.get("burn_hr") is not None:
-        bc = WARN if m["burn_hr"] >= 8 else V2
-        parts.append(f"{bc}{usd_fine(m['burn_hr'])}{GREY}/hr{RESET}")
-    if m.get("cost_spark"):
-        seg = f"{GREY}burn{RESET} {m['cost_spark']}"
-        if m.get("tok_rate") is not None:
-            seg += f" {DIM}{fmt_tok(m['tok_rate'])} t/m{RESET}"
-        parts.append(seg)
-    return f" {V0}·{RESET} ".join(parts)
-
-
-def seg_trends(data, m):
-    cells = []
-    now = time.time()
-    for key, lbl, spark in (("five_hour", "5h", "fh_spark"), ("seven_day", "7d", "sd_spark")):
-        r = parse_iso(get(data, "rate_limits", key, "resets_at"))
-        if r:
-            c = f"{GREY}{lbl} {ARR}{RESET} {WHITE}{human_dur(r - now)}{RESET}"
-            if m.get(spark):
-                c += f" {m[spark]}"
-            cells.append(c)
-    if m.get("session_cost") is not None:
-        cells.append(f"{GREY}session{RESET} {OK}{usd_fine(m['session_cost'])}{RESET}")
-    return cells
 
 
 # --------------------------------------------------------------------------- main
@@ -806,7 +823,7 @@ def render(raw):
     badge = (f"{V3}{BOLD}[SPRINT]{RESET}" if sprint
              else (f"{V3}[ultra]{RESET}" if effort in ("xhigh", "max") else ""))
 
-    rec, day_cost = safe(ledger_update, data, sid) or ({}, 0.0)
+    rec, day_cost, day_in, day_out = safe(ledger_update, data, sid) or ({}, 0.0, 0.0, 0.0)
     dur_ms = get(data, "cost", "total_duration_ms")
     metrics = (safe(ledger_metrics, rec, dur_ms) or {}) if rec else {}
 
@@ -833,8 +850,11 @@ def render(raw):
     if ln:
         gp += f"  {ln}"
     model = get(data, "model", "display_name") or get(data, "model", "id") or "?"
-    right = safe(seg_rates, data) or ""
-    right = (right + "   " if right else "") + f"{V2}{model}{RESET}"
+    pill = safe(model_pill, model) or f"{V2}{model}{RESET}"
+    rates = safe(seg_window_inline, data) or ""
+    prseg = safe(seg_pr, data) or ""
+    head_bits = [b for b in (rates, prseg) if b]
+    right = ("   ".join(head_bits) + "   " if head_bits else "") + pill
     box.row(lr(gp, right, inner))
 
     box.sep()
@@ -851,30 +871,20 @@ def render(raw):
         )
         box.sep()
 
-    # context (+ compaction cue)
-    ctx = safe(seg_context, data) or f"{GREY}ctx --{RESET}"
-    comp = safe(seg_compaction, data)
-    box.row(lr(ctx, comp, inner) if comp else ctx)
-
-    # tokens │ PR  (lines churn moved up to the repo row)
-    cells = [safe(seg_tokens, data) or f"{V2}{DN}{RESET} {WHITE}--{RESET}"]
-    pr = safe(seg_pr, data)
-    if pr:
-        cells.append(pr)
-    content, bounds = cols(cells, inner)
-    box.sep(tees=bounds)
-    box.row(content)
-    tail_tees = bounds
-
-    # cost / burn rows (lean mode drops these)
-    if not compact:
-        box.sep()
-        box.row(safe(seg_daycost, day_cost, metrics) or f"{OK}{usd_fine(day_cost)}{RESET} {GREY}today{RESET}")
-        tcells = safe(seg_trends, data, metrics) or []
-        if tcells:
-            tcontent, _ = cols(tcells, inner)
-            box.row(tcontent)
-        tail_tees = []
+    # usage block — Session over Total (label │ ↓ in  ↑ out │ $cost), a
+    # double-height left table; the right column carries the context-window
+    # detail. Rate limits live on the header line now, not their own row.
+    LW = 40
+    s_in = num(get(data, "context_window", "total_input_tokens"))
+    s_out = num(get(data, "context_window", "total_output_tokens"))
+    s_cost = num(get(data, "cost", "total_cost_usd"))
+    srow = safe(usage_row, "Session", s_in, s_out, s_cost) or ""
+    trow = safe(usage_row, "Total", day_in, day_out, day_cost) or ""
+    ctxl = safe(seg_ctx_lines, data, max(8, inner - LW - 3)) or [f"{GREY}ctx --{RESET}", ""]
+    div = f"{V0}{V}{RESET}"
+    box.row(f"{pad(srow, LW)} {div} {ctxl[0]}")
+    box.row(f"{pad(trow, LW)} {div} {ctxl[1] if len(ctxl) > 1 else ''}")
+    tail_tees = []
 
     # subagent rows (gated on presence; lean mode drops)
     if not compact:
