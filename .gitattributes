@@ -1,0 +1,5 @@
+# Hooks and the statusline run under bash/python on every platform — keep LF so
+# they never ship with CRLF (which breaks bash shebangs and is noisy in Python).
+*.sh   text eol=lf
+*.py   text eol=lf
+hooks/* text eol=lf
