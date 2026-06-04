@@ -1,6 +1,6 @@
 ---
 name: commit-gate
-description: The only path to a commit. Routed to when the user invokes /commit or otherwise instructs codeArbiter to persist staged changes. Eight gated phases — permission, branch, classification, verification (test/lint/secrets), diff review, selective stage, message, commit. Nothing reaches version control without clearing every gate; "it looks good" is not authorization.
+description: The only path to a commit. Routed to when the user invokes /commit or otherwise instructs codeArbiter to persist staged changes. Nine gated phases — permission, branch, classification, verification (test/lint/secrets), behavioral proof, diff review, selective stage, message, commit. Nothing reaches version control without clearing every gate; "it looks good" is not authorization.
 ---
 
 # commit-gate
@@ -57,7 +57,17 @@ Record each result (PASS / BLOCK) for the report.
 
 Gate: test, lint, and secrets scan all PASS. Any failure halts the commit until fixed and re-run.
 
-## Phase 5 — Diff review · gate: BLOCK
+## Phase 5 — Behavioral proof · gate: BLOCK
+
+A green suite proves the tests pass — not that the change does what it was asked to do. Before persisting, prove the behavior against the spec, not against a self-report.
+
+- Identify the proving command or observable: the acceptance criterion from `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md` (or the task's verification in the plan). If none exists, derive the smallest command that exercises the claimed behavior.
+- Run it FRESH in this phase. Read the actual output and the exit code — do not infer success from "the tests pass," and never trust a subagent's self-report that it works.
+- Confirm the observed behavior matches the spec's acceptance criteria. A mismatch, or an unverifiable claim, blocks.
+
+Gate: the change is proven to do what it claimed by fresh evidence — command output and exit code read in this phase. A self-reported "it works" does not pass.
+
+## Phase 6 — Diff review · gate: BLOCK
 
 Read the complete staged diff (`git diff --cached`). Flag as blocking:
 
@@ -71,13 +81,13 @@ On any blocking finding, unstage the affected files, surface the finding, and ST
 
 Gate: the diff is clean — zero blocking findings.
 
-## Phase 6 — Selective stage · gate: BLOCK
+## Phase 7 — Selective stage · gate: BLOCK
 
-If files were unstaged in Phase 5, re-stage only the clean files by explicit path: `git add path/to/file`. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
+If files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
 
 Gate: the staged set contains exactly the intended files. MUST NOT use `git add -A`, `git add .`, or any wildcard.
 
-## Phase 7 — Message · gate: BLOCK
+## Phase 8 — Message · gate: BLOCK
 
 Compose a Conventional Commits message:
 
@@ -89,11 +99,11 @@ Compose a Conventional Commits message:
 
 Gate: subject ≤ 72 chars, a body is present, and any `feat`/`fix` carries a `CHANGELOG:` footer.
 
-## Phase 8 — Commit · gate: BLOCK
+## Phase 9 — Commit · gate: BLOCK
 
 Commit with the approved message via `-m` or heredoc with proper quoting — never an interactive editor. Capture the resulting SHA.
 
-If a pre-commit hook fails: read its output in full, fix the issue, re-stage by explicit path (Phase 6 rules apply), and create a NEW commit. MUST NOT `--amend` after a hook failure.
+If a pre-commit hook fails: read its output in full, fix the issue, re-stage by explicit path (Phase 7 rules apply), and create a NEW commit. MUST NOT `--amend` after a hook failure.
 
 After a successful commit, run `git status` to confirm the tree is clean. Deliver the report: SHA, branch, explicit file list, gate results (test / lint / secrets), and the message used.
 
@@ -105,6 +115,7 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT commit to `main`, `master`, or any protected branch.
 - MUST NOT run `git add -A`, `git add .`, or any wildcard staging.
 - MUST NOT commit while any test is failing, any lint error stands, or any secret is present.
+- MUST NOT accept a self-reported "it works" — prove the behavior against the spec with a fresh command run (Phase 5) before committing.
 - MUST NOT skip, disable, or work around any automated gate.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP.

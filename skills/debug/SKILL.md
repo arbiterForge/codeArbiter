@@ -5,7 +5,7 @@ description: Investigate-then-decide root-cause analysis. Routed to when the cau
 
 # debug
 
-Find the cause first, fix it never. `debug` investigates and routes; it does not touch code. Code changes belong to `/fix`.
+Find the cause first, fix it never. `debug` investigates and routes; it does not touch code. It drives one closed loop — **reproduce** (Phase 1) → confirm by cited evidence (Phases 2–3) → hand `/fix` a regression test that re-runs the repro and must pass (**verify**). The minimal repro is the anchor that closes the loop; code changes belong to `/fix`.
 
 ## Pre-flight
 
@@ -60,7 +60,7 @@ Gate: no code change of any kind — no edit, no refactor, no "try a fix." A hyp
 
 Walk the evidence ledger and pick exactly one exit. "We'll figure it out later" is not an exit.
 
-- **(a) Confirmed bug → `/fix`.** One hypothesis is CONFIRMED by cited evidence and the disposition is a code change. Carry: the hypothesis ID and statement, the cited confirming evidence, and a named **regression test obligation** — a one-sentence description of the test `/fix` MUST write (and watch fail) before any fix code. `/fix` refuses to proceed without it.
+- **(a) Confirmed bug → `/fix`.** One hypothesis is CONFIRMED by cited evidence and the disposition is a code change. Carry: the hypothesis ID and statement, the cited confirming evidence, and a named **regression test obligation** — a one-sentence description of the test `/fix` MUST write (and watch fail) before any fix code. It MUST encode the Phase 1 minimal repro, so the exact condition that reproduced the defect becomes the test that proves it fixed — this is what closes the reproduce→fix→verify loop. `/fix` refuses to proceed without it.
 - **(b) Behavior/design ambiguity → `/adr`.** The system behaves as currently specified, but the specification itself is in question. Carry: the hypothesis ID and statement, a one-sentence statement of the ambiguity, and the symptom record plus evidence ledger as context. An ADR is authored only via `/adr` with explicit user attribution — surface the question to the user and obtain attribution; never author the ADR autonomously as the disposition of a debug session.
 - **(c) No-action close.** The symptom is non-reproducible, was a one-time environmental event, or was already resolved by an unrelated commit. Carry: a one-sentence rationale, the cited evidence supporting "no action," and a note appended to the symptom record.
 
@@ -94,5 +94,6 @@ Gate: the handoff is routed. Exit (a) carries an explicit regression test obliga
 - MUST exit Phase 4 with exactly one of (a) confirmed bug → `/fix`, (b) ambiguity → `/adr`, or (c) no-action close.
 - MUST NOT route to `/fix` for a bug not yet confirmed by cited evidence — `/fix` is for known bugs.
 - MUST NOT exit (a) without a named regression test obligation for `/fix` to carry into its TDD Phase 1.
+- MUST tie the exit-(a) regression test obligation to the Phase 1 minimal repro — the repro is the test that closes the loop.
 - MUST NOT author an ADR autonomously as the disposition of a debug session — exit (b) obtains user attribution and routes through `/adr`.
 - MUST NOT guess a log path, trace tool, or test command — read `tech-stack.md` or STOP.
