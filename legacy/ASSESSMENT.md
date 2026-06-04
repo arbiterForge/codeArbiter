@@ -202,3 +202,22 @@ Four dispositions are genuine judgment calls that change the cut list:
 4. **Out-of-scope findings with `ticketing-router` gone** — trivial inline `[NEEDS-TRIAGE]` marker, or drop entirely?
 
 These do not block approval of the overall list — they refine it.
+
+---
+
+## 10. Gate resolution — approved 2026-06-04
+
+The cut/keep/fix list is **approved** as the authorization for Phases 2–7. The four §9 dispositions resolved:
+
+1. **Project state → `.codearbiter/`** (root-level, survives plugin uninstall). Confirmed.
+2. **`/threat-model` + `security-architecture` → lightweight-optional.** Strip the NIST/ISO/SOC2 control-family mapping and the egress-allowlist CODEOWNER gate; keep a lean STRIDE-style threat pass as an opt-in capability for sensitive features.
+3. **Decision / SMARTS → compress, but preserve the commercialization on-ramp.** Refines OV-11 and OV-14:
+   - **Compress** the ~800-line SMARTS *reference corpus* (`decision-categories`, `decision-log-format`, `downstream-artifacts`, `known-open-decisions`) to a lean heuristic prompt.
+   - **Drop** pure-overhead governance: the 12-week ADR aging clock and the forced `decision-challenger` dispatch (OV-11).
+   - **KEEP** the structural soul that doubles as commercialization scaffolding: the **SMARTS 6-lens evaluation** (Scalable/Maintainable/Available/Reliable/Testable/Securable), the **append-only ADR/decision log with user attribution**, and the **audit trail**. These are exactly what a future "fundable / sellable / SOC2-able" review wants, and they are cheap to keep.
+   - `stage-gating`'s 4-stage named-human-approver promotion **still goes** (team process, not commercialization readiness), but **project maturity survives as a single config value** rather than disappearing.
+4. **Out-of-scope findings (ticketing cut) →** trivial inline `[NEEDS-TRIAGE]` marker; no router, no variants.
+
+**Net steer:** decision-making gets terser and stops nagging, but the audit trail + SMARTS rigor + ADR record remain a clean foundation any project can lean on if it becomes worth monetizing.
+
+Proceeding to **Phase 2**: plugin skeleton, activation hook, gated statusline, `.codearbiter/`, `ORCHESTRATOR.md`, and `tdd` migrated as the reference pattern.
