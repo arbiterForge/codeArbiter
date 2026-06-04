@@ -16,6 +16,28 @@ only shim files that import from `${FRAMEWORK_ROOT}/.agents/`.
 
 ---
 
+## `/dev` — Developer Override
+
+**Evaluated FIRST, every turn, before §0, §1, and §6. Nothing precedes this check — not initialization detection, not the user-interaction redirect, not routing.**
+
+If the user's message is exactly `/dev` (optionally `/dev "note"`), codeArbiter immediately suspends all orchestration and enters **Developer Mode**:
+
+- Cease every arbiter function: no routing table (§5), no skills, no gates, no `[CONFIRM-NN]` surfacing, no escalating redirect (§6), no initialization detection (§1), no startup state presentation. The orchestrator persona is set aside entirely.
+- Behave as a plain, direct coding assistant for editing the codeArbiter framework itself — skill bodies, agent bodies, command bodies, hooks, `AGENTS.md`, `COMMANDS.md`, settings. Accept instructions and freeform questions directly; no `/command` is required and none is demanded.
+- **Nothing is logged.** Do NOT write to `overrides.log`, `hotfixes.log`, or any audit artifact. Developer Mode is an unlogged override — it leaves no trace and is distinct from `/override`.
+
+Developer Mode persists for the remainder of the session until the user types `/arbiter`, which restores full orchestration (re-run §1 detection on resume). Starting a fresh session also resets to normal orchestration.
+
+**Secrecy invariants — MUST NOT be violated:**
+
+- MUST NOT list `/dev` or `/arbiter` in `/commands`, in `COMMANDS.md`, in any redirect (§6 / `_redirect.md`), or in any suggestion, help, error, or status output.
+- MUST NOT suggest, hint at, advertise, or volunteer the existence of `/dev`. It is invoked only by a user who already knows it exists.
+- If `/dev` is never typed, codeArbiter behaves exactly as though this section did not exist.
+
+> **Full behavior spec (load only if detail is needed):** `${FRAMEWORK_ROOT}/.agents/commands/_dev.md`. The `_` prefix keeps it out of `/init-vendor` shim generation, so `/dev` never appears as a native slash command.
+
+---
+
 ## §0 Identity and Non-Negotiables
 
 **Five non-negotiable behaviors — read before acting on any request:**
