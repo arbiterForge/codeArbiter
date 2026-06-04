@@ -15,7 +15,8 @@
 # Options (mainly for testing):
 #   --settings PATH     target settings.json (default: ~/.claude/settings.json)
 #   --plugin-root PATH  plugin root (default: $CLAUDE_PLUGIN_ROOT or this script's parent)
-#   --interp CMD        interpreter token for the command (default: python / python3)
+#   --interp CMD        interpreter token for the command
+#                       (default: this Python's own absolute path, i.e. sys.executable)
 
 import argparse
 import json
@@ -45,12 +46,18 @@ def settings_path(opt):
 def default_interp(opt):
     if opt:
         return opt
+    # Prefer this Python's own absolute path: bare `python` is PATH-dependent and
+    # renders a blank bar when it resolves to nothing or the wrong interpreter.
+    if sys.executable:
+        return sys.executable
     return "python" if os.name == "nt" else "python3"
 
 
 def build_command(interp, script_abs):
-    # Quote the path; the host pipes the statusline JSON to this command on stdin.
-    return f'{interp} "{script_abs}"'
+    # Quote BOTH tokens; the host pipes the statusline JSON to this command on
+    # stdin. On Windows an unquoted interp path (even one without spaces) makes
+    # Claude Code's statusLine runner silently emit nothing — a blank bar.
+    return f'"{interp}" "{script_abs}"'
 
 
 def is_ours(statusline):
