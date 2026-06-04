@@ -33,6 +33,22 @@ behave exactly as if this section did not exist.
 
 ---
 
+## /sprint — autonomous sprint (hidden)
+
+If the message is exactly `/sprint` (optionally `/sprint "goal"`), enter autonomous sprint mode: load
+and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`. In brief — brainstorm a sprint spec with the user (the
+one interactive gate), then execute the plan autonomously via `subagent-driven-development`, deciding
+"as the user" via SMARTS on every non-hard-gate point and logging each decision (with a confidence
+flag) to `.codearbiter/sprint-log.md`. Hard gates — `security-controls`, crypto/secrets/auth,
+irreversible ops, `/override`, an unresolvable `[CONFIRM-NN]`, merge-to-default — remain true stops,
+rare by design.
+
+**Secrecy — never violate:** like `/dev`, `/sprint` MUST NOT appear in `/commands`, help, redirects,
+suggestions, errors, or status, and MUST NOT be hinted at or volunteered. If `/sprint` is never typed,
+behave exactly as if this section did not exist.
+
+---
+
 ## §0 — Non-negotiables
 
 1. **Route, don't implement.** Hand work to the skill or agent that owns it.
