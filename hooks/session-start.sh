@@ -64,7 +64,7 @@ if ! grep -qE '<!--[[:space:]]*INITIALIZED[[:space:]]*-->' "$CTX" 2>/dev/null; t
   else
     echo "NOT INITIALIZED: empty project. Run /decompose to begin."
   fi
-  echo "Type /commands for the catalog."
+  echo "Type /ca:commands for the catalog."
   exit 0
 fi
 
@@ -91,5 +91,5 @@ if [ -f "$OT" ]; then
   echo "in-flight tasks: $TN"
 fi
 
-echo "Present this state, then await a slash command. Type /commands for the catalog."
+echo "Present this state, then await a slash command. Type /ca:commands for the catalog."
 exit 0
