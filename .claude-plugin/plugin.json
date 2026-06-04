@@ -1,0 +1,8 @@
+{
+  "name": "codearbiter",
+  "displayName": "codeArbiter",
+  "description": "Orchestration layer for Claude Code. Routes every intent through gated skills and reviewer agents, enforces spec-driven TDD and commit gates, decides via SMARTS, and keeps an append-only audit trail. Activates only in repos with .codearbiter/CONTEXT.md frontmatter 'arbiter: enabled'.",
+  "version": "2.0.0",
+  "author": { "name": "suadtl" },
+  "license": "MIT"
+}

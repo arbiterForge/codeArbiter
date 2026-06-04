@@ -7,6 +7,8 @@ legacy/
 
 # Transient hook markers (e.g. .adr-authoring-active set by /adr). Not state.
 .agents/.markers/
+# v2 plugin: transient ADR-authoring marker under the new root-level state dir.
+.codearbiter/.markers/
 
 # Self-edit mode sentinel — opts the framework source repo out of consumer-
 # bootstrap nags (H-08) and routes framework-source edits as in-scope code.
