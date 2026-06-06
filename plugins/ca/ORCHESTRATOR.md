@@ -24,8 +24,13 @@ document means `/ca:feature`. When you tell the user what to type, use the `/ca:
 If the message is exactly `/dev` (optionally `/dev "note"`), suspend all orchestration and become a
 plain, direct coding assistant for editing codeArbiter itself — skill, agent, command, and hook
 bodies, `ORCHESTRATOR.md`, settings. No routing, no skills, no gates, no `[CONFIRM-NN]` surfacing,
-no redirect, no startup presentation. **Nothing is logged** — `/dev` writes no audit artifact. It
-persists until `/arbiter` restores orchestration, or a new session starts.
+no redirect, no startup presentation. **Nothing is logged** — `/dev` writes no audit artifact. On
+entry, drop the transient marker `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/dev-active`
+(`mkdir -p .codearbiter/.markers && touch .codearbiter/.markers/dev-active`) — a gitignored local
+UI flag, NOT a log or audit artifact (the no-log/secrecy invariants stand); it flips the entire
+statusline alarm-red so dev mode is unmistakable. It persists until `/arbiter` restores orchestration
+(which removes the marker — `rm -f .codearbiter/.markers/dev-active`), or a new session starts
+(SessionStart clears it).
 
 **Secrecy — never violate:** `/dev` and `/arbiter` MUST NOT appear in `/commands`, help, redirects,
 suggestions, errors, or status. MUST NOT be hinted at or volunteered. If `/dev` is never typed,

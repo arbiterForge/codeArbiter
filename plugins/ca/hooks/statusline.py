@@ -997,6 +997,21 @@ def seg_pr(data):
     return f"{GREY}PR{RESET} {scol}#{num_}{RESET}{tail}"
 
 
+def dev_active(root):
+    """True when /dev developer-override mode is on — signalled by a transient marker
+    the orchestrator drops on /dev and clears on /arbiter (a local UI flag, not a log)."""
+    return os.path.exists(os.path.join(root, ".codearbiter", ".markers", "dev-active"))
+
+
+def redshift(s):
+    """/dev tell: recolor every truecolor SGR to a red of matching brightness, so the
+    WHOLE bar turns alarm-red — a glaring sign orchestration is suspended."""
+    def repl(m):
+        lum = max(int(m.group(2)), int(m.group(3)), int(m.group(4)))
+        return f"\033[{m.group(1)};2;{min(255, 96 + lum)};{lum // 6};{lum // 7}m"
+    return re.sub(r"\033\[(38|48);2;(\d+);(\d+);(\d+)m", repl, s)
+
+
 # --------------------------------------------------------------------------- main
 WIDTH_MARGIN = 6   # columns kept clear of the terminal's right edge
 
@@ -1150,7 +1165,8 @@ def render(raw):
                     tail_tees = []
 
     box.bottom(tees=tail_tees)
-    return box.render()
+    out = box.render()
+    return redshift(out) if safe(dev_active, root) else out
 
 
 def main():

@@ -25,6 +25,10 @@ PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2>/d
 
 CTX="$PROJECT_ROOT/.codearbiter/CONTEXT.md"
 
+# /dev developer-override is per-session: clear its statusline marker on startup —
+# a new session restores orchestration, so dev mode (the all-red bar) must not carry over.
+rm -f "$PROJECT_ROOT/.codearbiter/.markers/dev-active" 2>/dev/null
+
 # Activation gate: `arbiter: enabled` inside the leading YAML frontmatter block.
 arbiter_enabled() {
   [ -f "$CTX" ] || return 1
