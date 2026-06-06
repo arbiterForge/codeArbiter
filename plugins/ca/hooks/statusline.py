@@ -644,6 +644,36 @@ def burn_spark(rec):
     return sparkline(b[-24:]) if len(b) >= 2 else ""
 
 
+def session_start(sid):
+    """True session start (epoch seconds) from Claude Code's own session metadata
+    (~/.claude/sessions/<pid>.json, keyed by pid — match on sessionId). This is the
+    wall-clock start /usage reports, INCLUDING idle/suspend gaps the current
+    transcript can't show. None if unavailable -> caller falls back to the transcript."""
+    if not sid:
+        return None
+    d = os.path.join(os.path.expanduser("~"), ".claude", "sessions")
+    try:
+        names = os.listdir(d)
+    except OSError:
+        return None
+    for nm in names:
+        if not nm.endswith(".json"):
+            continue
+        fp = os.path.join(d, nm)
+        try:
+            if os.path.getsize(fp) > 65536:   # metadata is <1KB; never read a large file
+                continue
+            with open(fp, encoding="utf-8") as f:
+                meta = json.load(f)
+        except (OSError, ValueError):
+            continue
+        if isinstance(meta, dict) and meta.get("sessionId") == sid:
+            sa = num(meta.get("startedAt"), None)
+            if sa:
+                return sa / 1000.0 if sa > 1e12 else sa   # ms epoch -> seconds
+    return None
+
+
 # --------------------------------------------------------------------------- subagents
 def subagent_dir(data, root, sid):
     """Resolve the current session's subagents directory: prefer transcript_path
@@ -1022,8 +1052,13 @@ def render(raw):
         led = ({}, {"in": 0.0, "out": 0.0, "cost": 0.0}, {"in": 0.0, "out": 0.0, "cost": 0.0})
     rec, sess, day = led
     spark = safe(burn_spark, rec) or ""
-    age = time.time() - num(rec.get("t0"), num(rec.get("first_ts"), time.time()))
-    s_trail = f"{GREY}age{RESET} {WHITE}{human_dur(age)}{RESET}" + (f"  {spark}" if spark else "")
+    # True session age from Claude Code's session metadata (the wall clock /usage
+    # shows, incl. idle gaps); fall back to the current transcript's first message.
+    s0 = safe(session_start, sid)
+    if s0 is None:
+        s0 = num(rec.get("t0"), num(rec.get("first_ts"), time.time()))
+    age_str = f"{GREY}age{RESET} {WHITE}{human_dur(time.time() - s0)}{RESET}"
+    s_trail = spark   # age moves under the ctx bar (next to compact %), not here
 
     box = Box(W)
     inner = box.inner
@@ -1080,7 +1115,9 @@ def render(raw):
     ctxl = safe(seg_ctx_lines, data, max(8, inner - LW - 3)) or [f"{GREY}ctx --{RESET}", ""]
     div = f"{V0}{V}{RESET}"
     box.row(f"{pad(srow, LW)} {div} {ctxl[0]}")
-    box.row(f"{pad(trow, LW)} {div} {ctxl[1] if len(ctxl) > 1 else ''}")
+    cl2 = ctxl[1] if len(ctxl) > 1 else ""
+    cl2 = f"{cl2}   {age_str}" if cl2 else age_str   # session age sits under the bar, by the compact %
+    box.row(f"{pad(trow, LW)} {div} {cl2}")
     tail_tees = []
 
     # subagent rows (gated on presence; lean mode drops)
