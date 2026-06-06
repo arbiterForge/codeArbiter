@@ -219,7 +219,7 @@ codeArbiter is built to be an enforcement layer, not a collaborator that talks y
 
 ## Project history
 
-codeArbiter v2 is a ground-up rebuild — from a ~13,600-line `.agents/` + vendoring framework into a native Claude Code plugin. The full story is in [`CHANGELOG.md`](./CHANGELOG.md). The v1 framework is preserved under [`legacy/`](./legacy/) for reference.
+codeArbiter v2 is a ground-up rebuild — from a ~13,600-line `.agents/` + vendoring framework into a native Claude Code plugin. The full story is in [`CHANGELOG.md`](./CHANGELOG.md). The v1 framework is preserved on the [`archive/v1`](../../tree/archive/v1) branch for reference.
 
 ## License
 
