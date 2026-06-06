@@ -1,7 +1,7 @@
 {
   "statusLine": {
     "type": "command",
-    "command": "\"C:\\Python314\\python\" \"C:\\Users\\brenn\\projects\\codeArbiter\\hooks\\statusline.py\"",
+    "command": "\"C:\\Python314\\python\" \"C:\\Users\\brenn\\projects\\codeArbiter\\plugins\\ca\\hooks\\statusline.py\"",
     "padding": 0
   },
   "mcpServers": {
@@ -20,30 +20,30 @@
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "hooks": [{ "type": "command", "command": "bash hooks/pre-bash.sh" }]
+        "hooks": [{ "type": "command", "command": "bash plugins/ca/hooks/pre-bash.sh" }]
       },
       {
         "matcher": "Write",
-        "hooks": [{ "type": "command", "command": "bash hooks/pre-write.sh" }]
+        "hooks": [{ "type": "command", "command": "bash plugins/ca/hooks/pre-write.sh" }]
       },
       {
         "matcher": "Edit",
-        "hooks": [{ "type": "command", "command": "bash hooks/pre-edit.sh" }]
+        "hooks": [{ "type": "command", "command": "bash plugins/ca/hooks/pre-edit.sh" }]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Write",
-        "hooks": [{ "type": "command", "command": "bash hooks/post-write-edit.sh" }]
+        "hooks": [{ "type": "command", "command": "bash plugins/ca/hooks/post-write-edit.sh" }]
       },
       {
         "matcher": "Edit",
-        "hooks": [{ "type": "command", "command": "bash hooks/post-write-edit.sh" }]
+        "hooks": [{ "type": "command", "command": "bash plugins/ca/hooks/post-write-edit.sh" }]
       }
     ],
     "SessionStart": [
       {
-        "hooks": [{ "type": "command", "command": "bash hooks/session-start.sh" }]
+        "hooks": [{ "type": "command", "command": "bash plugins/ca/hooks/session-start.sh" }]
       }
     ]
   }
