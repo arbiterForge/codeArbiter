@@ -440,27 +440,28 @@ def _msg_date(ts):
 
 
 def _tx_accumulate(rec, tx_path):
-    """Tail the session transcript JSONL from the stored byte offset, folding each
-    NEW assistant message's real token usage into per-DAY, per-model buckets and
-    pushing a per-message burn sample. The transcript is append-only, so each
-    render parses only the bytes since last time — O(new lines). Returns True if
-    the offset advanced (state changed)."""
+    """Tail the session transcript JSONL from the stored byte offset, UPSERTING each
+    assistant message's usage into a per-requestId dedup map (the transcript logs a
+    single API call several times via streaming/replay; counting each request once
+    is what keeps tokens AND cost honest) and pushing a per-call burn sample. Append-
+    only -> O(new lines)/render. Returns True if the offset advanced."""
     if not tx_path or not os.path.isfile(tx_path):
         return False
     try:
         size = os.path.getsize(tx_path)
     except OSError:
         return False
-    if not isinstance(rec.get("days"), dict):
-        rec["days"] = {}          # fresh record, or migrating from the pre-day schema
+    if not isinstance(rec.get("reqs"), dict):
+        rec["reqs"] = {}          # fresh record, or migrating from an earlier schema
         rec["tx_off"] = 0
+        rec.pop("days", None)
         rec.pop("tok", None)
     if not isinstance(rec.get("burn"), list):
         rec["burn"] = []
     off = int(num(rec.get("tx_off")))
     # New transcript for this session, or truncation/rotation -> reparse from start.
     if rec.get("tx_path") != tx_path or off > size:
-        off, rec["days"], rec["burn"], rec["tx_path"] = 0, {}, [], tx_path
+        off, rec["reqs"], rec["burn"], rec["tx_path"] = 0, {}, [], tx_path
     if off >= size:
         return False
     try:
@@ -507,41 +508,46 @@ def _tx_accumulate(rec, tx_path):
         if cw and not (c5 or c1):        # 5m/1h split absent -> treat all as 5m
             c5 = cw
         out = num(u.get("output_tokens"))
-        daymap = rec["days"].setdefault(_msg_date(o.get("timestamp")), {})
-        t = daymap.setdefault(
-            model, {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
-        t["in"] += i; t["cr"] += cr; t["c5"] += c5; t["c1"] += c1; t["out"] += out
-        rec["burn"].append(i + cr + c5 + c1 + out)   # total tokens billed this call
+        # Dedupe by requestId: the transcript logs each API call multiple times
+        # (streaming/replay), so UPSERT each request's final usage exactly once
+        # instead of summing every line, which 2-3x over-counts BOTH tokens and cost.
+        key = o.get("requestId") or m.get("id") or f"_p{int(off) + parsed}"
+        is_new = key not in rec["reqs"]
+        rec["reqs"][key] = {"d": _msg_date(o.get("timestamp")), "m": model,
+                            "in": i, "cr": cr, "c5": c5, "c1": c1, "out": out}
+        if is_new:
+            rec["burn"].append(i + c5 + c1 + out)   # fresh input + output (cache reads excluded)
     if len(rec["burn"]) > BURN_RING:
         rec["burn"] = rec["burn"][-BURN_RING:]
     rec["tx_off"] = new_off
     return True
 
 
-def _merge_days(days, only=None):
-    """Merge {date:{model:tokens}} into {model: tokens}; if `only` is a date,
-    merge just that day's bucket (used for the per-calendar-day Today totals)."""
+def _agg_reqs(reqs, only=None):
+    """Aggregate the per-request dedup map into {model: tokens}; if `only` is a
+    date, include just that local-calendar-day's requests (for the Today totals)."""
     out = {}
-    for d, daymap in (days or {}).items():
-        if only is not None and d != only:
+    for r in (reqs or {}).values():
+        if not isinstance(r, dict):
             continue
-        if not isinstance(daymap, dict):
+        if only is not None and r.get("d") != only:
             continue
-        for model, t in daymap.items():
-            if not isinstance(t, dict):
-                continue
-            o = out.setdefault(model, {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
-            for k in o:
-                o[k] += num(t.get(k))
+        o = out.setdefault(r.get("m") or "?",
+                           {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
+        for k in o:
+            o[k] += num(r.get(k))
     return out
 
 
 def _totals(models):
-    """Display totals (in incl. cache, out) + API-equivalent cost for a model map."""
+    """Display totals + API-equivalent cost for a model map. The displayed "in" is
+    FRESH input (uncached input + cache writes) — cache READS are excluded from the
+    token count (they re-serve already-sent context every turn and would inflate it
+    30-100x), but they ARE still priced into the cost via api_cost()."""
     tin = tout = 0.0
     for t in (models or {}).values():
         if isinstance(t, dict):
-            tin += num(t.get("in")) + num(t.get("cr")) + num(t.get("c5")) + num(t.get("c1"))
+            tin += num(t.get("in")) + num(t.get("c5")) + num(t.get("c1"))
             tout += num(t.get("out"))
     return {"in": tin, "out": tout, "cost": api_cost(models)}
 
@@ -581,8 +587,8 @@ def ledger_update(data, sid):
     tx = data.get("transcript_path") if isinstance(data, dict) else None
     if safe(_tx_accumulate, rec, tx):
         dirty = True
-    sess = _totals(_merge_days(rec.get("days")))            # this session, all its days
-    rec["today"] = dict(_totals(_merge_days(rec.get("days"), only=today)), date=today)
+    sess = _totals(_agg_reqs(rec.get("reqs")))             # this session, all requests (deduped)
+    rec["today"] = dict(_totals(_agg_reqs(rec.get("reqs"), only=today)), date=today)
     rec.pop("tot", None)                    # retire the batch-1 whole-session cache key
     sessions[sid] = rec
 
@@ -675,7 +681,7 @@ def read_subagents(sdir):
     for mtime, size, fp, nm in files[:MAX_SUB_FILES]:
         if size > 16 * 1024 * 1024:
             continue
-        inp = out = 0
+        reqs = {}
         label = None
         try:
             with open(fp, encoding="utf-8", errors="replace") as f:
@@ -696,11 +702,15 @@ def read_subagents(sdir):
                         label = sub_label(msg.get("content"))
                     u = msg.get("usage")
                     if isinstance(u, dict):
-                        inp += (num(u.get("input_tokens")) + num(u.get("cache_read_input_tokens"))
-                                + num(u.get("cache_creation_input_tokens")))
-                        out += num(u.get("output_tokens"))
+                        # dedupe by requestId; fresh input only (cache reads excluded)
+                        # — same definition as the Session/Today rows.
+                        reqs[d.get("requestId") or msg.get("id") or i] = (
+                            num(u.get("input_tokens")) + num(u.get("cache_creation_input_tokens")),
+                            num(u.get("output_tokens")))
         except OSError:
             continue
+        inp = sum(v[0] for v in reqs.values())
+        out = sum(v[1] for v in reqs.values())
         tot_in += inp
         tot_out += out
         if len(shown) < MAX_SUB_ROWS:
@@ -872,20 +882,32 @@ def seg_window_inline(data):
 
 
 def model_pill(model):
-    """A colored pill behind the model name, keyed by family — Opus pops violet,
-    Sonnet reads blue (the daily driver), Haiku green — so the active model is
-    obvious at a glance instead of plain text."""
+    """A rounded, gradient-filled pill behind the model name, keyed by family —
+    Opus violet, Sonnet blue, Haiku green. Native half-circle caps (◖ ◗) round the
+    ends with no Nerd Font; the body background ramps dark->bright across the name
+    (a sheen matching the box), and the caps take the gradient's end colors."""
     m = str(model)
     ml = m.lower()
     if "opus" in ml:
-        b = bg(178, 102, 255)     # neon violet
+        c = (188, 120, 255)       # violet
     elif "sonnet" in ml:
-        b = bg(96, 174, 235)      # blue
+        c = (96, 174, 235)        # blue
     elif "haiku" in ml:
-        b = bg(120, 220, 150)     # green
+        c = (120, 220, 150)       # green
     else:
-        b = bg(150, 150, 162)     # grey (unknown)
-    return f"{b}{PILL_FG}{BOLD} {m} {RESET}"
+        c = (150, 150, 162)       # grey (unknown)
+    lo = tuple(int(v * 0.5) for v in c)               # dark start of the sheen
+    body = f" {m} "
+    n = max(1, len(body) - 1)
+    cells = []
+    for idx, ch in enumerate(body):
+        t = idx / n
+        rr = int(lo[0] + (c[0] - lo[0]) * t)
+        gg = int(lo[1] + (c[1] - lo[1]) * t)
+        bb = int(lo[2] + (c[2] - lo[2]) * t)
+        cells.append(f"{bg(rr, gg, bb)}{PILL_FG}{BOLD}{ch}")
+    # caps as foreground glyphs in the gradient's end colors -> rounded ends
+    return f"{fg(*lo)}◖{RESET}" + "".join(cells) + f"{RESET}{fg(*c)}◗{RESET}"
 
 
 def usage_row(label, tin, tout, cost, spark=""):
