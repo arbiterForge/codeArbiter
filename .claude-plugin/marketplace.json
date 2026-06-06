@@ -1,0 +1,13 @@
+{
+  "name": "codearbiter",
+  "owner": { "name": "suadtl" },
+  "metadata": {
+    "description": "codeArbiter — an orchestration layer for Claude Code. Single-plugin marketplace."
+  },
+  "plugins": [
+    {
+      "name": "ca",
+      "source": "./plugins/ca"
+    }
+  ]
+}
