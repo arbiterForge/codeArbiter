@@ -29,11 +29,14 @@ CTX="$PROJECT_ROOT/.codearbiter/CONTEXT.md"
 arbiter_enabled() {
   [ -f "$CTX" ] || return 1
   awk '
-    NR==1 && $0!="---" { exit 1 }            # no frontmatter -> not enabled
+    NR==1 { sub(/^\357\273\277/, "") }        # tolerate a leading UTF-8 BOM
+    NR==1 && $0!="---" { exit 1 }             # no opening delimiter -> not enabled
     NR==1 { next }
-    $0=="---" { exit (found?0:1) }            # end of frontmatter
-    /^arbiter:[[:space:]]*enabled[[:space:]]*$/ { found=1 }
-    END { exit (found?0:1) }
+    $0=="---" { code = (found?0:1); decided=1; exit code }   # closing delimiter -> decide here
+    tolower($0) ~ /^arbiter:[[:space:]]*enabled[[:space:]]*$/ { found=1 }
+    # exit re-enters END, so compute the verdict there: honor a real decision
+    # (closing --- seen); treat EOF-with-no-close as invalid frontmatter -> not enabled.
+    END { exit (decided ? code : 1) }
   ' "$CTX" 2>/dev/null
 }
 
@@ -56,8 +59,10 @@ if ! grep -qE '<!--[[:space:]]*INITIALIZED[[:space:]]*-->' "$CTX" 2>/dev/null; t
   SRC=$(find "$PROJECT_ROOT" \
         -not -path "$PROJECT_ROOT/.git/*" \
         -not -path "$PROJECT_ROOT/.codearbiter/*" \
+        -not -path "$PROJECT_ROOT/.claude/*" \
         -not -path "$PROJECT_ROOT/legacy/*" \
         -not -name 'README.md' -not -name 'LICENSE' -not -name '.gitignore' \
+        -not -name 'AGENTS.md' -not -name 'CLAUDE.md' -not -name '.gitmodules' \
         -type f 2>/dev/null | head -1)
   if [ -n "$SRC" ]; then
     echo "NOT INITIALIZED: source exists but .codearbiter/CONTEXT.md is a stub. Run /create-context before any other command."
@@ -78,7 +83,7 @@ OQ="$PROJECT_ROOT/.codearbiter/open-questions.md"
 if [ -f "$OQ" ]; then
   QN=$(grep -cE 'CONFIRM-[0-9]+' "$OQ" 2>/dev/null | tr -d '[:space:]'); [ -z "$QN" ] && QN=0
   if [ "$QN" -gt 0 ] 2>/dev/null; then
-    echo "BLOCKING questions (CONFIRM-NN): $QN — must resolve before stage promotion:"
+    echo "BLOCKING questions (CONFIRM-NN): $QN — must resolve before dependent work proceeds:"
     grep -E 'CONFIRM-[0-9]+' "$OQ" 2>/dev/null | sed 's/^/  /'
   else
     echo "open questions: 0"

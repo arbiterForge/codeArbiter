@@ -306,19 +306,26 @@ def git_dirty(root):
 def frontmatter(path):
     fm = {}
     try:
-        with open(path, encoding="utf-8", errors="replace") as f:
+        # utf-8-sig transparently strips a leading BOM (Windows editors / PowerShell
+        # Out-File default to UTF-8-with-BOM); plain utf-8 would leave it on line 1
+        # and break the "---" frontmatter check.
+        with open(path, encoding="utf-8-sig", errors="replace") as f:
             lines = f.read().splitlines()
     except OSError:
         return fm
     if not lines or lines[0].strip() != "---":
         return fm
+    closed = False
     for ln in lines[1:]:
         if ln.strip() == "---":
+            closed = True
             break
         m = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", ln)
         if m:
             fm[m.group(1)] = m.group(2).strip()
-    return fm
+    # A valid YAML frontmatter block is bounded by BOTH delimiters; an unterminated
+    # block (no closing "---") is malformed — don't honor keys parsed to EOF.
+    return fm if closed else {}
 
 
 def count_matches(path, pattern):

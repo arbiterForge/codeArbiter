@@ -19,6 +19,7 @@ Present the public command list. Read-only, no state change.
 | `/ca:feature "<what>"` | Spec-driven feature — the only entry to implementation | `brainstorming` → `tdd` pipeline |
 | `/ca:fix "<bug>"` | Fix a confirmed defect, regression test first | `tdd` skill |
 | `/ca:refactor "<what>"` | Behavior-preserving restructure | `tdd` skill |
+| `/ca:debug "<symptom>"` | Investigate-then-decide root-cause analysis | `debug` skill |
 | `/ca:commit` | Run the full commit gate | `commit-gate` skill |
 | `/ca:pr` | Open a PR after BLOCK reviews clear | `finishing-a-development-branch` |
 | `/ca:review [path]` | Review the current diff with the reviewer fleet | `dispatching-parallel-agents` |
@@ -26,8 +27,11 @@ Present the public command list. Read-only, no state change.
 | `/ca:threat-model` | Pre-implementation STRIDE analysis | `security-architecture` skill |
 | `/ca:adr "<title>"` | Author an Architecture Decision Record | `decision-lifecycle` skill |
 | `/ca:adr-status` | Report ADR health | `decision-lifecycle` skill |
+| `/ca:decision-variance` | Reconcile artifacts vs. scaffold via SMARTS | `decision-variance` skill |
 | `/ca:add-dep "<pkg>"` | Vet and add a dependency | `dependency-reviewer` |
+| `/ca:release` | SemVer bump + changelog + annotated tag | `release` skill |
 | `/ca:init` | Scaffold `.codearbiter/` state store | (scaffolder) |
+| `/ca:statusline` | Install/wire the codeArbiter statusline | (installer) |
 | `/ca:create-context` | Populate context for an existing codebase | `context-creation` skill |
 | `/ca:decompose` | Greenfield layered interview | `decompose` skill |
 | `/ca:status` | Formatted project status report | (none) |

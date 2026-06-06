@@ -26,7 +26,14 @@ Gate: the existing ADRs are indexed and, for `/adr`, the next number is fixed.
 
 Confirm the decision content with the user — context, the decision itself, alternatives, consequences. MUST NOT fill these from inference. Surface any unknown as an inline `[CONFIRM-NN]` placeholder; do not resolve it by guessing.
 
-Write `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/NNNN-<slug>.md` using the template below. If this decision supersedes an existing one, set `supersedes:` to that ADR's number; leave the prior ADR's file untouched (forward-only chain — do not edit it to add a back-reference).
+**Drop the authoring marker first.** The `pre-write`/`pre-edit` hooks block any write to `.codearbiter/decisions/NNNN-*.md` unless a fresh authoring marker is present — that block is the mechanism enforcing "ADRs only via `/adr`" (ORCHESTRATOR §3), so the sanctioned path must arm it itself. Immediately before writing, create the marker at the path the hooks check (project root = git top level):
+
+```bash
+mkdir -p "$(git rev-parse --show-toplevel)/.codearbiter/.markers"
+touch "$(git rev-parse --show-toplevel)/.codearbiter/.markers/adr-authoring-active"
+```
+
+The marker is honored for 30 minutes. Then write `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/NNNN-<slug>.md` using the template below. If this decision supersedes an existing one, set `supersedes:` to that ADR's number; leave the prior ADR's file untouched (forward-only chain — do not edit it to add a back-reference).
 
 ```markdown
 ---
@@ -60,6 +67,12 @@ Proposed
 ```
 
 After writing the ADR, append a corresponding entry to the decision log per the format in `${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md` — `Decided by:` names the user. Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction; never advance status on this skill's own judgment.
+
+Once the ADR file and its log entry are written (and any user-instructed status edit is applied), remove the marker — it exists only for one authoring pass:
+
+```bash
+rm -f "$(git rev-parse --show-toplevel)/.codearbiter/.markers/adr-authoring-active"
+```
 
 Gate: the ADR file is written with a real `decided-by` user attribution, numbered without a gap, and its log entry is appended. An ADR with no user attribution, or authored as the disposition of a finding, does not pass — STOP.
 
