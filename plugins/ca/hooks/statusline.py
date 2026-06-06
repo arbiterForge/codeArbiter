@@ -13,10 +13,11 @@
 #   - native-font glyphs only: box-drawing, block elements, arrows, ASCII labels.
 #   - top line = active folder; second line = git project (owner/name + branch),
 #     with a no-git fallback.
-#   - tokens + cost derive from the session TRANSCRIPT, not host snapshots: each
-#     assistant message's real per-model usage is accumulated, and the cost shown
-#     is the estimated pay-as-you-go API-equivalent (tokens * API list price,
-#     cache rates included), labelled "api≈" so it reads as an estimate.
+#   - token COUNTS come from the session TRANSCRIPT (deduped per requestId; the
+#     host sends no cumulative counts). The COST is the host's authoritative
+#     cost.total_cost_usd — it already prices every call (incl. subagents, which
+#     live in separate transcripts) the way your bill does; a token*price table
+#     would miss subagents and drift, so it is used only as a fallback.
 #   - context trusts context_window.used_percentage + context_window_size
 #     (1M for million-token models, 200K otherwise) — never exceeds 100%.
 #
@@ -508,12 +509,18 @@ def _tx_accumulate(rec, tx_path):
         if cw and not (c5 or c1):        # 5m/1h split absent -> treat all as 5m
             c5 = cw
         out = num(u.get("output_tokens"))
+        ts = o.get("timestamp")
+        e = parse_iso(ts) if isinstance(ts, str) else None
+        if e is not None:                       # earliest message ts = true session start
+            t0 = rec.get("t0")
+            if not isinstance(t0, (int, float)) or e < t0:
+                rec["t0"] = e
         # Dedupe by requestId: the transcript logs each API call multiple times
         # (streaming/replay), so UPSERT each request's final usage exactly once
         # instead of summing every line, which 2-3x over-counts BOTH tokens and cost.
         key = o.get("requestId") or m.get("id") or f"_p{int(off) + parsed}"
         is_new = key not in rec["reqs"]
-        rec["reqs"][key] = {"d": _msg_date(o.get("timestamp")), "m": model,
+        rec["reqs"][key] = {"d": _msg_date(ts), "m": model,
                             "in": i, "cr": cr, "c5": c5, "c1": c1, "out": out}
         if is_new:
             rec["burn"].append(i + c5 + c1 + out)   # fresh input + output (cache reads excluded)
@@ -553,10 +560,10 @@ def _totals(models):
 
 
 def ledger_update(data, sid):
-    """Read-modify-write the per-session ledger. Accumulate the session's TRUE
-    token usage by tailing its transcript, derive the API-equivalent cost, and
-    return (session record, this-session totals, today's totals across sessions).
-    Best-effort; safe blanks on any failure. The file self-heals on next write."""
+    """Read-modify-write the per-session ledger. Accumulate the session's TRUE token
+    COUNTS by tailing its transcript (deduped per requestId), take the COST from the
+    host's cost.total_cost_usd, and return (session record, this-session totals,
+    today's totals across sessions). Best-effort; safe blanks on any failure."""
     blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
     if not sid:
         return {}, dict(blank), dict(blank)
@@ -582,12 +589,18 @@ def ledger_update(data, sid):
         rec = {}
     rec.setdefault("first_ts", now)
     rec["last_ts"] = now
+    rec["last_day"] = today
     rec["host_cost"] = num(get(data, "cost", "total_cost_usd"))
 
     tx = data.get("transcript_path") if isinstance(data, dict) else None
     if safe(_tx_accumulate, rec, tx):
         dirty = True
-    sess = _totals(_agg_reqs(rec.get("reqs")))             # this session, all requests (deduped)
+    sess = _totals(_agg_reqs(rec.get("reqs")))             # tokens: this session, all requests (deduped)
+    # Cost = Claude Code's authoritative cost.total_cost_usd — it already prices every
+    # call (including subagents in separate transcripts) exactly as your bill does, so
+    # it is far more accurate than recomputing tokens*price. api_cost is fallback only.
+    if rec["host_cost"] > 0:
+        sess["cost"] = rec["host_cost"]
     rec["today"] = dict(_totals(_agg_reqs(rec.get("reqs"), only=today)), date=today)
     rec.pop("tot", None)                    # retire the batch-1 whole-session cache key
     sessions[sid] = rec
@@ -613,11 +626,14 @@ def ledger_update(data, sid):
     # on the current local day), summed across sessions — not whole-session totals.
     day = dict(blank)
     for v in sessions.values():
-        t = v.get("today") if isinstance(v, dict) and isinstance(v.get("today"), dict) else None
-        if t and t.get("date") == today:
+        if not isinstance(v, dict):
+            continue
+        t = v.get("today") if isinstance(v.get("today"), dict) else None
+        if t and t.get("date") == today:            # tokens: true per-calendar-day buckets
             day["in"] += num(t.get("in"))
             day["out"] += num(t.get("out"))
-            day["cost"] += num(t.get("cost"))
+        if v.get("last_day") == today:              # cost: host per-session total, day-attributed
+            day["cost"] += num(v.get("host_cost"))
     return rec, sess, day
 
 
@@ -882,10 +898,10 @@ def seg_window_inline(data):
 
 
 def model_pill(model):
-    """A rounded, gradient-filled pill behind the model name, keyed by family —
-    Opus violet, Sonnet blue, Haiku green. Native half-circle caps (◖ ◗) round the
-    ends with no Nerd Font; the body background ramps dark->bright across the name
-    (a sheen matching the box), and the caps take the gradient's end colors."""
+    """A gradient-filled pill behind the model name, keyed by family — Opus violet,
+    Sonnet blue, Haiku green. The background ramps dark->bright across the name (a
+    sheen matching the box) so the active model stands out at a glance. Plain block
+    ends (no half-circle caps — they don't align cleanly in a monospace cell)."""
     m = str(model)
     ml = m.lower()
     if "opus" in ml:
@@ -906,19 +922,18 @@ def model_pill(model):
         gg = int(lo[1] + (c[1] - lo[1]) * t)
         bb = int(lo[2] + (c[2] - lo[2]) * t)
         cells.append(f"{bg(rr, gg, bb)}{PILL_FG}{BOLD}{ch}")
-    # caps as foreground glyphs in the gradient's end colors -> rounded ends
-    return f"{fg(*lo)}◖{RESET}" + "".join(cells) + f"{RESET}{fg(*c)}◗{RESET}"
+    return "".join(cells) + RESET
 
 
-def usage_row(label, tin, tout, cost, spark=""):
-    """One row of the Session/Today mini-table: label │ ↓in ↑out │ api≈$cost, with
-    fixed-width numeric fields so the rows align. `cost` is the estimated API-
-    equivalent price of the real tokens (hence api≈); `spark` is the per-call burn."""
+def usage_row(label, tin, tout, cost, trail=""):
+    """One row of the Session/Today mini-table: label │ ↓in ↑out │ $cost. in/out are
+    fresh (sent) tokens; `cost` is Claude Code's real session cost (cost.total_cost_usd),
+    not an estimate. `trail` carries extras (session age, burn sparkline)."""
     base = (f"{GREY}{label:<7}{RESET} {V0}{V}{RESET} "
             f"{V2}{DN}{RESET} {WHITE}{fmt_tok(tin):>6}{RESET} "
             f"{V2}{UP}{RESET} {WHITE}{fmt_tok(tout):>6}{RESET} {V0}{V}{RESET} "
-            f"{DIM}api{RESET}{OK}≈{usd_fine(cost)}{RESET}")
-    return base + (f"  {spark}" if spark else "")
+            f"{OK}{usd_fine(cost)}{RESET}")
+    return base + (f"  {trail}" if trail else "")
 
 
 def seg_lines(data):
@@ -926,7 +941,7 @@ def seg_lines(data):
     rem = get(data, "cost", "total_lines_removed")
     if add is None and rem is None:
         return None
-    return f"{GREY}lines{RESET} {OK}+{fmt_tok(add)}{RESET}{GREY}/{RESET}{DANGER}-{fmt_tok(rem)}{RESET}"
+    return f"{GREY}diff{RESET} {OK}+{fmt_tok(add)}{RESET}{GREY}/{RESET}{DANGER}-{fmt_tok(rem)}{RESET}"
 
 
 def seg_pr(data):
@@ -1007,6 +1022,8 @@ def render(raw):
         led = ({}, {"in": 0.0, "out": 0.0, "cost": 0.0}, {"in": 0.0, "out": 0.0, "cost": 0.0})
     rec, sess, day = led
     spark = safe(burn_spark, rec) or ""
+    age = time.time() - num(rec.get("t0"), num(rec.get("first_ts"), time.time()))
+    s_trail = f"{GREY}age{RESET} {WHITE}{human_dur(age)}{RESET}" + (f"  {spark}" if spark else "")
 
     box = Box(W)
     inner = box.inner
@@ -1058,7 +1075,7 @@ def render(raw):
     # double-height left table; the right column carries the context-window
     # detail. Rate limits live on the header line now, not their own row.
     LW = max(34, min(50, inner // 2))   # proportional: don't starve the ctx panel at narrow widths
-    srow = safe(usage_row, "Session", sess["in"], sess["out"], sess["cost"], spark) or ""
+    srow = safe(usage_row, "Session", sess["in"], sess["out"], sess["cost"], s_trail) or ""
     trow = safe(usage_row, "Today", day["in"], day["out"], day["cost"]) or ""
     ctxl = safe(seg_ctx_lines, data, max(8, inner - LW - 3)) or [f"{GREY}ctx --{RESET}", ""]
     div = f"{V0}{V}{RESET}"
