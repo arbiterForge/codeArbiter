@@ -27,8 +27,12 @@ report. It surfaces findings — it is not a promotion gate, and it enforces no 
 3. `checkpoint-aggregator` writes the dated report to
    `${CLAUDE_PROJECT_DIR}/.codearbiter/checkpoints/YYYY-MM-DD.md`: findings by severity with
    file:line, and out-of-scope items marked inline `[NEEDS-TRIAGE]`.
-4. Advance `${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint` to now — the marker the statusline
-   reads for the overrides-since-checkpoint count.
+4. Write the current override **count** to `${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint` — the
+   integer baseline the statusline subtracts for its overrides-since-checkpoint counter. The value is
+   the number of non-comment, non-blank lines in `overrides.log` at this moment (`0` if the log is
+   absent). This re-zeros the `over:N` segment until the next `/ca:override`. Write a bare integer,
+   not a timestamp — the statusline treats any value above the current total as stale and falls back
+   to showing every override.
 5. Report the checkpoint path.
 
 ## Hard gate

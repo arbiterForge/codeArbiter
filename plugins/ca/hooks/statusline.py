@@ -46,6 +46,7 @@ import shutil
 import subprocess
 import sys
 import time
+import unicodedata
 from datetime import datetime, timezone
 
 # --------------------------------------------------------------------------- color
@@ -114,8 +115,20 @@ def get(d, *path, default=None):
     return cur
 
 
+def _cw(ch):
+    """Terminal column width of one character: 0 for a combining mark, 2 for an
+    East-Asian Wide/Fullwidth glyph (CJK, many emoji), 1 otherwise. Ambiguous-
+    width glyphs (box-drawing, blocks, arrows used in this bar) render as 1 in a
+    non-CJK terminal, so they stay 1 — only genuinely wide content counts as 2."""
+    if unicodedata.combining(ch):
+        return 0
+    return 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+
+
 def vlen(s):
-    return len(ANSI.sub("", s))
+    """Visible terminal-column width of s, ignoring ANSI codes and counting wide
+    glyphs as 2 columns — so the box never overflows on CJK/emoji content."""
+    return sum(_cw(c) for c in ANSI.sub("", s))
 
 
 def clip(s, w):
@@ -127,14 +140,17 @@ def clip(s, w):
         return s
     out, vis, i, n = [], 0, 0, len(s)
     limit = w - 1   # leave one column for the ellipsis
-    while i < n and vis < limit:
+    while i < n:
         m = ANSI.match(s, i)
         if m:
             out.append(m.group(0))
             i = m.end()
             continue
+        cw = _cw(s[i])
+        if vis + cw > limit:   # a wide glyph that would cross the limit stops here
+            break
         out.append(s[i])
-        vis += 1
+        vis += cw
         i += 1
     return "".join(out) + ELL + RESET
 
@@ -349,10 +365,15 @@ def arbiter_state(root):
     if fm.get("arbiter", "").lower() != "enabled":
         return None
     total_over = count_matches(os.path.join(cad, "overrides.log"), r"^(?!\s*#)(?!\s*$).+")
+    # last-checkpoint holds the override COUNT at the last /ca:checkpoint. A value
+    # outside [0, total] is not a valid count (e.g. a timestamp from a stale writer)
+    # -> fail safe to 0 so overrides are surfaced, never silently hidden.
     try:
         with open(os.path.join(cad, "last-checkpoint"), encoding="utf-8") as f:
             base = int(f.read().strip() or "0")
     except (OSError, ValueError):
+        base = 0
+    if base < 0 or base > total_over:
         base = 0
     return {
         "stage": fm.get("stage", "-"),
@@ -405,26 +426,41 @@ def api_cost(tok):
     return total
 
 
+def _msg_date(ts):
+    """Local calendar date (YYYY-MM-DD) of a transcript message's timestamp, so
+    tokens are attributed to the day they were actually burned (a session that
+    crosses midnight splits correctly across days)."""
+    e = parse_iso(ts) if isinstance(ts, str) else None
+    if e is None:
+        return datetime.now().strftime("%Y-%m-%d")
+    try:
+        return datetime.fromtimestamp(e).strftime("%Y-%m-%d")
+    except (OSError, OverflowError, ValueError):
+        return datetime.now().strftime("%Y-%m-%d")
+
+
 def _tx_accumulate(rec, tx_path):
     """Tail the session transcript JSONL from the stored byte offset, folding each
-    NEW assistant message's real token usage (by model) into the cumulative per-
-    model totals and pushing a per-message burn sample. The transcript is append-
-    only, so each render parses only the bytes since last time — O(new lines).
-    Returns True if the offset advanced (state changed)."""
+    NEW assistant message's real token usage into per-DAY, per-model buckets and
+    pushing a per-message burn sample. The transcript is append-only, so each
+    render parses only the bytes since last time — O(new lines). Returns True if
+    the offset advanced (state changed)."""
     if not tx_path or not os.path.isfile(tx_path):
         return False
     try:
         size = os.path.getsize(tx_path)
     except OSError:
         return False
-    if not isinstance(rec.get("tok"), dict):
-        rec["tok"] = {}
+    if not isinstance(rec.get("days"), dict):
+        rec["days"] = {}          # fresh record, or migrating from the pre-day schema
+        rec["tx_off"] = 0
+        rec.pop("tok", None)
     if not isinstance(rec.get("burn"), list):
         rec["burn"] = []
     off = int(num(rec.get("tx_off")))
     # New transcript for this session, or truncation/rotation -> reparse from start.
     if rec.get("tx_path") != tx_path or off > size:
-        off, rec["tok"], rec["burn"], rec["tx_path"] = 0, {}, [], tx_path
+        off, rec["days"], rec["burn"], rec["tx_path"] = 0, {}, [], tx_path
     if off >= size:
         return False
     try:
@@ -471,7 +507,8 @@ def _tx_accumulate(rec, tx_path):
         if cw and not (c5 or c1):        # 5m/1h split absent -> treat all as 5m
             c5 = cw
         out = num(u.get("output_tokens"))
-        t = rec["tok"].setdefault(
+        daymap = rec["days"].setdefault(_msg_date(o.get("timestamp")), {})
+        t = daymap.setdefault(
             model, {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
         t["in"] += i; t["cr"] += cr; t["c5"] += c5; t["c1"] += c1; t["out"] += out
         rec["burn"].append(i + cr + c5 + c1 + out)   # total tokens billed this call
@@ -481,14 +518,32 @@ def _tx_accumulate(rec, tx_path):
     return True
 
 
-def _rec_totals(rec):
-    """Collapse a session's per-model token map to display totals + API cost."""
+def _merge_days(days, only=None):
+    """Merge {date:{model:tokens}} into {model: tokens}; if `only` is a date,
+    merge just that day's bucket (used for the per-calendar-day Today totals)."""
+    out = {}
+    for d, daymap in (days or {}).items():
+        if only is not None and d != only:
+            continue
+        if not isinstance(daymap, dict):
+            continue
+        for model, t in daymap.items():
+            if not isinstance(t, dict):
+                continue
+            o = out.setdefault(model, {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
+            for k in o:
+                o[k] += num(t.get(k))
+    return out
+
+
+def _totals(models):
+    """Display totals (in incl. cache, out) + API-equivalent cost for a model map."""
     tin = tout = 0.0
-    for t in (rec.get("tok") or {}).values():
+    for t in (models or {}).values():
         if isinstance(t, dict):
             tin += num(t.get("in")) + num(t.get("cr")) + num(t.get("c5")) + num(t.get("c1"))
             tout += num(t.get("out"))
-    return {"in": tin, "out": tout, "cost": api_cost(rec.get("tok"))}
+    return {"in": tin, "out": tout, "cost": api_cost(models)}
 
 
 def ledger_update(data, sid):
@@ -520,15 +575,15 @@ def ledger_update(data, sid):
     if dirty:
         rec = {}
     rec.setdefault("first_ts", now)
-    rec["date"] = today
     rec["last_ts"] = now
     rec["host_cost"] = num(get(data, "cost", "total_cost_usd"))
 
     tx = data.get("transcript_path") if isinstance(data, dict) else None
     if safe(_tx_accumulate, rec, tx):
         dirty = True
-    sess = _rec_totals(rec)
-    rec["tot"] = sess                       # cached so other sessions can aggregate today
+    sess = _totals(_merge_days(rec.get("days")))            # this session, all its days
+    rec["today"] = dict(_totals(_merge_days(rec.get("days"), only=today)), date=today)
+    rec.pop("tot", None)                    # retire the batch-1 whole-session cache key
     sessions[sid] = rec
 
     for k in list(sessions.keys()):
@@ -548,13 +603,15 @@ def ledger_update(data, sid):
         except OSError:
             pass
 
+    # Today = each session's TODAY bucket (tokens whose transcript timestamp falls
+    # on the current local day), summed across sessions — not whole-session totals.
     day = dict(blank)
     for v in sessions.values():
-        if isinstance(v, dict) and v.get("date") == today:
-            tot = v.get("tot") if isinstance(v.get("tot"), dict) else {}
-            day["in"] += num(tot.get("in"))
-            day["out"] += num(tot.get("out"))
-            day["cost"] += num(tot.get("cost"))
+        t = v.get("today") if isinstance(v, dict) and isinstance(v.get("today"), dict) else None
+        if t and t.get("date") == today:
+            day["in"] += num(t.get("in"))
+            day["out"] += num(t.get("out"))
+            day["cost"] += num(t.get("cost"))
     return rec, sess, day
 
 
@@ -593,7 +650,9 @@ MAX_SUB_LINES = 2500      # per-file line cap
 
 
 def read_subagents(sdir):
-    """Return (active_count, shown[{label,inp,out,age}], (tot_in, tot_out))."""
+    """Return (active, recent, shown[{label,inp,out,age,active}], (tot_in, tot_out)).
+    `active` = files touched within ACTIVE_WINDOW (a liveness proxy); `recent` =
+    all files within SHOW_WINDOW (active + recently finished)."""
     now = time.time()
     files = []
     try:
@@ -637,7 +696,8 @@ def read_subagents(sdir):
                         label = sub_label(msg.get("content"))
                     u = msg.get("usage")
                     if isinstance(u, dict):
-                        inp += num(u.get("input_tokens")) + num(u.get("cache_creation_input_tokens"))
+                        inp += (num(u.get("input_tokens")) + num(u.get("cache_read_input_tokens"))
+                                + num(u.get("cache_creation_input_tokens")))
                         out += num(u.get("output_tokens"))
         except OSError:
             continue
@@ -645,8 +705,9 @@ def read_subagents(sdir):
         tot_out += out
         if len(shown) < MAX_SUB_ROWS:
             shown.append({"label": label or ("agent-" + re.sub(r"\.jsonl$", "", nm)[-6:]),
-                          "inp": inp, "out": out, "age": now - mtime})
-    return active, shown, (tot_in, tot_out)
+                          "inp": inp, "out": out, "age": now - mtime,
+                          "active": now - mtime <= ACTIVE_WINDOW})
+    return active, len(files), shown, (tot_in, tot_out)
 
 
 def sub_label(content):
@@ -751,7 +812,9 @@ def seg_ctx_lines(data, w):
     if pf is None:
         return [f"{GREY}ctx --{RESET}", ""]
     pctf = max(0.0, min(100.0, pf))
-    size = int(num(cw.get("context_window_size"), 200000)) or 200000
+    size_raw = cw.get("context_window_size")
+    has_size = size_raw is not None
+    size = int(num(size_raw, 200000)) or 200000
     win = "1M" if size >= 1_000_000 else f"{size // 1000}K"
     resident = round(pctf / 100.0 * size)
     col = V2 if pctf < 75 else (WARN if pctf < 90 else DANGER)
@@ -771,7 +834,9 @@ def seg_ctx_lines(data, w):
     else:
         ccol = OK if head > 30 else (WARN if head > 12 else DANGER)
         comp = f"{GREY}{BOLT} compact{RESET} {ccol}~{head:.0f}%{RESET}"
-    line2 = f"{DIM}{fmt_tok(resident)} / {win}{RESET}   {comp}"
+    # only assert resident/window when the host actually sent the window size;
+    # otherwise show just the (percentage-based) compaction headroom, no fake /200K.
+    line2 = f"{DIM}{fmt_tok(resident)} / {win}{RESET}   {comp}" if has_size else comp
     return [line1, line2]
 
 
@@ -792,7 +857,10 @@ def seg_window_cells(data):
         cell = f"{GREY}{lbl}{RESET} {c}{pf:.0f}%{RESET}"
         r = to_epoch(get(data, "rate_limits", key, "resets_at"))
         if r:
-            cell += f" {GREY}{ARR}{RESET} {WHITE}{human_dur(r - now)}{RESET}"
+            dt = r - now
+            # a reset already in the past is stale data, not "rolls over now"
+            tail = f"{WHITE}{human_dur(dt)}{RESET}" if dt > 0 else f"{GREY}—{RESET}"
+            cell += f" {GREY}{ARR}{RESET} {tail}"
         cells.append(cell)
     return cells
 
@@ -937,15 +1005,17 @@ def render(raw):
     if branch:
         dirty = "*" if safe(git_dirty, root) else ""
         gp += f" {V0}{V}{RESET} {(WARN if dirty else OK)}{branch}{dirty}{RESET}"
-    ln = safe(seg_lines, data)   # churn sits up here, next to the repo
-    if ln:
-        gp += f"  {ln}"
     model = get(data, "model", "display_name") or get(data, "model", "id") or "?"
     pill = safe(model_pill, model) or f"{V2}{model}{RESET}"
     rates = safe(seg_window_inline, data) or ""
     prseg = safe(seg_pr, data) or ""
     head_bits = [b for b in (rates, prseg) if b]
     right = ("   ".join(head_bits) + "   " if head_bits else "") + pill
+    # churn is the lowest-priority left segment: append it only if the whole
+    # "+N/-M" fits beside the right cluster — never let lr() clip it to "lines …".
+    ln = safe(seg_lines, data)
+    if ln and vlen(gp) + 2 + vlen(ln) + 3 + vlen(right) <= inner:
+        gp += f"  {ln}"
     box.row(lr(gp, right, inner))
 
     box.sep()
@@ -980,14 +1050,20 @@ def render(raw):
         if sdir:
             res = safe(read_subagents, sdir)
             if res:
-                active, shown, (tin, tout) = res
+                active, recent, shown, (tin, tout) = res
                 if shown:
                     box.sep()
-                    box.row(f"{V3}subagents{RESET} {WHITE}{active}{RESET} {GREY}active{RESET}"
-                            f"  {V2}{DN}{RESET} {WHITE}{fmt_tok(tin)}{RESET}"
+                    hdr = f"{V3}subagents{RESET} {WHITE}{active}{RESET} {GREY}active{RESET}"
+                    if recent > active:   # reconcile the header with the rows shown
+                        hdr += f" {V0}·{RESET} {GREY}{recent} recent{RESET}"
+                    hdr += (f"  {V2}{DN}{RESET} {WHITE}{fmt_tok(tin)}{RESET}"
                             f" {V2}{UP}{RESET} {WHITE}{fmt_tok(tout)}{RESET}")
+                    box.row(hdr)
                     for sub in shown:
-                        box.row(f"  {V1}{SUBDOT}{RESET} {WHITE}{pad(sub['label'], 22)}{RESET}"
+                        live = sub.get("active")
+                        glyph = f"{OK}{DOT}{RESET}" if live else f"{GREY}✓{RESET}"
+                        lcol = WHITE if live else GREY
+                        box.row(f"  {glyph} {lcol}{pad(sub['label'], 22)}{RESET}"
                                 f" {V2}{DN}{RESET} {GREY}{fmt_tok(sub['inp'])}{RESET}"
                                 f" {V2}{UP}{RESET} {GREY}{fmt_tok(sub['out'])}{RESET}"
                                 f"  {DIM}{human_dur(sub['age'])}{RESET}")
