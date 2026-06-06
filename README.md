@@ -107,15 +107,11 @@ Once `.codearbiter/CONTEXT.md` carries the `<!--INITIALIZED-->` marker, you're i
 
 ## Statusline
 
-```text
-/ca:statusline
-```
+codeArbiter ships a token-aware statusline. Wire it in with <kbd>/ca:statusline</kbd>:
 
-Wires a token-aware statusline. The usage/context/cost segment renders in every repo; in an arbiter-enabled repo it also surfaces stage, open-task and open-question counts, the git branch, and overrides logged since the last checkpoint.
+<div align="center"><img alt="codeArbiter statusline" src="./docs/statusline.png" width="880"></div>
 
-```text
-● stage:2 │ tasks:6 q:0 │ ⎇ rewrite/v2 │ over:0    ·  ctx 38%  $0.42
-```
+The folder, git/diff, rate limits, token usage, cost, and context segments render in every repo; the arbiter row (stage · tasks · open questions · overrides-since-checkpoint) lights up only in an enabled repo. Token counts come from the session transcript and the **cost is Claude Code's own `cost.total_cost_usd`** (what you actually pay); the context bar shifts toward red as you near compaction, the model pill carries the active model **and** its effort level, and session age sits beside the compaction headroom.
 
 Remove it any time with <kbd>/ca:statusline</kbd> — it backs up and restores whatever statusline you had before.
 
