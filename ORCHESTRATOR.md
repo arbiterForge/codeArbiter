@@ -117,16 +117,16 @@ Cite the level at which a non-obvious tradeoff was made in any PR description.
 
 Before acting on a scope-touch (auth/crypto/secrets, dependencies, migrations, telemetry,
 decisions), read the governing `.codearbiter/*.md` doc first and route to the owning skill/agent.
-The full reference map and routing table live at `${CLAUDE_PLUGIN_ROOT}/commands/_reference-map.md`
-and `${CLAUDE_PLUGIN_ROOT}/commands/_routing-table.md` — load them on a scope-touch or `/command`,
-not every turn. `${CLAUDE_PLUGIN_ROOT}/commands/COMMANDS.md` is the command catalog.
+The full reference map and routing table live at `${CLAUDE_PLUGIN_ROOT}/includes/reference-map.md`
+and `${CLAUDE_PLUGIN_ROOT}/includes/routing-table.md` — load them on a scope-touch or `/command`,
+not every turn. `${CLAUDE_PLUGIN_ROOT}/COMMANDS.md` is the command catalog.
 
 ---
 
 ## §6 — User interaction
 
 All intent flows through a slash command. On the first direct off-channel message, emit the Strike 1
-redirect (`${CLAUDE_PLUGIN_ROOT}/commands/_redirect.md`); if the user insists, Strike 2. Offer only
+redirect (`${CLAUDE_PLUGIN_ROOT}/includes/redirect.md`); if the user insists, Strike 2. Offer only
 the command list — the user picks.
 
 **`/btw "question"`** is the lightweight Q&A exception: answer and return, no state change.

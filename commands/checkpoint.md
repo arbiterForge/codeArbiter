@@ -1,0 +1,45 @@
+---
+description: Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report.
+argument-hint: (none)
+---
+
+# /ca:checkpoint — codebase sweep
+
+A periodic, lean sweep of the entire codebase with the reviewer fleet, funneled to a single dated
+report. It surfaces findings — it is not a promotion gate, and it enforces no sign-off.
+
+## Flow
+
+1. Build the unit list — the same fleet as `/ca:review`, scoped to the whole codebase against the
+   `${CLAUDE_PROJECT_DIR}/.codearbiter/` docs:
+
+   | Reviewer | Reads |
+   |---|---|
+   | `security-reviewer` | `security-controls.md`; reviews security posture |
+   | `auth-crypto-reviewer` | `security-controls.md`; authn/crypto/key/secret paths |
+   | `dependency-reviewer` | dependency manifests; license + supply-chain posture |
+   | `migration-reviewer` | migration history; safety + classification |
+   | `coverage-auditor` | test coverage vs. obligations across the tree |
+   | `architecture-drift-reviewer` | `decisions/`; drift between code and accepted ADRs |
+
+2. Route to `dispatching-parallel-agents` with that unit list (read-only batch). It dedupes, then
+   funnels through `finding-triage` → `checkpoint-aggregator`.
+3. `checkpoint-aggregator` writes the dated report to
+   `${CLAUDE_PROJECT_DIR}/.codearbiter/checkpoints/YYYY-MM-DD.md`: findings by severity with
+   file:line, and out-of-scope items marked inline `[NEEDS-TRIAGE]`.
+4. Advance `${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint` to now — the marker the statusline
+   reads for the overrides-since-checkpoint count.
+5. Report the checkpoint path.
+
+## Hard gate
+
+Read-only except writing the checkpoint doc and `last-checkpoint` — MUST NOT modify code. MUST NOT
+consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator` verdict. MUST NOT
+resolve a `[CONFIRM-NN]` surfaced during the sweep by guessing. The report surfaces findings; it does
+not block or sign off anything.
+
+## When NOT to use
+
+- Reviewing just the current diff → `/ca:review`.
+- A pre-implementation threat model → `/ca:threat-model`.
+- ADR health only → `/ca:adr-status`.
