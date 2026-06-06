@@ -4,18 +4,6 @@
     "command": "\"C:\\Python314\\python\" \"C:\\Users\\brenn\\projects\\codeArbiter\\plugins\\ca\\hooks\\statusline.py\"",
     "padding": 0
   },
-  "mcpServers": {
-    "_comment_plane": "Optional. Active only when ticketing-config.md has enabled: true AND mode: plane. The values below reference shell env vars by name; literal secrets MUST NEVER be inlined here. See .agents/skills/ticketing-router/plane/SKILL.md for setup.",
-    "plane": {
-      "command": "npx",
-      "args": ["-y", "@makeplane/plane-mcp-server"],
-      "env": {
-        "PLANE_API_URL": "${PLANE_API_URL}",
-        "PLANE_API_KEY": "${PLANE_API_KEY}",
-        "PLANE_WORKSPACE_SLUG": "${PLANE_WORKSPACE_SLUG}"
-      }
-    }
-  },
   "hooks": {
     "PreToolUse": [
       {
