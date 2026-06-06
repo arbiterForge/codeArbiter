@@ -2,9 +2,10 @@
 # codeArbiter statusline — dependency-free (Python stdlib only, no Nerd Font).
 #
 # Renders a sectioned, full-width box. The usage segments (folder, git, model,
-# rate limits, context, tokens, cost, burn) render in every repo. The arbiter
-# segments (stage / tasks / open-questions / overrides-since-checkpoint) render
-# only when the repo's .codearbiter/CONTEXT.md frontmatter is `arbiter: enabled`.
+# rate limits, context, cumulative tokens, API-equivalent cost, per-call burn)
+# render in every repo. The arbiter segments (stage / tasks / open-questions /
+# overrides-since-checkpoint) render only when the repo's .codearbiter/CONTEXT.md
+# frontmatter is `arbiter: enabled`.
 #
 # Design:
 #   - single neon-violet palette (a subtle dark->bright sheen, no rainbow);
@@ -12,14 +13,18 @@
 #   - native-font glyphs only: box-drawing, block elements, arrows, ASCII labels.
 #   - top line = active folder; second line = git project (owner/name + branch),
 #     with a no-git fallback.
-#   - cost trusts the host's cost.total_cost_usd (each call priced at the model
-#     used when burned; subagents included) — no token*price recompute.
+#   - tokens + cost derive from the session TRANSCRIPT, not host snapshots: each
+#     assistant message's real per-model usage is accumulated, and the cost shown
+#     is the estimated pay-as-you-go API-equivalent (tokens * API list price,
+#     cache rates included), labelled "api≈" so it reads as an estimate.
 #   - context trusts context_window.used_percentage + context_window_size
 #     (1M for million-token models, 200K otherwise) — never exceeds 100%.
 #
-# A small user-level ledger (~/.codearbiter/ledger.json) accumulates per-session
-# cost/token/rate samples so the box can show today's spend across sessions, a
-# recent $/hr burn rate, a burn sparkline + token rate, and 5h/7d burndown trends.
+# A small user-level ledger (~/.codearbiter/ledger.json) tails each session's
+# transcript from a stored byte offset (append-only -> O(new lines) per render),
+# accumulating true cumulative tokens + API-equivalent cost per session, so the
+# box shows this session, today's totals across sessions, and a sparkline of the
+# real per-message token burn.
 #
 # Robustness contract: this script must NEVER print a traceback. The host pipes
 # arbitrary JSON on stdin and the output lands in the user's terminal. Every
@@ -29,7 +34,7 @@
 #
 # Env:
 #   CODEARBITER_STATUSLINE=off   disable entirely
-#   CODEARBITER_COMPACT=1        drop the burn/reset/subagent rows (lean mode)
+#   CODEARBITER_COMPACT=1        drop the subagent rows (lean mode)
 #   CODEARBITER_WIDTH / COLUMNS  box width (clamped 70..160)
 #   CODEARBITER_COMPACT_AT=NN    context %% treated as the compaction threshold
 #   CODEARBITER_LEDGER=path      override ledger location
@@ -41,7 +46,7 @@ import shutil
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 # --------------------------------------------------------------------------- color
 def fg(r, g, b):
@@ -158,7 +163,7 @@ def gradient_h(text, width, c_from=(120, 80, 200), c_to=(205, 140, 255)):
 # --------------------------------------------------------------------------- format
 def fmt_tok(n):
     n = num(n)
-    if n >= 1_000_000:
+    if n >= 999_500:                 # round into M before the K branch can print 1000.0K
         return f"{n/1_000_000:.1f}M"
     if n >= 1000:
         return f"{n/1000:.1f}K"
@@ -176,6 +181,8 @@ def usd_fine(c):
         return f"${c:.0f}"
     if c >= 10:
         return f"${c:.1f}"
+    if 0 < c < 0.01:                 # don't render a measured nonzero cost as $0.00
+        return "<$.01"
     return f"${c:.2f}"
 
 
@@ -228,7 +235,7 @@ def parse_iso(s):
     try:
         dt = datetime.fromisoformat(s.strip().replace("Z", "+00:00"))
         if dt.tzinfo is None:
-            return dt.timestamp()
+            dt = dt.replace(tzinfo=timezone.utc)   # naive timestamps are UTC, not local
         return dt.timestamp()
     except Exception:
         return None
@@ -362,23 +369,136 @@ def ledger_path():
         os.path.join(os.path.expanduser("~"), ".codearbiter", "ledger.json")
 
 
-SAMPLE_INTERVAL = 12.0   # seconds heartbeat between persisted samples
-RING = 40                # max samples kept per session
 SESSION_TTL = 36 * 3600  # prune sessions older than ~1.5 days
-BURN_MIN_DT = 60.0       # dampen $/hr extrapolation from a tiny window
+BURN_RING = 40           # recent per-call token-burn samples kept for the sparkline
+TX_MAX_NEW_LINES = 20000 # hot-path bound: transcript lines parsed per render
+
+# API list prices, USD per 1M tokens (captured 2026-06-06 from Anthropic's
+# pricing pages). Used ONLY to estimate the pay-as-you-go API-equivalent cost of
+# this session's REAL tokens — the bar labels it "api≈"; it is not a bill.
+# Per model family: (input, output, cache_write_5m, cache_write_1h, cache_read).
+API_PRICES = {
+    "opus":   (5.0, 25.0, 6.25, 10.0, 0.50),
+    "sonnet": (3.0, 15.0, 3.75,  6.0, 0.30),
+    "haiku":  (1.0,  5.0, 1.25,  2.0, 0.10),
+}
 
 
-def _valid_sample(r):
-    return (isinstance(r, list) and len(r) >= 6
-            and isinstance(r[0], (int, float)) and isinstance(r[1], (int, float)))
+def price_for(model):
+    ml = str(model).lower()
+    for fam, p in API_PRICES.items():
+        if fam in ml:
+            return p
+    return API_PRICES["sonnet"]   # reasonable mid default for an unrecognized model
+
+
+def api_cost(tok):
+    """Estimated pay-as-you-go API cost (USD) for accumulated per-model tokens."""
+    total = 0.0
+    for model, t in (tok or {}).items():
+        if not isinstance(t, dict):
+            continue
+        pin, pout, p5, p1, pr = price_for(model)
+        total += (num(t.get("in")) * pin + num(t.get("out")) * pout
+                  + num(t.get("c5")) * p5 + num(t.get("c1")) * p1
+                  + num(t.get("cr")) * pr) / 1e6
+    return total
+
+
+def _tx_accumulate(rec, tx_path):
+    """Tail the session transcript JSONL from the stored byte offset, folding each
+    NEW assistant message's real token usage (by model) into the cumulative per-
+    model totals and pushing a per-message burn sample. The transcript is append-
+    only, so each render parses only the bytes since last time — O(new lines).
+    Returns True if the offset advanced (state changed)."""
+    if not tx_path or not os.path.isfile(tx_path):
+        return False
+    try:
+        size = os.path.getsize(tx_path)
+    except OSError:
+        return False
+    if not isinstance(rec.get("tok"), dict):
+        rec["tok"] = {}
+    if not isinstance(rec.get("burn"), list):
+        rec["burn"] = []
+    off = int(num(rec.get("tx_off")))
+    # New transcript for this session, or truncation/rotation -> reparse from start.
+    if rec.get("tx_path") != tx_path or off > size:
+        off, rec["tok"], rec["burn"], rec["tx_path"] = 0, {}, [], tx_path
+    if off >= size:
+        return False
+    try:
+        with open(tx_path, "rb") as f:
+            f.seek(off)
+            chunk = f.read()
+    except OSError:
+        return False
+    new_off = size
+    # A writer may flush mid-line; keep a trailing partial line for next render.
+    if chunk and not chunk.endswith(b"\n"):
+        cut = chunk.rfind(b"\n")
+        if cut < 0:
+            return False                 # no complete line yet
+        new_off = off + cut + 1
+        chunk = chunk[:cut]
+    parsed = 0
+    for raw in chunk.split(b"\n"):
+        if not raw.strip():
+            continue
+        parsed += 1
+        if parsed > TX_MAX_NEW_LINES:
+            break
+        try:
+            o = json.loads(raw.decode("utf-8", "replace"))
+        except ValueError:
+            continue
+        if not isinstance(o, dict) or o.get("type") != "assistant":
+            continue
+        m = o.get("message")
+        u = m.get("usage") if isinstance(m, dict) else None
+        if not isinstance(u, dict):
+            continue
+        model = m.get("model") or "?"
+        i = num(u.get("input_tokens"))
+        cr = num(u.get("cache_read_input_tokens"))
+        cc = u.get("cache_creation")
+        if isinstance(cc, dict):
+            c5 = num(cc.get("ephemeral_5m_input_tokens"))
+            c1 = num(cc.get("ephemeral_1h_input_tokens"))
+        else:
+            c5 = c1 = 0.0
+        cw = num(u.get("cache_creation_input_tokens"))
+        if cw and not (c5 or c1):        # 5m/1h split absent -> treat all as 5m
+            c5 = cw
+        out = num(u.get("output_tokens"))
+        t = rec["tok"].setdefault(
+            model, {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
+        t["in"] += i; t["cr"] += cr; t["c5"] += c5; t["c1"] += c1; t["out"] += out
+        rec["burn"].append(i + cr + c5 + c1 + out)   # total tokens billed this call
+    if len(rec["burn"]) > BURN_RING:
+        rec["burn"] = rec["burn"][-BURN_RING:]
+    rec["tx_off"] = new_off
+    return True
+
+
+def _rec_totals(rec):
+    """Collapse a session's per-model token map to display totals + API cost."""
+    tin = tout = 0.0
+    for t in (rec.get("tok") or {}).values():
+        if isinstance(t, dict):
+            tin += num(t.get("in")) + num(t.get("cr")) + num(t.get("c5")) + num(t.get("c1"))
+            tout += num(t.get("out"))
+    return {"in": tin, "out": tout, "cost": api_cost(rec.get("tok"))}
 
 
 def ledger_update(data, sid):
-    """Read-modify-write the per-session ledger; return (session record, today's
-    total cost across sessions). Best-effort; ({}, 0.0) on any failure. Corrupt
-    sample rows are dropped on load and the file self-heals on the next write."""
+    """Read-modify-write the per-session ledger. Accumulate the session's TRUE
+    token usage by tailing its transcript, derive the API-equivalent cost, and
+    return (session record, this-session totals, today's totals across sessions).
+    Best-effort; safe blanks on any failure. The file self-heals on next write."""
+    blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
     if not sid:
-        return {}, 0.0, 0.0, 0.0
+        return {}, dict(blank), dict(blank)
     path = ledger_path()
     now = time.time()
     today = datetime.now().strftime("%Y-%m-%d")
@@ -395,46 +515,30 @@ def ledger_update(data, sid):
     if not isinstance(sessions, dict):
         sessions = {}
 
-    cost = num(get(data, "cost", "total_cost_usd"))
-    cw = get(data, "context_window", default={}) or {}
-    toks = num(cw.get("total_input_tokens")) + num(cw.get("total_output_tokens"))
-    fh = get(data, "rate_limits", "five_hour", "used_percentage")
-    sd = get(data, "rate_limits", "seven_day", "used_percentage")
-    ctx = cw.get("used_percentage")
-
     rec = sessions.get(sid)
-    if not isinstance(rec, dict):
-        rec = {"first_ts": now, "samples": []}
+    dirty = not isinstance(rec, dict)
+    if dirty:
+        rec = {}
     rec.setdefault("first_ts", now)
     rec["date"] = today
     rec["last_ts"] = now
-    rec["last_cost"] = cost
-    rec["last_in"] = num(cw.get("total_input_tokens"))
-    rec["last_out"] = num(cw.get("total_output_tokens"))
+    rec["host_cost"] = num(get(data, "cost", "total_cost_usd"))
 
-    samples = rec.get("samples")
-    samples = [r for r in samples if _valid_sample(r)] if isinstance(samples, list) else []
-    # sample schema: [ts, cost, tokens, fh_pct, sd_pct, ctx_pct]
-    changed = (samples != rec.get("samples"))   # dropped corrupt rows -> must persist
-    last = samples[-1] if samples else None
-    if last is None or (now - last[0]) >= SAMPLE_INTERVAL or cost != last[1]:
-        samples.append([now, cost, toks,
-                        num(fh, None), num(sd, None), num(ctx, None)])
-        if len(samples) > RING:
-            samples = samples[-RING:]
-        changed = True
-    rec["samples"] = samples
+    tx = data.get("transcript_path") if isinstance(data, dict) else None
+    if safe(_tx_accumulate, rec, tx):
+        dirty = True
+    sess = _rec_totals(rec)
+    rec["tot"] = sess                       # cached so other sessions can aggregate today
     sessions[sid] = rec
 
     for k in list(sessions.keys()):
-        ts = sessions[k].get("last_ts", 0) if isinstance(sessions[k], dict) else 0
-        if now - num(ts) > SESSION_TTL:
+        v = sessions[k]
+        if not isinstance(v, dict) or now - num(v.get("last_ts")) > SESSION_TTL:
             del sessions[k]
-            changed = True
-
+            dirty = True
     led["sessions"] = sessions
 
-    if changed:
+    if dirty:
         try:
             os.makedirs(os.path.dirname(path), exist_ok=True)
             tmp = f"{path}.{os.getpid()}.tmp"   # per-process staging: no concurrent clobber
@@ -444,50 +548,21 @@ def ledger_update(data, sid):
         except OSError:
             pass
 
-    day_cost = day_in = day_out = 0.0
+    day = dict(blank)
     for v in sessions.values():
         if isinstance(v, dict) and v.get("date") == today:
-            day_cost += num(v.get("last_cost"))
-            day_in += num(v.get("last_in"))
-            day_out += num(v.get("last_out"))
-    return rec, day_cost, day_in, day_out
+            tot = v.get("tot") if isinstance(v.get("tot"), dict) else {}
+            day["in"] += num(tot.get("in"))
+            day["out"] += num(tot.get("out"))
+            day["cost"] += num(tot.get("cost"))
+    return rec, sess, day
 
 
-def ledger_metrics(rec, dur_ms=None):
-    """Derive recent $/hr burn, sparkline series, token rate, and burndown trends
-    from a session's sample ring. $/hr is the rate over the sampled window (not
-    anchored to first-seen time), with a host-duration fallback."""
-    s = [r for r in (rec.get("samples") or []) if _valid_sample(r)]
-    m = {"burn_hr": None, "cost_spark": "", "tok_rate": None,
-         "fh_spark": "", "sd_spark": "", "session_cost": num(rec.get("last_cost"))}
-    # $/hr = session total cost over wall-clock elapsed (first seen -> last seen).
-    # Honest and matches "total / time"; NOT a recent-window extrapolation, which
-    # over-reads during a burst and looks wrong against the running total.
-    first = num(rec.get("first_ts"), None)
-    last = num(rec.get("last_ts"), None)
-    if first is not None and last is not None and (last - first) >= BURN_MIN_DT:
-        m["burn_hr"] = m["session_cost"] / ((last - first) / 3600.0)
-    elif dur_ms:
-        hrs = num(dur_ms) / 1000.0 / 3600.0
-        if hrs > 0:
-            m["burn_hr"] = m["session_cost"] / hrs
-
-    deltas = []
-    for i in range(1, len(s)):
-        dt = max(1.0, s[i][0] - s[i - 1][0])
-        deltas.append(max(0.0, (s[i][1] or 0) - (s[i - 1][1] or 0)) / dt)
-    m["cost_spark"] = sparkline(deltas)
-
-    tok_pts = [(p[0], p[2]) for p in s if isinstance(p[2], (int, float))]
-    if len(tok_pts) >= 2:
-        dt = tok_pts[-1][0] - tok_pts[0][0]
-        dtok = tok_pts[-1][1] - tok_pts[0][1]
-        if dt > 0 and dtok >= 0:
-            m["tok_rate"] = dtok / (dt / 60.0)
-
-    m["fh_spark"] = sparkline([p[3] for p in s], grad=False)
-    m["sd_spark"] = sparkline([p[4] for p in s], grad=False)
-    return m
+def burn_spark(rec):
+    """Sparkline of recent per-message token burn — real per-API-call totals
+    accumulated from the transcript, not a time-extrapolated estimate."""
+    b = [num(x) for x in (rec.get("burn") or []) if isinstance(x, (int, float))]
+    return sparkline(b[-24:]) if len(b) >= 2 else ""
 
 
 # --------------------------------------------------------------------------- subagents
@@ -682,8 +757,13 @@ def seg_ctx_lines(data, w):
     col = V2 if pctf < 75 else (WARN if pctf < 90 else DANGER)
     barw = max(10, min(46, w - 12))
     filled = max(0, min(barw, round(pctf / 100 * barw)))
-    bar = gradient_h(BFULL * filled, max(1, filled)) + f"{V0}" + BEMPTY * (barw - filled) + RESET
-    line1 = f"{GREY}ctx{RESET} {bar} {col}{pctf:.0f}%{RESET}"
+    # below WARN: the violet sheen; at/over the 75/90 thresholds the FILL itself
+    # carries the threshold color so budget pressure shows on the dominant
+    # element, not just the trailing % glyph.
+    fill = gradient_h(BFULL * filled, max(1, filled)) if pctf < 75 else f"{col}{BFULL * filled}"
+    bar = fill + f"{V0}" + BEMPTY * (barw - filled) + RESET
+    pdisp = "<1%" if 0 < pctf < 1 else f"{pctf:.0f}%"
+    line1 = f"{GREY}ctx{RESET} {bar} {col}{pdisp}{RESET}"
     thresh = num(os.environ.get("CODEARBITER_COMPACT_AT"), 92.0)
     head = thresh - pctf
     if head <= 0:
@@ -740,13 +820,15 @@ def model_pill(model):
     return f"{b}{PILL_FG}{BOLD} {m} {RESET}"
 
 
-def usage_row(label, tin, tout, cost):
-    """One row of the Session/Total mini-table: label │ ↓ in  ↑ out │ $cost, with
-    fixed-width numeric fields so Session and Total align vertically."""
-    return (f"{GREY}{label:<7}{RESET} {V0}{V}{RESET} "
-            f"{V2}{DN}{RESET} {WHITE}{fmt_tok(tin):>7}{RESET} "
-            f"{V2}{UP}{RESET} {WHITE}{fmt_tok(tout):>7}{RESET} {V0}{V}{RESET} "
-            f"{OK}{usd_fine(cost):>6}{RESET}")
+def usage_row(label, tin, tout, cost, spark=""):
+    """One row of the Session/Today mini-table: label │ ↓in ↑out │ api≈$cost, with
+    fixed-width numeric fields so the rows align. `cost` is the estimated API-
+    equivalent price of the real tokens (hence api≈); `spark` is the per-call burn."""
+    base = (f"{GREY}{label:<7}{RESET} {V0}{V}{RESET} "
+            f"{V2}{DN}{RESET} {WHITE}{fmt_tok(tin):>6}{RESET} "
+            f"{V2}{UP}{RESET} {WHITE}{fmt_tok(tout):>6}{RESET} {V0}{V}{RESET} "
+            f"{DIM}api{RESET}{OK}≈{usd_fine(cost)}{RESET}")
+    return base + (f"  {spark}" if spark else "")
 
 
 def seg_lines(data):
@@ -830,9 +912,11 @@ def render(raw):
     badge = (f"{V3}{BOLD}[SPRINT]{RESET}" if sprint
              else (f"{V3}[ultra]{RESET}" if effort in ("xhigh", "max") else ""))
 
-    rec, day_cost, day_in, day_out = safe(ledger_update, data, sid) or ({}, 0.0, 0.0, 0.0)
-    dur_ms = get(data, "cost", "total_duration_ms")
-    metrics = (safe(ledger_metrics, rec, dur_ms) or {}) if rec else {}
+    led = safe(ledger_update, data, sid)
+    if not (isinstance(led, tuple) and len(led) == 3):
+        led = ({}, {"in": 0.0, "out": 0.0, "cost": 0.0}, {"in": 0.0, "out": 0.0, "cost": 0.0})
+    rec, sess, day = led
+    spark = safe(burn_spark, rec) or ""
 
     box = Box(W)
     inner = box.inner
@@ -871,7 +955,7 @@ def render(raw):
         s = f" {V0}·{RESET} "
         qcol = DANGER if arb["q"] > 0 else GREY
         ocol = DANGER if arb["over"] > 0 else GREY
-        tcol = WARN if arb["tasks"] > 0 else GREY
+        tcol = WHITE if arb["tasks"] > 0 else GREY
         box.row(
             f"{OK}{DOT}{RESET} {WHITE}stage:{arb['stage']}{RESET}{s}{tcol}tasks:{arb['tasks']}{RESET}"
             f"{s}{qcol}q:{arb['q']}{RESET}{s}{ocol}over:{arb['over']}{RESET}"
@@ -881,12 +965,9 @@ def render(raw):
     # usage block — Session over Total (label │ ↓ in  ↑ out │ $cost), a
     # double-height left table; the right column carries the context-window
     # detail. Rate limits live on the header line now, not their own row.
-    LW = 40
-    s_in = num(get(data, "context_window", "total_input_tokens"))
-    s_out = num(get(data, "context_window", "total_output_tokens"))
-    s_cost = num(get(data, "cost", "total_cost_usd"))
-    srow = safe(usage_row, "Session", s_in, s_out, s_cost) or ""
-    trow = safe(usage_row, "Total", day_in, day_out, day_cost) or ""
+    LW = max(34, min(50, inner // 2))   # proportional: don't starve the ctx panel at narrow widths
+    srow = safe(usage_row, "Session", sess["in"], sess["out"], sess["cost"], spark) or ""
+    trow = safe(usage_row, "Today", day["in"], day["out"], day["cost"]) or ""
     ctxl = safe(seg_ctx_lines, data, max(8, inner - LW - 3)) or [f"{GREY}ctx --{RESET}", ""]
     div = f"{V0}{V}{RESET}"
     box.row(f"{pad(srow, LW)} {div} {ctxl[0]}")

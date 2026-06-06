@@ -11,9 +11,13 @@ resolving its absolute path at install time and writing it to the user's `status
 backing script `${CLAUDE_PLUGIN_ROOT}/hooks/wire-statusline.py` performs the surgery deterministically
 and never clobbers a settings file it cannot parse.
 
-The renderer is global — its usage box (folder, git, model, rate limits, context, tokens, cost, burn)
-renders in every repo. The arbiter segments (`stage · tasks · q · over`) light up only where
-`.codearbiter/CONTEXT.md` sets `arbiter: enabled`.
+The renderer is global — its usage box (folder, git, model, rate limits, context, cumulative tokens,
+API-equivalent cost, per-call token burn) renders in every repo. The arbiter segments
+(`stage · tasks · q · over`) light up only where `.codearbiter/CONTEXT.md` sets `arbiter: enabled`.
+
+Token and cost figures come from the session transcript: real per-model token usage is accumulated,
+and the cost is the estimated pay-as-you-go **API-equivalent** (labelled `api≈`) — what the same
+tokens would have cost at list API rates — not a bill.
 
 ## Argument
 
@@ -44,7 +48,7 @@ renders in every repo. The arbiter segments (`stage · tasks · q · over`) ligh
 
 5. Report the script's output verbatim, then state what changed. If install succeeded, tell the user
    the statusline takes effect on the next render (a new prompt or session). Tip: `CODEARBITER_COMPACT=1`
-   drops the burn/reset/subagent rows; `CODEARBITER_STATUSLINE=off` disables it; `CODEARBITER_WIDTH`
+   drops the subagent rows; `CODEARBITER_STATUSLINE=off` disables it; `CODEARBITER_WIDTH`
    sets the box width.
 
 ## Hard gate
