@@ -927,11 +927,15 @@ def seg_window_inline(data):
     return f" {V0}·{RESET} ".join(cells) if cells else ""
 
 
-def model_pill(model):
-    """A gradient-filled pill behind the model name, keyed by family — Opus violet,
-    Sonnet blue, Haiku green. The background ramps dark->bright across the name (a
-    sheen matching the box) so the active model stands out at a glance. Plain block
-    ends (no half-circle caps — they don't align cleanly in a monospace cell)."""
+EFF_DISP = {"low": "Low", "medium": "Medium", "high": "High",
+            "xhigh": "XHigh", "max": "Max", "ultracode": "Ultracode"}
+
+
+def model_pill(model, effort=""):
+    """A gradient-filled pill carrying the model AND its effort level, e.g.
+    " Opus 4.8 │ Ultracode ", keyed by family — Opus violet, Sonnet blue, Haiku
+    green. The background ramps dark->bright across the pill (a sheen matching the
+    box). Plain block ends (half-circle caps don't align in a monospace cell)."""
     m = str(model)
     ml = m.lower()
     if "opus" in ml:
@@ -942,8 +946,9 @@ def model_pill(model):
         c = (120, 220, 150)       # green
     else:
         c = (150, 150, 162)       # grey (unknown)
-    lo = tuple(int(v * 0.5) for v in c)               # dark start of the sheen
-    body = f" {m} "
+    eff = str(effort).strip().lower()
+    body = f" {m} {V} {EFF_DISP.get(eff, eff.capitalize())} " if eff else f" {m} "
+    lo = tuple(int(v * 0.5) for v in c)           # dark start of the sheen
     n = max(1, len(body) - 1)
     cells = []
     for idx, ch in enumerate(body):
@@ -1044,8 +1049,7 @@ def render(raw):
     arb = safe(arbiter_state, root)
     effort = (get(data, "effort", "level") or "").lower()
     sprint = bool(arb and arb.get("sprint"))
-    badge = (f"{V3}{BOLD}[SPRINT]{RESET}" if sprint
-             else (f"{V3}[ultra]{RESET}" if effort in ("xhigh", "max") else ""))
+    badge = f"{V3}{BOLD}[SPRINT]{RESET}" if sprint else ""   # effort now shows by the model pill
 
     led = safe(ledger_update, data, sid)
     if not (isinstance(led, tuple) and len(led) == 3):
@@ -1080,7 +1084,7 @@ def render(raw):
         dirty = "*" if safe(git_dirty, root) else ""
         gp += f" {V0}{V}{RESET} {(WARN if dirty else OK)}{branch}{dirty}{RESET}"
     model = get(data, "model", "display_name") or get(data, "model", "id") or "?"
-    pill = safe(model_pill, model) or f"{V2}{model}{RESET}"
+    pill = safe(model_pill, model, effort) or f"{V2}{model}{RESET}"
     rates = safe(seg_window_inline, data) or ""
     prseg = safe(seg_pr, data) or ""
     head_bits = [b for b in (rates, prseg) if b]
