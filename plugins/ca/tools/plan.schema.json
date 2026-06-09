@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codearbiter/farm/plan.schema.json",
+  "title": "codeArbiter farm plan",
+  "description": "The handoff artifact writing-plans emits in --farm mode. Each task is a self-contained work packet a cheap Zen worker can complete. meta.model and meta.apiBaseUrl are written by subagent-driven-development at dispatch time (not at plan-authoring time).",
+  "type": "object",
+  "required": ["meta", "tasks"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "repo": { "type": "string" },
+        "model": {
+          "type": "string",
+          "description": "Zen model selected at dispatch time by subagent-driven-development's model research step. Not set at plan-authoring time."
+        },
+        "apiBaseUrl": {
+          "type": "string",
+          "description": "OpenAI-compatible endpoint base URL. Set at dispatch time alongside model."
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/task" }
+    }
+  },
+  "$defs": {
+    "task": {
+      "type": "object",
+      "required": ["id", "description", "filesInScope", "test", "gate"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Unique, kebab-case. Becomes the branch name farm/<id>."
+        },
+        "description": {
+          "type": "string",
+          "description": "One concrete unit of work, scoped tightly enough that a cheap model can do it."
+        },
+        "deps": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Task ids that must be GREEN before this one runs."
+        },
+        "filesInScope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "The ONLY paths the worker may create or edit. Enforced by drift detection after each worker run."
+        },
+        "test": {
+          "type": "object",
+          "required": ["path"],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Path to the failing test writing-plans already wrote. Workers must NOT touch it."
+            }
+          }
+        },
+        "gate": {
+          "type": "object",
+          "required": ["commands"],
+          "additionalProperties": false,
+          "properties": {
+            "commands": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string" },
+              "description": "Shell commands; ALL must exit 0. Typically: run this test, run full suite, lint, typecheck."
+            }
+          }
+        },
+        "context": {
+          "type": "string",
+          "description": "Minimal context slice — relevant types/interfaces/conventions only. NOT the whole module."
+        },
+        "maxRetries": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Overrides FARM_MAX_RETRIES for this task."
+        }
+      }
+    }
+  }
+}

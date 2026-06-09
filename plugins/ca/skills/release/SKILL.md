@@ -16,6 +16,7 @@ Read these, or STOP and surface the gap — never guess:
 - The current branch MUST NOT be `main`, `master`, or the default branch. Release lands through the normal branch/PR path; if HEAD is the default branch, STOP.
 - `git describe --tags --abbrev=0` identifies the last tag. No tags → `LAST_TAG=<none>`, treat the full history as the window. Set the base version to `0.0.0`.
 - The commit set `LAST_TAG..HEAD` must be non-empty. If empty, STOP — nothing to release.
+- **farm.js build check:** if `plugins/ca/tools/farm.ts` was modified in the release window (`git log LAST_TAG..HEAD -- plugins/ca/tools/farm.ts`), verify that `plugins/ca/tools/farm.js` is up to date by rebuilding: `cd plugins/ca/tools && npm run build`. A stale `farm.js` (built from an older `farm.ts`) is a release blocker — the plugin ships `farm.js`, not `farm.ts`. If the rebuild produces changes, commit them through `commit-gate` before tagging.
 
 ## Phase 1 — Version & changelog · gate: BLOCK
 

@@ -21,3 +21,10 @@ __pycache__/
 # Ephemeral execution scaffolding written by long plan runs. Removed in the
 # plan's cleanup phase. Never committed.
 /.plan-tasks/
+
+# farm.ts dev dependencies — not shipped, only needed to build farm.js.
+plugins/ca/tools/node_modules/
+
+# Farm dispatcher runtime artifacts — worktrees, reports, integration branch staging.
+# Written per-run in any project using codeArbiter. Never committed to the plugin repo.
+.farm/
