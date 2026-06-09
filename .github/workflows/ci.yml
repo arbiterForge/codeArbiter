@@ -1,0 +1,74 @@
+name: ci
+
+# Scoped to the repo's executable surface. The bulk of codeArbiter is prose
+# (skills/commands/agents) governed by the plugin's own authoring gates — CI's
+# job here is the mechanical things review can't catch: a stale shipped build
+# artifact, a regression in the farm dispatcher, or a manifest that won't parse.
+# A pure skill/docs PR matches none of these paths and skips CI entirely.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "plugins/ca/tools/**"
+      - "**/*.json"
+      - ".github/workflows/ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "plugins/ca/tools/**"
+      - "**/*.json"
+      - ".github/workflows/ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  tools:
+    name: farm — typecheck, test, artifact-freshness
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/ca/tools
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: plugins/ca/tools/package-lock.json
+      - name: Install (locked)
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Rebuild farm.js
+        run: npm run build
+      - name: Fail if committed farm.js is stale
+        run: |
+          if ! git diff --quiet -- farm.js; then
+            echo "::error file=plugins/ca/tools/farm.js::farm.js is out of date with farm.ts. Run 'npm run build' in plugins/ca/tools and commit the result — the plugin ships farm.js, not farm.ts."
+            git --no-pager diff -- farm.js
+            exit 1
+          fi
+          echo "farm.js is in sync with farm.ts"
+
+  manifests:
+    name: JSON manifests parse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate every tracked JSON parses
+        # A broken plugin.json / marketplace.json / hooks.json breaks install for
+        # every user. Parse-validity is the cheap guard against that.
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            if ! node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$f" 2>/dev/null; then
+              echo "::error file=$f::invalid JSON"
+              fail=1
+            fi
+          done < <(git ls-files '*.json')
+          if [ "$fail" -eq 0 ]; then echo "all tracked JSON valid"; fi
+          exit $fail
