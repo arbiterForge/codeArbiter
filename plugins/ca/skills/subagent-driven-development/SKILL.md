@@ -30,7 +30,46 @@ Gate: exactly one task selected, dependency-clean, with its spec obligation and 
 
 ## Phase 2 — Implementation dispatch · gate: BLOCK
 
-Dispatch ONE fresh subagent for the selected task — `backend-author`, `frontend-author`, or
+**Farm path (when `<slug>.plan.json` exists alongside the `.md` plan):** skip the subagent dispatch
+loop below and follow the farm path instead. The farm path replaces Phases 2–6 for ALL tasks in the
+plan simultaneously.
+
+### Phase 2-farm — Farm dispatch and model selection
+
+**Step 1 — Model selection.** If `FARM_MODEL` env var is set, use it directly and skip the research
+steps. Otherwise:
+
+1. Websearch `"OpenCode Zen free models <current month year>"` and the OpenCode model catalog page.
+2. For any opaque codename (e.g. "Big Pickle"), follow up: `"<codename> model underlying LLM coding benchmark site:reddit.com OR site:news.ycombinator.com"` — community consensus on the underlying model and its coding ability is the only reliable signal; model IDs change without notice.
+3. Select the best available free model for single-file code generation. Surface the selection to the user: "Selected `<model-id>` — community reports `<underlying model>`, `<coding assessment>`. Source: `<link>`. Proceed, or set `FARM_MODEL` to override."
+4. Gate: model selected and identity understood. BLOCK if no free models are identifiable (community has no consensus) — the user must set `FARM_MODEL` manually.
+5. Write `meta.model` and `meta.apiBaseUrl` into the `plan.json` file before dispatching (this records what actually ran in the plan artifact).
+
+**Step 2 — Farm dispatch.** Invoke the farm dispatcher:
+
+```
+node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" "${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.plan.json"
+```
+
+The dispatcher runs all tasks concurrently (up to `FARM_CONCURRENCY`, default 4), enforces gates, and writes:
+- `${CLAUDE_PROJECT_DIR}/.farm/farm-report.json` — structured results (status per task)
+- `${CLAUDE_PROJECT_DIR}/.farm/farm-report.md` — human-readable summary
+
+Collect both reports. Exit code 0 = all green; exit code 2 = some tasks escalated.
+
+**Step 3 — Escalation handler (Phase 2.5).** Read `farm-report.json`. For each result:
+
+- **status `green`** — task accepted. Advance directly to Phase 6 (Accept and advance) for this task.
+- **status `escalate`, note starts with `"drift:"`** — the cheap model touched files outside `filesInScope`. This indicates spec-gap or ambiguity. Raise a `[CONFIRM-NN]` in `open-questions.md` describing which files were written and why the worker strayed. HALT the loop — do not re-dispatch until the user resolves the ambiguity.
+- **status `escalate`, note is a gate failure message** — the cheap model failed to make the test pass after retries. Re-dispatch via normal Phase 2 (author subagent + `tdd`), seeding the brief with: the farm worktree path (`result.worktree` from the report), the gate failure note, and the task's `test.path`. The left-in-place worktree shows what the cheap model attempted; the author subagent can inspect it.
+- **status `escalate`, note is `"merge conflict vs integration branch"`** — re-order the task after its conflicting sibling and re-dispatch via Phase 2.
+- **blocked** tasks (dependency escalated) — treat as gate failure of the upstream task first; once the upstream is resolved, re-queue the blocked task normally.
+
+Gate: all tasks either green or re-dispatched via Phase 2 and accepted. No task may advance to commit-gate while any sibling is unresolved.
+
+---
+
+**Normal path (no `plan.json`):** dispatch ONE fresh subagent for the selected task — `backend-author`, `frontend-author`, or
 `infra-author` by the scope mapping in `tech-stack.md`
 (`${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`). A fresh context per task is the whole point: no carried-over
 assumptions, no accumulated drift.
@@ -99,3 +138,6 @@ Gate: every plan task `ACCEPTED`, the suite green, ready for `commit-gate`.
 - MUST halt and surface to the user on a `tdd` BLOCK, a security CRITICAL finding, or an unresolved `[CONFIRM-NN]` inside the loop — and on a `commit-gate` failure at the finish handoff — even under `/sprint`. These never auto-proceed.
 - MUST NOT commit — hand the accepted branch to `commit-gate`.
 - MUST mark out-of-scope findings with an inline `[NEEDS-TRIAGE]` marker and never act on them inside the task.
+- MUST NOT invoke `farm.js` before writing `meta.model` and `meta.apiBaseUrl` into `plan.json` — the dispatcher fails loudly if neither is set.
+- MUST NOT skip model selection research (Step 1) when `FARM_MODEL` is not set — a blind invocation with an unknown model ID is a waste of compute and fails unpredictably.
+- MUST raise a `[CONFIRM-NN]` and HALT on a drift escalation — do not silently re-dispatch a task where the cheap model strayed outside `filesInScope`; that signals a spec ambiguity, not an implementation gap.
