@@ -34,6 +34,12 @@ populating before normal operation.
      read the codebase and synthesize the full context, writing the initialization sentinel).
    - **Greenfield** (no meaningful source) → route to `/ca:decompose` (layered interview).
 
+   The populator is **mandatory, not optional**: it authors `tech-stack.md`, `coding-standards.md`,
+   and `security-controls.md` (and writes the initialization sentinel). The pipeline gates BLOCK on
+   reading those files — `writing-plans` and `tdd` need `tech-stack.md`, the security gates need
+   `security-controls.md` — so `/ca:feature` run on a freshly-scaffolded stub will STOP at pre-flight
+   until the populator has run. `session-start` surfaces this as `NOT INITIALIZED` every session.
+
 4. Report what was created and which populator you are routing to.
 
 ## When NOT to use

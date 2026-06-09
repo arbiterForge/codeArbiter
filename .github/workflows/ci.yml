@@ -10,15 +10,17 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "plugins/ca/tools/**"
+      - "plugins/ca/**"
       - "**/*.json"
       - ".github/workflows/ci.yml"
+      - ".github/scripts/**"
   push:
     branches: [main]
     paths:
-      - "plugins/ca/tools/**"
+      - "plugins/ca/**"
       - "**/*.json"
       - ".github/workflows/ci.yml"
+      - ".github/scripts/**"
 
 permissions:
   contents: read
@@ -53,6 +55,17 @@ jobs:
             exit 1
           fi
           echo "farm.js is in sync with farm.ts"
+
+  prose:
+    name: plugin reference graph
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check cross-reference graph
+        run: python3 .github/scripts/check-plugin-refs.py
 
   manifests:
     name: JSON manifests parse
