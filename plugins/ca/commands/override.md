@@ -23,12 +23,43 @@ logged, always visible, never silent. Single identity, single confirm.
    The log is append-only — never edited or deleted, committed as a permanent audit artifact.
 4. Proceed with the overridden action. Note in the response that the override is logged.
 
+## Security ceiling — heavier path for security-critical stops
+
+A routine gate (lint, a style rule, a non-security review finding) takes the single-confirm path above.
+But a **security-critical stop is NOT bypassable by a single confirm.** The following require the
+heavier path below, never the one-line flow:
+
+- a security **CRITICAL** finding;
+- the crypto/secret commit gate (hook **H-09b / H-10b** — staged crypto/TLS or secret without a gate pass);
+- an **irreversible** operation (data loss, a destructive migration, anything unrollbackable).
+
+Heavier path (all required, in order):
+1. **Surface the specific finding verbatim** — name the exact primitive/secret/operation and the
+   concrete risk. A generic "security override" is rejected.
+2. **Explicit per-finding acknowledgement** — the user must acknowledge *that specific finding* in
+   their own words (a bare "yes"/"go ahead"/"I trust you" is declined — this mirrors `decision-variance`).
+   Detect identity from `git config user.email`; if unset, ask once.
+3. **Heavier log entry** — append a line tagged `SECURITY-OVERRIDE` that records the specific finding,
+   not just the gate name:
+
+   ```
+   [ISO-8601] | BY: <email> | SECURITY-OVERRIDE | FINDING: <specific finding> | REASON: <reason>
+   ```
+4. **Only then** record the bypass. For the crypto/secret commit gate, that means creating
+   `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` so hook H-09b/H-10b allows the
+   commit — created **only** after steps 1–3, never to skip the gate proper.
+
+Under `/sprint`, a security-critical override is a hard-gate STOP: it surfaces to the user and is
+**never** auto-decided, even in autonomous mode (`SPRINT.md` hard gates).
+
 ## Hard gate
 
 MUST write the log line before proceeding — it is not optional. MUST capture an operator identity —
 "codeArbiter" or "automated" are not valid. MUST include a justification. The override is scoped to
 the immediate action only; it creates no standing exception. MUST NOT edit or delete an existing
-`overrides.log` entry.
+`overrides.log` entry. MUST route a security-critical / crypto-secret / irreversible stop through the
+**Security ceiling** path — never the single-confirm flow — and MUST NOT auto-decide such an override
+under `/sprint`.
 
 ## When NOT to use
 

@@ -24,5 +24,4 @@ An agent is a reviewer or author **dispatched** by a skill — never routed to, 
 
 `audit-emitter`, `trust-zone-reviewer`, `standards-compliance-reviewer`, and
 `scaffold-completeness-reviewer` were removed in the v2 rewrite (their parent compliance skills were
-cut, or their checks are now covered by `tdd`/`commit-gate`/the kept reviewers). See
-`legacy/ASSESSMENT.md` §8.
+cut, or their checks are now covered by `tdd`/`commit-gate`/the kept reviewers).
