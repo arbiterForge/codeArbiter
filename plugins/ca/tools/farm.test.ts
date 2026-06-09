@@ -370,6 +370,94 @@ describe("farm.ts smoke tests", () => {
     expect(report.results[0].note).toMatch(/^gaming:/);
   });
 
+  it("mutation guard — flags an impl whose branches the narrow test does not constrain", async () => {
+    // Worker returns a multi-branch impl; the narrow test only exercises one path,
+    // so mutating the unexercised branch/operator survives → low mutation score.
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```javascript",
+        "// path: src/classify.js",
+        "module.exports.classify = function (n) {",
+        '  if (n > 10) return "big";',
+        '  return "small";',
+        "};",
+        "```",
+      ].join("\n"),
+    ));
+
+    const narrowTest =
+      `node -e "const {classify}=require('./src/classify.js'); process.exit(classify(5)==='small'?0:1)"`;
+    const plan = {
+      meta: { name: "mutation-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Classify a number",
+          deps: [],
+          filesInScope: ["src/classify.js"],
+          test: { path: "src/classify.test.js" },
+          gate: { commands: [narrowTest] }, // gate.commands[0] = the narrow behavioral test
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    // Score is low but not near-zero (the "small" return IS killed), so it warns
+    // into Phase 3 rather than hard-escalating: task stays green with a warning.
+    expect(result.code).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    const r = report.results[0];
+    expect(r.status).toBe("green");
+    expect(r.mutationScore).toBeLessThan(0.5);
+    expect(r.warning).toMatch(/mutation-risk/);
+  });
+
+  it("mutation guard — near-zero score on a non-trivial impl hard-escalates", async () => {
+    // A multi-branch impl behind a no-op gate: nothing is constrained, so every
+    // mutant survives (score ~0) and the guard escalates.
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```javascript",
+        "// path: src/m.js",
+        "module.exports.f = function (a, b) {",
+        "  if (a > b) return 1;",
+        "  if (a < b) return 2;",
+        "  if (a === b) return 3;",
+        "  return 4;",
+        "};",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "mutation-escalate", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Compare",
+          deps: [],
+          filesInScope: ["src/m.js"],
+          test: { path: "src/m.test.js" },
+          gate: { commands: ["bash -c 'exit 0'"] }, // no-op gate constrains nothing
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/mutation score/);
+  });
+
   it("is safe to run twice in a row (stale branches cleaned)", async () => {
     ({ server: mockServer, port } = await startMockServer((body) => {
       const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
