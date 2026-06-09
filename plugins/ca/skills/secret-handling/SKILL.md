@@ -47,6 +47,8 @@ Dispatch the `auth-crypto-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/auth-cr
 
 Gate: no secret reaches a prohibited sink and no secret persists beyond its request.
 
+**On pass — record the gate:** create `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` (an empty file; `mkdir -p` its parent first). The PreToolUse commit hook **H-10b blocks any commit whose staged diff touches a secret pattern until this marker is fresh** (< 30 min). On any BLOCK, do NOT create the marker — the commit stays blocked until the finding is resolved and the gate genuinely passes.
+
 **Out-of-scope finding:** do not act on it and do not author an ADR (ADRs are user-attributed, via `/adr` only). Mark it inline with `[NEEDS-TRIAGE]`; never silently drop it.
 
 ## Hard rules
@@ -56,3 +58,4 @@ Gate: no secret reaches a prohibited sink and no secret persists beyond its requ
 - MUST NOT let a secret reach a logger, error response, telemetry, LLM prompt, serialized state, or session/JWT payload.
 - MUST NOT store a secret value in the database — store the approved-store reference only, with a format check constraint.
 - MUST NOT let a secret persist beyond the request boundary.
+- MUST create the `security-gate-passed` marker ONLY when the gate genuinely passes — the marker is what unblocks the commit (hook H-10b), so a premature or unconditional touch defeats the gate.

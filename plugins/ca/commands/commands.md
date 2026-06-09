@@ -18,7 +18,7 @@ Present the public command list. Read-only, no state change.
 |---|---|---|
 | `/ca:feature "<what>"` | Spec-driven feature — the only entry to implementation | `brainstorming` → `tdd` pipeline |
 | `/ca:fix "<bug>"` | Fix a confirmed defect, regression test first | `tdd` skill |
-| `/ca:refactor "<what>"` | Behavior-preserving restructure | `tdd` skill |
+| `/ca:refactor "<what>"` | Behavior-preserving restructure | `refactor` skill |
 | `/ca:debug "<symptom>"` | Investigate-then-decide root-cause analysis | `debug` skill |
 | `/ca:commit` | Run the full commit gate | `commit-gate` skill |
 | `/ca:pr` | Open a PR after BLOCK reviews clear | `finishing-a-development-branch` |
