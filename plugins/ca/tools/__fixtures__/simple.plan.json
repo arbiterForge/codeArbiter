@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "name": "farm-smoke-test",
+    "repo": "test",
+    "model": "test-model",
+    "apiBaseUrl": "http://localhost:9999"
+  },
+  "tasks": [
+    {
+      "id": "task-a",
+      "description": "Write a hello function",
+      "deps": [],
+      "filesInScope": ["src/hello.ts"],
+      "test": { "path": "src/hello.test.ts" },
+      "gate": { "commands": ["bash -c 'exit 0'"] }
+    },
+    {
+      "id": "task-b",
+      "description": "Write a world function that uses hello",
+      "deps": ["task-a"],
+      "filesInScope": ["src/world.ts"],
+      "test": { "path": "src/world.test.ts" },
+      "gate": { "commands": ["bash -c 'exit 0'"] }
+    }
+  ]
+}

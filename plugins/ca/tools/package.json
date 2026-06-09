@@ -1,0 +1,25 @@
+{
+  "name": "ca-farm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "codeArbiter dispatcher: writing-plans emits plan.json + failing tests, cheap Zen workers implement under hard gates.",
+  "scripts": {
+    "farm": "node --env-file-if-exists=.env --import tsx farm.ts",
+    "farm:dist": "node --env-file-if-exists=.env farm.js",
+    "farm:example": "node --env-file-if-exists=.env --import tsx farm.ts __fixtures__/simple.plan.json",
+    "build": "npx esbuild farm.ts --bundle --platform=node --format=esm --outfile=farm.js --banner:js='#!/usr/bin/env node'",
+    "test": "npx vitest run",
+    "typecheck": "npx tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
