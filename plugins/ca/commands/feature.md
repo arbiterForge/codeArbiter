@@ -21,21 +21,24 @@ Route through the pipeline in order; each step gates the next:
 2. **`writing-plans`** — decompose the approved spec into small tasks, each with an exact path and a
    verification that maps to a `tdd` obligation (it does not replace one). Writes
    `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.md` with bijective criterion↔task coverage.
-3. **`executing-plans`** — execute the plan inline with human checkpoints. Each task routes through
-   `tdd` (test-first; the spec's acceptance criteria are the Phase 1 obligations), and is proven done
-   by a fresh run, not a self-report.
+3. **`executing-plans`** — coordinates the plan in small batches with human checkpoints. Each batch is
+   delegated to `subagent-driven-development` (fresh author agent per task, spec-compliance review,
+   quality review, fresh verification). The user acknowledges between batches; nothing advances until
+   they do.
 4. **`commit-gate`** — the only path to a commit; nine gates, including behavioral proof.
 5. **`finishing-a-development-branch`** — terminal step: open-PR / merge-via-PR / discard. Every
    change lands through a PR; never a direct write to the default branch.
 
-The autonomous counterpart runs the same spec→plan but executes via `subagent-driven-development`
-without per-batch checkpoints. That path is its own (hidden) entry, not `/feature`.
+The autonomous counterpart (`/sprint`) runs the same spec→plan but passes the full plan to
+`subagent-driven-development` directly, without per-batch checkpoints. That path is its own (hidden)
+entry, not `/feature`.
 
 ## Scope routing
 
-Scope determines which implementation agent `tdd` dispatches: `backend-author`, `frontend-author`, or
-`infra-author`. A multi-area feature runs them in sequence, with the full suite green between
-transitions.
+Scope determines which author agent `subagent-driven-development` dispatches per task:
+`backend-author`, `frontend-author`, or `infra-author` — per the mapping in `tech-stack.md`. A
+multi-area feature runs the appropriate agent per task; the full suite must be green before
+transitioning between scope areas.
 
 ## When NOT to use
 

@@ -1,12 +1,13 @@
 ---
 name: subagent-driven-development
-description: The autonomous execution engine. Routed to by /sprint to drive a plan to completion, and optionally by /feature for parallel work. One fresh subagent per plan task — test-first via tdd — followed by a two-pass review (spec-compliance, then quality) and fresh-run verification. No single context accumulates drift, and nothing is accepted on a subagent's word.
+description: The implementation engine. Routed to by /sprint (full plan, autonomous) and by executing-plans (scoped batch, checkpoint-gated). One fresh subagent per task — test-first via tdd — followed by spec-compliance review, quality review, and fresh-run verification. No single context accumulates drift, and nothing is accepted on a subagent's word.
 ---
 
 # subagent-driven-development
 
-One task, one fresh subagent, two reviews, proof on a fresh run. Routed to by `/sprint`; optionally
-by `/feature` for parallel work. The loop processes the plan task-by-task and never trusts a self-report.
+One task, one fresh subagent, two reviews, proof on a fresh run. Routed to by `/sprint` (full plan,
+autonomous) and by `executing-plans` (one batch at a time, with human checkpoints between batches).
+The loop processes tasks in dependency order and never trusts a self-report.
 
 ## Pre-flight
 
@@ -18,10 +19,15 @@ Read these, or STOP and surface the gap — never guess scope, command, or oblig
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — build, test, and verification invocations; file layout; the scope-to-author mapping.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — only when a task touches a security boundary (auth, crypto, secrets, a trust boundary).
 
+**Optional `scope` parameter:** when invoked by `executing-plans`, a list of task IDs is passed. The
+loop processes only those tasks (in their internal dependency order). When `scope` is absent (the
+`/sprint` path), the loop processes the full plan from first unblocked task to last.
+
 ## Phase 1 — Task selection · gate: BLOCK
 
-Pull the next unblocked task from the plan in dependency order. A task is one verifiable unit of work
-with a path set, a spec obligation, and a verification command.
+Pull the next unblocked task from the plan in dependency order. When a `scope` was passed, restrict
+selection to tasks in that list. A task is one verifiable unit of work with a path set, a spec
+obligation, and a verification command.
 
 - Confirm every dependency task is `ACCEPTED` before selecting.
 - Confirm no unresolved `[CONFIRM-NN]` blocks the task. One that does halts the loop — see Hard rules.
@@ -104,11 +110,13 @@ Gate: the verification command exits clean and its output demonstrates the oblig
 Mark the task `ACCEPTED` only when both reviews passed AND verification passed on a fresh run.
 Record acceptance and any `[NEEDS-TRIAGE]` markers to the plan and the `.codearbiter/` audit trail.
 
-- Tasks remain → return to Phase 1.
-- Plan complete → hand the branch to `commit-gate`, then to the caller's finishing step. The loop does
-  not commit on its own authority.
+- Tasks remain in the current scope → return to Phase 1.
+- **Scoped invocation** (`scope` was passed by `executing-plans`): all scoped tasks `ACCEPTED` → signal
+  batch complete and return to `executing-plans`. Do NOT hand to `commit-gate`; the caller owns that decision.
+- **Full-plan invocation** (no `scope`, i.e. `/sprint`): plan complete → hand the branch to
+  `commit-gate`, then to the caller's finishing step. The loop does not commit on its own authority.
 
-Gate: every plan task `ACCEPTED`, the suite green, ready for `commit-gate`.
+Gate: every task in the current scope `ACCEPTED`, the suite green, ready for the caller's next step.
 
 ## Hard rules
 
