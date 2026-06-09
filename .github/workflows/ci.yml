@@ -65,8 +65,9 @@ jobs:
         run: |
           fail=0
           while IFS= read -r f; do
-            if ! node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$f" 2>/dev/null; then
-              echo "::error file=$f::invalid JSON"
+            [ -L "$f" ] && continue   # skip symlinks — a tracked .json must be a real file
+            if ! err=$(node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$f" 2>&1); then
+              echo "::error file=$f::invalid JSON: $err"
               fail=1
             fi
           done < <(git ls-files '*.json')
