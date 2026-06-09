@@ -6,6 +6,10 @@ legacy/
 .env
 .env.local
 
+# Local Claude Code project settings — machine-specific (statusline/hook paths),
+# never shared. Each developer's own .claude/settings.json wires the plugin hooks.
+.claude/settings.json
+
 # Transient ADR-authoring marker under the root-level state dir (set by /ca:adr).
 # Not project state.
 .codearbiter/.markers/
