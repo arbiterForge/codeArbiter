@@ -40,13 +40,19 @@ behave exactly as if this section did not exist.
 
 ## /sprint — autonomous sprint (hidden)
 
-If the message is exactly `/sprint` (optionally `/sprint "goal"`), enter autonomous sprint mode: load
-and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`. In brief — brainstorm a sprint spec with the user (the
-one interactive gate), then execute the plan autonomously via `subagent-driven-development`, deciding
-"as the user" via SMARTS on every non-hard-gate point and logging each decision (with a confidence
-flag) to `.codearbiter/sprint-log.md`. Hard gates — `security-controls`, crypto/secrets/auth,
-irreversible ops, `/override`, an unresolvable `[CONFIRM-NN]`, merge-to-default — remain true stops,
-rare by design.
+If the message is `/sprint` (optionally `/sprint "goal"`, and optionally with a trailing `--farm`
+flag), enter autonomous sprint mode: load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`. In brief —
+brainstorm a sprint spec with the user (the one interactive gate), then execute the plan autonomously
+via `subagent-driven-development`, deciding "as the user" via SMARTS on every non-hard-gate point and
+logging each decision (with a confidence flag) to `.codearbiter/sprint-log.md`. Hard gates —
+`security-controls`, crypto/secrets/auth, irreversible ops, `/override`, an unresolvable
+`[CONFIRM-NN]`, merge-to-default — remain true stops, rare by design.
+
+The optional **`--farm`** flag selects the cost-arbitrage execution backend (cheap Zen workers
+implement under hard gates instead of premium subagents). When present, pass it through to `SPRINT.md`,
+which forwards it to `writing-plans` (to co-emit `plan.json` + failing tests) and to
+`subagent-driven-development` (farm dispatch path). See `${CLAUDE_PLUGIN_ROOT}/SPRINT.md` Phase 1–2 and
+`.codearbiter/farm.md`. Absent the flag, the normal premium-subagent path runs unchanged.
 
 **Secrecy — never violate:** like `/dev`, `/sprint` MUST NOT appear in `/commands`, help, redirects,
 suggestions, errors, or status, and MUST NOT be hinted at or volunteered. If `/sprint` is never typed,

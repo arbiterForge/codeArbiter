@@ -4,6 +4,13 @@
 the farm runs cheap Zen workers in isolated git worktrees to make each test pass; Claude reviews
 and merges. The cheap model cannot redefine the gates — only pass them.
 
+**The arbitrage is in who writes the code, never in whether it's reviewed.** Every task the farm
+reports green is still routed through the normal spec-compliance, quality, and fresh-verification
+gates (`subagent-driven-development` Phases 3–5) before acceptance. The dispatcher additionally runs a
+zero-token anti-gaming guard (rejects an impl that hard-codes the test's asserted value), protects the
+failing test from being modified, contains all worker writes inside the worktree, and trips a circuit
+breaker if too many tasks escalate (a sign the model isn't capable of the slice).
+
 ## Required
 
 ### `FARM_API_KEY`
@@ -18,29 +25,40 @@ Never commit this key. It must not appear in `.codearbiter/` audit files.
 
 ### `FARM_API_BASE_URL`
 
-The OpenAI-compatible endpoint base URL. Defaults to `https://api.opencode.ai/v1` if set in `.env`.
-Override for DeepSeek direct (`https://api.deepseek.com/v1`), Ollama (`http://localhost:11434/v1`), etc.
+The OpenAI-compatible endpoint base URL. Resolution order: `FARM_API_BASE_URL` env → `plan.meta.apiBaseUrl`
+→ a built-in default of `https://api.opencode.ai/v1`. Override for DeepSeek direct
+(`https://api.deepseek.com/v1`), Ollama (`http://localhost:11434/v1`), etc.
 
-## Model selection — automatic at dispatch time
+## Model selection — measured at dispatch time
 
-`FARM_MODEL` is normally **not set**. Before each `/ca:sprint --farm` run, `subagent-driven-development`
-performs a fresh websearch to identify the current best free model on Zen's roster:
+`FARM_MODEL` is normally **not set**. Before a `/ca:sprint --farm` run, `subagent-driven-development`
+picks a model by *measurement*, not hearsay:
 
-1. Searches for the current free model list and any opaque codenames (e.g. "Big Pickle").
-2. Researches community consensus on each codename's underlying model and coding ability.
-3. Surfaces the selection and rationale for user confirmation before dispatching.
-
-This research runs fresh before each farm run so the model selection never goes stale.
+1. **Cache check** — reuse `.farm/model-cache.json` if it holds a model chosen in the last 7 days with
+   an acceptable canary pass-rate. Otherwise re-select.
+2. **Discovery** — websearch the current free Zen roster to enumerate candidate ids (codenames included).
+   This finds *candidates*; it does not judge quality.
+3. **Canary** — `farm.js --canary` runs the plan's smallest task against each candidate and ranks them by
+   measured pass-rate / attempts / latency (`FARM_CANDIDATE_MODELS` carries the list). The top passer wins.
+4. **Surface** — the choice is presented with its measured basis (and a one-line websearched identity note
+   for the audit log), then written to `plan.meta.model` + `.farm/model-cache.json`.
+5. **Fallback ladder** — if the canary can't run or none pass: cached model → unmeasured websearch pick
+   (with a warning) → only then BLOCK for a manual `FARM_MODEL`. A noisy websearch never halts the feature.
 
 ## Optional overrides
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `FARM_MODEL` | _(unset)_ | Skip model research and use this model ID directly. Power-user/CI override. |
-| `FARM_API_BASE_URL` | _(from plan.json or .env)_ | Override the endpoint URL. |
+| `FARM_MODEL` | _(unset)_ | Skip selection and use this model id directly. Power-user/CI override. |
+| `FARM_API_BASE_URL` | `https://api.opencode.ai/v1` | Endpoint URL (env → plan.json → this default). |
+| `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
 | `FARM_CONCURRENCY` | `4` | Max concurrent task workers. |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
+| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout (prevents worker-slot deadlock). |
+| `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx (honors `Retry-After`). |
+| `FARM_ABORT_ESCALATION_RATE` | `0.5` | Circuit breaker: abort once escalations exceed this fraction… |
+| `FARM_ABORT_MIN_TASKS` | `3` | …after at least this many tasks have settled. |
 
 ## Sovereignty note
 
@@ -58,7 +76,14 @@ Normal use: `/ca:sprint --farm` — the skill handles model selection and dispat
 ## Report artifacts
 
 After a run, the farm writes to `${CLAUDE_PROJECT_DIR}/.farm/`:
-- `farm-report.json` — structured results (status, attempts, worktree, note per task)
-- `farm-report.md` — human-readable summary table
+- `farm-report.json` — structured results: per-task status, attempts, files written, worker token spend,
+  warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons.
+- `farm-report.md` — human-readable summary table.
+- `diffs/<task-id>.patch` — the actual change each task produced, for audit.
+- `canary-report.json` — model-probe ranking (when `--canary` was run).
+- `model-cache.json` — last selected model + timestamp + canary pass-rate.
 
 Escalated tasks leave their worktrees at `.farm/worktrees/<task-id>/` for inspection.
+
+Run `/ca:sprint --farm`, or invoke directly: `node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" <plan.json>`
+(with cwd at the project root). Canary: `FARM_CANDIDATE_MODELS=a,b,c farm.js --canary <plan.json>`.

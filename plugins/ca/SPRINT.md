@@ -11,6 +11,16 @@ commands/ entirely. -->
 Brainstorm a sprint with the user, then execute it end-to-end — deciding "as the user" on everything
 that is not a true hard gate. Every auto-decision is logged. Hard gates are real stops, rare by design.
 
+## Execution backend: premium (default) vs. `--farm`
+
+`/sprint` runs the normal premium-subagent path unless invoked as `/sprint --farm`. The `--farm` flag
+selects the cost-arbitrage backend: Claude still authors the spec, the failing tests, and the plan, but
+cheap Zen workers (not premium subagents) implement each task under the same hard gates. Track whether
+`--farm` was passed and thread it into Phase 1 (`writing-plans --farm`) and Phase 2 (the farm dispatch
+path in `subagent-driven-development`). If `--farm` is set, pre-flight `FARM_API_KEY` — absent, BLOCK
+and cite `.codearbiter/farm.md` before brainstorming begins. Everything else about `/sprint` (the one
+interactive gate, deciding-as-the-user, hard gates, logging) is identical between backends.
+
 ## Secrecy — never violate
 
 `/sprint` MUST NOT appear in `/ca:commands`, `COMMANDS.md`, help, the §6 redirect, suggestions,
@@ -30,11 +40,27 @@ explicit "decide it this way" steers here. STOP for explicit user approval of th
 plan before autonomy begins. A blocking `[CONFIRM-NN]` is resolved here, with the user — never carried
 into autonomous execution unresolved.
 
+**`--farm` mode:** route the plan step through `writing-plans --farm`, which additionally writes each
+task's failing test and co-emits `plans/<sprint-slug>.plan.json`. To preserve the MVP-slice philosophy
+(and to cap the blast radius of a bad model), drive the farm **one MVP slice at a time**: emit and
+dispatch the plan.json for the current slice, review/merge it, then plan the next slice with the merged
+code in hand — rather than authoring every failing test in the sprint up front. The user approves the
+sprint spec and the first slice's plan at this gate; subsequent slices proceed under the same autonomy.
+
 ## Phase 2 — Autonomous execution · gate: BLOCK
 
 Hand the approved plan to `subagent-driven-development` and run it to completion WITHOUT per-batch
 human checkpoints — that is the difference from `/feature`'s `executing-plans`. Each task is
 test-first via `tdd`, two-pass reviewed, and proven on a fresh run.
+
+**`--farm` mode:** `subagent-driven-development` detects `plan.json` and takes its farm path —
+selecting a model (a canary probe over candidate Zen models, falling back to websearch), dispatching
+`farm.js`, then routing every green task through the SAME spec-compliance + quality + fresh-verification
+gates the premium path runs (Phases 3–5). The cost arbitrage is in who *writes* the code, never in
+whether it is *reviewed*. A farm escalation is handled per `subagent-driven-development`'s Phase 2.5
+(re-dispatch via premium Phase 2, or `[CONFIRM-NN]` on a genuine spec gap), and a circuit-breaker abort
+from `farm.js` (too many escalations) is itself a hard-gate surface: stop and tell the user the model
+isn't capable of the slice rather than grinding through.
 
 ### Deciding "as the user"
 

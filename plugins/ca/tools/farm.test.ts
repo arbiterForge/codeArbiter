@@ -4,7 +4,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execSync, exec } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -260,5 +260,133 @@ describe("farm.ts smoke tests", () => {
       readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"),
     );
     expect(report.results[0].status).toBe("escalate");
+  });
+
+  it("blocks path traversal — worker cannot write outside the worktree", async () => {
+    const sentinel = join(tmpDir, "..", `farm-escape-${Date.now()}.txt`);
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```typescript",
+        `// path: ../${sentinel.split("/").pop()}`,
+        "export const pwned = true;",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "traversal-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["bash -c 'exit 0'"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    // The escape file must NOT have been written anywhere outside the worktree.
+    expect(existsSync(sentinel)).toBe(false);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/escapes worktree/);
+  });
+
+  it("protects the failing test — worker cannot overwrite test.path", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      [
+        "```typescript",
+        "// path: src/hello.test.ts",
+        "// neutered test that always passes",
+        "```",
+      ].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "test-protect", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["bash -c 'exit 0'"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/read-only|tampered/);
+  });
+
+  it("flags anti-gaming — tiny impl that hard-codes the asserted literal escalates", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      ["```typescript", "// path: src/answer.ts", "export const answer = 42;", "```"].join("\n"),
+    ));
+
+    // Commit a test that asserts a specific literal, so it exists in the worktree.
+    writeFileSync(join(tmpDir, "src", "answer.test.ts"), "expect(answer).toBe(42);\n");
+    execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
+    execSync("git commit -m 'add failing test' --no-gpg-sign", { cwd: tmpDir, stdio: "pipe" });
+
+    const plan = {
+      meta: { name: "gaming-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Compute the answer",
+          deps: [],
+          filesInScope: ["src/answer.ts"],
+          test: { path: "src/answer.test.ts" },
+          gate: { commands: ["bash -c 'exit 0'"] }, // gate passes; guard must still catch gaming
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/^gaming:/);
+  });
+
+  it("is safe to run twice in a row (stale branches cleaned)", async () => {
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      const file = content.includes("src/hello.ts") ? "src/hello.ts" : "src/world.ts";
+      return ["```typescript", `// path: ${file}`, `export const x = 1;`, "```"].join("\n");
+    }));
+
+    const planPath = join(tmpDir, "plan.json");
+    const plan = JSON.parse(readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"));
+    plan.meta.apiBaseUrl = `http://127.0.0.1:${port}`;
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const first = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    expect(first.code).toBe(0);
+    // Second run against the same repo must not fail on stale farm/* branches.
+    const second = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    expect(second.code).toBe(0);
+    expect(second.out).toContain("green=2");
   });
 });

@@ -76,15 +76,19 @@ through `tdd`. The plan never hands off to `tdd` directly.
 ### Phase 4-farm extension (only when `--farm` was requested)
 
 After the bijective coverage gate passes and the `.md` plan is written, produce the machine artifact
-that the farm dispatcher needs. For each task in the plan, in dependency order:
+the farm dispatcher needs — **one MVP slice at a time, not the whole plan up front.** Front-loading
+every failing test for the entire plan would be the waterfall this skill otherwise rejects (Phase 3),
+and it maximizes the cost of a mid-flight spec change. So the farm artifact is scoped to the **current
+slice** (the MVP slice on the first pass; the next contiguous group on later passes). For each task in
+the current slice, in dependency order:
 
 1. Route through `tdd` Phase 1 (derive obligations) + Phase 2 (write the failing test). The test file
    must exist on disk and fail before continuing. Record the test file path for this task.
 2. Confirm the test is actually failing (run the gate command from `tech-stack.md`; it must exit non-zero).
    A test that passes before implementation means the obligation is wrong — STOP and revisit Phase 2.
 
-Then write `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.plan.json` conforming to
-`${CLAUDE_PLUGIN_ROOT}/tools/plan.schema.json`:
+Then write `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.plan.json` (the current slice's tasks only)
+conforming to `${CLAUDE_PLUGIN_ROOT}/tools/plan.schema.json`:
 
 - `meta.name` ← slug
 - `meta.repo` ← project name from CONTEXT.md
