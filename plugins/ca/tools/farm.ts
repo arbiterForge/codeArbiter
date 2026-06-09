@@ -90,6 +90,25 @@ const ENV = {
     .filter(Boolean),
 };
 
+// Mutation guard — a zero-token quality signal. After the gate goes green we
+// mutate the worker's in-scope impl and re-run ONLY the task's narrow test
+// (gate.commands[0]); a mutant the test fails to catch ("survivor") is code the
+// test does not constrain — gaming, dead code, or a weak test. Bounded by test
+// strength, so a LOW score is a strong red flag but a high one is only
+// necessary-not-sufficient. Low score → warning into Phase 3; only a near-zero
+// score on a non-trivial impl hard-escalates. Pluggable: set FARM_MUTATION_CMD
+// to a real per-language framework (it runs in the worktree with
+// FARM_MUTATION_FILES / FARM_MUTATION_TEST_PATH / FARM_MUTATION_TEST_CMD set,
+// and must print a trailing JSON line containing a numeric "score").
+const MUT = {
+  enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
+  sample: Number(process.env.FARM_MUTATION_SAMPLE ?? 15),
+  budgetMs: Number(process.env.FARM_MUTATION_BUDGET_MS ?? 30_000),
+  warnBelow: Number(process.env.FARM_MUTATION_WARN_BELOW ?? 0.5),
+  escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
+  cmd: process.env.FARM_MUTATION_CMD ?? null,
+};
+
 // --------------------------------------------------------------------------
 // process helpers
 // --------------------------------------------------------------------------
@@ -427,6 +446,127 @@ async function resetWorktree(wt: string) {
 }
 
 // --------------------------------------------------------------------------
+// mutation guard
+// --------------------------------------------------------------------------
+function shuffle<T>(a: T[]): T[] {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Single-point text mutants. Space-padded operators bias toward real code (not
+// string/generic content); invalid mutants that break compilation just fail the
+// test and count as "killed" — the lenient direction (no false escalation).
+function generateMutants(file: string, src: string): Array<{ file: string; mutated: string; tag: string }> {
+  const lines = src.split("\n");
+  const rules: Array<[RegExp, string, string]> = [
+    [/ >= /, " > ", ">=>"], [/ <= /, " < ", "<=<"],
+    [/ === /, " !== ", "===>!=="], [/ !== /, " === ", "!==>==="],
+    [/ == /, " != ", "==>!="], [/ != /, " == ", "!=>=="],
+    [/ > /, " >= ", ">>="], [/ < /, " <= ", "<<="],
+    [/ \+ /, " - ", "+>-"], [/ - /, " + ", "->+"], [/ \* /, " \/ ", "*>/"],
+    [/ && /, " || ", "&&>||"], [/ \|\| /, " && ", "||>&&"],
+    [/\btrue\b/, "false", "true>false"], [/\bfalse\b/, "true", "false>true"],
+  ];
+  const out: Array<{ file: string; mutated: string; tag: string }> = [];
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i];
+    const t = ln.trim();
+    if (!t || t.startsWith("//") || t.startsWith("#") || t.startsWith("*") || t.startsWith("/*")) continue;
+    for (const [re, rep, name] of rules) {
+      if (re.test(ln)) {
+        const mline = ln.replace(re, rep);
+        if (mline !== ln) {
+          const m = [...lines]; m[i] = mline;
+          out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} ${name}` });
+        }
+      }
+    }
+    const rm = ln.match(/\breturn\s+(.+?);/);
+    if (rm && rm[1].trim() !== "null" && rm[1].trim() !== "") {
+      const m = [...lines];
+      m[i] = ln.replace(/\breturn\s+.+?;/, "return null;");
+      out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} return>null` });
+    }
+  }
+  return out;
+}
+
+type MutationResult = { score: number; evaluated: number; survivors: string[] };
+
+async function mutationCheck(wt: string, task: Task): Promise<MutationResult | null> {
+  if (!MUT.enabled) return null;
+  const testCmd = task.gate.commands[0];
+  if (!testCmd) return null;
+  const impl = task.filesInScope.filter((f) => f !== task.test.path);
+
+  // Pluggable hook — hand off to a real per-language framework if configured.
+  if (MUT.cmd) {
+    const r = await new Promise<{ code: number; out: string }>((resolve) => {
+      const c = spawn("bash", ["-c", MUT.cmd!], {
+        cwd: wt,
+        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
+      });
+      let out = "";
+      c.stdout.on("data", (d) => (out += d));
+      c.stderr.on("data", (d) => (out += d));
+      c.on("error", (e) => resolve({ code: 1, out: String(e) }));
+      c.on("close", (code) => resolve({ code: code ?? 1, out }));
+    });
+    const j = [...r.out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
+    if (!j) return null;
+    try {
+      const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
+      if (typeof parsed.score === "number")
+        return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+    } catch {
+      /* unparseable — skip leniently */
+    }
+    return null;
+  }
+
+  // Built-in text mutation.
+  const originals = new Map<string, string>();
+  let candidates: Array<{ file: string; mutated: string; tag: string }> = [];
+  for (const f of impl) {
+    let src: string;
+    try {
+      src = await readFile(path.resolve(wt, f), "utf8");
+    } catch {
+      continue;
+    }
+    if (codeLineCount(src) <= 2) continue; // trivial file — nothing to constrain
+    originals.set(f, src);
+    candidates.push(...generateMutants(f, src));
+  }
+  if (candidates.length === 0) return null;
+  candidates = shuffle(candidates).slice(0, MUT.sample);
+
+  const start = Date.now();
+  let killed = 0;
+  let evaluated = 0;
+  const survivors: string[] = [];
+  try {
+    for (const c of candidates) {
+      if (Date.now() - start > MUT.budgetMs) break;
+      await writeFile(path.resolve(wt, c.file), c.mutated);
+      const r = await run("bash", ["-c", testCmd], wt);
+      await writeFile(path.resolve(wt, c.file), originals.get(c.file)!); // restore
+      evaluated++;
+      if (r.code !== 0) killed++;
+      else survivors.push(c.tag);
+    }
+  } finally {
+    // defensive: guarantee every impl file is back to the worker's output
+    for (const [f, src] of originals) await writeFile(path.resolve(wt, f), src).catch(() => {});
+  }
+  if (evaluated < 3) return null; // too few mutants to judge fairly
+  return { score: killed / evaluated, evaluated, survivors };
+}
+
+// --------------------------------------------------------------------------
 // per-task lifecycle
 // --------------------------------------------------------------------------
 type Result = {
@@ -441,6 +581,7 @@ type Result = {
   diffstat?: string;
   promptTokens?: number;
   completionTokens?: number;
+  mutationScore?: number | null;
 };
 
 // Integration merges happen inside a dedicated worktree — never the main
@@ -489,6 +630,7 @@ async function runTask(
   let promptTokens = 0;
   let completionTokens = 0;
   let lastWarning: string | undefined;
+  let mutationScore: number | null = null;
 
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) await resetWorktree(wt); // never accumulate stale files
@@ -536,14 +678,32 @@ async function runTask(
       continue;
     }
 
-    // Zero-token anti-gaming guard.
+    // Zero-token anti-gaming guard: fast literal-leak pass, then the deeper
+    // mutation pass (skipped if the leak pass already says "high").
     const gaming = await antiGamingCheck(wt, t);
-    if (gaming.risk === "high") {
-      priorFailure = `${gaming.note}. Implement real logic, do not hard-code the asserted value.`;
-      if (attempt <= limit) continue; // give it a chance to fix
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: gaming.note, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+    let risk = gaming.risk;
+    let riskNote = gaming.note;
+    if (risk !== "high") {
+      const mut = await mutationCheck(wt, t);
+      if (mut) {
+        mutationScore = mut.score;
+        if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
+          risk = "high";
+          riskNote = `gaming: mutation score ${mut.score.toFixed(2)} (${mut.evaluated} mutants survived — the test does not constrain the implementation)`;
+        } else if (mut.score < MUT.warnBelow) {
+          if (risk !== "warn") {
+            risk = "warn";
+            riskNote = `mutation-risk: score ${mut.score.toFixed(2)} (${mut.survivors.length}/${mut.evaluated} survived) — weak test or under-implemented logic`;
+          }
+        }
+      }
     }
-    if (gaming.risk === "warn") lastWarning = gaming.note;
+    if (risk === "high") {
+      priorFailure = `${riskNote}. Implement real logic; do not hard-code or special-case the asserted value.`;
+      if (attempt <= limit) continue; // give it a chance to fix
+      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore };
+    }
+    if (risk === "warn") lastWarning = riskNote;
 
     // Commit + merge into the dedicated integration worktree.
     await git(["add", "-A"], wt);
@@ -566,11 +726,11 @@ async function runTask(
 
     // success — drop the worktree (branch stays, merged into integration)
     await git(["worktree", "remove", "--force", wt]).catch(() => {});
-    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens };
+    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore };
   }
 
   // worktree intentionally left in place for inspection
-  return { id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens };
+  return { id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore };
 }
 
 // --------------------------------------------------------------------------
@@ -790,10 +950,10 @@ async function writeReport(plan: Plan, results: Result[], blocked: { id: string;
     aborted ? `> **ABORTED by circuit breaker** — escalation rate exceeded threshold.\n` : ``,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     ``,
-    `| task | status | attempts | files | branch | note |`,
-    `| --- | --- | --- | --- | --- | --- |`,
-    ...results.map((r) => `| ${r.id} | ${r.status}${r.warning ? " ⚠" : ""} | ${r.attempts} | ${(r.filesWritten ?? []).length} | ${r.branch} | ${r.note ?? r.warning ?? ""} |`),
-    ...blocked.map((b) => `| ${b.id} | blocked | 0 | 0 | — | ${b.reason} |`),
+    `| task | status | attempts | files | mut | branch | note |`,
+    `| --- | --- | --- | --- | --- | --- | --- |`,
+    ...results.map((r) => `| ${r.id} | ${r.status}${r.warning ? " ⚠" : ""} | ${r.attempts} | ${(r.filesWritten ?? []).length} | ${r.mutationScore == null ? "—" : r.mutationScore.toFixed(2)} | ${r.branch} | ${r.note ?? r.warning ?? ""} |`),
+    ...blocked.map((b) => `| ${b.id} | blocked | 0 | 0 | — | — | ${b.reason} |`),
     ``,
     `## Escalations — handle only these`,
     ...results
