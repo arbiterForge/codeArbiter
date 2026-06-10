@@ -6,6 +6,14 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.0.1] — 2026-06-10
+
+### Added
+- **Fable pricing in the statusline** — `API_PRICES` gains the Fable family ($10/$50 per MTok, standard 1.25×/2×/0.1× cache multipliers) so the `api≈` cost estimate prices Fable-model tokens correctly instead of falling back to Sonnet rates.
+- **Fable model pill** — the statusline model pill recognizes the Fable family and renders it gold, the tier above Opus violet; previously an unrecognized Fable model fell through to the grey unknown-model pill.
+
+---
+
 ## [2.0.0] — 2026-06-10 — Native Claude Code plugin
 
 The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring framework into a **native Claude Code plugin**. The soul is intact — orchestration, gates, SMARTS, the audit trail — re-grounded on Claude Code's plugin primitives and made leaner and more autonomous. Install with `/plugin marketplace add SUaDtL/codeArbiter` then `/plugin install ca@codearbiter`; commands are namespaced `/ca:<name>`. Pre-release, the whole plugin went through an eight-persona adversarial marketplace-readiness review; everything it surfaced is folded in below.
