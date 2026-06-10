@@ -218,11 +218,14 @@ When rules pull apart, they resolve by a fixed hierarchy — security & audit-tr
 .claude-plugin/marketplace.json     single-plugin marketplace → ./plugins/ca
 plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── .claude-plugin/plugin.json
+├── README.md                       plugin-directory summary (this file is the long form)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
+├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
 ├── commands/   (30)   skills/   (20)   agents/   (14)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
-└── hooks/                          session-start (activation linchpin) · pre/post gates · statusline
+├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline
+└── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
 ```
 
 **Skills** encode gated processes — `tdd`, `commit-gate`, `decision-variance`/SMARTS, `debug`, `refactor`, and the dynamic brainstorm → plan → execute workflow layer. **Agents** are the dispatched reviewers and authors — security, auth/crypto, dependency, migration, coverage, and architecture-drift reviewers, plus the backend/frontend/infra authors and the scout/grader/triage plumbing.
