@@ -395,11 +395,13 @@ SESSION_TTL = 36 * 3600  # prune sessions older than ~1.5 days
 BURN_RING = 40           # recent per-call token-burn samples kept for the sparkline
 TX_MAX_NEW_LINES = 20000 # hot-path bound: transcript lines parsed per render
 
-# API list prices, USD per 1M tokens (captured 2026-06-06 from Anthropic's
+# API list prices, USD per 1M tokens (captured 2026-06-10 from Anthropic's
 # pricing pages). Used ONLY to estimate the pay-as-you-go API-equivalent cost of
 # this session's REAL tokens — the bar labels it "api≈"; it is not a bill.
 # Per model family: (input, output, cache_write_5m, cache_write_1h, cache_read).
+# Cache multipliers are the standard ones: write 1.25x/2x input, read 0.1x.
 API_PRICES = {
+    "fable":  (10.0, 50.0, 12.50, 20.0, 1.00),
     "opus":   (5.0, 25.0, 6.25, 10.0, 0.50),
     "sonnet": (3.0, 15.0, 3.75,  6.0, 0.30),
     "haiku":  (1.0,  5.0, 1.25,  2.0, 0.10),
@@ -933,12 +935,15 @@ EFF_DISP = {"low": "Low", "medium": "Medium", "high": "High",
 
 def model_pill(model, effort=""):
     """A gradient-filled pill carrying the model AND its effort level, e.g.
-    " Opus 4.8 │ Ultracode ", keyed by family — Opus violet, Sonnet blue, Haiku
-    green. The background ramps dark->bright across the pill (a sheen matching the
-    box). Plain block ends (half-circle caps don't align in a monospace cell)."""
+    " Opus 4.8 │ Ultracode ", keyed by family — Fable gold, Opus violet, Sonnet
+    blue, Haiku green. The background ramps dark->bright across the pill (a sheen
+    matching the box). Plain block ends (half-circle caps don't align in a
+    monospace cell)."""
     m = str(model)
     ml = m.lower()
-    if "opus" in ml:
+    if "fable" in ml:
+        c = (235, 184, 90)        # gold — the tier above Opus
+    elif "opus" in ml:
         c = (188, 120, 255)       # violet
     elif "sonnet" in ml:
         c = (96, 174, 235)        # blue
