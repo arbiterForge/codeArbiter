@@ -27,7 +27,7 @@ Present the public command list. Read-only, no state change.
 | `/ca:threat-model` | Pre-implementation STRIDE analysis | `security-architecture` skill |
 | `/ca:adr "<title>"` | Author an Architecture Decision Record | `decision-lifecycle` skill |
 | `/ca:adr-status` | Report ADR health | `decision-lifecycle` skill |
-| `/ca:decision-variance` | Reconcile artifacts vs. scaffold via SMARTS | `decision-variance` skill |
+| `/ca:reconcile` | Reconcile artifacts vs. scaffold via SMARTS | `decision-variance` skill |
 | `/ca:add-dep "<pkg>"` | Vet and add a dependency | `dependency-reviewer` |
 | `/ca:release` | SemVer bump + changelog + annotated tag | `release` skill |
 | `/ca:init` | Scaffold `.codearbiter/` state store | (scaffolder) |
@@ -36,7 +36,7 @@ Present the public command list. Read-only, no state change.
 | `/ca:decompose` | Greenfield layered interview | `decompose` skill |
 | `/ca:status` | Formatted project status report | (none) |
 | `/ca:btw "<question>"` | Lightweight Q&A — no routing | (none) |
-| `/ca:surface-conflict` | Halt all work and surface a contradiction | (none) |
+| `/ca:conflict` | Halt all work and surface a contradiction | (none) |
 | `/ca:override "<reason>"` | Logged bypass of a gate | (none) |
 | `/ca:new-skill "<name>"` | Author a new skill | `skill-author` skill |
 | `/ca:commands` | Show this catalog | (none) |

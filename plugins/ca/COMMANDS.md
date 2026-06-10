@@ -33,8 +33,8 @@ ONLY when that command is invoked — never bulk-read the directory.
 |---|---|---|
 | `/ca:adr` | `"title"` | Author a numbered, user-attributed ADR. |
 | `/ca:adr-status` | `[--adr N]` | List/inspect ADR status and supersede chains. |
-| `/ca:decision-variance` | `["scope"]` | Reconcile artifacts vs. scaffold; arbitrate via SMARTS, user-attributed. |
-| `/ca:surface-conflict` | `"description"` | Stop all work and surface a rule conflict. |
+| `/ca:reconcile` | `["scope"]` | Reconcile artifacts vs. scaffold; arbitrate via SMARTS, user-attributed. |
+| `/ca:conflict` | `"description"` | Stop all work and surface a rule conflict. |
 | `/ca:threat-model` | `"scope"` | Optional lightweight STRIDE pass for a sensitive feature. |
 
 ## Project & meta

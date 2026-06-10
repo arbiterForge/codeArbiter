@@ -64,4 +64,4 @@ under `/sprint`.
 ## When NOT to use
 
 - Routine work that passes all gates — never needed.
-- Reconciling two conflicting sources → `/ca:surface-conflict`.
+- Reconciling two conflicting sources → `/ca:conflict`.

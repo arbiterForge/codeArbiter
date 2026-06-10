@@ -19,11 +19,11 @@ supersession candidates (a newer ADR or code pattern contradicts the decision), 
 ## When NOT to use
 
 - Author a new ADR → `/ca:adr`.
-- Challenge or reconcile a specific ADR in depth → `/ca:decision-variance`.
+- Challenge or reconcile a specific ADR in depth → `/ca:reconcile`.
 - Ask what a specific ADR says → `/ca:btw`.
 
 ## Hard gate
 
 Read-only — MUST NOT modify any file. MUST NOT resolve a `[CONFIRM-NN]` found during the scan —
 surface it and stop. A supersession candidate that contradicts an accepted ADR is flagged for
-`/ca:surface-conflict`.
+`/ca:conflict`.

@@ -25,7 +25,7 @@ What are you trying to do?
 Direct instruction declined. Choose a channel:
 /ca:decompose  /ca:create-context  /ca:feature  /ca:fix  /ca:refactor  /ca:debug
 /ca:commit  /ca:pr  /ca:review  /ca:checkpoint  /ca:release  /ca:add-dep
-/ca:threat-model  /ca:adr  /ca:adr-status  /ca:decision-variance  /ca:surface-conflict
+/ca:threat-model  /ca:adr  /ca:adr-status  /ca:reconcile  /ca:conflict
 /ca:new-skill  /ca:btw  /ca:status  /ca:init  /ca:commands
 Or /ca:override "reason" to bypass with logging.
 ```

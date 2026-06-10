@@ -80,7 +80,7 @@ Gate: the ADR file is written with a real `decided-by` user attribution, numbere
 
 Read-only. For each ADR (or the `--adr N` target), report: number, title, status, date, and supersession state — found by scanning forward for any later ADR whose `supersedes:` names it. Surface every unresolved `[CONFIRM-NN]` placeholder found in any ADR; MUST NOT resolve it.
 
-If a supersession candidate contradicts an `accepted` ADR with no clear direction, do not pick one — flag it for `/surface-conflict`.
+If a supersession candidate contradicts an `accepted` ADR with no clear direction, do not pick one — flag it for `/conflict`.
 
 ```
 ## ADR Status — YYYY-MM-DD

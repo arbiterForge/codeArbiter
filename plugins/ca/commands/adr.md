@@ -19,7 +19,7 @@ explicit user instruction; the orchestrator never advances an ADR on its own.
 ## When NOT to use
 
 - Check the health of existing ADRs → `/ca:adr-status`.
-- Reconcile or challenge a suspect ADR → `/ca:decision-variance`.
+- Reconcile or challenge a suspect ADR → `/ca:reconcile`.
 - Ask about a decision without recording it → `/ca:btw`.
 
 ## Hard gate

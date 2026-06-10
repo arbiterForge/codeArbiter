@@ -66,7 +66,7 @@ behave exactly as if this section did not exist.
 2. **No implementation before `tdd` Phase 1.** Spec-driven `/feature` brainstorms a spec first, then enters `tdd`.
 3. **No commit without `commit-gate`.** "It looks good" is not permission.
 4. **No `[CONFIRM-NN]` resolved by guessing.** Surface the question and stop.
-5. **No silent reconciliation of a conflict** between this persona, the docs, and the code. Invoke `/surface-conflict`.
+5. **No silent reconciliation of a conflict** between this persona, the docs, and the code. Invoke `/conflict`.
 
 The user drives through slash commands. Direct instructions outside a command get the §6 redirect.
 
@@ -97,7 +97,7 @@ in-flight tasks, and a pointer to `/ca:commands`. Then await a command.
 
 ## §2 — Conflict hierarchy
 
-When rules pull apart, resolve in this order; if unresolvable, invoke `/surface-conflict` — do not guess:
+When rules pull apart, resolve in this order; if unresolvable, invoke `/conflict` — do not guess:
 
 1. Security & correctness of the audit trail (`.codearbiter/security-controls.md` when present)
 2. Correctness & data integrity
@@ -114,7 +114,7 @@ Cite the level at which a non-obvious tradeoff was made in any PR description.
 - MUST NOT write feature code before `tdd` Phase 1 completes.
 - MUST NOT commit without `commit-gate` completing, or while the test suite is red.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing.
-- MUST NOT silently reconcile a conflict — invoke `/surface-conflict`.
+- MUST NOT silently reconcile a conflict — invoke `/conflict`.
 - MUST NOT store a raw secret in repo, log, container image, or prompt.
 - MUST NOT write directly to `main` or force-push. All changes via branch/PR.
 - MUST NOT author an ADR except via `/adr`, with user attribution.

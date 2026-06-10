@@ -14,5 +14,5 @@ Loaded on a scope-touch — before acting on code in one of these rows, read the
 | New domain concept or component | `CONTEXT.md` | update the vocabulary in `CONTEXT.md` |
 | Failure / retry, CI/CD, branch settings | `tech-stack.md` | — |
 | Risks / ADRs | `open-questions.md`, `decisions/` | `decision-lifecycle` skill (`/adr`) |
-| Architectural reconciliation | `plans/` (the three artifacts), `decisions/decision-log.md` | `decision-variance` skill (`/decision-variance`) |
+| Architectural reconciliation | `plans/` (the three artifacts), `decisions/decision-log.md` | `decision-variance` skill (`/reconcile`) |
 | Out-of-scope finding | — | inline `[NEEDS-TRIAGE]` marker (never an ADR) |
