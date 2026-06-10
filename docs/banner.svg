@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-label="codeArbiter — discipline, mechanically enforced. A commit line passes through three gates; the center gate is a balance.">
+  <title>codeArbiter</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#131a23"/>
+    </linearGradient>
+    <radialGradient id="haze" cx="0.5" cy="0.38" r="0.65">
+      <stop offset="0" stop-color="#e3b341" stop-opacity="0.07"/>
+      <stop offset="0.6" stop-color="#e3b341" stop-opacity="0.02"/>
+      <stop offset="1" stop-color="#e3b341" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowSoft" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ground -->
+  <rect width="1200" height="300" fill="url(#bg)"/>
+  <rect width="1200" height="300" fill="url(#grid)"/>
+  <rect width="1200" height="300" fill="url(#haze)"/>
+
+  <!-- certificate frame — the record is the artifact -->
+  <rect x="10" y="10" width="1180" height="280" fill="none" stroke="#e3b341" stroke-opacity="0.16" stroke-width="1"/>
+  <rect x="14" y="14" width="1172" height="272" fill="none" stroke="#e3b341" stroke-opacity="0.07" stroke-width="1"/>
+
+  <!-- wordmark -->
+  <text x="600" y="104" text-anchor="middle"
+        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="58" letter-spacing="0.5">
+    <tspan fill="#e6edf3" font-weight="300">code</tspan><tspan fill="#e3b341" font-weight="700">Arbiter</tspan>
+  </text>
+  <text x="600" y="140" text-anchor="middle"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace"
+        font-size="14" letter-spacing="4.5" fill="#8b95a2">DISCIPLINE, MECHANICALLY ENFORCED</text>
+
+  <!-- commit line -->
+  <line x1="60" y1="232" x2="1108" y2="232" stroke="#46505a" stroke-width="2"/>
+  <!-- arrowhead into the PR -->
+  <path d="M 1108 226 L 1120 232 L 1108 238 Z" fill="#46505a"/>
+  <text x="1132" y="236" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="11" fill="#8b95a2" letter-spacing="1">PR</text>
+
+  <!-- feature branch: forks, works, returns -->
+  <path d="M 140 232 C 168 232 176 200 206 200 L 300 200 C 330 200 338 232 366 232"
+        fill="none" stroke="#6e7b8b" stroke-width="1.5"/>
+  <circle cx="230" cy="200" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+  <circle cx="272" cy="200" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+
+  <!-- commits before the first gate: unproven, hollow -->
+  <circle cx="100" cy="232" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+  <circle cx="140" cy="232" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+  <circle cx="366" cy="232" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+  <circle cx="414" cy="232" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+
+  <!-- gate I — SPEC -->
+  <g filter="url(#glow)">
+    <line x1="452" y1="172" x2="452" y2="244" stroke="#d29922" stroke-width="3"/>
+    <line x1="468" y1="172" x2="468" y2="244" stroke="#d29922" stroke-width="3"/>
+    <rect x="446" y="164" width="28" height="6" fill="#e3b341"/>
+  </g>
+  <text x="460" y="264" text-anchor="middle"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="10" letter-spacing="2.5" fill="#8b95a2">SPEC</text>
+
+  <!-- commits between SPEC and the balance: specified, gold-rimmed -->
+  <circle cx="520" cy="232" r="4.5" fill="#0b0f14" stroke="#d29922" stroke-width="1.6"/>
+  <circle cx="576" cy="232" r="4.5" fill="#0b0f14" stroke="#d29922" stroke-width="1.6"/>
+  <circle cx="632" cy="232" r="4.5" fill="#0b0f14" stroke="#d29922" stroke-width="1.6"/>
+
+  <!-- gate II — the arbiter: its lintel is a balance beam -->
+  <g filter="url(#glow)">
+    <line x1="692" y1="160" x2="692" y2="244" stroke="#d29922" stroke-width="3"/>
+    <line x1="708" y1="160" x2="708" y2="244" stroke="#d29922" stroke-width="3"/>
+    <rect x="660" y="152" width="80" height="5" fill="#e3b341"/>
+    <!-- pivot -->
+    <path d="M 700 152 L 695 144 L 705 144 Z" fill="#e3b341"/>
+    <!-- chains and pans -->
+    <line x1="664" y1="157" x2="664" y2="170" stroke="#d29922" stroke-width="1.5"/>
+    <line x1="736" y1="157" x2="736" y2="170" stroke="#d29922" stroke-width="1.5"/>
+    <path d="M 652 171 Q 664 183 676 171" fill="none" stroke="#d29922" stroke-width="1.8"/>
+    <path d="M 724 171 Q 736 183 748 171" fill="none" stroke="#d29922" stroke-width="1.8"/>
+  </g>
+  <text x="700" y="264" text-anchor="middle"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="10" letter-spacing="2.5" fill="#8b95a2">TEST-FIRST</text>
+
+  <!-- commits between the balance and COMMIT-GATE: proven, filled -->
+  <circle cx="772" cy="232" r="4.5" fill="#d29922"/>
+  <circle cx="828" cy="232" r="4.5" fill="#d29922"/>
+  <circle cx="884" cy="232" r="4.5" fill="#d29922"/>
+
+  <!-- gate III — COMMIT-GATE -->
+  <g filter="url(#glow)">
+    <line x1="932" y1="172" x2="932" y2="244" stroke="#d29922" stroke-width="3"/>
+    <line x1="948" y1="172" x2="948" y2="244" stroke="#d29922" stroke-width="3"/>
+    <rect x="926" y="164" width="28" height="6" fill="#e3b341"/>
+  </g>
+  <text x="940" y="264" text-anchor="middle"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="10" letter-spacing="2.5" fill="#8b95a2">COMMIT-GATE</text>
+
+  <!-- commits past every gate: on the record -->
+  <circle cx="1002" cy="232" r="5" fill="#e3b341" filter="url(#glowSoft)"/>
+  <circle cx="1058" cy="232" r="5" fill="#e3b341" filter="url(#glowSoft)"/>
+
+  <!-- the seal: append-only -->
+  <text x="1166" y="278" text-anchor="end"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="9" letter-spacing="1.5" fill="#6e7b8b">overrides.log · append-only</text>
+</svg>

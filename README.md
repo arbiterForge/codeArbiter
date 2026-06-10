@@ -1,6 +1,6 @@
 <div align="center">
 
-# codeArbiter
+<img src="docs/banner.svg" alt="codeArbiter — discipline, mechanically enforced" width="100%">
 
 **An orchestration layer for Claude Code that refuses to freelance.**
 
@@ -8,7 +8,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="version 2.0.0" src="https://img.shields.io/badge/version-2.0.0-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-30-555">
+<img alt="commands" src="https://img.shields.io/badge/commands-31-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-14-555">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
