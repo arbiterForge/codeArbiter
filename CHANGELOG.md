@@ -6,7 +6,7 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
-## [2.0.0] — Native Claude Code plugin
+## [2.0.0] — 2026-06-10 — Native Claude Code plugin
 
 The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring framework into a **native Claude Code plugin**. The soul is intact — orchestration, gates, SMARTS, the audit trail — re-grounded on Claude Code's plugin primitives and made leaner and more autonomous. Install with `/plugin marketplace add SUaDtL/codeArbiter` then `/plugin install ca@codearbiter`; commands are namespaced `/ca:<name>`. Pre-release, the whole plugin went through an eight-persona adversarial marketplace-readiness review; everything it surfaced is folded in below.
 
@@ -24,6 +24,10 @@ The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring f
 - **Live ADRs** — an optional `governs:` path-glob field on ADRs; the post-write hook surfaces "this file is governed by ADR-NNNN" on any matching Write/Edit, so accepted decisions push back at edit time instead of waiting for a checkpoint sweep.
 - **SMARTS precedent row** — each variance table cites the 1–3 most-similar prior decisions from the project's own decision log and the observed lens pattern ("Precedent: none on record" on thin history).
 - **Mechanical hook hardening** — every enforcement hook is gated on `arbiter: enabled` (the dormancy promise is now mechanically true); hooks match the PowerShell tool as well as Bash; a `python3`→`python` fallback chain keeps gates alive on stock Windows; UTF-8 stdout guards; Windows backslash-path normalization; git guards tolerate global flags and catch `commit -a`, `--force-with-lease`, forcing refspecs, and `git add --all`; the audit logs are protected against truncation, deletion, and non-append edits.
+- **Enforcement layer red-teamed pre-release** — six verified bypasses closed: directory/glob/pathspec-magic staging (`git add src/`, `git add *`, `-u`); audit-log rewrites via `truncate`/`tee`/`cp`/`dd`/`sed -i`; shell-authored ADRs (`echo > .codearbiter/decisions/…`); pushes whose refspec lands on `main` (`git push origin HEAD:main`); a fail-open UTF-8 decode in the security diff scan; and the 30-minute TOCTOU window in the crypto/secret commit gate — the gate-pass marker is now **diff-bound** (`hooks/security-pass.py` records a digest of every sensitive line the gate approved; a pass for one diff cannot launder a different one). Proven by a 62-assertion guard-logic CI matrix on 3 OSes, alongside the 110-assertion cold-install interpreter matrix.
+- **`/ca:doctor`** — install health, proven not assumed: interpreter resolution (including the Microsoft Store `python3` stub), payload integrity, stale plugin-cache siblings, repo activation state, git identity, statusline wiring — then a live-fire probe (`git add --all --dry-run` must come back `BLOCKED [H-03]`) that catches the silent-dormancy failure the static checks can't.
+- **Pipeline resume** — plans carry a per-task `status` column; acceptance is recorded to the plan file, not just conversation context; an interrupted `/ca:feature` or `/ca:sprint` re-enters at the first unaccepted task (never re-brainstorms an approved spec); `/ca:status` lists every pipeline with its progress.
+- **Version-bump CI guard** — a PR changing the plugin payload on an already-published version fails CI, because `claude plugin update` no-ops on an unchanged version string and installed users would silently keep the old payload.
 - **commit-gate behavioral-proof phase** (verification before completion) and a closed reproduce→fix→verify loop in `debug`.
 - **Plugin statusline** — token/context/cost segment renders everywhere; the four arbiter segments (stage, open tasks, open questions, overrides-since-checkpoint) render only when `arbiter: enabled`. Wire it with `/ca:statusline`.
 
@@ -122,4 +126,4 @@ Meta-review of the framework: a four-workstream pass on the decompose skill, ski
 ## Maintenance notes
 
 - This changelog is updated by the maintainer (or via `/release` once that workflow is in regular use), not auto-generated. Each entry should describe an outcome a user might notice, not every commit on the way there.
-- `[2.0.0]` above is **unreleased** — no git tag exists yet. It accumulates everything up to the first marketplace release; tagging `v2.0.0` (via `/ca:release`) is the moment it freezes and a fresh section opens for what follows.
+- `[2.0.0]` froze when `v2.0.0` was tagged (2026-06-10). New work accumulates in a fresh section above it; any change to the shipped payload (`plugins/ca/**`) must ride a version bump — CI enforces this against published versions.
