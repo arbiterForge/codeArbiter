@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!C:/Program Files/Git/usr/bin/env node
 
 // farm.ts
 import { spawn } from "node:child_process";
@@ -41,9 +41,9 @@ var MUT = {
   escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
   cmd: process.env.FARM_MUTATION_CMD ?? null
 };
-function run(cmd, args, cwd) {
+function run(cmd, args, cwd, opts = {}) {
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { cwd, env: process.env });
+    const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
     let out = "";
     c.stdout.on("data", (d) => out += d);
     c.stderr.on("data", (d) => out += d);
@@ -58,9 +58,11 @@ function isInside(root, target) {
   const rel = path.relative(root, target);
   return rel === "" || !rel.startsWith("..") && !path.isAbsolute(rel);
 }
+var [SHELL_BIN, SHELL_FLAG] = process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
+var SHELL_OPTS = process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
 async function runGate(cwd, commands) {
   for (const cmd of commands) {
-    const r = await run("bash", ["-c", cmd], cwd);
+    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS);
     if (r.code !== 0)
       return { ok: false, failed: cmd, tail: r.out.slice(-3500) };
   }
@@ -202,7 +204,7 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden) {
     if (!isInside(cwd, absPath)) {
       return { ok: false, filesWritten, error: `path escapes worktree: ${cleanPath}` };
     }
-    const rel = path.relative(cwd, absPath);
+    const rel = path.relative(cwd, absPath).split(path.sep).join("/");
     if (forbidden.has(rel)) {
       return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
     }
@@ -348,9 +350,10 @@ async function mutationCheck(wt, task) {
   const impl = task.filesInScope.filter((f) => f !== task.test.path);
   if (MUT.cmd) {
     const r = await new Promise((resolve) => {
-      const c = spawn("bash", ["-c", MUT.cmd], {
+      const c = spawn(SHELL_BIN, [SHELL_FLAG, MUT.cmd], {
         cwd: wt,
-        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd }
+        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
+        ...SHELL_OPTS
       });
       let out = "";
       c.stdout.on("data", (d) => out += d);
@@ -391,7 +394,7 @@ async function mutationCheck(wt, task) {
     for (const c of candidates) {
       if (Date.now() - start > MUT.budgetMs) break;
       await writeFile(path.resolve(wt, c.file), c.mutated);
-      const r = await run("bash", ["-c", testCmd], wt);
+      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS);
       await writeFile(path.resolve(wt, c.file), originals.get(c.file));
       evaluated++;
       if (r.code !== 0) killed++;

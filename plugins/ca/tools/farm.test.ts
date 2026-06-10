@@ -5,11 +5,16 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execSync, exec } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, resolve, basename } from "node:path";
 import { fileURLToPath } from "node:url";
+import { tmpdir } from "node:os";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
-const TSX_BIN = resolve(__dirname, "node_modules/.bin/tsx");
+const TSX_BIN = resolve(
+  __dirname,
+  "node_modules/.bin",
+  process.platform === "win32" ? "tsx.cmd" : "tsx",
+);
 const farmTs = resolve(__dirname, "farm.ts");
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import type { Server } from "node:http";
@@ -96,7 +101,7 @@ describe("farm.ts smoke tests", () => {
   let port: number;
 
   beforeEach(async () => {
-    tmpDir = join("/tmp", `farm-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpDir = join(tmpdir(), `farm-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     createTempRepo(tmpDir);
   });
 
@@ -116,7 +121,7 @@ describe("farm.ts smoke tests", () => {
           description: "test",
           filesInScope: ["src/a.ts"],
           test: { path: "src/a.test.ts" },
-          gate: { commands: ["bash -c 'exit 0'"] },
+          gate: { commands: ["node -p 0"] },
         },
       ],
     };
@@ -207,7 +212,7 @@ describe("farm.ts smoke tests", () => {
           deps: [],
           filesInScope: ["src/hello.ts"],
           test: { path: "src/hello.test.ts" },
-          gate: { commands: ["bash -c 'exit 0'"] },
+          gate: { commands: ["node -p 0"] },
         },
       ],
     };
@@ -245,7 +250,7 @@ describe("farm.ts smoke tests", () => {
           deps: [],
           filesInScope: ["src/hello.ts"],
           test: { path: "src/hello.test.ts" },
-          gate: { commands: ["false"] }, // always fails (exit 1)
+          gate: { commands: ['node -e "process.exit(1)"'] }, // always fails (exit 1)
           maxRetries: 1,
         },
       ],
@@ -267,7 +272,7 @@ describe("farm.ts smoke tests", () => {
     ({ server: mockServer, port } = await startMockServer(() =>
       [
         "```typescript",
-        `// path: ../${sentinel.split("/").pop()}`,
+        `// path: ../${basename(sentinel)}`,
         "export const pwned = true;",
         "```",
       ].join("\n"),
@@ -282,7 +287,7 @@ describe("farm.ts smoke tests", () => {
           deps: [],
           filesInScope: ["src/hello.ts"],
           test: { path: "src/hello.test.ts" },
-          gate: { commands: ["bash -c 'exit 0'"] },
+          gate: { commands: ["node -p 0"] },
           maxRetries: 0,
         },
       ],
@@ -319,7 +324,7 @@ describe("farm.ts smoke tests", () => {
           deps: [],
           filesInScope: ["src/hello.ts"],
           test: { path: "src/hello.test.ts" },
-          gate: { commands: ["bash -c 'exit 0'"] },
+          gate: { commands: ["node -p 0"] },
           maxRetries: 0,
         },
       ],
@@ -343,7 +348,7 @@ describe("farm.ts smoke tests", () => {
     // Commit a test that asserts a specific literal, so it exists in the worktree.
     writeFileSync(join(tmpDir, "src", "answer.test.ts"), "expect(answer).toBe(42);\n");
     execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
-    execSync("git commit -m 'add failing test' --no-gpg-sign", { cwd: tmpDir, stdio: "pipe" });
+    execSync(`git commit -m "add failing test" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
 
     const plan = {
       meta: { name: "gaming-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -354,7 +359,7 @@ describe("farm.ts smoke tests", () => {
           deps: [],
           filesInScope: ["src/answer.ts"],
           test: { path: "src/answer.test.ts" },
-          gate: { commands: ["bash -c 'exit 0'"] }, // gate passes; guard must still catch gaming
+          gate: { commands: ["node -p 0"] }, // gate passes; guard must still catch gaming
           maxRetries: 0,
         },
       ],
@@ -442,7 +447,7 @@ describe("farm.ts smoke tests", () => {
           deps: [],
           filesInScope: ["src/m.js"],
           test: { path: "src/m.test.js" },
-          gate: { commands: ["bash -c 'exit 0'"] }, // no-op gate constrains nothing
+          gate: { commands: ["node -p 0"] }, // no-op gate constrains nothing
           maxRetries: 0,
         },
       ],
