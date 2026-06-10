@@ -45,9 +45,11 @@ Heavier path (all required, in order):
    ```
    [ISO-8601] | BY: <email> | SECURITY-OVERRIDE | FINDING: <specific finding> | REASON: <reason>
    ```
-4. **Only then** record the bypass. For the crypto/secret commit gate, that means creating
-   `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` so hook H-09b/H-10b allows the
-   commit — created **only** after steps 1–3, never to skip the gate proper.
+4. **Only then** record the bypass. For the crypto/secret commit gate, that means running
+   `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py"`,
+   which writes `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` bound to the
+   sensitive lines it approves, so hook H-09b/H-10b allows the commit — recorded **only** after
+   steps 1–3, never to skip the gate proper.
 
 Under `/sprint`, a security-critical override is a hard-gate STOP: it surfaces to the user and is
 **never** auto-decided, even in autonomous mode (`SPRINT.md` hard gates).

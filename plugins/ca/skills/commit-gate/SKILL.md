@@ -52,7 +52,7 @@ Read the test, lint, and secrets-scan commands from `tech-stack.md`. Then:
 - Run the test command. ALL tests green. Any failure blocks.
 - Run lint, and the type-check if the project is statically typed. Zero errors.
 - Run the secrets scan on ALL staged files, regardless of commit type. Any finding blocks.
-- **Security gates (mandatory routing):** if the staged diff touches crypto/TLS or secret patterns, route it through `crypto-compliance` and/or `secret-handling` (`${CLAUDE_PLUGIN_ROOT}/skills/`) — they scan against `security-controls.md` and, on pass, record `.codearbiter/.markers/security-gate-passed`. This is not optional: the PreToolUse commit hook **H-09b/H-10b blocks the commit** until that gate pass is recorded, so a crypto/secret change cannot reach a commit without the gate having run.
+- **Security gates (mandatory routing):** if the staged diff touches crypto/TLS or secret patterns, route it through `crypto-compliance` and/or `secret-handling` (`${CLAUDE_PLUGIN_ROOT}/skills/`) — they scan against `security-controls.md` and, on pass, record the diff-bound marker `.codearbiter/.markers/security-gate-passed` (via `hooks/security-pass.py`). This is not optional: the PreToolUse commit hook **H-09b/H-10b blocks the commit** until that gate pass is recorded AND covers every sensitive line being committed, so a crypto/secret change cannot reach a commit without the gate having reviewed that exact change.
 
 Record each result (PASS / BLOCK) for the report.
 

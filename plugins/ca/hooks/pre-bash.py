@@ -7,6 +7,12 @@
 #
 # All guards run only in arbiter-enabled repos (the plugin.json activation
 # contract); elsewhere this exits 0 immediately.
+#
+# Ambiguity resolves CLOSED here. Some patterns below block a harmless
+# spelling (e.g. `cp overrides.log backup` copies FROM the log) because the
+# destructive spelling is indistinguishable without a full shell parse;
+# /ca:override is the sanctioned escape hatch, and a false allow on the audit
+# trail is unrecoverable after the fact.
 
 import os
 import re
@@ -15,8 +21,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, arbiter_active, block, marker_fresh, project_root,
-    read_input, tool_input, utf8_stdio,
+    CRYPTO_RE, SECRET_RE, arbiter_active, block, line_digest, marker_fresh,
+    project_root, read_input, tool_input, utf8_stdio,
 )
 
 # `git` followed by any run of global options (-C <dir>, -c k=v, --git-dir=…,
@@ -31,14 +37,38 @@ GIT_C_DIR_RE = re.compile(r"\bgit\s+-C\s+(\"[^\"]+\"|'[^']+'|\S+)")
 # token (not a ref like `fix-f`), or a forcing `+refspec`.
 FORCE_RE = re.compile(r"(?:^|\s)(?:--force(?:-with-lease|-if-includes)?(?:=\S+)?|-f)(?=\s|$)")
 FORCE_REFSPEC_RE = re.compile(r"\s\+[\w./:~^-]+")
-WILDCARD_ADD_RE = re.compile(r"(?:^|\s)(?:-A|--all|\.)(?=\s|$)")
+# Flag spellings that stage a non-explicit file set. `-u/--update` joins
+# -A/--all/. : it stages every tracked modification — wildcard in behavior
+# even though no glob appears in the command.
+WILDCARD_ADD_RE = re.compile(r"(?:^|\s)(?:-A|--all|-u|--update|\.)(?=\s|$)")
 COMMIT_ALL_RE = re.compile(r"(?:^|\s)(?:-[a-zA-Z]*a[a-zA-Z]*|--all)(?=\s|$)")
+GLOB_RE = re.compile(r"[*?\[]")
+# A push destination that resolves to a protected branch, in any spelling:
+# `main`, `HEAD:main`, `feature:main`, `:main` (deletion), `refs/heads/main`.
+# Matched with fullmatch against each non-flag token, so `feature-main` and
+# `main-fix` never trip it.
+PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # Truncation (`>` but not `>>`) or destructive verbs aimed at an audit log
-# (overrides.log, triage.log — both append-only).
+# (overrides.log, triage.log — both append-only). The verb list includes
+# every common rewrite-in-place spelling (truncate, tee, dd, sed, sponge,
+# cp/copy onto the log); PowerShell's Add-Content is deliberately absent —
+# appending is the one sanctioned write.
 LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\s*\S*(?:overrides|triage)\.log")
 LOG_DESTROY_RE = re.compile(
-    r"\b(rm|del|mv|Remove-Item|Move-Item|Clear-Content|Set-Content|Out-File)\b"
+    r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
+    r"|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File)\b"
     r"[^|;&]*(?:overrides|triage)\.log", re.I,
+)
+# H-11's shell flank: ADRs are authored only via /adr (pre-write/pre-edit
+# guard the Write/Edit tools; this guards redirection and file verbs). Any
+# redirect into .codearbiter/decisions/, or any write/delete verb naming it,
+# blocks — `cat`/`ls`/`grep` reads pass untouched.
+DECISIONS = r"\.codearbiter[\\/]+decisions\b"
+DECISIONS_REDIRECT_RE = re.compile(r">>?\s*\S*" + DECISIONS, re.I)
+DECISIONS_WRITE_RE = re.compile(
+    r"\b(rm|del|mv|cp|copy|dd|tee|sed|touch|truncate|ni"
+    r"|New-Item|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content"
+    r"|Out-File|Add-Content)\b[^|;&]*" + DECISIONS, re.I,
 )
 
 
@@ -54,7 +84,8 @@ def current_branch(cwd):
     try:
         out = subprocess.run(
             ["git", "branch", "--show-current"], cwd=cwd,
-            capture_output=True, text=True, timeout=5,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5,
         )
         return out.stdout.strip() if out.returncode == 0 else ""
     except Exception:  # noqa: BLE001
@@ -62,11 +93,16 @@ def current_branch(cwd):
 
 
 def added_lines(cwd, ref):
-    """The added (`+`) lines of a diff — what a commit would introduce."""
+    """The added (`+`) lines of a diff — what a commit would introduce.
+    Decoded as UTF-8 with replacement: `text=True` alone uses the locale code
+    page (cp1252 on stock Windows), where a non-cp1252 byte in the diff raised
+    UnicodeDecodeError into the bare except below and the security gate
+    silently failed OPEN on exactly the platform this layer protects."""
     try:
         out = subprocess.run(
             ["git", "diff", ref], cwd=cwd,
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=10,
         )
         if out.returncode != 0:
             return ""
@@ -76,6 +112,26 @@ def added_lines(cwd, ref):
         line[1:] for line in out.stdout.splitlines()
         if line.startswith("+") and not line.startswith("+++")
     )
+
+
+def add_violation(args, cwd):
+    """The reason a `git add` argument set is not explicit-file staging, or
+    None. Each path token is checked best-effort against the repo the command
+    targets: a glob, a pathspec-magic prefix, or a directory blocks (staging
+    must name files); a token that resolves to nothing is allowed — git will
+    reject it anyway."""
+    for raw in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args):
+        tok = raw.strip("\"'")
+        if not tok or tok == "--" or tok.startswith("-"):
+            continue  # flag spellings are WILDCARD_ADD_RE's job
+        if tok.startswith(":"):
+            return f"pathspec magic ('{tok}')"
+        if GLOB_RE.search(tok):
+            return f"a glob pattern ('{tok}')"
+        p = tok if os.path.isabs(tok) else os.path.join(cwd, tok)
+        if os.path.isdir(p):
+            return f"a directory ('{tok}')"
+    return None
 
 
 def main():
@@ -95,16 +151,43 @@ def main():
             block("H-01", f"Direct commit to {branch} is prohibited (ORCHESTRATOR §3). "
                           f"Create a feature branch.")
 
-    # H-02: no force-push — any spelling, including --force-with-lease and +refspec
     push = PUSH_RE.search(cmd)
-    if push and (FORCE_RE.search(push.group("args")) or FORCE_REFSPEC_RE.search(push.group("args"))):
-        block("H-02", "Force-push is prohibited (ORCHESTRATOR §3).")
+    if push:
+        pargs = push.group("args")
 
-    # H-03: no wildcard git staging — stage explicitly (commit-gate)
+        # H-02: no force-push — any spelling, including --force-with-lease and +refspec
+        if FORCE_RE.search(pargs) or FORCE_REFSPEC_RE.search(pargs):
+            block("H-02", "Force-push is prohibited (ORCHESTRATOR §3).")
+
+        # H-01: no push whose destination is a protected branch. H-01's branch
+        # check alone left `git push origin HEAD:main` (and `feature:main`,
+        # `:main`) as a refspec-shaped hole — a direct write to main from any
+        # branch with no commit involved.
+        toks = [t.strip("\"'").lstrip("+") for t in pargs.split()
+                if t and not t.startswith("-")]
+        for tok in toks:
+            if PROTECTED_DEST_RE.fullmatch(tok):
+                block("H-01", f"Pushing to a protected branch ('{tok}') is prohibited "
+                              f"(ORCHESTRATOR §3) — main moves only via a merged PR.")
+        # Bare `git push` (no refspec) publishes the current branch.
+        if len(toks) < 2 and current_branch(cwd) in ("main", "master"):
+            block("H-01", "Bare `git push` from main/master publishes the protected "
+                          "branch (ORCHESTRATOR §3) — main moves only via a merged PR.")
+
+    # H-03: no wildcard git staging — stage explicitly (commit-gate). Both the
+    # flag spellings (-A/--all/-u/.) and the argument spellings (globs,
+    # directories, pathspec magic) — `git add src/` stages everything beneath
+    # src/ just as surely as `git add -A` does.
     add = ADD_RE.search(cmd)
-    if add and WILDCARD_ADD_RE.search(add.group("args")):
-        block("H-03", "'git add -A' / 'git add .' / 'git add --all' are prohibited. "
-                      "Stage files explicitly (commit-gate skill).")
+    if add:
+        if WILDCARD_ADD_RE.search(add.group("args")):
+            block("H-03", "'git add -A' / 'git add .' / 'git add --all' / 'git add -u' "
+                          "are prohibited. Stage files explicitly (commit-gate skill).")
+        why = add_violation(add.group("args"), cwd)
+        if why:
+            block("H-03", f"Wildcard staging is prohibited — {why} stages a "
+                          f"non-explicit file set. Stage files explicitly, one path "
+                          f"per file (commit-gate skill).")
 
     # H-05: the audit trail is append-only — block truncation/removal of
     # overrides.log via shell verbs (Write/Edit are guarded separately).
@@ -114,29 +197,53 @@ def main():
                       "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit trail "
                       "is prohibited; append with '>>' only.")
 
+    # H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
+    # pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,
+    # `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched.
+    if DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd):
+        block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
+                      "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
+                      "edits, and deletions there are prohibited.")
+
     # H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     # a recorded security-gate pass. The crypto-compliance / secret-handling skills
-    # drop `.codearbiter/.markers/security-gate-passed` when they pass; a security
-    # gate is NOT bypassable by a plain commit. Scans the staged diff, plus the
-    # worktree diff when the commit uses -a/--all or the same command stages files
-    # (`git add x && git commit`) — both land content this hook would otherwise
-    # never see (the hook runs before the `add` executes).
+    # record the pass via hooks/security-pass.py — a marker holding the digest of
+    # every sensitive line the gate approved. Two checks, both required:
+    # freshness (< 30 min) AND coverage (every sensitive line being committed is
+    # in the approved set). Coverage is what closes the TOCTOU window: a pass
+    # minted for one diff can no longer launder a different diff committed inside
+    # the freshness window. Scans the staged diff, plus the worktree diff when
+    # the commit uses -a/--all or the same command stages files.
     if commit:
         added = added_lines(cwd, "--cached")
         if COMMIT_ALL_RE.search(commit.group("args")) or add:
             added += "\n" + added_lines(cwd, "HEAD")
-        touches_crypto = bool(CRYPTO_RE.search(added))
-        touches_secret = bool(SECRET_RE.search(added))
-        if touches_crypto or touches_secret:
+        sensitive = [ln for ln in added.splitlines()
+                     if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
+        if sensitive:
+            touches_crypto = bool(CRYPTO_RE.search(added))
+            kind = "crypto/TLS" if touches_crypto else "secret"
+            tag = "H-09b" if touches_crypto else "H-10b"
+            skill = "crypto-compliance" if touches_crypto else "secret-handling"
             marker = os.path.join(root, ".codearbiter", ".markers", "security-gate-passed")
             if not marker_fresh(marker, 30):
-                kind = "crypto/TLS" if touches_crypto else "secret"
-                tag = "H-09b" if touches_crypto else "H-10b"
                 block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                            f"recorded (.codearbiter/.markers/security-gate-passed). Run the "
-                           f"{'crypto-compliance' if touches_crypto else 'secret-handling'} gate "
-                           f"(it records the pass), then commit. To bypass a security gate, "
-                           f"/override requires its heavier security-acknowledgement path.")
+                           f"{skill} gate (it records the pass), then commit. To bypass a "
+                           f"security gate, /override requires its heavier "
+                           f"security-acknowledgement path.")
+            try:
+                with open(marker, encoding="utf-8") as f:
+                    approved = set(f.read().split())
+            except Exception:  # noqa: BLE001
+                approved = set()
+            uncovered = [ln for ln in sensitive if line_digest(ln) not in approved]
+            if uncovered:
+                block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered "
+                           f"by the recorded security-gate pass — the pass is bound to the "
+                           f"exact lines it reviewed, and these changed (or appeared) after "
+                           f"it ran. Re-run the {skill} gate so it reviews the current diff "
+                           f"and re-records the binding, then commit.")
 
     sys.exit(0)
 

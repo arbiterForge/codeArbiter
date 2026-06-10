@@ -23,6 +23,7 @@
 # drained stdin and the rerun's exit 0 would swallow the block. Separate hook
 # entries each receive their own stdin, so the block survives.
 
+import hashlib
 import json
 import os
 import re
@@ -123,13 +124,24 @@ def project_root():
     try:
         out = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True, text=True, timeout=5,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5,
         )
         if out.returncode == 0:
             return out.stdout.strip()
     except Exception:  # noqa: BLE001
         pass
     return os.getcwd()
+
+
+def line_digest(line):
+    """Digest of one added diff line, for the security-gate binding
+    (H-09b/H-10b). The gate-pass marker stores these digests instead of being
+    an empty `touch`d file, so a recorded pass admits only the exact sensitive
+    lines it reviewed — not whatever lands in the next 30 minutes. Trailing
+    whitespace is stripped so CRLF translation between worktree and index
+    never breaks the match."""
+    return hashlib.sha256(line.rstrip().encode("utf-8", "replace")).hexdigest()
 
 
 def marker_fresh(path, minutes):

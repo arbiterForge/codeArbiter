@@ -75,6 +75,11 @@ jobs:
           python-version: "3.x"
       - name: Run cold-install interpreter matrix
         run: python .github/scripts/test_hooks_cold_install.py
+      - name: Run guard-logic matrix
+        # The cold-install matrix proves the interpreter plumbing; this proves
+        # the guard decisions themselves — every blocked spelling of
+        # H-01/02/03/05/11/09b blocks, every legitimate spelling still allows.
+        run: python .github/scripts/test_hook_guards.py
 
   prose:
     name: plugin reference graph
