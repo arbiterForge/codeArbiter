@@ -116,8 +116,11 @@ def cmd_install(settings, path, script_abs, interp):
         save_settings(path, settings)
         print(f"REFRESHED codeArbiter statusline path -> {new_cmd}")
         return
-    # back up whatever is there (only if we haven't already stashed one)
-    if BACKUP_KEY not in settings:
+    # Back up whatever is there. If a stale backup exists from an earlier cycle
+    # but the user has since wired a DIFFERENT third-party statusline, the live
+    # one wins — overwriting it without a fresh backup would lose the user's
+    # current line and restore the wrong one on uninstall.
+    if BACKUP_KEY not in settings or current is not None:
         settings[BACKUP_KEY] = current  # may be None
     settings["statusLine"] = {"type": "command", "command": new_cmd, "padding": 0}
     save_settings(path, settings)
