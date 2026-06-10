@@ -32,3 +32,6 @@ plugins/ca/tools/node_modules/
 # Farm dispatcher runtime artifacts — worktrees, reports, integration branch staging.
 # Written per-run in any project using codeArbiter. Never committed to the plugin repo.
 .farm/
+
+# Root-level scratch directory — local experiments, never committed.
+/tmp/

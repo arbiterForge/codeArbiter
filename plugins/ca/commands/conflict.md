@@ -5,10 +5,7 @@ argument-hint: (none)
 
 # /ca:conflict — conflict protocol
 
-An orchestrator protocol, not a skill route. When a rule conflict surfaces — the persona, a
-`.codearbiter/` document, and code contradict each other, or two docs contradict each other — all
-other work STOPs and the conflict is presented for the user to resolve. The orchestrator never picks a
-side.
+Orchestrator protocol, not a skill route. When a rule conflict surfaces — the persona, a `.codearbiter/` document, and code contradict each other, or two docs contradict each other — all other work STOPs and the conflict is presented for the user to resolve. The orchestrator never picks a side.
 
 ## Flow
 

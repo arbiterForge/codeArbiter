@@ -5,9 +5,7 @@ argument-hint: "<verb-noun skill name>"
 
 # /ca:new-skill — author a skill
 
-The permitted entry to creating a skill. Nothing is written until the gap is proven uncovered — skills
-are not created speculatively. Name the skill in verb-noun form (`"dependency-review"`), not as a
-description of what it does (`"the thing that checks packages"`).
+The only permitted entry to creating a skill. Nothing is written until the gap is proven uncovered — skills are not created speculatively. Name the skill in verb-noun form (`"dependency-review"`), not as a description (`"the thing that checks packages"`).
 
 ## Flow
 

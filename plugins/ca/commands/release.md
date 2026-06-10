@@ -5,9 +5,7 @@ argument-hint: ["<version>"] | --auto | --dry-run
 
 # /ca:release — tagged release
 
-The only permitted path to a version tag. A release is a deployment-readiness assertion, not a commit:
-the codebase at this SHA satisfies the bar for shipping. `/ca:release` aggregates existing compliance —
-it does not duplicate it.
+The only permitted path to a version tag. A release is a deployment-readiness assertion: the codebase at this SHA satisfies the bar for shipping. `/ca:release` aggregates existing compliance — it does not duplicate it.
 
 ## Flow
 
@@ -20,7 +18,7 @@ Routes to the `release` skill:
    disagrees with the classification BLOCKS — the bump is never silently up- or downgraded.
 3. **Changelog** — roll up the `CHANGELOG:` footers from `feat`, `fix`, and `perf` commits into a new
    section. BLOCK if any `feat`/`fix` commit lacks the footer; never auto-fill it.
-4. **Tag** — compose the annotated tag. MUST NOT push it to a remote without explicit user
+4. **Tag** — compose the annotated tag. Never push it to a remote without explicit user
    authorization — publication is a separate decision.
 
 `--dry-run` runs every gate and surfaces the readiness report, then STOPs before composing the tag.
@@ -30,8 +28,8 @@ Routes to the `release` skill:
 - **`<version>`** (e.g. `"1.2.3"`) — explicit version; Phase 2 still classifies the window and BLOCKs
   on disagreement.
 - **`--auto`** — derive the version from the commit log (default when no version is given).
-- **`--dry-run`** — run all gates, compose nothing. MAY combine with `--auto` or an explicit version.
-  An explicit version MUST NOT combine with `--auto` — they are mutually exclusive.
+- **`--dry-run`** — run all gates, compose nothing. Combines with `--auto` or an explicit version.
+  An explicit version never combines with `--auto` — they are mutually exclusive.
 
 ## Routes to
 

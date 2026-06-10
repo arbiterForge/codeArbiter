@@ -5,8 +5,7 @@ argument-hint: (none)
 
 # /ca:checkpoint — codebase sweep
 
-A periodic, lean sweep of the entire codebase with the reviewer fleet, funneled to a single dated
-report. It surfaces findings — it is not a promotion gate, and it enforces no sign-off.
+Periodic sweep of the entire codebase with the reviewer fleet, funneled to a single dated report. Surfaces findings — not a promotion gate, enforces no sign-off.
 
 ## Flow
 

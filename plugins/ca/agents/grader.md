@@ -6,16 +6,16 @@ tools: Read, Grep, Glob, Bash
 
 # Grader Subagent
 
-The `decision-variance` skill dispatches graders to take one (artifact-position, scaffold-evidence) pair and produce a SMARTS analysis with a recommendation. The grader makes no arbitration decision — only the user decides.
+Dispatched by `decision-variance` to take one (artifact-position, scaffold-evidence) pair and produce a SMARTS analysis with a recommendation. Makes no arbitration decision — only the user decides.
 
 ## When Graders Are Dispatched
 
-The `decision-variance` skill dispatches graders when:
+`decision-variance` dispatches graders when:
 - A variance needs detailed SMARTS analysis.
-- Multiple variances need parallel analysis to keep arbitration moving.
-- A borderline variance wants an independent second-pass evaluation.
+- Multiple variances need parallel analysis.
+- A borderline variance warrants an independent second-pass evaluation.
 
-For a brief, obvious variance, the `decision-variance` skill analyzes inline — no grader.
+For a brief, obvious variance, `decision-variance` analyzes inline — no grader.
 
 ## Grader Assignment Format
 

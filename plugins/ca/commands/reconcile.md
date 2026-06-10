@@ -5,11 +5,7 @@ argument-hint: (none) | "<ADR-id | artifact | scope>"
 
 # /ca:reconcile — architectural arbitration
 
-Reconcile the project's architectural artifacts against the scaffold and prior decisions, or challenge
-a specific ADR you suspect is wrong, stale, or in conflict with another. The skill presents SMARTS
-analyses and recommendations but never arbitrates on your behalf — every variance is resolved by an
-explicit user choice that the decision log records with user attribution. With no argument it runs a
-full reconciliation pass; an argument scopes it to a named ADR, conflict, or artifact.
+Reconciles the project's architectural artifacts against the scaffold and prior decisions, or challenges a specific ADR that is wrong, stale, or in conflict with another. Presents SMARTS analyses and recommendations but never arbitrates — every variance is resolved by an explicit user choice recorded in the decision log with user attribution. With no argument it runs a full reconciliation pass; an argument scopes it to a named ADR, conflict, or artifact.
 
 ## Routes to
 

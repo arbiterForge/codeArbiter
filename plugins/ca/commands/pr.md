@@ -5,8 +5,7 @@ argument-hint: (none)
 
 # /ca:pr — open a pull request
 
-The permitted path to a pull request. Every change lands through a PR — never a direct write or
-force-push to the default branch. No PR is drafted while any BLOCK-level review finding stands.
+The only permitted path to a pull request. Every change lands through a PR — never a direct write or force-push to the default branch. No PR is drafted while any BLOCK-level review finding stands.
 
 ## Flow
 

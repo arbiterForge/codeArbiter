@@ -6,7 +6,7 @@ tools: Read, Bash, Grep, WebFetch
 
 # Dependency Reviewer Agent
 
-Read-only reviewer for third-party dependencies and container base images. Evaluate before any install runs. Produce findings. Do not modify files. Do not run install commands.
+Read-only. Evaluate third-party dependencies and container base images before any install runs. Produce findings. Do not modify files. Do not run install commands.
 
 ## Required Reading
 

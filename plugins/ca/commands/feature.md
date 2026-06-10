@@ -5,11 +5,35 @@ argument-hint: "<what you want to build>"
 
 # /ca:feature — spec-driven feature
 
-The single permitted entry to implementation work. No feature code is written before a spec is
-approved and the `tdd` skill's Phase 1 clears. A one-line idea is not a spec — `brainstorming` makes
-it one.
+The single permitted entry to implementation work. No feature code is written before a spec is approved and `tdd` Phase 1 clears. A one-line idea is not a spec — `brainstorming` makes it one.
 
-## Flow
+## Step 0 — change-class triage (logged)
+
+Before routing, classify the request. The **small lane** applies only when ALL of these hold —
+judged against `$ARGUMENTS` and a quick look at the code, never assumed:
+
+- the change touches ≤ 2 implementation files (plus their tests);
+- no §4 reference-map scope-touch: auth/crypto/secrets, dependencies, migrations/schema, telemetry,
+  public API surface, domain vocabulary;
+- no new dependency, endpoint, command, or configuration surface;
+- the behavior change is expressible as 1–3 concrete, individually testable acceptance criteria.
+
+**Small lane:** state the mini-spec inline (the 1–3 criteria) and STOP for the user's one-reply
+confirmation. On confirmation, append one line to `${CLAUDE_PROJECT_DIR}/.codearbiter/triage.log`
+(append-only, `>>`):
+
+```
+[ISO-8601 timestamp] | BY: <git user.email> | LANE: small | SCOPE: <one-line> | BASIS: <criteria met>
+```
+
+Then route directly to `tdd` — the confirmed criteria are its Phase 1 obligations; Phases 2–6 run
+unchanged — and exit through the full `commit-gate` and `finishing-a-development-branch` exactly as
+the full lane does. The lane trims ceremony, never gates.
+
+Any criterion violated, or uncertain → **full lane** (below). Uncertainty is full-lane; the triage
+never guesses.
+
+## Flow — full lane
 
 Route through the pipeline in order; each step gates the next:
 
@@ -29,9 +53,9 @@ Route through the pipeline in order; each step gates the next:
 5. **`finishing-a-development-branch`** — terminal step: open-PR / merge-via-PR / discard. Every
    change lands through a PR; never a direct write to the default branch.
 
-The autonomous counterpart (`/sprint`) runs the same spec→plan but passes the full plan to
-`subagent-driven-development` directly, without per-batch checkpoints. That path is its own (hidden)
-entry, not `/feature`.
+The autonomous counterpart (`/ca:sprint`) runs the same spec→plan but passes the full plan to
+`subagent-driven-development` directly, without per-batch checkpoints. That path is its own entry,
+not `/feature`.
 
 ## Scope routing
 
@@ -49,6 +73,8 @@ transitioning between scope areas.
 
 ## Hard gate
 
-MUST NOT write feature code before the spec is approved AND `tdd` Phase 1 clears. MUST NOT skip
-`writing-plans` for anything beyond a trivial single-file change. MUST NOT resolve a `[CONFIRM-NN]`
-in the spec by guessing — surface it.
+MUST NOT write feature code before a spec is approved AND `tdd` Phase 1 clears — the brainstormed
+spec in the full lane, the user-confirmed mini-spec in the small lane. MUST NOT take the small lane
+unless every Step 0 criterion holds, and MUST log the classification to
+`.codearbiter/triage.log` before `tdd` begins. MUST NOT skip `writing-plans` in the full lane.
+MUST NOT resolve a `[CONFIRM-NN]` in the spec by guessing — surface it.

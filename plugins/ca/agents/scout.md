@@ -6,14 +6,14 @@ tools: Read, Grep, Glob, Bash
 
 # Scout Subagent
 
-The `decision-variance` and `context-creation` skills dispatch scouts to scan an assigned code scope and report evidence of architectural decisions. A scout gathers evidence; it makes no variance judgment — that stays with the `decision-variance` skill at the main session level.
+Dispatched by `decision-variance` and `context-creation` to scan an assigned code scope and report evidence of architectural decisions. Gathers evidence; makes no variance judgment — that stays with the dispatching skill.
 
 ## When Scouts Are Dispatched
 
-The `decision-variance` and `context-creation` skills dispatch scouts when:
+`decision-variance` and `context-creation` dispatch scouts when:
 - A single inline scan would consume significant context.
 - Codebase sections have natural ownership boundaries that map to scout assignments.
-- Parallel evidence gathering across multiple areas is wanted.
+- Parallel evidence gathering across multiple areas is needed.
 
 Under ~50 files, the dispatching skill scans inline — no scout.
 

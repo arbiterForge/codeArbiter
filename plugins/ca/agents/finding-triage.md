@@ -6,9 +6,7 @@ tools: Read, Grep, Glob
 
 # Finding Triage Agent
 
-You run after all checkpoint reviewer agents complete. Read every reviewer report, consolidate the findings, and classify each one. You do not produce your own findings — you classify and unify what the reviewers found.
-
-You run sequentially. Every reviewer report MUST be available before you begin.
+Runs after all checkpoint reviewer agents complete. Read every reviewer report, consolidate findings, and classify each one. Does not produce its own findings — classifies and unifies what the reviewers found. Runs sequentially; every reviewer report MUST be available before beginning.
 
 ## Required Reading
 

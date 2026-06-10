@@ -8,7 +8,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="version 2.0.0" src="https://img.shields.io/badge/version-2.0.0-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-24-555">
+<img alt="commands" src="https://img.shields.io/badge/commands-30-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-14-555">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
@@ -78,6 +78,11 @@ codeArbiter self-hosts a single-plugin marketplace from this repo.
 
 Hooks, commands, agents, and statusline wiring load automatically; everything resolves under the `/ca:` namespace.
 
+**Prerequisites:** Python 3 on `PATH` (every hook is Python — without it the gates and the startup
+injection silently don't run) and `git config user.email` set (overrides and ADRs are attributed to
+that identity). The optional <kbd>/ca:statusline</kbd> command writes the statusline entry into your
+global `~/.claude/settings.json` (it backs up what was there and restores it on removal).
+
 <details>
 <summary><b>Install from a local clone</b> (for hacking on it)</summary>
 
@@ -95,13 +100,14 @@ git clone https://github.com/SUaDtL/codeArbiter
 
 ## Enable codeArbiter in a repo
 
-Installing the plugin does nothing until you opt a repo in. Open the repo in Claude Code and pick the path that matches:
+Installing the plugin does nothing until you opt a repo in — that silence is intentional. Open the
+repo in Claude Code and run <kbd>/ca:init</kbd>: it scaffolds `.codearbiter/` with `arbiter: enabled`
+and routes you to the right populator for your situation:
 
-| You have… | Run | What it does |
+| You have… | /ca:init routes to | What it does |
 |---|---|---|
 | an existing codebase | <kbd>/ca:create-context</kbd> | back-fills `.codearbiter/` from the source already there |
-| a new project, no code yet | <kbd>/ca:decompose</kbd> | a layered interview that scaffolds `.codearbiter/` |
-| just want the state store | <kbd>/ca:init</kbd> | writes `.codearbiter/` with `arbiter: enabled` |
+| a new project, no code yet | <kbd>/ca:decompose</kbd> | a layered interview that scaffolds `.codearbiter/` (it's thorough — expect a long, resumable Q&A) |
 
 Once `.codearbiter/CONTEXT.md` carries the `<!--INITIALIZED-->` marker, you're in normal operation: the next session opens with the orchestrator active and the startup state presented. From there, everything flows through commands.
 
@@ -122,14 +128,16 @@ Every intent flows through a command; direct off-channel instructions get redire
 | Command | Purpose |
 |---|---|
 | <kbd>/ca:feature "desc"</kbd> | Spec-driven feature: brainstorm → plan → test-first build → commit → finish. **The only path to implementation.** |
+| <kbd>/ca:sprint "goal"</kbd> | **Autonomous sprint.** One interactive spec gate, then plan-to-PR execution — every auto-decision SMARTS-scored and logged with a confidence flag for your morning review. Security, irreversible ops, and merges still stop for you. |
 | <kbd>/ca:fix "bug"</kbd> | Regression-test-first defect fix. |
 | <kbd>/ca:commit</kbd> | The only path to a commit; routes through the nine-gate `commit-gate`. |
 | <kbd>/ca:review</kbd> | Dispatch the reviewer fleet over the diff; BLOCK on CRITICAL/HIGH. |
 | <kbd>/ca:adr "title"</kbd> | Author a numbered, user-attributed Architecture Decision Record. |
 | <kbd>/ca:status</kbd> | Stage, open tasks, unresolved `CONFIRM-NN`, overrides since checkpoint. |
+| <kbd>/ca:audit</kbd> | One command, one packet: every commit, override, ADR, and autonomous decision in a window, with attribution — the document an auditor actually asks for. |
 
 <details>
-<summary><b>The full catalog</b> — 24 commands</summary>
+<summary><b>The full catalog</b> — 30 commands</summary>
 
 <br>
 
@@ -137,10 +145,13 @@ Every intent flows through a command; direct off-channel instructions get redire
 
 | Command | Purpose |
 |---|---|
-| `/ca:feature "desc"` | Spec-driven feature — the only entry to implementation |
+| `/ca:feature "desc"` | Spec-driven feature — the only entry to implementation; a logged small lane skips ceremony for small changes |
+| `/ca:sprint "goal"` | Autonomous sprint — one spec gate, then plan-to-PR with every auto-decision logged |
 | `/ca:fix "bug"` | Regression-test-first defect fix |
 | `/ca:refactor "surface"` | Behavior-preserving restructure behind a parity-coverage gate |
 | `/ca:debug "symptom"` | Investigate-then-decide root-cause analysis |
+| `/ca:chore <docs\|deps\|revert>` | Non-behavioral lane — docs edits, dependency bumps, reverts; type-scaled gates |
+| `/ca:spike "question"` | Throwaway exploration on a `spike/*` branch — never merges; exits to a findings note or `/ca:feature` |
 
 **Commit &amp; ship**
 
@@ -159,8 +170,8 @@ Every intent flows through a command; direct off-channel instructions get redire
 |---|---|
 | `/ca:adr "title"` | Author a numbered, user-attributed ADR |
 | `/ca:adr-status [--adr N]` | List/inspect ADR status and supersede chains |
-| `/ca:decision-variance` | Reconcile artifacts vs. scaffold via SMARTS |
-| `/ca:surface-conflict` | Stop all work and surface a rule conflict |
+| `/ca:reconcile ["scope"]` | Reconcile artifacts vs. scaffold via SMARTS |
+| `/ca:conflict "description"` | Stop all work and surface a rule conflict |
 | `/ca:threat-model "scope"` | Optional lightweight STRIDE pass |
 
 **Project &amp; meta**
@@ -175,7 +186,15 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:new-skill "gap"` | Author a new skill after the gap is proven uncovered |
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
 | `/ca:override "reason"` | Sanctioned, logged single-identity gate bypass |
+| `/ca:audit [range]` | Assemble the governance packet for a window into `.codearbiter/audits/` — read-only |
 | `/ca:commands` | Show the catalog |
+
+**Maintainer**
+
+| Command | Purpose |
+|---|---|
+| `/ca:dev ["note"]` | Suspend orchestration to edit codeArbiter itself — requires `CODEARBITER_DEV=1`; entry/exit logged to `overrides.log` |
+| `/ca:arbiter` | Exit dev mode — restore orchestration, log the exit |
 
 </details>
 
@@ -186,10 +205,10 @@ The non-negotiables codeArbiter enforces in every enabled repo:
 - **No feature code before `tdd` Phase 1** — a failing test comes first.
 - **No commit without `commit-gate`**, and never on a red suite. "It looks good" is not permission.
 - **No `[CONFIRM-NN]` resolved by guessing** — the question is surfaced and work stops.
-- **No silent reconciliation** of a conflict between persona, docs, and code — it routes to `/ca:surface-conflict`.
+- **No silent reconciliation** of a conflict between persona, docs, and code — it routes to `/ca:conflict`.
 - **No direct-to-`main`, no force-push** — all changes via branch/PR.
-- **ADRs only via `/ca:adr`**, with explicit user attribution.
-- **Every `/ca:override` is logged** to an append-only audit trail.
+- **ADRs only via `/ca:adr`**, with explicit user attribution — and an ADR with a `governs:` field pushes back at edit time on the files it constrains.
+- **Every `/ca:override`, `/ca:dev` session, and small-lane triage call is logged** to append-only audit logs the hooks mechanically protect from rewrite.
 
 When rules pull apart, they resolve by a fixed hierarchy — security & audit-trail correctness first, then data integrity, maintainability, performance, velocity — and a non-obvious tradeoff cites the level it was made at.
 
@@ -200,9 +219,9 @@ When rules pull apart, they resolve by a fixed hierarchy — security & audit-tr
 plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── .claude-plugin/plugin.json
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
-├── COMMANDS.md                     command catalog
-├── commands/   (24)   skills/   (20)   agents/   (14)
-├── includes/                       routing-table · reference-map · redirect (loaded on demand)
+├── COMMANDS.md                     command catalog (+ user-facing glossary)
+├── commands/   (30)   skills/   (20)   agents/   (14)
+├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 └── hooks/                          session-start (activation linchpin) · pre/post gates · statusline
 ```
 

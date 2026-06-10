@@ -5,15 +5,9 @@ argument-hint: (none)
 
 # /ca:decompose — greenfield populate
 
-Stand up project state for a greenfield project — one with no meaningful source code yet. A
-senior-architect persona drives a six-layer interview eliciting purpose, scope, primary users, domain
-vocabulary, and architectural constraints, persisting each layer to disk so a context reset loses
-nothing, then writes the surviving `.codearbiter/` doc set and locks the project initialized. No
-arguments — the skill interviews the user (a handoff summary may be supplied freely during the
-interview).
+Stands up project state for a greenfield project — one with no meaningful source code yet. A senior-architect persona drives a six-layer interview eliciting purpose, scope, primary users, domain vocabulary, and architectural constraints, persisting each layer to disk so a context reset loses nothing, then writes the surviving `.codearbiter/` doc set and locks the project initialized. No arguments — the skill interviews the user (a handoff summary may be supplied freely during the interview).
 
-This is the only permitted path to populate `.codearbiter/` when no meaningful source exists, and the
-greenfield startup route. For an existing codebase, use `/ca:create-context`.
+The only permitted path to populate `.codearbiter/` when no meaningful source exists. For an existing codebase, use `/ca:create-context`.
 
 ## Routes to
 

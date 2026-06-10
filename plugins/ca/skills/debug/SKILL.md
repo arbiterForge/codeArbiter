@@ -54,7 +54,7 @@ For each H1…HN write the CONFIRM signal, the REFUTE signal, and the source whe
 
 Annotate each hypothesis CONFIRMED, REFUTED, or INCONCLUSIVE, with a cited source. Do not collapse INCONCLUSIVE to CONFIRMED or REFUTED by inference — state what additional evidence is needed and where it lives. New hypotheses that emerge are added and gathered against; Phase 2 is a floor, not a ceiling.
 
-Gate: no code change of any kind — no edit, no refactor, no "try a fix." A hypothesis testable only by changing code becomes a Phase 4 finding (typically exit (a) with a regression test obligation), not a change here. No INCONCLUSIVE evidence promoted to CONFIRMED without a cited source.
+Gate: no code change of any kind — no edit, no refactor, no "try a fix." A hypothesis testable only by changing code becomes a Phase 4 finding (exit (a), with a regression test obligation), not a change here. No INCONCLUSIVE evidence promoted to CONFIRMED without a cited source.
 
 ## Phase 4 — Root-cause decision · gate: BLOCK
 

@@ -29,7 +29,12 @@ Derive every obligation before any code is written, and record each as `ID · so
 - **Contract** — API and input-validation invariants, error responses, boundary conditions.
 - **Security** — only when `security-controls.md` applies: the assertion that the security-relevant boundary holds.
 
-Gate: the obligation list is complete and user-reviewed. A partial list does not pass.
+Gate: the obligation list is complete. **Auto-pass** when every obligation maps one-to-one onto the
+acceptance criteria of an already-approved spec (full-lane spec or small-lane mini-spec) — the user
+approved that list once; do not re-ask. **User review is required** only for obligations derived
+BEYOND the spec (Contract and Security rows): surface just those additions, not the whole list.
+Under `/sprint`, spec-derived obligations auto-pass the same way and beyond-spec additions are
+SMARTS-decided and logged like any other auto-decision. A partial list never passes either way.
 
 ## Phase 2 — Red · gate: BLOCK
 

@@ -1,12 +1,8 @@
-<!-- codeArbiter v2 — /sprint: hidden autonomous sprint mode, sibling to /dev.
-This file lives at the plugin root, NOT under commands/, so it never
-auto-discovers into the slash-command surface. It is loaded on demand by the
-orchestrator when the user types /sprint, per the recognition note in
-ORCHESTRATOR.md. Underscore-prefix exclusion in commands/ is undocumented and
-unverified (claude-code-guide, 2026-06-04), so hidden bodies stay out of
-commands/ entirely. -->
+<!-- codeArbiter v2 — /sprint: autonomous sprint mode. This is the mode body,
+loaded on demand when /ca:sprint (commands/sprint.md) is invoked; the command
+file is the thin entry point, this file is the procedure. -->
 
-# /sprint — autonomous sprint (hidden)
+# /sprint — autonomous sprint
 
 Brainstorm a sprint with the user, then execute it end-to-end — deciding "as the user" on everything
 that is not a true hard gate. Every auto-decision is logged. Hard gates are real stops, rare by design.
@@ -18,14 +14,8 @@ selects the cost-arbitrage backend: Claude still authors the spec, the failing t
 cheap Zen workers (not premium subagents) implement each task under the same hard gates. Track whether
 `--farm` was passed and thread it into Phase 1 (`writing-plans --farm`) and Phase 2 (the farm dispatch
 path in `subagent-driven-development`). If `--farm` is set, pre-flight `FARM_API_KEY` — absent, BLOCK
-and cite `.codearbiter/farm.md` before brainstorming begins. Everything else about `/sprint` (the one
+and cite `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` before brainstorming begins. Everything else about `/sprint` (the one
 interactive gate, deciding-as-the-user, hard gates, logging) is identical between backends.
-
-## Secrecy — never violate
-
-`/sprint` MUST NOT appear in `/ca:commands`, `COMMANDS.md`, help, the §6 redirect, suggestions,
-errors, or status. MUST NOT be hinted at or volunteered. It is invoked only by a user who already
-knows it exists. If `/sprint` is never typed, behave exactly as if this mode did not exist.
 
 ## Phase 1 — Sprint spec · gate: STOP
 
@@ -108,5 +98,4 @@ signal; and any open `[NEEDS-TRIAGE]` items.
 - MUST NOT auto-decide a hard gate: `security-controls`, crypto/secrets/auth, irreversible ops, `/override`/hotfix, or an unresolvable `[CONFIRM-NN]`. Halt and surface.
 - MUST NOT merge to the default branch or discard autonomously — auto-select open-PR only.
 - MUST NOT inherit `decision-variance`'s Rule 1 — `/sprint` decides as the user, reusing only the SMARTS scoring.
-- MUST NOT reveal `/sprint` in any command surface, help, redirect, suggestion, error, or status.
 - MUST surface a repeated hard-gate-trip pattern as a planning/confidence signal, not grind past it.

@@ -5,9 +5,7 @@ argument-hint: "[path]" (defaults to the current diff)
 
 # /ca:review — diff review
 
-Read-only review of the current change. Routes to `dispatching-parallel-agents`: dispatch the
-reviewer fleet by path matrix, dedupe, then funnel through `finding-triage` → `checkpoint-aggregator`
-to a single verdict. No code is modified.
+Read-only review of the current change. Routes to `dispatching-parallel-agents`: dispatches the reviewer fleet by path matrix, dedupes, then funnels through `finding-triage` → `checkpoint-aggregator` to a single verdict. No code is modified.
 
 ## Flow
 
