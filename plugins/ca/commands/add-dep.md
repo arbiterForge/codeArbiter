@@ -17,7 +17,7 @@ and supply-chain policy) and `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` 
 manager) to judge the package.
 
 After the agent clears it, the orchestrator surfaces the install command for confirmation. The lock
-file change MUST be committed alongside the manifest change — never one without the other.
+file change is committed alongside the manifest change — never one without the other.
 
 ## When NOT to use
 

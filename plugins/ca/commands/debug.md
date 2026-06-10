@@ -5,14 +5,9 @@ argument-hint: "<observed symptom>"
 
 # /ca:debug — root-cause investigation
 
-Investigate a defect, anomaly, or unexpected behavior whose cause is not yet known. `debug` separates
-investigation from implementation: no code is modified while debugging. Describe the symptom with
-enough fidelity that another operator could reproduce it — observed behavior, reproduction steps (or
-intermittent-trigger profile), and environment. Vague descriptions ("it's flaky") are rejected; the
-orchestrator asks for clarification before routing.
+Investigates a defect, anomaly, or unexpected behavior whose cause is not yet known. Separates investigation from implementation: no code is modified while debugging. Describe the symptom with enough fidelity that another operator could reproduce it — observed behavior, reproduction steps (or intermittent-trigger profile), and environment. Vague descriptions ("it's flaky") are rejected; the orchestrator asks for clarification before routing.
 
-If the cause is already known and a regression test is already named, skip this and invoke `/ca:fix`
-directly.
+If the cause is already known and a regression test is already named, invoke `/ca:fix` directly.
 
 ## Routes to
 

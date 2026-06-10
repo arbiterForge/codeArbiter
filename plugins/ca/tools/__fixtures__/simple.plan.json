@@ -12,7 +12,7 @@
       "deps": [],
       "filesInScope": ["src/hello.ts"],
       "test": { "path": "src/hello.test.ts" },
-      "gate": { "commands": ["bash -c 'exit 0'"] }
+      "gate": { "commands": ["node -p 0"] }
     },
     {
       "id": "task-b",
@@ -20,7 +20,7 @@
       "deps": ["task-a"],
       "filesInScope": ["src/world.ts"],
       "test": { "path": "src/world.test.ts" },
-      "gate": { "commands": ["bash -c 'exit 0'"] }
+      "gate": { "commands": ["node -p 0"] }
     }
   ]
 }

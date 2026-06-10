@@ -42,6 +42,7 @@ date: YYYY-MM-DD
 title: <title>
 decided-by: <user identifier>
 supersedes: NNNN | none
+governs: <optional, comma-separated path globs this decision constrains — e.g. src/auth/*, config/tls/*>
 ---
 
 # ADR-NNNN — <title>
@@ -67,6 +68,12 @@ Proposed
 ```
 
 After writing the ADR, append a corresponding entry to the decision log per the format in `${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md` — `Decided by:` names the user. Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction; never advance status on this skill's own judgment.
+
+**`governs:` makes the decision live.** When an ADR names path globs in `governs:`, the post-write
+hook surfaces a one-line notice on any Write/Edit touching a matching file — "this file is governed
+by ADR-NNNN" — so a recorded decision pushes back at edit time instead of waiting for a checkpoint
+sweep. Offer the field whenever a decision constrains identifiable files; omit it for decisions
+without a file footprint. Globs are fnmatch-style against repo-relative forward-slash paths.
 
 Once the ADR file and its log entry are written (and any user-instructed status edit is applied), remove the marker — it exists only for one authoring pass:
 

@@ -76,6 +76,16 @@ The SMARTS table follows `references/smarts.md` exactly: six lenses, verdict-fir
 Adequate / Weak / Indifferent), the length cap, no hedging adverbs, evidence specificity. The
 recommendation carries one strength label — strong / moderate / tied.
 
+**Precedent row.** Before writing the tables, scan the existing decision log once: tally which
+lenses prior resolutions turned on (which lens was decisive, which way ties broke) and note
+decisions whose subject overlaps this variance. Under each SMARTS table, append one `Precedent:`
+line citing the 1–3 most similar prior decisions by ID and the observed pattern — e.g.
+`Precedent: D-014 (bundled over external, Available decisive), D-009; this log has broken 3 of 4
+ties toward Maintainable.` No prior decisions, or none relevant → `Precedent: none on record` —
+never invent a pattern from thin history (fewer than 3 relevant entries is "none yet established").
+Precedent informs the recommendation; it never outranks the Phase 4 authority order, and it is
+input to the user's choice, not a substitute for it.
+
 For more than ~10 open variances, group by area and present area-by-area. For a large pass (more
 than ~20 decision categories or ~50 scaffold files), MAY dispatch `scout`
 (`${CLAUDE_PLUGIN_ROOT}/agents/scout.md`) to gather evidence and `grader`

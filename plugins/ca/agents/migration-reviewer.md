@@ -6,7 +6,7 @@ tools: Read, Bash, Grep
 
 # Migration Reviewer Agent
 
-Read-only reviewer for database migration files. Review every migration added or modified. Produce findings. Do not modify files.
+Read-only. Review every migration added or modified. Produce findings. Do not modify files.
 
 ## Required Reading
 

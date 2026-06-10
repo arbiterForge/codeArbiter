@@ -27,11 +27,14 @@ a target. Respect the plan's ordering and dependencies: a task never lands befor
 For each task, confirm the plan names its exact target paths and its verification command. A task
 missing either is underspecified — return it to `writing-plans`, do not improvise the gap.
 
-Present the batch breakdown to the user: which tasks land in batch 1, and what follows. Each
-unresolved unknown is a `[CONFIRM-NN]` in `open-questions.md` — surface it, do not guess past it.
+Present the batch breakdown to the user as information, not a question: which tasks land in batch 1,
+and what follows. Do NOT stop for a separate acknowledgment — the user approved the plan in
+`writing-plans`, and the first Phase 3 checkpoint arrives after batch 1; a breakdown objection
+surfaces there (or the user interrupts). Each unresolved unknown is a `[CONFIRM-NN]` in
+`open-questions.md` — surface it, do not guess past it.
 
-Gate: a batch sequence exists, every task has a target path and a verification command, and the user
-has acknowledged the breakdown.
+Gate: a batch sequence exists and every task has a target path and a verification command. A
+`[CONFIRM-NN]` that blocks batch 1 is the only reason to stop here.
 
 ## Phase 2 — Execute batch · gate: BLOCK
 

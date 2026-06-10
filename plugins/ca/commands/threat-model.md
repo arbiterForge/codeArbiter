@@ -5,11 +5,7 @@ argument-hint: "<scope description>"
 
 # /ca:threat-model — STRIDE pass (opt-in)
 
-An optional, lightweight pre-implementation security review for a sensitive change — new external
-endpoints, new secrets-handling paths, new auth/authz flows. This is **opt-in, not a routine gate**:
-nothing routes here automatically. Invoke it when a change warrants the thought; skip it otherwise.
-Read-only — modifies no file. Describe what the component does, what data it handles, and which actors
-interact with it.
+Optional, lightweight pre-implementation security review for a sensitive change — new external endpoints, new secrets-handling paths, new auth/authz flows. **Opt-in, not a routine gate**: nothing routes here automatically. Invoke it when a change warrants the thought; skip it otherwise. Read-only — modifies no file. Describe what the component does, what data it handles, and which actors interact with it.
 
 ## Routes to
 

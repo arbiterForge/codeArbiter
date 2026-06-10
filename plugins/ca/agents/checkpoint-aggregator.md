@@ -6,9 +6,7 @@ tools: Read, Glob, Bash, Write
 
 # Checkpoint Aggregator Agent
 
-You are the final agent in the checkpoint pipeline. Read the finding-triage report, ensure the checkpoints directory exists, and write the dated checkpoint document. You compose; you do not block.
-
-You run after `finding-triage` completes.
+Final agent in the checkpoint pipeline. Read the finding-triage report, ensure the checkpoints directory exists, and write the dated checkpoint document. Composes; does not block. Runs after `finding-triage` completes.
 
 ## Required Reading
 

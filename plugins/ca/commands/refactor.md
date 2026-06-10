@@ -5,10 +5,7 @@ argument-hint: "<surface and motivation>"
 
 # /ca:refactor — behavior-preserving restructure
 
-The permitted entry to refactor work. A refactor that cannot prove parity through unmodified
-pre-existing tests is a feature change in disguise and is re-routed to `/ca:feature`. The description
-has two required parts: the **surface** (exact files, functions, classes, or methods — vague surfaces
-like "the auth module" are rejected) and the **motivation** (why the restructure is worth doing).
+The only permitted entry to refactor work. A refactor that cannot prove parity through unmodified pre-existing tests is a feature change in disguise and routes to `/ca:feature`. Two required parts: the **surface** (exact files, functions, classes, or methods — vague surfaces like "the auth module" are rejected) and the **motivation** (why the restructure is worth doing).
 
 ## Flow
 

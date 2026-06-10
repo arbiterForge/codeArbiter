@@ -8,7 +8,7 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ## [2.0.0] — Native Claude Code plugin
 
-The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring framework into a **native Claude Code plugin**. The soul is intact — orchestration, gates, SMARTS, the audit trail, hidden `/dev` — re-grounded on Claude Code's plugin primitives and made leaner and more autonomous. Install with `/plugin marketplace add SUaDtL/codeArbiter` then `/plugin install ca@codearbiter`; commands are namespaced `/ca:<name>`.
+The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring framework into a **native Claude Code plugin**. The soul is intact — orchestration, gates, SMARTS, the audit trail — re-grounded on Claude Code's plugin primitives and made leaner and more autonomous. Install with `/plugin marketplace add SUaDtL/codeArbiter` then `/plugin install ca@codearbiter`; commands are namespaced `/ca:<name>`. Pre-release, the whole plugin went through an eight-persona adversarial marketplace-readiness review; everything it surfaced is folded in below.
 
 ### Added
 - **Native plugin packaging** — `.claude-plugin/marketplace.json` + the plugin under `plugins/ca/`. No clone-into-your-repo, no symlinks, no shims.
@@ -16,7 +16,14 @@ The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring f
 - **Root-level `.codearbiter/` project state** — stage, specs, plans, ADRs, decision log, and the overrides audit trail live at the repo root so they commit with your code and survive uninstalling the plugin. The sole footprint codeArbiter adds to a consumer repo.
 - **Spec-driven `/ca:feature`** — brainstorm a spec → plan → test-first build → commit → finish. The only path to implementation.
 - **Dynamic-workflow skill layer** — `brainstorming`, `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `finishing-a-development-branch`, `using-git-worktrees`, adapted from [obra/superpowers](https://github.com/obra/superpowers).
-- **Hidden `/sprint`** — autonomous sprint mode: brainstorm a spec, then execute the plan deciding "as the user" via SMARTS on every non-hard-gate point, logging each call to `.codearbiter/sprint-log.md`. Hard gates remain true stops.
+- **`/ca:sprint`** — the flagship autonomy mode: brainstorm a spec (the one interactive gate), then execute the plan deciding "as the user" via SMARTS on every non-hard-gate point, logging each call with a confidence flag to `.codearbiter/sprint-log.md`. Hard gates — security, crypto/secrets, irreversible ops, merge-to-default — remain true stops.
+- **`/ca:dev` / `/ca:arbiter`** — maintainer override for editing codeArbiter itself, env-gated behind `CODEARBITER_DEV=1` with entry/exit logged to `overrides.log`. Fully documented; nothing in the plugin is hidden from its operator.
+- **`/ca:chore` and `/ca:spike`** — sanctioned lanes for non-behavioral work (docs edits, dependency bumps, reverts — type-scaled gates) and for throwaway exploration (a `spike/*` branch that can never merge; exits to a findings note or `/ca:feature`).
+- **`/ca:feature` small lane** — a logged change-class triage (Step 0): small changes meeting four mechanical criteria skip the brainstorm/plan ceremony and go straight to `tdd` after a one-reply mini-spec confirmation. Every classification is appended to `.codearbiter/triage.log`, which the hooks guard append-only like `overrides.log`.
+- **`/ca:audit`** — the promotion packet: assembles commits, overrides (verbatim), triage classifications, ADRs with attribution, sprint auto-decisions, open `CONFIRM-NN`s, and open checkpoint findings for a window into `.codearbiter/audits/<date>.md`. Read-only; never overwrites a packet.
+- **Live ADRs** — an optional `governs:` path-glob field on ADRs; the post-write hook surfaces "this file is governed by ADR-NNNN" on any matching Write/Edit, so accepted decisions push back at edit time instead of waiting for a checkpoint sweep.
+- **SMARTS precedent row** — each variance table cites the 1–3 most-similar prior decisions from the project's own decision log and the observed lens pattern ("Precedent: none on record" on thin history).
+- **Mechanical hook hardening** — every enforcement hook is gated on `arbiter: enabled` (the dormancy promise is now mechanically true); hooks match the PowerShell tool as well as Bash; a `python3`→`python` fallback chain keeps gates alive on stock Windows; UTF-8 stdout guards; Windows backslash-path normalization; git guards tolerate global flags and catch `commit -a`, `--force-with-lease`, forcing refspecs, and `git add --all`; the audit logs are protected against truncation, deletion, and non-append edits.
 - **commit-gate behavioral-proof phase** (verification before completion) and a closed reproduce→fix→verify loop in `debug`.
 - **Plugin statusline** — token/context/cost segment renders everywhere; the four arbiter segments (stage, open tasks, open questions, overrides-since-checkpoint) render only when `arbiter: enabled`. Wire it with `/ca:statusline`.
 
@@ -26,6 +33,9 @@ The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring f
 - **SMARTS retained and trimmed** — 6 lenses + ADR/decision-log + audit trail kept; the 12-week aging clock and forced challenger dropped.
 - **Maturity is a single `stage` value** — a rigor knob, not the old 4-stage promotion machinery.
 - **Every skill/command/agent body re-grounded** — ~35–40% prose shrink per skill, every hard gate preserved.
+- **Tone pass on the user-facing surfaces** — the off-channel redirect now leads with routing help and a pre-filled command instead of a refusal ("Strike 1/2" is gone); the persona holds the gates without being adversarial toward the operator; a user-facing glossary (stage, gate, phase, `CONFIRM-NN`, SMARTS, …) ships in `COMMANDS.md`.
+- **Review-stop economics** — `tdd` Phase 1 auto-passes obligations that map one-to-one onto the already-approved spec (user reviews only beyond-spec additions); `executing-plans` drops the redundant breakdown acknowledgment; quality review runs once per batch over the combined diff. Roughly 7 interactive stops → 4 for a small feature, with no gate weakened.
+- **Crypto gate tuned** — benign `crypto.randomUUID`/`getRandomValues` no longer trip the commit gate; signing, key-derivation, `randomBytes`, `subtle`, and password-hashing changes still do.
 
 ### Removed
 - **All portability/vendoring machinery** — `.agents/`↔`.claude/` symlinks, per-file `@import` shims, `/init-vendor`, the `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}` dual-root scheme, the `AGENTS-CODEARBITER-ROOT` sentinel, `_paths.md`, and `SELF-EDIT-MODE`.
@@ -112,5 +122,4 @@ Meta-review of the framework: a four-workstream pass on the decompose skill, ski
 ## Maintenance notes
 
 - This changelog is updated by the maintainer (or via `/release` once that workflow is in regular use), not auto-generated. Each entry should describe an outcome a user might notice, not every commit on the way there.
-- Once the project cuts versioned releases (SemVer per `release` skill Phase 1), the date headers above will be reorganized under version headers (`## [0.1.0] - 2026-05-10`, etc.) with the trailing `[Unreleased]` section reserved for in-flight work.
-- The `[Unreleased]` section currently reflects work on branch `claude/edit-arbiter-meta-pKkTP`. When that branch merges to `main`, the section heading should be promoted to a dated entry.
+- `[2.0.0]` above is **unreleased** — no git tag exists yet. It accumulates everything up to the first marketplace release; tagging `v2.0.0` (via `/ca:release`) is the moment it freezes and a fresh section opens for what follows.

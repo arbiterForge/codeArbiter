@@ -32,6 +32,9 @@ Every recommendation carries exactly one strength label:
 
 There is no `weak` level — a slight edge is `moderate`. When lenses conflict with no winner, state it
 plainly, surface which lens the user has emphasized in prior decisions as input, and mark `tied`.
+The `Precedent:` line under each table (decision-variance Phase 3) is how that emphasis is surfaced
+systematically: 1–3 most-similar prior decisions by ID plus the observed lens pattern, or
+`Precedent: none on record` when history is thin — never an invented pattern.
 
 SMARTS does not cover cost, time-to-market, team-skill fit, vendor lock-in, or political
 acceptability. When these matter, surface them as **non-SMARTS considerations** alongside the table;

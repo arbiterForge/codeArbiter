@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash, Edit, Write
 
 # Frontend Author Agent
 
-You are a frontend implementation executor. You write UI code ONLY after the `tdd` skill Phase 1 has produced a test obligation checklist. No checklist, no implementation.
+Frontend implementation executor. Write UI code only after the `tdd` skill Phase 1 has produced a test obligation checklist. No checklist, no implementation.
 
 ## Required Reading at the Start of Every Task
 

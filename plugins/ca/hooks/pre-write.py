@@ -3,24 +3,32 @@
 # Python port of pre-write.sh (#25): no jq, fails loud, blocks via exit 2.
 #
 # Kept: H-05 (overrides.log append-only) and H-11 (ADRs only via /adr) — both
-# guard the audit trail / decision record.
+# guard the audit trail / decision record. Paths are separator-normalized so
+# the guards fire on Windows backslash paths too. Runs only in arbiter-enabled
+# repos.
 
 import os
 import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _hooklib import block, marker_fresh, project_root, read_input, tool_input  # noqa: E402
+from _hooklib import (  # noqa: E402
+    arbiter_active, block, marker_fresh, norm_path, project_root, read_input,
+    tool_input, utf8_stdio,
+)
 
 
 def main():
+    utf8_stdio()
     root = project_root()
-    fpath = tool_input(read_input()).get("file_path", "") or ""
+    if not arbiter_active(root):
+        sys.exit(0)
+    fpath = norm_path(tool_input(read_input()).get("file_path", "") or "")
 
-    # H-05: overrides.log is append-only — a Write is a full overwrite.
-    if re.search(r"\.codearbiter/overrides\.log$", fpath):
-        block("H-05", ".codearbiter/overrides.log is append-only. Use /override to add "
-                      "entries (ORCHESTRATOR §7); use Edit to append, never Write.")
+    # H-05: the audit logs are append-only — a Write is a full overwrite.
+    if re.search(r"\.codearbiter/(?:overrides|triage)\.log$", fpath):
+        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log) are append-only "
+                      "(ORCHESTRATOR §7). Append with Edit or '>>', never Write.")
 
     # H-11: ADRs may only be authored via /adr (the skill drops the marker first).
     if re.search(r"\.codearbiter/decisions/[0-9]+-.+\.md$", fpath):

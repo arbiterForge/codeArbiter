@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash
 
 # Architecture Drift Reviewer Agent
 
-Read-only reviewer. For every accepted ADR, scan the codebase for evidence the decision is followed — or contradicted. Produce findings. Never modify code. Never block — this review is informational; it pairs with the `decision-variance` skill's append-only decision record.
+Read-only. For every accepted ADR, scan the codebase for evidence the decision is followed — or contradicted. Produce findings. Never modify code. Never block — this review is informational; it pairs with the `decision-variance` skill's append-only decision record.
 
 ## Required Reading
 
@@ -57,11 +57,11 @@ Severity:
 
 ## What This Agent Does NOT Do
 
-- Does NOT judge whether the ADR itself is correct.
-- Does NOT recommend changing ADRs — surfaces the contradiction only.
-- Does NOT modify code or ADR files.
-- Does NOT evaluate proposed ADRs — only accepted ones.
-- Does NOT block. All output is informational.
+- Does not judge whether the ADR itself is correct.
+- Does not recommend changing ADRs — surfaces the contradiction only.
+- Does not modify code or ADR files.
+- Does not evaluate proposed ADRs — only accepted ones.
+- Does not block. All output is informational.
 
 ## Output
 

@@ -10,8 +10,8 @@ legacy/ASSESSMENT.md reference). Checks:
      (placeholder paths containing <...> are skipped).
   B. Every relative markdown link [text](path.md) inside plugins/ca resolves.
   C. agents/INDEX.md and skills/INDEX.md list exactly the agents/skills on disk.
-  D. The command catalog (COMMANDS.md) and commands/*.md agree (hidden commands —
-     sprint, dev, arbiter — are intentionally absent and excluded).
+  D. The command catalog (COMMANDS.md) and commands/*.md agree — every command
+     file is cataloged, every cataloged command has a file. Nothing is hidden.
 
 Exits non-zero listing every broken reference.
 """
@@ -22,7 +22,6 @@ import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PLUGIN = os.path.join(REPO, "plugins", "ca")
-HIDDEN_COMMANDS = {"sprint", "dev", "arbiter"}
 
 errors = []
 
@@ -118,9 +117,7 @@ for stem in command_stems:
     if stem not in catalog_cmds:
         errors.append(f"COMMANDS.md: command '/ca:{stem}' (commands/{stem}.md) not in the catalog")
 for cmd in catalog_cmds:
-    if cmd in HIDDEN_COMMANDS:
-        errors.append(f"COMMANDS.md: hidden command '/ca:{cmd}' must not appear in the catalog")
-    elif cmd not in command_stems:
+    if cmd not in command_stems:
         errors.append(f"COMMANDS.md: '/ca:{cmd}' in catalog has no commands/{cmd}.md")
 
 # --- report ---------------------------------------------------------------------

@@ -5,13 +5,9 @@ argument-hint: (none)
 
 # /ca:create-context — brownfield populate
 
-Wrap an existing codebase in project state without guessing. Dispatches parallel scouts to read the
-repository, synthesizes their findings into the surviving `.codearbiter/` doc set, resolves gaps via a
-targeted interview, and locks the project initialized. No arguments — the skill reads the repo and
-asks only what it cannot determine.
+Wraps an existing codebase in project state without guessing. Dispatches parallel scouts to read the repository, synthesizes their findings into the surviving `.codearbiter/` doc set, resolves gaps via a targeted interview, and locks the project initialized. No arguments — the skill reads the repo and asks only what it cannot determine.
 
-This is the only permitted path to populate `.codearbiter/` when meaningful source code already
-exists. For a greenfield project with no source, use `/ca:decompose`.
+The only permitted path to populate `.codearbiter/` when meaningful source code already exists. For a greenfield project with no source, use `/ca:decompose`.
 
 ## Routes to
 
