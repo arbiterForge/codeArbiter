@@ -1,4 +1,4 @@
-#!C:/Program Files/Git/usr/bin/env node
+#!/usr/bin/env node
 
 // farm.ts
 import { spawn } from "node:child_process";
