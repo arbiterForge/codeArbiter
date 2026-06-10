@@ -7,9 +7,10 @@ In-flight and queued work for the codeArbiter v2 rewrite. One `- ` bullet per ta
 - Phase 7: tone pass (not evidenced as a distinct pass), marketplace publication (marketplace.json present but not confirmed published).
 
 ## Marketplace-release review backlog (2026-06-09 eight-persona adversarial review; quick kills already landed on chore/tone-pass)
-- MR-10 (residual, manual): cold-install smoke test on a Store-stub-only Windows VM and on macOS before tagging 2.0.0; decide whether farm.test.ts/__fixtures__/tsconfig.json should move out of the published payload (no exclusion mechanism in git-sourced plugin installs — would require relocating the tools test harness).
+- MR-10 (residual): live Claude Code session on physical macOS — optional; the CI macos-latest leg covers shell semantics (/bin/sh -c, per-entry stdin). Decide whether farm.test.ts/__fixtures__/tsconfig.json should move out of the published payload (no exclusion mechanism in git-sourced plugin installs — would require relocating the tools test harness).
 
 ## Done
+- MR-10 (automated, 2026-06-10): cold-install smoke test is now CI (`hooks — cold-install matrix`, ubuntu/windows/macos × REAL/STUB/NONE PATH scenarios, .github/scripts/test_hooks_cold_install.py) — 110 assertions prove single persona injection, fallback-delivered exit-2 blocks under a Store-alias python3 stub (exit 9009, invocation-marked), dormancy in non-enabled repos, and LOUD failure with no Python. Live Windows client verified: persona injects exactly once on session start; `git add -A` via Bash is BLOCKED with the verbatim H-03 message and nothing reaches the index. Finding: the plugin cache does NOT refresh on `plugin update` when the version string is unchanged (stale v1 bash hooks.json survived a marketplace refresh; uninstall+reinstall required) — bump plugin.json version with any hooks change once 2.0.0 is published.
 - MR-12 (2026-06-10): plugin.json claim honesty — "drives spec-driven TDD, mechanically enforces the commit and audit-trail gates".
 - MR-11 (2026-06-10): CRYPTO_RE narrowed — crypto.randomUUID/getRandomValues no longer trip the gate; sensitive crypto.* members (subtle, sign, randomBytes, pbkdf2, …) and bcrypt still do. 9-case regression passes.
 - MR-10 (partial, 2026-06-10): plugins/ca/README.md added for the marketplace-facing directory; prerequisites + dormancy + footprint disclosed.
