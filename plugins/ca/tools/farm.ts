@@ -112,9 +112,9 @@ const MUT = {
 // --------------------------------------------------------------------------
 // process helpers
 // --------------------------------------------------------------------------
-function run(cmd: string, args: string[], cwd?: string) {
+function run(cmd: string, args: string[], cwd?: string, opts: object = {}) {
   return new Promise<{ code: number; out: string }>((resolve) => {
-    const c = spawn(cmd, args, { cwd, env: process.env });
+    const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
     let out = "";
     c.stdout.on("data", (d) => (out += d));
     c.stderr.on("data", (d) => (out += d));
@@ -139,12 +139,20 @@ function isInside(root: string, target: string): boolean {
 }
 
 // --------------------------------------------------------------------------
-// gate — pure determinism, no model. `bash -c` (NOT -lc): a login shell would
-// source the invoking user's dotfiles and make the gate non-deterministic.
+// gate — pure determinism, no model. Use a non-login shell (`-c`, not `-lc`)
+// so user dotfiles don't bleed in. On Windows, fall back to cmd.exe /c.
 // --------------------------------------------------------------------------
+const [SHELL_BIN, SHELL_FLAG] =
+  process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
+// Node's default arg-quoting backslash-escapes embedded quotes, which cmd.exe
+// does not understand — a gate like `node -e "process.exit(1)"` silently
+// mangles. Pass the command line through verbatim on Windows.
+const SHELL_OPTS =
+  process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
+
 async function runGate(cwd: string, commands: string[]) {
   for (const cmd of commands) {
-    const r = await run("bash", ["-c", cmd], cwd);
+    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS);
     if (r.code !== 0)
       return { ok: false as const, failed: cmd, tail: r.out.slice(-3500) };
   }
@@ -328,7 +336,9 @@ async function runWorker(
       return { ok: false, filesWritten, error: `path escapes worktree: ${cleanPath}` };
     }
     // The failing test is read-only — refuse to let the worker touch it.
-    const rel = path.relative(cwd, absPath);
+    // Normalize to forward slashes: plan paths are POSIX-style, but
+    // path.relative emits backslashes on Windows and the guard would miss.
+    const rel = path.relative(cwd, absPath).split(path.sep).join("/");
     if (forbidden.has(rel)) {
       return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
     }
@@ -505,9 +515,10 @@ async function mutationCheck(wt: string, task: Task): Promise<MutationResult | n
   // Pluggable hook — hand off to a real per-language framework if configured.
   if (MUT.cmd) {
     const r = await new Promise<{ code: number; out: string }>((resolve) => {
-      const c = spawn("bash", ["-c", MUT.cmd!], {
+      const c = spawn(SHELL_BIN, [SHELL_FLAG, MUT.cmd!], {
         cwd: wt,
         env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
+        ...SHELL_OPTS,
       });
       let out = "";
       c.stdout.on("data", (d) => (out += d));
@@ -552,7 +563,7 @@ async function mutationCheck(wt: string, task: Task): Promise<MutationResult | n
     for (const c of candidates) {
       if (Date.now() - start > MUT.budgetMs) break;
       await writeFile(path.resolve(wt, c.file), c.mutated);
-      const r = await run("bash", ["-c", testCmd], wt);
+      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS);
       await writeFile(path.resolve(wt, c.file), originals.get(c.file)!); // restore
       evaluated++;
       if (r.code !== 0) killed++;

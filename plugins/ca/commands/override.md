@@ -10,7 +10,7 @@ logged, always visible, never silent. Single identity, single confirm.
 
 ## Flow
 
-1. Validate `$ARGUMENTS` — the reason MUST name the gate being bypassed and a justification. Reject a
+1. Validate `$ARGUMENTS` — the reason names the gate being bypassed and a justification. Reject a
    vague reason ("just skip it") and ask for a specific one.
 2. Detect the operator identity from `git config user.email` only. If it is unset, ask the user once
    to state their identity for the log. (No platform ladder, no second confirmation.)

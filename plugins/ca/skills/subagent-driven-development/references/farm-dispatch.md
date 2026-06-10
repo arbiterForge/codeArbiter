@@ -4,7 +4,7 @@ Loaded from `subagent-driven-development` Phase 2 when `<slug>.plan.json` exists
 plan. The farm path replaces only the *authoring* step for the plan's tasks — cheap Zen workers
 implement under hard gates instead of premium subagents. It does **not** replace review: every task
 the farm reports green is still routed through Phases 3, 4, and 5 before acceptance. The cost arbitrage
-is in who *writes* the code, never in whether it is *reviewed*. See `.codearbiter/farm.md` for setup.
+is in who *writes* the code, never in whether it is *reviewed*. See `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` for setup.
 
 ## Step 1 — Model selection
 

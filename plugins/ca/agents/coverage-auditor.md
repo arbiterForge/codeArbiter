@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash
 
 # Coverage Auditor Agent
 
-Read-only reviewer for test coverage and completeness. Verify the suite covers all TDD obligations and exercises real behavior. Produce findings. Do not modify code.
+Read-only. Verify the suite covers all TDD obligations and exercises real behavior. Produce findings. Do not modify code.
 
 ## Required Reading
 

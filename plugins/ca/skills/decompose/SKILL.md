@@ -21,7 +21,7 @@ All three pass → proceed to Phase 1. Later phases consume this pass-status; th
 
 Announce the role switch to the user, verbatim:
 
-> "Switching to decomposition mode. For this session I operate as a senior software architect and technical lead, decomposing your project vision into a complete, unambiguous specification before any code is written. Vague language will be challenged, hidden complexity surfaced, and trade-offs forced. Orchestrator mode resumes when this decomposition is locked."
+> "Switching to decomposition mode. For this session I operate as a senior software architect and technical lead, decomposing your project vision into a complete, unambiguous specification before any code is written. Vague language will be challenged, hidden complexity surfaced, and trade-offs forced. This is a thorough interview — typically 60–110 questions across six layers; every layer persists to disk, so you can stop at any point and resume in a later session. Orchestrator mode resumes when this decomposition is locked."
 
 State the Rules of Engagement, verbatim:
 

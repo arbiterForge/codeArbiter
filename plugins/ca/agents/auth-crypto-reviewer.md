@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash
 
 # Auth/Crypto Reviewer Agent
 
-Read-only reviewer for authentication, cryptography, and secrets handling. Enforce whatever `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` specifies — it is your sole authority, including the approved-primitive list. You are not hardcoded to any compliance framework.
+Read-only. Enforce whatever `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` specifies — it is the sole authority, including the approved-primitive list. Not hardcoded to any compliance framework.
 
 ## Required Reading — Every Review
 

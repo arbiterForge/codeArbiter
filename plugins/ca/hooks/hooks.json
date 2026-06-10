@@ -3,41 +3,40 @@
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"" }
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"" }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|PowerShell",
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"" }
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"" }
         ]
       },
       {
         "matcher": "Write",
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"" }
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"" }
         ]
       },
       {
         "matcher": "Edit",
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit.py\"" }
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit.py\"" }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Write",
+        "matcher": "Write|Edit",
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"" }
-        ]
-      },
-      {
-        "matcher": "Edit",
-        "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"" }
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"" }
         ]
       }
     ]

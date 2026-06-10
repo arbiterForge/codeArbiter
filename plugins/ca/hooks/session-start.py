@@ -23,7 +23,9 @@ import re
 import subprocess
 import sys
 
-ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _hooklib import frontmatter_enabled, utf8_stdio  # noqa: E402
+
 INITIALIZED_RE = re.compile(r"<!--\s*INITIALIZED\s*-->")
 STAGE_RE = re.compile(r"^stage:\s*([0-9]+)", re.I | re.M)
 CONFIRM_RE = re.compile(r"CONFIRM-[0-9]+")
@@ -50,29 +52,6 @@ def read_text(path):
         return None
 
 
-def arbiter_enabled(ctx):
-    """Return (enabled, malformed). `enabled` iff `arbiter: enabled` appears in a
-    properly-closed leading YAML frontmatter block. `malformed` iff a block opens
-    (`---` on line 1) but never closes — the fail-loud case. A file with no
-    frontmatter at all is simply dormant (not malformed)."""
-    text = read_text(ctx)
-    if text is None:
-        return (False, False)
-    lines = text.split("\n")
-    if not lines:
-        return (False, False)
-    first = lines[0].lstrip("﻿")  # tolerate a leading UTF-8 BOM
-    if first.strip() != "---":
-        return (False, False)  # no opening delimiter — dormant, not malformed
-    found = False
-    for ln in lines[1:]:
-        if ln.strip() == "---":
-            return (found, False)  # closing delimiter — decision is final
-        if ARBITER_RE.match(ln):
-            found = True
-    return (False, True)  # opened but never closed — malformed
-
-
 def has_source(root):
     """True if the repo contains any file that isn't arbiter/scaffold cruft —
     distinguishes brownfield (adopt existing code) from greenfield. Returns on the
@@ -91,6 +70,7 @@ def has_source(root):
 
 
 def main():
+    utf8_stdio()
     root = project_root()
     plugin = os.environ.get("CLAUDE_PLUGIN_ROOT") or os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))
@@ -104,7 +84,7 @@ def main():
     except OSError:
         pass
 
-    enabled, malformed = arbiter_enabled(ctx)
+    enabled, malformed = frontmatter_enabled(ctx)
     if not enabled:
         if malformed:
             print("codeArbiter: .codearbiter/CONTEXT.md is present but its frontmatter is "
@@ -129,9 +109,9 @@ def main():
     if not INITIALIZED_RE.search(ctx_text):
         if has_source(root):
             print("NOT INITIALIZED: source exists but .codearbiter/CONTEXT.md is a stub. "
-                  "Run /create-context before any other command.")
+                  "Run /ca:create-context before any other command.")
         else:
-            print("NOT INITIALIZED: empty project. Run /decompose to begin.")
+            print("NOT INITIALIZED: empty project. Run /ca:decompose to begin.")
         print("Type /ca:commands for the catalog.")
         sys.exit(0)
 

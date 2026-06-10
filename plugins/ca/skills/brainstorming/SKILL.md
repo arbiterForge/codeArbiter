@@ -15,7 +15,7 @@ Read these, or STOP and surface the gap — never guess scope or stack:
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — the stack the feature must fit; rule out incompatible designs early.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` — existing `[CONFIRM-NN]` items; new ones number sequentially from here.
 
-This is per-feature and light. It is NOT decompose's whole-project six-layer interview — one feature, four phases, in and out.
+Per-feature and light. NOT decompose's whole-project six-layer interview — one feature, four phases.
 
 ## Phase 1 — Frame the problem · gate: BLOCK
 
@@ -24,7 +24,7 @@ Take the one-line idea and pin its boundaries before asking anything else:
 - State the problem in one sentence — the concrete pain, not the proposed solution.
 - Name the user or caller who feels it, and what "done" looks like to them.
 - Name what this feature explicitly does NOT do — the boundary that keeps scope honest.
-- Check the framing against `CONTEXT.md`: it MUST NOT contradict the NOT-building list or redefine domain vocabulary. A contradiction is a conflict — surface it, do not reconcile it silently.
+- Check the framing against `CONTEXT.md`: it never contradicts the NOT-building list or redefines domain vocabulary. A contradiction is a conflict — surface it, do not reconcile it silently.
 
 Gate: problem, caller, and out-of-scope boundary stated and consistent with `CONTEXT.md`.
 
@@ -46,17 +46,17 @@ Write the agreed spec to `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`. T
 
 - **Problem** — the Phase 1 framing in final form.
 - **Scope** — what is in, and the explicit out-of-scope boundary.
-- **Acceptance criteria** — a numbered list, each criterion concrete and testable: a specific input, the observable output, the boundary or failure behavior. Each criterion MUST be verifiable by a single test. "It works well" is not a criterion. These become `tdd` Phase 1 obligations — one obligation per criterion, so an untestable criterion is a defect to fix here, not in `tdd`.
+- **Acceptance criteria** — a numbered list, each criterion concrete and testable: a specific input, the observable output, the boundary or failure behavior. Each criterion is verifiable by a single test. "It works well" is not a criterion. These become `tdd` Phase 1 obligations — one obligation per criterion, so an untestable criterion is a defect to fix here, not in `tdd`.
 - **Open questions** — every `[CONFIRM-NN]` raised, cross-referenced to `open-questions.md`.
 
 Gate: the spec file exists on disk under `specs/`, with at least one acceptance criterion and every criterion individually testable.
 
 ## Phase 4 — Approval & handoff · gate: STOP
 
-The spec MUST be approved before any code is written or any handoff to `tdd` occurs:
+The spec is approved before any code is written or any handoff to `tdd` occurs — no exceptions:
 
 - **Under `/feature`** — present the spec and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval — never auto-resolve it.
-- **Under `/sprint`** — approval MAY be granted automatically by SMARTS scoring, logged to the `.codearbiter/` audit trail. A blocking `[CONFIRM-NN]` is NOT auto-approvable; it escalates to the user and STOPS the sprint flow.
+- **Under `/sprint`** — approval may be granted automatically by SMARTS scoring, logged to the `.codearbiter/` audit trail. A blocking `[CONFIRM-NN]` is never auto-approvable; it escalates to the user and STOPs the sprint flow.
 
 On approval, hand off to the `tdd` skill, which enters Phase 1 against the approved spec — one obligation per acceptance criterion.
 

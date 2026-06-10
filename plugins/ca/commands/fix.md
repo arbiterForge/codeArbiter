@@ -5,9 +5,7 @@ argument-hint: "<what's happening vs. what should happen>"
 
 # /ca:fix — regression-first bug fix
 
-The only permitted entry to bug-fix work. No fix code is written before a regression test reproduces
-the defect and goes red for the right reason. A one-line "it's broken" is not a bug report — give the
-observed behavior and the expected behavior, plus a stack trace or reproduction when you have one.
+The only permitted entry to bug-fix work. No fix code is written before a regression test reproduces the defect and goes red for the right reason. Give the observed behavior and the expected behavior, plus a stack trace or reproduction when you have one.
 
 ## Flow
 

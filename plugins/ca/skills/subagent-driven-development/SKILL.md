@@ -73,9 +73,14 @@ traces to — not against whether tests merely pass.
 Gate: the obligation is fully satisfied and scope is clean. A shortfall returns the task to Phase 2
 with a corrective brief.
 
-## Phase 4 — Quality review · gate: BLOCK
+## Phase 4 — Quality review (once per scope) · gate: BLOCK
 
-Dispatch the reviewers applicable to what the change touches, then `finding-triage`
+Runs ONCE per scope — after every task in the current scope has cleared Phase 3 and Phase 5 — over
+the **combined diff** of the scope, not per 2–5-minute task. Per-task review at that granularity
+costs more context than the work and catches nothing the batch diff doesn't; the batch boundary is
+where review pays. (A scope of one task reviews that task's diff — same rule, degenerate case.)
+
+Dispatch the reviewers applicable to what the combined diff touches, then `finding-triage`
 (`${CLAUDE_PLUGIN_ROOT}/agents/finding-triage.md`) to classify every finding by severity. Select
 reviewers by the diff, not blanket — dispatching an irrelevant reviewer wastes a context:
 
@@ -89,10 +94,12 @@ dispatched here.) If the change touches none of the above domains, the quality b
 plus `coverage-auditor` (already run in `tdd` Phase 4) — record that and proceed.
 
 - A security CRITICAL finding halts the loop — see Hard rules.
-- A HIGH finding returns the task to Phase 2.
+- A HIGH finding returns the offending task(s) — attributed by file — to Phase 2; the scope's
+  quality review re-runs over the corrected combined diff.
 - MEDIUM and LOW findings are recorded; the user decides whether they block.
 
-Gate: no CRITICAL, no HIGH. The quality bar for the task's severity profile is met.
+Gate: no CRITICAL, no HIGH across the scope's combined diff. Nothing in the scope is `ACCEPTED`
+until this passes.
 
 ## Phase 5 — Verification · gate: BLOCK
 
@@ -107,7 +114,8 @@ Gate: the verification command exits clean and its output demonstrates the oblig
 
 ## Phase 6 — Accept and advance · gate: BLOCK
 
-Mark the task `ACCEPTED` only when both reviews passed AND verification passed on a fresh run.
+Mark the task `ACCEPTED` only when its spec-compliance review and fresh verification passed AND the
+scope's Phase 4 quality review passed.
 Record acceptance and any `[NEEDS-TRIAGE]` markers to the plan and the `.codearbiter/` audit trail.
 
 - Tasks remain in the current scope → return to Phase 1.
