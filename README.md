@@ -183,6 +183,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:init` | Scaffold the `.codearbiter/` state store |
 | `/ca:status` | Maturity, open tasks, unresolved `CONFIRM-NN`, overrides |
 | `/ca:statusline` | Install/wire the codeArbiter statusline |
+| `/ca:doctor` | Prove the install is enforcing — payload, cache staleness, live-fire hook probe |
 | `/ca:new-skill "gap"` | Author a new skill after the gap is proven uncovered |
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
 | `/ca:override "reason"` | Sanctioned, logged single-identity gate bypass |
