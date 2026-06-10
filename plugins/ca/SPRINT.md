@@ -19,6 +19,12 @@ interactive gate, deciding-as-the-user, hard gates, logging) is identical betwee
 
 ## Phase 1 — Sprint spec · gate: STOP
 
+**Resume first:** if `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<sprint-slug>.md` and
+`plans/<sprint-slug>.md` already exist for this sprint, do not re-brainstorm — confirm the resume
+with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan with non-`ACCEPTED`
+tasks → straight to Phase 2, executing only the remaining tasks; the plan's `status` column is the
+ledger). An interrupted sprint is re-entered, never restarted.
+
 Route to `brainstorming`, scoped to a **sprint** — a coherent chunk of work (several features or one
 goal), not a single feature. Drive it to a concrete sprint spec at
 `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<sprint-slug>.md`, then to `writing-plans` for the task

@@ -7,6 +7,26 @@ argument-hint: "<what you want to build>"
 
 The single permitted entry to implementation work. No feature code is written before a spec is approved and `tdd` Phase 1 clears. A one-line idea is not a spec — `brainstorming` makes it one.
 
+## Resume — an interrupted pipeline is re-entered, never restarted
+
+Before triage, scan `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/` and `plans/` for an existing slug
+matching `$ARGUMENTS` (invoked bare, list every resumable pipeline and ask which). A crash,
+compaction, or closed session mid-pipeline loses nothing — the spec, the plan, and each task's
+`status` cell are on disk. On a match, confirm the resume with the user in one line
+("resume `<slug>` at <point>?") and re-enter at the furthest checkpoint reached:
+
+1. **Plan exists with non-`ACCEPTED` tasks** → `executing-plans` (its Phase 1 batches only the
+   remaining tasks).
+2. **Plan exists, every task `ACCEPTED`** → `commit-gate` (the work is done and verified; it was the
+   commit that never happened).
+3. **Spec approved, no plan** → `writing-plans`.
+4. **Spec exists but never approved** → `brainstorming`, at its approval gate — not from scratch.
+
+Re-running `brainstorming` against an already-approved spec is the failure mode this section exists
+to prevent: it discards approved decisions and re-asks answered questions. Only an explicit user
+request ("start over") restarts an existing slug — and that is logged to `triage.log` like any
+classification.
+
 ## Step 0 — change-class triage (logged)
 
 Before routing, classify the request. The **small lane** applies only when ALL of these hold —
@@ -78,3 +98,5 @@ spec in the full lane, the user-confirmed mini-spec in the small lane. MUST NOT 
 unless every Step 0 criterion holds, and MUST log the classification to
 `.codearbiter/triage.log` before `tdd` begins. MUST NOT skip `writing-plans` in the full lane.
 MUST NOT resolve a `[CONFIRM-NN]` in the spec by guessing — surface it.
+MUST NOT restart an interrupted pipeline whose artifacts exist on disk — resume at the furthest
+checkpoint per the Resume ladder, unless the user explicitly asks to start over.

@@ -38,11 +38,11 @@ ONLY when that command is invoked — never bulk-read the directory.
 | `/ca:adr-status` | `[--adr N]` | List/inspect ADR status and supersede chains. |
 | `/ca:reconcile` | `["scope"]` | Reconcile artifacts vs. scaffold; arbitrate via SMARTS, user-attributed. |
 | `/ca:conflict` | `"description"` | Stop all work and surface a rule conflict. |
+| `/ca:threat-model` | `"scope"` | Optional lightweight STRIDE pass for a sensitive feature. |
 
 Which one? `/ca:conflict` when two *rules* contradict (persona vs. docs vs. code) and work cannot
 safely continue — it halts everything. `/ca:reconcile` when *artifacts* have drifted (ADRs, scaffold,
 context docs disagree about the architecture) and you want each variance arbitrated — work continues.
-| `/ca:threat-model` | `"scope"` | Optional lightweight STRIDE pass for a sensitive feature. |
 
 ## Project & meta
 
@@ -54,6 +54,7 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `/ca:status` | _(none)_ | Show maturity, open tasks, unresolved `CONFIRM-NN`, overrides since checkpoint. |
 | `/ca:audit` | `[range]` | Assemble the governance packet for a window — commits, overrides, ADRs, sprint decisions, open items — into `.codearbiter/audits/`. Read-only. |
 | `/ca:statusline` | `[--check]` | Install/wire the codeArbiter statusline. |
+| `/ca:doctor` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, live-fire hook probe. |
 | `/ca:new-skill` | `"gap"` | Author a new skill after the gap is proven uncovered. |
 | `/ca:btw` | `"question"` | Lightweight Q&A; no state change. |
 | `/ca:override` | `"reason"` | Sanctioned, logged single-identity gate bypass. |

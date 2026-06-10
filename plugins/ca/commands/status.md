@@ -12,12 +12,16 @@ A read-only summary of `.codearbiter/` state. No skill is routed to; no file is 
 The orchestrator reads and presents:
 
 1. **Stage** — the `stage:` maturity value from `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` frontmatter.
-2. **Open tasks** — the count from `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md`.
-3. **Open questions** — the count of unresolved `[CONFIRM-NN]` placeholders in
+2. **Pipelines** — every slug in `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/` and `plans/`, with how
+   far each got: spec awaiting approval, spec approved / no plan, plan in progress (`ACCEPTED` count
+   vs. total from the plan's status column), or complete. An interrupted pipeline is resumable via
+   `/ca:feature` — say so on its line.
+3. **Open tasks** — the count from `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md`.
+4. **Open questions** — the count of unresolved `[CONFIRM-NN]` placeholders in
    `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md`.
-4. **Overrides since last checkpoint** — entries in `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`
+5. **Overrides since last checkpoint** — entries in `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`
    newer than the marker in `${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint`.
-5. **Current branch** — from git.
+6. **Current branch** — from git.
 
 ## Output
 
@@ -26,10 +30,15 @@ The orchestrator reads and presents:
 
 Stage:            N
 Branch:           <current branch>
+Pipelines:
+  <slug>          plan 3/7 ACCEPTED — resume with /ca:feature "<slug>"
+  <slug>          spec approved, no plan
 Open tasks:       N
 Open questions:   N ([CONFIRM-NN] unresolved)
 Overrides since last checkpoint: N
 ```
+
+No specs and no plans → `Pipelines: none`.
 
 If `[CONFIRM-NN]` placeholders are open, surface them — do not resolve them here.
 

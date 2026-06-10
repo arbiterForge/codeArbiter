@@ -24,6 +24,11 @@ Read these, or STOP and surface the gap — never guess a path, a command, or a 
 Group the plan's tasks into small batches. Keep batches tight — three to five tasks is a ceiling, not
 a target. Respect the plan's ordering and dependencies: a task never lands before the task it depends on.
 
+**Resume is the normal re-entry.** A task already `ACCEPTED` in the plan's status column was verified
+before an earlier interruption — exclude it from batching and say so ("resuming: T-01–T-03 already
+ACCEPTED"). Batch only the non-`ACCEPTED` tasks, starting at the first. Never re-execute an `ACCEPTED`
+task, and never restart the pipeline at brainstorming because the session died mid-plan.
+
 For each task, confirm the plan names its exact target paths and its verification command. A task
 missing either is underspecified — return it to `writing-plans`, do not improvise the gap.
 

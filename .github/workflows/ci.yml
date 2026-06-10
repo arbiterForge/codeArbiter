@@ -75,6 +75,47 @@ jobs:
           python-version: "3.x"
       - name: Run cold-install interpreter matrix
         run: python .github/scripts/test_hooks_cold_install.py
+      - name: Run guard-logic matrix
+        # The cold-install matrix proves the interpreter plumbing; this proves
+        # the guard decisions themselves — every blocked spelling of
+        # H-01/02/03/05/11/09b blocks, every legitimate spelling still allows.
+        run: python .github/scripts/test_hook_guards.py
+
+  version-bump:
+    name: plugin version bumped when payload changes
+    # `claude plugin update` is a NO-OP when plugin.json's version string is
+    # unchanged — verified live 2026-06-10: a months-stale hooks.json survived
+    # a marketplace refresh until uninstall+reinstall. So any change to the
+    # shipped payload (plugins/ca/**) that rides an already-published version
+    # silently never reaches installed users. This guard fails such a PR.
+    # Pre-publication PRs pass: the rule only bites when tag v<version>
+    # already exists.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fail if a published version ships a changed payload
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          git fetch -q origin "$BASE" --tags
+          if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca; then
+            echo "no payload change — version bump not required"
+            exit 0
+          fi
+          ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca/.claude-plugin/plugin.json','utf8')).version")
+          base_ver=$(git show "origin/$BASE:plugins/ca/.claude-plugin/plugin.json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
+          if [ "$ver" != "$base_ver" ]; then
+            echo "payload changed and version bumped: $base_ver -> $ver"
+            exit 0
+          fi
+          if git rev-parse -q --verify "refs/tags/v$ver" > /dev/null; then
+            echo "::error file=plugins/ca/.claude-plugin/plugin.json::plugins/ca/** changed but version is still $ver, which is already published (tag v$ver exists). 'claude plugin update' no-ops on an unchanged version, so installed users would silently keep the old payload. Bump the version."
+            exit 1
+          fi
+          echo "payload changed on unpublished version $ver (no tag v$ver) — allowed"
 
   prose:
     name: plugin reference graph
