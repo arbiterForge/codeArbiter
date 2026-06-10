@@ -3,7 +3,7 @@ description: SMARTS arbitration — reconcile architectural artifacts against th
 argument-hint: (none) | "<ADR-id | artifact | scope>"
 ---
 
-# /ca:decision-variance — architectural arbitration
+# /ca:reconcile — architectural arbitration
 
 Reconcile the project's architectural artifacts against the scaffold and prior decisions, or challenge
 a specific ADR you suspect is wrong, stale, or in conflict with another. The skill presents SMARTS
@@ -32,7 +32,7 @@ in-scope ADR — optional, not forced. Each variance ends in one of three user-c
 - Author a brand-new ADR with no prior conflict → `/ca:adr`.
 - Check ADR health (aged, unchallenged, unresolved CONFIRM-NN) → `/ca:adr-status`.
 - A general architectural discussion without recording a decision → `/ca:btw`.
-- A rule conflict between project docs and code → `/ca:surface-conflict`.
+- A rule conflict between project docs and code → `/ca:conflict`.
 - Routine git text-merge conflicts — this is architectural reconciliation, not merge resolution.
 
 ## Hard gate

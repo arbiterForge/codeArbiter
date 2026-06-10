@@ -3,7 +3,7 @@ description: Stop everything and surface a rule conflict — persona vs. docs vs
 argument-hint: (none)
 ---
 
-# /ca:surface-conflict — conflict protocol
+# /ca:conflict — conflict protocol
 
 An orchestrator protocol, not a skill route. When a rule conflict surfaces — the persona, a
 `.codearbiter/` document, and code contradict each other, or two docs contradict each other — all

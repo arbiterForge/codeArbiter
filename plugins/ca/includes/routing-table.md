@@ -21,8 +21,8 @@ stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to
 | Migration file added or changed | `migration-reviewer` | — | BLOCK on missing classification or irreversible destructive op |
 | `package.json` / lockfile / base image changed | `/add-dep` → `dependency-reviewer` | — | BLOCK on denied license or supply-chain concern |
 | Sensitive feature / attack-surface change | `/threat-model` → `security-architecture` (optional) | `security-reviewer`, `auth-crypto-reviewer` | STOP only on a critical unmitigated threat |
-| Arbitration / variance / ADR reconciliation | `/decision-variance` → `decision-variance` | `scout`, `grader`, `decision-challenger` | No decision recorded without user attribution |
+| Arbitration / variance / ADR reconciliation | `/reconcile` → `decision-variance` | `scout`, `grader`, `decision-challenger` | No decision recorded without user attribution |
 | New / aged ADR, unresolved `[CONFIRM-NN]` | `/adr`, `/adr-status` → `decision-lifecycle` | `decision-challenger` (optional) | No `[CONFIRM-NN]` resolved by guessing |
-| Rule conflict (persona vs docs vs code) | `/surface-conflict` | — | STOP all other work immediately |
+| Rule conflict (persona vs docs vs code) | `/conflict` | — | STOP all other work immediately |
 | New skill needed | `/new-skill` → `skill-author` | — | No skill until the gap is proven uncovered |
 | Subagent raises an out-of-scope finding | inline `[NEEDS-TRIAGE]` marker | — | Never an ADR disposition; never silently dropped |
