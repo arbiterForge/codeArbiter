@@ -56,6 +56,26 @@ jobs:
           fi
           echo "farm.js is in sync with farm.ts"
 
+  hooks:
+    name: hooks — cold-install matrix (${{ matrix.os }})
+    # MR-10: proves the dual-registration interpreter fallback on every OS —
+    # REAL (python3 present, no double execution), STUB (Store-alias python3
+    # that exits 9009; the fallback entry must do the work, including blocking
+    # via exit 2), NONE (no Python at all; every entry must fail LOUD, never
+    # silently dormant). See .github/scripts/test_hooks_cold_install.py.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run cold-install interpreter matrix
+        run: python .github/scripts/test_hooks_cold_install.py
+
   prose:
     name: plugin reference graph
     runs-on: ubuntu-latest
