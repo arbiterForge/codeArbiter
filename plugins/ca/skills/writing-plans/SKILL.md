@@ -66,7 +66,12 @@ Cross the ledger against the task set, both directions:
 
 Then write the plan to `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.md` — `<slug>` matching the
 spec — with the `AC-NN` ledger, the ordered task table (id · path(s) · verification · maps-to ·
-covers · depends-on), the marked MVP slice, and any out-of-scope item tagged inline `[NEEDS-TRIAGE]`.
+covers · depends-on · **status**, initialized `PENDING`), the marked MVP slice, and any out-of-scope
+item tagged inline `[NEEDS-TRIAGE]`.
+
+The status column is the pipeline's resume ledger: `subagent-driven-development` flips a task to
+`ACCEPTED` the moment it accepts it, so an interrupted run (crash, compaction, closed session) is
+re-entered by `/feature` at the first non-`ACCEPTED` task instead of restarted from brainstorming.
 
 Gate: bijective coverage proven — no criterion without a task, no task without a criterion — and the
 plan written to disk. This clears the path to execution: `executing-plans` (checkpointed, via

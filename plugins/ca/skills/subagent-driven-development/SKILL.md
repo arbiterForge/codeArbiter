@@ -116,7 +116,11 @@ Gate: the verification command exits clean and its output demonstrates the oblig
 
 Mark the task `ACCEPTED` only when its spec-compliance review and fresh verification passed AND the
 scope's Phase 4 quality review passed.
-Record acceptance and any `[NEEDS-TRIAGE]` markers to the plan and the `.codearbiter/` audit trail.
+Record acceptance **in the plan file itself** — set the task's `status` cell in
+`.codearbiter/plans/<slug>.md` to `ACCEPTED` the moment it is accepted, plus any `[NEEDS-TRIAGE]`
+markers and the `.codearbiter/` audit trail. The plan's status column is the pipeline's resume
+ledger: an interrupted run is re-entered at the first non-`ACCEPTED` task, and an acceptance that
+lives only in conversation context is lost to the interruption.
 
 - Tasks remain in the current scope → return to Phase 1.
 - **Scoped invocation** (`scope` was passed by `executing-plans`): all scoped tasks `ACCEPTED` → signal
