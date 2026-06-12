@@ -31,3 +31,4 @@ stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to
 | Unsure `/reconcile` vs `/conflict`? | rules contradict and work cannot safely continue → `/conflict`; artifacts drifted, work continues → `/reconcile` | — | When genuinely ambiguous, `/conflict` wins — stopping is recoverable, drifting past a rule conflict is not |
 | New skill needed | `/new-skill` → `skill-author` | — | No skill until the gap is proven uncovered |
 | Subagent raises an out-of-scope finding | inline `[NEEDS-TRIAGE]` marker | — | Never an ADR disposition; never silently dropped |
+| Session context bloated / want longer sessions | `/ca:prune` → `prune-transcript.py` | — | Never `--execute` the live transcript; dry-run by default; resume/compaction gains only, not live |

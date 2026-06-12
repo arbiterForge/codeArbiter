@@ -1002,6 +1002,29 @@ def seg_pr(data):
     return f"{GREY}PR{RESET} {scol}#{num_}{RESET}{tail}"
 
 
+def seg_prune(data, sid):
+    """Transcript-pruner indicator: cumulative reduction and age of the last
+    prune for this session, read from ~/.codearbiter/prune-state.json (written
+    by prune-transcript.py). Fail-soft — returns None on any problem, and never
+    raises, so it can never break statusline rendering."""
+    if not sid:
+        return None
+    try:
+        p = os.path.join(os.path.expanduser("~"), ".codearbiter", "prune-state.json")
+        with open(p, encoding="utf-8") as f:
+            st = json.load(f)
+        rec = st.get(sid) if isinstance(st, dict) else None
+        if not isinstance(rec, dict):
+            return None
+        pct = rec.get("pct") or 0
+        if pct <= 0:
+            return None
+        age = human_dur(max(0, time.time() - num(rec.get("last_run_ts"), time.time())))
+        return f"{GREY}✂{RESET} {WHITE}{pct:.0f}%{RESET} {GREY}{age}{RESET}"
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def dev_active(root):
     """True when /dev developer-override mode is on — signalled by a transient marker
     the orchestrator drops on /dev and clears on /arbiter (a local UI flag, not a log)."""
@@ -1124,10 +1147,14 @@ def render(raw):
         qcol = DANGER if arb["q"] > 0 else GREY
         ocol = DANGER if arb["over"] > 0 else GREY
         tcol = WHITE if arb["tasks"] > 0 else GREY
-        box.row(
+        arbline = (
             f"{OK}{DOT}{RESET} {WHITE}stage:{arb['stage']}{RESET}{s}{tcol}tasks:{arb['tasks']}{RESET}"
             f"{s}{qcol}q:{arb['q']}{RESET}{s}{ocol}over:{arb['over']}{RESET}"
         )
+        prune_bit = safe(seg_prune, data, sid)
+        if prune_bit:
+            arbline += f"{s}{prune_bit}"
+        box.row(arbline)
         box.sep()
 
     # usage block — Session over Total (label │ ↓ in  ↑ out │ $cost), a

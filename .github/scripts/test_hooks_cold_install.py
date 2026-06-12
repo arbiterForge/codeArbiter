@@ -294,7 +294,7 @@ def main():
                 "fallback": fallback[0].replace("${CLAUDE_PLUGIN_ROOT}", PLUGIN_ROOT),
             }
     expected = {"session-start.py", "pre-bash.py", "pre-write.py",
-                "pre-edit.py", "post-write-edit.py"}
+                "pre-edit.py", "post-write-edit.py", "prune-transcript.py"}
     if set(hooks) != expected:
         sys.exit(f"FATAL: hook set drifted — update this harness. "
                  f"found {sorted(hooks)}, expected {sorted(expected)}")
@@ -423,6 +423,21 @@ def main():
         fb = run("post-write-edit.py", "fallback", "STUB", enabled, post_in)
         check(fb.rc == 0 and "H-09" in fb.err, fb,
               "STUB fallback must emit the H-09 reminder via `python` and exit 0")
+
+        # ---- 9. prune-transcript: CODEARBITER_PRUNE unset → always a no-op
+        # The pruner exits 0 immediately when CODEARBITER_PRUNE is off/unset, so
+        # REAL/STUB behave identically to a dormant-repo hook (no output, exit 0);
+        # NONE still fails loud because the interpreter itself is missing.
+        prune_in = {"hook_event_name": "UserPromptSubmit",
+                    "session_id": "test-session",
+                    "transcript_path": "/nonexistent/path.jsonl"}
+        assert_noop_allow(run("prune-transcript.py", "primary", "REAL", enabled, prune_in))
+        assert_noop_allow(run("prune-transcript.py", "fallback", "REAL", enabled, prune_in))
+        assert_stub_primary(run("prune-transcript.py", "primary", "STUB", enabled, prune_in))
+        assert_noop_allow(run("prune-transcript.py", "fallback", "STUB", enabled, prune_in),
+                          stub_ok=True)
+        for kind in ("primary", "fallback"):
+            assert_loud_failure(run("prune-transcript.py", kind, "NONE", enabled, prune_in))
     finally:
         shutil.rmtree(base, ignore_errors=True)
 
