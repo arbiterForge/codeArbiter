@@ -119,6 +119,27 @@ class TestWrite(unittest.TestCase):
         with open(self.path, "rb") as f:
             self.assertEqual(f.read(), self.data)
 
+    def test_rollback_preserves_append_during_postwrite_failure(self):
+        # An append that lands AFTER our truncate but BEFORE the rollback (the
+        # post-write-validation failure path) must survive the restore. The
+        # monkeypatched checker is the seam: it appends, then forces the failure.
+        appended = b'{"type":"user","uuid":"race2","parentUuid":"afinal"}\n'
+
+        def fail_and_append(a, b):
+            with open(self.path, "ab") as f:
+                f.write(appended)
+            return ["injected failure"]
+        orig_check = P._post_write_check
+        P._post_write_check = fail_and_append
+        try:
+            res = P.run(self.path, self.cfg(), session="sess")
+        finally:
+            P._post_write_check = orig_check
+        self.assertFalse(res["executed"])
+        with open(self.path, "rb") as f:
+            landed = f.read()
+        self.assertEqual(landed, self.data + appended)
+
     def test_refuse_execute_on_validation_failure(self):
         # Force a validation failure pre-write by injecting a bad serialize.
         cfg = self.cfg()
@@ -127,6 +148,108 @@ class TestWrite(unittest.TestCase):
         lines = P.load_lines(data)
         errs = P.validate(data, data + b"x", lines, cfg)  # larger => v_shrink
         self.assertTrue(errs)
+
+
+class TestSelfHeal(unittest.TestCase):
+    """A process killed between write_in_place's write and its truncate leaves
+    new_bytes + the original's leftover tail — spliced mid-line. self_heal must
+    detect that corpse on the next run and restore from the session backup."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.path = os.path.join(self.tmp.name, "sess.jsonl")
+        self.data = make_transcript(n_pairs=6, result_bytes=20000)
+        with open(self.path, "wb") as f:
+            f.write(self.data)
+        self._home = redirect_home(self.tmp.name)
+
+    def tearDown(self):
+        restore_home(self._home)
+        self.tmp.cleanup()
+
+    def _pruned_bytes(self):
+        cfg = P.Config(tier="gentle", keep_recent=2, max_bytes=8192)
+        lines = P.load_lines(self.data)
+        idx = P.build_index(lines, cfg)
+        P.apply_strategies(lines, idx, cfg)
+        return P.serialize(lines)
+
+    def _plant_backup(self, content=None):
+        d = P.backup_dir()
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, "sess.20260101T000000Z.jsonl"), "wb") as f:
+            f.write(self.data if content is None else content)
+
+    def _write_corpse(self, extra=b""):
+        # The exact mid-write-kill artifact: new_bytes fully written and fsynced,
+        # truncate never ran -> short prefix + leftover original tail, splice
+        # boundary inside an old line. `extra` simulates post-crash live appends.
+        new = self._pruned_bytes()
+        self.assertLess(len(new), len(self.data))
+        corpse = new + self.data[len(new):] + extra
+        with open(self.path, "wb") as f:
+            f.write(corpse)
+        return corpse
+
+    def test_heals_truncate_point_splice(self):
+        self._write_corpse()
+        with open(self.path, "rb") as f:
+            self.assertTrue(any(lvl == "FAIL" for lvl, _ in P.audit(f.read())))
+        self._plant_backup()
+        healed, note = P.self_heal(self.path, "sess")
+        self.assertTrue(healed, note)
+        with open(self.path, "rb") as f:
+            self.assertEqual(f.read(), self.data)
+
+    def test_heal_preserves_lines_appended_after_crash(self):
+        appended = b'{"type":"user","uuid":"post","parentUuid":"afinal"}\n'
+        self._write_corpse(extra=appended)
+        self._plant_backup()
+        healed, note = P.self_heal(self.path, "sess")
+        self.assertTrue(healed, note)
+        with open(self.path, "rb") as f:
+            self.assertEqual(f.read(), self.data + appended)
+
+    def test_noop_on_clean_file(self):
+        self._plant_backup()
+        healed, note = P.self_heal(self.path, "sess")
+        self.assertFalse(healed)
+        self.assertEqual(note, "clean")
+        with open(self.path, "rb") as f:
+            self.assertEqual(f.read(), self.data)
+
+    def test_refuses_corrupt_file_without_backup(self):
+        corpse = self._write_corpse()
+        healed, note = P.self_heal(self.path, "sess")
+        self.assertFalse(healed)
+        self.assertIn("no backup", note)
+        with open(self.path, "rb") as f:
+            self.assertEqual(f.read(), corpse)  # untouched, left for a human
+
+    def test_refuses_non_splice_corruption(self):
+        # A file shorter than the backup is not an interrupted truncate (the
+        # truncate completing IS the success path); leave it alone.
+        mangled = self.data[:100] + b"GARBAGE-NOT-JSON\n"
+        with open(self.path, "wb") as f:
+            f.write(mangled)
+        self._plant_backup()
+        healed, note = P.self_heal(self.path, "sess")
+        self.assertFalse(healed)
+        with open(self.path, "rb") as f:
+            self.assertEqual(f.read(), mangled)
+
+    def test_run_execute_self_heals_then_prunes(self):
+        # End to end: a crashed prior prune's corpse, then a normal execute run —
+        # it must restore from backup and complete a clean prune of the original.
+        self._write_corpse()
+        self._plant_backup()
+        cfg = P.Config(tier="gentle", keep_recent=2, max_bytes=8192, execute=True)
+        res = P.run(self.path, cfg, session="sess")
+        self.assertTrue(res["executed"], res["verdict"])
+        with open(self.path, "rb") as f:
+            landed = f.read()
+        self.assertFalse(any(lvl == "FAIL" for lvl, _ in P.audit(landed)))
+        self.assertLess(len(landed), len(self.data))
 
 
 if __name__ == "__main__":

@@ -44,8 +44,11 @@ the running CLI sends its in-memory history to the API, not the file.
    prune at safe quiescence points, always exit 0, and never block the prompt. Tiers: `gentle`
    (sidecar + oversize clamp), `standard` (+ reasoning fold, aged/MCP/shell), `aggressive`
    (+ stale-read, reminder dedup, image evict). Config via `CODEARBITER_PRUNE` (`off`|`dry`|`on`,
-   ships **off**), `CODEARBITER_PRUNE_TIER`, `CODEARBITER_PRUNE_KEEP_RECENT`,
+   ships **off**), `CODEARBITER_PRUNE_TIER`, `CODEARBITER_PRUNE_KEEP_RECENT` (the K most recent
+   tool **turns** kept verbatim — each turn is an assistant tool_use plus its results),
    `CODEARBITER_PRUNE_MAXBYTES`. Enabling is the user's explicit choice — never set it unbidden.
+   If a prior service-mode prune was killed mid-write, the next run self-heals the transcript
+   from the newest backup in `~/.codearbiter/prune-backups/` before doing anything else.
 
 ## When NOT to use
 

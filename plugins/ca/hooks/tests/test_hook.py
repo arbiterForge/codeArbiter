@@ -109,6 +109,30 @@ class TestHook(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(os.path.getsize(path), before)  # dormant repo -> noop
 
+    def test_hook_self_heals_crash_corpse_then_prunes(self):
+        # A prior prune died between write and truncate, leaving a mid-line
+        # splice. The next hook run (mode=on) must restore from the backup
+        # BEFORE any gate reads the file, then prune normally.
+        with open(self.path, "rb") as f:
+            data = f.read()
+        cfg = P.Config(tier="gentle", keep_recent=2, max_bytes=8192)
+        lines = P.load_lines(data)
+        P.apply_strategies(lines, P.build_index(lines, cfg), cfg)
+        new = P.serialize(lines)
+        with open(self.path, "wb") as f:
+            f.write(new + data[len(new):])  # the crash corpse
+        d = P.backup_dir()
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, "sess.20260101T000000Z.jsonl"), "wb") as f:
+            f.write(data)
+        rc = P.hook_run(self.payload(), env=self.env(CODEARBITER_PRUNE="on"))
+        self.assertEqual(rc, 0)
+        with open(self.path, "rb") as f:
+            landed = f.read()
+        self.assertFalse(any(lvl == "FAIL" for lvl, _ in P.audit(landed)))
+        self.assertLess(len(landed), len(data))
+        self.assertIn("sess", P.load_state())
+
     def test_tail_is_settled_helper(self):
         good = P.load_lines(make_transcript(n_pairs=2, result_bytes=100))
         self.assertTrue(P.tail_is_settled(good))

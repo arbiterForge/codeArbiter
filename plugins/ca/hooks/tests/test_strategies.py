@@ -66,6 +66,25 @@ class TestStrategies(unittest.TestCase):
         txt = last_tr["message"]["content"][0]["content"][0]["text"]
         self.assertNotIn(P.MARKER_PREFIX, txt)
 
+    def test_keep_recent_counts_turns_not_lines(self):
+        # KEEP_RECENT's contract is TURNS: keep_recent=2 protects the 2 most
+        # recent tool turns — each an assistant tool_use line PLUS its
+        # tool_result line. Counting raw tool-bearing lines would protect only
+        # 1 turn here (a silent 2x deviation an operator can't see).
+        data = make_transcript(n_pairs=6, result_bytes=20000)
+        out, report, errs = prune(data, tier="gentle", keep_recent=2, max_bytes=8192)
+        self.assertEqual(errs, [])
+        objs = P._parts_objs(out)
+
+        def result_text(uuid):
+            o = next(o for o in objs if isinstance(o, dict) and o.get("uuid") == uuid)
+            return o["message"]["content"][0]["content"][0]["text"]
+        # Pairs 4 and 5 are the two most recent turns: results stay full-size.
+        self.assertNotIn(P.MARKER_PREFIX, result_text("ru4"))
+        self.assertNotIn(P.MARKER_PREFIX, result_text("ru5"))
+        # Pair 3 is the third most recent: pruned.
+        self.assertIn(P.MARKER_PREFIX, result_text("ru3"))
+
     def test_no_strategy_grows_a_line(self):
         # Net-negative guard: tiny content is never enlarged by a marker.
         data = (b'{"type":"user","uuid":"u1","parentUuid":null,"toolUseResult":{"status":"ok"},'

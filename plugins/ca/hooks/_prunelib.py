@@ -127,11 +127,17 @@ class Index:
 
 def build_index(lines, cfg):
     """Compute the protected tail and pre-strategy tool-id sets. The protected
-    tail is everything at/after the earlier of (a) the K-th most recent
-    tool-bearing line and (b) the last assistant message (whose thinking
-    signature must never be touched)."""
+    tail is everything at/after the earlier of (a) the start of the K-th most
+    recent tool-bearing TURN and (b) the last assistant message (whose thinking
+    signature must never be touched).
+
+    keep_recent counts TURNS, not lines: a turn is anchored by its assistant
+    tool_use line, and protecting that line's index also protects the
+    tool_result lines that follow it. (Counting result lines too would silently
+    halve the protection an operator asked for via KEEP_RECENT.)"""
     idx = Index()
-    tool_line_idxs = []
+    turn_anchor_idxs = []     # assistant tool_use-bearing lines: one per turn
+    result_line_idxs = []     # fallback anchors for a results-only transcript
     last_assistant = -1
     tu, tr = set(), set()
     edited = set()
@@ -144,8 +150,10 @@ def build_index(lines, cfg):
         if o.get("type") == "assistant":
             last_assistant = ln.idx
         a, b = _tool_use_ids(o), _tool_result_ids(o)
-        if a or b:
-            tool_line_idxs.append(ln.idx)
+        if a:
+            turn_anchor_idxs.append(ln.idx)
+        elif b:
+            result_line_idxs.append(ln.idx)
         tu |= a
         tr |= b
         msg = o.get("message")
@@ -161,13 +169,14 @@ def build_index(lines, cfg):
                 if name in ("Write", "Edit") and path:
                     edited.add(path)
                     edited_at[path] = max(edited_at.get(path, -1), ln.idx)
+    anchors = turn_anchor_idxs or result_line_idxs
     keep = cfg.keep_recent
     if keep <= 0:
         prot_tool = len(lines)
-    elif len(tool_line_idxs) > keep:
-        prot_tool = tool_line_idxs[-keep]
-    elif tool_line_idxs:
-        prot_tool = tool_line_idxs[0]
+    elif len(anchors) > keep:
+        prot_tool = anchors[-keep]
+    elif anchors:
+        prot_tool = anchors[0]
     else:
         prot_tool = len(lines)
     prot = prot_tool
@@ -818,6 +827,77 @@ def _prune_old_backups(session, keep):
             pass
 
 
+def self_heal(path, session="session"):
+    """Detect and repair the mid-write crash corpse, before any new prune.
+
+    write_in_place writes new_bytes (shorter) over the original and THEN
+    truncates. A process death between the two leaves the file as
+    new_bytes + orig[len(new_bytes):] — the boundary lands inside an old line,
+    so exactly one line is unparseable JSON. The newest backup for the session
+    holds the original; restore it, preserving any lines a live appender added
+    after the crash (they sit beyond len(backup)).
+
+    Conservative by design: heals ONLY when the damage matches that splice
+    signature — one bad line, file at least backup-sized, and the bytes from
+    the end of the bad line up to len(backup) identical to the backup's. Any
+    other corruption is left alone for a human. Returns (healed, note).
+    """
+    if os.path.islink(path):
+        return False, "symlink"
+    try:
+        with open(path, "rb") as f:
+            corpse = f.read()
+    except OSError as e:
+        return False, f"unreadable ({e})"
+    parts = corpse.split(b"\n")
+    objs = _parts_objs(corpse)
+    bad = [i for i, o in enumerate(objs) if isinstance(o, tuple)]
+    if not bad:
+        return False, "clean"
+    session = _safe_session(session)
+    d = backup_dir()
+    try:
+        entries = sorted(f for f in os.listdir(d) if f.startswith(session + "."))
+    except OSError:
+        entries = []
+    if not entries:
+        return False, "corrupt, but no backup for this session"
+    bpath = os.path.join(d, entries[-1])
+    try:
+        with open(bpath, "rb") as f:
+            backup = f.read()
+    except OSError as e:
+        return False, f"backup unreadable ({e})"
+    if any(isinstance(o, tuple) for o in _parts_objs(backup)):
+        return False, "backup itself is corrupt"
+    # --- splice-signature checks -------------------------------------------
+    if len(bad) != 1:
+        return False, "corruption does not match a prune splice (multiple bad lines)"
+    if len(corpse) < len(backup):
+        return False, "file shorter than backup; not an interrupted truncate"
+    # Byte offset just past the bad line (its trailing \n included).
+    end_off = sum(len(p) + 1 for p in parts[:bad[0] + 1])
+    end_off = min(end_off, len(corpse))
+    if end_off > len(backup) or corpse[end_off:len(backup)] != backup[end_off:len(backup)]:
+        return False, "corruption does not match a prune splice (tail differs from backup)"
+    # --- heal ----------------------------------------------------------------
+    # Everything past len(backup) was appended by the live session AFTER the
+    # crash (the file was exactly backup-sized when the prune died); keep it.
+    tail = corpse[len(backup):]
+    healed = backup + tail  # len(healed) == len(corpse): no truncate needed,
+    #                          and an append racing this write lands beyond it.
+    with open(path, "r+b") as f:
+        f.write(healed)
+        f.flush()
+        os.fsync(f.fileno())
+    append_audit_log({
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "session": session, "path": path,
+        "verdict": f"self-healed from {entries[-1]}",
+    })
+    return True, f"healed from backup {entries[-1]}"
+
+
 def write_in_place(path, new_bytes, pre_stat, cfg, session="session",
                    _probe=None):
     """Same-inode, shrink-only rewrite that is safe against a concurrent appender.
@@ -883,9 +963,27 @@ def write_in_place(path, new_bytes, pre_stat, cfg, session="session",
         landed = f.read()
     errs = _post_write_check(orig_bytes, landed)
     if errs:
-        _restore_prefix()
+        # Roll back without eating a concurrent append. At this point the file
+        # is new_bytes (we truncated above); a live appender may have added
+        # lines at offset len(new_bytes) since. Those bytes sit BELOW
+        # len(orig_bytes), so blindly rewriting the original prefix (let alone
+        # truncating) would destroy them. Capture the appended tail first,
+        # restore the original, and re-append the tail after it.
         with open(path, "r+b") as f:
-            f.truncate(len(orig_bytes))
+            cur = os.fstat(f.fileno()).st_size
+            tail = b""
+            if cur > len(new_bytes):
+                f.seek(len(new_bytes))
+                tail = f.read()
+            f.seek(0)
+            f.write(orig_bytes + tail)
+            f.flush()
+            os.fsync(f.fileno())
+            # Mirror the main-path growth guard: truncate only if nothing newer
+            # landed during the restore itself.
+            end = os.fstat(f.fileno()).st_size
+            if end <= len(orig_bytes) + len(tail):
+                f.truncate(len(orig_bytes) + len(tail))
         _prune_old_backups(session, cfg.backups)
         return False, "rolled-back: post-write validation failed: " + "; ".join(errs)
 
@@ -984,6 +1082,13 @@ def hook_run(payload, env=None):
     session = payload.get("session_id") or os.path.splitext(os.path.basename(path))[0]
     cfg = Config.from_env(e)
     cfg.execute = (mode == "on")
+    if cfg.execute:
+        # Repair the corpse a prune killed mid write/truncate may have left,
+        # BEFORE any gate reads or short-circuits on the damaged file.
+        try:
+            self_heal(path, session)
+        except Exception:  # noqa: BLE001 — never let healing break the turn
+            return 0
     try:
         st = os.stat(path)
     except OSError:
@@ -1036,6 +1141,11 @@ def append_audit_log(record):
 def run(path, cfg, session="session"):
     """Prune `path` per `cfg`. Always computes the report; writes only when
     cfg.execute and validation passes. Returns a result dict."""
+    if cfg.execute:
+        # A prior prune killed between write and truncate leaves a spliced
+        # file; restore it from backup before analyzing. (Dry-run never writes,
+        # including this.)
+        self_heal(path, session)
     with open(path, "rb") as f:
         orig_bytes = f.read()
         pre_stat = os.fstat(f.fileno())
