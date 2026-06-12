@@ -6,6 +6,63 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.1.0-beta.2] — 2026-06-12 — preview
+
+### Fixed
+- **Pruner: startup self-heal for the write/truncate crash window** — the in-place write protocol
+  (deliberately same-inode, so the live CLI's open handle and appends survive) writes the shorter
+  image and then truncates; a process death between the two left the file spliced mid-line.
+  `self_heal()` now runs at the top of every execute-mode run (hook and CLI): it detects the exact
+  splice signature (one unparseable line, file at least backup-sized, byte-identical tail vs. the
+  newest session backup in `~/.codearbiter/prune-backups/`), restores the original, and preserves
+  any lines the live session appended after the crash. Corruption that does not match the
+  signature is left untouched for a human. Logged to `~/.codearbiter/prune.log`.
+- **Pruner: rollback no longer eats a concurrent append** — the post-write-validation rollback
+  rewrote the original prefix and truncated blindly, destroying a line a live appender added
+  after the truncate. The rollback now captures any appended tail first, restores
+  original + tail, and skips the truncate if newer bytes landed during the restore (mirroring
+  the main path's growth guard).
+- **Pruner: `CODEARBITER_PRUNE_KEEP_RECENT` now counts turns, as documented** — the protected
+  tail counted tool-bearing *lines* (tool_use and tool_result separately), so `KEEP_RECENT=10`
+  protected ~5 turns. Turn anchors are now the assistant tool_use lines, so the setting protects
+  exactly the K most recent tool turns (each tool_use plus its results).
+
+---
+
+## [2.1.0-beta.1] — 2026-06-12 — preview
+
+> **Preview release.** The session-transcript pruner ships **off** by default
+> (`CODEARBITER_PRUNE=off`). Static analysis and the CLI (`/ca:prune dry/run/audit`) are stable.
+> Service mode (`CODEARBITER_PRUNE=on`) is experimental — opt in explicitly and treat it as
+> latest-channel until a `2.1.0` stable tag. The pruner never breaks a session (hook always exits 0,
+> write protocol has a rollback floor); the experimental label is about signal-loss calibration
+> at the aggressive tier, not safety.
+
+### Added
+- **Session-transcript pruner** (`/ca:prune`) — trims clutter from Claude Code JSONL transcripts
+  at safe quiescence boundaries to extend session lifetime. Ten strategies across three tiers:
+  `gentle` (`sidecar-collapse`, `oversize-result-clamp`), `standard` (+ `reasoning-fold`,
+  `aged-result-condense`, `mcp-payload-condense`, `shell-tail-keep`), `aggressive`
+  (+ `superseded-read-condense`, `repeat-reminder-fold`, `inline-image-evict`). The protected
+  tail keeps the K most recent tool-bearing turns verbatim; unknown line types pass through
+  byte-identical; 7-check validation battery with rollback; live-race-safe write protocol (re-stat
+  abort, same-inode shrink-only, fstat append-check gates `ftruncate`). Typical reduction on a
+  tool-heavy transcript: 50–80%; 20–40% on prose-dominated sessions. Backed by
+  `hooks/_prunelib.py` + `hooks/prune-transcript.py`; 40+ unit tests across pipeline, validators,
+  strategies, write safety, and hook mode.
+- **After-each-turn service mode** — `UserPromptSubmit` and `PreCompact` hook entries prune at
+  safe quiescence points and always exit 0. A stat short-circuit skips unchanged transcripts
+  (`CODEARBITER_PRUNE_MIN_GROWTH` bytes of growth required). Gains land at `claude --resume` /
+  restart / next compaction — not the current turn. Ships **off**; enabling is the user's explicit
+  choice.
+- **Statusline prune segment** — after the pruner runs, `statusline.py` renders `✂ N% · Xs ago`
+  (cumulative session reduction, age of last run). Absent until the first prune; fail-soft (never
+  makes statusline rendering fail).
+- **`/ca:doctor` payload check** — `prune-transcript.py` added to the hook-script completeness
+  check so a missing pruner shows as FAIL, not silent omission.
+
+---
+
 ## [2.0.1] — 2026-06-10
 
 ### Added

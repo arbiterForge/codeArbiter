@@ -39,6 +39,22 @@
           { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"" }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"" }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"" }
+        ]
+      }
     ]
   }
 }

@@ -54,6 +54,7 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `/ca:status` | _(none)_ | Show maturity, open tasks, unresolved `CONFIRM-NN`, overrides since checkpoint. |
 | `/ca:audit` | `[range]` | Assemble the governance packet for a window — commits, overrides, ADRs, sprint decisions, open items — into `.codearbiter/audits/`. Read-only. |
 | `/ca:statusline` | `[--check]` | Install/wire the codeArbiter statusline. |
+| `/ca:prune` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Trim transcript clutter to extend session lifetime. Dry-run by default; gains land on resume/compaction, not the live turn. |
 | `/ca:doctor` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, live-fire hook probe. |
 | `/ca:new-skill` | `"gap"` | Author a new skill after the gap is proven uncovered. |
 | `/ca:btw` | `"question"` | Lightweight Q&A; no state change. |

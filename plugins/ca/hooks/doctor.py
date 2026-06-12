@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import frontmatter_enabled, utf8_stdio  # noqa: E402
 
 HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
-                "pre-edit.py", "post-write-edit.py")
+                "pre-edit.py", "post-write-edit.py", "prune-transcript.py")
 
 results = []  # (level, line)
 
