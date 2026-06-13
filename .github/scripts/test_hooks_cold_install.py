@@ -182,10 +182,22 @@ def base_path_without_python():
 
 def scenario_env(path_value, fixture):
     env = {k: v for k, v in os.environ.items()
-           if k.upper() not in ("PATH", "PYTHONHOME", "PYTHONPATH", "VIRTUAL_ENV")}
+           if k.upper() not in ("PATH", "PYTHONHOME", "PYTHONPATH", "VIRTUAL_ENV",
+                                 "HOME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH")}
     env["PATH"] = path_value
     env["CLAUDE_PLUGIN_ROOT"] = PLUGIN_ROOT
     env["CLAUDE_PROJECT_DIR"] = fixture
+    # Sandbox the home dir. Hooks resolve ~/.claude/settings.json via
+    # expanduser("~") — notably session-start.py's statusLine self-heal, which
+    # REWRITES settings.json on every SessionStart. Without this redirect that
+    # write escapes into the developer's REAL settings and pins the statusLine to
+    # this run's throwaway venv interpreter, blanking the bar when teardown
+    # deletes it. expanduser prefers USERPROFILE on Windows and HOME on POSIX; set
+    # both (and drop HOMEDRIVE/HOMEPATH) so the home always resolves inside base.
+    sandbox_home = os.path.join(os.path.dirname(os.path.abspath(fixture)), "sandbox-home")
+    os.makedirs(sandbox_home, exist_ok=True)
+    env["HOME"] = sandbox_home
+    env["USERPROFILE"] = sandbox_home
     return env
 
 
@@ -329,6 +341,27 @@ def main():
         SESSION_IN = {"hook_event_name": "SessionStart", "source": "startup"}
         ADD_A_IN = {"tool_name": "Bash", "tool_input": {"command": "git add -A"}}
         BENIGN_BASH_IN = {"tool_name": "Bash", "tool_input": {"command": "git status"}}
+
+        # ---- 0. harness isolation: scenario_env MUST sandbox the home dir.
+        # session-start.py self-heals the statusLine on every SessionStart by
+        # writing ~/.claude/settings.json (resolved via expanduser("~")). If the
+        # scenario env leaves HOME/USERPROFILE pointed at the developer's real
+        # home, that write escapes the harness and pins the user's statusLine to
+        # THIS run's throwaway venv interpreter — which teardown then deletes,
+        # blanking the bar. The env must redirect the home dir into the temp base.
+        real_home = os.path.realpath(os.path.expanduser("~"))
+        iso_env = scenario_env(paths["REAL"], dormant)
+        iso = Entry("scenario_env/home-isolation", "scenario_env(REAL, fixture)",
+                    0, "", "", False)
+        child_home = iso_env.get("USERPROFILE") if WIN else iso_env.get("HOME")
+        check(bool(child_home), iso,
+              "scenario_env must set a sandbox home (USERPROFILE on Windows, HOME on POSIX)")
+        rp = os.path.realpath(child_home) if child_home else ""
+        check(rp != real_home, iso,
+              "scenario_env must redirect the home dir AWAY from the real user home — "
+              "else a hook's ~/.claude write escapes into the developer's real settings")
+        check(rp.startswith(os.path.realpath(base)), iso,
+              "the sandbox home must live under the harness temp dir")
 
         # ---- 1. SessionStart, enabled repo: persona exactly once, never twice
         for scen in ("REAL", "STUB"):
