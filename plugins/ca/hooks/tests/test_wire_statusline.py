@@ -274,5 +274,151 @@ class TestStatusSubcommand(unittest.TestCase):
         self.assertIn("YES", output)
 
 
+class TestSpinnerVerbsFreshInstall(unittest.TestCase):
+    """Fresh install: no prior spinnerVerbs → writes ours."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.settings = _make_settings(self.tmp.name)
+        self.root = _make_plugin_root(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_install_sets_spinner_verbs(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        sv = data.get("spinnerVerbs")
+        self.assertIsNotNone(sv)
+        verbs = sv.get("verbs") if isinstance(sv, dict) else None
+        self.assertIsInstance(verbs, list)
+        self.assertGreater(len(verbs), 0)
+
+    def test_install_spinner_verbs_backup_stored_as_none(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        self.assertIn(ws.SPINNER_BACKUP_KEY, data)
+        self.assertIsNone(data[ws.SPINNER_BACKUP_KEY])
+
+    def test_install_spinner_mode_is_replace(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        sv = data.get("spinnerVerbs", {})
+        self.assertEqual(sv.get("mode"), "replace")
+
+
+class TestSpinnerVerbsWithPriorCustomVerbs(unittest.TestCase):
+    """Install over existing user spinnerVerbs → backs theirs up, sets ours."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.prior_verbs = {"mode": "replace", "verbs": ["Thinking", "Working"]}
+        self.settings = _make_settings(
+            self.tmp.name, {"spinnerVerbs": self.prior_verbs})
+        self.root = _make_plugin_root(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_install_replaces_prior_verbs_with_ours(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        verbs = (data.get("spinnerVerbs") or {}).get("verbs", [])
+        self.assertNotEqual(verbs, self.prior_verbs["verbs"])
+        self.assertGreater(len(verbs), 2)
+
+    def test_prior_verbs_backed_up(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        backup = data.get(ws.SPINNER_BACKUP_KEY)
+        self.assertEqual(backup, self.prior_verbs)
+
+
+class TestSpinnerVerbsUninstall(unittest.TestCase):
+    """Uninstall → removes our verbs, restores prior."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.prior_verbs = {"mode": "replace", "verbs": ["Thinking", "Working"]}
+        self.settings = _make_settings(
+            self.tmp.name, {"spinnerVerbs": self.prior_verbs})
+        self.root = _make_plugin_root(self.tmp.name)
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_uninstall_restores_prior_verbs(self):
+        ws.main(["uninstall", "--settings", self.settings,
+                 "--plugin-root", self.root])
+        data = _read(self.settings)
+        self.assertEqual(data.get("spinnerVerbs"), self.prior_verbs)
+
+    def test_uninstall_removes_spinner_backup_key(self):
+        ws.main(["uninstall", "--settings", self.settings,
+                 "--plugin-root", self.root])
+        data = _read(self.settings)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+
+
+class TestSpinnerVerbsUninstallNoPrior(unittest.TestCase):
+    """Uninstall when no prior verbs → removes our key entirely."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.settings = _make_settings(self.tmp.name)
+        self.root = _make_plugin_root(self.tmp.name)
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_uninstall_removes_spinner_verbs_key(self):
+        ws.main(["uninstall", "--settings", self.settings,
+                 "--plugin-root", self.root])
+        data = _read(self.settings)
+        self.assertNotIn("spinnerVerbs", data)
+
+    def test_uninstall_removes_spinner_backup_key(self):
+        ws.main(["uninstall", "--settings", self.settings,
+                 "--plugin-root", self.root])
+        data = _read(self.settings)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+
+
+class TestSpinnerVerbsIdempotent(unittest.TestCase):
+    """Re-install refreshes verb list cleanly, no duplicate backup."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.settings = _make_settings(self.tmp.name)
+        self.root = _make_plugin_root(self.tmp.name)
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_second_install_spinner_backup_key_appears_once(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        raw = open(self.settings, encoding="utf-8").read()
+        self.assertEqual(raw.count(ws.SPINNER_BACKUP_KEY), 1)
+
+    def test_second_install_verbs_still_set(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        verbs = (data.get("spinnerVerbs") or {}).get("verbs", [])
+        self.assertGreater(len(verbs), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

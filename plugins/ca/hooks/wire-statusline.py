@@ -23,8 +23,30 @@ import json
 import os
 import sys
 
-BACKUP_KEY = "_codearbiterStatuslineBackup"   # holds the prior statusLine value
-MARKER = "statusline.py"                        # how we recognize our own line
+BACKUP_KEY = "_codearbiterStatuslineBackup"       # holds the prior statusLine value
+SPINNER_BACKUP_KEY = "_codearbiterSpinnerVerbsBackup"  # holds prior spinnerVerbs
+MARKER = "statusline.py"                          # how we recognize our own line
+
+ARBITER_SPINNER_VERBS = {
+    "mode": "replace",
+    "verbs": [
+        "Deliberating",
+        "Weighing the evidence",
+        "Consulting precedent",
+        "Reviewing the docket",
+        "Summoning the council",
+        "In chambers",
+        "Examining exhibits",
+        "Drafting the ruling",
+        "Calling order",
+        "Overruling prior context",
+        "Sustaining the objection",
+        "Issuing findings",
+        "Cross-examining the codebase",
+        "Invoking arbitration",
+        "Rendering judgment",
+    ],
+}
 
 
 def plugin_root(opt):
@@ -103,6 +125,13 @@ def cmd_status(settings, exists, script_abs):
     if BACKUP_KEY in settings:
         b = settings[BACKUP_KEY]
         print(f"backup on file: {b.get('command') if isinstance(b, dict) else b}")
+    sv = settings.get("spinnerVerbs")
+    if sv is None:
+        print("spinnerVerbs: (none set)")
+    else:
+        count = len(sv.get("verbs", [])) if isinstance(sv, dict) else "?"
+        owned = SPINNER_BACKUP_KEY in settings
+        print(f"spinnerVerbs: {count} verb(s), {'codeArbiter' if owned else 'user-owned'}")
 
 
 def cmd_install(settings, path, script_abs, interp):
@@ -113,6 +142,7 @@ def cmd_install(settings, path, script_abs, interp):
     if is_ours(current):
         # already ours: just refresh the path (e.g. after a plugin upgrade)
         settings["statusLine"] = {"type": "command", "command": new_cmd, "padding": 0}
+        _install_spinner_verbs(settings, refresh=True)
         save_settings(path, settings)
         print(f"REFRESHED codeArbiter statusline path -> {new_cmd}")
         return
@@ -123,6 +153,7 @@ def cmd_install(settings, path, script_abs, interp):
     if BACKUP_KEY not in settings or current is not None:
         settings[BACKUP_KEY] = current  # may be None
     settings["statusLine"] = {"type": "command", "command": new_cmd, "padding": 0}
+    _install_spinner_verbs(settings, refresh=False)
     save_settings(path, settings)
     print(f"WIRED codeArbiter statusline -> {new_cmd}")
     prior = settings[BACKUP_KEY]
@@ -131,6 +162,19 @@ def cmd_install(settings, path, script_abs, interp):
         print(f"backed up prior statusLine: {pc}")
     else:
         print("no prior statusLine existed; uninstall will simply remove ours.")
+
+
+def _install_spinner_verbs(settings, refresh):
+    current_sv = settings.get("spinnerVerbs")
+    already_ours = SPINNER_BACKUP_KEY in settings
+    if already_ours:
+        # Refresh: update to latest verb list, preserve the backup.
+        settings["spinnerVerbs"] = ARBITER_SPINNER_VERBS
+        return
+    # First install: back up whatever is there (may be None), then set ours.
+    if not refresh or current_sv is not None:
+        settings[SPINNER_BACKUP_KEY] = current_sv
+    settings["spinnerVerbs"] = ARBITER_SPINNER_VERBS
 
 
 def cmd_uninstall(settings, path, script_abs):
@@ -150,7 +194,18 @@ def cmd_uninstall(settings, path, script_abs):
     else:
         settings.pop("statusLine", None)
         print("REMOVED codeArbiter statusline.")
+    _uninstall_spinner_verbs(settings)
     save_settings(path, settings)
+
+
+def _uninstall_spinner_verbs(settings):
+    if SPINNER_BACKUP_KEY not in settings:
+        return
+    prior_sv = settings.pop(SPINNER_BACKUP_KEY)
+    if prior_sv is None:
+        settings.pop("spinnerVerbs", None)
+    else:
+        settings["spinnerVerbs"] = prior_sv
 
 
 def main(argv=None):
