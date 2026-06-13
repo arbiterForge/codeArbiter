@@ -11,6 +11,10 @@
 #   python wire-statusline.py install      # back up any existing line, wire ours
 #   python wire-statusline.py uninstall    # restore the backed-up line (or remove)
 #   python wire-statusline.py status       # report current wiring, change nothing
+#   python wire-statusline.py refresh      # self-heal a stale ca-owned path only
+#                                          # (no-op unless ours AND changed) — run
+#                                          # from SessionStart so a plugin update
+#                                          # re-points the pin automatically
 #
 # Options (mainly for testing):
 #   --settings PATH     target settings.json (default: ~/.claude/settings.json)
@@ -164,6 +168,41 @@ def cmd_install(settings, path, script_abs, interp):
         print("no prior statusLine existed; uninstall will simply remove ours.")
 
 
+def refresh_if_stale(settings, script_abs, interp):
+    """Self-heal a ca-owned statusLine whose command has gone stale (e.g. it points
+    at a previous plugin-version dir after an update). Mutates `settings` IN PLACE
+    and returns True iff something changed.
+
+    Scope is deliberately narrow — this is NOT install:
+      - statusLine is ours AND its command != the desired current command -> rewrite, True
+      - statusLine is ours and already current                            -> no change, False
+      - statusLine is a third-party line, or absent                       -> never touched, False
+
+    Returning a changed-flag lets the caller persist ONLY on a real change, so a
+    steady-state session start never churns settings.json."""
+    current = settings.get("statusLine")
+    if not is_ours(current):
+        return False
+    desired = build_command(interp, script_abs)
+    cur_cmd = current.get("command") if isinstance(current, dict) else current
+    if cur_cmd == desired:
+        return False
+    settings["statusLine"] = {"type": "command", "command": desired, "padding": 0}
+    return True
+
+
+def cmd_refresh(settings, path, script_abs, interp):
+    """SessionStart self-heal entry. Refresh a stale ca-owned path and persist ONLY
+    if it changed; otherwise leave settings.json untouched (no mtime churn)."""
+    if not os.path.exists(script_abs):
+        # Renderer missing (mid-update?) — do nothing rather than write a path that
+        # 404s. A later session with the file present will heal it.
+        return
+    if refresh_if_stale(settings, script_abs, interp):
+        save_settings(path, settings)
+        print(f"REFRESHED stale codeArbiter statusline path -> {settings['statusLine']['command']}")
+
+
 def _install_spinner_verbs(settings, refresh):
     current_sv = settings.get("spinnerVerbs")
     already_ours = SPINNER_BACKUP_KEY in settings
@@ -211,7 +250,7 @@ def _uninstall_spinner_verbs(settings):
 def main(argv=None):
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument("action", nargs="?", default="status",
-                    choices=["install", "uninstall", "status"])
+                    choices=["install", "uninstall", "status", "refresh"])
     ap.add_argument("--settings")
     ap.add_argument("--plugin-root")
     ap.add_argument("--interp")
@@ -230,6 +269,8 @@ def main(argv=None):
         cmd_install(settings, spath, script_abs, interp)
     elif args.action == "uninstall":
         cmd_uninstall(settings, spath, script_abs)
+    elif args.action == "refresh":
+        cmd_refresh(settings, spath, script_abs, interp)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,12 @@
 """Tests for session-start.py: has_source(), CONFIRM_RE, task counting."""
+import contextlib
+import io
+import json
 import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -138,6 +142,123 @@ class TestMalformedFrontmatter(unittest.TestCase):
             enabled, malformed = frontmatter_enabled(ctx)
             self.assertFalse(enabled)
             self.assertTrue(malformed)
+
+
+class TestHealStatuslineWiring(unittest.TestCase):
+    """Regression (#fix): SessionStart must self-heal a stale ca-owned statusLine
+    pin so a plugin update re-points the absolute path in settings.json instead of
+    silently running the old (eventually-broken) version. Drives the real
+    wire-statusline.py from the actual plugin root, against a temp settings file."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        # Real plugin root = parent of the hooks/ dir holding session-start.py.
+        self.plugin = os.path.dirname(
+            os.path.dirname(os.path.abspath(_mod.__file__)))
+        self.real_script = os.path.join(self.plugin, "hooks", "statusline.py")
+        d = os.path.join(self._tmp.name, ".claude")
+        os.makedirs(d)
+        self.settings = os.path.join(d, "settings.json")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _write(self, obj):
+        import json
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump(obj, f, indent=2)
+
+    def _read(self):
+        import json
+        with open(self.settings, encoding="utf-8") as f:
+            return json.load(f)
+
+    def test_stale_ours_pin_is_healed(self):
+        self._write({"statusLine": {"type": "command",
+                     "command": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'}})
+        changed = _mod.heal_statusline_wiring(
+            self.plugin, settings_path=self.settings, interp="python")
+        self.assertTrue(changed)
+        cmd = self._read()["statusLine"]["command"]
+        self.assertIn(self.real_script, cmd)
+        self.assertNotIn("2.0.1", cmd)
+
+    def test_third_party_pin_left_alone(self):
+        self._write({"statusLine": {"type": "command", "command": "theirs --x"}})
+        changed = _mod.heal_statusline_wiring(
+            self.plugin, settings_path=self.settings, interp="python")
+        self.assertFalse(changed)
+        self.assertEqual(self._read()["statusLine"]["command"], "theirs --x")
+
+    def test_corrupt_settings_does_not_crash(self):
+        with open(self.settings, "w", encoding="utf-8") as f:
+            f.write("{ not valid json")
+        # Must degrade silently (return False), never raise — a wiring refresh
+        # may not crash session startup.
+        self.assertFalse(
+            _mod.heal_statusline_wiring(
+                self.plugin, settings_path=self.settings, interp="python"))
+
+    def test_absent_settings_is_noop(self):
+        missing = os.path.join(self._tmp.name, "nope", "settings.json")
+        self.assertFalse(
+            _mod.heal_statusline_wiring(
+                self.plugin, settings_path=missing, interp="python"))
+
+    def test_loader_failure_returns_false(self):
+        # The `loader=` seam exists so a wire-statusline.py that fails to load
+        # degrades to a no-op rather than crashing startup. A loader returning
+        # None must short-circuit to False without touching settings.json.
+        self._write({"statusLine": {"type": "command", "command": "x statusline.py"}})
+        self.assertFalse(
+            _mod.heal_statusline_wiring(
+                self.plugin, settings_path=self.settings, interp="python",
+                loader=lambda _p: None))
+
+
+class TestMainHealsBeforeDormantGate(unittest.TestCase):
+    """Regression (#fix): the heal must run from main() BEFORE the dormant early
+    return, so a plugin update re-points the pin in EVERY session — even a
+    non-arbiter (dormant) repo. This is the test that FAILS if the
+    `heal_statusline_wiring(plugin)` call is deleted from main(); the direct-call
+    tests above would all still pass, leaving the actual fix point unguarded."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        # A dormant repo: no .codearbiter/CONTEXT.md -> main() exits early.
+        self.repo = os.path.join(self._tmp.name, "repo")
+        os.makedirs(self.repo)
+        # A fake HOME whose ~/.claude/settings.json carries a stale ca-owned pin.
+        self.home = os.path.join(self._tmp.name, "home")
+        os.makedirs(os.path.join(self.home, ".claude"))
+        self.settings = os.path.join(self.home, ".claude", "settings.json")
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump({"statusLine": {"type": "command",
+                       "command": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'}}, f)
+        self.plugin = os.path.dirname(os.path.dirname(os.path.abspath(_mod.__file__)))
+        self.real_script = os.path.join(self.plugin, "hooks", "statusline.py")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_main_heals_stale_pin_in_dormant_repo(self):
+        cwd = os.getcwd()
+        os.chdir(self.repo)
+        try:
+            # expanduser("~") -> our fake HOME, so settings_path resolves into it;
+            # CLAUDE_PLUGIN_ROOT -> the real plugin so statusline.py exists.
+            with mock.patch.object(os.path, "expanduser", return_value=self.home), \
+                 mock.patch.dict(os.environ, {"CLAUDE_PLUGIN_ROOT": self.plugin}), \
+                 contextlib.redirect_stdout(io.StringIO()), \
+                 contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    _mod.main()
+        finally:
+            os.chdir(cwd)
+        with open(self.settings, encoding="utf-8") as f:
+            cmd = json.load(f)["statusLine"]["command"]
+        self.assertIn(self.real_script, cmd)
+        self.assertNotIn("2.0.1", cmd)
 
 
 if __name__ == "__main__":
