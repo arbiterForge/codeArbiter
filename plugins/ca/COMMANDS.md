@@ -25,6 +25,7 @@ ONLY when that command is invoked — never bulk-read the directory.
 |---|---|---|
 | `/ca:commit` | _(none)_ | The only path to a commit; routes to `commit-gate` (nine gates). |
 | `/ca:pr` | `["title"]` | Finish a branch: open-PR / merge-via-PR / discard. No direct-to-default. |
+| `/ca:watch` | `<PR number\|url\|branch>` | Babysit a PR's CI server-side: diagnose on red, notify + offer the merge on green. Never auto-merges. Auto-attaches from `/ca:pr` when `CODEARBITER_BABYSIT` is on. |
 | `/ca:review` | `[path or scope]` | Dispatch the reviewer fleet over the diff; BLOCK on CRITICAL/HIGH. |
 | `/ca:checkpoint` | `[focus]` | Lean periodic reviewer sweep; surfaces a triaged report. |
 | `/ca:release` | `[--dry-run]` | Lean SemVer release: bump-from-commits + changelog + annotated tag. |
@@ -56,6 +57,7 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `/ca:statusline` | `[--check]` | Install/wire the codeArbiter statusline. |
 | `/ca:prune` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Trim transcript clutter to extend session lifetime. Dry-run by default; gains land on resume/compaction, not the live turn. |
 | `/ca:doctor` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, live-fire hook probe. |
+| `/ca:standup` | _(none)_ | Daily hygiene: review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes — each under per-action confirmation. |
 | `/ca:new-skill` | `"gap"` | Author a new skill after the gap is proven uncovered. |
 | `/ca:btw` | `"question"` | Lightweight Q&A; no state change. |
 | `/ca:override` | `"reason"` | Sanctioned, logged single-identity gate bypass. |

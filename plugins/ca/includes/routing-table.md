@@ -15,6 +15,7 @@ stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to
 | Unknown defect / investigation | `/debug` → `debug` skill | — | No code change in the skill; one named exit |
 | Commit | `/commit` → `commit-gate` | — | No commit without all nine gates green |
 | Open a PR / finish a branch | `/pr` → `finishing-a-development-branch` | reviewer fleet per path | PR only; no direct-to-default, no force-push |
+| Watch a PR's CI / babysit checks | `/watch` → detached `gh pr checks --watch` | on-red diagnose (propose\|branch) | Never auto-merges; green → notify + offer; merge-to-default routes through the hard gate; no poll loop |
 | Code review of the diff | `/review` → `dispatching-parallel-agents` | reviewer fleet → `finding-triage` → `checkpoint-aggregator` | BLOCK on any CRITICAL/HIGH |
 | Periodic sweep | `/checkpoint` → `dispatching-parallel-agents` | reviewer fleet → triage → aggregator | Surfaces a triaged report; not a promotion gate |
 | Governance record for a window | `/audit` | — | Read-only; never overwrites a packet; audit lines quoted verbatim |
@@ -32,3 +33,4 @@ stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to
 | New skill needed | `/new-skill` → `skill-author` | — | No skill until the gap is proven uncovered |
 | Subagent raises an out-of-scope finding | inline `[NEEDS-TRIAGE]` marker | — | Never an ADR disposition; never silently dropped |
 | Session context bloated / want longer sessions | `/ca:prune` → `prune-transcript.py` | — | Never `--execute` the live transcript; dry-run by default; resume/compaction gains only, not live |
+| Sitting down to code / repo hygiene cleanup | `/ca:standup` → orchestrator git actions | — | ff-only pull on a clean tree; each branch/worktree delete confirmed individually; stash/dirty/un-pushed report-only; never touch the default branch |

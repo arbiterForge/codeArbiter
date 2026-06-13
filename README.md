@@ -7,8 +7,8 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.1.0-beta.3" src="https://img.shields.io/badge/version-2.1.0--beta.3-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-32-555">
+<img alt="version 2.1.0-beta.4" src="https://img.shields.io/badge/version-2.1.0--beta.4-2b7489">
+<img alt="commands" src="https://img.shields.io/badge/commands-34-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-14-555">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
@@ -137,7 +137,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | <kbd>/ca:audit</kbd> | One command, one packet: every commit, override, ADR, and autonomous decision in a window, with attribution — the document an auditor actually asks for. |
 
 <details>
-<summary><b>The full catalog</b> — 32 commands</summary>
+<summary><b>The full catalog</b> — 34 commands</summary>
 
 <br>
 
@@ -159,6 +159,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 |---|---|
 | `/ca:commit` | The only path to a commit; routes through `commit-gate` |
 | `/ca:pr` | Open / finish a branch — no direct-to-default |
+| `/ca:watch <PR>` | Babysit a PR's CI server-side — diagnose on red, notify + offer merge on green; never auto-merges |
 | `/ca:review [path]` | Reviewer-fleet pass over the diff; BLOCK on CRITICAL/HIGH |
 | `/ca:checkpoint` | Lean periodic multi-reviewer sweep |
 | `/ca:release [--dry-run]` | SemVer bump + changelog + annotated tag |
@@ -184,6 +185,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:status` | Maturity, open tasks, unresolved `CONFIRM-NN`, overrides |
 | `/ca:statusline` | Install/wire the codeArbiter statusline |
 | `/ca:doctor` | Prove the install is enforcing — payload, cache staleness, live-fire hook probe |
+| `/ca:standup` | Daily hygiene — review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes, each under per-action confirmation |
 | `/ca:new-skill "gap"` | Author a new skill after the gap is proven uncovered |
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
 | `/ca:override "reason"` | Sanctioned, logged single-identity gate bypass |
@@ -224,7 +226,7 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (32)   skills/   (20)   agents/   (14)
+├── commands/   (34)   skills/   (20)   agents/   (14)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)

@@ -19,6 +19,10 @@ legacy/
 # via /ca:decompose if a session is interrupted. Never committed.
 .codearbiter/.decompose-draft/
 
+# Transient sprint lock written by /ca:sprint (holds the active sprint slug).
+# Removed when the sprint completes. Local-only, never committed.
+.codearbiter/sprint-active
+
 # Python bytecode (e.g. the statusline dev harnesses under plugins/ca/hooks/).
 __pycache__/
 
@@ -26,7 +30,9 @@ __pycache__/
 # plan's cleanup phase. Never committed.
 /.plan-tasks/
 
-# farm.ts dev dependencies — not shipped, only needed to build farm.js.
+# Node dependencies — never committed. Root-level appears from ad-hoc tooling;
+# farm.ts dev deps live under plugins/ca/tools and are only needed to build farm.js.
+/node_modules/
 plugins/ca/tools/node_modules/
 
 # Farm dispatcher runtime artifacts — worktrees, reports, integration branch staging.
