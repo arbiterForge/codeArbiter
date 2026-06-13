@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-06-13
 title: Adopt a hybrid ADR + living-docs governance model
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,7 @@ governs: .codearbiter/tech-stack.md, .codearbiter/security-controls.md, .codearb
 # ADR-0001 — Adopt a hybrid ADR + living-docs governance model
 
 ## Status
-Proposed
+Accepted — ratified 2026-06-13 by SUaDtL@users.noreply.github.com
 
 ## Context
 Governance decisions currently live as prose in `.codearbiter/tech-stack.md` and
