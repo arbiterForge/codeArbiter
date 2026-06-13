@@ -24,6 +24,16 @@ Full documentation, install instructions, and the command catalog live in the
 - **What it writes to your repo** — `.codearbiter/` only. Uninstalling the plugin leaves your
   project state intact and yours.
 
+## Feature Forge (preview)
+
+Some features ship in the box but aren't yet *blessed* — off by default, fully dormant until you opt
+in, labeled `preview` until real-world data earns them a stable promotion. In the forge now: **live
+transcript pruning** (`CODEARBITER_PRUNE`), which trims redundant transcript clutter to extend a
+session. Run it in `dry` mode (`export CODEARBITER_PRUNE=dry`) and it logs what it *would* prune —
+sizes and verdicts only, no transcript content — to `~/.codearbiter/metrics/prune-dry.jsonl`. Sending
+that log back ([open a prune-data issue](https://github.com/SUaDtL/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune))
+is what moves it toward `on`. Full detail in the [Feature Forge section of the repo README](https://github.com/SUaDtL/codeArbiter#feature-forge).
+
 ## What's in this directory
 
 `ORCHESTRATOR.md` (the persona injected in enabled repos) · `commands/` · `skills/` · `agents/` ·

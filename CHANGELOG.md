@@ -6,6 +6,34 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.1.0-beta.6] — 2026-06-13 — preview
+
+Docs-only release: distribution-readiness pass ahead of a marketplace submission. No code, no gate
+change, no behavioral surface.
+
+### Added
+- **"Feature Forge" section** (repo README) with its own hero (`docs/feature-forge.svg`, in the
+  banner's visual family — a commit at a gate that still glows hot, embers rising). Frames preview
+  features as opt-in, dormant, and promoted by real-world data rather than a calendar. Houses live
+  transcript pruning with its `off`/`dry`/`on` contract and a concrete feedback loop: run
+  `CODEARBITER_PRUNE=dry`, then send `~/.codearbiter/metrics/prune-dry.jsonl` back via a pre-filled
+  GitHub issue. The log carries sizes, per-strategy savings, and verdicts only — **no transcript
+  content** — and is the evidence base for the `dry → on` go/no-go.
+- **Issue form `Feature Forge: prune data`** (`.github/ISSUE_TEMPLATE/`) so returning a `dry` log is
+  drag-attach-submit, plus an issue-chooser config linking the docs and the Forge.
+- **Demo recording shot list** (`docs/demo-script.md`) and a commented placeholder in the README for
+  an in-motion GIF (the BLOCK → resolve → green beat).
+
+### Changed
+- **Plugin storefront** (`plugins/ca/README.md`) gains a compact Feature Forge blurb with the
+  prune-data ask — it's what the marketplace directory renders, so it can't be silent on previews.
+- **Configuration table** (repo README) split: the prune flags moved out of the stable table into
+  Feature Forge, so preview opt-ins no longer sit beside blessed ones.
+- A collapsible worked-example added to the README so it *shows* a real `/ca:fix → commit → pr` flow,
+  not only describes the gates.
+
+---
+
 ## [2.1.0-beta.5] — 2026-06-13 — preview
 
 Bug fix: the statusline pin no longer goes stale across plugin updates.
