@@ -41,6 +41,12 @@ jobs:
           cache-dependency-path: plugins/ca/tools/package-lock.json
       - name: Install (locked)
         run: npm ci
+      - name: Audit (CVE gate — fail on CRITICAL)
+        # Supply-chain gate per security-controls.md: a CRITICAL advisory in a
+        # production dependency fails the build. --omit=dev scopes to shipped
+        # deps; --audit-level=critical intentionally ignores lower severities so
+        # routine dev-tool advisories don't block unrelated PRs.
+        run: npm audit --omit=dev --audit-level=critical
       - name: Typecheck
         run: npm run typecheck
       - name: Test
