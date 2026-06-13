@@ -6,6 +6,36 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.1.0-beta.3] — 2026-06-13 — preview
+
+Remediation of the 2026-06-13 checkpoint sweep. One sprint, planned hard-gate stops; governance
+decisions recorded as user-attributed ADRs.
+
+### Security
+- **Validate the resolved API base URL before every fetch** — `farm.ts` previously validated only
+  `plan.meta.apiBaseUrl` at parse time, so a `FARM_API_BASE_URL` env override could resolve to
+  `http://` and send the `Authorization: Bearer ${FARM_API_KEY}` header over cleartext. The resolved
+  base URL (env → plan.meta → default) is now checked by `assertSecureBaseUrl` — HTTPS-only with a
+  documented loopback `http://` exception (no userinfo), via WHATWG `URL` parsing (the same parser
+  `fetch` uses, so no parser-differential bypass). Error messages never include the key.
+
+### Added
+- **`pre-edit.py` hook test suite** — `tests/test_pre_edit.py` covers the H-05 append-only guard
+  (overrides.log / triage.log) and the H-11 ADR-marker block/allow paths, including stale-marker and
+  Windows path variants.
+- **CVE gate in CI** — `npm audit --omit=dev --audit-level=critical` runs in the `tools` job;
+  referenced in `tech-stack.md`.
+- **Architecture decision records** — `.codearbiter/decisions/` initialized with ADR-0001..0004
+  (hybrid governance model, plan.json shell-exec trust boundary, HTTPS-only transport, database-free
+  stdlib-only architecture) and a decision log. Status: proposed.
+
+### Changed
+- **security-controls.md** — TLS section rewritten around the resolved-URL validation; boundary-
+  crossings table gains rows for plan.json/`FARM_MUTATION_CMD` shell execution and the loopback
+  `http://` exception.
+
+---
+
 ## [2.1.0-beta.2] — 2026-06-12 — preview
 
 ### Fixed
