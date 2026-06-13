@@ -6,6 +6,17 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.1.1] — 2026-06-13
+
+### Changed
+- **Project moved to the `arbiterForge` GitHub organization.** Canonical home is now
+  `github.com/arbiterForge/codeArbiter`. Plugin metadata (`homepage`, `repository`, `author`),
+  the self-hosted marketplace `owner`, install instructions, and all doc links point at the new
+  org. The old `SUaDtL/codeArbiter` URLs continue to redirect. No behavior, gate, or payload logic
+  changed — metadata and documentation only.
+
+---
+
 ## [2.1.0] — 2026-06-13
 
 First stable minor since the 2.0 plugin rewrite. Consolidates the `2.1.0-beta.1`…`beta.6`
@@ -93,7 +104,7 @@ README. The per-beta history remains in the git tag log.
 
 ## [2.0.0] — 2026-06-10 — Native Claude Code plugin
 
-The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring framework into a **native Claude Code plugin**. The soul is intact — orchestration, gates, SMARTS, the audit trail — re-grounded on Claude Code's plugin primitives and made leaner and more autonomous. Install with `/plugin marketplace add SUaDtL/codeArbiter` then `/plugin install ca@codearbiter`; commands are namespaced `/ca:<name>`. Pre-release, the whole plugin went through an eight-persona adversarial marketplace-readiness review; everything it surfaced is folded in below.
+The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring framework into a **native Claude Code plugin**. The soul is intact — orchestration, gates, SMARTS, the audit trail — re-grounded on Claude Code's plugin primitives and made leaner and more autonomous. Install with `/plugin marketplace add arbiterForge/codeArbiter` then `/plugin install ca@codearbiter`; commands are namespaced `/ca:<name>`. Pre-release, the whole plugin went through an eight-persona adversarial marketplace-readiness review; everything it surfaced is folded in below.
 
 ### Added
 - **Native plugin packaging** — `.claude-plugin/marketplace.json` + the plugin under `plugins/ca/`. No clone-into-your-repo, no symlinks, no shims.
