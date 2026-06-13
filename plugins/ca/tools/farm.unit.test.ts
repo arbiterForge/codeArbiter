@@ -3,7 +3,7 @@
  * These test the exported helpers directly without spawning a subprocess.
  */
 import { describe, it, expect } from "vitest";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl } from "./farm.ts";
 
 // ---------------------------------------------------------------------------
 // extractFileBlocks
@@ -284,6 +284,77 @@ describe("validate — schema checks (D-2)", () => {
     expect(() =>
       validate(basePlan({ gate: { commands: ["npm test", "npm run typecheck"] } }))
     ).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// assertSecureBaseUrl — the resolved-URL guard that closes the FARM_API_BASE_URL
+// cleartext-secret-leak bypass (the validate() check only covers plan.meta).
+// ---------------------------------------------------------------------------
+describe("assertSecureBaseUrl — resolved base URL guard", () => {
+  it("rejects a non-loopback http:// URL (the FARM_API_BASE_URL bypass)", () => {
+    expect(() => assertSecureBaseUrl("http://evil.example")).toThrow(/HTTPS/);
+  });
+
+  it("rejects a non-loopback http:// URL with a port", () => {
+    expect(() => assertSecureBaseUrl("http://evil.example:8080/v1")).toThrow(/HTTPS/);
+  });
+
+  it("accepts an https:// URL", () => {
+    expect(() => assertSecureBaseUrl("https://api.opencode.ai/v1")).not.toThrow();
+  });
+
+  it("accepts http://127.0.0.1 loopback (test mocks rely on it)", () => {
+    expect(() => assertSecureBaseUrl("http://127.0.0.1:8080")).not.toThrow();
+  });
+
+  it("accepts http://localhost loopback (test mocks rely on it)", () => {
+    expect(() => assertSecureBaseUrl("http://localhost:3000")).not.toThrow();
+  });
+
+  it("does not treat a host that merely starts with localhost as loopback", () => {
+    expect(() => assertSecureBaseUrl("http://localhost.evil.example")).toThrow(/HTTPS/);
+  });
+
+  // Defense-in-depth: userinfo tricks on the http-loopback path. A URL whose
+  // userinfo is a loopback-looking string but whose real host is hostile must
+  // be rejected; and any userinfo on the loopback path is disallowed.
+  it("rejects http with loopback-looking userinfo but a hostile host", () => {
+    expect(() => assertSecureBaseUrl("http://localhost@evil.example")).toThrow(/HTTPS/);
+  });
+
+  it("rejects http loopback that carries username:password userinfo", () => {
+    expect(() => assertSecureBaseUrl("http://user:pass@127.0.0.1:8080")).toThrow(/HTTPS/);
+  });
+
+  it("still accepts a clean http://127.0.0.1 loopback with no userinfo", () => {
+    expect(() => assertSecureBaseUrl("http://127.0.0.1:8080")).not.toThrow();
+  });
+
+  it("still accepts a clean http://localhost loopback with a path", () => {
+    expect(() => assertSecureBaseUrl("http://localhost:3000/v1")).not.toThrow();
+  });
+
+  it("rejects a malformed / unparseable URL", () => {
+    expect(() => assertSecureBaseUrl("not a url")).toThrow(/HTTPS/);
+  });
+
+  it("accepts an https URL with userinfo (https acceptance is scheme-only)", () => {
+    // https keeps the secret in TLS regardless of userinfo, so scheme alone
+    // governs; userinfo only matters on the cleartext http-loopback path.
+    expect(() => assertSecureBaseUrl("https://localhost@127.0.0.1:9/")).not.toThrow();
+  });
+
+  it("never leaks FARM_API_KEY in the thrown error message", () => {
+    const secret = "sk-ant-should-never-appear";
+    process.env.FARM_API_KEY = secret;
+    try {
+      assertSecureBaseUrl("http://evil.example");
+    } catch (e) {
+      expect((e as Error).message).not.toContain(secret);
+    } finally {
+      delete process.env.FARM_API_KEY;
+    }
   });
 });
 
