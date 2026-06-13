@@ -25,6 +25,10 @@ apply, then:
 5. **Stage the PR** once all BLOCK findings clear: concise title; summary of what changed and why; a
    bulleted test plan; a conflict-hierarchy tradeoff citation for any non-obvious tradeoff; a link to
    any ADR the change implements or contradicts. Then `gh pr create`; return the URL.
+6. **Auto-attach the babysitter** — only when the global flag `CODEARBITER_BABYSIT` is on (default
+   off; mirrors `CODEARBITER_PRUNE`): attach a CI watcher to the PR just opened, equivalent to
+   `/ca:watch <new-PR>`. When the flag is off, do nothing here — the user can still run `/ca:watch`
+   ad-hoc. Never enable the flag on the user's behalf.
 
 ## Routes to
 
@@ -41,4 +45,5 @@ open-PR path.
 
 MUST NOT open a PR while any BLOCK-level (CRITICAL or HIGH) finding is unresolved. MUST NOT skip a
 reviewer the path matrix requires. MUST NOT open a PR before the commit gate ran this session. MUST
-NOT open a PR, write, or force-push directly to the default branch.
+NOT open a PR, write, or force-push directly to the default branch. MUST NOT auto-attach a CI watcher
+unless `CODEARBITER_BABYSIT` is on, and MUST NOT enable that flag on the user's behalf.

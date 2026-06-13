@@ -7,8 +7,8 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.1.0-beta.3" src="https://img.shields.io/badge/version-2.1.0--beta.3-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-32-555">
+<img alt="version 2.1.0-beta.4" src="https://img.shields.io/badge/version-2.1.0--beta.4-2b7489">
+<img alt="commands" src="https://img.shields.io/badge/commands-34-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-14-555">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
@@ -37,6 +37,8 @@ It is decisive and terse by design. If you want an assistant that hedges, this i
 One plugin, named `ca`. Claude Code namespaces every plugin command, so you invoke it as <kbd>/ca:feature</kbd>, <kbd>/ca:commit</kbd>, <kbd>/ca:commands</kbd>, and so on.
 
 Activation is **per-repo and explicit**. A `SessionStart` hook checks the repo for `.codearbiter/CONTEXT.md` carrying the frontmatter flag `arbiter: enabled`. Present → it injects the orchestrator persona and live startup state. Absent → it exits silently. Install the plugin globally and it stays out of the way everywhere you haven't opted in.
+
+The first session of each day also opens with a read-only repo-hygiene briefing — branch drift against the remote, merged-but-unpruned branches, stale worktrees, and uncommitted or stashed work — surfaced, never acted on. <kbd>/ca:standup</kbd> then performs the cleanups under per-action confirmation (ff-only pull on a clean tree, branch and worktree pruning, never the default branch). Later sessions that day collapse to a single-line offer.
 
 ```mermaid
 flowchart LR
@@ -121,6 +123,21 @@ The folder, git/diff, rate limits, token usage, cost, and context segments rende
 
 Remove it any time with <kbd>/ca:statusline</kbd> — it backs up and restores whatever statusline you had before.
 
+## Configuration
+
+Every optional behavior is **off by default** and opt-in through an environment variable — codeArbiter never enables one on your behalf. Set them in your shell profile (or per session) to turn them on.
+
+| Variable | Default | Effect |
+|---|---|---|
+| `CODEARBITER_BABYSIT` | `off` | When `on`, <kbd>/ca:pr</kbd> auto-attaches a CI watcher to the PR it opens (same as running <kbd>/ca:watch</kbd> by hand). Ad-hoc <kbd>/ca:watch</kbd> works regardless. |
+| `CODEARBITER_BABYSIT_ONRED` | `propose` | The watcher's depth on a red check: `propose` (name the cause, suggest a fix, touch nothing) or `branch` (additionally stage the fix on an unmergeable `spike/fix-*`). |
+| `CODEARBITER_PRUNE` | `off` | Transcript-pruner mode: `off`, `dry` (report only), or `on` (trim on resume/compaction). |
+| `CODEARBITER_PRUNE_TIER` | — | Which pruning passes run; see <kbd>/ca:prune</kbd>. |
+| `CODEARBITER_PRUNE_KEEP_RECENT` | — | Protect the K most recent turns from pruning. |
+| `CODEARBITER_PRUNE_MIN_GROWTH` / `CODEARBITER_PRUNE_MAXBYTES` | — | Growth threshold before a prune runs / cap on bytes removed. |
+
+Both feature flags mirror each other's contract: shipped off, never auto-enabled, and dormant in a repo without `arbiter: enabled`.
+
 ## Commands
 
 Every intent flows through a command; direct off-channel instructions get redirected to the catalog. The full list is in [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md) and via <kbd>/ca:commands</kbd>.
@@ -137,7 +154,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | <kbd>/ca:audit</kbd> | One command, one packet: every commit, override, ADR, and autonomous decision in a window, with attribution — the document an auditor actually asks for. |
 
 <details>
-<summary><b>The full catalog</b> — 32 commands</summary>
+<summary><b>The full catalog</b> — 34 commands</summary>
 
 <br>
 
@@ -159,6 +176,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 |---|---|
 | `/ca:commit` | The only path to a commit; routes through `commit-gate` |
 | `/ca:pr` | Open / finish a branch — no direct-to-default |
+| `/ca:watch <PR>` | Babysit a PR's CI server-side — diagnose on red, notify + offer merge on green; never auto-merges |
 | `/ca:review [path]` | Reviewer-fleet pass over the diff; BLOCK on CRITICAL/HIGH |
 | `/ca:checkpoint` | Lean periodic multi-reviewer sweep |
 | `/ca:release [--dry-run]` | SemVer bump + changelog + annotated tag |
@@ -184,6 +202,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:status` | Maturity, open tasks, unresolved `CONFIRM-NN`, overrides |
 | `/ca:statusline` | Install/wire the codeArbiter statusline |
 | `/ca:doctor` | Prove the install is enforcing — payload, cache staleness, live-fire hook probe |
+| `/ca:standup` | Daily hygiene — review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes, each under per-action confirmation |
 | `/ca:new-skill "gap"` | Author a new skill after the gap is proven uncovered |
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
 | `/ca:override "reason"` | Sanctioned, logged single-identity gate bypass |
@@ -224,7 +243,7 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (32)   skills/   (20)   agents/   (14)
+├── commands/   (34)   skills/   (20)   agents/   (14)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)

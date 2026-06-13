@@ -6,6 +6,38 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.1.0-beta.4] — 2026-06-13 — preview
+
+Session-hygiene sprint: two opt-in repo-hygiene features, built test-first under `subagent-driven-development`. No change to existing gates; both features are dormant in a repo without `arbiter: enabled`.
+
+### Added
+- **`/ca:standup` + SessionStart morning briefing** — the SessionStart hook now emits a read-only
+  hygiene briefing on the first session of each local calendar day (a one-line offer on later
+  sessions), surfacing branch divergence, merged-but-unpruned branches, stale worktrees, and
+  stashes/dirty state. The hook only reports; `/ca:standup` performs the cleanups, each under
+  per-action confirmation: ff-only pull on a clean tree (refuses on divergence/dirty), prune of
+  merged branches (never the current or default branch), removal of stale worktrees, and report-only
+  surfacing of stashes/un-pushed work. The remote `git fetch` is detached and non-blocking, so
+  session start never awaits the network. New pure-logic module `hooks/_standuplib.py` (porcelain /
+  ahead-behind / merged-branch / worktree / stash parsers) with full `unittest` coverage.
+- **`/ca:watch <PR>` — PR CI babysitter** — watches a pull request's checks to completion via the
+  server-side `gh pr checks --watch` block (zero model tokens while CI runs; not a polling loop). On
+  red it diagnoses at a configurable depth (`CODEARBITER_BABYSIT_ONRED`: `propose` (default, no
+  tracked-file edit) | `branch` (an unmergeable `spike/fix-*`)). On green it notifies and offers the
+  merge — it **never** auto-merges, and a merge into the default branch still routes through the
+  merge-to-default hard gate. A global flag `CODEARBITER_BABYSIT` (default off, mirrors
+  `CODEARBITER_PRUNE`) auto-attaches a watcher when `/ca:pr` opens a PR; the flag is never set on the
+  user's behalf. New `hooks/_babysitlib.py` flag reader with `unittest` coverage.
+
+### Changed
+- **`/ca:pr`** — gains a step-6 auto-attach of the CI babysitter, gated on `CODEARBITER_BABYSIT`
+  (off by default); a Hard-gate clause forbids auto-attaching a watcher or enabling the flag without
+  the user's explicit opt-in.
+- **Catalog & routing** — `COMMANDS.md`, `README.md` (catalog + counts 32→34), and the routing table
+  gain `/ca:standup` and `/ca:watch` rows.
+
+---
+
 ## [2.1.0-beta.3] — 2026-06-13 — preview
 
 Remediation of the 2026-06-13 checkpoint sweep. One sprint, planned hard-gate stops; governance
