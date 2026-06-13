@@ -7,7 +7,7 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.1.0-beta.2" src="https://img.shields.io/badge/version-2.1.0--beta.2-2b7489">
+<img alt="version 2.1.0-beta.3" src="https://img.shields.io/badge/version-2.1.0--beta.3-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-32-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-14-555">
