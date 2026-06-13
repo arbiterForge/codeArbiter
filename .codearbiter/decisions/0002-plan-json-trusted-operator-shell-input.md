@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-06-13
 title: Treat plan.json gate commands and FARM_MUTATION_CMD as trusted operator-authored shell input
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,7 @@ governs: plugins/ca/tools/farm.ts
 # ADR-0002 — Treat plan.json gate commands and FARM_MUTATION_CMD as trusted operator-authored shell input
 
 ## Status
-Proposed
+Accepted — ratified 2026-06-13 by SUaDtL@users.noreply.github.com
 
 ## Context
 `farm.ts` executes `plan.json` `gate.commands` / `test.command` and the `FARM_MUTATION_CMD`

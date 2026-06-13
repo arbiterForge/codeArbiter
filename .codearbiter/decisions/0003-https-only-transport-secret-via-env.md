@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-06-13
 title: Outbound HTTPS-only API transport with loopback exception; FARM_API_KEY via env only
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,7 @@ governs: plugins/ca/tools/farm.ts
 # ADR-0003 — Outbound HTTPS-only API transport with loopback exception; FARM_API_KEY via env only
 
 ## Status
-Proposed
+Accepted — ratified 2026-06-13 by SUaDtL@users.noreply.github.com
 
 ## Context
 `farm.ts` sends an `Authorization: Bearer ${FARM_API_KEY}` header on outbound API calls. The

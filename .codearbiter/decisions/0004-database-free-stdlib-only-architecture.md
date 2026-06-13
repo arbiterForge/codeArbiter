@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-06-13
 title: Database-free architecture; Python hooks are stdlib-only
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,7 @@ governs: plugins/ca/hooks/*
 # ADR-0004 — Database-free architecture; Python hooks are stdlib-only
 
 ## Status
-Proposed
+Accepted — ratified 2026-06-13 by SUaDtL@users.noreply.github.com
 
 ## Context
 codeArbiter has no datastore. Project state is file-based prose artifacts under `.codearbiter/`,

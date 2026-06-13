@@ -124,3 +124,19 @@ Recorded as ratification of existing design; no code change. Revisit trigger: pr
 file-based artifacts.
 
 ---
+
+## Ratification — 2026-06-13
+
+DECISION-0001, DECISION-0002, DECISION-0003, and DECISION-0004 advanced from
+`proposed` to **`accepted`** on explicit user instruction
+(SUaDtL@users.noreply.github.com), ratified 2026-06-13. The `accepted` state is
+the canonical decision-log Status enum value (per
+`decision-variance/references/smarts.md`), resolving the proposed-vs-enum
+reconciliation noted in this log's header: the four entries above were recorded
+`proposed` for fidelity to the ADR lifecycle at authoring time and are now
+accepted. The ADR files (`0001..0004-*.md`) carry the authoritative
+`status: accepted` frontmatter and a ratification line in their `## Status`
+section. No content was superseded — ratification is the maturation of these
+same decisions, not a new decision.
+
+---
