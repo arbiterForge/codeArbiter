@@ -86,9 +86,12 @@ class TestWrite(unittest.TestCase):
         orig = P._post_write_check
         P._post_write_check = lambda a, b: ["injected failure"]
         try:
-            ok, verdict = P.run(self.path, self.cfg(), session="sess")["executed"], None
+            res = P.run(self.path, self.cfg(), session="sess")
         finally:
             P._post_write_check = orig
+        # The result must report that execution did NOT occur.
+        self.assertFalse(res["executed"])
+        self.assertIn("rolled-back", res["verdict"])
         # After a post-write failure the file must be restored to the original.
         with open(self.path, "rb") as f:
             landed = f.read()
