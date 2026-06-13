@@ -478,6 +478,33 @@ class TestRefreshStalePathOnSessionStart(unittest.TestCase):
         data = _read(spath)
         self.assertNotIn("statusLine", data)
 
+    def test_refresh_noop_when_renderer_missing(self):
+        # Mid-update safety: if the current renderer (hooks/statusline.py) is not
+        # present under the plugin root, refresh must NOT rewrite the pin to a path
+        # that would 404 — leave settings.json untouched (no mtime churn).
+        bare = os.path.join(self.tmp.name, "bareplugin")
+        os.makedirs(os.path.join(bare, "hooks"))  # hooks/ but NO statusline.py
+        import time
+        mtime_before = os.path.getmtime(self.settings)
+        time.sleep(0.05)
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", bare, "--interp", "python"])
+        self.assertAlmostEqual(mtime_before, os.path.getmtime(self.settings), delta=0.02)
+        self.assertEqual(_read(self.settings)["statusLine"]["command"], self.stale_cmd)
+
+    def test_refresh_heals_bare_string_statusline(self):
+        # is_ours() accepts a bare-string statusLine; the string-form branch of
+        # refresh_if_stale must heal that shape too (not only dict-form).
+        spath = _make_settings(
+            self.tmp.name,
+            {"statusLine": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'})
+        ws.main(["refresh", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        sl = _read(spath).get("statusLine")
+        cmd = sl.get("command") if isinstance(sl, dict) else sl
+        self.assertIn(self.script_abs, cmd)
+        self.assertNotIn("2.0.1", cmd)
+
 
 if __name__ == "__main__":
     unittest.main()
