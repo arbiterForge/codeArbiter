@@ -53,9 +53,17 @@ python .github/scripts/check-plugin-refs.py
 node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" <file>.json
 ```
 
+## CVE gate (supply chain)
+
+The configured CVE gate is `npm audit --omit=dev --audit-level=critical`, run in
+CI (the `tools` job, after `npm ci`) against the shipped dependency set. A
+CRITICAL advisory fails the build; lower severities are intentionally not
+gating, so routine dev-tool advisories don't block unrelated PRs. This enforces
+the supply-chain posture described in `security-controls.md`.
+
 ## Secrets scan
 
-No dedicated scanner is configured. The gate is two-layered:
+No dedicated secrets scanner is configured. The gate is two-layered:
 
 1. Manual sweep of the staged diff for credential patterns
    (`api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant`), case-insensitive.
