@@ -420,5 +420,64 @@ class TestSpinnerVerbsIdempotent(unittest.TestCase):
         self.assertGreater(len(verbs), 0)
 
 
+class TestRefreshStalePathOnSessionStart(unittest.TestCase):
+    """Regression (#fix): a ca-owned statusLine whose command points at an OLD
+    plugin-version path must be REFRESHED to the current renderer path on its own
+    — without a manual re-install. Previously nothing re-wired after a plugin
+    update, so users kept running a stale (eventually-broken) statusline."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = _make_plugin_root(self.tmp.name)
+        self.script_abs = os.path.join(self.root, "hooks", "statusline.py")
+        # A ca-owned line pinned to an OLD version dir (note: still 'ours' — the
+        # MARKER 'statusline.py' is present — but a different absolute path).
+        self.stale_cmd = (
+            '"python" "C:\\old\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"')
+        self.settings = _make_settings(
+            self.tmp.name,
+            {"statusLine": {"type": "command", "command": self.stale_cmd}})
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_stale_ours_path_is_refreshed(self):
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        cmd = (data.get("statusLine") or {}).get("command", "")
+        self.assertIn(self.script_abs, cmd)
+        self.assertNotIn("2.0.1", cmd)
+
+    def test_refresh_does_not_rewrite_when_already_current(self):
+        # First refresh brings it current; second must be a no-op (no churn): the
+        # file mtime must not change on the second call.
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        import time
+        mtime_before = os.path.getmtime(self.settings)
+        time.sleep(0.05)
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        self.assertAlmostEqual(mtime_before, os.path.getmtime(self.settings), delta=0.02)
+
+    def test_refresh_leaves_third_party_line_untouched(self):
+        third = {"statusLine": {"type": "command", "command": "their-statusline --x"}}
+        spath = _make_settings(self.tmp.name, third)
+        ws.main(["refresh", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(spath)
+        self.assertEqual(data["statusLine"]["command"], "their-statusline --x")
+
+    def test_refresh_does_not_wire_when_no_statusline(self):
+        # refresh HEALS an existing ours-line; it must never wire a fresh line
+        # where the user has none (that's what `install` is for).
+        spath = _make_settings(self.tmp.name, {})
+        ws.main(["refresh", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(spath)
+        self.assertNotIn("statusLine", data)
+
+
 if __name__ == "__main__":
     unittest.main()

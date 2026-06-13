@@ -341,6 +341,53 @@ def assemble_summary(root, runner=None, current=None, default="main", path_exist
     }
 
 
+# --- Statusline pin self-heal (SessionStart) -------------------------------
+# A plugin cannot own a statusLine and ${CLAUDE_PLUGIN_ROOT} is NOT expanded in
+# settings.json, so wire-statusline.py writes an ABSOLUTE, version-pinned path.
+# Nothing re-ran it after a plugin update, so an updated install kept invoking the
+# OLD version's statusline.py — stale, and eventually broken when that cache dir
+# is pruned. We heal it here every SessionStart: refresh a ca-OWNED pin to the
+# current renderer path, persisting ONLY on a real change (no steady-state churn),
+# and degrade silently on ANY failure — a wiring refresh must never crash startup.
+
+
+def _load_wire_statusline(plugin):
+    """Load wire-statusline.py (hyphenated filename) from <plugin>/hooks/ as a
+    module, or None on any failure."""
+    try:
+        import importlib.util  # noqa: PLC0415 — lazy by design
+        path = os.path.join(plugin, "hooks", "wire-statusline.py")
+        spec = importlib.util.spec_from_file_location("wire_statusline", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def heal_statusline_wiring(plugin, settings_path=None, interp=None, loader=None):
+    """Refresh a stale ca-OWNED statusLine pin to the current renderer path.
+    Returns True iff settings.json was rewritten. Fully guarded: any failure —
+    including a corrupt settings.json (which wire-statusline raises SystemExit on)
+    — degrades to False so it never crashes session startup."""
+    try:
+        ws = (loader or _load_wire_statusline)(plugin)
+        if ws is None:
+            return False
+        spath = settings_path or ws.settings_path(None)
+        script_abs = os.path.join(plugin, "hooks", "statusline.py")
+        interp = interp or ws.default_interp(None)
+        settings, exists = ws.load_settings(spath)
+        if not exists:
+            return False
+        if ws.refresh_if_stale(settings, script_abs, interp):
+            ws.save_settings(spath, settings)
+            return True
+        return False
+    except (Exception, SystemExit):  # noqa: BLE001 — heal is best-effort, never fatal
+        return False
+
+
 def has_source(root):
     """True if the repo contains any file that isn't arbiter/scaffold cruft —
     distinguishes brownfield (adopt existing code) from greenfield. Returns on the
@@ -372,6 +419,11 @@ def main():
         os.remove(os.path.join(root, ".codearbiter", ".markers", "dev-active"))
     except OSError:
         pass
+
+    # Self-heal a stale ca-owned statusLine pin before the dormant gate: the
+    # statusline is wired GLOBALLY in ~/.claude/settings.json, so a plugin update
+    # must re-point it in every session, not only in arbiter-enabled repos.
+    heal_statusline_wiring(plugin)
 
     enabled, malformed = frontmatter_enabled(ctx)
     if not enabled:

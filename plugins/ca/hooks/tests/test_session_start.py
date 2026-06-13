@@ -140,5 +140,67 @@ class TestMalformedFrontmatter(unittest.TestCase):
             self.assertTrue(malformed)
 
 
+class TestHealStatuslineWiring(unittest.TestCase):
+    """Regression (#fix): SessionStart must self-heal a stale ca-owned statusLine
+    pin so a plugin update re-points the absolute path in settings.json instead of
+    silently running the old (eventually-broken) version. Drives the real
+    wire-statusline.py from the actual plugin root, against a temp settings file."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        # Real plugin root = parent of the hooks/ dir holding session-start.py.
+        self.plugin = os.path.dirname(
+            os.path.dirname(os.path.abspath(_mod.__file__)))
+        self.real_script = os.path.join(self.plugin, "hooks", "statusline.py")
+        d = os.path.join(self._tmp.name, ".claude")
+        os.makedirs(d)
+        self.settings = os.path.join(d, "settings.json")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _write(self, obj):
+        import json
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump(obj, f, indent=2)
+
+    def _read(self):
+        import json
+        with open(self.settings, encoding="utf-8") as f:
+            return json.load(f)
+
+    def test_stale_ours_pin_is_healed(self):
+        self._write({"statusLine": {"type": "command",
+                     "command": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'}})
+        changed = _mod.heal_statusline_wiring(
+            self.plugin, settings_path=self.settings, interp="python")
+        self.assertTrue(changed)
+        cmd = self._read()["statusLine"]["command"]
+        self.assertIn(self.real_script, cmd)
+        self.assertNotIn("2.0.1", cmd)
+
+    def test_third_party_pin_left_alone(self):
+        self._write({"statusLine": {"type": "command", "command": "theirs --x"}})
+        changed = _mod.heal_statusline_wiring(
+            self.plugin, settings_path=self.settings, interp="python")
+        self.assertFalse(changed)
+        self.assertEqual(self._read()["statusLine"]["command"], "theirs --x")
+
+    def test_corrupt_settings_does_not_crash(self):
+        with open(self.settings, "w", encoding="utf-8") as f:
+            f.write("{ not valid json")
+        # Must degrade silently (return False), never raise — a wiring refresh
+        # may not crash session startup.
+        self.assertFalse(
+            _mod.heal_statusline_wiring(
+                self.plugin, settings_path=self.settings, interp="python"))
+
+    def test_absent_settings_is_noop(self):
+        missing = os.path.join(self._tmp.name, "nope", "settings.json")
+        self.assertFalse(
+            _mod.heal_statusline_wiring(
+                self.plugin, settings_path=missing, interp="python"))
+
+
 if __name__ == "__main__":
     unittest.main()
