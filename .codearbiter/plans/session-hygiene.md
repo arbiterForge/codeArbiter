@@ -49,7 +49,7 @@ Maps to acceptance criteria: SH-n = `standup-hygiene.md` criterion n; PB-n =
 |---|-------|---------|--------------|------|------|--------|
 | 17 | Version bump `2.1.0-beta.3` → `2.1.0-beta.4`, synced 3 places + CHANGELOG entry | `plugins/ca/.claude-plugin/plugin.json`, `plugins/ca/README.md` (badge), `CHANGELOG.md` | Three version strings agree; dated CHANGELOG section; `version-bump` CI guard passes | 1-16 | auto | ACCEPTED |
 | 18 | Full CI-parity sweep green before landing | repo | `test_hook_guards.py`, `test_hooks_cold_install.py`, `check-plugin-refs.py`, JSON manifest parse, `py_compile` on touched hooks all green | 17 | auto | ACCEPTED |
-| 19 | Land via `commit-gate` → `finishing-a-development-branch` (auto open-PR; merge deferred to user) | branch / PR | Suite green; PR opened; NOT merged | 18 | **HARD: merge-to-default → user** | TODO |
+| 19 | Land via `commit-gate` → `finishing-a-development-branch` (auto open-PR; merge deferred to user) | branch / PR | Suite green; PR opened; NOT merged | 18 | **HARD: merge-to-default → user** | ACCEPTED (PR #46; merge → user) |
 
 ## Notes
 

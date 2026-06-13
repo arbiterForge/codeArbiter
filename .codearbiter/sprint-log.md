@@ -118,3 +118,13 @@ Backend: premium subagents (no --farm, per user invocation) — confidence high.
 
 ## SH-T18 — Task 18 ACCEPTED · confidence: high
 - Full CI-parity sweep green locally: cold-install matrix (131 assertions), guard-logic matrix (62), ref-graph intact, all tracked JSON parse, py_compile on the 3 touched hooks, and the standup/babysit/session-start unittest suites (114 tests). No `plugins/ca/tools/**` change → farm typecheck/test/build leg not triggered (confirmed via `git status`); farm.js cannot be stale from this sprint.
+
+## SH-T19 — Task 19 LANDED (PR opened) · HARD gate: merge to default deferred to user
+- Branch `sprint/session-hygiene` committed (19 files, +2332), pushed, PR **#46** opened against `main`: https://github.com/SUaDtL/codeArbiter/pull/46. H-03 commit guard enforced explicit per-path staging (no `git add -A`). Commit message corrected after a PowerShell-heredoc artifact (`@`) leaked into the Bash subject — amended via POSIX heredoc.
+- **STOP here.** The merge-to-default hard gate is the user's call — the sprint does NOT merge. Squash-merge #46 when ready (or run `/ca:watch 46` to babysit its CI first).
+
+---
+
+# Sprint complete — session-hygiene · 2026-06-13
+
+All 19 tasks ACCEPTED. Two features shipped to PR #46, awaiting the user's merge. No low-confidence auto-decisions to review; one triage item (SH-TRIAGE-1, root node_modules) was resolved in-sprint.
