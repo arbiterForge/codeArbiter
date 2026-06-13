@@ -6,6 +6,24 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.1.0-beta.5] — 2026-06-13 — preview
+
+Bug fix: the statusline pin no longer goes stale across plugin updates.
+
+### Fixed
+- **Statusline now self-heals on a plugin update.** `wire-statusline.py` writes an absolute,
+  version-pinned path into `~/.claude/settings.json` (a plugin can't own a statusLine and
+  `${CLAUDE_PLUGIN_ROOT}` isn't expanded there), but nothing re-ran it after an update — so an
+  updated install kept invoking the OLD version's `statusline.py`: stale, and eventually a blank bar
+  once that version's cache dir is pruned. The SessionStart hook now refreshes a codeArbiter-owned
+  pin to the current renderer path on every session, persisting **only** on a real change (no
+  steady-state churn), leaving a third-party statusLine untouched, never wiring a fresh line where
+  the user has none, and degrading silently on any error (including a corrupt `settings.json`) so a
+  wiring refresh can never crash startup. New `refresh` action on `wire-statusline.py` and
+  `heal_statusline_wiring()` in `session-start.py`, both with `unittest` coverage.
+
+---
+
 ## [2.1.0-beta.4] — 2026-06-13 — preview
 
 Session-hygiene sprint: two opt-in repo-hygiene features, built test-first under `subagent-driven-development`. No change to existing gates; both features are dormant in a repo without `arbiter: enabled`.
