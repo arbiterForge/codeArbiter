@@ -70,7 +70,7 @@
         font-size="10" letter-spacing="2.5" fill="#c08a6a">FORGE</text>
 
   <!-- the seal: how a preview graduates -->
-  <text x="1166" y="220" text-anchor="end"
+  <text x="600" y="224" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="9" letter-spacing="1.5" fill="#6e7b8b">preview channel · opt-in · your data promotes it</text>
 </svg>
