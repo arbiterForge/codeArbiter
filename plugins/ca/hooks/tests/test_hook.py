@@ -19,8 +19,11 @@ class TestHook(unittest.TestCase):
         os.makedirs(os.path.join(self.repo, ".codearbiter"))
         with open(os.path.join(self.repo, ".codearbiter", "CONTEXT.md"), "w") as f:
             f.write("---\narbiter: enabled\n---\n# ctx\n")
-        # A large, prunable transcript.
-        self.path = os.path.join(self.repo, "sess.jsonl")
+        # A large, prunable transcript — placed under ~/.claude/projects/ so the
+        # N-1 transcript_path containment check passes (transcripts live there).
+        claude_dir = os.path.join(self.tmp.name, ".claude", "projects", "test")
+        os.makedirs(claude_dir, exist_ok=True)
+        self.path = os.path.join(claude_dir, "sess.jsonl")
         with open(self.path, "wb") as f:
             f.write(make_transcript(n_pairs=8, result_bytes=30000))
 
@@ -136,6 +139,79 @@ class TestHook(unittest.TestCase):
     def test_tail_is_settled_helper(self):
         good = P.load_lines(make_transcript(n_pairs=2, result_bytes=100))
         self.assertTrue(P.tail_is_settled(good))
+
+    def test_tail_is_settled_false_when_last_line_is_queue_operation(self):
+        # tail_is_settled must return False when the very last non-blank line is
+        # a queue-operation JSON object (mid-turn state, not a clean boundary).
+        data = make_transcript(n_pairs=2, result_bytes=100)
+        import json as _json
+        queue_line = (_json.dumps({"type": "queue-operation", "uuid": "qop1",
+                                   "parentUuid": "afinal"}) + "\n").encode()
+        lines = P.load_lines(data + queue_line)
+        self.assertFalse(P.tail_is_settled(lines))
+
+    def test_tail_is_settled_true_after_queue_operation_followed_by_result(self):
+        # A queue-operation that is NOT the final line must not block settlement —
+        # only the very last JSON line matters.
+        import json as _json
+        # Transcript: normal settled turn then a queue-op in the middle (not last).
+        data = make_transcript(n_pairs=1, result_bytes=100, final_assistant=False)
+        middle_queue = (_json.dumps({"type": "queue-operation", "uuid": "qm",
+                                     "parentUuid": "ru0"}) + "\n").encode()
+        final_result = (_json.dumps({
+            "type": "user", "uuid": "rfinal", "parentUuid": "a0",
+            "message": {"role": "user", "content": [
+                {"type": "tool_result", "tool_use_id": "toolu_0", "content": "ok"},
+            ]},
+        }) + "\n").encode()
+        lines = P.load_lines(data + middle_queue + final_result)
+        # The last line is a tool_result (not a queue-op) → loop is closed.
+        self.assertTrue(P.tail_is_settled(lines))
+
+
+class TestConfigFromEnv(unittest.TestCase):
+    def test_valid_env_produces_correct_config(self):
+        env = {
+            "CODEARBITER_PRUNE_TIER": "aggressive",
+            "CODEARBITER_PRUNE_MAXBYTES": "4096",
+            "CODEARBITER_PRUNE_KEEP_RECENT": "5",
+            "CODEARBITER_PRUNE_MIN_SIZE": "2097152",
+            "CODEARBITER_PRUNE_MIN_GROWTH": "524288",
+            "CODEARBITER_PRUNE_BACKUPS": "7",
+            "CODEARBITER_PRUNE_LIVE_SECS": "120",
+        }
+        cfg = P.Config.from_env(env)
+        self.assertEqual(cfg.tier, "aggressive")
+        self.assertEqual(cfg.max_bytes, 4096)
+        self.assertEqual(cfg.keep_recent, 5)
+        self.assertEqual(cfg.min_size, 2097152)
+        self.assertEqual(cfg.min_growth, 524288)
+        self.assertEqual(cfg.backups, 7)
+        self.assertEqual(cfg.live_secs, 120)
+        self.assertIsNone(cfg.strategies)
+
+    def test_non_numeric_maxbytes_falls_back_to_default(self):
+        env = {"CODEARBITER_PRUNE_MAXBYTES": "not-a-number"}
+        cfg = P.Config.from_env(env)
+        self.assertEqual(cfg.max_bytes, 8192)  # hard-coded default
+
+    def test_empty_strategies_string_produces_none(self):
+        # An empty CODEARBITER_PRUNE_STRATEGIES var (unset) must result in
+        # strategies=None so selected_strategies() falls back to the tier.
+        env = {}  # key absent
+        cfg = P.Config.from_env(env)
+        self.assertIsNone(cfg.strategies)
+
+    def test_strategies_string_parsed_into_list(self):
+        env = {"CODEARBITER_PRUNE_STRATEGIES": "sidecar-collapse, reasoning-fold,"}
+        cfg = P.Config.from_env(env)
+        self.assertEqual(cfg.strategies, ["sidecar-collapse", "reasoning-fold"])
+
+    def test_keyword_override_takes_precedence_over_env(self):
+        env = {"CODEARBITER_PRUNE_TIER": "gentle", "CODEARBITER_PRUNE_MAXBYTES": "1024"}
+        cfg = P.Config.from_env(env, tier="aggressive", max_bytes=512)
+        self.assertEqual(cfg.tier, "aggressive")
+        self.assertEqual(cfg.max_bytes, 512)
 
 
 if __name__ == "__main__":
