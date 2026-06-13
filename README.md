@@ -135,6 +135,7 @@ Every optional behavior is **off by default** and opt-in through an environment 
 | `CODEARBITER_PRUNE_TIER` | — | Which pruning passes run; see <kbd>/ca:prune</kbd>. |
 | `CODEARBITER_PRUNE_KEEP_RECENT` | — | Protect the K most recent turns from pruning. |
 | `CODEARBITER_PRUNE_MIN_GROWTH` / `CODEARBITER_PRUNE_MAXBYTES` | — | Growth threshold before a prune runs / cap on bytes removed. |
+| `CODEARBITER_PRUNE_METRICS` | `~/.codearbiter/metrics/prune-dry.jsonl` | Where `dry`-mode data collection lands — one shared append-only JSONL log every session writes to, the evidence base for the `dry`→`on` go/no-go. |
 
 Both feature flags mirror each other's contract: shipped off, never auto-enabled, and dormant in a repo without `arbiter: enabled`.
 

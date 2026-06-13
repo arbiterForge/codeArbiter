@@ -17,7 +17,12 @@ the running CLI sends its in-memory history to the API, not the file.
 `$ARGUMENTS` is one of:
 
 - `status` (default) — report cumulative reduction and service state for this session from
-  `~/.codearbiter/prune-state.json`, and whether `CODEARBITER_PRUNE` is `on`/`dry`/`off`.
+  `~/.codearbiter/prune-state.json`, and whether `CODEARBITER_PRUNE` is `on`/`dry`/`off`. When
+  the service has run in `dry` mode, every would-be prune is also recorded — one JSONL row per
+  decision, across all sessions — to the shared data-collection log
+  `~/.codearbiter/metrics/prune-dry.jsonl` (override with `CODEARBITER_PRUNE_METRICS`). That log is
+  the evidence base for the `dry`→`on` decision: a clean record (every row `verdict: dry-run`,
+  `validation_errors: 0`) over a representative set of sessions is the signal that enabling is safe.
 - `dry` — copy the live transcript to a scratch path and run a dry-run analysis; present the
   per-strategy reduction table. Never writes to the live file.
 - `run <path>` — prune the target with `--execute`. Targets a **copy or an old/inactive
@@ -47,6 +52,9 @@ the running CLI sends its in-memory history to the API, not the file.
    ships **off**), `CODEARBITER_PRUNE_TIER`, `CODEARBITER_PRUNE_KEEP_RECENT` (the K most recent
    tool **turns** kept verbatim — each turn is an assistant tool_use plus its results),
    `CODEARBITER_PRUNE_MAXBYTES`. Enabling is the user's explicit choice — never set it unbidden.
+   In `dry` mode the service writes no transcript but appends each would-be prune to
+   `~/.codearbiter/metrics/prune-dry.jsonl` (path override: `CODEARBITER_PRUNE_METRICS`) for
+   data collection; in `on` mode the executed prunes are recorded in `~/.codearbiter/prune.log`.
    If a prior service-mode prune was killed mid-write, the next run self-heals the transcript
    from the newest backup in `~/.codearbiter/prune-backups/` before doing anything else.
 

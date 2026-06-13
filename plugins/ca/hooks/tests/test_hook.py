@@ -136,6 +136,75 @@ class TestHook(unittest.TestCase):
         self.assertLess(len(landed), len(data))
         self.assertIn("sess", P.load_state())
 
+    def _read_jsonl(self, path):
+        import json as _json
+        with open(path, encoding="utf-8") as f:
+            return [_json.loads(ln) for ln in f if ln.strip()]
+
+    def test_dry_metrics_path_default_and_override(self):
+        # Default lands in a dedicated metrics folder under ~/.codearbiter;
+        # CODEARBITER_PRUNE_METRICS overrides the full path (with ~ expansion).
+        default = P.dry_metrics_path({})
+        self.assertEqual(
+            os.path.normpath(default),
+            os.path.normpath(os.path.join(
+                os.path.expanduser("~"), ".codearbiter", "metrics", "prune-dry.jsonl")))
+        override = P.dry_metrics_path({"CODEARBITER_PRUNE_METRICS": "~/custom/d.jsonl"})
+        self.assertEqual(os.path.normpath(override),
+                         os.path.normpath(os.path.expanduser("~/custom/d.jsonl")))
+
+    def test_dry_mode_appends_metrics_and_never_writes_transcript(self):
+        before = os.path.getsize(self.path)
+        rc = P.hook_run(self.payload(), env=self.env(CODEARBITER_PRUNE="dry"))
+        self.assertEqual(rc, 0)
+        # Dry never touches the live transcript.
+        self.assertEqual(os.path.getsize(self.path), before)
+        recs = self._read_jsonl(P.dry_metrics_path(self.env()))
+        self.assertEqual(len(recs), 1)
+        r = recs[0]
+        self.assertEqual(r["mode"], "dry")
+        self.assertEqual(r["session"], "sess")
+        self.assertEqual(r["verdict"], "dry-run")
+        self.assertEqual(r["validation_errors"], 0)
+        self.assertGreater(r["bytes_before"], r["bytes_after"])
+        self.assertIn("strategies", r)
+        self.assertIn("ts", r)
+
+    def test_dry_only_on_mode_does_not_write_dry_metrics(self):
+        rc = P.hook_run(self.payload(), env=self.env(CODEARBITER_PRUNE="on"))
+        self.assertEqual(rc, 0)
+        self.assertFalse(os.path.exists(P.dry_metrics_path(self.env())))
+
+    def test_dry_metrics_accumulate_across_sessions_in_one_log(self):
+        # Every session appends to the same dedicated log — the data-collection
+        # contract: one shared file, append-only across sessions.
+        for sid in ("sessA", "sessB", "sessC"):
+            pl = self.payload()
+            pl["session_id"] = sid
+            rc = P.hook_run(pl, env=self.env(CODEARBITER_PRUNE="dry"))
+            self.assertEqual(rc, 0)
+        recs = self._read_jsonl(P.dry_metrics_path(self.env()))
+        self.assertEqual([r["session"] for r in recs], ["sessA", "sessB", "sessC"])
+
+    def test_dry_metrics_records_validation_failure_verdict(self):
+        # When the would-be prune fails validation, the dry record captures the
+        # refusal verdict and a non-zero error count — the go/no-go signal.
+        import _prunelib as _P
+
+        def boom(orig, new, lines, cfg):
+            return ["synthetic chain break"]
+        orig_validate = _P.validate
+        _P.validate = boom
+        try:
+            rc = P.hook_run(self.payload(), env=self.env(CODEARBITER_PRUNE="dry"))
+        finally:
+            _P.validate = orig_validate
+        self.assertEqual(rc, 0)
+        recs = self._read_jsonl(P.dry_metrics_path(self.env()))
+        self.assertEqual(len(recs), 1)
+        self.assertEqual(recs[0]["verdict"], "refused: validation failed")
+        self.assertEqual(recs[0]["validation_errors"], 1)
+
     def test_tail_is_settled_helper(self):
         good = P.load_lines(make_transcript(n_pairs=2, result_bytes=100))
         self.assertTrue(P.tail_is_settled(good))
