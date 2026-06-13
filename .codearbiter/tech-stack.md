@@ -49,7 +49,7 @@ npm run build          # then: git diff --quiet -- farm.js  (stale build blocks)
 # Cross-reference graph: every skill/command/agent reference resolves
 python .github/scripts/check-plugin-refs.py
 
-# Every tracked JSON manifest parses (plugin.json, marketplace.json, hooks.json)
+# Every tracked JSON manifest parses (plugin.json, .claude-plugin/marketplace.json, hooks.json)
 node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" <file>.json
 ```
 

@@ -7,8 +7,8 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.0.1" src="https://img.shields.io/badge/version-2.0.1-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-31-555">
+<img alt="version 2.1.0-beta.2" src="https://img.shields.io/badge/version-2.1.0--beta.2-2b7489">
+<img alt="commands" src="https://img.shields.io/badge/commands-32-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-14-555">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
@@ -137,7 +137,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | <kbd>/ca:audit</kbd> | One command, one packet: every commit, override, ADR, and autonomous decision in a window, with attribution — the document an auditor actually asks for. |
 
 <details>
-<summary><b>The full catalog</b> — 30 commands</summary>
+<summary><b>The full catalog</b> — 32 commands</summary>
 
 <br>
 
@@ -188,6 +188,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
 | `/ca:override "reason"` | Sanctioned, logged single-identity gate bypass |
 | `/ca:audit [range]` | Assemble the governance packet for a window into `.codearbiter/audits/` — read-only |
+| `/ca:prune [status\|dry\|run\|audit\|on\|off]` | Trim transcript clutter to extend session lifetime; dry-run by default, gains land at resume/compaction |
 | `/ca:commands` | Show the catalog |
 
 **Maintainer**
@@ -223,7 +224,7 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (30)   skills/   (20)   agents/   (14)
+├── commands/   (32)   skills/   (20)   agents/   (14)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
