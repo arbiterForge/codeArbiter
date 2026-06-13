@@ -45,11 +45,17 @@ configuration and may freely use `process.env`.
 ## TLS
 
 Default Node.js TLS is required on all outbound HTTPS calls.
-`rejectUnauthorized: false` is never permitted. No HTTP (non-TLS) endpoints
-may be used for API calls.
+`rejectUnauthorized: false` is never permitted. No HTTP (non-TLS) endpoint may
+be used for API calls, except loopback (`127.0.0.1`/`localhost`) for test mocks
+— see the boundary-crossings table.
 
-The plan.json `meta.apiBaseUrl` field is validated at plan parse time to require
-the `https://` scheme.
+The **resolved** `apiBaseUrl` — after the `FARM_API_BASE_URL` env override,
+`plan.meta.apiBaseUrl`, and the built-in default are applied in that precedence —
+is validated before every outbound call by `assertSecureBaseUrl` (`farm.ts`),
+which requires the `https://` scheme (or the documented loopback `http://`
+exception, no userinfo). Validation uses WHATWG `URL` parsing — the same parser
+`fetch` uses for connection targeting — so there is no parser-differential bypass.
+This supersedes the prior parse-time check that covered only `plan.meta.apiBaseUrl`.
 
 ---
 
@@ -104,3 +110,5 @@ boundary.
 | H-03 explicit staging | `farm.ts` stages `worker.filesWritten` explicitly — previously `git add -A`, corrected 2026-06-12 | Farm worktree commits are operator-initiated, reviewed in PR |
 | Fail-open on hook input parse | `_hooklib.py:read_input()` | Parse failure must not brick the session |
 | Unsigned dispatcher commits | `NOSIGN` constant in `farm.ts` | CI signing servers reject unattended commits; the integration PR is the signed artifact |
+| Gate command shell execution | `plan.json` `gate.commands` / `test.command` and `FARM_MUTATION_CMD` run via `cmd.exe /c` / `bash -c` in `farm.ts` | Operator-authored, length-capped (≤1024), PR-reviewed; deterministic gate by design — no untrusted source. See ADR for the trust model |
+| Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo) | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, no cleartext-to-remote path |

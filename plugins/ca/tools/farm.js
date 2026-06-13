@@ -531,9 +531,21 @@ ${gate.tail}`;
   return { id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore };
 }
 var SAFE_TASK_ID = /^[A-Za-z0-9._-]{1,64}$/;
+var LOOPBACK_HOSTS = /* @__PURE__ */ new Set(["127.0.0.1", "localhost"]);
+function assertSecureBaseUrl(url) {
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+  }
+  if (parsed.protocol === "https:") return;
+  if (parsed.protocol === "http:" && LOOPBACK_HOSTS.has(parsed.hostname) && parsed.username === "" && parsed.password === "")
+    return;
+  throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+}
 function validate(plan) {
-  if (plan.meta.apiBaseUrl && !plan.meta.apiBaseUrl.startsWith("https://") && !/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(plan.meta.apiBaseUrl))
-    throw new Error(`plan meta.apiBaseUrl must use HTTPS, got: ${plan.meta.apiBaseUrl}`);
+  if (plan.meta.apiBaseUrl) assertSecureBaseUrl(plan.meta.apiBaseUrl);
   const ids = /* @__PURE__ */ new Set();
   for (const t of plan.tasks) {
     if (!SAFE_TASK_ID.test(t.id))
@@ -571,6 +583,7 @@ function resolveConfig(plan) {
   const model = ENV.model ?? plan.meta.model;
   const apiBaseUrl = ENV.apiBaseUrl ?? plan.meta.apiBaseUrl ?? ENV.defaultApiBaseUrl;
   const apiKey = ENV.apiKey;
+  assertSecureBaseUrl(apiBaseUrl);
   if (!model) {
     console.error(
       "Error: No model configured.\nSet FARM_MODEL env var, or run /ca:sprint --farm to trigger automatic model selection.\nSee .codearbiter/farm.md for setup instructions."
@@ -590,6 +603,7 @@ async function runCanary(plan) {
   }
   const apiBaseUrl = ENV.apiBaseUrl ?? plan.meta.apiBaseUrl ?? ENV.defaultApiBaseUrl;
   const apiKey = ENV.apiKey;
+  assertSecureBaseUrl(apiBaseUrl);
   if (!apiKey) {
     console.error("Error: FARM_API_KEY is not set.");
     process.exit(1);
@@ -759,6 +773,7 @@ if (_thisFile === _entryFile) {
 }
 export {
   SAFE_TASK_ID,
+  assertSecureBaseUrl,
   codeLineCount,
   extractFileBlocks,
   extractLiterals,

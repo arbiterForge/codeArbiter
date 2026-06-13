@@ -2,3 +2,4 @@
 # Format: [ISO-8601] | BY: <name> <<email>> | GATE: <gate bypassed> | REASON: <reason>
 # Written only by /override. The statusline counts non-comment lines after the
 # last-checkpoint marker as "overrides since last checkpoint."
+[2026-06-13T14:25:05Z] | BY: SUaDtL@users.noreply.github.com | OVERRIDE: H-02 force-push | REASON: rebase onto origin/main to resolve add/add conflicts on feature branch checkpoint-remediation-2026-06-12; no commits lost, all 4 sprint SHAs rebased cleanly, 225+56 tests green
