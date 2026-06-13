@@ -630,6 +630,23 @@ class TestAssembleSummary(unittest.TestCase):
         self.assertEqual(summary["stashes"], 1)
         self.assertTrue(sl.any_actionable(summary))
 
+    def test_dirty_repo_not_ff_pull_eligible(self):
+        # SH-6 wired live: a dirty tree withholds ff-pull even when behind.
+        table = {"status": "M  a.py\n", "rev-list": "2\t0",
+                 "branch": "* main aaa [origin/main]\n", "worktree": "", "stash": ""}
+        summary = _mod.assemble_summary(
+            "/root", runner=self._runner_from(table), current="main", default="main")
+        self.assertFalse(summary["ff_pull_eligible"])
+
+    def test_clean_behind_is_ff_pull_eligible(self):
+        # SH-6 wired live: clean tree AND behind>0 -> eligible.
+        table = {"status": "", "rev-list": "2\t0",
+                 "branch": "* main aaa [origin/main]\n", "worktree": "", "stash": ""}
+        summary = _mod.assemble_summary(
+            "/root", runner=self._runner_from(table), current="main", default="main")
+        self.assertTrue(summary["ff_pull_eligible"])
+        self.assertTrue(summary["upstream"])
+
     def test_clean_repo_all_zero_not_actionable(self):
         table = {
             "status": "",
@@ -643,6 +660,7 @@ class TestAssembleSummary(unittest.TestCase):
             current="main", default="main",
         )
         self.assertFalse(summary["dirty"])
+        self.assertFalse(summary["ff_pull_eligible"])   # behind 0 -> not eligible
         self.assertEqual(summary["behind"], 0)
         self.assertEqual(summary["ahead"], 0)
         self.assertEqual(summary["unpushed"], 0)
@@ -682,6 +700,8 @@ class TestAssembleSummary(unittest.TestCase):
         )
         self.assertEqual(summary["behind"], 0)
         self.assertEqual(summary["ahead"], 0)
+        self.assertFalse(summary["upstream"])   # empty rev-list -> no tracking branch
+        self.assertFalse(summary["ff_pull_eligible"])
 
 
 class TestAssembleSummaryStaleWorktrees(unittest.TestCase):

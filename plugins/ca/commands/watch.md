@@ -29,7 +29,13 @@ a phantom watcher.
    NOT a polling loop — there is no interval-based wake-up. Arbiter is re-invoked once
    when the watch process exits.
 3. **On red** — retrieve the failing job's logs (`gh run view --log-failed` /
-   `gh pr checks`) and act at the configured depth (`CODEARBITER_BABYSIT_ONRED`,
+   `gh pr checks`) and act at the configured depth. Resolve that depth with the
+   canonical resolver rather than reading the env var by hand (so the accepted
+   values can't drift):
+   ```
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}"
+   ```
+   It prints one JSON line; act at its `on_red` value (`CODEARBITER_BABYSIT_ONRED`,
    default `propose`):
    - **`propose`** — name the likely cause and propose a concrete fix. Do NOT edit
      any tracked file; applying the fix routes through `/ca:fix` or `/ca:feature`.

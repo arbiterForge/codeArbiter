@@ -18,10 +18,12 @@ stale worktrees) and presents it, then offers each applicable action in turn. Sk
 an action that has no candidates; never bundle confirmations.
 
 1. **Fetch + fast-forward pull** — kick `git fetch`, then offer a **`--ff-only`**
-   pull of the current branch. Offered ONLY on a clean working tree and only when
-   the branch is behind upstream. On a dirty tree the pull is withheld and the dirty
-   state is reported instead. A diverged branch (would need a merge) is refused with
-   a diverged-branch message — never a merge commit.
+   pull of the current branch. Eligibility is the briefing summary's
+   `ff_pull_eligible` flag (SH-6: clean working tree AND behind upstream) — the same
+   pure helper the SessionStart briefing computes, not a condition re-derived here.
+   On a dirty tree the pull is withheld and the dirty state is reported instead. A
+   diverged branch (would need a merge) is refused with a diverged-branch message —
+   never a merge commit.
 2. **Prune merged local branches** — list local branches already merged on remote
    (the `: gone]` upstream set), excluding the current branch and the default
    (`main`). Delete a listed branch only after an explicit per-branch confirmation;

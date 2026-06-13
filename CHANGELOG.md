@@ -42,6 +42,29 @@ Session-hygiene sprint: two opt-in repo-hygiene features, built test-first under
   the user's explicit opt-in.
 - **Catalog & routing** — `COMMANDS.md`, `README.md` (catalog + counts 32→34), and the routing table
   gain `/ca:standup` and `/ca:watch` rows.
+- **Babysitter flag resolution is now executed, not eyeballed** — `_babysitlib.py` gains a fail-safe
+  CLI (`--root`, prints one JSON line, always exits 0); `/ca:pr` and `/ca:watch` invoke it to resolve
+  `enabled`/`on_red` instead of re-stating the accepted `on|true|1` spellings and the dormancy gate in
+  prose, removing a drift risk. New `unittest` coverage for the CLI path.
+- **SH-6 ff-pull gate wired into the live briefing** — `assemble_summary` now computes the
+  `ff_pull_eligible` flag via the pure `_standuplib.ff_pull_eligible` helper (clean tree AND behind
+  upstream); the SessionStart briefing surfaces it and `/ca:standup` step 1 keys off it rather than
+  re-deriving the condition. Previously the helper was tested but never invoked.
+
+### Fixed
+- **Audit remediation (pre-tag sweep).** Catalog drift: `COMMANDS.md` advertised a non-existent
+  `/ca:statusline [--check]` (actual `install | uninstall | status`) and an incomplete `/ca:init`
+  hint; both corrected, and `init.md`'s `argument-hint` gains `--check`. The §6 repeat-redirect "Full
+  list" was missing ~8 commands (incl. `/ca:standup`, `/ca:watch`) — now complete. `prune.md` gained
+  the `python3 || python` Windows interpreter fallback the other commands already carried. Bare
+  `/sprint` command references in `sprint.md`/`override.md` normalized to `/ca:sprint`; `arbiter.md`
+  `argument-hint` normalized from `""` to `(none)`.
+- **`session-start.py` briefing.** Removed a stale comment claiming the briefing summary is always
+  empty (assembly is live); the upstream line no longer prints a misleading "behind 0, ahead 0 (as of
+  last fetch)" when there is no tracking branch (now "upstream: none"); the standup default-branch
+  override moved off the wrong `FARM_BASE_BRANCH` namespace to `CODEARBITER_BASE_BRANCH`.
+- **Statusline `/dev` tell.** Dev mode now shows a textual `[DEV]` badge alongside the full-bar
+  redshift, so it reads where color is stripped or unseen.
 
 ---
 

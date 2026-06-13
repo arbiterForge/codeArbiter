@@ -51,7 +51,7 @@ Heavier path (all required, in order):
    sensitive lines it approves, so hook H-09b/H-10b allows the commit — recorded **only** after
    steps 1–3, never to skip the gate proper.
 
-Under `/sprint`, a security-critical override is a hard-gate STOP: it surfaces to the user and is
+Under `/ca:sprint`, a security-critical override is a hard-gate STOP: it surfaces to the user and is
 **never** auto-decided, even in autonomous mode (`SPRINT.md` hard gates).
 
 ## Hard gate
@@ -61,7 +61,7 @@ MUST write the log line before proceeding — it is not optional. MUST capture a
 the immediate action only; it creates no standing exception. MUST NOT edit or delete an existing
 `overrides.log` entry. MUST route a security-critical / crypto-secret / irreversible stop through the
 **Security ceiling** path — never the single-confirm flow — and MUST NOT auto-decide such an override
-under `/sprint`.
+under `/ca:sprint`.
 
 ## When NOT to use
 

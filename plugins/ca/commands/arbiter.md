@@ -1,6 +1,6 @@
 ---
 description: Exit maintainer dev mode — restore orchestration, remove the dev marker, log the exit.
-argument-hint: ""
+argument-hint: (none)
 ---
 
 # /ca:arbiter — restore orchestration

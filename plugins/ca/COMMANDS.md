@@ -51,10 +51,10 @@ context docs disagree about the architecture) and you want each variance arbitra
 |---|---|---|
 | `/ca:decompose` | _(none)_ | Greenfield: layered interview to populate `.codearbiter/`. |
 | `/ca:create-context` | _(none)_ | Brownfield: back-fill `.codearbiter/` from existing source. |
-| `/ca:init` | `[--stage N]` | Scaffold the root-level `.codearbiter/` state store. |
+| `/ca:init` | `[--stage N \| --check]` | Scaffold the root-level `.codearbiter/` state store, or `--check` to report detection state without writing. |
 | `/ca:status` | _(none)_ | Show maturity, open tasks, unresolved `CONFIRM-NN`, overrides since checkpoint. |
 | `/ca:audit` | `[range]` | Assemble the governance packet for a window — commits, overrides, ADRs, sprint decisions, open items — into `.codearbiter/audits/`. Read-only. |
-| `/ca:statusline` | `[--check]` | Install/wire the codeArbiter statusline. |
+| `/ca:statusline` | `install \| uninstall \| status` | Install/wire the codeArbiter statusline, remove it, or report its state. |
 | `/ca:prune` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Trim transcript clutter to extend session lifetime. Dry-run by default; gains land on resume/compaction, not the live turn. |
 | `/ca:doctor` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, live-fire hook probe. |
 | `/ca:standup` | _(none)_ | Daily hygiene: review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes — each under per-action confirmation. |

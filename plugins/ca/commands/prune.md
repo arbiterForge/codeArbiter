@@ -35,13 +35,13 @@ the running CLI sends its in-memory history to the API, not the file.
 
 1. **status / dry / audit** — run the backing tool and present its output verbatim:
    ```
-   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py" <subcommand> [<path>]
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py" <subcommand> [<path>] || python "${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py" <subcommand> [<path>]
    ```
    For `dry`, copy the live transcript to `<path>.copy.jsonl` first, then analyze the copy.
 
 2. **run** — confirm the path is a copy or an inactive session, then:
    ```
-   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py" <path> --execute [--tier T]
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py" <path> --execute [--tier T] || python "${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py" <path> --execute [--tier T]
    ```
    Present the per-strategy reduction report; follow with `audit` on the result.
 

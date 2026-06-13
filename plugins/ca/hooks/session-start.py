@@ -29,6 +29,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import frontmatter_enabled, utf8_stdio  # noqa: E402
 from _standuplib import (  # noqa: E402
     any_actionable,
+    ff_pull_eligible,
     merged_branch_candidates,
     parse_ahead_behind,
     parse_porcelain,
@@ -263,8 +264,13 @@ def render_full_briefing(root, summary):
     print(f"  working tree: {'dirty' if summary['dirty'] else 'clean'} "
           f"(staged:{summary['staged']} unstaged:{summary['unstaged']} "
           f"untracked:{summary['untracked']})")
-    print(f"  upstream: behind {summary['behind']}, ahead {summary['ahead']} "
-          f"{STALE_REFS_NOTE}")
+    if summary.get("upstream", True):
+        print(f"  upstream: behind {summary['behind']}, ahead {summary['ahead']} "
+              f"{STALE_REFS_NOTE}")
+    else:
+        print("  upstream: none (no tracking branch)")
+    if summary.get("ff_pull_eligible"):
+        print("  ff-pull available: clean tree, behind upstream — /ca:standup to fast-forward")
     if summary["prune_candidates"]:
         print(f"  merged-branch prune candidates: "
               f"{', '.join(summary['prune_candidates'])}")
@@ -296,9 +302,12 @@ def assemble_summary(root, runner=None, current=None, default="main", path_exist
     porcelain = git_read(["status", "--porcelain=v1"], root, runner)
     p = parse_porcelain(porcelain)
 
-    behind, ahead = parse_ahead_behind(
-        git_read(["rev-list", "--left-right", "--count", "@{u}...HEAD"], root, runner)
-    )
+    revlist = git_read(["rev-list", "--left-right", "--count", "@{u}...HEAD"], root, runner)
+    behind, ahead = parse_ahead_behind(revlist)
+    # No tracking branch -> git errors -> git_read returns "". Distinguish that from
+    # an in-sync upstream (which returns "0\t0") so the briefing can suppress the
+    # misleading "behind 0, ahead 0 (as of last fetch)" line when no upstream exists.
+    has_upstream = bool(revlist.strip())
 
     branch_vv = git_read(["branch", "-vv"], root, runner)
     prune = merged_branch_candidates(branch_vv, current=current, default=default)
@@ -321,6 +330,10 @@ def assemble_summary(root, runner=None, current=None, default="main", path_exist
         "untracked": p["untracked"],
         "behind": behind,
         "ahead": ahead,
+        "upstream": has_upstream,
+        # SH-6: the canonical ff-pull gate (clean tree AND behind>0), computed by
+        # the same pure helper /ca:standup acts on — no re-derivation in prose.
+        "ff_pull_eligible": ff_pull_eligible(porcelain, behind),
         "unpushed": ahead,  # alias: ahead == commits not yet pushed upstream
         "prune_candidates": prune,
         "stale_worktrees": stale_worktrees,
@@ -420,10 +433,11 @@ def main():
     #   first session of the day (no marker)  -> full briefing + drop marker
     #   later session today, actionable       -> exactly ONE offer line
     #   later session today, nothing to do    -> emit nothing
-    # The rich briefing CONTENT and the git-derived `summary` (dirty/behind/ahead/
-    # prune candidates/worktrees/stashes) land in later tasks; until then the
-    # summary is empty, so any_actionable() is False and later sessions on a clean
-    # repo stay silent — the conservative default.
+    # The git-derived `summary` (dirty/behind/ahead/prune candidates/worktrees/
+    # stashes) is assembled below from read-only git reads; any_actionable(summary)
+    # then decides whether a later same-day session emits its single offer line. A
+    # clean repo yields an all-quiet summary, so later sessions stay silent — the
+    # conservative default.
     date_iso = local_date_iso()
     marker_present = not should_emit_briefing(root, date_iso)
 
@@ -431,7 +445,7 @@ def main():
     # (current local refs); we annotate it as possibly stale and kick a DETACHED
     # fetch to refresh for NEXT time without blocking this hook's return.
     current = head_branch(root)
-    default = os.environ.get("FARM_BASE_BRANCH") or "main"
+    default = os.environ.get("CODEARBITER_BASE_BRANCH") or "main"
     summary = assemble_summary(root, current=current, default=default)
     spawn_background_fetch(root)  # detached; never awaited
 

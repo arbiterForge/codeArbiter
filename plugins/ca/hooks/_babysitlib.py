@@ -48,3 +48,30 @@ def babysit_config(env, root, arbiter_active=None):
         on_red = _ONRED_DEFAULT  # PB-5
 
     return {"enabled": enabled, "on_red": on_red}
+
+
+def main(argv=None):
+    """CLI shim: resolve the babysitter config against the live environment and
+    print it as one JSON line, so /ca:pr and /ca:watch invoke this single
+    resolver instead of re-implementing the flag check in prose (no drift from
+    the accepted on|true|1 spellings or the PB-10 dormancy gate). Fail-safe:
+    any error degrades to the OFF default and still exits 0 — a broken resolver
+    must never become a reason to auto-attach a watcher."""
+    import argparse
+    import json
+    import os
+
+    parser = argparse.ArgumentParser(add_help=True)
+    parser.add_argument("--root", default=os.getcwd())
+    args = parser.parse_args(argv)
+    try:
+        cfg = babysit_config(os.environ, args.root)
+    except Exception:  # noqa: BLE001
+        cfg = {"enabled": False, "on_red": _ONRED_DEFAULT}
+    print(json.dumps(cfg))
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())

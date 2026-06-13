@@ -25,9 +25,15 @@ apply, then:
 5. **Stage the PR** once all BLOCK findings clear: concise title; summary of what changed and why; a
    bulleted test plan; a conflict-hierarchy tradeoff citation for any non-obvious tradeoff; a link to
    any ADR the change implements or contradicts. Then `gh pr create`; return the URL.
-6. **Auto-attach the babysitter** — only when the global flag `CODEARBITER_BABYSIT` is on (default
-   off; mirrors `CODEARBITER_PRUNE`): attach a CI watcher to the PR just opened, equivalent to
-   `/ca:watch <new-PR>`. When the flag is off, do nothing here — the user can still run `/ca:watch`
+6. **Auto-attach the babysitter** — resolve the flag with the canonical resolver, never by eyeballing
+   the env var (so the accepted `on|true|1` spellings and the dormancy gate can't drift):
+   ```
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}"
+   ```
+   It prints one JSON line, e.g. `{"enabled": true, "on_red": "propose"}`. Only when `enabled` is
+   true (the global flag `CODEARBITER_BABYSIT` is on — default off, mirrors `CODEARBITER_PRUNE` — and
+   the repo is arbiter-active), attach a CI watcher to the PR just opened, equivalent to
+   `/ca:watch <new-PR>`. When `enabled` is false, do nothing here — the user can still run `/ca:watch`
    ad-hoc. Never enable the flag on the user's behalf.
 
 ## Routes to

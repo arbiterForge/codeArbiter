@@ -1092,7 +1092,14 @@ def render(raw):
     arb = safe(arbiter_state, root)
     effort = (get(data, "effort", "level") or "").lower()
     sprint = bool(arb and arb.get("sprint"))
-    badge = f"{V3}{BOLD}[SPRINT]{RESET}" if sprint else ""   # effort now shows by the model pill
+    # /dev takes precedence over sprint: a textual [DEV] tell rides alongside the
+    # full-bar redshift so dev mode reads even where color is stripped or unseen.
+    if safe(dev_active, root):
+        badge = f"{BOLD}[DEV]{RESET}"
+    elif sprint:
+        badge = f"{V3}{BOLD}[SPRINT]{RESET}"   # effort now shows by the model pill
+    else:
+        badge = ""
 
     led = safe(ledger_update, data, sid)
     if not (isinstance(led, tuple) and len(led) == 3):

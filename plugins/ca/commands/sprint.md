@@ -20,7 +20,7 @@ Load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md` — it is the procedure. In br
 2. **Autonomous execution (BLOCK)** — `subagent-driven-development` runs the plan; test-first via
    `tdd`, two-pass reviewed, fresh-run verified. SMARTS decides non-hard-gate points; everything logs.
 3. **Land & summarize (BLOCK)** — `commit-gate`, then `finishing-a-development-branch`, which
-   auto-selects open-PR. `/sprint` never merges and never discards; the merge decision is the user's.
+   auto-selects open-PR. `/ca:sprint` never merges and never discards; the merge decision is the user's.
 
 Hard gates — `security-controls`, crypto/secrets/auth, irreversible ops, `/override`, an
 unresolvable `[CONFIRM-NN]`, merge-to-default — are NEVER auto-decided. They halt and surface.
