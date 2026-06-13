@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Command catalog & docs
+    url: https://github.com/SUaDtL/codeArbiter#readme
+    about: How to install, enable, and drive codeArbiter — start here.
+  - name: What's in the Feature Forge
+    url: https://github.com/SUaDtL/codeArbiter#feature-forge
+    about: Preview features, how they're opt-in, and how your data promotes them.

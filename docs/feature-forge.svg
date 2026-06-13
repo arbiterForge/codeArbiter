@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" width="1200" height="240" role="img" aria-label="The Feature Forge — preview features: built, tested, shipping, not yet blessed. A commit travels toward a gate that still glows hot, embers rising.">
+  <title>The Feature Forge</title>
+  <defs>
+    <linearGradient id="ffbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#16110d"/>
+    </linearGradient>
+    <radialGradient id="ffheat" cx="0.82" cy="0.82" r="0.55">
+      <stop offset="0" stop-color="#d97757" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="#d97757" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#d97757" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="ffgrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="ffword" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f0b35a"/>
+      <stop offset="1" stop-color="#d97757"/>
+    </linearGradient>
+    <filter id="ffglow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ground -->
+  <rect width="1200" height="240" fill="url(#ffbg)"/>
+  <rect width="1200" height="240" fill="url(#ffgrid)"/>
+  <rect width="1200" height="240" fill="url(#ffheat)"/>
+
+  <!-- certificate frame — same family as the top banner -->
+  <rect x="10" y="10" width="1180" height="220" fill="none" stroke="#e3b341" stroke-opacity="0.16" stroke-width="1"/>
+  <rect x="14" y="14" width="1172" height="212" fill="none" stroke="#e3b341" stroke-opacity="0.07" stroke-width="1"/>
+
+  <!-- wordmark -->
+  <text x="600" y="92" text-anchor="middle"
+        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="52" letter-spacing="0.5">
+    <tspan fill="#e6edf3" font-weight="300">the feature </tspan><tspan fill="url(#ffword)" font-weight="700">forge</tspan>
+  </text>
+  <text x="600" y="126" text-anchor="middle"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace"
+        font-size="12.5" letter-spacing="3.5" fill="#9a8b7a">BUILT · TESTED · SHIPPING — NOT YET BLESSED</text>
+
+  <!-- the forge line: commits travel toward a gate that still glows hot -->
+  <line x1="120" y1="190" x2="1012" y2="190" stroke="#46505a" stroke-width="2"/>
+
+  <!-- unproven commits: hollow -->
+  <circle cx="160" cy="190" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+  <circle cx="212" cy="190" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+  <circle cx="264" cy="190" r="4.5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
+
+  <!-- the work on the anvil: a commit, still hot -->
+  <circle cx="900" cy="190" r="5.5" fill="#d97757" filter="url(#ffglow)"/>
+
+  <!-- embers rising off the hot work -->
+  <circle cx="906" cy="168" r="2.2" fill="#f0b35a" filter="url(#ffglow)"/>
+  <circle cx="890" cy="154" r="1.6" fill="#e8954a" filter="url(#ffglow)"/>
+  <circle cx="913" cy="146" r="1.3" fill="#f0b35a" filter="url(#ffglow)"/>
+  <circle cx="884" cy="137" r="1.1" fill="#d97757" filter="url(#ffglow)"/>
+
+  <!-- the forge gate — glowing hot, still being worked -->
+  <g filter="url(#ffglow)">
+    <line x1="980" y1="150" x2="980" y2="206" stroke="#d97757" stroke-width="3"/>
+    <line x1="996" y1="150" x2="996" y2="206" stroke="#d97757" stroke-width="3"/>
+    <rect x="974" y="143" width="28" height="6" fill="#f0b35a"/>
+  </g>
+  <text x="988" y="224" text-anchor="middle"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="10" letter-spacing="2.5" fill="#c08a6a">FORGE</text>
+
+  <!-- the seal: how a preview graduates -->
+  <text x="1166" y="220" text-anchor="end"
+        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="9" letter-spacing="1.5" fill="#6e7b8b">preview channel · opt-in · your data promotes it</text>
+</svg>

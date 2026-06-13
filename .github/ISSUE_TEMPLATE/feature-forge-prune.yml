@@ -1,0 +1,61 @@
+name: "Feature Forge: prune data"
+description: "Send back your CODEARBITER_PRUNE=dry log to help promote live pruning out of preview."
+title: "Feature Forge: prune data — "
+labels: ["feature-forge", "prune"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for forging. 🔨
+
+        Live transcript pruning is a **preview** feature — it graduates from the
+        [Feature Forge](https://github.com/SUaDtL/codeArbiter#feature-forge) when real-world data
+        says it's safe to flip `on`. Your `dry`-mode log is that data.
+
+        **Privacy:** `prune-dry.jsonl` contains **sizes, strategy names, and validation verdicts
+        only — no transcript content**. Skim it first if you like; it's plain JSONL.
+
+        Generate it by running a few sessions with:
+        ```sh
+        export CODEARBITER_PRUNE=dry
+        ```
+        then attach or paste `~/.codearbiter/metrics/prune-dry.jsonl` below.
+  - type: textarea
+    id: jsonl
+    attributes:
+      label: Your prune-dry.jsonl
+      description: "Drag the file into this box to attach it, or paste its contents. Sizes/verdicts only — no transcript content."
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: sessions
+    attributes:
+      label: Roughly how many sessions does this cover?
+      placeholder: "e.g. 12 sessions over a week"
+    validations:
+      required: false
+  - type: dropdown
+    id: would-flip
+    attributes:
+      label: Based on what you saw in dry mode, would you flip it to `on`?
+      options:
+        - "Yes — the reductions look worth it and nothing important was cut"
+        - "Not sure — need to look closer"
+        - "No — it would have cut something I'd want to keep"
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything surprising? (optional)
+      description: "A verdict that looked wrong, a strategy that over- or under-pruned, anything that stood out."
+    validations:
+      required: false
+  - type: input
+    id: env
+    attributes:
+      label: Environment (optional)
+      placeholder: "OS · Python version · any CODEARBITER_PRUNE_* overrides you set"
+    validations:
+      required: false
