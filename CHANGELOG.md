@@ -6,198 +6,80 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
-## [2.1.0-beta.6] — 2026-06-13 — preview
+## [2.1.0] — 2026-06-13
 
-Docs-only release: distribution-readiness pass ahead of a marketplace submission. No code, no gate
-change, no behavioral surface.
-
-### Added
-- **"Feature Forge" section** (repo README) with its own hero (`docs/feature-forge.svg`, in the
-  banner's visual family — a commit at a gate that still glows hot, embers rising). Frames preview
-  features as opt-in, dormant, and promoted by real-world data rather than a calendar. Houses live
-  transcript pruning with its `off`/`dry`/`on` contract and a concrete feedback loop: run
-  `CODEARBITER_PRUNE=dry`, then send `~/.codearbiter/metrics/prune-dry.jsonl` back via a pre-filled
-  GitHub issue. The log carries sizes, per-strategy savings, and verdicts only — **no transcript
-  content** — and is the evidence base for the `dry → on` go/no-go.
-- **Issue form `Feature Forge: prune data`** (`.github/ISSUE_TEMPLATE/`) so returning a `dry` log is
-  drag-attach-submit, plus an issue-chooser config linking the docs and the Forge.
-- **Demo recording shot list** (`docs/demo-script.md`) and a commented placeholder in the README for
-  an in-motion GIF (the BLOCK → resolve → green beat).
-
-### Changed
-- **Plugin storefront** (`plugins/ca/README.md`) gains a compact Feature Forge blurb with the
-  prune-data ask — it's what the marketplace directory renders, so it can't be silent on previews.
-- **Configuration table** (repo README) split: the prune flags moved out of the stable table into
-  Feature Forge, so preview opt-ins no longer sit beside blessed ones.
-- A collapsible worked-example added to the README so it *shows* a real `/ca:fix → commit → pr` flow,
-  not only describes the gates.
-
----
-
-## [2.1.0-beta.5] — 2026-06-13 — preview
-
-Bug fix: the statusline pin no longer goes stale across plugin updates.
-
-### Fixed
-- **Statusline now self-heals on a plugin update.** `wire-statusline.py` writes an absolute,
-  version-pinned path into `~/.claude/settings.json` (a plugin can't own a statusLine and
-  `${CLAUDE_PLUGIN_ROOT}` isn't expanded there), but nothing re-ran it after an update — so an
-  updated install kept invoking the OLD version's `statusline.py`: stale, and eventually a blank bar
-  once that version's cache dir is pruned. The SessionStart hook now refreshes a codeArbiter-owned
-  pin to the current renderer path on every session, persisting **only** on a real change (no
-  steady-state churn), leaving a third-party statusLine untouched, never wiring a fresh line where
-  the user has none, and degrading silently on any error (including a corrupt `settings.json`) so a
-  wiring refresh can never crash startup. New `refresh` action on `wire-statusline.py` and
-  `heal_statusline_wiring()` in `session-start.py`, both with `unittest` coverage.
-
----
-
-## [2.1.0-beta.4] — 2026-06-13 — preview
-
-Session-hygiene sprint: two opt-in repo-hygiene features, built test-first under `subagent-driven-development`. No change to existing gates; both features are dormant in a repo without `arbiter: enabled`.
+First stable minor since the 2.0 plugin rewrite. Consolidates the `2.1.0-beta.1`…`beta.6`
+pre-releases into one release. Everything here ships **stable and dormant-by-default** (inert in a
+repo without `arbiter: enabled`). Per-feature maturity is governed by the **Feature Forge**, not by
+the version string: the session-transcript pruner is the lone **`preview`** feature — opt-in via
+`CODEARBITER_PRUNE`, promoted by real-world data, never on by default. See *Feature Forge* in the
+README. The per-beta history remains in the git tag log.
 
 ### Added
-- **`/ca:standup` + SessionStart morning briefing** — the SessionStart hook now emits a read-only
-  hygiene briefing on the first session of each local calendar day (a one-line offer on later
-  sessions), surfacing branch divergence, merged-but-unpruned branches, stale worktrees, and
-  stashes/dirty state. The hook only reports; `/ca:standup` performs the cleanups, each under
-  per-action confirmation: ff-only pull on a clean tree (refuses on divergence/dirty), prune of
-  merged branches (never the current or default branch), removal of stale worktrees, and report-only
-  surfacing of stashes/un-pushed work. The remote `git fetch` is detached and non-blocking, so
-  session start never awaits the network. New pure-logic module `hooks/_standuplib.py` (porcelain /
-  ahead-behind / merged-branch / worktree / stash parsers) with full `unittest` coverage.
-- **`/ca:watch <PR>` — PR CI babysitter** — watches a pull request's checks to completion via the
-  server-side `gh pr checks --watch` block (zero model tokens while CI runs; not a polling loop). On
-  red it diagnoses at a configurable depth (`CODEARBITER_BABYSIT_ONRED`: `propose` (default, no
-  tracked-file edit) | `branch` (an unmergeable `spike/fix-*`)). On green it notifies and offers the
-  merge — it **never** auto-merges, and a merge into the default branch still routes through the
-  merge-to-default hard gate. A global flag `CODEARBITER_BABYSIT` (default off, mirrors
-  `CODEARBITER_PRUNE`) auto-attaches a watcher when `/ca:pr` opens a PR; the flag is never set on the
-  user's behalf. New `hooks/_babysitlib.py` flag reader with `unittest` coverage.
-- **Pruner dry-mode data collection** — `CODEARBITER_PRUNE=dry` now records every would-be prune to
-  a shared append-only JSONL log (`~/.codearbiter/metrics/prune-dry.jsonl`, overridable via
-  `CODEARBITER_PRUNE_METRICS`): one row per decision across all sessions, each carrying the
-  reduction, per-strategy savings, and the validation verdict. Previously the audit log was written
-  only on execute, so dry mode left no track record — the evidence base for the `dry`→`on` go/no-go
-  decision. Dry-only by design; executed prunes continue to log to `~/.codearbiter/prune.log`.
-  Covered by new `unittest` cases in `tests/test_hook.py`.
+- **`/ca:standup` + SessionStart morning briefing** — read-only hygiene briefing on the first session
+  of each local day (a one-line offer thereafter): branch divergence, merged-but-unpruned branches,
+  stale worktrees, stashes/dirty state. The hook only reports; `/ca:standup` performs cleanups under
+  per-action confirmation (ff-only pull on a clean tree, prune of merged branches — never current or
+  default, stale-worktree removal, report-only stashes). Remote `git fetch` is detached and
+  non-blocking. New `hooks/_standuplib.py` with full `unittest` coverage.
+- **`/ca:watch <PR>` — PR CI babysitter** — watches a PR's checks to completion via server-side
+  `gh pr checks --watch` (zero model tokens while CI runs). On red it diagnoses
+  (`CODEARBITER_BABYSIT_ONRED`: `propose` default | `branch`); on green it notifies and offers the
+  merge — **never** auto-merges, and a default-branch merge still routes through the hard gate. Global
+  `CODEARBITER_BABYSIT` (default off) auto-attaches a watcher when `/ca:pr` opens a PR; never set on
+  the user's behalf. New `hooks/_babysitlib.py` with `unittest` coverage.
+- **Session-transcript pruner** (`/ca:prune`) — *Feature Forge preview, ships off.* Trims clutter from
+  Claude Code JSONL transcripts at safe quiescence boundaries. Ten strategies across `gentle` /
+  `standard` / `aggressive` tiers; protected tail keeps the K most recent tool turns verbatim; unknown
+  line types pass through byte-identical; 7-check validation battery with rollback; live-race-safe
+  write protocol. After-each-turn service mode (`UserPromptSubmit` / `PreCompact`, gains land at
+  resume/compaction, off by default), a `✂ N% · Xs ago` statusline segment, and a `/ca:doctor` payload
+  check. Dry mode (`CODEARBITER_PRUNE=dry`) records every would-be prune to an append-only JSONL log
+  (`~/.codearbiter/metrics/prune-dry.jsonl`) — sizes/savings/verdicts only, **no transcript content** —
+  the evidence base for the `dry → on` go/no-go. Backed by `hooks/_prunelib.py`; 40+ unit tests.
+- **Feature Forge** (README) — a section with its own hero (`docs/feature-forge.svg`) framing preview
+  features as opt-in, dormant, and promoted by real-world data; plus a `Feature Forge: prune data`
+  issue form and chooser config so returning a `dry` log is drag-attach-submit. Demo shot list
+  (`docs/demo-script.md`) and a README placeholder for an in-motion GIF.
+- **Spinner verbs** wired during plugin install/uninstall.
+- **`pre-edit.py` hook test suite** (`tests/test_pre_edit.py`) — H-05 append-only guard and H-11
+  ADR-marker paths, including stale-marker and Windows-path variants.
+- **CVE gate in CI** — `npm audit --omit=dev --audit-level=critical` in the `tools` job.
+- **Architecture decision records** — `.codearbiter/decisions/` with ADR-0001..0004 and a decision log.
 
 ### Changed
-- **`/ca:pr`** — gains a step-6 auto-attach of the CI babysitter, gated on `CODEARBITER_BABYSIT`
-  (off by default); a Hard-gate clause forbids auto-attaching a watcher or enabling the flag without
-  the user's explicit opt-in.
-- **Catalog & routing** — `COMMANDS.md`, `README.md` (catalog + counts 32→34), and the routing table
-  gain `/ca:standup` and `/ca:watch` rows.
-- **Babysitter flag resolution is now executed, not eyeballed** — `_babysitlib.py` gains a fail-safe
-  CLI (`--root`, prints one JSON line, always exits 0); `/ca:pr` and `/ca:watch` invoke it to resolve
-  `enabled`/`on_red` instead of re-stating the accepted `on|true|1` spellings and the dormancy gate in
-  prose, removing a drift risk. New `unittest` coverage for the CLI path.
-- **SH-6 ff-pull gate wired into the live briefing** — `assemble_summary` now computes the
-  `ff_pull_eligible` flag via the pure `_standuplib.ff_pull_eligible` helper (clean tree AND behind
-  upstream); the SessionStart briefing surfaces it and `/ca:standup` step 1 keys off it rather than
-  re-deriving the condition. Previously the helper was tested but never invoked.
+- **Plugin storefront** (`plugins/ca/README.md`) and the README **configuration table** split so
+  preview opt-ins (prune) sit under Feature Forge, not beside blessed flags. A collapsible README
+  worked-example now *shows* a real `/ca:fix → commit → pr` flow.
+- **Catalog & routing** — `COMMANDS.md`, `README.md` (counts 32→34), and the routing table gain
+  `/ca:standup` and `/ca:watch`.
+- **security-controls.md** — TLS section rewritten around resolved-URL validation; boundary-crossings
+  table gains plan.json/`FARM_MUTATION_CMD` shell-exec and the loopback `http://` exception rows.
+- **Babysitter flag resolution is executed, not eyeballed** — `_babysitlib.py` gains a fail-safe CLI;
+  `/ca:pr` and `/ca:watch` invoke it instead of restating spellings in prose.
+- **SH-6 ff-pull gate wired into the live briefing** — `assemble_summary` computes `ff_pull_eligible`
+  via the pure helper rather than re-deriving the condition.
 
 ### Fixed
-- **Audit remediation (pre-tag sweep).** Catalog drift: `COMMANDS.md` advertised a non-existent
-  `/ca:statusline [--check]` (actual `install | uninstall | status`) and an incomplete `/ca:init`
-  hint; both corrected, and `init.md`'s `argument-hint` gains `--check`. The §6 repeat-redirect "Full
-  list" was missing ~8 commands (incl. `/ca:standup`, `/ca:watch`) — now complete. `prune.md` gained
-  the `python3 || python` Windows interpreter fallback the other commands already carried. Bare
-  `/sprint` command references in `sprint.md`/`override.md` normalized to `/ca:sprint`; `arbiter.md`
-  `argument-hint` normalized from `""` to `(none)`.
-- **`session-start.py` briefing.** Removed a stale comment claiming the briefing summary is always
-  empty (assembly is live); the upstream line no longer prints a misleading "behind 0, ahead 0 (as of
-  last fetch)" when there is no tracking branch (now "upstream: none"); the standup default-branch
-  override moved off the wrong `FARM_BASE_BRANCH` namespace to `CODEARBITER_BASE_BRANCH`.
-- **Statusline `/dev` tell.** Dev mode now shows a textual `[DEV]` badge alongside the full-bar
-  redshift, so it reads where color is stripped or unseen.
-
----
-
-## [2.1.0-beta.3] — 2026-06-13 — preview
-
-Remediation of the 2026-06-13 checkpoint sweep. One sprint, planned hard-gate stops; governance
-decisions recorded as user-attributed ADRs.
+- **Statusline self-heals across plugin updates** — the SessionStart hook refreshes a
+  codeArbiter-owned pin to the current renderer path each session, persisting only on a real change,
+  leaving third-party statuslines untouched, and degrading silently on any error. New `refresh` action
+  on `wire-statusline.py` and `heal_statusline_wiring()` in `session-start.py`, both `unittest`-covered.
+- **Cold-install hook test no longer clobbers the developer's global statusline** — `scenario_env` now
+  sandboxes `HOME`/`USERPROFILE` so a hook's `~/.claude/settings.json` write cannot escape into real
+  user state.
+- **Pruner robustness** — startup self-heal for the write/truncate crash window; rollback no longer
+  eats a concurrent append; `CODEARBITER_PRUNE_KEEP_RECENT` counts turns as documented.
+- **Audit remediation (pre-tag sweep)** — catalog drift in `COMMANDS.md`/`init.md`, the §6
+  repeat-redirect command list completed, `prune.md` Windows interpreter fallback, `/sprint`→`/ca:sprint`
+  normalization; `session-start.py` briefing comment/upstream-line/base-branch-namespace fixes; a
+  textual `[DEV]` statusline badge for where color is stripped.
 
 ### Security
-- **Validate the resolved API base URL before every fetch** — `farm.ts` previously validated only
-  `plan.meta.apiBaseUrl` at parse time, so a `FARM_API_BASE_URL` env override could resolve to
-  `http://` and send the `Authorization: Bearer ${FARM_API_KEY}` header over cleartext. The resolved
-  base URL (env → plan.meta → default) is now checked by `assertSecureBaseUrl` — HTTPS-only with a
-  documented loopback `http://` exception (no userinfo), via WHATWG `URL` parsing (the same parser
-  `fetch` uses, so no parser-differential bypass). Error messages never include the key.
-
-### Added
-- **`pre-edit.py` hook test suite** — `tests/test_pre_edit.py` covers the H-05 append-only guard
-  (overrides.log / triage.log) and the H-11 ADR-marker block/allow paths, including stale-marker and
-  Windows path variants.
-- **CVE gate in CI** — `npm audit --omit=dev --audit-level=critical` runs in the `tools` job;
-  referenced in `tech-stack.md`.
-- **Architecture decision records** — `.codearbiter/decisions/` initialized with ADR-0001..0004
-  (hybrid governance model, plan.json shell-exec trust boundary, HTTPS-only transport, database-free
-  stdlib-only architecture) and a decision log. Status: proposed.
-
-### Changed
-- **security-controls.md** — TLS section rewritten around the resolved-URL validation; boundary-
-  crossings table gains rows for plan.json/`FARM_MUTATION_CMD` shell execution and the loopback
-  `http://` exception.
-
----
-
-## [2.1.0-beta.2] — 2026-06-12 — preview
-
-### Fixed
-- **Pruner: startup self-heal for the write/truncate crash window** — the in-place write protocol
-  (deliberately same-inode, so the live CLI's open handle and appends survive) writes the shorter
-  image and then truncates; a process death between the two left the file spliced mid-line.
-  `self_heal()` now runs at the top of every execute-mode run (hook and CLI): it detects the exact
-  splice signature (one unparseable line, file at least backup-sized, byte-identical tail vs. the
-  newest session backup in `~/.codearbiter/prune-backups/`), restores the original, and preserves
-  any lines the live session appended after the crash. Corruption that does not match the
-  signature is left untouched for a human. Logged to `~/.codearbiter/prune.log`.
-- **Pruner: rollback no longer eats a concurrent append** — the post-write-validation rollback
-  rewrote the original prefix and truncated blindly, destroying a line a live appender added
-  after the truncate. The rollback now captures any appended tail first, restores
-  original + tail, and skips the truncate if newer bytes landed during the restore (mirroring
-  the main path's growth guard).
-- **Pruner: `CODEARBITER_PRUNE_KEEP_RECENT` now counts turns, as documented** — the protected
-  tail counted tool-bearing *lines* (tool_use and tool_result separately), so `KEEP_RECENT=10`
-  protected ~5 turns. Turn anchors are now the assistant tool_use lines, so the setting protects
-  exactly the K most recent tool turns (each tool_use plus its results).
-
----
-
-## [2.1.0-beta.1] — 2026-06-12 — preview
-
-> **Preview release.** The session-transcript pruner ships **off** by default
-> (`CODEARBITER_PRUNE=off`). Static analysis and the CLI (`/ca:prune dry/run/audit`) are stable.
-> Service mode (`CODEARBITER_PRUNE=on`) is experimental — opt in explicitly and treat it as
-> latest-channel until a `2.1.0` stable tag. The pruner never breaks a session (hook always exits 0,
-> write protocol has a rollback floor); the experimental label is about signal-loss calibration
-> at the aggressive tier, not safety.
-
-### Added
-- **Session-transcript pruner** (`/ca:prune`) — trims clutter from Claude Code JSONL transcripts
-  at safe quiescence boundaries to extend session lifetime. Ten strategies across three tiers:
-  `gentle` (`sidecar-collapse`, `oversize-result-clamp`), `standard` (+ `reasoning-fold`,
-  `aged-result-condense`, `mcp-payload-condense`, `shell-tail-keep`), `aggressive`
-  (+ `superseded-read-condense`, `repeat-reminder-fold`, `inline-image-evict`). The protected
-  tail keeps the K most recent tool-bearing turns verbatim; unknown line types pass through
-  byte-identical; 7-check validation battery with rollback; live-race-safe write protocol (re-stat
-  abort, same-inode shrink-only, fstat append-check gates `ftruncate`). Typical reduction on a
-  tool-heavy transcript: 50–80%; 20–40% on prose-dominated sessions. Backed by
-  `hooks/_prunelib.py` + `hooks/prune-transcript.py`; 40+ unit tests across pipeline, validators,
-  strategies, write safety, and hook mode.
-- **After-each-turn service mode** — `UserPromptSubmit` and `PreCompact` hook entries prune at
-  safe quiescence points and always exit 0. A stat short-circuit skips unchanged transcripts
-  (`CODEARBITER_PRUNE_MIN_GROWTH` bytes of growth required). Gains land at `claude --resume` /
-  restart / next compaction — not the current turn. Ships **off**; enabling is the user's explicit
-  choice.
-- **Statusline prune segment** — after the pruner runs, `statusline.py` renders `✂ N% · Xs ago`
-  (cumulative session reduction, age of last run). Absent until the first prune; fail-soft (never
-  makes statusline rendering fail).
-- **`/ca:doctor` payload check** — `prune-transcript.py` added to the hook-script completeness
-  check so a missing pruner shows as FAIL, not silent omission.
+- **Validate the resolved API base URL before every fetch** — `farm.ts` now checks the resolved base
+  URL (env → plan.meta → default) via `assertSecureBaseUrl` (HTTPS-only, documented loopback `http://`
+  exception, WHATWG `URL` parsing), closing a path where a `FARM_API_BASE_URL` override could send the
+  `Authorization: Bearer` header over cleartext. Error messages never include the key.
 
 ---
 
