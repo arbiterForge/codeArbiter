@@ -38,6 +38,8 @@ One plugin, named `ca`. Claude Code namespaces every plugin command, so you invo
 
 Activation is **per-repo and explicit**. A `SessionStart` hook checks the repo for `.codearbiter/CONTEXT.md` carrying the frontmatter flag `arbiter: enabled`. Present → it injects the orchestrator persona and live startup state. Absent → it exits silently. Install the plugin globally and it stays out of the way everywhere you haven't opted in.
 
+The first session of each day also opens with a read-only repo-hygiene briefing — branch drift against the remote, merged-but-unpruned branches, stale worktrees, and uncommitted or stashed work — surfaced, never acted on. <kbd>/ca:standup</kbd> then performs the cleanups under per-action confirmation (ff-only pull on a clean tree, branch and worktree pruning, never the default branch). Later sessions that day collapse to a single-line offer.
+
 ```mermaid
 flowchart LR
     A(["SessionStart hook"]) --> B{"CONTEXT.md:<br/>arbiter enabled?"}
