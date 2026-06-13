@@ -28,6 +28,13 @@ Session-hygiene sprint: two opt-in repo-hygiene features, built test-first under
   merge-to-default hard gate. A global flag `CODEARBITER_BABYSIT` (default off, mirrors
   `CODEARBITER_PRUNE`) auto-attaches a watcher when `/ca:pr` opens a PR; the flag is never set on the
   user's behalf. New `hooks/_babysitlib.py` flag reader with `unittest` coverage.
+- **Pruner dry-mode data collection** — `CODEARBITER_PRUNE=dry` now records every would-be prune to
+  a shared append-only JSONL log (`~/.codearbiter/metrics/prune-dry.jsonl`, overridable via
+  `CODEARBITER_PRUNE_METRICS`): one row per decision across all sessions, each carrying the
+  reduction, per-strategy savings, and the validation verdict. Previously the audit log was written
+  only on execute, so dry mode left no track record — the evidence base for the `dry`→`on` go/no-go
+  decision. Dry-only by design; executed prunes continue to log to `~/.codearbiter/prune.log`.
+  Covered by new `unittest` cases in `tests/test_hook.py`.
 
 ### Changed
 - **`/ca:pr`** — gains a step-6 auto-attach of the CI babysitter, gated on `CODEARBITER_BABYSIT`

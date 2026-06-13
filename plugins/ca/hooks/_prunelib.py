@@ -1022,6 +1022,31 @@ def state_path():
     return os.path.join(os.path.expanduser("~"), ".codearbiter", "prune-state.json")
 
 
+def dry_metrics_path(env=None):
+    """Dedicated dry-run data-collection log. One shared append-only JSONL file
+    every session writes to — the evidence base for the dry->on go/no-go.
+    Defaults under ~/.codearbiter/metrics; CODEARBITER_PRUNE_METRICS overrides
+    the full path (with ~ expansion)."""
+    e = env if env is not None else os.environ
+    override = e.get("CODEARBITER_PRUNE_METRICS")
+    if override:
+        return os.path.expanduser(override)
+    return os.path.join(
+        os.path.expanduser("~"), ".codearbiter", "metrics", "prune-dry.jsonl")
+
+
+def append_dry_metrics(record, env=None):
+    """Append one dry-run record to the shared metrics log. Best-effort: a
+    logging failure must never break the turn (the caller always exits 0)."""
+    p = dry_metrics_path(env)
+    try:
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "a", encoding="utf-8") as f:
+            f.write(_dumps(record) + "\n")
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def load_state():
     try:
         with open(state_path(), encoding="utf-8") as f:
@@ -1122,6 +1147,25 @@ def hook_run(payload, env=None):
     except Exception:  # noqa: BLE001 — never let pruning break the turn
         return 0
     b0, b1 = res["bytes_before"], res["bytes_after"]
+    if not cfg.execute:
+        # Dry mode: persist the would-be outcome to the shared data-collection
+        # log so confidence accrues across sessions before flipping to on.
+        append_dry_metrics({
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "session": session,
+            "mode": "dry",
+            "tier": cfg.tier,
+            "bytes_before": b0,
+            "bytes_after": b1,
+            "pct": round(100.0 * (b0 - b1) / b0, 1) if b0 else 0.0,
+            "freed_bytes": b0 - b1,
+            "est_tokens_before": res["est_tokens_before"],
+            "est_tokens_after": res["est_tokens_after"],
+            "verdict": res["verdict"],
+            "validation_errors": len(res["validation_errors"]),
+            "strategies": {k: v["bytes_before"] - v["bytes_after"]
+                           for k, v in res["strategies"].items()},
+        }, env=e)
     state[session] = {
         "path": path,
         "last_size": b1 if res["executed"] else b0,
