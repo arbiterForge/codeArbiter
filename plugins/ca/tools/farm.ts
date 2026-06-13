@@ -38,6 +38,7 @@ import { spawn } from "node:child_process";
 import { readFile, writeFile, mkdir, rm, stat } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 // --------------------------------------------------------------------------
 // Types — the handoff contract. Claude emits plan.json conforming to this.
@@ -203,7 +204,7 @@ function buildPrompt(t: Task, priorFailure?: string, forbiddenExtra?: string[]) 
 // `// path:` / `# path:` comments, and the ```lang:path fence convention.
 // Returns the path + body for each file block.
 // --------------------------------------------------------------------------
-function extractFileBlocks(content: string): Array<{ path: string; body: string }> {
+export function extractFileBlocks(content: string): Array<{ path: string; body: string }> {
   const lines = content.split("\n");
   const blocks: Array<{ path: string; body: string }> = [];
   let i = 0;
@@ -297,11 +298,15 @@ async function callApi(
         continue;
       }
       const body = await resp.text().catch(() => "(unreadable)");
-      return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries: ${body.slice(0, 300)}` };
+      // D-3: log raw body to stderr for diagnostics; do NOT include it in the
+      // error field that flows into priorFailure and the next worker prompt.
+      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}\n`);
+      return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
     }
     if (!resp.ok) {
       const body = await resp.text().catch(() => "(unreadable)");
-      return { ok: false, error: `API ${resp.status}: ${body.slice(0, 500)}` };
+      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}\n`);
+      return { ok: false, error: `API ${resp.status}` };
     }
 
     let data: { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
@@ -389,7 +394,7 @@ async function checkDrift(cwd: string, allowed: Set<string>): Promise<string[]> 
 // non-trivial test literal verbatim. Egregious cases escalate; borderline
 // cases attach a warning that rides into the report for the human reviewer.
 // --------------------------------------------------------------------------
-function extractLiterals(testSrc: string): string[] {
+export function extractLiterals(testSrc: string): string[] {
   const lits = new Set<string>();
   // quoted strings
   for (const m of testSrc.matchAll(/(['"`])((?:\\.|(?!\1).){2,})\1/g)) lits.add(m[2]);
@@ -398,7 +403,7 @@ function extractLiterals(testSrc: string): string[] {
   return [...lits];
 }
 
-function codeLineCount(src: string): number {
+export function codeLineCount(src: string): number {
   return src
     .split("\n")
     .map((l) => l.trim())
@@ -717,7 +722,9 @@ async function runTask(
     if (risk === "warn") lastWarning = riskNote;
 
     // Commit + merge into the dedicated integration worktree.
-    await git(["add", "-A"], wt);
+    // B-1: stage only the files the worker actually wrote, not everything in the
+    // worktree — git add -A would silently include any stale or injected files.
+    await git(["add", "--", ...worker.filesWritten], wt);
     const commit = await git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
     if (commit.code !== 0)
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
@@ -747,11 +754,38 @@ async function runTask(
 // --------------------------------------------------------------------------
 // validation — duplicate ids, unknown deps, AND cycles
 // --------------------------------------------------------------------------
-function validate(plan: Plan) {
+export const SAFE_TASK_ID = /^[A-Za-z0-9._-]{1,64}$/;
+
+export function validate(plan: Plan) {
+  // meta-level schema checks — require HTTPS except for loopback (test mocks)
+  if (
+    plan.meta.apiBaseUrl &&
+    !plan.meta.apiBaseUrl.startsWith("https://") &&
+    !/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(plan.meta.apiBaseUrl)
+  )
+    throw new Error(`plan meta.apiBaseUrl must use HTTPS, got: ${plan.meta.apiBaseUrl}`);
+
   const ids = new Set<string>();
   for (const t of plan.tasks) {
+    // B-2: restrict id to safe characters to prevent path traversal in branch
+    // names and worktree paths derived from it
+    if (!SAFE_TASK_ID.test(t.id))
+      throw new Error(`task id "${t.id}" must match [A-Za-z0-9._-], max 64 chars`);
     if (ids.has(t.id)) throw new Error(`duplicate task id: ${t.id}`);
     ids.add(t.id);
+
+    // D-2: reject relative-path traversal in test.path and filesInScope
+    if (t.test.path.includes("..") || path.isAbsolute(t.test.path))
+      throw new Error(`task ${t.id}: test.path must be a relative path with no ".." segments`);
+    for (const f of t.filesInScope)
+      if (f.includes("..") || path.isAbsolute(f))
+        throw new Error(`task ${t.id}: filesInScope entry "${f}" must be a relative path with no ".." segments`);
+    for (const cmd of t.gate.commands) {
+      if (!cmd || typeof cmd !== "string")
+        throw new Error(`task ${t.id}: gate.commands entries must be non-empty strings`);
+      if (cmd.length > 1024)
+        throw new Error(`task ${t.id}: gate command exceeds 1024 chars`);
+    }
   }
   for (const t of plan.tasks)
     for (const d of t.deps ?? [])
@@ -977,7 +1011,13 @@ async function writeReport(plan: Plan, results: Result[], blocked: { id: string;
   await writeFile(path.join(ENV.reportDir, "farm-report.md"), md);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only execute when this file is the direct entry point (not when imported by
+// unit tests). tsx resolves import.meta.url correctly in both modes.
+const _thisFile = fileURLToPath(import.meta.url);
+const _entryFile = path.resolve(process.argv[1] ?? "");
+if (_thisFile === _entryFile) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

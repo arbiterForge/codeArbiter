@@ -8,7 +8,7 @@
     "farm": "node --env-file-if-exists=.env --import tsx farm.ts",
     "farm:dist": "node --env-file-if-exists=.env farm.js",
     "farm:example": "node --env-file-if-exists=.env --import tsx farm.ts __fixtures__/simple.plan.json",
-    "build": "npx esbuild farm.ts --bundle --platform=node --format=esm --outfile=farm.js --banner:js='#!/usr/bin/env node'",
+    "build": "npx esbuild farm.ts --bundle --platform=node --format=esm --outfile=farm.js \"--banner:js=#!/usr/bin/env node\"",
     "test": "npx vitest run",
     "typecheck": "npx tsc --noEmit"
   },

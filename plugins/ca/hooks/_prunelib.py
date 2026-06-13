@@ -1072,6 +1072,17 @@ def hook_run(payload, env=None):
     path = payload.get("transcript_path")
     if not path or not os.path.isfile(path):
         return 0
+    # N-1: containment — transcript must live under ~/.claude/ to prevent an
+    # attacker-controlled payload from pointing the pruner at arbitrary files.
+    try:
+        _claude_home = os.path.normcase(os.path.normpath(
+            os.path.realpath(os.path.expanduser("~/.claude"))
+        ))
+        _real_path = os.path.normcase(os.path.normpath(os.path.realpath(path)))
+        if not _real_path.startswith(_claude_home):
+            return 0
+    except Exception:  # noqa: BLE001 — realpath can fail on unusual mounts
+        return 0
     root = payload.get("cwd") or os.getcwd()
     try:
         import _hooklib

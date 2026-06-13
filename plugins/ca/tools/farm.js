@@ -5,6 +5,7 @@ import { spawn } from "node:child_process";
 import { readFile, writeFile, mkdir, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 var ENV = {
   // Model: plan.meta.model (set by subagent-driven-development before dispatch),
   // then FARM_MODEL env var override. Fails at startup if neither is set.
@@ -177,11 +178,15 @@ async function callApi(prompt, model, apiBaseUrl, apiKey) {
         continue;
       }
       const body = await resp.text().catch(() => "(unreadable)");
-      return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries: ${body.slice(0, 300)}` };
+      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}
+`);
+      return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
     }
     if (!resp.ok) {
       const body = await resp.text().catch(() => "(unreadable)");
-      return { ok: false, error: `API ${resp.status}: ${body.slice(0, 500)}` };
+      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}
+`);
+      return { ok: false, error: `API ${resp.status}` };
     }
     let data;
     try {
@@ -503,7 +508,7 @@ ${gate.tail}`;
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore };
     }
     if (risk === "warn") lastWarning = riskNote;
-    await git(["add", "-A"], wt);
+    await git(["add", "--", ...worker.filesWritten], wt);
     const commit = await git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
     if (commit.code !== 0)
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
@@ -525,11 +530,27 @@ ${gate.tail}`;
   }
   return { id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore };
 }
+var SAFE_TASK_ID = /^[A-Za-z0-9._-]{1,64}$/;
 function validate(plan) {
+  if (plan.meta.apiBaseUrl && !plan.meta.apiBaseUrl.startsWith("https://") && !/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(plan.meta.apiBaseUrl))
+    throw new Error(`plan meta.apiBaseUrl must use HTTPS, got: ${plan.meta.apiBaseUrl}`);
   const ids = /* @__PURE__ */ new Set();
   for (const t of plan.tasks) {
+    if (!SAFE_TASK_ID.test(t.id))
+      throw new Error(`task id "${t.id}" must match [A-Za-z0-9._-], max 64 chars`);
     if (ids.has(t.id)) throw new Error(`duplicate task id: ${t.id}`);
     ids.add(t.id);
+    if (t.test.path.includes("..") || path.isAbsolute(t.test.path))
+      throw new Error(`task ${t.id}: test.path must be a relative path with no ".." segments`);
+    for (const f of t.filesInScope)
+      if (f.includes("..") || path.isAbsolute(f))
+        throw new Error(`task ${t.id}: filesInScope entry "${f}" must be a relative path with no ".." segments`);
+    for (const cmd of t.gate.commands) {
+      if (!cmd || typeof cmd !== "string")
+        throw new Error(`task ${t.id}: gate.commands entries must be non-empty strings`);
+      if (cmd.length > 1024)
+        throw new Error(`task ${t.id}: gate command exceeds 1024 chars`);
+    }
   }
   for (const t of plan.tasks)
     for (const d of t.deps ?? [])
@@ -728,7 +749,18 @@ async function writeReport(plan, results, blocked, aborted) {
   ].join("\n");
   await writeFile(path.join(ENV.reportDir, "farm-report.md"), md);
 }
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+var _thisFile = fileURLToPath(import.meta.url);
+var _entryFile = path.resolve(process.argv[1] ?? "");
+if (_thisFile === _entryFile) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
+export {
+  SAFE_TASK_ID,
+  codeLineCount,
+  extractFileBlocks,
+  extractLiterals,
+  validate
+};
