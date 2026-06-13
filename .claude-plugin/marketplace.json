@@ -1,6 +1,6 @@
 {
   "name": "codearbiter",
-  "owner": { "name": "suadtl" },
+  "owner": { "name": "arbiterForge" },
   "metadata": {
     "description": "codeArbiter — an orchestration layer for Claude Code. Single-plugin marketplace."
   },
