@@ -756,14 +756,41 @@ async function runTask(
 // --------------------------------------------------------------------------
 export const SAFE_TASK_ID = /^[A-Za-z0-9._-]{1,64}$/;
 
+// Single source of truth for the outbound base-URL scheme rule: require HTTPS,
+// with an http:// exception ONLY for the loopback hosts test mocks bind to
+// (127.0.0.1 / localhost). Parsed with new URL() rather than a regex so the
+// host is the *resolved* host: userinfo tricks like
+// `http://localhost@evil.example` (whose real host is evil.example) cannot be
+// mistaken for loopback, and any userinfo on the loopback path is rejected
+// outright. A malformed/unparseable URL is treated as insecure and rejected.
+// This guards the Authorization: Bearer <FARM_API_KEY> header against
+// cleartext transport — the error message intentionally echoes only the
+// offending url, never the key.
+const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost"]);
+
+export function assertSecureBaseUrl(url: string) {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+  }
+  // https keeps the secret inside TLS regardless of host/userinfo — scheme alone governs.
+  if (parsed.protocol === "https:") return;
+  // http is permitted only for a bare loopback host with no embedded credentials.
+  if (
+    parsed.protocol === "http:" &&
+    LOOPBACK_HOSTS.has(parsed.hostname) &&
+    parsed.username === "" &&
+    parsed.password === ""
+  )
+    return;
+  throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+}
+
 export function validate(plan: Plan) {
   // meta-level schema checks — require HTTPS except for loopback (test mocks)
-  if (
-    plan.meta.apiBaseUrl &&
-    !plan.meta.apiBaseUrl.startsWith("https://") &&
-    !/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(plan.meta.apiBaseUrl)
-  )
-    throw new Error(`plan meta.apiBaseUrl must use HTTPS, got: ${plan.meta.apiBaseUrl}`);
+  if (plan.meta.apiBaseUrl) assertSecureBaseUrl(plan.meta.apiBaseUrl);
 
   const ids = new Set<string>();
   for (const t of plan.tasks) {
@@ -809,6 +836,10 @@ function resolveConfig(plan: Plan): { model: string; apiBaseUrl: string; apiKey:
   const model = ENV.model ?? plan.meta.model;
   const apiBaseUrl = ENV.apiBaseUrl ?? plan.meta.apiBaseUrl ?? ENV.defaultApiBaseUrl;
   const apiKey = ENV.apiKey;
+  // Re-validate the EFFECTIVE base URL after the env→plan→default precedence:
+  // validate() only sees plan.meta, so FARM_API_BASE_URL=http://evil would
+  // otherwise reach fetch() and leak the Bearer key over cleartext.
+  assertSecureBaseUrl(apiBaseUrl);
   if (!model) {
     console.error(
       "Error: No model configured.\n" +
@@ -834,6 +865,8 @@ async function runCanary(plan: Plan) {
   }
   const apiBaseUrl = ENV.apiBaseUrl ?? plan.meta.apiBaseUrl ?? ENV.defaultApiBaseUrl;
   const apiKey = ENV.apiKey;
+  // Same effective-URL guard as resolveConfig — canary also reaches fetch().
+  assertSecureBaseUrl(apiBaseUrl);
   if (!apiKey) {
     console.error("Error: FARM_API_KEY is not set.");
     process.exit(1);
