@@ -40,3 +40,9 @@ Started 2026-06-13. Append-only. SMARTS-scored auto-decisions; `low` = review th
 - **Options:** (a) bump patch-preview `2.1.0-beta.2` → `2.1.0-beta.3`; (b) bump minor `2.1.0` → `2.2.0`.
 - **SMARTS:** Maintainable/Reliable favor (a) — the change is a remediation + governance set within the in-flight beta line, not a new feature surface; beta preview increments are the established cadence (beta.1 → beta.2 → beta.3). Bumping the minor would imply a finished feature the sprint did not add.
 - **Chosen:** (a). plugin.json + README version badge + CHANGELOG `[2.1.0-beta.3] — 2026-06-13`. Strength: moderate.
+
+## SD-05 — PR base branch · confidence: low
+- **Point:** sprint branch is 6 commits off `checkpoint-remediation-2026-06-12` (itself 5 commits ahead of and unmerged to `main`). PR base: `main` or the parent branch?
+- **Options:** (a) base on `main` — PR bundles the parent's 5 unmerged commits with this sprint's 6; (b) base on `checkpoint-remediation-2026-06-12` — stacked PR showing exactly the 6 sprint commits.
+- **SMARTS:** Reviewable/Maintainable favor (b) — a stacked PR isolates this checkpoint's remediation for review; bundling the parent's prior work muddies the diff and conflates two checkpoints. Merge order stays the user's.
+- **Chosen:** (b). Strength: moderate. PR opened, NOT merged (merge-to-default is the user's hard gate).
