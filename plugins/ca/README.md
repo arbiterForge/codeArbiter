@@ -6,12 +6,12 @@ decisions go through SMARTS; the audit trail (`overrides.log`, `triage.log`, ADR
 append-only and mechanically guarded.
 
 Full documentation, install instructions, and the command catalog live in the
-[repository README](https://github.com/SUaDtL/codeArbiter) and in [`COMMANDS.md`](./COMMANDS.md)
+[repository README](https://github.com/arbiterForge/codeArbiter) and in [`COMMANDS.md`](./COMMANDS.md)
 (`/ca:commands` in-session).
 
 ## The short version
 
-- **Install** — `/plugin marketplace add SUaDtL/codeArbiter` → `/plugin install ca@codearbiter`.
+- **Install** — `/plugin marketplace add arbiterForge/codeArbiter` → `/plugin install ca@codearbiter`.
 - **Prerequisites** — Python 3 on `PATH` (all hooks are Python); `git config user.email` set
   (audit attribution). Optional `/ca:statusline` writes to your global `~/.claude/settings.json`
   (backed up; restored on removal).
@@ -31,8 +31,8 @@ in, labeled `preview` until real-world data earns them a stable promotion. In th
 transcript pruning** (`CODEARBITER_PRUNE`), which trims redundant transcript clutter to extend a
 session. Run it in `dry` mode (`export CODEARBITER_PRUNE=dry`) and it logs what it *would* prune —
 sizes and verdicts only, no transcript content — to `~/.codearbiter/metrics/prune-dry.jsonl`. Sending
-that log back ([open a prune-data issue](https://github.com/SUaDtL/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune))
-is what moves it toward `on`. Full detail in the [Feature Forge section of the repo README](https://github.com/SUaDtL/codeArbiter#feature-forge).
+that log back ([open a prune-data issue](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune))
+is what moves it toward `on`. Full detail in the [Feature Forge section of the repo README](https://github.com/arbiterForge/codeArbiter#feature-forge).
 
 ## What's in this directory
 

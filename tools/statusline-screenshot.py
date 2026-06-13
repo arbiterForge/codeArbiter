@@ -67,7 +67,7 @@ payload = {
     "context_window": {"used_percentage": 41, "context_window_size": 1000000},
     "cost": {"total_cost_usd": 4.20, "total_lines_added": 312, "total_lines_removed": 47},
     "workspace": {"current_dir": ROOT.replace("\\", "/"),
-                  "repo": {"owner": "SUaDtL", "name": "codeArbiter"}},
+                  "repo": {"owner": "arbiterForge", "name": "codeArbiter"}},
     "rate_limits": {"five_hour": {"used_percentage": 22, "resets_at": int((now + 1.8 * 3600) * 1000)},
                     "seven_day": {"used_percentage": 31, "resets_at": int((now + 3.2 * 86400) * 1000)}},
 }

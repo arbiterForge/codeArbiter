@@ -7,7 +7,7 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.1.0" src="https://img.shields.io/badge/version-2.1.0-2b7489">
+<img alt="version 2.1.1" src="https://img.shields.io/badge/version-2.1.1-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-34-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-14-555">
@@ -103,7 +103,7 @@ The plugin itself → `~/.claude/plugins/cache/`
 codeArbiter self-hosts a single-plugin marketplace from this repo.
 
 ```text
-/plugin marketplace add SUaDtL/codeArbiter
+/plugin marketplace add arbiterForge/codeArbiter
 /plugin install ca@codearbiter
 ```
 
@@ -120,7 +120,7 @@ global `~/.claude/settings.json` (it backs up what was there and restores it on 
 <br>
 
 ```sh
-git clone https://github.com/SUaDtL/codeArbiter
+git clone https://github.com/arbiterForge/codeArbiter
 ```
 ```text
 /plugin marketplace add ./codeArbiter
@@ -193,7 +193,7 @@ export CODEARBITER_PRUNE=dry      # collect evidence, change nothing
 
 `dry` mode appends one JSONL row per decision to `~/.codearbiter/metrics/prune-dry.jsonl` (relocate it with `CODEARBITER_PRUNE_METRICS`). Each row carries only the **would-be reduction, per-strategy savings, and a validation verdict** — sizes and strategy names, **no transcript content**. That file is the entire evidence base for the `dry → on` go/no-go.
 
-After a few sessions, [**open a "prune data" issue**](https://github.com/SUaDtL/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune) and attach or paste your `prune-dry.jsonl`. The more real sessions come back, the sooner pruning leaves the forge. Thank you for forging. 🔨
+After a few sessions, [**open a "prune data" issue**](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune) and attach or paste your `prune-dry.jsonl`. The more real sessions come back, the sooner pruning leaves the forge. Thank you for forging. 🔨
 
 ## Commands
 

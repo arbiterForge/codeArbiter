@@ -9,7 +9,7 @@ body:
         Thanks for forging. 🔨
 
         Live transcript pruning is a **preview** feature — it graduates from the
-        [Feature Forge](https://github.com/SUaDtL/codeArbiter#feature-forge) when real-world data
+        [Feature Forge](https://github.com/arbiterForge/codeArbiter#feature-forge) when real-world data
         says it's safe to flip `on`. Your `dry`-mode log is that data.
 
         **Privacy:** `prune-dry.jsonl` contains **sizes, strategy names, and validation verdicts
