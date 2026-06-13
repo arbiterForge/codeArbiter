@@ -53,6 +53,12 @@ PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # every common rewrite-in-place spelling (truncate, tee, dd, sed, sponge,
 # cp/copy onto the log); PowerShell's Add-Content is deliberately absent —
 # appending is the one sanctioned write.
+# N-3: Known limitations — this regex catches the common `> file` truncation
+# form but NOT every shell spelling that produces a new file descriptor on the
+# log. Specific gaps: triple-chevron (`>>>`, treated as append by some shells),
+# and file-descriptor forms like `exec 3>.codearbiter/overrides.log`. These are
+# difficult to close with a single regex and represent an accepted residual risk.
+# The sanctioned bypass for legitimate log management is /ca:override.
 LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\s*\S*(?:overrides|triage)\.log")
 LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"

@@ -10,9 +10,10 @@ from _helpers import fixture, make_transcript  # noqa: E402
 
 class TestValidators(unittest.TestCase):
     def test_preexisting_orphans_not_fatal(self):
-        # The corrupt fixture has a GHOST parentUuid and an orphan tool_result,
-        # but if we change nothing, validate must not invent new failures for
-        # pre-existing irregularities.
+        # This test verifies only that pre-existing orphan tool_result lines do
+        # not cause v_chain errors. It does not assert that the overall
+        # validate() result is empty — a pre-existing corrupt transcript may
+        # produce other categories of errors.
         data = fixture("corrupt.jsonl")
         lines = P.load_lines(data)
         out = P.serialize(lines)  # untouched

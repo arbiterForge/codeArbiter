@@ -106,8 +106,13 @@ def arbiter_active(root):
 
 
 def read_input():
-    """Parse the hook JSON from stdin. Fail loud (warn) but not closed on error —
-    a parse failure must not brick the session by blocking every tool call."""
+    """Parse the hook JSON from stdin.
+
+    Deliberately fail-open on parse error: a malformed stdin input must NOT
+    brick the session by blocking every subsequent tool call. This is an
+    explicit, documented exception to the fail-loud principle — the correct
+    behaviour here is warn + allow, not warn + block.
+    """
     try:
         raw = sys.stdin.read()
         return json.loads(raw) if raw.strip() else {}
