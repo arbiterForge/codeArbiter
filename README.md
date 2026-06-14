@@ -7,7 +7,7 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.3.0" src="https://img.shields.io/badge/version-2.3.0-2b7489">
+<img alt="version 2.3.1" src="https://img.shields.io/badge/version-2.3.1-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-34-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-15-555">
@@ -194,6 +194,10 @@ export CODEARBITER_PRUNE=dry      # collect evidence, change nothing
 `dry` mode appends one JSONL row per decision to `~/.codearbiter/metrics/prune-dry.jsonl` (relocate it with `CODEARBITER_PRUNE_METRICS`). Each row carries only the **would-be reduction, per-strategy savings, and a validation verdict**: sizes and strategy names, **no transcript content**. That file is the entire evidence base for the `dry → on` go/no-go.
 
 After a few sessions, [**open a "prune data" issue**](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune) and attach or paste your `prune-dry.jsonl`. The more real sessions come back, the sooner pruning leaves the forge. Thank you for forging. 🔨
+
+**Cost-arbitrage farm** · `/ca:sprint --farm` (needs `FARM_API_KEY`)
+
+`--farm` runs the implementation step on cheap [OpenCode Zen](https://opencode.ai) workers in isolated worktrees instead of premium subagents. Claude still writes the spec, the failing tests, and the plan, and still routes every task through the same spec-compliance, quality, and fresh-verification gates, so the cheap model can only pass the gates, never redefine them. The arbitrage is in who writes the code, not in whether it gets reviewed. It is **not yet validated on real runs**, so it ships off and stays `preview`. The promotion bar is being defined as an open question (`CONFIRM-05`); setup and the API-key/model config live in <kbd>/ca:sprint</kbd> and the farm setup doc.
 
 ## Commands
 

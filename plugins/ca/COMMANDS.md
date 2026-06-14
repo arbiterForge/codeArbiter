@@ -12,7 +12,7 @@ ONLY when that command is invoked — never bulk-read the directory.
 | Command | Argument | Purpose |
 |---|---|---|
 | `/ca:feature` | `"description"` | Spec-driven feature: brainstorm → plan → test-first build → commit → finish. The only path to implementation. |
-| `/ca:sprint` | `["goal"] [--farm]` | Autonomous sprint: one interactive spec gate, then plan-to-PR execution; every auto-decision SMARTS-scored and logged with a confidence flag. Hard gates still stop. |
+| `/ca:sprint` | `["goal"] [--farm]` | Autonomous sprint: one interactive spec gate, then plan-to-PR execution; every auto-decision SMARTS-scored and logged with a confidence flag. Hard gates still stop. `--farm` is a Feature Forge `preview` (off by default, needs `FARM_API_KEY`; not yet validated). |
 | `/ca:fix` | `"bug description"` | Fix a defect via `tdd`, regression-test-first. |
 | `/ca:refactor` | `"surface and motivation"` | Behavior-preserving restructure behind a parity-coverage gate. |
 | `/ca:debug` | `"symptom"` | Investigate-then-decide root-cause analysis; exits to `/ca:fix`, `/ca:adr`, or a no-action close. |

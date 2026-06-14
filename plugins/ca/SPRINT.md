@@ -9,6 +9,10 @@ that is not a true hard gate. Every auto-decision is logged. Hard gates are real
 
 ## Execution backend: premium (default) vs. `--farm`
 
+> **`--farm` is a Feature Forge `preview`** — shipped off by default and not yet validated on real
+> runs. The premium subagent path is the blessed default. The promotion bar lives in
+> `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` (CONFIRM-05).
+
 `/sprint` runs the normal premium-subagent path unless invoked as `/sprint --farm`. The `--farm` flag
 selects the cost-arbitrage backend: Claude still authors the spec, the failing tests, and the plan, but
 cheap Zen workers (not premium subagents) implement each task under the same hard gates. Track whether

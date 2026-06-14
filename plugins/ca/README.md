@@ -32,7 +32,9 @@ transcript pruning** (`CODEARBITER_PRUNE`), which trims redundant transcript clu
 session. Run it in `dry` mode (`export CODEARBITER_PRUNE=dry`) and it logs what it *would* prune
 (sizes and verdicts only, no transcript content) to `~/.codearbiter/metrics/prune-dry.jsonl`. Sending
 that log back ([open a prune-data issue](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune))
-is what moves it toward `on`. Full detail in the [Feature Forge section of the repo README](https://github.com/arbiterForge/codeArbiter#feature-forge).
+is what moves it toward `on`. Also in the forge: the **cost-arbitrage farm** (`/ca:sprint --farm`, needs
+`FARM_API_KEY`), which runs the implementation step on cheap OpenCode Zen workers under the same review
+gates; off by default and `preview` until validated. Full detail in the [Feature Forge section of the repo README](https://github.com/arbiterForge/codeArbiter#feature-forge).
 
 ## What's in this directory
 

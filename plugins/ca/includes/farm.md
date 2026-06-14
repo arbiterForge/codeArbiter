@@ -1,5 +1,9 @@
 # codeArbiter farm — setup and configuration
 
+> **Feature Forge `preview`.** The `--farm` backend ships off by default and is not yet validated on
+> real runs; the premium subagent path is the blessed default. Promotion bar:
+> `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` (CONFIRM-05).
+
 `farm.ts` is the zero-LLM-token dispatcher: Claude writes specs, failing tests, and a `plan.json`;
 the farm runs cheap Zen workers in isolated git worktrees to make each test pass; Claude reviews
 and merges. The cheap model cannot redefine the gates — only pass them.

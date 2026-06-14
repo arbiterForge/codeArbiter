@@ -6,6 +6,16 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.3.1] — 2026-06-14
+
+### Changed
+- **Moved the `--farm` (OpenCode Zen) cost-arbitrage backend under Feature Forge.** It is labeled
+  `preview` in the command catalog and the sprint body, documented in both READMEs' Feature Forge
+  section, and carries a preview banner in its setup doc. `CONFIRM-05` records the promotion bar (the
+  evidence that moves the farm from preview to stable). No behavior change to the farm itself.
+
+---
+
 ## [2.3.0] — 2026-06-14
 
 ### Added
