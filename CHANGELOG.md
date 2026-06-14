@@ -6,6 +6,32 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.2.0] — 2026-06-14
+
+### Added
+- **`anti-slop-design` reference and `design-quality-reviewer` agent.** A lazy-loaded include bundle
+  (`includes/anti-slop-design/`: an INDEX router, an always-loaded core, craft leaves, and per-medium
+  leaves for documents, dataviz, slides, web, CLI, and diagrams) that keeps generated user-facing
+  output from defaulting to generic AI-slop. A read-only `design-quality-reviewer` enforces it,
+  dispatched by `frontend-author` on UI changes; `/ca:pr` and `release` apply the reference inline to
+  PR-body and CHANGELOG prose. Governs generated artifacts only, not the framework's own docs.
+- **`docs/patterns/lazy-load-bundles.md`** documenting the lazy-load reference-bundle pattern.
+
+### Fixed
+- **Statusline subagent rows** show a wider, more useful label: it fills the available row width
+  instead of a fixed 22 columns, and is derived from a title-like first line with reminder and
+  role-assignment preambles stripped.
+- **Statusline honors the `NO_COLOR` environment variable**, and an expired rate-limit reset now reads
+  `--` instead of a bare dash.
+
+### Changed
+- Unified the five blocking reviewer agents (security, auth-crypto, migration, dependency, coverage)
+  onto one output grammar: `CRITICAL`/`HIGH`/`MEDIUM`/`LOW` buckets plus a single gate-status line.
+- Tightened public-facing copy: purged em-dash prose separators from the README, plugin README, and
+  demo-script, and corrected the agent count to 15.
+
+---
+
 ## [2.1.1] — 2026-06-13
 
 ### Changed

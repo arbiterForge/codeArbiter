@@ -1,5 +1,5 @@
 ---
-description: Restructure code the only sanctioned way — prove behavioral parity through unmodified pre-existing tests, then refactor. No behavior change.
+description: Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change.
 argument-hint: "<surface and motivation>"
 ---
 

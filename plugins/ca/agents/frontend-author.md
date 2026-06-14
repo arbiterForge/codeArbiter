@@ -15,6 +15,7 @@ Read in full before writing any code:
 1. `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — framework (React, Vue, Svelte, etc.), bundler, test runner command, lint command, component file location convention
 2. `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — naming, formatting rules, banned patterns
 3. `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — security-boundary rules governing API calls and data handling
+4. `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/INDEX.md`, then `core.md` and the `medium-web` leaf (plus the `typography`/`color`/`layout`/`images` craft leaves) — the design reference for any user-facing UI. Load lazily per the router; do not bulk-read the bundle
 
 ## TDD Workflow (Non-Negotiable)
 
@@ -59,6 +60,7 @@ Fixed order. Do not skip or reorder.
 - Change touches API calls, authentication flow, or a security boundary → dispatch the `security-reviewer` agent
 - Change touches authn or crypto → dispatch the `auth-crypto-reviewer` agent
 - Change adds a new dependency → go through `/add-dep` before writing code that depends on it
+- Change produces or alters user-facing UI → dispatch the `design-quality-reviewer` agent against the rendered output, the same way a security-sensitive change dispatches `security-reviewer`
 
 ## Out-of-Scope Findings
 

@@ -1,8 +1,8 @@
 # Reference map
 
-Loaded on a scope-touch — before acting on code in one of these rows, read the governing
-`.codearbiter/*.md` doc first, then route to the owning skill or agent. All paths are under
-`${CLAUDE_PROJECT_DIR}/.codearbiter/`.
+Loaded on a scope-touch — before acting on code in one of these rows, read the governing doc first,
+then route to the owning skill or agent. "Read first" paths are under `${CLAUDE_PROJECT_DIR}/.codearbiter/`
+unless the row gives an explicit `${CLAUDE_PLUGIN_ROOT}/` path (plugin-shipped reference material).
 
 | If the change touches… | Read first | Route to |
 |---|---|---|
@@ -16,3 +16,4 @@ Loaded on a scope-touch — before acting on code in one of these rows, read the
 | Risks / ADRs | `open-questions.md`, `decisions/` | `decision-lifecycle` skill (`/adr`) |
 | Architectural reconciliation | `plans/` (the three artifacts), `decisions/decision-log.md` | `decision-variance` skill (`/reconcile`) |
 | Out-of-scope finding | — | inline `[NEEDS-TRIAGE]` marker (never an ADR) |
+| Generating a user-facing deliverable (UI, report, PR/CHANGELOG prose, slide, chart) | `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/INDEX.md` (then `core` + the medium leaf) | `design-quality-reviewer` agent |

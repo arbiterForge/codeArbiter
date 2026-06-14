@@ -1,5 +1,5 @@
 ---
-description: Morning hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes.
+description: Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes.
 argument-hint: (none)
 ---
 

@@ -66,17 +66,20 @@ Flag as **MEDIUM** — not blockers, but address before production.
 ```
 ## Migration Review — <date>
 
-### CRITICAL (N)
+### CRITICAL findings (N)
 [findings or "none"]
 
-### HIGH (N)
+### HIGH findings (N)
 [findings or "none"]
 
-### MEDIUM (N)
+### MEDIUM findings (N)
+[findings or "none"]
+
+### LOW findings (N)
 [findings or "none"]
 
 ### Gate status
-PASS | BLOCK (classification annotation missing / committed migration modified / irreversible destructive op)
+PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
 ```
 
 ## Out-of-Scope Findings

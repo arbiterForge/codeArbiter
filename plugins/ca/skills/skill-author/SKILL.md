@@ -1,6 +1,6 @@
 ---
 name: skill-author
-description: The only path to a new skill. Routed to when the user invokes /new-skill "<gap>". Five gated phases — gap evidence, scope, authoring, self-review against the v2 house style, routing integration. A new skill is not written until an existing one is proven not to cover the gap, and not shipped until it carries gated phases, hard rules, and a routing entry. Every authored skill matches the v2 format (frontmatter name+description, # name, Pre-flight, Phase N · gate, Hard rules).
+description: The authoring gate for new skills. Routed to when the user invokes /new-skill "<gap>". Five gated phases — gap evidence, scope, authoring, self-review against the v2 house style, routing integration. A new skill is not written until an existing one is proven not to cover the gap, and not shipped until it carries gated phases, hard rules, and a routing entry. Every authored skill matches the v2 format (frontmatter name+description, # name, Pre-flight, Phase N · gate, Hard rules).
 ---
 
 # skill-author

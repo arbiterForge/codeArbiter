@@ -38,7 +38,7 @@ You are dispatched whenever changes appear in any of these:
 
 - **CRITICAL** — exploitable vulnerability, secret exposed in code/log/test, banned primitive in active use, data integrity breach possible. **Blocks PR.**
 - **HIGH** — significant compliance gap, undeclared security-boundary crossing, `shell: true` invocation, `verify: false` / `rejectUnauthorized: false`. **Blocks PR.**
-- **MEDIUM** — standards deviation with security implications, coverage gap on a security path, improvement clearly needed. Must appear in checkpoint report.
+- **MEDIUM** — standards deviation with security implications, or a coverage gap on a security path. Must appear in checkpoint report.
 - **LOW** — informational, defense-in-depth suggestion, minor deviation with no immediate security impact.
 
 ## What to Check
@@ -85,8 +85,8 @@ You are dispatched whenever changes appear in any of these:
 ### LOW findings (N)
 [findings or "none"]
 
-### PR gate status
-PASS (no CRITICAL or HIGH findings) | BLOCK (N CRITICAL, N HIGH findings must be resolved)
+### Gate status
+PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
 ```
 
 ## Out-of-Scope Findings

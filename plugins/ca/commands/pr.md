@@ -24,7 +24,10 @@ apply, then:
    The user resolves, re-runs `/ca:commit`, then `/ca:pr`.
 5. **Stage the PR** once all BLOCK findings clear: concise title; summary of what changed and why; a
    bulleted test plan; a conflict-hierarchy tradeoff citation for any non-obvious tradeoff; a link to
-   any ADR the change implements or contradicts. Then `gh pr create`; return the URL.
+   any ADR the change implements or contradicts. The PR body is a user-facing deliverable: before
+   composing it, load `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md` and the
+   `medium-documents` leaf, and apply at least the §3.A em-dash ban and the §3.B copy self-audit to the
+   prose. Then `gh pr create`; return the URL.
 6. **Auto-attach the babysitter** — resolve the flag with the canonical resolver, never by eyeballing
    the env var (so the accepted `on|true|1` spellings and the dormancy gate can't drift):
    ```

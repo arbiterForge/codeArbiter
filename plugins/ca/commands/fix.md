@@ -1,5 +1,5 @@
 ---
-description: Fix a confirmed bug the only sanctioned way — a failing regression test first, then a minimal fix, then the rest of the tdd gates.
+description: Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates.
 argument-hint: "<what's happening vs. what should happen>"
 ---
 

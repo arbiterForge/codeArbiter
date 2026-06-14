@@ -14,12 +14,12 @@ stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to
 | Behavior-preserving restructure | `/refactor` → `refactor` skill | `tdd` Phase 1 (new seams only) | No refactor without parity-coverage proof |
 | Unknown defect / investigation | `/debug` → `debug` skill | — | No code change in the skill; one named exit |
 | Commit | `/commit` → `commit-gate` | — | No commit without all nine gates green |
-| Open a PR / finish a branch | `/pr` → `finishing-a-development-branch` | reviewer fleet per path | PR only; no direct-to-default, no force-push |
+| Open a PR / finish a branch | `/pr` → `finishing-a-development-branch` | reviewer fleet per path; PR-body prose applies `anti-slop-design` (`core` + `medium-documents` §7.A.1) | PR only; no direct-to-default, no force-push |
 | Watch a PR's CI / babysit checks | `/watch` → detached `gh pr checks --watch` | on-red diagnose (propose\|branch) | Never auto-merges; green → notify + offer; merge-to-default routes through the hard gate; no poll loop |
 | Code review of the diff | `/review` → `dispatching-parallel-agents` | reviewer fleet → `finding-triage` → `checkpoint-aggregator` | BLOCK on any CRITICAL/HIGH |
 | Periodic sweep | `/checkpoint` → `dispatching-parallel-agents` | reviewer fleet → triage → aggregator | Surfaces a triaged report; not a promotion gate |
 | Governance record for a window | `/audit` | — | Read-only; never overwrites a packet; audit lines quoted verbatim |
-| Release / version tag | `/release` → `release` skill | `commit-gate` (release commit) | No tag on a red suite; tag not pushed unbidden |
+| Release / version tag | `/release` → `release` skill | `commit-gate` (release commit); CHANGELOG prose applies `anti-slop-design` (`core` §3.A/§3.B) | No tag on a red suite; tag not pushed unbidden |
 | Code uses crypto / hashing / signing / TLS / random | `crypto-compliance` skill | `auth-crypto-reviewer` | BLOCK on any banned primitive |
 | Code reads / writes / passes a secret | `secret-handling` skill | `auth-crypto-reviewer` | BLOCK on a secret outside the approved store |
 | Auth / crypto / key change | `auth-crypto-reviewer` | `security-reviewer` | BLOCK on banned primitive, exposed secret, shell injection |

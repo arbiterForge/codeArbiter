@@ -1,5 +1,5 @@
 ---
-description: Start a feature the only sanctioned way — brainstorm a spec, get it approved, then drive it test-first through the pipeline.
+description: Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.
 argument-hint: "<what you want to build>"
 ---
 

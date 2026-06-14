@@ -61,14 +61,20 @@ These block the PR regardless of context. None is advisory:
 ```
 ## Auth/Crypto Review — <date>
 
-### Hard blocks (must resolve before merge)
-[CRITICAL and HIGH findings, or "none"]
+### CRITICAL findings (N)
+[findings or "none"]
 
-### Advisory findings
-[MEDIUM and LOW findings, or "none"]
+### HIGH findings (N)
+[findings or "none"]
+
+### MEDIUM findings (N)
+[findings or "none"]
+
+### LOW findings (N)
+[findings or "none"]
 
 ### Gate status
-PASS | BLOCK (N hard block findings)
+PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
 ```
 
 ## Out-of-Scope Findings

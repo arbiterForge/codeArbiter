@@ -73,11 +73,20 @@ Flag suspicious install scripts as **HIGH**.
 ### Known CVEs: N critical, N high — PASS | BLOCK
 ### Supply chain: <install script: yes/no; notes> — PASS | FLAG
 
-### All findings
+### CRITICAL findings (N)
+[findings or "none"]
+
+### HIGH findings (N)
+[findings or "none"]
+
+### MEDIUM findings (N)
+[findings or "none"]
+
+### LOW findings (N)
 [findings or "none"]
 
 ### Gate status
-PASS (cleared for install) | BLOCK (N blocking findings — do not install)
+PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH; do not install)
 ```
 
 ## Out-of-Scope Findings

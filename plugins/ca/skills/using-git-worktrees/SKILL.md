@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: OPTIONAL per-task isolation for autonomous parallel work. Routed to only on explicit opt-in by subagent-driven-development or dispatching-parallel-agents, so parallel units mutate files without colliding. Stands up one worktree per unit, works it in isolation, then integrates each unit back onto the caller's working branch for the caller's single commit-gate + finishing-a-development-branch exit. Never on the default path, never bypasses a gate, never finishes per unit.
+description: OPTIONAL per-task isolation for autonomous parallel work. Routed to only on explicit opt-in by subagent-driven-development or dispatching-parallel-agents, so parallel units mutate files without colliding. Stands up one worktree per unit, works it in isolation, then integrates each unit back onto the caller's working branch for the caller's single commit-gate + finishing-a-development-branch exit. Never on the default path; it does not bypass a gate or finish per unit.
 ---
 
 # using-git-worktrees

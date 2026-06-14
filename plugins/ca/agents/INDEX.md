@@ -19,6 +19,7 @@ An agent is a reviewer or author **dispatched** by a skill — never routed to, 
 | [decision-challenger](decision-challenger.md) | `decision-variance` (optional) | Adversarial red-team of ADRs; confidence 1–5; surfaces disproving evidence. Read-only. | — (surfaces, does not block) |
 | [scout](scout.md) | `decision-variance`, `context-creation` (INTERNAL) | Scans an assigned code scope, reports decision evidence — paths + line numbers only, no excerpts. Never dispatch directly. | — (internal) |
 | [grader](grader.md) | `decision-variance` (INTERNAL) | Produces a SMARTS analysis + strength-labeled recommendation for one variance. Never decides. Never dispatch directly. | — (internal) |
+| [design-quality-reviewer](design-quality-reviewer.md) | `frontend-author` on UI changes (Tier 2 `/pr`, `release` apply the reference inline, not via this agent) | Read-only review of generated user-facing output (UI, reports, slides, charts, diagrams, CLI) against the lazy-loaded `anti-slop-design` reference. Loads only the medium leaf needed. | fabricated/unmarked numbers where provenance is assessable; em/en-dash used as a prose sentence-separator (3.A exemptions excluded) |
 
 ## Cut in v2
 

@@ -769,7 +769,11 @@ def read_subagents(sdir):
 
 
 def sub_label(content):
-    """Derive a short, sanitized label from a subagent's first user message."""
+    """Derive a label from a subagent's first user message. A short, title-like
+    first line wins (a dispatcher may lead the prompt with one); otherwise flatten
+    and drop a boilerplate role-assignment preamble so the visible text carries
+    signal instead of "You are a...". Truncation to the row width is the render's
+    job (clip()), so this returns the full cleaned string up to a sane cap."""
     text = ""
     if isinstance(content, str):
         text = content
@@ -781,9 +785,23 @@ def sub_label(content):
             if isinstance(blk, str):
                 text = blk
                 break
-    text = re.sub(r"\s+", " ", str(text)).strip()
-    text = re.sub(r"^<[^>]+>\s*", "", text)   # strip a leading reminder/system tag
-    return (text[:21] + ELL) if len(text) > 22 else text
+    raw = str(text)
+    # strip leading reminder/system blocks up front (multi-line safe), then a lone tag
+    raw = re.sub(r"^\s*(?:<([^>\s]+)[^>]*>.*?</\1>\s*)+", "", raw, flags=re.S)
+    raw = re.sub(r"^\s*<[^>]+>\s*", "", raw)
+    # a short, title-like first line wins (rewards a leading title line)
+    first = ""
+    for ln in raw.splitlines():
+        ln = ln.strip()
+        if ln:
+            first = ln
+            break
+    if 0 < len(first) <= 60 and not re.match(r"(?i)^(you are|act as|role\s*:)\b", first):
+        return first
+    # otherwise flatten and strip a leading role-assignment preamble (one or more sentences)
+    flat = re.sub(r"\s+", " ", raw).strip()
+    flat = re.sub(r"(?i)^(?:(?:you are|you're|act as|role\s*:)\b[^.]*\.\s*)+", "", flat)
+    return flat[:80].strip()
 
 
 # --------------------------------------------------------------------------- box
@@ -917,7 +935,7 @@ def seg_window_cells(data):
         if r:
             dt = r - now
             # a reset already in the past is stale data, not "rolls over now"
-            tail = f"{WHITE}{human_dur(dt)}{RESET}" if dt > 0 else f"{GREY}—{RESET}"
+            tail = f"{WHITE}{human_dur(dt)}{RESET}" if dt > 0 else f"{GREY}--{RESET}"
             cell += f" {GREY}{ARR}{RESET} {tail}"
         cells.append(cell)
     return cells
@@ -1197,15 +1215,26 @@ def render(raw):
                         live = sub.get("active")
                         glyph = f"{OK}{DOT}{RESET}" if live else f"{GREY}✓{RESET}"
                         lcol = WHITE if live else GREY
-                        box.row(f"  {glyph} {lcol}{pad(sub['label'], 22)}{RESET}"
-                                f" {V2}{DN}{RESET} {GREY}{fmt_tok(sub['inp'])}{RESET}"
+                        # build the token/duration tail once so its width is known
+                        tail = (f" {V2}{DN}{RESET} {GREY}{fmt_tok(sub['inp'])}{RESET}"
                                 f" {V2}{UP}{RESET} {GREY}{fmt_tok(sub['out'])}{RESET}"
                                 f"  {DIM}{human_dur(sub['age'])}{RESET}")
+                        # grow the label to its natural width up to the row limit, then the
+                        # tail sits right after it (was a fixed 22, wasting wide terminals);
+                        # clip (not pad) keeps the metrics adjacent and leaves trailing space
+                        lw = max(22, inner - 4 - vlen(tail))   # cap so the row can't overflow
+                        box.row(f"  {glyph} {lcol}{clip(sub['label'], lw)}{RESET}{tail}")
                     tail_tees = []
 
     box.bottom(tees=tail_tees)
     out = box.render()
-    return redshift(out) if safe(dev_active, root) else out
+    out = redshift(out) if safe(dev_active, root) else out
+    # Honor the NO_COLOR convention by stripping SGR from the final render. Do NOT gate on
+    # isatty: a Claude Code statusline is intentionally piped, so an isatty test would drop
+    # color in normal use. Width math already ignores ANSI, so stripping keeps alignment.
+    if os.environ.get("NO_COLOR"):
+        out = ANSI.sub("", out)
+    return out
 
 
 def main():

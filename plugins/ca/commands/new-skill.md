@@ -1,5 +1,5 @@
 ---
-description: Author a new codeArbiter skill the only sanctioned way — prove the gap is real, get the spec approved, then write it.
+description: Author a new codeArbiter skill: prove the gap is real, get the spec approved, then write it.
 argument-hint: "<verb-noun skill name>"
 ---
 

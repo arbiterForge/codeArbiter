@@ -62,11 +62,20 @@ Flag logical gaps as **MEDIUM**. Flag complete absence of negative-path tests as
 ### Coverage
 Current: <N>% | Threshold: <N>% | Status: PASS | BELOW THRESHOLD
 
-### All findings
+### CRITICAL findings (N)
+[findings or "none"]
+
+### HIGH findings (N)
+[findings or "none"]
+
+### MEDIUM findings (N)
+[findings or "none"]
+
+### LOW findings (N)
 [findings or "none"]
 
 ### Gate status
-PASS | BLOCK (coverage below threshold)
+PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
 ```
 
 ## Out-of-Scope Findings
