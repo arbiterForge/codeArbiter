@@ -40,7 +40,7 @@
   </text>
   <text x="600" y="126" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace"
-        font-size="12.5" letter-spacing="3.5" fill="#9a8b7a">BUILT · TESTED · SHIPPING — NOT YET BLESSED</text>
+        font-size="12.5" letter-spacing="3.5" fill="#9a8b7a">BUILT · TESTED · SHIPPING · NOT YET BLESSED</text>
 
   <!-- the forge line: commits travel toward a gate that still glows hot -->
   <line x1="120" y1="190" x2="1012" y2="190" stroke="#46505a" stroke-width="2"/>
