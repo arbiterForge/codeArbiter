@@ -1,16 +1,16 @@
 # Security Policy
 
-> This is the GitHub repository security policy — how to report a problem with the
+> This is the GitHub repository security policy: how to report a problem with the
 > codeArbiter plugin. It is distinct from `.codearbiter/security-controls.md`, which
 > is the in-repo governance doc the plugin's gates enforce on *your* code.
 
 ## What codeArbiter runs on your machine
 
-codeArbiter is a Claude Code plugin. It activates through hooks — small Python
+codeArbiter is a Claude Code plugin. It activates through hooks: small Python
 scripts Claude Code runs during a session. For full transparency about what each
 hook reads, writes, and runs, see **[`docs/hooks.md`](./docs/hooks.md)**. In short:
 
-- Hooks are stdlib-only Python — no third-party packages, no compiled binaries.
+- Hooks are stdlib-only Python, with no third-party packages and no compiled binaries.
 - No hook makes a network call. The only outbound process is a local, read-only
   `git fetch` against your own configured remote.
 - Guard hooks do nothing in a repo that has not opted in (`arbiter: enabled`).
@@ -32,7 +32,7 @@ receives no fixes.
 
 ## Reporting a problem
 
-Please report security issues **privately** — do not open a public issue for a
+Please report security issues **privately**. Do not open a public issue for a
 suspected vulnerability.
 
 - Preferred: open a [private security advisory][advisory] on GitHub
@@ -56,5 +56,5 @@ Helpful details to include:
 
 Because the threat surface is local (hooks run on the contributor's own machine,
 with no network calls and no privilege escalation), most reports will be about a
-guard behaving incorrectly rather than a remote vulnerability. Those still matter —
-a gate that fails open is a real bug — and are very welcome.
+guard behaving incorrectly rather than a remote vulnerability. Those still matter
+(a gate that fails open is a real bug) and are very welcome.

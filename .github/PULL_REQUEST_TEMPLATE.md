@@ -8,11 +8,11 @@ Closes #
 
 ## Type of change
 
-- [ ] `fix` — bug fix
-- [ ] `feat` — new behavior
-- [ ] `docs` — documentation only
-- [ ] `refactor` — no behavior change
-- [ ] `chore` — deps, tooling, reverts
+- [ ] `fix`: bug fix
+- [ ] `feat`: new behavior
+- [ ] `docs`: documentation only
+- [ ] `refactor`: no behavior change
+- [ ] `chore`: deps, tooling, reverts
 
 ## Checklist
 
