@@ -6,6 +6,27 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.4.1] — 2026-06-14
+
+### Fixed
+- **Anti-slop copy pass now runs on the `/ca:chore` docs lane.** User-facing docs authored through the
+  docs lane previously got no copy-law pass, so the core §3.A em/en dash prose-separator tell (the
+  highest-signal AI text marker) could ship unflagged. The docs lane now applies the
+  `anti-slop-design` pass before `commit-gate`, and a new advisory `H-13` PostToolUse reminder surfaces
+  separator dashes in user-facing docs (repo-root community docs and `docs/**`) as you write, exempting
+  code, URLs, numeric/date ranges, and lone table-cell dashes. (#60)
+
+### Added
+- **`PRIVACY.md`.** Records the no-data-by-default posture (no telemetry, no network calls in default
+  operation, all state local to the repo) and the two opt-in flows that touch data: the `--farm`
+  provider calls and the prune dry-mode local metrics. Supplies the Privacy Policy URL for the
+  Claude Community Marketplace listing. (#63)
+
+### Changed
+- **Clarified that `/ca:dev` is the gates-off escape hatch**, not the required lane for editing
+  codeArbiter's own command, hook, or persona bodies. Normal development of those files flows through
+  the ordinary gated lanes and ships via PR + release. (#64)
+
 ## [2.4.0] — 2026-06-14
 
 ### Changed
