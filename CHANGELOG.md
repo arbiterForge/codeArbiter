@@ -6,6 +6,16 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.3.0] — 2026-06-14
+
+### Added
+- **`/ca:release` now publishes the GitHub Release.** A new Phase 3 creates the GitHub Release via
+  `gh release create` under the same explicit authorization that pushes the tag, reusing the changelog
+  section composed in Phase 1 as the release notes. Closes the gap where the skill cut and pushed a tag
+  but left the Releases page empty until someone ran `gh` by hand.
+
+---
+
 ## [2.2.0] — 2026-06-14
 
 ### Added
