@@ -6,6 +6,35 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.4.0] — 2026-06-14
+
+### Changed
+- **Reframed `farm` as a pluggable execution backend (cheap / premium / agentic).** The dispatcher now
+  runs every task through a `Worker` interface seam rather than calling the HTTP chat endpoint directly;
+  the HTTP-chat author is one implementation. The worker owns the apply step, and a task-level
+  containment sweep runs post-apply for any worker type, so path-traversal and read-only-test guards
+  hold regardless of backend. Behavior-preserving for the existing flow. The name `farm` and its
+  `preview` (Feature Forge) status are unchanged.
+
+### Added
+- **Prompt enrichment for workers.** Outgoing requests now include the read-only source of the task's
+  failing test and the current contents of existing in-scope files, so a worker sees the contract it
+  must satisfy. The injected context is byte-capped (configurable, mindful of `FARM_REQUEST_TIMEOUT_MS`)
+  with a visible truncation marker, and is run through a redaction pass over the `security-controls.md`
+  secret-pattern set — planted secrets, including multi-line PEM keys, are never transmitted.
+- **Optional per-task `model`.** `task.model` is accepted in the plan schema (`additionalProperties:false`
+  honored) and resolves as `task.model ?? meta.model`, enabling design-for cross-model execution.
+- **Scope-aware scheduling.** A task overlapping an unfinished sibling's `filesInScope` is removed from
+  readiness (not merely merge-serialized) until that sibling is green and merged; ordering is derived
+  and id-tiebroken.
+- **Regenerate-on-conflict.** A merge conflict now resets to the new integration HEAD and re-runs the
+  worker once (the post-loop merge moved into the attempt loop) before escalating, instead of escalating
+  instantly.
+- **Streaming results rail.** Each settled task is appended to `.farm/farm-results.jsonl` in completion
+  order as it settles, alongside the final `farm-report.json`.
+
+---
+
 ## [2.3.1] — 2026-06-14
 
 ### Changed

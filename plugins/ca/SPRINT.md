@@ -14,8 +14,11 @@ that is not a true hard gate. Every auto-decision is logged. Hard gates are real
 > `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` (CONFIRM-05).
 
 `/sprint` runs the normal premium-subagent path unless invoked as `/sprint --farm`. The `--farm` flag
-selects the cost-arbitrage backend: Claude still authors the spec, the failing tests, and the plan, but
-cheap Zen workers (not premium subagents) implement each task under the same hard gates. Track whether
+selects the pluggable execution backend: Claude still authors the spec, the failing tests, and the plan,
+but a worker (not a premium subagent) implements each task behind the same hard gates. The backend's
+value is deterministic, gated, parallel, isolated execution; the `Worker` seam admits cheap, premium,
+and agentic implementations. Only the cheap HTTP-chat worker ships today — premium and agentic are what
+the seam is designed for, not yet built. Cost arbitrage is one worker policy, not the definition. Track whether
 `--farm` was passed and thread it into Phase 1 (`writing-plans --farm`) and Phase 2 (the farm dispatch
 path in `subagent-driven-development`). If `--farm` is set, pre-flight `FARM_API_KEY` — absent, BLOCK
 and cite `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` before brainstorming begins. Everything else about `/sprint` (the one
@@ -56,8 +59,8 @@ test-first via `tdd`, two-pass reviewed, and proven on a fresh run.
 **`--farm` mode:** `subagent-driven-development` detects `plan.json` and takes its farm path —
 selecting a model (a canary probe over candidate Zen models, falling back to websearch), dispatching
 `farm.js`, then routing every green task through the SAME spec-compliance + quality + fresh-verification
-gates the premium path runs (Phases 3–5). The cost arbitrage is in who *writes* the code, never in
-whether it is *reviewed*. A farm escalation is handled per `subagent-driven-development`'s Phase 2.5
+gates the premium path runs (Phases 3–5). Swapping the worker only changes who *writes* the code, never
+whether it is *reviewed* — every farm-produced green task still routes through the full review chain. A farm escalation is handled per `subagent-driven-development`'s Phase 2.5
 (re-dispatch via premium Phase 2, or `[CONFIRM-NN]` on a genuine spec gap), and a circuit-breaker abort
 from `farm.js` (too many escalations) is itself a hard-gate surface: stop and tell the user the model
 isn't capable of the slice rather than grinding through.

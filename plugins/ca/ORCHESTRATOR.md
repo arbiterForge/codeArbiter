@@ -54,9 +54,12 @@ logging each decision (with a confidence flag) to `.codearbiter/sprint-log.md`. 
 `security-controls`, crypto/secrets/auth, irreversible ops, `/override`, an unresolvable
 `[CONFIRM-NN]`, merge-to-default — remain true stops, rare by design.
 
-The optional **`--farm`** flag selects the cost-arbitrage execution backend (cheap Zen workers
-implement under hard gates instead of premium subagents). When present, pass it through to `SPRINT.md`,
-which forwards it to `writing-plans` (to co-emit `plan.json` + failing tests) and to
+The optional **`--farm`** flag selects the pluggable execution backend: Claude authors specs, failing
+tests, and the plan; a worker implements each task under the same hard gates (containment, read-only-test
+protection, anti-gaming, the full review chain) instead of a premium subagent. The seam admits cheap,
+premium, and agentic worker implementations — only the cheap HTTP-chat worker ships today; premium and
+agentic are roadmap. Cost arbitrage is one use case, not the definition. When present, pass it through to
+`SPRINT.md`, which forwards it to `writing-plans` (to co-emit `plan.json` + failing tests) and to
 `subagent-driven-development` (farm dispatch path). See `${CLAUDE_PLUGIN_ROOT}/SPRINT.md` Phase 1–2 and
 `${CLAUDE_PLUGIN_ROOT}/includes/farm.md`. Absent the flag, the normal premium-subagent path runs
 unchanged.

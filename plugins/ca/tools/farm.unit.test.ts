@@ -3,7 +3,11 @@
  * These test the exported helpers directly without spawning a subprocess.
  */
 import { describe, it, expect } from "vitest";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl } from "./farm.ts";
+import path from "node:path";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker } from "./farm.ts";
+import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 
 // ---------------------------------------------------------------------------
 // extractFileBlocks
@@ -358,6 +362,184 @@ describe("assertSecureBaseUrl — resolved base URL guard", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Worker seam (T-01 / AC-01) — runTask must obtain and invoke its worker
+// THROUGH the Worker interface, not by calling runWorker/callApi directly.
+// This drives a task with every side-effecting dependency stubbed (no network,
+// no git, no spawned process) and asserts the injected worker is the thing that
+// produced the task's output.
+// ---------------------------------------------------------------------------
+describe("Worker seam — runTask invokes an injectable Worker (AC-01)", () => {
+  // A deps bag that makes runTask's git/process/fs effects no-ops, so the only
+  // behaviour under test is the worker indirection.
+  function stubDeps(worker: Worker): RunTaskDeps {
+    return {
+      worker,
+      prepareWorktree: async () => null, // worktree "created"
+      resetWorktree: async () => {},
+      fileHash: async () => null, // null short-circuits the tamper check
+      checkDrift: async () => [], // no files outside scope
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  const task: Task = {
+    id: "seam-task",
+    description: "make the test pass",
+    filesInScope: ["src/seam.ts"],
+    test: { path: "src/seam.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  it("calls the injected worker exactly once with the resolved config", async () => {
+    const calls: Array<{ model: string; apiBaseUrl: string; apiKey: string }> = [];
+    const worker: Worker = {
+      async apply(ctx) {
+        calls.push({ model: ctx.model, apiBaseUrl: ctx.apiBaseUrl, apiKey: ctx.apiKey });
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(task, "stub-model", "https://api.example/v1", "stub-key", stubDeps(worker));
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toEqual({ model: "stub-model", apiBaseUrl: "https://api.example/v1", apiKey: "stub-key" });
+    expect(r.status).toBe("green");
+    // The worker's output is what flows into the result — proves the task path
+    // consumed the injected worker rather than an internal runWorker call.
+    expect(r.filesWritten).toEqual(["src/seam.ts"]);
+  });
+
+  it("escalates via the worker's error without ever hitting the network", async () => {
+    const worker: Worker = {
+      async apply() {
+        return { ok: false, filesWritten: [], error: "stub worker refused" } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(worker),
+    );
+
+    expect(r.status).toBe("escalate");
+  });
+
+  it("exposes a default httpWorker implementation behind the interface", () => {
+    expect(httpWorker).toBeDefined();
+    expect(typeof httpWorker.apply).toBe("function");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Post-apply containment sweep (T-02 / D6) — containment (isInside) and the
+// read-only-test guard are enforced at the TASK level after worker.apply()
+// returns, inspecting what the worker actually produced — NOT only inside
+// runWorker's write loop. A worker that bypasses runWorker's inline guard
+// (e.g. a future agentic CLI that writes its own files) must still be caught.
+//
+// These stubs deliberately do NOT route through runWorker/httpWorker: they
+// report (and, for the escape case, physically write) paths the inline guard
+// would have refused. Red before the relocation, green after.
+// ---------------------------------------------------------------------------
+describe("Post-apply containment sweep — task-level enforcement for ANY worker (D6)", () => {
+  // Same no-op deps bag as the Worker-seam suite, but we keep the REAL
+  // containment behaviour under test by routing it through runTask's sweep.
+  function stubDeps(worker: Worker): RunTaskDeps {
+    return {
+      worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null, // null short-circuits the hash tamper check
+      checkDrift: async () => [], // the allowlist sweep is satisfied
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  const task: Task = {
+    id: "sweep-task",
+    description: "make the test pass",
+    filesInScope: ["src/seam.ts"],
+    test: { path: "src/seam.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  it("escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard", async () => {
+    // A worker that does NOT use runWorker's write loop — it reports a path that
+    // escapes the worktree. The inline isInside guard never ran; only the
+    // task-level post-apply sweep can catch this.
+    const escapeWorker: Worker = {
+      async apply(ctx) {
+        const escaped = path.resolve(ctx.cwd, "..", "escape.ts");
+        return { ok: true, filesWritten: [escaped] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(escapeWorker),
+    );
+
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/escapes worktree/);
+  });
+
+  it("escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard", async () => {
+    // A worker that overwrites task.test.path directly. fileHash is stubbed to
+    // null (no hash-based tamper signal), and the inline forbidden-set guard
+    // never ran — so only the task-level sweep can reject this.
+    const testTamperWorker: Worker = {
+      async apply() {
+        return { ok: true, filesWritten: [task.test.path] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(testTamperWorker),
+    );
+
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/read-only|tampered/);
+  });
+
+  it("lets a compliant worker through the sweep (in-scope file, no escape)", async () => {
+    const goodWorker: Worker = {
+      async apply() {
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(goodWorker),
+    );
+
+    expect(r.status).toBe("green");
+    expect(r.filesWritten).toEqual(["src/seam.ts"]);
+  });
+});
+
 describe("validate — existing checks (cycles, duplicates, unknown deps)", () => {
   it("rejects duplicate task ids", () => {
     const plan = {
@@ -395,5 +577,266 @@ describe("validate — existing checks (cycles, duplicates, unknown deps)", () =
       ],
     };
     expect(() => validate(plan)).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Optional per-task model (T-03 / AC-02) — the effective model for a task is
+// `task.model ?? <run-level resolved model>`, layered where runTask invokes the
+// worker. A task WITH `model` overrides; a task WITHOUT behaves EXACTLY as
+// today (run-level model passed straight through to the worker).
+// ---------------------------------------------------------------------------
+describe("Per-task model resolution — task.model ?? run-level model (AC-02)", () => {
+  function stubDeps(worker: Worker): RunTaskDeps {
+    return {
+      worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  const baseModelTask: Task = {
+    id: "model-task",
+    description: "make the test pass",
+    filesInScope: ["src/seam.ts"],
+    test: { path: "src/seam.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  it("passes task.model to worker.apply when the task overrides the run-level model", async () => {
+    const seen: string[] = [];
+    const worker: Worker = {
+      async apply(ctx) {
+        seen.push(ctx.model);
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      { ...baseModelTask, model: "premium-x" },
+      "run-level-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(worker),
+    );
+
+    expect(seen).toEqual(["premium-x"]);
+    expect(r.status).toBe("green");
+  });
+
+  it("passes the run-level model to worker.apply when the task has no model (unchanged behavior)", async () => {
+    const seen: string[] = [];
+    const worker: Worker = {
+      async apply(ctx) {
+        seen.push(ctx.model);
+        return { ok: true, filesWritten: ["src/seam.ts"] } satisfies WorkerResult;
+      },
+    };
+
+    const r = await runTask(
+      baseModelTask, // no `model`
+      "run-level-model",
+      "https://api.example/v1",
+      "stub-key",
+      stubDeps(worker),
+    );
+
+    expect(seen).toEqual(["run-level-model"]);
+    expect(r.status).toBe("green");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// plan.schema.json — the optional per-task `model` field (T-03 / AC-02).
+// No JSON-schema validator is present in devDependencies, so we assert the
+// schema STRUCTURE directly via JSON.parse: `model` is declared on the task
+// `$defs` (required because the task object is additionalProperties:false, so
+// an undeclared field would be rejected) and additionalProperties:false is
+// kept intact (the strict authoring contract is not relaxed).
+// ---------------------------------------------------------------------------
+describe("plan.schema.json — optional per-task model (AC-02)", () => {
+  const schemaPath = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "plan.schema.json",
+  );
+  const schema = JSON.parse(readFileSync(schemaPath, "utf8"));
+  const taskDef = schema.$defs.task;
+
+  it("declares `model` as a string on the task properties", () => {
+    expect(taskDef.properties.model).toBeDefined();
+    expect(taskDef.properties.model.type).toBe("string");
+  });
+
+  it("does NOT add `model` to the task's required list (it is optional)", () => {
+    expect(taskDef.required).not.toContain("model");
+  });
+
+  it("keeps the task object additionalProperties:false (strict authoring contract intact)", () => {
+    // additionalProperties:false is what makes the declaration in (1) necessary:
+    // a plan carrying task.model would be rejected unless `model` is declared.
+    // Asserting this here documents that the field was added the correct way
+    // rather than by relaxing the contract.
+    expect(taskDef.additionalProperties).toBe(false);
+  });
+
+  it("would reject an unknown task field — no validator available, asserted structurally", () => {
+    // With additionalProperties:false and a fixed properties set, any field not
+    // in properties (e.g. `bogusField`) is rejected by a conforming validator.
+    // We have no validator in devDependencies, so we assert the structural
+    // precondition directly: the closed property set does not include it.
+    expect(taskDef.additionalProperties).toBe(false);
+    expect(Object.keys(taskDef.properties)).not.toContain("bogusField");
+    // and `model` IS in the closed set, so a plan with task.model is accepted.
+    expect(Object.keys(taskDef.properties)).toContain("model");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Regenerate-on-conflict (T-07 / AC-07 / D4) — a merge conflict against the
+// integration branch is treated like a gate failure: the task resets to the new
+// integration HEAD and RE-RUNS the worker, consuming ONE of the existing
+// maxRetries attempts, rather than escalating on the first conflict. If retries
+// are exhausted with the merge still conflicting, it escalates exactly as today.
+//
+// The clean deterministic way to force a conflict is the injected deps: the git
+// stub returns a non-zero `merge` on the first merge attempt and code 0 on the
+// second, with a worker we can count. (The merge runs through deps.git inside
+// deps.withMergeLock; everything else is a no-op.)
+// ---------------------------------------------------------------------------
+describe("Regenerate-on-conflict — merge conflict re-enters regeneration (AC-07)", () => {
+  const task: Task = {
+    id: "conflict-task",
+    description: "make the test pass",
+    filesInScope: ["src/conflict.ts"],
+    test: { path: "src/conflict.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  // A deps bag where `git` is a programmable stub: every `merge --no-ff` consults
+  // `mergeOutcomes` (shift one per call); all other git calls succeed as no-ops.
+  // `worker` counts apply() invocations so we can prove regeneration happened.
+  function conflictDeps(opts: {
+    worker: Worker;
+    // one entry consumed per merge attempt: null === success, string === conflict output
+    mergeOutcomes: Array<string | null>;
+    resetCalls: Array<string[]>;
+  }): RunTaskDeps {
+    const outcomes = [...opts.mergeOutcomes];
+    return {
+      worker: opts.worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async (args: string[]) => {
+        if (args.includes("merge") && args.includes("--no-ff")) {
+          const next = outcomes.shift();
+          // unspecified beyond the provided outcomes: default to conflict so an
+          // always-conflicting test doesn't accidentally fall through to green
+          const out = next === undefined ? "CONFLICT (content): fallback" : next;
+          if (out !== null) return { code: 1, out };
+          return { code: 0, out: "" };
+        }
+        if (args[0] === "reset" || args[0] === "clean") {
+          opts.resetCalls.push(args);
+        }
+        return { code: 0, out: "" };
+      },
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  it("re-runs the worker after a conflict and ends green when the second merge succeeds", async () => {
+    let workerCalls = 0;
+    const worker: Worker = {
+      async apply() {
+        workerCalls++;
+        return { ok: true, filesWritten: ["src/conflict.ts"] } satisfies WorkerResult;
+      },
+    };
+    const resetCalls: Array<string[]> = [];
+
+    const r = await runTask(
+      // maxRetries:1 → 2 attempts total; first merge conflicts, second succeeds.
+      { ...task, maxRetries: 1 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      conflictDeps({ worker, mergeOutcomes: ["CONFLICT (content): src/conflict.ts", null], resetCalls }),
+    );
+
+    // Regeneration happened: the worker was invoked a SECOND time after the
+    // conflict (not an instant escalate, which would leave it at one call).
+    expect(workerCalls).toBe(2);
+    // The conflict path reset the task worktree to the new integration HEAD
+    // before re-running (rebuild against the updated baseline).
+    expect(resetCalls.some((a) => a[0] === "reset" && a.includes("--hard"))).toBe(true);
+    // Second merge succeeded → green, NOT escalate.
+    expect(r.status).toBe("green");
+    expect(r.attempts).toBe(2);
+  });
+
+  it("escalates with a merge-related note when every merge conflicts and retries are spent (no infinite loop)", async () => {
+    let workerCalls = 0;
+    const worker: Worker = {
+      async apply() {
+        workerCalls++;
+        return { ok: true, filesWritten: ["src/conflict.ts"] } satisfies WorkerResult;
+      },
+    };
+    const resetCalls: Array<string[]> = [];
+
+    const r = await runTask(
+      // maxRetries:1 → 2 attempts; BOTH merges conflict → escalate after the budget.
+      { ...task, maxRetries: 1 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      conflictDeps({
+        worker,
+        mergeOutcomes: ["CONFLICT (content): a", "CONFLICT (content): b"],
+        resetCalls,
+      }),
+    );
+
+    // The worker ran on each of the two attempts (bounded — no unbounded loop).
+    expect(workerCalls).toBe(2);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/merge/i);
+    expect(r.attempts).toBe(2);
+  });
+
+  it("escalates instantly (no regeneration) on conflict when maxRetries is 0", async () => {
+    let workerCalls = 0;
+    const worker: Worker = {
+      async apply() {
+        workerCalls++;
+        return { ok: true, filesWritten: ["src/conflict.ts"] } satisfies WorkerResult;
+      },
+    };
+    const resetCalls: Array<string[]> = [];
+
+    const r = await runTask(
+      { ...task, maxRetries: 0 },
+      "stub-model",
+      "https://api.example/v1",
+      "stub-key",
+      conflictDeps({ worker, mergeOutcomes: ["CONFLICT (content): only-attempt"], resetCalls }),
+    );
+
+    // Budget is zero retries → the single attempt's conflict escalates at once.
+    expect(workerCalls).toBe(1);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/merge failed vs integration/);
   });
 });
