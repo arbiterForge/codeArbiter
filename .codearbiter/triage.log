@@ -1,0 +1,1 @@
+[2026-06-14T02:06:45Z] | BY: SUaDtL@users.noreply.github.com | LANE: small | SCOPE: /ca:release creates the GitHub Release in Phase 2 (gh release create) under the existing publish authorization | BASIS: 1 file (release SKILL.md), no new dep/command/config, no scope-touch, 3 testable criteria

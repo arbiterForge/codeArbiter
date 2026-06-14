@@ -1,6 +1,6 @@
 ---
 name: release
-description: The single permitted path to a version tag. Routed to when the user invokes /release on a non-default branch with a green suite. Derives the SemVer bump from Conventional-Commits history since the last tag, rolls the commits into CHANGELOG.md, and writes an annotated tag. A release commit, if needed, routes through commit-gate; the tag itself is never pushed without explicit authorization.
+description: The single permitted path to a version tag. Routed to when the user invokes /release on a non-default branch with a green suite. Derives the SemVer bump from Conventional-Commits history since the last tag, rolls the commits into CHANGELOG.md, writes an annotated tag, and on authorization publishes it as a GitHub Release with the changelog section as its notes. A release commit, if needed, routes through commit-gate; the tag and Release are never published without explicit authorization.
 ---
 
 # release
@@ -38,15 +38,29 @@ Gate: version confirmed, strictly monotonic, and matching the commit log; `CHANG
 
 1. Compose the annotated tag from the Phase 1 section plus a `Released-at: YYYY-MM-DD` footer. Tag with `git tag -a vMAJOR.MINOR.PATCH -F <message-file>` — never `-m` for multi-line content, never an interactive editor. If the tag already exists, STOP.
 2. Report: version, bump rationale, the per-commit classification, the changelog section, and the tag SHA.
-3. MUST NOT push the tag. Publication is a separate decision the user authorizes after reading the report.
+3. MUST NOT push the tag or create the GitHub Release here. Publication is Phase 3, a separate step the user authorizes after reading the report.
 
-Gate: the annotated tag exists locally and the report is delivered. The tag is not pushed.
+Gate: the annotated tag exists locally and the report is delivered. Nothing is published.
+
+## Phase 3 — Publish · gate: STOP
+
+The tag and the GitHub Release publish together, and only after the user explicitly authorizes publication. This phase does not run until then; absent authorization, nothing leaves the local repo.
+
+On authorization:
+
+1. Push the tag: `git push origin vMAJOR.MINOR.PATCH`.
+2. Create the GitHub Release from the **same changelog section composed in Phase 1** — reuse it as the notes, never re-derive or hand-write them: `gh release create vMAJOR.MINOR.PATCH --title "<title>" --notes-file <Phase-1 section file> --latest --verify-tag`. The title follows the existing convention `codeArbiter MAJOR.MINOR.PATCH: <summary>`, with no em-dash separator.
+3. Handle edge cases explicitly, never silently: if a Release for the tag already exists, report it and skip creation (the tag push may already have landed); if `gh` is missing, unauthenticated, or the call fails, STOP and print the exact `gh release create` command so publication can be finished by hand rather than left half-done.
+4. Report the Release URL.
+
+Gate: with authorization, the tag is pushed and the GitHub Release exists (or, on failure, the exact manual command was surfaced). Without authorization, nothing is published.
 
 ## Hard rules
 
 - MUST NOT tag on a red suite — `commit-gate` enforces green on every commit reaching HEAD; do not re-run it, but do not tag if the last suite was red.
 - MUST NOT write to `main`, `master`, or the default branch, and MUST NOT force-push. Releases land through the normal branch/PR path.
-- MUST NOT push the tag without explicit user authorization, even after the local tag composes.
+- MUST NOT push the tag or create the GitHub Release without explicit user authorization; they publish together in Phase 3, even after the local tag composes.
+- MUST use the Phase-1 changelog section verbatim as the GitHub Release notes — never re-derive or hand-write them.
 - MUST NOT guess the version — derive it from the commit log. A `feat` in the window cannot ship as a `patch`.
 - MUST NOT auto-fill a missing `CHANGELOG:` footer — surface it as `[NEEDS-TRIAGE]`.
 - MUST NOT tag a non-bumping window — `test`/`docs`/`chore`/`ci`-only sets do not release.
