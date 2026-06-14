@@ -12,7 +12,14 @@ the gates that fit it — and nothing it doesn't need. Everything still exits th
 ## Types
 
 **docs** — README, comments, CHANGELOG, `.codearbiter/` prose, typo fixes.
-- Gates: secrets scan over the diff; diff review (no behavioral code change smuggled in); `commit-gate`.
+- Gates: secrets scan over the diff; diff review (no behavioral code change smuggled in);
+  anti-slop copy pass on any user-facing doc in the change; `commit-gate`.
+- **Anti-slop copy pass** — for any user-facing doc the change touches (repo-root community docs
+  and `docs/**`; not codeArbiter's own framework bodies), load
+  `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/INDEX.md`, then `core.md` and the
+  `medium-documents` leaf (§7.A.1), and run the §3.A em-dash ban and the §3.B copy self-audit over
+  the authored prose before `commit-gate`. The `H-13` PostToolUse reminder surfaces §3.A separator
+  dashes as you write, so the pass is a confirmation, not a discovery.
 - No `tdd` — prose has no failing test to write.
 
 **deps** — bump an existing dependency's version (manifest + lockfile together, never one without
@@ -40,7 +47,8 @@ the other).
 
 MUST reject a change containing behavioral code (beyond the revert itself) — that is `/ca:feature`
 or `/ca:fix` territory. MUST keep manifest and lockfile changes in the same commit for `deps`.
-MUST run the full suite for `deps` and `revert`. Never skips `commit-gate`.
+MUST run the full suite for `deps` and `revert`. MUST run the anti-slop copy pass on any user-facing
+doc a `docs` change authors or edits. Never skips `commit-gate`.
 
 ## When NOT to use
 
