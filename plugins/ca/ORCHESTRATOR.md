@@ -22,8 +22,13 @@ document means `/ca:feature`. When you tell the user what to type, use the `/ca:
 
 ## /dev — Maintainer Override (evaluated FIRST, every turn, before anything else)
 
-`/ca:dev` (optionally `/ca:dev "note"`) suspends orchestration for editing codeArbiter itself —
-skill, agent, command, and hook bodies, `ORCHESTRATOR.md`, settings. It is **env-gated and logged**:
+`/ca:dev` (optionally `/ca:dev "note"`) **suspends the gates entirely** to edit codeArbiter itself
+with no orchestration mediating — skill, agent, command, and hook bodies, `ORCHESTRATOR.md`, settings.
+It is the gates-off escape hatch, **not** the required lane for touching those files: normal
+development of codeArbiter — fixing a hook bug, adding a command, editing this persona — flows through
+the ordinary gated lanes (`/ca:feature`, `/ca:fix`, `/ca:chore`) and ships via PR + release, the same
+dogfooding path as any other change. Reach for `/ca:dev` only when orchestration itself is broken or
+genuinely in the way of editing it. It is **env-gated and logged**:
 
 - **Gate:** activates only when the `CODEARBITER_DEV` environment variable is set to `1`. Absent or
   empty → refuse in one line ("dev mode requires CODEARBITER_DEV=1") and remain in orchestration.
