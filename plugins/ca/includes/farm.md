@@ -4,11 +4,18 @@
 > real runs; the premium subagent path is the blessed default. Promotion bar:
 > `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` (CONFIRM-05).
 
-`farm.ts` is the zero-LLM-token dispatcher: Claude writes specs, failing tests, and a `plan.json`;
-the farm runs cheap Zen workers in isolated git worktrees to make each test pass; Claude reviews
-and merges. The cheap model cannot redefine the gates — only pass them.
+`farm.ts` is the pluggable execution backend: Claude writes specs, failing tests, and a `plan.json`;
+the farm runs workers in isolated git worktrees to make each test pass; Claude reviews and merges. Its
+value is deterministic, gated, parallel, isolated execution — a worker cannot redefine the gates, only
+pass them. The `Worker` interface seam admits cheap, premium, and agentic worker implementations behind
+the same hard gates; **only the cheap HTTP-chat worker ships today** — premium (e.g. a top-tier hosted
+model) and agentic (a worker that reads files and iterates) are what the seam is designed for, roadmap
+not built. Cost arbitrage is one worker policy, not the definition.
 
-**The arbitrage is in who writes the code, never in whether it's reviewed.** Every task the farm
+The worker prompt is enriched with the failing-test source and current in-scope file contents, byte-capped
+(`FARM_ENRICH_MAX_BYTES`) and secret-redacted before transmission to the endpoint.
+
+**Swapping the worker changes who writes the code, never whether it's reviewed.** Every task the farm
 reports green is still routed through the normal spec-compliance, quality, and fresh-verification
 gates (`subagent-driven-development` Phases 3–5) before acceptance. The dispatcher additionally runs two
 zero-token guards (below), protects the failing test from being modified, contains all worker writes
@@ -80,6 +87,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
 | `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout (prevents worker-slot deadlock). |
 | `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx (honors `Retry-After`). |
+| `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on bytes of test-source + in-scope file context injected into the worker prompt (data-minimization; redacted for secrets). |
 | `FARM_ABORT_ESCALATION_RATE` | `0.5` | Circuit breaker: abort once escalations exceed this fraction… |
 | `FARM_ABORT_MIN_TASKS` | `3` | …after at least this many tasks have settled. |
 | `FARM_MUTATION` | `on` | Mutation guard on/off. |

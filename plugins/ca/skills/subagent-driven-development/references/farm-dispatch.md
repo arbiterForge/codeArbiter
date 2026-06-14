@@ -1,10 +1,13 @@
 # Farm dispatch — reference for subagent-driven-development's farm path
 
 Loaded from `subagent-driven-development` Phase 2 when `<slug>.plan.json` exists alongside the `.md`
-plan. The farm path replaces only the *authoring* step for the plan's tasks — cheap Zen workers
-implement under hard gates instead of premium subagents. It does **not** replace review: every task
-the farm reports green is still routed through Phases 3, 4, and 5 before acceptance. The cost arbitrage
-is in who *writes* the code, never in whether it is *reviewed*. See `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` for setup.
+plan. The farm is a pluggable execution backend — its value is deterministic, gated, parallel, isolated
+execution. The farm path replaces only the *authoring* step for the plan's tasks — a worker implements
+under hard gates instead of a premium subagent. The `Worker` seam admits cheap, premium, and agentic
+implementations; only the cheap HTTP-chat worker ships today (premium and agentic are what the seam is
+designed for — roadmap, not built). It does **not** replace review: every task the farm reports green is
+still routed through Phases 3, 4, and 5 before acceptance. Swapping the worker only changes who *writes*
+the code, never whether it is *reviewed*. See `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` for setup.
 
 ## Step 1 — Model selection
 
@@ -43,6 +46,8 @@ Run it with cwd set to `${CLAUDE_PROJECT_DIR}` (the dispatcher resolves `.farm/`
 against the current directory). It runs tasks concurrently (up to `FARM_CONCURRENCY`, default 4),
 enforces gates and a zero-token anti-gaming guard, and writes to `${CLAUDE_PROJECT_DIR}/.farm/`:
 - `farm-report.json` / `farm-report.md` — per-task status, attempts, files, worker token spend, warnings
+- `farm-results.jsonl` — the incremental stream: one `Result` JSON object per line, appended the moment
+  each task settles (drives completion-order consumption — see Step 2.6)
 - `diffs/<task-id>.patch` — the actual change per task, for audit
 
 Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run was aborted.
@@ -52,11 +57,34 @@ Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run
 If `farm-report.json` has `aborted: true`, the dispatcher tripped its escalation-rate breaker — the
 chosen model is likely not capable of this slice. This is a hard-gate surface: STOP and tell the user,
 recommending the premium path or a different `FARM_MODEL`. Do not silently re-dispatch every task to
-premium Phase 2 (that erases the arbitrage and hides a bad signal).
+premium Phase 2 (that defeats the backend's purpose and hides a bad signal).
+
+## Step 2.6 — Streaming consumption contract
+
+The dispatcher writes two artifacts (D7): the incremental `farm-results.jsonl` stream and the final
+`farm-report.json` summary. The escalation/acceptance handler (Step 3) MUST consume the stream in
+**completion order** — read `farm-results.jsonl` line by line (one `Result` JSON object per line) and
+process each task the moment it settles, rather than waiting to parse only the final report. Each
+`green` task is routed through **Phase 3 (spec-compliance) + Phase 5 (verification)** as it lands.
+
+- **Per-green-task = Phase 3 + Phase 5 only.** Only the spec-compliance and fresh-verification reviews
+  run per green task as it streams in.
+- **Phase 4 stays a once-per-scope barrier.** The quality review (Phase 4) MUST NOT be pipelined per
+  task — it still runs ONCE over the combined diff of the whole scope, after every task has cleared
+  Phase 3 and Phase 5. The streaming rail moves Phase 3 + Phase 5 earlier; it does NOT move Phase 4.
+- **`farm-report.json` is authority on abort (D7).** `farm-report.json` is always written in the
+  dispatcher's `finally` — even on a circuit-breaker abort or crash — and remains the AUTHORITATIVE
+  final summary. On an abort or crash, reconcile settled-task state against `farm-report.json`, NOT the
+  partial `.jsonl` stream. The stream is an append-only progress feed; the report is the source of truth.
+- **Temporal overlap is roadmap, not today.** `farm.js` runs in the foreground, so the consumer
+  processes the stream in completion order *after* the run returns — true *temporal* overlap (running
+  review WHILE the farm is still executing) requires backgrounding `farm.js` and is explicitly a
+  future/roadmap item. The streaming rail is the enabling primitive, not the full overlap yet.
 
 ## Step 3 — Escalation handler (Phase 2.5)
 
-Read `farm-report.json`. For each result:
+Consume `farm-results.jsonl` in completion order (Step 2.6); `farm-report.json` is the authoritative
+reconciliation source on abort. For each result:
 
 - **status `green`** — the test gate + anti-gaming guard passed, but it is NOT yet accepted. Route the
   task through **Phase 3 (spec-compliance), Phase 4 (quality review), and Phase 5 (fresh verification)**

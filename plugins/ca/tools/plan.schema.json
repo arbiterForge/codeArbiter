@@ -83,6 +83,10 @@
           "type": "string",
           "description": "Minimal context slice — relevant types/interfaces/conventions only. NOT the whole module."
         },
+        "model": {
+          "type": "string",
+          "description": "Optional per-task model id override. When set, the effective model for this task is task.model; when absent it falls back to the run-level resolved model (FARM_MODEL / meta.model). Model id only — no per-task provider or apiBaseUrl. Must be declared here because the task object is additionalProperties:false."
+        },
         "maxRetries": {
           "type": "integer",
           "minimum": 0,

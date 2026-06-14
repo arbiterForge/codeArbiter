@@ -43,8 +43,10 @@ gates instead of premium subagents); it does **not** replace review — every ta
 is still routed through Phases 3–5 before acceptance. The cost arbitrage is in who *writes* the code,
 never in whether it is *reviewed*. In brief: select a model (canary-probe with a cache→websearch
 fallback ladder), dispatch `tools/farm.js`, honor a circuit-breaker abort as a hard-gate STOP, then for
-each result either accept-after-Phases-3–5 (green) or re-dispatch via premium Phase 2 (escalate). The
-reference has the full step-by-step.
+each result either accept-after-Phases-3–5 (green) or re-dispatch via premium Phase 2 (escalate).
+Results stream to `.farm/farm-results.jsonl` and are consumed in completion order — Phase 3 + Phase 5
+per green task as it lands, Phase 4 still the once-per-scope barrier (reconcile against `farm-report.json`
+on abort). The reference has the full step-by-step.
 
 ---
 
