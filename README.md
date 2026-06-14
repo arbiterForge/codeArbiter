@@ -7,7 +7,7 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.3.1" src="https://img.shields.io/badge/version-2.3.1-2b7489">
+<img alt="version 2.4.0" src="https://img.shields.io/badge/version-2.4.0-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-34-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-15-555">
@@ -169,13 +169,20 @@ Every flag is shipped off, never auto-enabled, and dormant in a repo without `ar
 
 Some features are built, tested, and shipping in the box, but not yet *blessed*. They live in the **Feature Forge**: off by default, fully dormant until you opt in, and labeled `preview` until real-world data earns them a promotion to a stable release. Nothing here touches your repo or your gates unless you turn it on.
 
-**This is also where you come in.** A preview graduates when the evidence says it's ready, and that evidence comes from people running it. Each forge feature ships a `dry` mode that does the real analysis and records what it *would* have done, changing nothing. Send that data back and you pull the promote date forward.
+**This is also where you come in.** A preview graduates when the evidence says it's ready, and that evidence comes from people running it. Each feature gives you a low-risk way to contribute that evidence — a `dry` mode, or a structured run report — see each below. Send that data back and you pull the promote date forward.
 
 ### In the forge now
 
-**Live transcript pruning** · `CODEARBITER_PRUNE`
+| Feature | Opt-in | Status | How to help it graduate |
+|---|---|---|---|
+| [Live transcript pruning](#live-transcript-pruning) | `CODEARBITER_PRUNE=dry` | `preview` | run `dry`, send the log |
+| [Pluggable execution farm](#pluggable-execution-farm) | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
 
-Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom. The pruner trims redundant clutter so a session lives longer; gains land at resume/compaction, never mid-turn. Three modes:
+#### Live transcript pruning
+
+**What it does.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom. The pruner trims redundant clutter so a session lives longer; gains land at resume/compaction, never mid-turn.
+
+**Opt-in.** `CODEARBITER_PRUNE` — three modes:
 
 | `CODEARBITER_PRUNE` | What happens |
 |---|---|
@@ -185,7 +192,9 @@ Long sessions bloat the transcript until Claude Code compacts early and you lose
 
 Fine-tune with `CODEARBITER_PRUNE_TIER` (which passes run), `CODEARBITER_PRUNE_KEEP_RECENT` (protect the K most recent turns), and `CODEARBITER_PRUNE_MIN_GROWTH` / `CODEARBITER_PRUNE_MAXBYTES` (when a prune triggers / cap on bytes removed). Full detail in <kbd>/ca:prune</kbd>.
 
-#### Help promote it: run `dry`, send the log
+**Why it's preview.** The `dry → on` go/no-go needs real-session evidence before pruning is blessed to touch live transcripts on by default.
+
+**Help promote it: run `dry`, send the log.**
 
 ```sh
 export CODEARBITER_PRUNE=dry      # collect evidence, change nothing
@@ -195,9 +204,24 @@ export CODEARBITER_PRUNE=dry      # collect evidence, change nothing
 
 After a few sessions, [**open a "prune data" issue**](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune) and attach or paste your `prune-dry.jsonl`. The more real sessions come back, the sooner pruning leaves the forge. Thank you for forging. 🔨
 
-**Cost-arbitrage farm** · `/ca:sprint --farm` (needs `FARM_API_KEY`)
+#### Pluggable execution farm
 
-`--farm` runs the implementation step on cheap [OpenCode Zen](https://opencode.ai) workers in isolated worktrees instead of premium subagents. Claude still writes the spec, the failing tests, and the plan, and still routes every task through the same spec-compliance, quality, and fresh-verification gates, so the cheap model can only pass the gates, never redefine them. The arbitrage is in who writes the code, not in whether it gets reviewed. It is **not yet validated on real runs**, so it ships off and stays `preview`. The promotion bar is being defined as an open question (`CONFIRM-05`); setup and the API-key/model config live in <kbd>/ca:sprint</kbd> and the farm setup doc.
+**What it does.** <kbd>/ca:sprint --farm</kbd> runs the implementation step through a `Worker` seam in isolated git worktrees under the same hard gates, instead of a premium subagent. The cheap HTTP-chat worker ships today; the seam is built to admit **premium and agentic** workers behind the same gates (roadmap, not yet built). The worker prompt is enriched with the failing-test source and in-scope files — byte-capped and secret-redacted before transmission. Claude still writes the spec, failing tests, and plan, and **every green task still routes through the full spec-compliance + quality + fresh-verification chain** — a worker can pass the gates, never redefine them.
+
+**Opt-in.** <kbd>/ca:sprint --farm</kbd> (needs `FARM_API_KEY`).
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `FARM_API_KEY` | _(required)_ | OpenAI-compatible provider key; never committed, never in audit files. |
+| `FARM_MODEL` | _(unset)_ | Skip selection; otherwise the model is auto-selected by measured canary at dispatch. |
+| `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on test-source + in-scope context injected into the worker prompt (redacted for secrets). |
+| `FARM_CONCURRENCY` | `4` | Max concurrent task workers. |
+
+Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty note) is in <kbd>/ca:sprint</kbd> and the farm setup doc.
+
+**Why it's preview / promotion bar.** Not yet validated on real runs, so it ships off and stays `preview`. The promotion bar is the open question `CONFIRM-05`.
+
+**Help promote it: run a real sprint, report results.** Run a real <kbd>/ca:sprint --farm</kbd> and report back the per-task pass-rates and any gate escapes you see. That evidence feeds `CONFIRM-05` — real-run data is exactly what moves the farm out of the forge.
 
 ## Commands
 

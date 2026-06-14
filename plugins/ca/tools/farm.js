@@ -2,7 +2,7 @@
 
 // farm.ts
 import { spawn } from "node:child_process";
-import { readFile, writeFile, mkdir, rm } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -32,7 +32,17 @@ var ENV = {
   // Default endpoint, used only when neither env nor plan.meta provides one.
   defaultApiBaseUrl: process.env.FARM_DEFAULT_API_BASE_URL ?? "https://api.opencode.ai/v1",
   // Comma-separated candidate model ids for --canary mode.
-  candidateModels: (process.env.FARM_CANDIDATE_MODELS ?? "").split(",").map((s) => s.trim()).filter(Boolean)
+  candidateModels: (process.env.FARM_CANDIDATE_MODELS ?? "").split(",").map((s) => s.trim()).filter(Boolean),
+  // AC-05 byte cap on the TOTAL injected enrichment context (test source +
+  // in-scope file bodies) that leaves the trust boundary to the third-party
+  // endpoint. Default 131072 (128 KiB): more repo content now flows outbound,
+  // so the prompt must never be unbounded. 128 KiB is ~32K tokens of context —
+  // generous enough for the real test + a handful of in-scope files, yet small
+  // enough to stay well inside the FARM_REQUEST_TIMEOUT_MS (120s) single-request
+  // budget and to bound per-task token spend. Truncation past the cap is
+  // deterministic (in-order) with a visible marker; we never silently drop the
+  // boundedness guarantee.
+  enrichMaxBytes: Number(process.env.FARM_ENRICH_MAX_BYTES ?? 131072)
 };
 var MUT = {
   enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
@@ -65,11 +75,121 @@ async function runGate(cwd, commands) {
   for (const cmd of commands) {
     const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS);
     if (r.code !== 0)
-      return { ok: false, failed: cmd, tail: r.out.slice(-3500) };
+      return { ok: false, failed: cmd, tail: redactSecrets(r.out.slice(-3500)) };
   }
   return { ok: true };
 }
-function buildPrompt(t, priorFailure, forbiddenExtra) {
+async function readWorktreeFile(wt, relPath) {
+  try {
+    return await readFile(path.resolve(wt, relPath), "utf8");
+  } catch {
+    return null;
+  }
+}
+var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant)/i;
+var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
+var PEM_END = /^-----END .*-----\s*$/;
+var REDACTION_MARKER = "[REDACTED \u2014 secret-pattern match removed before transmission]";
+var SECRET_FILENAME_DENYLIST = [
+  /^\.env$/i,
+  // .env
+  /^\.env\..+$/i,
+  // .env.local, .env.production, ...
+  /\.pem$/i,
+  // *.pem
+  /\.key$/i,
+  // *.key
+  /^id_rsa(\..+)?$/i,
+  // id_rsa, id_rsa.pub, id_rsa.bak
+  /^id_ed25519(\..+)?$/i,
+  // id_ed25519, id_ed25519.pub
+  /^id_ecdsa(\..+)?$/i,
+  // id_ecdsa, id_ecdsa.pub
+  /\.p12$/i,
+  // PKCS#12 keystore
+  /\.pfx$/i
+  // PKCS#12 keystore (Windows)
+];
+function isSecretBearingFilename(relPath) {
+  const base = relPath.split(/[\\/]/).pop() ?? relPath;
+  return SECRET_FILENAME_DENYLIST.some((re) => re.test(base));
+}
+function redactSecrets(contents) {
+  const lines = contents.split("\n");
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (PEM_BEGIN.test(line.trim())) {
+      out.push(REDACTION_MARKER);
+      i++;
+      while (i < lines.length && !PEM_END.test(lines[i].trim())) i++;
+      continue;
+    }
+    out.push(SECRET_LINE.test(line) ? REDACTION_MARKER : line);
+  }
+  return out.join("\n");
+}
+function renderInjectedFile(file) {
+  const label = file.readOnly ? `${file.path} (read-only \u2014 the failing test)` : file.path;
+  return [`--- ${label} ---`, redactSecrets(file.contents)].join("\n");
+}
+var TRUNCATION_MARKER = "--- [TRUNCATED \u2014 injected context exceeded FARM_ENRICH_MAX_BYTES] ---";
+function capInjected(injected, maxBytes) {
+  const out = [];
+  let used = 0;
+  for (const file of injected) {
+    const renderedBytes = Buffer.byteLength(renderInjectedFile(file), "utf8");
+    if (used + renderedBytes <= maxBytes) {
+      out.push(file);
+      used += renderedBytes;
+      continue;
+    }
+    const contentBytes = Buffer.byteLength(redactSecrets(file.contents), "utf8");
+    const overhead = renderedBytes - contentBytes;
+    const remaining = maxBytes - used - overhead - Buffer.byteLength("\n" + TRUNCATION_MARKER, "utf8");
+    if (remaining > 0) {
+      const safe = Buffer.from(redactSecrets(file.contents), "utf8").subarray(0, remaining).toString("utf8");
+      out.push({ ...file, contents: safe + "\n" + TRUNCATION_MARKER });
+    } else {
+      out.push({ ...file, contents: TRUNCATION_MARKER });
+    }
+    break;
+  }
+  return out;
+}
+async function buildEnrichment(wt, t) {
+  const injected = [];
+  const seen = /* @__PURE__ */ new Set();
+  if (!isSecretBearingFilename(t.test.path)) {
+    const testSrc = await readWorktreeFile(wt, t.test.path);
+    if (testSrc !== null) {
+      injected.push({ path: t.test.path, contents: testSrc, readOnly: true });
+      seen.add(t.test.path);
+    }
+  } else {
+    seen.add(t.test.path);
+  }
+  for (const f of t.filesInScope) {
+    if (seen.has(f)) continue;
+    if (isSecretBearingFilename(f)) {
+      seen.add(f);
+      continue;
+    }
+    const src = await readWorktreeFile(wt, f);
+    if (src === null) continue;
+    injected.push({ path: f, contents: src, readOnly: false });
+    seen.add(f);
+  }
+  return capInjected(injected, ENV.enrichMaxBytes);
+}
+function buildPrompt(t, injected, priorFailure, forbiddenExtra) {
+  const enrichment = injected.length ? [
+    ``,
+    `Current source of the relevant files (the test is read-only; implement against it):`,
+    ``,
+    ...injected.map(renderInjectedFile),
+    ``
+  ] : [];
   return [
     `Implement exactly ONE task. Your only goal: make the failing test pass.`,
     ``,
@@ -88,7 +208,7 @@ ${t.context}
     forbiddenExtra && forbiddenExtra.length ? `
 Your previous attempt wrote these FORBIDDEN paths \u2014 do NOT touch them again:
 ${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}` : ``,
-    ``,
+    ...enrichment,
     `Solve the task with REAL logic. Do not hard-code the literal values the`,
     `test asserts \u2014 an implementation that only returns the expected constant`,
     `will be rejected.`,
@@ -233,6 +353,9 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden) {
     completionTokens: api.usage?.completion_tokens
   };
 }
+var httpWorker = {
+  apply: (ctx) => runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden)
+};
 async function checkDrift(cwd, allowed) {
   const tracked = await git(["diff", "--name-only", "HEAD"], cwd);
   const untracked = await git(
@@ -246,6 +369,19 @@ async function checkDrift(cwd, allowed) {
     changed.push(...untracked.out.split("\0").filter(Boolean));
   return [...new Set(changed)].filter((f) => !allowed.has(f));
 }
+function postApplySweep(cwd, filesWritten, forbidden) {
+  for (const f of filesWritten) {
+    const absPath = path.resolve(cwd, f);
+    if (!isInside(cwd, absPath)) {
+      return `path escapes worktree: ${f}`;
+    }
+    const rel = path.relative(cwd, absPath).split(path.sep).join("/");
+    if (forbidden.has(rel)) {
+      return `worker wrote read-only path: ${rel}`;
+    }
+  }
+  return null;
+}
 function extractLiterals(testSrc) {
   const lits = /* @__PURE__ */ new Set();
   for (const m of testSrc.matchAll(/(['"`])((?:\\.|(?!\1).){2,})\1/g)) lits.add(m[2]);
@@ -256,24 +392,16 @@ function codeLineCount(src) {
   return src.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("//") && !l.startsWith("#") && !l.startsWith("*") && !l.startsWith("/*")).length;
 }
 async function antiGamingCheck(cwd, task) {
-  let testSrc = "";
-  try {
-    testSrc = await readFile(path.resolve(cwd, task.test.path), "utf8");
-  } catch {
-    return { risk: "none" };
-  }
+  const testSrc = await readWorktreeFile(cwd, task.test.path);
+  if (testSrc === null) return { risk: "none" };
   const literals = extractLiterals(testSrc).filter((l) => l.length > 1 || /\d{2,}/.test(l));
   if (literals.length === 0) return { risk: "none" };
   const hits = [];
   let anyTiny = false;
   for (const f of task.filesInScope) {
     if (f === task.test.path) continue;
-    let src = "";
-    try {
-      src = await readFile(path.resolve(cwd, f), "utf8");
-    } catch {
-      continue;
-    }
+    const src = await readWorktreeFile(cwd, f);
+    if (src === null) continue;
     const tiny = codeLineCount(src) <= 5;
     for (const lit of literals) {
       if (src.includes(lit)) {
@@ -379,12 +507,8 @@ async function mutationCheck(wt, task) {
   const originals = /* @__PURE__ */ new Map();
   let candidates = [];
   for (const f of impl) {
-    let src;
-    try {
-      src = await readFile(path.resolve(wt, f), "utf8");
-    } catch {
-      continue;
-    }
+    const src = await readWorktreeFile(wt, f);
+    if (src === null) continue;
     if (codeLineCount(src) <= 2) continue;
     originals.set(f, src);
     candidates.push(...generateMutants(f, src));
@@ -431,16 +555,29 @@ async function prepareWorktree(branch, wt, from) {
   if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
   return null;
 }
-async function runTask(t, model, apiBaseUrl, apiKey) {
+var defaultRunTaskDeps = () => ({
+  worker: httpWorker,
+  prepareWorktree,
+  resetWorktree,
+  fileHash,
+  checkDrift,
+  runGate,
+  antiGamingCheck,
+  mutationCheck,
+  git,
+  withMergeLock
+});
+async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()) {
   const branch = `farm/${t.id}`;
   const wt = path.resolve(ENV.worktreeRoot, t.id);
   const limit = t.maxRetries ?? ENV.maxRetries;
+  const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
   const forbidden = /* @__PURE__ */ new Set([t.test.path]);
-  const prepErr = await prepareWorktree(branch, wt, ENV.integration);
+  const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return { id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr };
-  const testHashBefore = await fileHash(path.resolve(wt, t.test.path));
+  const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
   let priorFailure;
   let driftedOnce = false;
   let lastFilesWritten = [];
@@ -449,15 +586,16 @@ async function runTask(t, model, apiBaseUrl, apiKey) {
   let lastWarning;
   let mutationScore = null;
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
-    if (attempt > 1) await resetWorktree(wt);
-    const worker = await runWorker(
-      wt,
-      buildPrompt(t, priorFailure, driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0),
-      model,
+    if (attempt > 1) await deps.resetWorktree(wt);
+    const injected = await buildEnrichment(wt, t);
+    const worker = await deps.worker.apply({
+      cwd: wt,
+      prompt: buildPrompt(t, injected, priorFailure, driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0),
+      model: effectiveModel,
       apiBaseUrl,
       apiKey,
       forbidden
-    );
+    });
     promptTokens += worker.promptTokens ?? 0;
     completionTokens += worker.completionTokens ?? 0;
     lastFilesWritten = worker.filesWritten;
@@ -465,11 +603,15 @@ async function runTask(t, model, apiBaseUrl, apiKey) {
       priorFailure = `worker error: ${worker.error}`;
       continue;
     }
-    const testHashAfter = await fileHash(path.resolve(wt, t.test.path));
+    const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
+    if (sweepErr) {
+      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+    }
+    const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
     if (testHashBefore !== null && testHashAfter !== testHashBefore) {
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
     }
-    const driftFiles = await checkDrift(wt, allowed);
+    const driftFiles = await deps.checkDrift(wt, allowed);
     if (driftFiles.length > 0) {
       if (!driftedOnce && attempt <= limit) {
         driftedOnce = true;
@@ -478,17 +620,17 @@ async function runTask(t, model, apiBaseUrl, apiKey) {
       }
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
     }
-    const gate = await runGate(wt, t.gate.commands);
+    const gate = await deps.runGate(wt, t.gate.commands);
     if (!gate.ok) {
-      priorFailure = `failed: ${gate.failed}
-${gate.tail}`;
+      priorFailure = redactSecrets(`failed: ${gate.failed}
+${gate.tail}`);
       continue;
     }
-    const gaming = await antiGamingCheck(wt, t);
+    const gaming = await deps.antiGamingCheck(wt, t);
     let risk = gaming.risk;
     let riskNote = gaming.note;
     if (risk !== "high") {
-      const mut = await mutationCheck(wt, t);
+      const mut = await deps.mutationCheck(wt, t);
       if (mut) {
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
@@ -508,23 +650,33 @@ ${gate.tail}`;
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore };
     }
     if (risk === "warn") lastWarning = riskNote;
-    await git(["add", "--", ...worker.filesWritten], wt);
-    const commit = await git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
+    await deps.git(["add", "--", ...worker.filesWritten], wt);
+    const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
     if (commit.code !== 0)
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
-    const diffstat = (await git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
-    const merged = await withMergeLock(async () => {
-      const m = await git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
+    const diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
+    const merged = await deps.withMergeLock(async () => {
+      const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
       if (m.code !== 0) {
-        await git(["merge", "--abort"], integrationWorktree).catch(() => {
+        await deps.git(["merge", "--abort"], integrationWorktree).catch(() => {
         });
         return m.out;
       }
       return null;
     });
-    if (merged !== null)
+    if (merged !== null) {
+      if (attempt <= limit) {
+        await deps.git(["reset", "--hard", ENV.integration], wt).catch(() => {
+        });
+        await deps.git(["clean", "-fd"], wt).catch(() => {
+        });
+        priorFailure = redactSecrets(`merge conflict vs integration: rebuild against the updated baseline (integration HEAD moved)
+${String(merged).slice(0, 160)}`);
+        continue;
+      }
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
-    await git(["worktree", "remove", "--force", wt]).catch(() => {
+    }
+    await deps.git(["worktree", "remove", "--force", wt]).catch(() => {
     });
     return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore };
   }
@@ -648,6 +800,8 @@ async function main() {
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
+  const resultsStream = path.join(ENV.reportDir, "farm-results.jsonl");
+  await writeFile(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
   const done = /* @__PURE__ */ new Map();
   const blocked = [];
   let aborted = false;
@@ -667,10 +821,25 @@ async function main() {
     const escalated = /* @__PURE__ */ new Set();
     const pending = new Set(plan.tasks.map((t) => t.id));
     const running = /* @__PURE__ */ new Map();
+    const scopeOf = (id) => new Set(byId.get(id).filesInScope ?? []);
+    const overlaps = (a, b) => {
+      for (const f of b) if (a.has(f)) return true;
+      return false;
+    };
     const ready = () => [...pending].filter((id) => {
       const deps = byId.get(id).deps ?? [];
       if (deps.some((d) => escalated.has(d))) return false;
-      return deps.every((d) => done.get(d)?.status === "green");
+      if (!deps.every((d) => done.get(d)?.status === "green")) return false;
+      const myScope = scopeOf(id);
+      if (myScope.size === 0) return true;
+      for (const rid of running.keys()) {
+        if (overlaps(myScope, scopeOf(rid))) return false;
+      }
+      for (const pid of pending) {
+        if (pid === id) continue;
+        if (pid < id && overlaps(myScope, scopeOf(pid))) return false;
+      }
+      return true;
     });
     const tripped = () => {
       const settled = done.size;
@@ -697,6 +866,7 @@ async function main() {
       const { id, r } = await Promise.race(running.values());
       running.delete(id);
       done.set(id, r);
+      await appendFile(resultsStream, JSON.stringify(r) + "\n").catch((e) => console.error("results stream append failed:", e));
       if (r.status === "escalate") escalated.add(id);
     }
     for (const id of pending) {
@@ -777,5 +947,7 @@ export {
   codeLineCount,
   extractFileBlocks,
   extractLiterals,
+  httpWorker,
+  runTask,
   validate
 };

@@ -35,7 +35,7 @@
  * model selection is objective rather than web hearsay. No merge, no mutation.
  */
 import { spawn } from "node:child_process";
-import { readFile, writeFile, mkdir, rm, stat } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, rm, stat } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -43,7 +43,7 @@ import { fileURLToPath } from "node:url";
 // --------------------------------------------------------------------------
 // Types — the handoff contract. Claude emits plan.json conforming to this.
 // --------------------------------------------------------------------------
-type Task = {
+export type Task = {
   id: string;
   description: string;
   deps?: string[];
@@ -52,6 +52,11 @@ type Task = {
   gate: { commands: string[] };
   context?: string;
   maxRetries?: number;
+  // Optional per-task model override (AC-02). The effective model for a task is
+  // `task.model ?? <run-level resolved model>`, layered where runTask invokes
+  // the worker; absent → identical current behavior. Model id only — no second
+  // provider or per-task apiBaseUrl.
+  model?: string;
 };
 type Plan = {
   meta: { name: string; repo?: string; model?: string; apiBaseUrl?: string };
@@ -89,6 +94,16 @@ const ENV = {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean),
+  // AC-05 byte cap on the TOTAL injected enrichment context (test source +
+  // in-scope file bodies) that leaves the trust boundary to the third-party
+  // endpoint. Default 131072 (128 KiB): more repo content now flows outbound,
+  // so the prompt must never be unbounded. 128 KiB is ~32K tokens of context —
+  // generous enough for the real test + a handful of in-scope files, yet small
+  // enough to stay well inside the FARM_REQUEST_TIMEOUT_MS (120s) single-request
+  // budget and to bound per-task token spend. Truncation past the cap is
+  // deterministic (in-order) with a visible marker; we never silently drop the
+  // boundedness guarantee.
+  enrichMaxBytes: Number(process.env.FARM_ENRICH_MAX_BYTES ?? 131_072),
 };
 
 // Mutation guard — a zero-token quality signal. After the gate goes green we
@@ -155,15 +170,234 @@ async function runGate(cwd: string, commands: string[]) {
   for (const cmd of commands) {
     const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS);
     if (r.code !== 0)
-      return { ok: false as const, failed: cmd, tail: r.out.slice(-3500) };
+      // FINDING 2: the raw gate stdout+stderr tail flows into priorFailure and
+      // is injected into the next worker prompt (buildPrompt), crossing the
+      // trust boundary to the third party. Run it through the SAME span-aware
+      // redaction as injected file bodies before it leaves runGate, so a
+      // secret-shaped string a test/gate happens to print is never transmitted.
+      // (redactSecrets is a hoisted function declaration — callable here.)
+      return { ok: false as const, failed: cmd, tail: redactSecrets(r.out.slice(-3500)) };
   }
   return { ok: true as const };
 }
 
 // --------------------------------------------------------------------------
+// shared file reader — single read path for every consumer that needs the
+// current contents of a worktree file. Returns the file text, or null on any
+// read failure (missing file, not yet created, permission). antiGamingCheck,
+// mutationCheck, AND the prompt enrichment (AC-03/AC-04) all go through here
+// rather than growing their own parallel try/catch read paths (spec Risks:
+// "Duplicated file reads"). `wt`-relative paths are resolved against the
+// worktree the caller passes.
+// --------------------------------------------------------------------------
+async function readWorktreeFile(wt: string, relPath: string): Promise<string | null> {
+  try {
+    return await readFile(path.resolve(wt, relPath), "utf8");
+  } catch {
+    return null;
+  }
+}
+
+// --------------------------------------------------------------------------
+// prompt enrichment (AC-03 / AC-04). Gathers the read-only source of the
+// failing test plus the current contents of in-scope files that already exist
+// in the worktree (best-effort direct context — no deep import resolution).
+// On the first attempt these in-scope files hold the dependency-inherited
+// baseline, which is exactly the context the worker needs to implement
+// against. Reads reflect the per-attempt worktree state because runTask calls
+// this AFTER any inter-attempt reset.
+//
+// ALL injected content is funneled through this ONE chokepoint and rendered by
+// `renderInjectedFile`, so T-05 can wrap the byte cap + secret redaction here
+// without touching buildPrompt or the call site. (T-04 does the injection +
+// shared reader only — cap and redaction are explicitly NOT done here.)
+// --------------------------------------------------------------------------
+export type InjectedFile = { path: string; contents: string; readOnly: boolean };
+
+// AC-05 secret redaction. NEW code — there is no existing in-code secret sweep
+// to reuse (the repo's sweep is the manual/hook layer per tech-stack.md). This
+// is the exact secret-pattern set from tech-stack.md "Secrets scan", applied
+// case-insensitively. Any single line that matches a pattern is replaced
+// WHOLESALE with a `[REDACTED]` marker rather than surgically excising the
+// matched span — over-redaction is the safe direction, and the line is the
+// smallest unit guaranteed to contain the full secret value (e.g. the trailing
+// token after `api_key =`).
+//
+// SPAN-AWARE for PEM blocks (FINDING 1). A purely per-line redactor is unsafe
+// for multi-line secrets: a PEM private key's `-----BEGIN ... PRIVATE KEY-----`
+// header matches the trigger word, but the base64 BODY lines carry no trigger
+// word, so a per-line pass would transmit the key material. When a
+// `-----BEGIN ... -----` delimiter line is seen, we redact the WHOLE block
+// through the matching `-----END ... -----` delimiter (or to end-of-content if
+// no END is present) as a single unit. Single-line trigger-word matches keep
+// the existing per-line behavior. Matching, never transmitting a matched
+// secret, is the invariant — see spec AC-05 / D5.
+const SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant)/i;
+// PEM-style armor delimiters. BEGIN opens a span; END closes it. Matched
+// independently of SECRET_LINE so even a `-----BEGIN CERTIFICATE-----` (no
+// trigger word) is span-redacted — armored material is opaque, redact it whole.
+const PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
+const PEM_END = /^-----END .*-----\s*$/;
+const REDACTION_MARKER = "[REDACTED — secret-pattern match removed before transmission]";
+
+// Data-minimization (defence in depth ahead of per-line/span redaction): some
+// filenames are secret-bearing by convention and should never be read into the
+// injected context AT ALL, regardless of whether their individual lines trip a
+// trigger word. Matched on the BASENAME so a nested `config/.env.production` or
+// `keys/id_rsa` is caught too. If a file is denylisted its contents are simply
+// never read — the strongest form of non-transmission.
+const SECRET_FILENAME_DENYLIST: RegExp[] = [
+  /^\.env$/i, // .env
+  /^\.env\..+$/i, // .env.local, .env.production, ...
+  /\.pem$/i, // *.pem
+  /\.key$/i, // *.key
+  /^id_rsa(\..+)?$/i, // id_rsa, id_rsa.pub, id_rsa.bak
+  /^id_ed25519(\..+)?$/i, // id_ed25519, id_ed25519.pub
+  /^id_ecdsa(\..+)?$/i, // id_ecdsa, id_ecdsa.pub
+  /\.p12$/i, // PKCS#12 keystore
+  /\.pfx$/i, // PKCS#12 keystore (Windows)
+];
+
+function isSecretBearingFilename(relPath: string): boolean {
+  const base = relPath.split(/[\\/]/).pop() ?? relPath;
+  return SECRET_FILENAME_DENYLIST.some((re) => re.test(base));
+}
+
+function redactSecrets(contents: string): string {
+  const lines = contents.split("\n");
+  const out: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (PEM_BEGIN.test(line.trim())) {
+      // Span redaction: collapse BEGIN..END (inclusive) to one marker. If no
+      // END is found, redact through end-of-content — never let an unterminated
+      // armored body trickle out.
+      out.push(REDACTION_MARKER);
+      i++;
+      while (i < lines.length && !PEM_END.test(lines[i].trim())) i++;
+      // i now points at the END line (consumed by the span) or past the end.
+      continue;
+    }
+    out.push(SECRET_LINE.test(line) ? REDACTION_MARKER : line);
+  }
+  return out.join("\n");
+}
+
+// The single chokepoint for content that leaves the trust boundary. The byte
+// cap (applied over the rendered array in buildEnrichment) and the per-line
+// secret redaction (here) wrap every injected file body. Keep this the only
+// place injected file bodies are formatted so the boundary stays in one spot.
+function renderInjectedFile(file: InjectedFile): string {
+  const label = file.readOnly ? `${file.path} (read-only — the failing test)` : file.path;
+  return [`--- ${label} ---`, redactSecrets(file.contents)].join("\n");
+}
+
+// Deterministic byte cap over the TOTAL injected enrichment. Operates on the
+// InjectedFile[] (BEFORE buildPrompt renders it, so buildPrompt and the runTask
+// call site stay untouched) but budgets against each file's FULLY RENDERED size
+// — i.e. `renderInjectedFile` output, including the redaction substitutions and
+// the path label — so the cap reflects exactly what crosses the boundary.
+// Files are kept in order until the next would exceed the budget; the
+// overflowing file's contents are hard-truncated (UTF-8 safe) to fit and a
+// visible TRUNCATED marker appended; everything after is dropped. The prompt is
+// never unbounded. Measured in UTF-8 bytes — the unit the request body is
+// serialized in.
+const TRUNCATION_MARKER = "--- [TRUNCATED — injected context exceeded FARM_ENRICH_MAX_BYTES] ---";
+
+function capInjected(injected: InjectedFile[], maxBytes: number): InjectedFile[] {
+  const out: InjectedFile[] = [];
+  let used = 0;
+  for (const file of injected) {
+    const renderedBytes = Buffer.byteLength(renderInjectedFile(file), "utf8");
+    if (used + renderedBytes <= maxBytes) {
+      out.push(file);
+      used += renderedBytes;
+      continue;
+    }
+    // Fixed overhead this file's render adds around its contents (label line +
+    // joins): the difference between the rendered size and the contents size.
+    const contentBytes = Buffer.byteLength(redactSecrets(file.contents), "utf8");
+    const overhead = renderedBytes - contentBytes;
+    const remaining = maxBytes - used - overhead - Buffer.byteLength("\n" + TRUNCATION_MARKER, "utf8");
+    if (remaining > 0) {
+      // Truncate the (already redaction-safe) contents to the remaining byte
+      // budget on a UTF-8 boundary, then append the marker.
+      const safe = Buffer.from(redactSecrets(file.contents), "utf8")
+        .subarray(0, remaining)
+        .toString("utf8");
+      out.push({ ...file, contents: safe + "\n" + TRUNCATION_MARKER });
+    } else {
+      // No room even for this file's frame — emit a marker-only stub so the
+      // truncation is visible, then stop.
+      out.push({ ...file, contents: TRUNCATION_MARKER });
+    }
+    break;
+  }
+  return out;
+}
+
+async function buildEnrichment(wt: string, t: Task): Promise<InjectedFile[]> {
+  const injected: InjectedFile[] = [];
+  const seen = new Set<string>();
+
+  // AC-03: the read-only source of the failing test. Defense-in-depth: run the
+  // test path through the same secret-bearing-filename denylist as in-scope
+  // files (STEP-A) — a test.path pointing at .env/*.pem/*.key must never have its
+  // body cross the trust boundary, regardless of per-line redaction.
+  if (!isSecretBearingFilename(t.test.path)) {
+    const testSrc = await readWorktreeFile(wt, t.test.path);
+    if (testSrc !== null) {
+      injected.push({ path: t.test.path, contents: testSrc, readOnly: true });
+      seen.add(t.test.path);
+    }
+  } else {
+    seen.add(t.test.path);
+  }
+
+  // AC-04: current contents of in-scope files that already exist on disk in the
+  // worktree (best-effort). Skip the test path (already injected, read-only) and
+  // files that do not yet exist (e.g. the not-yet-written target).
+  for (const f of t.filesInScope) {
+    if (seen.has(f)) continue;
+    // Data-minimization: never even READ a secret-bearing filename
+    // (.env/.env.*/*.pem/*.key/id_rsa*, etc.) into injected context — its body
+    // must not cross the trust boundary regardless of per-line redaction.
+    if (isSecretBearingFilename(f)) {
+      seen.add(f);
+      continue;
+    }
+    const src = await readWorktreeFile(wt, f);
+    if (src === null) continue;
+    injected.push({ path: f, contents: src, readOnly: false });
+    seen.add(f);
+  }
+
+  // AC-05: byte-cap the TOTAL injected context before it leaves the trust
+  // boundary. Redaction is applied per-file inside renderInjectedFile (the
+  // chokepoint), but the truncation stub here means contents already carry the
+  // redaction by the time they are re-rendered — redactSecrets is idempotent on
+  // the marker, so a redacted-then-truncated body stays redacted.
+  return capInjected(injected, ENV.enrichMaxBytes);
+}
+
+// --------------------------------------------------------------------------
 // worker prompt
 // --------------------------------------------------------------------------
-function buildPrompt(t: Task, priorFailure?: string, forbiddenExtra?: string[]) {
+function buildPrompt(
+  t: Task,
+  injected: InjectedFile[],
+  priorFailure?: string,
+  forbiddenExtra?: string[],
+) {
+  const enrichment = injected.length
+    ? [
+        ``,
+        `Current source of the relevant files (the test is read-only; implement against it):`,
+        ``,
+        ...injected.map(renderInjectedFile),
+        ``,
+      ]
+    : [];
   return [
     `Implement exactly ONE task. Your only goal: make the failing test pass.`,
     ``,
@@ -179,7 +413,7 @@ function buildPrompt(t: Task, priorFailure?: string, forbiddenExtra?: string[]) 
     forbiddenExtra && forbiddenExtra.length
       ? `\nYour previous attempt wrote these FORBIDDEN paths — do NOT touch them again:\n${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}`
       : ``,
-    ``,
+    ...enrichment,
     `Solve the task with REAL logic. Do not hard-code the literal values the`,
     `test asserts — an implementation that only returns the expected constant`,
     `will be rejected.`,
@@ -245,7 +479,7 @@ export function extractFileBlocks(content: string): Array<{ path: string; body: 
   return blocks;
 }
 
-type WorkerResult = {
+export type WorkerResult = {
   ok: boolean;
   filesWritten: string[];
   error?: string;
@@ -370,6 +604,36 @@ async function runWorker(
 }
 
 // --------------------------------------------------------------------------
+// Worker seam (AC-01). The safety gates in runTask wrap ANY worker; the
+// HTTP-chat author is just one implementation. A worker is handed the task,
+// the resolved model/config, the worktree it must produce files into, and the
+// read-only forbidden set, and returns which files it wrote into the worktree.
+//
+// T-01 scope: this is the indirection point ONLY. httpWorker preserves the
+// existing runWorker behavior exactly (it still owns extractFileBlocks + write
+// and the inline isInside/read-only guards). Moving apply-ownership and the
+// containment sweep to a post-apply step in runTask is T-02 (D6) — not here.
+// --------------------------------------------------------------------------
+export type WorkerContext = {
+  cwd: string;
+  prompt: string;
+  model: string;
+  apiBaseUrl: string;
+  apiKey: string;
+  forbidden: Set<string>;
+};
+
+export interface Worker {
+  apply(ctx: WorkerContext): Promise<WorkerResult>;
+}
+
+// Default worker: the existing blind HTTP-chat author, unchanged.
+export const httpWorker: Worker = {
+  apply: (ctx) =>
+    runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden),
+};
+
+// --------------------------------------------------------------------------
 // drift check — path allowlist. Catches modified tracked files and new
 // untracked files individually (status --porcelain groups by directory).
 // --------------------------------------------------------------------------
@@ -385,6 +649,52 @@ async function checkDrift(cwd: string, allowed: Set<string>): Promise<string[]> 
   if (untracked.code === 0)
     changed.push(...untracked.out.split("\0").filter(Boolean));
   return [...new Set(changed)].filter((f) => !allowed.has(f));
+}
+
+// --------------------------------------------------------------------------
+// post-apply containment sweep (D6) — task-level enforcement of containment
+// (isInside) and the read-only-test guard over the worker's REPORTED writes.
+// It runs in runTask AFTER worker.apply() returns, inspecting the
+// `filesWritten` list the worker returns, so it protects against any worker
+// type whose write path differs from runWorker's inline loop — provided that
+// worker REPORTS what it wrote. The inline guards in runWorker stay as
+// defense-in-depth; this task-level sweep catches an escape or a test-path
+// write even when the inline guard was bypassed, as long as the path was
+// reported. (FINDING 3: narrowed from the prior "AUTHORITATIVE … protects
+// against ANY worker type" claim, which over-stated the guarantee.)
+//
+// [NEEDS-TRIAGE] Path-containment for a NON-REPORTING worker is NOT enforced
+// here. A future agentic/premium worker that writes a file OUTSIDE the worktree
+// without listing it in `filesWritten` is caught by neither this sweep nor
+// checkDrift (which only sees paths inside the worktree). The robust fix is a
+// process-level sandbox / cwd-jail guarantee around the worker, deferred to the
+// item-3 cross-model roadmap (no sandbox is built in this slice). The shipped
+// httpWorker reports its writes faithfully, so it is fully covered today.
+//
+// Returns a rejection reason (matching the existing /escapes worktree/ and
+// read-only/tampered note patterns), or null when every REPORTED path is
+// contained and none touches the read-only test.
+// --------------------------------------------------------------------------
+function postApplySweep(
+  cwd: string,
+  filesWritten: string[],
+  forbidden: Set<string>,
+): string | null {
+  for (const f of filesWritten) {
+    const absPath = path.resolve(cwd, f);
+    // Containment: nothing the worker produced may escape the worktree.
+    if (!isInside(cwd, absPath)) {
+      return `path escapes worktree: ${f}`;
+    }
+    // The failing test is read-only — reject a worker that wrote it, normalizing
+    // to forward slashes (plan paths are POSIX; path.relative emits backslashes
+    // on Windows and the guard would otherwise miss).
+    const rel = path.relative(cwd, absPath).split(path.sep).join("/");
+    if (forbidden.has(rel)) {
+      return `worker wrote read-only path: ${rel}`;
+    }
+  }
+  return null;
 }
 
 // --------------------------------------------------------------------------
@@ -414,12 +724,8 @@ async function antiGamingCheck(
   cwd: string,
   task: Task,
 ): Promise<{ risk: "none" | "warn" | "high"; note?: string }> {
-  let testSrc = "";
-  try {
-    testSrc = await readFile(path.resolve(cwd, task.test.path), "utf8");
-  } catch {
-    return { risk: "none" };
-  }
+  const testSrc = await readWorktreeFile(cwd, task.test.path);
+  if (testSrc === null) return { risk: "none" };
   const literals = extractLiterals(testSrc).filter((l) => l.length > 1 || /\d{2,}/.test(l));
   if (literals.length === 0) return { risk: "none" };
 
@@ -427,12 +733,8 @@ async function antiGamingCheck(
   let anyTiny = false;
   for (const f of task.filesInScope) {
     if (f === task.test.path) continue;
-    let src = "";
-    try {
-      src = await readFile(path.resolve(cwd, f), "utf8");
-    } catch {
-      continue;
-    }
+    const src = await readWorktreeFile(cwd, f);
+    if (src === null) continue;
     const tiny = codeLineCount(src) <= 5;
     for (const lit of literals) {
       if (src.includes(lit)) {
@@ -547,12 +849,8 @@ async function mutationCheck(wt: string, task: Task): Promise<MutationResult | n
   const originals = new Map<string, string>();
   let candidates: Array<{ file: string; mutated: string; tag: string }> = [];
   for (const f of impl) {
-    let src: string;
-    try {
-      src = await readFile(path.resolve(wt, f), "utf8");
-    } catch {
-      continue;
-    }
+    const src = await readWorktreeFile(wt, f);
+    if (src === null) continue;
     if (codeLineCount(src) <= 2) continue; // trivial file — nothing to constrain
     originals.set(f, src);
     candidates.push(...generateMutants(f, src));
@@ -622,23 +920,60 @@ async function prepareWorktree(branch: string, wt: string, from: string): Promis
   return null;
 }
 
-async function runTask(
+// Injectable dependencies for runTask. Every field defaults to the real
+// implementation, so callers (main/canary) get unchanged behavior. The seam
+// exists so the task-execution path can drive a stub Worker — and stub its
+// git/process/fs effects — under unit test without the network. The worker is
+// injected here (not called as runWorker directly), which is the AC-01 cut.
+export type RunTaskDeps = {
+  worker: Worker;
+  prepareWorktree: typeof prepareWorktree;
+  resetWorktree: typeof resetWorktree;
+  fileHash: typeof fileHash;
+  checkDrift: typeof checkDrift;
+  runGate: typeof runGate;
+  antiGamingCheck: typeof antiGamingCheck;
+  mutationCheck: typeof mutationCheck;
+  git: typeof git;
+  withMergeLock: typeof withMergeLock;
+};
+
+const defaultRunTaskDeps = (): RunTaskDeps => ({
+  worker: httpWorker,
+  prepareWorktree,
+  resetWorktree,
+  fileHash,
+  checkDrift,
+  runGate,
+  antiGamingCheck,
+  mutationCheck,
+  git,
+  withMergeLock,
+});
+
+export async function runTask(
   t: Task,
   model: string,
   apiBaseUrl: string,
   apiKey: string,
+  deps: RunTaskDeps = defaultRunTaskDeps(),
 ): Promise<Result> {
   const branch = `farm/${t.id}`;
   const wt = path.resolve(ENV.worktreeRoot, t.id);
   const limit = t.maxRetries ?? ENV.maxRetries;
+  // Per-task model (AC-02): layer the optional task-level override on top of the
+  // run-level resolved model (the `model` param, from resolveConfig:
+  // ENV.model ?? plan.meta.model — itself unchanged). Absent task.model →
+  // effectiveModel === model, i.e. exactly today's behavior. Model id only.
+  const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
   const forbidden = new Set([t.test.path]);
 
-  const prepErr = await prepareWorktree(branch, wt, ENV.integration);
+  const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return { id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr };
 
-  const testHashBefore = await fileHash(path.resolve(wt, t.test.path));
+  const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
 
   let priorFailure: string | undefined;
   let driftedOnce = false;
@@ -649,16 +984,21 @@ async function runTask(
   let mutationScore: number | null = null;
 
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
-    if (attempt > 1) await resetWorktree(wt); // never accumulate stale files
+    if (attempt > 1) await deps.resetWorktree(wt); // never accumulate stale files
 
-    const worker = await runWorker(
-      wt,
-      buildPrompt(t, priorFailure, driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : undefined),
-      model,
+    // Enrichment (AC-03/AC-04): read the per-attempt worktree state — AFTER any
+    // reset above — so the test source and existing in-scope file contents
+    // reflect what the worker would actually see this attempt.
+    const injected = await buildEnrichment(wt, t);
+
+    const worker = await deps.worker.apply({
+      cwd: wt,
+      prompt: buildPrompt(t, injected, priorFailure, driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : undefined),
+      model: effectiveModel,
       apiBaseUrl,
       apiKey,
       forbidden,
-    );
+    });
     promptTokens += worker.promptTokens ?? 0;
     completionTokens += worker.completionTokens ?? 0;
     lastFilesWritten = worker.filesWritten;
@@ -668,9 +1008,22 @@ async function runTask(
       continue;
     }
 
+    // Post-apply containment sweep (D6) — task-level enforcement over the
+    // worker's REPORTED writes (see postApplySweep header). Inspects the
+    // `filesWritten` the worker returned, so an escape or a read-only-test write
+    // is rejected even when the worker bypassed runWorker's inline guard —
+    // provided the path was reported. A NON-REPORTING worker that writes outside
+    // its reported set is NOT covered here ([NEEDS-TRIAGE], deferred to the
+    // item-3 sandbox). Runs alongside the checkDrift allowlist sweep below; the
+    // inline guards remain defense-in-depth.
+    const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
+    if (sweepErr) {
+      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+    }
+
     // The failing test must be untouched (defence in depth — the write path
     // already refuses test.path, this catches a sneaky in-scope edit too).
-    const testHashAfter = await fileHash(path.resolve(wt, t.test.path));
+    const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
     if (testHashBefore !== null && testHashAfter !== testHashBefore) {
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
     }
@@ -678,7 +1031,7 @@ async function runTask(
     // Drift: on the FIRST drift, retry once with a hardened prompt naming the
     // offending paths — usually the cheap model is just being dumb, not the
     // spec being ambiguous. Only escalate as drift after that retry.
-    const driftFiles = await checkDrift(wt, allowed);
+    const driftFiles = await deps.checkDrift(wt, allowed);
     if (driftFiles.length > 0) {
       if (!driftedOnce && attempt <= limit) {
         driftedOnce = true;
@@ -688,19 +1041,25 @@ async function runTask(
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
     }
 
-    const gate = await runGate(wt, t.gate.commands);
+    const gate = await deps.runGate(wt, t.gate.commands);
     if (!gate.ok) {
-      priorFailure = `failed: ${gate.failed}\n${gate.tail}`;
+      // FINDING 2: redact the WHOLE priorFailure that reaches the next worker
+      // prompt — not just the gate.tail (already redacted in runGate). The
+      // failing command line (gate.failed) is echoed verbatim too, so a secret
+      // embedded in a gate command would otherwise cross the trust boundary.
+      // redactSecrets is idempotent, so re-running it over the already-redacted
+      // tail is safe.
+      priorFailure = redactSecrets(`failed: ${gate.failed}\n${gate.tail}`);
       continue;
     }
 
     // Zero-token anti-gaming guard: fast literal-leak pass, then the deeper
     // mutation pass (skipped if the leak pass already says "high").
-    const gaming = await antiGamingCheck(wt, t);
+    const gaming = await deps.antiGamingCheck(wt, t);
     let risk = gaming.risk;
     let riskNote = gaming.note;
     if (risk !== "high") {
-      const mut = await mutationCheck(wt, t);
+      const mut = await deps.mutationCheck(wt, t);
       if (mut) {
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
@@ -724,26 +1083,47 @@ async function runTask(
     // Commit + merge into the dedicated integration worktree.
     // B-1: stage only the files the worker actually wrote, not everything in the
     // worktree — git add -A would silently include any stale or injected files.
-    await git(["add", "--", ...worker.filesWritten], wt);
-    const commit = await git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
+    await deps.git(["add", "--", ...worker.filesWritten], wt);
+    const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
     if (commit.code !== 0)
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
 
-    const diffstat = (await git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
+    const diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
 
-    const merged = await withMergeLock(async () => {
-      const m = await git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
+    // Merge into the integration branch is INSIDE the attempt loop (AC-07/D4):
+    // a conflict is treated like a gate failure and re-enters regeneration,
+    // consuming ONE of the existing `maxRetries` attempts rather than escalating
+    // instantly. The merge stays serialized under withMergeLock so the
+    // integration worktree is never touched concurrently (T-06 prevents most
+    // overlaps; this is the residual defense-in-depth case).
+    const merged = await deps.withMergeLock(async () => {
+      const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
       if (m.code !== 0) {
-        await git(["merge", "--abort"], integrationWorktree).catch(() => {});
+        await deps.git(["merge", "--abort"], integrationWorktree).catch(() => {});
         return m.out;
       }
       return null;
     });
-    if (merged !== null)
+    if (merged !== null) {
+      // Regenerate-on-conflict (AC-07): with retries left, rebuild against the
+      // UPDATED baseline instead of escalating. Reset the task worktree+branch
+      // onto the new integration HEAD (so the next attempt cuts from what the
+      // merge target now contains), then re-run the worker with a redacted,
+      // concise merge-conflict note seeded into priorFailure. resetWorktree at
+      // the loop top is then a no-op reset to this same HEAD. Per D4 this is NOT
+      // a new unbounded loop — it spends one of the existing attempts.
+      if (attempt <= limit) {
+        await deps.git(["reset", "--hard", ENV.integration], wt).catch(() => {});
+        await deps.git(["clean", "-fd"], wt).catch(() => {});
+        priorFailure = redactSecrets(`merge conflict vs integration: rebuild against the updated baseline (integration HEAD moved)\n${String(merged).slice(0, 160)}`);
+        continue;
+      }
+      // retries exhausted — escalate exactly as before (worktree left for inspection)
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+    }
 
     // success — drop the worktree (branch stays, merged into integration)
-    await git(["worktree", "remove", "--force", wt]).catch(() => {});
+    await deps.git(["worktree", "remove", "--force", wt]).catch(() => {});
     return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore };
   }
 
@@ -754,6 +1134,23 @@ async function runTask(
 // --------------------------------------------------------------------------
 // validation — duplicate ids, unknown deps, AND cycles
 // --------------------------------------------------------------------------
+// Intentional divergence from plan.schema.json's task `id` pattern
+// (`^[a-z0-9][a-z0-9-]*$`, strict kebab-case). The two are NOT meant to match:
+//   - The schema `id` pattern is the AUTHORING contract — what writing-plans is
+//     allowed to emit. It is deliberately narrow (kebab-case) for readable
+//     branch names.
+//   - SAFE_TASK_ID is the RUNTIME path-traversal defense. The id becomes a
+//     branch name (`farm/<id>`) and a worktree directory, so this check must
+//     hold regardless of HOW a plan was produced — including a hand-edited or
+//     non-schema-validated plan that never went through the authoring gate.
+//     It is therefore broader (`[A-Za-z0-9._-]`, capped at 64) but still admits
+//     only characters that cannot escape a path or branch ref.
+// Neither side is widened to match the other: tightening SAFE_TASK_ID to
+// kebab-case would weaken the runtime defense's independence from the authoring
+// layer, and widening the schema would loosen the authoring contract. A cleaner
+// reconciliation (a single shared, runtime-strict pattern enforced by validate()
+// AND advertised by the schema) is possible but is a behavior change to id
+// acceptance and out of scope for AC-02 — noted, not made. [NEEDS-TRIAGE]
 export const SAFE_TASK_ID = /^[A-Za-z0-9._-]{1,64}$/;
 
 // Single source of truth for the outbound base-URL scheme rule: require HTTPS,
@@ -919,6 +1316,14 @@ async function main() {
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
 
+  // Streaming rail (AC-08 / D7): the incremental, append-only record of settled
+  // tasks, consumed in completion order. Truncate/initialize it at run start so
+  // a re-run does not accumulate stale lines (the "safe to run twice" invariant).
+  // The authoritative final summary remains farm-report.json (written in the
+  // finally, even on abort); on abort the consumer reconciles against it.
+  const resultsStream = path.join(ENV.reportDir, "farm-results.jsonl");
+  await writeFile(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
+
   const done = new Map<string, Result>();
   const blocked: { id: string; reason: string }[] = [];
   let aborted = false;
@@ -940,11 +1345,43 @@ async function main() {
     const pending = new Set(plan.tasks.map((t) => t.id));
     const running = new Map<string, Promise<{ id: string; r: Result }>>();
 
+    // AC-06: scope-aware readiness. Two tasks whose filesInScope intersect
+    // collide at merge time if dispatched concurrently, and a later-cut worktree
+    // would miss the earlier task's merge. This is enforced as a DERIVED
+    // readiness filter — never written as a `deps` edge — so it cannot create a
+    // plan-validation cycle (Risks: "Scheduling deadlock/starvation").
+    const scopeOf = (id: string) => new Set(byId.get(id)!.filesInScope ?? []);
+    const overlaps = (a: Set<string>, b: Iterable<string>) => {
+      for (const f of b) if (a.has(f)) return true;
+      return false;
+    };
+
     const ready = () =>
       [...pending].filter((id) => {
         const deps = byId.get(id)!.deps ?? [];
         if (deps.some((d) => escalated.has(d))) return false;
-        return deps.every((d) => done.get(d)?.status === "green");
+        if (!deps.every((d) => done.get(d)?.status === "green")) return false;
+
+        // A candidate is ready iff its written deps are green (above) AND no
+        // overlapping sibling is still in flight or ordered ahead of it:
+        //   - no currently-RUNNING task with intersecting filesInScope, AND
+        //   - no still-PENDING task with intersecting filesInScope and a lower
+        //     (lexicographic) id.
+        // Effect: among an overlapping group, members run sequentially in id
+        // order, each cutting its worktree from the integration HEAD that already
+        // contains the prior member's merge. A SETTLED sibling (green-merged or
+        // escalated) is neither running nor pending, so it no longer blocks —
+        // hence no deadlock and no starvation.
+        const myScope = scopeOf(id);
+        if (myScope.size === 0) return true;
+        for (const rid of running.keys()) {
+          if (overlaps(myScope, scopeOf(rid))) return false;
+        }
+        for (const pid of pending) {
+          if (pid === id) continue;
+          if (pid < id && overlaps(myScope, scopeOf(pid))) return false;
+        }
+        return true;
       });
 
     const tripped = () => {
@@ -973,6 +1410,11 @@ async function main() {
       const { id, r } = await Promise.race(running.values());
       running.delete(id);
       done.set(id, r);
+      // Streaming rail (AC-08 / D7): append this settled task as one JSONL line
+      // the moment it settles, so a pipelined consumer can act in completion
+      // order. Resilient by design — mirror the report-write .catch so a stream
+      // failure logs but never crashes the run (the report stays authoritative).
+      await appendFile(resultsStream, JSON.stringify(r) + "\n").catch((e) => console.error("results stream append failed:", e));
       if (r.status === "escalate") escalated.add(id);
     }
 
