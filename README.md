@@ -306,11 +306,13 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
 ├── commands/   (34)   skills/   (20)   agents/   (15)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
-├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline
+├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
 ```
 
 **Skills** encode gated processes: `tdd`, `commit-gate`, `decision-variance`/SMARTS, `debug`, `refactor`, and the dynamic brainstorm → plan → execute workflow layer. **Agents** are the dispatched reviewers and authors: security, auth/crypto, dependency, migration, coverage, and architecture-drift reviewers, the design-quality reviewer, plus the backend/frontend/infra authors and the scout/grader/triage plumbing.
+
+**Hooks** are how the plugin stays active in your repo, and they run code on your machine — so they're documented in full: [`docs/hooks.md`](./docs/hooks.md) covers every hook, exactly what it reads and writes, and the invariant that **no hook makes a network call**.
 
 <details>
 <summary><b>Why "decisive and terse"?</b></summary>
