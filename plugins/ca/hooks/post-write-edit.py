@@ -19,6 +19,7 @@ from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, arbiter_active, project_root, read_input, remind,
     tool_input, utf8_stdio,
 )
+from _sloplib import find_prose_separator_dashes, in_antislop_doc_scope  # noqa: E402
 
 DEP_MANIFEST_RE = re.compile(
     r"(package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|requirements\.txt"
@@ -113,6 +114,19 @@ def main():
     if SECRET_RE.search(content):
         remind("H-10", "Possible hardcoded secret. Run the secret-handling check before "
                        "committing. The commit will block until the gate records a pass.")
+
+    # H-13: a user-facing doc was written with an em/en dash used as a prose
+    # separator (anti-slop-design core §3.A, the single highest-signal AI tell).
+    # Advisory nudge to run the copy self-audit before it ships. Scope is community
+    # docs + docs/**, never codeArbiter's own framework bodies (see _sloplib).
+    if rel and not rel.startswith("..") and in_antislop_doc_scope(rel):
+        hits = find_prose_separator_dashes(content)
+        if hits:
+            shown = ", ".join(str(h["line"]) for h in hits[:5])
+            more = "" if len(hits) <= 5 else f" (+{len(hits) - 5} more)"
+            remind("H-13", f"{rel}: em/en dash used as a prose separator on line(s) "
+                           f"{shown}{more} (anti-slop-design §3.A). Restructure the prose "
+                           f"and run the §3.A/§3.B copy self-audit before committing.")
 
     sys.exit(0)
 
