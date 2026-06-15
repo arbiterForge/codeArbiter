@@ -304,6 +304,42 @@ Every intent flows through a command; direct off-channel instructions get redire
 
 </details>
 
+## Decisions go through SMARTS
+
+When the arbiter hits an architectural fork — two `accepted` ADRs that disagree, a spec that says one thing and a scaffold that does another, an open question with real trade-offs — it does not pick for you and it does not hand you a naked "A or B?" Every option is scored through **SMARTS**, a fixed six-lens evaluation, and the choice it presents carries that analysis with it.
+
+The six lenses, applied evenhandedly to every option:
+
+| Lens | Asks |
+|---|---|
+| **S**calable | Does it absorb growth in users, data, throughput, geography without an architectural rewrite? |
+| **M**aintainable | Can it be understood, modified, and extended later — by a human or an agent — without prohibitive effort? |
+| **A**vailable | Is it reachable and functional when needed, including under partial failure? |
+| **R**eliable | Are outcomes correct, predictable, and durable — ACID where it matters, recovery without corruption? |
+| **T**estable | Can deterministic, fast tests cover the real failure modes? ("Tests later" is a `Weak` verdict.) |
+| **S**ecurable | Does it satisfy the project's security posture without a retrofit? |
+
+Each lens gets one cell per option, and the cells are **constrained, not prose**: verdict first — `Strong`, `Adequate`, `Weak`, or `Indifferent` (the lens doesn't separate the options at this scale) — then at most 20 words of justification, no hedging adverbs, and evidence that cites a specific property or failure mode rather than "industry standard." A cell that breaks the rules is rejected.
+
+That is what lands in front of you — a table, not an opinion:
+
+| Lens | Bundle the auth engine | Customer-provided |
+|---|---|---|
+| Scalable | Adequate. Sub-ms decisions sufficient at 50-user scale. | Adequate. Same ceiling, adds a network hop. |
+| Maintainable | Strong. One package owns versioning and integration. | Weak. Two release cycles must coordinate. |
+| Available | Strong. Available whenever the system is. | Weak. Depends on customer infrastructure. |
+| Reliable | Strong. Failure contained in the deployment boundary. | Weak. Failure surface includes customer network. |
+| Testable | Strong. Local test env is one package install. | Weak. Requires standing up two services. |
+| Securable | Strong. Self-contained mandate satisfied. | Weak. Cross-service auditing is harder. |
+
+**Recommendation:** Bundle. Strength: **strong** — Securable and Available dominate cleanly; no lens favors external enough to override.
+
+Every recommendation carries exactly one **strength label** — `strong` (dominant lenses align, confirmed by non-SMARTS factors), `moderate` (a single lens dominates, or alignment with caveats), or `tied` ("this is a coin flip under SMARTS — your call"). There is no `weak`; a slight edge is `moderate`. Below each table a `Precedent:` line cites the 1–3 most similar prior decisions and which lens they turned on, so the recommendation reflects how *you've* broken ties before — or says `none on record` rather than inventing a pattern. SMARTS deliberately stays out of cost, time-to-market, team-skill fit, and vendor lock-in; when those matter they're surfaced as **non-SMARTS considerations** beside the table, never folded into it.
+
+**You still decide.** The arbiter recommends, it does not push, and it will not record a decision you didn't explicitly make — "use your best judgment," "I trust you," "we're short on time" are declined, because the decision log is append-only and every entry is attributed to a person. Your choice is written immediately, with the SMARTS rationale that drove it, and never edited; to change course you append a superseding entry. This runs whenever a choice surfaces — interactively through <kbd>/ca:reconcile</kbd> (the full variance pass over artifacts vs. scaffold) and on any fork inside a feature.
+
+**One deliberate exception: autonomy.** <kbd>/ca:sprint</kbd> reuses the same six-lens *scoring* to decide "as the user" on every non-hard-gate point — but only the scoring, never the "never decide alone" rule. Each auto-decision is logged to `.codearbiter/sprint-log.md` with the options weighed, the verdict, the strength, and a **confidence flag**: `high` for `strong`, `low` for anything `moderate` or `tied`. Those `low`-confidence calls are exactly what you skim in the morning — autonomy with a paper trail. Security boundaries, irreversible operations, gate bypasses, and a `[CONFIRM-NN]` the spec can't resolve still stop and wait for you.
+
 ## The gates
 
 The non-negotiables codeArbiter enforces in every enabled repo:
