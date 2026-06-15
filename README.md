@@ -98,6 +98,56 @@ The plugin itself → `~/.claude/plugins/cache/`
 </tr>
 </table>
 
+## The gates
+
+The non-negotiables codeArbiter enforces in every enabled repo:
+
+- **No feature code before `tdd` Phase 1**: a failing test comes first.
+- **No commit without `commit-gate`**, and never on a red suite. "It looks good" is not permission.
+- **No `[CONFIRM-NN]` resolved by guessing**: the question is surfaced and work stops.
+- **No silent reconciliation** of a conflict between persona, docs, and code; it routes to `/ca:conflict`.
+- **No direct-to-`main`, no force-push**: all changes via branch/PR.
+- **ADRs only via `/ca:adr`**, with explicit user attribution; an ADR with a `governs:` field pushes back at edit time on the files it constrains.
+- **Every `/ca:override`, `/ca:dev` session, and small-lane triage call is logged** to append-only audit logs the hooks mechanically protect from rewrite.
+
+When rules pull apart, they resolve by a fixed hierarchy (security & audit-trail correctness first, then data integrity, maintainability, performance, velocity), and a non-obvious tradeoff cites the level it was made at.
+
+## Decisions go through SMARTS
+
+When the arbiter hits an architectural fork — two `accepted` ADRs that disagree, a spec that says one thing and a scaffold that does another, an open question with real trade-offs — it does not pick for you and it does not hand you a naked "A or B?" Every option is scored through **SMARTS**, a fixed six-lens evaluation, and the choice it presents carries that analysis with it.
+
+The six lenses, applied evenhandedly to every option:
+
+| Lens | Asks |
+|---|---|
+| **S**calable | Does it absorb growth in users, data, throughput, geography without an architectural rewrite? |
+| **M**aintainable | Can it be understood, modified, and extended later — by a human or an agent — without prohibitive effort? |
+| **A**vailable | Is it reachable and functional when needed, including under partial failure? |
+| **R**eliable | Are outcomes correct, predictable, and durable — ACID where it matters, recovery without corruption? |
+| **T**estable | Can deterministic, fast tests cover the real failure modes? ("Tests later" is a `Weak` verdict.) |
+| **S**ecurable | Does it satisfy the project's security posture without a retrofit? |
+
+Each lens gets one cell per option, and the cells are **constrained, not prose**: verdict first — `Strong`, `Adequate`, `Weak`, or `Indifferent` (the lens doesn't separate the options at this scale) — then at most 20 words of justification, no hedging adverbs, and evidence that cites a specific property or failure mode rather than "industry standard." A cell that breaks the rules is rejected.
+
+That is what lands in front of you — a table, not an opinion:
+
+| Lens | Bundle the auth engine | Customer-provided |
+|---|---|---|
+| Scalable | Adequate. Sub-ms decisions sufficient at 50-user scale. | Adequate. Same ceiling, adds a network hop. |
+| Maintainable | Strong. One package owns versioning and integration. | Weak. Two release cycles must coordinate. |
+| Available | Strong. Available whenever the system is. | Weak. Depends on customer infrastructure. |
+| Reliable | Strong. Failure contained in the deployment boundary. | Weak. Failure surface includes customer network. |
+| Testable | Strong. Local test env is one package install. | Weak. Requires standing up two services. |
+| Securable | Strong. Self-contained mandate satisfied. | Weak. Cross-service auditing is harder. |
+
+**Recommendation:** Bundle. Strength: **strong** — Securable and Available dominate cleanly; no lens favors external enough to override.
+
+Every recommendation carries exactly one **strength label** — `strong` (dominant lenses align, confirmed by non-SMARTS factors), `moderate` (a single lens dominates, or alignment with caveats), or `tied` ("this is a coin flip under SMARTS — your call"). There is no `weak`; a slight edge is `moderate`. Below each table a `Precedent:` line cites the 1–3 most similar prior decisions and which lens they turned on, so the recommendation reflects how *you've* broken ties before — or says `none on record` rather than inventing a pattern. SMARTS deliberately stays out of cost, time-to-market, team-skill fit, and vendor lock-in; when those matter they're surfaced as **non-SMARTS considerations** beside the table, never folded into it.
+
+**You still decide.** The arbiter recommends, it does not push, and it will not record a decision you didn't explicitly make — "use your best judgment," "I trust you," "we're short on time" are declined, because the decision log is append-only and every entry is attributed to a person. Your choice is written immediately, with the SMARTS rationale that drove it, and never edited; to change course you append a superseding entry. This runs whenever a choice surfaces — interactively through <kbd>/ca:reconcile</kbd> (the full variance pass over artifacts vs. scaffold) and on any fork inside a feature.
+
+**One deliberate exception: autonomy.** <kbd>/ca:sprint</kbd> reuses the same six-lens *scoring* to decide "as the user" on every non-hard-gate point — but only the scoring, never the "never decide alone" rule. Each auto-decision is logged to `.codearbiter/sprint-log.md` with the options weighed, the verdict, the strength, and a **confidence flag**: `high` for `strong`, `low` for anything `moderate` or `tied`. Those `low`-confidence calls are exactly what you skim in the morning — autonomy with a paper trail. Security boundaries, irreversible operations, gate bypasses, and a `[CONFIRM-NN]` the spec can't resolve still stop and wait for you.
+
 ## Install
 
 codeArbiter self-hosts a single-plugin marketplace from this repo.
@@ -162,66 +212,6 @@ Every optional behavior is **off by default** and opt-in through an environment 
 | `CODEARBITER_BABYSIT_ONRED` | `propose` | The watcher's depth on a red check: `propose` (name the cause, suggest a fix, touch nothing) or `branch` (additionally stage the fix on an unmergeable `spike/fix-*`). |
 
 Every flag is shipped off, never auto-enabled, and dormant in a repo without `arbiter: enabled`. Preview features carry their own opt-ins; see [**Feature Forge**](#feature-forge) below.
-
-## Feature Forge
-
-<div align="center"><img src="docs/feature-forge.svg" alt="The Feature Forge. Preview features: built, tested, shipping, not yet blessed" width="100%"></div>
-
-Some features are built, tested, and shipping in the box, but not yet *blessed*. They live in the **Feature Forge**: off by default, fully dormant until you opt in, and labeled `preview` until real-world data earns them a promotion to a stable release. Nothing here touches your repo or your gates unless you turn it on.
-
-**This is also where you come in.** A preview graduates when the evidence says it's ready, and that evidence comes from people running it. Each feature gives you a low-risk way to contribute that evidence — a `dry` mode, or a structured run report — see each below. Send that data back and you pull the promote date forward.
-
-### In the forge now
-
-| Feature | Opt-in | Status | How to help it graduate |
-|---|---|---|---|
-| [Live transcript pruning](#live-transcript-pruning) | `CODEARBITER_PRUNE=dry` | `preview` | run `dry`, send the log |
-| [Pluggable execution farm](#pluggable-execution-farm) | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
-
-#### Live transcript pruning
-
-**What it does.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom. The pruner trims redundant clutter so a session lives longer; gains land at resume/compaction, never mid-turn.
-
-**Opt-in.** `CODEARBITER_PRUNE` — three modes:
-
-| `CODEARBITER_PRUNE` | What happens |
-|---|---|
-| `off` *(default)* | nothing, fully dormant |
-| `dry` | **report only**: computes every prune it *would* make and logs the evidence; your transcript is untouched |
-| `on` | actually trims, at resume/compaction |
-
-Fine-tune with `CODEARBITER_PRUNE_TIER` (which passes run), `CODEARBITER_PRUNE_KEEP_RECENT` (protect the K most recent turns), and `CODEARBITER_PRUNE_MIN_GROWTH` / `CODEARBITER_PRUNE_MAXBYTES` (when a prune triggers / cap on bytes removed). Full detail in <kbd>/ca:prune</kbd>.
-
-**Why it's preview.** The `dry → on` go/no-go needs real-session evidence before pruning is blessed to touch live transcripts on by default.
-
-**Help promote it: run `dry`, send the log.**
-
-```sh
-export CODEARBITER_PRUNE=dry      # collect evidence, change nothing
-```
-
-`dry` mode appends one JSONL row per decision to `~/.codearbiter/metrics/prune-dry.jsonl` (relocate it with `CODEARBITER_PRUNE_METRICS`). Each row carries only the **would-be reduction, per-strategy savings, and a validation verdict**: sizes and strategy names, **no transcript content**. That file is the entire evidence base for the `dry → on` go/no-go.
-
-After a few sessions, [**open a "prune data" issue**](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune) and attach or paste your `prune-dry.jsonl`. The more real sessions come back, the sooner pruning leaves the forge. Thank you for forging. 🔨
-
-#### Pluggable execution farm
-
-**What it does.** <kbd>/ca:sprint --farm</kbd> runs the implementation step through a `Worker` seam in isolated git worktrees under the same hard gates, instead of a premium subagent. The cheap HTTP-chat worker ships today; the seam is built to admit **premium and agentic** workers behind the same gates (roadmap, not yet built). The worker prompt is enriched with the failing-test source and in-scope files — byte-capped and secret-redacted before transmission. Claude still writes the spec, failing tests, and plan, and **every green task still routes through the full spec-compliance + quality + fresh-verification chain** — a worker can pass the gates, never redefine them.
-
-**Opt-in.** <kbd>/ca:sprint --farm</kbd> (needs `FARM_API_KEY`).
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `FARM_API_KEY` | _(required)_ | OpenAI-compatible provider key; never committed, never in audit files. |
-| `FARM_MODEL` | _(unset)_ | Skip selection; otherwise the model is auto-selected by measured canary at dispatch. |
-| `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on test-source + in-scope context injected into the worker prompt (redacted for secrets). |
-| `FARM_CONCURRENCY` | `4` | Max concurrent task workers. |
-
-Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty note) is in <kbd>/ca:sprint</kbd> and the farm setup doc.
-
-**Why it's preview / promotion bar.** Not yet validated on real runs, so it ships off and stays `preview`. The promotion bar is the open question `CONFIRM-05`.
-
-**Help promote it: run a real sprint, report results.** Run a real <kbd>/ca:sprint --farm</kbd> and report back the per-task pass-rates and any gate escapes you see. That evidence feeds `CONFIRM-05` — real-run data is exactly what moves the farm out of the forge.
 
 ## Commands
 
@@ -304,56 +294,6 @@ Every intent flows through a command; direct off-channel instructions get redire
 
 </details>
 
-## Decisions go through SMARTS
-
-When the arbiter hits an architectural fork — two `accepted` ADRs that disagree, a spec that says one thing and a scaffold that does another, an open question with real trade-offs — it does not pick for you and it does not hand you a naked "A or B?" Every option is scored through **SMARTS**, a fixed six-lens evaluation, and the choice it presents carries that analysis with it.
-
-The six lenses, applied evenhandedly to every option:
-
-| Lens | Asks |
-|---|---|
-| **S**calable | Does it absorb growth in users, data, throughput, geography without an architectural rewrite? |
-| **M**aintainable | Can it be understood, modified, and extended later — by a human or an agent — without prohibitive effort? |
-| **A**vailable | Is it reachable and functional when needed, including under partial failure? |
-| **R**eliable | Are outcomes correct, predictable, and durable — ACID where it matters, recovery without corruption? |
-| **T**estable | Can deterministic, fast tests cover the real failure modes? ("Tests later" is a `Weak` verdict.) |
-| **S**ecurable | Does it satisfy the project's security posture without a retrofit? |
-
-Each lens gets one cell per option, and the cells are **constrained, not prose**: verdict first — `Strong`, `Adequate`, `Weak`, or `Indifferent` (the lens doesn't separate the options at this scale) — then at most 20 words of justification, no hedging adverbs, and evidence that cites a specific property or failure mode rather than "industry standard." A cell that breaks the rules is rejected.
-
-That is what lands in front of you — a table, not an opinion:
-
-| Lens | Bundle the auth engine | Customer-provided |
-|---|---|---|
-| Scalable | Adequate. Sub-ms decisions sufficient at 50-user scale. | Adequate. Same ceiling, adds a network hop. |
-| Maintainable | Strong. One package owns versioning and integration. | Weak. Two release cycles must coordinate. |
-| Available | Strong. Available whenever the system is. | Weak. Depends on customer infrastructure. |
-| Reliable | Strong. Failure contained in the deployment boundary. | Weak. Failure surface includes customer network. |
-| Testable | Strong. Local test env is one package install. | Weak. Requires standing up two services. |
-| Securable | Strong. Self-contained mandate satisfied. | Weak. Cross-service auditing is harder. |
-
-**Recommendation:** Bundle. Strength: **strong** — Securable and Available dominate cleanly; no lens favors external enough to override.
-
-Every recommendation carries exactly one **strength label** — `strong` (dominant lenses align, confirmed by non-SMARTS factors), `moderate` (a single lens dominates, or alignment with caveats), or `tied` ("this is a coin flip under SMARTS — your call"). There is no `weak`; a slight edge is `moderate`. Below each table a `Precedent:` line cites the 1–3 most similar prior decisions and which lens they turned on, so the recommendation reflects how *you've* broken ties before — or says `none on record` rather than inventing a pattern. SMARTS deliberately stays out of cost, time-to-market, team-skill fit, and vendor lock-in; when those matter they're surfaced as **non-SMARTS considerations** beside the table, never folded into it.
-
-**You still decide.** The arbiter recommends, it does not push, and it will not record a decision you didn't explicitly make — "use your best judgment," "I trust you," "we're short on time" are declined, because the decision log is append-only and every entry is attributed to a person. Your choice is written immediately, with the SMARTS rationale that drove it, and never edited; to change course you append a superseding entry. This runs whenever a choice surfaces — interactively through <kbd>/ca:reconcile</kbd> (the full variance pass over artifacts vs. scaffold) and on any fork inside a feature.
-
-**One deliberate exception: autonomy.** <kbd>/ca:sprint</kbd> reuses the same six-lens *scoring* to decide "as the user" on every non-hard-gate point — but only the scoring, never the "never decide alone" rule. Each auto-decision is logged to `.codearbiter/sprint-log.md` with the options weighed, the verdict, the strength, and a **confidence flag**: `high` for `strong`, `low` for anything `moderate` or `tied`. Those `low`-confidence calls are exactly what you skim in the morning — autonomy with a paper trail. Security boundaries, irreversible operations, gate bypasses, and a `[CONFIRM-NN]` the spec can't resolve still stop and wait for you.
-
-## The gates
-
-The non-negotiables codeArbiter enforces in every enabled repo:
-
-- **No feature code before `tdd` Phase 1**: a failing test comes first.
-- **No commit without `commit-gate`**, and never on a red suite. "It looks good" is not permission.
-- **No `[CONFIRM-NN]` resolved by guessing**: the question is surfaced and work stops.
-- **No silent reconciliation** of a conflict between persona, docs, and code; it routes to `/ca:conflict`.
-- **No direct-to-`main`, no force-push**: all changes via branch/PR.
-- **ADRs only via `/ca:adr`**, with explicit user attribution; an ADR with a `governs:` field pushes back at edit time on the files it constrains.
-- **Every `/ca:override`, `/ca:dev` session, and small-lane triage call is logged** to append-only audit logs the hooks mechanically protect from rewrite.
-
-When rules pull apart, they resolve by a fixed hierarchy (security & audit-trail correctness first, then data integrity, maintainability, performance, velocity), and a non-obvious tradeoff cites the level it was made at.
-
 ## What's inside
 
 ```text
@@ -382,6 +322,66 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 codeArbiter is built to be an enforcement layer, not a collaborator that talks you out of the rules. It states, it doesn't hedge; it enforces, it doesn't negotiate. The gates exist because the failure mode of an eager AI assistant is *plausible-but-wrong work that ships*. The orchestrator's job is to make that hard.
 
 </details>
+
+## Feature Forge
+
+<div align="center"><img src="docs/feature-forge.svg" alt="The Feature Forge. Preview features: built, tested, shipping, not yet blessed" width="100%"></div>
+
+Some features are built, tested, and shipping in the box, but not yet *blessed*. They live in the **Feature Forge**: off by default, fully dormant until you opt in, and labeled `preview` until real-world data earns them a promotion to a stable release. Nothing here touches your repo or your gates unless you turn it on.
+
+**This is also where you come in.** A preview graduates when the evidence says it's ready, and that evidence comes from people running it. Each feature gives you a low-risk way to contribute that evidence — a `dry` mode, or a structured run report — see each below. Send that data back and you pull the promote date forward.
+
+### In the forge now
+
+| Feature | Opt-in | Status | How to help it graduate |
+|---|---|---|---|
+| [Live transcript pruning](#live-transcript-pruning) | `CODEARBITER_PRUNE=dry` | `preview` | run `dry`, send the log |
+| [Pluggable execution farm](#pluggable-execution-farm) | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
+
+#### Live transcript pruning
+
+**What it does.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom. The pruner trims redundant clutter so a session lives longer; gains land at resume/compaction, never mid-turn.
+
+**Opt-in.** `CODEARBITER_PRUNE` — three modes:
+
+| `CODEARBITER_PRUNE` | What happens |
+|---|---|
+| `off` *(default)* | nothing, fully dormant |
+| `dry` | **report only**: computes every prune it *would* make and logs the evidence; your transcript is untouched |
+| `on` | actually trims, at resume/compaction |
+
+Fine-tune with `CODEARBITER_PRUNE_TIER` (which passes run), `CODEARBITER_PRUNE_KEEP_RECENT` (protect the K most recent turns), and `CODEARBITER_PRUNE_MIN_GROWTH` / `CODEARBITER_PRUNE_MAXBYTES` (when a prune triggers / cap on bytes removed). Full detail in <kbd>/ca:prune</kbd>.
+
+**Why it's preview.** The `dry → on` go/no-go needs real-session evidence before pruning is blessed to touch live transcripts on by default.
+
+**Help promote it: run `dry`, send the log.**
+
+```sh
+export CODEARBITER_PRUNE=dry      # collect evidence, change nothing
+```
+
+`dry` mode appends one JSONL row per decision to `~/.codearbiter/metrics/prune-dry.jsonl` (relocate it with `CODEARBITER_PRUNE_METRICS`). Each row carries only the **would-be reduction, per-strategy savings, and a validation verdict**: sizes and strategy names, **no transcript content**. That file is the entire evidence base for the `dry → on` go/no-go.
+
+After a few sessions, [**open a "prune data" issue**](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune) and attach or paste your `prune-dry.jsonl`. The more real sessions come back, the sooner pruning leaves the forge. Thank you for forging. 🔨
+
+#### Pluggable execution farm
+
+**What it does.** <kbd>/ca:sprint --farm</kbd> runs the implementation step through a `Worker` seam in isolated git worktrees under the same hard gates, instead of a premium subagent. The cheap HTTP-chat worker ships today; the seam is built to admit **premium and agentic** workers behind the same gates (roadmap, not yet built). The worker prompt is enriched with the failing-test source and in-scope files — byte-capped and secret-redacted before transmission. Claude still writes the spec, failing tests, and plan, and **every green task still routes through the full spec-compliance + quality + fresh-verification chain** — a worker can pass the gates, never redefine them.
+
+**Opt-in.** <kbd>/ca:sprint --farm</kbd> (needs `FARM_API_KEY`).
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `FARM_API_KEY` | _(required)_ | OpenAI-compatible provider key; never committed, never in audit files. |
+| `FARM_MODEL` | _(unset)_ | Skip selection; otherwise the model is auto-selected by measured canary at dispatch. |
+| `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on test-source + in-scope context injected into the worker prompt (redacted for secrets). |
+| `FARM_CONCURRENCY` | `4` | Max concurrent task workers. |
+
+Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty note) is in <kbd>/ca:sprint</kbd> and the farm setup doc.
+
+**Why it's preview / promotion bar.** Not yet validated on real runs, so it ships off and stays `preview`. The promotion bar is the open question `CONFIRM-05`.
+
+**Help promote it: run a real sprint, report results.** Run a real <kbd>/ca:sprint --farm</kbd> and report back the per-task pass-rates and any gate escapes you see. That evidence feeds `CONFIRM-05` — real-run data is exactly what moves the farm out of the forge.
 
 ## Project history
 
