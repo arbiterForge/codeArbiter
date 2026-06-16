@@ -10,7 +10,7 @@ stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to
 | Autonomous sprint | `/sprint` → `SPRINT.md` (brainstorm → plan → `subagent-driven-development`) | per-task impl authors + reviewers | One interactive spec gate; hard gates never auto-decided; every auto-decision logged |
 | Bug fix | `/fix` → `tdd` (bug variant) | impl author | Failing regression test before any fix code |
 | Docs edit / dep bump / revert | `/chore` (type-scaled gates) | `dependency-reviewer` for deps | No behavioral code; suite green for deps/revert; exits via `commit-gate` |
-| Exploratory question needing code | `/spike` → `spike/<slug>` branch | — | Never merges or PRs; exits to a findings note or `/feature` |
+| Exploratory throwaway spike | `/spike` → `spike` skill → `spike/<slug>` branch | — | Never merges or PRs; `commit-gate`-exempt (nothing on the branch can land); exits to a findings note or `/feature` |
 | Behavior-preserving restructure | `/refactor` → `refactor` skill | `tdd` Phase 1 (new seams only) | No refactor without parity-coverage proof |
 | Unknown defect / investigation | `/debug` → `debug` skill | — | No code change in the skill; one named exit |
 | Commit | `/commit` → `commit-gate` | — | No commit without all nine gates green |

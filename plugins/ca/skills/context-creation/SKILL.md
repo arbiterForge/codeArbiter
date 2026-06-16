@@ -94,7 +94,7 @@ Write the surviving docs to `${CLAUDE_PROJECT_DIR}/.codearbiter/`. Every doc car
 
 If scouts found existing decision records (`docs/decisions/`, `adr/`), summarize them as entries under `.codearbiter/decisions/` in the standard ADR format. If a record cannot be fully parsed, summarize what is known, flag the uncertainty, and note the source path for review.
 
-Do NOT scaffold any cut doc — no `audit-spec.md`, `observability-spec.md`, `trust-zones.md`, `secrets-policy.md`, `dependency-policy.md`, or a `stage` file. Maturity lives in the `stage:` frontmatter of `CONTEXT.md`, not a separate file.
+Do NOT scaffold any cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity lives in the `stage:` frontmatter of `CONTEXT.md`, not a separate file.
 
 Gate: every surviving doc written; `CONTEXT.md` frontmatter carries `arbiter: enabled` and `stage:`; no resolved value left as a placeholder. Deferred `[CONFIRM-NN]` items are acceptable only in `open-questions.md`.
 
@@ -116,5 +116,5 @@ Gate: `arbiter: enabled` set and `<!--INITIALIZED-->` present in `CONTEXT.md`; e
 - MUST NOT proceed past Phase 2 with fewer than six scout reports.
 - MUST NOT load raw source into the orchestrator context after Phase 1 — synthesize from scout reports only.
 - MUST NOT record a scout finding that exposes a secret value — paths and line numbers only.
-- MUST NOT scaffold a cut doc (`audit-spec.md`, `observability-spec.md`, `trust-zones.md`, `secrets-policy.md`, `dependency-policy.md`, a separate `stage` file) — maturity is the `stage:` frontmatter number in `CONTEXT.md`.
+- MUST NOT scaffold a cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity is the `stage:` frontmatter number in `CONTEXT.md`.
 - MUST NOT run when `CONTEXT.md` already carries `<!--INITIALIZED-->` — stop and route to normal operation.

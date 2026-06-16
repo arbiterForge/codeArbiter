@@ -60,11 +60,12 @@ Gate: test, lint, secrets scan, and (when crypto/secret is touched) the security
 
 ## Phase 5 — Behavioral proof · gate: BLOCK
 
-A green suite proves the tests pass — not that the change does what it was asked to do. Before persisting, prove the behavior against the spec, not against a self-report.
+Apply the shared fresh-run discipline in `${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`, with
+**the spec's acceptance criterion** as the target — prove the behavior against the spec, not against a
+self-report.
 
 - Identify the proving command or observable: the acceptance criterion from `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md` (or the task's verification in the plan). If none exists, derive the smallest command that exercises the claimed behavior.
-- Run it FRESH in this phase. Read the actual output and the exit code — do not infer success from "the tests pass," and never trust a subagent's self-report that it works.
-- Confirm the observed behavior matches the spec's acceptance criteria. A mismatch, or an unverifiable claim, blocks.
+- Run it fresh in this phase, read its output and exit code, and confirm the observed behavior matches the spec's acceptance criteria. A mismatch, or an unverifiable claim, blocks.
 
 Gate: the change is proven to do what it claimed by fresh evidence — command output and exit code read in this phase. A self-reported "it works" does not pass.
 
