@@ -6,6 +6,10 @@ In-flight and queued work for the codeArbiter v2 rewrite. One `- ` bullet per ta
 ## In-flight
 - Phase 7: tone pass (not evidenced as a distinct pass), marketplace publication (marketplace.json present but not confirmed published).
 
+## Carried triage (folded from the 2026-06-13 session-hygiene sprint by review-remediation 2026-06-16)
+- SH-TRIAGE-2: `.codearbiter/coding-standards.md` is named as required pre-flight reading by `tdd`, `refactor`, `writing-plans`, and the author agents, but the file is absent from this repo's `.codearbiter/`. Either create it (style/structure/naming for the plugin's Python + TS) or make those pre-flight reads tolerate its absence. Raised in the session-hygiene sprint, never closed.
+- SD-02: the farm.ts `new URL()` host-normalization loosening was flagged for a focused security re-review that the sprint log never records happening. The review-remediation Pass-D engine review re-examined `assertSecureBaseUrl` and confirmed it is loopback-bounded and well-tested (https unconditional, http only for bare loopback, userinfo rejected) — so the risk is low, but the formally-requested focused re-review is still unrecorded. Close by confirming acceptance or running the focused pass.
+
 ## Marketplace-release review backlog (2026-06-09 eight-persona adversarial review; quick kills already landed on chore/tone-pass)
 - MR-10 (residual): live Claude Code session on physical macOS — optional; the CI macos-latest leg covers shell semantics (/bin/sh -c, per-entry stdin). Decide whether farm.test.ts/__fixtures__/tsconfig.json should move out of the published payload (no exclusion mechanism in git-sourced plugin installs — would require relocating the tools test harness).
 

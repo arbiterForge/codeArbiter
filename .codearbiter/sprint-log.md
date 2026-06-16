@@ -128,3 +128,61 @@ Backend: premium subagents (no --farm, per user invocation) — confidence high.
 # Sprint complete — session-hygiene · 2026-06-13
 
 All 19 tasks ACCEPTED. Two features shipped to PR #46, awaiting the user's merge. No low-confidence auto-decisions to review; one triage item (SH-TRIAGE-1, root node_modules) was resolved in-sprint.
+
+---
+
+# Sprint: review-remediation · 2026-06-16
+
+Spec `.codearbiter/specs/review-remediation.md`, plan `plans/review-remediation.md` — APPROVED at the Phase 1 gate. Premium backend. Closing the 6-pass review findings. Workstream A (enforcement hooks) is hard-gate-dense; each code-fix surfaces for user approval.
+
+## RR-A-DISCOVERY — pre-bash guard tests live in .github/scripts · confidence: high
+- **Point:** the review's Pass C/D cited `test_hook_guards.py` for the `pre-bash.py` H-01/H-05 guards; no such file exists under `plugins/ca/hooks/tests/`.
+- **Finding:** the file is `.github/scripts/test_hook_guards.py` (the guard-logic regression matrix, run in CI). `pre-bash.py` IS tested there, just not in the hooks unittest dir. Pass D's empirical citations were correct; only the path label was off.
+- **Chosen:** add the new Workstream-A failing cases to `.github/scripts/test_hook_guards.py` (the existing matrix) rather than create a parallel test file. Strength: strong.
+
+## RR-A1-A3-RED — failing cases added for both confirmed bypasses · confidence: high
+- **Point:** test shape for the `--all`/`--mirror` push bypass (H-01) and the `>|` force-clobber bypass (H-05/H-11).
+- **Chosen:** `--all`/`--mirror` blocked unconditionally on push (they write protected refs from any branch; matches the file's CLOSED-ambiguity philosophy — the hook can't cheaply enumerate refs). `>|` added to both the audit-log and ADR-redirect block lists; the no-space `>|path` form already blocks (kept as a regression case). Matrix run: 71 assertions, 8 failed — exactly the genuine bypasses (RED confirmed). Strength: strong.
+- **NEXT: HARD GATE** — the `pre-bash.py` fix (tasks 2 & 4) is a trust-boundary change; halting for user approval before applying.
+
+## RR-A2-A4-GREEN — both confirmed bypasses closed · HARD gate: user-approved
+- **Applied (user-approved trust-boundary change):** `pre-bash.py` — new `PUSH_ALL_RE` blocks `--all`/`--mirror` on push (H-01); `LOG_TRUNC_RE` and `DECISIONS_REDIRECT_RE` gained an optional `\|?` to catch the `>|` force-clobber (H-05/H-11). `exec 3>` left as documented residual (spec out-of-scope).
+- **Verification:** `py_compile` OK; guard matrix 71 assertions, 0 failed (was 8 failed at RED). Plain `>`/`>>` and bare-push allow cases unchanged. Tasks 1–4 ACCEPTED.
+
+## RR-A5-A10-GREEN — Workstream A complete · HARD gate: user-approved (batch)
+- **Discovery:** `pre-write.py`'s H-05/H-11 Write guards had NO direct test (`test_write.py` covers the pruner engine, not the hook) — created `plugins/ca/hooks/tests/test_pre_write.py` to cover them. The review's `test_hook_guards.py` path was `.github/scripts/`, not the hooks tests dir.
+- **Applied (user-approved trust-boundary batch):**
+  - H-11 regex broadened `decisions/[0-9]+-.+\.md` → `decisions/.+\.md` in `pre-write.py` + `pre-edit.py` (catches non-numbered drafts + nested paths).
+  - `sprint-log.md` added to the H-05 append-only set in all three hooks (shared `LOG_NAMES` in `pre-bash.py`; regex alternation in pre-write/pre-edit). `>>` append still allowed.
+  - `hooks.json` Edit matcher → `Edit|MultiEdit`; `pre-edit.py` now reads `tool_name` and blocks a MultiEdit on an append-only log (can't express a verified pure append). **NotebookEdit deliberately out of scope** — it only targets `.ipynb`, so it cannot reach a `.log` audit file or `.md` ADR (logged in spec).
+  - `pre-bash.py`: case-insensitive protected-branch check (`is_protected_branch`) + `head_on_protected_tip` so a commit in a detached HEAD at main/master's tip blocks.
+- **SMARTS (task 9 MultiEdit posture):** block-outright vs shape-aware append-parsing — chose block-outright (Secure + Simple; MultiEdit on an audit log is never a legitimate pattern, the sanctioned append is a single Edit/`>>`). Strength: strong. User approved the batch.
+- **Verification:** py_compile OK; hooks.json valid; guard matrix 79/0 (was 6-red); pre-edit+pre-write 27/0; **full hook suite 404 tests OK**; cold-install 134/0; ref-graph intact. Tasks 5–10 ACCEPTED. Workstream A complete.
+
+## RR-B-GREEN — ADR-format unified (#3) · confidence: high
+- **Point:** decompose authored ADRs in a non-frontmatter `**Status:**` format that `/adr-status` (which reads YAML `status:`) cannot parse. Canonical chosen at the Phase 1 gate = decision-lifecycle's YAML `NNNN-` format.
+- **Applied:** new shared `skills/decision-lifecycle/references/adr-template.md` (single source of truth, documents the draft→accepted lifecycle). `decision-lifecycle` and `decompose` both now point at it; decompose authors `status: draft` and promotes to `status: accepted` at Phase 5 (frontmatter field + `## Status` mirror). Reconciled all `Status: DRAFT/Accepted` prose in decompose to the frontmatter `status:` field. Filenames were already compatible (both 4-digit `NNNN-`); the real fork was frontmatter + missing Alternatives/Risks sections.
+- **Verification:** ref-graph intact (new reference resolves from both skills). Tasks 11–13 ACCEPTED.
+
+## RR-C-GREEN — skill-overlap dedup complete (tasks 14–20) · confidence: high (19 = moderate)
+- **C-14 (#4):** writing-plans `--farm` Phase-4 extension → `skills/writing-plans/references/farm-plan.md`; body now a pointer (mirrors farm-dispatch.md).
+- **C-15 (#5):** fresh-run verification principle → `includes/fresh-verification.md`; subagent-driven-development P5 + commit-gate P5 both reference it, each keeping its own target (per-task command vs spec acceptance).
+- **C-16:** the verbatim "never-scaffold cut docs" list → `includes/cut-docs.md`, referenced from decompose + context-creation (3 sites). **Scoping decision:** the broader Phase-6 lock-mechanics were left per-skill — decompose's required-file set (decisions/, plans/01-03, .decompose-draft cleanup) genuinely differs from context-creation's, so a shared lock-contract would flatten real differences and risk parity. Took the safe verbatim dedup only.
+- **C-17:** maturity→coverage table → `includes/maturity-coverage.md`; tdd P5 + refactor P2 reference it.
+- **C-18:** crypto/secret "On pass — record the gate" block → `includes/security-gate-record.md`; crypto (H-09b) + secret (H-10b) reference it, hook ids preserved.
+- **C-19 (decision-lifecycle↔decision-variance) — SMARTS, confidence moderate:** options were (a) full merge over a shared decision-log reference vs (b) clarify the boundary. Chose **(b)**: the only genuinely-shared artifact (the decision-log format) is *already* single-sourced in `smarts.md`; the remaining overlaps (supersession, challenger-dispatch, same-level-conflict) are principle restatements governing *different* artifacts (ADR files vs log entries vs variance arbitration). A merge of two governance skills = real parity risk for marginal gain. Added a boundary note (authoring vs arbitration) instead. User flagged this task as "split out if hairy" — this is that split. **Flagged for user review.**
+- **C-20:** finishing-a-development-branch open-PR path no longer says "owned by /pr; route there" (circular — and wrong under /sprint where /pr never ran); it now *executes* the pr.md pipeline steps without re-invoking the command.
+- **Verification:** ref-graph intact (6 new include/reference files resolve). Tasks 14–20 ACCEPTED.
+
+## RR-D-GREEN — catalog & docs hygiene (tasks 21–24) · confidence: high
+- **D-21 (#8):** new-skill.md stripped of its inline 5-phase re-spec (which contradicted skill-author, used the banned word "trigger", and dropped the routing-integration gate) — now a faithful wrapper naming skill-author's phases without restating them.
+- **D-22:** commands.md inline `## Catalog` table (stale, missing ~11 commands) deleted; it now renders from `COMMANDS.md` only, with a Hard-gate rule forbidding a second copy.
+- **D-23:** INDEX.md `release` corrected two→three phases (Publish/Phase 3 was missing). `arbiter.md` gained a `## Hard gate` (write `DEV: exit`, remove marker, append-only — symmetric with dev.md). **Correction to the review:** the `/spike` routing-table row was NOT missing (Pass B3 was inaccurate) — it existed; I enriched it (names the spike skill + commit-gate exemption).
+- **D-24:** folded the two dangling triage items into `open-tasks.md` (SH-TRIAGE-2 missing coding-standards.md; SD-02 farm host-normalization re-review — noting Pass D already confirmed it loopback-bounded). Annotated both `checkpoints/2026-06-{12,13}.md` with a superseded-note: their "0 ADRs / decisions absent" claims are stale (ADRs 0001-0004 landed in a365ee1).
+- **Verification:** ref-graph + INDEX/COMMANDS catalog consistency intact. Tasks 21–24 ACCEPTED.
+
+## RR-E-GREEN — engine test-debt (tasks 25–27) · confidence: high
+- **E-26:** new `plugins/ca/hooks/tests/test_security_pass.py` — 6 tests covering security-pass.py's previously-untested branches: no-.codearbiter exit-1, empty-digest write, untracked-file inclusion, MAX_UNTRACKED_BYTES skip, unborn-branch (ls-files fallback), and diff-HEAD added line.
+- **E-25 (SMARTS, confidence high):** the Pass-D "self_heal false-positive on a growing transcript" is already prevented by the existing guard — a healthy mid-append's bad line is the FINAL line, so `end_off > len(backup)` (`_prunelib.py:881`) returns "tail differs" and does not heal. Chose a **characterization test** pinning that conservative behavior over a risky change to the crash-recovery path. Added `test_does_not_heal_growing_file_with_partial_final_line` to test_write.py.
+- **E-27 DEFERRED (LOW/optional):** same-second backup-filename disambiguation. A clean fix collides with the lexicographic `entries[-1]`-is-newest assumption (a `-N` suffix sorts before `.jsonl`), and two prunes in one wall-second is very unlikely given min_growth gating. Not worth the risk in this sprint; left as a noted optional.
+- **Verification:** full hook suite **411 tests OK** (+7), guard matrix 79/0, cold-install 134/0, ref-graph intact. Tasks 25–26 ACCEPTED; 27 deferred.
