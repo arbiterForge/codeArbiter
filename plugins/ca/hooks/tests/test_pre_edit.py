@@ -68,6 +68,8 @@ class _PreEditFixture(unittest.TestCase):
                     "[2026-01-01T00:00:00Z] | BY: harness | GATE: none | REASON: seed\n")
         self._write(os.path.join(self.ca, "triage.log"),
                     "[2026-01-01T00:00:00Z] | finding-1 | open\n")
+        self._write(os.path.join(self.ca, "sprint-log.md"),
+                    "# Sprint log\n\n## SD-01 seed\n- chosen: X\n")
         self._write(os.path.join(self.ddir, "0001-seed.md"),
                     "# ADR-0001\nseed decision\n")
 
@@ -101,6 +103,13 @@ class _PreEditFixture(unittest.TestCase):
                 "old_string": old_string,
                 "new_string": new_string,
             },
+        })
+        return _sh([sys.executable, PRE_EDIT], self.root, input=payload)
+
+    def run_multiedit(self, file_path, edits):
+        payload = json.dumps({
+            "tool_name": "MultiEdit",
+            "tool_input": {"file_path": file_path, "edits": edits},
         })
         return _sh([sys.executable, PRE_EDIT], self.root, input=payload)
 
@@ -157,6 +166,25 @@ class TestH05AppendOnly(_PreEditFixture):
         )
         self.assertAllowed(res)
 
+    def test_rewrite_of_sprint_log_is_blocked(self):
+        # /sprint auto-decisions in sprint-log.md are an append-only audit
+        # artifact — a non-append Edit rewrites the decision record -> block.
+        res = self.run_edit(
+            os.path.join(self.ca, "sprint-log.md"),
+            old_string="## SD-01 seed\n- chosen: X\n",
+            new_string="## SD-01 seed\n- chosen: Y (tampered)\n",
+        )
+        self.assertBlocked(res, "H-05")
+
+    def test_pure_append_to_sprint_log_is_allowed(self):
+        old = "# Sprint log\n\n## SD-01 seed\n- chosen: X\n"
+        res = self.run_edit(
+            os.path.join(self.ca, "sprint-log.md"),
+            old_string=old,
+            new_string=old + "\n## SD-02\n- chosen: Z\n",
+        )
+        self.assertAllowed(res)
+
     def test_windows_backslash_path_still_triggers_h05_branch(self):
         # norm_path() folds backslashes to forward slashes, so a Windows-style
         # path to overrides.log must still take the H-05 branch and block a
@@ -198,6 +226,58 @@ class TestH11AdrAuthoring(_PreEditFixture):
         res = self.run_edit(self._adr_path(),
                             old_string="seed decision\n",
                             new_string="rewritten decision\n")
+        self.assertAllowed(res)
+
+    def test_edit_of_non_numeric_adr_is_blocked(self):
+        # An ADR file without a numeric prefix (e.g. a draft) lives under
+        # decisions/ and is still immutable-except-via-/adr. No marker -> block.
+        draft = os.path.join(self.ddir, "draft.md")
+        self._write(draft, "# draft ADR\nbody\n")
+        res = self.run_edit(draft, old_string="body\n",
+                            new_string="rewritten\n")
+        self.assertBlocked(res, "H-11")
+
+    def test_edit_of_nested_adr_is_blocked(self):
+        # A nested path under decisions/ must not slip the gate either.
+        nested_dir = os.path.join(self.ddir, "sub")
+        os.makedirs(nested_dir, exist_ok=True)
+        nested = os.path.join(nested_dir, "0001-x.md")
+        self._write(nested, "# nested ADR\nbody\n")
+        res = self.run_edit(nested, old_string="body\n",
+                            new_string="rewritten\n")
+        self.assertBlocked(res, "H-11")
+
+
+class TestMultiEditGuards(_PreEditFixture):
+    """MultiEdit is matched by the Edit hook and cannot express a verified pure
+    append to an append-only file, so it blocks on the audit logs; on ADRs it
+    obeys the same marker rule as Edit."""
+
+    def test_multiedit_on_overrides_log_is_blocked(self):
+        res = self.run_multiedit(
+            os.path.join(self.ca, "overrides.log"),
+            [{"old_string": "seed", "new_string": "seed\nmore"}])
+        self.assertBlocked(res, "H-05")
+
+    def test_multiedit_on_sprint_log_is_blocked(self):
+        res = self.run_multiedit(
+            os.path.join(self.ca, "sprint-log.md"),
+            [{"old_string": "log", "new_string": "log\nmore"}])
+        self.assertBlocked(res, "H-05")
+
+    def test_multiedit_on_adr_without_marker_is_blocked(self):
+        res = self.run_multiedit(
+            self.ddir and os.path.join(self.ddir, "0001-seed.md"),
+            [{"old_string": "seed decision", "new_string": "rewritten"}])
+        self.assertBlocked(res, "H-11")
+
+    def test_multiedit_on_unrelated_path_is_allowed(self):
+        src = os.path.join(self.root, "src")
+        os.makedirs(src, exist_ok=True)
+        f = os.path.join(src, "app.py")
+        self._write(f, "print('hi')\n")
+        res = self.run_multiedit(
+            f, [{"old_string": "hi", "new_string": "bye"}])
         self.assertAllowed(res)
 
 

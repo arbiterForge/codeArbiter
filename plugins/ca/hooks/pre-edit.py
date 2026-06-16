@@ -24,22 +24,33 @@ def main():
     root = project_root()
     if not arbiter_active(root):
         sys.exit(0)
-    ti = tool_input(read_input())
+    payload = read_input()
+    tool = payload.get("tool_name", "") or ""
+    ti = tool_input(payload)
     fpath = norm_path(ti.get("file_path", "") or "")
 
-    # H-05: the audit logs are append-only — an Edit must leave existing lines
-    # intact (new_string extends old_string), never alter or delete them.
-    if re.search(r"\.codearbiter/(?:overrides|triage)\.log$", fpath):
+    # H-05: the audit logs (and the /sprint decision record) are append-only — an
+    # Edit must leave existing lines intact (new_string extends old_string), never
+    # alter or delete them.
+    if re.search(r"\.codearbiter/(?:(?:overrides|triage)\.log|sprint-log\.md)$", fpath):
+        # MultiEdit applies a batch of edits and cannot express a verifiable pure
+        # append to an append-only file — the sanctioned append path is a single
+        # Edit (or '>>'). Block it outright rather than reason about the batch.
+        if tool == "MultiEdit":
+            block("H-05", "MultiEdit cannot guarantee a pure append to an append-only "
+                          ".codearbiter audit log (overrides.log, triage.log, sprint-log.md) "
+                          "(ORCHESTRATOR §7). Append with a single Edit or '>>'.")
         old = ti.get("old_string", "") or ""
         new = ti.get("new_string", "") or ""
         if not new.startswith(old):
-            block("H-05", "The .codearbiter audit logs (overrides.log, triage.log) are "
-                          "append-only (ORCHESTRATOR §7). This Edit alters existing audit "
-                          "lines; only pure appends are permitted (new text must extend "
-                          "the old text).")
+            block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, "
+                          "sprint-log.md) are append-only (ORCHESTRATOR §7). This Edit alters "
+                          "existing audit lines; only pure appends are permitted (new text "
+                          "must extend the old text).")
 
-    # H-11: ADRs may only be edited via /adr.
-    if re.search(r"\.codearbiter/decisions/[0-9]+-.+\.md$", fpath):
+    # H-11: ADRs may only be edited via /adr — any .md anywhere under decisions/
+    # (a non-numbered draft or a nested path is still an immutable decision).
+    if re.search(r"\.codearbiter/decisions/.+\.md$", fpath):
         marker = os.path.join(root, ".codearbiter", ".markers", "adr-authoring-active")
         if not os.path.isfile(marker):
             block("H-11", "ADR files are edited only via /adr (ORCHESTRATOR §3) — user "

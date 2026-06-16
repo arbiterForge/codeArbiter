@@ -37,6 +37,11 @@ GIT_C_DIR_RE = re.compile(r"\bgit\s+-C\s+(\"[^\"]+\"|'[^']+'|\S+)")
 # token (not a ref like `fix-f`), or a forcing `+refspec`.
 FORCE_RE = re.compile(r"(?:^|\s)(?:--force(?:-with-lease|-if-includes)?(?:=\S+)?|-f)(?=\s|$)")
 FORCE_REFSPEC_RE = re.compile(r"\s\+[\w./:~^-]+")
+# Bulk-push flags that publish protected refs with no refspec token to inspect:
+# `--all` pushes every local branch (main included); `--mirror` pushes every ref
+# and can force-update/delete them. Neither names a destination the
+# PROTECTED_DEST scan can see, so they slip the refspec check — block on sight.
+PUSH_ALL_RE = re.compile(r"(?:^|\s)(?:--all|--mirror)(?=\s|$)")
 # Flag spellings that stage a non-explicit file set. `-u/--update` joins
 # -A/--all/. : it stages every tracked modification — wildcard in behavior
 # even though no glob appears in the command.
@@ -53,24 +58,31 @@ PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # every common rewrite-in-place spelling (truncate, tee, dd, sed, sponge,
 # cp/copy onto the log); PowerShell's Add-Content is deliberately absent —
 # appending is the one sanctioned write.
-# N-3: Known limitations — this regex catches the common `> file` truncation
-# form but NOT every shell spelling that produces a new file descriptor on the
-# log. Specific gaps: triple-chevron (`>>>`, treated as append by some shells),
-# and file-descriptor forms like `exec 3>.codearbiter/overrides.log`. These are
-# difficult to close with a single regex and represent an accepted residual risk.
-# The sanctioned bypass for legitimate log management is /ca:override.
-LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\s*\S*(?:overrides|triage)\.log")
+# N-3: Known limitations — this regex catches the common `> file` and `>| file`
+# (force-clobber) truncation forms but NOT every shell spelling that produces a
+# new file descriptor on the log. Specific gaps: triple-chevron (`>>>`, treated
+# as append by some shells), and file-descriptor forms like
+# `exec 3>.codearbiter/overrides.log`. These are difficult to close with a single
+# regex and represent an accepted residual risk. The sanctioned bypass for
+# legitimate log management is /ca:override.
+# The optional `\|?` admits `>|` (clobber even under `set -o noclobber`); the
+# leading `(?!>)` still excludes the append form `>>`.
+# `sprint-log.md` joins overrides.log/triage.log as an append-only audit artifact
+# (the /sprint decision record).
+LOG_NAMES = r"(?:(?:overrides|triage)\.log|sprint-log\.md)"
+LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES)
 LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
     r"|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File)\b"
-    r"[^|;&]*(?:overrides|triage)\.log", re.I,
+    r"[^|;&]*" + LOG_NAMES, re.I,
 )
 # H-11's shell flank: ADRs are authored only via /adr (pre-write/pre-edit
 # guard the Write/Edit tools; this guards redirection and file verbs). Any
 # redirect into .codearbiter/decisions/, or any write/delete verb naming it,
 # blocks — `cat`/`ls`/`grep` reads pass untouched.
 DECISIONS = r"\.codearbiter[\\/]+decisions\b"
-DECISIONS_REDIRECT_RE = re.compile(r">>?\s*\S*" + DECISIONS, re.I)
+# `>>?\|?` covers `>`, `>>`, and the `>|` force-clobber form into decisions/.
+DECISIONS_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + DECISIONS, re.I)
 DECISIONS_WRITE_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|touch|truncate|ni"
     r"|New-Item|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content"
@@ -96,6 +108,34 @@ def current_branch(cwd):
         return out.stdout.strip() if out.returncode == 0 else ""
     except Exception:  # noqa: BLE001
         return ""
+
+
+def is_protected_branch(branch):
+    """Case-insensitive: `Main`/`MASTER` are the default branch on a case-folding
+    ref store and must be treated as protected, just like `main`/`master`."""
+    return branch.lower() in ("main", "master")
+
+
+def _rev(cwd, ref):
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--verify", "-q", ref], cwd=cwd,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5,
+        )
+        return out.stdout.strip() if out.returncode == 0 else ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def head_on_protected_tip(cwd):
+    """True when HEAD (typically detached) points at the commit a protected
+    branch tips — a commit there still writes onto main/master's history even
+    though `git branch --show-current` reports no branch name."""
+    head = _rev(cwd, "HEAD")
+    if not head:
+        return False
+    return any(_rev(cwd, b) == head for b in ("main", "master"))
 
 
 def added_lines(cwd, ref):
@@ -150,11 +190,14 @@ def main():
     commit = COMMIT_RE.search(cmd)
     cwd = git_cwd(cmd, root)
 
-    # H-01: no commit directly to main/master
+    # H-01: no commit directly to main/master — case-insensitive, and a detached
+    # HEAD sitting on a protected branch's tip counts (the commit lands on its
+    # history regardless of the absent branch name).
     if commit:
         branch = current_branch(cwd)
-        if branch in ("main", "master"):
-            block("H-01", f"Direct commit to {branch} is prohibited (ORCHESTRATOR §3). "
+        if is_protected_branch(branch) or (not branch and head_on_protected_tip(cwd)):
+            target = branch or "main/master (detached HEAD)"
+            block("H-01", f"Direct commit to {target} is prohibited (ORCHESTRATOR §3). "
                           f"Create a feature branch.")
 
     push = PUSH_RE.search(cmd)
@@ -164,6 +207,13 @@ def main():
         # H-02: no force-push — any spelling, including --force-with-lease and +refspec
         if FORCE_RE.search(pargs) or FORCE_REFSPEC_RE.search(pargs):
             block("H-02", "Force-push is prohibited (ORCHESTRATOR §3).")
+
+        # H-01: `--all` / `--mirror` publish protected refs (main included) with
+        # no inspectable destination token — block regardless of current branch.
+        if PUSH_ALL_RE.search(pargs):
+            block("H-01", "'git push --all' / '--mirror' publish every local ref "
+                          "(including main) (ORCHESTRATOR §3) — main moves only via a "
+                          "merged PR. Push an explicit feature refspec.")
 
         # H-01: no push whose destination is a protected branch. H-01's branch
         # check alone left `git push origin HEAD:main` (and `feature:main`,
@@ -176,7 +226,7 @@ def main():
                 block("H-01", f"Pushing to a protected branch ('{tok}') is prohibited "
                               f"(ORCHESTRATOR §3) — main moves only via a merged PR.")
         # Bare `git push` (no refspec) publishes the current branch.
-        if len(toks) < 2 and current_branch(cwd) in ("main", "master"):
+        if len(toks) < 2 and is_protected_branch(current_branch(cwd)):
             block("H-01", "Bare `git push` from main/master publishes the protected "
                           "branch (ORCHESTRATOR §3) — main moves only via a merged PR.")
 
@@ -195,13 +245,13 @@ def main():
                           f"non-explicit file set. Stage files explicitly, one path "
                           f"per file (commit-gate skill).")
 
-    # H-05: the audit trail is append-only — block truncation/removal of
-    # overrides.log via shell verbs (Write/Edit are guarded separately).
-    if ("overrides.log" in cmd or "triage.log" in cmd) and (
+    # H-05: the audit trail is append-only — block truncation/removal of the
+    # audit logs via shell verbs (Write/Edit are guarded separately).
+    if ("overrides.log" in cmd or "triage.log" in cmd or "sprint-log.md" in cmd) and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)):
-        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log) are append-only "
-                      "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit trail "
-                      "is prohibited; append with '>>' only.")
+        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
+                      "are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting "
+                      "the audit trail is prohibited; append with '>>' only.")
 
     # H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
     # pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,

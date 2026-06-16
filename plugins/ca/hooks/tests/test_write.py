@@ -229,6 +229,20 @@ class TestSelfHeal(unittest.TestCase):
         with open(self.path, "rb") as f:
             self.assertEqual(f.read(), corpse)  # untouched, left for a human
 
+    def test_does_not_heal_growing_file_with_partial_final_line(self):
+        # A healthy live session mid-append: exactly one unparseable line, but it
+        # is the FINAL line and the file is LARGER than the last backup. This is
+        # not a crash splice (the bad line sits past len(backup)), so self_heal
+        # must leave it alone — healing here would clobber an in-progress append.
+        partial = b'{"type":"user","uuid":"partial-append-in-progress'
+        with open(self.path, "wb") as f:
+            f.write(self.data + partial)
+        self._plant_backup()  # backup == self.data, smaller than the grown file
+        healed, note = P.self_heal(self.path, "sess")
+        self.assertFalse(healed, note)
+        with open(self.path, "rb") as f:
+            self.assertEqual(f.read(), self.data + partial)  # untouched
+
     def test_refuses_non_splice_corruption(self):
         # A file shorter than the backup is not an interrupted truncate (the
         # truncate completing IS the success path); leave it alone.
