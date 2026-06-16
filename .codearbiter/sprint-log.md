@@ -186,3 +186,19 @@ Spec `.codearbiter/specs/review-remediation.md`, plan `plans/review-remediation.
 - **E-25 (SMARTS, confidence high):** the Pass-D "self_heal false-positive on a growing transcript" is already prevented by the existing guard — a healthy mid-append's bad line is the FINAL line, so `end_off > len(backup)` (`_prunelib.py:881`) returns "tail differs" and does not heal. Chose a **characterization test** pinning that conservative behavior over a risky change to the crash-recovery path. Added `test_does_not_heal_growing_file_with_partial_final_line` to test_write.py.
 - **E-27 DEFERRED (LOW/optional):** same-second backup-filename disambiguation. A clean fix collides with the lexicographic `entries[-1]`-is-newest assumption (a `-N` suffix sorts before `.jsonl`), and two prunes in one wall-second is very unlikely given min_growth gating. Not worth the risk in this sprint; left as a noted optional.
 - **Verification:** full hook suite **411 tests OK** (+7), guard matrix 79/0, cold-install 134/0, ref-graph intact. Tasks 25–26 ACCEPTED; 27 deferred.
+
+---
+
+# Sprint complete — review-remediation · 2026-06-16
+
+28 of 29 tasks ACCEPTED (E-27 same-second backup naming DEFERRED, logged). Landed as 3 type-homogeneous commits on `sprint/review-remediation`, **PR #68** opened against `main` (https://github.com/arbiterForge/codeArbiter/pull/68) — **NOT merged**; the merge is the user's call (the `/sprint` hard gate).
+
+- `dcb0448` fix(hooks): close confirmed enforcement bypasses (9 files)
+- `c1b61a7` refactor(skills): dedup overlap, unify ADR format, fix catalog/routing drift (22 files)
+- `25215fa` chore(governance): review-remediation sprint artifacts + triage folding (7 files)
+
+**Verification at land:** full hook suite 411 tests OK · guard matrix 79/0 · cold-install 134/0 · ref-graph intact.
+
+**Auto-decisions flagged for review (per /sprint contract):** two moderate-confidence SMARTS calls — C-19 (lifecycle↔variance boundary-clarified, not merged) and the task-9 MultiEdit block-outright posture. Both logged above with rationale. **Two corrections to the original review** were recorded: pre-bash guards live in `.github/scripts/test_hook_guards.py` (not the hooks tests dir), and the `/spike` routing-table row was not actually missing.
+
+**Deferred (own decision):** review finding #6 (mechanical red-suite / commit-gate enforcement) — non-blocking note in `open-questions.md`. **Carried:** SH-TRIAGE-2 (missing coding-standards.md) and SD-02 (farm host-normalization re-review) folded into `open-tasks.md`.

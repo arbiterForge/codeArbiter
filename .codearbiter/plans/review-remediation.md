@@ -41,7 +41,7 @@ Execution order: branch (0) → **A** enforcement hooks (hard-gate-dense, first 
 | 26 | E: cover `security-pass.py` branches (unborn/untracked/oversize-skip/no-.codearbiter/empty-digest/diff-HEAD) | `plugins/ca/hooks/tests/test_security_pass.py` (new) | 6 new tests exercise each branch; suite green | 0 | auto | DONE |
 | 27 | E (LOW, optional): disambiguate same-second prune backup filenames | `plugins/ca/hooks/_prunelib.py` | DEFERRED — clean fix fights the lexicographic newest-backup sort for a very-unlikely case; logged | 25 | auto | DEFERRED |
 | 28 | Log #6 deferral to `open-questions.md` as a tracked, non-blocking item | `.codearbiter/open-questions.md` | Deferral recorded with rationale; not marked BLOCKING | 0 | auto | TODO |
-| 29 | Land: `commit-gate` → `finishing-a-development-branch` (auto open-PR) | — | Full suite green; PR opened; merge left to user | 1-28 | **HARD: merge-to-default deferred to user** | TODO |
+| 29 | Land: `commit-gate` → `finishing-a-development-branch` (auto open-PR) | — | Full suite green; **PR #68 opened**; merge left to user | 1-28 | **HARD: merge-to-default deferred to user** | DONE (3 commits; NOT merged) |
 
 ---
 
