@@ -6,6 +6,27 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.4.2] — 2026-06-16
+
+### Fixed
+- **Closed six confirmed hook-enforcement bypasses** surfaced by the 2026-06-15 repo review, each
+  with a red→green test: `git push --all`/`--mirror` could publish protected refs from any branch
+  (H-01); `>|` force-clobber slipped the log-truncation and ADR-redirect guards (H-05/H-11); the
+  Write/Edit ADR gate matched only numeric-prefixed names, so drafts and nested `decisions/*.md`
+  slipped (H-11); `sprint-log.md` was not in the append-only set (H-05); `hooks.json` matched only
+  `Edit`, letting `MultiEdit` sidestep the audit-log/ADR guards; and a detached-HEAD / case-sensitive
+  branch check let a commit onto `main`'s tip slip. Adds direct tests for `pre-write.py` and
+  `security-pass.py` plus a self-heal characterization test. (#68)
+
+### Changed
+- **Deduped skill overlap and unified the ADR format** (behavior-preserving skill-prose cleanups from
+  the 2026-06-15 review). ADRs now share one `references/adr-template.md`, and `decompose` emits
+  parseable `status:` frontmatter so `/ca:adr-status` reads every ADR uniformly. Five duplications
+  were extracted to shared leaves (`--farm` plan extension, fresh-run verification, maturity→coverage
+  table, crypto/secret on-pass block, cut-doc list). The `finishing-a-development-branch` open-PR path
+  now executes the `/ca:pr` steps inline instead of re-routing (which looped under `/sprint`), and the
+  stale inline command catalog was removed in favor of rendering from `COMMANDS.md`. (#68)
+
 ## [2.4.1] — 2026-06-14
 
 ### Fixed
