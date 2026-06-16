@@ -26,7 +26,7 @@ Dispatch the `auth-crypto-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/auth-cr
 
 Gate: no banned or unapproved primitive, no disabled TLS verification, and no home-rolled crypto in the changed code.
 
-**On pass — record the gate:** run `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py"`. It writes `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` containing a digest of every sensitive added line it approved. The PreToolUse commit hook **H-09b blocks any commit whose staged diff touches crypto/TLS until this marker is fresh (< 30 min) AND covers every sensitive line being committed** — a pass recorded for one diff cannot launder a later, different change through the freshness window. On any BLOCK, do NOT record the pass — the commit stays blocked until the finding is resolved and the gate genuinely passes.
+**On pass — record the gate:** follow `${CLAUDE_PLUGIN_ROOT}/includes/security-gate-record.md` (the shared record mechanism). For this gate the relevant commit hook is **H-09b** (crypto/TLS). On any BLOCK, do NOT record the pass.
 
 **Out-of-scope finding:** do not act on it and do not author an ADR (ADRs are user-attributed, via `/adr` only). Mark it inline with `[NEEDS-TRIAGE]`; never silently drop it.
 

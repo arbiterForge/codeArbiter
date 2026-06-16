@@ -19,3 +19,11 @@ The exit door for `/ca:dev`. No-op if dev mode is not active.
    returns to normal.
 3. **Resume** — re-present the startup state (stage, blocking `CONFIRM-NN`, in-flight tasks) and
    await a slash command. Orchestration, routing, and all gates are back in force.
+
+## Hard gate
+
+MUST write the `DEV: exit` line to `overrides.log` and remove the `dev-active` marker before resuming
+orchestration — the exit is on the audit trail like the entry. MUST NOT rewrite or truncate
+`overrides.log` — the append-only rule has no dev exception, on entry or exit. If a prior session ended
+mid-dev (the marker was cleared by SessionStart without an exit line), write the `DEV: exit` line at
+the next opportunity.

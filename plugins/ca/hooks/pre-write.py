@@ -25,13 +25,16 @@ def main():
         sys.exit(0)
     fpath = norm_path(tool_input(read_input()).get("file_path", "") or "")
 
-    # H-05: the audit logs are append-only — a Write is a full overwrite.
-    if re.search(r"\.codearbiter/(?:overrides|triage)\.log$", fpath):
-        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log) are append-only "
-                      "(ORCHESTRATOR §7). Append with Edit or '>>', never Write.")
+    # H-05: the audit logs (and the /sprint decision record) are append-only —
+    # a Write is a full overwrite.
+    if re.search(r"\.codearbiter/(?:(?:overrides|triage)\.log|sprint-log\.md)$", fpath):
+        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
+                      "are append-only (ORCHESTRATOR §7). Append with Edit or '>>', never Write.")
 
     # H-11: ADRs may only be authored via /adr (the skill drops the marker first).
-    if re.search(r"\.codearbiter/decisions/[0-9]+-.+\.md$", fpath):
+    # Any .md anywhere under decisions/ is covered — a non-numbered draft or a
+    # nested path is still an immutable decision artifact.
+    if re.search(r"\.codearbiter/decisions/.+\.md$", fpath):
         marker = os.path.join(root, ".codearbiter", ".markers", "adr-authoring-active")
         if not os.path.isfile(marker):
             block("H-11", "ADR files are authored only via /adr (ORCHESTRATOR §3) — user "

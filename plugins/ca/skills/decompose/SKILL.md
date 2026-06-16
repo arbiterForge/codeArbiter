@@ -46,9 +46,9 @@ Check for an existing draft directory at `${CLAUDE_PROJECT_DIR}/.codearbiter/.de
 
 **If it exists with `_session.md` and one or more `layer-N-*.md` files — Resume mode:**
 
-- Read `_session.md` and every `layer-*.md` present. Read every `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/*.md` with `Status: DRAFT` (prior-session draft ADRs to carry forward).
+- Read `_session.md` and every `layer-*.md` present. Read every `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/*.md` with `status: draft` (prior-session draft ADRs to carry forward).
 - Present a numbered summary: prior-session timestamp, captured layers by name, count of DRAFT ADRs.
-- Ask the user to choose: **(a) Resume** — continue from the next unfinished layer, treating captured layers as solid; **(b) Restart** — delete the draft directory and every `Status: DRAFT` ADR, begin fresh; **(c) Abort** — exit the skill, leave draft directory and DRAFT ADRs intact.
+- Ask the user to choose: **(a) Resume** — continue from the next unfinished layer, treating captured layers as solid; **(b) Restart** — delete the draft directory and every `status: draft` ADR, begin fresh; **(c) Abort** — exit the skill, leave draft directory and DRAFT ADRs intact.
 - On Resume: re-establish each captured layer as solid, then enter Phase 3 at the next unfinished layer. On Restart: delete `.decompose-draft/` and every DRAFT ADR, then fresh-init below. On Abort: exit cleanly; never silently delete.
 
 **If no draft directory exists (or after Restart) — fresh init:**
@@ -80,23 +80,7 @@ Run the six layers in strict sequence. Never skip a layer. Never advance until t
 
 (All under `${CLAUDE_PROJECT_DIR}/.codearbiter/`.) Each file holds every question asked, the user's verbatim answer (or a faithful paraphrase), every challenge made under the three lenses, every `[CONFIRM-NN]` raised, and every DRAFT-ADR title generated. These files are the authoritative record — Phases 4 and 5 read from them, not from conversation context. The next layer does not begin until the prior layer's file exists on disk and is non-empty; if a write fails, surface the error and do not advance.
 
-**Layer 4 immediate ADR drafts:** each forced architectural choice in Layer 4 is written at the moment it is made as `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/000N-<slug>.md` with `Status: DRAFT`, numbered sequentially across the existing `decisions/` directory. Do not batch the writes. Phase 5 promotes each to `Status: Accepted`. The ADR body is:
-
-```
-# ADR-000N: <Decision Title>
-**Status:** DRAFT
-**Date:** <today>
-**Decider:** <user name, or "user" if anonymous>
-
-## Context
-<What forced this decision>
-
-## Decision
-<What was decided>
-
-## Consequences
-<What is easier and harder as a result>
-```
+**Layer 4 immediate ADR drafts:** each forced architectural choice in Layer 4 is written at the moment it is made as `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/NNNN-<slug>.md`, numbered sequentially across the existing `decisions/` directory. Do not batch the writes. Author each using the canonical ADR template — `${CLAUDE_PLUGIN_ROOT}/skills/decision-lifecycle/references/adr-template.md` (the single source of truth, shared with `decision-lifecycle`) — with frontmatter `status: draft` and `decided-by:` set to the user (or "user" if anonymous). Fill `## Context`, `## Decision`, and `## Consequences` from the forced choice; leave `## Alternatives considered` and `## Risks` populated where the interview surfaced them, or as `<none recorded>`. Phase 5 promotes each to `status: accepted`.
 
 **Layer 1 — Vision & Problem.** Unlock: the specific problem and the evidence it is real (not assumed); the primary user and any conflicting user types (name and resolve the conflict, or flag it); the demo-to-a-skeptic definition of "working"; what this project explicitly is NOT building. Advance when: problem concrete, primary user named, "working" demonstrable, NOT-building list explicit.
 
@@ -104,17 +88,17 @@ Run the six layers in strict sequence. Never skip a layer. Never advance until t
 
 **Layer 3 — Functional Scope.** Unlock: every capability, challenged individually — what it does (concrete verbs), who initiates it, inputs and outputs; each capability classified MVP / v1 / later; the hardest user-facing problem (the one that invalidates the product if wrong); every "later" forced to closure or recorded as `[CONFIRM-NN]`. Advance when: capability list complete and every item classified; no unresolved "later" except as `[CONFIRM-NN]`.
 
-**Layer 4 — Technical Shape.** Unlock: components and ownership (what each owns, where the boundaries are); core data entities, relationships, cardinality; where state lives and how it changes (write paths); the hardest technical problem; hard constraints (stack, runtime, cloud, compliance, budget, team size and skill); the copyright holder for new-file headers (record in `coding-standards.md`; if undecided, record as `[CONFIRM-NN]`); a forced trade-off for every major architectural decision (e.g. monolith vs. services, sync vs. async). Each forced choice is written immediately as a `Status: DRAFT` ADR per the rule above. Advance when: all components named, all entities sketched, all hard constraints recorded, every major trade-off resolved or deferred as `[CONFIRM-NN]`, AND `layer-4-tech-shape.md` is on disk with one DRAFT ADR per forced choice.
+**Layer 4 — Technical Shape.** Unlock: components and ownership (what each owns, where the boundaries are); core data entities, relationships, cardinality; where state lives and how it changes (write paths); the hardest technical problem; hard constraints (stack, runtime, cloud, compliance, budget, team size and skill); the copyright holder for new-file headers (record in `coding-standards.md`; if undecided, record as `[CONFIRM-NN]`); a forced trade-off for every major architectural decision (e.g. monolith vs. services, sync vs. async). Each forced choice is written immediately as a `status: draft` ADR per the rule above. Advance when: all components named, all entities sketched, all hard constraints recorded, every major trade-off resolved or deferred as `[CONFIRM-NN]`, AND `layer-4-tech-shape.md` is on disk with one DRAFT ADR per forced choice.
 
 **Layer 5 — Integrations & Infrastructure.** Unlock: every external dependency (APIs, services, data sources, auth providers, payment processors, notification services), each named; commodity vs. differentiator for each; actual API contracts, data formats, and auth mechanisms for any system being integrated with; integration risks per dependency (rate limits, reliability and fallback, data ownership and portability, cost at scale). Advance when: all dependencies named, commodity/differentiator classified, integration risks surfaced for each.
 
 **Layer 6 — Risks & Unknowns.** Unlock: the top three build-killing risks, each with probability, impact, mitigation; the lowest-confidence areas; spike candidates (what question each answers, cost of being wrong, time-box); the signals and decision points that would force a major architecture change mid-build. Advance when: top three risks named with mitigations, spike candidates identified, architecture-change triggers named.
 
-Gate: all six layers complete (no open "later" except as `[CONFIRM-NN]`); all six `layer-*-*.md` files on disk and non-empty; at least one `Status: DRAFT` ADR present if any Layer 4 trade-off was forced — a Layer 4 with zero forced trade-offs is suspicious and is re-examined before advancing.
+Gate: all six layers complete (no open "later" except as `[CONFIRM-NN]`); all six `layer-*-*.md` files on disk and non-empty; at least one `status: draft` ADR present if any Layer 4 trade-off was forced — a Layer 4 with zero forced trade-offs is suspicious and is re-examined before advancing.
 
 ## Phase 4 — Synthesis · gate: BLOCK
 
-Begin by re-reading every `layer-*-*.md` and every `Status: DRAFT` ADR from disk. Do NOT rely on conversation context — by now an auto-compaction may have erased the original Q/A. The on-disk drafts are authoritative; this re-read makes the phase idempotent across compaction. If any expected layer file is missing, BLOCK and surface the gap rather than synthesizing from incomplete context.
+Begin by re-reading every `layer-*-*.md` and every `status: draft` ADR from disk. Do NOT rely on conversation context — by now an auto-compaction may have erased the original Q/A. The on-disk drafts are authoritative; this re-read makes the phase idempotent across compaction. If any expected layer file is missing, BLOCK and surface the gap rather than synthesizing from incomplete context.
 
 Produce three artifacts and write each to disk under `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/` BEFORE asking for review (the user reviews from disk, which survives a session restart):
 
@@ -132,9 +116,9 @@ Gate: all three artifact files on disk AND the user explicitly approves all thre
 
 ## Phase 5 — project-state population · gate: BLOCK
 
-Re-read every input from disk — the three approved artifacts, all six `layer-*-*.md` files, and every `Status: DRAFT` ADR. This makes population idempotent across compaction: a user may approve Phase 4, suffer a compaction, re-invoke `/decompose` (Phase 2 enters Resume, Phase 4 sees its artifacts already approved on disk), and Phase 5 proceeds from disk.
+Re-read every input from disk — the three approved artifacts, all six `layer-*-*.md` files, and every `status: draft` ADR. This makes population idempotent across compaction: a user may approve Phase 4, suffer a compaction, re-invoke `/decompose` (Phase 2 enters Resume, Phase 4 sees its artifacts already approved on disk), and Phase 5 proceeds from disk.
 
-Promote each `Status: DRAFT` ADR to `Status: Accepted` — an in-place edit of the Status line only; do not duplicate or rewrite the ADR body.
+Promote each `status: draft` ADR to `status: accepted` — an in-place edit of the frontmatter `status:` line (and its `## Status` body mirror) only; do not duplicate or rewrite the ADR body.
 
 Then write the surviving project-state docs. Every file holds actual content derived from the interview — no template boilerplate left unfilled:
 
@@ -152,29 +136,29 @@ Then write the surviving project-state docs. Every file holds actual content der
 
 (All under `${CLAUDE_PROJECT_DIR}/.codearbiter/`.) Set the `stage:` frontmatter value in `CONTEXT.md` to the maturity number for the MVP phase of the build plan (a single number — there is no promotion ladder).
 
-Gate: every project-state doc written with real content; no `Status: DRAFT` ADRs remain in `decisions/`; `[CONFIRM-NN]` items are acceptable in `open-questions.md` for genuinely unresolved items.
+Gate: every project-state doc written with real content; no `status: draft` ADRs remain in `decisions/`; `[CONFIRM-NN]` items are acceptable in `open-questions.md` for genuinely unresolved items.
 
 ## Phase 6 — Initialization lock & cleanup · gate: BLOCK
 
 1. Write the `<!--INITIALIZED-->` body marker on its own line in `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md`. A marker embedded in a template instruction comment does not satisfy the gate.
 2. List `${CLAUDE_PROJECT_DIR}/.codearbiter/` and show the populated tree to the user.
-3. Confirm each required file is present and non-empty: `CONTEXT.md` (with `arbiter: enabled` + `stage:` frontmatter and `<!--INITIALIZED-->` body), `tech-stack.md`, `coding-standards.md`, `security-controls.md`, `open-questions.md`, `open-tasks.md`, `overrides.log` (append-only audit sink — create with its audit header if the scaffold left it absent), `last-checkpoint`, `decisions/` (at least one ADR, all `Status: Accepted`, none DRAFT), and `plans/01-…`, `plans/02-…`, `plans/03-…`.
+3. Confirm each required file is present and non-empty: `CONTEXT.md` (with `arbiter: enabled` + `stage:` frontmatter and `<!--INITIALIZED-->` body), `tech-stack.md`, `coding-standards.md`, `security-controls.md`, `open-questions.md`, `open-tasks.md`, `overrides.log` (append-only audit sink — create with its audit header if the scaffold left it absent), `last-checkpoint`, `decisions/` (at least one ADR, all `status: accepted`, none `status: draft`), and `plans/01-…`, `plans/02-…`, `plans/03-…`.
 4. Delete `${CLAUDE_PROJECT_DIR}/.codearbiter/.decompose-draft/` and all its contents. This is mandatory — a leftover draft directory signals a still-in-progress decomposition to Phase 2 of any future `/decompose`.
 5. Announce return to normal operation:
 
    > "Decomposition complete. Project state is initialized and locked, draft directory removed. Returning to codeArbiter orchestrator mode. Use `/ca:feature` to begin implementation, or any other command. Open questions are recorded in `.codearbiter/open-questions.md`."
 
-Gate: `<!--INITIALIZED-->` present on its own line in `CONTEXT.md`; all required files present and non-empty; no `Status: DRAFT` ADRs in `decisions/`; `.decompose-draft/` no longer exists on disk.
+Gate: `<!--INITIALIZED-->` present on its own line in `CONTEXT.md`; all required files present and non-empty; no `status: draft` ADRs in `decisions/`; `.decompose-draft/` no longer exists on disk.
 
 ## Hard rules
 
 - MUST NOT write any project-state file before all six layers are solid and on disk.
-- MUST NOT scaffold any cut doc — no `audit-spec.md`, `observability-spec.md`, `trust-zones.md`, `secrets-policy.md`, `dependency-policy.md`, or a separate `stage` file. Maturity is the single `stage:` value in `CONTEXT.md` frontmatter.
+- MUST NOT scaffold any cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity is the single `stage:` value in `CONTEXT.md` frontmatter.
 - MUST NOT advance a layer until its draft file exists on disk and is non-empty.
 - MUST NOT advance past a layer holding an unresolved "later" item unless it is recorded as `[CONFIRM-NN]`.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing — surface the question and record it in `open-questions.md`.
 - MUST NOT synthesize artifacts (Phase 4) or populate context (Phase 5) from conversation context — re-read the on-disk drafts first.
 - MUST NOT proceed past Phase 4 without explicit user approval of all three artifacts.
-- MUST NOT leave any `Status: DRAFT` ADR in `decisions/` after Phase 5.
+- MUST NOT leave any `status: draft` ADR in `decisions/` after Phase 5.
 - MUST NOT close the skill while `.decompose-draft/` still exists, or while `CONTEXT.md` lacks the `<!--INITIALIZED-->` body marker on its own line.
 - MUST NOT silently delete a draft directory on Resume — the user chooses Resume, Restart, or Abort.

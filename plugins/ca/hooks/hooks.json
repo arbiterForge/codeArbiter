@@ -24,7 +24,7 @@
         ]
       },
       {
-        "matcher": "Edit",
+        "matcher": "Edit|MultiEdit",
         "hooks": [
           { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit.py\"" },
           { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit.py\"" }

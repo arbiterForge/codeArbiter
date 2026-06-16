@@ -105,12 +105,10 @@ until this passes.
 
 ## Phase 5 — Verification · gate: BLOCK
 
-Verification-before-completion: run the task's verification command from the plan **fresh**, in a
-clean invocation. Read the actual output and the exit code. A subagent's "done" is not evidence —
-proof is.
-
-- Run the command yourself; do not accept a logged result from Phase 2.
-- A non-zero exit, or output that does not demonstrate the obligation, returns the task to Phase 2.
+Verification-before-completion: apply the shared fresh-run discipline in
+`${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`, with **the task's verification command from the
+plan** as the target. Run it yourself in a clean invocation; do not accept a logged result from Phase 2.
+A non-zero exit, or output that does not demonstrate the obligation, returns the task to Phase 2.
 
 Gate: the verification command exits clean and its output demonstrates the obligation. Only then.
 

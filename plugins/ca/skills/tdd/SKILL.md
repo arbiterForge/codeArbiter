@@ -76,16 +76,10 @@ Gate: every obligation `COVERED`, each backed by a passing test. Any `MISSING` b
 ## Phase 5 — Coverage · gate: BLOCK
 
 Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — a rigor knob, not a promotion
-gate:
+gate. The threshold table is the shared `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md` (the
+single source of truth, also used by `refactor` Phase 2).
 
-| maturity | minimum coverage |
-|---|---|
-| 1 | ≥ 60% |
-| 2 | ≥ 70% |
-| 3 | ≥ 85% |
-| 4 | ≥ 90% |
-
-Run the coverage command from `tech-stack.md`. Below threshold → add tests until it is met.
+Run the coverage command from `tech-stack.md`. Below the maturity threshold → add tests until it is met.
 
 Gate: threshold met for the current maturity value.
 

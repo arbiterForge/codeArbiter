@@ -34,14 +34,8 @@ Gate: a precise, complete surface table, user-signed-off. A vague or category-le
 
 Prove pre-existing tests already exercise the named surface well enough to detect a behavior change, before any production code is touched. Locate every test that exercises a symbol in the surface table. Run the coverage command from `tech-stack.md` scoped to the surface files; record line, branch, and per-symbol coverage.
 
-Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — the same knob as `tdd` Phase 5:
-
-| maturity | minimum coverage |
-|---|---|
-| 1 | ≥ 60% |
-| 2 | ≥ 70% |
-| 3 | ≥ 85% |
-| 4 | ≥ 90% |
+Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — the same knob as `tdd` Phase 5,
+using the shared threshold table `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md`.
 
 Every public method in the surface table MUST have at least one direct test — transitive coverage through a higher-level integration test does not count. A public method with zero direct tests is uncovered for this gate.
 

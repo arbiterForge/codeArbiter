@@ -48,7 +48,7 @@ Gate: a single terminal option is chosen — by the user under `/feature`, or au
 
 Carry out the chosen option, and only that one:
 
-- **Open a PR** — push the branch and open the PR against the default branch with a description citing the plan items satisfied, the gate results, and the §2 conflict level of any non-obvious tradeoff. Leave it open; the merge is not yours to take. The PR body pipeline is owned by `/pr`; route there.
+- **Open a PR** — push the branch and open the PR against the default branch. The reviewer path-matrix, the anti-slop PR-body composition (description citing the plan items satisfied, the gate results, the §2 conflict level of any non-obvious tradeoff), and the babysitter attach are the steps documented in the `/ca:pr` command flow (`${CLAUDE_PLUGIN_ROOT}/commands/pr.md`) — **execute those steps here; do not re-invoke `/ca:pr`** (under `/sprint` this skill is reached via `commit-gate`, without the `/pr` command ever running, so a route back would loop). Leave the PR open; the merge is not yours to take.
 - **Merge via PR** — open the PR as above, confirm its checks are green, then merge it through the PR (squash or merge per project convention) so the work lands. Never push to the default branch directly, never force-push.
 - **Discard** — requires explicit user confirmation naming the branch. Before discarding, verify the branch is fully pushed; if any commit is un-pushed, STOP and report exactly what would be lost — never delete un-pushed work silently. Discard proceeds only after the user confirms with that loss in view.
 

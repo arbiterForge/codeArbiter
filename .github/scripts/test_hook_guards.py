@@ -126,22 +126,34 @@ def main():
 
         # ---- H-05: audit logs are append-only --------------------------------
         for cmd in ("echo x > .codearbiter/overrides.log",
+                    # `>|` force-clobbers even under `set -o noclobber` — it
+                    # truncates the audit log exactly as `>` does and must block.
+                    "echo x >| .codearbiter/overrides.log",
+                    "echo x >|.codearbiter/overrides.log",
                     "truncate -s0 .codearbiter/overrides.log",
                     "tee .codearbiter/overrides.log < /tmp/x",
                     "cp /dev/null .codearbiter/overrides.log",
                     "dd if=/dev/null of=.codearbiter/overrides.log",
                     "sed -i d .codearbiter/triage.log",
                     "rm .codearbiter/triage.log",
-                    "Set-Content .codearbiter/overrides.log 'gone'"):
+                    "Set-Content .codearbiter/overrides.log 'gone'",
+                    # sprint-log.md is the /sprint decision record — append-only.
+                    "echo x > .codearbiter/sprint-log.md",
+                    "echo x >| .codearbiter/sprint-log.md",
+                    "rm .codearbiter/sprint-log.md",
+                    "Set-Content .codearbiter/sprint-log.md 'gone'"):
             expect_block(fx, cmd, "H-05", f"H-05 block: {cmd}")
         for cmd in ("echo entry >> .codearbiter/overrides.log",
+                    "echo entry >> .codearbiter/sprint-log.md",
                     "cat .codearbiter/overrides.log",
                     "grep GATE .codearbiter/overrides.log",
+                    "cat .codearbiter/sprint-log.md",
                     "tail -5 .codearbiter/triage.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
 
         # ---- H-11: no shell writes into .codearbiter/decisions/ --------------
         for cmd in ("echo '# fake ADR' > .codearbiter/decisions/0009-fake.md",
+                    "echo '# fake ADR' >| .codearbiter/decisions/0009-fake.md",
                     "echo more >> .codearbiter/decisions/0001-seed.md",
                     "touch .codearbiter/decisions/0010-x.md",
                     "cp /tmp/draft.md .codearbiter/decisions/0011-y.md",
@@ -166,9 +178,29 @@ def main():
                     "git push origin feature-main", "git push",
                     "git push origin"):
             expect_allow(fx, cmd, f"H-01 allow: {cmd}")
+        # --all pushes every local branch (incl. main); --mirror pushes every
+        # ref and can force-update/delete them. Both write protected refs from
+        # any branch and must block regardless of the current branch.
+        for cmd in ("git push --all", "git push --all origin",
+                    "git push origin --all", "git push --mirror",
+                    "git push --mirror origin", "git push origin --mirror"):
+            expect_block(fx, cmd, "H-01", f"H-01 block: {cmd}")
         expect_block(fx_main, "git push", "H-01", "H-01 block: bare push on main")
         expect_block(fx_main, "git push origin", "H-01", "H-01 block: push remote-only on main")
         expect_block(fx_main, "git commit -m x", "H-01", "H-01 block: commit on main")
+        # Case-insensitive protected name: `Main` is the default branch on a
+        # case-folding ref store and must block exactly like `main`. Built in its
+        # own sub-base so `fixture-Main` doesn't collide with `fixture-main` on a
+        # case-insensitive filesystem.
+        case_base = os.path.join(base, "case")
+        os.makedirs(case_base)
+        fx_Main = make_fixture(case_base, "Main")
+        expect_block(fx_Main, "git commit -m x", "H-01", "H-01 block: commit on 'Main'")
+        # Detached HEAD sitting on main's tip: current_branch() is "" but a commit
+        # still writes onto main's history -> must block.
+        git(["checkout", "--detach"], fx_main)
+        expect_block(fx_main, "git commit -m x", "H-01",
+                     "H-01 block: commit in detached HEAD at main tip")
         expect_block(fx, "git push --force origin feat/work", "H-02", "H-02 block: force push")
 
         # ---- H-09b: the diff-bound security gate (TOCTOU closed) -------------
