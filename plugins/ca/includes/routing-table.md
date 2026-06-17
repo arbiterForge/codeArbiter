@@ -34,3 +34,4 @@ stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to
 | Subagent raises an out-of-scope finding | inline `[NEEDS-TRIAGE]` marker | — | Never an ADR disposition; never silently dropped |
 | Session context bloated / want longer sessions | `/ca:prune` → `prune-transcript.py` | — | Never `--execute` the live transcript; dry-run by default; resume/compaction gains only, not live |
 | Sitting down to code / repo hygiene cleanup | `/ca:standup` → orchestrator git actions | — | ff-only pull on a clean tree; each branch/worktree delete confirmed individually; stash/dirty/un-pushed report-only; never touch the default branch |
+| Zero-onboarding dry-run of the reviewer fleet | `/ca:preview` (no skill; reuses `includes/review-matrix.md` to predict reviewers) | — | Read-only; writes nothing, stages nothing, `git status` unchanged; no `/ca:init` or `.codearbiter/` required; empty diff exits clean |
