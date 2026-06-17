@@ -28,6 +28,9 @@ python .github/scripts/test_hooks_cold_install.py
 
 # /ca:preview helpers — diff-collection + redacting secret-scan (_previewlib)
 python .github/scripts/test_preview_lib.py
+
+# UX-conversion-trio copy — Receipt close, stakes lines, register split (structural)
+python .github/scripts/test_ux_conversion.py
 ```
 
 Only when `plugins/ca/tools/**` changed:

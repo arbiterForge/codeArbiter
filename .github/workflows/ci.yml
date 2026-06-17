@@ -91,6 +91,11 @@ jobs:
         # (_previewlib): collect_diff over the three change kinds it unions and
         # the redacting secret scan, including the no-raise edges.
         run: python .github/scripts/test_preview_lib.py
+      - name: Run UX-conversion-trio structural copy tests
+        # Content-presence/absence assertions for the #82/#84/#83 prose changes:
+        # the Receipt close, stakes lines on substantive finding-blocks, the
+        # register split, and the negatives (no saves-ledger/statusline segment).
+        run: python .github/scripts/test_ux_conversion.py
 
   version-bump:
     name: plugin version bumped when payload changes

@@ -101,9 +101,13 @@ On plan completion, route the branch through `commit-gate`, then `finishing-a-de
 which under `/sprint` AUTO-SELECTS open-PR and surfaces the merge decision to the user. `/sprint`
 never merges and never discards.
 
-Emit a sprint summary: what shipped; the auto-decision count with every `low`-confidence call listed
-for review (cite `sprint-log.md`); any hard gates that tripped, each with the planning/confidence
-signal; and any open `[NEEDS-TRIAGE]` items.
+Emit the sprint **Receipt** — the same win-summary shape `finishing-a-development-branch` Phase 4 uses,
+widened to the whole sprint: what shipped; obligations covered and the gates that fired with what each
+caught; secrets/regressions prevented; suite time; the auto-decision count with every `low`-confidence
+call listed for review (cite `sprint-log.md`); any hard gates that tripped, each with the
+planning/confidence signal; and any open `[NEEDS-TRIAGE]` items. Drawn from in-hand state, not a fresh
+crawl. Close with exactly one warm, synthesizing sentence (per the orchestrator register) — earned,
+never on a no-op run.
 
 ## Hard rules
 

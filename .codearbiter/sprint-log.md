@@ -202,3 +202,41 @@ Spec `.codearbiter/specs/review-remediation.md`, plan `plans/review-remediation.
 **Auto-decisions flagged for review (per /sprint contract):** two moderate-confidence SMARTS calls — C-19 (lifecycle↔variance boundary-clarified, not merged) and the task-9 MultiEdit block-outright posture. Both logged above with rationale. **Two corrections to the original review** were recorded: pre-bash guards live in `.github/scripts/test_hook_guards.py` (not the hooks tests dir), and the `/spike` routing-table row was not actually missing.
 
 **Deferred (own decision):** review finding #6 (mechanical red-suite / commit-gate enforcement) — non-blocking note in `open-questions.md`. **Carried:** SH-TRIAGE-2 (missing coding-standards.md) and SD-02 (farm host-normalization re-review) folded into `open-tasks.md`.
+
+---
+
+# Sprint — ux-conversion-trio (#82 + #84 + #83) · 2026-06-17
+
+Spec + plan approved by the user at the Phase-1 gate. Branch `sprint/ux-conversion-trio` off `main`.
+
+## D-01 — execution model (SMARTS, confidence: moderate → flag for review)
+- **Decision point:** subagent-driven-development prescribes one fresh author subagent per task. The 8 tasks are tightly-coupled prose edits sharing one marker scheme and one test file (`test_ux_conversion.py`).
+- **Options weighed:** (a) fresh author per task — max anti-drift isolation, but fragments voice across coordinated copy and risks marker-scheme divergence on a shared test; (b) coordinate authoring in the orchestrator context, then enforce the load-bearing guarantee via independent fresh reviewers (spec-compliance + quality) + mechanical fresh-run verification (the structural test + check-plugin-refs).
+- **SMARTS verdict:** Maintainable/Testable favor (b) for coherence of a shared marker scheme; the anti-drift guarantee is preserved by independent review + a mechanical test, so nothing is accepted on the author's own word. Scalable/Available/Reliable/Securable neutral (copy-only, no logic change).
+- **Chosen:** (b). Strength: moderate. Flagged for morning review.
+
+## Execution — tasks T-01..T-08 (confidence: high)
+- All six framework files edited test-first; structural test `test_ux_conversion.py` drove 22-red → green. One brittle assertion corrected (markdown bold `**exactly one**` split the literal phrase) — assertion fixed to component-presence, semantics unchanged (not a relaxed implementation pass).
+- Wired into CI (`ci.yml`) + `tech-stack.md`. Ref graph intact. `security-controls.md` untouched; secret-handling/commit-gate edits confirmed purely additive copy (no gate-logic/MUST change).
+
+## Two-pass independent review (per D-01)
+- **Spec-compliance:** 10/11 ACs COVERED; one real GAP — AC-5 ("tdd Phase 4 & 5") had a Stakes line on Phase 4 only, and the test did not guard Phase 5.
+- **Copy-quality:** no BLOCK; 5 NITs — duplicated warm example, 4×-restated no-crawl gloss, "no-op" wording drift, a purple "under cover of" clause, a secret-handling run-on. All 5 applied.
+
+## D-02 — AC-5 Phase 5 stakes gap (SMARTS, confidence: high)
+- **Decision point:** spec/plan say tdd "Phase 4 & 5" stakes; implementation + test covered only Phase 4. Resolve toward the approved spec or narrow scope?
+- **Chosen:** honor the approved contract — added a Stakes line to tdd Phase 5 (Coverage) and a Phase-5 test assertion. Below-threshold coverage is the same "untested code ships" finding class; narrowing would weaken a user-approved AC. Strength: strong.
+
+---
+
+# Sprint complete — ux-conversion-trio · 2026-06-17
+
+8 of 8 tasks ACCEPTED. Landed as 3 type-homogeneous commits on `sprint/ux-conversion-trio`, **PR #88** opened against `main` (https://github.com/arbiterForge/codeArbiter/pull/88) — **NOT merged**; the merge is the user's call (the `/sprint` hard gate).
+
+- `4a32a31` feat(ux): reflect prevention back at the close and caught findings (7 files)
+- `4255727` ci(ux): run test_ux_conversion.py in CI; list it in tech-stack (2 files)
+- `f28603f` chore(sprint): ux-conversion-trio spec, plan, decision log (3 files)
+
+**Verification at land:** full Python suite green (hook-guards · cold-install · preview · ux-conversion) · ref graph intact · PR CI 7/7 green incl. version-bump gate. Two-pass review: spec-compliance 11/11 (after the AC-5 fix), copy-quality clean (5 NITs applied).
+
+**Auto-decisions flagged for review:** D-01 (execution model — coordinate-author + independent review, moderate) is the one low-confidence call. D-02 (AC-5 Phase-5 stakes) resolved high toward the approved spec.

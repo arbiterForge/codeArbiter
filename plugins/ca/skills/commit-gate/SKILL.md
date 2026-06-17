@@ -67,6 +67,8 @@ self-report.
 - Identify the proving command or observable: the acceptance criterion from `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md` (or the task's verification in the plan). If none exists, derive the smallest command that exercises the claimed behavior.
 - Run it fresh in this phase, read its output and exit code, and confirm the observed behavior matches the spec's acceptance criteria. A mismatch, or an unverifiable claim, blocks.
 
+**Stakes:** a behavioral-proof mismatch means the change does not do what the spec claims — state what would ship broken if this passed ("the retry path never fires; a transient error would hang the caller"), not just "proof mismatch." That gap is exactly what a green-looking suite hides.
+
 Gate: the change is proven to do what it claimed by fresh evidence — command output and exit code read in this phase. A self-reported "it works" does not pass.
 
 ## Phase 6 — Diff review · gate: BLOCK
@@ -80,6 +82,8 @@ Read the complete staged diff (`git diff --cached`). Flag as blocking:
 - Scope creep — changes outside the agreed feature or fix boundary.
 
 On any blocking finding, unstage the affected files, surface the finding, and STOP. An out-of-scope change that should not be lost gets an inline `[NEEDS-TRIAGE]` marker before it is set aside.
+
+**Stakes:** name what the finding would have cost if committed — a leaked credential is live the moment it lands and must be rotated; a scope-creep file ships untested behavior the review waved through. State that consequence on a credential or scope finding, not just "out of scope."
 
 Gate: the diff is clean — zero blocking findings.
 
