@@ -226,3 +226,17 @@ Spec + plan approved by the user at the Phase-1 gate. Branch `sprint/ux-conversi
 ## D-02 — AC-5 Phase 5 stakes gap (SMARTS, confidence: high)
 - **Decision point:** spec/plan say tdd "Phase 4 & 5" stakes; implementation + test covered only Phase 4. Resolve toward the approved spec or narrow scope?
 - **Chosen:** honor the approved contract — added a Stakes line to tdd Phase 5 (Coverage) and a Phase-5 test assertion. Below-threshold coverage is the same "untested code ships" finding class; narrowing would weaken a user-approved AC. Strength: strong.
+
+---
+
+# Sprint complete — ux-conversion-trio · 2026-06-17
+
+8 of 8 tasks ACCEPTED. Landed as 3 type-homogeneous commits on `sprint/ux-conversion-trio`, **PR #88** opened against `main` (https://github.com/arbiterForge/codeArbiter/pull/88) — **NOT merged**; the merge is the user's call (the `/sprint` hard gate).
+
+- `4a32a31` feat(ux): reflect prevention back at the close and caught findings (7 files)
+- `4255727` ci(ux): run test_ux_conversion.py in CI; list it in tech-stack (2 files)
+- `f28603f` chore(sprint): ux-conversion-trio spec, plan, decision log (3 files)
+
+**Verification at land:** full Python suite green (hook-guards · cold-install · preview · ux-conversion) · ref graph intact · PR CI 7/7 green incl. version-bump gate. Two-pass review: spec-compliance 11/11 (after the AC-5 fix), copy-quality clean (5 NITs applied).
+
+**Auto-decisions flagged for review:** D-01 (execution model — coordinate-author + independent review, moderate) is the one low-confidence call. D-02 (AC-5 Phase-5 stakes) resolved high toward the approved spec.
