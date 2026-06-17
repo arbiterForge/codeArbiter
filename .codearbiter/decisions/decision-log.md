@@ -140,3 +140,77 @@ section. No content was superseded — ratification is the maturation of these
 same decisions, not a new decision.
 
 ---
+
+## DECISION-0005 — ADR-0005 — Split the persona register (terse gates, conversational thinking)
+
+**Date:** 2026-06-16
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** product/persona
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Persona is terse everywhere by design (ORCHESTRATOR.md), including the exploratory thinking surfaces.
+- **Scaffold position:** Issue #70's eval found uniform terseness is the cause of "flat" daily feel and a drag on adoption.
+- **Status type:** open-decision-closure
+
+### Decision
+Run two persona registers scoped by surface: gates and enforcement (commit-gate, reviewer fleet,
+hard STOPs, BLOCK findings) stay terse and non-negotiable; the thinking surfaces (brainstorming,
+debug, decision-variance/SMARTS) run a conversational register. Sets direction for #82/#83/#84.
+
+### SMARTS rationale
+SMARTS verdict was tied (only Reliable differentiated, favoring terse gates over a chatty gate);
+the non-SMARTS adoption factor broke the tie toward the split. Reliable holds the gate line;
+warmth is quarantined to non-gating surfaces, so enforcement authority is preserved.
+
+### Implementation implication
+ADR-0005 authored. Future work on brainstorming/debug/decision-variance bodies and ORCHESTRATOR.md
+register. Ratifies the direction of issues #82, #83, #84.
+
+---
+
+## DECISION-0006 — ADR-0006 — Broad-adoption OSS posture (decline a commercial vertical)
+
+**Date:** 2026-06-16
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** governance/strategy
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** No recorded strategic posture; the eval (#70) implicitly pushed a commercialize-to-vertical framing.
+- **Scaffold position:** Issue #70 recommended re-targeting to a regulated/audited commercial ICP for willingness-to-pay.
+- **Status type:** open-decision-closure
+
+### Decision
+codeArbiter stays broad open-source software optimized for public adoption; it declines
+re-targeting to a regulated or narrow commercial vertical. The objective is maximizing adoption
+of a tool with demonstrated value (a real team uses it daily). Explicitly overrules #70's
+vertical-ICP recommendation.
+
+### SMARTS rationale
+The user reframed the ICP question as moot for OSS. Decision rests on non-SMARTS factors (intent,
+adoption goal) over the eval's Securable-aligned commercial framing. The audit/SMARTS machinery is
+retained as a broad-audience quality/trust feature, not a compliance-only one.
+
+### Implementation implication
+ADR-0006 authored. Priority order set: cold-install observation (#70 move 1), demo above the fold
+(#71), zero-onboarding dry run (#81 /ca:preview), README adoption-proof positioning (#72).
+Re-evaluation trigger: if adoption does not move after time-to-first-value + proof work ships,
+the vertical-ICP question reopens.
+
+---
+
+## Ratification — 2026-06-16
+
+DECISION-0005 and DECISION-0006 advanced from `proposed` to **`accepted`** on
+explicit user instruction (SUaDtL@users.noreply.github.com), ratified 2026-06-16.
+The ADR files (`0005-split-persona-register.md`, `0006-broad-adoption-oss-posture.md`)
+carry the authoritative `status: accepted` frontmatter and a ratification line in their
+`## Status` section. No content was superseded — ratification is the maturation of these
+same decisions, not a new decision.
+
+---
