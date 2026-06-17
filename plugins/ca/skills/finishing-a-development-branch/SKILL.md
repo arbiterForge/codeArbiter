@@ -54,6 +54,31 @@ Carry out the chosen option, and only that one:
 
 Gate: the chosen option completed — for open-PR a PR exists against the default branch; for merge the work landed through that PR; for discard the user confirmed against a stated loss summary.
 
+## Phase 4 — Receipt · gate: BLOCK
+
+The loop has been a chain of gates the user watched clear. End it on its most rewarding beat, not in
+silence. Emit a tight **Receipt** — a win summary that reflects the prevention back, drawn ONLY from
+the state Phase 1 already assembled plus `${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint`. This is
+**not a fresh audit-trail crawl** — no new log scan, no `git` archaeology. If a field has no data in
+hand, omit the line rather than go digging.
+
+Report only what the assembled state supports:
+
+- **Obligations covered** — the count of `tdd` obligations that reached `COVERED` on this branch.
+- **Gates that fired and what each caught** — the gates that BLOCKed and then cleared, named with the
+  specific thing caught (an untested seam, a scope-creep file set aside), not a bare gate name.
+- **SMARTS decisions the user made** — the architectural forks the user resolved, one line each.
+- **Secrets / regressions prevented** — credential findings and behavioral-proof mismatches the gates
+  stopped before they shipped.
+- **Suite time** — the wall-clock of the verifying run, from the gate results in hand.
+
+Close with **exactly one** warm, synthesizing sentence (per the orchestrator register) that reflects
+the run back — synthesized for this branch, not the register's canned example. One sentence, earned,
+never on a no-op close.
+
+Gate: the Receipt is emitted from in-hand state (no fresh crawl), and the close carries at most one
+warm sentence.
+
 ## Hard rules
 
 - MUST NOT merge directly to the default branch or force-push — every change lands through a PR.
@@ -62,3 +87,5 @@ Gate: the chosen option completed — for open-PR a PR exists against the defaul
 - MUST NOT delete un-pushed commits silently — STOP and report the loss before any discard.
 - MUST NOT run before `commit-gate` has cleared on the current HEAD.
 - MUST NOT guess the branch or default-branch name — read `CONTEXT.md` or STOP.
+- MUST draw the Receipt only from Phase 1 state + `last-checkpoint` — never a fresh audit-trail crawl — and never build a rolling cross-branch "saves" tally.
+- MUST keep the close to at most one warm sentence; never on a no-op close.
