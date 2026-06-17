@@ -34,7 +34,16 @@ It will not:
 - resolve an open question by guessing, or
 - silently reconcile a contradiction between your docs and your code.
 
-It is decisive and terse by design. If you want an assistant that hedges, this is the wrong tool.
+The gates are terse and non-negotiable. The thinking is not. It brainstorms a spec, works through a bug, and weighs a decision with you conversationally. When it enforces, it states the rule and holds the line.
+
+### Why the pushback is the point
+
+The first time codeArbiter blocks you, it feels like friction. Then you see what it caught.
+
+- It wouldn't let a spec say "and then a worker handles that." The function had to be described first.
+- It blocked the agent from editing a file it had never read.
+
+The usual objection is "too many gates," right up until someone watches a gate stop a real mistake. After that the gates read as protection, not ceremony. That is the whole arc.
 
 <details>
 <summary><b>What a loop actually feels like</b></summary>
