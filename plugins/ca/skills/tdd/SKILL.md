@@ -71,6 +71,10 @@ contract-critical logic, dispatch the `coverage-auditor` agent
 A `MISSING` obligation returns the workflow to Phase 2 — author a correct failing test, then re-run
 Phase 3 — and loops until it is `COVERED`.
 
+**Stakes:** when you block on a `MISSING` obligation, state what the untested seam leaves exposed, not
+just that it is `MISSING` — one line naming the consequence: "this error path is untested; a 500 here
+would reach users silently." The block is the rule; the stakes are why it is worth the friction.
+
 Gate: every obligation `COVERED`, each backed by a passing test. Any `MISSING` blocks Phase 5.
 
 ## Phase 5 — Coverage · gate: BLOCK
@@ -80,6 +84,10 @@ gate. The threshold table is the shared `${CLAUDE_PLUGIN_ROOT}/includes/maturity
 single source of truth, also used by `refactor` Phase 2).
 
 Run the coverage command from `tech-stack.md`. Below the maturity threshold → add tests until it is met.
+
+**Stakes:** when coverage blocks below threshold, name the class of code left dark — the paths a later
+regression could rot unnoticed — not just "below threshold." The number is the rule; the untested paths
+are why it matters.
 
 Gate: threshold met for the current maturity value.
 
