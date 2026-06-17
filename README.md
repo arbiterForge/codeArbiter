@@ -8,7 +8,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="version 2.4.2" src="https://img.shields.io/badge/version-2.4.2-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-34-555">
+<img alt="commands" src="https://img.shields.io/badge/commands-35-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-20-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-15-555">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
@@ -229,7 +229,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | <kbd>/ca:audit</kbd> | One command, one packet: every commit, override, ADR, and autonomous decision in a window, with attribution: the document an auditor actually asks for. |
 
 <details>
-<summary><b>The full catalog</b>: 34 commands</summary>
+<summary><b>The full catalog</b>: 35 commands</summary>
 
 <br>
 
@@ -277,6 +277,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:status` | Maturity, open tasks, unresolved `CONFIRM-NN`, overrides |
 | `/ca:statusline` | Install/wire the codeArbiter statusline |
 | `/ca:doctor` | Prove the install is enforcing: payload, cache staleness, live-fire hook probe |
+| `/ca:preview` | Zero-onboarding read-only dry-run of the reviewer fleet on the current diff: predicts reviewers, runs the state-free secret scan, writes nothing |
 | `/ca:standup` | Daily hygiene: review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes, each under per-action confirmation |
 | `/ca:new-skill "gap"` | Author a new skill after the gap is proven uncovered |
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
@@ -304,7 +305,7 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (34)   skills/   (20)   agents/   (15)
+├── commands/   (35)   skills/   (20)   agents/   (15)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
