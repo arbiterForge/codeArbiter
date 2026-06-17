@@ -86,6 +86,11 @@ jobs:
         # the guard decisions themselves — every blocked spelling of
         # H-01/02/03/05/11/09b blocks, every legitimate spelling still allows.
         run: python .github/scripts/test_hook_guards.py
+      - name: Run /ca:preview helper unit tests
+        # Unit tests for the /ca:preview diff-collection + secret-scan helpers
+        # (_previewlib): collect_diff over the three change kinds it unions and
+        # the redacting secret scan, including the no-raise edges.
+        run: python .github/scripts/test_preview_lib.py
 
   version-bump:
     name: plugin version bumped when payload changes

@@ -25,6 +25,9 @@ python .github/scripts/test_hook_guards.py
 
 # Interpreter plumbing — REAL / STUB / NONE python3 matrix, dual registration
 python .github/scripts/test_hooks_cold_install.py
+
+# /ca:preview helpers — diff-collection + redacting secret-scan (_previewlib)
+python .github/scripts/test_preview_lib.py
 ```
 
 Only when `plugins/ca/tools/**` changed:
