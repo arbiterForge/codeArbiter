@@ -1,7 +1,9 @@
 {
   "meta": {
     "name": "docs-site-mvp",
-    "repo": "codeArbiter"
+    "repo": "codeArbiter",
+    "apiBaseUrl": "https://opencode.ai/zen/v1",
+    "model": "big-pickle"
   },
   "tasks": [
     {
