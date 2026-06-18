@@ -10,5 +10,9 @@ import type { ParsedDoc } from "./types";
  * body-only file).
  */
 export function parseDoc(raw: string): ParsedDoc {
-  throw new Error("not implemented");
+  const { frontmatter, body } = splitFrontmatter(raw);
+  return {
+    fields: frontmatter === null ? {} : parseFields(frontmatter),
+    body,
+  };
 }
