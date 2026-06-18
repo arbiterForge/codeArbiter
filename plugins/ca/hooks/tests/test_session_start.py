@@ -23,6 +23,11 @@ _spec.loader.exec_module(_mod)
 
 has_source = _mod.has_source
 CONFIRM_RE = _mod.CONFIRM_RE
+should_emit_briefing = _mod.should_emit_briefing
+briefing_mode = _mod.briefing_mode
+standup_marker_path = _mod.standup_marker_path
+local_date_iso = _mod.local_date_iso
+write_standup_marker = _mod.write_standup_marker
 
 
 class TestHasSource(unittest.TestCase):
@@ -259,6 +264,65 @@ class TestMainHealsBeforeDormantGate(unittest.TestCase):
             cmd = json.load(f)["statusLine"]["command"]
         self.assertIn(self.real_script, cmd)
         self.assertNotIn("2.0.1", cmd)
+
+
+class TestStandupBriefingGating(unittest.TestCase):
+    """#61 regression: pin the once-per-LOCAL-day briefing contract so the
+    documented behavior (and the absence of a marker/timezone misfire) cannot
+    silently regress.
+
+    Conclusion of the #61 investigation: the briefing is correct-but-surprising,
+    NOT a bug. The full briefing shows once per local day (first session); later
+    same-day sessions emit an offer line ONLY when something is actionable, and
+    nothing otherwise. A prior-day marker never suppresses today (rules out the
+    marker-staleness hypothesis)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_first_session_of_day_emits(self):
+        # No marker for today -> emit the full briefing.
+        self.assertTrue(should_emit_briefing(self.root, "2026-06-18"))
+
+    def test_marker_present_suppresses_same_day(self):
+        write_standup_marker(self.root, "2026-06-18")
+        self.assertFalse(should_emit_briefing(self.root, "2026-06-18"))
+
+    def test_prior_day_marker_does_NOT_suppress_today(self):
+        # The marker is date-keyed: yesterday's marker is irrelevant to today.
+        # This is the guard against the "stale marker persists" hypothesis.
+        write_standup_marker(self.root, "2026-06-17")
+        self.assertTrue(should_emit_briefing(self.root, "2026-06-18"))
+
+    def test_write_marker_is_idempotent(self):
+        write_standup_marker(self.root, "2026-06-18")
+        write_standup_marker(self.root, "2026-06-18")  # must not raise
+        self.assertTrue(os.path.isfile(standup_marker_path(self.root, "2026-06-18")))
+
+    def test_marker_path_is_date_keyed_under_markers_dir(self):
+        p = standup_marker_path(self.root, "2026-06-18")
+        self.assertEqual(
+            p,
+            os.path.join(self.root, ".codearbiter", ".markers", "standup-2026-06-18"),
+        )
+
+    def test_local_date_iso_accepts_injected_date(self):
+        import datetime
+        self.assertEqual(local_date_iso(datetime.date(2026, 6, 18)), "2026-06-18")
+
+    def test_briefing_mode_first_session_is_full_regardless_of_actionable(self):
+        # marker absent -> "full" whether or not the repo is actionable.
+        self.assertEqual(briefing_mode(marker_present=False, actionable=False), "full")
+        self.assertEqual(briefing_mode(marker_present=False, actionable=True), "full")
+
+    def test_briefing_mode_later_session_offers_only_when_actionable(self):
+        # marker present -> "offer" iff actionable, else "none" (silent).
+        self.assertEqual(briefing_mode(marker_present=True, actionable=True), "offer")
+        self.assertEqual(briefing_mode(marker_present=True, actionable=False), "none")
 
 
 if __name__ == "__main__":
