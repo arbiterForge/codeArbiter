@@ -63,6 +63,13 @@ type Plan = {
   tasks: Task[];
 };
 
+// Built-in default endpoint, used only when neither FARM_API_BASE_URL nor
+// plan.meta.apiBaseUrl provides one. The live OpenCode Zen OpenAI-compatible
+// host: `/models` and `/chat/completions` both 200 here. The former default
+// `https://api.opencode.ai/v1` now answers 200 with body "Not Found" (#90), so
+// every worker died with an opaque non-JSON parse error.
+export const DEFAULT_API_BASE_URL = "https://opencode.ai/zen/v1";
+
 const ENV = {
   // Model: plan.meta.model (set by subagent-driven-development before dispatch),
   // then FARM_MODEL env var override. Fails at startup if neither is set.
@@ -80,6 +87,10 @@ const ENV = {
   reportDir: process.env.FARM_REPORT_DIR ?? ".farm",
   // Per-request hard timeout so a hung endpoint can't deadlock a worker slot.
   requestTimeoutMs: Number(process.env.FARM_REQUEST_TIMEOUT_MS ?? 120_000),
+  // Per-candidate wall-clock cap for the #93 entitlement pre-screen, so one
+  // slow/dead model can't dominate the probe. Kept short (35s) — a screen, not a
+  // capability run — and ≤ the per-request timeout.
+  entitlementProbeTimeoutMs: Number(process.env.FARM_ENTITLEMENT_PROBE_TIMEOUT_MS ?? 35_000),
   // Transport-level retries (429 / 5xx) — distinct from model-quality retries.
   apiMaxRetries: Number(process.env.FARM_API_MAX_RETRIES ?? 3),
   // Circuit breaker: abort dispatch once the escalation rate exceeds this,
@@ -88,7 +99,7 @@ const ENV = {
   abortMinTasks: Number(process.env.FARM_ABORT_MIN_TASKS ?? 3),
   // Default endpoint, used only when neither env nor plan.meta provides one.
   defaultApiBaseUrl:
-    process.env.FARM_DEFAULT_API_BASE_URL ?? "https://api.opencode.ai/v1",
+    process.env.FARM_DEFAULT_API_BASE_URL ?? DEFAULT_API_BASE_URL,
   // Comma-separated candidate model ids for --canary mode.
   candidateModels: (process.env.FARM_CANDIDATE_MODELS ?? "")
     .split(",")
@@ -128,17 +139,27 @@ const MUT = {
 // --------------------------------------------------------------------------
 // process helpers
 // --------------------------------------------------------------------------
-function run(cmd: string, args: string[], cwd?: string, opts: object = {}) {
-  return new Promise<{ code: number; out: string }>((resolve) => {
+// Result of a spawned process. `out` stays the merged stdout+stderr string that
+// existing consumers (runGate, diagnostics) read. `stdout`/`stderr` are kept
+// SEPARATE so parsing contexts (checkDrift — #91) read only stdout: on Windows
+// with core.safecrlf, git writes a `warning: ... LF will be replaced by CRLF`
+// line to stderr that, when merged, was parsed as a changed file path and tripped
+// a false `drift:` escalation.
+type RunResult = { code: number; out: string; stdout: string; stderr: string };
+type GitRunner = (args: string[], cwd?: string) => Promise<RunResult>;
+
+function run(cmd: string, args: string[], cwd?: string, opts: object = {}): Promise<RunResult> {
+  return new Promise<RunResult>((resolve) => {
     const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
-    let out = "";
-    c.stdout.on("data", (d) => (out += d));
-    c.stderr.on("data", (d) => (out += d));
-    c.on("error", (e) => resolve({ code: 1, out: String(e) }));
-    c.on("close", (code) => resolve({ code: code ?? 1, out }));
+    let stdout = "";
+    let stderr = "";
+    c.stdout.on("data", (d) => (stdout += d));
+    c.stderr.on("data", (d) => (stderr += d));
+    c.on("error", (e) => resolve({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
+    c.on("close", (code) => resolve({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
   });
 }
-const git = (args: string[], cwd?: string) => run("git", args, cwd);
+const git: GitRunner = (args, cwd) => run("git", args, cwd);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Commit without signing — the farm makes mechanical commits; signing servers
@@ -487,6 +508,33 @@ export type WorkerResult = {
   completionTokens?: number;
 };
 
+// Interpret a `/chat/completions` response BODY (already read as text). Split
+// out from callApi (#90) so the non-JSON-body path is unit-testable without a
+// network round-trip, and so the error it produces is actionable rather than an
+// opaque `non-JSON response: SyntaxError`. A stale/misconfigured endpoint (the
+// #90 failure: a 200 whose body is the literal "Not Found") is the common cause,
+// so the error names the endpoint and the FARM_API_BASE_URL knob the operator
+// must fix. The body snippet is bounded so a large HTML error page can't flood
+// the message.
+export function parseChatCompletion(
+  text: string,
+  apiBaseUrl: string,
+):
+  | { ok: true; content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } }
+  | { ok: false; error: string } {
+  let data: { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
+  try {
+    data = JSON.parse(text) as typeof data;
+  } catch {
+    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
+    return {
+      ok: false,
+      error: `endpoint ${apiBaseUrl} returned a non-JSON body (${JSON.stringify(snippet)}) — check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`,
+    };
+  }
+  return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
+}
+
 async function callApi(
   prompt: string,
   model: string,
@@ -543,13 +591,13 @@ async function callApi(
       return { ok: false, error: `API ${resp.status}` };
     }
 
-    let data: { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
-    try {
-      data = (await resp.json()) as typeof data;
-    } catch (e) {
-      return { ok: false, error: `non-JSON response: ${e}` };
-    }
-    return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
+    // Read the body as text first, then parse — so a 2xx-with-non-JSON-body (the
+    // #90 stale-endpoint failure: a 200 whose body is "Not Found") yields an
+    // actionable, endpoint-naming error instead of an opaque SyntaxError. The
+    // body is consumed once, so a re-read on parse failure is not possible —
+    // parseChatCompletion works off the text we already hold.
+    const text = await resp.text().catch(() => "");
+    return parseChatCompletion(text, apiBaseUrl);
   }
   return { ok: false, error: "exhausted API retries" };
 }
@@ -637,17 +685,25 @@ export const httpWorker: Worker = {
 // drift check — path allowlist. Catches modified tracked files and new
 // untracked files individually (status --porcelain groups by directory).
 // --------------------------------------------------------------------------
-async function checkDrift(cwd: string, allowed: Set<string>): Promise<string[]> {
-  const tracked = await git(["diff", "--name-only", "HEAD"], cwd);
-  const untracked = await git(
+// gitRunner is injectable (default = real git) so the stdout-only parsing is
+// unit-testable without a repo. Parse STDOUT only (#91): a git stderr line —
+// the Windows core.safecrlf `warning: ... LF will be replaced by CRLF` notably —
+// must never be mistaken for a changed file path.
+export async function checkDrift(
+  cwd: string,
+  allowed: Set<string>,
+  gitRunner: GitRunner = git,
+): Promise<string[]> {
+  const tracked = await gitRunner(["diff", "--name-only", "HEAD"], cwd);
+  const untracked = await gitRunner(
     ["ls-files", "--others", "--exclude-standard", "-z"],
     cwd,
   );
   const changed: string[] = [];
   if (tracked.code === 0)
-    changed.push(...tracked.out.trim().split("\n").filter(Boolean));
+    changed.push(...tracked.stdout.trim().split("\n").filter(Boolean));
   if (untracked.code === 0)
-    changed.push(...untracked.out.split("\0").filter(Boolean));
+    changed.push(...untracked.stdout.split("\0").filter(Boolean));
   return [...new Set(changed)].filter((f) => !allowed.has(f));
 }
 
@@ -1253,6 +1309,82 @@ function resolveConfig(plan: Plan): { model: string; apiBaseUrl: string; apiKey:
 }
 
 // --------------------------------------------------------------------------
+// entitlement pre-screen (#93). OpenCode Zen's /models catalog lists models the
+// API key is NOT entitled to (expired `*-free` promos); /chat/completions then
+// returns 401 "Free promotion has ended for ...". The canary cannot tell that
+// from a capability failure and burns full attempts/timeouts on dead candidates.
+// This cheap screen runs one minimal probe per candidate and drops the 401s
+// BEFORE the real canary, surfacing them distinctly (never conflated with a
+// capability FAIL). Pure + injectable (probe, sleepFn) so it is unit-testable
+// without the network; the per-candidate wall-clock cap is enforced here via a
+// race, so a hung/dead endpoint cannot dominate the screen.
+// --------------------------------------------------------------------------
+export type EntitlementSkip = { model: string; reason: "entitlement" | "timeout" | "error"; note: string };
+export type EntitlementScreen = { survivors: string[]; skipped: EntitlementSkip[] };
+export type EntitlementProbe = (model: string) => Promise<{ status: number }>;
+
+export async function screenEntitlements(
+  models: string[],
+  probe: EntitlementProbe,
+  opts: { timeoutMs?: number; sleepFn?: (ms: number) => Promise<void> } = {},
+): Promise<EntitlementScreen> {
+  const timeoutMs = opts.timeoutMs ?? ENV.entitlementProbeTimeoutMs;
+  const sleepFn = opts.sleepFn ?? sleep;
+  const survivors: string[] = [];
+  const skipped: EntitlementSkip[] = [];
+  for (const model of models) {
+    // null is the timeout sentinel — the probe itself never resolves to null,
+    // so `res === null` cleanly means the wall-clock race fired.
+    let res: { status: number } | null;
+    try {
+      res = await Promise.race<{ status: number } | null>([
+        probe(model),
+        sleepFn(timeoutMs).then(() => null),
+      ]);
+    } catch (e) {
+      skipped.push({ model, reason: "error", note: `entitlement probe error: ${e}` });
+      continue;
+    }
+    if (res === null) {
+      skipped.push({ model, reason: "timeout", note: `entitlement probe exceeded ${timeoutMs}ms — model is slow or dead` });
+      continue;
+    }
+    if (res.status === 401) {
+      skipped.push({ model, reason: "entitlement", note: "401 — not entitled / free promotion ended" });
+      continue;
+    }
+    // Any other status (200, 4xx≠401, 5xx) → let the real canary judge capability.
+    survivors.push(model);
+  }
+  return { survivors, skipped };
+}
+
+// Real entitlement probe: one minimal /chat/completions call (max_tokens: 1),
+// returning only the HTTP status. Its own AbortController bounds the underlying
+// fetch so a hung socket is actually torn down (the screen's race is the
+// higher-level cap). A network/abort failure maps to status 0 → screened as a
+// survivor, not an entitlement drop (only a real 401 drops a candidate).
+function makeEntitlementProbe(apiBaseUrl: string, apiKey: string, timeoutMs: number): EntitlementProbe {
+  return async (model) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const resp = await fetch(`${apiBaseUrl}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({ model, messages: [{ role: "user", content: "ping" }], max_tokens: 1 }),
+        signal: ctrl.signal,
+      });
+      return { status: resp.status };
+    } catch {
+      return { status: 0 };
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+}
+
+// --------------------------------------------------------------------------
 // canary — measure candidate models on the smallest task. No merge.
 // --------------------------------------------------------------------------
 async function runCanary(plan: Plan) {
@@ -1282,8 +1414,18 @@ async function runCanary(plan: Plan) {
     .filter((t) => (t.deps ?? []).length === 0)
     .sort((a, b) => a.filesInScope.length - b.filesInScope.length)[0] ?? plan.tasks[0];
 
+  // #93: entitlement pre-screen. Drop candidates the key isn't entitled to (401
+  // "free promotion ended") BEFORE the expensive per-candidate canary, so a dead
+  // promo model can't burn full attempts/timeouts. Bounded per candidate.
+  const { survivors, skipped } = await screenEntitlements(
+    ENV.candidateModels,
+    makeEntitlementProbe(apiBaseUrl, apiKey, ENV.entitlementProbeTimeoutMs),
+  );
+  if (skipped.length)
+    process.stderr.write(`Entitlement screen dropped ${skipped.length}/${ENV.candidateModels.length}: ${skipped.map((s) => `${s.model} (${s.reason})`).join(", ")}\n`);
+
   const results: Array<{ model: string; green: boolean; attempts: number; ms: number; note?: string }> = [];
-  for (const model of ENV.candidateModels) {
+  for (const model of survivors) {
     const t0 = Date.now();
     const r = await runTask({ ...task, id: `canary-${task.id}` }, model, apiBaseUrl, apiKey);
     results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note });
@@ -1293,8 +1435,16 @@ async function runCanary(plan: Plan) {
   await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
 
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
-  await writeFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, ts: new Date().toISOString() }, null, 2));
-  const summary = ["\nCanary results (best first):", ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`), `\nRecommended: ${results[0]?.green ? results[0].model : "NONE PASSED — set FARM_MODEL manually or revise the plan"}`, ""].join("\n");
+  // Skipped candidates are surfaced DISTINCTLY (their own array), never folded
+  // into the capability `results` as a FAIL.
+  await writeFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: new Date().toISOString() }, null, 2));
+  const summary = [
+    "\nCanary results (best first):",
+    ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`),
+    ...skipped.map((s) => `  SKIP  ${s.model}  (${s.reason}: ${s.note})`),
+    `\nRecommended: ${results[0]?.green ? results[0].model : "NONE PASSED — set FARM_MODEL manually or revise the plan"}`,
+    "",
+  ].join("\n");
   await new Promise<void>((resolve) => process.stdout.write(summary, () => resolve()));
   process.exit(results[0]?.green ? 0 : 2);
 }

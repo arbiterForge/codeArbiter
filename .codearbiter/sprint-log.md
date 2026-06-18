@@ -267,3 +267,24 @@ Spec + plan approved by the user at the Phase-1 gate. Branch `sprint/ux-conversi
 
 ## Security gate (H-09b) — cleared by review
 The commit hook flagged 3 lines in `site/package-lock.json` as crypto-sensitive: the transitive dependency `iron-webcrypto@1.2.1`. Dispatched `auth-crypto-reviewer` — verdict **PASS** (0 findings): it is a reputable MIT WebCrypto wrapper arriving via the owner-approved Astro/Starlight stack (`astro → unstorage → h3 → iron-webcrypto`), not a banned/home-rolled primitive; no secret, key material, or disabled-TLS introduced; the real API key is absent from all tracked files. Recorded the diff-bound security-pass marker (no `/override` needed — the gate genuinely passed).
+
+# Sprint — farm-feature-forge-fixes · 2026-06-18 (#90, #91, #93)
+
+`/ca:sprint` (premium path, NOT --farm — the farm tool is itself the subject, and #90 leaves --farm broken; dogfooding a broken tool to fix itself is circular). Spec + plan approved at the one interactive gate. Closes the three known-cause feature-forge bugs filed during the docs-site-mvp farm run.
+
+## User decisions (at the one interactive gate — NOT auto-decided)
+- **U-01 PR structure → single combined PR.** User chose one branch/PR closing #90/#91/#93 over three separate or stacked PRs, to avoid farm.js bundle-merge friction. User-attributed.
+- **U-02 scope = #90, #91, #93.** #92 (enhancement) and #61 (needs /ca:debug — unknown cause) deferred. User-attributed.
+
+## Auto-decisions (SMARTS, deciding-as-the-user)
+- **D-01 #90 testability seam → extract+export `parseChatCompletion(text, apiBaseUrl)`** rather than export `callApi` + inject `fetch`. Lets the non-JSON-body path be unit-tested with no network; callApi now reads `resp.text()` then delegates. SMARTS: strong (minimal surface, single chokepoint). Confidence: **high**.
+- **D-02 #90 default URL via exported `DEFAULT_API_BASE_URL` const** (single source of truth, referenced by ENV). Strong. **high**.
+- **D-03 #90 scope widened to `.env.example`** (operator-facing default also carried the stale URL) beyond the 3 spec-named files. Obvious correctness. **high**.
+- **D-04 #91 fix = separate stdout/stderr in `run()`** (return `{code,out,stdout,stderr}`; `out` stays merged for back-compat consumers like runGate) + export `checkDrift` with an injectable git runner, parsing stdout only. Chosen over line-filtering `^warning:` (fragile, CRLF-only). Strong (principled, handles all stderr noise). **high**.
+- **D-05 #91 updated 5 pre-existing git-stub return shapes** in farm.unit.test.ts to the new RunResult contract. These are test DOUBLES (return values), not assertions — mechanical type-conformance, not evidence tampering. **high**.
+- **D-06 #93 screen owns the wall-clock cap via Promise.race + null sentinel**; new env knob `FARM_ENTITLEMENT_PROBE_TIMEOUT_MS` (default 35_000, ≤ request timeout). Only HTTP 401 drops a candidate (entitlement); a race timeout drops as `timeout`; any other status (incl. 5xx/network=0) stays a survivor so the real canary judges capability. SMARTS: strong (matches issue's 401-is-the-signal framing). **high**.
+- **D-07 #93 skipped candidates surfaced in their own `skipped[]` array** in canary-report.json + summary, never folded into capability `results` as FAIL (AC-93.2). **high**.
+
+## Verification
+- `plugins/ca/tools`: typecheck clean, **104/104 vitest** (was 93; +11 new across #90/#91/#93), `npm run build` regenerated farm.js. No security/auth/crypto surface touched (hard-gate-clear by design).
+- Note (manual): `runCanary`'s report-shape wiring (D-07) is typecheck-verified but not unit-covered — runCanary does real git+network+process.exit and has no existing harness; consistent with current coverage.
