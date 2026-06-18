@@ -8,5 +8,20 @@
  * Backslash separators are normalized to forward slashes first.
  */
 export function deriveName(path: string, fields: Record<string, string>): string {
-  throw new Error("not implemented");
+  if (fields.name) {
+    return fields.name;
+  }
+  const normalized = path.replace(/\\/g, '/');
+  const segments = normalized.split('/');
+  let basename = segments[segments.length - 1] || '';
+  if (basename.endsWith('.md')) {
+    basename = basename.slice(0, -3);
+  }
+  if (basename === 'SKILL') {
+    if (segments.length >= 2) {
+      return segments[segments.length - 2];
+    }
+    return '';
+  }
+  return basename;
 }
