@@ -87,6 +87,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
 | `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout (prevents worker-slot deadlock). |
 | `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx (honors `Retry-After`). |
+| `FARM_ENTITLEMENT_PROBE_TIMEOUT_MS` | `35000` | Per-candidate wall-clock cap for the `--canary` entitlement pre-screen (drops 401 promo-expired models). |
 | `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on bytes of test-source + in-scope file context injected into the worker prompt (data-minimization; redacted for secrets). |
 | `FARM_ABORT_ESCALATION_RATE` | `0.5` | Circuit breaker: abort once escalations exceed this fraction… |
 | `FARM_ABORT_MIN_TASKS` | `3` | …after at least this many tasks have settled. |
@@ -96,6 +97,30 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MUTATION_WARN_BELOW` | `0.5` | Score below this attaches a warning into Phase 3. |
 | `FARM_MUTATION_ESCALATE_BELOW` | `0.1` | Score at/below this (≥5 mutants) hard-escalates. |
 | `FARM_MUTATION_CMD` | _(unset)_ | Pluggable external mutation framework hook. |
+
+## Per-worktree setup (dependency hook)
+
+Each task runs in an isolated git worktree cut from the integration HEAD. Gitignored directories —
+`node_modules`, a Python `venv`, `target/`, etc. — are **not** present in a fresh worktree, so a gate
+that needs them (`vitest`, `pytest`, `cargo test`) can fail for environmental reasons. (Node's
+up-tree module resolution often papers over this for JS because the worktree lives under the repo
+root; languages without up-tree resolution get nothing.)
+
+Set **`meta.setup`** in `plan.json` — a list of shell commands the dispatcher runs **in each worktree
+before the worker**, on every attempt:
+
+```json
+{ "meta": { "name": "my-sprint", "setup": ["npm ci"] }, "tasks": [ … ] }
+```
+
+- A per-task **`task.setup`** overrides `meta.setup` for that task; otherwise `meta.setup` applies to all.
+- Setup runs through the same shell + exit-code path as `gate.commands`. A **non-zero setup command
+  escalates the task immediately** (it is environmental, not a worker failure) — the worker is not invoked.
+- **Setup-produced files must be gitignored.** Anything setup writes that is *not* ignored and *not* in
+  the task's `filesInScope` is correctly flagged as drift and escalates.
+- Cost: setup re-runs each retry (the inter-attempt reset wipes untracked deps), but most tasks pass on
+  attempt 1, so it runs once. For JS, leaving `setup` unset and relying on root `node_modules` up-tree
+  resolution is the cheaper path when it works; `setup` is the portable, explicit alternative.
 
 ## Sovereignty note
 
