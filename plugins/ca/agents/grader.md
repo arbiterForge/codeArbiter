@@ -41,7 +41,7 @@ Option C — Hybrid (only if synthesis is genuinely possible):
 Project context relevant to this decision:
 - <relevant project constraints>
 
-Apply the SMARTS framework per ${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md (you have access to it). Follow its hard cell constraints exactly.
+Apply the SMARTS framework per ${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md (you have access to it). Follow its hard cell constraints exactly.
 Recommendation strength is one of: strong, moderate, tied. There is no "weak" level.
 
 Output format: structured Markdown using the template below.
@@ -131,7 +131,7 @@ There is no `weak` level. A slight edge is `moderate`. Genuinely tied is `tied`,
 
 The `decision-variance` skill uses strength to decide how forcefully to present the recommendation: strong → confidently; moderate → with caveats; tied → "user must decide — analysis does not differentiate."
 
-## Hard Format Constraints (per smarts.md)
+## Hard Format Constraints (per includes/smarts/core.md)
 
 Non-negotiable:
 
@@ -164,6 +164,6 @@ After the grader returns:
 3. It includes the conformant analysis in the variance report entry verbatim.
 4. It may add context (project history, prior decisions) the grader lacked.
 5. It presents the analysis to the user.
-6. It records the user's decision per the decision-log format in `${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md`.
+6. It records the user's decision per the decision-log format in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`.
 
 The grader's recommendation is informational. The user's decision is authoritative.

@@ -7,8 +7,10 @@ description: Reconcile the project's architectural artifacts against the scaffol
 
 Reconcile the architectural artifacts against the scaffold; present variances; the user decides. This skill never arbitrates on its own — every recorded decision carries user attribution.
 
-The SMARTS lenses, cell rules, strength labels, and the decision-log format are in
-`${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md`. Read it before Phase 3.
+The SMARTS lenses, cell rules, and strength labels are in
+`${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` — read it before Phase 3. The append-only decision-log
+entry format is in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md` — read it before
+writing a log line.
 
 ## Pre-flight
 
@@ -38,7 +40,7 @@ comments stripped), and flag every decision whose hash changed. Surface the flag
 prior decisions reference artifact sections that have changed. Re-evaluate, keep as-is, or mark
 superseded?" Per the user's choice — re-evaluate (treat as a new variance), keep (update the
 recorded hash to current), or supersede (prompt for a new decision, append per the supersession
-protocol in `references/smarts.md`).
+protocol in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`).
 
 Gate: the three artifacts are located, ADRs and the decision log are indexed, and any stale prior
 decisions are surfaced and dispositioned by the user. A first session with no decision log skips the
@@ -72,7 +74,7 @@ sentences), the resolution options (adopt artifact / adopt scaffold / hybrid onl
 exists / defer with reason), a SMARTS analysis of each option, and a recommendation with a strength
 label. `concur` and `both-silent` cases produce no entry — they live in the evidence index only.
 
-The SMARTS table follows `references/smarts.md` exactly: six lenses, verdict-first cells (Strong /
+The SMARTS table follows `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` exactly: six lenses, verdict-first cells (Strong /
 Adequate / Weak / Indifferent), the length cap, no hedging adverbs, evidence specificity. The
 recommendation carries one strength label — strong / moderate / tied.
 
@@ -99,7 +101,7 @@ recommendation. No `concur`/`both-silent` noise in the report.
 
 Present grouped by area, dependency-ordered within each area, one area at a time. For each variance:
 lead with the variance, present the recommendation (recommend, do not push), wait for the user's
-choice, confirm it back in one sentence, then append the decision to the log per `references/smarts.md`
+choice, confirm it back in one sentence, then append the decision to the log per `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`
 — immediately, never batched in memory.
 
 When two sources at the same authority level conflict (e.g., two `accepted` ADRs that contradict),
