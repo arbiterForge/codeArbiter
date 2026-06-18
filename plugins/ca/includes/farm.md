@@ -56,7 +56,7 @@ Never commit this key. It must not appear in `.codearbiter/` audit files.
 ### `FARM_API_BASE_URL`
 
 The OpenAI-compatible endpoint base URL. Resolution order: `FARM_API_BASE_URL` env → `plan.meta.apiBaseUrl`
-→ a built-in default of `https://api.opencode.ai/v1`. Override for DeepSeek direct
+→ a built-in default of `https://opencode.ai/zen/v1` (the live OpenCode Zen host). Override for DeepSeek direct
 (`https://api.deepseek.com/v1`), Ollama (`http://localhost:11434/v1`), etc.
 
 ## Model selection — measured at dispatch time
@@ -80,7 +80,7 @@ picks a model by *measurement*, not hearsay:
 | Variable | Default | Purpose |
 |---|---|---|
 | `FARM_MODEL` | _(unset)_ | Skip selection and use this model id directly. Power-user/CI override. |
-| `FARM_API_BASE_URL` | `https://api.opencode.ai/v1` | Endpoint URL (env → plan.json → this default). |
+| `FARM_API_BASE_URL` | `https://opencode.ai/zen/v1` | Endpoint URL (env → plan.json → this default). |
 | `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
 | `FARM_CONCURRENCY` | `4` | Max concurrent task workers. |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
