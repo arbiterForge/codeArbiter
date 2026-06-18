@@ -70,8 +70,8 @@ isn't capable of the slice rather than grinding through.
 At every point the framework would normally surface for the user's decision — a design choice, an
 ambiguity, a trade-off, a non-obvious option — DECIDE rather than stop:
 
-- Run the SMARTS 6-lens evaluation (the scoring in `decision-variance`'s
-  `${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md`) plus a project-correctness
+- Run the SMARTS 6-lens evaluation (the scoring in
+  `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md`) plus a project-correctness
   read against `CONTEXT.md` and the sprint spec. Reuse SMARTS *scoring* only — NOT `decision-variance`'s
   Rule 1 ("never decide alone"), which `/sprint` explicitly overrides.
 - Choose the option the analysis favors. Decide on EVERY non-hard-gate point **regardless of SMARTS

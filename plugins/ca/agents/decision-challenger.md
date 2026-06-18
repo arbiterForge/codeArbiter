@@ -21,7 +21,7 @@ If you cannot find strong arguments against a decision, confidence is high (4–
 
 1. `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/` — the ADRs under review.
 2. `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/decision-log.md` — the decision index.
-3. `${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md` — the SMARTS lenses and decision-log reference.
+3. `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` — the SMARTS lenses, cell rules, and strength labels.
 
 ## Process
 

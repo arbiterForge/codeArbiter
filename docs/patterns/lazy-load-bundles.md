@@ -62,6 +62,9 @@ Two legibility corollaries the reviews also flagged:
 
 When adding a lazy-load bundle:
 
+- [ ] **Placement:** content loaded by 2+ skills/agents lives under `includes/`; `references/` is for
+      content a single skill owns exclusively. A shared rule reached cross-skill (e.g. a sibling's
+      `references/`) is a placement bug — promote it to `includes/`.
 - [ ] `includes/<bundle>/INDEX.md` with scope, a deterministic load map, and a leaf surface scan.
 - [ ] `core.md` holds only the always-true rules; leaves hold the partitioned rest.
 - [ ] No rule duplicated across tiers; leaves cross-reference `core` instead.
