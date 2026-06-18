@@ -10,5 +10,10 @@ import type { PageInput } from "./types";
  * `default`), and a `**Tools:**` line (via {@link formatToolsList}).
  */
 export function renderAgentPage(input: PageInput): string {
-  throw new Error("not implemented");
+  const frontMatter = `---\ntitle: ${input.name}\n---`;
+  const heading = `# ${input.name}`;
+  const modelLine = `- **Model tier:** ${modelTier(input.model)}`;
+  const toolsLine = `- **Tools:** ${formatToolsList(input.tools)}`;
+
+  return `${frontMatter}\n\n${heading}\n${input.description}\n${modelLine}\n${toolsLine}`;
 }
