@@ -2,8 +2,11 @@
 
 Canned messages for §6 when the user sends a direct instruction outside a slash command. Loaded only
 when needed. Offer the command list — the user picks. Before sending, infer the likely intent and
-pre-fill the closest command with the user's own words (e.g. "add a healthcheck endpoint" →
-`/ca:feature "add a healthcheck endpoint"`), so the user can route with one keystroke.
+pre-fill the closest command with the user's own words, so the user can route with one keystroke.
+Match the channel to the *phrasing*, not just the topic — an interrogative is a question, not a build
+request (e.g. "add a healthcheck endpoint" → `/ca:feature "add a healthcheck endpoint"`, but
+"should we add a healthcheck?" → `/ca:btw "should we add a healthcheck?"`; "do my ADRs conflict?" →
+`/ca:reconcile`). A question pulled into the heavy spec lane is a misroute.
 
 ## First redirect — first off-channel message
 
