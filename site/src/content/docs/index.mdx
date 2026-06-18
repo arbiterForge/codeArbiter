@@ -3,38 +3,74 @@ title: codeArbiter
 description: Gated software-engineering workflows for Claude Code.
 template: splash
 hero:
-  tagline: You hold the gates; the user holds the decisions.
+  tagline: |
+    Turn ad-hoc AI coding into an orchestrated, gated workflow. Every intent
+    routes to the skill or agent that owns it and clears its gates before it
+    ships. You hold the gates; the user holds the decisions.
   actions:
-    - text: Overview
+    - text: Get started
       link: /overview/
       icon: right-arrow
       variant: primary
     - text: Concepts
       link: /concepts/
       icon: open-book
+      variant: secondary
     - text: GitHub
       link: https://github.com/arbiterForge/codeArbiter
       icon: external
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard, Steps } from '@astrojs/starlight/components';
 
-**codeArbiter** is a Claude Code plugin that turns ad-hoc AI coding into an
-orchestrated, gated workflow. Every intent flows through a slash command, routes
-to the skill or agent that owns it, and clears its gates before it ships.
-
-<CardGrid stagger>
+<CardGrid>
   <Card title="Orchestrated" icon="puzzle">
-    One persona routes every request to the skill or agent that owns it — no freelancing.
+    One persona routes every request to the skill or agent that owns it — it orchestrates, it does not freelance.
   </Card>
   <Card title="Gated" icon="approve-check">
     Tests, reviews, secrets, and crypto are real stops. "It looks good" is not authorization.
   </Card>
   <Card title="Auditable" icon="document">
-    ADRs, a decision log, checkpoints, and an append-only override trail record every call.
+    ADRs, a decision log, dated checkpoints, and an append-only override trail record every call.
   </Card>
   <Card title="Living reference" icon="list-format">
-    The <a href="/reference/">command, skill, and agent reference</a> is generated from the plugin's own frontmatter — it can't drift.
+    The <a href="/reference/">command, skill &amp; agent reference</a> is generated from the plugin's own frontmatter — it can't drift.
   </Card>
+</CardGrid>
+
+## How a request flows
+
+<Steps>
+
+1. **Command** — you invoke a namespaced slash command: `/ca:feature`, `/ca:fix`, `/ca:commit`.
+
+2. **Route** — the orchestrator hands it to the one skill or agent that owns that lane.
+
+3. **Gate** — nothing advances until its gates are green: a failing test, a CRITICAL finding, an unresolved decision are real stops.
+
+4. **Ship** — code reaches version control only through the commit gate, and `main` only through a pull request.
+
+</Steps>
+
+## Start with a lane
+
+Each kind of work has a sanctioned lane, with gates scaled to its risk.
+
+<div class="ca-lanes">
+
+```bash
+/ca:feature "add rate limiting"   # brainstorm → plan → TDD → review → PR
+/ca:fix "login 500 on empty body" # test-first bug fix
+/ca:commit                        # the only sanctioned path to a commit
+/ca:sprint --farm "build the docs site"  # autonomous, cheap-worker execution
+```
+
+</div>
+
+<CardGrid>
+  <LinkCard title="Overview" href="/overview/" description="Orchestration, gates, context minimization, and the lane model." />
+  <LinkCard title="Concepts" href="/concepts/" description="Gated lanes, SMARTS, ADRs, checkpoints, and the persona-register split." />
+  <LinkCard title="Reference" href="/reference/" description="Every command, skill, and agent — auto-generated from the plugin." />
+  <LinkCard title="GitHub" href="https://github.com/arbiterForge/codeArbiter" description="Source, issues, and releases." />
 </CardGrid>

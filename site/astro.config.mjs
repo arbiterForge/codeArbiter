@@ -30,6 +30,7 @@ export default defineConfig({
     starlight({
       title: "codeArbiter",
       description: "Gated software-engineering workflows for Claude Code.",
+      customCss: ["./src/styles/theme.css"],
       sidebar: [
         {
           label: "Start here",
