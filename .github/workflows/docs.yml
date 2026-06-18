@@ -1,0 +1,44 @@
+name: Deploy docs
+
+# Builds the Astro Starlight site in site/ and publishes it to GitHub Pages.
+# The reference section is regenerated in CI from plugins/ca/** (npm run build
+# runs `prebuild` -> the generator), so the generated output is never committed.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; let a newer push supersede an in-flight run.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with Astro
+        uses: withastro/action@v3
+        with:
+          path: site # runs `npm ci` + `npm run build` (prebuild regenerates the reference)
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
