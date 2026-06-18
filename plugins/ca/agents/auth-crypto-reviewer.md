@@ -2,6 +2,7 @@
 name: auth-crypto-reviewer
 description: Reviews authentication, cryptography, key handling, and secrets against ${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md. Hard blocks on banned primitives, exposed secrets, disabled TLS verification, and shell injection. Read-only checkpoint reviewer.
 tools: Read, Grep, Glob, Bash
+model: inherit
 ---
 
 # Auth/Crypto Reviewer Agent

@@ -2,6 +2,7 @@
 name: design-quality-reviewer
 description: Reviews generated, user-facing visual or formatted output (UI, reports, slides, charts, diagrams, CLI output) against the anti-slop-design reference. Read-only; surfaces design-slop findings. Dispatched by frontend-author on UI changes. Tier 2 document producers (/pr, release) apply the reference inline and do not dispatch this agent. Loads only the medium leaf the artifact needs.
 tools: Read, Grep, Glob
+model: sonnet
 ---
 
 # Design Quality Reviewer Agent

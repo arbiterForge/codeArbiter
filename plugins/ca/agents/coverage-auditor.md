@@ -2,6 +2,7 @@
 name: coverage-auditor
 description: Dispatched by the tdd skill (Phase 4) to audit test coverage against TDD obligations. Identifies untested source files, coverage below the maturity threshold, and logical test gaps.
 tools: Read, Grep, Glob, Bash
+model: haiku
 ---
 
 # Coverage Auditor Agent

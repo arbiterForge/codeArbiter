@@ -2,6 +2,7 @@
 name: infra-author
 description: Use when writing or modifying IaC, containers, CI/CD manifests, or deployment configuration. Reads tech stack and security boundaries from ${CLAUDE_PROJECT_DIR}/.codearbiter/.
 tools: Read, Grep, Glob, Bash, Edit, Write
+model: sonnet
 ---
 
 # Infrastructure Author Agent

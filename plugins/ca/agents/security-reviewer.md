@@ -2,6 +2,7 @@
 name: security-reviewer
 description: Dispatch PROACTIVELY when a change touches authentication, authorization, cryptography, secrets, deployment manifests, network policies, or CI workflows. Reviews diffs against ${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md. Read-only; produces findings.
 tools: Read, Grep, Glob, Bash
+model: inherit
 ---
 
 # Security Reviewer Agent
