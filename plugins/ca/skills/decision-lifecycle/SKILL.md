@@ -7,9 +7,9 @@ description: Author and track Architecture Decision Records. Routed to when the 
 
 Author and track ADRs. Routed to when the user invokes `/adr "<title>"` (author a new ADR) or `/adr-status [--adr N]` (list ADR health, read-only). Every ADR is user-attributed — this skill never records a decision the user did not explicitly make.
 
-The append-only decision-log format (entry fields, supersession protocol) lives in `${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md`. Read it before writing a log line; do not restate it here.
+The append-only decision-log format (entry fields, supersession protocol) lives in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`. Read it before writing a log line; do not restate it here.
 
-**Boundary with `decision-variance`.** This skill owns ADR *authoring* and *status* (`/adr`, `/adr-status`) — recording a decision the user has already made, and reporting ADR health. `decision-variance` owns *arbitration* — detecting variances between artifacts and the scaffold, scoring options via SMARTS, and the decision log itself. The two share one canonical reference (`smarts.md`, the log format + SMARTS scoring) and one ADR template (`references/adr-template.md`); they are one domain split by responsibility, not duplicated. When a decision needs *making* (competing options), route to `decision-variance`; when it needs *recording* (already decided), stay here.
+**Boundary with `decision-variance`.** This skill owns ADR *authoring* and *status* (`/adr`, `/adr-status`) — recording a decision the user has already made, and reporting ADR health. `decision-variance` owns *arbitration* — detecting variances between artifacts and the scaffold, scoring options via SMARTS, and the decision log itself. The two share the canonical SMARTS reference under `${CLAUDE_PLUGIN_ROOT}/includes/smarts/` (`core.md` for scoring, `decision-log-format.md` for the log) and one ADR template (`references/adr-template.md`); they are one domain split by responsibility, not duplicated. When a decision needs *making* (competing options), route to `decision-variance`; when it needs *recording* (already decided), stay here.
 
 ## Pre-flight
 
@@ -37,7 +37,7 @@ touch "$(git rev-parse --show-toplevel)/.codearbiter/.markers/adr-authoring-acti
 
 The marker is honored for 30 minutes. Then write `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/NNNN-<slug>.md` using the canonical ADR template — `${CLAUDE_PLUGIN_ROOT}/skills/decision-lifecycle/references/adr-template.md` (the single source of truth for the ADR shape, shared with `decompose`). Author it with `status: proposed`. If this decision supersedes an existing one, set `supersedes:` to that ADR's number; leave the prior ADR's file untouched (forward-only chain — do not edit it to add a back-reference).
 
-After writing the ADR, append a corresponding entry to the decision log per the format in `${CLAUDE_PLUGIN_ROOT}/skills/decision-variance/references/smarts.md` — `Decided by:` names the user. Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction; never advance status on this skill's own judgment.
+After writing the ADR, append a corresponding entry to the decision log per the format in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md` — `Decided by:` names the user. Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction; never advance status on this skill's own judgment.
 
 **`governs:` makes the decision live.** When an ADR names path globs in `governs:`, the post-write
 hook surfaces a one-line notice on any Write/Edit touching a matching file — "this file is governed
