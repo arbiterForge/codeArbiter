@@ -42,8 +42,20 @@ def _cell_count(raw: str) -> int:
     return int(m.group()) if m and raw.strip()[:1].isdigit() else 0
 
 
+# Checkpoint docs are authored free-hand, so the same reviewer can appear under more
+# than one label across documents (e.g. the auth-crypto sub-reviewer logged as both
+# "auth-crypto-reviewer" and the shorthand "auth-reviewer"). Left unmerged, that splits
+# one reviewer's dispatches across two rows and corrupts the yield metric. Canonicalize
+# known aliases to the agent's real name (plugins/ca/agents/<name>.md). Extend as new
+# label drift is observed; the deeper fix is canonical names at checkpoint authoring time.
+_CANON = {
+    "auth-reviewer": "auth-crypto-reviewer",
+}
+
+
 def _norm(name: str) -> str:
-    return name.strip().strip("*` ").strip()
+    cleaned = name.strip().strip("*` ").strip()
+    return _CANON.get(cleaned.lower(), cleaned)
 
 
 def parse_finding_summary(text: str):
