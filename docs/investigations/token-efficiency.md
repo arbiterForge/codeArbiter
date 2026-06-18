@@ -207,6 +207,22 @@ the pruner or statusline on the user's behalf — every "turn it on" step is the
   (`repeat-reminder-fold`/`inline-image-evict` never triggered) → aggressive inconclusive. Wins come
   from `sidecar-collapse` + `aged-result-condense` (both standard). Justified to flip `on@standard`
   (user toggle). Aggressive: TBD.
+- **Step 4 — reviewer yield (n=2 checkpoints, thin):** no actionable trigger change at this sample.
+  Found and fixed a data-quality bug first: the auth-crypto sub-reviewer was logged under two names
+  (`auth-crypto-reviewer` / `auth-reviewer`), splitting its row and mis-reading as 0% — actually ~50%
+  (4 findings). `tools/reviewer-yield.py` now canonicalizes that alias. After the merge, the only
+  genuine 0%-yield reviewer is `migration-reviewer` (2 disp / 0 found) — but it's governance (held
+  `inherit`) and n=2, so per the governance constraint the most it could ever justify is a *tighter
+  trigger*, never a downgrade/removal, and not on this sample. **Action: accumulate checkpoints; watch
+  `migration-reviewer`.** Deeper fix: canonical reviewer names at checkpoint-authoring time.
+- **Step 5 — context discipline (advisory; longitudinal):** habit = `/clear` between *unrelated* tasks,
+  `/compact` mid-task. The before/after >150k-context usage share needs `/usage` sampling across days;
+  not measurable in one session. Ledger corroborates large transcripts (9 sessions est. 270k–585k
+  tokens) but those are transcript sizes, not live-window peaks.
+- **Step 6 — `--farm` (user-gated; not run):** no `FARM_API_KEY`, no `.farm/` (never run). Instrument
+  `tools/farm-first-pass.py` confirmed working (clean no-data path). Protocol: set `FARM_API_KEY`, run
+  one low-sensitivity `/ca:sprint --farm`, judge on first-pass/escalation from `.farm/farm-report.json`;
+  pin `FARM_MODEL` on anything sensitive.
 
 ## Branch artifacts (for resuming locally)
 This branch (`claude/investigate-token-efficiency-bbf17t`) carries:
