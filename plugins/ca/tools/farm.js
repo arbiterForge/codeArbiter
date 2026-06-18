@@ -601,6 +601,12 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   let mutationScore = null;
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) await deps.resetWorktree(wt);
+    if (t.setup && t.setup.length > 0) {
+      const setupResult = await deps.runGate(wt, t.setup);
+      if (!setupResult.ok)
+        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `setup failed: ${setupResult.failed}
+${setupResult.tail}`, promptTokens, completionTokens };
+    }
     const injected = await buildEnrichment(wt, t);
     const worker = await deps.worker.apply({
       cwd: wt,
@@ -712,6 +718,14 @@ function assertSecureBaseUrl(url) {
 }
 function validate(plan) {
   if (plan.meta.apiBaseUrl) assertSecureBaseUrl(plan.meta.apiBaseUrl);
+  const checkSetup = (label, cmds) => {
+    for (const cmd of cmds) {
+      if (!cmd || typeof cmd !== "string")
+        throw new Error(`${label}: setup entries must be non-empty strings`);
+      if (cmd.length > 1024) throw new Error(`${label}: setup command exceeds 1024 chars`);
+    }
+  };
+  if (plan.meta.setup) checkSetup("plan.meta.setup", plan.meta.setup);
   const ids = /* @__PURE__ */ new Set();
   for (const t of plan.tasks) {
     if (!SAFE_TASK_ID.test(t.id))
@@ -729,6 +743,7 @@ function validate(plan) {
       if (cmd.length > 1024)
         throw new Error(`task ${t.id}: gate command exceeds 1024 chars`);
     }
+    if (t.setup) checkSetup(`task ${t.id} setup`, t.setup);
   }
   for (const t of plan.tasks)
     for (const d of t.deps ?? [])
@@ -870,6 +885,9 @@ async function main() {
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
   const plan = JSON.parse(await readFile(planPath, "utf8"));
   validate(plan);
+  if (plan.meta.setup) {
+    for (const t of plan.tasks) if (t.setup === void 0) t.setup = plan.meta.setup;
+  }
   if (canary) return runCanary(plan);
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
   await mkdir(ENV.worktreeRoot, { recursive: true });

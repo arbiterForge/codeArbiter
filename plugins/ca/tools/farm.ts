@@ -52,6 +52,14 @@ export type Task = {
   gate: { commands: string[] };
   context?: string;
   maxRetries?: number;
+  // Optional per-worktree setup commands (#92). Shell commands run IN the task
+  // worktree before the worker, on every attempt (so they survive the
+  // inter-attempt reset that wipes untracked deps). The common case is repo-wide
+  // dependency install (`npm ci`, `pip install -r requirements.txt`); set
+  // plan.meta.setup and it propagates here at dispatch. A per-task value
+  // overrides the meta default. Setup artifacts MUST be gitignored or they trip
+  // drift detection. A failing setup command escalates the task immediately.
+  setup?: string[];
   // Optional per-task model override (AC-02). The effective model for a task is
   // `task.model ?? <run-level resolved model>`, layered where runTask invokes
   // the worker; absent → identical current behavior. Model id only — no second
@@ -59,7 +67,7 @@ export type Task = {
   model?: string;
 };
 type Plan = {
-  meta: { name: string; repo?: string; model?: string; apiBaseUrl?: string };
+  meta: { name: string; repo?: string; model?: string; apiBaseUrl?: string; setup?: string[] };
   tasks: Task[];
 };
 
@@ -1042,6 +1050,18 @@ export async function runTask(
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) await deps.resetWorktree(wt); // never accumulate stale files
 
+    // Per-worktree setup (#92): run dependency-setup commands in the worktree
+    // before the worker. Runs every attempt because the reset above wipes
+    // untracked deps (node_modules etc.); on the happy path (attempt 1 passes)
+    // it runs once. Executed through the same gate machinery (shell + exit
+    // code, redacted tail). A setup failure is environmental, not the worker's
+    // fault, so it escalates immediately rather than burning a worker retry.
+    if (t.setup && t.setup.length > 0) {
+      const setupResult = await deps.runGate(wt, t.setup);
+      if (!setupResult.ok)
+        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `setup failed: ${setupResult.failed}\n${setupResult.tail}`, promptTokens, completionTokens };
+    }
+
     // Enrichment (AC-03/AC-04): read the per-attempt worktree state — AFTER any
     // reset above — so the test source and existing in-scope file contents
     // reflect what the worker would actually see this attempt.
@@ -1245,6 +1265,17 @@ export function validate(plan: Plan) {
   // meta-level schema checks — require HTTPS except for loopback (test mocks)
   if (plan.meta.apiBaseUrl) assertSecureBaseUrl(plan.meta.apiBaseUrl);
 
+  // #92: setup commands (meta-level and per-task) are validated like
+  // gate.commands — non-empty strings, capped length.
+  const checkSetup = (label: string, cmds: string[]) => {
+    for (const cmd of cmds) {
+      if (!cmd || typeof cmd !== "string")
+        throw new Error(`${label}: setup entries must be non-empty strings`);
+      if (cmd.length > 1024) throw new Error(`${label}: setup command exceeds 1024 chars`);
+    }
+  };
+  if (plan.meta.setup) checkSetup("plan.meta.setup", plan.meta.setup);
+
   const ids = new Set<string>();
   for (const t of plan.tasks) {
     // B-2: restrict id to safe characters to prevent path traversal in branch
@@ -1266,6 +1297,7 @@ export function validate(plan: Plan) {
       if (cmd.length > 1024)
         throw new Error(`task ${t.id}: gate command exceeds 1024 chars`);
     }
+    if (t.setup) checkSetup(`task ${t.id} setup`, t.setup);
   }
   for (const t of plan.tasks)
     for (const d of t.deps ?? [])
@@ -1458,6 +1490,12 @@ async function main() {
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
   const plan = JSON.parse(await readFile(planPath, "utf8")) as Plan;
   validate(plan);
+
+  // #92: propagate the repo-wide meta.setup to every task that did not declare
+  // its own (task.setup wins; meta.setup fills the gap). Done once at dispatch,
+  // before main and canary, so runTask only ever reads the effective t.setup.
+  if (plan.meta.setup)
+    for (const t of plan.tasks) if (t.setup === undefined) t.setup = plan.meta.setup;
 
   if (canary) return runCanary(plan);
 

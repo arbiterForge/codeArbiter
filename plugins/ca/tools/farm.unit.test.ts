@@ -977,3 +977,100 @@ describe("#93 screenEntitlements", () => {
     expect(skipped).toEqual([]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// #92 — per-worktree dependency setup hook (task.setup / meta.setup)
+// ---------------------------------------------------------------------------
+describe("#92 per-worktree setup hook", () => {
+  const baseTask: Task = {
+    id: "setup-task",
+    description: "make the test pass",
+    filesInScope: ["src/s.ts"],
+    test: { path: "src/s.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  // Deps that record the ORDER of runGate vs worker calls, so we can prove setup
+  // runs in the worktree BEFORE the worker. runGate is the execution path for
+  // both setup and the gate; a `gateFailFor` predicate lets a test fail a
+  // specific command set.
+  function recordingDeps(opts: {
+    events: string[];
+    workerCalls: { n: number };
+    gateFailFor?: (commands: string[]) => boolean;
+  }): RunTaskDeps {
+    const worker: Worker = {
+      async apply() {
+        opts.workerCalls.n++;
+        opts.events.push("worker");
+        return { ok: true, filesWritten: ["src/s.ts"] } satisfies WorkerResult;
+      },
+    };
+    return {
+      worker,
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async (_cwd: string, commands: string[]) => {
+        opts.events.push(`runGate:${commands.join(",")}`);
+        if (opts.gateFailFor?.(commands))
+          return { ok: false as const, failed: commands[0], tail: "boom" };
+        return { ok: true as const };
+      },
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  it("runs setup commands in the worktree BEFORE the worker", async () => {
+    const events: string[] = [];
+    const workerCalls = { n: 0 };
+    const r = await runTask(
+      { ...baseTask, setup: ["npm ci"] },
+      "m", "https://api.example/v1", "k",
+      recordingDeps({ events, workerCalls }),
+    );
+    expect(r.status).toBe("green");
+    // setup runGate fires, THEN the worker, THEN the gate runGate.
+    expect(events[0]).toBe("runGate:npm ci");
+    expect(events.indexOf("runGate:npm ci")).toBeLessThan(events.indexOf("worker"));
+  });
+
+  it("escalates immediately when a setup command fails — worker never runs", async () => {
+    const events: string[] = [];
+    const workerCalls = { n: 0 };
+    const r = await runTask(
+      { ...baseTask, maxRetries: 0, setup: ["npm ci"] },
+      "m", "https://api.example/v1", "k",
+      recordingDeps({ events, workerCalls, gateFailFor: (c) => c[0] === "npm ci" }),
+    );
+    expect(r.status).toBe("escalate");
+    expect(r.note).toMatch(/setup failed/i);
+    expect(workerCalls.n).toBe(0);
+  });
+
+  it("is a no-op when no setup is configured (worker runs, runGate only for the gate)", async () => {
+    const events: string[] = [];
+    const workerCalls = { n: 0 };
+    const r = await runTask(
+      baseTask, "m", "https://api.example/v1", "k",
+      recordingDeps({ events, workerCalls }),
+    );
+    expect(r.status).toBe("green");
+    expect(workerCalls.n).toBe(1);
+    // The only runGate call is the gate itself — no setup invocation.
+    expect(events.filter((e) => e.startsWith("runGate:"))).toEqual(["runGate:node -p 0"]);
+  });
+
+  it("validate() rejects an empty or oversized setup command (meta and task)", () => {
+    const okTask: Task = { ...baseTask, deps: [] };
+    expect(() => validate({ meta: { name: "p", setup: [""] }, tasks: [okTask] })).toThrow(/setup/i);
+    expect(() => validate({ meta: { name: "p", setup: ["x".repeat(1025)] }, tasks: [okTask] })).toThrow(/setup/i);
+    expect(() => validate({ meta: { name: "p" }, tasks: [{ ...okTask, setup: [""] }] })).toThrow(/setup/i);
+    // A valid setup passes.
+    expect(() => validate({ meta: { name: "p", setup: ["npm ci"] }, tasks: [okTask] })).not.toThrow();
+  });
+});

@@ -20,6 +20,11 @@
         "apiBaseUrl": {
           "type": "string",
           "description": "OpenAI-compatible endpoint base URL. Set at dispatch time alongside model."
+        },
+        "setup": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Per-worktree setup shell commands run BEFORE the worker in each task worktree (e.g. `npm ci`). Propagates to every task lacking its own task.setup. Setup-produced files must be gitignored or they trip drift detection."
         }
       }
     },
@@ -91,6 +96,11 @@
           "type": "integer",
           "minimum": 0,
           "description": "Overrides FARM_MAX_RETRIES for this task."
+        },
+        "setup": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional per-task override of meta.setup — per-worktree setup shell commands run before the worker. When set, replaces meta.setup for this task. Must be declared here because the task object is additionalProperties:false."
         }
       }
     }
