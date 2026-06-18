@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { collectSources } from "./collect-sources";
 import { parseDoc } from "./parse-doc";
 import { deriveName } from "./derive-name";
@@ -29,6 +29,18 @@ function renderPage(type: SourceType, input: PageInput): string {
 }
 
 /**
+ * Normalize a raw file at the read boundary: strip a leading BOM and convert
+ * CRLF to LF. The frontmatter parser is specified against `\n`, so real-world
+ * CRLF files (e.g. a Windows checkout of the plugin) must be normalized here
+ * before parsing — otherwise the leading `---` line carries a trailing `\r` and
+ * no frontmatter is detected.
+ */
+function normalize(raw: string): string {
+  const noBom = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
+  return noBom.replace(/\r\n/g, "\n");
+}
+
+/**
  * Generate the full reference: collect → parse → render → write.
  *
  * Reads plugin sources under `srcDir`, emits one markdown page per source file
@@ -43,21 +55,29 @@ export function generate(
   sidebarPath?: string,
 ): GenerateResult {
   const resolvedSidebarPath = sidebarPath ?? join(outDir, "sidebar.json");
-  const sources = collectSources(srcDir);
+  // `INDEX.md` files are the plugin's internal catalog / surface-scan tables
+  // (no frontmatter, not a documentable command/skill/agent). Skip them — they
+  // would also collide with Starlight's reserved `index` route slug.
+  const sources = collectSources(srcDir).filter(
+    (s) => !/(^|\/)INDEX\.md$/i.test(s.path),
+  );
 
-  // Derive a display name per source, then assign collision-free slugs across
-  // the whole set (stable: collectSources is already sorted by path).
-  const names = sources.map((s) => deriveName(s.path, parseDoc(s.raw).fields));
+  // Parse each source once (normalized). Names are derived first so slugs can be
+  // de-duplicated across the whole, already path-sorted set (stable output).
+  const parsed = sources.map((source) => ({
+    source,
+    doc: parseDoc(normalize(source.raw)),
+  }));
+  const names = parsed.map((p) => deriveName(p.source.path, p.doc.fields));
   const slugs = assignSlugs(names);
 
-  const pages: RenderedPage[] = sources.map((source, i) => {
-    const { fields } = parseDoc(source.raw);
+  const pages: RenderedPage[] = parsed.map(({ source, doc }, i) => {
     const name = names[i];
     const input: PageInput = {
       name,
-      description: fields.description,
-      model: fields.model,
-      tools: fields.tools,
+      description: doc.fields.description ?? "",
+      model: doc.fields.model,
+      tools: doc.fields.tools,
     };
     return {
       type: source.type,
@@ -74,10 +94,23 @@ export function generate(
     writeFileSync(join(dir, `${page.slug}.md`), page.markdown);
   }
 
-  // Index + sidebar.
-  const { markdown, sidebar } = buildIndex(pages);
+  // Index + sidebar. buildIndex gives the grouped, sorted structure; we render a
+  // Starlight-valid index page (frontmatter title + linked groups) from it.
+  const { sidebar } = buildIndex(pages);
+  const indexBody = sidebar
+    .map((group) => {
+      const heading = `## ${group.type.charAt(0).toUpperCase()}${group.type.slice(1)}s`;
+      const links = group.items
+        .map((it) => `- [${it.label}](./${TYPE_DIR[group.type]}/${it.slug}/)`)
+        .join("\n");
+      return `${heading}\n\n${links}`;
+    })
+    .join("\n\n");
+  const indexContent = `---\ntitle: Reference\ndescription: Auto-generated reference for codeArbiter commands, skills, and agents.\n---\n\nThis section is generated from the plugin's own frontmatter and regenerates on every build, so it can never drift from the source.\n\n${indexBody}\n`;
+
   mkdirSync(outDir, { recursive: true });
-  writeFileSync(join(outDir, "index.md"), markdown);
+  mkdirSync(dirname(resolvedSidebarPath), { recursive: true });
+  writeFileSync(join(outDir, "index.md"), indexContent);
   writeFileSync(resolvedSidebarPath, JSON.stringify(sidebar, null, 2));
 
   return { pages, outDir, sidebarPath: resolvedSidebarPath };

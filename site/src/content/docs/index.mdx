@@ -1,0 +1,40 @@
+---
+title: codeArbiter
+description: Gated software-engineering workflows for Claude Code.
+template: splash
+hero:
+  tagline: You hold the gates; the user holds the decisions.
+  actions:
+    - text: Overview
+      link: /overview/
+      icon: right-arrow
+      variant: primary
+    - text: Concepts
+      link: /concepts/
+      icon: open-book
+    - text: GitHub
+      link: https://github.com/arbiterForge/codeArbiter
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+**codeArbiter** is a Claude Code plugin that turns ad-hoc AI coding into an
+orchestrated, gated workflow. Every intent flows through a slash command, routes
+to the skill or agent that owns it, and clears its gates before it ships.
+
+<CardGrid stagger>
+  <Card title="Orchestrated" icon="puzzle">
+    One persona routes every request to the skill or agent that owns it — no freelancing.
+  </Card>
+  <Card title="Gated" icon="approve-check">
+    Tests, reviews, secrets, and crypto are real stops. "It looks good" is not authorization.
+  </Card>
+  <Card title="Auditable" icon="document">
+    ADRs, a decision log, checkpoints, and an append-only override trail record every call.
+  </Card>
+  <Card title="Living reference" icon="list-format">
+    The <a href="/reference/">command, skill, and agent reference</a> is generated from the plugin's own frontmatter — it can't drift.
+  </Card>
+</CardGrid>

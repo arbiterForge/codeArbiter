@@ -15,5 +15,5 @@ export function renderAgentPage(input: PageInput): string {
   const modelLine = `- **Model tier:** ${modelTier(input.model)}`;
   const toolsLine = `- **Tools:** ${formatToolsList(input.tools)}`;
 
-  return `${frontMatter}\n\n${heading}\n${input.description}\n${modelLine}\n${toolsLine}`;
+  return `${frontMatter}\n\n${heading}\n\n${input.description}\n\n${modelLine}\n${toolsLine}\n`;
 }

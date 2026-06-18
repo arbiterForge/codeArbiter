@@ -35,11 +35,18 @@ __pycache__/
 /node_modules/
 plugins/ca/tools/node_modules/
 
-# Docs site (Astro Starlight) — local deps, build output, and Astro cache. The
-# generator's reference output IS committed (it lives under src/content/docs).
+# Docs site (Astro Starlight) — local deps, build output, and Astro cache.
 site/node_modules/
 site/dist/
 site/.astro/
+site/*.log
+
+# Generated reference output — regenerated deterministically by `npm run gen`
+# (wired into predev/prebuild), so it is not committed. The generator + its tests
+# are the reviewable source of truth; the hand-written narrative pages directly
+# under site/src/content/docs/ ARE committed.
+site/src/content/docs/reference/
+site/src/generated/
 
 # Farm dispatcher runtime artifacts — worktrees, reports, integration branch staging.
 # Written per-run in any project using codeArbiter. Never committed to the plugin repo.
