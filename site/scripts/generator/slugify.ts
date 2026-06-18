@@ -7,5 +7,8 @@
  * - Idempotent: `slugify(slugify(x)) === slugify(x)`.
  */
 export function slugify(input: string): string {
-  throw new Error("not implemented");
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
