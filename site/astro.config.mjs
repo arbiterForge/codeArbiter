@@ -26,6 +26,10 @@ try {
 }
 
 export default defineConfig({
+  // GitHub Pages project site: served from https://arbiterforge.github.io/codeArbiter/.
+  // `base` also applies in local dev — the dev server serves at /codeArbiter/.
+  site: "https://arbiterforge.github.io",
+  base: "/codeArbiter",
   integrations: [
     starlight({
       title: "codeArbiter",

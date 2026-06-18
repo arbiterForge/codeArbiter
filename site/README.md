@@ -65,52 +65,35 @@ the reference, change the frontmatter in `plugins/ca/**` and re-run `npm run gen
 The generator is built test-first: each module has its own Vitest file under
 `test/generator/`, with fixtures under `test/fixtures/`. Run `npm test`.
 
-## Deploying (not yet enabled)
+## Deploying to GitHub Pages
 
-The site builds to a static `dist/` and is ready for GitHub Pages. To deploy:
+The site is wired for GitHub Pages at `https://arbiterforge.github.io/codeArbiter/`.
+The pieces are already in place:
 
-1. **Set the base path.** In `astro.config.mjs` add:
-   ```js
-   site: 'https://arbiterforge.github.io',
-   base: '/codeArbiter',
-   ```
-   (This also silences the sitemap warning.) Internal links already use
-   root-relative paths, which Astro rewrites under `base` at build time.
-2. **Add a GitHub Pages workflow** — `.github/workflows/docs.yml` using the
-   official Astro action:
-   ```yaml
-   name: Deploy docs
-   on:
-     push:
-       branches: [main]
-       paths: ['site/**', 'plugins/ca/**']   # rebuild when the plugin changes too
-   permissions:
-     contents: read
-     pages: write
-     id-token: write
-   jobs:
-     build:
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v4
-         - uses: withastro/action@v3
-           with:
-             path: site
-     deploy:
-       needs: build
-       runs-on: ubuntu-latest
-       environment:
-         name: github-pages
-         url: ${{ steps.deployment.outputs.page_url }}
-       steps:
-         - id: deployment
-           uses: actions/deploy-pages@v4
-   ```
-   Then enable Pages (Settings → Pages → Source: GitHub Actions).
-3. **Version against releases.** The reference reflects whatever `plugins/ca/**`
-   is on the deployed branch. Because the `paths` filter includes `plugins/ca/**`,
-   a release that changes the plugin payload triggers a docs rebuild. To publish
-   versioned docs (one set per release tag), add Starlight's
-   [versioning](https://starlight.astro.build/) via a multi-version setup or build
-   one site per tag into a versioned subpath — deferred until single-version docs
-   are validated.
+- **Base path** — `astro.config.mjs` sets `site` + `base: '/codeArbiter'`. Note this
+  also applies in local dev (the dev server serves at `http://localhost:4321/codeArbiter/`).
+- **Base-aware links** — Starlight prepends `base` to its own navigation (sidebar,
+  next/prev), but **not** to author-written links. So the hand-authored links are
+  base-safe explicitly: the home page (`index.mdx`) bakes the base into its links
+  (`/codeArbiter/overview/`); the plain-markdown pages use relative links
+  (`../concepts/`); the generated reference index links are relative too. (Astro does
+  **not** auto-rewrite root-relative links in content, and `import.meta.env.BASE_URL`
+  carries no trailing slash — that's why these are explicit. If you change `base`,
+  update the hardcoded home links to match.)
+- **Workflow** — `.github/workflows/docs.yml` builds with `withastro/action`
+  (`path: site`) and deploys via `actions/deploy-pages`. It triggers on push to
+  `main` touching `site/**` or `plugins/ca/**`, and can be run manually
+  (`workflow_dispatch`). The reference is regenerated in CI, so committing the
+  generated output isn't needed.
+
+**To go live:** enable Pages once (Settings → Pages → Source: **GitHub Actions**),
+then merge to `main` (or run the workflow manually). Pages and Actions are free for
+this public repo.
+
+### Versioning against releases
+
+The reference reflects whatever `plugins/ca/**` is on `main`, and the workflow's
+`paths` filter rebuilds the docs whenever the plugin payload changes — so a release
+that bumps the payload republishes the reference automatically. Publishing *versioned*
+docs (one set per release tag) is a later step: add Starlight multi-version support or
+build one site per tag into a versioned subpath, once single-version docs are validated.

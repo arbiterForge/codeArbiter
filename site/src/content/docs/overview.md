@@ -61,6 +61,6 @@ risk:
 - **Project & meta** — `/ca:init`, `/ca:status`, `/ca:audit`, `/ca:doctor`,
   `/ca:btw`, and more.
 
-See [Concepts](/concepts/) for the ideas behind the lanes, and the
-[Reference](/reference/) for the full, auto-generated catalog of commands,
+See [Concepts](../concepts/) for the ideas behind the lanes, and the
+[Reference](../reference/) for the full, auto-generated catalog of commands,
 skills, and agents.

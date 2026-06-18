@@ -8,12 +8,14 @@ hero:
     routes to the skill or agent that owns it and clears its gates before it
     ships. You hold the gates; the user holds the decisions.
   actions:
+    # Base path is baked in here because hero actions are static frontmatter
+    # (no access to import.meta.env.BASE_URL). Keep in sync with `base` in astro.config.mjs.
     - text: Get started
-      link: /overview/
+      link: /codeArbiter/overview/
       icon: right-arrow
       variant: primary
     - text: Concepts
-      link: /concepts/
+      link: /codeArbiter/concepts/
       icon: open-book
       variant: secondary
     - text: GitHub
@@ -35,7 +37,7 @@ import { Card, CardGrid, LinkCard, Steps } from '@astrojs/starlight/components';
     ADRs, a decision log, dated checkpoints, and an append-only override trail record every call.
   </Card>
   <Card title="Living reference" icon="list-format">
-    The <a href="/reference/">command, skill &amp; agent reference</a> is generated from the plugin's own frontmatter — it can't drift.
+    The <a href="/codeArbiter/reference/">command, skill &amp; agent reference</a> is generated from the plugin's own frontmatter — it can't drift.
   </Card>
 </CardGrid>
 
@@ -69,8 +71,8 @@ Each kind of work has a sanctioned lane, with gates scaled to its risk.
 </div>
 
 <CardGrid>
-  <LinkCard title="Overview" href="/overview/" description="Orchestration, gates, context minimization, and the lane model." />
-  <LinkCard title="Concepts" href="/concepts/" description="Gated lanes, SMARTS, ADRs, checkpoints, and the persona-register split." />
-  <LinkCard title="Reference" href="/reference/" description="Every command, skill, and agent — auto-generated from the plugin." />
+  <LinkCard title="Overview" href="/codeArbiter/overview/" description="Orchestration, gates, context minimization, and the lane model." />
+  <LinkCard title="Concepts" href="/codeArbiter/concepts/" description="Gated lanes, SMARTS, ADRs, checkpoints, and the persona-register split." />
+  <LinkCard title="Reference" href="/codeArbiter/reference/" description="Every command, skill, and agent — auto-generated from the plugin." />
   <LinkCard title="GitHub" href="https://github.com/arbiterForge/codeArbiter" description="Source, issues, and releases." />
 </CardGrid>

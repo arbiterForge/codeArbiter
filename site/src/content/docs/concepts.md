@@ -65,4 +65,4 @@ trail records every sanctioned bypass. The governance record can be assembled fo
 any range of work on demand.
 
 For the concrete catalog of what runs in each lane, see the auto-generated
-[Reference](/reference/).
+[Reference](../reference/).
