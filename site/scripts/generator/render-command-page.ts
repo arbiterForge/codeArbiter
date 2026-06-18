@@ -8,5 +8,15 @@ import type { PageInput } from "./types";
  * `Model tier` nor a `Tools` section.
  */
 export function renderCommandPage(input: PageInput): string {
-  throw new Error("not implemented");
+  const { name, description } = input;
+  const desc = description ?? "";
+
+  return `---
+title: ${name}
+---
+
+# ${name}
+
+${desc}
+`;
 }
