@@ -2,6 +2,7 @@
 name: decision-challenger
 description: Adversarial red-team reviewer of ADRs. Builds the strongest case against each decision, names load-bearing assumptions, assigns confidence 1–5, and surfaces evidence that would prove a decision wrong. Read-only. Dispatched optionally by decision-variance. Reads ADRs from .codearbiter/decisions/.
 tools: Read, Grep, Glob, Bash
+model: inherit
 ---
 
 # Decision Challenger Agent

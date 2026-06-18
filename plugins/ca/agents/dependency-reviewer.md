@@ -2,6 +2,7 @@
 name: dependency-reviewer
 description: Dispatched when package.json, lock files, or container base images change. Verifies license, provenance, maintenance signal, and supply-chain posture against .codearbiter/security-controls.md and .codearbiter/tech-stack.md before merge.
 tools: Read, Bash, Grep, WebFetch
+model: sonnet
 ---
 
 # Dependency Reviewer Agent

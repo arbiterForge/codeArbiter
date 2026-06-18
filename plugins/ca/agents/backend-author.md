@@ -2,6 +2,7 @@
 name: backend-author
 description: Use when writing or modifying backend/server-side code. Owns the TDD workflow, input validation, framework conventions, and ORM usage. MUST write failing tests before implementation code. Reads tech stack from ${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md.
 tools: Read, Grep, Glob, Bash, Edit, Write
+model: sonnet
 ---
 
 # Backend Author Agent

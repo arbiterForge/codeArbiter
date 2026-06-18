@@ -2,6 +2,7 @@
 name: finding-triage
 description: Post-processes all checkpoint reviewer reports — consolidates findings, classifies each by severity and whether it blocks the current change. Sequential. Produces a unified triage report for the checkpoint-aggregator. Reads project state from .codearbiter/.
 tools: Read, Grep, Glob
+model: haiku
 ---
 
 # Finding Triage Agent

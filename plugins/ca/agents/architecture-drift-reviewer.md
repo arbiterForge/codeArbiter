@@ -2,6 +2,7 @@
 name: architecture-drift-reviewer
 description: Read-only checkpoint reviewer. Surfaces drift between the codebase and accepted ADRs in .codearbiter/decisions/. Informational — never blocks.
 tools: Read, Grep, Glob, Bash
+model: haiku
 ---
 
 # Architecture Drift Reviewer Agent

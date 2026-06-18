@@ -2,6 +2,7 @@
 name: migration-reviewer
 description: Dispatched when a database migration file is added or modified. Reviews migrations for safety, data-classification tagging, and immutability against .codearbiter/security-controls.md.
 tools: Read, Bash, Grep
+model: inherit
 ---
 
 # Migration Reviewer Agent
