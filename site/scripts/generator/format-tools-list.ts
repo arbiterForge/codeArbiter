@@ -6,5 +6,14 @@
  * - Missing or empty → `"—"`.
  */
 export function formatToolsList(tools?: string): string {
-  throw new Error("not implemented");
+  if (!tools || tools.trim() === '') {
+    return '—'; // em dash U+2014
+  }
+
+  return tools
+    .split(',')
+    .map(entry => entry.trim())
+    .filter(entry => entry !== '')
+    .map(entry => `\`${entry}\``)
+    .join(', ');
 }
