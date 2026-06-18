@@ -288,3 +288,18 @@ The commit hook flagged 3 lines in `site/package-lock.json` as crypto-sensitive:
 ## Verification
 - `plugins/ca/tools`: typecheck clean, **104/104 vitest** (was 93; +11 new across #90/#91/#93), `npm run build` regenerated farm.js. No security/auth/crypto surface touched (hard-gate-clear by design).
 - Note (manual): `runCanary`'s report-shape wiring (D-07) is typecheck-verified but not unit-covered — runCanary does real git+network+process.exit and has no existing harness; consistent with current coverage.
+
+# Sprint — farm-worktree-setup-hook · 2026-06-18 (#92, fully autonomous)
+
+`/ca:sprint` fully autonomous — user delegated the design decision ("come back to a PR in the morning"), so the normally-STOP spec gate was decided-as-the-user via SMARTS and logged here. Premium path.
+
+## Auto-decisions (SMARTS, deciding-as-the-user)
+- **D-01 design = declarative setup hook (`meta.setup`/`task.setup`).** Chosen over (B) auto-symlink/copy node_modules (JS-only, Windows-junction-fragile) and (C) doc-only up-tree-resolution reliance (non-fix, Node-only). A is language-agnostic, deterministic, fits the plan.json contract, and is exactly the "setup hook" the issue names. SMARTS: strong. Confidence: **high**.
+- **D-02 run setup at top of each attempt (after resetWorktree).** The inter-attempt `git clean -fd` wipes untracked deps; re-running keeps them present. Cost bounded (happy-path tasks run it once). Strong. **high**.
+- **D-03 setup failure → immediate escalate** (environmental, not worker-fixable) rather than consuming a worker retry. Strong. **high**.
+- **D-04 execute setup via existing `deps.runGate`** (same shell + exit-code + redaction) rather than a new dependency seam — DRY, zero churn to existing test deps. Moderate. **high**.
+- **D-05 documented FARM_ENTITLEMENT_PROBE_TIMEOUT_MS** (from #93) in farm.md — it shipped undocumented last PR; trivial completeness fix folded in while editing the same table. **high**.
+
+## Verification
+- typecheck clean, **108/108 vitest** (+4 new for #92), `farm.js` rebuilt. Schema parses; `meta.setup`/`task.setup` validated and drift-contract documented. No auth/crypto/secret surface (hard-gate-clear by design).
+- Caught two line-ending flips (Edit tool on Windows): farm.ts/test stayed LF this run, but plan.schema.json flipped — normalized so the real diff is +10, not +206.
