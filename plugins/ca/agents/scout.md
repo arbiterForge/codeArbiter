@@ -2,6 +2,7 @@
 name: scout
 description: INTERNAL evidence-gatherer dispatched by the decision-variance and context-creation skills. Scans an assigned code scope and reports evidence of architectural decisions — file paths and line numbers only. Never dispatch directly.
 tools: Read, Grep, Glob, Bash
+model: haiku
 ---
 
 # Scout Subagent

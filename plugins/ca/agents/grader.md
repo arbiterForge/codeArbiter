@@ -2,6 +2,7 @@
 name: grader
 description: INTERNAL SMARTS analyst dispatched by the decision-variance skill. Produces a SMARTS analysis and recommendation for one (artifact-position, scaffold-evidence) pair. Never decides — the user decides. Never dispatch directly.
 tools: Read, Grep, Glob, Bash
+model: inherit
 ---
 
 # Grader Subagent

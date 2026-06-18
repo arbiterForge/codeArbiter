@@ -2,6 +2,7 @@
 name: checkpoint-aggregator
 description: Composes the finding-triage report and decision-challenger output into a dated checkpoint document under .codearbiter/checkpoints/YYYY-MM-DD.md. Aggregator, not a blocker.
 tools: Read, Glob, Bash, Write
+model: haiku
 ---
 
 # Checkpoint Aggregator Agent

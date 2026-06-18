@@ -2,6 +2,7 @@
 name: frontend-author
 description: Use when writing or modifying frontend/UI code. Owns the TDD workflow, component conventions, state management, and UI security. MUST write failing tests before implementation code. Reads tech stack from ${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md.
 tools: Read, Grep, Glob, Bash, Edit, Write
+model: sonnet
 ---
 
 # Frontend Author Agent
