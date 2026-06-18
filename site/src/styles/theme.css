@@ -1,0 +1,75 @@
+/* codeArbiter docs — brand theme.
+   Palette lifted from docs/banner.svg: "gate gold" (#e3b341 / #d29922) on a
+   deep slate (#0b0f14). The accent variables retint Starlight site-wide; the
+   rest is scoped to the splash landing page. */
+
+:root {
+  --sl-color-accent-low: #3b2e0a;
+  --sl-color-accent: #c0871d;
+  --sl-color-accent-high: #ecd083;
+  --ca-gold: #e3b341;
+  --ca-gold-dim: #d29922;
+}
+:root[data-theme="dark"] {
+  --sl-color-accent-low: #3b2e0a;
+  --sl-color-accent: #e3b341;
+  --sl-color-accent-high: #f3e1a6;
+}
+
+/* ---- Splash hero: brand glow + tighter vertical rhythm ---- */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+/* Soft gold haze behind the hero, echoing the banner — fills the dead space
+   under the title/actions without adding a heavy image. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -45% -15% auto -15%;
+  height: 150%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    52% 56% at 50% 22%,
+    rgba(227, 179, 65, 0.13),
+    transparent 70%
+  );
+}
+.hero .tagline {
+  max-width: 48ch;
+  margin-inline: auto;
+}
+
+/* ---- Feature cards: aligned + equal height + brand accent + hover lift ---- */
+.card-grid {
+  align-items: stretch;
+}
+.card {
+  height: 100%;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.card:hover {
+  border-color: var(--ca-gold-dim);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -18px rgba(0, 0, 0, 0.75);
+}
+.card .icon {
+  color: var(--ca-gold);
+}
+
+/* ---- Landing "lane" example: make the command block feel like a terminal ---- */
+.ca-lanes .expressive-code,
+.ca-lanes pre {
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 22%, transparent);
+  border-radius: 0.6rem;
+}
+
+/* ---- Section headings on content pages: a subtle gold rule ---- */
+.sl-markdown-content h2 {
+  border-block-end: 1px solid var(--sl-color-gray-5);
+  padding-block-end: 0.25rem;
+}

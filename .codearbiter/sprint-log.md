@@ -240,3 +240,30 @@ Spec + plan approved by the user at the Phase-1 gate. Branch `sprint/ux-conversi
 **Verification at land:** full Python suite green (hook-guards · cold-install · preview · ux-conversion) · ref graph intact · PR CI 7/7 green incl. version-bump gate. Two-pass review: spec-compliance 11/11 (after the AC-5 fix), copy-quality clean (5 NITs applied).
 
 **Auto-decisions flagged for review:** D-01 (execution model — coordinate-author + independent review, moderate) is the one low-confidence call. D-02 (AC-5 Phase-5 stakes) resolved high toward the approved spec.
+
+---
+
+# Sprint — docs-site-mvp · 2026-06-18 (Step 6 of token-efficiency investigation)
+
+`/ca:sprint --farm`. Slice 1 (the 15-task generator) dispatched to the OpenCode Zen farm; Slice 2 (Astro + prose) Claude-authored. Spec + plan approved at the one interactive gate.
+
+## Hard gates that tripped (surfaced to user, NOT auto-decided)
+- **HG-01 — trust boundary (external dispatch).** The harness security classifier blocked sending repo code to a third-party API (api.opencode.ai). Per `/sprint` hard-gate rule (trust-boundary change), HALTED and surfaced. **User authorized** dispatch to OpenCode Zen (low-sensitivity site/ code; byte-cap + secret-redaction safeguards). User-attributed.
+
+## Auto-decisions (SMARTS, deciding-as-the-user)
+- **D-01 model selection → `big-pickle`.** Canary-measured (passed 1 attempt / 100s). User steered candidates to {qwen3.6-plus-free, minimax-m3-free, big-pickle}; the first two return HTTP 401 ("Free promotion has ended"), so big-pickle was the only viable one. Strength: strong. Confidence: **high**.
+- **D-02 endpoint correction → `https://opencode.ai/zen/v1`.** Farm's built-in default `api.opencode.ai/v1` is stale (404). Verified live endpoint via /models + /chat/completions. Filed issue #90. Confidence: **high**.
+- **D-03 CRLF drift workaround.** `git config core.autocrlf false && core.safecrlf false` — git's CRLF warning on stderr polluted farm's drift detection → false `drift:` escalation. Filed issue #91. Confidence: **high**.
+- **D-04 worktree dependency resolution.** Installed toolchain at project-root `node_modules` (already gitignored) so worktrees resolve vitest/tsc up-tree; no per-worktree setup hook exists. Filed issue #92. Confidence: **high**.
+- **D-05 gaming-risk warnings judged false-positive.** All 14 green tasks carried a literal-leak warning, but the flagged "literal" was each function's own name / necessary identifier (e.g. `classifySource`, `node:path`, `command`). Read every impl — genuine logic, not hardcoded. Mutation scores 0.67–1.00 where computed. Accepted all 14. Confidence: **high**.
+- **D-06 generate escalation → premium.** `generate` timed out (60s) on all 3 attempts = single-task model incapacity (not drift/gaming/spec-gap), so implemented via the premium path per sdd Phase 2.5. Confidence: **high**.
+- Filed issue #93 (model discovery surfaces expired free-promo models; add entitlement pre-check).
+
+## Step 6 measurement (farm first-pass vs escalation)
+- 15 tasks: **14 green, 1 escalated** (generate, timeout). Escalation rate **1/15 = 6.7%** — well under FARM_ABORT_ESCALATION_RATE (0.5); circuit breaker did NOT trip.
+- First-pass (attempt 1): **11/14 green tasks** (3 needed attempt 2: slugify, render-skill-page, split-frontmatter).
+- Worker tokens: prompt=14,391 completion=32,951 (zero premium tokens for the 14 farmed tasks).
+- Full integrated suite after premium generate fill: **56/56 green**, typecheck clean.
+
+## Security gate (H-09b) — cleared by review
+The commit hook flagged 3 lines in `site/package-lock.json` as crypto-sensitive: the transitive dependency `iron-webcrypto@1.2.1`. Dispatched `auth-crypto-reviewer` — verdict **PASS** (0 findings): it is a reputable MIT WebCrypto wrapper arriving via the owner-approved Astro/Starlight stack (`astro → unstorage → h3 → iron-webcrypto`), not a banned/home-rolled primitive; no secret, key material, or disabled-TLS introduced; the real API key is absent from all tracked files. Recorded the diff-bound security-pass marker (no `/override` needed — the gate genuinely passed).

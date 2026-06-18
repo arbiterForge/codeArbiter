@@ -1,0 +1,210 @@
+{
+  "meta": {
+    "name": "docs-site-mvp",
+    "repo": "codeArbiter",
+    "apiBaseUrl": "https://opencode.ai/zen/v1",
+    "model": "big-pickle"
+  },
+  "tasks": [
+    {
+      "id": "split-frontmatter",
+      "description": "Implement splitFrontmatter(raw): separate a leading ----delimited frontmatter block from the body. Return { frontmatter: string|null, body: string }. frontmatter is the text between the first '---' line and the next '---' line (no surrounding newlines); body is everything after the closing delimiter with leading newlines stripped. No leading frontmatter -> { frontmatter: null, body: raw }. Empty input -> { frontmatter: null, body: '' }. Never throw.",
+      "filesInScope": ["site/scripts/generator/split-frontmatter.ts"],
+      "test": { "path": "site/test/generator/split-frontmatter.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/split-frontmatter.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "TypeScript ESM. Import the return type: `import type { SplitResult } from \"./types\";`. The raw text must START with a line that is exactly '---' to count as frontmatter (a later '---' does not). Use string/array ops only; no deps."
+    },
+    {
+      "id": "parse-fields",
+      "description": "Implement parseFields(text): turn a flat 'key: value' block into Record<string,string>. Split each line on its FIRST ':'; trim key and value. Strip a single pair of matching surrounding single or double quotes from the value. Skip blank lines and lines with no ':'. Empty input -> {}. Never throw. Missing fields are simply absent; extra fields are kept.",
+      "filesInScope": ["site/scripts/generator/parse-fields.ts"],
+      "test": { "path": "site/test/generator/parse-fields.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/parse-fields.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "TypeScript ESM. Return Record<string,string>. 'description: a: b' must yield value 'a: b' (split on first colon only). 'argument-hint: \"[note]\"' must yield value '[note]' (quotes stripped). No deps."
+    },
+    {
+      "id": "parse-doc",
+      "description": "Implement parseDoc(raw): compose splitFrontmatter then parseFields. Return { fields, body }. When there is no frontmatter, fields is {}. body is the split body. Never throw on empty or body-only input.",
+      "filesInScope": ["site/scripts/generator/parse-doc.ts"],
+      "test": { "path": "site/test/generator/parse-doc.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/parse-doc.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "deps": ["split-frontmatter", "parse-fields"],
+      "context": "Import the real helpers: `import { splitFrontmatter } from \"./split-frontmatter\";` and `import { parseFields } from \"./parse-fields\";` and `import type { ParsedDoc } from \"./types\";`. If split.frontmatter is null, fields = {}, else parseFields(split.frontmatter)."
+    },
+    {
+      "id": "slugify",
+      "description": "Implement slugify(input): lowercase; replace every run of non-alphanumeric chars with a single '-'; strip leading and trailing '-'. Must be idempotent: slugify(slugify(x)) === slugify(x).",
+      "filesInScope": ["site/scripts/generator/slugify.ts"],
+      "test": { "path": "site/test/generator/slugify.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/slugify.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "Pure string function. '/ca:commit' -> 'ca-commit'; 'Foo__Bar!!Baz' -> 'foo-bar-baz'. Use input.toLowerCase().replace(/[^a-z0-9]+/g, '-') then strip leading/trailing '-'. No deps."
+    },
+    {
+      "id": "assign-slugs",
+      "description": "Implement assignSlugs(names): map each name through slugify, preserving input order and length. On a duplicate slug, append '-2', '-3', ... in order of appearance so all returned slugs are unique.",
+      "filesInScope": ["site/scripts/generator/assign-slugs.ts"],
+      "test": { "path": "site/test/generator/assign-slugs.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/assign-slugs.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "deps": ["slugify"],
+      "context": "Import: `import { slugify } from \"./slugify\";`. ['Foo','foo','Bar'] -> ['foo','foo-2','bar']; ['a','a','a'] -> ['a','a-2','a-3']. Track seen counts in a Map."
+    },
+    {
+      "id": "classify-source",
+      "description": "Implement classifySource(path): normalize backslashes to forward slashes, then return 'command' if the path contains 'commands/', 'skill' if it contains 'skills/', 'agent' if it contains 'agents/'. Throw on a path matching none.",
+      "filesInScope": ["site/scripts/generator/classify-source.ts"],
+      "test": { "path": "site/test/generator/classify-source.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/classify-source.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "Import the return type: `import type { SourceType } from \"./types\";`. Replace(/\\\\/g, '/') first. No deps."
+    },
+    {
+      "id": "derive-name",
+      "description": "Implement deriveName(path, fields): if fields.name is a non-empty string, return it. Otherwise normalize backslashes, take the basename without the trailing '.md'; if that basename is 'SKILL', use the parent directory name instead.",
+      "filesInScope": ["site/scripts/generator/derive-name.ts"],
+      "test": { "path": "site/test/generator/derive-name.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/derive-name.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "Plain function (path: string, fields: Record<string,string>) => string. 'x/commands/commit.md',{} -> 'commit'; 'x/skills/tdd/SKILL.md',{} -> 'tdd'. No deps; use string split on '/'."
+    },
+    {
+      "id": "model-tier",
+      "description": "Implement modelTier(model?): missing or empty -> 'default'. Map known ids case-insensitively: sonnet->'Sonnet', opus->'Opus', haiku->'Haiku'. Any other value -> returned unchanged.",
+      "filesInScope": ["site/scripts/generator/model-tier.ts"],
+      "test": { "path": "site/test/generator/model-tier.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/model-tier.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "(model?: string) => string. Use a lookup object keyed by model.toLowerCase(); fall back to the original model string. No deps."
+    },
+    {
+      "id": "format-tools-list",
+      "description": "Implement formatToolsList(tools?): split a comma-separated string, trim each entry, wrap each in backticks, join with ', '. Missing or empty (after trim) -> '—' (em dash U+2014).",
+      "filesInScope": ["site/scripts/generator/format-tools-list.ts"],
+      "test": { "path": "site/test/generator/format-tools-list.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/format-tools-list.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "(tools?: string) => string. 'Read, Grep' -> '`Read`, `Grep`'; 'Read,Grep' -> '`Read`, `Grep`'; undefined/'' -> '—'. Filter out empty entries after trim. No deps."
+    },
+    {
+      "id": "render-agent-page",
+      "description": "Implement renderAgentPage(input: PageInput): return Starlight markdown. Must include a frontmatter line 'title: <name>', an '# <name>' heading, the description, a line containing the model tier via modelTier(input.model) (so a missing model shows 'default'), and a line containing the tools via formatToolsList(input.tools).",
+      "filesInScope": ["site/scripts/generator/render-agent-page.ts"],
+      "test": { "path": "site/test/generator/render-agent-page.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/render-agent-page.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "deps": ["model-tier", "format-tools-list"],
+      "context": "Imports: `import { modelTier } from \"./model-tier\";`, `import { formatToolsList } from \"./format-tools-list\";`, `import type { PageInput } from \"./types\";`. Emit YAML frontmatter delimited by '---' lines with `title: ${input.name}`, then '# ' + name, description, and bullet lines '- **Model tier:** ' + modelTier(...) and '- **Tools:** ' + formatToolsList(...)."
+    },
+    {
+      "id": "render-command-page",
+      "description": "Implement renderCommandPage(input: PageInput): return Starlight markdown with a 'title: <name>' frontmatter line, an '# <name>' heading, and the description. Must NOT contain the strings 'Model tier' or 'Tools'.",
+      "filesInScope": ["site/scripts/generator/render-command-page.ts"],
+      "test": { "path": "site/test/generator/render-command-page.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/render-command-page.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "Import: `import type { PageInput } from \"./types\";`. description may be undefined — render an empty string or a placeholder, but never the literal words 'Model tier' or 'Tools'."
+    },
+    {
+      "id": "render-skill-page",
+      "description": "Implement renderSkillPage(input: PageInput): return Starlight markdown with a 'title: <name>' frontmatter line, an '# <name>' heading, and the description. Must NOT contain the strings 'Model tier' or 'Tools'.",
+      "filesInScope": ["site/scripts/generator/render-skill-page.ts"],
+      "test": { "path": "site/test/generator/render-skill-page.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/render-skill-page.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "Import: `import type { PageInput } from \"./types\";`. Same shape as the command renderer; never emit 'Model tier' or 'Tools'."
+    },
+    {
+      "id": "collect-sources",
+      "description": "Implement collectSources(rootDir): read commands/*.md, skills/*/SKILL.md, and agents/*.md under rootDir. Return SourceFile[] with { path, raw, type } where type = classifySource(path) and raw is the file text. A missing subdirectory or missing rootDir yields no entries (never throw). Sort the result by path for stable order.",
+      "filesInScope": ["site/scripts/generator/collect-sources.ts"],
+      "test": { "path": "site/test/generator/collect-sources.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/collect-sources.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "deps": ["classify-source"],
+      "context": "Imports: `import { classifySource } from \"./classify-source\";`, `import type { SourceFile } from \"./types\";`, and node fs/path (`import { readdirSync, readFileSync, existsSync, statSync } from \"node:fs\";` `import { join } from \"node:path\";`). Guard every readdir with existsSync. For skills, iterate subdirectories and read each '<dir>/SKILL.md' if it exists. Use forward-slash joins ('/') in the returned path so classifySource matches and order is stable. Sort by path before returning."
+    },
+    {
+      "id": "build-index",
+      "description": "Implement buildIndex(pages: RenderedPage[]): group pages by type in fixed order command, skill, agent; include only groups that have at least one page. Within each group sort items by title. Return { markdown, sidebar } where sidebar is SidebarGroup[] ({ type, label, items:[{label,slug}] }) and markdown lists every page's title.",
+      "filesInScope": ["site/scripts/generator/build-index.ts"],
+      "test": { "path": "site/test/generator/build-index.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/build-index.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "context": "Imports: `import type { RenderedPage, IndexResult, SidebarGroup, SidebarEntry } from \"./types\";`. Fixed order array ['command','skill','agent']. Empty pages -> sidebar []. item.label = page.title, item.slug = page.slug. markdown must contain each page.title."
+    },
+    {
+      "id": "generate",
+      "description": "Implement generate(srcDir, outDir, sidebarPath?): collect sources, parse each (parseDoc), derive a display name (deriveName), assign collision-free slugs across all names (assignSlugs), render each by type (renderAgentPage / renderCommandPage / renderSkillPage), and write one markdown file per source to outDir/<plural-type>/<slug>.md (plural: commands, skills, agents). Build the index (buildIndex) and write outDir/index.md plus the sidebar JSON to sidebarPath (default outDir/sidebar.json) as JSON.stringify(sidebar, null, 2). Create directories as needed. Idempotent: a second run over the same sources produces byte-identical output. Return { pages, outDir, sidebarPath }.",
+      "filesInScope": ["site/scripts/generator/generate.ts"],
+      "test": { "path": "site/test/generator/generate.test.ts" },
+      "gate": {
+        "commands": [
+          "cd site && npx vitest run test/generator/generate.test.ts",
+          "cd site && npx tsc --noEmit"
+        ]
+      },
+      "deps": ["collect-sources", "parse-doc", "derive-name", "assign-slugs", "render-agent-page", "render-command-page", "render-skill-page", "build-index"],
+      "context": "Import every helper from its sibling module and the types from './types' (PageInput, RenderedPage, GenerateResult). Build PageInput as { name, description: fields.description, model: fields.model, tools: fields.tools }. Map type->dir: command->'commands', skill->'skills', agent->'agents'. Use node fs (mkdirSync({recursive:true}), writeFileSync) and node path (join). Page slug order follows collectSources order (already sorted) so output is deterministic. RenderedPage = { type, slug, title: name, markdown }. Default sidebarPath = join(outDir, 'sidebar.json')."
+    }
+  ]
+}

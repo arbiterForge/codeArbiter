@@ -1,0 +1,29 @@
+{
+  "name": "codearbiter-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "codeArbiter documentation site (MVP) — Astro Starlight + auto-generated reference",
+  "scripts": {
+    "gen": "tsx scripts/gen.ts",
+    "predev": "npm run gen",
+    "dev": "astro dev",
+    "prebuild": "npm run gen",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.32.0",
+    "astro": "^5.6.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
