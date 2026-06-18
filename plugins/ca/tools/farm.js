@@ -6,6 +6,7 @@ import { readFile, writeFile, appendFile, mkdir, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+var DEFAULT_API_BASE_URL = "https://opencode.ai/zen/v1";
 var ENV = {
   // Model: plan.meta.model (set by subagent-driven-development before dispatch),
   // then FARM_MODEL env var override. Fails at startup if neither is set.
@@ -23,6 +24,10 @@ var ENV = {
   reportDir: process.env.FARM_REPORT_DIR ?? ".farm",
   // Per-request hard timeout so a hung endpoint can't deadlock a worker slot.
   requestTimeoutMs: Number(process.env.FARM_REQUEST_TIMEOUT_MS ?? 12e4),
+  // Per-candidate wall-clock cap for the #93 entitlement pre-screen, so one
+  // slow/dead model can't dominate the probe. Kept short (35s) — a screen, not a
+  // capability run — and ≤ the per-request timeout.
+  entitlementProbeTimeoutMs: Number(process.env.FARM_ENTITLEMENT_PROBE_TIMEOUT_MS ?? 35e3),
   // Transport-level retries (429 / 5xx) — distinct from model-quality retries.
   apiMaxRetries: Number(process.env.FARM_API_MAX_RETRIES ?? 3),
   // Circuit breaker: abort dispatch once the escalation rate exceeds this,
@@ -30,7 +35,7 @@ var ENV = {
   abortEscalationRate: Number(process.env.FARM_ABORT_ESCALATION_RATE ?? 0.5),
   abortMinTasks: Number(process.env.FARM_ABORT_MIN_TASKS ?? 3),
   // Default endpoint, used only when neither env nor plan.meta provides one.
-  defaultApiBaseUrl: process.env.FARM_DEFAULT_API_BASE_URL ?? "https://api.opencode.ai/v1",
+  defaultApiBaseUrl: process.env.FARM_DEFAULT_API_BASE_URL ?? DEFAULT_API_BASE_URL,
   // Comma-separated candidate model ids for --canary mode.
   candidateModels: (process.env.FARM_CANDIDATE_MODELS ?? "").split(",").map((s) => s.trim()).filter(Boolean),
   // AC-05 byte cap on the TOTAL injected enrichment context (test source +
@@ -55,11 +60,12 @@ var MUT = {
 function run(cmd, args, cwd, opts = {}) {
   return new Promise((resolve) => {
     const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
-    let out = "";
-    c.stdout.on("data", (d) => out += d);
-    c.stderr.on("data", (d) => out += d);
-    c.on("error", (e) => resolve({ code: 1, out: String(e) }));
-    c.on("close", (code) => resolve({ code: code ?? 1, out }));
+    let stdout = "";
+    let stderr = "";
+    c.stdout.on("data", (d) => stdout += d);
+    c.stderr.on("data", (d) => stderr += d);
+    c.on("error", (e) => resolve({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
+    c.on("close", (code) => resolve({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
   });
 }
 var git = (args, cwd) => run("git", args, cwd);
@@ -262,6 +268,19 @@ function extractFileBlocks(content) {
   }
   return blocks;
 }
+function parseChatCompletion(text, apiBaseUrl) {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
+    return {
+      ok: false,
+      error: `endpoint ${apiBaseUrl} returned a non-JSON body (${JSON.stringify(snippet)}) \u2014 check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`
+    };
+  }
+  return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
+}
 async function callApi(prompt, model, apiBaseUrl, apiKey) {
   for (let attempt = 0; attempt <= ENV.apiMaxRetries; attempt++) {
     const ctrl = new AbortController();
@@ -308,13 +327,8 @@ async function callApi(prompt, model, apiBaseUrl, apiKey) {
 `);
       return { ok: false, error: `API ${resp.status}` };
     }
-    let data;
-    try {
-      data = await resp.json();
-    } catch (e) {
-      return { ok: false, error: `non-JSON response: ${e}` };
-    }
-    return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
+    const text = await resp.text().catch(() => "");
+    return parseChatCompletion(text, apiBaseUrl);
   }
   return { ok: false, error: "exhausted API retries" };
 }
@@ -356,17 +370,17 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden) {
 var httpWorker = {
   apply: (ctx) => runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden)
 };
-async function checkDrift(cwd, allowed) {
-  const tracked = await git(["diff", "--name-only", "HEAD"], cwd);
-  const untracked = await git(
+async function checkDrift(cwd, allowed, gitRunner = git) {
+  const tracked = await gitRunner(["diff", "--name-only", "HEAD"], cwd);
+  const untracked = await gitRunner(
     ["ls-files", "--others", "--exclude-standard", "-z"],
     cwd
   );
   const changed = [];
   if (tracked.code === 0)
-    changed.push(...tracked.out.trim().split("\n").filter(Boolean));
+    changed.push(...tracked.stdout.trim().split("\n").filter(Boolean));
   if (untracked.code === 0)
-    changed.push(...untracked.out.split("\0").filter(Boolean));
+    changed.push(...untracked.stdout.split("\0").filter(Boolean));
   return [...new Set(changed)].filter((f) => !allowed.has(f));
 }
 function postApplySweep(cwd, filesWritten, forbidden) {
@@ -748,6 +762,53 @@ function resolveConfig(plan) {
   }
   return { model, apiBaseUrl, apiKey };
 }
+async function screenEntitlements(models, probe, opts = {}) {
+  const timeoutMs = opts.timeoutMs ?? ENV.entitlementProbeTimeoutMs;
+  const sleepFn = opts.sleepFn ?? sleep;
+  const survivors = [];
+  const skipped = [];
+  for (const model of models) {
+    let res;
+    try {
+      res = await Promise.race([
+        probe(model),
+        sleepFn(timeoutMs).then(() => null)
+      ]);
+    } catch (e) {
+      skipped.push({ model, reason: "error", note: `entitlement probe error: ${e}` });
+      continue;
+    }
+    if (res === null) {
+      skipped.push({ model, reason: "timeout", note: `entitlement probe exceeded ${timeoutMs}ms \u2014 model is slow or dead` });
+      continue;
+    }
+    if (res.status === 401) {
+      skipped.push({ model, reason: "entitlement", note: "401 \u2014 not entitled / free promotion ended" });
+      continue;
+    }
+    survivors.push(model);
+  }
+  return { survivors, skipped };
+}
+function makeEntitlementProbe(apiBaseUrl, apiKey, timeoutMs) {
+  return async (model) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const resp = await fetch(`${apiBaseUrl}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({ model, messages: [{ role: "user", content: "ping" }], max_tokens: 1 }),
+        signal: ctrl.signal
+      });
+      return { status: resp.status };
+    } catch {
+      return { status: 0 };
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+}
 async function runCanary(plan) {
   if (ENV.candidateModels.length === 0) {
     console.error("Error: --canary requires FARM_CANDIDATE_MODELS (comma-separated model ids).");
@@ -771,8 +832,15 @@ async function runCanary(plan) {
   await git(["worktree", "add", integrationWorktree, ENV.integration]).catch(() => {
   });
   const task = [...plan.tasks].filter((t) => (t.deps ?? []).length === 0).sort((a, b) => a.filesInScope.length - b.filesInScope.length)[0] ?? plan.tasks[0];
+  const { survivors, skipped } = await screenEntitlements(
+    ENV.candidateModels,
+    makeEntitlementProbe(apiBaseUrl, apiKey, ENV.entitlementProbeTimeoutMs)
+  );
+  if (skipped.length)
+    process.stderr.write(`Entitlement screen dropped ${skipped.length}/${ENV.candidateModels.length}: ${skipped.map((s) => `${s.model} (${s.reason})`).join(", ")}
+`);
   const results = [];
-  for (const model of ENV.candidateModels) {
+  for (const model of survivors) {
     const t0 = Date.now();
     const r = await runTask({ ...task, id: `canary-${task.id}` }, model, apiBaseUrl, apiKey);
     results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note });
@@ -784,9 +852,15 @@ async function runCanary(plan) {
   await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
   });
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
-  await writeFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
-  const summary = ["\nCanary results (best first):", ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`), `
-Recommended: ${results[0]?.green ? results[0].model : "NONE PASSED \u2014 set FARM_MODEL manually or revise the plan"}`, ""].join("\n");
+  await writeFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
+  const summary = [
+    "\nCanary results (best first):",
+    ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`),
+    ...skipped.map((s) => `  SKIP  ${s.model}  (${s.reason}: ${s.note})`),
+    `
+Recommended: ${results[0]?.green ? results[0].model : "NONE PASSED \u2014 set FARM_MODEL manually or revise the plan"}`,
+    ""
+  ].join("\n");
   await new Promise((resolve) => process.stdout.write(summary, () => resolve()));
   process.exit(results[0]?.green ? 0 : 2);
 }
@@ -942,12 +1016,16 @@ if (_thisFile === _entryFile) {
   });
 }
 export {
+  DEFAULT_API_BASE_URL,
   SAFE_TASK_ID,
   assertSecureBaseUrl,
+  checkDrift,
   codeLineCount,
   extractFileBlocks,
   extractLiterals,
   httpWorker,
+  parseChatCompletion,
   runTask,
+  screenEntitlements,
   validate
 };

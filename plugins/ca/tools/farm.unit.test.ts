@@ -6,7 +6,7 @@ import { describe, it, expect } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 
 // ---------------------------------------------------------------------------
@@ -382,7 +382,7 @@ describe("Worker seam — runTask invokes an injectable Worker (AC-01)", () => {
       runGate: async () => ({ ok: true as const }),
       antiGamingCheck: async () => ({ risk: "none" as const }),
       mutationCheck: async () => null,
-      git: async () => ({ code: 0, out: "" }),
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
       withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
     };
   }
@@ -462,7 +462,7 @@ describe("Post-apply containment sweep — task-level enforcement for ANY worker
       runGate: async () => ({ ok: true as const }),
       antiGamingCheck: async () => ({ risk: "none" as const }),
       mutationCheck: async () => null,
-      git: async () => ({ code: 0, out: "" }),
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
       withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
     };
   }
@@ -597,7 +597,7 @@ describe("Per-task model resolution — task.model ?? run-level model (AC-02)", 
       runGate: async () => ({ ok: true as const }),
       antiGamingCheck: async () => ({ risk: "none" as const }),
       mutationCheck: async () => null,
-      git: async () => ({ code: 0, out: "" }),
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
       withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
     };
   }
@@ -744,13 +744,13 @@ describe("Regenerate-on-conflict — merge conflict re-enters regeneration (AC-0
           // unspecified beyond the provided outcomes: default to conflict so an
           // always-conflicting test doesn't accidentally fall through to green
           const out = next === undefined ? "CONFLICT (content): fallback" : next;
-          if (out !== null) return { code: 1, out };
-          return { code: 0, out: "" };
+          if (out !== null) return { code: 1, out, stdout: "", stderr: out };
+          return { code: 0, out: "", stdout: "", stderr: "" };
         }
         if (args[0] === "reset" || args[0] === "clean") {
           opts.resetCalls.push(args);
         }
-        return { code: 0, out: "" };
+        return { code: 0, out: "", stdout: "", stderr: "" };
       },
       withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
     };
@@ -838,5 +838,142 @@ describe("Regenerate-on-conflict — merge conflict re-enters regeneration (AC-0
     expect(workerCalls).toBe(1);
     expect(r.status).toBe("escalate");
     expect(r.note).toMatch(/merge failed vs integration/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #90 — stale default base URL + opaque non-JSON-body error
+// ---------------------------------------------------------------------------
+describe("#90 default base URL + non-JSON body", () => {
+  it("default base URL points at the live OpenCode Zen endpoint", () => {
+    expect(DEFAULT_API_BASE_URL).toBe("https://opencode.ai/zen/v1");
+  });
+
+  it("parseChatCompletion returns content + usage for a valid JSON body", () => {
+    const body = JSON.stringify({
+      choices: [{ message: { content: "hello" } }],
+      usage: { prompt_tokens: 3, completion_tokens: 4 },
+    });
+    const r = parseChatCompletion(body, "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.content).toBe("hello");
+      expect(r.usage?.prompt_tokens).toBe(3);
+      expect(r.usage?.completion_tokens).toBe(4);
+    }
+  });
+
+  it("parseChatCompletion returns an actionable, endpoint-naming error for a non-JSON body", () => {
+    // The exact failure mode of the stale endpoint: 200 with body "Not Found".
+    const r = parseChatCompletion("Not Found", "https://api.opencode.ai/v1");
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      // Names the knob the operator must fix...
+      expect(r.error).toMatch(/FARM_API_BASE_URL/);
+      // ...echoes the offending endpoint...
+      expect(r.error).toMatch(/api\.opencode\.ai\/v1/);
+      // ...and is NOT the opaque raw-SyntaxError message it used to be.
+      expect(r.error).not.toMatch(/^non-JSON response: SyntaxError/);
+    }
+  });
+
+  it("parseChatCompletion echoes a (bounded) snippet of the offending body", () => {
+    const r = parseChatCompletion("Not Found", "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toMatch(/Not Found/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #91 — git CRLF stderr warning must not pollute drift detection (Windows)
+// ---------------------------------------------------------------------------
+describe("#91 checkDrift parses stdout only (CRLF stderr immune)", () => {
+  // The exact line git prints to STDERR under core.safecrlf on Windows.
+  const crlfWarning =
+    "warning: in the working copy of 'site/scripts/generator/split-frontmatter.ts', LF will be replaced by CRLF the next time Git touches it";
+
+  // Stub git runner: returns the given stdout per subcommand, with the CRLF
+  // warning ALWAYS on stderr (and folded into the merged `out`, as the real
+  // run() helper does) — so a stdout-only parser is immune and a merged-string
+  // parser is poisoned.
+  function stubGit(stdoutFor: { diff?: string; lsfiles?: string }) {
+    return async (args: string[]) => {
+      const stdout = args[0] === "diff" ? (stdoutFor.diff ?? "") : (stdoutFor.lsfiles ?? "");
+      const stderr = crlfWarning + "\n";
+      return { code: 0, stdout, stderr, out: stdout + stderr };
+    };
+  }
+
+  it("never treats a git CRLF stderr warning as a changed path", async () => {
+    const allowed = new Set(["src/a.ts"]);
+    // worker edited an OUT-of-scope file (src/b.ts) — that is real drift; the
+    // CRLF warning on stderr is noise that must be ignored.
+    const drift = await checkDrift("/wt", allowed, stubGit({ diff: "src/b.ts\n" }));
+    expect(drift).toEqual(["src/b.ts"]);
+    expect(drift.join(" ")).not.toMatch(/LF will be replaced by CRLF/);
+    expect(drift.some((f) => f.startsWith("warning:"))).toBe(false);
+  });
+
+  it("reports NO drift when only in-scope files changed, despite a CRLF warning on stderr", async () => {
+    const allowed = new Set(["src/a.ts"]);
+    const drift = await checkDrift("/wt", allowed, stubGit({ diff: "src/a.ts\n" }));
+    expect(drift).toEqual([]);
+  });
+
+  it("still catches an out-of-scope untracked file from ls-files stdout", async () => {
+    const allowed = new Set(["src/a.ts"]);
+    const drift = await checkDrift("/wt", allowed, stubGit({ diff: "", lsfiles: "src/new.ts\0" }));
+    expect(drift).toEqual(["src/new.ts"]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #93 — entitlement pre-check drops 401 ("free promotion ended") candidates
+// ---------------------------------------------------------------------------
+describe("#93 screenEntitlements", () => {
+  // sleepFn that never resolves → the wall-clock race never fires, so the
+  // probe's verdict is what's tested (used by the non-timeout cases).
+  const neverSleep = () => new Promise<void>(() => {});
+
+  it("drops a 401 candidate with a distinct entitlement note and keeps an entitled one", async () => {
+    const probe = async (m: string) => ({ status: m.endsWith("-free") ? 401 : 200 });
+    const { survivors, skipped } = await screenEntitlements(
+      ["big-pickle", "minimax-m3-free"],
+      probe,
+      { sleepFn: neverSleep },
+    );
+    expect(survivors).toEqual(["big-pickle"]);
+    expect(skipped).toHaveLength(1);
+    expect(skipped[0].model).toBe("minimax-m3-free");
+    expect(skipped[0].reason).toBe("entitlement");
+    expect(skipped[0].note).toMatch(/401/);
+    expect(skipped[0].note).toMatch(/promotion|entitle/i);
+  });
+
+  it("keeps every candidate when none returns 401", async () => {
+    const probe = async () => ({ status: 200 });
+    const { survivors, skipped } = await screenEntitlements(["a", "b"], probe, { sleepFn: neverSleep });
+    expect(survivors).toEqual(["a", "b"]);
+    expect(skipped).toEqual([]);
+  });
+
+  it("drops a candidate whose probe exceeds the per-candidate wall-clock cap (no hang)", async () => {
+    const hangingProbe = () => new Promise<{ status: number }>(() => {}); // never resolves
+    const { survivors, skipped } = await screenEntitlements(
+      ["slow-model"],
+      hangingProbe,
+      { timeoutMs: 5, sleepFn: async () => {} }, // instant timeout wins the race
+    );
+    expect(survivors).toEqual([]);
+    expect(skipped).toHaveLength(1);
+    expect(skipped[0].model).toBe("slow-model");
+    expect(skipped[0].reason).toBe("timeout");
+  });
+
+  it("treats a non-401 error status as a survivor (let the canary judge capability)", async () => {
+    const probe = async () => ({ status: 500 });
+    const { survivors, skipped } = await screenEntitlements(["flaky"], probe, { sleepFn: neverSleep });
+    expect(survivors).toEqual(["flaky"]);
+    expect(skipped).toEqual([]);
   });
 });
