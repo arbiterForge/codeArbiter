@@ -43,6 +43,8 @@ Read the staged set (`git diff --cached --name-only` and `--stat`). Classify the
 
 Derive the scope from the staged paths. If the staged set spans more than one type, split it — stage and commit each type separately.
 
+Flag any staged **database migration** (per `_hooklib.is_migration_path`) here — it carries a mandatory migration-review routing in Phase 4 (the H-14 gate), independent of the commit type.
+
 Gate: the staged set is type-homogeneous with a single type and scope.
 
 ## Phase 4 — Verification · gate: BLOCK
@@ -53,6 +55,7 @@ Read the test, lint, and secrets-scan commands from `tech-stack.md`. Then:
 - Run lint, and the type-check if the project is statically typed. Zero errors.
 - Run the secrets scan on ALL staged files, regardless of commit type. Any finding blocks.
 - **Security gates (mandatory routing):** if the staged diff touches crypto/TLS or secret patterns, route it through `crypto-compliance` and/or `secret-handling` (`${CLAUDE_PLUGIN_ROOT}/skills/`) — they scan against `security-controls.md` and, on pass, record the diff-bound marker `.codearbiter/.markers/security-gate-passed` (via `hooks/security-pass.py`). This is not optional: the PreToolUse commit hook **H-09b/H-10b blocks the commit** until that gate pass is recorded AND covers every sensitive line being committed, so a crypto/secret change cannot reach a commit without the gate having reviewed that exact change.
+- **Migration gate (mandatory routing):** if the staged set contains a database migration (Phase 3 flags it; the detection rule is `_hooklib.is_migration_path` — default migration globs, extendable/narrowable via a `migration-paths` block in `security-controls.md`), dispatch the `migration-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/migration-reviewer.md`). **On a genuine PASS only**, record the content-bound marker `.codearbiter/.markers/migration-gate-passed` by running `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/migration-pass.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/migration-pass.py"`. This is not optional: the PreToolUse commit hook **H-14 blocks the commit** until the pass is recorded AND covers every migration file being committed (by content digest, no freshness window — an edit to a reviewed migration re-blocks). This closes the bare-`/commit` / small-lane gap from issue #77. On a BLOCK, do not record the pass.
 
 Record each result (PASS / BLOCK) for the report.
 
@@ -123,5 +126,6 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT commit while any test is failing, any lint error stands, or any secret is present.
 - MUST NOT accept a self-reported "it works" — prove the behavior against the spec with a fresh command run (Phase 5) before committing.
 - MUST NOT skip, disable, or work around any automated gate.
+- MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP.
