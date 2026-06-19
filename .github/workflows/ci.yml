@@ -101,6 +101,11 @@ jobs:
         # hook_run integration (armed→2/stderr, resubmit→0, flag-off→today's
         # behavior), and docs gate (prune.md references CODEARBITER_PRUNE_NUDGE).
         run: python .github/scripts/test_prune_nudge.py
+      - name: Run H-14 migration backstop tests
+        # OB-01..11 + OB-C1/OB-S1 (#77): is_migration_path detection (defaults +
+        # security-controls.md extend/exclude), migration-pass.py content-digest
+        # marker, and pre-bash.py H-14 block/admit/edit-reblock/dormant/-a.
+        run: python .github/scripts/test_migration_backstop.py
 
   version-bump:
     name: plugin version bumped when payload changes

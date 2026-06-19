@@ -34,6 +34,9 @@ python .github/scripts/test_ux_conversion.py
 
 # Cold-miss nudge — nudge_decision, advisory, idle extraction, hook_run integration (O1–O11)
 python .github/scripts/test_prune_nudge.py
+
+# H-14 migration commit-time backstop — detection, producer marker, pre-bash gate (#77)
+python .github/scripts/test_migration_backstop.py
 ```
 
 Only when `plugins/ca/tools/**` changed:
