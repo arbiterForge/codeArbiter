@@ -19,11 +19,13 @@
 #
 # Stdlib only (hooks must run on a stock interpreter — see _hooklib.py).
 
+import calendar
 import hashlib
 import json
 import os
 import re
 import shutil
+import sys
 import time
 
 BOM = b"\xef\xbb\xbf"
@@ -1086,10 +1088,99 @@ def tail_is_settled(lines):
     return True
 
 
+# --------------------------------------------------------------------------- #
+# Cold-miss nudge helpers (opt-in; `CODEARBITER_PRUNE_NUDGE=on` required)
+# --------------------------------------------------------------------------- #
+
+def _parse_iso8601(s):
+    """Parse an ISO 8601 datetime string to a UTC epoch int.
+    Robust Z/+offset/fractional-second handling; stdlib-only; never raises."""
+    try:
+        s = str(s).strip()
+        if s.endswith("Z"):
+            s = s[:-1]
+        # Drop fractional seconds and any UTC-offset suffix.
+        s = s.split(".")[0].split("+")[0]
+        return calendar.timegm(time.strptime(s, "%Y-%m-%dT%H:%M:%S"))
+    except Exception:  # noqa: BLE001 — fail open
+        return None
+
+
+def _last_assistant_ts(data):
+    """Return epoch secs of the most recent assistant turn's top-level
+    `timestamp`, or None when absent/unparseable."""
+    ts = None
+    for ln in load_lines(data):
+        o = ln.obj
+        if isinstance(o, dict) and o.get("type") == "assistant" and o.get("timestamp"):
+            ts = o.get("timestamp")
+    return _parse_iso8601(ts) if ts is not None else None
+
+
+def _idle_seconds(data, now):
+    """Seconds since the last assistant turn, or None when unknown."""
+    t = _last_assistant_ts(data)
+    return None if t is None else now - t
+
+
+def _nudge_advisory(rec):
+    """Build the advisory string from state-record numbers only.
+    Never includes transcript content — only sizes / est-tokens / percent."""
+    freed = int(rec.get("freed_bytes", 0) or 0)
+    pruned = int(rec.get("last_pruned_size", 0) or 0)
+    approx_tokens = est_tokens(pruned + freed)   # ~ in-memory (bloated) size
+    pct = rec.get("pct", 0)
+    return (f"Cold cache miss imminent on ~{approx_tokens // 1000}k tokens. "
+            f"/compact or exit + --resume lands that re-cache on pruned context "
+            f"(~{pct}% smaller). Submit again to proceed.")
+
+
+def nudge_decision(rec, idle_secs, e):
+    """Decide whether to fire the cold-miss nudge. Pure + fail-open.
+
+    Returns (armed: bool, advisory: str, new_rec: dict). new_rec is `rec`
+    unchanged unless the cold_nudged marker must flip (arm) or clear (warm
+    reset).  `rec` is a prune-state session record; `idle_secs` is seconds
+    since the last assistant turn (None if unknown); `e` is the env mapping.
+    """
+    rec = rec if isinstance(rec, dict) else {}
+    if (e.get("CODEARBITER_PRUNE_NUDGE", "off") or "off").lower() != "on":
+        return (False, "", rec)
+
+    def _num(key, default):
+        try:
+            return int(e[key])
+        except Exception:  # noqa: BLE001
+            return default
+
+    idle_floor = _num("CODEARBITER_PRUNE_NUDGE_IDLE_SECS", 240)
+    min_tokens = _num("CODEARBITER_PRUNE_NUDGE_MIN_TOKENS", 80000)
+    cold = isinstance(idle_secs, (int, float)) and idle_secs >= idle_floor
+
+    if not cold:
+        if rec.get("cold_nudged"):          # warm submit resets the window
+            nr = dict(rec)
+            nr["cold_nudged"] = False
+            return (False, "", nr)
+        return (False, "", rec)
+
+    freed = rec.get("freed_bytes", 0)
+    if not isinstance(freed, (int, float)) or est_tokens(int(freed)) < min_tokens:
+        return (False, "", rec)
+
+    if rec.get("cold_nudged"):              # already fired this cold window
+        return (False, "", rec)
+
+    nr = dict(rec)
+    nr["cold_nudged"] = True
+    return (True, _nudge_advisory(rec), nr)
+
+
 def hook_run(payload, env=None):
     """Service-mode entry: gate, short-circuit cheaply, prune at a safe point,
-    and record state for the statusline. ALWAYS returns 0 — a pruner failure
-    must never block the user's prompt or break the session."""
+    and record state for the statusline. Normally returns 0; returns 2 only
+    when the cold-miss nudge is armed (opt-in, see nudge_decision). A pruner
+    fault must never block the user's prompt or break the session."""
     e = env if env is not None else os.environ
     mode = (e.get("CODEARBITER_PRUNE", "off") or "off").lower()
     if mode not in ("dry", "on"):
@@ -1131,8 +1222,27 @@ def hook_run(payload, env=None):
         return 0
     if st.st_size < cfg.min_size or st.st_size > (50 << 20):
         return 0
-    state = load_state()
+    try:
+        state = load_state()
+    except Exception:  # noqa: BLE001 — fail open on any state-read fault
+        return 0
     rec = state.get(session, {})
+    # Cold-miss nudge (opt-in): the ONLY non-zero return in this hook. Evaluated
+    # before the growth short-circuit so an idle user (no new bytes) still nudges.
+    if cfg.execute and (e.get("CODEARBITER_PRUNE_NUDGE", "off") or "off").lower() == "on":
+        try:
+            with open(path, "rb") as f:
+                ndata = f.read()
+            armed, advisory, new_rec = nudge_decision(
+                rec, _idle_seconds(ndata, time.time()), e)
+            if new_rec != rec:
+                state[session] = new_rec
+                save_state(state)
+            if armed:
+                sys.stderr.write(advisory + "\n")
+                return 2
+        except Exception:  # noqa: BLE001 — fail open; pruner fault must never block
+            pass
     if rec and (st.st_size - rec.get("last_pruned_size", 0)) < cfg.min_growth:
         return 0  # cheap stat short-circuit: not enough new bytes
     try:
@@ -1166,7 +1276,11 @@ def hook_run(payload, env=None):
             "strategies": {k: v["bytes_before"] - v["bytes_after"]
                            for k, v in res["strategies"].items()},
         }, env=e)
-    state[session] = {
+    # Carry cold_nudged forward so the once-per-cold-window marker survives a
+    # normal (non-armed) prune run. Re-read from state in case the nudge block
+    # above already flushed an updated rec (e.g. a warm-submit clear).
+    _cold_nudged = state.get(session, {}).get("cold_nudged")
+    new_state = {
         "path": path,
         "last_size": b1 if res["executed"] else b0,
         "last_pruned_size": (b1 if res["executed"] else st.st_size),
@@ -1175,6 +1289,9 @@ def hook_run(payload, env=None):
         "freed_bytes": b0 - b1,
         "verdict": res["verdict"],
     }
+    if _cold_nudged:
+        new_state["cold_nudged"] = _cold_nudged
+    state[session] = new_state
     save_state(state)
     return 0
 
