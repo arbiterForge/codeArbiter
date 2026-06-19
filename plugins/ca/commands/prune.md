@@ -58,6 +58,18 @@ the running CLI sends its in-memory history to the API, not the file.
    If a prior service-mode prune was killed mid-write, the next run self-heals the transcript
    from the newest backup in `~/.codearbiter/prune-backups/` before doing anything else.
 
+   **Cold-miss nudge** [Feature Forge — `preview`]: when `CODEARBITER_PRUNE` is `on`, an
+   optional submit-time speed bump warns once before a cold cache re-cache lands on bloated
+   context. Enable with `CODEARBITER_PRUNE_NUDGE=on` (default `off`). When all arming conditions
+   hold (idle ≥ `CODEARBITER_PRUNE_NUDGE_IDLE_SECS`, default 240 s; estimated freed tokens ≥
+   `CODEARBITER_PRUNE_NUDGE_MIN_TOKENS`, default 80 000), the hook blocks the submit once with
+   an advisory on stderr and returns exit code 2. The advisory names the approximate token count,
+   saving percentage, and the two actions that move the re-cache to pruned context:
+   `/compact` or exit + `--resume`. Resubmitting immediately proceeds. The block fires at most
+   once per cold window; a subsequent warm submit (idle < floor) resets the window so the next
+   genuine cold stretch re-arms. The gate is strictly opt-in, never fires in `dry`/`off` mode,
+   and fails open on any error — a pruner fault will never block the session.
+
 ## When NOT to use
 
 - Context bar nowhere near compaction — the most recent turns are protected anyway.

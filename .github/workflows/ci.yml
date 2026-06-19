@@ -96,6 +96,11 @@ jobs:
         # the Receipt close, stakes lines on substantive finding-blocks, the
         # register split, and the negatives (no saves-ledger/statusline segment).
         run: python .github/scripts/test_ux_conversion.py
+      - name: Run cold-miss nudge unit tests
+        # O1–O11: nudge_decision pure helper, advisory builder, idle extraction,
+        # hook_run integration (armed→2/stderr, resubmit→0, flag-off→today's
+        # behavior), and docs gate (prune.md references CODEARBITER_PRUNE_NUDGE).
+        run: python .github/scripts/test_prune_nudge.py
 
   version-bump:
     name: plugin version bumped when payload changes

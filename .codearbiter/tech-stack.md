@@ -31,6 +31,9 @@ python .github/scripts/test_preview_lib.py
 
 # UX-conversion-trio copy — Receipt close, stakes lines, register split (structural)
 python .github/scripts/test_ux_conversion.py
+
+# Cold-miss nudge — nudge_decision, advisory, idle extraction, hook_run integration (O1–O11)
+python .github/scripts/test_prune_nudge.py
 ```
 
 Only when `plugins/ca/tools/**` changed:
