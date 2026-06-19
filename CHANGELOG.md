@@ -6,6 +6,17 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.4.4] — 2026-06-18
+
+### Added
+- **Cold-miss nudge** [Feature Forge — `preview`]: an opt-in `UserPromptSubmit` speed bump that
+  blocks once, with an advisory on stderr, when a large banked prune delta is about to re-cache on
+  bloated in-memory context (idle ≥ 240 s, freed tokens ≥ 80k, `CODEARBITER_PRUNE_NUDGE=on`).
+  Returns exit code 2 once; a resubmit proceeds. The once-per-cold-window `cold_nudged` marker is
+  persisted in `prune-state.json` and reset on any warm submit. Strictly fail-open: any internal
+  error returns 0 and never blocks the session. This is the first non-zero exit path in `hook_run`.
+  Advisory content is derived from state numbers only (no transcript text). (#69)
+
 ## [2.4.2] — 2026-06-16
 
 ### Fixed
