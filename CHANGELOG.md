@@ -6,6 +6,19 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.4.5] — 2026-06-19
+
+### Added
+- **Migration commit-time backstop** (`H-14`): a `git commit` that stages a database migration is
+  blocked until a migration-review pass is recorded for that file. commit-gate dispatches the
+  `migration-reviewer` agent on a staged migration and, on PASS, records a content-digest marker
+  (`.codearbiter/.markers/migration-gate-passed`) via the new `hooks/migration-pass.py`; `pre-bash.py`
+  H-14 then admits the commit only when every staged migration is covered. Binding is by file-content
+  digest with no freshness window — an edit to a reviewed migration re-blocks (closing TOCTOU and
+  enforcing migration immutability at commit time). Migration paths are detected by a default glob set,
+  extendable/narrowable via a `migration-paths` block in `security-controls.md`. Closes the bare-`/commit`
+  / `/feature` small-lane gap where no lane dispatched the reviewer and no hook fired. (#77)
+
 ## [2.4.4] — 2026-06-18
 
 ### Added

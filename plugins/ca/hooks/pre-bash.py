@@ -21,8 +21,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, arbiter_active, block, line_digest, marker_fresh,
-    project_root, read_input, tool_input, utf8_stdio,
+    CRYPTO_RE, SECRET_RE, arbiter_active, block, content_digest, is_migration_path,
+    line_digest, marker_fresh, project_root, read_input, tool_input, utf8_stdio,
 )
 
 # `git` followed by any run of global options (-C <dir>, -c k=v, --git-dir=…,
@@ -158,6 +158,45 @@ def added_lines(cwd, ref):
         line[1:] for line in out.stdout.splitlines()
         if line.startswith("+") and not line.startswith("+++")
     )
+
+
+def _names(cwd, args):
+    """A set of repo-relative paths from a `git ... --name-only` style query."""
+    try:
+        out = subprocess.run(
+            ["git"] + args, cwd=cwd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=10,
+        )
+        if out.returncode != 0:
+            return set()
+    except Exception:  # noqa: BLE001
+        return set()
+    return {p for p in out.stdout.splitlines() if p.strip()}
+
+
+def staged_paths(cwd):
+    """Paths in the index — what a plain `git commit` would record."""
+    return _names(cwd, ["diff", "--cached", "--name-only"])
+
+
+def worktree_paths(cwd):
+    """Tracked worktree modifications (what `git commit -a` sweeps in) plus
+    untracked files."""
+    return (_names(cwd, ["diff", "--name-only"])
+            | _names(cwd, ["ls-files", "--others", "--exclude-standard"]))
+
+
+def read_worktree(cwd, rel):
+    """Worktree content of `rel`, or None if absent/oversize. The H-14 producer
+    digests worktree content too, so the backstop's view matches the marker."""
+    p = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
+    try:
+        if os.path.getsize(p) > 1_000_000:
+            return None
+        with open(p, encoding="utf-8", errors="replace") as f:
+            return f.read()
+    except Exception:  # noqa: BLE001
+        return None
 
 
 def add_violation(args, cwd):
@@ -300,6 +339,42 @@ def main():
                            f"exact lines it reviewed, and these changed (or appeared) after "
                            f"it ran. Re-run the {skill} gate so it reviews the current diff "
                            f"and re-records the binding, then commit.")
+
+    # H-14: BLOCK a commit that stages a database migration without a recorded
+    # migration-review pass. commit-gate (and /review, /pr, /checkpoint, sprint)
+    # dispatch migration-reviewer and run hooks/migration-pass.py on PASS — a
+    # marker holding the content digest of every migration file the reviewer
+    # approved. Coverage is by content digest, no freshness window: an immutable
+    # migration stays approved while unchanged, and any edit changes the digest
+    # -> uncovered -> BLOCK (closes the TOCTOU window and enforces migration
+    # immutability at commit time). This closes the narrow #77 gap — a migration
+    # committed via bare /commit or the /feature small lane, where no lane
+    # dispatched the reviewer and no hook fired. A missing/unreadable marker is
+    # treated as no coverage (fail-closed), consistent with this layer's
+    # "ambiguity resolves CLOSED" stance.
+    if commit:
+        staged = staged_paths(cwd)
+        if COMMIT_ALL_RE.search(commit.group("args")) or add:
+            staged |= worktree_paths(cwd)
+        migs = sorted(p for p in staged if is_migration_path(p, root))
+        if migs:
+            marker = os.path.join(root, ".codearbiter", ".markers", "migration-gate-passed")
+            try:
+                with open(marker, encoding="utf-8") as f:
+                    approved = set(f.read().split())
+            except Exception:  # noqa: BLE001 — missing/unreadable marker -> no coverage
+                approved = set()
+            uncovered = []
+            for rel in migs:
+                text = read_worktree(cwd, rel)
+                if text is None or content_digest(text) not in approved:
+                    uncovered.append(rel)
+            if uncovered:
+                block("H-14", f"{len(uncovered)} staged migration file(s) lack a recorded "
+                              f"migration-review pass: {', '.join(uncovered)}. commit-gate "
+                              f"dispatches migration-reviewer and records the pass via "
+                              f"hooks/migration-pass.py; run that review, then commit. To "
+                              f"bypass a migration gate, /override logs the exception.")
 
     sys.exit(0)
 
