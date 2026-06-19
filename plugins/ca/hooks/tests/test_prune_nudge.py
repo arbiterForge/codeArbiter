@@ -463,5 +463,165 @@ class TestO11Docs(unittest.TestCase):
                       "prune.md must document the CODEARBITER_PRUNE_NUDGE env var")
 
 
+def _warm_ts():
+    """A `Z` timestamp at 'now' (UTC) → idle ~ 0 → warm."""
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+# ---------------------------------------------------------------------------
+# Parser + idle extraction edge cases (MEDIUM coverage gaps + the offset bug)
+# ---------------------------------------------------------------------------
+
+class TestParseAndIdleEdges(unittest.TestCase):
+    def test_parse_plain_z(self):
+        # Returns an int epoch, and the arithmetic is sane: +90s parses 90 higher.
+        t0 = P._parse_iso8601("2026-06-18T10:00:00Z")
+        t1 = P._parse_iso8601("2026-06-18T10:01:30Z")
+        self.assertIsInstance(t0, int)
+        self.assertEqual(t1 - t0, 90)
+
+    def test_parse_fractional_seconds_z(self):
+        # Fractional seconds are dropped; same epoch as the whole-second form.
+        self.assertEqual(P._parse_iso8601("2026-06-18T10:00:00.123456Z"),
+                         P._parse_iso8601("2026-06-18T10:00:00Z"))
+
+    def test_parse_positive_offset_returns_none(self):
+        # Offset-bearing timestamps are treated as unknown — never silently UTC.
+        self.assertIsNone(P._parse_iso8601("2026-06-18T10:00:00+05:00"))
+
+    def test_parse_negative_offset_returns_none(self):
+        # The bug the audit caught: -offset must behave the same as +offset.
+        self.assertIsNone(P._parse_iso8601("2026-06-18T10:00:00-05:00"))
+
+    def test_parse_garbage_returns_none(self):
+        self.assertIsNone(P._parse_iso8601("not a date"))
+        self.assertIsNone(P._parse_iso8601(None))
+
+    def test_last_assistant_ts_no_assistant_turn(self):
+        # A transcript with no assistant line → None (fail open, no nudge).
+        data = (b'{"type":"user","uuid":"u0","parentUuid":null,'
+                b'"message":{"role":"user","content":"hi"}}\n')
+        self.assertIsNone(P._last_assistant_ts(data))
+
+    def test_last_assistant_ts_assistant_without_timestamp(self):
+        # make_transcript emits assistant turns but NO top-level timestamp → None.
+        data = make_transcript(n_pairs=2, result_bytes=100, final_assistant=True)
+        self.assertIsNone(P._last_assistant_ts(data))
+
+    def test_idle_seconds_none_when_ts_absent(self):
+        data = make_transcript(n_pairs=1, result_bytes=100)
+        self.assertIsNone(P._idle_seconds(data, now=1.0e9))
+
+
+# ---------------------------------------------------------------------------
+# Shared armed-eligible integration harness (cold transcript + big delta)
+# ---------------------------------------------------------------------------
+
+class _ArmedHarness(unittest.TestCase):
+    """setUp builds an arbiter repo + a cold transcript whose state record has a
+    large freed_bytes and a SMALL last_pruned_size (so a later warm submit's
+    grown transcript actually prunes, exercising the carry-forward path)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self._home = redirect_home(self.tmp.name)
+        self.repo = os.path.join(self.tmp.name, "repo")
+        os.makedirs(os.path.join(self.repo, ".codearbiter"))
+        with open(os.path.join(self.repo, ".codearbiter", "CONTEXT.md"), "w") as f:
+            f.write("---\narbiter: enabled\n---\n# ctx\n")
+        self.claude_dir = os.path.join(self.tmp.name, ".claude", "projects", "test")
+        os.makedirs(self.claude_dir, exist_ok=True)
+        self.path = os.path.join(self.claude_dir, "sess.jsonl")
+        self._write_transcript("2026-06-17T00:00:00Z")  # cold
+        P.save_state({"sess": {"freed_bytes": 400_000,
+                               "last_pruned_size": 1000, "pct": 33.0}})
+
+    def tearDown(self):
+        restore_home(self._home)
+        self.tmp.cleanup()
+
+    def _write_transcript(self, ts, result_bytes=20000):
+        with open(self.path, "wb") as f:
+            f.write(_make_transcript_with_ts(n_pairs=6, result_bytes=result_bytes,
+                                             final_ts=ts))
+
+    def _env(self, **kw):
+        e = {"CODEARBITER_PRUNE": "on", "CODEARBITER_PRUNE_NUDGE": "on",
+             "CODEARBITER_PRUNE_KEEP_RECENT": "2",
+             "CODEARBITER_PRUNE_MIN_SIZE": "1000",
+             "CODEARBITER_PRUNE_MIN_GROWTH": "1000",
+             "CODEARBITER_PRUNE_NUDGE_MIN_TOKENS": "1",
+             "CODEARBITER_PRUNE_NUDGE_IDLE_SECS": "1"}
+        e.update(kw)
+        return e
+
+    def _payload(self):
+        return {"hook_event_name": "UserPromptSubmit", "transcript_path": self.path,
+                "session_id": "sess", "cwd": self.repo}
+
+
+# ---------------------------------------------------------------------------
+# O8 (hook_run level) — a fault INSIDE the nudge block fails open, never 2
+# ---------------------------------------------------------------------------
+
+class TestO8bNudgeBlockFailOpen(_ArmedHarness):
+    def test_exception_in_nudge_block_returns_0(self):
+        # The armed conditions hold (this env returns 2 normally — see O10). Force
+        # nudge_decision (called only inside the nudge block's try/except) to raise
+        # and prove the block fails open to 0 rather than escaping or returning 2.
+        orig = P.nudge_decision
+        P.nudge_decision = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom"))
+        try:
+            rc = P.hook_run(self._payload(), env=self._env())
+        finally:
+            P.nudge_decision = orig
+        self.assertEqual(rc, 0,
+                         "a fault inside the nudge block must fail open to 0, never 2")
+
+    def test_armed_baseline_returns_2(self):
+        # Guard: prove the harness IS armed, so the fail-open test above is meaningful.
+        rc = P.hook_run(self._payload(), env=self._env())
+        self.assertEqual(rc, 2)
+
+
+# ---------------------------------------------------------------------------
+# O10 — warm submit clears cold_nudged AND that clear persists through a prune
+# ---------------------------------------------------------------------------
+
+class TestO10bWarmResetPersistence(_ArmedHarness):
+    def test_cold_arm_then_warm_clears_and_persists_through_prune(self):
+        # 1) Cold submit arms: returns 2, persists cold_nudged=True, skips prune.
+        rc1 = P.hook_run(self._payload(), env=self._env())
+        self.assertEqual(rc1, 2)
+        self.assertTrue(P.load_state()["sess"].get("cold_nudged"))
+
+        # 2) A warm, GROWN transcript arrives (recent timestamp, larger body so it
+        #    exceeds min_growth and actually prunes — exercising the carry-forward).
+        self._write_transcript(_warm_ts(), result_bytes=40000)
+        before = os.path.getsize(self.path)
+        rc2 = P.hook_run(self._payload(), env=self._env())
+        self.assertEqual(rc2, 0, "warm submit must not block")
+
+        # 3) The clear is persisted to disk (not just decided in memory)...
+        self.assertFalse(P.load_state()["sess"].get("cold_nudged"),
+                         "warm submit must persist the cold_nudged clear")
+        # ...and the prune actually ran (carry-forward path, not a short-circuit).
+        self.assertLess(os.path.getsize(self.path), before,
+                        "warm grown transcript should have pruned")
+
+
+# ---------------------------------------------------------------------------
+# O2 (LOW) — dry mode never ENTERS the nudge block (no state mutation)
+# ---------------------------------------------------------------------------
+
+class TestO2bDryModeSkipsNudgeBlock(_ArmedHarness):
+    def test_dry_mode_does_not_touch_cold_nudged(self):
+        # Armed-eligible state, but PRUNE=dry → cfg.execute False → nudge block
+        # is gated out entirely; the cold_nudged marker is never written.
+        P.hook_run(self._payload(), env=self._env(CODEARBITER_PRUNE="dry"))
+        self.assertIsNone(P.load_state().get("sess", {}).get("cold_nudged"),
+                          "dry mode must not enter the nudge block")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

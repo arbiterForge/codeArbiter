@@ -1093,14 +1093,17 @@ def tail_is_settled(lines):
 # --------------------------------------------------------------------------- #
 
 def _parse_iso8601(s):
-    """Parse an ISO 8601 datetime string to a UTC epoch int.
-    Robust Z/+offset/fractional-second handling; stdlib-only; never raises."""
+    """Parse a UTC (`Z`-suffixed) ISO 8601 datetime to an epoch int.
+
+    Claude Code transcript timestamps are always UTC `Z`. We deliberately
+    handle only that form plus fractional seconds; a non-`Z` numeric offset
+    (`+HH:MM` / `-HH:MM`) is treated as unknown and returns None rather than
+    being silently misread as UTC. Stdlib-only; never raises (fail open)."""
     try:
         s = str(s).strip()
-        if s.endswith("Z"):
-            s = s[:-1]
-        # Drop fractional seconds and any UTC-offset suffix.
-        s = s.split(".")[0].split("+")[0]
+        if not s.endswith("Z"):
+            return None  # offset-bearing or naive timestamp: don't guess → no nudge
+        s = s[:-1].split(".")[0]  # drop the Z and any fractional seconds
         return calendar.timegm(time.strptime(s, "%Y-%m-%dT%H:%M:%S"))
     except Exception:  # noqa: BLE001 — fail open
         return None
