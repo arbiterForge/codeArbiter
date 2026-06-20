@@ -27,6 +27,8 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 codeArbiter is a native Claude Code plugin that sits between you and your codebase. Instead of letting the model freelance, you drive through slash commands. Each one routes to the skill or agent that owns the work (TDD, the commit gate, decision-variance/SMARTS, the reviewer fleet) and clears its gates before anything ships.
 
+**Who it's for:** teams and power users who let agents write real code and need to prove what happened. The kind who'd rather a tool block than apologize.
+
 It will not:
 
 - write feature code before a failing test exists,
@@ -35,6 +37,8 @@ It will not:
 - silently reconcile a contradiction between your docs and your code.
 
 The gates are terse and non-negotiable. The thinking is not. It brainstorms a spec, works through a bug, and weighs a decision with you conversationally. When it enforces, it states the rule and holds the line.
+
+Is that a lot of ceremony? It scales to the change. The heavyweight gates are what a skimmer notices first, but a one-line docs fix takes the small lane or `/ca:chore`, not the full spec-to-PR march. The weight is there because the failure mode of an eager AI assistant is *plausible-but-wrong work that ships*, and the gates exist to make that hard.
 
 ### Why the pushback is the point
 
@@ -155,7 +159,7 @@ Every recommendation carries exactly one **strength label** — `strong` (domina
 
 **You still decide.** The arbiter recommends, it does not push, and it will not record a decision you didn't explicitly make — "use your best judgment," "I trust you," "we're short on time" are declined, because the decision log is append-only and every entry is attributed to a person. Your choice is written immediately, with the SMARTS rationale that drove it, and never edited; to change course you append a superseding entry. This runs whenever a choice surfaces — interactively through <kbd>/ca:reconcile</kbd> (the full variance pass over artifacts vs. scaffold) and on any fork inside a feature.
 
-**One deliberate exception: autonomy.** <kbd>/ca:sprint</kbd> reuses the same six-lens *scoring* to decide "as the user" on every non-hard-gate point — but only the scoring, never the "never decide alone" rule. Each auto-decision is logged to `.codearbiter/sprint-log.md` with the options weighed, the verdict, the strength, and a **confidence flag**: `high` for `strong`, `low` for anything `moderate` or `tied`. Those `low`-confidence calls are exactly what you skim in the morning — autonomy with a paper trail. Security boundaries, irreversible operations, gate bypasses, and a `[CONFIRM-NN]` the spec can't resolve still stop and wait for you.
+**Autonomy with a paper trail.** Go to bed, wake to a reviewed PR and a log of every call it made. <kbd>/ca:sprint</kbd> reuses the same six-lens *scoring* to decide "as the user" on every non-hard-gate point, but only the scoring, never the "never decide alone" rule. Each auto-decision is logged to `.codearbiter/sprint-log.md` with the options weighed, the verdict, the strength, and a **confidence flag**: `high` for `strong`, `low` for anything `moderate` or `tied`. Those `low`-confidence calls are exactly what you skim in the morning. Security boundaries, irreversible operations, gate bypasses, and a `[CONFIRM-NN]` the spec can't resolve still stop and wait for you.
 
 ## Install
 
