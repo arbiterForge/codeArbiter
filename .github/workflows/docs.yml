@@ -3,6 +3,12 @@ name: Deploy docs
 # Builds the Astro Starlight site in site/ and publishes it to GitHub Pages.
 # The reference section is regenerated in CI from plugins/ca/** (npm run build
 # runs `prebuild` -> the generator), so the generated output is never committed.
+#
+# On pull_request the build job runs as validation only (no deploy) so a
+# site-breaking change — e.g. a dep bump that outruns the runner's Node — is
+# caught at review time instead of going red on main after merge. Deploy stays
+# scoped to push: it needs pages:write/id-token:write, which a PR (especially
+# from a fork) can't safely hold.
 
 on:
   push:
@@ -10,6 +16,11 @@ on:
     paths:
       - "site/**"
       - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
+  pull_request:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "plugins/ca/**"
   workflow_dispatch:
 
 permissions:
@@ -17,9 +28,11 @@ permissions:
   pages: write
   id-token: write
 
-# One deploy at a time; let a newer push supersede an in-flight run.
+# One run at a time per ref; let a newer push/PR-push supersede an in-flight
+# run. Per-ref grouping keeps PR validation builds from cancelling a main
+# deploy (and each other).
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -31,9 +44,12 @@ jobs:
         uses: withastro/action@v3
         with:
           path: site # runs `npm ci` + `npm run build` (prebuild regenerates the reference)
+          node-version: 22 # Astro 6 requires Node >=22.12.0; the action defaults to 20
 
   deploy:
     needs: build
+    # Push to main only — pull_request builds are validation-only.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
