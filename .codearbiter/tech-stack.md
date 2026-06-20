@@ -49,6 +49,19 @@ npm test
 npm run build          # then: git diff --quiet -- farm.js  (stale build blocks)
 ```
 
+Only when `plugins/ca-sandbox/tools/**` changed (the ca-sandbox sibling plugin, ADR-0007):
+
+```sh
+cd plugins/ca-sandbox/tools
+npm ci
+npm run typecheck
+npm test                # docker-gated suites run serially (fileParallelism off); needs a Docker engine
+npm run build           # then: git diff --quiet -- sandbox.js  (stale build blocks)
+```
+
+ca-sandbox's docker-gated tests build real ephemeral containers (and on Windows drive nixpacks via the
+WSL bridge), so they need Docker available and are slower; they self-skip when `docker info` fails.
+
 ## Lint / typecheck
 
 - Python hooks: no linter is configured. The floor is a syntax check —

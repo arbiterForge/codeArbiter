@@ -37,8 +37,51 @@ project. This is an explicit exception to a general "no process.env for secrets"
 rule: the project has no vault, the key is short-lived per-session, and the
 deployment model is a single-developer CLI tool.
 
+A second secret exists in the `ca-sandbox` plugin (ADR-0007): the
+`CLAUDE_CODE_OAUTH_TOKEN` used by `--with-claude` to authenticate Claude Code
+*inside* a sandbox box.
+
+**Approved access method:** env-injection only. The token is passed to the
+container as `-e CLAUDE_CODE_OAUTH_TOKEN=...` (auth-precedence #5; Spike B /
+CONFIRM-07). It is never baked into an image layer, never written to a committed
+file, never logged (the failure path emits docker's own stderr/stdout, never the
+argv), and tests use a clearly-labelled DUMMY value only. Because a token in a box
+running untrusted code is stealable, `--with-claude` is hard-defaulted to
+offline/Anthropic-only egress and its credential volume is never co-mounted with
+an untrusted source volume (`TokenCoMountRejectedError`).
+
 All other env vars (`FARM_MODEL`, `FARM_BASE_BRANCH`, etc.) are non-sensitive
 configuration and may freely use `process.env`.
+
+---
+
+## Container isolation (ca-sandbox)
+
+`ca-sandbox` (ADR-0007) runs **untrusted** repositories. Its entire value is
+isolation, so the following structural controls are load-bearing and enforced by
+construction in `plugins/ca-sandbox/tools/`. A regression in any of them is a
+security defect, not a style nit.
+
+- **No host filesystem access.** Every mount is built through the single
+  chokepoint `buildMountArgs` (`mounts.ts`), which rejects all bind specs (string
+  `-v` shorthand, object form, explicit `type=bind`, unknown types) — only
+  `type=volume` and `type=tmpfs` are emitted. There is no other path to a `docker`
+  mount argv.
+- **Reduced privilege.** Sandbox runs (`run.ts`) and the `--with-claude` box
+  (`claude-inside.ts`) both emit `--user 1000:1000`, `--cap-drop ALL`,
+  `--read-only`, `--security-opt no-new-privileges`, and resource caps. Never
+  `--privileged`; the docker socket is never mounted.
+- **Egress default-deny.** The default network policy is `offline`
+  (`--network none`). The `clone-then-cut` and experimental allowlist policies are
+  opt-in; an unknown policy is a hard error, never a silent pass-through.
+- **Clone-input trust model.** The repo url is untrusted and validated by
+  `validateRepoUrl` (`create.ts`) before it reaches git: only `https://`, `ssh://`,
+  and `user@host:path` remotes are allowed; leading-`-` values (git argument
+  injection) and transport-helper syntax (`ext::`, `fd::`, `file://`) are rejected,
+  and the clone argv emits an end-of-options `--` before the url.
+- **No shell interpolation of untrusted input.** Every docker invocation uses an
+  argv array (`spawn`/`spawnSync`, no `shell: true`); untrusted urls, ids, and
+  paths reach docker as discrete argv elements, never a parsed command line.
 
 ---
 
@@ -112,3 +155,5 @@ boundary.
 | Unsigned dispatcher commits | `NOSIGN` constant in `farm.ts` | CI signing servers reject unattended commits; the integration PR is the signed artifact |
 | Gate command shell execution | `plan.json` `gate.commands` / `test.command` and `FARM_MUTATION_CMD` run via `cmd.exe /c` / `bash -c` in `farm.ts` | Operator-authored, length-capped (≤1024), PR-reviewed; deterministic gate by design — no untrusted source. See ADR for the trust model |
 | Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo) | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, no cleartext-to-remote path |
+| Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
+| `curl \| bash` nixpacks install | `build.ts` runs `curl -fsSL https://nixpacks.com/install.sh \| bash` when nixpacks is absent | Build-time host convenience; the URL is a hardcoded constant (not attacker-controllable). Tracked: prefer declaring nixpacks a prerequisite or pinning a checksum (NEEDS-TRIAGE in the ca-sandbox plan) |

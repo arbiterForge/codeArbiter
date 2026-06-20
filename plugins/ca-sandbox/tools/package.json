@@ -1,0 +1,22 @@
+{
+  "name": "ca-sandbox-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "codeArbiter ca-sandbox driver: clone an untrusted repo into an ephemeral, host-isolated docker box, explore, tear down.",
+  "scripts": {
+    "build": "npx esbuild cli.ts --bundle --platform=node --format=esm --outfile=sandbox.js \"--banner:js=#!/usr/bin/env node\"",
+    "test": "npx vitest run",
+    "typecheck": "npx tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
