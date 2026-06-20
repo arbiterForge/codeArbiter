@@ -1,0 +1,12 @@
+# Minimal ca-sandbox rust fixture manifest (AC-07).
+#
+# Cargo.toml is the rust DEPENDENCY MANIFEST the dephash hashes (alongside the
+# Cargo.lock lockfile next to it). No external crates — std only — so the build is
+# OFFLINE/hermetic: no crates.io fetch. A change to [dependencies] or the lockfile
+# bumps the dephash and forces a rebuild (AC-05 model).
+[package]
+name = "ca-sbx-fixture-rust"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]

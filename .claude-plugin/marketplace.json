@@ -2,12 +2,16 @@
   "name": "codearbiter",
   "owner": { "name": "arbiterForge" },
   "metadata": {
-    "description": "codeArbiter: an orchestration layer for Claude Code. Single-plugin marketplace."
+    "description": "codeArbiter: a marketplace of two sibling plugins — the ca governance/orchestration layer for Claude Code, plus ca-sandbox, an infrastructure plugin that runs untrusted repos in ephemeral isolated containers."
   },
   "plugins": [
     {
       "name": "ca",
       "source": "./plugins/ca"
+    },
+    {
+      "name": "ca-sandbox",
+      "source": "./plugins/ca-sandbox"
     }
   ]
 }

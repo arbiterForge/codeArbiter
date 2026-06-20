@@ -214,3 +214,48 @@ carry the authoritative `status: accepted` frontmatter and a ratification line i
 same decisions, not a new decision.
 
 ---
+
+## DECISION-0007 — ADR-0007 — Host a second sibling plugin (ca-sandbox) in the repo/marketplace
+
+**Date:** 2026-06-20
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture/governance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** CONTEXT.md frames the repo as "the orchestration framework itself"; marketplace.json says "Single-plugin marketplace."
+- **Scaffold position:** The marketplace `plugins` array supports multiple entries; the ca-sandbox brainstorm needs a home and integrates with farm.ts.
+- **Status type:** open-decision-closure
+
+### Decision
+Host `ca-sandbox` as a second, sibling plugin (`plugins/ca-sandbox/`) in this repo/marketplace,
+distinct from the `ca` governance plugin, with path-scoped CI so neither plugin's changes trigger the
+other's checks. ca-sandbox is infrastructure arbiter integrates with, not part of the governance
+kernel; the `ca` plugin's identity and gates are unchanged.
+
+### SMARTS rationale
+Maintainable + Scalable-at-current-scale favored co-location over a separate repo (one less repo for a
+solo dev; tight `farm.ts` item-3 coupling) while path-scoped CI preserves independence. Securable held
+the line that the governance plugin's gates must not absorb infrastructure concerns — hence sibling,
+not embedded.
+
+### Implementation implication
+Update `.codearbiter/CONTEXT.md` and `.claude-plugin/marketplace.json` descriptions to state the
+two-plugin shape; add the `{ "name": "ca-sandbox", "source": "./plugins/ca-sandbox" }` marketplace
+entry; parameterize/duplicate CI (check-plugin-refs, version-bump, tools tests) per-plugin by path.
+Re-evaluation trigger: if the two plugins require constant cross-plugin changes, reopen to merge or
+split to separate repos.
+
+---
+
+## Ratification — 2026-06-20
+
+DECISION-0007 advanced from `proposed` to **`accepted`** on explicit user instruction
+(SUaDtL@users.noreply.github.com), ratified 2026-06-20. The ADR file
+(`0007-second-plugin-ca-sandbox.md`) carries the authoritative `status: accepted` frontmatter and a
+ratification line in its `## Status` section. No content was superseded — ratification is the
+maturation of this decision, not a new one.
+
+---

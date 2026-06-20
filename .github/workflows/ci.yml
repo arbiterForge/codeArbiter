@@ -1,16 +1,25 @@
 name: ci
 
 # Scoped to the repo's executable surface. The bulk of codeArbiter is prose
-# (skills/commands/agents) governed by the plugin's own authoring gates — CI's
+# (skills/commands/agents) governed by each plugin's own authoring gates — CI's
 # job here is the mechanical things review can't catch: a stale shipped build
 # artifact, a regression in the farm dispatcher, or a manifest that won't parse.
 # A pure skill/docs PR matches none of these paths and skips CI entirely.
+#
+# ADR-0007: the repo hosts two sibling plugins (ca, ca-sandbox) with PATH-SCOPED
+# CI — a diff touching only plugins/ca-sandbox/** runs the docker-gated
+# ca-sandbox tools job and SKIPS every ca job (tools tests, refs graph,
+# version-bump guard); a diff touching only plugins/ca/** skips the ca-sandbox
+# job. The `changes` job below computes per-plugin flags via dorny/paths-filter
+# and every plugin-specific job gates on them. Shared infra (hooks, JSON
+# manifests) stays repo-wide — it is owned by neither plugin.
 
 on:
   pull_request:
     branches: [main]
     paths:
       - "plugins/ca/**"
+      - "plugins/ca-sandbox/**"
       - "**/*.json"
       - ".github/workflows/ci.yml"
       - ".github/scripts/**"
@@ -18,6 +27,7 @@ on:
     branches: [main]
     paths:
       - "plugins/ca/**"
+      - "plugins/ca-sandbox/**"
       - "**/*.json"
       - ".github/workflows/ci.yml"
       - ".github/scripts/**"
@@ -26,8 +36,34 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: detect changed plugin(s)
+    runs-on: ubuntu-latest
+    outputs:
+      ca: ${{ steps.filter.outputs.ca }}
+      ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # A change to shared CI infra (.github/) flags BOTH plugins so the
+          # full mechanical surface re-runs. A plugin-only change flags just
+          # that plugin — this is the path-scoping ADR-0007 requires.
+          filters: |
+            ca:
+              - 'plugins/ca/**'
+              - '.github/workflows/ci.yml'
+              - '.github/scripts/check-plugin-refs.py'
+            ca-sandbox:
+              - 'plugins/ca-sandbox/**'
+              - '.github/workflows/ci.yml'
+              - '.github/scripts/check-plugin-refs.py'
+
   tools:
-    name: farm — typecheck, test, artifact-freshness
+    name: ca farm — typecheck, test, artifact-freshness
+    needs: changes
+    if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,6 +98,44 @@ jobs:
           fi
           echo "farm.js is in sync with farm.ts"
 
+  ca-sandbox-tools:
+    name: ca-sandbox driver — typecheck, test, artifact-freshness
+    needs: changes
+    if: needs.changes.outputs.ca-sandbox == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/ca-sandbox/tools
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: plugins/ca-sandbox/tools/package-lock.json
+      - name: Install (locked)
+        run: npm ci
+      - name: Audit (CVE gate — fail on CRITICAL)
+        run: npm audit --omit=dev --audit-level=critical
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        # Docker-gated. The bulk of the ca-sandbox suite spins real containers;
+        # those specs probe `docker info` and skip themselves when Docker is
+        # absent. The GitHub ubuntu-latest runner ships Docker, so they run for
+        # real here; the pure-unit specs (mounts, dephash) always run.
+        run: npm test
+      - name: Rebuild sandbox.js
+        run: npm run build
+      - name: Fail if committed sandbox.js is stale
+        run: |
+          if ! git diff --quiet -- sandbox.js; then
+            echo "::error file=plugins/ca-sandbox/tools/sandbox.js::sandbox.js is out of date with cli.ts. Run 'npm run build' in plugins/ca-sandbox/tools and commit the result — the plugin ships sandbox.js, not the TypeScript sources."
+            git --no-pager diff -- sandbox.js
+            exit 1
+          fi
+          echo "sandbox.js is in sync with the TypeScript sources"
+
   hooks:
     name: hooks — cold-install matrix (${{ matrix.os }})
     # MR-10: proves the dual-registration interpreter fallback on every OS —
@@ -69,6 +143,8 @@ jobs:
     # that exits 9009; the fallback entry must do the work, including blocking
     # via exit 2), NONE (no Python at all; every entry must fail LOUD, never
     # silently dormant). See .github/scripts/test_hooks_cold_install.py.
+    # Shared infra (the ca plugin's hooks) — runs whenever CI runs; not gated
+    # per-plugin because the hook payload belongs to neither sandbox driver.
     strategy:
       fail-fast: false
       matrix:
@@ -108,15 +184,16 @@ jobs:
         run: python .github/scripts/test_migration_backstop.py
 
   version-bump:
-    name: plugin version bumped when payload changes
+    name: ca version bumped when payload changes
     # `claude plugin update` is a NO-OP when plugin.json's version string is
     # unchanged — verified live 2026-06-10: a months-stale hooks.json survived
     # a marketplace refresh until uninstall+reinstall. So any change to the
     # shipped payload (plugins/ca/**) that rides an already-published version
     # silently never reaches installed users. This guard fails such a PR.
     # Pre-publication PRs pass: the rule only bites when tag v<version>
-    # already exists.
-    if: github.event_name == 'pull_request'
+    # already exists. Gated to ca-touching diffs (ADR-0007 path-scoping).
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -143,25 +220,76 @@ jobs:
           fi
           echo "payload changed on unpublished version $ver (no tag v$ver) — allowed"
 
+  version-bump-sandbox:
+    name: ca-sandbox version bumped when payload changes
+    # Per-plugin twin of the ca version-bump guard (ADR-0007): the two plugins
+    # version independently, so a changed ca-sandbox payload on an
+    # already-published ca-sandbox version (tag ca-sandbox-v<version>) is the
+    # same silent-staleness trap and is failed here. The sandbox plugin's tags
+    # are namespaced (ca-sandbox-v*) so they never collide with ca's v* tags.
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-sandbox == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fail if a published version ships a changed payload
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          git fetch -q origin "$BASE" --tags
+          if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca-sandbox; then
+            echo "no payload change — version bump not required"
+            exit 0
+          fi
+          ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-sandbox/.claude-plugin/plugin.json','utf8')).version")
+          base_ver=$(git show "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
+          if [ "$ver" != "$base_ver" ]; then
+            echo "payload changed and version bumped: $base_ver -> $ver"
+            exit 0
+          fi
+          if git rev-parse -q --verify "refs/tags/ca-sandbox-v$ver" > /dev/null; then
+            echo "::error file=plugins/ca-sandbox/.claude-plugin/plugin.json::plugins/ca-sandbox/** changed but version is still $ver, which is already published (tag ca-sandbox-v$ver exists). 'claude plugin update' no-ops on an unchanged version, so installed users would silently keep the old payload. Bump the version."
+            exit 1
+          fi
+          echo "payload changed on unpublished version $ver (no tag ca-sandbox-v$ver) — allowed"
+
   prose:
-    name: plugin reference graph
+    name: ca plugin reference graph
+    needs: changes
+    if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Check cross-reference graph
-        run: python3 .github/scripts/check-plugin-refs.py
+      - name: Check cross-reference graph (ca)
+        run: python3 .github/scripts/check-plugin-refs.py ca
+
+  prose-sandbox:
+    name: ca-sandbox plugin reference graph
+    needs: changes
+    if: needs.changes.outputs.ca-sandbox == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check cross-reference graph (ca-sandbox)
+        run: python3 .github/scripts/check-plugin-refs.py ca-sandbox
 
   manifests:
     name: JSON manifests parse
+    # Shared infra — a broken plugin.json / marketplace.json / hooks.json breaks
+    # install for every user regardless of which plugin it belongs to, so this
+    # is repo-wide and not gated per-plugin.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Validate every tracked JSON parses
-        # A broken plugin.json / marketplace.json / hooks.json breaks install for
-        # every user. Parse-validity is the cheap guard against that.
         run: |
           fail=0
           while IFS= read -r f; do

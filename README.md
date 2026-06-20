@@ -351,6 +351,7 @@ Some features are built, tested, and shipping in the box, but not yet *blessed*.
 |---|---|---|---|
 | [Live transcript pruning](#live-transcript-pruning) | `CODEARBITER_PRUNE=dry` | `preview` | run `dry`, send the log |
 | [Pluggable execution farm](#pluggable-execution-farm) | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
+| [ca-sandbox (local Codespace)](#ca-sandbox-local-codespace) | install the `ca-sandbox` plugin | `preview` | explore real repos in it; run `--with-claude` and report |
 
 #### Live transcript pruning
 
@@ -396,6 +397,16 @@ Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty not
 **Why it's preview / promotion bar.** Not yet validated on real runs, so it ships off and stays `preview`. The promotion bar is the open question `CONFIRM-05`.
 
 **Help promote it: run a real sprint, report results.** Run a real <kbd>/ca:sprint --farm</kbd> and report back the per-task pass-rates and any gate escapes you see. That evidence feeds `CONFIRM-05` — real-run data is exactly what moves the farm out of the forge.
+
+#### ca-sandbox (local Codespace)
+
+**What it does.** A locally-hosted GitHub-Codespace equivalent (shipped as a sibling plugin, `ca-sandbox`, per ADR-0007). Pull a repo you're curious about — including untrusted code — into an ephemeral, isolated Docker container: the clone and all execution live inside the box, your host filesystem is never mounted in (no bind mounts, no docker socket, never `--privileged`). Network is configurable (offline / clone-then-cut / experimental allowlist); getting work back out is a host-initiated `cp` only. Images are dep-hash cached; on Windows it builds via a WSL bridge (nixpacks generates the Dockerfile, host Docker builds it). Details in [`plugins/ca-sandbox/README.md`](./plugins/ca-sandbox/README.md).
+
+**Opt-in.** Install the `ca-sandbox` plugin from the marketplace, then `/ca-sandbox:sandbox create <repo-url>` (and `shell` / `exec` / `cp` / `destroy`). It requires Docker; the `ca` governance plugin is unaffected and unchanged.
+
+**Why it's preview.** It ships with a full automated suite (isolation canary, dep-cache, network policy, lifecycle, exec/cp) green, but it has **not been proven in real use** yet — in particular the `--with-claude` path (running Claude Code *inside* the box) is verified only against a dummy token, never a real interactive session. It stays `preview` until real-world runs earn it a promotion.
+
+**Help promote it: explore real repos in it, and run `--with-claude`.** Use it to poke at repos you'd otherwise hesitate to clone, and report what worked, what broke, and especially how `--with-claude` behaves in a real session. Real-use evidence is what moves it out of the forge.
 
 ## Project history
 

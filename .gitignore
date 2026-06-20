@@ -54,3 +54,6 @@ site/src/generated/
 
 # Root-level scratch directory — local experiments, never committed.
 /tmp/
+plugins/ca-sandbox/tools/node_modules/
+plugins/ca-sandbox/tools/**/.nixpacks/
+plugins/ca-sandbox/tools/**/.ca-sandbox.nixpacks.Dockerfile

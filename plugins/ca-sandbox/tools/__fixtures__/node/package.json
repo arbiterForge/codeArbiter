@@ -1,0 +1,9 @@
+{
+  "name": "ca-sbx-fixture-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal ca-sandbox node fixture: one real dep (is-odd) imported by index.js. Proves baked /deps resolve at runtime under a /work/repo source volume, and that an in-volume source edit takes effect on re-run (AC-06).",
+  "dependencies": {
+    "is-odd": "3.0.1"
+  }
+}
