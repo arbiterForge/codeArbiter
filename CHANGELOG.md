@@ -17,6 +17,12 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
   `§7` Override stay in-kernel, and `§3`/`§5`/`§6`/`§7` heading numbers are unchanged so hook citations
   stay accurate. Behavior-preserving — reduces the per-session SessionStart injection by ~21 lines. (#75)
 
+### Security
+- **Cleared 17 Dependabot alerts and hardened the farm test harness.** Bumped the vulnerable
+  dev-dependency pins under `plugins/ca/tools/` (`package.json` / `package-lock.json`) and tightened
+  process spawning in `farm.test.ts` so the test harness no longer shells out unsafely. Dev/test-only —
+  no change to runtime plugin behavior. (#106)
+
 ## [2.4.5] — 2026-06-19
 
 ### Added
