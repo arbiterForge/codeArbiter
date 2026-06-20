@@ -6,6 +6,17 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.4.6] — 2026-06-19
+
+### Changed
+- **Trimmed the always-on `ORCHESTRATOR.md` kernel.** The verbose `/dev` maintainer-override body
+  moved to a new on-demand `includes/dev-mode.md` (loaded only on `/ca:dev` or `/ca:arbiter`), and the
+  `--farm` summary compressed to a one-line pointer at `SPRINT.md` / `includes/farm.md`. The kernel
+  retains the `/dev` security invariant (env-gated on `CODEARBITER_DEV=1`, entry/exit logged
+  append-only, load the detail before suspending any gate) as a stub; the `§0.1` terminology lock and
+  `§7` Override stay in-kernel, and `§3`/`§5`/`§6`/`§7` heading numbers are unchanged so hook citations
+  stay accurate. Behavior-preserving — reduces the per-session SessionStart injection by ~21 lines. (#75)
+
 ## [2.4.5] — 2026-06-19
 
 ### Added
