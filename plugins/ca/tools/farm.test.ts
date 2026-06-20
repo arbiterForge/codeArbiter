@@ -6,16 +6,18 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execSync, spawn } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { join, resolve, basename } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
-const TSX_BIN = resolve(
-  __dirname,
-  "node_modules/.bin",
-  process.platform === "win32" ? "tsx.cmd" : "tsx",
-);
 const farmTs = resolve(__dirname, "farm.ts");
+// Absolute file: URL to the tsx ESM loader, resolved from THIS file's location
+// (where tsx is installed) so it is independent of the child's cwd — the temp
+// repo the child runs in has no node_modules.
+const TSX_LOADER = pathToFileURL(
+  createRequire(import.meta.url).resolve("tsx"),
+).href;
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import type { Server } from "node:http";
 
@@ -72,26 +74,29 @@ function runFarm(
   env: Record<string, string>,
 ): Promise<{ code: number; out: string }> {
   return new Promise((resolve) => {
-    // D-6: use spawn() with explicit args array instead of exec() with a
-    // shell-interpolated string — eliminates shell injection surface.
-    // On Windows, .cmd files must be invoked via cmd.exe /c (same pattern
-    // as runGate in farm.ts itself).
-    const [bin, args] =
-      process.platform === "win32"
-        ? (["cmd.exe", ["/c", TSX_BIN, farmTs, planPath]] as const)
-        : ([TSX_BIN, [farmTs, planPath]] as const);
-    const child = spawn(bin, args, {
-      cwd: repoDir,
-      env: {
-        ...process.env,
-        // Disable commit signing in temp repos
-        GIT_CONFIG_COUNT: "1",
-        GIT_CONFIG_KEY_0: "commit.gpgsign",
-        GIT_CONFIG_VALUE_0: "false",
-        ...env,
+    // D-6: use spawn() with an explicit args array — no shell. Run farm.ts
+    // through Node's own tsx loader (process.execPath is an absolute path, no
+    // PATH lookup) rather than round-tripping the tsx.cmd shim through
+    // `cmd.exe /c`. The old path built a cmd.exe command line out of absolute
+    // file paths (TSX_BIN/farmTs/planPath), which mis-parses any path containing
+    // a space and is what CodeQL js/shell-command-injection-from-environment
+    // flagged. This form passes each path as a discrete argv entry, never as
+    // shell text, so spaced paths and metacharacters are inert.
+    const child = spawn(
+      process.execPath,
+      ["--import", TSX_LOADER, farmTs, planPath],
+      {
+        cwd: repoDir,
+        env: {
+          ...process.env,
+          // Disable commit signing in temp repos
+          GIT_CONFIG_COUNT: "1",
+          GIT_CONFIG_KEY_0: "commit.gpgsign",
+          GIT_CONFIG_VALUE_0: "false",
+          ...env,
+        },
       },
-      ...(process.platform === "win32" ? { windowsVerbatimArguments: true } : {}),
-    });
+    );
     let out = "";
     child.stdout.on("data", (d: Buffer) => (out += d));
     child.stderr.on("data", (d: Buffer) => (out += d));
