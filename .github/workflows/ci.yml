@@ -182,6 +182,10 @@ jobs:
         # security-controls.md extend/exclude), migration-pass.py content-digest
         # marker, and pre-bash.py H-14 block/admit/edit-reblock/dormant/-a.
         run: python .github/scripts/test_migration_backstop.py
+      - name: Run /ca:metrics helper unit tests
+        # AC-01..AC-07: window tiling, 3-metric collection, empty-source safety,
+        # and read-only enforcement (_metricslib).
+        run: python .github/scripts/test_metrics_lib.py
 
   version-bump:
     name: ca version bumped when payload changes

@@ -21,6 +21,10 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
   `deploy-paths` blocks in `security-controls.md` (same grammar as `migration-paths`); the migration,
   CI, and deploy detectors now share one `path_in_globs` matcher in `_hooklib.py`. Resolves the
   scope-touch half of #73. (#73)
+- **`/ca:metrics` — governance trend glance** (issue #79). Read-only command computing override rate,
+  small-lane rate, and sprint low-confidence ratio over 20-commit windows, each with a direction arrow
+  (↑/↓/→) vs. the prior window. Optional `--window N` to adjust the window size. Bare numbers only —
+  not a second `/ca:audit` packet; writes nothing.
 
 ## [2.4.6] — 2026-06-19
 

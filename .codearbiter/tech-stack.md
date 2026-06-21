@@ -37,6 +37,9 @@ python .github/scripts/test_prune_nudge.py
 
 # H-14 migration commit-time backstop — detection, producer marker, pre-bash gate (#77)
 python .github/scripts/test_migration_backstop.py
+
+# /ca:metrics trends helper — window tiling, 3 metrics, empty-source safety, read-only
+python .github/scripts/test_metrics_lib.py
 ```
 
 Only when `plugins/ca/tools/**` changed:
