@@ -225,7 +225,7 @@ d("network policy [docker] — AC-08 real egress behavior", () => {
     expect(after.status, "post-cut egress must fail").not.toBe(0);
   }, 180_000);
 
-  it("egress-allowlist (EXPERIMENTAL): curl github.com SUCCEEDS, curl example.com FAILS", () => {
+  it("egress-allowlist (EXPERIMENTAL): curl github.com SUCCEEDS, curl example.com FAILS", { timeout: 240_000, retry: 2 }, () => {
     // We need an image with curl + iptables + a resolver tool. Build a tiny one
     // (egress is up at build time). alpine has all via apk.
     const img = `${NS}-fw:${Date.now()}`;
@@ -280,5 +280,5 @@ d("network policy [docker] — AC-08 real egress behavior", () => {
     // Non-allowlisted host fails (DROP => timeout/non-zero).
     const blocked = dk(["exec", id, "curl", "-sS", "-o", "/dev/null", "--max-time", "10", "https://example.com"]);
     expect(blocked.status, "example.com must be blocked").not.toBe(0);
-  }, { timeout: 240_000, retry: 2 });
+  });
 });

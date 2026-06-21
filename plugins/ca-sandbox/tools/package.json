@@ -1,6 +1,6 @@
 {
   "name": "ca-sandbox-tools",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "codeArbiter ca-sandbox driver: clone an untrusted repo into an ephemeral, host-isolated docker box, explore, tear down.",
@@ -14,9 +14,9 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.28.1",
     "tsx": "^4.19.0",
     "typescript": "^5.5.0",
-    "vitest": "^2.0.0"
+    "vitest": "^4.1.9"
   }
 }
