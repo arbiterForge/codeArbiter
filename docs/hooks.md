@@ -151,9 +151,13 @@ so a relevant gate isn't a surprise later. It runs only in enabled repos.
 | H-07 | A dependency manifest changed; dispatch `dependency-reviewer` before committing |
 | H-09 | A crypto/TLS pattern appeared; run `crypto-compliance` (the commit will block until it records a pass) |
 | H-10 | A possible hardcoded secret appeared; run `secret-handling` (same) |
+| H-15 | A CI/CD workflow file changed; dispatch `security-reviewer` before merging — advisory, **no commit block** (a workflow runs only once merged) |
+| H-16 | A deployment/IaC manifest changed; dispatch `security-reviewer` before merging — advisory, **no commit block** (IaC bites only on apply) |
+| H-17 | Auth/authorization logic appeared (narrow high-signal patterns); dispatch `security-reviewer` — advisory, **no commit block** (the dangerous crypto/secret primitives are still hard-blocked by H-09b/H-10b) |
 
 **Reads:** the touched `file_path` and its content; ADR frontmatter under
-`.codearbiter/decisions/`. **Writes:** a `governs-cache.json` under
+`.codearbiter/decisions/`; the `ci-paths`/`deploy-paths`/`migration-paths` blocks in
+`security-controls.md` (for H-15/H-16 detection). **Writes:** a `governs-cache.json` under
 `.codearbiter/.markers/`. That cache is a pure optimization, an mtime-keyed index of
 the ADR `governs:` globs, rebuilt whenever the decisions change. **Network:** none.
 
@@ -168,6 +172,41 @@ Dry-run is the default mode and writes nothing but a local metrics log. Stdlib o
 **Reads:** the session transcript JSONL (local, under `~/.claude/projects/…`).
 **Writes:** only when explicitly enabled, namely the transcript itself (`on` mode)
 and/or a local metrics file. **Network:** none.
+
+---
+
+## Path-scope declarations (`security-controls.md`)
+
+Three hooks detect a scope-touch by path glob: migrations (H-14, blocking), CI
+workflows (H-15, advisory), and deployment/IaC manifests (H-16, advisory). Each
+ships sensible defaults and lets a project extend or narrow the set with a fenced
+block in `.codearbiter/security-controls.md`. The grammar is identical across all
+three — one directive per line, `+ glob` to add a path, `- glob` to exclude one
+(**excludes win**). `**` spans path segments; `*`/`?` stay within one.
+
+```markdown
+<!-- migration-paths -->
++ sql/changesets/**
+- **/migrations/legacy/**
+<!-- /migration-paths -->
+
+<!-- ci-paths -->
++ ops/pipelines/**
+<!-- /ci-paths -->
+
+<!-- deploy-paths -->
++ pulumi/**
+- infra/sandbox.tf
+<!-- /deploy-paths -->
+```
+
+Defaults (matched even with no block present): migrations — `**/migrations/**`,
+`**/migrate/**`, `**/db/migrate/**`, `**/alembic/versions/*.py`,
+`**/prisma/migrations/**`. CI — `.github/workflows/**`, `.circleci/**`,
+`**/.gitlab-ci.yml`, `**/Jenkinsfile`, `**/azure-pipelines.yml`,
+`**/bitbucket-pipelines.yml`. Deploy — `**/Dockerfile`, `**/Dockerfile.*`,
+`**/docker-compose*.{yml,yaml}`, `**/*.tf`, `**/*.tfvars`, `**/k8s/**`,
+`**/helm/**`, `**/kustomization.{yaml,yml}`, `**/Procfile`.
 
 ---
 
