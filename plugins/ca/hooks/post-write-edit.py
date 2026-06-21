@@ -16,14 +16,28 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, arbiter_active, project_root, read_input, remind,
-    tool_input, utf8_stdio,
+    CRYPTO_RE, SECRET_RE, arbiter_active, is_ci_path, is_deploy_path,
+    project_root, read_input, remind, tool_input, utf8_stdio,
 )
 from _sloplib import find_prose_separator_dashes, in_antislop_doc_scope  # noqa: E402
 
 DEP_MANIFEST_RE = re.compile(
     r"(package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|requirements\.txt"
     r"|pyproject\.toml|go\.mod|Cargo\.toml)$"
+)
+
+# Narrow, high-signal auth patterns for the H-17 advisory (#73). Deliberately
+# tight — auth has no clean deterministic trigger, so this nudges on the
+# unmistakable markers (passport, jwt verify/sign, framework guards/decorators,
+# common auth middleware names) rather than every mention of "login"/"session",
+# which would be noise. Advisory only: there is no auth commit gate.
+AUTH_RE = re.compile(
+    r"(passport\.(?:authenticate|use)"
+    r"|\bjsonwebtoken\b|jwt\.(?:verify|sign)"
+    r"|@(?:UseGuards|CanActivate|Authorize|RequireAuth)\b"
+    r"|\b(?:AuthGuard|requireAuth|isAuthenticated|authenticateUser|withAuth)\b"
+    r"|@login_required\b)",
+    re.I,
 )
 
 GOVERNS_RE = re.compile(r"^governs:\s*(.+)$", re.I)
@@ -102,6 +116,29 @@ def main():
     if DEP_MANIFEST_RE.search(fpath):
         remind("H-07", "Dependency manifest changed. Dispatch dependency-reviewer before "
                        "committing (ORCHESTRATOR §5).")
+
+    # H-15: CI/CD workflow touched — advisory (#73). A bad workflow only runs
+    # once merged, so this is a nudge, not a commit gate; dispatch security-reviewer
+    # before the PR merges.
+    if rel and not rel.startswith("..") and is_ci_path(rel, root):
+        remind("H-15", "CI/CD workflow changed. Dispatch security-reviewer before merging "
+                       "(it reviews workflow/secrets/permissions exposure). Advisory — "
+                       "not a commit block.")
+
+    # H-16: deployment / IaC manifest touched — advisory (#73). IaC bites only on
+    # apply, so this nudges; security-reviewer is the enforcement point at PR.
+    if rel and not rel.startswith("..") and is_deploy_path(rel, root):
+        remind("H-16", "Deployment/IaC manifest changed. Dispatch security-reviewer before "
+                       "merging (it reviews exposed ports, public ACLs, disabled "
+                       "encryption, privilege). Advisory — not a commit block.")
+
+    # H-17: authentication/authorization logic touched — advisory (#73). Narrow,
+    # high-signal patterns only; the dangerous crypto/secret primitives are still
+    # hard-blocked by H-09b/H-10b at commit time.
+    if AUTH_RE.search(content):
+        remind("H-17", "Auth/authorization logic detected. Dispatch security-reviewer "
+                       "before merging (authn on every protected route; authz at the "
+                       "right layer). Advisory — not a commit block.")
 
     # H-09: crypto/TLS pattern — the pre-commit gate will BLOCK until the
     # crypto-compliance gate records a pass; run it now to avoid a commit-time stop.
