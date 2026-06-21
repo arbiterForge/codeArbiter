@@ -2,7 +2,7 @@
   "name": "ca-sandbox",
   "displayName": "codeArbiter Sandbox",
   "description": "Locally-hosted Codespace equivalent for codeArbiter. Pulls an untrusted repo into an ephemeral, isolated Docker container with no host-filesystem access and configurable egress, caches dependencies by content hash, then tears the box down. Requires Docker and nixpacks on PATH.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": { "name": "arbiterForge" },
   "license": "MIT",
   "homepage": "https://github.com/arbiterForge/codeArbiter",
