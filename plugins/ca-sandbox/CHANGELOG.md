@@ -4,6 +4,15 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ---
 
+## [0.1.1] — 2026-06-21 — Dependency bump
+
+Dev-toolchain dependency bump for the sandbox driver (`tools/`). No payload behavior change; consolidates Dependabot #112 and #114 into one synced lockfile.
+
+### Changed
+- **`tools/` dev dependencies** — `esbuild` `^0.24.0 → ^0.28.1`, `vitest` `^2.0.0 → ^4.1.9` (transitive `vite` dropped). Regenerated `package-lock.json` so `npm ci` is back in sync.
+
+---
+
 ## [0.1.0] — 2026-06-20 — Initial preview
 
 First public release, shipping in the **Feature Forge** as `preview`. A locally-hosted Codespace equivalent: it pulls an untrusted repo into an ephemeral, isolated Docker container with no host-filesystem access and configurable egress, caches dependencies by content hash, then tears the box down. Requires Docker and nixpacks on PATH. Off by default; stays `preview` until real-world runs earn a promotion.
