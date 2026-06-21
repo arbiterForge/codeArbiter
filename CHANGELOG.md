@@ -6,6 +6,22 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.5.0] — 2026-06-21
+
+### Added
+- **Advisory scope-touch detection for CI, deploy/IaC, and auth** (`H-15`/`H-16`/`H-17`). After a
+  write/edit, `post-write-edit.py` now reminds when a CI/CD workflow (`H-15`), a deployment/IaC
+  manifest (`H-16`), or narrow high-signal auth logic (`H-17`) is touched, pointing at
+  `security-reviewer`. These are **advisory only — no commit block**: a workflow runs only once merged
+  and IaC bites only on apply, so a hard per-commit gate would impede iterative infra work while the PR
+  review still catches the change (the irreversible-once-committed harms — secret/migration/crypto —
+  keep their blocking gates). commit-gate now dispatches `security-reviewer` on a staged CI/deploy touch
+  even on bare `/commit` / the small lane, closing the same lane-skip gap `H-14` closed for migrations.
+  CI and deploy paths are detected by default glob sets, extendable/narrowable via `ci-paths` /
+  `deploy-paths` blocks in `security-controls.md` (same grammar as `migration-paths`); the migration,
+  CI, and deploy detectors now share one `path_in_globs` matcher in `_hooklib.py`. Resolves the
+  scope-touch half of #73. (#73)
+
 ## [2.4.6] — 2026-06-19
 
 ### Changed

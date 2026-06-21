@@ -176,6 +176,39 @@ MIGRATION_DEFAULT_GLOBS = (
 _MIG_DECL_RE = re.compile(
     r"<!--\s*migration-paths\s*-->(.*?)<!--\s*/migration-paths\s*-->", re.S | re.I)
 
+# CI/CD workflow detection (H-15, #73). Advisory only — no commit gate; the
+# defaults cover the common CI ecosystems and a project extends/narrows them via
+# a `ci-paths` block in security-controls.md (same `+`/`-` grammar as migrations).
+CI_DEFAULT_GLOBS = (
+    ".github/workflows/**",
+    ".circleci/**",
+    "**/.gitlab-ci.yml",
+    "**/Jenkinsfile",
+    "**/azure-pipelines.yml",
+    "**/bitbucket-pipelines.yml",
+)
+_CI_DECL_RE = re.compile(
+    r"<!--\s*ci-paths\s*-->(.*?)<!--\s*/ci-paths\s*-->", re.S | re.I)
+
+# Deployment / IaC detection (H-16, #73). Advisory only. Defaults cover the
+# common container/orchestration/IaC manifests; extend/narrow via a
+# `deploy-paths` block in security-controls.md.
+DEPLOY_DEFAULT_GLOBS = (
+    "**/Dockerfile",
+    "**/Dockerfile.*",
+    "**/docker-compose*.yml",
+    "**/docker-compose*.yaml",
+    "**/*.tf",
+    "**/*.tfvars",
+    "**/k8s/**",
+    "**/helm/**",
+    "**/kustomization.yaml",
+    "**/kustomization.yml",
+    "**/Procfile",
+)
+_DEPLOY_DECL_RE = re.compile(
+    r"<!--\s*deploy-paths\s*-->(.*?)<!--\s*/deploy-paths\s*-->", re.S | re.I)
+
 
 def _glob_to_re(glob):
     """Compile a forward-slash glob into a full-path regex. `**/` is an optional
@@ -202,18 +235,23 @@ def _glob_to_re(glob):
     return re.compile("".join(out))
 
 
-def migration_globs(root):
-    """(includes, excludes) for migration detection: the built-in defaults plus
-    any `migration-paths` declaration in security-controls.md (`+ glob` extends,
-    `- glob` excludes). A missing or undeclared file yields the defaults."""
-    includes, excludes = list(MIGRATION_DEFAULT_GLOBS), []
+def _read_controls(root):
+    """The repo's security-controls.md text, or "" when absent/unreadable."""
     try:
         with open(os.path.join(root, ".codearbiter", "security-controls.md"),
                   encoding="utf-8", errors="replace") as f:
-            text = f.read()
+            return f.read()
     except Exception:  # noqa: BLE001 — no controls file -> defaults only
-        return includes, excludes
-    m = _MIG_DECL_RE.search(text)
+        return ""
+
+
+def scope_globs(root, defaults, decl_re):
+    """(includes, excludes) for one scope category: the built-in `defaults` plus
+    any declaration block matched by `decl_re` in security-controls.md
+    (`+ glob` extends, `- glob` excludes). Shared by every path-glob scope
+    detector (migration/CI/deploy) so they never drift on the grammar."""
+    includes, excludes = list(defaults), []
+    m = decl_re.search(_read_controls(root))
     if not m:
         return includes, excludes
     for ln in m.group(1).splitlines():
@@ -225,15 +263,38 @@ def migration_globs(root):
     return includes, excludes
 
 
-def is_migration_path(rel, root):
-    """True iff `rel` (a repo-relative path) is a database migration: it matches
-    an include glob and no exclude glob. Excludes win — the false-positive
-    escape hatch for a project whose `migrations/` dir holds non-DB files."""
+def path_in_globs(rel, root, defaults, decl_re):
+    """True iff `rel` (a repo-relative path) matches an include glob and no
+    exclude glob for the given scope category. Excludes win — the false-positive
+    escape hatch. The one matcher behind is_migration_path/is_ci_path/
+    is_deploy_path."""
     rel = norm_path(rel).lstrip("/")
-    includes, excludes = migration_globs(root)
+    includes, excludes = scope_globs(root, defaults, decl_re)
     if any(_glob_to_re(g).match(rel) for g in excludes):
         return False
     return any(_glob_to_re(g).match(rel) for g in includes)
+
+
+def migration_globs(root):
+    """(includes, excludes) for migration detection: defaults plus any
+    `migration-paths` declaration in security-controls.md."""
+    return scope_globs(root, MIGRATION_DEFAULT_GLOBS, _MIG_DECL_RE)
+
+
+def is_migration_path(rel, root):
+    """True iff `rel` is a database migration (H-14). Excludes win — the
+    escape hatch for a project whose `migrations/` dir holds non-DB files."""
+    return path_in_globs(rel, root, MIGRATION_DEFAULT_GLOBS, _MIG_DECL_RE)
+
+
+def is_ci_path(rel, root):
+    """True iff `rel` is a CI/CD workflow file (H-15, advisory)."""
+    return path_in_globs(rel, root, CI_DEFAULT_GLOBS, _CI_DECL_RE)
+
+
+def is_deploy_path(rel, root):
+    """True iff `rel` is a deployment / IaC manifest (H-16, advisory)."""
+    return path_in_globs(rel, root, DEPLOY_DEFAULT_GLOBS, _DEPLOY_DECL_RE)
 
 
 def marker_fresh(path, minutes):
