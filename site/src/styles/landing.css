@@ -1,0 +1,107 @@
+/* codeArbiter docs — landing.css
+   Bespoke landing page layout: hero, gate-catch terminal section, Feature Forge
+   showcase. Design tokens and shared component classes live in theme.css.
+   Build on those; do not redefine tokens here.
+*/
+
+/* =========================================================
+   BESPOKE HERO
+   Replaces the stock CardGrid. Placed inside the Starlight
+   splash template body, constrained to a readable measure.
+   ========================================================= */
+
+.ca-hero {
+  max-width: 56rem;
+  margin-inline: auto;
+  padding-block: 1.5rem 0;
+}
+
+.ca-hero__what {
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  color: var(--ca-text-muted);
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.04em;
+  margin-block-end: 0.5rem;
+}
+
+.ca-hero__first-command {
+  margin-block: 1.5rem;
+}
+
+.ca-hero__first-command pre,
+.ca-hero__first-command .expressive-code {
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 28%, transparent);
+  border-radius: 0.5rem;
+  background: var(--ca-slate-mid);
+}
+
+/* =========================================================
+   TERMINAL SECTION
+   The gate-catch demo sits in a capped-width reading column.
+   ========================================================= */
+
+.ca-terminal-section {
+  max-width: 56rem;
+  margin-inline: auto;
+  margin-block: 2.5rem;
+}
+
+.ca-terminal-section > h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ca-text-muted);
+  margin-block-end: 0.75rem;
+}
+
+/* =========================================================
+   FORGE SHOWCASE
+   Separated from the terminal by whitespace; narrower column
+   to read like editorial prose, not a feature grid.
+   ========================================================= */
+
+.ca-forge {
+  max-width: 56rem;
+  margin-inline: auto;
+  margin-block: 3rem 2rem;
+  padding-block-start: 2rem;
+  border-block-start: 1px solid var(--ca-slate-border);
+}
+
+.ca-forge h2 {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  margin-block-end: 1rem;
+  color: var(--ca-gold);
+}
+
+.ca-forge p {
+  max-width: 60ch;
+}
+
+/* =========================================================
+   LANE FLOW DIAGRAM
+   The lane-flow SVG is wide (900px viewBox); let it fill the
+   prose column and clip gracefully on narrow viewports.
+   ========================================================= */
+
+.ca-laneflow {
+  max-width: 56rem;
+  margin-inline: auto;
+  margin-block: 2rem;
+}
+
+/* =========================================================
+   REDUCED-MOTION OVERRIDE (landing-specific)
+   theme.css handles the ca-terminal__line rule globally;
+   this block ensures any additional landing-specific motion
+   (e.g., hover lifts on the hero) collapses cleanly.
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-hero,
+  .ca-terminal-section,
+  .ca-forge {
+    transition: none;
+  }
+}

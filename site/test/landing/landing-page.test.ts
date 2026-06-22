@@ -1,0 +1,262 @@
+/**
+ * TDD Phase 1 obligations — bespoke landing page (AC 6, 7, 8, 12, 15, 16, 19).
+ *
+ * These tests read the landing source files because the full Astro build is not
+ * run inside vitest.  The "landing source" is the union of:
+ *   - src/content/docs/index.mdx   (frontmatter + MDX body)
+ *   - src/components/GateCatchTerminal.astro
+ *   - src/components/ForgeShowcase.astro
+ *   - src/styles/landing.css
+ *
+ * Source-level assertions are reliable here because:
+ *   - AC 6/7/8/12/15/16: structural/markup obligations are authored in the above
+ *     files and render directly to the built HTML without transformation.
+ *   - AC 19: em-dash cap is a source-level prose check by spec definition.
+ *
+ * The design-quality-reviewer (AC-11) is dispatched separately as a visual gate.
+ */
+
+import { describe, it, expect } from "vitest";
+import { readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import * as path from "node:path";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const siteRoot = path.resolve(__dirname, "../../");
+
+function readSrc(rel: string): string {
+  return readFileSync(path.join(siteRoot, rel), "utf8");
+}
+
+// ---------------------------------------------------------------------------
+// Fixtures
+// ---------------------------------------------------------------------------
+
+const indexMdx = readSrc("src/content/docs/index.mdx");
+const terminalCmp = readSrc("src/components/GateCatchTerminal.astro");
+const forgeCmp = readSrc("src/components/ForgeShowcase.astro");
+const landingCss = readSrc("src/styles/landing.css");
+
+/** Combined source of all landing page artifacts */
+const landingSrc = indexMdx + "\n" + terminalCmp + "\n" + forgeCmp;
+
+// ---------------------------------------------------------------------------
+// AC-6: Bespoke landing — stock CardGrid replaced
+// ---------------------------------------------------------------------------
+
+describe("AC-6: bespoke landing replaces stock CardGrid", () => {
+  it("index.mdx does not contain the stock <CardGrid> component from Starlight", () => {
+    expect(indexMdx).not.toMatch(/<CardGrid>/);
+  });
+
+  it("landing source contains the gate-catch terminal (ca-terminal)", () => {
+    expect(landingSrc).toContain("ca-terminal");
+  });
+
+  it("landing source contains the Feature Forge showcase section (ca-forge)", () => {
+    expect(landingSrc).toContain("ca-forge");
+  });
+
+  it("index.mdx contains the bespoke hero section (ca-hero)", () => {
+    expect(indexMdx).toContain("ca-hero");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AC-7: prefers-reduced-motion honored for terminal animation
+// ---------------------------------------------------------------------------
+
+describe("AC-7: terminal honors prefers-reduced-motion", () => {
+  it("theme.css contains a prefers-reduced-motion media query that collapses animation", () => {
+    const themeCss = readSrc("src/styles/theme.css");
+    expect(themeCss).toContain("prefers-reduced-motion");
+    expect(themeCss).toContain("animation: none");
+  });
+
+  it("terminal lines carry the ca-terminal__line class (so the reduced-motion rule applies)", () => {
+    expect(terminalCmp).toContain("ca-terminal__line");
+  });
+
+  it("theme.css reduced-motion block sets opacity: 1 so all lines are visible statically", () => {
+    const themeCss = readSrc("src/styles/theme.css");
+    expect(themeCss).toMatch(/prefers-reduced-motion[\s\S]*?opacity:\s*1/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AC-8: Terminal transcript is real DOM text
+// ---------------------------------------------------------------------------
+
+describe("AC-8: terminal transcript is real DOM text, not canvas/image", () => {
+  it("terminal component does not use <canvas> elements", () => {
+    expect(terminalCmp).not.toContain("<canvas");
+  });
+
+  it("terminal component does not use <img> elements for the transcript", () => {
+    // The terminal transcript itself must not be an image
+    // (img is allowed in diagrams but not inside the terminal body)
+    const bodySection = terminalCmp.match(/ca-terminal__body[\s\S]*/)?.[0] ?? "";
+    expect(bodySection).not.toContain("<img");
+  });
+
+  it("terminal contains visible command text as plain DOM text", () => {
+    expect(terminalCmp).toMatch(/git commit|ca:commit/i);
+  });
+
+  it("terminal body has role=list for screen-reader grouping", () => {
+    expect(terminalCmp).toContain('role="list"');
+  });
+
+  it("terminal lines have role=listitem", () => {
+    expect(terminalCmp).toContain('role="listitem"');
+  });
+
+  it("terminal region has an aria-label", () => {
+    expect(terminalCmp).toMatch(/aria-label="[^"]+"/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AC-12: Feature Forge showcase
+// ---------------------------------------------------------------------------
+
+describe("AC-12: Feature Forge showcase with key claims", () => {
+  it("showcase states features are opt-in", () => {
+    expect(forgeCmp).toMatch(/opt.in/i);
+  });
+
+  it("showcase states features ship dormant or off by default", () => {
+    expect(forgeCmp).toMatch(/dormant|off by default/i);
+  });
+
+  it("showcase states promotion is by real-world evidence", () => {
+    expect(forgeCmp).toMatch(/evidence/i);
+  });
+
+  it("showcase mentions SemVer for whole payload versioning", () => {
+    expect(forgeCmp).toMatch(/SemVer|semver/i);
+  });
+
+  it("showcase mentions Feature Forge per-feature preview model", () => {
+    expect(forgeCmp).toMatch(/Feature Forge|per.feature/i);
+  });
+
+  it("showcase references the two-axis-model diagram", () => {
+    expect(forgeCmp).toContain("two-axis-model");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AC-15: --farm is adjacent to / links the Feature Forge showcase
+// ---------------------------------------------------------------------------
+
+describe("AC-15: --farm is no longer context-free", () => {
+  it("--farm appears in the landing source", () => {
+    expect(landingSrc).toContain("--farm");
+  });
+
+  it("--farm appears inside the forge showcase component", () => {
+    expect(forgeCmp).toContain("--farm");
+  });
+
+  it("forge showcase component contains a preview callout for --farm", () => {
+    // The --farm must be in a visible explanatory block, not bare
+    expect(forgeCmp).toMatch(/ca-callout--preview[\s\S]*?--farm|--farm[\s\S]*?ca-callout/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AC-16: Above-the-fold: what / why / first command + single primary CTA
+// ---------------------------------------------------------------------------
+
+describe("AC-16: above-fold hero answers what/why/first command + one primary CTA", () => {
+  it("hero tagline is present in frontmatter", () => {
+    expect(indexMdx).toContain("tagline:");
+  });
+
+  it("exactly one primary CTA variant exists in the hero frontmatter actions", () => {
+    const primaryMatches = indexMdx.match(/variant: primary/g);
+    expect(primaryMatches).not.toBeNull();
+    expect(primaryMatches!.length).toBe(1);
+  });
+
+  it("primary CTA links to the overview page with a base-safe relative link", () => {
+    // Hero `actions` links are emitted verbatim by Starlight's Hero/LinkButton
+    // (no base-prefixing, unlike slug-based nav). A leading-slash link like
+    // `/overview/` would render non-base-prefixed and 404 under the /codeArbiter
+    // base on GH Pages. A page-relative `./overview/` resolves against the page
+    // URL (served at /codeArbiter/) → /codeArbiter/overview/, and auto-corrects
+    // if the base changes. No hardcoded base.
+    expect(indexMdx).toMatch(/link: \.\/overview\//);
+  });
+
+  it("first command is shown in the hero section", () => {
+    // The hero body must show a copy-able first command
+    expect(indexMdx).toMatch(/\/ca:feature|\/ca:commit|\/ca:fix/);
+  });
+
+  it("hero body answers 'what' (the orchestrator description)", () => {
+    expect(indexMdx).toMatch(/orchestrat|gated|lane/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AC-19: Em-dash cap (≤3 per page, ≤1 per paragraph) on prose
+// ---------------------------------------------------------------------------
+
+describe("AC-19: em-dash cap on landing prose", () => {
+  /**
+   * Strips frontmatter, code blocks, HTML/JSX tags, and import statements
+   * so the cap applies only to hand-written prose, per spec.
+   */
+  function extractProse(src: string): string {
+    let text = src.replace(/^---[\s\S]*?---\n/, "");
+    text = text.replace(/```[\s\S]*?```/g, "");
+    text = text.replace(/`[^`\n]*`/g, "");
+    text = text.replace(/<[^>]+>/g, " ");
+    text = text.replace(/^import\s+.*$/gm, "");
+    return text;
+  }
+
+  it("index.mdx contains ≤3 em-dashes in hand-written prose", () => {
+    const prose = extractProse(indexMdx);
+    const emDashes = (prose.match(/—/g) ?? []).length;
+    expect(emDashes).toBeLessThanOrEqual(3);
+  });
+
+  it("no paragraph in index.mdx prose has more than one em-dash", () => {
+    const prose = extractProse(indexMdx);
+    const paragraphs = prose.split(/\n{2,}/);
+    for (const para of paragraphs) {
+      const count = (para.match(/—/g) ?? []).length;
+      expect(count).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it("GateCatchTerminal.astro prose contains ≤3 em-dashes", () => {
+    const prose = extractProse(terminalCmp);
+    const emDashes = (prose.match(/—/g) ?? []).length;
+    expect(emDashes).toBeLessThanOrEqual(3);
+  });
+
+  it("ForgeShowcase.astro prose contains ≤3 em-dashes", () => {
+    const prose = extractProse(forgeCmp);
+    const emDashes = (prose.match(/—/g) ?? []).length;
+    expect(emDashes).toBeLessThanOrEqual(3);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lane-flow diagram embedded in landing
+// ---------------------------------------------------------------------------
+
+describe("lane-flow diagram embedded in landing", () => {
+  it("lane-flow.svg asset exists", () => {
+    const svgPath = path.join(siteRoot, "src/assets/diagrams/lane-flow.svg");
+    expect(existsSync(svgPath)).toBe(true);
+  });
+
+  it("index.mdx references the lane-flow diagram", () => {
+    expect(indexMdx).toContain("lane-flow");
+  });
+});
