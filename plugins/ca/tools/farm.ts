@@ -261,7 +261,10 @@ export type InjectedFile = { path: string; contents: string; readOnly: boolean }
 // no END is present) as a single unit. Single-line trigger-word matches keep
 // the existing per-line behavior. Matching, never transmitting a matched
 // secret, is the invariant — see spec AC-05 / D5.
-const SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant)/i;
+// Trigger words plus known high-entropy key prefixes (AWS / GitHub), kept in
+// step with the hook-side SECRET_RE so the outbound redactor and the commit
+// gate never disagree on what a secret looks like (checkpoint 2026-06-22).
+const SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
 // PEM-style armor delimiters. BEGIN opens a span; END closes it. Matched
 // independently of SECRET_LINE so even a `-----BEGIN CERTIFICATE-----` (no
 // trigger word) is span-redacted — armored material is opaque, redact it whole.
@@ -292,7 +295,7 @@ function isSecretBearingFilename(relPath: string): boolean {
   return SECRET_FILENAME_DENYLIST.some((re) => re.test(base));
 }
 
-function redactSecrets(contents: string): string {
+export function redactSecrets(contents: string): string {
   const lines = contents.split("\n");
   const out: string[] = [];
   for (let i = 0; i < lines.length; i++) {
