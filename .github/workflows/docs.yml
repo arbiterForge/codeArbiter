@@ -23,10 +23,11 @@ on:
       - "plugins/ca/**"
   workflow_dispatch:
 
+# Least-privilege: only the deploy job needs pages/id-token:write, granted at
+# job level below. The build job — which runs on PRs, including forks — stays
+# read-only.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One run at a time per ref; let a newer push/PR-push supersede an in-flight
 # run. Per-ref grouping keeps PR validation builds from cancelling a main
@@ -51,6 +52,10 @@ jobs:
     # Push to main only — pull_request builds are validation-only.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
