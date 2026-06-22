@@ -50,6 +50,15 @@ import time
 import unicodedata
 from datetime import datetime, timezone
 
+# Shared task-board logic so the "tasks" segment counts in-flight items the same
+# way the SessionStart hook does (excludes done). Guarded: a failed import must
+# degrade the segment, never break the box (robustness contract above).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from _taskboardlib import count_in_flight as _count_in_flight, read_board as _read_board
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _count_in_flight = None
+
 # --------------------------------------------------------------------------- color
 def fg(r, g, b):
     return f"\033[38;2;{r};{g};{b}m"
@@ -376,9 +385,14 @@ def arbiter_state(root):
         base = 0
     if base < 0 or base > total_over:
         base = 0
+    ot_path = os.path.join(cad, "open-tasks.md")
+    if _count_in_flight is not None:
+        tasks = _count_in_flight(_read_board(ot_path) or "")
+    else:  # degraded fallback: pre-schema count (never crashes the box)
+        tasks = count_matches(ot_path, r"^- ")
     return {
         "stage": fm.get("stage", "-"),
-        "tasks": count_matches(os.path.join(cad, "open-tasks.md"), r"^- "),
+        "tasks": tasks,
         "q": count_matches(os.path.join(cad, "open-questions.md"), r"CONFIRM-[0-9]+"),
         "over": max(0, total_over - base),
         "sprint": os.path.exists(os.path.join(cad, "sprint-active")),

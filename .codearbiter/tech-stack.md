@@ -40,6 +40,10 @@ python .github/scripts/test_migration_backstop.py
 
 # /ca:metrics trends helper — window tiling, 3 metrics, empty-source safety, read-only
 python .github/scripts/test_metrics_lib.py
+
+# task-board lifecycle helper — in-flight count (excludes done), dotted-ID grammar,
+# field parsing, stale-in-progress nudge, oversize degradation (_taskboardlib)
+python .github/scripts/test_taskboardlib.py
 ```
 
 Only when `plugins/ca/tools/**` changed:

@@ -37,6 +37,7 @@ from _standuplib import (  # noqa: E402
     parse_worktrees,
     stale_worktree_candidates,
 )
+import _taskboardlib  # noqa: E402 — shared task-board count/staleness logic
 
 INITIALIZED_RE = re.compile(r"<!--\s*INITIALIZED\s*-->")
 STAGE_RE = re.compile(r"^stage:\s*([0-9]+)", re.I | re.M)
@@ -475,8 +476,11 @@ def main():
     ot = os.path.join(root, ".codearbiter", "open-tasks.md")
     ot_text = read_text(ot)
     if ot_text is not None:
-        tn = sum(1 for ln in ot_text.splitlines() if ln.startswith("- "))
-        print(f"in-flight tasks: {tn}")
+        # Shared helper: in-flight count (excludes done) + a stale-in-progress
+        # nudge when a [~] task has sat past the threshold. Oversize boards
+        # degrade to a one-line notice.
+        for _line in _taskboardlib.startup_summary(ot_text, datetime.date.today()):
+            print(_line)
 
     print("Present this state, then await a slash command. Type /ca:commands for the catalog.")
 
