@@ -767,12 +767,12 @@ function resolveConfig(plan) {
   assertSecureBaseUrl(apiBaseUrl);
   if (!model) {
     console.error(
-      "Error: No model configured.\nSet FARM_MODEL env var, or run /ca:sprint --farm to trigger automatic model selection.\nSee .codearbiter/farm.md for setup instructions."
+      "Error: No model configured.\nSet FARM_MODEL env var, or run /ca:sprint --farm to trigger automatic model selection.\nSee ${CLAUDE_PLUGIN_ROOT}/includes/farm.md for setup instructions."
     );
     process.exit(1);
   }
   if (!apiKey) {
-    console.error("Error: FARM_API_KEY is not set.\nSee .codearbiter/farm.md for setup instructions.");
+    console.error("Error: FARM_API_KEY is not set.\nSee ${CLAUDE_PLUGIN_ROOT}/includes/farm.md for setup instructions.");
     process.exit(1);
   }
   return { model, apiBaseUrl, apiKey };
