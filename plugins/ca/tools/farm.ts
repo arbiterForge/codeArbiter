@@ -1329,12 +1329,12 @@ function resolveConfig(plan: Plan): { model: string; apiBaseUrl: string; apiKey:
     console.error(
       "Error: No model configured.\n" +
         "Set FARM_MODEL env var, or run /ca:sprint --farm to trigger automatic model selection.\n" +
-        "See .codearbiter/farm.md for setup instructions.",
+        "See ${CLAUDE_PLUGIN_ROOT}/includes/farm.md for setup instructions.",
     );
     process.exit(1);
   }
   if (!apiKey) {
-    console.error("Error: FARM_API_KEY is not set.\nSee .codearbiter/farm.md for setup instructions.");
+    console.error("Error: FARM_API_KEY is not set.\nSee ${CLAUDE_PLUGIN_ROOT}/includes/farm.md for setup instructions.");
     process.exit(1);
   }
   return { model, apiBaseUrl, apiKey };
