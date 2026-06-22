@@ -43,12 +43,23 @@ CRYPTO_RE = re.compile(
     r"|\bRSA\b|x509|bcrypt"
     r"|crypto\.(subtle|sign|verify|createSign|createVerify|generateKey"
     r"|publicEncrypt|privateDecrypt|pbkdf2|scrypt|randomBytes|createDiffieHellman)"
-    r"|InsecureSkipVerify|verify=False)",
+    r"|InsecureSkipVerify|verify=False"
+    # Node/TS TLS-disable forms — all networked first-party code here is TS, so
+    # this is where a verification bypass would actually land (2026-06-22 HIGH).
+    r"|rejectUnauthorized\s*[:=]\s*false|NODE_TLS_REJECT_UNAUTHORIZED)",
     re.I,
 )
+# Two branches: (1) a secret keyword assigned a quoted literal, via `=` OR `:`
+# (the colon/object form dominates this TS/JSON repo) — the quoted-value
+# requirement keeps it from firing on every bare `token:` reference; (2) known
+# high-entropy key prefixes, keyword-independent (AWS / GitHub / Anthropic).
 SECRET_RE = re.compile(
-    r"\b(password|secret|token|api_key|apikey|private_key|passphrase|credential)"
-    r"""\s*=\s*["'][^"']{4,}""",
+    r"\b(?:password|secret|token|api_key|apikey|private_key|passphrase|credential"
+    r"|aws_secret_access_key|client_secret)"
+    r"""["']?\s*[:=]\s*["'][^"']{4,}"""
+    r"|AKIA[0-9A-Z]{16}"
+    r"|ghp_[A-Za-z0-9]{36}"
+    r"|sk-ant-[A-Za-z0-9_-]{16,}",
     re.I,
 )
 

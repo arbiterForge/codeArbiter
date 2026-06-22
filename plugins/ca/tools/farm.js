@@ -92,7 +92,7 @@ async function readWorktreeFile(wt, relPath) {
     return null;
   }
 }
-var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant)/i;
+var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
 var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
 var PEM_END = /^-----END .*-----\s*$/;
 var REDACTION_MARKER = "[REDACTED \u2014 secret-pattern match removed before transmission]";
@@ -1043,6 +1043,7 @@ export {
   extractLiterals,
   httpWorker,
   parseChatCompletion,
+  redactSecrets,
   runTask,
   screenEntitlements,
   validate

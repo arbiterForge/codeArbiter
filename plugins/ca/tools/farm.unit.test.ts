@@ -6,8 +6,33 @@ import { describe, it, expect } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
+
+// ---------------------------------------------------------------------------
+// redactSecrets — outbound-boundary redactor must stay aligned with the hook
+// SECRET_RE: catch known high-entropy key prefixes, not just trigger words.
+// ---------------------------------------------------------------------------
+describe("redactSecrets — high-entropy key prefixes (checkpoint 2026-06-22)", () => {
+  it("redacts an AWS access key id with no trigger word on the line", () => {
+    const out = redactSecrets("const id = AKIAIOSFODNN7EXAMPLE;");
+    expect(out).not.toContain("AKIAIOSFODNN7EXAMPLE");
+    expect(out).toContain("[REDACTED");
+  });
+
+  it("redacts a GitHub PAT prefix with no trigger word on the line", () => {
+    const pat = "ghp_abcdefghijklmnopqrstuvwxyz0123456789";
+    expect(redactSecrets(`const t = ${pat};`)).not.toContain(pat);
+  });
+
+  it("still redacts the existing sk-ant trigger", () => {
+    expect(redactSecrets("key: sk-ant-secret")).toContain("[REDACTED");
+  });
+
+  it("passes a benign line through unchanged", () => {
+    expect(redactSecrets("const total = sum(a, b);")).toBe("const total = sum(a, b);");
+  });
+});
 
 // ---------------------------------------------------------------------------
 // extractFileBlocks

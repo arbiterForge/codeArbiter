@@ -110,16 +110,25 @@ permitted in `package-lock.json` or any manifest.
 
 ---
 
-## Approved licenses (devDependencies)
+## Approved licenses (dependencies)
 
 This is a private package (`"private": true`). The following SPDX identifiers
-are approved for devDependencies:
+are approved across all manifests (the shipped plugin payload carries no runtime
+npm dependencies; the docs site under `site/` is not part of that payload):
 
 - MIT
 - ISC
 - Apache-2.0
 - BSD-2-Clause
 - BSD-3-Clause
+- BlueOak-1.0.0 — permissive, OSI-approved "better-MIT"; imposes no obligations
+- CC0-1.0 — public-domain dedication; imposes no obligations
+
+`BlueOak-1.0.0` and `CC0-1.0` were approved 2026-06-22 (user decision via SMARTS
+arbitration, checkpoint 2026-06-22) to cover transitive `site/` dependencies
+(`common-ancestor-path`, `lru-cache`, `sax`; `mdn-data`). `argparse@2.0.1`
+declares a `Python-2.0` SPDX field that is a packaging mislabel — upstream is
+MIT — and is accepted on that basis.
 
 Any new dependency with a license outside this list requires an explicit
 review and an entry in `overrides.log` before merging.
