@@ -5,12 +5,14 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] v2.chore.0001 - Move sharp from dependencies to optionalDependencies in site/package.json (checkpoint 2026-06-22 MEDIUM) to cut install-time native-binary surface; requires regenerating site/package-lock.json.  (from checkpoint-2026-06-22)
+- [ ] v2.test.0001 - _sloplib prose-separator detector (find_prose_separator_dashes) has no direct unit tests (checkpoint 2026-06-22 MEDIUM). Add test_sloplib.py covering fence/inline-code/URL/numeric-range exemptions and in_antislop_doc_scope.  (from checkpoint-2026-06-22)
 - [ ] v2.release.0001 - Phase 7 tone pass + marketplace publication
   - Desc: tone pass not evidenced as a distinct pass; marketplace.json present but publication not confirmed.
   - Done when: a tone-pass record exists and the marketplace listing is confirmed live.
 
 ## Carried triage (folded from the 2026-06-13 session-hygiene sprint by review-remediation 2026-06-16)
-- [ ] v2.docs.0002 - Resolve the absent coding-standards.md (SH-TRIAGE-2)
+- [x] v2.docs.0002 - Resolve the absent coding-standards.md (SH-TRIAGE-2)  (done 2026-06-22)
   - Desc: `.codearbiter/coding-standards.md` is named as required pre-flight reading by `tdd`, `refactor`, `writing-plans`, and the author agents, but the file is absent from this repo. Confirmed still missing 2026-06-21 during the task-board-lifecycle tdd pre-flight.
   - Done when: either the file exists (style/structure/naming for the plugin's Python + TS) OR those pre-flight reads tolerate its absence.
   - Boundaries: none
