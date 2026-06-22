@@ -1,0 +1,85 @@
+---
+/**
+ * GateCatchTerminal.astro — codeArbiter's conversion centerpiece.
+ *
+ * Renders an animated gate-catch demo: a commit blocked by a CRITICAL finding,
+ * then fixed, then green. Animation is CSS-only (no JS player). The transcript
+ * is real DOM text for screen readers. Under prefers-reduced-motion the
+ * animation collapses to static and the full transcript is immediately visible.
+ *
+ * Design-system contract (from theme.css):
+ *   .ca-terminal, .ca-terminal__titlebar, .ca-terminal__dot, .ca-terminal__title,
+ *   .ca-terminal__body, .ca-terminal__line, .ca-terminal__line--error,
+ *   .ca-terminal__line--pass, .ca-terminal__line--dim, .ca-terminal__prompt
+ */
+---
+
+<div
+  class="ca-terminal"
+  role="region"
+  aria-label="Gate-catch demo: a commit blocked by a CRITICAL finding, then fixed and passed"
+>
+  <div class="ca-terminal__titlebar" aria-hidden="true">
+    <span class="ca-terminal__dot"></span>
+    <span class="ca-terminal__dot"></span>
+    <span class="ca-terminal__dot"></span>
+    <span class="ca-terminal__title">codearbiter gate</span>
+  </div>
+
+  <ol
+    class="ca-terminal__body"
+    role="list"
+    aria-label="Terminal output showing commit blocked, fix applied, gate passed"
+  >
+    <!-- Attempt 1: commit with banned crypto pattern -->
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 0.1s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>git commit -m "add payment hash"</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 0.5s">
+      <span>codeArbiter pre-commit · scanning diff...</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--error" role="listitem" style="--ca-term-delay: 1.0s">
+      <span>H-09 BLOCKED: banned crypto — createHash("md5") on line 42.</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--error" role="listitem" style="--ca-term-delay: 1.3s">
+      <span>CRITICAL: MD5 is forbidden. Replace with SHA-256 (see security-controls.md).</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 1.6s">
+      <span>Commit rejected. Fix the finding, then commit again.</span>
+    </li>
+
+    <!-- Blank separator line -->
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 1.9s">
+      <span>&nbsp;</span>
+    </li>
+
+    <!-- Fix applied -->
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 2.2s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>sed -i 's/createHash("md5")/createHash("sha256")/g' payment.ts</span>
+    </li>
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 2.7s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>git add payment.ts</span>
+    </li>
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 3.0s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>git commit -m "add payment hash (sha-256)"</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 3.4s">
+      <span>codeArbiter pre-commit · scanning diff...</span>
+    </li>
+
+    <!-- Gate pass -->
+    <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 3.9s">
+      <span>H-09 passed: SHA-256 confirmed. No banned patterns.</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 4.2s">
+      <span>All gates green. Commit accepted.</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 4.5s">
+      <span>[main 3fb950c] add payment hash (sha-256)</span>
+    </li>
+  </ol>
+</div>
