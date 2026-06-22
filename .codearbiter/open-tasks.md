@@ -5,6 +5,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] v2.test.0002 - Backfill direct unit tests in test_hooklib.py for the ~18 pre-existing CRYPTO_RE branches (3des, RSA, sha1, createCipher, crypto.pbkdf2/scrypt/sign, etc.) currently exercised only indirectly (coverage-auditor NEEDS-TRIAGE, checkpoint 2026-06-22).  (from checkpoint-2026-06-22)
 - [ ] v2.chore.0001 - Move sharp from dependencies to optionalDependencies in site/package.json (checkpoint 2026-06-22 MEDIUM) to cut install-time native-binary surface; requires regenerating site/package-lock.json.  (from checkpoint-2026-06-22)
 - [ ] v2.test.0001 - _sloplib prose-separator detector (find_prose_separator_dashes) has no direct unit tests (checkpoint 2026-06-22 MEDIUM). Add test_sloplib.py covering fence/inline-code/URL/numeric-range exemptions and in_antislop_doc_scope.  (from checkpoint-2026-06-22)
 - [ ] v2.release.0001 - Phase 7 tone pass + marketplace publication
