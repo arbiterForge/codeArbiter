@@ -130,3 +130,4 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP.
+- MUST, after the commit lands, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — batch-confirm promoting it to `open-tasks.md` (work) or `open-questions.md` (decision) so the out-of-scope change isn't lost.

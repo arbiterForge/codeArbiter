@@ -107,12 +107,12 @@ class TestConfirmRe(unittest.TestCase):
 
 
 class TestTaskCount(unittest.TestCase):
-    """The task counter in main() sums lines starting with '- '. Test the
-    logic in isolation (no subprocess / filesystem side-effects)."""
+    """main() now delegates the in-flight count to _taskboardlib.count_in_flight
+    (done items excluded). Bind the REAL shared helper, not a reimplementation."""
 
-    def _count_tasks(self, text):
-        """Mirror the counting logic from session-start.py main()."""
-        return sum(1 for ln in text.splitlines() if ln.startswith("- "))
+    def setUp(self):
+        import _taskboardlib
+        self._count_tasks = _taskboardlib.count_in_flight
 
     def test_zero_tasks(self):
         text = "# open-tasks\n\nNo tasks yet.\n"
@@ -129,6 +129,11 @@ class TestTaskCount(unittest.TestCase):
     def test_indented_lines_not_counted(self):
         # Only lines that START with "- " are tasks; indented sub-items are not.
         text = "# open-tasks\n- Task A\n  - sub-item\n- Task B\n"
+        self.assertEqual(self._count_tasks(text), 2)
+
+    def test_done_items_excluded(self):
+        # The bug this feature fixes: '- [x]' done items must NOT inflate the count.
+        text = "- [ ] a.b.0001 - A\n- [~] a.b.0002 - B\n- [x] a.b.0003 - C\n"
         self.assertEqual(self._count_tasks(text), 2)
 
 

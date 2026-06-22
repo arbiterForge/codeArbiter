@@ -16,7 +16,9 @@ The orchestrator reads and presents:
    far each got: spec awaiting approval, spec approved / no plan, plan in progress (`ACCEPTED` count
    vs. total from the plan's status column), or complete. An interrupted pipeline is resumable via
    `/ca:feature` — say so on its line.
-3. **Open tasks** — the count from `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md`.
+3. **Open tasks** — the in-flight count from `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md`
+   (top-level `- ` bullets excluding done `- [x]`; the same `_taskboardlib` count the
+   statusline and SessionStart hook use).
 4. **Open questions** — the count of unresolved `[CONFIRM-NN]` placeholders in
    `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md`.
 5. **Overrides since last checkpoint** — entries in `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`

@@ -99,3 +99,4 @@ artifacts exist before handing off to `subagent-driven-development`.
 - MUST NOT emit `plan.json` in `--farm` mode without writing and confirming each failing test first.
 - MUST NOT set `meta.model` or `meta.apiBaseUrl` in `plan.json` — these belong to the dispatch step.
 - MUST NOT proceed with `--farm` if `FARM_API_KEY` is absent — cite `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` and BLOCK.
+- MUST, at exit, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any `[NEEDS-TRIAGE]` out-of-scope items — batch-confirm promoting them to `open-tasks.md` (work) or `open-questions.md` (decisions) so they don't die in the plan file.

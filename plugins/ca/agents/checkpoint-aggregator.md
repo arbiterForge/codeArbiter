@@ -33,6 +33,10 @@ Write `${CLAUDE_PROJECT_DIR}/.codearbiter/checkpoints/YYYY-MM-DD.md` with the st
 
 Report: "Checkpoint document written to `${CLAUDE_PROJECT_DIR}/.codearbiter/checkpoints/YYYY-MM-DD.md`."
 
+### Step 5 — Surface DEFERRABLE findings for harvest
+
+After writing, list the `### DEFERRABLE` findings as follow-up harvest candidates and signal the orchestrator to run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) so they reach `open-tasks.md` instead of languishing in the checkpoint doc. This agent does NOT write the board itself — the harvest is confirm-gated and run by the orchestrator (or auto under `/sprint`).
+
 ## Checkpoint Document Structure
 
 ```markdown

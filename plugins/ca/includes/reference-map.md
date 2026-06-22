@@ -15,5 +15,6 @@ unless the row gives an explicit `${CLAUDE_PLUGIN_ROOT}/` path (plugin-shipped r
 | Failure / retry, CI/CD, branch settings | `tech-stack.md`, `security-controls.md` | `security-reviewer` agent (CI/CD: H-15 advisory) |
 | Risks / ADRs | `open-questions.md`, `decisions/` | `decision-lifecycle` skill (`/adr`) |
 | Architectural reconciliation | `plans/` (the three artifacts), `decisions/decision-log.md` | `decision-variance` skill (`/reconcile`) |
-| Out-of-scope finding | — | inline `[NEEDS-TRIAGE]` marker (never an ADR) |
+| Out-of-scope finding | — | inline `[NEEDS-TRIAGE]` marker (never an ADR); promoted to `open-tasks.md` by the harvest at the workflow's terminal step |
+| Following up on workflow residue / a backlog task | `open-tasks.md` (schema), `${CLAUDE_PLUGIN_ROOT}/includes/harvest.md` | `/ca:task` writer; harvest (`extract_*` → `promote`) at a terminal step |
 | Generating a user-facing deliverable (UI, report, PR/CHANGELOG prose, slide, chart) | `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/INDEX.md` (then `core` + the medium leaf) | `design-quality-reviewer` agent |

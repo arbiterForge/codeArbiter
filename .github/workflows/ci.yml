@@ -186,6 +186,16 @@ jobs:
         # AC-01..AC-07: window tiling, 3-metric collection, empty-source safety,
         # and read-only enforcement (_metricslib).
         run: python .github/scripts/test_metrics_lib.py
+      - name: Run task-board lifecycle helper unit tests
+        # AC-01..AC-10: in-flight count (excludes done), dotted-ID grammar,
+        # field parsing, stale-in-progress nudge, oversize degradation, and the
+        # session-start/statusline readers routing through _taskboardlib.
+        run: python .github/scripts/test_taskboardlib.py
+      - name: Run task-board writer + harvest unit tests
+        # AC-01..AC-11: next_seq, add_entry (ID-less + mint), set_state (dated
+        # start/done + assign-on-pickup), dedup, the 3 harvest extractors, and
+        # promote routing/modes (work->board, decision->questions).
+        run: python .github/scripts/test_taskwriter.py
 
   version-bump:
     name: ca version bumped when payload changes
