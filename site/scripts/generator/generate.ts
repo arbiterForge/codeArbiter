@@ -8,6 +8,7 @@ import { renderAgentPage } from "./render-agent-page";
 import { renderCommandPage } from "./render-command-page";
 import { renderSkillPage } from "./render-skill-page";
 import { buildIndex } from "./build-index";
+import { getCommandForgeStatus } from "./forge-status";
 import type { GenerateResult, PageInput, RenderedPage, SourceType } from "./types";
 
 /** Output subdirectory for each source type. */
@@ -73,11 +74,19 @@ export function generate(
 
   const pages: RenderedPage[] = parsed.map(({ source, doc }, i) => {
     const name = names[i];
+    // Derive forge status for command pages only. The slug at this point is the
+    // raw file-basename (e.g. "prune", "sprint") — use that as the lookup key
+    // so the allowlist stays filename-stable regardless of display name.
+    const forgeStatus =
+      source.type === "command"
+        ? getCommandForgeStatus(slugs[i])
+        : null;
     const input: PageInput = {
       name,
       description: doc.fields.description ?? "",
       model: doc.fields.model,
       tools: doc.fields.tools,
+      forgeStatus,
     };
     return {
       type: source.type,

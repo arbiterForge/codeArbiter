@@ -1,19 +1,116 @@
 /* codeArbiter docs — brand theme.
    Palette lifted from docs/banner.svg: "gate gold" (#e3b341 / #d29922) on a
    deep slate (#0b0f14). The accent variables retint Starlight site-wide; the
-   rest is scoped to the splash landing page. */
+   rest is scoped to the splash landing page.
+
+   DESIGN SYSTEM CONTRACT — downstream authors build on these tokens and
+   classes; never edit this file for per-page content.
+
+   Callout classes (use in MDX/Astro via <div class="ca-callout ca-callout--{type}">):
+     .ca-callout--note      informational, slate-blue left border
+     .ca-callout--warn      caution, amber left border
+     .ca-callout--gate      gate-catch highlight, gold left border + tinted bg
+     .ca-callout--preview   Feature Forge preview, ember-orange left border
+
+   Badge class (inline span):
+     .ca-badge              small pill label (use data-kind="preview" for orange)
+
+   Diagram container:
+     .ca-diagram            centers + constrains an SVG figure with accessible border
+
+   Gate-catch terminal:
+     .ca-terminal           animated terminal shell for the gate-catch demo
+     .ca-terminal__body     scrollable output area
+     .ca-terminal__line     one output line (role="listitem")
+     .ca-terminal__prompt   shell prompt prefix
+     .ca-terminal__error    red-tinted blocked-commit line
+     .ca-terminal__pass     green-tinted gate-pass line
+*/
 
 :root {
-  --sl-color-accent-low: #3b2e0a;
-  --sl-color-accent: #c0871d;
+  /* ---- Brand palette ---- */
+  --ca-gold:          #e3b341;
+  --ca-gold-dim:      #d29922;
+  --ca-gold-low:      #3b2e0a;
+  --ca-slate:         #0b0f14;
+  --ca-slate-mid:     #131a23;
+  --ca-slate-border:  #22303f;
+  --ca-text-muted:    #8b95a2;
+  --ca-ember:         #d97757;     /* Feature Forge / preview channel */
+  --ca-ember-dim:     #c0643e;
+
+  /* ---- Callout palette ---- */
+  --ca-callout-note-border:   #5b8dd9;
+  --ca-callout-note-bg:       rgba(91, 141, 217, 0.07);
+  --ca-callout-warn-border:   #d29922;
+  --ca-callout-warn-bg:       rgba(210, 153, 34, 0.08);
+  --ca-callout-gate-border:   #e3b341;
+  --ca-callout-gate-bg:       rgba(227, 179, 65, 0.09);
+  --ca-callout-preview-border:#d97757;
+  --ca-callout-preview-bg:    rgba(217, 119, 87, 0.09);
+
+  /* ---- Badge palette ---- */
+  --ca-badge-preview-bg:      rgba(217, 119, 87, 0.18);
+  --ca-badge-preview-text:    #f0b35a;
+  --ca-badge-stable-bg:       rgba(91, 141, 217, 0.14);
+  --ca-badge-stable-text:     #88b4ea;
+
+  /* ---- Terminal palette ---- */
+  --ca-term-bg:       #0d1117;
+  --ca-term-border:   color-mix(in srgb, var(--ca-gold) 18%, transparent);
+  --ca-term-header:   #161c24;
+  --ca-term-text:     #c9d1d9;
+  --ca-term-prompt:   var(--ca-gold-dim);
+  --ca-term-error:    #ff7b72;
+  --ca-term-pass:     #3fb950;
+  --ca-term-dim:      #6e7b8b;
+
+  /* ---- Starlight accent overrides ---- */
+  --sl-color-accent-low:  var(--ca-gold-low);
+  --sl-color-accent:      #c0871d;
   --sl-color-accent-high: #ecd083;
-  --ca-gold: #e3b341;
-  --ca-gold-dim: #d29922;
 }
+
 :root[data-theme="dark"] {
-  --sl-color-accent-low: #3b2e0a;
-  --sl-color-accent: #e3b341;
+  --sl-color-accent-low:  var(--ca-gold-low);
+  --sl-color-accent:      var(--ca-gold);
   --sl-color-accent-high: #f3e1a6;
+}
+
+/* ---- Light-mode token overrides ----
+   medium-web §7.D — design light and dark together. The :root block above is a
+   dark palette; every custom-styled component (callouts, badges, the diagram
+   container, muted prose text) needs a light-base counterpart so Starlight's
+   light theme does not render dark blobs on a white shell.
+
+   The gate-catch terminal is deliberately NOT relit: a terminal emulator reads
+   as dark chrome by convention, and its body is internally AA (light text on
+   #0d1117). It is a self-contained dark surface in both modes, not an
+   un-adapted leak. */
+:root[data-theme="light"] {
+  /* Muted prose text must clear WCAG AA (4.5:1) on the light shell.
+     #586072 ≈ 6.3:1 on white — used by the hero lead and terminal-section
+     heading (landing.css) and diagram captions. */
+  --ca-text-muted:    #586072;
+
+  /* Slate surfaces flip to light neutrals so the diagram container and hero
+     command block read as light cards, not dark cutouts. */
+  --ca-slate:         #eef1f5;
+  --ca-slate-mid:     #f4f6f9;
+  --ca-slate-border:  #d2d9e2;
+
+  /* Callout tints: same hues, slightly stronger alpha to register on white.
+     Borders stay saturated; they already pass on a light base. */
+  --ca-callout-note-bg:       rgba(45, 99, 173, 0.08);
+  --ca-callout-warn-bg:       rgba(166, 116, 16, 0.10);
+  --ca-callout-gate-bg:       rgba(176, 134, 25, 0.11);
+  --ca-callout-preview-bg:    rgba(192, 100, 62, 0.10);
+
+  /* Badge pills: light tint backgrounds with darkened text that clears AA. */
+  --ca-badge-preview-bg:      rgba(217, 119, 87, 0.14);
+  --ca-badge-preview-text:    #9a4b27;
+  --ca-badge-stable-bg:       rgba(91, 141, 217, 0.13);
+  --ca-badge-stable-text:     #2f5aa0;
 }
 
 /* ---- Splash hero: brand glow + tighter vertical rhythm ---- */
@@ -72,4 +169,250 @@
 .sl-markdown-content h2 {
   border-block-end: 1px solid var(--sl-color-gray-5);
   padding-block-end: 0.25rem;
+}
+
+/* =========================================================
+   CALLOUTS
+   Usage: <div class="ca-callout ca-callout--{note|warn|gate|preview}">
+            <p class="ca-callout__label">Note</p>
+            <p>Body text here.</p>
+          </div>
+   ========================================================= */
+
+.ca-callout {
+  border-inline-start: 3px solid var(--ca-callout-note-border);
+  background: var(--ca-callout-note-bg);
+  border-radius: 0 0.4rem 0.4rem 0;
+  padding: 0.75rem 1rem;
+  margin-block: 1.25rem;
+}
+
+.ca-callout--note {
+  border-color: var(--ca-callout-note-border);
+  background: var(--ca-callout-note-bg);
+}
+
+.ca-callout--warn {
+  border-color: var(--ca-callout-warn-border);
+  background: var(--ca-callout-warn-bg);
+}
+
+.ca-callout--gate {
+  border-color: var(--ca-callout-gate-border);
+  background: var(--ca-callout-gate-bg);
+}
+
+.ca-callout--preview {
+  border-color: var(--ca-callout-preview-border);
+  background: var(--ca-callout-preview-bg);
+}
+
+/* Optional label line inside the callout */
+.ca-callout__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-block-end: 0.35rem;
+  opacity: 0.75;
+}
+
+.ca-callout--note   .ca-callout__label { color: var(--ca-callout-note-border); }
+.ca-callout--warn   .ca-callout__label { color: var(--ca-callout-warn-border); }
+.ca-callout--gate   .ca-callout__label { color: var(--ca-callout-gate-border); }
+.ca-callout--preview .ca-callout__label { color: var(--ca-callout-preview-border); }
+
+/* Remove margin from last child inside callout */
+.ca-callout > *:last-child {
+  margin-block-end: 0;
+}
+
+/* =========================================================
+   BADGE
+   Usage: <span class="ca-badge" data-kind="preview">preview</span>
+          <span class="ca-badge" data-kind="stable">stable</span>
+   ========================================================= */
+
+.ca-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15em 0.5em;
+  border-radius: 0.25rem;
+  vertical-align: middle;
+  line-height: 1.4;
+  /* default: preview style */
+  background: var(--ca-badge-preview-bg);
+  color: var(--ca-badge-preview-text);
+  border: 1px solid color-mix(in srgb, var(--ca-ember) 30%, transparent);
+}
+
+.ca-badge[data-kind="preview"] {
+  background: var(--ca-badge-preview-bg);
+  color: var(--ca-badge-preview-text);
+  border-color: color-mix(in srgb, var(--ca-ember) 30%, transparent);
+}
+
+.ca-badge[data-kind="stable"] {
+  background: var(--ca-badge-stable-bg);
+  color: var(--ca-badge-stable-text);
+  border-color: color-mix(in srgb, var(--ca-callout-note-border) 30%, transparent);
+}
+
+/* =========================================================
+   DIAGRAM CONTAINER
+   Usage: <figure class="ca-diagram">
+            <img src="..." alt="..." />
+            <!-- OR an inline <svg> with <title> -->
+          </figure>
+   ========================================================= */
+
+.ca-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-block: 2rem;
+  padding: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 16%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--ca-slate) 60%, transparent);
+  overflow-x: auto;
+}
+
+.ca-diagram > svg,
+.ca-diagram > img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ca-diagram figcaption {
+  margin-block-start: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--ca-text-muted);
+  text-align: center;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.04em;
+}
+
+/* =========================================================
+   GATE-CATCH TERMINAL
+   Usage: <div class="ca-terminal" role="region" aria-label="Gate catch demo">
+            <div class="ca-terminal__titlebar" aria-hidden="true">
+              <span class="ca-terminal__dot"></span>
+              <span class="ca-terminal__dot"></span>
+              <span class="ca-terminal__dot"></span>
+              <span class="ca-terminal__title">terminal</span>
+            </div>
+            <ol class="ca-terminal__body" role="list" aria-label="Terminal output">
+              <li class="ca-terminal__line" role="listitem">
+                <span class="ca-terminal__prompt">$</span>
+                <span>git commit -m "add feature"</span>
+              </li>
+              <li class="ca-terminal__line ca-terminal__line--error" role="listitem">
+                <span>H-09 BLOCKED: banned crypto pattern detected.</span>
+              </li>
+              <li class="ca-terminal__line ca-terminal__line--pass" role="listitem">
+                <span>Gate passed after fix.</span>
+              </li>
+            </ol>
+          </div>
+
+   Animation: lines fade in sequentially via --ca-term-delay CSS custom property.
+   prefers-reduced-motion: collapse animation, render transcript statically.
+   ========================================================= */
+
+.ca-terminal {
+  background: var(--ca-term-bg);
+  border: 1px solid var(--ca-term-border);
+  border-radius: 0.6rem;
+  overflow: hidden;
+  font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+  font-size: 0.825rem;
+  line-height: 1.6;
+  margin-block: 1.5rem;
+  /* Prevent CLS when animation runs */
+  contain: layout;
+}
+
+.ca-terminal__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--ca-term-header);
+  border-block-end: 1px solid color-mix(in srgb, var(--ca-gold) 10%, transparent);
+}
+
+.ca-terminal__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--ca-slate-border);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.ca-terminal__title {
+  margin-inline-start: auto;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--ca-term-dim);
+  text-transform: lowercase;
+}
+
+.ca-terminal__body {
+  padding: 0.875rem 1rem;
+  margin: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ca-slate-border) transparent;
+}
+
+.ca-terminal__line {
+  display: flex;
+  gap: 0.6rem;
+  color: var(--ca-term-text);
+  white-space: pre;
+  /* Animation: each line fades in after its delay */
+  opacity: 0;
+  animation: ca-term-fadein 0.25s ease forwards;
+  animation-delay: var(--ca-term-delay, 0s);
+}
+
+.ca-terminal__prompt {
+  color: var(--ca-term-prompt);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.ca-terminal__line--error {
+  color: var(--ca-term-error);
+}
+
+.ca-terminal__line--pass {
+  color: var(--ca-term-pass);
+}
+
+.ca-terminal__line--dim {
+  color: var(--ca-term-dim);
+}
+
+@keyframes ca-term-fadein {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Reduced-motion: skip animation, render all lines immediately and statically */
+@media (prefers-reduced-motion: reduce) {
+  .ca-terminal__line {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
 }
