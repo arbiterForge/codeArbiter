@@ -23,9 +23,10 @@ that fights `plans/`.
 - A structured task entry: top-level lifecycle line + indented content sub-bullets.
   - Lifecycle marker `[ ]` queued · `[~]` in-progress · `[x]` done, with dated
     `(started YYYY-MM-DD)` / `(done YYYY-MM-DD)` parentheticals.
-  - Content-bearing ID `‹group›.‹type›.‹seq4›` (e.g. `poc.auth.0001`): `group` = build
+  - Content-bearing ID `‹group›.‹type›.‹seq›` (e.g. `poc.auth.0001`): `group` = build
     phase (reused from decompose's `02-phased-build-plan.md`), `type` = domain/area
-    token, `seq` = zero-padded, numbered within each `group.type` namespace.
+    token, `seq` = a `>=4`-digit zero-padded number (growth past 9999 allowed),
+    numbered within each `group.type` namespace.
   - Sub-fields `Desc`, `Done when`, `Boundaries`. `ID + title + marker` are mandatory;
     the three sub-fields are expected but may read `TBD` until refined.
   - `Boundaries` uses the project's live vocabulary ("security boundary" / "trust
@@ -33,9 +34,14 @@ that fights `plans/`.
     foreshadows a downstream `security-reviewer` / `crypto-compliance` /
     `secret-handling` gate — it never replaces those gates.
 - A pure, fixture-testable helper (`_taskboardlib.py`) shared by both readers:
-  `parse_board`, `validate_id`, `count_in_flight`, `stale_in_progress`.
+  `parse_board`, `validate_id`, `duplicate_ids`, `count_in_flight`,
+  `stale_in_progress`, `undated_in_progress`, `lint_board`, `startup_summary`.
 - Count fix consumed by both `session-start.py` and `statusline.py` (lockstep).
-- A SessionStart stale-in-progress nudge.
+- A SessionStart stale-in-progress nudge, plus an undated-in-progress notice and a
+  `lint_board` pass that SURFACES a task at risk of dropping off the map — a marker
+  not at column 0 (indented / no-space / wrong-bullet), or an invalid/duplicate ID.
+  This is the live surface for `validate_id` / `duplicate_ids` (without it they are
+  dead code and a one-character slip hides a real task silently).
 - Oversize-board degradation (`>65536B` not body-parsed).
 - Scaffold-template documentation of the schema; migration of this repo's own
   `open-tasks.md`.
@@ -48,7 +54,12 @@ that fights `plans/`.
   sentence; per-step paths + verification commands belong to `plans/`, testable criteria
   to a spec.
 - No live cross-file move to `done-tasks.md` — done is an in-place `[x]` flip; archival
-  is a separate, deliberate, confirmed, append-only sweep (deferred, CONFIRM-07).
+  is a separate, deliberate, confirmed, append-only sweep (deferred — see D-2 in
+  `open-questions.md`).
+- No automated transition writer in the MVP: flipping a marker `[ ]`→`[~]`→`[x]` (and
+  adding the `(started ...)` date) is HAND-EDITED. A command to do it is deferred — see
+  D-1. This is the main residual drop-off risk: a task started but never flipped to
+  `[~]` (with a date) is invisible to the stale nudge.
 - No router+core+leaves bundle for a mutable task list.
 - Not a UI/TUI kanban; the artifact is a markdown file.
 

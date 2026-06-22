@@ -87,6 +87,13 @@ class CountTest(unittest.TestCase):
         non_done = [t for t in tb.parse_board(SAMPLE) if t.state != "done"]
         self.assertEqual(tb.count_in_flight(SAMPLE), len(non_done))
 
+    def test_blank_bullets_not_counted(self):
+        # H-2: a bare "- ", whitespace-only, or empty "- [ ]" has no content and
+        # must not inflate the count (lint surfaces them instead).
+        self.assertEqual(tb.count_in_flight("- \n-  \n- [ ]\n"), 0)
+        # ...but a real legacy bare bullet WITH content still counts.
+        self.assertEqual(tb.count_in_flight("- real legacy task\n"), 1)
+
 
 class ValidateIdTest(unittest.TestCase):
     """AC-09: dotted ‹group›.‹type›.‹seq4› grammar + duplicate reporting."""
@@ -99,6 +106,11 @@ class ValidateIdTest(unittest.TestCase):
         for bad in ("poc.auth", "poc.auth.1", "poc.auth.42", "poc..0001",
                     "poc.auth.0001x", "PoC.auth.0001", "poc.auth.", "", "auth.0001"):
             self.assertFalse(tb.validate_id(bad), bad)
+
+    def test_rejects_trailing_newline(self):
+        # M-3: `$` would accept a trailing newline; `\Z` must not.
+        self.assertFalse(tb.validate_id("poc.auth.0001\n"))
+        self.assertFalse(tb.validate_id("poc.auth.0001 "))
 
     def test_duplicate_ids_reported(self):
         text = ("- [ ] poc.auth.0001 — first\n"
@@ -141,6 +153,23 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(tasks["poc.auth.0003"].state, "done")
         self.assertEqual(tasks["poc.auth.0003"].done, _date(2026, 6, 15))
 
+    def test_subfields_do_not_leak_across_heading(self):
+        # M-1: a ## heading between a task and an indented sub-bullet must close
+        # the task so the sub-field cannot bind to the wrong (prior) task.
+        text = ("- [ ] poc.api.0001 — first\n"
+                "## Done\n"
+                "  - Desc: this belongs to nobody\n")
+        first = tb.parse_board(text)[0]
+        self.assertEqual(first.id, "poc.api.0001")
+        self.assertEqual(first.desc, "")   # NOT leaked across the heading
+
+    def test_decoy_started_phrase_does_not_shadow_real_date(self):
+        # M-2: a non-date "(started ...)" earlier in the title must not block the
+        # real trailing date from being parsed.
+        text = "- [~] poc.api.0001 — Refactor (started by Bob) cache  (started 2026-06-18)\n"
+        t = tb.parse_board(text)[0]
+        self.assertEqual(t.started, _date(2026, 6, 18))
+
 
 class StaleTest(unittest.TestCase):
     """AC-03 / AC-07: stale [~] detection with an injected 'today'."""
@@ -164,6 +193,66 @@ class StaleTest(unittest.TestCase):
         self.assertEqual(r["count"], 0)
         # still counted as in-flight despite the bad date
         self.assertEqual(tb.count_in_flight(text), 1)
+
+    def test_same_age_tie_with_legacy_bullet_never_crashes(self):
+        # B-1 regression: two same-age stale [~] tasks where one is a legacy bare
+        # bullet (id=None). A naive (age, id) sort raises TypeError on the tie —
+        # which would take down the whole SessionStart hook.
+        text = ("- [~] a.b.0001 — A  (started 2026-06-10)\n"
+                "- [~] legacy bare in progress  (started 2026-06-10)\n")
+        r = tb.stale_in_progress(text, today=_date(2026, 6, 21), threshold_days=3)
+        self.assertEqual(r["count"], 2)            # both stale, no crash
+        lines = tb.startup_summary(text, today=_date(2026, 6, 21))  # public path
+        self.assertTrue(any("stale" in ln for ln in lines))
+
+
+class UndatedTest(unittest.TestCase):
+    """Drop-off #3: an in-progress [~] with no start date must be surfaced (it
+    can never age, so the stale nudge alone would miss it forever)."""
+
+    def test_undated_in_progress_collected(self):
+        text = ("- [~] a.b.0001 — no date here\n"
+                "- [~] a.b.0002 — dated  (started 2026-06-18)\n"
+                "- [ ] a.b.0003 — queued\n")
+        undated = tb.undated_in_progress(text)
+        self.assertEqual([t.id for t in undated], ["a.b.0001"])
+
+    def test_startup_surfaces_undated(self):
+        text = "- [~] a.b.0001 — no date here\n"
+        lines = tb.startup_summary(text, today=_date(2026, 6, 21))
+        self.assertTrue(any("no start date" in ln for ln in lines))
+
+
+class LintTest(unittest.TestCase):
+    """Drop-off #2: lint_board SURFACES tasks at risk of vanishing — a marker
+    not in the canonical column-0 position, an invalid ID, or a duplicate ID."""
+
+    def test_clean_board_no_warnings(self):
+        self.assertEqual(tb.lint_board(SAMPLE), [])
+
+    def test_flags_markers_not_at_column_zero(self):
+        for bad in ("  - [ ] a.b.0001 — indented",     # indented
+                    "-[ ] a.b.0001 — no space",         # no space after dash
+                    "* [ ] a.b.0001 — wrong bullet",    # asterisk bullet
+                    "\t- [~] a.b.0001 — tab",           # tab-indented
+                    "[ ] a.b.0001 — no dash"):          # bare marker
+            warnings = tb.lint_board(bad)
+            self.assertTrue(any("malformed" in w for w in warnings), bad)
+            # ...and the count is structurally blind to it (that's why we lint):
+            self.assertEqual(tb.count_in_flight(bad), 0, bad)
+
+    def test_marker_inside_title_is_not_flagged(self):
+        # A legacy bullet whose TITLE contains "[x]" must not be a false positive.
+        self.assertEqual(tb.lint_board("- fix the [x] rendering bug\n"), [])
+
+    def test_flags_invalid_id(self):
+        warnings = tb.lint_board("- [ ] poc.auth.1 — under-padded seq\n")
+        self.assertTrue(any("invalid task id" in w for w in warnings))
+
+    def test_flags_duplicate_id(self):
+        text = "- [ ] a.b.0001 — one\n- [ ] a.b.0001 — two\n"
+        warnings = tb.lint_board(text)
+        self.assertTrue(any("duplicate task id" in w for w in warnings))
 
 
 class NudgeTest(unittest.TestCase):
@@ -229,6 +318,25 @@ class ReaderIntegrationTest(unittest.TestCase):
             state = mod.arbiter_state(tmp)
             self.assertEqual(state["tasks"], 3)   # done excluded, not 6
 
+    def test_statusline_fallback_still_excludes_done(self):
+        # H-1: if _taskboardlib import fails, the degraded fallback must STILL
+        # exclude done — never silently re-inflate to the pre-schema count.
+        import tempfile
+        mod = _load("statusline", "statusline.py")
+        mod._count_in_flight = None   # simulate the import-failure path
+        with tempfile.TemporaryDirectory() as tmp:
+            cad = os.path.join(tmp, ".codearbiter")
+            os.makedirs(cad)
+            with open(os.path.join(cad, "CONTEXT.md"), "w", encoding="utf-8") as f:
+                f.write("---\narbiter: enabled\nstage: 2\n---\n")
+            with open(os.path.join(cad, "open-tasks.md"), "w", encoding="utf-8") as f:
+                f.write(SAMPLE)
+            open(os.path.join(cad, "overrides.log"), "w").close()
+            with open(os.path.join(cad, "last-checkpoint"), "w") as f:
+                f.write("0\n")
+            state = mod.arbiter_state(tmp)
+            self.assertEqual(state["tasks"], 3)   # fallback excludes done too
+
 
 class ScaffoldTest(unittest.TestCase):
     """AC-06: the init template documents the schema."""
@@ -254,6 +362,9 @@ class RepoBoardConformsTest(unittest.TestCase):
         for t in tb.parse_board(text):
             if t.id is not None:
                 self.assertTrue(tb.validate_id(t.id), f"bad id: {t.id}")
+        # Independent ground-truth check (NOT self-consistent with count): lint
+        # would catch a malformed/indented/duplicate entry the count is blind to.
+        self.assertEqual(tb.lint_board(text), [])
 
 
 if __name__ == "__main__":

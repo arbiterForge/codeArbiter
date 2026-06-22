@@ -388,8 +388,11 @@ def arbiter_state(root):
     ot_path = os.path.join(cad, "open-tasks.md")
     if _count_in_flight is not None:
         tasks = _count_in_flight(_read_board(ot_path) or "")
-    else:  # degraded fallback: pre-schema count (never crashes the box)
-        tasks = count_matches(ot_path, r"^- ")
+    else:
+        # Degraded fallback (only if _taskboardlib failed to import): mirror
+        # count_in_flight's done-exclusion inline so the segment never silently
+        # re-inflates to the pre-schema count. Never crashes the box.
+        tasks = count_matches(ot_path, r"^- (?!\[[xX]\])")
     return {
         "stage": fm.get("stage", "-"),
         "tasks": tasks,

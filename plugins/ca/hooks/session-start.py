@@ -477,10 +477,19 @@ def main():
     ot_text = read_text(ot)
     if ot_text is not None:
         # Shared helper: in-flight count (excludes done) + a stale-in-progress
-        # nudge when a [~] task has sat past the threshold. Oversize boards
-        # degrade to a one-line notice.
-        for _line in _taskboardlib.startup_summary(ot_text, datetime.date.today()):
-            print(_line)
+        # nudge + undated/malformed warnings. Oversize boards degrade to a
+        # one-line notice. Guarded: the task board must never take down the
+        # linchpin hook — on any unexpected parse error, fail LOUD (stderr
+        # breadcrumb) and fall back to the raw count, never go dormant.
+        try:
+            for _line in _taskboardlib.startup_summary(ot_text, datetime.date.today()):
+                print(_line)
+        except Exception as _e:  # noqa: BLE001 — never crash session startup
+            n = sum(1 for ln in ot_text.splitlines()
+                    if ln.startswith("- ") and not ln.startswith("- [x]"))
+            print(f"in-flight tasks: {n}")
+            print(f"codeArbiter: task-board summary degraded ({_e}); "
+                  f"check .codearbiter/open-tasks.md", file=sys.stderr)
 
     print("Present this state, then await a slash command. Type /ca:commands for the catalog.")
 

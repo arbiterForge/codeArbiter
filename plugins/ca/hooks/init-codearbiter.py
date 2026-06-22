@@ -65,7 +65,7 @@ Schema (one task = a lifecycle line + indented content sub-bullets):
   `group.type`. ID + title + marker are required.
 - `Desc` / `Done when` / `Boundaries` are filled when known (`TBD` until then).
   Keep `Done when` to one coarse sentence — per-step verification belongs to a
-  plan, not here. `Boundaries` names the security/trust boundaries the task is
+  plan, not here. `Boundaries` names the security/trust boundary the task is
   expected to touch (auth, crypto, secrets, ...).
 """
 

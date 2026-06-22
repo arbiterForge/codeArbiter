@@ -1,9 +1,8 @@
 # Open tasks
 
 In-flight and queued work for the codeArbiter v2 rewrite. One top-level `- ` bullet
-per task; the statusline and SessionStart hook count these, EXCLUDING done (`- [x]`).
-Schema: see the scaffold note in `plugins/ca/hooks/init-codearbiter.py` (`OPEN_TASKS`)
-or `.codearbiter/specs/task-board-lifecycle.md`.
+per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
+(`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
 - [ ] v2.release.0001 - Phase 7 tone pass + marketplace publication
