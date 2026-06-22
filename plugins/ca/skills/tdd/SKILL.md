@@ -106,3 +106,4 @@ Gate: clean lint and type-check, zero errors — this is what clears the path to
 - MUST NOT lower a coverage threshold without a decision recorded in `CONTEXT.md`.
 - MUST NOT inline-suppress a lint rule without a written reason, and never to bypass a security-relevant rule.
 - MUST NOT guess the test, coverage, or lint command — read `tech-stack.md` or STOP.
+- MUST, at exit, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any `[NEEDS-TRIAGE]` raised this run — batch-confirm promoting work to `open-tasks.md` and decisions to `open-questions.md` so nothing languishes; nothing auto-promotes interactively.

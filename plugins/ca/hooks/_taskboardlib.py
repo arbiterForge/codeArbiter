@@ -209,7 +209,8 @@ def _split_id_title(body):
     else:
         tid = None
         rest = body
-    title = re.sub(r"\((?:started|done)\s+[^)]*\)", "", rest).strip()
+    title = re.sub(r"\((?:started|done)\s+[^)]*\)", "", rest)
+    title = re.sub(r"\(from\s+[^)]*\)", "", title).strip()   # back-ref is metadata, not title
     return tid, title
 
 
@@ -319,6 +320,225 @@ def startup_summary(text, today, threshold_days=STALE_THRESHOLD_DAYS):
                      f"(cannot age -- add a date or close)")
     lines.extend(lint_board(text))
     return lines
+
+
+# ---------------------------------------------------------------------------
+# Writer transforms (pure: text in -> new text out; the /ca:task command does I/O)
+# ---------------------------------------------------------------------------
+
+# A harvested follow-up candidate. kind in {"work", "decision"}; blocking marks a
+# decision that must gate (routed to a [CONFIRM-NN]/escalation, never the
+# non-gating Deferred-decisions section). Defaults keep the 4-arg constructions valid.
+Candidate = namedtuple("Candidate", "kind desc origin boundaries blocking")
+Candidate.__new__.__defaults__ = (False,)
+# The outcome of a promote pass.
+PromoteResult = namedtuple("PromoteResult", "candidates board questions audit applied")
+
+_MARK_BY_STATE = {"queued": " ", "in_progress": "~", "done": "x"}
+
+
+def next_seq(text, group, type):
+    """Next free 4-digit seq in the `group.type` ID namespace (1 when none)."""
+    prefix = f"{group}.{type}."
+    mx = 0
+    for t in parse_board(text):
+        if t.id and t.id.startswith(prefix):
+            tail = t.id[len(prefix):]
+            if tail.isdigit():
+                mx = max(mx, int(tail))
+    return mx + 1
+
+
+def _join(lines, original):
+    return "\n".join(lines) + ("\n" if original.endswith("\n") else "")
+
+
+def _insert_under_section(text, block, section):
+    """Insert `block` immediately after the `section` heading, creating the
+    section at the end if it is absent."""
+    lines = text.splitlines()
+    for i, ln in enumerate(lines):
+        if ln.strip() == section.strip():
+            lines.insert(i + 1, block)
+            return _join(lines, text or "\n")
+    base = text if (text == "" or text.endswith("\n")) else text + "\n"
+    return f"{base}{section}\n{block}\n"
+
+
+def add_entry(text, *, desc, origin=None, group=None, type=None,
+              boundaries=None, section="## In-flight"):
+    """Append a queued entry. ID-less by default; mints `<group>.<type>.<NNNN>`
+    when both group and type are given. Optional `(from <origin>)` back-ref and a
+    `Boundaries` sub-bullet. The desc is collapsed to one physical line so a
+    multi-line candidate can never inject an orphan/malformed second bullet."""
+    desc = (desc or "").replace("\r", " ").replace("\n", " ").strip()
+    tid = f"{group}.{type}.{next_seq(text, group, type):04d}" if (group and type) else None
+    body = f"{tid} - {desc}" if tid else desc
+    line = f"- [ ] {body}"
+    if origin:
+        line += f"  (from {origin})"
+    if boundaries:
+        line += f"\n  - Boundaries: {', '.join(boundaries)}"
+    return _insert_under_section(text, line, section)
+
+
+def _find_task_line(lines, target):
+    """Index of the task line matching `target` (a dotted id, or the title of an
+    ID-less item), or -1. PREFERS an open match: a done line never shadows a live
+    task of the same title (it is only used as a fallback for an id-targeted
+    re-`done`)."""
+    fallback = -1
+    for i, ln in enumerate(lines):
+        if not _TOP_RE.match(ln):
+            continue
+        parsed = parse_board(ln)
+        if not parsed:
+            continue
+        t = parsed[0]
+        if t.id == target or (t.id is None and t.title == target):
+            if t.state != "done":
+                return i
+            if fallback < 0:
+                fallback = i
+    return fallback
+
+
+def set_state(text, target, state, today, *, assign=None):
+    """Flip a task's marker and stamp the matching date. `target` is a dotted id
+    or the title of an ID-less item (use the id when the desc contains parentheses
+    — title matching is best-effort). `in_progress` ALWAYS stamps `(started …)`;
+    `done` stamps `(done …)`. With `assign="group.type"` on an ID-less target,
+    mints the dotted ID at pick-up. A re-`done` is a no-op; a missing target
+    returns the text unchanged (no raise). The line is mutated in place so the
+    description text (and the `(from …)` back-ref) is preserved verbatim."""
+    lines = text.splitlines()
+    idx = _find_task_line(lines, target)
+    if idx < 0:
+        return text
+    raw = lines[idx]
+    t = parse_board(raw)[0]
+    if state == "done" and t.state == "done":
+        return text
+    m = re.match(r"^- (?:\[[ xX~]\] )?(.*)$", raw)
+    rest = m.group(1) if m else raw[2:]
+    if assign and t.id is None and "." in assign:   # mint a dotted ID on pick-up
+        g, ty = assign.split(".", 1)
+        rest = f"{g}.{ty}.{next_seq(text, g, ty):04d} - {rest}"
+    rest = re.sub(r"\s*\((?:started|done)\s+[^)]*\)", "", rest).rstrip()  # drop old stamp, keep the rest
+    line = f"- [{_MARK_BY_STATE[state]}] {rest}"
+    if state == "in_progress":
+        line += f"  (started {today.isoformat()})"
+    elif state == "done":
+        line += f"  (done {today.isoformat()})"
+    lines[idx] = line
+    return _join(lines, text)
+
+
+def already_promoted(text, origin):
+    """True iff an OPEN (non-done) entry already carries `(from <origin>)`."""
+    needle = f"(from {origin})"
+    return any(_TOP_RE.match(ln) and not _DONE_RE.match(ln) and needle in ln
+               for ln in text.splitlines())
+
+
+# ---------------------------------------------------------------------------
+# Harvest extractors (pure: artifact text -> candidate list)
+# ---------------------------------------------------------------------------
+
+def extract_needs_triage(text, origin):
+    """Candidates from `[NEEDS-TRIAGE]` markers (tdd / brainstorming /
+    writing-plans / commit-gate residue). kind=work."""
+    out = []
+    for ln in (text or "").splitlines():
+        if "[NEEDS-TRIAGE]" in ln:
+            desc = ln.split("[NEEDS-TRIAGE]", 1)[1].strip(" \t-:")
+            out.append(Candidate("work", desc, f"{origin}#triage-{len(out) + 1}", []))
+    return out
+
+
+def extract_deferrable(text, origin):
+    """Candidates from a checkpoint doc's `### DEFERRABLE` section. The real
+    checkpoint-aggregator emits a markdown TABLE (`| Finding | Source | Severity |`);
+    a hand-written bullet list is also accepted. The heading must START with
+    DEFERRABLE (so a prose `###` mentioning the word doesn't trigger), and only
+    column-0 bullets / table rows are taken (nested sub-bullets are ignored).
+    kind=work (re-tag to decision at the confirm step if it is really a decision)."""
+    out, in_def = [], False
+    for ln in (text or "").splitlines():
+        s = ln.strip()
+        if s.startswith("###"):
+            in_def = s.lstrip("# ").upper().startswith("DEFERRABLE")
+            continue
+        if not in_def:
+            continue
+        if s.startswith("|"):                       # table row
+            cells = [c.strip() for c in s.strip("|").split("|")]
+            first = cells[0] if cells else ""
+            if not first or first.lower() == "finding" or set(first) <= set("-: "):
+                continue                            # header / separator row
+            desc = first
+        elif ln.startswith("- ") or ln.startswith("* "):   # column-0 bullet only
+            desc = ln[2:].strip()
+        else:
+            continue
+        out.append(Candidate("work", desc, f"{origin}#deferrable-{len(out) + 1}", []))
+    return out
+
+
+def extract_low_confidence(text, origin):
+    """Candidates from `sprint-log.md` `confidence: low` auto-decisions. kind=work."""
+    out = []
+    for ln in (text or "").splitlines():
+        if ln.lstrip().startswith("#") and "confidence: low" in ln.lower():
+            title = re.split(r"·\s*confidence:\s*low", ln.lstrip("#").strip(),
+                             flags=re.I)[0].strip()
+            out.append(Candidate("work", title, f"{origin}#{len(out) + 1}", []))
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Promote (route + dedup + apply)
+# ---------------------------------------------------------------------------
+
+def _add_deferred_decision(questions, desc, origin):
+    block = f"- **(harvested)** {desc}  (from {origin})"
+    lines = questions.splitlines()
+    for i, ln in enumerate(lines):
+        if ln.strip().lower().startswith("## deferred decisions"):
+            lines.insert(i + 1, block)
+            return _join(lines, questions or "\n")
+    base = questions if (questions == "" or questions.endswith("\n")) else questions + "\n"
+    return f"{base}\n## Deferred decisions\n{block}\n"
+
+
+def promote(board, questions, candidates, *, mode, today):
+    """Route follow-up candidates: work -> board, decision -> questions. Dedups by
+    origin. mode="interactive" returns the fresh candidates WITHOUT mutating
+    (caller confirms, then applies); mode="auto" applies and returns an audit."""
+    fresh = []
+    for c in candidates:
+        if c.kind == "work" and already_promoted(board, c.origin):
+            continue
+        if c.kind == "decision" and f"(from {c.origin})" in questions:
+            continue
+        fresh.append(c)
+    if mode == "interactive":
+        return PromoteResult(fresh, board, questions, [], False)
+    nb, nq, audit = board, questions, []
+    for c in fresh:
+        if c.kind == "work":
+            nb = add_entry(nb, desc=c.desc, origin=c.origin,
+                           boundaries=(c.boundaries or None))
+            audit.append(f"work -> open-tasks: {c.desc} (from {c.origin})")
+        elif getattr(c, "blocking", False):
+            # A blocking decision must GATE — it is never filed into the
+            # non-gating Deferred-decisions section. Escalate for a [CONFIRM-NN].
+            audit.append(f"ESCALATE (blocking decision — author a [CONFIRM-NN]): "
+                         f"{c.desc} (from {c.origin})")
+        else:
+            nq = _add_deferred_decision(nq, c.desc, c.origin)
+            audit.append(f"decision -> open-questions: {c.desc} (from {c.origin})")
+    return PromoteResult(fresh, nb, nq, audit, True)
 
 
 # ---------------------------------------------------------------------------

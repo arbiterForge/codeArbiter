@@ -116,3 +116,4 @@ never on a no-op run.
 - MUST NOT merge to the default branch or discard autonomously — auto-select open-PR only.
 - MUST NOT inherit `decision-variance`'s Rule 1 — `/sprint` decides as the user, reusing only the SMARTS scoring.
 - MUST surface a repeated hard-gate-trip pattern as a planning/confidence signal, not grind past it.
+- MUST, at sprint close, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) in autonomous mode — auto-promote `confidence: low` `sprint-log.md` decisions and any open `[NEEDS-TRIAGE]` to `open-tasks.md` (work) / `open-questions.md` (decisions), each promotion SMARTS-scored and logged. A blocking decision is never auto-promoted — it escalates.

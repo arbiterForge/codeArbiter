@@ -44,6 +44,10 @@ python .github/scripts/test_metrics_lib.py
 # task-board lifecycle helper — in-flight count (excludes done), dotted-ID grammar,
 # field parsing, stale-in-progress nudge, oversize degradation (_taskboardlib)
 python .github/scripts/test_taskboardlib.py
+
+# task-board writer + follow-up harvest — next_seq, add_entry, set_state, dedup,
+# the 3 extractors, and promote routing/modes (_taskboardlib)
+python .github/scripts/test_taskwriter.py
 ```
 
 Only when `plugins/ca/tools/**` changed:
