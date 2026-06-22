@@ -78,7 +78,8 @@ persona, so this hook does it. On every session start it:
    governance line. Later sessions the same day collapse to at most a single offer
    line, or nothing.
 
-**Reads:** `.codearbiter/CONTEXT.md`, `open-questions.md`, `open-tasks.md`;
+**Reads:** `.codearbiter/CONTEXT.md`, `open-questions.md`, `open-tasks.md` (in-flight
+count excluding done, plus a stale-in-progress nudge, via `_taskboardlib`);
 read-only `git` queries (`status`, `rev-list`, `branch -vv`, `worktree list`,
 `stash list`, `rev-parse`). **Writes:** the first-of-day marker
 `.codearbiter/.markers/standup-<date>`, and possibly the statusline pin in

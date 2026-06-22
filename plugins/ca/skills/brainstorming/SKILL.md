@@ -71,3 +71,4 @@ Gate: the spec is approved (by the user under `/feature`, or by logged SMARTS au
 - MUST NOT contradict the NOT-building list or redefine domain vocabulary in `CONTEXT.md` — a contradiction is a conflict to surface, not reconcile.
 - MUST NOT run decompose's six-layer whole-project interview — this is one feature, four phases.
 - MUST log a `/sprint` auto-approval to the `.codearbiter/` audit trail.
+- MUST, at exit, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any `[NEEDS-TRIAGE]` notes raised this run — batch-confirm promoting them to `open-tasks.md` (work) or `open-questions.md` (decisions) so out-of-scope ideas don't vanish.

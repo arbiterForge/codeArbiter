@@ -77,7 +77,7 @@ Emit a summary downstream skills can consume without re-reading the session, the
 - **Summary block:** symptom (one sentence), reproduction profile, hypotheses considered (count + one-line list), evidence ledger summary (CONFIRMED / REFUTED / INCONCLUSIVE per hypothesis), the Phase 4 exit and rationale, and the handoff target.
 - **Exit (a):** route to `/fix` with the confirmed bug statement, cited evidence, and named regression test obligation. The orchestrator routes `/fix` to the `tdd` skill in bug-fix variant, where that test becomes the Phase 1 obligation that must fail before fix code. `debug` does not pre-write the test.
 - **Exit (b):** surface the chosen `/adr` with the ambiguity statement, symptom record, and evidence ledger attached as context, with user attribution.
-- **Exit (c):** append the symptom record and "no action" rationale to `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md` (under a debug-close note) for future reference. No further handoff.
+- **Exit (c):** append a schema-conformant queued entry to `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md` (the format the SessionStart hook and statusline parse — see the `OPEN_TASKS` scaffold note): a top-level `- [ ] <symptom> (logged YYYY-MM-DD)` line, with the "no action" rationale as an indented `- Desc:` sub-bullet. A dotted ID is optional for a debug note. This keeps the note in the in-flight count as an open item to revisit, rather than a bare bullet that drifts from the schema. No further handoff.
 
 Surface the summary and the handoff to the user before the skill exits.
 
