@@ -28,13 +28,34 @@ try {
 export default defineConfig({
   // GitHub Pages project site: served from https://arbiterforge.github.io/codeArbiter/.
   // `base` also applies in local dev — the dev server serves at /codeArbiter/.
+  //
+  // BASE-PATH-SAFE LINK PATTERN for downstream authors:
+  //   - In Starlight MDX/Markdown, use root-relative slugs (no leading slash):
+  //       [Overview](/overview)  →  Starlight maps slugs through the base automatically.
+  //   - In Astro component href props, use import.meta.env.BASE_URL:
+  //       href={`${import.meta.env.BASE_URL}overview/`}
+  //   - Never hardcode "/codeArbiter/" in href strings. That value desynchs
+  //     when the Astro base is changed and is invisible to linting.
   site: "https://arbiterforge.github.io",
   base: "/codeArbiter",
   integrations: [
     starlight({
       title: "codeArbiter",
       description: "Gated software-engineering workflows for Claude Code.",
-      customCss: ["./src/styles/theme.css"],
+      logo: {
+        src: "./src/assets/logo.svg",
+        replacesTitle: true,
+        alt: "codeArbiter",
+      },
+      favicon: "/favicon.svg",
+      customCss: [
+        "./src/styles/theme.css",
+        "./src/styles/callouts.css",
+        "./src/styles/landing.css",
+      ],
+      social: {
+        github: "https://github.com/arbiterforge/codeArbiter",
+      },
       sidebar: [
         {
           label: "Start here",

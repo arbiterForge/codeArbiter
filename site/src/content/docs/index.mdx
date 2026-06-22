@@ -4,75 +4,62 @@ description: Gated software-engineering workflows for Claude Code.
 template: splash
 hero:
   tagline: |
-    Turn ad-hoc AI coding into an orchestrated, gated workflow. Every intent
-    routes to the skill or agent that owns it and clears its gates before it
-    ships. You hold the gates; the user holds the decisions.
+    Orchestrate every Claude Code request through a gated lane.
+    Tests, reviews, and security checks are real stops: not suggestions,
+    not optional, not bypassed under time pressure.
   actions:
-    # Base path is baked in here because hero actions are static frontmatter
-    # (no access to import.meta.env.BASE_URL). Keep in sync with `base` in astro.config.mjs.
     - text: Get started
-      link: /codeArbiter/overview/
+      link: ./overview/
       icon: right-arrow
       variant: primary
-    - text: Concepts
-      link: /codeArbiter/concepts/
+    - text: How it works
+      link: ./concepts/
       icon: open-book
-      variant: secondary
-    - text: GitHub
-      link: https://github.com/arbiterForge/codeArbiter
-      icon: external
       variant: minimal
 ---
 
-import { Card, CardGrid, LinkCard, Steps } from '@astrojs/starlight/components';
+import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
+import ForgeShowcase from '../../components/ForgeShowcase.astro';
 
-<CardGrid>
-  <Card title="Orchestrated" icon="puzzle">
-    One persona routes every request to the skill or agent that owns it — it orchestrates, it does not freelance.
-  </Card>
-  <Card title="Gated" icon="approve-check">
-    Tests, reviews, secrets, and crypto are real stops. "It looks good" is not authorization.
-  </Card>
-  <Card title="Auditable" icon="document">
-    ADRs, a decision log, dated checkpoints, and an append-only override trail record every call.
-  </Card>
-  <Card title="Living reference" icon="list-format">
-    The <a href="/codeArbiter/reference/">command, skill &amp; agent reference</a> is generated from the plugin's own frontmatter — it can't drift.
-  </Card>
-</CardGrid>
+<div class="ca-hero">
+  <p class="ca-hero__what">
+    A Claude Code plugin. One orchestrator. Gated lanes for every kind of work.
+  </p>
 
-## How a request flows
-
-<Steps>
-
-1. **Command** — you invoke a namespaced slash command: `/ca:feature`, `/ca:fix`, `/ca:commit`.
-
-2. **Route** — the orchestrator hands it to the one skill or agent that owns that lane.
-
-3. **Gate** — nothing advances until its gates are green: a failing test, a CRITICAL finding, an unresolved decision are real stops.
-
-4. **Ship** — code reaches version control only through the commit gate, and `main` only through a pull request.
-
-</Steps>
-
-## Start with a lane
-
-Each kind of work has a sanctioned lane, with gates scaled to its risk.
-
-<div class="ca-lanes">
+  <div class="ca-hero__first-command">
 
 ```bash
 /ca:feature "add rate limiting"   # brainstorm → plan → TDD → review → PR
-/ca:fix "login 500 on empty body" # test-first bug fix
+/ca:fix "login 500 on empty body" # test-first bug fix, gate before commit
 /ca:commit                        # the only sanctioned path to a commit
-/ca:sprint --farm "build the docs site"  # autonomous, cheap-worker execution
 ```
+
+  </div>
+</div>
+
+<div class="ca-terminal-section">
+
+## A gate catching a real mistake
+
+The conversion mechanic is not a description of gates. It is a gate doing its job.
+
+<GateCatchTerminal />
 
 </div>
 
-<CardGrid>
-  <LinkCard title="Overview" href="/codeArbiter/overview/" description="Orchestration, gates, context minimization, and the lane model." />
-  <LinkCard title="Concepts" href="/codeArbiter/concepts/" description="Gated lanes, SMARTS, ADRs, checkpoints, and the persona-register split." />
-  <LinkCard title="Reference" href="/codeArbiter/reference/" description="Every command, skill, and agent — auto-generated from the plugin." />
-  <LinkCard title="GitHub" href="https://github.com/arbiterForge/codeArbiter" description="Source, issues, and releases." />
-</CardGrid>
+<div class="ca-laneflow">
+
+<figure class="ca-diagram">
+  <img
+    src="diagrams/lane-flow.svg"
+    alt="Lane flow: a command routes to the owning skill, clears its gate pillars, then ships to version control via a pull request."
+    loading="lazy"
+    width="900"
+    height="160"
+  />
+  <figcaption>Every request flows: command → route → gate → ship. Nothing skips the gate.</figcaption>
+</figure>
+
+</div>
+
+<ForgeShowcase />

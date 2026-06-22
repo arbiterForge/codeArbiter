@@ -1,5 +1,6 @@
 // Shared type contract for the codeArbiter reference generator.
 // Authored as the harness API; individual modules implement against it.
+import type { ForgeStatus } from "./forge-status";
 
 /** The three kinds of plugin source documents the generator reads. */
 export type SourceType = "command" | "skill" | "agent";
@@ -32,6 +33,8 @@ export interface PageInput {
   description?: string;
   model?: string;
   tools?: string;
+  /** Feature Forge preview status for this page, or null/undefined for stable features. */
+  forgeStatus?: ForgeStatus | null;
 }
 
 /** A rendered reference page ready to write to disk. */

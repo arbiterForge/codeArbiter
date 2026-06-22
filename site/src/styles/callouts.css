@@ -1,0 +1,38 @@
+/* codeArbiter docs — callouts.css
+   Page-scoped refinements for callouts and inline diagrams on the Overview and
+   Concepts prose pages. The base .ca-callout / .ca-diagram systems and all tokens
+   live in theme.css; this file only tunes how they sit inside the Starlight prose
+   column. Do NOT redefine the tokens established in theme.css here.
+*/
+
+/* Inline code inside a callout should read as code without fighting the tinted
+   callout background. Lean on the callout's own border token for the chip edge. */
+.ca-callout code {
+  background: color-mix(in srgb, var(--ca-callout-note-border) 12%, transparent);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.92em;
+}
+.ca-callout--gate code {
+  background: color-mix(in srgb, var(--ca-callout-gate-border) 14%, transparent);
+}
+.ca-callout--preview code {
+  background: color-mix(in srgb, var(--ca-callout-preview-border) 14%, transparent);
+}
+
+/* Diagrams embedded mid-prose get room to breathe and never overflow the column. */
+.sl-markdown-content .ca-diagram {
+  margin-block: 1.75rem;
+}
+.ca-diagram img,
+.ca-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ca-diagram figcaption {
+  margin-top: 0.6rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ca-text-muted, #8b95a2);
+}

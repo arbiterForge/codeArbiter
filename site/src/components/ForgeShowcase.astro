@@ -1,0 +1,70 @@
+---
+/**
+ * ForgeShowcase.astro — Feature Forge landing showcase (AC-12, AC-15).
+ *
+ * Explains the two-axis model (SemVer = whole payload version, Feature Forge =
+ * per-feature preview/maturity), the opt-in / dormant / evidence-promoted
+ * discipline, and grounds --farm in context so it is no longer a free-floating
+ * term (AC-15).
+ *
+ * The two-axis-model.svg is embedded by path per the diagram-assets contract.
+ * Class names follow the design-system contract (theme.css).
+ */
+
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<section class="ca-forge" aria-labelledby="forge-heading">
+  <h2 id="forge-heading">The Feature Forge</h2>
+
+  <p>
+    codeArbiter uses two independent versioning axes. SemVer answers one question:
+    did the whole plugin payload change? The Feature Forge answers a different one:
+    is a specific capability ready for general use?
+  </p>
+
+  <figure class="ca-diagram">
+    <img
+      src={`${baseUrl}/diagrams/two-axis-model.svg`}
+      alt="Two-axis model: SemVer left column tracks the whole plugin payload; Feature Forge right column tracks per-feature preview maturity with a promotion arc from preview to stable."
+      loading="lazy"
+      width="900"
+      height="320"
+    />
+    <figcaption>SemVer versions the payload. The Feature Forge versions each feature's maturity.</figcaption>
+  </figure>
+
+  <p>
+    Preview features follow three rules. They are <strong>opt-in</strong>: you
+    enable them by flag, never by default. They ship <strong>dormant</strong>:
+    off unless you turn them on, so a new plugin version never changes your
+    workflow without consent. Promotion to stable requires
+    <strong>real-world evidence</strong>: field usage, not a calendar date or a
+    version bump.
+  </p>
+
+  <div class="ca-callout ca-callout--preview">
+    <p class="ca-callout__label">Preview feature</p>
+    <p>
+      <code>--farm</code> is a preview flag on <code>/ca:sprint</code>. It routes
+      work to cheap parallel workers for autonomous, multi-step execution. Because
+      it is a preview feature, it is opt-in and off by default.
+    </p>
+    <p>
+      Try it: <code>/ca:sprint --farm "build the docs site"</code>
+    </p>
+    <p>
+      <a href={`${baseUrl}/reference/commands/sprint/`}>Full reference for <code>/ca:sprint</code></a>
+    </p>
+  </div>
+
+  <div class="ca-callout ca-callout--note">
+    <p class="ca-callout__label">Stable vs preview</p>
+    <p>
+      Stable commands (<code>/ca:feature</code>, <code>/ca:fix</code>,
+      <code>/ca:commit</code>) are on by default and gate-proven. Preview
+      features carry a <span class="ca-badge" data-kind="preview">preview</span>
+      badge in the reference and require explicit opt-in.
+    </p>
+  </div>
+</section>
