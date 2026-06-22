@@ -6,7 +6,7 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
-## [2.5.0] — 2026-06-21
+## [2.5.0] — 2026-06-22
 
 ### Added
 - **Advisory scope-touch detection for CI, deploy/IaC, and auth** (`H-15`/`H-16`/`H-17`). After a
@@ -25,6 +25,23 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
   small-lane rate, and sprint low-confidence ratio over 20-commit windows, each with a direction arrow
   (↑/↓/→) vs. the prior window. Optional `--window N` to adjust the window size. Bare numbers only —
   not a second `/ca:audit` packet; writes nothing.
+- **Task-board lifecycle + `/ca:task` writer and follow-up harvest** (#118). `open-tasks.md` gains a
+  kanban-style lifecycle (`[ ]` queued, `[~]` in-progress, `[x]` done) with content-bearing IDs, so
+  the in-flight count and stale-task nudge read real state instead of counting every bullet. The board
+  now surfaces malformed or undated entries at SessionStart rather than letting work silently drop off.
+  New `/ca:task add|start|done` is the sanctioned board mutator, and each gated workflow's terminal
+  step harvests its un-actioned residue (NEEDS-TRIAGE markers, the checkpoint DEFERRABLE table,
+  low-confidence sprint decisions) into the durable backlog.
+
+### Fixed
+- **`--farm` setup-doc error messages now point at the file that actually ships** (#119). The no-model
+  and no-API-key guards cited a never-scaffolded `.codearbiter/farm.md`; they now point at
+  `${CLAUDE_PLUGIN_ROOT}/includes/farm.md`, which is part of the plugin payload.
+- **The crypto and secret commit gates now catch the Node/TS forms** (#120). `CRYPTO_RE` detects the
+  TypeScript TLS-verification-disable patterns (the `rejectUnauthorized` bypass and the Node TLS-reject
+  env override), not only the Python form; and `SECRET_RE` matches object-literal secrets
+  (`"api_key": "…"`) plus high-entropy key prefixes (`AKIA`, `ghp_`, `sk-ant-`), not only `=`-style
+  assignments. The `farm.ts` outbound redactor is aligned so the gate and the redactor never disagree.
 
 ## [2.4.6] — 2026-06-19
 
