@@ -53,9 +53,14 @@ export default defineConfig({
         "./src/styles/callouts.css",
         "./src/styles/landing.css",
       ],
-      social: {
-        github: "https://github.com/arbiterforge/codeArbiter",
-      },
+      // Starlight 0.33+ takes an array of link items, not an object.
+      social: [
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/arbiterForge/codeArbiter",
+        },
+      ],
       sidebar: [
         {
           label: "Start here",
