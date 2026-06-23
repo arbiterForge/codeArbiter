@@ -303,3 +303,59 @@ The commit hook flagged 3 lines in `site/package-lock.json` as crypto-sensitive:
 ## Verification
 - typecheck clean, **108/108 vitest** (+4 new for #92), `farm.js` rebuilt. Schema parses; `meta.setup`/`task.setup` validated and drift-contract documented. No auth/crypto/secret surface (hard-gate-clear by design).
 - Caught two line-ending flips (Edit tool on Windows): farm.ts/test stayed LF this run, but plan.schema.json flipped — normalized so the real diff is +10, not +206.
+
+---
+
+# Sprint — release-hardening-debt-paydown · 2026-06-23
+
+Spec `.codearbiter/specs/release-hardening-debt-paydown.md`, plan `plans/release-hardening-debt-paydown.md` — APPROVED at the Phase-1 gate. Premium backend (no `--farm`). Branch `sprint/release-hardening-debt-paydown` off `main`.
+
+**Origin:** `/ca:sprint` seeded with (1) README badge stale vs the 2.5.0 release, (2) adversarial pass over the `release` skill, (3) plan as many `open-tasks.md` items as reasonable. The badge bug proved to be the symptom of a `release` skill written for a single-plugin repo — `ca-sandbox` silently broke its tag resolution, window, `--latest`, and artifact check (3 BLOCK + 4 HIGH findings).
+
+**User decisions at the gate (NOT auto-decided):** full scope (release-hygiene + 3 backfills + 4 docs-site items); BOTH a release-skill update step AND a CI drift guard; full red-team fixing every BLOCK/HIGH; and the docs-site (+ sharp) cluster run as a **parallel Opus worktree unit** (`sprint/site-cluster`), converging to one commit-gate + one PR.
+
+## AD-001 — Parallelization boundary drawn by directory · confidence: high
+- **Point:** how to split the worktree unit from the main-branch unit without file collision.
+- **Options:** (a) split by slice (Slice 4 only in worktree) — but Task 17 (sharp, Slice 3) and Task 19 both edit `site/package.json` → collision; (b) split by directory — all `site/**`+`docs.yml` in the worktree, everything else on main.
+- **SMARTS:** Reliable + Maintainable favor (b) — zero shared files (CI edits land in `ci.yml` on main vs `docs.yml` in the worktree), conflict-free integration by construction.
+- **Chosen:** (b). Site worktree = Tasks 17–22 (`site/**`+`docs.yml`); main branch = Tasks 1–16. Strength: strong.
+
+## AD-002 — Release-skill hardening (Tasks 1–4, 9–12) ACCEPTED · confidence: high
+- BLOCK1 (AC-A1): `LAST_TAG` now `git tag -l 'v[0-9]*' --sort=-v:refname | grep -Ev -- '-(beta|rc|alpha)' | head -1`. Verified: bare `git describe` → `ca-sandbox-v0.1.0` (the bug); fixed → `v2.5.0`.
+- BLOCK2 (AC-A2): window + bump scoped `-- plugins/ca/`. Verified the scope filters `ca-sandbox` commits (`#111`/`#115`).
+- BLOCK3 (AC-A3): Phase-1 asserts derived version == `plugin.json`; STOP on lag.
+- HIGH4 (AC-A4): Phase-1 step 5 asserts README badges/prose-counts + README full-catalog table + canonical `COMMANDS.md` all match the repo; drift is a BLOCK.
+- HIGH5 (AC-A5): `--latest` now conditional on newest-across-both-plugins (`gh release list`), else `--latest=false`.
+- HIGH6 (AC-A6): Phase-3 post-publish read-back (`gh release view --json url,isDraft,tagName`); a failed/unverified publish is no longer a passing gate.
+- HIGH7 (AC-A7): a missing `CHANGELOG:` footer on a bumping commit is now a Phase-1 BLOCK, not a soft finding. Hard rules updated to match.
+
+## AD-003 — Correction to the red-team's "COMMANDS.md both copies" claim · confidence: high
+- The red-team (HIGH 4) called `plugins/ca/commands/COMMANDS.md` a catalog mirror. It is not — it is the `/ca:commands` command body (renders from the canonical root catalog, holds no rows by design; on the case-insensitive Windows FS it is the same file as `commands.md`). The single canonical catalog is `plugins/ca/COMMANDS.md`. Skill text + hard rule corrected to say so; the guard checks the canonical catalog + the README table, not a phantom second copy.
+
+## AD-004 — README drift fixed (Task 5, AC-A9) ACCEPTED · confidence: high
+- `version-2.4.6`→`2.5.0` (badge alt + value); `commands-36`→`37` (badge, "37 commands" summary, `commands/ (37)` tree). Counts re-derived from the repo; skills 20 / agents 15 re-confirmed.
+- **Real catch:** the README full-catalog table was *missing the `/ca:task` row entirely* (had 36 rows for 37 commands) — added it under Project & meta. Verified bijection: 37 catalog slugs ↔ 37 command files, zero drift. plugin.json was already 2.5.0 (release commit bumped it); only the README drifted — exactly the gap the new release step + CI guard close.
+
+## AD-005 — Badge-consistency CI guard (Tasks 6–8, AC-A10) ACCEPTED · confidence: high
+- `.github/scripts/check_badge_consistency.py` (+ test `test_badge_consistency.py`, 11 tests) enforces 5 invariants from the repo: README version badge == `plugin.json`; count badges == file counts; every prose count echo == actual; canonical `COMMANDS.md` ↔ command-file bijection; every command has a README full-catalog row (the `/ca:task`-bug class). Test-first (red on ModuleNotFoundError → green). Live guard passes on HEAD.
+- Wired into CI: unit test in the always-on `hooks` job; a dedicated ca-gated `badge-consistency` job runs the live check. Added `README.md` to the CI trigger paths + `ca` filter (it was not a trigger before, so README drift could ship un-checked). EOL note: `sprint-log.md` was CRLF in git; appended as a pure-append (existing bytes untouched) to satisfy the append-only hook.
+
+## AD-006 — Slice 3 backfills (Tasks 14–16) ACCEPTED · confidence: high
+- **Stale-board catch:** the open-tasks entries were stale — `test_sloplib.py` (16 tests) and `test_hooklib.py`'s `CryptoReTest` already existed. The work was residual-gap closure, not greenfield.
+- Task 14 (AC-B1): +6 `_sloplib` tests — `~~~` fence, the HTML-tag/comment + markdown-link-target branches of `_URL_RE`, leading `./`, empty/None `rel_path`, multi-line findings. 22 tests green. Meaningfulness proven by negative controls (the same dash IS flagged once the exemption context is removed).
+- Task 15 (AC-B2): direct positive assertions for all ~18 undirected CRYPTO_RE branches (createCipher, createHmac, sha1, rc4, 3des, RSA, the full `crypto.*` group) + a narrowness negative (`crypto.timingSafeEqual` must NOT match). 32 tests green. Test-only — `CRYPTO_RE` and `security-controls.md` untouched.
+- Task 16 (AC-B3): wired `test_hooklib.py` + the `plugins/ca/hooks/tests/` suite (481 tests) into CI's `hooks` job — they ran nowhere in CI before, so the backfills are now enforced, not decorative. Full discover green locally (exit 0) before wiring.
+
+## AD-007 — Site cluster reviewed + integrated (Tasks 17–22) · confidence: high
+- The parallel Opus worktree unit (`sprint/site-cluster`, 3 commits) finished all green: 123 vitest (+19), typecheck clean, build 77 pages, link-audit 6624 links resolve. Touched only `site/**` + `docs.yml` (12 files), zero overlap with the main-branch work — verified by a file-set intersection.
+- **Independent review (orchestrator, not author's word):** read `docs.yml` (the CI restructure — replaced `withastro/action` with explicit jobs: a `site-check` typecheck+test job, build+link-audit, and `deploy` gated `needs:[build,site-check]` so a red suite never publishes; least-privilege pages/id-token kept job-scoped) and `link-audit.ts` (Node-built-ins only, correct base/relative/index resolution, asset checks, non-zero on dangling). Both sound. YAML valid; all site files LF.
+- **Task 21 convention (agent SMARTS, accepted):** root-absolute `/codeArbiter/diagrams/<name>.svg` for the 4 `.md`/`.mdx` refs; kept `import.meta.env.BASE_URL` for `ForgeShowcase.astro` (the `.astro`-sanctioned base-safe form per astro.config). A fail-closed guard test sanctions exactly those two forms. The base is already hardcoded in astro.config, so the literal adds no new coupling. Strength: moderate→ accepted on the config's own documented guidance.
+- **Integration method:** imported the site content into the working tree (`git checkout sprint/site-cluster -- site .github/workflows/docs.yml`) so the whole sprint lands through one commit-gate as type-homogeneous commits (the established pattern), rather than a merge commit.
+- Fresh-run re-verified on the INTEGRATED tree (not just the worktree): site suite green end-to-end.
+
+## AD-008 — Crypto gate (H-09b) on the CRYPTO_RE test fixtures · confidence: high
+- The commit-hook crypto gate flags 19 lines in `test_hooklib.py`. Inline review: every flagged line is a detector **test fixture** (a string the test asserts `CRYPTO_RE` matches), inside `CryptoReTest`. No real crypto call, no banned primitive introduced into shipped code, no secret; `CRYPTO_RE` and `security-controls.md` are unchanged. The spec pre-cleared this as "not a hard-gate stop." Gate disposition: PASS (test-only); record the security-pass marker, no `/override` — the gate genuinely passes.
+
+## Fresh-run verification (integrated tree) · confidence: high
+- Python: test_hooklib 32 · test_sloplib 22 · test_badge_consistency 11 · live badge guard exit 0 · hooks/tests discover **481** · ref-graph (ca) intact.
+- Site: `npm ci` → typecheck clean → **123** vitest → build 77 pages → link-audit OK (6624 links).
