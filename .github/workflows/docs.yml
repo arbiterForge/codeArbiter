@@ -37,18 +37,54 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  # Gate the site's own test suite and typecheck. The Astro build (below) does
+  # not run vitest or `tsc`, so without this job a broken site test or type
+  # error would ship silently. Runs on the same site/** + plugins/ca/** triggers
+  # as build; a red test here fails the workflow.
+  site-check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
     steps:
       - uses: actions/checkout@v4
-      - name: Build with Astro
-        uses: withastro/action@v3
+      - uses: actions/setup-node@v4
         with:
-          path: site # runs `npm ci` + `npm run build` (prebuild regenerates the reference)
+          node-version: 22 # Astro 6 requires Node >=22.12.0
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
           node-version: 22 # Astro 6 requires Node >=22.12.0; the action defaults to 20
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Build
+        run: npm run build # prebuild regenerates the reference from plugins/ca/**
+      - name: Link audit
+        run: npm run link-audit # post-build dangling-link gate (AC-2/AC-4)
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
 
   deploy:
-    needs: build
+    needs: [build, site-check] # never publish a build whose tests/typecheck are red
     # Push to main only — pull_request builds are validation-only.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest

@@ -21,6 +21,7 @@ on:
       - "plugins/ca/**"
       - "plugins/ca-sandbox/**"
       - "**/*.json"
+      - "README.md"
       - ".github/workflows/ci.yml"
       - ".github/scripts/**"
   push:
@@ -29,6 +30,7 @@ on:
       - "plugins/ca/**"
       - "plugins/ca-sandbox/**"
       - "**/*.json"
+      - "README.md"
       - ".github/workflows/ci.yml"
       - ".github/scripts/**"
 
@@ -53,8 +55,10 @@ jobs:
           filters: |
             ca:
               - 'plugins/ca/**'
+              - 'README.md'
               - '.github/workflows/ci.yml'
               - '.github/scripts/check-plugin-refs.py'
+              - '.github/scripts/check_badge_consistency.py'
             ca-sandbox:
               - 'plugins/ca-sandbox/**'
               - '.github/workflows/ci.yml'
@@ -196,6 +200,22 @@ jobs:
         # start/done + assign-on-pickup), dedup, the 3 harvest extractors, and
         # promote routing/modes (work->board, decision->questions).
         run: python .github/scripts/test_taskwriter.py
+      - name: Run README badge-consistency unit tests
+        # The guard's own logic: version-badge parse, count-badge parse, prose
+        # counts, table-row slugs, and each drift kind (version/count/prose/
+        # catalog/missing-row) failing — plus the live HEAD-is-consistent check.
+        run: python .github/scripts/test_badge_consistency.py
+      - name: Run shared hook-helper unit tests (_hooklib)
+        # CRYPTO_RE / SECRET_RE branch coverage + the path/frontmatter/marker/
+        # digest helpers every enforcement hook routes through. Ran nowhere in CI
+        # before (checkpoint 2026-06-22 gap); the ~18 CRYPTO_RE branches now have
+        # direct assertions.
+        run: python .github/scripts/test_hooklib.py
+      - name: Run the hooks/tests unittest suite
+        # plugins/ca/hooks/tests/ — the hook enforcement + helper logic. Ran only
+        # locally per CONTRIBUTING; wired here so the guards are mechanically
+        # enforced. Stdlib-only, cross-platform (discovered on every matrix OS).
+        run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 
   version-bump:
     name: ca version bumped when payload changes
@@ -289,6 +309,23 @@ jobs:
           python-version: "3.x"
       - name: Check cross-reference graph (ca)
         run: python3 .github/scripts/check-plugin-refs.py ca
+
+  badge-consistency:
+    name: ca README badges/counts/catalog match the repo
+    # The mechanical backstop the 2.5.0 release proved was missing: the README
+    # version badge, the command/skill/agent count badges, their prose echoes,
+    # and the full-catalog table must all match the repo. A release that bumps
+    # the payload but forgets the README (the original bug) fails here.
+    needs: changes
+    if: needs.changes.outputs.ca == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check README badge/count/catalog consistency (ca)
+        run: python3 .github/scripts/check_badge_consistency.py
 
   prose-sandbox:
     name: ca-sandbox plugin reference graph
