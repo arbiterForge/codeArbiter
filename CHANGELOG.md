@@ -6,6 +6,21 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.5.1] — 2026-06-23
+
+### Fixed
+- **Scope-touch reminders now fire on macOS and Windows** (`H-12`/`H-15`/`H-16`/`H-13`).
+  `post-write-edit.py` derived its repo-relative path with a lexical `os.path.relpath`. When
+  the hook payload's `file_path` and `git rev-parse --show-toplevel` named the same repo via
+  divergent forms (a symlinked `/var` vs `/private/var` on macOS, an 8.3 short name on
+  Windows), the path came out `..`-prefixed and every path-scoped reminder was silently
+  dropped. A new `_hooklib.repo_rel()` canonicalizes both sides with `realpath` first. (#125)
+- **`/ca:release` is now scoped to the `ca` plugin** (ADR-0007). The skill assumed a
+  single-plugin repo: `LAST_TAG` resolved via bare `git describe` (returning a `ca-sandbox`
+  tag), the bump and commit window spanned the whole repo, the derived version was never
+  asserted against `plugin.json`, and the README/catalog surfaces had no sync step. All are
+  now scoped to `plugins/ca/` and enforced, including a read-back of the published Release. (#125)
+
 ## [2.5.0] — 2026-06-22
 
 ### Added
