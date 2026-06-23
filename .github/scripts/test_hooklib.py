@@ -55,6 +55,38 @@ class CryptoReTest(unittest.TestCase):
         for s in ("createHash('md5')", "import bcrypt", "new DES()", "x509 cert"):
             self.assertTrue(self._matches(s), s)
 
+    # --- direct coverage for every CRYPTO_RE branch (checkpoint 2026-06-22
+    #     NEEDS-TRIAGE: ~18 branches were exercised only indirectly). Each string
+    #     is chosen to match via its named branch only (no incidental RSA/sha1). ---
+    def test_matches_each_banned_branch(self):
+        cases = {
+            "createCipher": "crypto.createCipher('aes', key)",
+            "createHmac": "createHmac('sha256', key)",
+            "sha1": "hashlib.sha1(data)",
+            "rc4": "cipher = RC4(key)",
+            "3des": "algorithm: 3DES",
+            "RSA": "RSA.generate(2048)",
+            "crypto.subtle": "crypto.subtle.digest('SHA-256', buf)",
+            "crypto.sign": "crypto.sign('sha256', data, key)",
+            "crypto.verify": "crypto.verify('sha256', data, key, sig)",
+            "crypto.createSign": "crypto.createSign('sha256')",
+            "crypto.createVerify": "crypto.createVerify('sha256')",
+            "crypto.generateKey": "crypto.generateKey('aes', opts, cb)",
+            "crypto.publicEncrypt": "crypto.publicEncrypt(key, buf)",
+            "crypto.privateDecrypt": "crypto.privateDecrypt(key, buf)",
+            "crypto.pbkdf2": "crypto.pbkdf2(pw, salt, 1000, 64, 'sha512', cb)",
+            "crypto.scrypt": "crypto.scrypt(pw, salt, 64, cb)",
+            "crypto.randomBytes": "crypto.randomBytes(32)",
+            "crypto.createDiffieHellman": "crypto.createDiffieHellman(2048)",
+        }
+        for branch, s in cases.items():
+            with self.subTest(branch=branch):
+                self.assertTrue(self._matches(s), "%s should match: %r" % (branch, s))
+
+    # --- narrowness: a crypto.* member NOT in the banned set must not match ---
+    def test_does_not_match_unlisted_crypto_member(self):
+        self.assertFalse(self._matches("crypto.timingSafeEqual(a, b)"))
+
     # --- the deliberate exemption must stay exempt ---
     def test_does_not_match_benign_randomness(self):
         for s in ("crypto.randomUUID()", "crypto.getRandomValues(buf)"):
