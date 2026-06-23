@@ -59,6 +59,26 @@ class TestProseSeparatorDashes(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0]["line"], 2)
 
+    def test_tilde_fence_is_exempt(self):
+        # _FENCE_RE matches both ``` and ~~~; the tilde fence was untested.
+        text = f"Intro.\n~~~\ncode {EM} here\n~~~\nOutro.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_html_tag_or_comment_dash_is_exempt(self):
+        # The <[^>]*> branch of _URL_RE: a dash inside an HTML tag/comment is code.
+        text = f"Before <!-- note {EM} here --> after.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_markdown_link_target_dash_is_exempt(self):
+        # The \]\([^)]*\) branch of _URL_RE: a dash inside a []() link target.
+        text = f"See [the docs]({EM}path) for detail.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_multiple_lines_each_flagged_with_line_numbers(self):
+        text = f"First {EM} sep.\nclean middle line\nthird {EN} sep.\n"
+        findings = S.find_prose_separator_dashes(text)
+        self.assertEqual([f["line"] for f in findings], [1, 3])
+
 
 class TestAntiSlopDocScope(unittest.TestCase):
     def test_root_community_docs_in_scope(self):
@@ -87,6 +107,16 @@ class TestAntiSlopDocScope(unittest.TestCase):
     def test_windows_separators_normalized(self):
         self.assertFalse(S.in_antislop_doc_scope("plugins\\ca\\ORCHESTRATOR.md"))
         self.assertTrue(S.in_antislop_doc_scope("docs\\hooks.md"))
+
+    def test_leading_dot_slash_is_normalized(self):
+        # "./README.md" is the repo root; the leading ./ must be stripped.
+        self.assertTrue(S.in_antislop_doc_scope("./README.md"))
+        self.assertTrue(S.in_antislop_doc_scope("./docs/hooks.md"))
+        self.assertFalse(S.in_antislop_doc_scope("./plugins/ca/ORCHESTRATOR.md"))
+
+    def test_empty_or_falsy_path_out_of_scope(self):
+        self.assertFalse(S.in_antislop_doc_scope(""))
+        self.assertFalse(S.in_antislop_doc_scope(None))
 
 
 if __name__ == "__main__":

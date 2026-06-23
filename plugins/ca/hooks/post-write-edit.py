@@ -17,7 +17,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, arbiter_active, is_ci_path, is_deploy_path,
-    project_root, read_input, remind, tool_input, utf8_stdio,
+    project_root, read_input, remind, repo_rel, tool_input, utf8_stdio,
 )
 from _sloplib import find_prose_separator_dashes, in_antislop_doc_scope  # noqa: E402
 
@@ -103,8 +103,8 @@ def main():
 
     # H-12: the touched file is governed by an accepted ADR — surface it so the
     # recorded decision pushes back at edit time, not at the next checkpoint.
-    rel = os.path.relpath(fpath, root).replace(os.sep, "/") if fpath else ""
-    if rel and not rel.startswith(".."):
+    rel = repo_rel(fpath, root)
+    if rel:
         for entry in governs_index(root):
             if any(fnmatch.fnmatch(rel, g) for g in entry["globs"]):
                 remind("H-12", f"{rel} is governed by ADR-{entry['adr']} ({entry['title']}). "
@@ -120,14 +120,14 @@ def main():
     # H-15: CI/CD workflow touched — advisory (#73). A bad workflow only runs
     # once merged, so this is a nudge, not a commit gate; dispatch security-reviewer
     # before the PR merges.
-    if rel and not rel.startswith("..") and is_ci_path(rel, root):
+    if rel and is_ci_path(rel, root):
         remind("H-15", "CI/CD workflow changed. Dispatch security-reviewer before merging "
                        "(it reviews workflow/secrets/permissions exposure). Advisory — "
                        "not a commit block.")
 
     # H-16: deployment / IaC manifest touched — advisory (#73). IaC bites only on
     # apply, so this nudges; security-reviewer is the enforcement point at PR.
-    if rel and not rel.startswith("..") and is_deploy_path(rel, root):
+    if rel and is_deploy_path(rel, root):
         remind("H-16", "Deployment/IaC manifest changed. Dispatch security-reviewer before "
                        "merging (it reviews exposed ports, public ACLs, disabled "
                        "encryption, privilege). Advisory — not a commit block.")
@@ -156,7 +156,7 @@ def main():
     # separator (anti-slop-design core §3.A, the single highest-signal AI tell).
     # Advisory nudge to run the copy self-audit before it ships. Scope is community
     # docs + docs/**, never codeArbiter's own framework bodies (see _sloplib).
-    if rel and not rel.startswith("..") and in_antislop_doc_scope(rel):
+    if rel and in_antislop_doc_scope(rel):
         hits = find_prose_separator_dashes(content)
         if hits:
             shown = ", ".join(str(h["line"]) for h in hits[:5])

@@ -9,30 +9,34 @@ The single permitted path to a version tag. Routed to when the user invokes `/re
 
 ## Pre-flight
 
+**This repo ships two independently-versioned plugins** (`ca` and `ca-sandbox`, per ADR-0007), each with its own tag series (`v*` vs `ca-sandbox-v*`), its own payload path, and its own built artifact. `/release` targets the **`ca`** plugin: tags `vMAJOR.MINOR.PATCH`, payload `plugins/ca/`, manifest `plugins/ca/.claude-plugin/plugin.json`. Every step below is scoped to `ca` — a `ca-sandbox` tag or commit MUST NOT influence ca's version, window, or changelog.
+
 Read these, or STOP and surface the gap — never guess:
 
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — the default-branch name and project context.
 - `git status` must be clean. A dirty tree STOPs — commit or stash via `commit-gate` first.
 - The current branch MUST NOT be `main`, `master`, or the default branch. Release lands through the normal branch/PR path; if HEAD is the default branch, STOP.
-- `git describe --tags --abbrev=0` identifies the last tag. No tags → `LAST_TAG=<none>`, treat the full history as the window. Set the base version to `0.0.0`.
-- The commit set `LAST_TAG..HEAD` must be non-empty. If empty, STOP — nothing to release.
+- **Resolve `LAST_TAG` from ca's SemVer tags only** — never bare `git describe --tags --abbrev=0`, which returns the nearest tag by commit-graph ancestry and in this two-plugin repo resolves to a `ca-sandbox-v*` tag, silently basing the entire release on the wrong baseline. Use a version-sorted, ca-only, pre-release-excluding query: `LAST_TAG=$(git tag -l 'v[0-9]*' --sort=-v:refname | grep -Ev -- '-(beta|rc|alpha)' | head -1)`. No matching tag → `LAST_TAG=<none>`, treat the full history as the window, base version `0.0.0`.
+- **Scope the release window to the `ca` payload:** the commit set is `git log LAST_TAG..HEAD -- plugins/ca/`, NOT the whole repo — a `feat(ca-sandbox)` commit must not bump `ca` or land in ca's changelog. This payload-scoped set must be non-empty; if empty, STOP — nothing to release for `ca`.
+- **Manifest read:** read the `version` field of `plugins/ca/.claude-plugin/plugin.json`. Phase 1 asserts the derived bump equals it and updates it (and the README badges/counts) — a tag whose version runs ahead of `plugin.json` ships nothing, because `claude plugin update` no-ops on an unchanged version string.
 - **farm.js build check:** if `plugins/ca/tools/farm.ts` was modified in the release window (`git log LAST_TAG..HEAD -- plugins/ca/tools/farm.ts`), verify that `plugins/ca/tools/farm.js` is up to date by rebuilding: `cd plugins/ca/tools && npm run build`. A stale `farm.js` (built from an older `farm.ts`) is a release blocker — the plugin ships `farm.js`, not `farm.ts`. If the rebuild produces changes, commit them through `commit-gate` before tagging.
 
 ## Phase 1 — Version & changelog · gate: BLOCK
 
 Derive the bump mechanically from the commit log; do not guess it.
 
-1. Read every commit in the window: `git log LAST_TAG..HEAD --pretty=format:%H%n%s%n%b%n----`.
+1. Read every commit in the ca-scoped window: `git log LAST_TAG..HEAD --pretty=format:%H%n%s%n%b%n---- -- plugins/ca/` (the `-- plugins/ca/` path scope is load-bearing — it excludes `ca-sandbox` commits from the bump and changelog).
 2. Classify each subject by its Conventional-Commits prefix and apply the highest-precedence bump:
    - `BREAKING CHANGE:` footer or `!` after the type/scope → **major**.
    - else any `feat` → **minor**.
    - else any `fix`, `perf`, `refactor` → **patch**.
    - `test` / `docs` / `chore` / `ci` only → no bump. If the whole window is non-bumping, STOP — there is nothing to release.
-3. Compute the next version and confirm it is strictly greater than `LAST_TAG`. Present the version and the per-commit classification to the user for confirmation.
-4. Roll the `CHANGELOG:` footers from each `feat` / `fix` / `perf` commit into a new `## vMAJOR.MINOR.PATCH — YYYY-MM-DD` section in the repo's `CHANGELOG.md`, grouped Added / Fixed / Performance. Prior sections stay intact. Create the file with a `# Changelog` heading if absent. A `feat`/`fix` commit missing its footer is a one-line `[NEEDS-TRIAGE]` finding — surface it, do not auto-fill. The changelog is a user-facing deliverable: apply `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md` §3.A (no prose-separator em-dashes in the entry prose) and §3.B (copy self-audit), and the `medium-documents` §7.A.1 changelog guidance, to each rolled entry.
-5. If the changelog edit needs to land as a commit before tagging, route it through `commit-gate`. Do not reimplement the commit path here.
+3. Compute the next version, confirm it is strictly greater than `LAST_TAG`, and assert it **equals** the `version` in `plugins/ca/.claude-plugin/plugin.json`. If the manifest lags the derived bump, bump it now — that is a precondition of tagging (Pre-flight), not an afterthought; a tag ahead of `plugin.json` ships nothing. Present the version and the per-commit classification to the user for confirmation.
+4. Roll the `CHANGELOG:` footers from each `feat` / `fix` / `perf` commit into a new `## vMAJOR.MINOR.PATCH — YYYY-MM-DD` section in the repo's `CHANGELOG.md`, grouped Added / Fixed / Performance. Prior sections stay intact. Create the file with a `# Changelog` heading if absent. **A `feat`/`fix` commit missing its `CHANGELOG:` footer is a BLOCK**, not a soft finding: surface the `[NEEDS-TRIAGE]` and STOP — never auto-fill, and never tag a changelog that silently drops a user-visible change. The changelog is a user-facing deliverable: apply `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md` §3.A (no prose-separator em-dashes in the entry prose) and §3.B (copy self-audit), and the `medium-documents` §7.A.1 changelog guidance, to each rolled entry.
+5. **Sync the release surfaces to the repo — mechanically derived, never typed.** Update, all to the derived version / live counts: `plugins/ca/.claude-plugin/plugin.json` `version`; the README version badge (`version-X.Y.Z`); the command / skill / agent **count** badges and every prose echo of those counts (e.g. "N commands", the `commands/ (N)` tree line). Derive each count from the repo, never increment by hand: `commands = ls plugins/ca/commands/*.md | grep -v INDEX | wc -l`, `skills = ls -d plugins/ca/skills/*/ | wc -l`, `agents = ls plugins/ca/agents/*.md | grep -v INDEX | wc -l`. Then assert the canonical catalog `plugins/ca/COMMANDS.md` enumerates exactly those command files, and that the README full-catalog table lists every one of them (the `/ca:commands` body at `plugins/ca/commands/COMMANDS.md` renders from the canonical catalog and holds no rows of its own — do not treat it as a second catalog). A badge, prose-count, README-table, or catalog drift is a **BLOCK** — reconcile it before tagging. The CI badge-consistency guard (`.github/scripts/check_badge_consistency.py`) is the mechanical backstop for this step; if it is red, this step is not done.
+6. If the changelog edit or the surface sync needs to land as a commit before tagging, route it through `commit-gate`. Do not reimplement the commit path here.
 
-Gate: version confirmed, strictly monotonic, and matching the commit log; `CHANGELOG.md` updated. BLOCK if the classification disagrees with the log or the window is non-bumping.
+Gate: version confirmed, strictly monotonic, matching the commit log, and equal to `plugin.json`; `CHANGELOG.md` updated; README badges/prose-counts and the `COMMANDS.md` catalog reconciled to the repo. BLOCK if the classification disagrees with the log, the window is non-bumping, a bumping commit's `CHANGELOG:` footer is missing, or any surface count/catalog drifts.
 
 ## Phase 2 — Tag & report · gate: BLOCK
 
@@ -49,18 +53,21 @@ The tag and the GitHub Release publish together, and only after the user explici
 On authorization:
 
 1. Push the tag: `git push origin vMAJOR.MINOR.PATCH`.
-2. Create the GitHub Release from the **same changelog section composed in Phase 1** — reuse it as the notes, never re-derive or hand-write them: `gh release create vMAJOR.MINOR.PATCH --title "<title>" --notes-file <Phase-1 section file> --latest --verify-tag`. The title follows the existing convention `codeArbiter MAJOR.MINOR.PATCH: <summary>`, with no em-dash separator.
+2. Create the GitHub Release from the **same changelog section composed in Phase 1** — reuse it as the notes, never re-derive or hand-write them. **Set `--latest` conditionally:** the repo ships two release series but GitHub has one repo-wide "Latest" — assert `--latest` only when this tag is the newest release across *both* plugins (compare against `gh release list`); otherwise pass `--latest=false` so a `ca` release doesn't steal the badge from a newer `ca-sandbox` release, or vice-versa. `gh release create vMAJOR.MINOR.PATCH --title "<title>" --notes-file <Phase-1 section file> --latest[=false] --verify-tag`. The title follows the existing convention `codeArbiter MAJOR.MINOR.PATCH: <summary>`, with no em-dash separator.
 3. Handle edge cases explicitly, never silently: if a Release for the tag already exists, report it and skip creation (the tag push may already have landed); if `gh` is missing, unauthenticated, or the call fails, STOP and print the exact `gh release create` command so publication can be finished by hand rather than left half-done.
-4. Report the Release URL.
+4. **Verify publication — never assume it.** Read the Release back: `gh release view vMAJOR.MINOR.PATCH --json url,isDraft,tagName`. STOP unless it returns a **non-draft** Release on the correct tag; `gh release create` can partially succeed (tag pushed, Release rejected for an empty notes-file or a permissions/`--verify-tag` race), and an unverified publish is not a published release. Report the Release URL only once the read-back confirms it.
 
-Gate: with authorization, the tag is pushed and the GitHub Release exists (or, on failure, the exact manual command was surfaced). Without authorization, nothing is published.
+Gate: with authorization, the tag is pushed AND a non-draft GitHub Release on that tag is confirmed by read-back (or, on failure, the exact manual command was surfaced and the half-finished state named). A failed or unverified publish is NOT a passing gate. Without authorization, nothing is published.
 
 ## Hard rules
 
 - MUST NOT tag on a red suite — `commit-gate` enforces green on every commit reaching HEAD; do not re-run it, but do not tag if the last suite was red.
 - MUST NOT write to `main`, `master`, or the default branch, and MUST NOT force-push. Releases land through the normal branch/PR path.
 - MUST NOT push the tag or create the GitHub Release without explicit user authorization; they publish together in Phase 3, even after the local tag composes.
+- MUST scope tag resolution, the commit window, and the bump derivation to the `ca` payload (`plugins/ca/`); a `ca-sandbox` tag or commit MUST NOT influence ca's version, window, or changelog. MUST NOT resolve `LAST_TAG` with bare `git describe --tags`.
+- MUST assert the derived version equals `plugins/ca/.claude-plugin/plugin.json`, and MUST sync the README version/count badges, their prose echoes, the README full-catalog table, and the canonical `plugins/ca/COMMANDS.md` catalog to the repo before tagging — counts derived mechanically, never typed.
+- MUST verify the published Release by read-back (`gh release view` → non-draft, correct tag); a failed or unverified publish is not a passing gate. MUST NOT assert `--latest` unless the tag is the newest release across both plugins.
 - MUST use the Phase-1 changelog section verbatim as the GitHub Release notes — never re-derive or hand-write them.
 - MUST NOT guess the version — derive it from the commit log. A `feat` in the window cannot ship as a `patch`.
-- MUST NOT auto-fill a missing `CHANGELOG:` footer — surface it as `[NEEDS-TRIAGE]`.
+- MUST NOT auto-fill a missing `CHANGELOG:` footer, and MUST NOT tag past one — a missing footer on a bumping commit is a Phase-1 BLOCK, surfaced as `[NEEDS-TRIAGE]` and stopped.
 - MUST NOT tag a non-bumping window — `test`/`docs`/`chore`/`ci`-only sets do not release.
