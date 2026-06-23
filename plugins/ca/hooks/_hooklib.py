@@ -150,6 +150,24 @@ def project_root():
     return os.getcwd()
 
 
+def repo_rel(fpath, root):
+    """Repo-relative POSIX path for `fpath`, or "" when it lies outside `root`.
+
+    realpath BOTH sides before relpath: `git rev-parse --show-toplevel`
+    (project_root) canonicalizes symlinks and 8.3 short names, but the
+    `file_path` in a hook payload may not — so on macOS (TMPDIR `/var` ->
+    `/private/var`) and Windows (`RUNNER~1` -> `runneradmin`) the two name the
+    same repo via divergent forms. A purely lexical relpath on those forms
+    yields a bogus `..`-prefixed path, which silently suppressed every
+    path-scoped reminder (#125 CI: H-12/H-15/H-16/H-13 dropped on macOS +
+    Windows runners while ubuntu passed)."""
+    if not fpath:
+        return ""
+    rel = os.path.relpath(os.path.realpath(fpath), os.path.realpath(root))
+    rel = rel.replace(os.sep, "/")
+    return "" if rel == ".." or rel.startswith("../") else rel
+
+
 def line_digest(line):
     """Digest of one added diff line, for the security-gate binding
     (H-09b/H-10b). The gate-pass marker stores these digests instead of being

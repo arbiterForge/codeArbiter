@@ -59,6 +59,35 @@ class TestScopeReminders(unittest.TestCase):
             self.assertNotIn(tag, proc.stderr)
         self.assertEqual(proc.returncode, 0)
 
+    def test_path_reminder_survives_divergent_root_form(self):
+        """Regression (#125 CI): file_path and `git rev-parse --show-toplevel`
+        can name the same repo via divergent-but-equivalent forms — a symlinked
+        path on macOS (/var -> /private/var) or an 8.3 short name on Windows
+        (RUNNER~1 -> runneradmin). Lexical os.path.relpath then returned a
+        ..-prefixed path, so the `not rel.startswith("..")` guard silently
+        dropped every path-scoped reminder (H-12/H-15/H-16/H-13). Reproduced
+        with a symlinked root: the hook's cwd/file_path go through the link
+        while git resolves to the real path."""
+        real = os.path.realpath(self.root)
+        link = real + "_lnk"
+        try:
+            os.symlink(real, link, target_is_directory=True)
+        except OSError:
+            self.skipTest("symlink creation not permitted on this host")
+        self.addCleanup(lambda: os.path.lexists(link) and os.remove(link))
+        rel = ".github/workflows/ci.yml"
+        abspath = os.path.join(link, rel.replace("/", os.sep))
+        os.makedirs(os.path.dirname(abspath), exist_ok=True)
+        payload = {"hook_event_name": "PostToolUse", "cwd": link,
+                   "tool_name": "Write",
+                   "tool_input": {"file_path": abspath,
+                                  "content": "name: ci\non: push\n"}}
+        proc = subprocess.run([sys.executable, HOOK], input=json.dumps(payload),
+                              capture_output=True, text=True, cwd=link,
+                              encoding="utf-8")
+        self.assertIn("H-15", proc.stderr)
+        self.assertEqual(proc.returncode, 0)
+
 
 if __name__ == "__main__":
     unittest.main()
