@@ -13,14 +13,17 @@
     "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "link-audit": "tsx scripts/link-audit.ts"
   },
   "overrides": {
     "esbuild": "^0.28.1"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.40.0",
-    "astro": "^6.4.6",
+    "astro": "^6.4.6"
+  },
+  "optionalDependencies": {
     "sharp": "^0.33.5"
   },
   "devDependencies": {

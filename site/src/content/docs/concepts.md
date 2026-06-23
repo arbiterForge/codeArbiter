@@ -21,7 +21,7 @@ by design. When they trip often, that's a signal the spec was too thin, not an o
 grind past.
 
 <figure class="ca-diagram">
-  <img src="../diagrams/gate-model.svg" alt="Gate model. A soft gate surfaces a decision bubble and waits for the user. A hard gate is a closed cross-bar that is never auto-decided." loading="lazy" />
+  <img src="/codeArbiter/diagrams/gate-model.svg" alt="Gate model. A soft gate surfaces a decision bubble and waits for the user. A hard gate is a closed cross-bar that is never auto-decided." loading="lazy" />
   <figcaption>Soft gates surface and wait. Hard gates stop, and only the user can clear them.</figcaption>
 </figure>
 
@@ -41,7 +41,7 @@ That is the two-axis model. Read them together and a release is legible: SemVer 
 whole payload, the Feature Forge governs each feature's maturity.
 
 <figure class="ca-diagram">
-  <img src="../diagrams/two-axis-model.svg" alt="Two-axis labeling model. SemVer governs the whole plugin payload; the Feature Forge governs each feature as preview (opt-in, dormant) or stable (on by default, evidence-promoted)." loading="lazy" />
+  <img src="/codeArbiter/diagrams/two-axis-model.svg" alt="Two-axis labeling model. SemVer governs the whole plugin payload; the Feature Forge governs each feature as preview (opt-in, dormant) or stable (on by default, evidence-promoted)." loading="lazy" />
   <figcaption>Two axes: SemVer for the whole payload, the Feature Forge for per-feature maturity.</figcaption>
 </figure>
 
