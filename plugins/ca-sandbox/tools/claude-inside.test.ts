@@ -32,7 +32,7 @@ import {
   buildClaudeRunArgs,
   TokenCoMountRejectedError,
 } from "./claude-inside.ts";
-import { SANDBOX_USER } from "./run.ts";
+import { SANDBOX_USER, hardeningFlags } from "./run.ts";
 
 // --------------------------------------------------------------------------
 // PURE unit layer — image + argv builders, no real docker.
@@ -56,6 +56,36 @@ describe("buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12
     // must be writable for that uid, so the image chowns it and defaults USER to it.
     expect(df).toMatch(/chown -R 1000:1000/);
     expect(df).toMatch(/^USER 1000:1000$/m);
+  });
+});
+
+// architecture-002: the container hardening argv is security-load-bearing and
+// was re-emitted verbatim in both run.ts and claude-inside.ts — the token-bearing
+// --with-claude box silently weakens if a future flag lands in run.ts only. The
+// shared hardeningFlags() is now the single source; the --with-claude argv must
+// carry EVERY flag (and its value) the ordinary sandbox does.
+describe("buildClaudeRunArgs — hardening parity with run.ts (architecture-002)", () => {
+  const argv = buildClaudeRunArgs({
+    image: "ca-sbx-claude:demo",
+    token: "dummy-not-a-real-token",
+    homeVolume: "ca-sbx-claude-home-demo",
+  });
+
+  it("carries every shared hardening flag the ordinary sandbox emits", () => {
+    const flags = hardeningFlags();
+    // hardeningFlags() is a flat [flag, value, valuelessFlag, ...] argv. Assert
+    // each flag — and the value following a valued flag — appears in the claude
+    // argv, regardless of position/order.
+    for (let i = 0; i < flags.length; i++) {
+      const tok = flags[i];
+      if (!tok.startsWith("--")) continue; // a value consumed with its flag below
+      const idx = argv.indexOf(tok);
+      expect(idx, `--with-claude argv missing hardening flag ${tok}`).toBeGreaterThanOrEqual(0);
+      const next = flags[i + 1];
+      if (next !== undefined && !next.startsWith("--")) {
+        expect(argv[idx + 1], `${tok} value mismatch in --with-claude argv`).toBe(next);
+      }
+    }
   });
 });
 

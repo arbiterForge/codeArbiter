@@ -94,6 +94,39 @@ function defaultDockerRun(args: string[]): RunResult {
  * @throws (BindMountRejectedError, via buildMountArgs) — unreachable here since
  *   we only construct volume/tmpfs specs, but the chokepoint is the guarantee.
  */
+/**
+ * The shared container hardening argv (architecture-002). This block is
+ * security-load-bearing — non-root, read-only root fs, a tmpfs /tmp, every Linux
+ * capability dropped, no privilege escalation, and resource caps. It is defined
+ * ONCE here and spliced by BOTH buildRunArgs and claude-inside.ts's
+ * buildClaudeRunArgs, so the token-bearing --with-claude box can never drift to a
+ * softer lockdown than the ordinary sandbox. NOT included: --workdir (the two
+ * callers point it at different in-container dirs) and the per-call mount/label/
+ * network/name argv.
+ */
+export function hardeningFlags(): string[] {
+  return [
+    "--user",
+    SANDBOX_USER,
+    "--read-only",
+    // --read-only makes a writable /tmp essential; the `--tmpfs <path>` short
+    // form is the idiomatic, spec-named flag. (run.ts also renders a tmpfs /tmp
+    // via buildMountArgs; the duplicate is harmless and robust across engines.)
+    "--tmpfs",
+    "/tmp",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--pids-limit",
+    "512",
+    "--memory",
+    "4g",
+    "--cpus",
+    "2",
+  ];
+}
+
 export function buildRunArgs(
   image: string,
   volumeName: string,
@@ -131,26 +164,9 @@ export function buildRunArgs(
     ...mountArgs,
     "--workdir",
     APP_DIR,
-    "--user",
-    SANDBOX_USER,
-    "--read-only",
-    // --tmpfs is rendered by buildMountArgs as `--mount type=tmpfs,target=/tmp`,
-    // BUT docker's `--read-only` makes a writable /tmp essential and the
-    // `--tmpfs <path>` short form is the idiomatic, spec-named flag. Emit it
-    // explicitly too so the run is robust on engines that treat a tmpfs --mount
-    // and a read-only root differently; the duplicate tmpfs is harmless.
-    "--tmpfs",
-    "/tmp",
-    "--cap-drop",
-    "ALL",
-    "--security-opt",
-    "no-new-privileges",
-    "--pids-limit",
-    "512",
-    "--memory",
-    "4g",
-    "--cpus",
-    "2",
+    // The shared, security-load-bearing isolation block (defined once, also
+    // spliced by claude-inside.ts so the two never drift).
+    ...hardeningFlags(),
     ...networkArgs,
     ...labelArgs,
     image,
