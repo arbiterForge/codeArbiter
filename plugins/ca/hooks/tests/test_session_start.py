@@ -271,6 +271,65 @@ class TestMainHealsBeforeDormantGate(unittest.TestCase):
         self.assertNotIn("2.0.1", cmd)
 
 
+class TestDevExitAudit(unittest.TestCase):
+    """observability-001: when SessionStart clears a LIVE dev-active marker (a
+    prior session entered /ca:dev and ended without /ca:arbiter), it must append
+    a synthetic DEV: exit line to overrides.log BEFORE removing the marker — so
+    the audit trail keeps a matched DEV: enter/exit pair instead of an orphaned
+    enter. Append-only (never rewrites); no append when there is no live marker."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        self.ca = os.path.join(self.root, ".codearbiter")
+        self.markers = os.path.join(self.ca, ".markers")
+        os.makedirs(self.markers)
+        self.log = os.path.join(self.ca, "overrides.log")
+        self.marker = os.path.join(self.markers, "dev-active")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _seed_log(self, text):
+        with open(self.log, "w", encoding="utf-8") as f:
+            f.write(text)
+
+    def _read_log(self):
+        with open(self.log, encoding="utf-8") as f:
+            return f.read()
+
+    def _drop_marker(self):
+        with open(self.marker, "w", encoding="utf-8") as f:
+            f.write("active\n")
+
+    def test_live_marker_appends_dev_exit_and_removes_marker(self):
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root)
+        self.assertFalse(os.path.isfile(self.marker), "live marker must be removed")
+        log = self._read_log()
+        self.assertIn("DEV: exit", log)
+        self.assertIn("BY: session-cleanup", log)
+        # append-only: the prior DEV: enter line is preserved.
+        self.assertIn("DEV: enter", log)
+
+    def test_no_marker_appends_nothing(self):
+        seed = "[2026-01-01T00:00:00Z] | BY: x | GATE: none | REASON: seed\n"
+        self._seed_log(seed)
+        self.assertFalse(os.path.isfile(self.marker))
+        _mod.clear_dev_marker(self.root)
+        self.assertEqual(self._read_log(), seed, "no marker -> overrides.log untouched")
+
+    def test_append_is_a_single_line_after_existing_content(self):
+        seed = "[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: —\n"
+        self._seed_log(seed)
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root)
+        log = self._read_log()
+        self.assertTrue(log.startswith(seed), "existing lines must remain a prefix (pure append)")
+        self.assertEqual(len(log.splitlines()), 2, "exactly one DEV: exit line appended")
+
+
 class TestStandupBriefingGating(unittest.TestCase):
     """#61 regression: pin the once-per-LOCAL-day briefing contract so the
     documented behavior (and the absence of a marker/timezone misfire) cannot

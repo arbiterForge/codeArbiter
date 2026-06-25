@@ -43,6 +43,7 @@
 #   is_audit_log(rel) -> bool             True iff rel is an append-only audit log (H-05)
 #   is_decisions_path(rel) -> bool        True iff rel is an ADR under decisions/ (H-11)
 #   marker_fresh(path, minutes) -> bool   True iff marker file exists and is recent
+#   write_text_atomic(path, text) -> None  crash-safe write (temp + os.replace)
 #   block(tag, msg) -> None              BLOCK tool call: print to stderr and exit 2
 #   remind(tag, msg) -> None             non-blocking nudge to stderr
 #   warn(msg) -> None                    loud degradation breadcrumb to stderr
@@ -53,6 +54,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
 
 # Crypto/TLS and secret patterns — shared by the post-write reminder (H-09/H-10)
@@ -479,6 +481,28 @@ def is_ci_path(rel, root):
 def is_deploy_path(rel, root):
     """True iff `rel` is a deployment / IaC manifest (H-16, advisory)."""
     return path_in_globs(rel, root, DEPLOY_DEFAULT_GLOBS, _DEPLOY_DECL_RE)
+
+
+def write_text_atomic(path, text):
+    """Write `text` to `path` atomically: a sibling temp file in the same dir,
+    then os.replace() into place (atomic on POSIX; a same-volume rename on
+    Windows). A crash between open() and the rename never leaves a half-written
+    file at `path`. The gate-marker writers (migration-pass / security-pass) rely
+    on this so a partial digest set can't be read back as an unrecognized token
+    and force a spurious gate re-run (migration-002). On any failure the temp
+    file is cleaned up and the original `path` is left untouched."""
+    d = os.path.dirname(path) or "."
+    fd, tmp = tempfile.mkstemp(dir=d, prefix=os.path.basename(path) + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+        os.replace(tmp, path)
+    except Exception:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        raise
 
 
 def marker_fresh(path, minutes):
