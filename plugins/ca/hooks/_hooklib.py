@@ -40,6 +40,8 @@
 #   is_migration_path(rel, root) -> bool  True iff rel is a DB migration (H-14)
 #   is_ci_path(rel, root) -> bool         True iff rel is a CI/CD workflow (H-15)
 #   is_deploy_path(rel, root) -> bool     True iff rel is a deployment/IaC manifest (H-16)
+#   is_audit_log(rel) -> bool             True iff rel is an append-only audit log (H-05)
+#   is_decisions_path(rel) -> bool        True iff rel is an ADR under decisions/ (H-11)
 #   marker_fresh(path, minutes) -> bool   True iff marker file exists and is recent
 #   block(tag, msg) -> None              BLOCK tool call: print to stderr and exit 2
 #   remind(tag, msg) -> None             non-blocking nudge to stderr
@@ -62,6 +64,7 @@ import time
 # not, a password-hashing change is exactly what crypto-compliance reviews.
 CRYPTO_RE = re.compile(
     r"(createHash|createCipher|createHmac|\bmd5\b|\bsha1\b|\brc4\b|\bdes\b|3des"
+    r"|\brc2\b|\bblowfish\b"
     r"|\bRSA\b|x509|bcrypt"
     r"|crypto\.(subtle|sign|verify|createSign|createVerify|generateKey"
     r"|publicEncrypt|privateDecrypt|pbkdf2|scrypt|randomBytes|createDiffieHellman)"
@@ -75,8 +78,14 @@ CRYPTO_RE = re.compile(
 # (the colon/object form dominates this TS/JSON repo) — the quoted-value
 # requirement keeps it from firing on every bare `token:` reference; (2) known
 # high-entropy key prefixes, keyword-independent (AWS / GitHub / Anthropic).
+# No LEADING word boundary on the keyword group (secrets-002): a `\b` there
+# never fires when the keyword is the trailing segment of a compound identifier
+# (the char left of `api_key` in `FARM_API_KEY` is `_`, a word char), so a
+# hardcoded `FARM_API_KEY = "..."` silently passed the gate. The right-hand
+# quoted-assignment anchor still bounds the match — a bare `token:` reference
+# without a quoted value never matches.
 SECRET_RE = re.compile(
-    r"\b(?:password|secret|token|api_key|apikey|private_key|passphrase|credential"
+    r"(?:password|secret|token|api_key|apikey|private_key|passphrase|credential"
     r"|aws_secret_access_key|client_secret)"
     r"""["']?\s*[:=]\s*["'][^"']{4,}"""
     r"|AKIA[0-9A-Z]{16}"
@@ -87,6 +96,36 @@ SECRET_RE = re.compile(
 
 
 ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
+
+# Append-only audit logs (H-05) and ADR-decisions paths (H-11) — centralized
+# here (architecture-004) so the three pre-* hooks import ONE definition instead
+# of re-encoding the regex inline (the exact drift this module exists to
+# prevent: adding sprint-log.md once meant hand-editing every copy). Same home,
+# same rationale, as CRYPTO_RE/SECRET_RE/MIGRATION_DEFAULT_GLOBS.
+#
+# AUDIT_LOG_NAMES is the bare filename alternation; pre-bash.py composes its
+# shell LOG_NAMES from it, and AUDIT_LOG_RE anchors it under .codearbiter/ for
+# the Write/Edit file-path guards. DECISIONS_DIR_RE is the separator-tolerant
+# decisions directory token; pre-bash.py composes its shell DECISIONS from it,
+# and DECISIONS_PATH_RE extends it to a full ADR file path. `[\\/]+` matches the
+# norm_path'd `/` as well as a raw backslash, so both the file-path and shell
+# flanks derive from one source.
+AUDIT_LOG_NAMES = r"(?:(?:overrides|triage)\.log|sprint-log\.md)"
+AUDIT_LOG_RE = re.compile(r"\.codearbiter/" + AUDIT_LOG_NAMES + r"$")
+DECISIONS_DIR_RE = r"\.codearbiter[\\/]+decisions"
+DECISIONS_PATH_RE = re.compile(DECISIONS_DIR_RE + r"[\\/]+.+\.md$")
+
+
+def is_audit_log(rel):
+    """True iff `rel` is one of the append-only .codearbiter audit logs
+    (overrides.log, triage.log, sprint-log.md) — the H-05 guard set."""
+    return bool(AUDIT_LOG_RE.search(norm_path(rel)))
+
+
+def is_decisions_path(rel):
+    """True iff `rel` is a `.md` ADR anywhere under .codearbiter/decisions/ —
+    the H-11 guard set (a non-numbered draft or a nested path still counts)."""
+    return bool(DECISIONS_PATH_RE.search(norm_path(rel)))
 
 
 def utf8_stdio():

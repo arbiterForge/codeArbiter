@@ -148,10 +148,31 @@ Hook input parsing fails open (not closed) on malformed stdin — see
 
 ## Audit trail
 
-`overrides.log` and `triage.log` are append-only artifacts. They may never be
-truncated, rewritten, or deleted. The `pre-bash.py` H-05 guard and the
-`pre-write.py` / `pre-edit.py` H-05 guards enforce this at every tool-call
-boundary.
+`overrides.log`, `triage.log`, and `sprint-log.md` are append-only artifacts.
+They may never be truncated, rewritten, or deleted. The `pre-bash.py` H-05 guard
+and the `pre-write.py` / `pre-edit.py` H-05 guards enforce this at every
+tool-call boundary.
+
+**Enforcement scope (accepted residual risk).** These guards are *integrity*
+controls, not *completeness* controls — they protect a log once written, they do
+not compel a write (see `observability-002` / the "compel a log write" CONFIRM).
+The `pre-bash.py` shell guard is lexical and anchored on the literal log name, so
+the following truncation/indirection spellings are out of scope and accepted as
+residual risk (the sanctioned bypass for legitimate log management is
+`/ca:override`):
+
+- file-descriptor redirects where no filename token is adjacent to the verb —
+  `exec 3>.codearbiter/overrides.log`;
+- triple-chevron `>>>` (treated as append by some shells);
+- process-substitution spellings;
+- verb-with-variable targets where the literal name never appears beside the
+  verb — `f=.codearbiter/overrides.log; rm "$f"` (bash) or `$f='overrides.log';
+  rm $f` (PowerShell).
+
+The `pre-write.py` / `pre-edit.py` guards close the Write/Edit flank (including an
+empty-`old_string` Edit, which is not a verifiable append). The append-only path
+set is centralized in `_hooklib` (`is_audit_log`, `AUDIT_LOG_NAMES`) so the three
+guards never drift on which files are covered.
 
 ---
 
