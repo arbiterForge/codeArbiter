@@ -22,6 +22,28 @@
 # python3 exists and the script BLOCKS (exit 2), `||` would re-run it against a
 # drained stdin and the rerun's exit 0 would swallow the block. Separate hook
 # entries each receive their own stdin, so the block survives.
+#
+# Public API:
+#   utf8_stdio() -> None                 force UTF-8 on stdout/stderr
+#   norm_path(p) -> str                  normalize path separators to forward-slash
+#   frontmatter_enabled(ctx_path) -> tuple[bool, bool]   (enabled, malformed)
+#   arbiter_active(root) -> bool         True iff repo opted in via CONTEXT.md frontmatter
+#   read_input() -> dict                 parse hook JSON from stdin; fail-open on error
+#   tool_input(data) -> dict             extract tool_input sub-dict from hook payload
+#   project_root() -> str                git repo root, or cwd as fallback
+#   repo_rel(fpath, root) -> str         repo-relative POSIX path, or "" if outside root
+#   line_digest(line) -> str             sha256 hex of one diff line (H-09b/H-10b gate)
+#   content_digest(text) -> str          sha256 hex of a whole file's content (H-14 gate)
+#   migration_globs(root) -> tuple[list, list]   (includes, excludes) for migration detection
+#   scope_globs(root, defaults, decl_re) -> tuple[list, list]   generic glob scope resolver
+#   path_in_globs(rel, root, defaults, decl_re) -> bool         True iff path matches scope
+#   is_migration_path(rel, root) -> bool  True iff rel is a DB migration (H-14)
+#   is_ci_path(rel, root) -> bool         True iff rel is a CI/CD workflow (H-15)
+#   is_deploy_path(rel, root) -> bool     True iff rel is a deployment/IaC manifest (H-16)
+#   marker_fresh(path, minutes) -> bool   True iff marker file exists and is recent
+#   block(tag, msg) -> None              BLOCK tool call: print to stderr and exit 2
+#   remind(tag, msg) -> None             non-blocking nudge to stderr
+#   warn(msg) -> None                    loud degradation breadcrumb to stderr
 
 import hashlib
 import json
