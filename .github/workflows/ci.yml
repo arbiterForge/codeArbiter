@@ -39,7 +39,7 @@ permissions:
 
 jobs:
   changes:
-    name: detect changed plugin(s)
+    name: repo | meta - detect changed plugins
     runs-on: ubuntu-latest
     outputs:
       ca: ${{ steps.filter.outputs.ca }}
@@ -65,7 +65,7 @@ jobs:
               - '.github/scripts/check-plugin-refs.py'
 
   tools:
-    name: ca farm — typecheck, test, artifact-freshness
+    name: ca | build - farm dispatcher (typecheck/test/artifact)
     needs: changes
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
@@ -103,7 +103,7 @@ jobs:
           echo "farm.js is in sync with farm.ts"
 
   ca-sandbox-tools:
-    name: ca-sandbox driver — typecheck, test, artifact-freshness
+    name: ca-sandbox | build - sandbox driver (typecheck/test/artifact)
     needs: changes
     if: needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
@@ -141,7 +141,7 @@ jobs:
           echo "sandbox.js is in sync with the TypeScript sources"
 
   hooks:
-    name: hooks — cold-install matrix (${{ matrix.os }})
+    name: ca | test - hooks (${{ matrix.os }})
     # MR-10: proves the dual-registration interpreter fallback on every OS —
     # REAL (python3 present, no double execution), STUB (Store-alias python3
     # that exits 9009; the fallback entry must do the work, including blocking
@@ -218,7 +218,7 @@ jobs:
         run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 
   version-bump:
-    name: ca version bumped when payload changes
+    name: ca | gate - version bump on payload change
     # `claude plugin update` is a NO-OP when plugin.json's version string is
     # unchanged — verified live 2026-06-10: a months-stale hooks.json survived
     # a marketplace refresh until uninstall+reinstall. So any change to the
@@ -255,7 +255,7 @@ jobs:
           echo "payload changed on unpublished version $ver (no tag v$ver) — allowed"
 
   version-bump-sandbox:
-    name: ca-sandbox version bumped when payload changes
+    name: ca-sandbox | gate - version bump on payload change
     # Per-plugin twin of the ca version-bump guard (ADR-0007): the two plugins
     # version independently, so a changed ca-sandbox payload on an
     # already-published ca-sandbox version (tag ca-sandbox-v<version>) is the
@@ -298,7 +298,7 @@ jobs:
           echo "payload changed on unpublished version $ver (no tag ca-sandbox-v$ver) — allowed"
 
   prose:
-    name: ca plugin reference graph
+    name: ca | check - reference graph
     needs: changes
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
@@ -311,7 +311,7 @@ jobs:
         run: python3 .github/scripts/check-plugin-refs.py ca
 
   badge-consistency:
-    name: ca README badges/counts/catalog match the repo
+    name: ca | check - README badges & catalog
     # The mechanical backstop the 2.5.0 release proved was missing: the README
     # version badge, the command/skill/agent count badges, their prose echoes,
     # and the full-catalog table must all match the repo. A release that bumps
@@ -328,7 +328,7 @@ jobs:
         run: python3 .github/scripts/check_badge_consistency.py
 
   prose-sandbox:
-    name: ca-sandbox plugin reference graph
+    name: ca-sandbox | check - reference graph
     needs: changes
     if: needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
@@ -341,7 +341,7 @@ jobs:
         run: python3 .github/scripts/check-plugin-refs.py ca-sandbox
 
   manifests:
-    name: JSON manifests parse
+    name: repo | check - JSON manifests
     # Shared infra — a broken plugin.json / marketplace.json / hooks.json breaks
     # install for every user regardless of which plugin it belongs to, so this
     # is repo-wide and not gated per-plugin.

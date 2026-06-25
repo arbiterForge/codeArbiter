@@ -42,6 +42,7 @@ jobs:
   # error would ship silently. Runs on the same site/** + plugins/ca/** triggers
   # as build; a red test here fails the workflow.
   site-check:
+    name: site | test - generator
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,6 +62,7 @@ jobs:
         run: npm test
 
   build:
+    name: site | build - astro pages
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -84,6 +86,7 @@ jobs:
           path: site/dist
 
   deploy:
+    name: site | deploy - github pages
     needs: [build, site-check] # never publish a build whose tests/typecheck are red
     # Push to main only — pull_request builds are validation-only.
     if: github.event_name != 'pull_request'
