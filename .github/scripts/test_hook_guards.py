@@ -201,6 +201,31 @@ def main():
         git(["checkout", "--detach"], fx_main)
         expect_block(fx_main, "git commit -m x", "H-01",
                      "H-01 block: commit in detached HEAD at main tip")
+        # performance-006 parity lock: head_on_protected_tip now resolves HEAD +
+        # both protected branches in a SINGLE `git rev-parse HEAD main master`.
+        # When `master` is absent that spawn exits nonzero and echoes the
+        # unresolved name as a non-SHA line — the detection must read SHA-shaped
+        # lines only and still BLOCK a detached HEAD on the `master` tip when
+        # master is the default branch (main absent).
+        master_base = os.path.join(base, "master-case")
+        os.makedirs(master_base)
+        fx_master = make_fixture(master_base, "master")
+        git(["checkout", "--detach"], fx_master)
+        expect_block(fx_master, "git commit -m x", "H-01",
+                     "H-01 block: commit in detached HEAD at master tip")
+        # And the converse: a detached HEAD on an OLDER commit (main exists but
+        # HEAD != its tip) must ALLOW — the single spawn must not misread a
+        # resolved-but-different protected SHA as a tip match.
+        detach_base = os.path.join(base, "detach-old")
+        os.makedirs(detach_base)
+        fx_old = make_fixture(detach_base, "main")
+        with open(os.path.join(fx_old, "notes.txt"), "a", encoding="utf-8") as f:
+            f.write("second commit\n")
+        git(["add", "notes.txt"], fx_old)
+        git(["commit", "-q", "-m", "second"], fx_old)
+        git(["checkout", "--detach", "HEAD~1"], fx_old)
+        expect_allow(fx_old, "git commit -m x",
+                     "allow: detached HEAD on an older commit is not a protected tip")
         expect_block(fx, "git push --force origin feat/work", "H-02", "H-02 block: force push")
 
         # ---- H-09b: the diff-bound security gate (TOCTOU closed) -------------
