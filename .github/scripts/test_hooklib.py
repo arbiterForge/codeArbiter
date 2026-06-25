@@ -159,6 +159,78 @@ class PathGlobTest(unittest.TestCase):
         self.assertTrue(_hooklib.is_ci_path(".github\\workflows\\ci.yml", self._root))
 
 
+def _write_controls(root, content):
+    """Write content to .codearbiter/security-controls.md in root."""
+    ca_dir = os.path.join(root, ".codearbiter")
+    os.makedirs(ca_dir, exist_ok=True)
+    with open(os.path.join(ca_dir, "security-controls.md"), "w", encoding="utf-8") as f:
+        f.write(content)
+
+
+class CiPathCustomGlobTest(unittest.TestCase):
+    """scope_globs + is_ci_path with a <!-- ci-paths --> declaration block in
+    security-controls.md — mirrors OB-02/OB-03 from test_migration_backstop.py."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_ci_paths_extend_matches_custom_path(self):
+        """A `+ glob` in <!-- ci-paths --> makes a non-default path detected."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n+ custom/ci/**\n<!-- /ci-paths -->\n")
+        self.assertTrue(_hooklib.is_ci_path("custom/ci/pipeline.yml", self._root))
+
+    def test_ci_paths_extend_does_not_break_defaults(self):
+        """Extending must not suppress the default globs."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n+ custom/ci/**\n<!-- /ci-paths -->\n")
+        self.assertTrue(_hooklib.is_ci_path(".github/workflows/ci.yml", self._root))
+
+    def test_ci_paths_exclude_narrows_detection(self):
+        """A `- glob` in <!-- ci-paths --> drops a path that would otherwise match."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n- .circleci/**\n<!-- /ci-paths -->\n")
+        self.assertFalse(_hooklib.is_ci_path(".circleci/config.yml", self._root))
+
+    def test_ci_paths_exclude_does_not_over_suppress(self):
+        """An exclude on one glob must leave other default globs intact."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n- .circleci/**\n<!-- /ci-paths -->\n")
+        self.assertTrue(_hooklib.is_ci_path(".github/workflows/ci.yml", self._root))
+
+
+class DeployPathCustomGlobTest(unittest.TestCase):
+    """scope_globs + is_deploy_path with a <!-- deploy-paths --> declaration block
+    in security-controls.md — mirrors OB-02/OB-03 from test_migration_backstop.py."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_deploy_paths_extend_matches_custom_path(self):
+        """A `+ glob` in <!-- deploy-paths --> makes a non-default path detected."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n+ deploy/scripts/**\n<!-- /deploy-paths -->\n")
+        self.assertTrue(_hooklib.is_deploy_path("deploy/scripts/rollout.sh", self._root))
+
+    def test_deploy_paths_extend_does_not_break_defaults(self):
+        """Extending must not suppress the default globs."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n+ deploy/scripts/**\n<!-- /deploy-paths -->\n")
+        self.assertTrue(_hooklib.is_deploy_path("Dockerfile", self._root))
+
+    def test_deploy_paths_exclude_narrows_detection(self):
+        """A `- glob` in <!-- deploy-paths --> drops a path that would otherwise match."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n- **/Procfile\n<!-- /deploy-paths -->\n")
+        self.assertFalse(_hooklib.is_deploy_path("Procfile", self._root))
+
+    def test_deploy_paths_exclude_does_not_over_suppress(self):
+        """An exclude on one glob must leave other default globs intact."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n- **/Procfile\n<!-- /deploy-paths -->\n")
+        self.assertTrue(_hooklib.is_deploy_path("Dockerfile", self._root))
+
+
 class FrontmatterTest(unittest.TestCase):
     """frontmatter_enabled: enabled / malformed / dormant."""
 
