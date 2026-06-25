@@ -10,6 +10,12 @@
 # to run the §3.A/§3.B copy self-audit; it never blocks. It honors the §3.A
 # exemptions it can detect cheaply (fenced/inline code, URLs, numeric/date ranges)
 # and errs toward silence on the rest.
+#
+# Public API:
+#   find_prose_separator_dashes(text) -> list[dict]   findings per line; each
+#                                        {"line": int, "context": str}; empty when clean
+#   in_antislop_doc_scope(rel_path) -> bool   True for user-facing Markdown the
+#                                        anti-slop bundle governs (repo-root + docs/**)
 
 import re
 

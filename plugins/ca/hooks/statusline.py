@@ -59,6 +59,41 @@ try:
 except Exception:  # pragma: no cover — never let an import break the statusline
     _count_in_flight = None
 
+# Reuse the enforcement-hook activation contract so the box reports "arbiter
+# enabled" exactly the way the hooks gate on it (one frontmatter parser, not two).
+# Guarded the same defensive way as _taskboardlib: a missing lib degrades the
+# arbiter segment to a local fallback, it never breaks the box.
+try:
+    from _hooklib import frontmatter_enabled as _frontmatter_enabled
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _frontmatter_enabled = None
+
+# The cost/token ledger subsystem now lives in _ledgerlib (extracted T-12) with
+# zero import-time side effects. Re-bind its functions into this module so the
+# cost segment — and the existing test suite that reaches them via statusline —
+# keep working. Guarded: a missing lib leaves the names None and the cost segment
+# safe()-degrades, never breaking the box.
+try:
+    import _ledgerlib
+    ledger_update = _ledgerlib.ledger_update
+    _tx_accumulate = _ledgerlib._tx_accumulate
+    _agg_reqs = _ledgerlib._agg_reqs
+    _totals = _ledgerlib._totals
+    api_cost = _ledgerlib.api_cost
+    price_for = _ledgerlib.price_for
+    ledger_path = _ledgerlib.ledger_path
+    persist_sess_start = _ledgerlib.persist_sess_start
+    API_PRICES = _ledgerlib.API_PRICES
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _ledgerlib = None
+
+    def ledger_update(data, sid):   # safe blanks: keeps render()'s 3-tuple contract
+        blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
+        return {}, dict(blank), dict(blank)
+
+    def persist_sess_start(sid, value):   # no ledger lib -> nothing to persist into
+        return False
+
 # --------------------------------------------------------------------------- color
 def fg(r, g, b):
     return f"\033[38;2;{r};{g};{b}m"
@@ -337,6 +372,11 @@ def git_dirty(root):
 
 # --------------------------------------------------------------------------- arbiter
 def frontmatter(path):
+    """Parse a properly-closed leading YAML frontmatter block into a key map. The
+    *arbiter-enabled* decision is NOT made here — that activation contract is owned
+    by _hooklib.frontmatter_enabled (see arbiter_state) so the box and the
+    enforcement hooks read it one way. This reader exists only to surface the
+    remaining display keys (e.g. `stage`) the boolean gate doesn't carry."""
     fm = {}
     try:
         # utf-8-sig transparently strips a leading BOM (Windows editors / PowerShell
@@ -369,11 +409,57 @@ def count_matches(path, pattern):
         return 0
 
 
+# mtime-keyed memo: statusline.py is a short-lived subprocess, but a single render
+# can resolve arbiter_state more than once (safe() probes), and the StopHook fires
+# the whole script on every tool-call completion. Caching on max(input mtime) makes
+# the 5 .codearbiter/ reads happen at most once per (root, change), re-reading only
+# when one of the inputs actually changes between renders.
+_ARBITER_CACHE = {}        # root -> (mtime_key, result)
+_ARBITER_FILES = ("CONTEXT.md", "overrides.log", "last-checkpoint",
+                  "open-tasks.md", "open-questions.md", "sprint-active")
+
+
+def _arbiter_mtime_key(cad):
+    """Max mtime across the arbiter input files (missing files stat as -1.0). Two
+    renders with the same key saw identical inputs, so the cached state is valid."""
+    latest = -1.0
+    for nm in _ARBITER_FILES:
+        try:
+            latest = max(latest, os.stat(os.path.join(cad, nm)).st_mtime)
+        except OSError:
+            pass
+    return latest
+
+
+def _arbiter_enabled(ctx_path):
+    """The arbiter-enabled gate, owned by _hooklib.frontmatter_enabled when the lib
+    is importable (so the box and the enforcement hooks agree on the activation
+    contract). Falls back to the local frontmatter() parser only if the import
+    failed — the defensive degrade path, never a hard dependency."""
+    if _frontmatter_enabled is not None:
+        try:
+            enabled, _malformed = _frontmatter_enabled(ctx_path)
+            return enabled
+        except Exception:  # noqa: BLE001 — degrade to the local parser, never crash
+            pass
+    return frontmatter(ctx_path).get("arbiter", "").lower() == "enabled"
+
+
 def arbiter_state(root):
     cad = os.path.join(root, ".codearbiter")
-    fm = frontmatter(os.path.join(cad, "CONTEXT.md"))
-    if fm.get("arbiter", "").lower() != "enabled":
+    mkey = _arbiter_mtime_key(cad)
+    cached = _ARBITER_CACHE.get(root)
+    if cached is not None and cached[0] == mkey:
+        return cached[1]
+    result = _arbiter_state_uncached(cad)
+    _ARBITER_CACHE[root] = (mkey, result)
+    return result
+
+
+def _arbiter_state_uncached(cad):
+    if not _arbiter_enabled(os.path.join(cad, "CONTEXT.md")):
         return None
+    fm = frontmatter(os.path.join(cad, "CONTEXT.md"))
     total_over = count_matches(os.path.join(cad, "overrides.log"), r"^(?!\s*#)(?!\s*$).+")
     # last-checkpoint holds the override COUNT at the last /ca:checkpoint. A value
     # outside [0, total] is not a valid count (e.g. a timestamp from a stale writer)
@@ -403,273 +489,27 @@ def arbiter_state(root):
 
 
 # --------------------------------------------------------------------------- ledger
-def ledger_path():
-    return os.environ.get("CODEARBITER_LEDGER") or \
-        os.path.join(os.path.expanduser("~"), ".codearbiter", "ledger.json")
-
-
-SESSION_TTL = 36 * 3600  # prune sessions older than ~1.5 days
-BURN_RING = 40           # recent per-call token-burn samples kept for the sparkline
-TX_MAX_NEW_LINES = 20000 # hot-path bound: transcript lines parsed per render
-
-# API list prices, USD per 1M tokens (captured 2026-06-10 from Anthropic's
-# pricing pages). Used ONLY to estimate the pay-as-you-go API-equivalent cost of
-# this session's REAL tokens — the bar labels it "api≈"; it is not a bill.
-# Per model family: (input, output, cache_write_5m, cache_write_1h, cache_read).
-# Cache multipliers are the standard ones: write 1.25x/2x input, read 0.1x.
-API_PRICES = {
-    "fable":  (10.0, 50.0, 12.50, 20.0, 1.00),
-    "opus":   (5.0, 25.0, 6.25, 10.0, 0.50),
-    "sonnet": (3.0, 15.0, 3.75,  6.0, 0.30),
-    "haiku":  (1.0,  5.0, 1.25,  2.0, 0.10),
-}
-
-
-def price_for(model):
-    ml = str(model).lower()
-    for fam, p in API_PRICES.items():
-        if fam in ml:
-            return p
-    return API_PRICES["sonnet"]   # reasonable mid default for an unrecognized model
-
-
-def api_cost(tok):
-    """Estimated pay-as-you-go API cost (USD) for accumulated per-model tokens."""
-    total = 0.0
-    for model, t in (tok or {}).items():
-        if not isinstance(t, dict):
-            continue
-        pin, pout, p5, p1, pr = price_for(model)
-        total += (num(t.get("in")) * pin + num(t.get("out")) * pout
-                  + num(t.get("c5")) * p5 + num(t.get("c1")) * p1
-                  + num(t.get("cr")) * pr) / 1e6
-    return total
-
-
-def _msg_date(ts):
-    """Local calendar date (YYYY-MM-DD) of a transcript message's timestamp, so
-    tokens are attributed to the day they were actually burned (a session that
-    crosses midnight splits correctly across days)."""
-    e = parse_iso(ts) if isinstance(ts, str) else None
-    if e is None:
-        return datetime.now().strftime("%Y-%m-%d")
-    try:
-        return datetime.fromtimestamp(e).strftime("%Y-%m-%d")
-    except (OSError, OverflowError, ValueError):
-        return datetime.now().strftime("%Y-%m-%d")
-
-
-def _tx_accumulate(rec, tx_path):
-    """Tail the session transcript JSONL from the stored byte offset, UPSERTING each
-    assistant message's usage into a per-requestId dedup map (the transcript logs a
-    single API call several times via streaming/replay; counting each request once
-    is what keeps tokens AND cost honest) and pushing a per-call burn sample. Append-
-    only -> O(new lines)/render. Returns True if the offset advanced."""
-    if not tx_path or not os.path.isfile(tx_path):
-        return False
-    try:
-        size = os.path.getsize(tx_path)
-    except OSError:
-        return False
-    if not isinstance(rec.get("reqs"), dict):
-        rec["reqs"] = {}          # fresh record, or migrating from an earlier schema
-        rec["tx_off"] = 0
-        rec.pop("days", None)
-        rec.pop("tok", None)
-    if not isinstance(rec.get("burn"), list):
-        rec["burn"] = []
-    off = int(num(rec.get("tx_off")))
-    # New transcript for this session, or truncation/rotation -> reparse from start.
-    if rec.get("tx_path") != tx_path or off > size:
-        off, rec["reqs"], rec["burn"], rec["tx_path"] = 0, {}, [], tx_path
-    if off >= size:
-        return False
-    try:
-        with open(tx_path, "rb") as f:
-            f.seek(off)
-            chunk = f.read()
-    except OSError:
-        return False
-    new_off = size
-    # A writer may flush mid-line; keep a trailing partial line for next render.
-    if chunk and not chunk.endswith(b"\n"):
-        cut = chunk.rfind(b"\n")
-        if cut < 0:
-            return False                 # no complete line yet
-        new_off = off + cut + 1
-        chunk = chunk[:cut]
-    parsed = 0
-    for raw in chunk.split(b"\n"):
-        if not raw.strip():
-            continue
-        parsed += 1
-        if parsed > TX_MAX_NEW_LINES:
-            break
-        try:
-            o = json.loads(raw.decode("utf-8", "replace"))
-        except ValueError:
-            continue
-        if not isinstance(o, dict) or o.get("type") != "assistant":
-            continue
-        m = o.get("message")
-        u = m.get("usage") if isinstance(m, dict) else None
-        if not isinstance(u, dict):
-            continue
-        model = m.get("model") or "?"
-        i = num(u.get("input_tokens"))
-        cr = num(u.get("cache_read_input_tokens"))
-        cc = u.get("cache_creation")
-        if isinstance(cc, dict):
-            c5 = num(cc.get("ephemeral_5m_input_tokens"))
-            c1 = num(cc.get("ephemeral_1h_input_tokens"))
-        else:
-            c5 = c1 = 0.0
-        cw = num(u.get("cache_creation_input_tokens"))
-        if cw and not (c5 or c1):        # 5m/1h split absent -> treat all as 5m
-            c5 = cw
-        out = num(u.get("output_tokens"))
-        ts = o.get("timestamp")
-        e = parse_iso(ts) if isinstance(ts, str) else None
-        if e is not None:                       # earliest message ts = true session start
-            t0 = rec.get("t0")
-            if not isinstance(t0, (int, float)) or e < t0:
-                rec["t0"] = e
-        # Dedupe by requestId: the transcript logs each API call multiple times
-        # (streaming/replay), so UPSERT each request's final usage exactly once
-        # instead of summing every line, which 2-3x over-counts BOTH tokens and cost.
-        key = o.get("requestId") or m.get("id") or f"_p{int(off) + parsed}"
-        is_new = key not in rec["reqs"]
-        rec["reqs"][key] = {"d": _msg_date(ts), "m": model,
-                            "in": i, "cr": cr, "c5": c5, "c1": c1, "out": out}
-        if is_new:
-            rec["burn"].append(i + c5 + c1 + out)   # fresh input + output (cache reads excluded)
-    if len(rec["burn"]) > BURN_RING:
-        rec["burn"] = rec["burn"][-BURN_RING:]
-    rec["tx_off"] = new_off
-    return True
-
-
-def _agg_reqs(reqs, only=None):
-    """Aggregate the per-request dedup map into {model: tokens}; if `only` is a
-    date, include just that local-calendar-day's requests (for the Today totals)."""
-    out = {}
-    for r in (reqs or {}).values():
-        if not isinstance(r, dict):
-            continue
-        if only is not None and r.get("d") != only:
-            continue
-        o = out.setdefault(r.get("m") or "?",
-                           {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
-        for k in o:
-            o[k] += num(r.get(k))
-    return out
-
-
-def _totals(models):
-    """Display totals + API-equivalent cost for a model map. The displayed "in" is
-    FRESH input (uncached input + cache writes) — cache READS are excluded from the
-    token count (they re-serve already-sent context every turn and would inflate it
-    30-100x), but they ARE still priced into the cost via api_cost()."""
-    tin = tout = 0.0
-    for t in (models or {}).values():
-        if isinstance(t, dict):
-            tin += num(t.get("in")) + num(t.get("c5")) + num(t.get("c1"))
-            tout += num(t.get("out"))
-    return {"in": tin, "out": tout, "cost": api_cost(models)}
-
-
-def ledger_update(data, sid):
-    """Read-modify-write the per-session ledger. Accumulate the session's TRUE token
-    COUNTS by tailing its transcript (deduped per requestId), take the COST from the
-    host's cost.total_cost_usd, and return (session record, this-session totals,
-    today's totals across sessions). Best-effort; safe blanks on any failure."""
-    blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
-    if not sid:
-        return {}, dict(blank), dict(blank)
-    path = ledger_path()
-    now = time.time()
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    led = {}
-    try:
-        with open(path, encoding="utf-8") as f:
-            led = json.load(f)
-    except (OSError, ValueError):
-        led = {}
-    if not isinstance(led, dict):
-        led = {}
-    sessions = led.get("sessions")
-    if not isinstance(sessions, dict):
-        sessions = {}
-
-    rec = sessions.get(sid)
-    dirty = not isinstance(rec, dict)
-    if dirty:
-        rec = {}
-    rec.setdefault("first_ts", now)
-    rec["last_ts"] = now
-    rec["last_day"] = today
-    rec["host_cost"] = num(get(data, "cost", "total_cost_usd"))
-
-    tx = data.get("transcript_path") if isinstance(data, dict) else None
-    if safe(_tx_accumulate, rec, tx):
-        dirty = True
-    sess = _totals(_agg_reqs(rec.get("reqs")))             # tokens: this session, all requests (deduped)
-    # Cost = Claude Code's authoritative cost.total_cost_usd — it already prices every
-    # call (including subagents in separate transcripts) exactly as your bill does, so
-    # it is far more accurate than recomputing tokens*price. api_cost is fallback only.
-    if rec["host_cost"] > 0:
-        sess["cost"] = rec["host_cost"]
-    rec["today"] = dict(_totals(_agg_reqs(rec.get("reqs"), only=today)), date=today)
-    rec.pop("tot", None)                    # retire the batch-1 whole-session cache key
-    sessions[sid] = rec
-
-    for k in list(sessions.keys()):
-        v = sessions[k]
-        if not isinstance(v, dict) or now - num(v.get("last_ts")) > SESSION_TTL:
-            del sessions[k]
-            dirty = True
-    led["sessions"] = sessions
-
-    if dirty:
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            tmp = f"{path}.{os.getpid()}.tmp"   # per-process staging: no concurrent clobber
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(led, f)
-            os.replace(tmp, path)
-        except OSError:
-            pass
-
-    # Today = each session's TODAY bucket (tokens whose transcript timestamp falls
-    # on the current local day), summed across sessions — not whole-session totals.
-    day = dict(blank)
-    for v in sessions.values():
-        if not isinstance(v, dict):
-            continue
-        t = v.get("today") if isinstance(v.get("today"), dict) else None
-        if t and t.get("date") == today:            # tokens: true per-calendar-day buckets
-            day["in"] += num(t.get("in"))
-            day["out"] += num(t.get("out"))
-        if v.get("last_day") == today:              # cost: host per-session total, day-attributed
-            day["cost"] += num(v.get("host_cost"))
-    return rec, sess, day
-
-
+# The token/cost ledger (pricing table, transcript accumulation, JSON persistence,
+# burn samples) lives in _ledgerlib (extracted T-12). Its functions — ledger_update,
+# _tx_accumulate, _agg_reqs, _totals, api_cost, price_for, ledger_path, API_PRICES —
+# are bound into this module at import time (see the guarded import at the top), so
+# the cost segment and the test suite reach them unchanged. Only burn_spark stays
+# here: it is the render bridge that turns the lib's numeric samples into a colored
+# sparkline, so it keeps the ANSI dependency out of the lib.
 def burn_spark(rec):
     """Sparkline of recent per-message token burn — real per-API-call totals
-    accumulated from the transcript, not a time-extrapolated estimate."""
-    b = [num(x) for x in (rec.get("burn") or []) if isinstance(x, (int, float))]
-    return sparkline(b[-24:]) if len(b) >= 2 else ""
+    accumulated from the transcript (via _ledgerlib.burn_samples), not a
+    time-extrapolated estimate."""
+    samples = _ledgerlib.burn_samples(rec) if _ledgerlib is not None else []
+    return sparkline(samples) if len(samples) >= 2 else ""
 
 
-def session_start(sid):
-    """True session start (epoch seconds) from Claude Code's own session metadata
-    (~/.claude/sessions/<pid>.json, keyed by pid — match on sessionId). This is the
-    wall-clock start /usage reports, INCLUDING idle/suspend gaps the current
-    transcript can't show. None if unavailable -> caller falls back to the transcript."""
-    if not sid:
-        return None
+def _session_start_scan(sid):
+    """The O(N) fallback: scan ~/.claude/sessions/*.json for the one whose
+    sessionId matches `sid` and read its startedAt. The metadata file is named by
+    the host PID, not the sessionId, so a direct name lookup isn't possible from
+    here — a match-on-content scan is the only correct resolver. The caller caches
+    the result in the ledger so this scan runs at most once per session."""
     d = os.path.join(os.path.expanduser("~"), ".claude", "sessions")
     try:
         names = os.listdir(d)
@@ -691,6 +531,27 @@ def session_start(sid):
             if sa:
                 return sa / 1000.0 if sa > 1e12 else sa   # ms epoch -> seconds
     return None
+
+
+def session_start(sid, rec=None):
+    """True session start (epoch seconds) from Claude Code's own session metadata
+    (~/.claude/sessions/<pid>.json, matched on sessionId). This is the wall-clock
+    start /usage reports, INCLUDING idle/suspend gaps the current transcript can't
+    show. None if unavailable -> caller falls back to the transcript.
+
+    Fast path: the resolved value is cached in the ledger record (`rec["sess_start"]`),
+    which ledger_update persists, so subsequent renders skip the per-render directory
+    scan entirely. On a cache miss the full scan runs once and seeds the cache."""
+    if not sid:
+        return None
+    if isinstance(rec, dict):
+        cached = num(rec.get("sess_start"), None)
+        if cached:
+            return cached
+    sa = _session_start_scan(sid)
+    if sa and isinstance(rec, dict):
+        rec["sess_start"] = sa   # seed the ledger cache; ledger_update persists it
+    return sa
 
 
 # --------------------------------------------------------------------------- subagents
@@ -1143,7 +1004,13 @@ def render(raw):
     spark = safe(burn_spark, rec) or ""
     # True session age from Claude Code's session metadata (the wall clock /usage
     # shows, incl. idle gaps); fall back to the current transcript's first message.
-    s0 = safe(session_start, sid)
+    had_cached_start = isinstance(rec, dict) and bool(num(rec.get("sess_start"), None))
+    s0 = safe(session_start, sid, rec)
+    # Freshly resolved (not from cache) -> persist into the ledger so the next render
+    # skips the ~/.claude/sessions scan. ledger_update already ran this render, so a
+    # targeted write seeds the cache now rather than waiting for the next dirty write.
+    if s0 is not None and not had_cached_start and sid:
+        safe(persist_sess_start, sid, s0)
     if s0 is None:
         s0 = num(rec.get("t0"), num(rec.get("first_ts"), time.time()))
     age_str = f"{GREY}age{RESET} {WHITE}{human_dur(time.time() - s0)}{RESET}"

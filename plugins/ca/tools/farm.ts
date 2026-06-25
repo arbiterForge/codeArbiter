@@ -36,7 +36,7 @@
  */
 import { spawn } from "node:child_process";
 import { readFile, writeFile, appendFile, mkdir, rm, stat } from "node:fs/promises";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -152,19 +152,71 @@ const MUT = {
 // SEPARATE so parsing contexts (checkDrift — #91) read only stdout: on Windows
 // with core.safecrlf, git writes a `warning: ... LF will be replaced by CRLF`
 // line to stderr that, when merged, was parsed as a changed file path and tripped
-// a false `drift:` escalation.
-type RunResult = { code: number; out: string; stdout: string; stderr: string };
+// a false `drift:` escalation. `timedOut` is set when a per-command wall-clock
+// timeout fired and the child was killed (T-06 / reliability-001) — consumers
+// surface it as a gate/setup/mutation failure rather than a clean exit.
+type RunResult = { code: number; out: string; stdout: string; stderr: string; timedOut?: true };
 type GitRunner = (args: string[], cwd?: string) => Promise<RunResult>;
 
-function run(cmd: string, args: string[], cwd?: string, opts: object = {}): Promise<RunResult> {
+// T-06 (reliability-001): per-command wall-clock timeout. The shared run() helper
+// previously resolved ONLY on the child's close/error event, so a gate/setup/
+// mutation command that never exits (a test blocking on stdin, a watch/dev-server
+// invocation, an interactive prompt) wedged the awaiting worker forever — and the
+// scheduler's Promise.race never settled, so the whole run hung with no report.
+// This mirrors the AbortController discipline the API path already uses. Default a
+// few minutes; configurable, independent of FARM_REQUEST_TIMEOUT_MS.
+const GATE_TIMEOUT_MS = Number(process.env.FARM_GATE_TIMEOUT_MS ?? 300_000);
+
+// Kill a spawned child and its descendants. On Windows a plain child.kill() does
+// not reap the process tree (cmd.exe /c spawns the real command as a grandchild),
+// so use `taskkill /T /F` by PID; elsewhere SIGKILL the child. Best-effort —
+// errors are swallowed (the child may already be gone).
+function treeKill(child: ReturnType<typeof spawn>): void {
+  try {
+    if (process.platform === "win32" && child.pid !== undefined) {
+      spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]);
+    } else {
+      child.kill("SIGKILL");
+    }
+  } catch {
+    /* already exited / unkillable — best effort */
+  }
+}
+
+// `timeoutMs` (opts) bounds the child's wall-clock; 0/undefined disables the
+// timeout (used by git, which must not be killed mid-operation). On timeout the
+// child tree is killed and a RunResult tagged `timedOut` resolves, so the caller
+// treats it as a non-zero failure instead of awaiting forever.
+export function run(
+  cmd: string,
+  args: string[],
+  cwd?: string,
+  opts: object = {},
+  timeoutMs = 0,
+): Promise<RunResult> {
   return new Promise<RunResult>((resolve) => {
     const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
     let stdout = "";
     let stderr = "";
+    let settled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const done = (r: RunResult) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve(r);
+    };
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        treeKill(c);
+        const note = `\n[FARM] command exceeded ${timeoutMs}ms wall-clock timeout — killed (FARM_GATE_TIMEOUT_MS)`;
+        done({ code: 124, out: stdout + stderr + note, stdout, stderr: stderr + note, timedOut: true });
+      }, timeoutMs);
+    }
     c.stdout.on("data", (d) => (stdout += d));
     c.stderr.on("data", (d) => (stderr += d));
-    c.on("error", (e) => resolve({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
-    c.on("close", (code) => resolve({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
+    c.on("error", (e) => done({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
+    c.on("close", (code) => done({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
   });
 }
 const git: GitRunner = (args, cwd) => run("git", args, cwd);
@@ -195,9 +247,13 @@ const [SHELL_BIN, SHELL_FLAG] =
 const SHELL_OPTS =
   process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
 
-async function runGate(cwd: string, commands: string[]) {
+export async function runGate(cwd: string, commands: string[]) {
   for (const cmd of commands) {
-    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS);
+    // T-06: bound each gate/setup command by the wall-clock timeout so a hung
+    // command is killed and surfaces as a gate failure instead of wedging the
+    // worker. The killed RunResult carries code!=0 (124), so the existing
+    // non-zero branch below treats it exactly like any other gate failure.
+    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
     if (r.code !== 0)
       // FINDING 2: the raw gate stdout+stderr tail flows into priorFailure and
       // is injected into the next worker prompt (buildPrompt), crossing the
@@ -543,6 +599,19 @@ export function parseChatCompletion(
       error: `endpoint ${apiBaseUrl} returned a non-JSON body (${JSON.stringify(snippet)}) — check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`,
     };
   }
+  // dx-001 (T-08a): the `as typeof data` cast is unsound — valid JSON of an
+  // UNEXPECTED shape (an array, a non-object, or `{error: ...}`) passes the cast
+  // and then yields a silent `ok:true content:""`, exhausting retries without
+  // signalling the real cause (the #90 class of misconfiguration). Verify the
+  // chat-completions shape (a `choices` array) before trusting it; on a mismatch
+  // return an actionable, endpoint-naming error.
+  if (!data || typeof data !== "object" || !Array.isArray((data as { choices?: unknown }).choices)) {
+    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
+    return {
+      ok: false,
+      error: `endpoint ${apiBaseUrl} returned an unexpected shape (no 'choices' array): ${JSON.stringify(snippet)} — check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`,
+    };
+  }
   return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
 }
 
@@ -880,6 +949,27 @@ function generateMutants(file: string, src: string): Array<{ file: string; mutat
 
 type MutationResult = { score: number; evaluated: number; survivors: string[] };
 
+// dx-002 (T-08b): parse a pluggable FARM_MUTATION_CMD's stdout for its trailing
+// JSON score line. Extracted as a pure, exported function so the shape guard is
+// unit-testable without spawning a process. The last `{...\"score\"...}` match is
+// JSON.parsed; a value that is null, not an object, or an array (e.g. "score"
+// emitted inside a string, or a bare numeric literal) is rejected to null before
+// `parsed.score` is read, rather than silently mis-interpreted. A non-numeric
+// score, no match, or unparseable JSON all map to null (skip leniently).
+export function parseMutationHookOutput(out: string): MutationResult | null {
+  const j = [...out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
+  if (!j) return null;
+  try {
+    const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    if (typeof parsed.score === "number")
+      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+  } catch {
+    /* unparseable — skip leniently */
+  }
+  return null;
+}
+
 async function mutationCheck(wt: string, task: Task): Promise<MutationResult | null> {
   if (!MUT.enabled) return null;
   const testCmd = task.gate.commands[0];
@@ -895,21 +985,28 @@ async function mutationCheck(wt: string, task: Task): Promise<MutationResult | n
         ...SHELL_OPTS,
       });
       let out = "";
+      let settled = false;
+      const finish = (res: { code: number; out: string }) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(res);
+      };
+      // T-06: bound the pluggable FARM_MUTATION_CMD by the same wall-clock
+      // timeout. A hung mutation framework would otherwise wedge the worker; on
+      // timeout the child tree is killed and the result is treated as
+      // unparseable (score skipped leniently — no false escalation).
+      const timer = setTimeout(() => {
+        treeKill(c);
+        finish({ code: 124, out: out + "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout — killed" });
+      }, GATE_TIMEOUT_MS);
       c.stdout.on("data", (d) => (out += d));
       c.stderr.on("data", (d) => (out += d));
-      c.on("error", (e) => resolve({ code: 1, out: String(e) }));
-      c.on("close", (code) => resolve({ code: code ?? 1, out }));
+      c.on("error", (e) => finish({ code: 1, out: String(e) }));
+      c.on("close", (code) => finish({ code: code ?? 1, out }));
     });
-    const j = [...r.out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
-    if (!j) return null;
-    try {
-      const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
-      if (typeof parsed.score === "number")
-        return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
-    } catch {
-      /* unparseable — skip leniently */
-    }
-    return null;
+    // dx-002 (T-08b): shape-guarded parse of the hook's trailing score line.
+    return parseMutationHookOutput(r.out);
   }
 
   // Built-in text mutation.
@@ -933,8 +1030,17 @@ async function mutationCheck(wt: string, task: Task): Promise<MutationResult | n
     for (const c of candidates) {
       if (Date.now() - start > MUT.budgetMs) break;
       await writeFile(path.resolve(wt, c.file), c.mutated);
-      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS);
-      await writeFile(path.resolve(wt, c.file), originals.get(c.file)!); // restore
+      // T-06: bound the mutant re-run by the wall-clock timeout. A hung test
+      // here (a mutant that turns the test into an infinite loop, say) would
+      // otherwise wedge the worker; the killed result counts as a "killed"
+      // mutant (code!=0), the lenient direction.
+      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
+      // T-08 (dx-003): skip the restore on a Map miss rather than writing the
+      // literal string "undefined" into the worktree file. The invariant
+      // (every candidate's file is a key in `originals`) holds for the built-in
+      // generator today; this guard preserves the file if that ever changes.
+      const orig = originals.get(c.file);
+      if (orig !== undefined) await writeFile(path.resolve(wt, c.file), orig); // restore
       evaluated++;
       if (r.code !== 0) killed++;
       else survivors.push(c.tag);
@@ -963,7 +1069,19 @@ type Result = {
   promptTokens?: number;
   completionTokens?: number;
   mutationScore?: number | null;
+  // observability-003 (T-07c): run-level correlation id, stamped onto every
+  // result before it is appended to farm-results.jsonl, so concurrent farm runs
+  // writing to the same .farm/ directory produce distinguishable lines that tie
+  // back to a single farm-report.json header.
+  runId?: string;
 };
+
+// observability-003 (T-07c): a short run-id minted once at main() startup. Six
+// hex chars from crypto.randomBytes — enough to disambiguate concurrent runs in
+// the shared JSONL stream without bloating every line.
+export function mintRunId(): string {
+  return randomBytes(3).toString("hex");
+}
 
 // Integration merges happen inside a dedicated worktree — never the main
 // checkout. mergeChain serializes access to that worktree.
@@ -1288,6 +1406,21 @@ export function validate(plan: Plan) {
     if (ids.has(t.id)) throw new Error(`duplicate task id: ${t.id}`);
     ids.add(t.id);
 
+    // migration-004 (T-07b): guard the REQUIRED structured fields before
+    // dereferencing them. These are `required` in plan.schema.json, but
+    // validate() runs against a `JSON.parse(...) as Plan` assertion (no runtime
+    // schema check), so a hand-crafted or partially-written plan.json with
+    // `test:null`, `gate:null`, or `filesInScope:null` would otherwise throw an
+    // opaque `TypeError: Cannot read properties of null` instead of a named
+    // error identifying the task and the field. Fail-closed either way; this
+    // just makes the failure diagnosable.
+    if (!t.test || typeof t.test.path !== "string")
+      throw new Error(`task ${t.id}: test.path is required (string)`);
+    if (!Array.isArray(t.filesInScope))
+      throw new Error(`task ${t.id}: filesInScope is required (array of relative paths)`);
+    if (!t.gate || !Array.isArray(t.gate.commands))
+      throw new Error(`task ${t.id}: gate.commands is required (array of strings)`);
+
     // D-2: reject relative-path traversal in test.path and filesInScope
     if (t.test.path.includes("..") || path.isAbsolute(t.test.path))
       throw new Error(`task ${t.id}: test.path must be a relative path with no ".." segments`);
@@ -1504,6 +1637,10 @@ async function main() {
 
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
 
+  // observability-003 (T-07c): one run-id for this whole invocation, threaded
+  // into every farm-results.jsonl line and the farm-report.json header.
+  const runId = mintRunId();
+
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
 
@@ -1593,13 +1730,30 @@ async function main() {
           id,
           runTask(byId.get(id)!, model, apiBaseUrl, apiKey).then(
             (r) => ({ id, r }),
-            (e) => ({ id, r: { id, status: "escalate" as const, attempts: 0, branch: `farm/${id}`, worktree: path.resolve(ENV.worktreeRoot, id), note: `crashed: ${e?.message ?? e}` } }),
+            // observability-003 (T-07c): a crash produces an escalate Result with
+            // a correlated, stack-bearing note. The truncated err.stack gives the
+            // post-mortem a call site (e.g. the spawn TypeError from
+            // reliability-004) instead of a one-line message with no origin.
+            (e) => ({
+              id,
+              r: {
+                id,
+                status: "escalate" as const,
+                attempts: 0,
+                branch: `farm/${id}`,
+                worktree: path.resolve(ENV.worktreeRoot, id),
+                note: `crashed: ${e?.message ?? e}${e?.stack ? `\n${String(e.stack).slice(0, 1500)}` : ""}`,
+              },
+            }),
           ),
         );
       }
       if (running.size === 0) break;
       const { id, r } = await Promise.race(running.values());
       running.delete(id);
+      // observability-003 (T-07c): stamp the run-id onto every settled result —
+      // crash or clean — so the JSONL line and the report header share it.
+      r.runId = runId;
       done.set(id, r);
       // Streaming rail (AC-08 / D7): append this settled task as one JSONL line
       // the moment it settles, so a pipelined consumer can act in completion
@@ -1616,8 +1770,15 @@ async function main() {
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
   } finally {
-    await writeReport(plan, [...done.values()], blocked, aborted).catch((e) => console.error("report write failed:", e));
-    await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
+    await writeReport(plan, [...done.values()], blocked, aborted, runId).catch((e) => console.error("report write failed:", e));
+    // reliability-004 (T-07a): only remove the integration worktree if it was
+    // actually assigned. An early throw (e.g. the integration branch could not
+    // be created) leaves `integrationWorktree` undefined; passing undefined as an
+    // argv element into spawn throws a synchronous TypeError out of this finally,
+    // masking the real, actionable error. Guard it so the original error
+    // surfaces.
+    if (integrationWorktree)
+      await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
   }
 
   const results = [...done.values()];
@@ -1638,7 +1799,7 @@ async function main() {
   process.exit(exitCode);
 }
 
-async function writeReport(plan: Plan, results: Result[], blocked: { id: string; reason: string }[], aborted: boolean) {
+async function writeReport(plan: Plan, results: Result[], blocked: { id: string; reason: string }[], aborted: boolean, runId?: string) {
   // per-task diff artifacts for audit
   await mkdir(path.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {});
   for (const r of results) {
@@ -1652,7 +1813,7 @@ async function writeReport(plan: Plan, results: Result[], blocked: { id: string;
 
   await writeFile(
     path.join(ENV.reportDir, "farm-report.json"),
-    JSON.stringify({ plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: new Date().toISOString() }, null, 2),
+    JSON.stringify({ run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: new Date().toISOString() }, null, 2),
   );
 
   const md = [

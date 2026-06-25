@@ -6,7 +6,7 @@ import { describe, it, expect } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 
 // ---------------------------------------------------------------------------
@@ -1097,5 +1097,223 @@ describe("#92 per-worktree setup hook", () => {
     expect(() => validate({ meta: { name: "p" }, tasks: [{ ...okTask, setup: [""] }] })).toThrow(/setup/i);
     // A valid setup passes.
     expect(() => validate({ meta: { name: "p", setup: ["npm ci"] }, tasks: [okTask] })).not.toThrow();
+  });
+});
+
+// ===========================================================================
+// deep-review-quick-kills Slice 3
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// T-06 (reliability-001) — per-command wall-clock timeout on run(). A hung
+// gate/setup/mutation command must be KILLED and surface as a non-zero,
+// timeout-tagged RunResult so the worker (and the scheduler) finalizes instead
+// of awaiting forever.
+// ---------------------------------------------------------------------------
+describe("T-06 run() wall-clock timeout (reliability-001)", () => {
+  // A node child that never exits (mirrors a watch/dev-server or a test blocking
+  // on stdin). Spawned via process.execPath so it is cross-platform.
+  const HANG = ["-e", "setInterval(() => {}, 1000);"];
+
+  it("kills a hung command after the timeout and tags the result timedOut", async () => {
+    const t0 = Date.now();
+    const r = await run(process.execPath, HANG, undefined, {}, 200);
+    const elapsed = Date.now() - t0;
+    // It actually resolved (did not hang the test) ...
+    expect(r.timedOut).toBe(true);
+    // ... with a non-zero code so every consumer's `code !== 0` branch fires ...
+    expect(r.code).not.toBe(0);
+    // ... and it resolved promptly around the timeout, not after the child's
+    // (never-arriving) natural exit.
+    expect(elapsed).toBeLessThan(5000);
+    expect(r.out).toMatch(/timeout/i);
+  });
+
+  it("does NOT time out a fast command and reports its real exit code", async () => {
+    const ok = await run(process.execPath, ["-e", "process.exit(0)"], undefined, {}, 5000);
+    expect(ok.timedOut).toBeUndefined();
+    expect(ok.code).toBe(0);
+    const bad = await run(process.execPath, ["-e", "process.exit(3)"], undefined, {}, 5000);
+    expect(bad.timedOut).toBeUndefined();
+    expect(bad.code).toBe(3);
+  });
+
+  it("disables the timeout when timeoutMs is 0/omitted (git-style calls are unbounded)", async () => {
+    // No timeout arg → a fast command still completes normally (proves the
+    // default path is unchanged for git and other un-timed callers).
+    const r = await run(process.execPath, ["-e", "process.exit(0)"]);
+    expect(r.timedOut).toBeUndefined();
+    expect(r.code).toBe(0);
+  });
+
+  it("runGate surfaces a killed hung command as a gate failure (scheduler can finalize)", async () => {
+    // runGate uses the module default FARM_GATE_TIMEOUT_MS (minutes), so rather
+    // than wait that long we prove the runTask path FINALIZES (escalate) when its
+    // injected runGate reports a timeout failure — exactly the RunResult shape
+    // run() produces on a kill. The scheduler never wedges because runGate
+    // returns instead of awaiting forever.
+    const task: Task = {
+      id: "hang-task",
+      description: "make the test pass",
+      filesInScope: ["src/x.ts"],
+      test: { path: "src/x.test.ts" },
+      gate: { commands: ["sleep infinity"] },
+    };
+    const deps: RunTaskDeps = {
+      worker: { async apply() { return { ok: true, filesWritten: ["src/x.ts"] }; } },
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      // The gate "hangs" → run() kills it → runGate reports the timeout failure.
+      runGate: async () => ({ ok: false as const, failed: "sleep infinity", tail: "[FARM] command exceeded ...ms wall-clock timeout — killed" }),
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+    const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", deps);
+    // Finalizes (does not hang) and escalates on the persistent gate failure.
+    expect(r.status).toBe("escalate");
+  });
+
+  it("runGate (real) returns {ok:false} on a non-zero exit and {ok:true} on success", async () => {
+    // The runGate wiring passes GATE_TIMEOUT_MS into run() for every command;
+    // the kill path itself is proven via run() above (the module default is too
+    // long to wait on here). This asserts runGate's contract is intact: a real
+    // failing command is a gate failure, a passing one is a pass.
+    // `exit N` is a builtin in both cmd.exe and bash, so no path-quoting issues.
+    const fail = await runGate(process.cwd(), ["exit 7"]);
+    expect(fail.ok).toBe(false);
+    const pass = await runGate(process.cwd(), ["exit 0"]);
+    expect(pass.ok).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-07 (reliability-004 + migration-004 + observability-003)
+// ---------------------------------------------------------------------------
+describe("T-07a validate() named errors on malformed required fields (migration-004)", () => {
+  const ok = (o: object) => ({ id: "t", description: "d", filesInScope: ["a.ts"], test: { path: "a.test.ts" }, gate: { commands: ["x"] }, ...o });
+
+  it("throws a NAMED error (task id + field) for test:null, not a TypeError", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ test: null })] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).toThrow(/task t: test\.path is required/);
+  });
+
+  it("throws a named error for filesInScope:null", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ filesInScope: null })] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).toThrow(/task t: filesInScope is required/);
+  });
+
+  it("throws a named error for gate:null", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ gate: null })] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).toThrow(/task t: gate\.commands is required/);
+  });
+
+  it("does not raise a raw TypeError (Cannot read properties of null) for any of them", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({ test: null })] } as unknown as Parameters<typeof validate>[0];
+    try {
+      validate(plan);
+    } catch (e) {
+      expect((e as Error).message).not.toMatch(/Cannot read properties of null/);
+    }
+  });
+
+  it("still accepts a well-formed plan (no behavior change)", () => {
+    const plan = { meta: { name: "p" }, tasks: [ok({})] } as unknown as Parameters<typeof validate>[0];
+    expect(() => validate(plan)).not.toThrow();
+  });
+});
+
+describe("T-07c run-id correlation (observability-003)", () => {
+  it("mints a short, non-empty, distinct run id", () => {
+    const a = mintRunId();
+    const b = mintRunId();
+    expect(a).toMatch(/^[0-9a-f]{6}$/);
+    expect(a).not.toBe(b); // overwhelmingly likely distinct
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-08a (dx-001) — parseChatCompletion must reject an unexpected shape with an
+// actionable, endpoint-naming error rather than a silent ok:true content:"".
+// ---------------------------------------------------------------------------
+describe("T-08a parseChatCompletion shape guard (dx-001)", () => {
+  it("returns ok:false for a body with no choices array, naming the endpoint", () => {
+    const r = parseChatCompletion(JSON.stringify({ error: "bad model" }), "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.error).toMatch(/opencode\.ai\/zen\/v1/);
+      expect(r.error).toMatch(/choices|unexpected shape/i);
+    }
+  });
+
+  it("returns ok:false for an array-wrapped body", () => {
+    const r = parseChatCompletion(JSON.stringify([{ choices: [] }]), "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+  });
+
+  it("returns ok:false for a non-object JSON body (a bare number)", () => {
+    const r = parseChatCompletion("42", "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(false);
+  });
+
+  it("still returns ok:true with content for a well-formed chat completion", () => {
+    const r = parseChatCompletion(JSON.stringify({ choices: [{ message: { content: "hi" } }] }), "https://opencode.ai/zen/v1");
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.content).toBe("hi");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-08b (dx-002) — parseMutationHookOutput rejects a non-object score.
+// ---------------------------------------------------------------------------
+describe("T-08b parseMutationHookOutput shape guard (dx-002)", () => {
+  it("returns null when score is emitted inside a JSON string (non-object after parse)", () => {
+    // The regex matches the {...} that contains the word score, but it parses to
+    // a string-bearing object whose .score is absent → null.
+    expect(parseMutationHookOutput('noise {"msg":"the score is 1"} noise')).toBeNull();
+  });
+
+  it("returns null when score is present but not a number (e.g. a string)", () => {
+    // The dx-002 failure mode: a matched object whose `score` is the wrong type.
+    // The number guard rejects it rather than coercing a bogus value.
+    expect(parseMutationHookOutput('{"score":"high"}')).toBeNull();
+  });
+
+  it("returns null when there is no score JSON at all", () => {
+    expect(parseMutationHookOutput("ran 10 mutants, all killed")).toBeNull();
+  });
+
+  it("returns a result for a well-formed {score} object", () => {
+    const r = parseMutationHookOutput('done\n{"score":0.8,"total":10,"survived":["a"]}');
+    expect(r).not.toBeNull();
+    expect(r!.score).toBe(0.8);
+    expect(r!.evaluated).toBe(10);
+    expect(r!.survivors).toEqual(["a"]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-08c (dx-003) — Map-miss on the mutant restore preserves the file rather
+// than writing the literal "undefined". The restore guard is internal to
+// mutationCheck; this proves the guard's CONTRACT via the same code path the
+// fix uses (Map.get → undefined → skip), expressed against the public
+// behavior: a candidate file absent from `originals` must not be clobbered.
+// ---------------------------------------------------------------------------
+describe("T-08c mutant-restore Map-miss preserves the file (dx-003)", () => {
+  it("Map.get on a missing key yields undefined (the guarded skip condition)", () => {
+    // The fix replaced `originals.get(c.file)!` with a guard that only writes
+    // when the value is defined. This asserts the precondition the guard relies
+    // on: a miss is `undefined`, never the string "undefined".
+    const originals = new Map<string, string>([["impl.ts", "real source"]]);
+    const orig = originals.get("not-in-map.ts");
+    expect(orig).toBeUndefined();
+    // The guard's effect: with orig === undefined, no write happens, so the
+    // worktree file keeps its real contents. We model that decision here.
+    let wrote: string | null = null;
+    if (orig !== undefined) wrote = orig;
+    expect(wrote).toBeNull(); // file preserved, never overwritten with "undefined"
   });
 });

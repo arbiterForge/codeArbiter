@@ -348,6 +348,46 @@ class ScaffoldTest(unittest.TestCase):
             self.assertIn(token, tmpl, token)
 
 
+class SetStateGuardTest(unittest.TestCase):
+    """dx-004: set_state with an unknown state must degrade gracefully (no KeyError)."""
+
+    def test_unknown_state_returns_text_unchanged(self):
+        # dx-004: an unknown state string must NOT raise KeyError; degrade by
+        # returning the text unchanged so the hook-stdin path cannot crash.
+        result = tb.set_state(SAMPLE, "poc.auth.0001", "pending", _date(2026, 6, 21))
+        self.assertEqual(result, SAMPLE,
+                         "set_state with unknown state must return text unchanged")
+
+    def test_known_states_still_work(self):
+        # Regression guard: the fix must not break valid state transitions.
+        out = tb.set_state(SAMPLE, "poc.auth.0001", "done", _date(2026, 6, 21))
+        self.assertIn("- [x]", out)
+
+
+class PromoteModeGuardTest(unittest.TestCase):
+    """dx-005: promote with an unknown mode must not silently auto-apply."""
+
+    def _cands(self):
+        return [tb.Candidate(kind="work", desc="do the thing", origin="o-work",
+                             boundaries=[])]
+
+    def test_unknown_mode_raises_valueerror(self):
+        # dx-005: an unknown mode (e.g. 'dry-run', a typo) must raise ValueError
+        # rather than silently applying candidates to the board.
+        with self.assertRaises(ValueError):
+            tb.promote(SAMPLE, "# Open questions\n", self._cands(),
+                       mode="dry-run", today=_date(2026, 6, 21))
+
+    def test_known_modes_still_work(self):
+        # Regression guard: interactive and auto must be unaffected.
+        res_i = tb.promote(SAMPLE, "# Open questions\n", self._cands(),
+                           mode="interactive", today=_date(2026, 6, 21))
+        self.assertFalse(res_i.applied)
+        res_a = tb.promote(SAMPLE, "# Open questions\n", self._cands(),
+                           mode="auto", today=_date(2026, 6, 21))
+        self.assertTrue(res_a.applied)
+
+
 class RepoBoardConformsTest(unittest.TestCase):
     """AC-08: this repo's own open-tasks.md conforms after migration."""
 

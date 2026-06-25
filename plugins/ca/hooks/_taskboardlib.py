@@ -36,6 +36,18 @@
 #   lint_board(text) -> list[str]        independent "task at risk of dropping off" warnings
 #   startup_summary(text, today, threshold_days) -> list[str]     (the reader's lines)
 #   read_board(path) -> str | None       thin file reader (not unit-tested)
+#   next_seq(text, group, type) -> int   next free seq in a group.type namespace
+#   add_entry(text, *, desc, origin, group, type, boundaries, section) -> str
+#   set_state(text, target, state, today, *, assign) -> str
+#                                        state in {"queued","in_progress","done"}; unknown
+#                                        state degrades gracefully (returns text unchanged)
+#   already_promoted(text, origin) -> bool
+#   extract_needs_triage(text, origin) -> list[Candidate]
+#   extract_deferrable(text, origin) -> list[Candidate]
+#   extract_low_confidence(text, origin) -> list[Candidate]
+#   promote(board, questions, candidates, *, mode, today) -> PromoteResult
+#                                        mode in {"interactive","auto"}; unknown mode
+#                                        raises ValueError
 
 import datetime
 import re
@@ -409,8 +421,13 @@ def set_state(text, target, state, today, *, assign=None):
     — title matching is best-effort). `in_progress` ALWAYS stamps `(started …)`;
     `done` stamps `(done …)`. With `assign="group.type"` on an ID-less target,
     mints the dotted ID at pick-up. A re-`done` is a no-op; a missing target
-    returns the text unchanged (no raise). The line is mutated in place so the
-    description text (and the `(from …)` back-ref) is preserved verbatim."""
+    returns the text unchanged (no raise). An unknown `state` value degrades
+    gracefully: returns `text` unchanged rather than raising KeyError (coding
+    standard: never raise on malformed user input — this is a hook-stdin path).
+
+    Valid state values: "queued", "in_progress", "done"."""
+    if state not in _MARK_BY_STATE:
+        return text
     lines = text.splitlines()
     idx = _find_task_line(lines, target)
     if idx < 0:
@@ -514,7 +531,16 @@ def _add_deferred_decision(questions, desc, origin):
 def promote(board, questions, candidates, *, mode, today):
     """Route follow-up candidates: work -> board, decision -> questions. Dedups by
     origin. mode="interactive" returns the fresh candidates WITHOUT mutating
-    (caller confirms, then applies); mode="auto" applies and returns an audit."""
+    (caller confirms, then applies); mode="auto" applies and returns an audit.
+
+    Valid mode values: "interactive", "auto". Any other value raises ValueError
+    so a typo (e.g. mode="dry-run") is caught immediately rather than silently
+    applying all candidates to persistent state."""
+    _VALID_MODES = ("interactive", "auto")
+    if mode not in _VALID_MODES:
+        raise ValueError(
+            f"promote: unknown mode {mode!r}; expected one of {_VALID_MODES}"
+        )
     fresh = []
     for c in candidates:
         if c.kind == "work" and already_promoted(board, c.origin):
