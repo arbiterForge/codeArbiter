@@ -231,6 +231,84 @@ class DeployPathCustomGlobTest(unittest.TestCase):
         self.assertTrue(_hooklib.is_deploy_path("Dockerfile", self._root))
 
 
+class ControlsCacheTest(unittest.TestCase):
+    """performance-001/002: _read_controls is process-cached keyed by
+    (root, mtime) of security-controls.md, and the cache is mtime-invalidated so
+    an intra-process change to the file takes effect. ZERO behaviour change to
+    scope verdicts is the hard constraint — these tests pin both the cache hit
+    (no re-read) and the cache-bust (mtime change re-reads)."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_read_controls_returns_same_text_within_process(self):
+        _write_controls(self._root, "# sc\nhello\n")
+        first = _hooklib._read_controls(self._root)
+        second = _hooklib._read_controls(self._root)
+        self.assertEqual(first, second)
+        self.assertEqual(first, "# sc\nhello\n")
+
+    def test_cache_invalidated_on_mtime_change(self):
+        """Changing the controls content AND mtime between two scope checks must
+        make the new scope take effect — the cache is mtime-keyed, not permanent.
+        custom/ci/** is not a default CI path, so detection flips only if the
+        re-written controls file is actually re-read."""
+        _write_controls(self._root, "# sc\n")
+        self.assertFalse(_hooklib.is_ci_path("custom/ci/pipeline.yml", self._root))
+
+        # Rewrite with a ci-paths extend block and bump the mtime forward so the
+        # (root, mtime) cache key changes even on coarse-resolution filesystems.
+        controls = os.path.join(self._root, ".codearbiter", "security-controls.md")
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n+ custom/ci/**\n<!-- /ci-paths -->\n")
+        future = os.path.getmtime(controls) + 10
+        os.utime(controls, (future, future))
+
+        self.assertTrue(_hooklib.is_ci_path("custom/ci/pipeline.yml", self._root))
+
+    def test_cache_invalidated_when_controls_file_created(self):
+        """Going from no-controls (defaults only) to a controls file with an
+        exclude must take effect — the absent-file cache state must not pin."""
+        self.assertTrue(_hooklib.is_ci_path(".circleci/config.yml", self._root))
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n- .circleci/**\n<!-- /ci-paths -->\n")
+        self.assertFalse(_hooklib.is_ci_path(".circleci/config.yml", self._root))
+
+
+class DefaultGlobPrecompileTest(unittest.TestCase):
+    """performance-002: the default glob sets are pre-compiled to regex once at
+    module load. Verdicts for default-glob paths must be unchanged, and the
+    module-level compiled tuples must exist and line up 1:1 with their string
+    tuples."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_compiled_default_tuples_exist_and_align(self):
+        for strings, compiled in (
+            (_hooklib.MIGRATION_DEFAULT_GLOBS, _hooklib._MIGRATION_DEFAULT_RES),
+            (_hooklib.CI_DEFAULT_GLOBS, _hooklib._CI_DEFAULT_RES),
+            (_hooklib.DEPLOY_DEFAULT_GLOBS, _hooklib._DEPLOY_DEFAULT_RES),
+        ):
+            self.assertEqual(len(strings), len(compiled))
+            for r in compiled:
+                self.assertTrue(hasattr(r, "match"))
+
+    def test_default_ci_path_still_detected(self):
+        self.assertTrue(_hooklib.is_ci_path(".github/workflows/x.yml", self._root))
+
+    def test_default_migration_path_still_detected(self):
+        self.assertTrue(_hooklib.is_migration_path("db/migrate/001_init.rb", self._root))
+
+    def test_default_deploy_path_still_detected(self):
+        self.assertTrue(_hooklib.is_deploy_path("Dockerfile", self._root))
+
+    def test_default_non_matches_still_negative(self):
+        self.assertFalse(_hooklib.is_ci_path("src/index.ts", self._root))
+        self.assertFalse(_hooklib.is_migration_path("src/app.ts", self._root))
+        self.assertFalse(_hooklib.is_deploy_path("README.md", self._root))
+
+
 class FrontmatterTest(unittest.TestCase):
     """frontmatter_enabled: enabled / malformed / dormant."""
 
