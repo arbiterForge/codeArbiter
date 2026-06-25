@@ -88,6 +88,7 @@ var APP_DIR = "/work/repo";
 var SANDBOX_LABEL = "ca.sandbox=1";
 var SANDBOX_USER = "1000:1000";
 var DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
+var NETWORKED_POLICIES = /* @__PURE__ */ new Set();
 function defaultDockerRun(args) {
   const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
   return {
@@ -129,7 +130,7 @@ function buildRunArgs(image, volumeName, netPolicy, opts = {}) {
   const labels = [SANDBOX_LABEL, ...opts.extraLabels ?? []];
   const labelArgs = labels.flatMap((l) => ["--label", l]);
   const nameArgs = opts.namePrefix ? ["--name", `${opts.namePrefix}-${Math.random().toString(16).slice(2, 10)}`] : [];
-  const networkArgs = netPolicy === "offline" ? ["--network", "none"] : [];
+  const networkArgs = NETWORKED_POLICIES.has(netPolicy) ? [] : ["--network", "none"];
   return [
     "run",
     "-d",

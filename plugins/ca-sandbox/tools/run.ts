@@ -53,9 +53,22 @@ const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
  * Network policy for a sandbox run. T-06 only distinguishes the safe default
  * (`offline` => no networking at all); the richer clone-then-cut / allowlist
  * policies are layered by T-10 (AC-08). A string is accepted so this stays a
- * stable seam — an unknown policy is passed through without forcing isolation.
+ * stable seam — but the resolution is FAIL-CLOSED (dx-006): only a policy in the
+ * closed NETWORKED_POLICIES set escapes the airgap, so a typo of `offline` (or
+ * any policy no layer implements) gets `--network none` rather than silently
+ * running networked.
  */
 export type NetPolicy = "offline" | (string & {});
+
+/**
+ * The closed set of policies that intentionally run WITH networking. T-10 adds
+ * its allowlist/clone-then-cut policy names here as it implements them. EMPTY
+ * today: the only T-06 posture is the airgap, so every policy — including
+ * `offline` and any misspelling of it — currently resolves to `--network none`.
+ * This is the fail-closed safe default (dx-006): the airgap is only dropped for
+ * an EXACT, recognized networked policy, never for an unrecognized string.
+ */
+const NETWORKED_POLICIES: ReadonlySet<string> = new Set<string>();
 
 /** Optional knobs for runContainer that the test harness / callers may set. */
 export type RunOptions = {
@@ -152,10 +165,12 @@ export function buildRunArgs(
       ? ["--name", `${opts.namePrefix}-${Math.random().toString(16).slice(2, 10)}`]
       : [];
 
-  // Network: the safe default is total isolation. T-10 layers the richer
-  // policies; anything other than "offline" is passed through without forcing
-  // --network none (so T-10 can attach its own network/proxy).
-  const networkArgs = netPolicy === "offline" ? ["--network", "none"] : [];
+  // Network: the safe default is total isolation, resolved FAIL-CLOSED (dx-006).
+  // Only an EXACT, recognized networked policy (T-10 registers these in
+  // NETWORKED_POLICIES) skips the airgap; every other value — "offline", a typo
+  // of it, or any unimplemented policy — gets --network none. A misspelled
+  // policy can never silently drop the airgap onto docker's default bridge.
+  const networkArgs = NETWORKED_POLICIES.has(netPolicy) ? [] : ["--network", "none"];
 
   return [
     "run",
