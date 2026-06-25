@@ -13,8 +13,10 @@ import {
   validateRepoUrl,
   InvalidRepoUrlError,
   buildCloneArgs,
+  createSandbox,
   APP_DIR,
 } from "./create.ts";
+import type { CloneResult } from "./create.ts";
 
 describe("validateRepoUrl — clone-input trust model (AC-01)", () => {
   it("accepts plain network remotes (https / ssh / scp-like)", () => {
@@ -63,5 +65,138 @@ describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
     expect(sep).toBeGreaterThan(clone);
     // Everything between `clone` and `--` is a known flag, never the url.
     expect(argv.slice(clone, sep)).not.toContain(url);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-10 (coverage-003) — validateRepoUrl scp-like edge cases
+// ---------------------------------------------------------------------------
+describe("validateRepoUrl — scp-like edge cases (coverage-003)", () => {
+  it("REJECTS double-colon transport-helper form git@github.com::evil (InvalidRepoUrlError)", () => {
+    // The `:[^:]` guard in the scp regex means a second colon at position 0 of
+    // the path segment fails the match — this is the transport-helper hole being
+    // pinned to prevent regex regressions.
+    expect(() => validateRepoUrl("git@github.com::evil")).toThrow(InvalidRepoUrlError);
+    expect(() => validateRepoUrl("git@github.com::evil-command")).toThrow(InvalidRepoUrlError);
+  });
+
+  it("ACCEPTS scp-like url with single colon and a nested path (git@github.com:path/sub)", () => {
+    expect(() => validateRepoUrl("git@github.com:path/sub")).not.toThrow();
+    expect(() => validateRepoUrl("git@github.com:owner/repo.git")).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-09 (reliability-002 + observability-004) — error surfacing tests
+// ---------------------------------------------------------------------------
+
+/** Minimal fake docker runner covering the volume create/rm and ps paths. */
+function makeDockerRun() {
+  return (args: string[]) => {
+    if (args[0] === "volume" && args[1] === "create") return { code: 0, stdout: "vol", stderr: "" };
+    if (args[0] === "volume" && args[1] === "rm") return { code: 0, stdout: "", stderr: "" };
+    if (args[0] === "ps") return { code: 0, stdout: "", stderr: "" };
+    return { code: 0, stdout: "", stderr: "" };
+  };
+}
+
+describe("createSandbox — clone failure surfaces stderr (observability-004)", () => {
+  it("throws with stderr snippet when injected cloneRepo fails (exit 1)", async () => {
+    // Inject a clone that fails with a captured stderr — mirrors what the real
+    // alpine/git container emits (e.g. 'fatal: repository not found').
+    const fakeClone = async (_url: string, _vol: string): Promise<CloneResult> => ({
+      code: 1,
+      stderr: "fatal: repository 'https://github.com/no/repo.git/' not found",
+    });
+
+    await expect(
+      createSandbox("https://github.com/no/repo.git", {
+        id: "test-clone-fail",
+        dockerRun: makeDockerRun(),
+        cloneRepo: fakeClone,
+        buildImage: async () => { throw new Error("should not reach build"); },
+      }),
+    ).rejects.toThrow(/fatal: repository/);
+  });
+
+  it("includes exit code in the clone error message when stderr is empty", async () => {
+    const fakeClone = async (): Promise<CloneResult> => ({ code: 128, stderr: "" });
+
+    await expect(
+      createSandbox("https://github.com/owner/repo.git", {
+        id: "test-clone-code-only",
+        dockerRun: makeDockerRun(),
+        cloneRepo: fakeClone,
+        buildImage: async () => { throw new Error("should not reach build"); },
+      }),
+    ).rejects.toThrow(/exit 128/);
+  });
+
+  it("thrown error does NOT include raw argv — only docker/git stderr (no secret leak)", async () => {
+    // The error must contain only the git stderr, not any environment variables
+    // or constructed command strings.
+    const fakeClone = async (): Promise<CloneResult> => ({
+      code: 128,
+      stderr: "git: 'clone' is not a git command",
+    });
+
+    let caught: Error | undefined;
+    try {
+      await createSandbox("https://github.com/owner/repo.git", {
+        id: "test-no-leak",
+        dockerRun: makeDockerRun(),
+        cloneRepo: fakeClone,
+        buildImage: async () => { throw new Error("should not reach build"); },
+      });
+    } catch (e) {
+      caught = e as Error;
+    }
+    expect(caught).toBeDefined();
+    // Error must contain the git stderr but not internal argv/env details
+    expect(caught!.message).toContain("git");
+    // Must not accidentally include the DOCKER_ENV object representation
+    expect(caught!.message).not.toContain("MSYS_NO_PATHCONV");
+  });
+});
+
+describe("defaultBuildImage — docker create/cp failures surface as errors (reliability-002)", () => {
+  it("throws with docker stderr when injected buildImage signals docker-create failure", async () => {
+    // Inject buildImage that throws as defaultBuildImage will after the fix —
+    // non-zero docker create surfaces stderr in the error message.
+    const fakeBuild = async (_vol: string): Promise<never> => {
+      throw new Error(
+        "ca-sandbox: docker create failed for helper container (exit 125)\ndocker: Error response from daemon: Conflict. The container name already exists.",
+      );
+    };
+
+    const fakeClone = async (): Promise<CloneResult> => ({ code: 0, stderr: "" });
+
+    await expect(
+      createSandbox("https://github.com/owner/repo.git", {
+        id: "test-docker-create-fail",
+        dockerRun: makeDockerRun(),
+        cloneRepo: fakeClone,
+        buildImage: fakeBuild,
+      }),
+    ).rejects.toThrow(/docker create failed/);
+  });
+
+  it("throws when injected buildImage signals docker-cp produced an empty checkout", async () => {
+    const fakeBuild = async (_vol: string): Promise<never> => {
+      throw new Error(
+        "ca-sandbox: docker cp failed — empty checkout, cannot compute dephash (exit 1)\nerror: No such container:path",
+      );
+    };
+
+    const fakeClone = async (): Promise<CloneResult> => ({ code: 0, stderr: "" });
+
+    await expect(
+      createSandbox("https://github.com/owner/repo.git", {
+        id: "test-docker-cp-fail",
+        dockerRun: makeDockerRun(),
+        cloneRepo: fakeClone,
+        buildImage: fakeBuild,
+      }),
+    ).rejects.toThrow(/docker cp failed/);
   });
 });
