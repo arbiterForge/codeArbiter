@@ -29,6 +29,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
     content_digest, is_migration_path, project_root, utf8_stdio, warn,
+    write_text_atomic,
 )
 
 MAX_FILE_BYTES = 1_000_000  # a blob bigger than this is not a reviewable migration
@@ -88,8 +89,10 @@ def main():
     os.makedirs(marker_dir, exist_ok=True)
     marker = os.path.join(marker_dir, "migration-gate-passed")
     digests = sorted(digests)
-    with open(marker, "w", encoding="utf-8") as f:
-        f.write("\n".join(digests) + ("\n" if digests else ""))
+    # Atomic write (migration-002): a crash mid-write never leaves a half-written
+    # marker, which the backstop would read as an unrecognized digest and force a
+    # spurious gate re-run.
+    write_text_atomic(marker, "\n".join(digests) + ("\n" if digests else ""))
     print(f"migration-gate pass recorded: {len(digests)} migration file(s) "
           f"bound to {os.path.relpath(marker, root)}")
 

@@ -24,6 +24,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, line_digest, project_root, utf8_stdio, warn,
+    write_text_atomic,
 )
 
 MAX_UNTRACKED_BYTES = 1_000_000  # an untracked blob bigger than this is not reviewable prose
@@ -81,8 +82,10 @@ def main():
     os.makedirs(marker_dir, exist_ok=True)
     marker = os.path.join(marker_dir, "security-gate-passed")
     digests = sorted({line_digest(ln) for ln in sensitive})
-    with open(marker, "w", encoding="utf-8") as f:
-        f.write("\n".join(digests) + ("\n" if digests else ""))
+    # Atomic write (migration-002): a crash mid-write never leaves a half-written
+    # marker, which the backstop would read as an unrecognized digest and force a
+    # spurious gate re-run.
+    write_text_atomic(marker, "\n".join(digests) + ("\n" if digests else ""))
     print(f"security-gate pass recorded: {len(digests)} sensitive line(s) "
           f"bound to {os.path.relpath(marker, root)}")
 

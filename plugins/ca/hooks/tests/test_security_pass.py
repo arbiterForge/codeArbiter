@@ -122,6 +122,18 @@ class TestSecurityPassBranches(_Fixture):
         self.assertEqual(res.returncode, 0)
         self.assertIn("1 sensitive line", res.stdout)
 
+    def test_marker_write_leaves_no_temp_file(self):
+        # migration-002: the marker is written atomically (temp + os.replace), so
+        # after a successful run the .markers dir holds the marker and no .tmp.
+        self._ca()
+        self._write("auth.js", CRYPTO_LINE)
+        res = self.run_pass()
+        self.assertEqual(res.returncode, 0)
+        markers_dir = os.path.join(self.root, ".codearbiter", ".markers")
+        entries = sorted(os.listdir(markers_dir))
+        self.assertEqual(entries, ["security-gate-passed"],
+                         f"only the marker should remain, got {entries}")
+
 
 if __name__ == "__main__":
     unittest.main()

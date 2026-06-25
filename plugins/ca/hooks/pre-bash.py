@@ -122,26 +122,38 @@ def is_protected_branch(branch):
     return branch.lower() in ("main", "master")
 
 
-def _rev(cwd, ref):
-    try:
-        out = subprocess.run(
-            ["git", "rev-parse", "--verify", "-q", ref], cwd=cwd,
-            capture_output=True, text=True, encoding="utf-8", errors="replace",
-            timeout=5,
-        )
-        return out.stdout.strip() if out.returncode == 0 else ""
-    except Exception:  # noqa: BLE001
-        return ""
-
-
 def head_on_protected_tip(cwd):
     """True when HEAD (typically detached) points at the commit a protected
     branch tips — a commit there still writes onto main/master's history even
-    though `git branch --show-current` reports no branch name."""
-    head = _rev(cwd, "HEAD")
-    if not head:
+    though `git branch --show-current` reports no branch name.
+
+    One spawn (performance-006): `git show-ref --head refs/heads/main
+    refs/heads/master` lists `<sha> HEAD` plus a `<sha> refs/heads/<branch>` line
+    for each protected branch that EXISTS — a missing branch is simply omitted
+    (exit 0), with no fatal. (`git rev-parse HEAD main master` cannot be used: it
+    stops at the first unresolvable arg, so a missing `main` would hide a present
+    `master` tip and silently allow a commit onto it.) HEAD sits on a protected
+    tip iff its sha matches a listed main/master tip. A non-repo / unborn HEAD
+    lists no HEAD sha -> False."""
+    try:
+        out = subprocess.run(
+            ["git", "show-ref", "--head", "refs/heads/main", "refs/heads/master"],
+            cwd=cwd, capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=5,
+        )
+    except Exception:  # noqa: BLE001
         return False
-    return any(_rev(cwd, b) == head for b in ("main", "master"))
+    head_sha, protected = None, set()
+    for ln in out.stdout.splitlines():
+        parts = ln.split()
+        if len(parts) != 2:
+            continue
+        sha, ref = parts
+        if ref == "HEAD":
+            head_sha = sha
+        elif ref in ("refs/heads/main", "refs/heads/master"):
+            protected.add(sha)
+    return head_sha is not None and head_sha in protected
 
 
 def added_lines(cwd, ref, paths=None):
