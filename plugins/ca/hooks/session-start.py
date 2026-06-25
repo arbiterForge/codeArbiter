@@ -406,6 +406,30 @@ def has_source(root):
     return False
 
 
+def clear_dev_marker(root):
+    """Clear the per-session /dev statusline marker on startup. If the marker is
+    LIVE (a prior session entered /ca:dev and ended without /ca:arbiter), append a
+    synthetic DEV: exit line to overrides.log BEFORE removing it
+    (observability-001) — otherwise the audit trail keeps an orphaned DEV: enter
+    with no matching close. Append-only (it never rewrites); best-effort — a write
+    or remove failure must never brick session startup."""
+    marker = os.path.join(root, ".codearbiter", ".markers", "dev-active")
+    if os.path.isfile(marker):
+        ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        line = (f"[{ts}] | BY: session-cleanup | DEV: exit | NOTE: cleared by "
+                f"SessionStart (prior session ended mid-dev without /ca:arbiter)\n")
+        try:
+            with open(os.path.join(root, ".codearbiter", "overrides.log"),
+                      "a", encoding="utf-8") as f:
+                f.write(line)
+        except OSError:
+            pass
+    try:
+        os.remove(marker)
+    except OSError:
+        pass
+
+
 def main():
     utf8_stdio()
     root = project_root()
@@ -415,11 +439,9 @@ def main():
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
 
     # /dev developer-override is per-session: clear its statusline marker on
-    # startup — a new session restores orchestration.
-    try:
-        os.remove(os.path.join(root, ".codearbiter", ".markers", "dev-active"))
-    except OSError:
-        pass
+    # startup — a new session restores orchestration. A live marker means a prior
+    # session never ran /ca:arbiter, so close the DEV audit pair before clearing.
+    clear_dev_marker(root)
 
     # Self-heal a stale ca-owned statusLine pin before the dormant gate: the
     # statusline is wired GLOBALLY in ~/.claude/settings.json, so a plugin update

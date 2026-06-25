@@ -15,6 +15,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -424,6 +425,43 @@ class FrontmatterTest(unittest.TestCase):
     def test_dormant_when_no_frontmatter(self):
         p = self._write("# just a heading, no frontmatter\n")
         self.assertEqual(_hooklib.frontmatter_enabled(p), (False, False))
+
+
+class WriteAtomicTest(unittest.TestCase):
+    """migration-002: write_text_atomic writes via a sibling temp file then
+    os.replace() so a crash mid-write never leaves a half-written file at the
+    destination — the marker writers (migration-pass/security-pass) rely on this
+    so a partial digest set can't force a spurious gate re-run. ZERO behaviour
+    change on the happy path is the constraint."""
+
+    def setUp(self):
+        self._tmp = tempfile.mkdtemp()
+
+    def test_creates_file_with_exact_content(self):
+        p = os.path.join(self._tmp, "marker")
+        _hooklib.write_text_atomic(p, "a\nb\n")
+        with open(p, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "a\nb\n")
+
+    def test_overwrites_existing_atomically(self):
+        p = os.path.join(self._tmp, "marker")
+        _hooklib.write_text_atomic(p, "old\n")
+        _hooklib.write_text_atomic(p, "new\n")
+        with open(p, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "new\n")
+
+    def test_replace_failure_leaves_original_intact_and_no_tmp(self):
+        """If os.replace raises (the crash-equivalent), the destination keeps its
+        PRIOR content (never truncated) and no stray .tmp is left behind."""
+        p = os.path.join(self._tmp, "marker")
+        _hooklib.write_text_atomic(p, "original\n")
+        with mock.patch("os.replace", side_effect=OSError("simulated crash")):
+            with self.assertRaises(OSError):
+                _hooklib.write_text_atomic(p, "corrupt-partial")
+        with open(p, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "original\n", "destination must not be truncated")
+        leftovers = [n for n in os.listdir(self._tmp) if n != "marker"]
+        self.assertEqual(leftovers, [], f"no temp file should linger: {leftovers}")
 
 
 class MarkerDigestTest(unittest.TestCase):
