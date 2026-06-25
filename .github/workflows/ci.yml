@@ -17,13 +17,6 @@ name: ci
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "plugins/ca/**"
-      - "plugins/ca-sandbox/**"
-      - "**/*.json"
-      - "README.md"
-      - ".github/workflows/ci.yml"
-      - ".github/scripts/**"
   push:
     branches: [main]
     paths:
@@ -44,6 +37,8 @@ jobs:
     outputs:
       ca: ${{ steps.filter.outputs.ca }}
       ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
+      hooks: ${{ steps.filter.outputs.hooks }}
+      manifests: ${{ steps.filter.outputs.manifests }}
     steps:
       - uses: actions/checkout@v5
       - uses: dorny/paths-filter@v4
@@ -63,6 +58,13 @@ jobs:
               - 'plugins/ca-sandbox/**'
               - '.github/workflows/ci.yml'
               - '.github/scripts/check-plugin-refs.py'
+            hooks:
+              - 'plugins/ca/hooks/**'
+              - '.github/scripts/**'
+              - '.github/workflows/ci.yml'
+            manifests:
+              - '**/*.json'
+              - '.github/workflows/ci.yml'
 
   tools:
     name: CA | [Build] - Farm Dispatcher (Typecheck/Test/Artifact)
@@ -149,6 +151,8 @@ jobs:
     # silently dormant). See .github/scripts/test_hooks_cold_install.py.
     # Shared infra (the ca plugin's hooks) - runs whenever CI runs; not gated
     # per-plugin because the hook payload belongs to neither sandbox driver.
+    needs: changes
+    if: needs.changes.outputs.hooks == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -177,8 +181,8 @@ jobs:
         # register split, and the negatives (no saves-ledger/statusline segment).
         run: python .github/scripts/test_ux_conversion.py
       - name: Run cold-miss nudge unit tests
-        # O1–O11: nudge_decision pure helper, advisory builder, idle extraction,
-        # hook_run integration (armed→2/stderr, resubmit→0, flag-off→today's
+        # O1-O11: nudge_decision pure helper, advisory builder, idle extraction,
+        # hook_run integration (armed->2/stderr, resubmit->0, flag-off->today's
         # behavior), and docs gate (prune.md references CODEARBITER_PRUNE_NUDGE).
         run: python .github/scripts/test_prune_nudge.py
       - name: Run H-14 migration backstop tests
@@ -345,6 +349,8 @@ jobs:
     # Shared infra - a broken plugin.json / marketplace.json / hooks.json breaks
     # install for every user regardless of which plugin it belongs to, so this
     # is repo-wide and not gated per-plugin.
+    needs: changes
+    if: needs.changes.outputs.manifests == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -360,3 +366,31 @@ jobs:
           done < <(git ls-files '*.json')
           if [ "$fail" -eq 0 ]; then echo "all tracked JSON valid"; fi
           exit $fail
+
+  ci-passed:
+    name: Repo | [Gate] - CI Passed
+    if: always()
+    needs:
+      - changes
+      - tools
+      - ca-sandbox-tools
+      - hooks
+      - version-bump
+      - version-bump-sandbox
+      - prose
+      - badge-consistency
+      - prose-sandbox
+      - manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every job to have succeeded or been skipped
+        run: |
+          results="${{ join(needs.*.result, ' ') }}"
+          echo "upstream results: $results"
+          for r in $results; do
+            case "$r" in
+              success|skipped) ;;
+              *) echo "::error::a required CI job concluded '$r'"; exit 1 ;;
+            esac
+          done
+          echo "all required CI jobs passed or were skipped"
