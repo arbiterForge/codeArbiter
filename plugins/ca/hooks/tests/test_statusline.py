@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 import unittest
 
 # ---------------------------------------------------------------------------
@@ -503,6 +504,117 @@ class TestRender(unittest.TestCase):
             any(c in plain for c in (sl.TL, sl.TR, sl.BL, sl.BR)),
             "render() output missing box-drawing characters",
         )
+
+
+# =========================================================================== arbiter_state cache (T-11b)
+class TestArbiterStateCache(unittest.TestCase):
+    """arbiter_state caches mtime-keyed: identical inputs -> cached dict; a change
+    to any input file re-reads. (performance-005)"""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.cad = os.path.join(self.tmp, ".codearbiter")
+        os.makedirs(self.cad, exist_ok=True)
+        self._write("CONTEXT.md", "---\narbiter: enabled\nstage: build\n---\n")
+        self._write("open-tasks.md", "- [ ] t.t.0001 - a task\n")
+        self._write("open-questions.md", "")
+        self._write("overrides.log", "")
+        self._write("last-checkpoint", "0")
+        # Reset the module-level cache so prior tests don't bleed in.
+        sl._ARBITER_CACHE.clear()
+
+    def _write(self, name, body):
+        with open(os.path.join(self.cad, name), "w", encoding="utf-8", newline="\n") as f:
+            f.write(body)
+
+    def test_enabled_state_is_read(self):
+        st = sl.arbiter_state(self.tmp)
+        self.assertIsNotNone(st)
+        self.assertEqual(st["stage"], "build")
+        self.assertEqual(st["tasks"], 1)
+
+    def test_cached_when_inputs_unchanged(self):
+        first = sl.arbiter_state(self.tmp)
+        second = sl.arbiter_state(self.tmp)
+        # Same object identity proves the second call returned the cache, not a re-read.
+        self.assertIs(first, second)
+
+    def test_rereads_on_change(self):
+        first = sl.arbiter_state(self.tmp)
+        # Bump an input file's mtime forward and change its content.
+        future = time.time() + 10
+        ot = os.path.join(self.cad, "open-tasks.md")
+        with open(ot, "w", encoding="utf-8", newline="\n") as f:
+            f.write("- [ ] t.t.0001 - a\n- [ ] t.t.0002 - b\n")
+        os.utime(ot, (future, future))
+        second = sl.arbiter_state(self.tmp)
+        self.assertIsNot(first, second)        # cache was invalidated
+        self.assertEqual(second["tasks"], 2)   # fresh read picked up the new task
+
+    def test_disabled_repo_returns_none(self):
+        self._write("CONTEXT.md", "---\narbiter: disabled\n---\n")
+        sl._ARBITER_CACHE.clear()
+        self.assertIsNone(sl.arbiter_state(self.tmp))
+
+    def test_enabled_gate_routes_through_hooklib_when_available(self):
+        # When _hooklib is importable, the gate uses frontmatter_enabled — confirm
+        # the activation decision still resolves correctly via that path.
+        if sl._frontmatter_enabled is None:
+            self.skipTest("_hooklib not importable in this environment")
+        self.assertTrue(sl._arbiter_enabled(os.path.join(self.cad, "CONTEXT.md")))
+
+
+# =========================================================================== session_start fast path (T-11a)
+class TestSessionStartCache(unittest.TestCase):
+    """session_start reads the resolved start from the ledger record when present,
+    skipping the ~/.claude/sessions scan. (performance-004)"""
+
+    def test_cached_value_short_circuits_scan(self):
+        rec = {"sess_start": 1700000000.0}
+        # No real ~/.claude/sessions touched: the cache hit returns immediately.
+        self.assertEqual(sl.session_start("any-sid", rec), 1700000000.0)
+
+    def test_no_sid_returns_none(self):
+        self.assertIsNone(sl.session_start(None, {"sess_start": 5.0}))
+
+    def test_miss_falls_back_to_scan(self):
+        # A rec with no cached value + a sid that no session file matches -> the scan
+        # runs and finds nothing -> None (no crash).
+        result = sl.session_start("nonexistent-session-id-xyz", {})
+        self.assertIsNone(result)
+
+
+# =========================================================================== render parity (T-11/T-12)
+class TestRenderParity(unittest.TestCase):
+    """The refactor + caching must be byte-identical for the same inputs: rendering
+    the same JSON twice yields the same bytes, and the ledger functions remain
+    reachable via the statusline module after extraction to _ledgerlib."""
+
+    def test_render_is_deterministic_for_same_input(self):
+        payload = json.dumps({
+            "session_id": "parity-sid",
+            "model": {"display_name": "claude-opus-4-8"},
+            "context_window": {"used_percentage": 40.0,
+                               "context_window_size": 200000},
+            "cost": {"total_cost_usd": 1.23},
+        })
+        a = sl.render(payload)
+        b = sl.render(payload)
+        self.assertEqual(a, b)
+
+    def test_ledger_functions_reachable_via_statusline(self):
+        # The unmodified test suite reaches these via sl.*; the extraction must keep
+        # them bound on the statusline module.
+        for name in ("ledger_update", "_tx_accumulate", "_agg_reqs", "_totals",
+                     "api_cost", "price_for", "ledger_path", "API_PRICES"):
+            self.assertTrue(hasattr(sl, name), f"sl.{name} missing after extraction")
+
+    def test_burn_spark_returns_string(self):
+        # burn_spark now delegates to _ledgerlib.burn_samples but still renders.
+        rec = {"burn": [100, 200, 150, 300]}
+        out = sl.burn_spark(rec)
+        self.assertIsInstance(out, str)
+        self.assertGreater(len(sl.ANSI.sub("", out)), 0)
 
 
 if __name__ == "__main__":

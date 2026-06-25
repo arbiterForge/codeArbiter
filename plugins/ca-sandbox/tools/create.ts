@@ -48,6 +48,9 @@ export const APP_DIR = "/work/repo";
 /** Prefix for the named volume of a sandbox. */
 export const VOLUME_PREFIX = "ca-sbx-vol";
 
+/** Result returned by the injectable repo cloner. */
+export type CloneResult = { code: number; stderr: string };
+
 export type CreateOptions = {
   /** Network policy for the SANDBOX container (run.ts). Defaults to "offline". */
   netPolicy?: NetPolicy;
@@ -59,9 +62,11 @@ export type CreateOptions = {
   dockerRun?: DockerRun;
   /**
    * Injectable repo cloner. Defaults to the throwaway alpine/git container.
-   * Returns 0 on success. Tests inject a fake to avoid real network.
+   * Accepts either the new `CloneResult` shape (preferred — surfaces git stderr in
+   * error messages) or a plain exit-code number (backward-compatible with existing
+   * tests; treated as having no stderr).
    */
-  cloneRepo?: (url: string, volumeName: string) => Promise<number>;
+  cloneRepo?: (url: string, volumeName: string) => Promise<CloneResult | number>;
   /**
    * Injectable image builder. Defaults to build.ts buildOrReuseImage over a
    * temp checkout. Tests inject a fake that returns a prebuilt tag.
@@ -143,11 +148,25 @@ export function newSandboxId(): string {
   return randomBytes(6).toString("hex");
 }
 
-function spawnAsync(cmd: string, args: string[]): Promise<number> {
+/** Spawn `cmd` asynchronously and resolve with the exit code and captured stderr.
+ * stderr is collected (up to 500 bytes, last slice) so clone/pull failures can
+ * surface actionable diagnostics (e.g. "fatal: repository not found"). argv and
+ * env are never included in the returned value — only the child process's own
+ * stderr stream is captured, keeping the secret-free contract of the failure path.
+ */
+function spawnAsync(cmd: string, args: string[]): Promise<CloneResult> {
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { env: DOCKER_ENV, stdio: "ignore" });
-    c.on("error", () => resolve(1));
-    c.on("close", (code) => resolve(code ?? 1));
+    const c = spawn(cmd, args, { env: DOCKER_ENV, stdio: ["ignore", "ignore", "pipe"] });
+    const stderrChunks: Buffer[] = [];
+    c.stderr?.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
+    c.on("error", () => resolve({ code: 1, stderr: "" }));
+    c.on("close", (code) => {
+      const raw = Buffer.concat(stderrChunks).toString("utf8");
+      // Bounded slice — last 500 bytes avoids flooding the caller while keeping
+      // the most actionable tail of git's error output.
+      const stderr = raw.length > 500 ? raw.slice(-500) : raw;
+      resolve({ code: code ?? 1, stderr });
+    });
   });
 }
 
@@ -158,7 +177,7 @@ function spawnAsync(cmd: string, args: string[]): Promise<number> {
  * sandbox itself. Cloning into an empty named volume's mount point; alpine/git's
  * entrypoint is `git`, so the args after the image are git's.
  */
-export async function defaultCloneRepo(url: string, volumeName: string): Promise<number> {
+export async function defaultCloneRepo(url: string, volumeName: string): Promise<CloneResult> {
   return spawnAsync("docker", buildCloneArgs(url, volumeName));
 }
 
@@ -203,7 +222,7 @@ async function defaultBuildImage(volumeName: string): Promise<BuildResult> {
   // Materialize the volume contents to the host temp dir via a helper container:
   // mount the volume read-only and `docker cp` its /work/repo out.
   const helper = `ca-sbx-cp-${newSandboxId()}`;
-  spawnSync(
+  const createResult = spawnSync(
     "docker",
     [
       "create",
@@ -216,8 +235,24 @@ async function defaultBuildImage(volumeName: string): Promise<BuildResult> {
     ],
     { env: DOCKER_ENV, encoding: "utf8" },
   );
+  if ((createResult.status ?? 1) !== 0) {
+    const hint = (createResult.stderr ?? "").trim();
+    await rm(dir, { recursive: true, force: true }).catch(() => {});
+    throw new Error(
+      `ca-sandbox: docker create failed for helper container (exit ${createResult.status ?? 1})${hint ? `\n${hint}` : ""}`,
+    );
+  }
   try {
-    spawnSync("docker", ["cp", `${helper}:${APP_DIR}/.`, dir], { env: DOCKER_ENV });
+    const cpResult = spawnSync("docker", ["cp", `${helper}:${APP_DIR}/.`, dir], {
+      env: DOCKER_ENV,
+      encoding: "utf8",
+    });
+    if ((cpResult.status ?? 1) !== 0) {
+      const hint = (cpResult.stderr ?? "").trim();
+      throw new Error(
+        `ca-sandbox: docker cp failed — empty checkout, cannot compute dephash (exit ${cpResult.status ?? 1})${hint ? `\n${hint}` : ""}`,
+      );
+    }
     const manifests = await readManifests(dir, path);
     const dephash = computeDepHash(manifests);
     return await buildOrReuseImage(dir, dephash);
@@ -304,9 +339,16 @@ export async function createSandbox(
   // failed create never leaves a labeled half-sandbox behind.
   try {
     // 2. Clone INTO the volume via the throwaway alpine/git container (net up).
-    const cloneCode = await cloneRepo(url, volumeName);
+    const cloneRaw = await cloneRepo(url, volumeName);
+    // Accept either a plain exit code (backward-compatible) or a CloneResult with
+    // captured stderr (preferred — surfaces actionable git diagnostics on failure).
+    const cloneCode = typeof cloneRaw === "number" ? cloneRaw : cloneRaw.code;
+    const cloneStderr = typeof cloneRaw === "number" ? "" : cloneRaw.stderr;
     if (cloneCode !== 0) {
-      throw new Error(`ca-sandbox: clone of ${url} into ${volumeName} failed (exit ${cloneCode})`);
+      const hint = cloneStderr.trim() ? `\n${cloneStderr.trim()}` : "";
+      throw new Error(
+        `ca-sandbox: clone of ${url} into ${volumeName} failed (exit ${cloneCode})${hint}`,
+      );
     }
 
     // 3. Build (or reuse) the image — dephash-cached, deps relocated to /deps.

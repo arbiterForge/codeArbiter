@@ -159,6 +159,156 @@ class PathGlobTest(unittest.TestCase):
         self.assertTrue(_hooklib.is_ci_path(".github\\workflows\\ci.yml", self._root))
 
 
+def _write_controls(root, content):
+    """Write content to .codearbiter/security-controls.md in root."""
+    ca_dir = os.path.join(root, ".codearbiter")
+    os.makedirs(ca_dir, exist_ok=True)
+    with open(os.path.join(ca_dir, "security-controls.md"), "w", encoding="utf-8") as f:
+        f.write(content)
+
+
+class CiPathCustomGlobTest(unittest.TestCase):
+    """scope_globs + is_ci_path with a <!-- ci-paths --> declaration block in
+    security-controls.md — mirrors OB-02/OB-03 from test_migration_backstop.py."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_ci_paths_extend_matches_custom_path(self):
+        """A `+ glob` in <!-- ci-paths --> makes a non-default path detected."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n+ custom/ci/**\n<!-- /ci-paths -->\n")
+        self.assertTrue(_hooklib.is_ci_path("custom/ci/pipeline.yml", self._root))
+
+    def test_ci_paths_extend_does_not_break_defaults(self):
+        """Extending must not suppress the default globs."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n+ custom/ci/**\n<!-- /ci-paths -->\n")
+        self.assertTrue(_hooklib.is_ci_path(".github/workflows/ci.yml", self._root))
+
+    def test_ci_paths_exclude_narrows_detection(self):
+        """A `- glob` in <!-- ci-paths --> drops a path that would otherwise match."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n- .circleci/**\n<!-- /ci-paths -->\n")
+        self.assertFalse(_hooklib.is_ci_path(".circleci/config.yml", self._root))
+
+    def test_ci_paths_exclude_does_not_over_suppress(self):
+        """An exclude on one glob must leave other default globs intact."""
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n- .circleci/**\n<!-- /ci-paths -->\n")
+        self.assertTrue(_hooklib.is_ci_path(".github/workflows/ci.yml", self._root))
+
+
+class DeployPathCustomGlobTest(unittest.TestCase):
+    """scope_globs + is_deploy_path with a <!-- deploy-paths --> declaration block
+    in security-controls.md — mirrors OB-02/OB-03 from test_migration_backstop.py."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_deploy_paths_extend_matches_custom_path(self):
+        """A `+ glob` in <!-- deploy-paths --> makes a non-default path detected."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n+ deploy/scripts/**\n<!-- /deploy-paths -->\n")
+        self.assertTrue(_hooklib.is_deploy_path("deploy/scripts/rollout.sh", self._root))
+
+    def test_deploy_paths_extend_does_not_break_defaults(self):
+        """Extending must not suppress the default globs."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n+ deploy/scripts/**\n<!-- /deploy-paths -->\n")
+        self.assertTrue(_hooklib.is_deploy_path("Dockerfile", self._root))
+
+    def test_deploy_paths_exclude_narrows_detection(self):
+        """A `- glob` in <!-- deploy-paths --> drops a path that would otherwise match."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n- **/Procfile\n<!-- /deploy-paths -->\n")
+        self.assertFalse(_hooklib.is_deploy_path("Procfile", self._root))
+
+    def test_deploy_paths_exclude_does_not_over_suppress(self):
+        """An exclude on one glob must leave other default globs intact."""
+        _write_controls(self._root,
+                        "# sc\n<!-- deploy-paths -->\n- **/Procfile\n<!-- /deploy-paths -->\n")
+        self.assertTrue(_hooklib.is_deploy_path("Dockerfile", self._root))
+
+
+class ControlsCacheTest(unittest.TestCase):
+    """performance-001/002: _read_controls is process-cached keyed by
+    (root, mtime) of security-controls.md, and the cache is mtime-invalidated so
+    an intra-process change to the file takes effect. ZERO behaviour change to
+    scope verdicts is the hard constraint — these tests pin both the cache hit
+    (no re-read) and the cache-bust (mtime change re-reads)."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_read_controls_returns_same_text_within_process(self):
+        _write_controls(self._root, "# sc\nhello\n")
+        first = _hooklib._read_controls(self._root)
+        second = _hooklib._read_controls(self._root)
+        self.assertEqual(first, second)
+        self.assertEqual(first, "# sc\nhello\n")
+
+    def test_cache_invalidated_on_mtime_change(self):
+        """Changing the controls content AND mtime between two scope checks must
+        make the new scope take effect — the cache is mtime-keyed, not permanent.
+        custom/ci/** is not a default CI path, so detection flips only if the
+        re-written controls file is actually re-read."""
+        _write_controls(self._root, "# sc\n")
+        self.assertFalse(_hooklib.is_ci_path("custom/ci/pipeline.yml", self._root))
+
+        # Rewrite with a ci-paths extend block and bump the mtime forward so the
+        # (root, mtime) cache key changes even on coarse-resolution filesystems.
+        controls = os.path.join(self._root, ".codearbiter", "security-controls.md")
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n+ custom/ci/**\n<!-- /ci-paths -->\n")
+        future = os.path.getmtime(controls) + 10
+        os.utime(controls, (future, future))
+
+        self.assertTrue(_hooklib.is_ci_path("custom/ci/pipeline.yml", self._root))
+
+    def test_cache_invalidated_when_controls_file_created(self):
+        """Going from no-controls (defaults only) to a controls file with an
+        exclude must take effect — the absent-file cache state must not pin."""
+        self.assertTrue(_hooklib.is_ci_path(".circleci/config.yml", self._root))
+        _write_controls(self._root,
+                        "# sc\n<!-- ci-paths -->\n- .circleci/**\n<!-- /ci-paths -->\n")
+        self.assertFalse(_hooklib.is_ci_path(".circleci/config.yml", self._root))
+
+
+class DefaultGlobPrecompileTest(unittest.TestCase):
+    """performance-002: the default glob sets are pre-compiled to regex once at
+    module load. Verdicts for default-glob paths must be unchanged, and the
+    module-level compiled tuples must exist and line up 1:1 with their string
+    tuples."""
+
+    def setUp(self):
+        self._root = tempfile.mkdtemp()
+
+    def test_compiled_default_tuples_exist_and_align(self):
+        for strings, compiled in (
+            (_hooklib.MIGRATION_DEFAULT_GLOBS, _hooklib._MIGRATION_DEFAULT_RES),
+            (_hooklib.CI_DEFAULT_GLOBS, _hooklib._CI_DEFAULT_RES),
+            (_hooklib.DEPLOY_DEFAULT_GLOBS, _hooklib._DEPLOY_DEFAULT_RES),
+        ):
+            self.assertEqual(len(strings), len(compiled))
+            for r in compiled:
+                self.assertTrue(hasattr(r, "match"))
+
+    def test_default_ci_path_still_detected(self):
+        self.assertTrue(_hooklib.is_ci_path(".github/workflows/x.yml", self._root))
+
+    def test_default_migration_path_still_detected(self):
+        self.assertTrue(_hooklib.is_migration_path("db/migrate/001_init.rb", self._root))
+
+    def test_default_deploy_path_still_detected(self):
+        self.assertTrue(_hooklib.is_deploy_path("Dockerfile", self._root))
+
+    def test_default_non_matches_still_negative(self):
+        self.assertFalse(_hooklib.is_ci_path("src/index.ts", self._root))
+        self.assertFalse(_hooklib.is_migration_path("src/app.ts", self._root))
+        self.assertFalse(_hooklib.is_deploy_path("README.md", self._root))
+
+
 class FrontmatterTest(unittest.TestCase):
     """frontmatter_enabled: enabled / malformed / dormant."""
 

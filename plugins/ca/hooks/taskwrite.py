@@ -23,6 +23,7 @@ import datetime
 import os
 import subprocess
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _taskboardlib as tb  # noqa: E402
@@ -102,8 +103,21 @@ def main(argv=None):
             return 1
         action = f"marked {state}: {args.target}"
 
-    with open(board_path, "w", encoding="utf-8", newline="\n") as f:
-        f.write(new)
+    # Atomic write: write to a sibling temp file, then os.replace() into place.
+    # os.replace() is atomic on POSIX and a same-volume rename on Windows, so a
+    # crash between open() and f.write() never leaves the board truncated.
+    board_dir = os.path.dirname(board_path)
+    fd, tmp_path = tempfile.mkstemp(dir=board_dir, suffix=".tmp", prefix="open-tasks.")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
+            f.write(new)
+        os.replace(tmp_path, board_path)
+    except Exception:
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
+        raise
     print(action)
     return 0
 

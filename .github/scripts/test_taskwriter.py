@@ -292,6 +292,47 @@ class TaskwriteCliTest(unittest.TestCase):
         with open(p, encoding="utf-8") as f:
             self.assertIn("-rf important task", f.read())
 
+    def test_atomic_write_board_survives_interrupted_write(self):
+        """migration-001: the original board must survive a write interrupted after
+        truncation.  We monkeypatch the temp-file write to raise, then assert the
+        real open-tasks.md is unchanged (no truncation)."""
+        import importlib
+        import types
+        import tempfile
+        import taskwrite
+
+        d, p = self._board()
+        with open(p, encoding="utf-8") as _f:
+            original_content = _f.read()
+
+        # Patch os.replace in taskwrite's namespace to raise before the rename
+        # completes, simulating a crash between temp-write and rename.
+        original_replace = taskwrite.os.replace
+
+        def _failing_replace(src, dst):
+            # Remove the temp file but do NOT copy it to dst — simulates a crash
+            # mid-rename. The real board at dst must remain untouched.
+            try:
+                taskwrite.os.remove(src)
+            except OSError:
+                pass
+            raise OSError("simulated crash during os.replace")
+
+        taskwrite.os.replace = _failing_replace
+        try:
+            taskwrite.project_root = lambda: d
+            try:
+                taskwrite.main(["add", "should not land"])
+            except OSError:
+                pass  # expected — the simulated crash propagates
+        finally:
+            taskwrite.os.replace = original_replace
+
+        # The original board must be intact — no truncation occurred.
+        with open(p, encoding="utf-8") as f:
+            self.assertEqual(f.read(), original_content,
+                             "board was truncated/corrupted by an interrupted write")
+
 
 if __name__ == "__main__":
     unittest.main()

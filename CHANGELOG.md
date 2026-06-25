@@ -6,6 +6,23 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.5.2] — 2026-06-24
+
+Deep-review (`docs/reports/2026-06-24-root/`) quick-kills: mechanical robustness, diagnosability, and hot-path hardening with no enforcement-behavior change (guard matrix, cold-install, and statusline render verified unchanged/byte-identical).
+
+### Fixed
+- **The task board can't be lost to a crashed write.** `taskwrite.py` writes `open-tasks.md` atomically (temp file in the board's own directory + `os.replace`), so an interrupted write leaves the prior board intact. (migration-001)
+- **Farm dispatcher robustness + diagnosability.** A per-command wall-clock timeout (`FARM_GATE_TIMEOUT_MS`, default 5m; git stays unbounded) kills a hung gate/setup/mutation child so a stuck command can no longer wedge a run and stall the final report; the worktree-cleanup `finally` is guarded against an early failure; plan validation emits named field errors instead of an opaque crash; a run-id correlates `farm-results.jsonl` lines and the report header. Response/parse shape guards turn malformed API or mutation-hook output into actionable errors instead of silent empties. (reliability-001/004, migration-004, observability-003, dx-001/002/003)
+- **ca-sandbox surfaces real failure causes.** `docker create`/`cp` exit codes are checked and the failed-clone path captures a bounded slice of git stderr into the thrown error, so a failed sandbox build/clone no longer reports only a bare exit code. (reliability-002, observability-004)
+- **Task-board lib input guards.** `_taskboardlib.set_state`/`promote` no longer raise or silently mutate state on an unexpected value; valid value sets are documented. (dx-004/005)
+
+### Changed
+- **Hook hot-path and statusline render cost reduced (behavior-preserving).** `_hooklib` caches the controls read (mtime-keyed, per ephemeral hook process) and precompiles its default path-globs at import; the statusline caches per-render state reads and its cost-ledger subsystem moved into a dedicated `_ledgerlib.py`. Verified: guard matrix 79/0, cold-install 134/0, and the statusline render byte-identical. (performance-001..005, architecture-005/007)
+- Public-API header blocks added to `_hooklib.py` and `_sloplib.py` per the coding standard. (dx-007)
+
+### Tests
+- Added integration/coverage for existing behavior with no source change: custom CI/deploy scope grammar, the H-12 governed-path reminder (incl. superseded-ADR), and `validateRepoUrl` scp double-colon rejection; plus a `_ledgerlib` suite. (coverage-003/004/005)
+
 ## [2.5.1] — 2026-06-23
 
 ### Fixed

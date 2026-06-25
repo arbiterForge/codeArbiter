@@ -3,7 +3,7 @@
 // farm.ts
 import { spawn } from "node:child_process";
 import { readFile, writeFile, appendFile, mkdir, rm } from "node:fs/promises";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 var DEFAULT_API_BASE_URL = "https://opencode.ai/zen/v1";
@@ -57,15 +57,42 @@ var MUT = {
   escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
   cmd: process.env.FARM_MUTATION_CMD ?? null
 };
-function run(cmd, args, cwd, opts = {}) {
+var GATE_TIMEOUT_MS = Number(process.env.FARM_GATE_TIMEOUT_MS ?? 3e5);
+function treeKill(child) {
+  try {
+    if (process.platform === "win32" && child.pid !== void 0) {
+      spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]);
+    } else {
+      child.kill("SIGKILL");
+    }
+  } catch {
+  }
+}
+function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
   return new Promise((resolve) => {
     const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
     let stdout = "";
     let stderr = "";
+    let settled = false;
+    let timer;
+    const done = (r) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve(r);
+    };
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        treeKill(c);
+        const note = `
+[FARM] command exceeded ${timeoutMs}ms wall-clock timeout \u2014 killed (FARM_GATE_TIMEOUT_MS)`;
+        done({ code: 124, out: stdout + stderr + note, stdout, stderr: stderr + note, timedOut: true });
+      }, timeoutMs);
+    }
     c.stdout.on("data", (d) => stdout += d);
     c.stderr.on("data", (d) => stderr += d);
-    c.on("error", (e) => resolve({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
-    c.on("close", (code) => resolve({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
+    c.on("error", (e) => done({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
+    c.on("close", (code) => done({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
   });
 }
 var git = (args, cwd) => run("git", args, cwd);
@@ -79,7 +106,7 @@ var [SHELL_BIN, SHELL_FLAG] = process.platform === "win32" ? ["cmd.exe", "/c"] :
 var SHELL_OPTS = process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
 async function runGate(cwd, commands) {
   for (const cmd of commands) {
-    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS);
+    const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
     if (r.code !== 0)
       return { ok: false, failed: cmd, tail: redactSecrets(r.out.slice(-3500)) };
   }
@@ -277,6 +304,13 @@ function parseChatCompletion(text, apiBaseUrl) {
     return {
       ok: false,
       error: `endpoint ${apiBaseUrl} returned a non-JSON body (${JSON.stringify(snippet)}) \u2014 check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`
+    };
+  }
+  if (!data || typeof data !== "object" || !Array.isArray(data.choices)) {
+    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
+    return {
+      ok: false,
+      error: `endpoint ${apiBaseUrl} returned an unexpected shape (no 'choices' array): ${JSON.stringify(snippet)} \u2014 check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`
     };
   }
   return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
@@ -490,6 +524,18 @@ function generateMutants(file, src) {
   }
   return out;
 }
+function parseMutationHookOutput(out) {
+  const j = [...out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
+  if (!j) return null;
+  try {
+    const parsed = JSON.parse(j[0]);
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    if (typeof parsed.score === "number")
+      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+  } catch {
+  }
+  return null;
+}
 async function mutationCheck(wt, task) {
   if (!MUT.enabled) return null;
   const testCmd = task.gate.commands[0];
@@ -503,20 +549,23 @@ async function mutationCheck(wt, task) {
         ...SHELL_OPTS
       });
       let out = "";
+      let settled = false;
+      const finish = (res) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(res);
+      };
+      const timer = setTimeout(() => {
+        treeKill(c);
+        finish({ code: 124, out: out + "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed" });
+      }, GATE_TIMEOUT_MS);
       c.stdout.on("data", (d) => out += d);
       c.stderr.on("data", (d) => out += d);
-      c.on("error", (e) => resolve({ code: 1, out: String(e) }));
-      c.on("close", (code) => resolve({ code: code ?? 1, out }));
+      c.on("error", (e) => finish({ code: 1, out: String(e) }));
+      c.on("close", (code) => finish({ code: code ?? 1, out }));
     });
-    const j = [...r.out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
-    if (!j) return null;
-    try {
-      const parsed = JSON.parse(j[0]);
-      if (typeof parsed.score === "number")
-        return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
-    } catch {
-    }
-    return null;
+    return parseMutationHookOutput(r.out);
   }
   const originals = /* @__PURE__ */ new Map();
   let candidates = [];
@@ -537,8 +586,9 @@ async function mutationCheck(wt, task) {
     for (const c of candidates) {
       if (Date.now() - start > MUT.budgetMs) break;
       await writeFile(path.resolve(wt, c.file), c.mutated);
-      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS);
-      await writeFile(path.resolve(wt, c.file), originals.get(c.file));
+      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
+      const orig = originals.get(c.file);
+      if (orig !== void 0) await writeFile(path.resolve(wt, c.file), orig);
       evaluated++;
       if (r.code !== 0) killed++;
       else survivors.push(c.tag);
@@ -549,6 +599,9 @@ async function mutationCheck(wt, task) {
   }
   if (evaluated < 3) return null;
   return { score: killed / evaluated, evaluated, survivors };
+}
+function mintRunId() {
+  return randomBytes(3).toString("hex");
 }
 var mergeChain = Promise.resolve();
 var integrationWorktree;
@@ -732,6 +785,12 @@ function validate(plan) {
       throw new Error(`task id "${t.id}" must match [A-Za-z0-9._-], max 64 chars`);
     if (ids.has(t.id)) throw new Error(`duplicate task id: ${t.id}`);
     ids.add(t.id);
+    if (!t.test || typeof t.test.path !== "string")
+      throw new Error(`task ${t.id}: test.path is required (string)`);
+    if (!Array.isArray(t.filesInScope))
+      throw new Error(`task ${t.id}: filesInScope is required (array of relative paths)`);
+    if (!t.gate || !Array.isArray(t.gate.commands))
+      throw new Error(`task ${t.id}: gate.commands is required (array of strings)`);
     if (t.test.path.includes("..") || path.isAbsolute(t.test.path))
       throw new Error(`task ${t.id}: test.path must be a relative path with no ".." segments`);
     for (const f of t.filesInScope)
@@ -890,6 +949,7 @@ async function main() {
   }
   if (canary) return runCanary(plan);
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
+  const runId = mintRunId();
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
   const resultsStream = path.join(ENV.reportDir, "farm-results.jsonl");
@@ -950,13 +1010,29 @@ async function main() {
           id2,
           runTask(byId.get(id2), model, apiBaseUrl, apiKey).then(
             (r2) => ({ id: id2, r: r2 }),
-            (e) => ({ id: id2, r: { id: id2, status: "escalate", attempts: 0, branch: `farm/${id2}`, worktree: path.resolve(ENV.worktreeRoot, id2), note: `crashed: ${e?.message ?? e}` } })
+            // observability-003 (T-07c): a crash produces an escalate Result with
+            // a correlated, stack-bearing note. The truncated err.stack gives the
+            // post-mortem a call site (e.g. the spawn TypeError from
+            // reliability-004) instead of a one-line message with no origin.
+            (e) => ({
+              id: id2,
+              r: {
+                id: id2,
+                status: "escalate",
+                attempts: 0,
+                branch: `farm/${id2}`,
+                worktree: path.resolve(ENV.worktreeRoot, id2),
+                note: `crashed: ${e?.message ?? e}${e?.stack ? `
+${String(e.stack).slice(0, 1500)}` : ""}`
+              }
+            })
           )
         );
       }
       if (running.size === 0) break;
       const { id, r } = await Promise.race(running.values());
       running.delete(id);
+      r.runId = runId;
       done.set(id, r);
       await appendFile(resultsStream, JSON.stringify(r) + "\n").catch((e) => console.error("results stream append failed:", e));
       if (r.status === "escalate") escalated.add(id);
@@ -967,9 +1043,10 @@ async function main() {
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
   } finally {
-    await writeReport(plan, [...done.values()], blocked, aborted).catch((e) => console.error("report write failed:", e));
-    await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
-    });
+    await writeReport(plan, [...done.values()], blocked, aborted, runId).catch((e) => console.error("report write failed:", e));
+    if (integrationWorktree)
+      await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
+      });
   }
   const results = [...done.values()];
   const esc = results.filter((r) => r.status === "escalate").length;
@@ -990,7 +1067,7 @@ Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
   await new Promise((resolve) => process.stdout.write(summary, () => resolve()));
   process.exit(exitCode);
 }
-async function writeReport(plan, results, blocked, aborted) {
+async function writeReport(plan, results, blocked, aborted, runId) {
   await mkdir(path.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {
   });
   for (const r of results) {
@@ -1003,7 +1080,7 @@ async function writeReport(plan, results, blocked, aborted) {
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
   await writeFile(
     path.join(ENV.reportDir, "farm-report.json"),
-    JSON.stringify({ plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2)
+    JSON.stringify({ run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2)
   );
   const md = [
     `# Farm report \u2014 ${plan.meta.name}`,
@@ -1042,8 +1119,12 @@ export {
   extractFileBlocks,
   extractLiterals,
   httpWorker,
+  mintRunId,
   parseChatCompletion,
+  parseMutationHookOutput,
   redactSecrets,
+  run,
+  runGate,
   runTask,
   screenEntitlements,
   validate

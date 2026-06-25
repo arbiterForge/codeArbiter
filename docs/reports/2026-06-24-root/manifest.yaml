@@ -1,0 +1,51 @@
+schema: manifest/v1
+run_id: 2026-06-24-root
+scope: .              # repository root
+concurrency: 3
+issue_create_cmd: null   # report-only run; no tracker integration
+started_at: 2026-06-24
+
+stack:
+  hooks: Python 3 (stdlib only) — plugins/ca/hooks/*.py
+  farm: TypeScript / Node 20 (vitest) — plugins/ca/tools/farm.ts (ships built farm.js)
+  ca-sandbox: TypeScript / Node 20 (vitest, docker-gated) — plugins/ca-sandbox/tools/*.ts (ships sandbox.js)
+  site: Astro + TS generator — site/scripts/**
+  ci-scripts: Python 3 — .github/scripts/*.py
+  prose: markdown skills/commands/agents — governed by plugin authoring gates, OUT OF CODE SCOPE
+
+policy_docs:
+  - .codearbiter/security-controls.md   # crypto/secret/isolation/TLS/license/audit controls + declared exceptions
+  - .codearbiter/tech-stack.md          # canonical test/lint/build commands
+  - .codearbiter/coding-standards.md
+
+mapping: inline   # repo bounded; mapper agents skipped (offload optimization not needed)
+
+lenses:
+  launched:
+    - {lens: appsec,                   wave: 1, model: opus,   effort: high,   status: flushed, findings: 3}
+    - {lens: secrets-crypto-supply,    wave: 1, model: sonnet, effort: high,   status: flushed, findings: 4}
+    - {lens: reliability,              wave: 1, model: opus,   effort: high,   status: flushed, findings: 4}
+    - {lens: performance,              wave: 2, model: sonnet, effort: medium, status: flushed, findings: 6}
+    - {lens: architecture,             wave: 2, model: opus,   effort: high,   status: flushed, findings: 7}
+    - {lens: migration-data-integrity, wave: 2, model: sonnet, effort: high,   status: flushed, findings: 4}
+    - {lens: observability,            wave: 3, model: sonnet, effort: medium, status: flushed, findings: 5}
+    - {lens: dx-typesafety,            wave: 3, model: sonnet, effort: medium, status: flushed, findings: 7}
+    - {lens: tests-coverage,           wave: 3, model: sonnet, effort: medium, status: flushed, findings: 5}
+    - {lens: tests-fidelity,           wave: 3, model: sonnet, effort: high,   status: flushed, findings: 0}
+  skipped:
+    - {lens: map-structure, reason: "repo bounded; mapped inline by orchestrator"}
+    - {lens: map-deps,      reason: "repo bounded; mapped inline by orchestrator"}
+
+waves:
+  - {wave: 1, lenses: [appsec, secrets-crypto-supply, reliability], status: triaged, findings: 11, kept: 9, decision_required: 1, deferred: 1}
+  - {wave: 2, lenses: [performance, architecture, migration-data-integrity], status: triaged, findings: 17, kept: 17, decision_required: 0, deferred: 0}
+  - {wave: 3, lenses: [observability, dx-typesafety, tests-coverage, tests-fidelity], status: triaged, findings: 17, kept: 16, decision_required: 1, deferred: 0}
+
+run_totals:
+  findings: 45
+  kept_or_combined: 42
+  decision_required: 2
+  deferred: 1
+  by_final_severity_kept: {high: 2, medium: 18, low: 22}
+  status: all_waves_triaged
+

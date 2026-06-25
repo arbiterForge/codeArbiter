@@ -14,6 +14,33 @@ set and thresholds; until then the farm stays `preview`.
 
 _Previously resolved: the four Phase 1 gate decisions, 2026-06-04 (see `legacy/ASSESSMENT.md` §10)._
 
+## [CONFIRM-08] Approve LGPL-3.0-or-later + 0BSD build-time docs-site dependencies?
+
+Deep-review 2026-06-24-root (secrets-003) found 18 `@img/sharp-libvips-*` packages licensed
+`LGPL-3.0-or-later` and `tslib` licensed `0BSD` in `site/package-lock.json` — both outside the
+`security-controls.md` approved-license list. They are docs-site / build-time only (the shipped
+plugin payload carries no runtime npm deps), so there is no payload-inclusion risk; LGPL-3.0's
+replaceable-component obligation is low-stakes for a build-time image optimizer, and 0BSD is
+effectively public-domain (more permissive than MIT). **Decision:** approve both (add to the
+approved list with a docs-site/build-time scope note, the same SMARTS-arbitration path used for
+`BlueOak-1.0.0`/`CC0-1.0` on 2026-06-22), OR record `overrides.log` entries for the specific
+packages. Until resolved, a dependency review flags them as unapproved. Tracked as `v2.rev.0026`.
+
+## [CONFIRM-09] "Compel a log write" — pick an audit-completeness enforcement strategy
+
+Deep-review 2026-06-24-root (observability-002) confirmed and scoped the long-deferred gap (see
+the Deferred-decisions note below, review finding #6 sibling): the H-05 guards protect the audit
+logs from destruction once written, but NO hook forces the required append for an `/override`, a
+`/sprint` auto-decision (`sprint-log.md`), or a `/dev` entry — those rely on prose instruction
+only, so a model lapse / interruption / future skill edit could skip the write undetected.
+Promoted from non-blocking to a tracked CONFIRM. **Decision:** choose an enforcement strategy —
+(a) a lightweight PostToolUse/UserPromptSubmit staleness check (warn if an active sprint's
+sprint-log wasn't appended in N minutes); (b) a per-action PreToolUse check on the bypassed tool
+that requires a recent matching log entry (more invasive, the "test-running commit hook" class);
+or (c) accept prose-enforcement and close. No-regrets regardless: document the integrity-vs-
+completeness distinction in `security-controls.md` §Audit trail (queued in `v2.rev.0021`).
+Tracked as `v2.rev.0027`.
+
 ## Deferred decisions (non-blocking — deliberately NOT a `CONFIRM-NN`, so it does not gate stage promotion)
 
 - **Mechanical enforcement of "no commit on a red suite" / "no commit without commit-gate" (review finding #6).** The 2026-06-15 review confirmed these ORCHESTRATOR §3 rules are skill-discipline only — no hook runs or inspects test status, and `pre-bash.py` lets a raw `git commit` (no secrets, feature branch) through. The `review-remediation` sprint deferred this to its own decision per the user (2026-06-16): a test-running commit hook is slow and invasive, so whether to build one (vs. accept the rules as prose-enforced) is a separate design call. Its siblings ride along: the "compel a log write" half of audit logging (hooks protect logs once written but never force a write) and the secret-to-logger/prompt sink breadth (`SECRET_RE` only matches assignment literals). Pick a direction when enforcement strategy is next revisited. _Update 2026-06-22 (checkpoint remediation): the `SECRET_RE`-breadth half is resolved — `CRYPTO_RE` now sees the Node/TS TLS-disable forms and `SECRET_RE` matches colon/object-literal forms and high-entropy key prefixes (`AKIA`/`ghp_`/`sk-ant-`), with the `farm.ts` outbound redactor aligned and `test_hooklib.py` guarding it. The test-running commit hook and the "compel a log write" siblings remain open._

@@ -507,9 +507,15 @@ function newSandboxId() {
 }
 function spawnAsync(cmd, args) {
   return new Promise((resolve) => {
-    const c = spawn2(cmd, args, { env: DOCKER_ENV4, stdio: "ignore" });
-    c.on("error", () => resolve(1));
-    c.on("close", (code) => resolve(code ?? 1));
+    const c = spawn2(cmd, args, { env: DOCKER_ENV4, stdio: ["ignore", "ignore", "pipe"] });
+    const stderrChunks = [];
+    c.stderr?.on("data", (chunk) => stderrChunks.push(chunk));
+    c.on("error", () => resolve({ code: 1, stderr: "" }));
+    c.on("close", (code) => {
+      const raw = Buffer.concat(stderrChunks).toString("utf8");
+      const stderr = raw.length > 500 ? raw.slice(-500) : raw;
+      resolve({ code: code ?? 1, stderr });
+    });
   });
 }
 async function defaultCloneRepo(url, volumeName) {
@@ -536,7 +542,7 @@ async function defaultBuildImage(volumeName) {
   const path3 = await import("node:path");
   const dir = await mkdtemp2(path3.join(tmpdir(), "ca-sbx-checkout-"));
   const helper = `ca-sbx-cp-${newSandboxId()}`;
-  spawnSync3(
+  const createResult = spawnSync3(
     "docker",
     [
       "create",
@@ -549,8 +555,27 @@ async function defaultBuildImage(volumeName) {
     ],
     { env: DOCKER_ENV4, encoding: "utf8" }
   );
+  if ((createResult.status ?? 1) !== 0) {
+    const hint = (createResult.stderr ?? "").trim();
+    await rm2(dir, { recursive: true, force: true }).catch(() => {
+    });
+    throw new Error(
+      `ca-sandbox: docker create failed for helper container (exit ${createResult.status ?? 1})${hint ? `
+${hint}` : ""}`
+    );
+  }
   try {
-    spawnSync3("docker", ["cp", `${helper}:${APP_DIR3}/.`, dir], { env: DOCKER_ENV4 });
+    const cpResult = spawnSync3("docker", ["cp", `${helper}:${APP_DIR3}/.`, dir], {
+      env: DOCKER_ENV4,
+      encoding: "utf8"
+    });
+    if ((cpResult.status ?? 1) !== 0) {
+      const hint = (cpResult.stderr ?? "").trim();
+      throw new Error(
+        `ca-sandbox: docker cp failed \u2014 empty checkout, cannot compute dephash (exit ${cpResult.status ?? 1})${hint ? `
+${hint}` : ""}`
+      );
+    }
     const manifests = await readManifests(dir, path3);
     const dephash = computeDepHash(manifests);
     return await buildOrReuseImage(dir, dephash);
@@ -610,9 +635,15 @@ ${mk.stderr.slice(-1e3)}`
     );
   }
   try {
-    const cloneCode = await cloneRepo(url, volumeName);
+    const cloneRaw = await cloneRepo(url, volumeName);
+    const cloneCode = typeof cloneRaw === "number" ? cloneRaw : cloneRaw.code;
+    const cloneStderr = typeof cloneRaw === "number" ? "" : cloneRaw.stderr;
     if (cloneCode !== 0) {
-      throw new Error(`ca-sandbox: clone of ${url} into ${volumeName} failed (exit ${cloneCode})`);
+      const hint = cloneStderr.trim() ? `
+${cloneStderr.trim()}` : "";
+      throw new Error(
+        `ca-sandbox: clone of ${url} into ${volumeName} failed (exit ${cloneCode})${hint}`
+      );
     }
     const build = await buildImage(volumeName);
     const containerId = runContainer(build.tag, volumeName, netPolicy, {

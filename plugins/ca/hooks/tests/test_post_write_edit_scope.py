@@ -89,5 +89,62 @@ class TestScopeReminders(unittest.TestCase):
         self.assertEqual(proc.returncode, 0)
 
 
+class TestH12GovernsReminder(unittest.TestCase):
+    """Integration tests for H-12: post-write-edit.py reminds when a touched file
+    is governed by an ADR whose frontmatter carries a matching `governs:` glob.
+    Mirror the harness shape of TestScopeReminders above."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
+        os.makedirs(os.path.join(self.root, ".codearbiter", "decisions"))
+        with open(os.path.join(self.root, ".codearbiter", "CONTEXT.md"),
+                  "w", encoding="utf-8") as f:
+            f.write("---\narbiter: enabled\n---\n# ctx\n")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _write_adr(self, filename, governs, status="accepted", title="Test ADR"):
+        """Write a minimal ADR with a governs: field."""
+        ddir = os.path.join(self.root, ".codearbiter", "decisions")
+        content = f"---\ntitle: {title}\nstatus: {status}\ngoverns: {governs}\n---\n# Body\n"
+        with open(os.path.join(ddir, filename), "w", encoding="utf-8") as f:
+            f.write(content)
+
+    def _run(self, rel_path, content):
+        abspath = os.path.join(self.root, rel_path.replace("/", os.sep))
+        os.makedirs(os.path.dirname(abspath), exist_ok=True)
+        payload = {"hook_event_name": "PostToolUse", "cwd": self.root,
+                   "tool_name": "Write",
+                   "tool_input": {"file_path": abspath, "content": content}}
+        return subprocess.run([sys.executable, HOOK], input=json.dumps(payload),
+                              capture_output=True, text=True, cwd=self.root,
+                              encoding="utf-8")
+
+    def test_governed_path_emits_h12_nonblocking(self):
+        """Writing a file that matches an ADR governs: glob triggers H-12 on stderr
+        with exit 0 (advisory only)."""
+        self._write_adr("0001-src-ownership.md", governs="src/*.ts")
+        proc = self._run("src/app.ts", "export const x = 1;\n")
+        self.assertIn("H-12", proc.stderr)
+        self.assertEqual(proc.returncode, 0)
+
+    def test_non_governed_path_does_not_emit_h12(self):
+        """Writing a file that does NOT match any governs: glob must not produce H-12."""
+        self._write_adr("0001-src-ownership.md", governs="src/*.ts")
+        proc = self._run("docs/README.md", "# readme\n")
+        self.assertNotIn("H-12", proc.stderr)
+        self.assertEqual(proc.returncode, 0)
+
+    def test_superseded_adr_governs_not_enforced(self):
+        """A superseded ADR must not trigger H-12 even when the glob matches."""
+        self._write_adr("0001-old-rule.md", governs="src/*.ts", status="superseded")
+        proc = self._run("src/app.ts", "export const x = 1;\n")
+        self.assertNotIn("H-12", proc.stderr)
+        self.assertEqual(proc.returncode, 0)
+
+
 if __name__ == "__main__":
     unittest.main()
