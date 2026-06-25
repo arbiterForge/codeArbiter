@@ -70,7 +70,10 @@ function treeKill(child) {
 }
 function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
+    const childEnv = { ...process.env };
+    delete childEnv.FARM_API_KEY;
+    delete childEnv.CLAUDE_CODE_OAUTH_TOKEN;
+    const c = spawn(cmd, args, { cwd, env: childEnv, ...opts });
     let stdout = "";
     let stderr = "";
     let settled = false;
