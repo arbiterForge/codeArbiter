@@ -585,3 +585,38 @@ APPROVED at the Phase-1 gate by brennonhuff@gmail.com. Premium backend. Branch
   Strength: strong. Confidence: high. Board task v2.rev.0014 marked DROPPED with this rationale; if
   the latency is ever worth revisiting, it is a deliberate ATTENDED security change with an
   exhaustive cross-topology parity matrix, not an AUTO quick-kill.
+
+---
+
+# Sprint complete — deep-review-quick-kills · 2026-06-24
+
+**13 of 14 tasks ACCEPTED; T-14 DROPPED (SMARTS AD-005).** Landed as 9 commits on
+`sprint/deep-review-quick-kills`, **PR #127** against `main`
+(https://github.com/arbiterForge/codeArbiter/pull/127) — **NOT merged** (the merge is the user's,
+per the /sprint hard gate). ca bumped 2.5.1 → 2.5.2.
+
+**Shipped:** atomic open-tasks write · taskboard input guards · _hooklib/_sloplib API headers ·
+ci/deploy-scope + H-12 coverage · farm timeout/diagnosability/parse-guards · ca-sandbox failure
+surfacing + validateRepoUrl pin · statusline per-render caching + _ledgerlib extraction · _hooklib
+controls-cache + glob-precompile.
+
+**Verification at land:** guard matrix 79/0 · cold-install 134/0 · migration 31/0 · hooks suite 523 OK
+(all unchanged → no enforcement regression) · farm 132 / ca-sandbox 185 vitest · artifacts in-sync ·
+badge + ref-graph green · independent two-pass review 12/12 ACs, 0 BLOCK.
+
+**Hard gate that fired (cleared, not bypassed):** H-09b on farm.ts `randomBytes` (CSPRNG run-id) →
+auth-crypto-reviewer PASS, security-gate marker recorded. Not an /override.
+
+**Auto-decisions flagged for review (per /sprint contract):** AD-001 (slice-granularity execution
+model, moderate) and DR-03 (held the [AUTO] code as queued tasks rather than landing it in the prior
+turn, moderate — superseded this turn: the code is now landed in PR #127). Both logged above.
+
+**Follow-up harvest (autonomous):** no NEW promotions needed — all actionable residue is already
+seeded. Open work: v2.rev.0015–0025 ([HARD-GATE] enforcement fixes, await attended /ca:sprint or
+/ca:dev). Open decisions: CONFIRM-08 (LGPL-3.0/0BSD licenses) + CONFIRM-09 (compel-a-log-write).
+Accepted-cost: performance-003 (project_root subprocess) per AD-005. One NEEDS-TRIAGE from the
+auth-crypto-reviewer (optional broader security review of the timeout/ca-sandbox changes) is judged
+covered by the two-pass review's no-enforcement-weakening check — not promoted.
+
+Real catch worth the run: an untested error path is now covered and a hung farm command can no longer
+wedge a walk-away run — clean green throughout, enforcement surface untouched.
