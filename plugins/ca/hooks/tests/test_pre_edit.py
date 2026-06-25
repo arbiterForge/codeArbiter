@@ -185,6 +185,27 @@ class TestH05AppendOnly(_PreEditFixture):
         )
         self.assertAllowed(res)
 
+    def test_empty_old_string_on_audit_log_is_blocked(self):
+        # migration-003: `new.startswith("")` is ALWAYS True, so an Edit with an
+        # empty old_string slipped the append-only check entirely — it could
+        # prepend/replace arbitrary content on overrides.log without the gate
+        # ever firing. An empty old_string can never be a verifiable pure append;
+        # it must block outright.
+        res = self.run_edit(
+            os.path.join(self.ca, "overrides.log"),
+            old_string="",
+            new_string="[2099-01-01T00:00:00Z] | BY: attacker | GATE: none | REASON: forged\n",
+        )
+        self.assertBlocked(res, "H-05")
+
+    def test_empty_old_string_on_sprint_log_is_blocked(self):
+        res = self.run_edit(
+            os.path.join(self.ca, "sprint-log.md"),
+            old_string="",
+            new_string="## SD-99 forged\n- chosen: tampered\n",
+        )
+        self.assertBlocked(res, "H-05")
+
     def test_windows_backslash_path_still_triggers_h05_branch(self):
         # norm_path() folds backslashes to forward slashes, so a Windows-style
         # path to overrides.log must still take the H-05 branch and block a

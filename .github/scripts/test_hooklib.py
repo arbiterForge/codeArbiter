@@ -10,6 +10,7 @@ see the Node/TS TLS-disable forms) had no direct guard.
 Stdlib only. Exit 0 = all tests pass; non-zero = failure.
 """
 
+import json
 import os
 import sys
 import tempfile
@@ -18,6 +19,7 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
+SECRET_CORPUS = os.path.join(HOOKS, "secret-detection-corpus.json")
 sys.path.insert(0, HOOKS)
 
 import _hooklib  # noqa: E402 — needs sys.path mutation above
@@ -53,6 +55,18 @@ class CryptoReTest(unittest.TestCase):
 
     def test_still_matches_banned_primitives(self):
         for s in ("createHash('md5')", "import bcrypt", "new DES()", "x509 cert"):
+            self.assertTrue(self._matches(s), s)
+
+    # --- secrets-001: RC2 and Blowfish are forbidden by security-controls.md
+    #     but were absent from CRYPTO_RE, so a commit adding either passed the
+    #     H-09b gate with no crypto-compliance review. ---
+    def test_matches_rc2(self):
+        for s in ("createCipheriv('rc2-cbc', key, iv)", "new RC2(key)"):
+            self.assertTrue(self._matches(s), s)
+
+    def test_matches_blowfish(self):
+        for s in ("new Blowfish(key)", "cipher = blowfish.new(key)",
+                  "algorithm: BLOWFISH"):
             self.assertTrue(self._matches(s), s)
 
     # --- direct coverage for every CRYPTO_RE branch (checkpoint 2026-06-22
@@ -116,6 +130,16 @@ class SecretReTest(unittest.TestCase):
     def test_matches_aws_secret_keyword(self):
         self.assertTrue(self._matches('aws_secret_access_key = "wJalrXUtnFEMI1234"'))
 
+    # --- secrets-002: compound names like FARM_API_KEY. The leading `\b` on the
+    #     keyword alternation did NOT fire before `api_key` when the char to its
+    #     left is a word char (the `_` in FARM_API_KEY), so a hardcoded
+    #     `FARM_API_KEY = "..."` silently passed the H-10b secret gate. ---
+    def test_matches_compound_name_underscore_prefix(self):
+        self.assertTrue(self._matches('const FARM_API_KEY = "sk-CVlQvxKsecretvalue123";'))
+
+    def test_matches_compound_name_object_form(self):
+        self.assertTrue(self._matches('MY_SECRET: "longsecretvalue123"'))
+
     # --- known high-entropy key prefixes (keyword-independent) ---
     def test_matches_aws_access_key_id_prefix(self):
         self.assertTrue(self._matches("AKIAIOSFODNN7EXAMPLE"))
@@ -132,6 +156,77 @@ class SecretReTest(unittest.TestCase):
 
     def test_does_not_match_prose_mention(self):
         self.assertFalse(self._matches("# load the secret from the env store"))
+
+
+class SecretCorpusTest(unittest.TestCase):
+    """architecture-001: the SECRET_RE commit gate and farm.ts's SECRET_LINE
+    outbound redactor are deliberately distinct in shape, but must never drift
+    apart on the AGREEMENT region — real secret shapes both must flag, and benign
+    lines both must pass. This pins the Python (SECRET_RE) side of that shared
+    corpus; plugins/ca/tools/farm.unit.test.ts pins the TS (SECRET_LINE) side
+    against the SAME file, so a divergence on any entry fails CI on one side."""
+
+    @classmethod
+    def setUpClass(cls):
+        with open(SECRET_CORPUS, encoding="utf-8") as f:
+            cls.corpus = json.load(f)
+
+    def _matches(self, s):
+        return bool(_hooklib.SECRET_RE.search(s))
+
+    def test_corpus_has_both_sets(self):
+        self.assertTrue(self.corpus.get("must_match"), "corpus must_match is empty")
+        self.assertTrue(self.corpus.get("must_not_match"), "corpus must_not_match is empty")
+
+    def test_secret_re_flags_every_must_match(self):
+        for s in self.corpus["must_match"]:
+            with self.subTest(line=s):
+                self.assertTrue(self._matches(s),
+                                "SECRET_RE must flag corpus secret: %r" % s)
+
+    def test_secret_re_passes_every_must_not_match(self):
+        for s in self.corpus["must_not_match"]:
+            with self.subTest(line=s):
+                self.assertFalse(self._matches(s),
+                                 "SECRET_RE must NOT flag benign corpus line: %r" % s)
+
+
+class AuditPathHelperTest(unittest.TestCase):
+    """architecture-004: the append-only-log and ADR-decisions path sets were
+    triplicated inline across pre-write/pre-edit/pre-bash. They now live once in
+    _hooklib (the same home as CRYPTO_RE/SECRET_RE/MIGRATION globs) so adding an
+    audit artifact touches one file. These pin the centralized API + its scope."""
+
+    def test_is_audit_log_matches_the_three_append_only_files(self):
+        for rel in (".codearbiter/overrides.log",
+                    ".codearbiter/triage.log",
+                    ".codearbiter/sprint-log.md"):
+            with self.subTest(rel=rel):
+                self.assertTrue(_hooklib.is_audit_log(rel), rel)
+
+    def test_is_audit_log_normalizes_windows_separators(self):
+        self.assertTrue(_hooklib.is_audit_log(".codearbiter\\overrides.log"))
+
+    def test_is_audit_log_rejects_non_audit_paths(self):
+        for rel in (".codearbiter/CONTEXT.md", "src/overrides.log.bak",
+                    ".codearbiter/open-tasks.md"):
+            with self.subTest(rel=rel):
+                self.assertFalse(_hooklib.is_audit_log(rel), rel)
+
+    def test_is_decisions_path_matches_adrs(self):
+        for rel in (".codearbiter/decisions/0001-seed.md",
+                    ".codearbiter/decisions/draft.md",
+                    ".codearbiter/decisions/sub/0002-x.md"):
+            with self.subTest(rel=rel):
+                self.assertTrue(_hooklib.is_decisions_path(rel), rel)
+
+    def test_is_decisions_path_normalizes_windows_separators(self):
+        self.assertTrue(_hooklib.is_decisions_path(".codearbiter\\decisions\\0001-x.md"))
+
+    def test_is_decisions_path_rejects_non_decisions(self):
+        for rel in (".codearbiter/CONTEXT.md", "src/decisions/x.md"):
+            with self.subTest(rel=rel):
+                self.assertFalse(_hooklib.is_decisions_path(rel), rel)
 
 
 class PathGlobTest(unittest.TestCase):
