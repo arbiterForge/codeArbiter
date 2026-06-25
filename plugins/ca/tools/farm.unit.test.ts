@@ -1317,3 +1317,34 @@ describe("T-08c mutant-restore Map-miss preserves the file (dx-003)", () => {
     expect(wrote).toBeNull(); // file preserved, never overwritten with "undefined"
   });
 });
+
+describe("run() scrubs dispatcher secrets from the child env (least-privilege, CodeQL #5)", () => {
+  const PRINT = [
+    "-e",
+    "process.stdout.write(`KEY=${process.env.FARM_API_KEY ?? 'ABSENT'};TOK=${process.env.CLAUDE_CODE_OAUTH_TOKEN ?? 'ABSENT'};MODEL=${process.env.FARM_MODEL ?? 'ABSENT'}`)",
+  ];
+  it("hides FARM_API_KEY / OAuth token from a child command but still inherits non-secret config", async () => {
+    const prev = {
+      key: process.env.FARM_API_KEY,
+      tok: process.env.CLAUDE_CODE_OAUTH_TOKEN,
+      model: process.env.FARM_MODEL,
+    };
+    process.env.FARM_API_KEY = "sk-should-not-leak";
+    process.env.CLAUDE_CODE_OAUTH_TOKEN = "tok-should-not-leak";
+    process.env.FARM_MODEL = "passes-through";
+    try {
+      const r = await run(process.execPath, PRINT, undefined, {}, 5000);
+      expect(r.code).toBe(0);
+      expect(r.stdout).toContain("KEY=ABSENT"); // secret scrubbed
+      expect(r.stdout).toContain("TOK=ABSENT"); // secret scrubbed
+      expect(r.stdout).not.toContain("should-not-leak"); // value never reaches the child
+      expect(r.stdout).toContain("MODEL=passes-through"); // non-secret config still inherited
+    } finally {
+      const restore = (k: string, v: string | undefined) =>
+        v === undefined ? delete process.env[k] : (process.env[k] = v);
+      restore("FARM_API_KEY", prev.key);
+      restore("CLAUDE_CODE_OAUTH_TOKEN", prev.tok);
+      restore("FARM_MODEL", prev.model);
+    }
+  });
+});

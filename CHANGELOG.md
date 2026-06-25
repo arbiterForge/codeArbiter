@@ -12,6 +12,7 @@ Deep-review (`docs/reports/2026-06-24-root/`) quick-kills: mechanical robustness
 
 ### Security
 - **Commit-time gates can no longer be bypassed by `git commit <pathspec>`.** A `git commit <path>` records the *worktree* content of the named paths (bypassing the index), but the H-09b/H-10b crypto-secret gate and the H-14 migration gate scanned only the staged (`--cached`) diff — so an unstaged crypto/secret/migration change named as a pathspec committed with no recorded review. Both gates now union the worktree diff **scoped to the named pathspecs** (an unrelated worktree change elsewhere is not dragged in). The crypto/secret scan and the H-14 file-list read now also **fail closed** when `git diff` cannot be read (timeout/error) instead of silently passing. (appsec-001/002, reliability-003)
+- **Farm child commands no longer inherit dispatcher secrets.** `run()` scrubs `FARM_API_KEY` and `CLAUDE_CODE_OAUTH_TOKEN` from the environment passed to every child (git, operator gate/setup/test, mutation) — the API key is used only by the in-process `fetch`. Least-privilege defense-in-depth; shrinks the blast radius of the operator-authored gate-command shell boundary (CodeQL `js/shell-command-injection-from-environment` #5, traced non-exploitable and dismissed).
 
 ### Fixed
 - **The task board can't be lost to a crashed write.** `taskwrite.py` writes `open-tasks.md` atomically (temp file in the board's own directory + `os.replace`), so an interrupted write leaves the prior board intact. (migration-001)
