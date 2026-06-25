@@ -5,7 +5,7 @@ name: Deploy docs
 # runs `prebuild` -> the generator), so the generated output is never committed.
 #
 # On pull_request the build job runs as validation only (no deploy) so a
-# site-breaking change — e.g. a dep bump that outruns the runner's Node — is
+# site-breaking change - e.g. a dep bump that outruns the runner's Node - is
 # caught at review time instead of going red on main after merge. Deploy stays
 # scoped to push: it needs pages:write/id-token:write, which a PR (especially
 # from a fork) can't safely hold.
@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
 
 # Least-privilege: only the deploy job needs pages/id-token:write, granted at
-# job level below. The build job — which runs on PRs, including forks — stays
+# job level below. The build job - which runs on PRs, including forks - stays
 # read-only.
 permissions:
   contents: read
@@ -48,8 +48,8 @@ jobs:
       run:
         working-directory: site
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0
           cache: npm
@@ -68,8 +68,8 @@ jobs:
       run:
         working-directory: site
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0; the action defaults to 20
           cache: npm
@@ -81,14 +81,14 @@ jobs:
       - name: Link audit
         run: npm run link-audit # post-build dangling-link gate (AC-2/AC-4)
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: site/dist
 
   deploy:
     name: Site | [Deploy] - GitHub Pages
     needs: [build, site-check] # never publish a build whose tests/typecheck are red
-    # Push to main only — pull_request builds are validation-only.
+    # Push to main only - pull_request builds are validation-only.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -101,4 +101,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
