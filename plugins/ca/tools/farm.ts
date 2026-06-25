@@ -195,7 +195,15 @@ export function run(
   timeoutMs = 0,
 ): Promise<RunResult> {
   return new Promise<RunResult>((resolve) => {
-    const c = spawn(cmd, args, { cwd, env: process.env, ...opts });
+    // Least-privilege: child commands (git, operator gate/setup/test, mutation)
+    // never need the dispatcher's secrets — the API key is used only by the
+    // in-process fetch. Scrub them from the inherited env so a gate command
+    // can't read FARM_API_KEY / the OAuth token (and shrinks the blast radius
+    // of the operator-authored-but-shell-run gate commands, CodeQL #5).
+    const childEnv: NodeJS.ProcessEnv = { ...process.env };
+    delete childEnv.FARM_API_KEY;
+    delete childEnv.CLAUDE_CODE_OAUTH_TOKEN;
+    const c = spawn(cmd, args, { cwd, env: childEnv, ...opts });
     let stdout = "";
     let stderr = "";
     let settled = false;
