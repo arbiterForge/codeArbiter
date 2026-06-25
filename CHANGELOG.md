@@ -10,6 +10,9 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 Deep-review (`docs/reports/2026-06-24-root/`) quick-kills: mechanical robustness, diagnosability, and hot-path hardening with no enforcement-behavior change (guard matrix, cold-install, and statusline render verified unchanged/byte-identical).
 
+### Security
+- **Commit-time gates can no longer be bypassed by `git commit <pathspec>`.** A `git commit <path>` records the *worktree* content of the named paths (bypassing the index), but the H-09b/H-10b crypto-secret gate and the H-14 migration gate scanned only the staged (`--cached`) diff — so an unstaged crypto/secret/migration change named as a pathspec committed with no recorded review. Both gates now union the worktree diff **scoped to the named pathspecs** (an unrelated worktree change elsewhere is not dragged in). The crypto/secret scan and the H-14 file-list read now also **fail closed** when `git diff` cannot be read (timeout/error) instead of silently passing. (appsec-001/002, reliability-003)
+
 ### Fixed
 - **The task board can't be lost to a crashed write.** `taskwrite.py` writes `open-tasks.md` atomically (temp file in the board's own directory + `os.replace`), so an interrupted write leaves the prior board intact. (migration-001)
 - **Farm dispatcher robustness + diagnosability.** A per-command wall-clock timeout (`FARM_GATE_TIMEOUT_MS`, default 5m; git stays unbounded) kills a hung gate/setup/mutation child so a stuck command can no longer wedge a run and stall the final report; the worktree-cleanup `finally` is guarded against an early failure; plan validation emits named field errors instead of an opaque crash; a run-id correlates `farm-results.jsonl` lines and the report header. Response/parse shape guards turn malformed API or mutation-hook output into actionable errors instead of silent empties. (reliability-001/004, migration-004, observability-003, dx-001/002/003)
