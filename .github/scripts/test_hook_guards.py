@@ -254,6 +254,81 @@ def main():
         git(["restore", "--staged", "src/auth.js"], fx)
         expect_allow(fx, "git commit -m 'notes only'",
                      "H-09b allow: benign commit needs no pass")
+
+        # ---- 6f-6j: deep-review HIGH (v2.rev.0015) — a `git commit <pathspec>`
+        # records the WORKTREE content of the named paths, bypassing the index.
+        # The gate scanned only --cached (unioning worktree only on -a/add), so an
+        # unstaged crypto/secret/migration change named as a pathspec slipped past
+        # with no recorded pass. Also: the security scan must fail CLOSED on a
+        # git-read error (parity with the H-14 backstop). RED until pre-bash.py is
+        # fixed; locked here so the hole can never silently reopen.
+        fxp = make_fixture(base, "feat/pathspec")
+        os.makedirs(os.path.join(fxp, "migrations"))
+        mig_rel = "migrations/001_init.sql"
+        with open(os.path.join(fxp, mig_rel), "w", encoding="utf-8") as f:
+            f.write("CREATE TABLE t (id int);\n")
+        git(["add", mig_rel], fxp)
+        git(["commit", "-q", "-m", "seed migration"], fxp)
+        appp = os.path.join(fxp, "src", "app.py")  # tracked since make_fixture
+
+        # 6f. H-09b: unstaged crypto in a tracked file, committed by pathspec.
+        with open(appp, "a", encoding="utf-8") as f:
+            f.write("const h = createHash('sha256');\n")
+        expect_block(fxp, "git commit -m 'sneak' src/app.py", "H-09b",
+                     "H-09b block: pathspec commit of an unstaged crypto change")
+        git(["checkout", "--", "src/app.py"], fxp)
+
+        # 6g. H-10b: same, for a secret literal.
+        with open(appp, "a", encoding="utf-8") as f:
+            f.write('const api_key = "abcd1234efgh";\n')
+        expect_block(fxp, "git commit -m 'sneak' src/app.py", "H-10b",
+                     "H-10b block: pathspec commit of an unstaged secret")
+        git(["checkout", "--", "src/app.py"], fxp)
+
+        # 6h. H-14: unstaged migration edit committed by pathspec.
+        with open(os.path.join(fxp, mig_rel), "a", encoding="utf-8") as f:
+            f.write("ALTER TABLE t ADD c int;\n")
+        expect_block(fxp, f"git commit -m 'sneak' {mig_rel}", "H-14",
+                     "H-14 block: pathspec commit of an unstaged migration")
+        git(["checkout", "--", mig_rel], fxp)
+
+        # 6i. coverage lock-in (GREEN already): -am sweeps the worktree -> H-09b.
+        with open(appp, "a", encoding="utf-8") as f:
+            f.write("const h2 = createHash('sha256');\n")
+        expect_block(fxp, "git commit -am 'sweep'", "H-09b",
+                     "H-09b block: git commit -am pulls in worktree crypto")
+        git(["checkout", "--", "src/app.py"], fxp)
+
+        # 6j. fail-CLOSED: a git-read error during the security scan must BLOCK,
+        # not pass. An arbiter-enabled dir that is not a git repo forces the
+        # `git diff` nonzero-return path (proxy for a timeout/locked-index error).
+        nogit = os.path.join(base, "nogit")
+        os.makedirs(os.path.join(nogit, ".codearbiter"))
+        with open(os.path.join(nogit, ".codearbiter", "CONTEXT.md"), "w", encoding="utf-8") as f:
+            f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+        with open(os.path.join(nogit, "auth.js"), "w", encoding="utf-8") as f:
+            f.write("const h = createHash('sha256');\n")
+        r = run_hook(nogit, "git commit -m x auth.js")
+        check(r.returncode == 2, "H-09b fail-closed",
+              f"a git-diff failure during the security scan must fail CLOSED (block)\n"
+              f"  exit={r.returncode} stderr={r.stderr.strip()[:300]!r}")
+
+        # 6k. the worktree union must NOT over-block a benign pathspec commit.
+        with open(os.path.join(fxp, "notes.txt"), "a", encoding="utf-8") as f:
+            f.write("a benign note\n")
+        expect_allow(fxp, "git commit -m 'notes' notes.txt",
+                     "allow: benign pathspec commit is not over-blocked")
+
+        # 6l. SCOPED, not over-scanned: an unstaged crypto change in app.py must
+        # NOT block a pathspec commit that names only the benign notes.txt — the
+        # scan is scoped to the named paths, so an unrelated worktree change
+        # elsewhere is not dragged in (app.py's crypto isn't being committed).
+        with open(appp, "a", encoding="utf-8") as f:
+            f.write("const x = createHash('sha256');\n")
+        expect_allow(fxp, "git commit -m 'notes' notes.txt",
+                     "allow: pathspec scan is scoped to named paths, not whole worktree")
+        git(["checkout", "--", "src/app.py"], fxp)
+        git(["checkout", "--", "notes.txt"], fxp)
     finally:
         shutil.rmtree(base, ignore_errors=True)
 

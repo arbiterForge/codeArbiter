@@ -138,22 +138,28 @@ def head_on_protected_tip(cwd):
     return any(_rev(cwd, b) == head for b in ("main", "master"))
 
 
-def added_lines(cwd, ref):
-    """The added (`+`) lines of a diff — what a commit would introduce.
+def added_lines(cwd, ref, paths=None):
+    """The added (`+`) lines of a diff — what a commit would introduce — or None
+    when git could not produce the diff (nonzero exit / timeout / error). The
+    None return (not "") lets the H-09b/H-10b security scan fail CLOSED on a read
+    error rather than silently passing — an empty diff and an unreadable diff are
+    NOT the same thing. `paths`, when given, scopes the diff to the pathspec(s) a
+    `git commit <path>` names (whose worktree content the --cached scan misses).
     Decoded as UTF-8 with replacement: `text=True` alone uses the locale code
     page (cp1252 on stock Windows), where a non-cp1252 byte in the diff raised
     UnicodeDecodeError into the bare except below and the security gate
     silently failed OPEN on exactly the platform this layer protects."""
+    argv = ["git", "diff", ref] + (["--", *paths] if paths else [])
     try:
         out = subprocess.run(
-            ["git", "diff", ref], cwd=cwd,
+            argv, cwd=cwd,
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=10,
         )
         if out.returncode != 0:
-            return ""
+            return None
     except Exception:  # noqa: BLE001
-        return ""
+        return None
     return "\n".join(
         line[1:] for line in out.stdout.splitlines()
         if line.startswith("+") and not line.startswith("+++")
@@ -161,29 +167,37 @@ def added_lines(cwd, ref):
 
 
 def _names(cwd, args):
-    """A set of repo-relative paths from a `git ... --name-only` style query."""
+    """A set of repo-relative paths from a `git ... --name-only` style query, or
+    None when git could not answer (nonzero / timeout / error). None (not an
+    empty set) lets the H-14 migration scan fail CLOSED on a read error rather
+    than concluding "no migrations staged" from a failed read."""
     try:
         out = subprocess.run(
             ["git"] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=10,
         )
         if out.returncode != 0:
-            return set()
+            return None
     except Exception:  # noqa: BLE001
-        return set()
+        return None
     return {p for p in out.stdout.splitlines() if p.strip()}
 
 
 def staged_paths(cwd):
-    """Paths in the index — what a plain `git commit` would record."""
+    """Paths in the index — what a plain `git commit` would record. None on a
+    git-read failure (caller fails closed)."""
     return _names(cwd, ["diff", "--cached", "--name-only"])
 
 
 def worktree_paths(cwd):
     """Tracked worktree modifications (what `git commit -a` sweeps in) plus
-    untracked files."""
-    return (_names(cwd, ["diff", "--name-only"])
-            | _names(cwd, ["ls-files", "--others", "--exclude-standard"]))
+    untracked files. None if either underlying query failed (caller fails
+    closed)."""
+    tracked = _names(cwd, ["diff", "--name-only"])
+    untracked = _names(cwd, ["ls-files", "--others", "--exclude-standard"])
+    if tracked is None or untracked is None:
+        return None
+    return tracked | untracked
 
 
 def read_worktree(cwd, rel):
@@ -217,6 +231,45 @@ def add_violation(args, cwd):
         if os.path.isdir(p):
             return f"a directory ('{tok}')"
     return None
+
+
+# Flags whose NEXT token is a value, not a pathspec — so `git commit -m "msg" f`
+# names `f`, not `msg`. (`--flag=value` is self-contained; a short bundle ending
+# in one of these chars takes the next token, e.g. `-am msg`.)
+COMMIT_VALUE_FLAGS = frozenset({
+    "-m", "--message", "-F", "--file", "-C", "--reuse-message",
+    "-c", "--reedit-message", "--author", "--date", "-t", "--template",
+    "--fixup", "--squash", "--trailer",
+})
+
+
+def commit_pathspecs(args):
+    """The worktree paths a `git commit` names as pathspecs. A `git commit <path>`
+    records the WORKTREE content of <path>, bypassing the index — content the
+    index-only `--cached` scan never sees — so the security/migration gates must
+    union the worktree diff for these paths. Best-effort parse: everything after
+    a `--` separator is a pathspec; otherwise bare tokens that are neither a flag
+    nor a value-taking flag's value. Bias is to OVER-include — a non-path token
+    diffs to nothing (harmless), whereas under-including would reopen the bypass,
+    so any ambiguity is treated as a pathspec."""
+    toks = [t.strip("\"'") for t in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args)]
+    if "--" in toks:
+        return [t for t in toks[toks.index("--") + 1:] if t]
+    out, expect_value = [], False
+    for t in toks:
+        if expect_value:
+            expect_value = False
+            continue
+        if t.startswith("-"):
+            if "=" in t:  # --message=... carries its own value
+                continue
+            if t in COMMIT_VALUE_FLAGS or (
+                    re.fullmatch(r"-[A-Za-z]+", t) and t[-1] in "mFCct"):
+                expect_value = True  # next token is this flag's value, not a path
+            continue
+        if t:
+            out.append(t)
+    return out
 
 
 def main():
@@ -310,9 +363,25 @@ def main():
     # the freshness window. Scans the staged diff, plus the worktree diff when
     # the commit uses -a/--all or the same command stages files.
     if commit:
-        added = added_lines(cwd, "--cached")
-        if COMMIT_ALL_RE.search(commit.group("args")) or add:
-            added += "\n" + added_lines(cwd, "HEAD")
+        cargs = commit.group("args")
+        # Scan the staged diff, plus the worktree diff when the commit pulls in
+        # worktree content: -a/--all (whole tree), an in-command `git add`, OR a
+        # `git commit <pathspec>` (the named paths only — a pathspec commit
+        # records worktree content the --cached scan never sees). A None from
+        # added_lines means git could not read the diff -> fail CLOSED.
+        parts = [added_lines(cwd, "--cached")]
+        if COMMIT_ALL_RE.search(cargs) or add:
+            parts.append(added_lines(cwd, "HEAD"))
+        else:
+            pathspecs = commit_pathspecs(cargs)
+            if pathspecs:
+                parts.append(added_lines(cwd, "HEAD", pathspecs))
+        if any(p is None for p in parts):
+            block("H-09b", "the diff for the crypto/secret security scan could not be "
+                           "read (git unavailable or timed out) — failing closed "
+                           "(ORCHESTRATOR §2). Retry, or run the crypto-compliance / "
+                           "secret-handling gate, then commit.")
+        added = "\n".join(parts)
         sensitive = [ln for ln in added.splitlines()
                      if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
         if sensitive:
@@ -353,9 +422,30 @@ def main():
     # treated as no coverage (fail-closed), consistent with this layer's
     # "ambiguity resolves CLOSED" stance.
     if commit:
+        cargs = commit.group("args")
+        # Index paths, plus worktree paths when the commit pulls them in: -a/add
+        # (whole tree) or a `git commit <pathspec>` (named paths only). A None
+        # from any path query means git could not read the file list -> fail
+        # CLOSED, consistent with this layer's "ambiguity resolves CLOSED" stance.
         staged = staged_paths(cwd)
-        if COMMIT_ALL_RE.search(commit.group("args")) or add:
-            staged |= worktree_paths(cwd)
+        failed = staged is None
+        extra = set()
+        if COMMIT_ALL_RE.search(cargs) or add:
+            wt = worktree_paths(cwd)
+            failed = failed or wt is None
+            extra = wt or set()
+        else:
+            pathspecs = commit_pathspecs(cargs)
+            if pathspecs:
+                ps = _names(cwd, ["diff", "HEAD", "--name-only", "--", *pathspecs])
+                failed = failed or ps is None
+                extra = ps or set()
+        if failed:
+            block("H-14", "the file list for the migration scan could not be read "
+                          "(git unavailable or timed out) — failing closed "
+                          "(ORCHESTRATOR §2). Retry, or run the migration-review gate, "
+                          "then commit.")
+        staged |= extra
         migs = sorted(p for p in staged if is_migration_path(p, root))
         if migs:
             marker = os.path.join(root, ".codearbiter", ".markers", "migration-gate-passed")
