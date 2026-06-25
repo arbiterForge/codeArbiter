@@ -35,6 +35,41 @@ describe("redactSecrets — high-entropy key prefixes (checkpoint 2026-06-22)", 
 });
 
 // ---------------------------------------------------------------------------
+// Shared secret-detection corpus (architecture-001). SECRET_LINE (this
+// outbound redactor) and _hooklib.SECRET_RE (the commit gate) are deliberately
+// distinct in shape, but must never drift apart on the AGREEMENT region. This
+// pins the TS (SECRET_LINE) side against the SAME corpus file that
+// .github/scripts/test_hooklib.py asserts SECRET_RE against — a divergence on
+// any entry fails CI on one side or the other. (For a single-line input
+// redactSecrets returns the marker iff SECRET_LINE matched.)
+// ---------------------------------------------------------------------------
+describe("redactSecrets — shared secret-detection corpus parity", () => {
+  const corpusPath = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "hooks",
+    "secret-detection-corpus.json",
+  );
+  const corpus = JSON.parse(readFileSync(corpusPath, "utf8")) as {
+    must_match: string[];
+    must_not_match: string[];
+  };
+
+  it("has both corpus sets", () => {
+    expect(corpus.must_match.length).toBeGreaterThan(0);
+    expect(corpus.must_not_match.length).toBeGreaterThan(0);
+  });
+
+  it.each(corpus.must_match)("redacts a must_match secret: %s", (line) => {
+    expect(redactSecrets(line)).toContain("[REDACTED");
+  });
+
+  it.each(corpus.must_not_match)("passes a must_not_match benign line: %s", (line) => {
+    expect(redactSecrets(line)).toBe(line);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // extractFileBlocks
 // ---------------------------------------------------------------------------
 describe("extractFileBlocks", () => {

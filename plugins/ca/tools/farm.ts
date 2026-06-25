@@ -325,9 +325,18 @@ export type InjectedFile = { path: string; contents: string; readOnly: boolean }
 // no END is present) as a single unit. Single-line trigger-word matches keep
 // the existing per-line behavior. Matching, never transmitting a matched
 // secret, is the invariant — see spec AC-05 / D5.
-// Trigger words plus known high-entropy key prefixes (AWS / GitHub), kept in
-// step with the hook-side SECRET_RE so the outbound redactor and the commit
-// gate never disagree on what a secret looks like (checkpoint 2026-06-22).
+// Trigger words plus known high-entropy key prefixes (AWS / GitHub). This
+// outbound redactor is DELIBERATELY DISTINCT in shape from the hook-side
+// _hooklib.SECRET_RE commit gate (architecture-001): SECRET_LINE is BROAD — a
+// bare trigger word anywhere on a line redacts the whole line, because over-
+// redaction is the safe direction for content crossing the trust boundary;
+// SECRET_RE is NARROW — it requires a quoted-literal assignment so it does not
+// fire on every `token:` reference in committed source. They therefore disagree
+// by design on bare-keyword lines. What is pinned is the AGREEMENT region:
+// plugins/ca/hooks/secret-detection-corpus.json lists real secret shapes both
+// must flag and benign lines both must pass, asserted against SECRET_LINE here
+// (farm.unit.test.ts) and against SECRET_RE in test_hooklib.py, so neither side
+// can silently regress on it.
 const SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
 // PEM-style armor delimiters. BEGIN opens a span; END closes it. Matched
 // independently of SECRET_LINE so even a `-----BEGIN CERTIFICATE-----` (no

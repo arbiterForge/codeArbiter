@@ -21,8 +21,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, arbiter_active, block, content_digest, is_migration_path,
-    line_digest, marker_fresh, project_root, read_input, tool_input, utf8_stdio,
+    AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE, SECRET_RE, arbiter_active, block,
+    content_digest, is_migration_path, line_digest, marker_fresh, project_root,
+    read_input, tool_input, utf8_stdio,
 )
 
 # `git` followed by any run of global options (-C <dir>, -c k=v, --git-dir=…,
@@ -61,15 +62,20 @@ PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # N-3: Known limitations — this regex catches the common `> file` and `>| file`
 # (force-clobber) truncation forms but NOT every shell spelling that produces a
 # new file descriptor on the log. Specific gaps: triple-chevron (`>>>`, treated
-# as append by some shells), and file-descriptor forms like
-# `exec 3>.codearbiter/overrides.log`. These are difficult to close with a single
-# regex and represent an accepted residual risk. The sanctioned bypass for
-# legitimate log management is /ca:override.
+# as append by some shells), file-descriptor forms like
+# `exec 3>.codearbiter/overrides.log`, and verb-with-VARIABLE-target spellings
+# where the literal log name never appears adjacent to the verb (appsec-003):
+# e.g. `f=.codearbiter/overrides.log; rm "$f"` or PowerShell `$f='overrides.log';
+# rm $f` — the guard is purely lexical and anchored on the literal name, so an
+# indirected target defeats it. These are difficult to close with a single regex
+# and represent an accepted residual risk. The sanctioned bypass for legitimate
+# log management is /ca:override.
 # The optional `\|?` admits `>|` (clobber even under `set -o noclobber`); the
 # leading `(?!>)` still excludes the append form `>>`.
 # `sprint-log.md` joins overrides.log/triage.log as an append-only audit artifact
-# (the /sprint decision record).
-LOG_NAMES = r"(?:(?:overrides|triage)\.log|sprint-log\.md)"
+# (the /sprint decision record). The bare-name alternation is centralized in
+# _hooklib.AUDIT_LOG_NAMES so the Write/Edit and shell flanks never drift.
+LOG_NAMES = AUDIT_LOG_NAMES
 LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES)
 LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
@@ -80,7 +86,7 @@ LOG_DESTROY_RE = re.compile(
 # guard the Write/Edit tools; this guards redirection and file verbs). Any
 # redirect into .codearbiter/decisions/, or any write/delete verb naming it,
 # blocks — `cat`/`ls`/`grep` reads pass untouched.
-DECISIONS = r"\.codearbiter[\\/]+decisions\b"
+DECISIONS = DECISIONS_DIR_RE + r"\b"
 # `>>?\|?` covers `>`, `>>`, and the `>|` force-clobber form into decisions/.
 DECISIONS_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + DECISIONS, re.I)
 DECISIONS_WRITE_RE = re.compile(
