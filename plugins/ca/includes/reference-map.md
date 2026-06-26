@@ -1,8 +1,9 @@
 # Reference map
 
-Loaded on a scope-touch — before acting on code in one of these rows, read the governing doc first,
-then route to the owning skill or agent. "Read first" paths are under `${CLAUDE_PROJECT_DIR}/.codearbiter/`
-unless the row gives an explicit `${CLAUDE_PLUGIN_ROOT}/` path (plugin-shipped reference material).
+Loaded on a scope-touch: before acting on code in one of these rows, read the governing doc first,
+then route to the owning skill or agent. This map answers *what to read before touching a scope*; for
+*what to invoke or route given a trigger*, use `routing-table.md`. "Read first" paths are under
+`${CLAUDE_PROJECT_DIR}/.codearbiter/` unless the row gives a `${CLAUDE_PLUGIN_ROOT}/` path.
 
 | If the change touches… | Read first | Route to |
 |---|---|---|

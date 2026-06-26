@@ -48,15 +48,20 @@ After writing, list the `### DEFERRABLE` findings as follow-up harvest candidate
 |-------|-------|
 | Stage | N |
 | Checkpoint date | YYYY-MM-DD |
-| Reviewers | architecture-drift, test-audit, security, decision-challenger |
+| Reviewers | one row per reviewer the checkpoint dispatched |
 
 ## Finding summary
+
+One row per dispatched reviewer (the checkpoint fleet varies by what the change touched:
+architecture-drift-reviewer, coverage-auditor, security-reviewer, and as applicable
+auth-crypto-reviewer, dependency-reviewer, migration-reviewer, plus decision-challenger).
 
 | Reviewer | CRITICAL | HIGH | MEDIUM | LOW |
 |----------|----------|------|--------|-----|
 | architecture-drift-reviewer | N | N | N | N |
 | coverage-auditor | N | N | N | N |
 | security-reviewer | N | N | N | N |
+| <other dispatched reviewers> | N | N | N | N |
 | decision-challenger | — | N escalated | N revisit | N uphold |
 | **Total** | **N** | **N** | **N** | **N** |
 
@@ -82,10 +87,12 @@ After writing, list the `### DEFERRABLE` findings as follow-up harvest candidate
 
 ## All findings (full detail)
 
+One `###` section per dispatched reviewer. Typical sections:
+
 ### Architecture Drift
 [findings or "none"]
 
-### Test Audit
+### Coverage / Test Audit
 [findings or "none"]
 
 ### Security

@@ -70,6 +70,13 @@ export default defineConfig({
           ],
         },
         {
+          label: "How it works",
+          items: [
+            { label: "Enforcement & Security", slug: "enforcement" },
+            { label: "Hooks reference", slug: "hooks" },
+          ],
+        },
+        {
           label: "Reference",
           items: [{ label: "All reference", slug: "reference" }, ...referenceGroups],
         },

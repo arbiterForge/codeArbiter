@@ -11,8 +11,9 @@ skills gate on this file being present.
 
 **Approved:** SHA-256 and the broader SHA-2 family (SHA-384, SHA-512).
 
-**Forbidden:** MD5, SHA-1, DES, 3DES, RC4, RC2, Blowfish (in new code). These
-are never acceptable regardless of context.
+**Forbidden:** MD5, SHA-1, DES, 3DES, RC4, RC2, Blowfish. These are never
+acceptable regardless of context; the `CRYPTO_RE` commit gate (H-09b) flags any
+added line that uses one, with no new-code-versus-old distinction.
 
 All production crypto in this repo uses `hashlib.sha256` (Python) or
 `createHash("sha256")` (Node.js). The two occurrences of `createHash("md5")`
@@ -42,8 +43,8 @@ A second secret exists in the `ca-sandbox` plugin (ADR-0007): the
 *inside* a sandbox box.
 
 **Approved access method:** env-injection only. The token is passed to the
-container as `-e CLAUDE_CODE_OAUTH_TOKEN=...` (auth-precedence #5; Spike B /
-CONFIRM-07). It is never baked into an image layer, never written to a committed
+container as `-e CLAUDE_CODE_OAUTH_TOKEN=...` (auth-precedence #5; resolved via
+ADR-0007, Spike B). It is never baked into an image layer, never written to a committed
 file, never logged (the failure path emits docker's own stderr/stdout, never the
 argv), and tests use a clearly-labelled DUMMY value only. Because a token in a box
 running untrusted code is stealable, `--with-claude` is hard-defaulted to
@@ -173,6 +174,15 @@ The `pre-write.py` / `pre-edit.py` guards close the Write/Edit flank (including 
 empty-`old_string` Edit, which is not a verifiable append). The append-only path
 set is centralized in `_hooklib` (`is_audit_log`, `AUDIT_LOG_NAMES`) so the three
 guards never drift on which files are covered.
+
+**Automated writer of record.** One write to `overrides.log` is performed by the
+framework, not a user action: on session start, if a prior session entered
+`/ca:dev` and ended without `/ca:arbiter`, `session-start.py` appends a
+`BY: session-cleanup | DEV: exit` close line before clearing the live dev marker
+(observability-001), so the dev-mode enter/exit trail is never left half-open. It
+is append-only and best-effort. This is the only writer of `overrides.log` other
+than the three sanctioned mutators (`/override`, `/sprint` auto-decisions,
+`/dev` entry/exit).
 
 ---
 
