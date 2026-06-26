@@ -17,6 +17,7 @@ import {
   run,
   treeKill,
   readWorktreeFile,
+  scrubbedEnv,
   SHELL_BIN,
   SHELL_FLAG,
   SHELL_OPTS,
@@ -175,9 +176,13 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationRes
   // Pluggable hook — hand off to a real per-language framework if configured.
   if (MUT.cmd) {
     const r = await new Promise<{ code: number; out: string }>((resolve) => {
+      // Least-privilege parity with run(): the operator-authored mutation hook
+      // is a child like any other and must not inherit the dispatcher's
+      // secrets. Route its env through scrubbedEnv(), passing only the
+      // FARM_MUTATION_* contract vars on top of the scrubbed base.
       const c = spawn(SHELL_BIN, [SHELL_FLAG, MUT.cmd!], {
         cwd: wt,
-        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
+        env: scrubbedEnv({ FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd }),
         ...SHELL_OPTS,
       });
       let out = "";

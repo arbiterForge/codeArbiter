@@ -513,6 +513,69 @@ describe("farm.ts smoke tests", () => {
     expect(report.results[0].note).toMatch(/mutation score/);
   });
 
+  it("runs FARM_MUTATION_CMD under the scrubbed env — the pluggable hook cannot read FARM_API_KEY / OAuth (least-privilege parity)", async () => {
+    // The pluggable mutation hook runs operator-supplied, possibly third-party
+    // code in the worktree. Like every other child (gate/setup/test/git via
+    // run()), it must NOT inherit the dispatcher's secrets — only the
+    // FARM_MUTATION_* contract vars. Probe: a committed script the hook invokes
+    // records its own env to an absolute PROBE_OUT path (an env value, so no
+    // shell quoting), then prints a score line so mutationCheck parses cleanly.
+    const probeOut = join(tmpdir(), `farm-mut-env-probe-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
+    const probe = [
+      "const fs = require('node:fs');",
+      "fs.writeFileSync(process.env.PROBE_OUT, JSON.stringify({",
+      "  key: process.env.FARM_API_KEY ?? 'ABSENT',",
+      "  tok: process.env.CLAUDE_CODE_OAUTH_TOKEN ?? 'ABSENT',",
+      "  files: process.env.FARM_MUTATION_FILES ?? 'ABSENT',",
+      "  testPath: process.env.FARM_MUTATION_TEST_PATH ?? 'ABSENT',",
+      "  testCmd: process.env.FARM_MUTATION_TEST_CMD ?? 'ABSENT',",
+      "}));",
+      "process.stdout.write('{\"score\":1,\"total\":5}');",
+    ].join("\n");
+    // Commit the probe so it lands in the ephemeral worktree the hook runs in.
+    writeFileSync(join(tmpDir, "mut-probe.cjs"), probe);
+    execSync("git add mut-probe.cjs", { cwd: tmpDir, stdio: "pipe" });
+    execSync("git commit -m probe --no-gpg-sign", { cwd: tmpDir, stdio: "pipe" });
+
+    ({ server: mockServer, port } = await startMockServer(() =>
+      ["```javascript", "// path: src/m.js", "module.exports.f = (a, b) => a + b;", "```"].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "mutation-env-scrub", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Add",
+          deps: [],
+          filesInScope: ["src/m.js"],
+          test: { path: "src/m.test.js" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "sk-must-not-leak-to-hook",
+      CLAUDE_CODE_OAUTH_TOKEN: "tok-must-not-leak",
+      FARM_MUTATION: "on",
+      FARM_MUTATION_CMD: "node mut-probe.cjs",
+      PROBE_OUT: probeOut,
+    });
+
+    expect(existsSync(probeOut)).toBe(true); // the pluggable hook actually ran
+    const seen = JSON.parse(readFileSync(probeOut, "utf8"));
+    expect(seen.key).toBe("ABSENT"); // SEC-1: FARM_API_KEY scrubbed from the hook env
+    expect(seen.tok).toBe("ABSENT"); // SEC-1: OAuth token scrubbed
+    expect(seen.files).toContain("src/m.js"); // CON-1: feature env still delivered
+    expect(seen.testPath).toBe("src/m.test.js"); // CON-1
+    expect(seen.testCmd).toBe("node -p 0"); // CON-1
+    rmSync(probeOut, { force: true });
+  });
+
   it("enriches the worker prompt with the test source AND an in-scope sibling's contents (AC-03/AC-04)", async () => {
     // Capture every prompt the worker is sent. The mock returns a benign
     // in-scope file so the task can settle; the assertion is on what reached it.

@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
+import { scrubbedEnv } from "./exec.ts";
 
 // ---------------------------------------------------------------------------
 // redactSecrets — outbound-boundary redactor must stay aligned with the hook
@@ -1353,6 +1354,23 @@ describe("T-08c mutant-restore Map-miss preserves the file (dx-003)", () => {
     let wrote: string | null = null;
     if (orig !== undefined) wrote = orig;
     expect(wrote).toBeNull(); // file preserved, never overwritten with "undefined"
+  });
+});
+
+describe("scrubbedEnv() deletes secrets LAST so a caller var cannot reintroduce one (CodeQL #5)", () => {
+  it("strips FARM_API_KEY / OAuth token even when they are passed in `extra`", () => {
+    // The delete-last ordering is the load-bearing defense: a caller that
+    // (accidentally or maliciously) puts a secret in `extra` must not be able
+    // to re-add it. A future reorder of the delete before the merge would pass
+    // every other test but silently break this; this test pins the ordering.
+    const env = scrubbedEnv({
+      FARM_API_KEY: "extra-should-be-deleted",
+      CLAUDE_CODE_OAUTH_TOKEN: "extra-tok-should-be-deleted",
+      FARM_MUTATION_FILES: "a.ts,b.ts", // a non-secret contract var survives
+    });
+    expect(env.FARM_API_KEY).toBeUndefined();
+    expect(env.CLAUDE_CODE_OAUTH_TOKEN).toBeUndefined();
+    expect(env.FARM_MUTATION_FILES).toBe("a.ts,b.ts");
   });
 });
 
