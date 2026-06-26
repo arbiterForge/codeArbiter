@@ -5,6 +5,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] sync docs-site command mirrors (task.md, standup.md) after commit-gate board-sync co-location  (from plan:commit-gate-board-sync)
 - [ ] casandbox.release.0001 - Release ca-sandbox 0.1.1 — Batch C isolation hardening (shared hardeningFlags(), create.ts mount chokepoint via buildMountArgs, fail-closed NetPolicy; #134) is in main on ca-sandbox 0.1.1 but the latest tag is ca-sandbox-v0.1.0, so it is unreleased. /ca:release is ca-only (ADR-0007); this needs a ca-sandbox release path in the skill OR a manual ca-sandbox-v0.1.1 tag + GitHub Release. Done when: ca-sandbox 0.1.1 is tagged and published, or a decision to defer is recorded.
   - Boundaries: egress, isolation
 - [x] Add a CI link-audit gate for the docs site: assert every internal dist link resolves under the /codeArbiter base path and the favicon/logo assets emit to dist (spec AC-2/AC-4, currently build-time/manual only).  (from coverage-auditor:docs-site-polish)  (done 2026-06-23, sprint release-hardening-debt-paydown — site/scripts/link-audit.ts + docs.yml)

@@ -38,6 +38,10 @@ an ID (`/ca:task start --as <group>.<type> -- "<title>"`) to disambiguate.
   (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`), which calls this writer for you.
 - Reading the board / counts → `/ca:status` (read-only).
 - Archiving long-settled done items → deferred (D-2); done items stay in-place for now.
+- Filing a separate `chore(board)` PR just to flip a task state → task-board transitions
+  (`[x]` done-flip, `[~]` start-flip, new `[ ]` add) ride the **work commit** via
+  commit-gate, co-located atomically with the code that completes, starts, or spawns the
+  task (ADR-0008). A lagging board-only PR is the anti-pattern this design eliminates.
 
 ## Hard gate
 
