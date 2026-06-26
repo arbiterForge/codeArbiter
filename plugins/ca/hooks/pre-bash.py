@@ -261,15 +261,52 @@ COMMIT_VALUE_FLAGS = frozenset({
 })
 
 
+# A redirect operator token (`>`, `>>`, `2>`, `<`, `<<`, `<<'EOF'`, …). Never a
+# git pathspec — feeding one to `git diff -- <op>` can ERROR (not "diff to
+# nothing"), which is what failed the H-09b/H-14 scan CLOSED on heredoc commits.
+REDIRECT_RE = re.compile(r"\d*[<>]")
+
+
+# A heredoc: `<<` (optional `-`), optional quote, a word delimiter, optional
+# matching quote, the rest of that line, then body lines, up to a line that is
+# the delimiter alone. The body is stdin content (the commit message via `-F -`),
+# never git arguments — parsing it as pathspecs failed H-09b/H-10b/H-14 CLOSED on
+# the recommended `git commit -F - <<EOF` form.
+# Group 3 captures the REST OF THE OPERATOR LINE after `<<WORD` — `git commit -F
+# - <<EOF realfile.py` passes `realfile.py` to git as a pathspec (only the body
+# is stdin), so that tail is re-emitted, not swallowed with the body, or the
+# worktree-union scan would under-scan it (errs open).
+HEREDOC_RE = re.compile(
+    r"<<-?[ \t]*([\"']?)(\w+)\1([^\n]*)\n(?:.*?\n)?[ \t]*\2[ \t]*(?:\n|$)",
+    re.DOTALL)
+
+
+def _strip_heredoc_bodies(args):
+    """Remove heredoc operator+body+delimiter from a git-commit arg string so the
+    body is never parsed as flags/pathspecs (it false-blocked H-09b/H-10b/H-14 on
+    `git commit -F - <<EOF`). `\\`-newline continuations are joined first; the
+    operator-line tail (group 3) is preserved.
+
+    CRITICALLY nothing but the heredoc body is cut. An earlier attempt bounded to
+    the first newline (`split("\\n", 1)[0]`), which also truncated at a literal
+    newline inside a quoted `-m "subject\\n\\nbody"` message and dropped a trailing
+    pathspec — silently under-scanning a pathspec-scoped commit and reopening the
+    v2.rev.0015 worktree-union bypass. Stripping only the heredoc (and keeping the
+    operator-line tail) leaves a multi-line message and any real pathspec intact."""
+    joined = re.sub(r"\\\r?\n", " ", args)   # honor line-continuations
+    return HEREDOC_RE.sub(r"\3 ", joined)
+
+
 def commit_pathspecs(args):
     """The worktree paths a `git commit` names as pathspecs. A `git commit <path>`
     records the WORKTREE content of <path>, bypassing the index — content the
     index-only `--cached` scan never sees — so the security/migration gates must
     union the worktree diff for these paths. Best-effort parse: everything after
-    a `--` separator is a pathspec; otherwise bare tokens that are neither a flag
-    nor a value-taking flag's value. Bias is to OVER-include — a non-path token
-    diffs to nothing (harmless), whereas under-including would reopen the bypass,
-    so any ambiguity is treated as a pathspec."""
+    a `--` separator is a pathspec; otherwise bare tokens that are neither a flag,
+    a value-taking flag's value, nor a redirect operator. Bias is to OVER-include
+    — a non-path token diffs to nothing (harmless), whereas under-including would
+    reopen the bypass, so any ambiguity is treated as a pathspec. Callers pass a
+    `_strip_heredoc_bodies`-cleaned string so a heredoc body never reaches here."""
     toks = [t.strip("\"'") for t in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args)]
     if "--" in toks:
         return [t for t in toks[toks.index("--") + 1:] if t]
@@ -277,6 +314,8 @@ def commit_pathspecs(args):
     for t in toks:
         if expect_value:
             expect_value = False
+            continue
+        if REDIRECT_RE.match(t):  # a redirect operator, not a pathspec
             continue
         if t.startswith("-"):
             if "=" in t:  # --message=... carries its own value
@@ -381,7 +420,7 @@ def main():
     # the freshness window. Scans the staged diff, plus the worktree diff when
     # the commit uses -a/--all or the same command stages files.
     if commit:
-        cargs = commit.group("args")
+        cargs = _strip_heredoc_bodies(commit.group("args"))
         # Scan the staged diff, plus the worktree diff when the commit pulls in
         # worktree content: -a/--all (whole tree), an in-command `git add`, OR a
         # `git commit <pathspec>` (the named paths only — a pathspec commit
@@ -440,7 +479,7 @@ def main():
     # treated as no coverage (fail-closed), consistent with this layer's
     # "ambiguity resolves CLOSED" stance.
     if commit:
-        cargs = commit.group("args")
+        cargs = _strip_heredoc_bodies(commit.group("args"))
         # Index paths, plus worktree paths when the commit pulls them in: -a/add
         # (whole tree) or a `git commit <pathspec>` (named paths only). A None
         # from any path query means git could not read the file list -> fail
