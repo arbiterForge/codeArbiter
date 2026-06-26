@@ -620,3 +620,37 @@ covered by the two-pass review's no-enforcement-weakening check — not promoted
 
 Real catch worth the run: an untested error path is now covered and a hung farm command can no longer
 wedge a walk-away run — clean green throughout, enforcement surface untouched.
+
+---
+
+# Sprint — farm-sampling-context (best-of-N + retry feedback + auto-context) · 2026-06-26 (autonomous; user asleep)
+
+Spec `.codearbiter/specs/farm-sampling-context.md`, plan `plans/farm-sampling-context.md` — APPROVED at
+the Phase-1 gate by brennonhuff@gmail.com. Premium backend (NOT --farm — the farm tool is the subject).
+Branch `feat/farm-best-of-n` off `main`. User: "approve, unless hard gate you cannot pass with SMARTS;
+do not stop to ask a question until there is a PR." Slice 1 = F4+F2+F1; Slice 2 (F3) planned after Slice
+1 merges. F8 descoped to an ADR at the gate. Origin: docs/reports/2026-06-26-farm/report.md.
+
+## D0 — execution strategy · confidence: low
+- Options: (a) one fresh subagent per task per subagent-driven-development; (b) coherent single author
+  (orchestrator, full farm.ts context) + independent review-agent passes before the PR.
+- SMARTS: Maintainable/Reliable favor (b) — the 11 Slice-1 tasks are deeply coupled on runTask + the
+  scheduler; 11 blind subagents each re-deriving 1868-line context risks integration drift. The sprint's
+  load-bearing property (independent review before acceptance) is preserved by dispatching fresh
+  reviewers. Mirrors prior accepted calls D-01 (ux-conversion) and SD-B2 (session-hygiene).
+- Chosen: (b). Strength: moderate. Confidence: LOW (process deviation — flagged for morning review).
+
+## D1 — F4 default knobs · confidence: high
+- FARM_TEMPERATURE default 0 (deterministic, closest to "make the test pass"); FARM_MAX_TOKENS default 0
+  = omit (preserve today's unbounded behavior; opt-in cap). Defaults make single-sample == today. Strong.
+
+## D2 — best-of-N concurrency model (AC-F1.2/F1.4) · confidence: low
+- Spec says samples run concurrently in isolated per-sample worktrees under a shared FARM_CONCURRENCY
+  budget. Faithful but higher-risk. If per-sample worktree promotion threatens correctness within the
+  run, the SMARTS fallback is sequential-in-worktree sampling (still raises acceptance via diversified
+  retries) with the AC-F1.2 "concurrently" deviation logged — rather than shipping unverified
+  concurrent-git or stopping. Strength: moderate. Confidence: LOW.
+
+## D3 — FARM_SAMPLES>1 + FARM_TEMPERATURE=0 auto-bump · confidence: low
+- Bump to 0.7 (conventional diversifying default) with a logged note; N identical temp-0 samples is
+  wasted spend. Strength: moderate. Confidence: LOW.
