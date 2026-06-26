@@ -204,6 +204,12 @@ jobs:
         # start/done + assign-on-pickup), dedup, the 3 harvest extractors, and
         # promote routing/modes (work->board, decision->questions).
         run: python .github/scripts/test_taskwriter.py
+      - name: Run release-skill hardening helper unit tests
+        # AC-1..AC-6 of release-skill-hardening: last_tag_select (ca-only,
+        # pre-release-excluded baseline), notes_heading_matches, release_dates_
+        # consistent, classify_publish_state, the CLI dispatch, and the SKILL.md
+        # structural wiring (_releaselib).
+        run: python .github/scripts/test_release_lib.py
       - name: Run README badge-consistency unit tests
         # The guard's own logic: version-badge parse, count-badge parse, prose
         # counts, table-row slugs, and each drift kind (version/count/prose/
