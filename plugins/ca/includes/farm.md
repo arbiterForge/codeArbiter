@@ -41,6 +41,25 @@ Note: `writing-plans --farm` MUST place the task's narrow behavioral test first 
 the mutation guard runs `gate.commands[0]` as the per-mutant test (running the full suite per mutant
 would be too slow).
 
+### Best-of-N sampling and iterative retries
+
+By default the farm draws one worker completion per task attempt (`FARM_SAMPLES=1` — unchanged
+behavior). Because the gate is a deterministic pass/fail oracle and each task runs in an isolated
+worktree, you can instead draw **N candidates in parallel** and accept the first that passes the gate:
+set `FARM_SAMPLES=N`. Each sample runs in its own scratch worktree cut from the integration HEAD; the
+winner's files are taken into the task worktree and merged, the losers discarded. Total in-flight
+worker calls never exceed `FARM_CONCURRENCY` — sampling **shares** that budget, it does not multiply
+it. The cost is up to N× worker tokens (the cheap axis) for a higher first-time-go rate;
+`farm-report.json` records both the summed sample-token spend (`promptTokens`/`completionTokens`) and
+the accepted candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`) so the
+trade-off is visible. With `FARM_SAMPLES>1` the worker temperature is auto-bumped off 0 (to 0.7) so the
+samples actually diversify; set `FARM_TEMPERATURE` to control it.
+
+On a **retry** — a failed gate, or a sampling round with no green — the worker is shown its own previous
+in-scope output, not just the gate-failure tail, so it refines rather than restarts blind. That prior
+output rides the same byte-cap (`FARM_ENRICH_MAX_BYTES`) and secret-redaction chokepoint as all other
+injected context; out-of-scope drift is never carried forward.
+
 ## Required
 
 ### `FARM_API_KEY`
@@ -82,7 +101,10 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MODEL` | _(unset)_ | Skip selection and use this model id directly. Power-user/CI override. |
 | `FARM_API_BASE_URL` | `https://opencode.ai/zen/v1` | Endpoint URL (env → plan.json → this default). |
 | `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
-| `FARM_CONCURRENCY` | `4` | Max concurrent task workers. |
+| `FARM_CONCURRENCY` | `4` | Max concurrent task workers — and the shared ceiling on TOTAL in-flight worker calls, including best-of-N samples. |
+| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per task attempt; first to pass the gate wins. `1` = today's single-candidate path. N>1 trades up to N× worker tokens for higher first-time-go; shares the `FARM_CONCURRENCY` budget (never N× it). |
+| `FARM_TEMPERATURE` | `0` | Sampling temperature sent to the worker. Auto-bumped to `0.7` when `FARM_SAMPLES>1` and left at `0` (so samples diversify); set explicitly to override. |
+| `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
 | `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout (prevents worker-slot deadlock). |

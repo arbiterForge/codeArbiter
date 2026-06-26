@@ -100,6 +100,37 @@ function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
 }
 var git = (args, cwd) => run("git", args, cwd);
 var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+function createLimiter(max) {
+  const cap = Math.max(1, Math.floor(max) || 1);
+  let active = 0;
+  const queue = [];
+  const pump = () => {
+    if (active < cap && queue.length) {
+      active++;
+      queue.shift()();
+    }
+  };
+  const acquire = () => new Promise((resolve) => {
+    queue.push(resolve);
+    pump();
+  });
+  const release = () => {
+    active--;
+    pump();
+  };
+  return {
+    async run(fn) {
+      await acquire();
+      try {
+        return await fn();
+      } finally {
+        release();
+      }
+    },
+    active: () => active
+  };
+}
+var workerLimit = createLimiter(ENV.concurrency);
 var NOSIGN = ["-c", "commit.gpgsign=false"];
 function isInside(root, target) {
   const rel = path.relative(root, target);
@@ -166,7 +197,7 @@ function redactSecrets(contents) {
   return out.join("\n");
 }
 function renderInjectedFile(file) {
-  const label = file.readOnly ? `${file.path} (read-only \u2014 the failing test)` : file.path;
+  const label = file.prior ? `${file.path} (your previous attempt \u2014 FAILED)` : file.readOnly ? `${file.path} (read-only \u2014 the failing test)` : file.path;
   return [`--- ${label} ---`, redactSecrets(file.contents)].join("\n");
 }
 var TRUNCATION_MARKER = "--- [TRUNCATED \u2014 injected context exceeded FARM_ENRICH_MAX_BYTES] ---";
@@ -193,7 +224,7 @@ function capInjected(injected, maxBytes) {
   }
   return out;
 }
-async function buildEnrichment(wt, t) {
+async function buildEnrichment(wt, t, priorInScope = []) {
   const injected = [];
   const seen = /* @__PURE__ */ new Set();
   if (!isSecretBearingFilename(t.test.path)) {
@@ -216,14 +247,38 @@ async function buildEnrichment(wt, t) {
     injected.push({ path: f, contents: src, readOnly: false });
     seen.add(f);
   }
+  for (const pf of priorInScope) {
+    if (isSecretBearingFilename(pf.path)) continue;
+    injected.push({ path: pf.path, contents: pf.contents, readOnly: true, prior: true });
+  }
   return capInjected(injected, ENV.enrichMaxBytes);
 }
+async function captureInScope(wt, t) {
+  const out = [];
+  for (const f of t.filesInScope) {
+    if (f === t.test.path) continue;
+    if (isSecretBearingFilename(f)) continue;
+    const src = await readWorktreeFile(wt, f);
+    if (src === null) continue;
+    out.push({ path: f, contents: src });
+  }
+  return out;
+}
 function buildPrompt(t, injected, priorFailure, forbiddenExtra) {
-  const enrichment = injected.length ? [
+  const current = injected.filter((f) => !f.prior);
+  const priorFiles = injected.filter((f) => f.prior);
+  const enrichment = current.length ? [
     ``,
     `Current source of the relevant files (the test is read-only; implement against it):`,
     ``,
-    ...injected.map(renderInjectedFile),
+    ...current.map(renderInjectedFile),
+    ``
+  ] : [];
+  const priorBlock = priorFiles.length ? [
+    ``,
+    `Your PREVIOUS attempt FAILED the gate. Here is what you wrote last time \u2014 do NOT just repeat it; change it to fix the cause shown at the end:`,
+    ``,
+    ...priorFiles.map(renderInjectedFile),
     ``
   ] : [];
   return [
@@ -245,6 +300,7 @@ ${t.context}
 Your previous attempt wrote these FORBIDDEN paths \u2014 do NOT touch them again:
 ${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}` : ``,
     ...enrichment,
+    ...priorBlock,
     `Solve the task with REAL logic. Do not hard-code the literal values the`,
     `test asserts \u2014 an implementation that only returns the expected constant`,
     `will be rejected.`,
@@ -318,7 +374,18 @@ function parseChatCompletion(text, apiBaseUrl) {
   }
   return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
 }
-async function callApi(prompt, model, apiBaseUrl, apiKey) {
+function readSampling() {
+  return {
+    temperature: Number(process.env.FARM_TEMPERATURE ?? 0),
+    maxTokens: Number(process.env.FARM_MAX_TOKENS ?? 0)
+  };
+}
+function buildChatBody(model, messages, sampling = readSampling()) {
+  const body = { model, messages, temperature: sampling.temperature };
+  if (sampling.maxTokens > 0) body.max_tokens = sampling.maxTokens;
+  return body;
+}
+async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSampling()) {
   for (let attempt = 0; attempt <= ENV.apiMaxRetries; attempt++) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ENV.requestTimeoutMs);
@@ -330,10 +397,7 @@ async function callApi(prompt, model, apiBaseUrl, apiKey) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`
         },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: "user", content: prompt }]
-        }),
+        body: JSON.stringify(buildChatBody(model, [{ role: "user", content: prompt }], sampling)),
         signal: ctrl.signal
       });
     } catch (e) {
@@ -369,8 +433,8 @@ async function callApi(prompt, model, apiBaseUrl, apiKey) {
   }
   return { ok: false, error: "exhausted API retries" };
 }
-async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden) {
-  const api = await callApi(prompt, model, apiBaseUrl, apiKey);
+async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, sampling) {
+  const api = await callApi(prompt, model, apiBaseUrl, apiKey, sampling ?? readSampling());
   if (!api.ok) return { ok: false, filesWritten: [], error: api.error };
   const blocks = extractFileBlocks(api.content);
   const filesWritten = [];
@@ -405,7 +469,7 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden) {
   };
 }
 var httpWorker = {
-  apply: (ctx) => runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden)
+  apply: (ctx) => runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden, ctx.sampling)
 };
 async function checkDrift(cwd, allowed, gitRunner = git) {
   const tracked = await gitRunner(["diff", "--name-only", "HEAD"], cwd);
@@ -637,6 +701,85 @@ var defaultRunTaskDeps = () => ({
   git,
   withMergeLock
 });
+function effectiveSampling(samples) {
+  const s = readSampling();
+  const explicit = (process.env.FARM_TEMPERATURE ?? "") !== "";
+  if (samples > 1 && s.temperature === 0 && !explicit) {
+    process.stderr.write(
+      `[FARM] FARM_SAMPLES=${samples} with no FARM_TEMPERATURE set \u2014 bumping temperature to 0.7 so samples diversify (set FARM_TEMPERATURE to override)
+`
+    );
+    return { ...s, temperature: 0.7 };
+  }
+  return s;
+}
+async function writeFilesInto(wt, files) {
+  for (const f of files) {
+    const abs = path.resolve(wt, f.path);
+    if (!isInside(wt, abs)) continue;
+    await mkdir(path.dirname(abs), { recursive: true });
+    await writeFile(abs, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
+  }
+}
+async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps) {
+  const taskBranch = `farm/${t.id}`;
+  const runSample = (k) => workerLimit.run(async () => {
+    const branch = `farm/${t.id}__s${k}`;
+    const wt = path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
+    const base = {
+      green: false,
+      filesWritten: [],
+      files: [],
+      inScope: [],
+      promptTokens: 0,
+      completionTokens: 0,
+      wt,
+      branch
+    };
+    try {
+      const prep = await deps.prepareWorktree(branch, wt, taskBranch);
+      if (prep) return { ...base, note: prep };
+      if (t.setup && t.setup.length > 0) {
+        const sr = await deps.runGate(wt, t.setup);
+        if (!sr.ok) return { ...base, note: redactSecrets(`setup failed: ${sr.failed}
+${sr.tail}`) };
+      }
+      const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+      const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
+      const pt = w.promptTokens ?? 0;
+      const ct = w.completionTokens ?? 0;
+      if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
+      const sweep = postApplySweep(wt, w.filesWritten, forbidden);
+      if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
+      const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
+      if (testHashBefore !== null && testHashAfter !== testHashBefore)
+        return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
+      const drift = await deps.checkDrift(wt, allowed);
+      if (drift.length > 0)
+        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
+      const gate = await deps.runGate(wt, t.gate.commands);
+      if (!gate.ok)
+        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}
+${gate.tail}`), promptTokens: pt, completionTokens: ct };
+      const inScope = await captureInScope(wt, t);
+      return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
+    } catch (e) {
+      return { ...base, note: `sample error: ${e instanceof Error ? e.message : String(e)}` };
+    }
+  });
+  const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
+  const promptTokens = outcomes.reduce((s, o) => s + o.promptTokens, 0);
+  const completionTokens = outcomes.reduce((s, o) => s + o.completionTokens, 0);
+  const winner = outcomes.find((o) => o.green) ?? null;
+  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
+  for (const o of outcomes) {
+    await deps.git(["worktree", "remove", "--force", o.wt]).catch(() => {
+    });
+    await deps.git(["branch", "-D", o.branch]).catch(() => {
+    });
+  }
+  return { winner, bestFailure, promptTokens, completionTokens };
+}
 async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()) {
   const branch = `farm/${t.id}`;
   const wt = path.resolve(ENV.worktreeRoot, t.id);
@@ -644,6 +787,9 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
   const forbidden = /* @__PURE__ */ new Set([t.test.path]);
+  const rawSamples = Number(process.env.FARM_SAMPLES ?? 1);
+  const samples = Number.isFinite(rawSamples) ? Math.max(1, Math.floor(rawSamples)) : 1;
+  const sampling = effectiveSampling(samples);
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return { id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr };
@@ -651,33 +797,56 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   let priorFailure;
   let driftedOnce = false;
   let lastFilesWritten = [];
+  let priorInScope = [];
+  let acceptedPromptTokens = 0;
+  let acceptedCompletionTokens = 0;
   let promptTokens = 0;
   let completionTokens = 0;
   let lastWarning;
   let mutationScore = null;
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
-    if (attempt > 1) await deps.resetWorktree(wt);
+    if (attempt > 1) {
+      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
+      await deps.resetWorktree(wt);
+    }
     if (t.setup && t.setup.length > 0) {
       const setupResult = await deps.runGate(wt, t.setup);
       if (!setupResult.ok)
-        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `setup failed: ${setupResult.failed}
-${setupResult.tail}`, promptTokens, completionTokens };
+        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: redactSecrets(`setup failed: ${setupResult.failed}
+${setupResult.tail}`), promptTokens, completionTokens };
     }
-    const injected = await buildEnrichment(wt, t);
-    const worker = await deps.worker.apply({
-      cwd: wt,
-      prompt: buildPrompt(t, injected, priorFailure, driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0),
-      model: effectiveModel,
-      apiBaseUrl,
-      apiKey,
-      forbidden
-    });
-    promptTokens += worker.promptTokens ?? 0;
-    completionTokens += worker.completionTokens ?? 0;
-    lastFilesWritten = worker.filesWritten;
-    if (!worker.ok) {
-      priorFailure = `worker error: ${worker.error}`;
-      continue;
+    const injected = await buildEnrichment(wt, t, priorInScope);
+    const forbiddenExtra = driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0;
+    const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
+    let worker;
+    if (samples <= 1) {
+      worker = await workerLimit.run(
+        () => deps.worker.apply({ cwd: wt, prompt, model: effectiveModel, apiBaseUrl, apiKey, forbidden, sampling })
+      );
+      promptTokens += worker.promptTokens ?? 0;
+      completionTokens += worker.completionTokens ?? 0;
+      acceptedPromptTokens = worker.promptTokens ?? 0;
+      acceptedCompletionTokens = worker.completionTokens ?? 0;
+      lastFilesWritten = worker.filesWritten;
+      if (!worker.ok) {
+        priorFailure = redactSecrets(`worker error: ${worker.error}`);
+        continue;
+      }
+    } else {
+      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps);
+      promptTokens += sel.promptTokens;
+      completionTokens += sel.completionTokens;
+      acceptedPromptTokens = sel.winner?.promptTokens ?? 0;
+      acceptedCompletionTokens = sel.winner?.completionTokens ?? 0;
+      if (!sel.winner) {
+        lastFilesWritten = sel.bestFailure?.filesWritten ?? [];
+        priorInScope = sel.bestFailure?.inScope ?? [];
+        priorFailure = sel.bestFailure?.note ?? "all samples failed the gate";
+        continue;
+      }
+      await writeFilesInto(wt, sel.winner.files);
+      worker = { ok: true, filesWritten: sel.winner.filesWritten };
+      lastFilesWritten = worker.filesWritten;
     }
     const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
     if (sweepErr) {
@@ -754,7 +923,7 @@ ${String(merged).slice(0, 160)}`);
     }
     await deps.git(["worktree", "remove", "--force", wt]).catch(() => {
     });
-    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore };
+    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens };
   }
   return { id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore };
 }
@@ -1117,14 +1286,19 @@ export {
   DEFAULT_API_BASE_URL,
   SAFE_TASK_ID,
   assertSecureBaseUrl,
+  buildChatBody,
+  buildPrompt,
+  captureInScope,
   checkDrift,
   codeLineCount,
+  createLimiter,
   extractFileBlocks,
   extractLiterals,
   httpWorker,
   mintRunId,
   parseChatCompletion,
   parseMutationHookOutput,
+  readSampling,
   redactSecrets,
   run,
   runGate,
