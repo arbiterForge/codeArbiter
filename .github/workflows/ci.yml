@@ -221,6 +221,11 @@ jobs:
         # before (checkpoint 2026-06-22 gap); the ~18 CRYPTO_RE branches now have
         # direct assertions.
         run: python .github/scripts/test_hooklib.py
+      - name: Run commit-gate board-sync structural tests
+        # AC-04..07 (ADR-0008): Phase 6 board-edit exemption names the classifier,
+        # retains a clean transition, still flags arbitrary edits; task.md and
+        # future prose checks enforce the co-location contract.
+        run: python .github/scripts/test_board_sync.py
       - name: Run the hooks/tests unittest suite
         # plugins/ca/hooks/tests/ - the hook enforcement + helper logic. Ran only
         # locally per CONTRIBUTING; wired here so the guards are mechanically

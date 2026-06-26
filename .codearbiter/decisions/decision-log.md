@@ -259,3 +259,38 @@ ratification line in its `## Status` section. No content was superseded — rati
 maturation of this decision, not a new one.
 
 ---
+
+## DECISION-0008 — ADR-0008 — commit-gate is the board-sync chokepoint (task-board transitions ride the work commit)
+
+**Date:** 2026-06-26
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** process/governance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** commit-gate Phase 6 ejects an `open-tasks.md` edit as scope creep; the raise-new harvest runs post-commit — so board flips landed in a separate `chore(board)` PR or a PR-description note (issue #142; drift in #138, #140/#141).
+- **Scaffold position:** flips are human-declared via `/ca:task`→`taskwrite.py` (no inference); the board edit is invisible on `main` until merge, so co-locating it with the work commit is self-correcting.
+- **Status type:** open-decision-closure
+
+### Decision
+commit-gate becomes the single board-sync chokepoint. done-flip rides the completing commit, start-flip rides the first work commit (both revert on abandonment); raise-new rides the work commit as a contingent default (the harvest moves pre-commit), with must-survive follow-ups filed as GitHub issues. Phase 6 stops flagging schema-valid board transitions as scope creep, Phase 7 stages them, and a `/ca:standup`/`/ca:doctor` reconciliation sweep backstops any residual drift.
+
+### SMARTS rationale
+Reliable + Maintainable: one atomic merge lands work and board state together, removing the cross-session memory dependency that was the failure mode, while the narrow Phase 6 exemption (only `taskwrite.py`-shaped diffs) preserves the genuine scope-creep check. The contingent-default + GitHub-issue split keeps capture co-located without a CI-writes-to-`main` mechanism (declined) or an unnecessary task→commit linkage convention (the human already declares the id).
+
+### Implementation implication
+Follow-on `/ca:feature`: commit-gate SKILL Phase 6/7 + harvest ordering, `/ca:task` doc, `harvest.md`, and `task-board-lifecycle.md` updated in lockstep; `/ca:standup` (and/or `/ca:doctor`) gains the board↔merged-PR reconciliation sweep. Resolves D-1's start-flip drop-off sibling. Re-evaluation trigger: board drift persists post-ship, or the Phase 6 exemption causes a scope-creep escape — reopen to the post-merge Action or a stricter linkage convention.
+
+---
+
+## Ratification — 2026-06-26
+
+DECISION-0008 advanced from `proposed` to **`accepted`** on explicit user instruction
+(SUaDtL@users.noreply.github.com), ratified 2026-06-26. The ADR file
+(`0008-commit-gate-board-sync-chokepoint.md`) carries the authoritative `status: accepted` frontmatter
+and a ratification line in its `## Status` section. No content was superseded — ratification is the
+maturation of this decision, not a new one.
+
+---
