@@ -104,3 +104,44 @@ A `PreToolUse:Read` hook that, when an agent opens a file, injects the governing
 ## Bottom line on "is the effort worth the payoff?"
 
 **Most of what these tools market is not worth it for our goal** — and several headline features don't even work as claimed. The payoff concentrates in a **small, cheap, hooks-based drift + provenance layer** (items 1-2) that fixes the one real flaw, plus an optional **file-scoped injection** (item 3) that makes the existing docs work harder. Everything heavier (vectors, daemons, transcript mining) is cost without commensurate benefit for "a solid mapped understanding of the project it's in."
+
+---
+
+## Appendix: codeArbiter internals (grounding for implementation)
+
+Concrete map of how `.codearbiter` context works today, so a fresh session can design against it without re-discovery. All paths under `plugins/ca/` unless noted.
+
+### Creation
+- **Brownfield** — `/ca:create-context` → `skills/context-creation/SKILL.md` (6 gated phases). Phase 2 dispatches **6 parallel scouts** (`agents/scout.md`): A tech-stack, B infrastructure, C architecture, D security, E testing, F data-model. **Scouts return paths + line numbers ONLY — never code/secrets** (`scout.md`; `context-creation/SKILL.md` Phase 2). Under ~50 files → no scout, orchestrator scans inline. Phase 3 synthesizes scout reports into docs; **scout reports are then discarded** (gap #2 — the provenance we want to persist).
+- **Greenfield** — `/ca:decompose` → `skills/decompose/SKILL.md` (6-layer interview). Each layer written to `.codearbiter/.decompose-draft/layer-*.md` immediately (compaction-resilient), ADRs written at decision time; draft dir deleted at Phase 6 lock.
+- Both end by writing the `<!--INITIALIZED-->` marker into `CONTEXT.md`.
+
+### Storage — `.codearbiter/` at repo root
+- `CONTEXT.md` — frontmatter `arbiter: enabled` (activation flag) + `stage: N` (maturity, gates thresholds) + `<!--INITIALIZED-->` marker; body = problem / users / NOT-building / identity.
+- `tech-stack.md` (exact test/lint/typecheck/build/coverage commands from CI), `coding-standards.md`, `security-controls.md` (thin; some skills BLOCK on it).
+- `open-questions.md` (`CONFIRM-NN` items), `open-tasks.md`, `overrides.log` (append-only audit), `decisions/NNNN-<slug>.md` (ADRs), `plans/`, `specs/<slug>.md`, `checkpoints/`, `.markers/` (e.g. `standup-YYYY-MM-DD`, `dev-active`), `last-checkpoint`.
+
+### Consumption
+- **SessionStart hook** `hooks/session-start.py` — registered **matcher-less** in `hooks/hooks.json:3-10`, so it fires on **all** sources (startup/resume/clear/compact). It injects `ORCHESTRATOR.md` (~147 lines) + live startup state via **plain stdout** (NOT `hookSpecificOutput.additionalContext` — see the file header: plugin-scoped `additionalContext` was unreliable, claude-code #16538; plain stdout is added to context dependably). Live state = stage, BLOCKING `CONFIRM-NN` list, in-flight task count, first-of-day standup briefing. Dormant (exit 0) if `CONTEXT.md` lacks `arbiter: enabled`.
+- **Per-skill Pre-flight** — every skill opens by explicitly Reading the `.codearbiter/` docs it needs (e.g. `skills/tdd/SKILL.md` reads CONTEXT/tech-stack/coding-standards/spec/security). Skills MUST NOT guess commands — read them.
+- **Routing** — `includes/reference-map.md`: scope-touch → read governing doc → route to owning skill.
+
+### Maintenance (the gap)
+- **No incremental indexing, no staleness detection.** Docs are edited in place by the owning skill; freshness is assumed. No doc→source provenance, no re-scan trigger. This is exactly what items 1-2 add.
+
+### Pruning (confirmed "not live")
+- `hooks/prune-transcript.py` + `hooks/_prunelib.py`, registered on **UserPromptSubmit** and **PreCompact** (`hooks.json:43-58`), gated by env `CODEARBITER_PRUNE` (`off`/`dry`/`on`), `CODEARBITER_PRUNE_TIER` (gentle/standard/aggressive), `CODEARBITER_PRUNE_KEEP_RECENT` (default 10). Operates on the **session transcript only**, never `.codearbiter/`. Gains land at `--resume`/restart/compaction, not the current turn (the running CLI sends in-memory history to the API). `commands/prune.md` states this honestly.
+
+### Existing hook surface (for item 3)
+- `hooks/hooks.json` currently registers PreToolUse matchers **`Bash|PowerShell`, `Write`, `Edit|MultiEdit`** (`pre-bash.py`/`pre-write.py`/`pre-edit.py`) — **`Read` is NOT yet hooked**, so item 3 adds a new `PreToolUse: Read` matcher. PostToolUse matches `Write|Edit` (`post-write-edit.py`). ⚠️ Item-3 risk: our SessionStart deliberately avoids `additionalContext` for plugins (#16538); PreToolUse injection *requires* `additionalContext` (stdout from PreToolUse is not added to context). The vector archetype proved PreToolUse:Read `additionalContext` works in practice — but **verify it for a plugin-scoped hook before committing the design.**
+
+### Anthropic-docs facts that constrain the design
+- Inject-capable hooks: **SessionStart, UserPromptSubmit, PostToolUse** only. Stop/SessionEnd/PreCompact cannot inject. SessionStart re-fires on `source:"compact"` (only post-compaction inject path). Transcript JSONL field schema is **not** a guaranteed-stable interface. Subagents (scouts) get fresh isolated context and return only a summary.
+
+---
+
+## Appendix: brainstorming kickoff prompts
+
+Two self-contained prompts live alongside this report for parallel `/ca:brainstorming` sessions:
+- `kickoff-1-drift-provenance.md` — context drift detection + scout provenance (fixes the flaw; do first).
+- `kickoff-2-file-scoped-injection.md` — file-scoped JIT injection (enhancement; depends on #1's provenance map).
