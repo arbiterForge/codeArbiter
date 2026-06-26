@@ -88,6 +88,7 @@ var APP_DIR = "/work/repo";
 var SANDBOX_LABEL = "ca.sandbox=1";
 var SANDBOX_USER = "1000:1000";
 var DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
+var NETWORKED_POLICIES = /* @__PURE__ */ new Set();
 function defaultDockerRun(args) {
   const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
   return {
@@ -95,6 +96,28 @@ function defaultDockerRun(args) {
     stdout: r.stdout ?? "",
     stderr: r.stderr ?? (r.error ? String(r.error) : "")
   };
+}
+function hardeningFlags() {
+  return [
+    "--user",
+    SANDBOX_USER,
+    "--read-only",
+    // --read-only makes a writable /tmp essential; the `--tmpfs <path>` short
+    // form is the idiomatic, spec-named flag. (run.ts also renders a tmpfs /tmp
+    // via buildMountArgs; the duplicate is harmless and robust across engines.)
+    "--tmpfs",
+    "/tmp",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--pids-limit",
+    "512",
+    "--memory",
+    "4g",
+    "--cpus",
+    "2"
+  ];
 }
 function buildRunArgs(image, volumeName, netPolicy, opts = {}) {
   if (!image) throw new Error("ca-sandbox: runContainer requires a non-empty image");
@@ -107,7 +130,7 @@ function buildRunArgs(image, volumeName, netPolicy, opts = {}) {
   const labels = [SANDBOX_LABEL, ...opts.extraLabels ?? []];
   const labelArgs = labels.flatMap((l) => ["--label", l]);
   const nameArgs = opts.namePrefix ? ["--name", `${opts.namePrefix}-${Math.random().toString(16).slice(2, 10)}`] : [];
-  const networkArgs = netPolicy === "offline" ? ["--network", "none"] : [];
+  const networkArgs = NETWORKED_POLICIES.has(netPolicy) ? [] : ["--network", "none"];
   return [
     "run",
     "-d",
@@ -115,26 +138,9 @@ function buildRunArgs(image, volumeName, netPolicy, opts = {}) {
     ...mountArgs,
     "--workdir",
     APP_DIR,
-    "--user",
-    SANDBOX_USER,
-    "--read-only",
-    // --tmpfs is rendered by buildMountArgs as `--mount type=tmpfs,target=/tmp`,
-    // BUT docker's `--read-only` makes a writable /tmp essential and the
-    // `--tmpfs <path>` short form is the idiomatic, spec-named flag. Emit it
-    // explicitly too so the run is robust on engines that treat a tmpfs --mount
-    // and a read-only root differently; the duplicate tmpfs is harmless.
-    "--tmpfs",
-    "/tmp",
-    "--cap-drop",
-    "ALL",
-    "--security-opt",
-    "no-new-privileges",
-    "--pids-limit",
-    "512",
-    "--memory",
-    "4g",
-    "--cpus",
-    "2",
+    // The shared, security-load-bearing isolation block (defined once, also
+    // spliced by claude-inside.ts so the two never drift).
+    ...hardeningFlags(),
     ...networkArgs,
     ...labelArgs,
     image,
@@ -525,8 +531,10 @@ function buildCloneArgs(url, volumeName) {
   return [
     "run",
     "--rm",
-    "--mount",
-    `type=volume,source=${volumeName},target=${APP_DIR3}`,
+    // Mount via the buildMountArgs chokepoint (architecture-006) so this caller is
+    // covered by the bind-rejection guarantee and there is genuinely one mount-argv
+    // path. Same volume spec as before -> byte-identical argv.
+    ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR3 }]),
     CLONE_IMAGE,
     "clone",
     "--depth",
@@ -548,8 +556,8 @@ async function defaultBuildImage(volumeName) {
       "create",
       "--name",
       helper,
-      "--mount",
-      `type=volume,source=${volumeName},target=${APP_DIR3}`,
+      // Same buildMountArgs chokepoint as buildCloneArgs (architecture-006).
+      ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR3 }]),
       CLONE_IMAGE,
       "true"
     ],
