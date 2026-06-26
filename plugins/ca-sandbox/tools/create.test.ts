@@ -17,6 +17,7 @@ import {
   APP_DIR,
 } from "./create.ts";
 import type { CloneResult } from "./create.ts";
+import { buildMountArgs } from "./mounts.ts";
 
 describe("validateRepoUrl — clone-input trust model (AC-01)", () => {
   it("accepts plain network remotes (https / ssh / scp-like)", () => {
@@ -65,6 +66,21 @@ describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
     expect(sep).toBeGreaterThan(clone);
     // Everything between `clone` and `--` is a known flag, never the url.
     expect(argv.slice(clone, sep)).not.toContain(url);
+  });
+
+  // architecture-006: the clone/build mounts must route through buildMountArgs —
+  // the documented single chokepoint — so they are covered by the bind-rejection
+  // guarantee and there is genuinely one mount-argv path. Pin that the emitted
+  // mount argv is EXACTLY what buildMountArgs produces for the volume spec.
+  it("routes the source-volume mount through the buildMountArgs chokepoint", () => {
+    const expected = buildMountArgs([
+      { type: "volume", source: "ca-sbx-vol-demo", target: APP_DIR },
+    ]);
+    const m = argv.indexOf("--mount");
+    expect(m).toBeGreaterThanOrEqual(0);
+    expect(argv.slice(m, m + expected.length)).toEqual(expected);
+    // No raw bind expression hand-rolled anywhere.
+    for (const tok of argv) expect(tok).not.toMatch(/type=bind/);
   });
 });
 

@@ -30,6 +30,7 @@ import { spawnSync, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { readdir } from "node:fs/promises";
 import { runContainer, type NetPolicy } from "./run.ts";
+import { buildMountArgs } from "./mounts.ts";
 import { buildOrReuseImage, type BuildResult } from "./build.ts";
 import { computeDepHash, type ManifestFile } from "./dephash.ts";
 import {
@@ -194,8 +195,10 @@ export function buildCloneArgs(url: string, volumeName: string): string[] {
   return [
     "run",
     "--rm",
-    "--mount",
-    `type=volume,source=${volumeName},target=${APP_DIR}`,
+    // Mount via the buildMountArgs chokepoint (architecture-006) so this caller is
+    // covered by the bind-rejection guarantee and there is genuinely one mount-argv
+    // path. Same volume spec as before -> byte-identical argv.
+    ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR }]),
     CLONE_IMAGE,
     "clone",
     "--depth",
@@ -228,8 +231,8 @@ async function defaultBuildImage(volumeName: string): Promise<BuildResult> {
       "create",
       "--name",
       helper,
-      "--mount",
-      `type=volume,source=${volumeName},target=${APP_DIR}`,
+      // Same buildMountArgs chokepoint as buildCloneArgs (architecture-006).
+      ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR }]),
       CLONE_IMAGE,
       "true",
     ],

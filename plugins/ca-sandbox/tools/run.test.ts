@@ -79,9 +79,21 @@ describe("buildRunArgs — network policy (AC-01 / AC-08 seam)", () => {
     expect(argvPair(argv, "--network")).toBe("none");
   });
 
-  it("a non-offline policy does NOT force --network none", () => {
-    const argv = buildRunArgs("img", "vol", "open");
-    expect(networkValues(argv)).not.toContain("none");
+  // dx-006: the safe default is fail-CLOSED. Only a RECOGNIZED networked policy
+  // (T-10 will add these) may skip the airgap; any UNRECOGNIZED value — a typo of
+  // "offline", or a policy no layer implements — must still get --network none
+  // rather than silently run on docker's default bridge. (Replaces the prior test
+  // that asserted a bare non-offline string passed through, which was the gap.)
+  it("a typo of 'offline' still gets --network none (fail closed)", () => {
+    const argv = buildRunArgs("img", "vol", "offlien");
+    expect(argvPair(argv, "--network")).toBe("none");
+  });
+
+  it("an unrecognized policy fails closed to --network none", () => {
+    for (const policy of ["open", "Offline", " offline ", "bridge", ""]) {
+      const argv = buildRunArgs("img", "vol", policy);
+      expect(networkValues(argv), `policy ${JSON.stringify(policy)} must airgap`).toContain("none");
+    }
   });
 
   it("refuses an empty image or volume name", () => {

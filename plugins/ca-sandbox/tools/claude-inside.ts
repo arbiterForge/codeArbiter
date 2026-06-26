@@ -40,7 +40,7 @@
 import { spawnSync } from "node:child_process";
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
 import { applyNetworkPolicy } from "./network.ts";
-import { SANDBOX_USER } from "./run.ts";
+import { SANDBOX_LABEL, hardeningFlags } from "./run.ts";
 
 /**
  * The PINNED Claude Code CLI version baked into the sandbox image. Pinned (never
@@ -60,8 +60,9 @@ export const CLAUDE_BASE_IMAGE = "node:22-slim";
 export const CLAUDE_HOME = "/home/sbx";
 /** The env var Claude Code reads as auth-precedence #5 (Spike B). */
 export const TOKEN_ENV_VAR = "CLAUDE_CODE_OAUTH_TOKEN";
-/** The lifecycle/registry label every sandbox container carries (AC-11). */
-export const SANDBOX_LABEL = "ca.sandbox=1";
+// SANDBOX_LABEL is shared from run.ts (architecture-002) so the lifecycle label
+// has a single definition; re-exported here for existing importers of this name.
+export { SANDBOX_LABEL };
 
 // On Windows + Git Bash, `-e HOME=/...` and container paths handed to docker get
 // mangled by MSYS path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B).
@@ -275,27 +276,13 @@ export function buildClaudeRunArgs(opts: ClaudeRunOptions): string[] {
     ...mountArgs,
     "--workdir",
     CLAUDE_HOME,
-    // Non-root + drop every capability: the SAME structural lockdown as run.ts so
-    // the token-bearing box is no softer than an ordinary sandbox. The image
-    // chowns CLAUDE_HOME to this uid, so the named-volume HOME is writable for the
-    // .claude credential store even under the read-only root below.
-    "--user",
-    SANDBOX_USER,
-    "--cap-drop",
-    "ALL",
-    // Read-only root + a tmpfs /tmp: the same structural lockdown as run.ts. (HOME
-    // is writable because the named volume is mounted over it.)
-    "--read-only",
-    "--tmpfs",
-    "/tmp",
-    "--security-opt",
-    "no-new-privileges",
-    "--pids-limit",
-    "512",
-    "--memory",
-    "4g",
-    "--cpus",
-    "2",
+    // The SAME shared hardening block as the ordinary sandbox (architecture-002),
+    // spliced from run.ts's hardeningFlags() so the token-bearing box can never
+    // drift to a softer lockdown. Non-root + every capability dropped + read-only
+    // root + tmpfs /tmp + no-new-privileges + resource caps. The image chowns
+    // CLAUDE_HOME to this uid and the named volume mounts over HOME, so the
+    // .claude credential store stays writable under the read-only root.
+    ...hardeningFlags(),
     ...networkArgs,
     ...labelArgs,
     image,
