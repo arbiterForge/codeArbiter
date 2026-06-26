@@ -85,6 +85,8 @@ Read the complete staged diff (`git diff --cached`). Flag as blocking:
 - Tests disabled or skipped that were not intentionally disabled.
 - Scope creep — changes outside the agreed feature or fix boundary.
 
+**Board-edit exemption (ADR-0008):** an edit to `open-tasks.md` where `_taskboardlib.classify_board_diff(old, new)` returns a clean transition (done-flip `[~]`→`[x]`, start-flip `[ ]`→`[~]`, or a single queued-add `[ ]`) is **expected and RETAINED** — it is not scope creep and MUST NOT be unstaged. Any other `open-tasks.md` change — a reworded or deleted entry, or an arbitrary content edit — does not classify as a transition and still flags as scope creep.
+
 On any blocking finding, unstage the affected files, surface the finding, and STOP. An out-of-scope change that should not be lost gets an inline `[NEEDS-TRIAGE]` marker before it is set aside.
 
 **Stakes:** name what the finding would have cost if committed — a leaked credential is live the moment it lands and must be rotated; a scope-creep file ships untested behavior the review waved through. State that consequence on a credential or scope finding, not just "out of scope."
@@ -93,7 +95,11 @@ Gate: the diff is clean — zero blocking findings.
 
 ## Phase 7 — Selective stage · gate: BLOCK
 
-If files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
+**First, run the follow-up harvest — before staging anything.** Run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-asides — promote discovered follow-ups to `open-tasks.md` (work) or `open-questions.md` (decision) via the existing harvest procedure. Running this before the commit means raised board tasks are staged and ride the work commit in the same payload.
+
+**Atomicity rule:** a raised task riding the work commit is a **contingent default** — if the PR/branch is abandoned, the board additions are abandoned with it (self-correcting, ADR-0008). A follow-up that **must survive** PR abandonment is filed as a **GitHub issue**, not the board.
+
+Then selectively stage: if files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. When a clean task-board transition was retained by the Phase 6 board-edit exemption, include `open-tasks.md` in the selective stage by explicit path (`git add open-tasks.md`) alongside the work files, so the flip rides the same commit. Include any `open-tasks.md` additions produced by the harvest step in the same explicit-path stage. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
 
 Gate: the staged set contains exactly the intended files. MUST NOT use `git add -A`, `git add .`, or any wildcard.
 
@@ -130,4 +136,4 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP.
-- MUST, after the commit lands, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — batch-confirm promoting it to `open-tasks.md` (work) or `open-questions.md` (decision) so the out-of-scope change isn't lost.
+- MUST, **at Phase 7 before staging**, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — promote to `open-tasks.md` (work) or `open-questions.md` (decision) so raised tasks ride the work commit. A follow-up that must survive PR abandonment is filed as a GitHub issue, not the board.

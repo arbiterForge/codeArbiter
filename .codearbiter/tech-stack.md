@@ -53,6 +53,10 @@ python .github/scripts/test_taskwriter.py
 # excluded), notes-heading/tag match, release-date consistency, half-finished-
 # publish classifier, the CLI, and the SKILL.md structural wiring (_releaselib)
 python .github/scripts/test_release_lib.py
+
+# commit-gate board-sync chokepoint — Phase 6 board-edit exemption + prose
+# wiring (AC-04..07, ADR-0008); structural SKILL.md/command-doc assertions
+python .github/scripts/test_board_sync.py
 ```
 
 Only when `plugins/ca/tools/**` changed:

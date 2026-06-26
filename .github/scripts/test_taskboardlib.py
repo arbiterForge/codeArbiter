@@ -407,5 +407,389 @@ class RepoBoardConformsTest(unittest.TestCase):
         self.assertEqual(tb.lint_board(text), [])
 
 
+class ClassifyBoardDiffTest(unittest.TestCase):
+    """AC-01/02/03: classify_board_diff — done-flip, start-flip, add positive;
+    reword/delete/unstamped/double-flip/unrelated-line/empty/garbled negative."""
+
+    # Minimal two-section board used across all cases in this class.
+    _BASE = (
+        "# Open tasks\n\n"
+        "## In-flight\n"
+        "- [~] a.b.0001 - Validate tokens  (started 2026-06-18)\n"
+        "- [ ] a.b.0002 - Rate-limit endpoint\n\n"
+        "## Done\n"
+        "- [x] a.b.0003 - Hash passwords  (done 2026-06-15)\n"
+    )
+
+    # ── positive: done-flip ──────────────────────────────────────────────────
+
+    def test_done_flip_is_clean_transition(self):
+        """AC-01: [~]+started → [x]+done with no other change is a clean transition."""
+        old = self._BASE
+        new = old.replace(
+            "- [~] a.b.0001 - Validate tokens  (started 2026-06-18)",
+            "- [x] a.b.0001 - Validate tokens  (done 2026-06-26)",
+        )
+        self.assertTrue(tb.classify_board_diff(old, new))
+
+    # ── positive: start-flip ─────────────────────────────────────────────────
+
+    def test_start_flip_is_clean_transition(self):
+        """AC-02a: [ ] → [~]+started with no other change is a clean transition."""
+        old = self._BASE
+        new = old.replace(
+            "- [ ] a.b.0002 - Rate-limit endpoint",
+            "- [~] a.b.0002 - Rate-limit endpoint  (started 2026-06-26)",
+        )
+        self.assertTrue(tb.classify_board_diff(old, new))
+
+    # ── positive: add ────────────────────────────────────────────────────────
+
+    def test_add_queued_entry_is_clean_transition(self):
+        """AC-02b: appending a single - [ ] entry with no other change is a clean transition."""
+        old = self._BASE
+        new = old.rstrip("\n") + "\n- [ ] a.b.0004 - Implement caching\n"
+        self.assertTrue(tb.classify_board_diff(old, new))
+
+    def test_add_with_from_backref_is_clean_transition(self):
+        """AC-02b: add with a (from origin) back-ref is still a clean transition."""
+        old = self._BASE
+        new = old.rstrip("\n") + "\n- [ ] a.b.0004 - Implement caching  (from sprint-3)\n"
+        self.assertTrue(tb.classify_board_diff(old, new))
+
+    def test_add_with_boundaries_subbullet_is_clean_transition(self):
+        """AC-02b: add with an indented - Boundaries: sub-bullet is still a clean transition."""
+        old = self._BASE
+        new = (old.rstrip("\n")
+               + "\n- [ ] a.b.0004 - Implement caching\n"
+               + "  - Boundaries: cache, perf\n")
+        self.assertTrue(tb.classify_board_diff(old, new))
+
+    # ── negative: reworded description ───────────────────────────────────────
+
+    def test_reworded_desc_is_not_transition(self):
+        """AC-03: changing a task title (not just the stamp) is not a clean transition."""
+        old = self._BASE
+        new = old.replace(
+            "- [~] a.b.0001 - Validate tokens  (started 2026-06-18)",
+            "- [~] a.b.0001 - Validate ALL the tokens reworded  (started 2026-06-18)",
+        )
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    # ── negative: deleted task ────────────────────────────────────────────────
+
+    def test_deleted_task_is_not_transition(self):
+        """AC-03: removing an existing entry is not a clean transition."""
+        old = self._BASE
+        new = old.replace("- [ ] a.b.0002 - Rate-limit endpoint\n", "")
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    # ── negative: marker flip without date stamp ──────────────────────────────
+
+    def test_done_flip_without_stamp_is_not_transition(self):
+        """AC-03: [~] → [x] without a (done YYYY-MM-DD) stamp is not a clean transition."""
+        old = self._BASE
+        new = old.replace(
+            "- [~] a.b.0001 - Validate tokens  (started 2026-06-18)",
+            "- [x] a.b.0001 - Validate tokens",
+        )
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    def test_start_flip_without_stamp_is_not_transition(self):
+        """AC-03: [ ] → [~] without a (started YYYY-MM-DD) stamp is not a clean transition."""
+        old = self._BASE
+        new = old.replace(
+            "- [ ] a.b.0002 - Rate-limit endpoint",
+            "- [~] a.b.0002 - Rate-limit endpoint",
+        )
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    # ── negative: two transitions at once ────────────────────────────────────
+
+    def test_two_simultaneous_flips_is_not_transition(self):
+        """AC-03: two state changes at once is not a single clean transition."""
+        old = self._BASE
+        new = old.replace(
+            "- [~] a.b.0001 - Validate tokens  (started 2026-06-18)",
+            "- [x] a.b.0001 - Validate tokens  (done 2026-06-26)",
+        ).replace(
+            "- [ ] a.b.0002 - Rate-limit endpoint",
+            "- [~] a.b.0002 - Rate-limit endpoint  (started 2026-06-26)",
+        )
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    # ── negative: unrelated-line edit ─────────────────────────────────────────
+
+    def test_unrelated_line_edit_is_not_transition(self):
+        """AC-03: editing a non-task line (e.g., a section heading) is not a clean transition."""
+        old = self._BASE
+        new = old.replace("## In-flight", "## In-flight (modified)")
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    # ── negative: empty / garbled input ──────────────────────────────────────
+
+    def test_empty_old_text_degrades_to_false(self):
+        """AC-03: empty old_text never raises; degrades to False (not-transition)."""
+        self.assertFalse(tb.classify_board_diff("", self._BASE))
+
+    def test_empty_new_text_degrades_to_false(self):
+        """AC-03: empty new_text never raises; degrades to False (not-transition)."""
+        self.assertFalse(tb.classify_board_diff(self._BASE, ""))
+
+    def test_none_inputs_degrade_to_false(self):
+        """AC-03: None inputs never raise and degrade to False (not-transition)."""
+        self.assertFalse(tb.classify_board_diff(None, None))
+
+    def test_garbled_input_degrades_to_false(self):
+        """AC-03: completely unparseable input degrades to False without raising."""
+        self.assertFalse(tb.classify_board_diff("not a board at all", "also not a board"))
+
+
+class ExtractTaskIdsTest(unittest.TestCase):
+    """AC-10: extract_task_ids — valid dotted task-ids from arbitrary text;
+    non-id tokens ignored; dedup preserves first-seen order; crash-safe."""
+
+    # Simulated multi-commit git log output with a variety of token types.
+    _GIT_LOG = (
+        "commit 836154a fix(farm): scrub dispatcher secrets (#143)\n"
+        "commit 3dbfd14 chore(board): mark v2.rev.0020 + v2.release.0002-0006 done (#141)\n"
+        "commit 86c5b7b refactor(farm): split farm.ts god-module (#140)\n"
+        "commit cafeb8e fix(hooks): heredoc false-block fix (H-09b) (#139)\n"
+        "    - closes poc.auth.0001, poc.api.0002\n"
+        "    - also refs v2, #142, 2026-06-20\n"
+        "    - mvp1.ui.0005 was merged\n"
+    )
+
+    # ── happy-path: ids extracted from multi-line log ─────────────────────────
+
+    def test_ids_from_git_log(self):
+        """IDs embedded in real-shaped git log output are all found."""
+        ids = tb.extract_task_ids(self._GIT_LOG)
+        self.assertIn("v2.rev.0020", ids)
+        self.assertIn("poc.auth.0001", ids)
+        self.assertIn("poc.api.0002", ids)
+        self.assertIn("mvp1.ui.0005", ids)
+
+    def test_only_valid_ids_returned(self):
+        """Every element returned must pass validate_id."""
+        ids = tb.extract_task_ids(self._GIT_LOG)
+        for tid in ids:
+            self.assertTrue(tb.validate_id(tid), f"invalid id in result: {tid!r}")
+
+    # ── non-id tokens ignored ─────────────────────────────────────────────────
+
+    def test_issue_refs_ignored(self):
+        """Issue refs like #142 are never returned."""
+        ids = tb.extract_task_ids(self._GIT_LOG)
+        self.assertNotIn("#142", ids)
+        self.assertNotIn("#143", ids)
+
+    def test_version_shorthand_ignored(self):
+        """Two-part tokens like 'v2' (missing seq) are not extracted."""
+        ids = tb.extract_task_ids("v2 some prose")
+        self.assertNotIn("v2", ids)
+
+    def test_date_string_ignored(self):
+        """Date strings like 2026-06-20 are not extracted."""
+        ids = tb.extract_task_ids("fixed on 2026-06-20")
+        self.assertNotIn("2026-06-20", ids)
+
+    def test_bare_words_ignored(self):
+        """Plain prose words without dots are not extracted."""
+        ids = tb.extract_task_ids("farm refactor hooks heredoc")
+        self.assertEqual(ids, [])
+
+    def test_git_hash_ignored(self):
+        """Short git hashes (no dots) are not extracted."""
+        ids = tb.extract_task_ids("commit 836154a cafeb8e 3dbfd14")
+        self.assertEqual(ids, [])
+
+    def test_under_padded_seq_ignored(self):
+        """A token whose seq is fewer than 4 digits is not extracted."""
+        # 3-digit seq: scanner requires {4,}
+        self.assertEqual(tb.extract_task_ids("poc.auth.001"), [])
+        # 2-digit seq
+        self.assertEqual(tb.extract_task_ids("poc.auth.42"), [])
+        # 1-digit seq
+        self.assertEqual(tb.extract_task_ids("poc.auth.1"), [])
+
+    def test_uppercase_token_ignored(self):
+        """Tokens with uppercase characters are rejected by validate_id."""
+        self.assertEqual(tb.extract_task_ids("PoC.auth.0001"), [])
+
+    def test_extended_token_not_partial_matched(self):
+        """A token like poc.auth.0001x is not extracted (trailing alnum blocks match)."""
+        self.assertEqual(tb.extract_task_ids("poc.auth.0001x"), [])
+
+    # ── mid-line and punctuation-surrounded ids ───────────────────────────────
+
+    def test_mid_line_ids_found(self):
+        """IDs surrounded by punctuation/whitespace mid-line are found."""
+        text = "fixes (poc.auth.0001), closes poc.api.0002; done: mvp1.ui.0005.\n"
+        ids = tb.extract_task_ids(text)
+        self.assertIn("poc.auth.0001", ids)
+        self.assertIn("poc.api.0002", ids)
+        self.assertIn("mvp1.ui.0005", ids)
+
+    def test_id_preceded_by_colon_found(self):
+        """An ID immediately after a colon (e.g. 'closes: v2.rev.0020') is found."""
+        ids = tb.extract_task_ids("closes: v2.rev.0020")
+        self.assertIn("v2.rev.0020", ids)
+
+    def test_id_in_parentheses_found(self):
+        """An ID inside parentheses is found."""
+        ids = tb.extract_task_ids("(poc.auth.0001)")
+        self.assertIn("poc.auth.0001", ids)
+
+    # ── dedup preserves first-seen order ─────────────────────────────────────
+
+    def test_dedup_preserves_first_seen_order(self):
+        """A duplicate ID appears only once; position matches first occurrence."""
+        text = (
+            "poc.auth.0001 some stuff\n"
+            "poc.api.0002 other stuff\n"
+            "poc.auth.0001 again\n"
+        )
+        ids = tb.extract_task_ids(text)
+        self.assertEqual(ids, ["poc.auth.0001", "poc.api.0002"])
+
+    def test_order_reflects_first_occurrence(self):
+        """Ordering is by first-seen position across the whole input."""
+        text = "mvp1.ui.0005 poc.auth.0001 poc.api.0002 poc.auth.0001"
+        ids = tb.extract_task_ids(text)
+        self.assertEqual(ids.index("mvp1.ui.0005"), 0)
+        self.assertEqual(ids.index("poc.auth.0001"), 1)
+        self.assertEqual(ids.index("poc.api.0002"), 2)
+
+    # ── None / empty / garbled → [] ──────────────────────────────────────────
+
+    def test_none_returns_empty(self):
+        """None input never raises and returns []."""
+        self.assertEqual(tb.extract_task_ids(None), [])
+
+    def test_empty_string_returns_empty(self):
+        """Empty string returns []."""
+        self.assertEqual(tb.extract_task_ids(""), [])
+
+    def test_garbled_input_returns_empty(self):
+        """Non-matching garbled text returns []."""
+        self.assertEqual(tb.extract_task_ids("#142 v2 2026-06-20 hello world"), [])
+
+    def test_return_type_is_list(self):
+        """Return type is always list, never set or other."""
+        self.assertIsInstance(tb.extract_task_ids("poc.auth.0001"), list)
+        self.assertIsInstance(tb.extract_task_ids(""), list)
+        self.assertIsInstance(tb.extract_task_ids(None), list)
+
+
+class FindBoardDriftTest(unittest.TestCase):
+    """AC-08 / AC-09: find_board_drift — detects tasks whose work merged but
+    whose board state was never flipped to done; unknown-id safety; pure."""
+
+    # A minimal board with one [~], one [ ], and one [x] task.
+    _BOARD = (
+        "# Open tasks\n\n"
+        "## In-flight\n"
+        "- [~] poc.auth.0001 — Validate session tokens  (started 2026-06-18)\n"
+        "- [ ] poc.api.0002 — Rate-limit the login endpoint\n"
+        "- [ ] poc.ui.0003 — Login form skeleton\n\n"
+        "## Done\n"
+        "- [x] poc.auth.0004 — Hash passwords  (done 2026-06-15)\n"
+    )
+    _TODAY = datetime.date(2026, 6, 26)
+
+    # AC-08: a [~] (in_progress) task whose id is in merged_ids → drifted
+    def test_in_progress_task_in_merged_ids_is_drift(self):
+        """AC-08: a [~] task that merged is returned in drifted."""
+        result = tb.find_board_drift(self._BOARD, ["poc.auth.0001"], self._TODAY)
+        ids = [t.id for t in result.drifted]
+        self.assertIn("poc.auth.0001", ids)
+
+    # AC-08: a [ ] (queued) task whose id is in merged_ids → drifted
+    def test_queued_task_in_merged_ids_is_drift(self):
+        """AC-08: a [ ] task that merged is returned in drifted."""
+        result = tb.find_board_drift(self._BOARD, ["poc.api.0002"], self._TODAY)
+        ids = [t.id for t in result.drifted]
+        self.assertIn("poc.api.0002", ids)
+
+    # AC-09: a [x] task in merged_ids is NOT drift
+    def test_done_task_in_merged_ids_is_not_drift(self):
+        """AC-09: a [x] task is excluded from drifted (already done)."""
+        result = tb.find_board_drift(self._BOARD, ["poc.auth.0004"], self._TODAY)
+        self.assertEqual(result.drifted, [])
+
+    # AC-09: a merged_id absent from the board → unknown (not drifted)
+    def test_unknown_merged_id_lands_in_unknown_not_drifted(self):
+        """AC-09: a merged_id not present on the board surfaces in unknown, never drifted."""
+        result = tb.find_board_drift(self._BOARD, ["poc.absent.9999"], self._TODAY)
+        self.assertIn("poc.absent.9999", result.unknown)
+        self.assertEqual(result.drifted, [])
+
+    # A task on the board but NOT in merged_ids is completely ignored
+    def test_board_task_not_in_merged_ids_is_ignored(self):
+        """A board task not referenced in merged_ids does not appear in any result field."""
+        result = tb.find_board_drift(self._BOARD, [], self._TODAY)
+        self.assertEqual(result.drifted, [])
+        self.assertEqual(result.unknown, [])
+
+    # today is preserved in result.observed (parameter is not dead)
+    def test_observed_field_is_today(self):
+        """The observed field is exactly the today argument passed by the caller."""
+        result = tb.find_board_drift(self._BOARD, ["poc.auth.0001"], self._TODAY)
+        self.assertEqual(result.observed, self._TODAY)
+
+    # empty board text → empty DriftResult (degenerate input rule)
+    def test_empty_board_returns_empty_result(self):
+        """Empty board text → empty DriftResult (drifted=[], unknown=[])."""
+        result = tb.find_board_drift("", ["poc.auth.0001"], self._TODAY)
+        self.assertEqual(result.drifted, [])
+        self.assertEqual(result.unknown, [])
+
+    # None board → empty DriftResult (never raises)
+    def test_none_board_returns_empty_result(self):
+        """None board_text → empty DriftResult, no exception."""
+        result = tb.find_board_drift(None, ["poc.auth.0001"], self._TODAY)
+        self.assertEqual(result.drifted, [])
+        self.assertEqual(result.unknown, [])
+
+    # empty merged_ids → empty DriftResult
+    def test_empty_merged_ids_returns_empty_result(self):
+        """Empty merged_ids list → nothing to check → empty DriftResult."""
+        result = tb.find_board_drift(self._BOARD, [], self._TODAY)
+        self.assertEqual(result.drifted, [])
+        self.assertEqual(result.unknown, [])
+
+    # None merged_ids → empty DriftResult (never raises)
+    def test_none_merged_ids_returns_empty_result(self):
+        """None merged_ids → empty DriftResult, no exception."""
+        result = tb.find_board_drift(self._BOARD, None, self._TODAY)
+        self.assertEqual(result.drifted, [])
+        self.assertEqual(result.unknown, [])
+
+    # AC-09: unknown ids are deduped, first-seen order
+    def test_unknown_ids_deduped_first_seen_order(self):
+        """A repeated absent id appears exactly once in unknown, in first-seen order."""
+        ids = ["poc.absent.9999", "poc.other.0001", "poc.absent.9999"]
+        result = tb.find_board_drift(self._BOARD, ids, self._TODAY)
+        self.assertEqual(result.unknown.count("poc.absent.9999"), 1)
+        # first-seen: poc.absent.9999 must precede poc.other.0001
+        self.assertLess(result.unknown.index("poc.absent.9999"),
+                        result.unknown.index("poc.other.0001"))
+
+    # pure: board_text string reference is unchanged after the call
+    def test_no_mutation_board_text_unchanged(self):
+        """find_board_drift is pure — the board_text argument is not mutated."""
+        original = self._BOARD
+        snapshot = str(original)
+        tb.find_board_drift(original, ["poc.auth.0001"], self._TODAY)
+        self.assertEqual(original, snapshot)
+
+    # structural: return type is DriftResult
+    def test_return_type_is_driftresult(self):
+        """Return value is always a DriftResult namedtuple."""
+        result = tb.find_board_drift(self._BOARD, [], self._TODAY)
+        self.assertIsInstance(result, tb.DriftResult)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -19,6 +19,13 @@ residue languish far *less*, not "never"; do not rely on it as a guarantee until
 | `checkpoint` | the `### DEFERRABLE` section | `extract_deferrable(text, origin)` |
 | `sprint` (completion) | `confidence: low` auto-decisions in `sprint-log.md` | `extract_low_confidence(text, origin)` |
 
+**commit-gate Phase 7 — pre-commit harvest (ADR-0008):** When commit-gate invokes harvest it
+does so at **Phase 7, before staging** — not after the commit. The promoted `open-tasks.md`
+additions are staged into and **ride the work commit** as part of the same payload. This is a
+contingent default: an abandoned branch or PR abandons the board additions with it
+(self-correcting per ADR-0008). A follow-up that **must survive** abandonment should be filed
+as a **GitHub issue**, not the board.
+
 `origin` is the artifact's identity (e.g. `checkpoint-2026-06-13`, `spec:<slug>`,
 `sprint:<slug>`) so each promoted entry carries a `(from <origin>)` back-ref.
 

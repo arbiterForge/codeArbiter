@@ -48,6 +48,17 @@
 #   promote(board, questions, candidates, *, mode, today) -> PromoteResult
 #                                        mode in {"interactive","auto"}; unknown mode
 #                                        raises ValueError
+#   classify_board_diff(old_text, new_text) -> bool
+#                                        True iff the change is a clean done-flip,
+#                                        start-flip, or single queued add; never raises
+#   extract_task_ids(text) -> list[str]  valid dotted task-ids found in arbitrary text
+#                                        (e.g. git log output); deduped, first-seen
+#                                        order; never raises
+#   find_board_drift(board_text, merged_ids, today) -> DriftResult
+#                                        tasks whose work merged but board state is not
+#                                        [x]; pure, never raises; DriftResult fields:
+#                                        drifted (list[Task]), unknown (list[str]),
+#                                        observed (datetime.date)
 
 import datetime
 import re
@@ -76,6 +87,14 @@ STALE_THRESHOLD_DAYS = 3
 Task = namedtuple(
     "Task", "state id title started done desc done_when boundaries raw lineno")
 
+# Result of find_board_drift. All fields always present (never None):
+#   drifted  — list[Task] whose state is not "done" and whose id is in merged_ids
+#              (work merged but board was never flipped to [x]).
+#   unknown  — list[str] of merged_ids absent from the board entirely
+#              (informational; first-seen order, deduped; never treated as drift).
+#   observed — datetime.date passed by the caller (stamps when the sweep ran).
+DriftResult = namedtuple("DriftResult", "drifted unknown observed")
+
 # ---------------------------------------------------------------------------
 # Patterns
 # ---------------------------------------------------------------------------
@@ -99,6 +118,25 @@ _STRAY_MARKER_RE = re.compile(r"^\s*[-*+]?\s*\[[ xX~]\]")
 _CANON_TASK_RE = re.compile(r"^- \[[ xX~]\] ")      # a well-formed marked task line
 
 _STATE_BY_MARK = {" ": "queued", "~": "in_progress", "x": "done", "X": "done"}
+
+# classify_board_diff helpers — strip markers/stamps for content-equality comparison.
+_STAMP_FULL_RE = re.compile(r'\s*\((?:started|done)\s+\d{4}-\d{2}-\d{2}\)')
+_STATE_MARK_RE = re.compile(r'^- \[([ xX~])\]\s*')
+_QUEUED_TOP_RE = re.compile(r'^- \[ \] .+')
+_INDENTED_BULLET_RE = re.compile(r'^\s+- ')
+# extract_task_ids search pattern — non-anchored; two-part negative lookahead so
+# trailing sentence punctuation (e.g. "mvp1.ui.0005.") is not blocked, while an
+# extended alphanumeric suffix ("poc.auth.0001x") and a continuing dot-segment
+# ("poc.auth.0001.extra") are both rejected:
+#   (?![a-z0-9])        — no letter/digit immediately after the seq digits
+#   (?!\.[a-z0-9])      — no dot immediately followed by a letter/digit (next segment)
+# The negative lookbehind prevents matching a mid-word start or a token that is
+# already part of a longer dotted sequence (preceded by "." or alphanum).
+# Every candidate is additionally gated through validate_id() so only
+# grammar-valid IDs are returned.
+_TASK_ID_SCAN_RE = re.compile(
+    r"(?<![a-z0-9.])([a-z][a-z0-9]*\.[a-z][a-z0-9]*\.[0-9]{4,})(?![a-z0-9])(?!\.[a-z0-9])"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -332,6 +370,178 @@ def startup_summary(text, today, threshold_days=STALE_THRESHOLD_DAYS):
                      f"(cannot age -- add a date or close)")
     lines.extend(lint_board(text))
     return lines
+
+
+def _strip_stamps_and_marker(line):
+    """Strip the state marker and (started/done YYYY-MM-DD) stamps for content comparison.
+
+    Used by classify_board_diff to check whether two task lines differ only in their
+    state marker and date stamp, and not in their descriptive content.
+    """
+    line = _STATE_MARK_RE.sub('', line)
+    line = _STAMP_FULL_RE.sub('', line)
+    return line.rstrip()
+
+
+def _is_valid_state_flip(old_line, new_line):
+    """True iff old_line → new_line is a valid done-flip ([~]→[x]+done) or
+    start-flip ([ ]→[~]+started), with all other content unchanged."""
+    old_m = _STATE_MARK_RE.match(old_line)
+    new_m = _STATE_MARK_RE.match(new_line)
+    if not old_m or not new_m:
+        return False
+    old_mark = old_m.group(1).lower()
+    new_mark = new_m.group(1).lower()
+    # done-flip: [~] → [x], new line must carry (done YYYY-MM-DD)
+    if old_mark == '~' and new_mark == 'x':
+        if _extract_date(new_line, 'done') is None:
+            return False
+        return _strip_stamps_and_marker(old_line) == _strip_stamps_and_marker(new_line)
+    # start-flip: [ ] → [~], new line must carry (started YYYY-MM-DD)
+    if old_mark == ' ' and new_mark == '~':
+        if _extract_date(new_line, 'started') is None:
+            return False
+        return _strip_stamps_and_marker(old_line) == _strip_stamps_and_marker(new_line)
+    return False
+
+
+def _is_valid_queued_block(lines):
+    """True iff `lines` form a single valid queued entry: one `- [ ] desc` top-level
+    line (non-empty) optionally followed by indented sub-bullets only (e.g. Boundaries)."""
+    if not lines or not _QUEUED_TOP_RE.match(lines[0]):
+        return False
+    return all(_INDENTED_BULLET_RE.match(ln) for ln in lines[1:])
+
+
+def classify_board_diff(old_text, new_text):
+    """True iff the change from old_text to new_text is a clean task-board transition.
+
+    A clean transition is EXACTLY ONE of:
+    - done-flip: one task's marker changes [~] → [x], a (done YYYY-MM-DD) stamp is
+      added, and no other content changes (a prior (started ...) stamp is allowed to
+      drop; nothing else may change);
+    - start-flip: one task's marker changes [ ] → [~], a (started YYYY-MM-DD) stamp
+      is added, and no other content changes;
+    - add: exactly one new queued top-level entry `- [ ] desc` (optionally with a
+      dotted id, a (from <origin>) back-ref, and/or an indented `- Boundaries:`
+      sub-bullet) is inserted or appended, and no existing line is changed.
+
+    Returns False for anything else: reworded description, deleted entry, marker
+    change without the required date stamp, multiple simultaneous transitions, an
+    edit to an unrelated line, or any content change beyond those above.
+
+    Never raises — empty, None, or garbled input degrades to False (same crash-safe
+    invariant as all other _taskboardlib pure functions).
+    """
+    try:
+        if not old_text or not new_text:
+            return False
+        old_lines = old_text.splitlines()
+        new_lines = new_text.splitlines()
+
+        # ── state-flip branch: same line count, exactly one line changed ──────
+        if len(old_lines) == len(new_lines):
+            changed = [(old_lines[i], new_lines[i])
+                       for i in range(len(old_lines))
+                       if old_lines[i] != new_lines[i]]
+            return len(changed) == 1 and _is_valid_state_flip(*changed[0])
+
+        # ── add branch: new has more lines; all old lines intact, extra is one ─
+        if len(new_lines) > len(old_lines):
+            n_extra = len(new_lines) - len(old_lines)
+            # find how many leading lines are already identical (the common prefix)
+            k = 0
+            while k < len(old_lines) and old_lines[k] == new_lines[k]:
+                k += 1
+            extra = new_lines[k:k + n_extra]
+            # the lines after the inserted block must equal the old suffix
+            if new_lines[k + n_extra:] != old_lines[k:]:
+                return False
+            return _is_valid_queued_block(extra)
+
+        # new has fewer lines than old — a deletion, never a clean transition
+        return False
+    except Exception:
+        return False
+
+
+def extract_task_ids(text):
+    """Scan arbitrary text and return valid dotted task-ids in first-seen order.
+
+    Finds ids matching <group>.<type>.<seq> where seq is >=4 digits — the same
+    grammar validate_id enforces (e.g. 'v2.rev.0020', 'poc.auth.0001'). Tokens
+    that do not match the grammar (issue refs like '#142', version shorthands
+    like 'v2', dates, bare words, extended tokens like 'poc.auth.0001x') are
+    silently ignored. Deduplicates while preserving first-seen order.
+
+    Never raises — None, empty, or garbled input returns [] (crash-safe
+    invariant, same as classify_board_diff and all other pure functions here).
+    """
+    try:
+        if not text:
+            return []
+        seen_set = set()
+        seen_list = []
+        for m in _TASK_ID_SCAN_RE.finditer(text):
+            candidate = m.group(1)
+            if validate_id(candidate) and candidate not in seen_set:
+                seen_set.add(candidate)
+                seen_list.append(candidate)
+        return seen_list
+    except Exception:
+        return []
+
+
+def find_board_drift(board_text, merged_ids, today):
+    """Detect task-board drift: tasks whose work merged but board state is not [x].
+
+    board_text  — the open-tasks.md text.
+    merged_ids  — list/iterable of dotted task-ids referenced in merged work,
+                  typically produced upstream by extract_task_ids.
+    today       — a datetime.date; stored as DriftResult.observed so the caller
+                  can stamp the report with the sweep date (not a dead parameter).
+
+    Returns a DriftResult namedtuple:
+      drifted  — Task records with state 'queued' or 'in_progress' whose id is
+                 in merged_ids (work merged, board not yet flipped to done).
+      unknown  — merged_ids absent from the board entirely (informational;
+                 first-seen order, deduped; never reported as drift or done).
+      observed — today (the observation date).
+
+    Never raises. None/empty board_text or merged_ids returns an empty
+    DriftResult (drifted=[], unknown=[], observed=today). A merged_id not
+    present on the board surfaces in unknown only — the function writes nothing;
+    it is pure and returns data only.
+    """
+    try:
+        if not board_text or not merged_ids:
+            return DriftResult([], [], today)
+
+        # Build an id -> Task index; id=None legacy bullets are not addressable.
+        board_by_id = {}
+        for t in parse_board(board_text):
+            if t.id is not None:
+                board_by_id[t.id] = t
+
+        drifted = []
+        unknown = []
+        seen_unknown = set()
+
+        for mid in merged_ids:
+            if mid in board_by_id:
+                t = board_by_id[mid]
+                if t.state != "done":
+                    drifted.append(t)
+                # done → already [x], excluded from drift (AC-09)
+            else:
+                # absent from the board → informational unknown, never drift
+                if mid not in seen_unknown:
+                    seen_unknown.add(mid)
+                    unknown.append(mid)
+
+        return DriftResult(drifted, unknown, today)
+    except Exception:
+        return DriftResult([], [], today)
 
 
 # ---------------------------------------------------------------------------
