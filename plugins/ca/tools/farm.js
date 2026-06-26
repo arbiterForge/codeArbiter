@@ -1,11 +1,283 @@
 #!/usr/bin/env node
 
 // farm.ts
-import { spawn } from "node:child_process";
-import { readFile, writeFile, appendFile, mkdir, rm } from "node:fs/promises";
+import { readFile as readFile2, writeFile as writeFile2, appendFile, mkdir, rm } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
-import path from "node:path";
+import path3 from "node:path";
 import { fileURLToPath } from "node:url";
+
+// exec.ts
+import { spawn } from "node:child_process";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+var [SHELL_BIN, SHELL_FLAG] = process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
+var SHELL_OPTS = process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
+var GATE_TIMEOUT_MS = Number(process.env.FARM_GATE_TIMEOUT_MS ?? 3e5);
+function treeKill(child) {
+  try {
+    if (process.platform === "win32" && child.pid !== void 0) {
+      spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]);
+    } else {
+      child.kill("SIGKILL");
+    }
+  } catch {
+  }
+}
+function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
+  return new Promise((resolve) => {
+    const childEnv = { ...process.env };
+    delete childEnv.FARM_API_KEY;
+    delete childEnv.CLAUDE_CODE_OAUTH_TOKEN;
+    const c = spawn(cmd, args, { cwd, env: childEnv, ...opts });
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+    let timer;
+    const done = (r) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve(r);
+    };
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        treeKill(c);
+        const note = `
+[FARM] command exceeded ${timeoutMs}ms wall-clock timeout \u2014 killed (FARM_GATE_TIMEOUT_MS)`;
+        done({ code: 124, out: stdout + stderr + note, stdout, stderr: stderr + note, timedOut: true });
+      }, timeoutMs);
+    }
+    c.stdout.on("data", (d) => stdout += d);
+    c.stderr.on("data", (d) => stderr += d);
+    c.on("error", (e) => done({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
+    c.on("close", (code) => done({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
+  });
+}
+async function readWorktreeFile(wt, relPath) {
+  try {
+    return await readFile(path.resolve(wt, relPath), "utf8");
+  } catch {
+    return null;
+  }
+}
+
+// redactor.ts
+var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
+var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
+var PEM_END = /^-----END .*-----\s*$/;
+var REDACTION_MARKER = "[REDACTED \u2014 secret-pattern match removed before transmission]";
+var SECRET_FILENAME_DENYLIST = [
+  /^\.env$/i,
+  // .env
+  /^\.env\..+$/i,
+  // .env.local, .env.production, ...
+  /\.pem$/i,
+  // *.pem
+  /\.key$/i,
+  // *.key
+  /^id_rsa(\..+)?$/i,
+  // id_rsa, id_rsa.pub, id_rsa.bak
+  /^id_ed25519(\..+)?$/i,
+  // id_ed25519, id_ed25519.pub
+  /^id_ecdsa(\..+)?$/i,
+  // id_ecdsa, id_ecdsa.pub
+  /\.p12$/i,
+  // PKCS#12 keystore
+  /\.pfx$/i
+  // PKCS#12 keystore (Windows)
+];
+function isSecretBearingFilename(relPath) {
+  const base = relPath.split(/[\\/]/).pop() ?? relPath;
+  return SECRET_FILENAME_DENYLIST.some((re) => re.test(base));
+}
+function redactSecrets(contents) {
+  const lines = contents.split("\n");
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (PEM_BEGIN.test(line.trim())) {
+      out.push(REDACTION_MARKER);
+      i++;
+      while (i < lines.length && !PEM_END.test(lines[i].trim())) i++;
+      continue;
+    }
+    out.push(SECRET_LINE.test(line) ? REDACTION_MARKER : line);
+  }
+  return out.join("\n");
+}
+
+// mutation.ts
+import { spawn as spawn2 } from "node:child_process";
+import { writeFile } from "node:fs/promises";
+import path2 from "node:path";
+var MUT = {
+  enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
+  sample: Number(process.env.FARM_MUTATION_SAMPLE ?? 15),
+  budgetMs: Number(process.env.FARM_MUTATION_BUDGET_MS ?? 3e4),
+  warnBelow: Number(process.env.FARM_MUTATION_WARN_BELOW ?? 0.5),
+  escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
+  cmd: process.env.FARM_MUTATION_CMD ?? null
+};
+function extractLiterals(testSrc) {
+  const lits = /* @__PURE__ */ new Set();
+  for (const m of testSrc.matchAll(/(['"`])((?:\\.|(?!\1).){2,})\1/g)) lits.add(m[2]);
+  for (const m of testSrc.matchAll(/\b(\d{2,}|[2-9])\b/g)) lits.add(m[1]);
+  return [...lits];
+}
+function codeLineCount(src) {
+  return src.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("//") && !l.startsWith("#") && !l.startsWith("*") && !l.startsWith("/*")).length;
+}
+async function antiGamingCheck(cwd, task) {
+  const testSrc = await readWorktreeFile(cwd, task.test.path);
+  if (testSrc === null) return { risk: "none" };
+  const literals = extractLiterals(testSrc).filter((l) => l.length > 1 || /\d{2,}/.test(l));
+  if (literals.length === 0) return { risk: "none" };
+  const hits = [];
+  let anyTiny = false;
+  for (const f of task.filesInScope) {
+    if (f === task.test.path) continue;
+    const src = await readWorktreeFile(cwd, f);
+    if (src === null) continue;
+    const tiny = codeLineCount(src) <= 5;
+    for (const lit of literals) {
+      if (src.includes(lit)) {
+        hits.push(`${f} contains test literal ${JSON.stringify(lit)}`);
+        if (tiny) anyTiny = true;
+      }
+    }
+  }
+  if (hits.length === 0) return { risk: "none" };
+  if (anyTiny) return { risk: "high", note: `gaming: ${hits[0]} (impl is trivial)` };
+  return { risk: "warn", note: `gaming-risk: ${hits[0]}` };
+}
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function generateMutants(file, src) {
+  const lines = src.split("\n");
+  const rules = [
+    [/ >= /, " > ", ">=>"],
+    [/ <= /, " < ", "<=<"],
+    [/ === /, " !== ", "===>!=="],
+    [/ !== /, " === ", "!==>==="],
+    [/ == /, " != ", "==>!="],
+    [/ != /, " == ", "!=>=="],
+    [/ > /, " >= ", ">>="],
+    [/ < /, " <= ", "<<="],
+    [/ \+ /, " - ", "+>-"],
+    [/ - /, " + ", "->+"],
+    [/ \* /, " / ", "*>/"],
+    [/ && /, " || ", "&&>||"],
+    [/ \|\| /, " && ", "||>&&"],
+    [/\btrue\b/, "false", "true>false"],
+    [/\bfalse\b/, "true", "false>true"]
+  ];
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i];
+    const t = ln.trim();
+    if (!t || t.startsWith("//") || t.startsWith("#") || t.startsWith("*") || t.startsWith("/*")) continue;
+    for (const [re, rep, name] of rules) {
+      if (re.test(ln)) {
+        const mline = ln.replace(re, rep);
+        if (mline !== ln) {
+          const m = [...lines];
+          m[i] = mline;
+          out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} ${name}` });
+        }
+      }
+    }
+    const rm2 = ln.match(/\breturn\s+(.+?);/);
+    if (rm2 && rm2[1].trim() !== "null" && rm2[1].trim() !== "") {
+      const m = [...lines];
+      m[i] = ln.replace(/\breturn\s+.+?;/, "return null;");
+      out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} return>null` });
+    }
+  }
+  return out;
+}
+function parseMutationHookOutput(out) {
+  const j = [...out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
+  if (!j) return null;
+  try {
+    const parsed = JSON.parse(j[0]);
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    if (typeof parsed.score === "number")
+      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+  } catch {
+  }
+  return null;
+}
+async function mutationCheck(wt, task) {
+  if (!MUT.enabled) return null;
+  const testCmd = task.gate.commands[0];
+  if (!testCmd) return null;
+  const impl = task.filesInScope.filter((f) => f !== task.test.path);
+  if (MUT.cmd) {
+    const r = await new Promise((resolve) => {
+      const c = spawn2(SHELL_BIN, [SHELL_FLAG, MUT.cmd], {
+        cwd: wt,
+        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
+        ...SHELL_OPTS
+      });
+      let out = "";
+      let settled = false;
+      const finish = (res) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(res);
+      };
+      const timer = setTimeout(() => {
+        treeKill(c);
+        finish({ code: 124, out: out + "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed" });
+      }, GATE_TIMEOUT_MS);
+      c.stdout.on("data", (d) => out += d);
+      c.stderr.on("data", (d) => out += d);
+      c.on("error", (e) => finish({ code: 1, out: String(e) }));
+      c.on("close", (code) => finish({ code: code ?? 1, out }));
+    });
+    return parseMutationHookOutput(r.out);
+  }
+  const originals = /* @__PURE__ */ new Map();
+  let candidates = [];
+  for (const f of impl) {
+    const src = await readWorktreeFile(wt, f);
+    if (src === null) continue;
+    if (codeLineCount(src) <= 2) continue;
+    originals.set(f, src);
+    candidates.push(...generateMutants(f, src));
+  }
+  if (candidates.length === 0) return null;
+  candidates = shuffle(candidates).slice(0, MUT.sample);
+  const start = Date.now();
+  let killed = 0;
+  let evaluated = 0;
+  const survivors = [];
+  try {
+    for (const c of candidates) {
+      if (Date.now() - start > MUT.budgetMs) break;
+      await writeFile(path2.resolve(wt, c.file), c.mutated);
+      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
+      const orig = originals.get(c.file);
+      if (orig !== void 0) await writeFile(path2.resolve(wt, c.file), orig);
+      evaluated++;
+      if (r.code !== 0) killed++;
+      else survivors.push(c.tag);
+    }
+  } finally {
+    for (const [f, src] of originals) await writeFile(path2.resolve(wt, f), src).catch(() => {
+    });
+  }
+  if (evaluated < 3) return null;
+  return { score: killed / evaluated, evaluated, survivors };
+}
+
+// farm.ts
 var DEFAULT_API_BASE_URL = "https://opencode.ai/zen/v1";
 var ENV = {
   // Model: plan.meta.model (set by subagent-driven-development before dispatch),
@@ -49,55 +321,6 @@ var ENV = {
   // boundedness guarantee.
   enrichMaxBytes: Number(process.env.FARM_ENRICH_MAX_BYTES ?? 131072)
 };
-var MUT = {
-  enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
-  sample: Number(process.env.FARM_MUTATION_SAMPLE ?? 15),
-  budgetMs: Number(process.env.FARM_MUTATION_BUDGET_MS ?? 3e4),
-  warnBelow: Number(process.env.FARM_MUTATION_WARN_BELOW ?? 0.5),
-  escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
-  cmd: process.env.FARM_MUTATION_CMD ?? null
-};
-var GATE_TIMEOUT_MS = Number(process.env.FARM_GATE_TIMEOUT_MS ?? 3e5);
-function treeKill(child) {
-  try {
-    if (process.platform === "win32" && child.pid !== void 0) {
-      spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]);
-    } else {
-      child.kill("SIGKILL");
-    }
-  } catch {
-  }
-}
-function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
-  return new Promise((resolve) => {
-    const childEnv = { ...process.env };
-    delete childEnv.FARM_API_KEY;
-    delete childEnv.CLAUDE_CODE_OAUTH_TOKEN;
-    const c = spawn(cmd, args, { cwd, env: childEnv, ...opts });
-    let stdout = "";
-    let stderr = "";
-    let settled = false;
-    let timer;
-    const done = (r) => {
-      if (settled) return;
-      settled = true;
-      if (timer) clearTimeout(timer);
-      resolve(r);
-    };
-    if (timeoutMs > 0) {
-      timer = setTimeout(() => {
-        treeKill(c);
-        const note = `
-[FARM] command exceeded ${timeoutMs}ms wall-clock timeout \u2014 killed (FARM_GATE_TIMEOUT_MS)`;
-        done({ code: 124, out: stdout + stderr + note, stdout, stderr: stderr + note, timedOut: true });
-      }, timeoutMs);
-    }
-    c.stdout.on("data", (d) => stdout += d);
-    c.stderr.on("data", (d) => stderr += d);
-    c.on("error", (e) => done({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
-    c.on("close", (code) => done({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
-  });
-}
 var git = (args, cwd) => run("git", args, cwd);
 var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function createLimiter(max) {
@@ -133,11 +356,9 @@ function createLimiter(max) {
 var workerLimit = createLimiter(ENV.concurrency);
 var NOSIGN = ["-c", "commit.gpgsign=false"];
 function isInside(root, target) {
-  const rel = path.relative(root, target);
-  return rel === "" || !rel.startsWith("..") && !path.isAbsolute(rel);
+  const rel = path3.relative(root, target);
+  return rel === "" || !rel.startsWith("..") && !path3.isAbsolute(rel);
 }
-var [SHELL_BIN, SHELL_FLAG] = process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
-var SHELL_OPTS = process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
 async function runGate(cwd, commands) {
   for (const cmd of commands) {
     const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
@@ -145,56 +366,6 @@ async function runGate(cwd, commands) {
       return { ok: false, failed: cmd, tail: redactSecrets(r.out.slice(-3500)) };
   }
   return { ok: true };
-}
-async function readWorktreeFile(wt, relPath) {
-  try {
-    return await readFile(path.resolve(wt, relPath), "utf8");
-  } catch {
-    return null;
-  }
-}
-var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
-var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
-var PEM_END = /^-----END .*-----\s*$/;
-var REDACTION_MARKER = "[REDACTED \u2014 secret-pattern match removed before transmission]";
-var SECRET_FILENAME_DENYLIST = [
-  /^\.env$/i,
-  // .env
-  /^\.env\..+$/i,
-  // .env.local, .env.production, ...
-  /\.pem$/i,
-  // *.pem
-  /\.key$/i,
-  // *.key
-  /^id_rsa(\..+)?$/i,
-  // id_rsa, id_rsa.pub, id_rsa.bak
-  /^id_ed25519(\..+)?$/i,
-  // id_ed25519, id_ed25519.pub
-  /^id_ecdsa(\..+)?$/i,
-  // id_ecdsa, id_ecdsa.pub
-  /\.p12$/i,
-  // PKCS#12 keystore
-  /\.pfx$/i
-  // PKCS#12 keystore (Windows)
-];
-function isSecretBearingFilename(relPath) {
-  const base = relPath.split(/[\\/]/).pop() ?? relPath;
-  return SECRET_FILENAME_DENYLIST.some((re) => re.test(base));
-}
-function redactSecrets(contents) {
-  const lines = contents.split("\n");
-  const out = [];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (PEM_BEGIN.test(line.trim())) {
-      out.push(REDACTION_MARKER);
-      i++;
-      while (i < lines.length && !PEM_END.test(lines[i].trim())) i++;
-      continue;
-    }
-    out.push(SECRET_LINE.test(line) ? REDACTION_MARKER : line);
-  }
-  return out.join("\n");
 }
 function renderInjectedFile(file) {
   const label = file.prior ? `${file.path} (your previous attempt \u2014 FAILED)` : file.readOnly ? `${file.path} (read-only \u2014 the failing test)` : file.path;
@@ -440,16 +611,16 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, samp
   const filesWritten = [];
   for (const { path: filePath, body } of blocks) {
     const cleanPath = filePath.trim();
-    const absPath = path.resolve(cwd, cleanPath);
+    const absPath = path3.resolve(cwd, cleanPath);
     if (!isInside(cwd, absPath)) {
       return { ok: false, filesWritten, error: `path escapes worktree: ${cleanPath}` };
     }
-    const rel = path.relative(cwd, absPath).split(path.sep).join("/");
+    const rel = path3.relative(cwd, absPath).split(path3.sep).join("/");
     if (forbidden.has(rel)) {
       return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
     }
-    await mkdir(path.dirname(absPath), { recursive: true });
-    await writeFile(absPath, body.endsWith("\n") ? body : body + "\n");
+    await mkdir(path3.dirname(absPath), { recursive: true });
+    await writeFile2(absPath, body.endsWith("\n") ? body : body + "\n");
     filesWritten.push(rel);
   }
   if (filesWritten.length === 0) {
@@ -486,52 +657,20 @@ async function checkDrift(cwd, allowed, gitRunner = git) {
 }
 function postApplySweep(cwd, filesWritten, forbidden) {
   for (const f of filesWritten) {
-    const absPath = path.resolve(cwd, f);
+    const absPath = path3.resolve(cwd, f);
     if (!isInside(cwd, absPath)) {
       return `path escapes worktree: ${f}`;
     }
-    const rel = path.relative(cwd, absPath).split(path.sep).join("/");
+    const rel = path3.relative(cwd, absPath).split(path3.sep).join("/");
     if (forbidden.has(rel)) {
       return `worker wrote read-only path: ${rel}`;
     }
   }
   return null;
 }
-function extractLiterals(testSrc) {
-  const lits = /* @__PURE__ */ new Set();
-  for (const m of testSrc.matchAll(/(['"`])((?:\\.|(?!\1).){2,})\1/g)) lits.add(m[2]);
-  for (const m of testSrc.matchAll(/\b(\d{2,}|[2-9])\b/g)) lits.add(m[1]);
-  return [...lits];
-}
-function codeLineCount(src) {
-  return src.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("//") && !l.startsWith("#") && !l.startsWith("*") && !l.startsWith("/*")).length;
-}
-async function antiGamingCheck(cwd, task) {
-  const testSrc = await readWorktreeFile(cwd, task.test.path);
-  if (testSrc === null) return { risk: "none" };
-  const literals = extractLiterals(testSrc).filter((l) => l.length > 1 || /\d{2,}/.test(l));
-  if (literals.length === 0) return { risk: "none" };
-  const hits = [];
-  let anyTiny = false;
-  for (const f of task.filesInScope) {
-    if (f === task.test.path) continue;
-    const src = await readWorktreeFile(cwd, f);
-    if (src === null) continue;
-    const tiny = codeLineCount(src) <= 5;
-    for (const lit of literals) {
-      if (src.includes(lit)) {
-        hits.push(`${f} contains test literal ${JSON.stringify(lit)}`);
-        if (tiny) anyTiny = true;
-      }
-    }
-  }
-  if (hits.length === 0) return { risk: "none" };
-  if (anyTiny) return { risk: "high", note: `gaming: ${hits[0]} (impl is trivial)` };
-  return { risk: "warn", note: `gaming-risk: ${hits[0]}` };
-}
 async function fileHash(p) {
   try {
-    const buf = await readFile(p);
+    const buf = await readFile2(p);
     return createHash("sha256").update(buf).digest("hex");
   } catch {
     return null;
@@ -540,132 +679,6 @@ async function fileHash(p) {
 async function resetWorktree(wt) {
   await git(["reset", "--hard", "HEAD"], wt);
   await git(["clean", "-fd"], wt);
-}
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-function generateMutants(file, src) {
-  const lines = src.split("\n");
-  const rules = [
-    [/ >= /, " > ", ">=>"],
-    [/ <= /, " < ", "<=<"],
-    [/ === /, " !== ", "===>!=="],
-    [/ !== /, " === ", "!==>==="],
-    [/ == /, " != ", "==>!="],
-    [/ != /, " == ", "!=>=="],
-    [/ > /, " >= ", ">>="],
-    [/ < /, " <= ", "<<="],
-    [/ \+ /, " - ", "+>-"],
-    [/ - /, " + ", "->+"],
-    [/ \* /, " / ", "*>/"],
-    [/ && /, " || ", "&&>||"],
-    [/ \|\| /, " && ", "||>&&"],
-    [/\btrue\b/, "false", "true>false"],
-    [/\bfalse\b/, "true", "false>true"]
-  ];
-  const out = [];
-  for (let i = 0; i < lines.length; i++) {
-    const ln = lines[i];
-    const t = ln.trim();
-    if (!t || t.startsWith("//") || t.startsWith("#") || t.startsWith("*") || t.startsWith("/*")) continue;
-    for (const [re, rep, name] of rules) {
-      if (re.test(ln)) {
-        const mline = ln.replace(re, rep);
-        if (mline !== ln) {
-          const m = [...lines];
-          m[i] = mline;
-          out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} ${name}` });
-        }
-      }
-    }
-    const rm2 = ln.match(/\breturn\s+(.+?);/);
-    if (rm2 && rm2[1].trim() !== "null" && rm2[1].trim() !== "") {
-      const m = [...lines];
-      m[i] = ln.replace(/\breturn\s+.+?;/, "return null;");
-      out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} return>null` });
-    }
-  }
-  return out;
-}
-function parseMutationHookOutput(out) {
-  const j = [...out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
-  if (!j) return null;
-  try {
-    const parsed = JSON.parse(j[0]);
-    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number")
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
-  } catch {
-  }
-  return null;
-}
-async function mutationCheck(wt, task) {
-  if (!MUT.enabled) return null;
-  const testCmd = task.gate.commands[0];
-  if (!testCmd) return null;
-  const impl = task.filesInScope.filter((f) => f !== task.test.path);
-  if (MUT.cmd) {
-    const r = await new Promise((resolve) => {
-      const c = spawn(SHELL_BIN, [SHELL_FLAG, MUT.cmd], {
-        cwd: wt,
-        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
-        ...SHELL_OPTS
-      });
-      let out = "";
-      let settled = false;
-      const finish = (res) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        resolve(res);
-      };
-      const timer = setTimeout(() => {
-        treeKill(c);
-        finish({ code: 124, out: out + "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed" });
-      }, GATE_TIMEOUT_MS);
-      c.stdout.on("data", (d) => out += d);
-      c.stderr.on("data", (d) => out += d);
-      c.on("error", (e) => finish({ code: 1, out: String(e) }));
-      c.on("close", (code) => finish({ code: code ?? 1, out }));
-    });
-    return parseMutationHookOutput(r.out);
-  }
-  const originals = /* @__PURE__ */ new Map();
-  let candidates = [];
-  for (const f of impl) {
-    const src = await readWorktreeFile(wt, f);
-    if (src === null) continue;
-    if (codeLineCount(src) <= 2) continue;
-    originals.set(f, src);
-    candidates.push(...generateMutants(f, src));
-  }
-  if (candidates.length === 0) return null;
-  candidates = shuffle(candidates).slice(0, MUT.sample);
-  const start = Date.now();
-  let killed = 0;
-  let evaluated = 0;
-  const survivors = [];
-  try {
-    for (const c of candidates) {
-      if (Date.now() - start > MUT.budgetMs) break;
-      await writeFile(path.resolve(wt, c.file), c.mutated);
-      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
-      const orig = originals.get(c.file);
-      if (orig !== void 0) await writeFile(path.resolve(wt, c.file), orig);
-      evaluated++;
-      if (r.code !== 0) killed++;
-      else survivors.push(c.tag);
-    }
-  } finally {
-    for (const [f, src] of originals) await writeFile(path.resolve(wt, f), src).catch(() => {
-    });
-  }
-  if (evaluated < 3) return null;
-  return { score: killed / evaluated, evaluated, survivors };
 }
 function mintRunId() {
   return randomBytes(3).toString("hex");
@@ -715,17 +728,17 @@ function effectiveSampling(samples) {
 }
 async function writeFilesInto(wt, files) {
   for (const f of files) {
-    const abs = path.resolve(wt, f.path);
+    const abs = path3.resolve(wt, f.path);
     if (!isInside(wt, abs)) continue;
-    await mkdir(path.dirname(abs), { recursive: true });
-    await writeFile(abs, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
+    await mkdir(path3.dirname(abs), { recursive: true });
+    await writeFile2(abs, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
   }
 }
 async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps) {
   const taskBranch = `farm/${t.id}`;
   const runSample = (k) => workerLimit.run(async () => {
     const branch = `farm/${t.id}__s${k}`;
-    const wt = path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
+    const wt = path3.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
     const base = {
       green: false,
       filesWritten: [],
@@ -744,14 +757,14 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
         if (!sr.ok) return { ...base, note: redactSecrets(`setup failed: ${sr.failed}
 ${sr.tail}`) };
       }
-      const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+      const testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
       const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
       const pt = w.promptTokens ?? 0;
       const ct = w.completionTokens ?? 0;
       if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
       const sweep = postApplySweep(wt, w.filesWritten, forbidden);
       if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
-      const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
+      const testHashAfter = await deps.fileHash(path3.resolve(wt, t.test.path));
       if (testHashBefore !== null && testHashAfter !== testHashBefore)
         return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
       const drift = await deps.checkDrift(wt, allowed);
@@ -782,7 +795,7 @@ ${gate.tail}`), promptTokens: pt, completionTokens: ct };
 }
 async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()) {
   const branch = `farm/${t.id}`;
-  const wt = path.resolve(ENV.worktreeRoot, t.id);
+  const wt = path3.resolve(ENV.worktreeRoot, t.id);
   const limit = t.maxRetries ?? ENV.maxRetries;
   const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
@@ -793,7 +806,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return { id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr };
-  const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+  const testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
   let priorFailure;
   let driftedOnce = false;
   let lastFilesWritten = [];
@@ -852,7 +865,7 @@ ${setupResult.tail}`), promptTokens, completionTokens };
     if (sweepErr) {
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens };
     }
-    const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
+    const testHashAfter = await deps.fileHash(path3.resolve(wt, t.test.path));
     if (testHashBefore !== null && testHashAfter !== testHashBefore) {
       return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
     }
@@ -963,10 +976,10 @@ function validate(plan) {
       throw new Error(`task ${t.id}: filesInScope is required (array of relative paths)`);
     if (!t.gate || !Array.isArray(t.gate.commands))
       throw new Error(`task ${t.id}: gate.commands is required (array of strings)`);
-    if (t.test.path.includes("..") || path.isAbsolute(t.test.path))
+    if (t.test.path.includes("..") || path3.isAbsolute(t.test.path))
       throw new Error(`task ${t.id}: test.path must be a relative path with no ".." segments`);
     for (const f of t.filesInScope)
-      if (f.includes("..") || path.isAbsolute(f))
+      if (f.includes("..") || path3.isAbsolute(f))
         throw new Error(`task ${t.id}: filesInScope entry "${f}" must be a relative path with no ".." segments`);
     for (const cmd of t.gate.commands) {
       if (!cmd || typeof cmd !== "string")
@@ -1070,7 +1083,7 @@ async function runCanary(plan) {
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
   await git(["branch", "-f", ENV.integration, ENV.base]);
-  integrationWorktree = path.resolve(ENV.reportDir, "integration-wt");
+  integrationWorktree = path3.resolve(ENV.reportDir, "integration-wt");
   await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
   });
   await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {
@@ -1090,7 +1103,7 @@ async function runCanary(plan) {
     const t0 = Date.now();
     const r = await runTask({ ...task, id: `canary-${task.id}` }, model, apiBaseUrl, apiKey);
     results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note });
-    await git(["worktree", "remove", "--force", path.resolve(ENV.worktreeRoot, `canary-${task.id}`)]).catch(() => {
+    await git(["worktree", "remove", "--force", path3.resolve(ENV.worktreeRoot, `canary-${task.id}`)]).catch(() => {
     });
     await git(["branch", "-D", `farm/canary-${task.id}`]).catch(() => {
     });
@@ -1098,7 +1111,7 @@ async function runCanary(plan) {
   await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
   });
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
-  await writeFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
+  await writeFile2(path3.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
   const summary = [
     "\nCanary results (best first):",
     ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`),
@@ -1114,7 +1127,7 @@ async function main() {
   const args = process.argv.slice(2);
   const canary = args.includes("--canary");
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
-  const plan = JSON.parse(await readFile(planPath, "utf8"));
+  const plan = JSON.parse(await readFile2(planPath, "utf8"));
   validate(plan);
   if (plan.meta.setup) {
     for (const t of plan.tasks) if (t.setup === void 0) t.setup = plan.meta.setup;
@@ -1124,8 +1137,8 @@ async function main() {
   const runId = mintRunId();
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
-  const resultsStream = path.join(ENV.reportDir, "farm-results.jsonl");
-  await writeFile(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
+  const resultsStream = path3.join(ENV.reportDir, "farm-results.jsonl");
+  await writeFile2(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
   const done = /* @__PURE__ */ new Map();
   const blocked = [];
   let aborted = false;
@@ -1133,7 +1146,7 @@ async function main() {
     const branchResult = await git(["branch", "-f", ENV.integration, ENV.base]);
     if (branchResult.code !== 0)
       throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
-    integrationWorktree = path.resolve(ENV.reportDir, "integration-wt");
+    integrationWorktree = path3.resolve(ENV.reportDir, "integration-wt");
     await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
     });
     await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {
@@ -1193,7 +1206,7 @@ async function main() {
                 status: "escalate",
                 attempts: 0,
                 branch: `farm/${id2}`,
-                worktree: path.resolve(ENV.worktreeRoot, id2),
+                worktree: path3.resolve(ENV.worktreeRoot, id2),
                 note: `crashed: ${e?.message ?? e}${e?.stack ? `
 ${String(e.stack).slice(0, 1500)}` : ""}`
               }
@@ -1233,25 +1246,25 @@ ABORTED by circuit breaker \u2014 escalation rate exceeded ${ENV.abortEscalation
 Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
-    `Report: ${path.join(ENV.reportDir, "farm-report.md")}`,
+    `Report: ${path3.join(ENV.reportDir, "farm-report.md")}`,
     ""
   ].join("\n");
   await new Promise((resolve) => process.stdout.write(summary, () => resolve()));
   process.exit(exitCode);
 }
 async function writeReport(plan, results, blocked, aborted, runId) {
-  await mkdir(path.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {
+  await mkdir(path3.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {
   });
   for (const r of results) {
     const d = await git(["diff", `${ENV.base}...${r.branch}`]);
     if (d.code === 0 && d.out.trim())
-      await writeFile(path.join(ENV.reportDir, "diffs", `${r.id}.patch`), d.out).catch(() => {
+      await writeFile2(path3.join(ENV.reportDir, "diffs", `${r.id}.patch`), d.out).catch(() => {
       });
   }
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
-  await writeFile(
-    path.join(ENV.reportDir, "farm-report.json"),
+  await writeFile2(
+    path3.join(ENV.reportDir, "farm-report.json"),
     JSON.stringify({ run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2)
   );
   const md = [
@@ -1270,12 +1283,12 @@ async function writeReport(plan, results, blocked, aborted, runId) {
     ...results.filter((r) => r.status === "escalate").map((r) => `- **${r.id}** \u2014 worktree \`${r.worktree}\`, branch \`${r.branch}\`. ${r.note ?? ""}`),
     ``,
     `## Warnings \u2014 review during spec-compliance`,
-    ...results.filter((r) => r.warning).map((r) => `- **${r.id}** \u2014 ${r.warning} (diff: \`${path.join(ENV.reportDir, "diffs", r.id + ".patch")}\`)`)
+    ...results.filter((r) => r.warning).map((r) => `- **${r.id}** \u2014 ${r.warning} (diff: \`${path3.join(ENV.reportDir, "diffs", r.id + ".patch")}\`)`)
   ].join("\n");
-  await writeFile(path.join(ENV.reportDir, "farm-report.md"), md);
+  await writeFile2(path3.join(ENV.reportDir, "farm-report.md"), md);
 }
 var _thisFile = fileURLToPath(import.meta.url);
-var _entryFile = path.resolve(process.argv[1] ?? "");
+var _entryFile = path3.resolve(process.argv[1] ?? "");
 if (_thisFile === _entryFile) {
   main().catch((e) => {
     console.error(e);
