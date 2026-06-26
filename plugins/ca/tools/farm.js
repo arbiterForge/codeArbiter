@@ -23,12 +23,15 @@ function treeKill(child) {
   } catch {
   }
 }
+function scrubbedEnv(extra) {
+  const env = { ...process.env, ...extra ?? {} };
+  delete env.FARM_API_KEY;
+  delete env.CLAUDE_CODE_OAUTH_TOKEN;
+  return env;
+}
 function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
   return new Promise((resolve) => {
-    const childEnv = { ...process.env };
-    delete childEnv.FARM_API_KEY;
-    delete childEnv.CLAUDE_CODE_OAUTH_TOKEN;
-    const c = spawn(cmd, args, { cwd, env: childEnv, ...opts });
+    const c = spawn(cmd, args, { cwd, env: scrubbedEnv(), ...opts });
     let stdout = "";
     let stderr = "";
     let settled = false;
@@ -221,7 +224,7 @@ async function mutationCheck(wt, task) {
     const r = await new Promise((resolve) => {
       const c = spawn2(SHELL_BIN, [SHELL_FLAG, MUT.cmd], {
         cwd: wt,
-        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
+        env: scrubbedEnv({ FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd }),
         ...SHELL_OPTS
       });
       let out = "";
