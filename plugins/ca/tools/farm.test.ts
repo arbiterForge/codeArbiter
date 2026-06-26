@@ -964,6 +964,55 @@ describe("farm.ts smoke tests", () => {
     expect(integB).toContain("export const b = 2;");
   });
 
+  it("best-of-N (FARM_SAMPLES>1) draws N samples in real isolated worktrees, accepts a green one, and cleans up scratch worktrees", async () => {
+    // Real-worktree validation of F1 (stubs can't exercise git worktree add /
+    // cleanup / winner materialization). The mock returns a valid impl for every
+    // sample, so all samples pass the gate and the first (index 0) is accepted.
+    let calls = 0;
+    ({ server: mockServer, port } = await startMockServer(() => {
+      calls++;
+      return ["```typescript", "// path: src/hello.ts", "export function hello() { return 'hello'; }", "```"].join("\n");
+    }));
+
+    const plan = {
+      meta: { name: "best-of-n", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_SAMPLES: "3", FARM_TEMPERATURE: "0.5" });
+    if (result.code !== 0) console.error("BEST-OF-N OUTPUT:", result.out);
+
+    expect(result.code).toBe(0);
+    expect(result.out).toContain("green=1");
+    // One worker call PER sample for the single task → exactly 3.
+    expect(calls).toBe(3);
+
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("green");
+    expect(report.results[0].samples).toBe(3);
+
+    // The winning impl actually landed on the integration branch.
+    const integHello = execSync("git show farm/integration:src/hello.ts", { cwd: tmpDir, encoding: "utf8" });
+    expect(integHello).toContain("export function hello()");
+
+    // Scratch sample worktrees AND the task worktree are removed on success.
+    expect(existsSync(join(tmpDir, ".farm/worktrees/task-a__s0"))).toBe(false);
+    expect(existsSync(join(tmpDir, ".farm/worktrees/task-a__s2"))).toBe(false);
+    expect(existsSync(join(tmpDir, ".farm/worktrees/task-a"))).toBe(false);
+  });
+
   it("is safe to run twice in a row (stale branches cleaned)", async () => {
     ({ server: mockServer, port } = await startMockServer((body) => {
       const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";

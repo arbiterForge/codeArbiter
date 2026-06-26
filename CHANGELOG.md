@@ -6,6 +6,20 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.6.0] — 2026-06-26
+
+Farm first-time-go accuracy — Slice 1 of the `docs/reports/2026-06-26-farm/` deep-review (F8 worker-sandboxing descoped to an ADR; F3 auto-context is Slice 2). The `--farm` backend remains a Feature Forge preview, off by default; these are opt-in worker-quality levers that spend the cheap (worker-token) axis, with the single-sample path behaviorally unchanged.
+
+### Added
+- **Best-of-N sampling against the gate (`FARM_SAMPLES`, default 1).** Because the gate is a deterministic pass/fail oracle and each task runs in an isolated worktree, N candidates are drawn in parallel and the first to pass the gate is accepted. Each sample runs in its own scratch worktree cut from the integration HEAD; the winner's files are taken into the task worktree and merged, the losers discarded. Total in-flight worker calls never exceed `FARM_CONCURRENCY` — a shared limiter, so sampling shares the budget rather than multiplying it. `FARM_SAMPLES=1` is byte-for-byte today's single-candidate path (pinned by a regression test). (report F1)
+- **Sampling parameters on the worker call (`FARM_TEMPERATURE`, `FARM_MAX_TOKENS`).** The chat body now carries `temperature` (default 0; auto-bumped to 0.7 when `FARM_SAMPLES>1` so samples diversify) and an optional `max_tokens` cap (default unset = provider default, today's behavior). (report F4)
+- **Best-of-N cost transparency.** `farm-report.json` records both the summed sample-token spend and the accepted candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`), so the N×-tokens trade-off is visible rather than hidden. (report F1)
+
+### Changed
+- **Retries are now iterative.** On a retry — a failed gate, or a sampling round with no green — the worker is shown its own previous in-scope output, not just the gate-failure tail, so it refines rather than restarts blind. The prior output rides the same `FARM_ENRICH_MAX_BYTES` byte-cap and secret-redaction chokepoint as all injected context; out-of-scope drift is never carried forward. (report F2)
+
+---
+
 ## [2.5.2] — 2026-06-25
 
 Deep-review (`docs/reports/2026-06-24-root/`) remediation, in two parts. The quick-kill batch is mechanical robustness, diagnosability, and hot-path hardening with no enforcement-behavior change (guard matrix, cold-install, and statusline render verified unchanged or byte-identical). The HARD-GATE batch closes real gaps in the crypto/secret commit gate and the append-only audit guards; each enforcement change shipped test-first (a RED test proving the gap, then the fix), with the full guard matrix, cold-install, migration backstop, and hook unit suites green.

@@ -230,6 +230,49 @@ export function run(
 const git: GitRunner = (args, cwd) => run("git", args, cwd);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// --------------------------------------------------------------------------
+// Concurrency limiter (F1). A shared worker-call budget so best-of-N sampling
+// (up to FARM_SAMPLES worker calls per task) never exceeds FARM_CONCURRENCY
+// TOTAL in-flight calls, across tasks AND their samples (AC-F1.4). With
+// FARM_SAMPLES=1 each task makes exactly one call and the scheduler already caps
+// concurrent tasks at the same bound, so the limiter never blocks — behavior is
+// identical to today. A job that throws still releases its slot (no leak).
+// --------------------------------------------------------------------------
+export type Limiter = { run<T>(fn: () => Promise<T>): Promise<T>; active(): number };
+export function createLimiter(max: number): Limiter {
+  const cap = Math.max(1, Math.floor(max) || 1);
+  let active = 0;
+  const queue: Array<() => void> = [];
+  const pump = () => {
+    if (active < cap && queue.length) {
+      active++;
+      queue.shift()!();
+    }
+  };
+  const acquire = () =>
+    new Promise<void>((resolve) => {
+      queue.push(resolve);
+      pump();
+    });
+  const release = () => {
+    active--;
+    pump();
+  };
+  return {
+    async run(fn) {
+      await acquire();
+      try {
+        return await fn();
+      } finally {
+        release();
+      }
+    },
+    active: () => active,
+  };
+}
+// Shared worker-call budget, sized to FARM_CONCURRENCY at module load.
+const workerLimit = createLimiter(ENV.concurrency);
+
 // Commit without signing — the farm makes mechanical commits; signing servers
 // in CI environments reject unattended commits and would be misreported as
 // merge conflicts. The integration PR the human opens is the signed artifact.
@@ -305,7 +348,10 @@ async function readWorktreeFile(wt: string, relPath: string): Promise<string | n
 // without touching buildPrompt or the call site. (T-04 does the injection +
 // shared reader only — cap and redaction are explicitly NOT done here.)
 // --------------------------------------------------------------------------
-export type InjectedFile = { path: string; contents: string; readOnly: boolean };
+// `prior` (F2): this file is the worker's OWN output from a FAILED previous
+// attempt, captured before the inter-attempt reset and shown read-only so a
+// retry refines rather than restarts. Rendered in its own labeled section.
+export type InjectedFile = { path: string; contents: string; readOnly: boolean; prior?: boolean };
 
 // AC-05 secret redaction. NEW code — there is no existing in-code secret sweep
 // to reuse (the repo's sweep is the manual/hook layer per tech-stack.md). This
@@ -393,7 +439,11 @@ export function redactSecrets(contents: string): string {
 // secret redaction (here) wrap every injected file body. Keep this the only
 // place injected file bodies are formatted so the boundary stays in one spot.
 function renderInjectedFile(file: InjectedFile): string {
-  const label = file.readOnly ? `${file.path} (read-only — the failing test)` : file.path;
+  const label = file.prior
+    ? `${file.path} (your previous attempt — FAILED)`
+    : file.readOnly
+      ? `${file.path} (read-only — the failing test)`
+      : file.path;
   return [`--- ${label} ---`, redactSecrets(file.contents)].join("\n");
 }
 
@@ -441,7 +491,11 @@ function capInjected(injected: InjectedFile[], maxBytes: number): InjectedFile[]
   return out;
 }
 
-async function buildEnrichment(wt: string, t: Task): Promise<InjectedFile[]> {
+async function buildEnrichment(
+  wt: string,
+  t: Task,
+  priorInScope: Array<{ path: string; contents: string }> = [],
+): Promise<InjectedFile[]> {
   const injected: InjectedFile[] = [];
   const seen = new Set<string>();
 
@@ -477,6 +531,15 @@ async function buildEnrichment(wt: string, t: Task): Promise<InjectedFile[]> {
     seen.add(f);
   }
 
+  // F2: the worker's OWN prior failed in-scope output (captured before the
+  // inter-attempt reset). Appended AFTER current files so the byte cap truncates
+  // prior context FIRST — the current baseline keeps budget priority. Same
+  // secret-bearing-filename denylist as everything else that leaves the boundary.
+  for (const pf of priorInScope) {
+    if (isSecretBearingFilename(pf.path)) continue;
+    injected.push({ path: pf.path, contents: pf.contents, readOnly: true, prior: true });
+  }
+
   // AC-05: byte-cap the TOTAL injected context before it leaves the trust
   // boundary. Redaction is applied per-file inside renderInjectedFile (the
   // chokepoint), but the truncation stub here means contents already carry the
@@ -485,21 +548,56 @@ async function buildEnrichment(wt: string, t: Task): Promise<InjectedFile[]> {
   return capInjected(injected, ENV.enrichMaxBytes);
 }
 
+// F2: snapshot the worker's in-scope output from the worktree BEFORE the
+// inter-attempt reset wipes it, so the next attempt can refine rather than
+// restart blind. Reads only filesInScope (never the read-only test, never a
+// secret-bearing filename), through the shared reader; a not-yet-written file is
+// skipped. Out-of-scope drift is never in filesInScope, so it is never captured
+// (AC-F2.2).
+export async function captureInScope(
+  wt: string,
+  t: Task,
+): Promise<Array<{ path: string; contents: string }>> {
+  const out: Array<{ path: string; contents: string }> = [];
+  for (const f of t.filesInScope) {
+    if (f === t.test.path) continue;
+    if (isSecretBearingFilename(f)) continue;
+    const src = await readWorktreeFile(wt, f);
+    if (src === null) continue;
+    out.push({ path: f, contents: src });
+  }
+  return out;
+}
+
 // --------------------------------------------------------------------------
 // worker prompt
 // --------------------------------------------------------------------------
-function buildPrompt(
+export function buildPrompt(
   t: Task,
   injected: InjectedFile[],
   priorFailure?: string,
   forbiddenExtra?: string[],
 ) {
-  const enrichment = injected.length
+  // F2: split current source (the baseline + the read-only test) from the
+  // worker's prior failed output, so each renders in its own clearly-labeled
+  // section. A retry then sees BOTH what to build against and what it tried last.
+  const current = injected.filter((f) => !f.prior);
+  const priorFiles = injected.filter((f) => f.prior);
+  const enrichment = current.length
     ? [
         ``,
         `Current source of the relevant files (the test is read-only; implement against it):`,
         ``,
-        ...injected.map(renderInjectedFile),
+        ...current.map(renderInjectedFile),
+        ``,
+      ]
+    : [];
+  const priorBlock = priorFiles.length
+    ? [
+        ``,
+        `Your PREVIOUS attempt FAILED the gate. Here is what you wrote last time — do NOT just repeat it; change it to fix the cause shown at the end:`,
+        ``,
+        ...priorFiles.map(renderInjectedFile),
         ``,
       ]
     : [];
@@ -519,6 +617,7 @@ function buildPrompt(
       ? `\nYour previous attempt wrote these FORBIDDEN paths — do NOT touch them again:\n${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}`
       : ``,
     ...enrichment,
+    ...priorBlock,
     `Solve the task with REAL logic. Do not hard-code the literal values the`,
     `test asserts — an implementation that only returns the expected constant`,
     `will be rejected.`,
@@ -632,11 +731,43 @@ export function parseChatCompletion(
   return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
 }
 
+// --------------------------------------------------------------------------
+// Sampling parameters (F4). Today the request body is only {model, messages};
+// without a `temperature` the provider default applies and best-of-N samples
+// cannot diversify, and an unbounded completion can run past the request budget.
+// `readSampling` reads the knobs LIVE from the environment (FARM_TEMPERATURE
+// default 0 — deterministic, closest to "make the test pass"; FARM_MAX_TOKENS
+// default 0 = omit, preserving today's unbounded behavior). `buildChatBody`
+// renders the OpenAI-compatible body; max_tokens is included ONLY when > 0 so
+// the default body is byte-equivalent to today plus the explicit temperature.
+// An explicit `sampling` override is the seam runTask uses to vary temperature
+// per run (the best-of-N auto-bump, AC-F1.3).
+// --------------------------------------------------------------------------
+export type Sampling = { temperature: number; maxTokens: number };
+
+export function readSampling(): Sampling {
+  return {
+    temperature: Number(process.env.FARM_TEMPERATURE ?? 0),
+    maxTokens: Number(process.env.FARM_MAX_TOKENS ?? 0),
+  };
+}
+
+export function buildChatBody(
+  model: string,
+  messages: Array<{ role: string; content: string }>,
+  sampling: Sampling = readSampling(),
+): Record<string, unknown> {
+  const body: Record<string, unknown> = { model, messages, temperature: sampling.temperature };
+  if (sampling.maxTokens > 0) body.max_tokens = sampling.maxTokens;
+  return body;
+}
+
 async function callApi(
   prompt: string,
   model: string,
   apiBaseUrl: string,
   apiKey: string,
+  sampling: Sampling = readSampling(),
 ): Promise<{ ok: true; content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } } | { ok: false; error: string }> {
   for (let attempt = 0; attempt <= ENV.apiMaxRetries; attempt++) {
     const ctrl = new AbortController();
@@ -649,10 +780,7 @@ async function callApi(
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: "user", content: prompt }],
-        }),
+        body: JSON.stringify(buildChatBody(model, [{ role: "user", content: prompt }], sampling)),
         signal: ctrl.signal,
       });
     } catch (e) {
@@ -706,8 +834,9 @@ async function runWorker(
   apiBaseUrl: string,
   apiKey: string,
   forbidden: Set<string>,
+  sampling?: Sampling,
 ): Promise<WorkerResult> {
-  const api = await callApi(prompt, model, apiBaseUrl, apiKey);
+  const api = await callApi(prompt, model, apiBaseUrl, apiKey, sampling ?? readSampling());
   if (!api.ok) return { ok: false, filesWritten: [], error: api.error };
 
   const blocks = extractFileBlocks(api.content);
@@ -766,6 +895,10 @@ export type WorkerContext = {
   apiBaseUrl: string;
   apiKey: string;
   forbidden: Set<string>;
+  // F4/F1: the effective sampling for this worker call. runTask computes it
+  // (FARM_TEMPERATURE, with the best-of-N auto-bump applied per AC-F1.3) and
+  // threads it here; absent → the worker reads the live env defaults.
+  sampling?: Sampling;
 };
 
 export interface Worker {
@@ -775,7 +908,7 @@ export interface Worker {
 // Default worker: the existing blind HTTP-chat author, unchanged.
 export const httpWorker: Worker = {
   apply: (ctx) =>
-    runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden),
+    runWorker(ctx.cwd, ctx.prompt, ctx.model, ctx.apiBaseUrl, ctx.apiKey, ctx.forbidden, ctx.sampling),
 };
 
 // --------------------------------------------------------------------------
@@ -1086,6 +1219,13 @@ type Result = {
   promptTokens?: number;
   completionTokens?: number;
   mutationScore?: number | null;
+  // F1/AC-F1.6: best-of-N cost transparency. `samples` = candidates drawn for
+  // the accepted attempt; `promptTokens`/`completionTokens` already SUM every
+  // sample (total spend), and these expose the ACCEPTED candidate's own tokens
+  // so the report can show accepted-vs-total. Absent / equal at FARM_SAMPLES=1.
+  samples?: number;
+  acceptedPromptTokens?: number;
+  acceptedCompletionTokens?: number;
   // observability-003 (T-07c): run-level correlation id, stamped onto every
   // result before it is appended to farm-results.jsonl, so concurrent farm runs
   // writing to the same .farm/ directory produce distinguishable lines that tie
@@ -1153,6 +1293,141 @@ const defaultRunTaskDeps = (): RunTaskDeps => ({
   withMergeLock,
 });
 
+// F1 — effective sampling for a run. AC-F1.3: N>1 with a deterministic
+// temperature 0 produces N identical samples, which defeats best-of-N; bump to a
+// diversifying default (logged) unless the operator set FARM_TEMPERATURE.
+function effectiveSampling(samples: number): Sampling {
+  const s = readSampling();
+  // Bump only when the temperature is an UNSET default 0. An operator who set
+  // FARM_TEMPERATURE explicitly — including to 0 — gets exactly what they asked
+  // for; the stderr hint ("set FARM_TEMPERATURE to override") would otherwise lie
+  // for the explicit-0 case.
+  const explicit = (process.env.FARM_TEMPERATURE ?? "") !== "";
+  if (samples > 1 && s.temperature === 0 && !explicit) {
+    process.stderr.write(
+      `[FARM] FARM_SAMPLES=${samples} with no FARM_TEMPERATURE set — bumping temperature to 0.7 so samples diversify (set FARM_TEMPERATURE to override)\n`,
+    );
+    return { ...s, temperature: 0.7 };
+  }
+  return s;
+}
+
+// F1 — materialize the winning sample's in-scope files into the task worktree,
+// so the unchanged post-selection pipeline (sweep/tamper/drift/gate/anti-gaming/
+// commit/merge) runs against `wt` exactly as in the single-sample path. Only
+// in-scope impl files are written (the test is already present in `wt`); a path
+// that would escape the worktree is refused (defense-in-depth — winner files are
+// in-scope already).
+async function writeFilesInto(wt: string, files: Array<{ path: string; contents: string }>): Promise<void> {
+  for (const f of files) {
+    const abs = path.resolve(wt, f.path);
+    if (!isInside(wt, abs)) continue;
+    await mkdir(path.dirname(abs), { recursive: true });
+    await writeFile(abs, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
+  }
+}
+
+// F1 — one best-of-N sample: a full candidate gating (worker → containment sweep
+// → test-tamper → drift → gate) in an isolated scratch worktree cut from
+// integration HEAD. Drawn through the shared worker-call limiter (AC-F1.4). On
+// green it captures the in-scope impl files so the winner can be materialized
+// into the task worktree.
+type SampleOutcome = {
+  green: boolean;
+  filesWritten: string[];
+  files: Array<{ path: string; contents: string }>;
+  inScope: Array<{ path: string; contents: string }>;
+  note?: string;
+  promptTokens: number;
+  completionTokens: number;
+  wt: string;
+  branch: string;
+};
+
+async function bestOfN(
+  t: Task,
+  prompt: string,
+  model: string,
+  apiBaseUrl: string,
+  apiKey: string,
+  sampling: Sampling,
+  forbidden: Set<string>,
+  allowed: Set<string>,
+  n: number,
+  deps: RunTaskDeps,
+): Promise<{
+  winner: SampleOutcome | null;
+  bestFailure: SampleOutcome | null;
+  promptTokens: number;
+  completionTokens: number;
+}> {
+  // All sample worktrees are cut from the same integration HEAD as the task
+  // worktree, so they share the baseline the single `prompt` was enriched
+  // against — the prompt is reused rather than rebuilt per sample.
+  // Samples are cut from the TASK branch (a frozen snapshot of integration HEAD
+  // at task start) — NOT from the live `farm/integration` ref — so every sample
+  // shares the EXACT baseline the task worktree re-gates and merges against
+  // (AC-F1.2). This is immune to a non-overlapping sibling task moving
+  // farm/integration mid-flight (which would otherwise gate a sample against a
+  // newer baseline than the task worktree, causing a false escalation).
+  const taskBranch = `farm/${t.id}`;
+  const runSample = (k: number): Promise<SampleOutcome> =>
+    workerLimit.run(async () => {
+      const branch = `farm/${t.id}__s${k}`;
+      const wt = path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
+      const base: SampleOutcome = {
+        green: false, filesWritten: [], files: [], inScope: [], promptTokens: 0, completionTokens: 0, wt, branch,
+      };
+      try {
+        const prep = await deps.prepareWorktree(branch, wt, taskBranch);
+        if (prep) return { ...base, note: prep };
+        if (t.setup && t.setup.length > 0) {
+          const sr = await deps.runGate(wt, t.setup);
+          if (!sr.ok) return { ...base, note: redactSecrets(`setup failed: ${sr.failed}\n${sr.tail}`) };
+        }
+        const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+        const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
+        const pt = w.promptTokens ?? 0;
+        const ct = w.completionTokens ?? 0;
+        if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
+        const sweep = postApplySweep(wt, w.filesWritten, forbidden);
+        if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
+        const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
+        if (testHashBefore !== null && testHashAfter !== testHashBefore)
+          return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
+        const drift = await deps.checkDrift(wt, allowed);
+        if (drift.length > 0)
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
+        const gate = await deps.runGate(wt, t.gate.commands);
+        if (!gate.ok)
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
+        const inScope = await captureInScope(wt, t);
+        return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
+      } catch (e) {
+        // A sample that THROWS (fs/git error mid-flight) must still resolve to a
+        // failure OUTCOME, not reject — so Promise.all below never rejects and the
+        // cleanup loop always removes every scratch worktree (M1: no leak on the
+        // exception path). `base` already carries this sample's wt/branch.
+        return { ...base, note: `sample error: ${e instanceof Error ? e.message : String(e)}` };
+      }
+    });
+
+  const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
+  const promptTokens = outcomes.reduce((s, o) => s + o.promptTokens, 0);
+  const completionTokens = outcomes.reduce((s, o) => s + o.completionTokens, 0);
+  // First green by sample index wins (deterministic; avoids a wall-clock race).
+  const winner = outcomes.find((o) => o.green) ?? null;
+  // Best failure to seed the retry: prefer one that reached the gate (has its
+  // in-scope output for F2), else any failure.
+  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
+  // Discard every sample worktree — the winner's files are already captured.
+  for (const o of outcomes) {
+    await deps.git(["worktree", "remove", "--force", o.wt]).catch(() => {});
+    await deps.git(["branch", "-D", o.branch]).catch(() => {});
+  }
+  return { winner, bestFailure, promptTokens, completionTokens };
+}
+
 export async function runTask(
   t: Task,
   model: string,
@@ -1170,6 +1445,14 @@ export async function runTask(
   const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
   const forbidden = new Set([t.test.path]);
+  // F1: best-of-N. FARM_SAMPLES read live (default 1 = today's single-candidate
+  // path). A non-numeric / non-finite value falls back to 1 rather than poisoning
+  // the run with NaN — `Math.max(1, NaN)` is NaN, which would empty every sample
+  // batch and silently mass-escalate the run. `sampling` carries the temperature
+  // (auto-bumped when N>1, AC-F1.3).
+  const rawSamples = Number(process.env.FARM_SAMPLES ?? 1);
+  const samples = Number.isFinite(rawSamples) ? Math.max(1, Math.floor(rawSamples)) : 1;
+  const sampling = effectiveSampling(samples);
 
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
@@ -1180,13 +1463,31 @@ export async function runTask(
   let priorFailure: string | undefined;
   let driftedOnce = false;
   let lastFilesWritten: string[] = [];
+  // F2: the failed attempt's in-scope output, captured before each reset and
+  // shown read-only to the next attempt (empty on the first attempt).
+  let priorInScope: Array<{ path: string; contents: string }> = [];
+  // F1/AC-F1.6: the accepted candidate's own token spend (vs the summed total).
+  let acceptedPromptTokens = 0;
+  let acceptedCompletionTokens = 0;
   let promptTokens = 0;
   let completionTokens = 0;
   let lastWarning: string | undefined;
   let mutationScore: number | null = null;
 
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
-    if (attempt > 1) await deps.resetWorktree(wt); // never accumulate stale files
+    if (attempt > 1) {
+      // F2: snapshot the failed attempt's in-scope output BEFORE the reset wipes
+      // it, so the next attempt refines against what it wrote rather than
+      // restarting from the baseline blind. Out-of-scope drift is not captured.
+      // Only meaningful for the single-sample path (which writes into `wt`); under
+      // best-of-N `priorInScope` is seeded explicitly from the best failing sample
+      // below, so the task worktree (never sample-written) must not clobber it.
+      // And only re-show output the worker ACTUALLY wrote: if the prior attempt
+      // failed at the API level (no files written), captureInScope would return the
+      // inherited baseline, which must not be mislabeled "your previous attempt".
+      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
+      await deps.resetWorktree(wt); // never accumulate stale files
+    }
 
     // Per-worktree setup (#92): run dependency-setup commands in the worktree
     // before the worker. Runs every attempt because the reset above wipes
@@ -1197,29 +1498,54 @@ export async function runTask(
     if (t.setup && t.setup.length > 0) {
       const setupResult = await deps.runGate(wt, t.setup);
       if (!setupResult.ok)
-        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `setup failed: ${setupResult.failed}\n${setupResult.tail}`, promptTokens, completionTokens };
+        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: redactSecrets(`setup failed: ${setupResult.failed}\n${setupResult.tail}`), promptTokens, completionTokens };
     }
 
     // Enrichment (AC-03/AC-04): read the per-attempt worktree state — AFTER any
     // reset above — so the test source and existing in-scope file contents
     // reflect what the worker would actually see this attempt.
-    const injected = await buildEnrichment(wt, t);
+    const injected = await buildEnrichment(wt, t, priorInScope);
 
-    const worker = await deps.worker.apply({
-      cwd: wt,
-      prompt: buildPrompt(t, injected, priorFailure, driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : undefined),
-      model: effectiveModel,
-      apiBaseUrl,
-      apiKey,
-      forbidden,
-    });
-    promptTokens += worker.promptTokens ?? 0;
-    completionTokens += worker.completionTokens ?? 0;
-    lastFilesWritten = worker.filesWritten;
+    const forbiddenExtra = driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : undefined;
+    const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
 
-    if (!worker.ok) {
-      priorFailure = `worker error: ${worker.error}`;
-      continue;
+    let worker: WorkerResult;
+    if (samples <= 1) {
+      // Single-sample path — identical to today (one worker call into the task
+      // worktree), now drawn through the shared limiter (a no-op at N=1).
+      worker = await workerLimit.run(() =>
+        deps.worker.apply({ cwd: wt, prompt, model: effectiveModel, apiBaseUrl, apiKey, forbidden, sampling }),
+      );
+      promptTokens += worker.promptTokens ?? 0;
+      completionTokens += worker.completionTokens ?? 0;
+      acceptedPromptTokens = worker.promptTokens ?? 0;
+      acceptedCompletionTokens = worker.completionTokens ?? 0;
+      lastFilesWritten = worker.filesWritten;
+      if (!worker.ok) {
+        priorFailure = redactSecrets(`worker error: ${worker.error}`);
+        continue;
+      }
+    } else {
+      // Best-of-N (AC-F1.2): draw `samples` candidates concurrently in isolated
+      // scratch worktrees, gate each, accept the first green. The winner's files
+      // are materialized into `wt`; the post-selection pipeline below then runs
+      // against `wt` UNCHANGED. No green → seed the retry from the best failure
+      // (its in-scope output, per F2) and loop (AC-F1.5). Token spend across ALL
+      // samples is summed; the winner's own tokens are recorded separately (AC-F1.6).
+      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps);
+      promptTokens += sel.promptTokens;
+      completionTokens += sel.completionTokens;
+      acceptedPromptTokens = sel.winner?.promptTokens ?? 0;
+      acceptedCompletionTokens = sel.winner?.completionTokens ?? 0;
+      if (!sel.winner) {
+        lastFilesWritten = sel.bestFailure?.filesWritten ?? [];
+        priorInScope = sel.bestFailure?.inScope ?? [];
+        priorFailure = sel.bestFailure?.note ?? "all samples failed the gate";
+        continue;
+      }
+      await writeFilesInto(wt, sel.winner.files);
+      worker = { ok: true, filesWritten: sel.winner.filesWritten };
+      lastFilesWritten = worker.filesWritten;
     }
 
     // Post-apply containment sweep (D6) — task-level enforcement over the
@@ -1338,7 +1664,7 @@ export async function runTask(
 
     // success — drop the worktree (branch stays, merged into integration)
     await deps.git(["worktree", "remove", "--force", wt]).catch(() => {});
-    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore };
+    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens };
   }
 
   // worktree intentionally left in place for inspection

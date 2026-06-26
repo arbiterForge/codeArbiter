@@ -620,3 +620,63 @@ covered by the two-pass review's no-enforcement-weakening check — not promoted
 
 Real catch worth the run: an untested error path is now covered and a hung farm command can no longer
 wedge a walk-away run — clean green throughout, enforcement surface untouched.
+
+---
+
+# Sprint — farm-sampling-context (best-of-N + retry feedback + auto-context) · 2026-06-26 (autonomous; user asleep)
+
+Spec `.codearbiter/specs/farm-sampling-context.md`, plan `plans/farm-sampling-context.md` — APPROVED at
+the Phase-1 gate by brennonhuff@gmail.com. Premium backend (NOT --farm — the farm tool is the subject).
+Branch `feat/farm-best-of-n` off `main`. User: "approve, unless hard gate you cannot pass with SMARTS;
+do not stop to ask a question until there is a PR." Slice 1 = F4+F2+F1; Slice 2 (F3) planned after Slice
+1 merges. F8 descoped to an ADR at the gate. Origin: docs/reports/2026-06-26-farm/report.md.
+
+## D0 — execution strategy · confidence: low
+- Options: (a) one fresh subagent per task per subagent-driven-development; (b) coherent single author
+  (orchestrator, full farm.ts context) + independent review-agent passes before the PR.
+- SMARTS: Maintainable/Reliable favor (b) — the 11 Slice-1 tasks are deeply coupled on runTask + the
+  scheduler; 11 blind subagents each re-deriving 1868-line context risks integration drift. The sprint's
+  load-bearing property (independent review before acceptance) is preserved by dispatching fresh
+  reviewers. Mirrors prior accepted calls D-01 (ux-conversion) and SD-B2 (session-hygiene).
+- Chosen: (b). Strength: moderate. Confidence: LOW (process deviation — flagged for morning review).
+
+## D1 — F4 default knobs · confidence: high
+- FARM_TEMPERATURE default 0 (deterministic, closest to "make the test pass"); FARM_MAX_TOKENS default 0
+  = omit (preserve today's unbounded behavior; opt-in cap). Defaults make single-sample == today. Strong.
+
+## D2 — best-of-N concurrency model (AC-F1.2/F1.4) · confidence: low
+- Spec says samples run concurrently in isolated per-sample worktrees under a shared FARM_CONCURRENCY
+  budget. Faithful but higher-risk. If per-sample worktree promotion threatens correctness within the
+  run, the SMARTS fallback is sequential-in-worktree sampling (still raises acceptance via diversified
+  retries) with the AC-F1.2 "concurrently" deviation logged — rather than shipping unverified
+  concurrent-git or stopping. Strength: moderate. Confidence: LOW.
+
+## D3 — FARM_SAMPLES>1 + FARM_TEMPERATURE=0 auto-bump · confidence: low
+- Bump to 0.7 (conventional diversifying default) with a logged note; N identical temp-0 samples is
+  wasted spend. Strength: moderate. Confidence: LOW.
+
+## Two-pass independent review (per D0) — both PASS/SHIP, dispositions applied
+
+Dispatched read-only with fresh context before the PR (nothing accepted on the author's word):
+- **security-reviewer:** PASS — 0 CRIT/HIGH/MED. Traced all five trust-boundary paths; F2 prior-output
+  re-injection rides the SAME redactSecrets + capInjected + secret-filename-denylist chokepoint; bearer
+  token + assertSecureBaseUrl intact, no new egress channel. One LOW (note-redaction symmetry).
+- **correctness/spec-compliance:** SHIP — 0 BLOCK/HIGH. AC-F1.1/F1.4 verified sound; createLimiter
+  correct; no-winner cleanup verified. Two MEDIUM + three LOW surfaced.
+
+### Dispositions (all applied — confidence high)
+- **M1 (worktree leak if a sample THROWS):** per-sample try/catch returns a failure OUTCOME so
+  Promise.all never rejects and the cleanup loop always runs (+ test: a throwing sample → green sibling
+  still wins).
+- **M2 (sample baseline skew vs the moving farm/integration):** samples now cut from the TASK branch (a
+  frozen integration-at-task-start snapshot) — the exact baseline the task worktree re-gates/merges
+  against. True AC-F1.2 compliance; removes the false-escalation window. Real-worktree smoke test green.
+- **L1 (non-numeric FARM_SAMPLES → NaN mass-escalation):** Number.isFinite guard → falls back to 1 (+ test).
+- **L2 (explicit FARM_TEMPERATURE=0 still bumped):** distinguish unset from explicit 0; bump only when
+  unset (+ test).
+- **L3 (baseline mislabeled "previous attempt" on an API failure):** seed prior-attempt context only when
+  the prior worker actually wrote files.
+- **security LOW (note-redaction symmetry):** worker-error + setup notes now wrapped in redactSecrets,
+  matching the gate/merge notes (single-sample and best-of-N parity).
+
+Verification after fixes: 169 vitest green (+2), typecheck clean, farm.js rebuilt.
