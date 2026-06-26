@@ -1556,6 +1556,7 @@ describe("F1 — best-of-N in runTask", () => {
 
   function bestOfNDeps(opts: {
     gateFailSamples?: number[];
+    throwSamples?: number[];
     workerTokens?: number;
     onWorkerCwd?: (cwd: string) => void;
     capturedSampling?: { value?: Sampling };
@@ -1566,6 +1567,7 @@ describe("F1 — best-of-N in runTask", () => {
         async apply(ctx) {
           opts.onWorkerCwd?.(ctx.cwd);
           if (opts.capturedSampling) opts.capturedSampling.value = ctx.sampling;
+          if (opts.throwSamples?.includes(sampleIdx(ctx.cwd))) throw new Error(`boom s${sampleIdx(ctx.cwd)}`);
           const k = ctx.cwd.match(/__s(\d+)$/)?.[1] ?? "main";
           return { ok: true, filesWritten: [`src/s${k}.ts`], promptTokens: tok, completionTokens: tok * 2 } satisfies WorkerResult;
         },
@@ -1609,7 +1611,7 @@ describe("F1 — best-of-N in runTask", () => {
     expect(r.status).toBe("escalate");
   });
 
-  it("auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE=0 (AC-F1.3)", async () => {
+  it("auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)", async () => {
     process.env.FARM_SAMPLES = "2";
     delete process.env.FARM_TEMPERATURE;
     const cap: { value?: Sampling } = {};
@@ -1617,12 +1619,35 @@ describe("F1 — best-of-N in runTask", () => {
     expect(cap.value?.temperature).toBe(0.7);
   });
 
-  it("does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly", async () => {
+  it("does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)", async () => {
     process.env.FARM_SAMPLES = "2";
     process.env.FARM_TEMPERATURE = "0.2";
     const cap: { value?: Sampling } = {};
     await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ capturedSampling: cap }));
     expect(cap.value?.temperature).toBe(0.2);
+    // explicit 0 means deterministic-on-purpose — must NOT be bumped to 0.7
+    process.env.FARM_TEMPERATURE = "0";
+    const cap0: { value?: Sampling } = {};
+    await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ capturedSampling: cap0 }));
+    expect(cap0.value?.temperature).toBe(0);
+  });
+
+  it("treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)", async () => {
+    process.env.FARM_SAMPLES = "not-a-number";
+    const cwds: string[] = [];
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ onWorkerCwd: (c) => cwds.push(c) }));
+    expect(r.status).toBe("green");
+    expect(r.samples).toBe(1);
+    expect(cwds).toHaveLength(1);
+    expect(cwds[0]).not.toMatch(/__s\d+$/);
+  });
+
+  it("survives a sample that THROWS — it resolves to a failure and a green sibling still wins (M1)", async () => {
+    process.env.FARM_SAMPLES = "3";
+    // sample 0 throws inside the worker; samples 1,2 are green → winner is index 1.
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ throwSamples: [0] }));
+    expect(r.status).toBe("green");
+    expect(r.filesWritten).toEqual(["src/s1.ts"]);
   });
 
   it("REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)", async () => {

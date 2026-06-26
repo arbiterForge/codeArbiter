@@ -1298,9 +1298,14 @@ const defaultRunTaskDeps = (): RunTaskDeps => ({
 // diversifying default (logged) unless the operator set FARM_TEMPERATURE.
 function effectiveSampling(samples: number): Sampling {
   const s = readSampling();
-  if (samples > 1 && s.temperature === 0) {
+  // Bump only when the temperature is an UNSET default 0. An operator who set
+  // FARM_TEMPERATURE explicitly — including to 0 — gets exactly what they asked
+  // for; the stderr hint ("set FARM_TEMPERATURE to override") would otherwise lie
+  // for the explicit-0 case.
+  const explicit = (process.env.FARM_TEMPERATURE ?? "") !== "";
+  if (samples > 1 && s.temperature === 0 && !explicit) {
     process.stderr.write(
-      `[FARM] FARM_SAMPLES=${samples} with FARM_TEMPERATURE=0 — bumping temperature to 0.7 so samples diversify (set FARM_TEMPERATURE to override)\n`,
+      `[FARM] FARM_SAMPLES=${samples} with no FARM_TEMPERATURE set — bumping temperature to 0.7 so samples diversify (set FARM_TEMPERATURE to override)\n`,
     );
     return { ...s, temperature: 0.7 };
   }
@@ -1359,6 +1364,13 @@ async function bestOfN(
   // All sample worktrees are cut from the same integration HEAD as the task
   // worktree, so they share the baseline the single `prompt` was enriched
   // against — the prompt is reused rather than rebuilt per sample.
+  // Samples are cut from the TASK branch (a frozen snapshot of integration HEAD
+  // at task start) — NOT from the live `farm/integration` ref — so every sample
+  // shares the EXACT baseline the task worktree re-gates and merges against
+  // (AC-F1.2). This is immune to a non-overlapping sibling task moving
+  // farm/integration mid-flight (which would otherwise gate a sample against a
+  // newer baseline than the task worktree, causing a false escalation).
+  const taskBranch = `farm/${t.id}`;
   const runSample = (k: number): Promise<SampleOutcome> =>
     workerLimit.run(async () => {
       const branch = `farm/${t.id}__s${k}`;
@@ -1366,30 +1378,38 @@ async function bestOfN(
       const base: SampleOutcome = {
         green: false, filesWritten: [], files: [], inScope: [], promptTokens: 0, completionTokens: 0, wt, branch,
       };
-      const prep = await deps.prepareWorktree(branch, wt, ENV.integration);
-      if (prep) return { ...base, note: prep };
-      if (t.setup && t.setup.length > 0) {
-        const sr = await deps.runGate(wt, t.setup);
-        if (!sr.ok) return { ...base, note: `setup failed: ${sr.failed}\n${sr.tail}` };
+      try {
+        const prep = await deps.prepareWorktree(branch, wt, taskBranch);
+        if (prep) return { ...base, note: prep };
+        if (t.setup && t.setup.length > 0) {
+          const sr = await deps.runGate(wt, t.setup);
+          if (!sr.ok) return { ...base, note: redactSecrets(`setup failed: ${sr.failed}\n${sr.tail}`) };
+        }
+        const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+        const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
+        const pt = w.promptTokens ?? 0;
+        const ct = w.completionTokens ?? 0;
+        if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
+        const sweep = postApplySweep(wt, w.filesWritten, forbidden);
+        if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
+        const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
+        if (testHashBefore !== null && testHashAfter !== testHashBefore)
+          return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
+        const drift = await deps.checkDrift(wt, allowed);
+        if (drift.length > 0)
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
+        const gate = await deps.runGate(wt, t.gate.commands);
+        if (!gate.ok)
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
+        const inScope = await captureInScope(wt, t);
+        return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
+      } catch (e) {
+        // A sample that THROWS (fs/git error mid-flight) must still resolve to a
+        // failure OUTCOME, not reject — so Promise.all below never rejects and the
+        // cleanup loop always removes every scratch worktree (M1: no leak on the
+        // exception path). `base` already carries this sample's wt/branch.
+        return { ...base, note: `sample error: ${e instanceof Error ? e.message : String(e)}` };
       }
-      const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
-      const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
-      const pt = w.promptTokens ?? 0;
-      const ct = w.completionTokens ?? 0;
-      if (!w.ok) return { ...base, note: `worker error: ${w.error}`, promptTokens: pt, completionTokens: ct };
-      const sweep = postApplySweep(wt, w.filesWritten, forbidden);
-      if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
-      const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
-      if (testHashBefore !== null && testHashAfter !== testHashBefore)
-        return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
-      const drift = await deps.checkDrift(wt, allowed);
-      if (drift.length > 0)
-        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
-      const gate = await deps.runGate(wt, t.gate.commands);
-      if (!gate.ok)
-        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
-      const inScope = await captureInScope(wt, t);
-      return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
     });
 
   const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
@@ -1426,8 +1446,12 @@ export async function runTask(
   const allowed = new Set(t.filesInScope);
   const forbidden = new Set([t.test.path]);
   // F1: best-of-N. FARM_SAMPLES read live (default 1 = today's single-candidate
-  // path). `sampling` carries the temperature (auto-bumped when N>1, AC-F1.3).
-  const samples = Math.max(1, Number(process.env.FARM_SAMPLES ?? 1));
+  // path). A non-numeric / non-finite value falls back to 1 rather than poisoning
+  // the run with NaN — `Math.max(1, NaN)` is NaN, which would empty every sample
+  // batch and silently mass-escalate the run. `sampling` carries the temperature
+  // (auto-bumped when N>1, AC-F1.3).
+  const rawSamples = Number(process.env.FARM_SAMPLES ?? 1);
+  const samples = Number.isFinite(rawSamples) ? Math.max(1, Math.floor(rawSamples)) : 1;
   const sampling = effectiveSampling(samples);
 
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
@@ -1458,7 +1482,10 @@ export async function runTask(
       // Only meaningful for the single-sample path (which writes into `wt`); under
       // best-of-N `priorInScope` is seeded explicitly from the best failing sample
       // below, so the task worktree (never sample-written) must not clobber it.
-      if (samples <= 1) priorInScope = await captureInScope(wt, t);
+      // And only re-show output the worker ACTUALLY wrote: if the prior attempt
+      // failed at the API level (no files written), captureInScope would return the
+      // inherited baseline, which must not be mislabeled "your previous attempt".
+      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
       await deps.resetWorktree(wt); // never accumulate stale files
     }
 
@@ -1471,7 +1498,7 @@ export async function runTask(
     if (t.setup && t.setup.length > 0) {
       const setupResult = await deps.runGate(wt, t.setup);
       if (!setupResult.ok)
-        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `setup failed: ${setupResult.failed}\n${setupResult.tail}`, promptTokens, completionTokens };
+        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: redactSecrets(`setup failed: ${setupResult.failed}\n${setupResult.tail}`), promptTokens, completionTokens };
     }
 
     // Enrichment (AC-03/AC-04): read the per-attempt worktree state — AFTER any
@@ -1495,7 +1522,7 @@ export async function runTask(
       acceptedCompletionTokens = worker.completionTokens ?? 0;
       lastFilesWritten = worker.filesWritten;
       if (!worker.ok) {
-        priorFailure = `worker error: ${worker.error}`;
+        priorFailure = redactSecrets(`worker error: ${worker.error}`);
         continue;
       }
     } else {

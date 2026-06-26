@@ -703,9 +703,10 @@ var defaultRunTaskDeps = () => ({
 });
 function effectiveSampling(samples) {
   const s = readSampling();
-  if (samples > 1 && s.temperature === 0) {
+  const explicit = (process.env.FARM_TEMPERATURE ?? "") !== "";
+  if (samples > 1 && s.temperature === 0 && !explicit) {
     process.stderr.write(
-      `[FARM] FARM_SAMPLES=${samples} with FARM_TEMPERATURE=0 \u2014 bumping temperature to 0.7 so samples diversify (set FARM_TEMPERATURE to override)
+      `[FARM] FARM_SAMPLES=${samples} with no FARM_TEMPERATURE set \u2014 bumping temperature to 0.7 so samples diversify (set FARM_TEMPERATURE to override)
 `
     );
     return { ...s, temperature: 0.7 };
@@ -721,6 +722,7 @@ async function writeFilesInto(wt, files) {
   }
 }
 async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps) {
+  const taskBranch = `farm/${t.id}`;
   const runSample = (k) => workerLimit.run(async () => {
     const branch = `farm/${t.id}__s${k}`;
     const wt = path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
@@ -734,32 +736,36 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
       wt,
       branch
     };
-    const prep = await deps.prepareWorktree(branch, wt, ENV.integration);
-    if (prep) return { ...base, note: prep };
-    if (t.setup && t.setup.length > 0) {
-      const sr = await deps.runGate(wt, t.setup);
-      if (!sr.ok) return { ...base, note: `setup failed: ${sr.failed}
-${sr.tail}` };
-    }
-    const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
-    const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
-    const pt = w.promptTokens ?? 0;
-    const ct = w.completionTokens ?? 0;
-    if (!w.ok) return { ...base, note: `worker error: ${w.error}`, promptTokens: pt, completionTokens: ct };
-    const sweep = postApplySweep(wt, w.filesWritten, forbidden);
-    if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
-    const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
-    if (testHashBefore !== null && testHashAfter !== testHashBefore)
-      return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
-    const drift = await deps.checkDrift(wt, allowed);
-    if (drift.length > 0)
-      return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
-    const gate = await deps.runGate(wt, t.gate.commands);
-    if (!gate.ok)
-      return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}
+    try {
+      const prep = await deps.prepareWorktree(branch, wt, taskBranch);
+      if (prep) return { ...base, note: prep };
+      if (t.setup && t.setup.length > 0) {
+        const sr = await deps.runGate(wt, t.setup);
+        if (!sr.ok) return { ...base, note: redactSecrets(`setup failed: ${sr.failed}
+${sr.tail}`) };
+      }
+      const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+      const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
+      const pt = w.promptTokens ?? 0;
+      const ct = w.completionTokens ?? 0;
+      if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
+      const sweep = postApplySweep(wt, w.filesWritten, forbidden);
+      if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
+      const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
+      if (testHashBefore !== null && testHashAfter !== testHashBefore)
+        return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
+      const drift = await deps.checkDrift(wt, allowed);
+      if (drift.length > 0)
+        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
+      const gate = await deps.runGate(wt, t.gate.commands);
+      if (!gate.ok)
+        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}
 ${gate.tail}`), promptTokens: pt, completionTokens: ct };
-    const inScope = await captureInScope(wt, t);
-    return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
+      const inScope = await captureInScope(wt, t);
+      return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
+    } catch (e) {
+      return { ...base, note: `sample error: ${e instanceof Error ? e.message : String(e)}` };
+    }
   });
   const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
   const promptTokens = outcomes.reduce((s, o) => s + o.promptTokens, 0);
@@ -781,7 +787,8 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
   const forbidden = /* @__PURE__ */ new Set([t.test.path]);
-  const samples = Math.max(1, Number(process.env.FARM_SAMPLES ?? 1));
+  const rawSamples = Number(process.env.FARM_SAMPLES ?? 1);
+  const samples = Number.isFinite(rawSamples) ? Math.max(1, Math.floor(rawSamples)) : 1;
   const sampling = effectiveSampling(samples);
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
@@ -799,14 +806,14 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   let mutationScore = null;
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) {
-      if (samples <= 1) priorInScope = await captureInScope(wt, t);
+      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
       await deps.resetWorktree(wt);
     }
     if (t.setup && t.setup.length > 0) {
       const setupResult = await deps.runGate(wt, t.setup);
       if (!setupResult.ok)
-        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `setup failed: ${setupResult.failed}
-${setupResult.tail}`, promptTokens, completionTokens };
+        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: redactSecrets(`setup failed: ${setupResult.failed}
+${setupResult.tail}`), promptTokens, completionTokens };
     }
     const injected = await buildEnrichment(wt, t, priorInScope);
     const forbiddenExtra = driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0;
@@ -822,7 +829,7 @@ ${setupResult.tail}`, promptTokens, completionTokens };
       acceptedCompletionTokens = worker.completionTokens ?? 0;
       lastFilesWritten = worker.filesWritten;
       if (!worker.ok) {
-        priorFailure = `worker error: ${worker.error}`;
+        priorFailure = redactSecrets(`worker error: ${worker.error}`);
         continue;
       }
     } else {

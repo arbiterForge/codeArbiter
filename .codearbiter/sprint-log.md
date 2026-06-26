@@ -654,3 +654,29 @@ do not stop to ask a question until there is a PR." Slice 1 = F4+F2+F1; Slice 2 
 ## D3 — FARM_SAMPLES>1 + FARM_TEMPERATURE=0 auto-bump · confidence: low
 - Bump to 0.7 (conventional diversifying default) with a logged note; N identical temp-0 samples is
   wasted spend. Strength: moderate. Confidence: LOW.
+
+## Two-pass independent review (per D0) — both PASS/SHIP, dispositions applied
+
+Dispatched read-only with fresh context before the PR (nothing accepted on the author's word):
+- **security-reviewer:** PASS — 0 CRIT/HIGH/MED. Traced all five trust-boundary paths; F2 prior-output
+  re-injection rides the SAME redactSecrets + capInjected + secret-filename-denylist chokepoint; bearer
+  token + assertSecureBaseUrl intact, no new egress channel. One LOW (note-redaction symmetry).
+- **correctness/spec-compliance:** SHIP — 0 BLOCK/HIGH. AC-F1.1/F1.4 verified sound; createLimiter
+  correct; no-winner cleanup verified. Two MEDIUM + three LOW surfaced.
+
+### Dispositions (all applied — confidence high)
+- **M1 (worktree leak if a sample THROWS):** per-sample try/catch returns a failure OUTCOME so
+  Promise.all never rejects and the cleanup loop always runs (+ test: a throwing sample → green sibling
+  still wins).
+- **M2 (sample baseline skew vs the moving farm/integration):** samples now cut from the TASK branch (a
+  frozen integration-at-task-start snapshot) — the exact baseline the task worktree re-gates/merges
+  against. True AC-F1.2 compliance; removes the false-escalation window. Real-worktree smoke test green.
+- **L1 (non-numeric FARM_SAMPLES → NaN mass-escalation):** Number.isFinite guard → falls back to 1 (+ test).
+- **L2 (explicit FARM_TEMPERATURE=0 still bumped):** distinguish unset from explicit 0; bump only when
+  unset (+ test).
+- **L3 (baseline mislabeled "previous attempt" on an API failure):** seed prior-attempt context only when
+  the prior worker actually wrote files.
+- **security LOW (note-redaction symmetry):** worker-error + setup notes now wrapped in redactSecrets,
+  matching the gate/merge notes (single-sample and best-of-N parity).
+
+Verification after fixes: 169 vitest green (+2), typecheck clean, farm.js rebuilt.
