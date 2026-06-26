@@ -59,6 +59,20 @@ export function treeKill(child: ReturnType<typeof spawn>): void {
   }
 }
 
+// Least-privilege child env — the single source of truth for every spawned
+// child. The dispatcher's secrets (the Zen API key and the OAuth token) are
+// used only by the in-process fetch; NO child — git, the operator-authored
+// gate/setup/test commands, or the pluggable mutation hook — needs them. Build
+// the env from process.env plus any caller-supplied vars, then delete the
+// secrets LAST so a caller var can never re-introduce one (CodeQL #5). Every
+// spawn routes through here so the scrub cannot drift between call sites.
+export function scrubbedEnv(extra?: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { ...process.env, ...(extra ?? {}) };
+  delete env.FARM_API_KEY;
+  delete env.CLAUDE_CODE_OAUTH_TOKEN;
+  return env;
+}
+
 // `timeoutMs` (opts) bounds the child's wall-clock; 0/undefined disables the
 // timeout (used by git, which must not be killed mid-operation). On timeout the
 // child tree is killed and a RunResult tagged `timedOut` resolves, so the caller
@@ -71,15 +85,7 @@ export function run(
   timeoutMs = 0,
 ): Promise<RunResult> {
   return new Promise<RunResult>((resolve) => {
-    // Least-privilege: child commands (git, operator gate/setup/test, mutation)
-    // never need the dispatcher's secrets — the API key is used only by the
-    // in-process fetch. Scrub them from the inherited env so a gate command
-    // can't read FARM_API_KEY / the OAuth token (and shrinks the blast radius
-    // of the operator-authored-but-shell-run gate commands, CodeQL #5).
-    const childEnv: NodeJS.ProcessEnv = { ...process.env };
-    delete childEnv.FARM_API_KEY;
-    delete childEnv.CLAUDE_CODE_OAUTH_TOKEN;
-    const c = spawn(cmd, args, { cwd, env: childEnv, ...opts });
+    const c = spawn(cmd, args, { cwd, env: scrubbedEnv(), ...opts });
     let stdout = "";
     let stderr = "";
     let settled = false;
