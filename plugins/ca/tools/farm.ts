@@ -34,11 +34,22 @@
  * model in FARM_CANDIDATE_MODELS and reports a measured pass-rate ranking, so
  * model selection is objective rather than web hearsay. No merge, no mutation.
  */
-import { spawn } from "node:child_process";
 import { readFile, writeFile, appendFile, mkdir, rm, stat } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+// v2.rev.0020 god-module split (architecture-003): the process/shell layer, the
+// outbound secret redactor, and the zero-token mutation engine now live in their
+// own focused, tested modules. farm.ts imports what it consumes and re-exports
+// the members the test suite + external consumers import from "./farm.ts", so
+// this file stays the stable public surface. The graph is one-way: farm.ts ->
+// {exec, redactor, mutation} and mutation -> exec (no cycle).
+import { run, readWorktreeFile, SHELL_BIN, SHELL_FLAG, SHELL_OPTS, GATE_TIMEOUT_MS } from "./exec.ts";
+import type { RunResult } from "./exec.ts";
+import { redactSecrets, isSecretBearingFilename } from "./redactor.ts";
+import { MUT, mutationCheck, antiGamingCheck } from "./mutation.ts";
+export { run, redactSecrets };
+export { extractLiterals, codeLineCount, parseMutationHookOutput } from "./mutation.ts";
 
 // --------------------------------------------------------------------------
 // Types — the handoff contract. Claude emits plan.json conforming to this.
@@ -125,108 +136,13 @@ const ENV = {
   enrichMaxBytes: Number(process.env.FARM_ENRICH_MAX_BYTES ?? 131_072),
 };
 
-// Mutation guard — a zero-token quality signal. After the gate goes green we
-// mutate the worker's in-scope impl and re-run ONLY the task's narrow test
-// (gate.commands[0]); a mutant the test fails to catch ("survivor") is code the
-// test does not constrain — gaming, dead code, or a weak test. Bounded by test
-// strength, so a LOW score is a strong red flag but a high one is only
-// necessary-not-sufficient. Low score → warning into Phase 3; only a near-zero
-// score on a non-trivial impl hard-escalates. Pluggable: set FARM_MUTATION_CMD
-// to a real per-language framework (it runs in the worktree with
-// FARM_MUTATION_FILES / FARM_MUTATION_TEST_PATH / FARM_MUTATION_TEST_CMD set,
-// and must print a trailing JSON line containing a numeric "score").
-const MUT = {
-  enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
-  sample: Number(process.env.FARM_MUTATION_SAMPLE ?? 15),
-  budgetMs: Number(process.env.FARM_MUTATION_BUDGET_MS ?? 30_000),
-  warnBelow: Number(process.env.FARM_MUTATION_WARN_BELOW ?? 0.5),
-  escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
-  cmd: process.env.FARM_MUTATION_CMD ?? null,
-};
-
 // --------------------------------------------------------------------------
-// process helpers
+// process helpers — run(), treeKill(), SHELL_*, GATE_TIMEOUT_MS, the RunResult
+// type, and the shared readWorktreeFile reader now live in ./exec.ts
+// (v2.rev.0020 split); MUT and the mutation engine live in ./mutation.ts. Only
+// the git/sleep wrappers stay here, over the imported run().
 // --------------------------------------------------------------------------
-// Result of a spawned process. `out` stays the merged stdout+stderr string that
-// existing consumers (runGate, diagnostics) read. `stdout`/`stderr` are kept
-// SEPARATE so parsing contexts (checkDrift — #91) read only stdout: on Windows
-// with core.safecrlf, git writes a `warning: ... LF will be replaced by CRLF`
-// line to stderr that, when merged, was parsed as a changed file path and tripped
-// a false `drift:` escalation. `timedOut` is set when a per-command wall-clock
-// timeout fired and the child was killed (T-06 / reliability-001) — consumers
-// surface it as a gate/setup/mutation failure rather than a clean exit.
-type RunResult = { code: number; out: string; stdout: string; stderr: string; timedOut?: true };
 type GitRunner = (args: string[], cwd?: string) => Promise<RunResult>;
-
-// T-06 (reliability-001): per-command wall-clock timeout. The shared run() helper
-// previously resolved ONLY on the child's close/error event, so a gate/setup/
-// mutation command that never exits (a test blocking on stdin, a watch/dev-server
-// invocation, an interactive prompt) wedged the awaiting worker forever — and the
-// scheduler's Promise.race never settled, so the whole run hung with no report.
-// This mirrors the AbortController discipline the API path already uses. Default a
-// few minutes; configurable, independent of FARM_REQUEST_TIMEOUT_MS.
-const GATE_TIMEOUT_MS = Number(process.env.FARM_GATE_TIMEOUT_MS ?? 300_000);
-
-// Kill a spawned child and its descendants. On Windows a plain child.kill() does
-// not reap the process tree (cmd.exe /c spawns the real command as a grandchild),
-// so use `taskkill /T /F` by PID; elsewhere SIGKILL the child. Best-effort —
-// errors are swallowed (the child may already be gone).
-function treeKill(child: ReturnType<typeof spawn>): void {
-  try {
-    if (process.platform === "win32" && child.pid !== undefined) {
-      spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]);
-    } else {
-      child.kill("SIGKILL");
-    }
-  } catch {
-    /* already exited / unkillable — best effort */
-  }
-}
-
-// `timeoutMs` (opts) bounds the child's wall-clock; 0/undefined disables the
-// timeout (used by git, which must not be killed mid-operation). On timeout the
-// child tree is killed and a RunResult tagged `timedOut` resolves, so the caller
-// treats it as a non-zero failure instead of awaiting forever.
-export function run(
-  cmd: string,
-  args: string[],
-  cwd?: string,
-  opts: object = {},
-  timeoutMs = 0,
-): Promise<RunResult> {
-  return new Promise<RunResult>((resolve) => {
-    // Least-privilege: child commands (git, operator gate/setup/test, mutation)
-    // never need the dispatcher's secrets — the API key is used only by the
-    // in-process fetch. Scrub them from the inherited env so a gate command
-    // can't read FARM_API_KEY / the OAuth token (and shrinks the blast radius
-    // of the operator-authored-but-shell-run gate commands, CodeQL #5).
-    const childEnv: NodeJS.ProcessEnv = { ...process.env };
-    delete childEnv.FARM_API_KEY;
-    delete childEnv.CLAUDE_CODE_OAUTH_TOKEN;
-    const c = spawn(cmd, args, { cwd, env: childEnv, ...opts });
-    let stdout = "";
-    let stderr = "";
-    let settled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const done = (r: RunResult) => {
-      if (settled) return;
-      settled = true;
-      if (timer) clearTimeout(timer);
-      resolve(r);
-    };
-    if (timeoutMs > 0) {
-      timer = setTimeout(() => {
-        treeKill(c);
-        const note = `\n[FARM] command exceeded ${timeoutMs}ms wall-clock timeout — killed (FARM_GATE_TIMEOUT_MS)`;
-        done({ code: 124, out: stdout + stderr + note, stdout, stderr: stderr + note, timedOut: true });
-      }, timeoutMs);
-    }
-    c.stdout.on("data", (d) => (stdout += d));
-    c.stderr.on("data", (d) => (stderr += d));
-    c.on("error", (e) => done({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
-    c.on("close", (code) => done({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
-  });
-}
 const git: GitRunner = (args, cwd) => run("git", args, cwd);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -287,17 +203,10 @@ function isInside(root: string, target: string): boolean {
 }
 
 // --------------------------------------------------------------------------
-// gate — pure determinism, no model. Use a non-login shell (`-c`, not `-lc`)
-// so user dotfiles don't bleed in. On Windows, fall back to cmd.exe /c.
+// gate — pure determinism, no model. Each command runs through the shared
+// SHELL_* config + run() from ./exec.ts (non-login shell so user dotfiles don't
+// bleed in; cmd.exe /c with verbatim args on Windows).
 // --------------------------------------------------------------------------
-const [SHELL_BIN, SHELL_FLAG] =
-  process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
-// Node's default arg-quoting backslash-escapes embedded quotes, which cmd.exe
-// does not understand — a gate like `node -e "process.exit(1)"` silently
-// mangles. Pass the command line through verbatim on Windows.
-const SHELL_OPTS =
-  process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
-
 export async function runGate(cwd: string, commands: string[]) {
   for (const cmd of commands) {
     // T-06: bound each gate/setup command by the wall-clock timeout so a hung
@@ -318,21 +227,11 @@ export async function runGate(cwd: string, commands: string[]) {
 }
 
 // --------------------------------------------------------------------------
-// shared file reader — single read path for every consumer that needs the
-// current contents of a worktree file. Returns the file text, or null on any
-// read failure (missing file, not yet created, permission). antiGamingCheck,
-// mutationCheck, AND the prompt enrichment (AC-03/AC-04) all go through here
-// rather than growing their own parallel try/catch read paths (spec Risks:
-// "Duplicated file reads"). `wt`-relative paths are resolved against the
-// worktree the caller passes.
+// shared worktree-file reader — readWorktreeFile now lives in ./exec.ts
+// (v2.rev.0020). It is still the single read path every consumer goes through
+// (buildEnrichment here, antiGamingCheck + mutationCheck in ./mutation.ts), so
+// there are no parallel try/catch read paths; it is imported at the top.
 // --------------------------------------------------------------------------
-async function readWorktreeFile(wt: string, relPath: string): Promise<string | null> {
-  try {
-    return await readFile(path.resolve(wt, relPath), "utf8");
-  } catch {
-    return null;
-  }
-}
 
 // --------------------------------------------------------------------------
 // prompt enrichment (AC-03 / AC-04). Gathers the read-only source of the
@@ -353,86 +252,10 @@ async function readWorktreeFile(wt: string, relPath: string): Promise<string | n
 // retry refines rather than restarts. Rendered in its own labeled section.
 export type InjectedFile = { path: string; contents: string; readOnly: boolean; prior?: boolean };
 
-// AC-05 secret redaction. NEW code — there is no existing in-code secret sweep
-// to reuse (the repo's sweep is the manual/hook layer per tech-stack.md). This
-// is the exact secret-pattern set from tech-stack.md "Secrets scan", applied
-// case-insensitively. Any single line that matches a pattern is replaced
-// WHOLESALE with a `[REDACTED]` marker rather than surgically excising the
-// matched span — over-redaction is the safe direction, and the line is the
-// smallest unit guaranteed to contain the full secret value (e.g. the trailing
-// token after `api_key =`).
-//
-// SPAN-AWARE for PEM blocks (FINDING 1). A purely per-line redactor is unsafe
-// for multi-line secrets: a PEM private key's `-----BEGIN ... PRIVATE KEY-----`
-// header matches the trigger word, but the base64 BODY lines carry no trigger
-// word, so a per-line pass would transmit the key material. When a
-// `-----BEGIN ... -----` delimiter line is seen, we redact the WHOLE block
-// through the matching `-----END ... -----` delimiter (or to end-of-content if
-// no END is present) as a single unit. Single-line trigger-word matches keep
-// the existing per-line behavior. Matching, never transmitting a matched
-// secret, is the invariant — see spec AC-05 / D5.
-// Trigger words plus known high-entropy key prefixes (AWS / GitHub). This
-// outbound redactor is DELIBERATELY DISTINCT in shape from the hook-side
-// _hooklib.SECRET_RE commit gate (architecture-001): SECRET_LINE is BROAD — a
-// bare trigger word anywhere on a line redacts the whole line, because over-
-// redaction is the safe direction for content crossing the trust boundary;
-// SECRET_RE is NARROW — it requires a quoted-literal assignment so it does not
-// fire on every `token:` reference in committed source. They therefore disagree
-// by design on bare-keyword lines. What is pinned is the AGREEMENT region:
-// plugins/ca/hooks/secret-detection-corpus.json lists real secret shapes both
-// must flag and benign lines both must pass, asserted against SECRET_LINE here
-// (farm.unit.test.ts) and against SECRET_RE in test_hooklib.py, so neither side
-// can silently regress on it.
-const SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
-// PEM-style armor delimiters. BEGIN opens a span; END closes it. Matched
-// independently of SECRET_LINE so even a `-----BEGIN CERTIFICATE-----` (no
-// trigger word) is span-redacted — armored material is opaque, redact it whole.
-const PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
-const PEM_END = /^-----END .*-----\s*$/;
-const REDACTION_MARKER = "[REDACTED — secret-pattern match removed before transmission]";
-
-// Data-minimization (defence in depth ahead of per-line/span redaction): some
-// filenames are secret-bearing by convention and should never be read into the
-// injected context AT ALL, regardless of whether their individual lines trip a
-// trigger word. Matched on the BASENAME so a nested `config/.env.production` or
-// `keys/id_rsa` is caught too. If a file is denylisted its contents are simply
-// never read — the strongest form of non-transmission.
-const SECRET_FILENAME_DENYLIST: RegExp[] = [
-  /^\.env$/i, // .env
-  /^\.env\..+$/i, // .env.local, .env.production, ...
-  /\.pem$/i, // *.pem
-  /\.key$/i, // *.key
-  /^id_rsa(\..+)?$/i, // id_rsa, id_rsa.pub, id_rsa.bak
-  /^id_ed25519(\..+)?$/i, // id_ed25519, id_ed25519.pub
-  /^id_ecdsa(\..+)?$/i, // id_ecdsa, id_ecdsa.pub
-  /\.p12$/i, // PKCS#12 keystore
-  /\.pfx$/i, // PKCS#12 keystore (Windows)
-];
-
-function isSecretBearingFilename(relPath: string): boolean {
-  const base = relPath.split(/[\\/]/).pop() ?? relPath;
-  return SECRET_FILENAME_DENYLIST.some((re) => re.test(base));
-}
-
-export function redactSecrets(contents: string): string {
-  const lines = contents.split("\n");
-  const out: string[] = [];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (PEM_BEGIN.test(line.trim())) {
-      // Span redaction: collapse BEGIN..END (inclusive) to one marker. If no
-      // END is found, redact through end-of-content — never let an unterminated
-      // armored body trickle out.
-      out.push(REDACTION_MARKER);
-      i++;
-      while (i < lines.length && !PEM_END.test(lines[i].trim())) i++;
-      // i now points at the END line (consumed by the span) or past the end.
-      continue;
-    }
-    out.push(SECRET_LINE.test(line) ? REDACTION_MARKER : line);
-  }
-  return out.join("\n");
-}
+// AC-05 secret redaction + the secret-bearing-filename denylist now live in
+// ./redactor.ts (v2.rev.0020). redactSecrets + isSecretBearingFilename are
+// imported at the top; behaviour, the span-aware PEM handling, and the
+// corpus-parity pin (architecture-001) are unchanged.
 
 // The single chokepoint for content that leaves the trust boundary. The byte
 // cap (applied over the rendered array in buildEnrichment) and the per-line
@@ -984,56 +807,11 @@ function postApplySweep(
 }
 
 // --------------------------------------------------------------------------
-// anti-gaming guard — zero-token heuristic. A cheap model can satisfy a narrow
-// test by hard-coding the asserted value. We extract the literals the test
-// asserts and flag an impl file that (a) is tiny and (b) reproduces a
-// non-trivial test literal verbatim. Egregious cases escalate; borderline
-// cases attach a warning that rides into the report for the human reviewer.
+// anti-gaming guard — extractLiterals, codeLineCount, and antiGamingCheck now
+// live in ./mutation.ts (v2.rev.0020). antiGamingCheck is imported above and
+// wired into defaultRunTaskDeps; the two pure helpers are re-exported from
+// "./farm.ts" at the top so the unit-test import surface is unchanged.
 // --------------------------------------------------------------------------
-export function extractLiterals(testSrc: string): string[] {
-  const lits = new Set<string>();
-  // quoted strings
-  for (const m of testSrc.matchAll(/(['"`])((?:\\.|(?!\1).){2,})\1/g)) lits.add(m[2]);
-  // multi-digit / non-0-1 numbers
-  for (const m of testSrc.matchAll(/\b(\d{2,}|[2-9])\b/g)) lits.add(m[1]);
-  return [...lits];
-}
-
-export function codeLineCount(src: string): number {
-  return src
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith("//") && !l.startsWith("#") && !l.startsWith("*") && !l.startsWith("/*")).length;
-}
-
-async function antiGamingCheck(
-  cwd: string,
-  task: Task,
-): Promise<{ risk: "none" | "warn" | "high"; note?: string }> {
-  const testSrc = await readWorktreeFile(cwd, task.test.path);
-  if (testSrc === null) return { risk: "none" };
-  const literals = extractLiterals(testSrc).filter((l) => l.length > 1 || /\d{2,}/.test(l));
-  if (literals.length === 0) return { risk: "none" };
-
-  const hits: string[] = [];
-  let anyTiny = false;
-  for (const f of task.filesInScope) {
-    if (f === task.test.path) continue;
-    const src = await readWorktreeFile(cwd, f);
-    if (src === null) continue;
-    const tiny = codeLineCount(src) <= 5;
-    for (const lit of literals) {
-      if (src.includes(lit)) {
-        hits.push(`${f} contains test literal ${JSON.stringify(lit)}`);
-        if (tiny) anyTiny = true;
-      }
-    }
-  }
-  if (hits.length === 0) return { risk: "none" };
-  if (anyTiny) return { risk: "high", note: `gaming: ${hits[0]} (impl is trivial)` };
-  return { risk: "warn", note: `gaming-risk: ${hits[0]}` };
-}
-
 async function fileHash(p: string): Promise<string | null> {
   try {
     const buf = await readFile(p);
@@ -1049,159 +827,12 @@ async function resetWorktree(wt: string) {
 }
 
 // --------------------------------------------------------------------------
-// mutation guard
+// mutation guard — shuffle, generateMutants, MutationResult, the exported
+// parseMutationHookOutput, and mutationCheck now live in ./mutation.ts
+// (v2.rev.0020). mutationCheck is imported above and wired into
+// defaultRunTaskDeps; parseMutationHookOutput is re-exported from "./farm.ts" at
+// the top so the unit-test import surface is unchanged.
 // --------------------------------------------------------------------------
-function shuffle<T>(a: T[]): T[] {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// Single-point text mutants. Space-padded operators bias toward real code (not
-// string/generic content); invalid mutants that break compilation just fail the
-// test and count as "killed" — the lenient direction (no false escalation).
-function generateMutants(file: string, src: string): Array<{ file: string; mutated: string; tag: string }> {
-  const lines = src.split("\n");
-  const rules: Array<[RegExp, string, string]> = [
-    [/ >= /, " > ", ">=>"], [/ <= /, " < ", "<=<"],
-    [/ === /, " !== ", "===>!=="], [/ !== /, " === ", "!==>==="],
-    [/ == /, " != ", "==>!="], [/ != /, " == ", "!=>=="],
-    [/ > /, " >= ", ">>="], [/ < /, " <= ", "<<="],
-    [/ \+ /, " - ", "+>-"], [/ - /, " + ", "->+"], [/ \* /, " \/ ", "*>/"],
-    [/ && /, " || ", "&&>||"], [/ \|\| /, " && ", "||>&&"],
-    [/\btrue\b/, "false", "true>false"], [/\bfalse\b/, "true", "false>true"],
-  ];
-  const out: Array<{ file: string; mutated: string; tag: string }> = [];
-  for (let i = 0; i < lines.length; i++) {
-    const ln = lines[i];
-    const t = ln.trim();
-    if (!t || t.startsWith("//") || t.startsWith("#") || t.startsWith("*") || t.startsWith("/*")) continue;
-    for (const [re, rep, name] of rules) {
-      if (re.test(ln)) {
-        const mline = ln.replace(re, rep);
-        if (mline !== ln) {
-          const m = [...lines]; m[i] = mline;
-          out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} ${name}` });
-        }
-      }
-    }
-    const rm = ln.match(/\breturn\s+(.+?);/);
-    if (rm && rm[1].trim() !== "null" && rm[1].trim() !== "") {
-      const m = [...lines];
-      m[i] = ln.replace(/\breturn\s+.+?;/, "return null;");
-      out.push({ file, mutated: m.join("\n"), tag: `${file}:${i + 1} return>null` });
-    }
-  }
-  return out;
-}
-
-type MutationResult = { score: number; evaluated: number; survivors: string[] };
-
-// dx-002 (T-08b): parse a pluggable FARM_MUTATION_CMD's stdout for its trailing
-// JSON score line. Extracted as a pure, exported function so the shape guard is
-// unit-testable without spawning a process. The last `{...\"score\"...}` match is
-// JSON.parsed; a value that is null, not an object, or an array (e.g. "score"
-// emitted inside a string, or a bare numeric literal) is rejected to null before
-// `parsed.score` is read, rather than silently mis-interpreted. A non-numeric
-// score, no match, or unparseable JSON all map to null (skip leniently).
-export function parseMutationHookOutput(out: string): MutationResult | null {
-  const j = [...out.matchAll(/\{[^\n]*"score"[^\n]*\}/g)].pop();
-  if (!j) return null;
-  try {
-    const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
-    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number")
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
-  } catch {
-    /* unparseable — skip leniently */
-  }
-  return null;
-}
-
-async function mutationCheck(wt: string, task: Task): Promise<MutationResult | null> {
-  if (!MUT.enabled) return null;
-  const testCmd = task.gate.commands[0];
-  if (!testCmd) return null;
-  const impl = task.filesInScope.filter((f) => f !== task.test.path);
-
-  // Pluggable hook — hand off to a real per-language framework if configured.
-  if (MUT.cmd) {
-    const r = await new Promise<{ code: number; out: string }>((resolve) => {
-      const c = spawn(SHELL_BIN, [SHELL_FLAG, MUT.cmd!], {
-        cwd: wt,
-        env: { ...process.env, FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd },
-        ...SHELL_OPTS,
-      });
-      let out = "";
-      let settled = false;
-      const finish = (res: { code: number; out: string }) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        resolve(res);
-      };
-      // T-06: bound the pluggable FARM_MUTATION_CMD by the same wall-clock
-      // timeout. A hung mutation framework would otherwise wedge the worker; on
-      // timeout the child tree is killed and the result is treated as
-      // unparseable (score skipped leniently — no false escalation).
-      const timer = setTimeout(() => {
-        treeKill(c);
-        finish({ code: 124, out: out + "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout — killed" });
-      }, GATE_TIMEOUT_MS);
-      c.stdout.on("data", (d) => (out += d));
-      c.stderr.on("data", (d) => (out += d));
-      c.on("error", (e) => finish({ code: 1, out: String(e) }));
-      c.on("close", (code) => finish({ code: code ?? 1, out }));
-    });
-    // dx-002 (T-08b): shape-guarded parse of the hook's trailing score line.
-    return parseMutationHookOutput(r.out);
-  }
-
-  // Built-in text mutation.
-  const originals = new Map<string, string>();
-  let candidates: Array<{ file: string; mutated: string; tag: string }> = [];
-  for (const f of impl) {
-    const src = await readWorktreeFile(wt, f);
-    if (src === null) continue;
-    if (codeLineCount(src) <= 2) continue; // trivial file — nothing to constrain
-    originals.set(f, src);
-    candidates.push(...generateMutants(f, src));
-  }
-  if (candidates.length === 0) return null;
-  candidates = shuffle(candidates).slice(0, MUT.sample);
-
-  const start = Date.now();
-  let killed = 0;
-  let evaluated = 0;
-  const survivors: string[] = [];
-  try {
-    for (const c of candidates) {
-      if (Date.now() - start > MUT.budgetMs) break;
-      await writeFile(path.resolve(wt, c.file), c.mutated);
-      // T-06: bound the mutant re-run by the wall-clock timeout. A hung test
-      // here (a mutant that turns the test into an infinite loop, say) would
-      // otherwise wedge the worker; the killed result counts as a "killed"
-      // mutant (code!=0), the lenient direction.
-      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
-      // T-08 (dx-003): skip the restore on a Map miss rather than writing the
-      // literal string "undefined" into the worktree file. The invariant
-      // (every candidate's file is a key in `originals`) holds for the built-in
-      // generator today; this guard preserves the file if that ever changes.
-      const orig = originals.get(c.file);
-      if (orig !== undefined) await writeFile(path.resolve(wt, c.file), orig); // restore
-      evaluated++;
-      if (r.code !== 0) killed++;
-      else survivors.push(c.tag);
-    }
-  } finally {
-    // defensive: guarantee every impl file is back to the worker's output
-    for (const [f, src] of originals) await writeFile(path.resolve(wt, f), src).catch(() => {});
-  }
-  if (evaluated < 3) return null; // too few mutants to judge fairly
-  return { score: killed / evaluated, evaluated, survivors };
-}
 
 // --------------------------------------------------------------------------
 // per-task lifecycle
