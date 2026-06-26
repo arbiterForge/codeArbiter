@@ -28,11 +28,10 @@ Each secret MUST originate from the approved store in `security-controls.md`, ac
 - A database column holding the raw value (a stored *reference* is allowed — see Phase 3).
 - Any store endpoint not named in `security-controls.md`.
 
-**Stakes:** a hardcoded or unapproved-source secret does not merely fail policy — it ships to every
-clone, every CI log, and anyone who reads the history. Rotation is the only fix once it lands. State
-that consequence when you block, not just "unapproved source." A genuine catch the user then rotates
-earns **exactly one** warm sentence at the close (per the orchestrator register) — never on a clean
-pass.
+**Stakes:** a hardcoded or unapproved-source secret ships to every clone, every CI log, and the
+history; rotation is the only fix once it lands. State that when you block, not just "unapproved
+source." A genuine catch the user then rotates earns **exactly one** warm sentence at the close (per
+the orchestrator register), never on a clean pass.
 
 Gate: every secret is sourced from the approved store via the approved access method.
 

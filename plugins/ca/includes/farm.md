@@ -45,7 +45,7 @@ would be too slow).
 
 ### `FARM_API_KEY`
 
-Your OpenCode Zen API key (or a compatible OpenAI-compatible provider key). Set it in one of:
+Your OpenCode Zen API key, or any OpenAI-compatible provider key. Set it in one of:
 
 - Shell environment: `export FARM_API_KEY=sk-...` (recommended for CI and development)
 - Local `.env` at `plugins/ca/tools/.env` (dev convenience, never committed)
@@ -147,5 +147,4 @@ After a run, the farm writes to `${CLAUDE_PROJECT_DIR}/.farm/`:
 
 Escalated tasks leave their worktrees at `.farm/worktrees/<task-id>/` for inspection.
 
-Run `/ca:sprint --farm`, or invoke directly: `node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" <plan.json>`
-(with cwd at the project root). Canary: `FARM_CANDIDATE_MODELS=a,b,c farm.js --canary <plan.json>`.
+Canary ranking: `FARM_CANDIDATE_MODELS=a,b,c farm.js --canary <plan.json>` (cwd at the project root).

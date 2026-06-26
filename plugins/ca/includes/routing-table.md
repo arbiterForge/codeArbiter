@@ -1,8 +1,9 @@
 # Routing table
 
-Loaded on a scope-touch or `/command` — not every turn. Follow the primary route; the gate is a hard
-stop, not a suggestion. A command is **invoked**; the orchestrator **routes** to a skill; a skill
-**dispatches** an agent.
+Loaded on a scope-touch or `/command`, not every turn. This table is the authoritative trigger→route
+surface: it answers *what to invoke or route given a trigger*; for *what doc to read before touching a
+scope*, use `reference-map.md`. Follow the primary route; the gate is a hard stop, not a suggestion. A
+command is **invoked**; the orchestrator **routes** to a skill; a skill **dispatches** an agent.
 
 | Invocation cue | Primary route | Also dispatch | Hard gate |
 |---|---|---|---|

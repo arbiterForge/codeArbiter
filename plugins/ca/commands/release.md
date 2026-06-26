@@ -9,7 +9,10 @@ The only permitted path to a version tag. A release is a deployment-readiness as
 
 ## Flow
 
-Routes to the `release` skill:
+Routes to the `release` skill. `/ca:release` targets the **`ca`** plugin only (ADR-0007): `LAST_TAG`
+is the newest `ca` SemVer tag (`v*`, never the sibling `ca-sandbox-v*`), and the release window is the
+`plugins/ca/`-scoped commit set — a `ca-sandbox` tag or commit never bumps `ca` or lands in its
+changelog.
 
 1. **Pre-flight** — working tree clean, on the configured release branch, suite green, no blocking
    `[CONFIRM-NN]` open, HEAD not produced via `/ca:override`. Identify `LAST_TAG` and the release window.

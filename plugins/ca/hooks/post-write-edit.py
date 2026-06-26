@@ -144,8 +144,8 @@ def main():
     # crypto-compliance gate records a pass; run it now to avoid a commit-time stop.
     if CRYPTO_RE.search(content):
         remind("H-09", "Crypto/TLS pattern detected. Run the crypto-compliance check + dispatch "
-                       "auth-crypto-reviewer (no MD5/SHA1/DES/RC4; do not disable TLS "
-                       "verification). The commit will block until the gate records a pass.")
+                       "auth-crypto-reviewer (no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish; do not disable "
+                       "TLS verification). The commit will block until the gate records a pass.")
 
     # H-10: possible hardcoded secret.
     if SECRET_RE.search(content):

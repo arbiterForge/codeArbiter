@@ -15,14 +15,13 @@ that is not a true hard gate. Every auto-decision is logged. Hard gates are real
 
 `/sprint` runs the normal premium-subagent path unless invoked as `/sprint --farm`. The `--farm` flag
 selects the pluggable execution backend: Claude still authors the spec, the failing tests, and the plan,
-but a worker (not a premium subagent) implements each task behind the same hard gates. The backend's
-value is deterministic, gated, parallel, isolated execution; the `Worker` seam admits cheap, premium,
-and agentic implementations. Only the cheap HTTP-chat worker ships today — premium and agentic are what
-the seam is designed for, not yet built. Cost arbitrage is one worker policy, not the definition. Track whether
-`--farm` was passed and thread it into Phase 1 (`writing-plans --farm`) and Phase 2 (the farm dispatch
-path in `subagent-driven-development`). If `--farm` is set, pre-flight `FARM_API_KEY` — absent, BLOCK
-and cite `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` before brainstorming begins. Everything else about `/sprint` (the one
-interactive gate, deciding-as-the-user, hard gates, logging) is identical between backends.
+but a worker (not a premium subagent) implements each task behind the same hard gates. Thread the flag
+into Phase 1 (`writing-plans --farm`) and Phase 2 (the farm dispatch path in
+`subagent-driven-development`); if `--farm` is set, pre-flight `FARM_API_KEY` and BLOCK if absent,
+citing `${CLAUDE_PLUGIN_ROOT}/includes/farm.md`, before brainstorming begins. Everything else about
+`/sprint` (the one interactive gate, deciding-as-the-user, hard gates, logging) is identical between
+backends. The worker-seam design (the cheap/premium/agentic policies the seam admits) lives in
+`farm.md`; do not restate it here.
 
 ## Phase 1 — Sprint spec · gate: STOP
 

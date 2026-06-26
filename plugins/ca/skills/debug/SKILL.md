@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Investigate-then-decide root-cause analysis. Routed to when the cause of a defect, anomaly, or unexpected behavior is unknown — distinct from /fix, which assumes a known bug. Five gated phases: capture, hypothesize, gather, decide, hand off. Investigation only; no code changes here. Forces a single named exit — /fix, /adr, or a no-action close — and marks any out-of-scope finding with an inline [NEEDS-TRIAGE] note.
+description: Investigate-then-decide root-cause analysis for a defect whose cause is unknown (distinct from /fix, which assumes a known bug). Five gated phases: capture, hypothesize, gather, decide, hand off. Investigation only, no code changes; exits to /fix, /adr, or a no-action close.
 ---
 
 # debug
