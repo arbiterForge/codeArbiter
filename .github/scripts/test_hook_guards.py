@@ -29,6 +29,14 @@ HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
 SECURITY_PASS = os.path.join(HOOKS, "security-pass.py")
 
+# Load pre-bash.py as a module for direct unit tests of its pure parsers
+# (the file name has a hyphen, so import via spec). Import is side-effect-free:
+# pre-bash.py only reads stdin / acts inside main(), guarded by __main__.
+import importlib.util as _ilu  # noqa: E402
+_spec = _ilu.spec_from_file_location("pre_bash_mod", PRE_BASH)
+pre_bash = _ilu.module_from_spec(_spec)
+_spec.loader.exec_module(pre_bash)
+
 failures = []
 checks = 0
 
@@ -100,6 +108,54 @@ def make_fixture(base, branch):
     return root
 
 
+def check_commit_pathspecs():
+    """Unit-level: a heredoc BODY (stdin content via `-F -`) must not be parsed as
+    pathspecs (the false H-09b/H-14 block), but everything else — including a
+    multi-line quoted `-m` message AND a real trailing pathspec — must survive, or
+    the worktree-union scan (v2.rev.0015) under-scans. Redirect operators are
+    skipped while barewords after them stay over-included."""
+    strip = pre_bash._strip_heredoc_bodies
+    cp = pre_bash.commit_pathspecs
+
+    # the heredoc operator + body + delimiter is removed; nothing else is cut
+    s = strip(" -F - <<'EOF'\nfix: x\nbody ../docs\nEOF")
+    check("../docs" not in s and "<<" not in s, "strip-heredoc",
+          "the heredoc body+operator must be stripped from the arg string")
+    check(cp(strip(" -F - <<'EOF'\nfix: x\nsee ../docs\nEOF")) == [], "cp-heredoc",
+          "heredoc body tokens must not be parsed as pathspecs")
+    check(cp(" -F - <<'EOF'") == [], "cp-redirect-op",
+          "the heredoc operator token must not be a pathspec")
+    # a `\\`-newline continuation is joined, not cut
+    check("b.py" in strip(" a.py \\\n b.py"), "strip-continuation",
+          "a line-continuation must be joined, not truncated")
+
+    # NON-WEAKENING (the v2.rev.0015 regression the first cut introduced): a real
+    # pathspec after a MULTI-LINE quoted -m message must still be collected — a
+    # literal newline inside quotes must NOT drop the trailing path.
+    check(cp(strip(' -m "l1\nl2" secret.py')) == ["secret.py"], "cp-multiline-msg",
+          "a pathspec after a multi-line -m message must still be collected")
+    check(cp(strip(' -m "l1\n\nbody" -- secret.py')) == ["secret.py"],
+          "cp-multiline-dashdash",
+          "the canonical `-- path` form after a multi-line message must survive")
+    # a pathspec on the OPERATOR line, after `<<WORD`, is a real git pathspec
+    # (the shell passes it to git; only the body is stdin) — it must survive the
+    # heredoc strip, not be swallowed with the body (errs-open under-scan).
+    check(cp(strip(" -F - <<EOF secret.py\nbody\nEOF")) == ["secret.py"],
+          "cp-heredoc-opline-pathspec",
+          "a pathspec after `<<WORD` on the operator line must be preserved")
+
+    # ordinary pathspecs / flags
+    check(cp(" -m 'msg' src/app.py") == ["src/app.py"], "cp-pathspec",
+          "a real pathspec must still be collected")
+    check(cp(" -m x a.py b.py") == ["a.py", "b.py"], "cp-multi",
+          "multiple pathspecs collected")
+    check(cp(" -- a.py") == ["a.py"], "cp-dashdash", "explicit -- pathspec collected")
+    # a redirect OPERATOR is skipped, but a bareword after it is still over-included
+    # (so `git commit > log secret.py` cannot smuggle secret.py past the scan)
+    check("secret.py" in cp(" > log secret.py"), "cp-redirect-overinclude",
+          "a bareword after a redirect must still be over-included (no under-scan)")
+
+
 def main():
     for s in (sys.stdout, sys.stderr):
         try:
@@ -109,6 +165,7 @@ def main():
 
     base = tempfile.mkdtemp(prefix="ca-guards-")
     try:
+        check_commit_pathspecs()                    # pure parser units (no fixture)
         fx = make_fixture(base, "feat/work")        # the normal case: a feature branch
         fx_main = make_fixture(base, "main")        # only for on-main push/commit cases
 
@@ -343,6 +400,43 @@ def main():
             f.write("a benign note\n")
         expect_allow(fxp, "git commit -m 'notes' notes.txt",
                      "allow: benign pathspec commit is not over-blocked")
+
+        # 6l. the recommended `git commit -F - <<EOF` multi-line form must NOT
+        # false-block: its heredoc body is the message via stdin, not pathspecs.
+        # RED before the fix — body tokens (e.g. `../docs`) were parsed as
+        # pathspecs and `git diff HEAD -- ../docs` errored -> fail-closed.
+        expect_allow(
+            fxp,
+            "git commit -F - <<'EOF'\nchore: tidy\n\nSee ../docs for context.\nEOF",
+            "H-09b heredoc: benign -F - <<EOF must not false-block on body tokens")
+
+        # 6m. non-weakening lock-in: a heredoc commit that STAGES crypto must
+        # still block — the --cached scan catches it regardless of how the
+        # message is supplied (proves the fix narrows parsing, not the gate).
+        with open(appp, "a", encoding="utf-8") as f:
+            f.write("const h = createHash('sha256');\n")
+        git(["add", "src/app.py"], fxp)
+        expect_block(
+            fxp,
+            "git commit -F - <<'EOF'\nfeat: hashing\nEOF",
+            "H-09b",
+            "H-09b heredoc: staged crypto still blocks (fix does not weaken the gate)")
+        git(["restore", "--staged", "src/app.py"], fxp)
+        git(["checkout", "--", "src/app.py"], fxp)
+
+        # 6n. THE worktree-union non-weakening proof: an UNSTAGED crypto change
+        # committed by pathspec, with a MULTI-LINE `-m` message, must still block.
+        # A first-line split would truncate at the literal newline inside the
+        # quotes and drop the trailing pathspec -> bypass. (RED against that;
+        # GREEN once only heredoc bodies are stripped.)
+        with open(appp, "a", encoding="utf-8") as f:
+            f.write("const h3 = createHash('sha256');\n")
+        expect_block(
+            fxp,
+            'git commit -m "subject\n\nbody line" src/app.py',
+            "H-09b",
+            "H-09b: worktree crypto via multi-line -m pathspec commit still blocks")
+        git(["checkout", "--", "src/app.py"], fxp)
 
         # 6l. SCOPED, not over-scanned: an unstaged crypto change in app.py must
         # NOT block a pathspec commit that names only the benign notes.txt — the
