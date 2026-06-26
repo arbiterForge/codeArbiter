@@ -35,10 +35,10 @@ Still need a command channel. Closest matches first:
 <up to three prefilled /ca: commands for the inferred intent>
 
 Full list:
-/ca:decompose  /ca:create-context  /ca:feature  /ca:fix  /ca:refactor  /ca:debug  /ca:chore  /ca:spike
+/ca:decompose  /ca:create-context  /ca:feature  /ca:sprint  /ca:fix  /ca:refactor  /ca:debug  /ca:chore  /ca:spike
 /ca:commit  /ca:pr  /ca:watch  /ca:review  /ca:checkpoint  /ca:release  /ca:add-dep
 /ca:threat-model  /ca:adr  /ca:adr-status  /ca:reconcile  /ca:conflict
-/ca:init  /ca:status  /ca:audit  /ca:statusline  /ca:prune  /ca:doctor  /ca:standup
+/ca:init  /ca:status  /ca:metrics  /ca:audit  /ca:preview  /ca:statusline  /ca:prune  /ca:doctor  /ca:standup  /ca:task
 /ca:new-skill  /ca:btw  /ca:commands
 Or /ca:override "reason" to proceed anyway with an audit entry.
 ```

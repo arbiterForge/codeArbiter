@@ -24,6 +24,7 @@ The exit door for `/ca:dev`. No-op if dev mode is not active.
 
 MUST write the `DEV: exit` line to `overrides.log` and remove the `dev-active` marker before resuming
 orchestration — the exit is on the audit trail like the entry. MUST NOT rewrite or truncate
-`overrides.log` — the append-only rule has no dev exception, on entry or exit. If a prior session ended
-mid-dev (the marker was cleared by SessionStart without an exit line), write the `DEV: exit` line at
-the next opportunity.
+`overrides.log` — the append-only rule has no dev exception, on entry or exit. If a prior session
+ended mid-dev, SessionStart has already appended the synthetic `BY: session-cleanup | DEV: exit` close
+line and cleared the marker (`session-start.py`, observability-001). In that case MUST NOT write a
+second `DEV: exit` for that orphaned entry — the close is already on the trail.

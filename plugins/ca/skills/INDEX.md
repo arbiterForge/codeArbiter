@@ -1,8 +1,9 @@
 # skills — catalog (surface scan)
 
 Skill bodies load on routing only. This index is the surface scan; never bulk-read
-`skills/*/SKILL.md`. Each skill is an orchestrator routine with gated phases — routed to, never
-"triggered."
+`skills/*/SKILL.md`. Each skill is an orchestrator routine with gated phases, routed to, never
+"triggered." This index lists what each skill OWNS; to decide WHERE a trigger routes, load
+`${CLAUDE_PLUGIN_ROOT}/includes/routing-table.md` (the authoritative trigger→route surface).
 
 | Skill | Routed to by | Owns |
 |---|---|---|

@@ -17,7 +17,7 @@ Read-only. Enforce whatever `${CLAUDE_PROJECT_DIR}/.codearbiter/security-control
 
 These block the PR regardless of context. None is advisory:
 
-- **Banned crypto primitive in use** — any algorithm, mode, or key size prohibited by `security-controls.md`. No MD5, SHA1, DES, or RC4.
+- **Banned crypto primitive in use** — any algorithm, mode, or key size prohibited by `security-controls.md`. No MD5, SHA1, DES/3DES, RC2, RC4, or Blowfish (the commit gate's `CRYPTO_RE` flags these; `security-controls.md` is the authority for the full list).
 - **Home-rolled crypto** — hand-built encryption, signing, or key derivation instead of a vetted primitive.
 - **`verify: false`** or **`rejectUnauthorized: false`** — TLS verification disabled in any connection.
 - **Secret outside approved store** — any raw secret, token, key, or credential in source, test fixtures, config files, or log output.
