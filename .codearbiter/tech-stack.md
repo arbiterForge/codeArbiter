@@ -102,10 +102,14 @@ the supply-chain posture described in `security-controls.md`.
 No dedicated secrets scanner is configured. The gate is two-layered:
 
 1. Manual sweep of the staged diff for credential patterns
-   (`api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant`), case-insensitive.
-2. The plugin's own enforcement hooks: H-09b/H-10b block any commit whose diff
-   touches crypto/secret lines until a diff-bound security-gate pass marker
-   covers those exact lines (`hooks/security-pass.py`).
+   (`api[_-]?key|token|secret|password|private[_-]?key|passphrase|credential|BEGIN.*PRIVATE|AKIA|ghp_|sk-ant`),
+   case-insensitive. This is the convenience layer; the authoritative classifier
+   is `_hooklib.SECRET_RE`, pinned against the farm redactor by the shared
+   `hooks/secret-detection-corpus.json`, which also matches a secret keyword as
+   the trailing segment of a compound name (e.g. `FARM_API_KEY = "..."`).
+2. The plugin's own enforcement hooks: H-09b (crypto/TLS) and H-10b (secrets)
+   block any commit whose diff touches a crypto or secret line until a diff-bound
+   security-gate pass marker covers those exact lines (`hooks/security-pass.py`).
 
 ## Release invariants
 

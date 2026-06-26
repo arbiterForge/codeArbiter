@@ -32,6 +32,9 @@ Deep-review (`docs/reports/2026-06-24-root/`) remediation, in two parts. The qui
 ### Tests
 - Added integration/coverage for existing behavior with no source change: custom CI/deploy scope grammar, the H-12 governed-path reminder (incl. superseded-ADR), and `validateRepoUrl` scp double-colon rejection; plus a `_ledgerlib` suite. (coverage-003/004/005)
 
+### Documentation
+- **Full pre-release docs pass.** Tightened the always-loaded orchestrator core (collapsed the duplicated non-negotiables, trimmed the register, made the lazy-load routers state one deterministic trigger-to-route surface) and reconciled the governance docs to the now-merged enforcement (the forbidden-crypto list, the secret-sweep pattern, and the audit-trail section that now names the automated `session-cleanup` `DEV: exit` write). Corrected stale references (`/ca:arbiter` no longer instructs a manual dev-exit line the hook already writes; `auth-crypto-reviewer` and the post-write reminder now list rc2/blowfish). The docs site gains an **Enforcement & Security** page and a complete **Hooks reference** documenting every hook (event, location, controls, and fail posture).
+
 ## [2.5.1] — 2026-06-23
 
 ### Fixed

@@ -63,6 +63,6 @@ plugin's own authoring gates (`skill-author` v2 house style), not by this file.
 - UTF-8, no BOM. Canonical EOL is **LF** for all tracked text.
 - `.gitattributes` enforces LF for `*.sh`, `*.py`, and `hooks/*` (CRLF breaks bash
   shebangs and is noisy in Python). The same LF convention applies to `.md`, `.ts`,
-  `.json`, and `.yml`, but is not yet enforced there — watch Windows editors
-  silently flipping LF→CRLF on edit, and normalize before staging so diffs stay
-  minimal.
+  `.json`, and `.yml`, but is not yet enforced by `.gitattributes` there. An edit
+  MUST NOT flip LF to CRLF; normalize to LF before staging. A diff that introduces
+  CRLF on a tracked text file is rejected at review.
