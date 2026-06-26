@@ -46,20 +46,20 @@
         font-size="14" fill="#e6edf3" font-weight="600">whole payload</text>
 
   <!-- version pill row -->
-  <!-- v2.4.0 -->
+  <!-- v2.5.1 -->
   <rect x="52" y="72" width="72" height="28" rx="3" fill="#1c2430" stroke="#46505a" stroke-width="1"/>
   <text x="88" y="91" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="12" fill="#8b95a2">v2.4.0</text>
+        font-size="12" fill="#8b95a2">v2.5.1</text>
 
   <!-- arrow -->
   <line x1="124" y1="86" x2="160" y2="86" stroke="#46505a" stroke-width="1.5" marker-end="url(#ta-arrow)"/>
 
-  <!-- v2.5.0 (current, highlighted) -->
+  <!-- v2.5.2 (current, highlighted) -->
   <rect x="168" y="68" width="80" height="36" rx="3" fill="#1c2430" stroke="#d29922" stroke-width="1.5"/>
   <text x="208" y="91" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="13" fill="#e3b341" font-weight="700">v2.5.0</text>
+        font-size="13" fill="#e3b341" font-weight="700">v2.5.2</text>
   <rect x="168" y="68" width="80" height="36" rx="3" fill="none" stroke="#e3b341" stroke-opacity="0.22" stroke-width="1"/>
 
   <!-- arrow -->

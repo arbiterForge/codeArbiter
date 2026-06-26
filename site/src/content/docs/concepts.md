@@ -1,6 +1,6 @@
 ---
 title: Concepts
-description: The core ideas behind codeArbiter — gated lanes, the Feature Forge, SMARTS, ADRs, and checkpoints.
+description: "The core ideas behind codeArbiter: gated lanes, the Feature Forge, SMARTS, ADRs, and checkpoints."
 ---
 
 These are the ideas the lanes are built on.

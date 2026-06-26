@@ -40,13 +40,13 @@
       <span>codeArbiter pre-commit · scanning diff...</span>
     </li>
     <li class="ca-terminal__line ca-terminal__line--error" role="listitem" style="--ca-term-delay: 1.0s">
-      <span>H-09 BLOCKED: banned crypto — createHash("md5") on line 42.</span>
+      <span>H-09b BLOCKED: banned crypto, createHash("md5") on line 42.</span>
     </li>
     <li class="ca-terminal__line ca-terminal__line--error" role="listitem" style="--ca-term-delay: 1.3s">
       <span>CRITICAL: MD5 is forbidden. Replace with SHA-256 (see security-controls.md).</span>
     </li>
     <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 1.6s">
-      <span>Commit rejected. Fix the finding, then commit again.</span>
+      <span>No security-gate-passed marker for the changed crypto lines. Commit rejected.</span>
     </li>
 
     <!-- Blank separator line -->
@@ -54,29 +54,28 @@
       <span>&nbsp;</span>
     </li>
 
-    <!-- Fix applied -->
+    <!-- Fix applied, then routed through the sanctioned commit path -->
     <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 2.2s">
       <span class="ca-terminal__prompt" aria-hidden="true">$</span>
       <span>sed -i 's/createHash("md5")/createHash("sha256")/g' payment.ts</span>
     </li>
     <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 2.7s">
       <span class="ca-terminal__prompt" aria-hidden="true">$</span>
-      <span>git add payment.ts</span>
+      <span>/ca:commit</span>
     </li>
-    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 3.0s">
-      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
-      <span>git commit -m "add payment hash (sha-256)"</span>
-    </li>
-    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 3.4s">
-      <span>codeArbiter pre-commit · scanning diff...</span>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 3.1s">
+      <span>crypto-compliance gate · reviewing changed crypto lines...</span>
     </li>
 
-    <!-- Gate pass -->
+    <!-- Gate pass: marker recorded, bound to the exact lines -->
+    <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 3.6s">
+      <span>SHA-256 confirmed. No banned primitives.</span>
+    </li>
     <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 3.9s">
-      <span>H-09 passed: SHA-256 confirmed. No banned patterns.</span>
+      <span>security-gate-passed marker recorded, bound to the line digests.</span>
     </li>
     <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 4.2s">
-      <span>All gates green. Commit accepted.</span>
+      <span>H-09b passed: marker matches the diff. Commit accepted.</span>
     </li>
     <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 4.5s">
       <span>[main 3fb950c] add payment hash (sha-256)</span>
