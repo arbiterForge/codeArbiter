@@ -2,11 +2,14 @@
  * Unit tests for farm.ts pure-function core.
  * These test the exported helpers directly without spawning a subprocess.
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput } from "./farm.ts";
+import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, rm as fsRm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter } from "./farm.ts";
+import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 
 // ---------------------------------------------------------------------------
@@ -1380,6 +1383,296 @@ describe("run() scrubs dispatcher secrets from the child env (least-privilege, C
       restore("FARM_API_KEY", prev.key);
       restore("CLAUDE_CODE_OAUTH_TOKEN", prev.tok);
       restore("FARM_MODEL", prev.model);
+    }
+  });
+});
+
+// ===========================================================================
+// Slice 1 — first-time-go accuracy (best-of-N + retry feedback)
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// F4 — sampling parameters in the chat request body. Today callApi posts only
+// {model, messages}; buildChatBody adds `temperature` (FARM_TEMPERATURE, default
+// 0) and `max_tokens` (only when FARM_MAX_TOKENS > 0, so today's unbounded
+// behavior is the default). Reads env LIVE so a test can set the knob and assert
+// the body, and accepts an explicit override (the seam best-of-N uses to vary
+// temperature per run).
+// ---------------------------------------------------------------------------
+describe("F4 — buildChatBody sampling params", () => {
+  const saved = { temp: process.env.FARM_TEMPERATURE, max: process.env.FARM_MAX_TOKENS };
+  afterEach(() => {
+    const restore = (k: string, v: string | undefined) =>
+      v === undefined ? delete process.env[k] : (process.env[k] = v);
+    restore("FARM_TEMPERATURE", saved.temp);
+    restore("FARM_MAX_TOKENS", saved.max);
+  });
+
+  it("includes temperature (default 0) and omits max_tokens by default", () => {
+    delete process.env.FARM_TEMPERATURE;
+    delete process.env.FARM_MAX_TOKENS;
+    const body = buildChatBody("m", [{ role: "user", content: "hi" }]);
+    expect(body.model).toBe("m");
+    expect(body.messages).toEqual([{ role: "user", content: "hi" }]);
+    expect(body.temperature).toBe(0);
+    expect("max_tokens" in body).toBe(false);
+  });
+
+  it("reads FARM_TEMPERATURE from the environment", () => {
+    process.env.FARM_TEMPERATURE = "0.7";
+    expect(buildChatBody("m", []).temperature).toBe(0.7);
+  });
+
+  it("includes max_tokens only when FARM_MAX_TOKENS > 0", () => {
+    process.env.FARM_MAX_TOKENS = "256";
+    expect(buildChatBody("m", []).max_tokens).toBe(256);
+    process.env.FARM_MAX_TOKENS = "0";
+    expect("max_tokens" in buildChatBody("m", [])).toBe(false);
+  });
+
+  it("honors an explicit sampling override (the best-of-N seam)", () => {
+    const body = buildChatBody("m", [], { temperature: 0.9, maxTokens: 100 });
+    expect(body.temperature).toBe(0.9);
+    expect(body.max_tokens).toBe(100);
+  });
+
+  it("readSampling reflects the live environment", () => {
+    process.env.FARM_TEMPERATURE = "0.3";
+    process.env.FARM_MAX_TOKENS = "512";
+    expect(readSampling()).toEqual({ temperature: 0.3, maxTokens: 512 });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F2 — iterative retries: the worker sees its OWN prior failed in-scope output,
+// not just the gate tail. buildPrompt renders prior-attempt files in a distinct
+// "previous attempt" section (redacted, via the same chokepoint); captureInScope
+// gathers the failed attempt's in-scope contents BEFORE the inter-attempt reset,
+// excluding the read-only test path and secret-bearing files (AC-F2.1/2.2/2.3).
+// ---------------------------------------------------------------------------
+describe("F2 — prior-attempt context in buildPrompt", () => {
+  const task: Task = {
+    id: "t",
+    description: "d",
+    filesInScope: ["src/a.ts"],
+    test: { path: "src/a.test.ts" },
+    gate: { commands: ["x"] },
+  };
+
+  it("renders prior-attempt files in a distinct section, redacted, alongside the current baseline", () => {
+    const injected: InjectedFile[] = [
+      { path: "src/a.ts", contents: "export const x = BASELINE;", readOnly: false },
+      { path: "src/a.ts", contents: "const k = 'sk-ant-leak';\nexport const x = 1;", readOnly: true, prior: true },
+    ];
+    const prompt = buildPrompt(task, injected);
+    expect(prompt).toMatch(/previous attempt/i);
+    // the prior code is redacted through the same chokepoint
+    expect(prompt).not.toContain("sk-ant-leak");
+    expect(prompt).toContain("[REDACTED");
+    // the current baseline is still present, in its own (non-prior) section
+    expect(prompt).toContain("BASELINE");
+  });
+
+  it("omits the previous-attempt section entirely when no prior files are present (today's prompt)", () => {
+    const prompt = buildPrompt(task, [{ path: "src/a.ts", contents: "export const x = 1;", readOnly: false }]);
+    expect(prompt).not.toMatch(/previous attempt/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F1 — shared concurrency limiter. Best-of-N draws N worker calls per task; the
+// limiter is the shared budget that keeps TOTAL in-flight worker calls (across
+// tasks AND samples) at or under FARM_CONCURRENCY (AC-F1.4). With FARM_SAMPLES=1
+// each task makes one call and the limiter never blocks.
+// ---------------------------------------------------------------------------
+describe("F1 — createLimiter caps concurrency", () => {
+  async function peakUnder(cap: number, jobs: number): Promise<number> {
+    const limit = createLimiter(cap);
+    let active = 0;
+    let peak = 0;
+    await Promise.all(
+      Array.from({ length: jobs }, () =>
+        limit.run(async () => {
+          active++;
+          peak = Math.max(peak, active);
+          await new Promise((r) => setTimeout(r, 10));
+          active--;
+        }),
+      ),
+    );
+    return peak;
+  }
+
+  it("never runs more than `max` jobs concurrently, and does parallelize up to it", async () => {
+    expect(await peakUnder(2, 6)).toBe(2);
+  });
+
+  it("clamps a max < 1 to 1 (never deadlocks, never unbounded)", async () => {
+    expect(await peakUnder(0, 4)).toBe(1);
+  });
+
+  it("returns each job's resolved value", async () => {
+    const limit = createLimiter(2);
+    const out = await Promise.all([1, 2, 3].map((n) => limit.run(async () => n * 10)));
+    expect(out).toEqual([10, 20, 30]);
+  });
+
+  it("releases the slot even when a job throws (no slot leak)", async () => {
+    const limit = createLimiter(1);
+    await expect(limit.run(async () => { throw new Error("boom"); })).rejects.toThrow("boom");
+    // if the slot had leaked, this second job would hang; a fast resolve proves release.
+    await expect(limit.run(async () => "ok")).resolves.toBe("ok");
+    expect(limit.active()).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F1 — best-of-N selection in runTask. With FARM_SAMPLES>1 the task draws N
+// candidates concurrently in isolated scratch worktrees, gates each, and accepts
+// the first green; no green seeds the existing retry from the best failure. The
+// stub deps are cwd-aware: a sample worktree path ends `__s<k>`, so the stub gate
+// can fail specific samples and the stub worker can record which worktree it ran
+// in. Worker writes are not materialized in stub-land (no real fs), which is fine
+// — selection is what's under test; the accepted Result reflects the winner.
+// ---------------------------------------------------------------------------
+describe("F1 — best-of-N in runTask", () => {
+  const saved = { samples: process.env.FARM_SAMPLES, temp: process.env.FARM_TEMPERATURE };
+  afterEach(() => {
+    const restore = (k: string, v: string | undefined) =>
+      v === undefined ? delete process.env[k] : (process.env[k] = v);
+    restore("FARM_SAMPLES", saved.samples);
+    restore("FARM_TEMPERATURE", saved.temp);
+  });
+
+  const task: Task = {
+    id: "bon",
+    description: "make the test pass",
+    filesInScope: ["src/bon.ts"],
+    test: { path: "src/bon.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  const sampleIdx = (cwd: string) => Number(cwd.match(/__s(\d+)$/)?.[1] ?? -1);
+
+  function bestOfNDeps(opts: {
+    gateFailSamples?: number[];
+    workerTokens?: number;
+    onWorkerCwd?: (cwd: string) => void;
+    capturedSampling?: { value?: Sampling };
+  }): RunTaskDeps {
+    const tok = opts.workerTokens ?? 5;
+    return {
+      worker: {
+        async apply(ctx) {
+          opts.onWorkerCwd?.(ctx.cwd);
+          if (opts.capturedSampling) opts.capturedSampling.value = ctx.sampling;
+          const k = ctx.cwd.match(/__s(\d+)$/)?.[1] ?? "main";
+          return { ok: true, filesWritten: [`src/s${k}.ts`], promptTokens: tok, completionTokens: tok * 2 } satisfies WorkerResult;
+        },
+      },
+      prepareWorktree: async () => null,
+      resetWorktree: async () => {},
+      fileHash: async () => null,
+      checkDrift: async () => [],
+      runGate: async (cwd: string) => {
+        if (opts.gateFailSamples?.includes(sampleIdx(cwd))) return { ok: false as const, failed: "node -p 0", tail: "red" };
+        return { ok: true as const };
+      },
+      antiGamingCheck: async () => ({ risk: "none" as const }),
+      mutationCheck: async () => null,
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+  }
+
+  it("accepts the FIRST green sample by index and reports its files (AC-F1.2)", async () => {
+    process.env.FARM_SAMPLES = "3";
+    // sample 0 fails the gate; samples 1 and 2 pass → winner is index 1.
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ gateFailSamples: [0] }));
+    expect(r.status).toBe("green");
+    expect(r.filesWritten).toEqual(["src/s1.ts"]);
+  });
+
+  it("sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)", async () => {
+    process.env.FARM_SAMPLES = "3";
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ gateFailSamples: [0], workerTokens: 5 }));
+    expect(r.samples).toBe(3);
+    expect(r.promptTokens).toBe(15); // 3 samples × 5
+    expect(r.completionTokens).toBe(30); // 3 × 10
+    expect(r.acceptedPromptTokens).toBe(5); // winner only
+    expect(r.acceptedCompletionTokens).toBe(10);
+  });
+
+  it("escalates when no sample passes the gate and retries are spent (AC-F1.5)", async () => {
+    process.env.FARM_SAMPLES = "2";
+    const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", bestOfNDeps({ gateFailSamples: [0, 1] }));
+    expect(r.status).toBe("escalate");
+  });
+
+  it("auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE=0 (AC-F1.3)", async () => {
+    process.env.FARM_SAMPLES = "2";
+    delete process.env.FARM_TEMPERATURE;
+    const cap: { value?: Sampling } = {};
+    await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ capturedSampling: cap }));
+    expect(cap.value?.temperature).toBe(0.7);
+  });
+
+  it("does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly", async () => {
+    process.env.FARM_SAMPLES = "2";
+    process.env.FARM_TEMPERATURE = "0.2";
+    const cap: { value?: Sampling } = {};
+    await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ capturedSampling: cap }));
+    expect(cap.value?.temperature).toBe(0.2);
+  });
+
+  it("REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const cwds: string[] = [];
+    const r = await runTask(task, "m", "https://api.example/v1", "k", bestOfNDeps({ onWorkerCwd: (c) => cwds.push(c) }));
+    expect(r.status).toBe("green");
+    expect(cwds).toHaveLength(1);
+    expect(cwds[0]).not.toMatch(/__s\d+$/); // the task worktree, never a sample scratch
+    expect(r.samples).toBe(1);
+  });
+});
+
+describe("F2 — captureInScope (failed-attempt capture before reset)", () => {
+  it("returns in-scope file contents, excluding the test path and secret-bearing files", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-cap-"));
+    try {
+      await fsMkdir(path.join(dir, "src"), { recursive: true });
+      await fsWriteFile(path.join(dir, "src/a.ts"), "export const a = 1;");
+      await fsWriteFile(path.join(dir, "src/a.test.ts"), "the read-only test");
+      await fsWriteFile(path.join(dir, "deploy.key"), "PRIVATE-KEY-MATERIAL");
+      // test.path AND a secret-bearing file are both in filesInScope to prove
+      // they are excluded from the captured set; only src/a.ts survives.
+      const t: Task = {
+        id: "t",
+        description: "d",
+        filesInScope: ["src/a.ts", "src/a.test.ts", "deploy.key"],
+        test: { path: "src/a.test.ts" },
+        gate: { commands: ["x"] },
+      };
+      const captured = await captureInScope(dir, t);
+      expect(captured).toEqual([{ path: "src/a.ts", contents: "export const a = 1;" }]);
+    } finally {
+      await fsRm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("returns [] when no in-scope files exist on disk yet", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-cap-"));
+    try {
+      const t: Task = {
+        id: "t",
+        description: "d",
+        filesInScope: ["src/not-written-yet.ts"],
+        test: { path: "src/x.test.ts" },
+        gate: { commands: ["x"] },
+      };
+      expect(await captureInScope(dir, t)).toEqual([]);
+    } finally {
+      await fsRm(dir, { recursive: true, force: true });
     }
   });
 });
