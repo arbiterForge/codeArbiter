@@ -48,6 +48,11 @@ python .github/scripts/test_taskboardlib.py
 # task-board writer + follow-up harvest — next_seq, add_entry, set_state, dedup,
 # the 3 extractors, and promote routing/modes (_taskboardlib)
 python .github/scripts/test_taskwriter.py
+
+# release-skill hardening helpers — last-tag selection (ca-only, pre-release
+# excluded), notes-heading/tag match, release-date consistency, half-finished-
+# publish classifier, the CLI, and the SKILL.md structural wiring (_releaselib)
+python .github/scripts/test_release_lib.py
 ```
 
 Only when `plugins/ca/tools/**` changed:
