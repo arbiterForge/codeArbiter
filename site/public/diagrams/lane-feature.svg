@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 250" role="img"
+     aria-label="The /ca:feature lane across three rows by piece type, loaded in order. Commands row: /ca:feature, then /ca:commit, then /ca:pr. Skills row: brainstorming, writing-plans, tdd, then commit-gate. Agents row: author agents, then reviewer agents. A connector weaves through them left to right in execution order: /ca:feature, brainstorming, writing-plans, tdd, author agents, reviewer agents, /ca:commit, commit-gate, /ca:pr. Each piece loads only when the lane reaches it.">
+  <title>The /ca:feature lane: commands, skills, and agents, loaded in order</title>
+  <defs>
+    <linearGradient id="lfx-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#131a23"/>
+    </linearGradient>
+    <pattern id="lfx-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <marker id="lfx-arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 Z" fill="#6e7b8b"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="250" fill="url(#lfx-bg)"/>
+  <rect width="920" height="250" fill="url(#lfx-grid)"/>
+  <rect x="8" y="8" width="904" height="234" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+
+  <!-- row guides -->
+  <line x1="128" y1="80" x2="900" y2="80" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="128" y1="145" x2="900" y2="145" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="128" y1="210" x2="900" y2="210" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+
+  <!-- row labels (these double as the legend) -->
+  <text x="116" y="84" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#d29922">COMMANDS</text>
+  <text x="116" y="149" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#8957e5">SKILLS</text>
+  <text x="116" y="214" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#3a8a44">AGENTS</text>
+
+  <!-- execution-order connector (drawn first; chips sit on top so it shows in the gaps) -->
+  <polyline points="160,80 252,145 352,145 450,145 545,210 658,210 740,80 808,145 872,80"
+            fill="none" stroke="#6e7b8b" stroke-width="1.4" marker-end="url(#lfx-arrow)"/>
+
+  <!-- ── chips ── command = gold, skill = violet, agent = green ── -->
+  <!-- 1 /ca:feature -->
+  <rect x="117" y="63" width="86" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="160" y="84" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:feature</text>
+  <!-- 2 brainstorming -->
+  <rect x="204" y="128" width="96" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="252" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">brainstorming</text>
+  <!-- 3 writing-plans -->
+  <rect x="304" y="128" width="96" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="352" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">writing-plans</text>
+  <!-- 4 tdd -->
+  <rect x="424" y="128" width="52" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="450" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">tdd</text>
+  <!-- 5 author agents -->
+  <rect x="493" y="193" width="104" height="34" rx="5" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.4"/>
+  <text x="545" y="214" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#7fd089">author agents</text>
+  <!-- 6 reviewer agents -->
+  <rect x="600" y="193" width="116" height="34" rx="5" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.4"/>
+  <text x="658" y="214" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#7fd089">reviewer agents</text>
+  <!-- 7 /ca:commit -->
+  <rect x="698" y="63" width="84" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="740" y="84" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:commit</text>
+  <!-- 8 commit-gate -->
+  <rect x="762" y="128" width="92" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="808" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">commit-gate</text>
+  <!-- 9 /ca:pr -->
+  <rect x="840" y="63" width="64" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="872" y="84" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:pr</text>
+
+  <!-- flow legend -->
+  <text x="900" y="232" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">loaded in execution order →</text>
+</svg>

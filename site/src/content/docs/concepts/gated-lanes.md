@@ -1,5 +1,5 @@
 ---
-title: The gated-lane model
+title: The Gated-Lane Model
 description: "How codeArbiter assigns every kind of work to a sanctioned path with gates scaled to its risk, and what distinguishes soft gates from hard gates."
 ---
 

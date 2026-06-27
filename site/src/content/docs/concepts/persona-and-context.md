@@ -1,5 +1,5 @@
 ---
-title: The persona-register split
+title: The Persona-Register Split
 description: "How codeArbiter separates the orchestrator, author, and reviewer personas to keep each role sharp and its context footprint small."
 ---
 

@@ -1,0 +1,119 @@
+---
+title: What's in the Forge
+description: "The live list of codeArbiter features currently in preview: opt-in, off by default, awaiting evidence-based promotion to stable."
+---
+
+import { FORGE_FEATURES } from '../../../../scripts/generator/forge-status';
+
+This is the current contents of the [Feature Forge](/feature-forge/overview/): every codeArbiter
+feature in **preview** right now. Preview features are opt-in and off by default. This list is
+generated from the same allowlist that stamps the <span class="ca-badge" data-kind="preview">preview</span>
+badge on the reference pages, so it stays in step with them automatically.
+
+## Currently in Preview
+
+<ul>
+  {FORGE_FEATURES.map((f) => (
+    <li>
+      <strong class="ca-forge-name">{f.name}</strong>{' '}
+      <span class="ca-badge" data-kind="preview">preview</span><br />
+      {f.summary}<br />
+      Opt in: <code>{f.optIn}</code>.{' '}
+      {f.command ? (
+        <a href={`${import.meta.env.BASE_URL}reference/commands/${f.command}/`}>Reference for /ca:{f.command}</a>
+      ) : f.href ? (
+        <a href={f.href}>Details</a>
+      ) : null}
+      {f.requires ? (
+        <><br />Requires <code>{f.requires}</code>.</>
+      ) : null}
+      {f.env && f.env.length > 0 ? (
+        <div class="ca-forge-env">
+          <p class="ca-forge-env__label">Environment variables</p>
+          <ul>
+            {f.env.map((e) => (
+              <li>
+                <code>{e.name}</code>{' '}
+                <span class="ca-badge" data-kind={e.required ? 'preview' : 'stable'}>
+                  {e.required ? 'required' : 'optional'}
+                </span><br />
+                {e.description}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      <p class="ca-forge-help"><em>Help it graduate:</em> {f.helpGraduate}</p>
+    </li>
+  ))}
+</ul>
+
+When this list changes it is because a feature entered or left the Forge: a new preview was added,
+or one was promoted to stable and is now on by default for everyone.
+
+## How Each Preview Works
+
+Each feature above is in preview for the same reason: it works, but it has not yet earned the
+evidence to be on by default. Here is what each one actually does, and why it is worth turning on.
+
+### Live transcript pruning
+
+A long Claude Code session dies when its transcript fills the context window. Most of that weight is
+not conversation. It is `toolUseResult` sidecars, oversized tool outputs, folded thinking blocks, and
+stale file reads that no longer matter. The pruner trims that bulk at safe quiescence points (after a
+turn settles, at compaction) while leaving three things untouched: the `uuid`/`parentUuid` chain that
+threads the conversation, every line type (including future ones it does not recognize), and the most
+recent tool-bearing turns, kept verbatim.
+
+The gains land when you resume or compact the session, not on the current turn, because the running
+CLI replays its in-memory history to the API rather than re-reading the file. The opt-in is staged for
+exactly that reason: `CODEARBITER_PRUNE=dry` runs the full analysis and logs every cut it would make
+without ever touching the live transcript, so you accumulate evidence that it is safe before you let it
+write anything. Three tiers (gentle, standard, aggressive) control how hard it trims. See the
+[`/ca:prune` reference](/reference/commands/prune/) for the modes and tiers.
+
+The payoff: a session that would have hit the wall keeps going, and it does so without losing the
+thread of what you were doing.
+
+### Pluggable execution farm
+
+`--farm` swaps the engine that writes implementation code without touching anything that decides
+whether that code is good. On a normal `/ca:sprint`, a premium subagent implements each task. With
+`--farm`, Claude still writes the spec, the failing tests, and the plan; then a pool of worker agents
+picks up each task in its own isolated git worktree and works until the test passes. Claude reviews the
+result and merges it.
+
+The point is the seam. A worker cannot redefine the gates, only pass them. Every task the farm reports
+green still runs through the same spec-compliance, quality, and fresh-verification reviews a premium
+sprint uses, plus two zero-token guards the dispatcher adds: a literal-leak check that rejects code
+which merely hard-codes the value the test asserts, and a mutation pass that perturbs the worker's code
+and re-runs the test to confirm the test actually constrains it. Tasks run in parallel, each isolated,
+and a circuit breaker aborts the run if too many tasks escalate, a sign the chosen model is not up to
+the slice. Best-of-N sampling (`FARM_SAMPLES`) takes it further, drawing several candidates per task in
+parallel and accepting the first that clears the gate.
+
+The payoff: you can route implementation to a cheaper or different model and keep the exact same safety
+chain. The behavior that protects you does not change; only who types the first draft does. The
+[autonomous sprints guide](/guides/autonomous-sprints/) walks through a `--farm` run end to end.
+
+### ca-sandbox (local Codespace)
+
+`ca-sandbox` is a separate sibling plugin for one job: running code you do not trust without exposing
+your machine. Give it a repo URL and it clones the code into a Docker named volume (never onto your
+host filesystem), builds a dependency-cached image with nixpacks, and starts a container you can
+explore.
+
+The isolation holds by construction, not by trust: `--cap-drop ALL`, non-root, a read-only root
+filesystem, `no-new-privileges`, the source mounted only at `/work/repo`, and no bind mount, no docker
+socket, never `--privileged`. Network defaults to offline; `clone-then-cut` fetches dependencies at
+build time and then cuts egress. `--with-claude` runs Claude Code inside the box under hardened
+defaults through a separate gated routine, so you can point an agent at unfamiliar code from inside the
+cage.
+
+The payoff: it is a local Codespace for the moment you want to actually run an unknown repo (build it,
+test it, let an agent poke at it) and be certain the worst it can do is trash a throwaway container.
+
+## Turning One On
+
+See [Using features still in the Forge](/feature-forge/using-preview-features/) for how to enable a
+preview feature and what to expect while it is still in the Forge.

@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 280" role="img"
-     aria-label="Two-axis labeling model. SemVer governs the whole plugin payload: a version bump means every user gets the change. Feature Forge governs individual features: a feature can be preview (opt-in, dormant) or stable (on by default, evidence-promoted).">
-  <title>Two-axis labeling model: SemVer (whole payload) vs Feature Forge (per-feature preview)</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 466" role="img"
+     aria-label="Two-axis labeling model, stacked. Top band, the SemVer axis, governs the whole plugin payload: versions progress v2.5.1, v2.5.2 (current), v2.6.0, and a version bump reaches every user at once. Bottom band, the Feature Forge axis, governs individual features: a feature moves from preview (opt-in, dormant) to stable (on by default) on real-world evidence, and can be preview inside a stable release.">
+  <title>Two-axis labeling model: SemVer (whole payload) and Feature Forge (per-feature preview)</title>
   <defs>
     <linearGradient id="ta-bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0b0f14"/>
@@ -9,12 +9,8 @@
     <pattern id="ta-grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
     </pattern>
-    <filter id="ta-glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="2.2" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
     <marker id="ta-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#46505a"/>
+      <path d="M0,0 L0,6 L8,3 Z" fill="#56616d"/>
     </marker>
     <marker id="ta-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
       <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
@@ -22,162 +18,91 @@
   </defs>
 
   <!-- ground -->
-  <rect width="900" height="280" fill="url(#ta-bg)"/>
-  <rect width="900" height="280" fill="url(#ta-grid)"/>
-
-  <!-- outer frame -->
-  <rect x="8" y="8" width="884" height="264" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+  <rect width="720" height="466" fill="url(#ta-bg)"/>
+  <rect width="720" height="466" fill="url(#ta-grid)"/>
+  <rect x="8" y="8" width="704" height="450" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
 
   <!-- ═══════════════════════════════════════════════
-       AXIS 1: SEMVER — left column
+       BAND 1: SEMVER — whole payload
        ═══════════════════════════════════════════════ -->
 
-  <!-- column divider -->
-  <line x1="450" y1="20" x2="450" y2="260" stroke="#2a3340" stroke-width="1" stroke-dasharray="4 4"/>
-
-  <!-- axis label: SemVer -->
-  <text x="225" y="38" text-anchor="middle"
+  <text x="360" y="46" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="10" letter-spacing="3" fill="#8b95a2">SEMVER AXIS</text>
-
-  <!-- scope label -->
-  <text x="225" y="56" text-anchor="middle"
+  <text x="360" y="71" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="14" fill="#e6edf3" font-weight="600">whole payload</text>
+        font-size="19" fill="#f0f3f6" font-weight="700">Whole Payload</text>
 
-  <!-- version pill row -->
-  <!-- v2.5.1 -->
-  <rect x="52" y="72" width="72" height="28" rx="3" fill="#1c2430" stroke="#46505a" stroke-width="1"/>
-  <text x="88" y="91" text-anchor="middle"
+  <!-- version progression: v2.5.1 → v2.5.2 (current) → v2.6.0, centred on x=360 -->
+  <rect x="203" y="92" width="78" height="38" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1"/>
+  <text x="242" y="116" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="12" fill="#8b95a2">v2.5.1</text>
 
-  <!-- arrow -->
-  <line x1="124" y1="86" x2="160" y2="86" stroke="#46505a" stroke-width="1.5" marker-end="url(#ta-arrow)"/>
+  <line x1="281" y1="111" x2="317" y2="111" stroke="#56616d" stroke-width="1.5" marker-end="url(#ta-arrow)"/>
 
-  <!-- v2.5.2 (current, highlighted) -->
-  <rect x="168" y="68" width="80" height="36" rx="3" fill="#1c2430" stroke="#d29922" stroke-width="1.5"/>
-  <text x="208" y="91" text-anchor="middle"
+  <rect x="317" y="92" width="86" height="38" rx="4" fill="#1c2430" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="360" y="116" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="13" fill="#e3b341" font-weight="700">v2.5.2</text>
-  <rect x="168" y="68" width="80" height="36" rx="3" fill="none" stroke="#e3b341" stroke-opacity="0.22" stroke-width="1"/>
 
-  <!-- arrow -->
-  <line x1="248" y1="86" x2="284" y2="86" stroke="#46505a" stroke-width="1.5" marker-end="url(#ta-arrow)"/>
+  <line x1="403" y1="111" x2="439" y2="111" stroke="#56616d" stroke-width="1.5" marker-end="url(#ta-arrow)"/>
 
-  <!-- v2.6.0 (future) -->
-  <rect x="292" y="72" width="72" height="28" rx="3" fill="#1c2430" stroke="#2a3340" stroke-width="1"/>
-  <text x="328" y="91" text-anchor="middle"
+  <rect x="439" y="92" width="78" height="38" rx="4" fill="#1c2430" stroke="#2a3340" stroke-width="1"/>
+  <text x="478" y="116" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="12" fill="#46505a">v2.6.0</text>
+        font-size="12" fill="#6e7b8b">v2.6.0</text>
 
-  <!-- SemVer invariant note -->
-  <text x="225" y="122" text-anchor="middle"
+  <text x="360" y="160" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">version bump = every user gets the change</text>
+        font-size="12" fill="#8b95a2">a version bump reaches every user at once</text>
 
-  <!-- divider line -->
-  <line x1="32" y1="140" x2="418" y2="140" stroke="#2a3340" stroke-width="1"/>
-
-  <!-- "who decides?" -->
-  <text x="225" y="162" text-anchor="middle"
+  <text x="360" y="186" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="10" letter-spacing="2" fill="#6e7b8b">GOVERNED BY</text>
-  <text x="225" y="182" text-anchor="middle"
+  <text x="360" y="204" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#8b95a2">semantic versioning contract</text>
-  <text x="225" y="200" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#6e7b8b">MAJOR · MINOR · PATCH</text>
+        font-size="11" fill="#8b95a2">a semantic versioning contract · MAJOR · MINOR · PATCH</text>
 
-  <!-- pill samples at bottom of left column -->
-  <rect x="94" y="220" width="66" height="22" rx="11" fill="#1c2430" stroke="#46505a" stroke-width="1"/>
-  <text x="127" y="235" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#8b95a2">stable</text>
-
-  <rect x="174" y="220" width="102" height="22" rx="11" fill="#1c2430" stroke="#46505a" stroke-width="1"/>
-  <text x="225" y="235" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#8b95a2">all features</text>
-
-  <text x="225" y="260" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="10" fill="#46505a">applies to the whole plugin at once</text>
+  <!-- band divider -->
+  <line x1="40" y1="233" x2="680" y2="233" stroke="#2a3340" stroke-width="1"/>
 
   <!-- ═══════════════════════════════════════════════
-       AXIS 2: FEATURE FORGE — right column
+       BAND 2: FEATURE FORGE — per-feature preview
        ═══════════════════════════════════════════════ -->
 
-  <!-- axis label: Feature Forge -->
-  <text x="675" y="38" text-anchor="middle"
+  <text x="360" y="277" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="10" letter-spacing="3" fill="#c08a6a">FEATURE FORGE AXIS</text>
-
-  <!-- scope label -->
-  <text x="675" y="56" text-anchor="middle"
+  <text x="360" y="302" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="14" fill="#e6edf3" font-weight="600">per-feature preview</text>
+        font-size="19" fill="#f0f3f6" font-weight="700">Per-Feature Preview</text>
 
-  <!-- feature state progression: preview → stable -->
-  <!-- preview badge -->
-  <rect x="496" y="68" width="96" height="36" rx="3" fill="#1e1408" stroke="#d97757" stroke-width="1.5"/>
-  <text x="544" y="84" text-anchor="middle"
+  <!-- feature progression: preview → (evidence) → stable, centred on x=360 -->
+  <rect x="234" y="323" width="100" height="38" rx="4" fill="#1e1408" stroke="#d97757" stroke-width="1.5"/>
+  <text x="284" y="347" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="11" fill="#d97757" font-weight="700">preview</text>
-  <text x="544" y="99" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" fill="#c08a6a" letter-spacing="1">opt-in · dormant</text>
+        font-size="13" fill="#d97757" font-weight="700">preview</text>
 
-  <!-- promotion arrow with label -->
-  <line x1="592" y1="86" x2="648" y2="86" stroke="#d29922" stroke-width="1.5" marker-end="url(#ta-arrow-gold)" stroke-dasharray="4 3"/>
-  <text x="620" y="78" text-anchor="middle"
+  <text x="362" y="333" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="9" fill="#6e7b8b">evidence</text>
+  <line x1="334" y1="342" x2="390" y2="342" stroke="#d29922" stroke-width="1.5"
+        stroke-dasharray="4 3" marker-end="url(#ta-arrow-gold)"/>
 
-  <!-- stable badge -->
-  <rect x="656" y="68" width="90" height="36" rx="3" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.5"/>
-  <text x="701" y="84" text-anchor="middle"
+  <rect x="390" y="323" width="96" height="38" rx="4" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.5"/>
+  <text x="438" y="347" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="11" fill="#4caf57" font-weight="700">stable</text>
-  <text x="701" y="99" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" fill="#3a8a44" letter-spacing="1">on by default</text>
+        font-size="13" fill="#4caf57" font-weight="700">stable</text>
 
-  <!-- forge gate motif (small) -->
-  <g filter="url(#ta-glow)">
-    <line x1="784" y1="60" x2="784" y2="112" stroke="#d97757" stroke-width="2.5"/>
-    <line x1="798" y1="60" x2="798" y2="112" stroke="#d97757" stroke-width="2.5"/>
-    <rect x="779" y="54" width="24" height="5" fill="#f0b35a"/>
-  </g>
-  <text x="791" y="127" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="8" letter-spacing="2" fill="#c08a6a">FORGE</text>
-
-  <!-- Feature Forge invariant note -->
-  <text x="675" y="152" text-anchor="middle"
+  <text x="360" y="391" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">a feature can be preview inside a stable release</text>
+        font-size="12" fill="#8b95a2">a feature can be preview inside a stable release</text>
 
-  <!-- divider -->
-  <line x1="466" y1="165" x2="882" y2="165" stroke="#2a3340" stroke-width="1"/>
-
-  <!-- "who decides?" -->
-  <text x="675" y="187" text-anchor="middle"
+  <text x="360" y="417" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="10" letter-spacing="2" fill="#6e7b8b">GOVERNED BY</text>
-  <text x="675" y="207" text-anchor="middle"
+  <text x="360" y="435" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#8b95a2">real-world evidence from users who opt in</text>
-
-  <!-- three-part description -->
-  <text x="675" y="228" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="10" fill="#6e7b8b">ships dormant · no surprise behavior · your data promotes it</text>
-
-  <!-- example feature label -->
-  <rect x="564" y="245" width="222" height="22" rx="3" fill="#1e1408" stroke="#d97757" stroke-opacity="0.5" stroke-width="1"/>
-  <text x="675" y="260" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#c08a6a">--farm · preview · opt-in today</text>
+        font-size="11" fill="#8b95a2">real-world evidence from users who opt in</text>
 </svg>

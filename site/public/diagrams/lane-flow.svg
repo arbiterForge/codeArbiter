@@ -20,6 +20,9 @@
     <marker id="lf-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
       <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
     </marker>
+    <marker id="lf-arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 Z" fill="#3a8a44"/>
+    </marker>
   </defs>
 
   <!-- ground -->
@@ -28,6 +31,10 @@
 
   <!-- outer frame -->
   <rect x="8" y="8" width="884" height="144" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+
+  <!-- content row, nudged left so the first box and last box sit an equal
+       distance from the inner frame (left/right gap both 15) -->
+  <g transform="translate(-7 0)">
 
   <!-- ── STEP 1: COMMAND ── -->
   <!-- box -->
@@ -90,14 +97,22 @@
   <!-- gold glow on the border -->
   <rect x="578" y="52" width="136" height="56" rx="3" fill="none" stroke="#e3b341" stroke-opacity="0.28" stroke-width="1"/>
 
-  <!-- tail: PR arrow out -->
-  <line x1="714" y1="80" x2="778" y2="80" stroke="#46505a" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
-  <text x="840" y="84" text-anchor="middle"
+  <!-- connector 4→5 (green — the reviewed merge path) -->
+  <line x1="714" y1="80" x2="746" y2="80" stroke="#3a8a44" stroke-width="1.5" marker-end="url(#lf-arrow-green)"/>
+
+  <!-- ── STEP 5: PULL REQUEST ── (same box size as the other steps) -->
+  <rect x="748" y="52" width="136" height="56" rx="3" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.5"/>
+  <text x="816" y="77" text-anchor="middle"
+        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="12" fill="#e6edf3" font-weight="600">pull request</text>
+  <text x="816" y="96" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="12" fill="#8b95a2" letter-spacing="1">PR</text>
+        font-size="10" fill="#5fae6a" letter-spacing="1.5">MERGE</text>
+  <rect x="748" y="52" width="136" height="56" rx="3" fill="none" stroke="#4caf57" stroke-opacity="0.3" stroke-width="1"/>
 
   <!-- seam note -->
-  <text x="892" y="153" text-anchor="end"
+  <text x="455" y="149" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="8" letter-spacing="1" fill="#46505a">never a direct write to main</text>
+        font-size="8" letter-spacing="1" fill="#6e7b8b">never a direct write to main</text>
+  </g>
 </svg>

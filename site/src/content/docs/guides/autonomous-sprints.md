@@ -1,15 +1,26 @@
 ---
-title: "Run an autonomous sprint"
+title: "Run an Autonomous Sprint"
 description: "Hand a goal to codeArbiter and have it plan, implement, and open a PR with one interactive gate at the start."
 ---
 
 `/ca:sprint` runs a full development cycle without continuous input. You review a spec and approve a plan once, at the start. After that, codeArbiter handles every implementation task, scores every decision it makes in your place, logs the lot, and opens a PR when the gate chain clears. You come back at the end to decide whether to merge.
 
-## Before you begin
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-sprint.svg"
+    alt="The /ca:sprint lane in three rows: Commands (/ca:sprint), Skills (writing-plans, subagent-driven-development, commit-gate, finishing-a-development-branch), and Agents (author subagent, reviewer fleet), with a connector weaving through them in execution order."
+    loading="lazy"
+    width="920"
+    height="250"
+  />
+  <figcaption>The <code>/ca:sprint</code> lane by piece type: command (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
+</figure>
+
+## Before You Begin
 
 Your repository must be opted in (`arbiter: enabled` in `.codearbiter/CONTEXT.md`). If it isn't yet, run `/ca:init`. The [Quickstart](/getting-started/quickstart/) walks through the opt-in.
 
-## Approve the spec and plan
+## Approve the Spec and Plan
 
 Run the sprint with your goal as the argument:
 
@@ -25,7 +36,7 @@ Second, it runs the [`writing-plans`](/reference/skills/writing-plans/) skill. T
 
 That plan approval is the last required interaction before execution begins.
 
-## Autonomous execution
+## Autonomous Execution
 
 Each task in the approved plan dispatches a fresh subagent through [`subagent-driven-development`](/reference/skills/subagent-driven-development/): test first via the `tdd` gate, then spec-compliance review, quality review, and a fresh-run verification. No single agent context accumulates state across tasks.
 
@@ -33,7 +44,7 @@ When the sprint must make a choice in your place, such as which approach to take
 
 Nothing hides behind the autonomy. Every choice the sprint made on your behalf is in the log.
 
-## Hard gates that always stop
+## Hard Gates That Always Stop
 
 Some decisions are never auto-decided, regardless of confidence. The sprint halts and waits when it encounters:
 
@@ -44,11 +55,11 @@ Some decisions are never auto-decided, regardless of confidence. The sprint halt
 
 These stops are rare when the spec is thorough. A sprint that halts often on hard gates is a signal that the goal needed more detail before starting, not that the gates are miscalibrated.
 
-## The pull request
+## The Pull Request
 
 When the commit gate clears on the final task, [`finishing-a-development-branch`](/reference/skills/finishing-a-development-branch/) runs. Under `/ca:sprint`, it auto-selects "open PR." It will not merge to the default branch. Direct merge is prohibited. A pull request is opened and the merge decision is yours to make on your own timeline.
 
-## Route implementation through farm workers
+## Route Implementation Through Farm Workers
 
 <div class="ca-callout ca-callout--preview"><p class="ca-callout__label">Preview</p><p><code>--farm</code> is a Feature Forge preview feature. It ships dormant and is off by default. It has not been promoted to stable. Turn it on deliberately; do not rely on it for production workflows until promotion is tracked and recorded.</p></div>
 
@@ -67,7 +78,7 @@ The spec and plan gate runs exactly as it does without the flag. Farm routing ta
 
 Because `--farm` is a Feature Forge preview, its behavior may change between releases. Promotion to stable requires real-world evidence and is recorded as a deliberate tracked decision in the project, not an automatic calendar event.
 
-## Review the sprint log
+## Review the Sprint Log
 
 After the PR opens, read the sprint log before merging. It lists every auto-decision in order: the options considered, the SMARTS lens scores, the chosen option, and the confidence flag. The low-confidence entries are the ones worth reading first. They are where the sprint was least certain and where a brief review returns the most value.
 

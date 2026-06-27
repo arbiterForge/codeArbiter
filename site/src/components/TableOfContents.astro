@@ -1,0 +1,125 @@
+---
+/**
+ * Desktop "On this page" override.
+ *
+ * Starlight's stock scroll-spy uses an IntersectionObserver with a thin band
+ * near the top of the viewport. The last heading's section is often too short to
+ * ever scroll into that band before the page bottom (or the footer, which maps
+ * back to the page title) takes over, so the final TOC item never highlights.
+ *
+ * This override keeps Starlight's markup and styling (via CaTocList) but swaps
+ * the scroll-spy for a position-based one that explicitly activates the last
+ * item once the page is scrolled to the bottom. Mobile TOC is untouched.
+ */
+import CaTocList from "./CaTocList.astro";
+
+const { toc } = Astro.locals.starlightRoute;
+---
+
+{
+  toc && (
+    <ca-toc>
+      <nav aria-labelledby="starlight__on-this-page">
+        <h2 id="starlight__on-this-page">{Astro.locals.t("tableOfContents.onThisPage")}</h2>
+        <CaTocList toc={toc.items} />
+      </nav>
+    </ca-toc>
+  )
+}
+
+<script>
+  class CaToc extends HTMLElement {
+    private pairs: { link: HTMLAnchorElement; heading: HTMLElement }[] = [];
+    private raf = 0;
+
+    connectedCallback() {
+      this.pairs = [...this.querySelectorAll("a")]
+        .map((link) => {
+          const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+          return heading ? { link, heading } : null;
+        })
+        .filter((p): p is { link: HTMLAnchorElement; heading: HTMLElement } => p !== null);
+
+      window.addEventListener("scroll", this.schedule, { passive: true });
+      window.addEventListener("resize", this.schedule, { passive: true });
+      this.update();
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("scroll", this.schedule);
+      window.removeEventListener("resize", this.schedule);
+      cancelAnimationFrame(this.raf);
+    }
+
+    private schedule = () => {
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => this.update());
+    };
+
+    private setCurrent(active: HTMLAnchorElement | undefined) {
+      for (const { link } of this.pairs) {
+        if (link === active) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      }
+    }
+
+    private update() {
+      if (!this.pairs.length) return;
+      const n = this.pairs.length;
+      const navH = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
+      const threshold = navH + 32;
+      const doc = document.documentElement;
+      const scrollY = window.scrollY;
+      const maxScroll = doc.scrollHeight - window.innerHeight;
+
+      // Scroll-invariant absolute top of each heading.
+      const absTop = this.pairs.map(
+        (p) => p.heading.getBoundingClientRect().top + scrollY,
+      );
+
+      // Pass 1 — the active heading is the last one whose top has crossed the
+      // threshold band below the nav.
+      let idx = 0;
+      for (let i = 0; i < n; i++) {
+        if (absTop[i] <= scrollY + threshold) idx = i;
+        else break;
+      }
+
+      // Pass 2 — trailing short sections. A heading is "reachable" only if there
+      // is enough content after it to scroll its top up to the threshold band;
+      // once absTop exceeds (maxScroll + threshold) the page bottoms out first,
+      // so Pass 1 freezes on the last reachable heading and a naive snap-to-last
+      // would jump over everything between it and the final item (e.g. the dense
+      // run at the end of the Hooks page). Map the remaining scroll back onto the
+      // headings' real positions so each trailing section gets a turn sized to
+      // its actual height — no section is skipped and a tall one is not cut short.
+      let lastReachable = -1;
+      for (let i = 0; i < n; i++) {
+        if (absTop[i] <= maxScroll + threshold) lastReachable = i;
+        else break;
+      }
+      if (lastReachable >= 0 && lastReachable < n - 1 && maxScroll > 0) {
+        const startScroll = absTop[lastReachable] - threshold; // R reaches the band
+        const actualSpan = maxScroll - startScroll; // scroll we actually have left
+        const naturalSpan = absTop[n - 1] - threshold - startScroll; // scroll we'd need
+        if (actualSpan > 0 && naturalSpan > 0 && scrollY >= startScroll) {
+          // Stretch real scroll into the position space the headings live in.
+          const virtual = startScroll + (scrollY - startScroll) * (naturalSpan / actualSpan);
+          for (let i = lastReachable; i < n; i++) {
+            if (absTop[i] - threshold <= virtual + 0.5) idx = i;
+            else break;
+          }
+        }
+      }
+
+      // Exact bottom always lands on the final item (rounding safety net).
+      if (Math.ceil(scrollY + window.innerHeight) >= doc.scrollHeight - 2) {
+        idx = n - 1;
+      }
+
+      this.setCurrent(this.pairs[idx].link);
+    }
+  }
+
+  if (!customElements.get("ca-toc")) customElements.define("ca-toc", CaToc);
+</script>

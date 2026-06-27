@@ -1,40 +1,60 @@
 ---
-title: Gated workflows for Claude Code
+title: Arbitration for Claude Code Workflows
 description: Gated software-engineering workflows for Claude Code.
-template: splash
-hero:
-  tagline: |
-    Orchestrate every Claude Code request through a gated lane.
-    Tests, reviews, and security checks are real stops: not suggestions,
-    not optional, not bypassed under time pressure.
-  actions:
-    - text: Get started
-      link: ./overview/
-      icon: right-arrow
-      variant: primary
-    - text: How it works
-      link: ./concepts/
-      icon: open-book
-      variant: minimal
+template: doc
+tableOfContents: false
+editUrl: false
+prev: false
+next: false
 ---
 
 import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
-import ForgeShowcase from '../../components/ForgeShowcase.astro';
 
-<div class="ca-terminal-section">
+<div class="ca-landing">
 
-## A gate catching a real mistake
+<div class="ca-landing__hero">
+  <div class="ca-landing__intro">
+    <h1 id="_top" class="ca-landing__title">Arbitration for Claude&nbsp;Code Workflows</h1>
+    <p class="ca-landing__tagline">
+      Orchestrate every Claude Code request through a gated lane. Tests, reviews,
+      and security checks are real stops: not suggestions, not optional, not
+      bypassed under time pressure.
+    </p>
+    <div class="ca-landing__actions">
+      <a class="ca-landing__cta ca-landing__cta--primary" href="./getting-started/install/">Get started</a>
+      <a class="ca-landing__cta" href="./concepts/">How it works</a>
+    </div>
+  </div>
 
-The conversion mechanic is not a description of gates. It is a gate doing its job.
-
-<GateCatchTerminal />
-
+  <div class="ca-landing__demo">
+    <p class="ca-landing__demo-label">A gate catching a real mistake</p>
+    <GateCatchTerminal />
+    <p class="ca-landing__demo-note">
+      Not a description of gates. A gate doing its job.
+    </p>
+  </div>
 </div>
 
 <div class="ca-hero">
   <div class="ca-hero__what">
     A Claude Code plugin. One orchestrator. Gated lanes for every kind of work.
   </div>
+
+  <figure class="ca-diagram ca-laneflow">
+    <img
+      src="/codeArbiter/diagrams/lane-flow.svg"
+      alt="Lane flow: a command routes to the owning skill, clears its gate pillars, ships to version control, then opens a pull request to reach main."
+      loading="lazy"
+      width="900"
+      height="160"
+    />
+    <figcaption>Every request flows: command → route → gate → ship → pull request. Nothing skips the gate.</figcaption>
+  </figure>
+
+  <p class="ca-hero__lead">
+    You drive with slash commands. Type one and the orchestrator runs that whole lane for
+    you: planning, tests, review, and the gate, then it opens the PR. Three of the most common:
+  </p>
 
   <div class="ca-hero__first-command">
 
@@ -47,19 +67,4 @@ The conversion mechanic is not a description of gates. It is a gate doing its jo
   </div>
 </div>
 
-<div class="ca-laneflow">
-
-<figure class="ca-diagram">
-  <img
-    src="/codeArbiter/diagrams/lane-flow.svg"
-    alt="Lane flow: a command routes to the owning skill, clears its gate pillars, then ships to version control via a pull request."
-    loading="lazy"
-    width="900"
-    height="160"
-  />
-  <figcaption>Every request flows: command → route → gate → ship. Nothing skips the gate.</figcaption>
-</figure>
-
 </div>
-
-<ForgeShowcase />

@@ -1,9 +1,20 @@
 ---
-title: "Cut a release"
+title: "Cut a Release"
 description: "Tag and publish a codeArbiter version with /ca:release: SemVer derivation from Conventional Commits, CHANGELOG.md update, and authorized GitHub Release publication."
 ---
 
 `/ca:release` is the only permitted path to a version tag. It derives the SemVer bump from Conventional Commits history since the last `ca` tag, updates `CHANGELOG.md`, composes an annotated tag locally, and publishes a GitHub Release only after you explicitly authorize it.
+
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-release.svg"
+    alt="The /ca:release lane in two rows: Commands (/ca:release) and Skills (release, then commit-gate), with a connector running in execution order from /ca:release through the release skill to commit-gate."
+    loading="lazy"
+    width="920"
+    height="190"
+  />
+  <figcaption>The <code>/ca:release</code> lane by piece type: command (gold) and the skills it routes through (violet), each loaded in execution order.</figcaption>
+</figure>
 
 ## Prerequisites
 
@@ -16,7 +27,7 @@ Four conditions must hold before `/ca:release` will proceed:
 
 Every `feat` and `fix` commit in the release window must carry a `CHANGELOG:` footer. A commit missing that footer is a hard block. The skill never auto-fills one.
 
-### CHANGELOG: footer format
+### CHANGELOG: Footer Format
 
 The `CHANGELOG:` footer is part of the commit body, following the Conventional Commits trailer convention:
 
@@ -28,7 +39,7 @@ CHANGELOG: Tag derivation now resolves the ca baseline tag through the tested he
 
 `/ca:release` rolls these footers into the new changelog section. If a `feat` or `fix` commit has no footer, it surfaces the commit and stops.
 
-## Check readiness without tagging
+## Check Readiness Without Tagging
 
 Before running the full release, use `--dry-run` to see the bump classification and the commit window:
 
@@ -44,7 +55,7 @@ This runs every gate and surfaces a readiness report. It stops before composing 
 /ca:release "X.Y.Z" --dry-run
 ```
 
-## Run the release
+## Run the Release
 
 ```text
 /ca:release
@@ -58,7 +69,7 @@ No version argument means `--auto`: the version is derived from the commit log. 
 
 An explicit version that disagrees with what the commit log requires is a hard block. The bump is never silently adjusted. An explicit version and `--auto` are mutually exclusive.
 
-### Phase 1: version and CHANGELOG
+### Phase 1: Version and CHANGELOG
 
 The skill reads every `plugins/ca/`-scoped commit since the last `ca` SemVer tag. Commits under `plugins/ca-sandbox/` do not affect the bump or the changelog. The highest-precedence type in the window determines the bump:
 
@@ -83,15 +94,15 @@ The `CHANGELOG:` footers from `feat`, `fix`, and `perf` commits are appended to 
 
 Prior sections stay intact. If `CHANGELOG.md` does not exist, the skill creates it. The README version badge, command/skill/agent count badges, and the `COMMANDS.md` catalog are also updated to match the repo. If those changes require a commit before tagging, it routes through commit-gate.
 
-### Phase 2: tag
+### Phase 2: Tag
 
 The annotated tag is composed locally from the Phase 1 changelog section. The tag is never pushed without authorization. Phase 2 ends with a report: version, bump rationale, per-commit classification, the new changelog section, and the tag SHA.
 
-### Phase 3: publish (requires authorization)
+### Phase 3: Publish (Requires Authorization)
 
 The tag and GitHub Release publish together, and only after you authorize them. Without authorization, nothing leaves the local repository.
 
-## Review and authorize
+## Review and Authorize
 
 Read the Phase 2 report. When the version, classification, and changelog section look correct, authorize publication.
 
@@ -103,7 +114,7 @@ On authorization:
 
 The Release URL is reported only after the read-back confirms a non-draft Release on the correct tag.
 
-## Common blocks
+## Common Blocks
 
 | Situation | Effect | Resolution |
 |---|---|---|
@@ -116,7 +127,7 @@ The Release URL is reported only after the read-back confirms a non-draft Releas
 
 Any block may be bypassed only through `/ca:override`.
 
-## See also
+## Related
 
 - [release command reference](/reference/commands/release/): arguments and hard gates
 - [release skill reference](/reference/skills/release-2/): full phase-by-phase specification

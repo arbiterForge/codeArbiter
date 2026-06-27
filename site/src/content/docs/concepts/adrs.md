@@ -1,5 +1,5 @@
 ---
-title: ADRs and the decision log
+title: ADRs and the Decision Log
 description: "How architecturally significant choices are captured as numbered, dated, user-attributed Architecture Decision Records with supersede chains and decision-health reporting."
 ---
 

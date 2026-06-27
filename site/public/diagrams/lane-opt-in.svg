@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 190" role="img"
+     aria-label="The /ca:init lane across two rows by piece type, with a branch. Commands row: /ca:init, which routes to either /ca:create-context (existing code) or /ca:decompose (new project). Skills row: the create-context skill backs the existing-code path; the decompose skill backs the new-project path. Two connectors fork from /ca:init, one to each context-builder command and its skill.">
+  <title>The /ca:init lane: init forks to create-context (existing code) or decompose (new project)</title>
+  <defs>
+    <linearGradient id="loi-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#131a23"/>
+    </linearGradient>
+    <pattern id="loi-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <marker id="loi-arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 Z" fill="#6e7b8b"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="190" fill="url(#loi-bg)"/>
+  <rect width="920" height="190" fill="url(#loi-grid)"/>
+  <rect x="8" y="8" width="904" height="174" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+
+  <!-- row guides -->
+  <line x1="128" y1="78" x2="900" y2="78" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="128" y1="140" x2="900" y2="140" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+
+  <!-- row labels (these double as the legend) -->
+  <text x="116" y="82" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#d29922">COMMANDS</text>
+  <text x="116" y="144" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#8957e5">SKILLS</text>
+
+  <!-- branch labels -->
+  <text x="470" y="34" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">EXISTING CODE</text>
+  <text x="730" y="34" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">NEW PROJECT</text>
+
+  <!-- forked execution connectors (drawn first; chips sit on top) -->
+  <polyline points="150,78 470,78 470,140"
+            fill="none" stroke="#6e7b8b" stroke-width="1.4" marker-end="url(#loi-arrow)"/>
+  <polyline points="150,78 730,78 730,140"
+            fill="none" stroke="#6e7b8b" stroke-width="1.4" marker-end="url(#loi-arrow)"/>
+
+  <!-- chips: command = gold, skill = violet -->
+  <!-- /ca:init -->
+  <rect x="114" y="61" width="72" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="150" y="82" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:init</text>
+  <!-- /ca:create-context -->
+  <rect x="407" y="61" width="126" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="470" y="82" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:create-context</text>
+  <!-- /ca:decompose -->
+  <rect x="681" y="61" width="98" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="730" y="82" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:decompose</text>
+  <!-- create-context skill -->
+  <rect x="418" y="123" width="104" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="470" y="144" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">create-context</text>
+  <!-- decompose skill -->
+  <rect x="691" y="123" width="78" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="730" y="144" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">decompose</text>
+
+  <!-- flow legend -->
+  <text x="900" y="172" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">one routes to one path →</text>
+</svg>

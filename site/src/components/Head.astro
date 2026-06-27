@@ -1,0 +1,13 @@
+---
+/* codeArbiter override: enable Astro view transitions for SPA-like navigation.
+
+   Starlight 0.41 does not ship view transitions. Adding Astro's <ClientRouter>
+   makes navigation client-side: the persistent shell (sidebar, header) stays put
+   and pages swap without a full reload. Wraps the stock Head so all default
+   <head> output is preserved. */
+import Default from '@astrojs/starlight/components/Head.astro';
+import { ClientRouter } from 'astro:transitions';
+---
+
+<Default><slot /></Default>
+<ClientRouter />

@@ -13,6 +13,8 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 <img alt="agents" src="https://img.shields.io/badge/agents-15-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
+### 📖 [Read the documentation →](https://arbiterforge.github.io/codeArbiter/)
+
 <sub>Install it globally; it stays dormant until you opt a repo in.</sub>
 
 <!-- DEMO: once recorded, replace this comment with the in-motion GIF. Recording shot list in docs/demo-script.md
@@ -213,7 +215,7 @@ Once `.codearbiter/CONTEXT.md` carries the `<!--INITIALIZED-->` marker, you're i
 
 codeArbiter ships a token-aware statusline. Wire it in with <kbd>/ca:statusline</kbd>:
 
-<div align="center"><img alt="codeArbiter statusline" src="./docs/statusline.png" width="880"></div>
+<div align="center"><img alt="codeArbiter statusline" src="./site/public/diagrams/statusline.png" width="880"></div>
 
 The folder, git/diff, rate limits, token usage, cost, and context segments render in every repo; the arbiter row (stage · tasks · open questions · overrides-since-checkpoint) lights up only in an enabled repo. Token counts come from the session transcript and the **cost is Claude Code's own `cost.total_cost_usd`** (what you actually pay); the context bar shifts toward red as you near compaction, the model pill carries the active model **and** its effort level, and session age sits beside the compaction headroom.
 

@@ -1,5 +1,5 @@
 ---
-title: What is codeArbiter
+title: What Is codeArbiter
 description: How codeArbiter orchestrates gated software-engineering workflows in Claude Code.
 ---
 
@@ -8,7 +8,7 @@ single orchestrator persona that mediates every request. It orchestrates. It doe
 freelance. Every user intent flows through a slash command, routes to the one skill or
 agent that owns it, and clears its gates before it ships.
 
-## You hold the gates; the user holds the decisions
+## You Hold the Gates; the User Holds the Decisions
 
 This is the organizing principle. codeArbiter is decisive about process and deferential
 about choices. It holds the gates: the test-first rule, the review chain, the secret and
@@ -17,7 +17,7 @@ the decisions those gates surface belong to the user. Which design? Which trade-
 Whether to merge? Those are yours. The plugin states; it does not hedge. It stops; it does
 not silently reconcile.
 
-## How a request flows
+## How a Request Flows
 
 1. **Command.** You invoke a namespaced slash command: `/ca:feature`, `/ca:fix`,
    `/ca:commit`, and so on. (The plugin is named `ca`, and Claude Code namespaces every
@@ -45,7 +45,7 @@ not silently reconcile.
   an answer and push past.
 </div>
 
-## Context minimization
+## Context Minimization
 
 codeArbiter is built so almost nothing loads until it is needed. The only always-loaded
 context is one file, the orchestrator persona, injected by a `SessionStart` hook, and only
@@ -58,7 +58,7 @@ entry point reaches it. A typical `/ca:fix` touches the persona, the test-first 
 author, and maybe one reviewer. It never pulls the whole payload. Read-only meta commands
 like `/ca:status`, `/ca:btw`, and `/ca:commands` route to no skill at all.
 
-## The lanes
+## The Lanes
 
 Work is organized into lanes. Each is a sanctioned path with gates scaled to its risk.
 

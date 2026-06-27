@@ -1,5 +1,5 @@
 ---
-title: "Override a gate safely"
+title: "Override a Gate Safely"
 description: "Bypass a blocked gate with /ca:override, the only sanctioned path: one audit line is appended to overrides.log, your identity comes from git config user.email, and the bypass is permanent in the trail."
 ---
 
@@ -7,7 +7,7 @@ A gate blocked your command and the action is genuinely justified. Use `/ca:over
 
 Before running it, identify which kind of gate you are facing. The two paths are different.
 
-## Before you start
+## Before You Start
 
 **Routine gate** — a lint rule, a style check, a scope-creep finding, a non-security review result. The single-confirm path described in [Run the command](#run-the-command) applies.
 
@@ -19,7 +19,7 @@ Before running it, identify which kind of gate you are facing. The two paths are
 
 Under an autonomous `/ca:sprint` run, a security-critical stop is a hard-gate STOP. It surfaces to you and is never auto-decided.
 
-## When not to override
+## When Not to Override
 
 Hard gates exist because the cost of the mistake they prevent is higher than the cost of stopping. A gate that trips often signals the spec or plan was too thin, not an obstacle to work around.
 
@@ -31,7 +31,7 @@ Do not use `/ca:override` when:
 
 The bypass is scoped to the immediate action only. It creates no standing exception for future commands.
 
-## Run the command
+## Run the Command
 
 ```text
 /ca:override "H-03: wildcard staging blocked — the generated migration file was omitted from the explicit list; reviewed the staged diff, this commit only"
@@ -39,7 +39,7 @@ The bypass is scoped to the immediate action only. It creates no standing except
 
 The reason must name the gate and justify the action. A vague reason such as "just skip it" is rejected. codeArbiter asks for a specific one before proceeding.
 
-## What happens
+## What Happens
 
 1. codeArbiter reads your identity from `git config user.email`. If that value is unset, it asks once. No second prompt.
 2. One line is appended to `.codearbiter/overrides.log`:
@@ -52,7 +52,7 @@ The reason must name the gate and justify the action. A vague reason such as "ju
 
 The override covers the immediate action only. Nothing else is changed.
 
-## Security-critical stops
+## Security-Critical Stops
 
 These require explicit per-finding acknowledgement and a heavier log entry. The single-confirm flow is not available for any of these.
 
@@ -66,17 +66,17 @@ These require explicit per-finding acknowledgement and a heavier log entry. The 
 
 4. Only after steps 1 through 3 does the bypass record. For H-09b / H-10b, recording the bypass means running `security-pass.py`, which writes a digest-bound gate-pass marker covering the specific sensitive lines approved. The commit gate then allows the commit for those exact lines.
 
-## The audit trail is permanent
+## The Audit Trail Is Permanent
 
 `overrides.log` is an append-only artifact. H-05 blocks every attempt to truncate, overwrite, or delete it at the shell, Write, and Edit flanks. An empty-`old_string` Edit on a log file is also blocked, because that operation cannot be verified as an append.
 
 Once written, an override line cannot be removed. The log accumulates for the lifetime of the repository and is part of the governance record that `/ca:audit` assembles on demand.
 
-## How overrides appear in the statusline
+## How Overrides Appear in the Statusline
 
 If the statusline is wired in, the arbiter row shows `over:N`, where N is the count of non-comment lines in `overrides.log` recorded after the last checkpoint. The segment turns red when N is greater than zero. Running `/ca:checkpoint` resets the counter by recording the current total as the new baseline.
 
-## Related pages
+## Related
 
 - [override](/reference/commands/override/) command reference
 - [Enforcement & Security](/enforcement/) (H-05: append-only audit log; H-09b / H-10b: crypto and secret commit gate)

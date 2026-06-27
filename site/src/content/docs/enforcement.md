@@ -7,7 +7,7 @@ codeArbiter's gates are not advice the model can talk past. They run as Claude C
 
 For the per-hook breakdown, see the [Hooks reference](/hooks).
 
-## The activation contract
+## The Activation Contract
 
 codeArbiter is dormant until a repository opts in. Every enforcement hook calls `arbiter_active()`, which is true only when `.codearbiter/CONTEXT.md` carries `arbiter: enabled` in a properly closed leading YAML frontmatter block. A repo with no such file, or no such line, loads nothing and blocks nothing.
 
@@ -15,7 +15,7 @@ codeArbiter is dormant until a repository opts in. Every enforcement hook calls 
 - **Persona injection.** On an enabled repo, the `SessionStart` hook injects the orchestrator persona. That single file is the only always-loaded context.
 - **Malformed frontmatter fails loud.** A frontmatter block that opens (`---` on line 1) but never closes is surfaced as a malformed-state error, not silently treated as disabled. A file with no frontmatter at all is simply dormant.
 
-## Blocking commit-time gates
+## Blocking Commit-Time Gates
 
 These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit guards for the audit trail and ADRs). Each blocks the tool call outright. Ambiguity resolves **closed**: a spelling that cannot be told apart from a destructive one is blocked, and `/ca:override` is the sanctioned escape hatch.
 
@@ -29,7 +29,7 @@ These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit
 | **H-11** | ADRs are authored only via `/ca:adr`. Both the shell flank (redirects, `cp`, `rm`, `sed -i` into `decisions/`) and the Write/Edit flank are guarded; the skill drops a fresh authoring marker first. |
 | **H-14** | Migration review. A commit staging a database migration is blocked unless a migration-review pass is recorded for that file's current content. |
 
-### H-09b/H-10b: a digest-bound gate that closes TOCTOU
+### H-09b/H-10b: A Digest-Bound Gate That Closes TOCTOU
 
 The crypto/secret gate does not just check freshness. The crypto-compliance and secret-handling skills record a `security-gate-passed` marker holding the **digest of every sensitive line the gate approved**. At commit time, `pre-bash.py` requires both:
 
@@ -42,7 +42,7 @@ The gate **fails closed when the diff cannot be read.** If git is unavailable or
 
 The detection corpus is shared. `CRYPTO_RE` and `SECRET_RE` live once in `_hooklib.py`, so the redactor and the gate cannot drift on what counts as crypto or a secret.
 
-## Commit-gate board transitions (ADR-0008)
+## Commit-Gate Board Transitions (ADR-0008)
 
 `open-tasks.md` has one sanctioned writer: `/ca:task`. No other agent, hook, or workflow is permitted to modify that file directly. The three mutations it performs are a queued add (a new task in `[ ]` state), the start-flip (`[ ]` to `[~]` with a stamped date), and the done-flip (`[~]` to `[x]`).
 
@@ -52,7 +52,7 @@ This replaces the old pattern of a separate, lagging `chore(board)` PR. Cross-se
 
 `/ca:standup` and `/ca:doctor` each run a read-only reconciliation sweep and surface any merged-but-not-flipped task. They report; they do not write.
 
-## Advisory, non-blocking reminders
+## Advisory, Non-Blocking Reminders
 
 `post-write-edit.py` (`PostToolUse(Write|Edit)`) surfaces reminders right after a write. These **never block**. They nudge so the blocking gate is not a surprise at commit time.
 
@@ -65,7 +65,7 @@ This replaces the old pattern of a separate, lagging `chore(board)` PR. Cross-se
 
 These are advisory **because they bite at a later boundary, not at commit.** A bad CI workflow, IaC manifest, or auth change does damage only once merged or applied, and `security-reviewer` is the real enforcement point at the PR. The dangerous crypto and secret primitives, which land the moment code ships, stay hard-blocked by H-09b/H-10b.
 
-## 2.5.2 hardening
+## 2.5.2 Hardening
 
 - **Broader crypto detection.** `CRYPTO_RE` flags `rc2` and `blowfish` alongside MD5, SHA-1, DES, 3DES, and RC4, and TLS-disable forms (`rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED`, `verify=False`, `InsecureSkipVerify`).
 - **Compound-name secret detection.** `SECRET_RE` matches compound keys (`aws_secret_access_key`, `client_secret`, `private_key`) and known token shapes (`AKIA…`, `ghp_…`, `sk-ant-…`).
@@ -73,7 +73,7 @@ These are advisory **because they bite at a later boundary, not at commit.** A b
 - **Centralized audit-path sets.** `AUDIT_LOG_NAMES` and the decisions-path tokens live once in `_hooklib`, so the shell, Write, and Edit flanks never disagree on which files are append-only.
 - **ca-sandbox isolation.** The sandbox that runs untrusted repositories is non-root (`--user 1000:1000`), `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, with a **fail-closed network policy** (default `--network none`; an unknown policy is a hard error, never a silent pass-through). No host bind mounts; the docker socket is never mounted.
 
-## Fail-loud, never silently dormant
+## Fail-Loud, Never Silently Dormant
 
 The hooks fail loud: a blocking gate prints `BLOCKED [H-NN]: …` to stderr and exits 2. The one deliberate fail-*open* is hook-input parsing. A malformed stdin must not brick the session by blocking every subsequent tool call (documented in `_hooklib.read_input()`).
 

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 250" role="img"
+     aria-label="The /ca:sprint lane across three rows by piece type, loaded in order. Commands row: /ca:sprint. Skills row: writing-plans, subagent-driven-development, then commit-gate, then finishing-a-development-branch. Agents row: author subagent, then reviewer fleet. A connector weaves through them left to right in execution order: /ca:sprint, writing-plans, subagent-driven-development, author subagent, reviewer fleet, commit-gate, finishing-a-development-branch. After the one spec-and-plan gate at the start, the rest runs autonomously.">
+  <title>The /ca:sprint lane: one command, an autonomous skill chain, and per-task agents</title>
+  <defs>
+    <linearGradient id="lsp-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#131a23"/>
+    </linearGradient>
+    <pattern id="lsp-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <marker id="lsp-arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 Z" fill="#6e7b8b"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="250" fill="url(#lsp-bg)"/>
+  <rect width="920" height="250" fill="url(#lsp-grid)"/>
+  <rect x="8" y="8" width="904" height="234" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+
+  <!-- row guides -->
+  <line x1="128" y1="80" x2="900" y2="80" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="128" y1="145" x2="900" y2="145" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="128" y1="210" x2="900" y2="210" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+
+  <!-- row labels (these double as the legend) -->
+  <text x="116" y="84" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#d29922">COMMANDS</text>
+  <text x="116" y="149" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#8957e5">SKILLS</text>
+  <text x="116" y="214" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#3a8a44">AGENTS</text>
+
+  <!-- execution-order connector (drawn first; chips sit on top so it shows in the gaps) -->
+  <polyline points="168,80 283,145 457,145 500,210 615,210 629,145 806,145"
+            fill="none" stroke="#6e7b8b" stroke-width="1.4" marker-end="url(#lsp-arrow)"/>
+
+  <!-- chips: command = gold, skill = violet, agent = green -->
+  <!-- 1 /ca:sprint -->
+  <rect x="127" y="63" width="82" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="168" y="84" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:sprint</text>
+  <!-- 2 writing-plans -->
+  <rect x="235" y="128" width="96" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="283" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">writing-plans</text>
+  <!-- 3 subagent-driven-development -->
+  <rect x="368" y="128" width="178" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="457" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">subagent-driven-development</text>
+  <!-- 4 author subagent -->
+  <rect x="444" y="193" width="112" height="34" rx="5" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.4"/>
+  <text x="500" y="214" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#7fd089">author subagent</text>
+  <!-- 5 reviewer fleet -->
+  <rect x="562" y="193" width="106" height="34" rx="5" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.4"/>
+  <text x="615" y="214" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#7fd089">reviewer fleet</text>
+  <!-- 6 commit-gate -->
+  <rect x="583" y="128" width="92" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="629" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">commit-gate</text>
+  <!-- 7 finishing-a-development-branch -->
+  <rect x="712" y="128" width="188" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="806" y="149" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">finishing-a-development-branch</text>
+
+  <!-- flow legend -->
+  <text x="900" y="232" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">loaded in execution order →</text>
+</svg>
