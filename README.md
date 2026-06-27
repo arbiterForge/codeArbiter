@@ -7,7 +7,7 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.6.0" src="https://img.shields.io/badge/version-2.6.0-2b7489">
+<img alt="version 2.6.1" src="https://img.shields.io/badge/version-2.6.1-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-38-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-21-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-15-555">
@@ -23,7 +23,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 ---
 
-> **License notice.** As of v2.6.0, codeArbiter is licensed under the [GNU AGPLv3](LICENSE), a change from its earlier MIT license. Copyright (C) 2026 SUaDtL. Proprietary and commercial licensing is available separately; see [Dual-Licensing & Contributions](#dual-licensing--contributions).
+> **License notice.** As of v2.6.0, codeArbiter is licensed under the [GNU AGPLv3](LICENSE), a change from its earlier MIT license. Copyright (C) 2026 SUaDtL, who reserves the right to dual-license under separate proprietary terms; commercial licenses are not offered at this time. See [Dual-Licensing & Contributions](#dual-licensing--contributions).
 
 ## What it is
 
