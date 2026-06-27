@@ -48,6 +48,7 @@ Write the agreed spec to `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`. T
 - **Scope** — what is in, and the explicit out-of-scope boundary.
 - **Acceptance criteria** — a numbered list, each criterion concrete and testable: a specific input, the observable output, the boundary or failure behavior. Each criterion is verifiable by a single test. "It works well" is not a criterion. These become `tdd` Phase 1 obligations — one obligation per criterion, so an untestable criterion is a defect to fix here, not in `tdd`.
 - **Open questions** — every `[CONFIRM-NN]` raised, cross-referenced to `open-questions.md`.
+- **Governs** *(optional)* — a spec-header line `**Governs:** <comma-separated globs>` that enrolls the approved spec in file-scoped just-in-time context injection: on a Read of any file matching one of the listed globs, a pointer to this spec is surfaced to the agent (tier 3 of the file→knowledge map). Adding the line is sufficient to enroll; no other change required.
 
 Gate: the spec file exists on disk under `specs/`, with at least one acceptance criterion and every criterion individually testable.
 

@@ -235,6 +235,15 @@ jobs:
         # those paths only, re-baseline rides work commit, claim-changed routes to
         # Phase 6 diff-review; Phase 6/7 provenance exemption + staging wiring.
         run: python .github/scripts/test_provenance_wiring.py
+      - name: Run file-scoped-context-injection lib unit tests
+        # AC-03/09/10/12 (_readinjectlib): allow_output hookSpecificOutput shape,
+        # four-tier context map/budget/dedup/index assembly, cache round-trip.
+        run: python .github/scripts/test_readinjectlib.py
+      - name: Run pre-read hook entry-point integration tests
+        # AC-03/09/10/12 (pre-read.py): governed-file injection, dedup (same
+        # session+file -> first injects, second silent), .codearbiter/ self-read
+        # silent allow, fail-open on malformed stdin, miss, and dormant-repo paths.
+        run: python .github/scripts/test_pre_read.py
       - name: Run the hooks/tests unittest suite
         # plugins/ca/hooks/tests/ - the hook enforcement + helper logic. Ran only
         # locally per CONTRIBUTING; wired here so the guards are mechanically
