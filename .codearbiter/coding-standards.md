@@ -52,8 +52,8 @@ plugin's own authoring gates (`skill-author` v2 house style), not by this file.
 
 ## File headers and copyright
 
-- License is MIT; the copyright holder of record is **"codeArbiter contributors"**
-  (`LICENSE`).
+- License is **AGPL-3.0-only**; the copyright holder of record is **SUaDtL**
+  (`LICENSE`, ADR-0009 — relicensed from MIT at v2.6.0).
 - **No per-file license or SPDX headers.** The single root `LICENSE` governs; new
   files carry no copyright header. The `# codeArbiter — …` / `/** … */` purpose
   comment is documentation, not a license header.
