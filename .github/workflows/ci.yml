@@ -210,6 +210,10 @@ jobs:
         # consistent, classify_publish_state, the CLI dispatch, and the SKILL.md
         # structural wiring (_releaselib).
         run: python .github/scripts/test_release_lib.py
+      - name: Run provenance-store helper unit tests
+        # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
+        # with schema/doc/created/interview_derived/entries[] (_provenancelib).
+        run: python .github/scripts/test_provenancelib.py
       - name: Run README badge-consistency unit tests
         # The guard's own logic: version-badge parse, count-badge parse, prose
         # counts, table-row slugs, and each drift kind (version/count/prose/
@@ -226,6 +230,11 @@ jobs:
         # retains a clean transition, still flags arbitrary edits; task.md and
         # future prose checks enforce the co-location contract.
         run: python .github/scripts/test_board_sync.py
+      - name: Run commit-gate provenance auto-heal wiring tests
+        # AC-14 (T-17): Phase 5.5 heal_worklist, incremental re-scout scoped to
+        # those paths only, re-baseline rides work commit, claim-changed routes to
+        # Phase 6 diff-review; Phase 6/7 provenance exemption + staging wiring.
+        run: python .github/scripts/test_provenance_wiring.py
       - name: Run the hooks/tests unittest suite
         # plugins/ca/hooks/tests/ - the hook enforcement + helper logic. Ran only
         # locally per CONTRIBUTING; wired here so the guards are mechanically

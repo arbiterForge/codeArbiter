@@ -6,6 +6,16 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 
 ## In-flight
 - [ ] sync docs-site command mirrors (task.md, standup.md) after commit-gate board-sync co-location  (from plan:commit-gate-board-sync)
+- [ ] v2.feature.0001 - File-scoped just-in-time context injection (deep-dive rec #3 / kickoff-2). A PreToolUse:Read hook that injects the governing .codearbiter/ knowledge about the file an agent is opening (decision/standard/spec), gated on freshness, budgeted (~150 tok). The committed NEXT feature after context-drift-provenance ships — it consumes that feature's provenance map.  (from brainstorming:context-drift-provenance, 2026-06-26)
+  - Desc: turns the static doc set into just-in-time context per-file. Report flags the plugin-hook risk: SessionStart avoids additionalContext (#16538) but PreToolUse injection REQUIRES additionalContext — verify it works for a plugin-scoped hook before committing the design.
+  - Done when: a spec exists in .codearbiter/specs/ via /ca:brainstorming using kickoff-2-file-scoped-injection.md, depends-on context-drift-provenance.
+  - Boundaries: none (context injection; no enforcement surface)
+- [ ] v2.docs.0004 - Reconcile the scout-agent dispatch inconsistency: agents/scout.md says the scout agent is dispatched by context-creation, but context-creation/SKILL.md Phase 2 dispatches general-purpose agents. Decide which is canonical and align both docs.  (from brainstorming:context-drift-provenance NEEDS-TRIAGE, 2026-06-26)
+  - Done when: scout.md and context-creation/SKILL.md agree on which agent runs brownfield scouting.
+  - Boundaries: none
+- [ ] v2.harden.0001 - Reject newline/NUL or `..`-escaping paths in provenance entries before hashing (in `_provenancelib.load_provenance_dir`/`startup_drift_line`), or normalize-and-confine under root. Accepted-residual LOW from the context-drift-provenance security review — minimal risk (committed-store trust + existence pre-filter + no content disclosure), defense-in-depth only.  (from security-reviewer:context-drift-provenance, 2026-06-26)
+  - Done when: a provenance entry path containing a newline/NUL or escaping root is dropped/confined before reaching git hash-object.
+  - Boundaries: none
 - [ ] casandbox.release.0001 - Release ca-sandbox 0.1.1 — Batch C isolation hardening (shared hardeningFlags(), create.ts mount chokepoint via buildMountArgs, fail-closed NetPolicy; #134) is in main on ca-sandbox 0.1.1 but the latest tag is ca-sandbox-v0.1.0, so it is unreleased. /ca:release is ca-only (ADR-0007); this needs a ca-sandbox release path in the skill OR a manual ca-sandbox-v0.1.1 tag + GitHub Release. Done when: ca-sandbox 0.1.1 is tagged and published, or a decision to defer is recorded.
   - Boundaries: egress, isolation
 - [x] Add a CI link-audit gate for the docs site: assert every internal dist link resolves under the /codeArbiter base path and the favicon/logo assets emit to dist (spec AC-2/AC-4, currently build-time/manual only).  (from coverage-auditor:docs-site-polish)  (done 2026-06-23, sprint release-hardening-debt-paydown — site/scripts/link-audit.ts + docs.yml)

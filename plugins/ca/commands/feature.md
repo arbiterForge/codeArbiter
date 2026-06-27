@@ -7,6 +7,8 @@ argument-hint: "<what you want to build>"
 
 The single permitted entry to implementation work. No feature code is written before a spec is approved and `tdd` Phase 1 clears. A one-line idea is not a spec — `brainstorming` makes it one.
 
+**Orientation:** if `.codearbiter/code-map.md` is present, read it first — a coarse concern→path→role map that orients task authoring. Absent is fine; it is read-on-demand, populated by context-creation or commit-gate heal.
+
 ## Resume — an interrupted pipeline is re-entered, never restarted
 
 Before triage, scan `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/` and `plans/` for an existing slug
