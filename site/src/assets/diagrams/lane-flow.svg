@@ -99,5 +99,5 @@
   <!-- seam note -->
   <text x="892" y="153" text-anchor="end"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="8" letter-spacing="1" fill="#46505a">never a direct write to main</text>
+        font-size="8" letter-spacing="1" fill="#6e7b8b">never a direct write to main</text>
 </svg>

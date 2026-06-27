@@ -69,7 +69,7 @@
   <rect x="292" y="72" width="72" height="28" rx="3" fill="#1c2430" stroke="#2a3340" stroke-width="1"/>
   <text x="328" y="91" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="12" fill="#46505a">v2.6.0</text>
+        font-size="12" fill="#6e7b8b">v2.6.0</text>
 
   <!-- SemVer invariant note -->
   <text x="225" y="122" text-anchor="middle"
@@ -103,7 +103,7 @@
 
   <text x="225" y="260" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="10" fill="#46505a">applies to the whole plugin at once</text>
+        font-size="10" fill="#6e7b8b">applies to the whole plugin at once</text>
 
   <!-- ═══════════════════════════════════════════════
        AXIS 2: FEATURE FORGE — right column
