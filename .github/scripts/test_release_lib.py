@@ -246,6 +246,16 @@ class SkillProseTest(unittest.TestCase):
         # The release date is computed once and reused (no second hand-typed date).
         self.assertIn("date +%F", self.text)
 
+    def test_changelog_roll_uses_bracket_heading(self):
+        # The repo's CHANGELOG.md and the _releaselib guards both use the
+        # Keep-a-Changelog `## [X.Y.Z]` heading form; the roll instruction must
+        # name that, not the bare `## vX.Y.Z` form that contradicted both (and
+        # made notes-match no-match on the real v2.6.0 publish). `vMAJOR.MINOR.
+        # PATCH` without the `## ` prefix is still correct for tag names, so the
+        # assertion is scoped to the markdown-heading form only.
+        self.assertIn("## [MAJOR.MINOR.PATCH]", self.text)
+        self.assertNotIn("## vMAJOR.MINOR.PATCH", self.text)
+
 
 if __name__ == "__main__":
     unittest.main()
