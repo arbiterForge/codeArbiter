@@ -92,6 +92,37 @@ register keeps each role sharp. The orchestrator isn't trying to also be a backe
 and a security reviewer isn't trying to also be a copywriter. Each agent loads only the
 context its role needs, which is also what keeps the standing footprint small.
 
+## Provenance & context drift
+
+Every derived document under `.codearbiter/` traces its claims to source files in the repo. codeArbiter records this mapping as **provenance**: which files back a given doc, and the `git hash-object` hash of each file at the time the doc was authored. When a tracked source changes, the stored hash no longer matches. That mismatch is **context drift**.
+
+Drift is surfaced once, passively, as a single line at SessionStart. It does not interrupt work. `.codearbiter/code-map.md` provides a coarse orientation map: it names the main source files and the docs that depend on them. `/ca:context-check` runs the same detection on demand, as a manual audit.
+
+When a commit lands, the **commit-gate auto-heal** step checks whether any staged source files have drifted their dependent docs. If they have, it re-baselines the provenance in the same commit or proposes a doc update to accompany the work. A drifted claim is suppressed rather than surfaced as if fresh. A stale assertion cannot appear as current fact.
+
+<figure class="ca-diagram">
+  <img src="/codeArbiter/diagrams/provenance-drift-flow.svg" alt="Context-drift provenance flow: a tracked source change is detected by a git hash-object mismatch, surfaced at SessionStart, and healed by commit-gate which re-baselines or proposes a doc update with the work commit." loading="lazy" />
+  <figcaption>Provenance tracks source hashes. A mismatch is detected at SessionStart and healed when the commit lands.</figcaption>
+</figure>
+
+## Just-in-time context injection
+
+When any agent reads a file, a `PreToolUse:Read` hook fires first. It checks whether the file is governed by any knowledge document and, if so, injects a short pointer capped at a 150-token budget. The Read always proceeds. The hook is fail-open and never blocks it.
+
+The check follows a four-tier priority map. Each tier is evaluated in order; the first match wins:
+
+1. **Security controls:** if the file path is a security-entry point in `security-controls.md`, that document governs it.
+2. **Accepted ADRs:** any accepted ADR whose `governs:` glob matches the path.
+3. **Approved specs:** any spec carrying a `**Governs:**` header line whose glob matches the path. A spec opts in by adding that line.
+4. **Provenance claims:** a provenance claim whose stored `git hash-object` hash still matches the current file.
+
+A file that matches none of these tiers is non-governed. The hook injects nothing and makes no git call. Injection is deduplicated once per session and file, so repeated reads of the same file do not accumulate pointer tokens.
+
+<figure class="ca-diagram">
+  <img src="/codeArbiter/diagrams/four-tier-map.svg" alt="The four-tier file-to-knowledge map: a Read is matched against security-controls.md, accepted ADRs, approved specs, and provenance in priority order, and the highest-priority match's pointer is injected within a 150-token budget." loading="lazy" />
+  <figcaption>Four tiers, evaluated in priority order. The highest match governs; a non-governed Read injects nothing.</figcaption>
+</figure>
+
 ## Auditability
 
 Taken together, these concepts make a codeArbiter repository auditable after the fact. ADRs

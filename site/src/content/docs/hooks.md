@@ -15,6 +15,7 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
 | `PreToolUse` | `Bash\|PowerShell` | `pre-bash.py` |
 | `PreToolUse` | `Write` | `pre-write.py` |
 | `PreToolUse` | `Edit\|MultiEdit` | `pre-edit.py` |
+| `PreToolUse` | `Read` | `pre-read.py` |
 | `PostToolUse` | `Write\|Edit` | `post-write-edit.py` |
 | `UserPromptSubmit` | (any) | `prune-transcript.py` |
 | `PreCompact` | (any) | `prune-transcript.py` |
@@ -75,6 +76,19 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
   - **H-11:** the same fresh `adr-authoring-active` marker requirement for `decisions/` `.md` files.
 - **Why:** Closes the Edit/MultiEdit flank; an append-only log accepts only verifiable appends.
 - **Fail posture:** Blocking (exit 2).
+
+---
+
+### pre-read.py
+
+- **Event:** `PreToolUse`, matcher `Read`.
+- **Script:** `pre-read.py`.
+- **What it does:** On a Read of a governed file, assembles a budgeted (150-token ceiling), freshness-gated note naming the decision, control, or spec that governs that path, and delivers it via `additionalContext` while always allowing the Read. See [Concepts: just-in-time context injection](/concepts#just-in-time-context-injection) for the four-tier governing map.
+  - Searches four tiers in priority order: `security-controls.md` for security-classified files; an accepted ADR whose `governs:` glob matches the path; an approved spec whose `**Governs:**` header matches; a provenance enrichment entry whose stored hash still equals the file's current content.
+  - Each `(session, file)` pair is injected at most once. A second Read of the same file in the same session produces no injection.
+  - On a Read of a non-governed file, nothing fires. No git call runs; cost is a single index lookup.
+- **Why:** Surfaces the governing context the moment a file opens, without requiring the agent's session to have already loaded the full doc set.
+- **Fail posture:** Advisory, fail-open (always exits 0). Any error in the governing-map lookup, git call, or budget computation degrades to allow-with-no-injection. A Read is never blocked.
 
 ---
 

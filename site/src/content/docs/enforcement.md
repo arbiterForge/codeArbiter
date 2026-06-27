@@ -42,6 +42,16 @@ The gate **fails closed when the diff cannot be read.** If git is unavailable or
 
 The detection corpus is shared. `CRYPTO_RE` and `SECRET_RE` live once in `_hooklib.py`, so the redactor and the gate cannot drift on what counts as crypto or a secret.
 
+## Commit-gate board transitions (ADR-0008)
+
+`open-tasks.md` has one sanctioned writer: `/ca:task`. No other agent, hook, or workflow is permitted to modify that file directly. The three mutations it performs are a queued add (a new task in `[ ]` state), the start-flip (`[ ]` to `[~]` with a stamped date), and the done-flip (`[~]` to `[x]`).
+
+The commit gate is the single board-sync chokepoint. Phase 6 of the commit-gate skill identifies a schema-valid board transition and exempts it from the scope-creep check; Phase 7 stages it alongside the work. The board flip therefore lands atomically with the code it describes: an abandoned PR abandons the flip with it, and there is no window where the board reads done while the corresponding work is not yet merged.
+
+This replaces the old pattern of a separate, lagging `chore(board)` PR. Cross-session board drift (a task left open after its work lands) is eliminated by construction rather than by process discipline. See ADR-0008 for the full design rationale.
+
+`/ca:standup` and `/ca:doctor` each run a read-only reconciliation sweep and surface any merged-but-not-flipped task. They report; they do not write.
+
 ## Advisory, non-blocking reminders
 
 `post-write-edit.py` (`PostToolUse(Write|Edit)`) surfaces reminders right after a write. These **never block**. They nudge so the blocking gate is not a surprise at commit time.
