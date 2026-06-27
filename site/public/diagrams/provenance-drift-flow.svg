@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" role="img"
+     aria-label="Context-drift provenance flow. When a derived doc's tracked source changes, drift is detected by a git hash-object mismatch. A SessionStart line surfaces it passively, and commit-gate auto-heal re-baselines the provenance or proposes a doc update with the work commit. The /ca:context-check command runs the same detection as a manual audit.">
+  <title>Context-drift provenance: detect, surface, and auto-heal</title>
+  <defs>
+    <linearGradient id="pdf-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#131a23"/>
+    </linearGradient>
+    <pattern id="pdf-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <marker id="pdf-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 Z" fill="#46505a"/>
+    </marker>
+    <marker id="pdf-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="300" fill="url(#pdf-bg)"/>
+  <rect width="900" height="300" fill="url(#pdf-grid)"/>
+  <rect x="8" y="8" width="884" height="284" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+
+  <text x="30" y="36" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
+        font-size="10" letter-spacing="3" fill="#8b95a2">CONTEXT-DRIFT PROVENANCE</text>
+  <text x="30" y="57" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="15" fill="#e6edf3" font-weight="600">detect · surface · auto-heal</text>
+
+  <!-- step 1 -->
+  <rect x="30" y="98" width="180" height="66" rx="5" fill="#1c2430" stroke="#6e7b8b" stroke-width="1.2"/>
+  <text x="120" y="124" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#e6edf3">tracked source changes</text>
+  <text x="120" y="142" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">a doc's cited file is edited</text>
+  <line x1="210" y1="131" x2="248" y2="131" stroke="#46505a" stroke-width="1.5" marker-end="url(#pdf-arrow)"/>
+
+  <!-- step 2 -->
+  <rect x="250" y="98" width="180" height="66" rx="5" fill="#1c2430" stroke="#d29922" stroke-width="1.3"/>
+  <text x="340" y="124" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#e6edf3">drift detected</text>
+  <text x="340" y="142" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#8b95a2">git hash-object mismatch</text>
+  <line x1="430" y1="131" x2="468" y2="131" stroke="#46505a" stroke-width="1.5" marker-end="url(#pdf-arrow)"/>
+
+  <!-- step 3 -->
+  <rect x="470" y="98" width="180" height="66" rx="5" fill="#1c2430" stroke="#6e7b8b" stroke-width="1.2"/>
+  <text x="560" y="124" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#e6edf3">SessionStart line</text>
+  <text x="560" y="142" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">passive, one line</text>
+  <line x1="650" y1="131" x2="688" y2="131" stroke="#d29922" stroke-width="1.5" marker-end="url(#pdf-arrow-gold)"/>
+
+  <!-- step 4 -->
+  <rect x="690" y="92" width="182" height="78" rx="5" fill="#1c2430" stroke="#d29922" stroke-width="1.3"/>
+  <text x="781" y="116" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#e6edf3">commit-gate auto-heal</text>
+  <text x="781" y="134" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">re-baseline, or propose a</text>
+  <text x="781" y="149" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">doc update with the work commit</text>
+
+  <!-- manual audit entry -->
+  <rect x="250" y="208" width="180" height="52" rx="5" fill="#11161d" stroke="#46505a" stroke-width="1"/>
+  <text x="340" y="230" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#e6edf3">/ca:context-check</text>
+  <text x="340" y="247" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">manual audit, same detection</text>
+  <line x1="340" y1="208" x2="340" y2="166" stroke="#2a3340" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#pdf-arrow)"/>
+
+  <text x="690" y="232" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#8b95a2">A drifted claim is suppressed,</text>
+  <text x="690" y="249" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#6e7b8b">never injected as if it were fresh.</text>
+</svg>
