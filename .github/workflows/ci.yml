@@ -24,6 +24,7 @@ on:
       - "plugins/ca-sandbox/**"
       - "**/*.json"
       - "README.md"
+      - "LICENSE"
       - ".github/workflows/ci.yml"
       - ".github/scripts/**"
 
@@ -396,6 +397,23 @@ jobs:
           if [ "$fail" -eq 0 ]; then echo "all tracked JSON valid"; fi
           exit $fail
 
+  license-consistency:
+    name: Repo | [Check] - License Consistency
+    # Shared infra - the project's own license declarations (both plugin
+    # manifests, the LICENSE file, and the README badge + notice) must all agree
+    # with the canonical SPDX, so a partial relicense can't ship (the v2.6.0
+    # relicense left three surfaces stale, caught only by human review). Repo-wide
+    # and always-on: a license edit can ride any PR. See
+    # specs/license-consistency-check.md.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+      - name: Check license declarations agree across surfaces
+        run: python3 .github/scripts/check_license_consistency.py .
+
   ci-passed:
     name: Repo | [Gate] - CI Passed
     if: always()
@@ -410,6 +428,7 @@ jobs:
       - badge-consistency
       - prose-sandbox
       - manifests
+      - license-consistency
     runs-on: ubuntu-latest
     steps:
       - name: Require every job to have succeeded or been skipped
