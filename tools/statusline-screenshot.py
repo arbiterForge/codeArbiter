@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Regenerate docs/statusline.png — a screenshot of the codeArbiter statusline with
-mock values, rendered ANSI -> styled HTML -> Chromium (Playwright).
+"""Regenerate site/public/diagrams/statusline.png — a screenshot of the codeArbiter
+statusline with mock values, rendered ANSI -> styled HTML -> Chromium (Playwright).
+
+This is the single source for the statusline image: the docs-site guide serves it
+from site/public/diagrams, and the repo README references the same file. Re-run it
+whenever statusline.py changes so both surfaces stay byte-for-byte current.
 
 Maintenance tool, not part of the shipped plugin. Usage:
 
     pip install playwright && python -m playwright install chromium
-    python tools/statusline-screenshot.py                 # -> docs/statusline.png
+    python tools/statusline-screenshot.py                 # -> site/public/diagrams/statusline.png
     SHOT_OUT=docs/foo.png python tools/statusline-screenshot.py
 
 The bar reads the REAL repo for the git branch and `.codearbiter/` state, so run it
@@ -132,8 +136,9 @@ doc = f"""<!doctype html><html><head><meta charset="utf-8"><style>
 htmlp = os.path.join(scratch, "shot.html")
 open(htmlp, "w", encoding="utf-8").write(doc)
 
-os.makedirs(os.path.join(ROOT, "docs"), exist_ok=True)
-outp = os.environ.get("SHOT_OUT", os.path.join(ROOT, "docs", "statusline.png"))
+default_out = os.path.join(ROOT, "site", "public", "diagrams", "statusline.png")
+os.makedirs(os.path.dirname(default_out), exist_ok=True)
+outp = os.environ.get("SHOT_OUT", default_out)
 from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
     b = p.chromium.launch()
