@@ -74,6 +74,19 @@ describe("Feature Forge catalog explains each feature, not just lists it", () =>
     }
   });
 
+  it("every field the card renders is present (no 'undefined' leaks into the UI)", () => {
+    // The card renders optIn and helpGraduate for every feature, and falls back
+    // to href for a feature with no /ca: command (e.g. ca-sandbox). Guard them
+    // so an emptied field is caught here, not seen as "Opt in: undefined" live.
+    for (const f of FORGE_FEATURES) {
+      expect(f.optIn.length).toBeGreaterThan(0);
+      expect(f.helpGraduate.length).toBeGreaterThan(0);
+      if (!f.command) {
+        expect(f.href && f.href.length > 0).toBeTruthy();
+      }
+    }
+  });
+
   it("has a hand-authored 'How Each Preview Works' deep-dive section", () => {
     expect(whatsIn).toContain("## How Each Preview Works");
   });
