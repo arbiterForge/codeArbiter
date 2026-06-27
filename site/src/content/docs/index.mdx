@@ -40,6 +40,22 @@ import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
     A Claude Code plugin. One orchestrator. Gated lanes for every kind of work.
   </div>
 
+  <figure class="ca-diagram ca-laneflow">
+    <img
+      src="/codeArbiter/diagrams/lane-flow.svg"
+      alt="Lane flow: a command routes to the owning skill, clears its gate pillars, ships to version control, then opens a pull request to reach main."
+      loading="lazy"
+      width="900"
+      height="160"
+    />
+    <figcaption>Every request flows: command → route → gate → ship → pull request. Nothing skips the gate.</figcaption>
+  </figure>
+
+  <p class="ca-hero__lead">
+    You drive with slash commands. Type one and the orchestrator runs that whole lane for
+    you: planning, tests, review, and the gate, then it opens the PR. Three of the most common:
+  </p>
+
   <div class="ca-hero__first-command">
 
 ```bash
@@ -49,21 +65,6 @@ import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
 ```
 
   </div>
-</div>
-
-<div class="ca-laneflow">
-
-<figure class="ca-diagram">
-  <img
-    src="/codeArbiter/diagrams/lane-flow.svg"
-    alt="Lane flow: a command routes to the owning skill, clears its gate pillars, then ships to version control via a pull request."
-    loading="lazy"
-    width="900"
-    height="160"
-  />
-  <figcaption>Every request flows: command → route → gate → ship. Nothing skips the gate.</figcaption>
-</figure>
-
 </div>
 
 </div>

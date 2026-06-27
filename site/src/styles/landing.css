@@ -142,6 +142,13 @@
   letter-spacing: 0.04em;
 }
 
+.ca-hero__lead {
+  margin-block: 1.5rem 0.75rem;
+  max-width: 70ch;
+  color: var(--sl-color-gray-2);
+  line-height: 1.6;
+}
+
 .ca-hero__first-command {
   margin-block: 1.5rem;
 }
@@ -158,7 +165,7 @@
    ========================================================= */
 
 .ca-laneflow {
-  margin-block: 2rem;
+  margin-block: 1rem;
 }
 
 /* =========================================================

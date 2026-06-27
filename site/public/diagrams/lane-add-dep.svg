@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 190" role="img"
+     aria-label="The /ca:add-dep lane across two rows by piece type, loaded in order. Commands row: /ca:add-dep. Agents row: dependency-reviewer. A connector runs left to right in execution order: /ca:add-dep holds the install and dispatches the dependency-reviewer agent, which clears license, provenance, and supply-chain posture before anything is installed. This lane uses no skills, so the skills row is omitted.">
+  <title>The /ca:add-dep lane: the command holds the install until the dependency-reviewer agent clears the package</title>
+  <defs>
+    <linearGradient id="ladd-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#131a23"/>
+    </linearGradient>
+    <pattern id="ladd-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <marker id="ladd-arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 Z" fill="#6e7b8b"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="190" fill="url(#ladd-bg)"/>
+  <rect width="920" height="190" fill="url(#ladd-grid)"/>
+  <rect x="8" y="8" width="904" height="174" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+
+  <!-- row guides -->
+  <line x1="128" y1="70" x2="900" y2="70" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="128" y1="135" x2="900" y2="135" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+
+  <!-- row labels (these double as the legend; this lane uses no skills) -->
+  <text x="116" y="74" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#d29922">COMMANDS</text>
+  <text x="116" y="139" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#3a8a44">AGENTS</text>
+
+  <!-- execution-order connector -->
+  <polyline points="220,70 560,135"
+            fill="none" stroke="#6e7b8b" stroke-width="1.4" marker-end="url(#ladd-arrow)"/>
+
+  <!-- chips: command = gold, agent = green -->
+  <!-- 1 /ca:add-dep -->
+  <rect x="176" y="53" width="88" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="220" y="74" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:add-dep</text>
+  <!-- 2 dependency-reviewer -->
+  <rect x="494" y="118" width="132" height="34" rx="5" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.4"/>
+  <text x="560" y="139" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#7fd089">dependency-reviewer</text>
+
+  <!-- flow legend -->
+  <text x="900" y="172" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">cleared before install →</text>
+</svg>

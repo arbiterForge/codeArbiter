@@ -79,6 +79,7 @@ export default defineConfig({
       sidebar: [
         {
           label: "Getting Started",
+          collapsed: true,
           items: [
             { label: "Install", slug: "getting-started/install" },
             { label: "Quickstart", slug: "getting-started/quickstart" },
@@ -87,20 +88,22 @@ export default defineConfig({
         },
         {
           label: "Guides",
+          collapsed: true,
           items: [
             { label: "Opt a Repository In", slug: "guides/opt-in-a-repo" },
+            { label: "Record an Architecture Decision", slug: "guides/recording-adrs" },
+            { label: "Add a Dependency Safely", slug: "guides/adding-a-dependency" },
+            { label: "Set Up the Statusline", slug: "guides/the-statusline" },
             { label: "Build a Feature End to End", slug: "guides/feature-lane" },
             { label: "Run an Autonomous Sprint", slug: "guides/autonomous-sprints" },
             { label: "Override a Gate Safely", slug: "guides/overriding-a-gate" },
-            { label: "Record an Architecture Decision", slug: "guides/recording-adrs" },
-            { label: "Add a Dependency Safely", slug: "guides/adding-a-dependency" },
             { label: "Cut a Release", slug: "guides/releasing-a-version" },
-            { label: "Set Up the Statusline", slug: "guides/the-statusline" },
             { label: "Troubleshooting", slug: "guides/troubleshooting" },
           ],
         },
         {
           label: "Feature Forge",
+          collapsed: true,
           items: [
             { label: "What Is the Feature Forge", slug: "feature-forge/overview" },
             { label: "What's in the Forge", slug: "feature-forge/whats-in-the-forge" },
@@ -109,20 +112,22 @@ export default defineConfig({
         },
         {
           label: "Concepts",
+          collapsed: true,
           items: [
             { label: "Overview", slug: "concepts" },
-            { label: "The Gated-Lane Model", slug: "concepts/gated-lanes" },
             { label: "SMARTS", slug: "concepts/smarts" },
+            { label: "Provenance and Context Drift", slug: "concepts/provenance-drift" },
             { label: "ADRs and the Decision Log", slug: "concepts/adrs" },
+            { label: "Just-in-Time Context Injection", slug: "concepts/jit-context-injection" },
+            { label: "The Gated-Lane Model", slug: "concepts/gated-lanes" },
             { label: "Checkpoints", slug: "concepts/checkpoints" },
             { label: "The Persona-Register Split", slug: "concepts/persona-and-context" },
-            { label: "Provenance and Context Drift", slug: "concepts/provenance-drift" },
-            { label: "Just-in-Time Context Injection", slug: "concepts/jit-context-injection" },
             { label: "Auditability", slug: "concepts/auditability" },
           ],
         },
         {
           label: "Security",
+          collapsed: true,
           items: [
             { label: "Enforcement & Security", slug: "enforcement" },
             { label: "Hooks Reference", slug: "hooks" },
@@ -130,6 +135,7 @@ export default defineConfig({
         },
         {
           label: "Reference",
+          collapsed: true,
           items: [{ label: "All Reference", slug: "reference" }, ...referenceGroups],
         },
       ],

@@ -5,6 +5,17 @@ description: "Hand a goal to codeArbiter and have it plan, implement, and open a
 
 `/ca:sprint` runs a full development cycle without continuous input. You review a spec and approve a plan once, at the start. After that, codeArbiter handles every implementation task, scores every decision it makes in your place, logs the lot, and opens a PR when the gate chain clears. You come back at the end to decide whether to merge.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-sprint.svg"
+    alt="The /ca:sprint lane in three rows: Commands (/ca:sprint), Skills (writing-plans, subagent-driven-development, commit-gate, finishing-a-development-branch), and Agents (author subagent, reviewer fleet), with a connector weaving through them in execution order."
+    loading="lazy"
+    width="920"
+    height="250"
+  />
+  <figcaption>The <code>/ca:sprint</code> lane by piece type: command (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
+</figure>
+
 ## Before You Begin
 
 Your repository must be opted in (`arbiter: enabled` in `.codearbiter/CONTEXT.md`). If it isn't yet, run `/ca:init`. The [Quickstart](/getting-started/quickstart/) walks through the opt-in.

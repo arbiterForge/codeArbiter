@@ -29,9 +29,9 @@
   <text x="360" y="46" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="10" letter-spacing="3" fill="#8b95a2">SEMVER AXIS</text>
-  <text x="360" y="70" text-anchor="middle"
+  <text x="360" y="71" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="15" fill="#e6edf3" font-weight="600">whole payload</text>
+        font-size="19" fill="#f0f3f6" font-weight="700">Whole Payload</text>
 
   <!-- version progression: v2.5.1 → v2.5.2 (current) → v2.6.0, centred on x=360 -->
   <rect x="203" y="92" width="78" height="38" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1"/>
@@ -74,9 +74,9 @@
   <text x="360" y="277" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
         font-size="10" letter-spacing="3" fill="#c08a6a">FEATURE FORGE AXIS</text>
-  <text x="360" y="301" text-anchor="middle"
+  <text x="360" y="302" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="15" fill="#e6edf3" font-weight="600">per-feature preview</text>
+        font-size="19" fill="#f0f3f6" font-weight="700">Per-Feature Preview</text>
 
   <!-- feature progression: preview → (evidence) → stable, centred on x=360 -->
   <rect x="234" y="323" width="100" height="38" rx="4" fill="#1e1408" stroke="#d97757" stroke-width="1.5"/>

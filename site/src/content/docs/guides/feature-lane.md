@@ -10,6 +10,19 @@ description: "Take an idea through spec, plan, test-first implementation, and pu
 ```
 
 The lane runs in order and gates at each transition. Nothing moves until the previous gate clears.
+Each piece loads only when the lane reaches it: the command you run, the skills it routes through,
+and the author and reviewer agents it dispatches on demand.
+
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-feature.svg"
+    alt="The /ca:feature lane in three rows: Commands (/ca:feature, /ca:commit, /ca:pr), Skills (brainstorming, writing-plans, tdd, commit-gate), and Agents (author agents, reviewer agents), with a connector weaving through them in execution order."
+    loading="lazy"
+    width="920"
+    height="250"
+  />
+  <figcaption>The <code>/ca:feature</code> lane by piece type: commands (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
+</figure>
 
 ## Refine the Idea Into a Spec
 
@@ -64,7 +77,7 @@ Once all batches are committed, run:
 
 The [pr command](/reference/commands/pr/) runs the review fleet and clears every BLOCK-level finding before the PR is staged. A PR is never written directly to the default branch. Unresolved BLOCK findings are resolved first, not deferred.
 
-## Reference
+## Related
 
 | Skill or command | Where |
 |---|---|

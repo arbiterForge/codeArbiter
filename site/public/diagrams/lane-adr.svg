@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 190" role="img"
+     aria-label="The /ca:adr lane across two rows by piece type, loaded in order. Commands row: /ca:adr, then later /ca:adr-status. Skills row: decision-lifecycle. A connector runs left to right in execution order: /ca:adr opens the decision-lifecycle interview that writes the record, then /ca:adr-status sweeps the decisions directory for health later.">
+  <title>The /ca:adr lane: the authoring command, the decision-lifecycle skill, and the status sweep</title>
+  <defs>
+    <linearGradient id="ladr-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#131a23"/>
+    </linearGradient>
+    <pattern id="ladr-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
+    <marker id="ladr-arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 Z" fill="#6e7b8b"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="190" fill="url(#ladr-bg)"/>
+  <rect width="920" height="190" fill="url(#ladr-grid)"/>
+  <rect x="8" y="8" width="904" height="174" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
+
+  <!-- row guides -->
+  <line x1="128" y1="70" x2="900" y2="70" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+  <line x1="128" y1="135" x2="900" y2="135" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
+
+  <!-- row labels (these double as the legend) -->
+  <text x="116" y="74" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#d29922">COMMANDS</text>
+  <text x="116" y="139" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#8957e5">SKILLS</text>
+
+  <!-- execution-order connector -->
+  <polyline points="180,70 400,135 650,70"
+            fill="none" stroke="#6e7b8b" stroke-width="1.4" marker-end="url(#ladr-arrow)"/>
+
+  <!-- chips: command = gold, skill = violet -->
+  <!-- 1 /ca:adr -->
+  <rect x="147" y="53" width="66" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="180" y="74" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:adr</text>
+  <!-- 2 decision-lifecycle -->
+  <rect x="337" y="118" width="126" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="400" y="139" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">decision-lifecycle</text>
+  <!-- 3 /ca:adr-status -->
+  <rect x="598" y="53" width="104" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
+  <text x="650" y="74" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:adr-status</text>
+
+  <!-- flow legend -->
+  <text x="900" y="172" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">loaded in execution order →</text>
+</svg>

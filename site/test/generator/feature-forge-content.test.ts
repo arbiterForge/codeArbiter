@@ -13,6 +13,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { FORGE_FEATURES } from "../../scripts/generator/forge-status";
 
 const DOCS = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -49,7 +50,7 @@ describe("Feature Forge section (its own top-level group)", () => {
   });
 
   it("the catalog is data-driven from forge-status.ts (cannot drift from the badges)", () => {
-    expect(whatsIn).toContain("PREVIEW_COMMANDS");
+    expect(whatsIn).toContain("FORGE_FEATURES");
     expect(whatsIn).toMatch(/from\s+['"][^'"]*forge-status['"]/);
   });
 
@@ -60,5 +61,26 @@ describe("Feature Forge section (its own top-level group)", () => {
   it("the how-to covers opt-in and dormant behavior", () => {
     expect(usingPreview.toLowerCase()).toContain("opt-in");
     expect(usingPreview.toLowerCase()).toContain("dormant");
+  });
+});
+
+describe("Feature Forge catalog explains each feature, not just lists it", () => {
+  it("each catalog card renders the feature's summary", () => {
+    // The summary field is required on ForgeFeature and rendered in the card,
+    // so the at-a-glance list is self-explanatory rather than a bare lookup.
+    expect(whatsIn).toContain("{f.summary}");
+    for (const f of FORGE_FEATURES) {
+      expect(f.summary.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("has a hand-authored 'How Each Preview Works' deep-dive section", () => {
+    expect(whatsIn).toContain("## How Each Preview Works");
+  });
+
+  it("every Forge feature has a matching deep-dive subsection (prose cannot silently drift)", () => {
+    for (const f of FORGE_FEATURES) {
+      expect(whatsIn).toContain(`### ${f.name}`);
+    }
   });
 });

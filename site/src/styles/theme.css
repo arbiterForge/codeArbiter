@@ -165,6 +165,14 @@
   padding-block-end: 0.25rem;
 }
 
+/* Tighten the lead-in gap before a section heading. Starlight's default
+   (~1.5em above any heading that follows content) reads as too airy on the
+   guides; cut it close to half so a new section sits nearer the prior one.
+   Unlayered customCss beats Starlight's layered rule regardless of specificity. */
+.sl-markdown-content :is(h2, h3, h4) {
+  margin-block-start: 0.8em;
+}
+
 /* =========================================================
    CALLOUTS
    Usage: <div class="ca-callout ca-callout--{note|warn|gate|preview}">
@@ -255,6 +263,37 @@
   background: var(--ca-badge-stable-bg);
   color: var(--ca-badge-stable-text);
   border-color: color-mix(in srgb, var(--ca-callout-note-border) 30%, transparent);
+}
+
+/* =========================================================
+   FEATURE FORGE — env-var block in the "What's in the Forge" catalog
+   ========================================================= */
+
+.ca-forge-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--sl-color-white);
+}
+
+.ca-forge-env {
+  margin-block-start: 0.6rem;
+  padding-inline-start: 0.9rem;
+  border-inline-start: 2px solid var(--ca-slate-border);
+}
+
+.ca-forge-env__label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ca-text-muted);
+}
+
+.ca-forge-help {
+  margin-block: 0.5rem 0;
+  font-size: 0.85rem;
+  color: var(--ca-text-muted);
 }
 
 /* =========================================================

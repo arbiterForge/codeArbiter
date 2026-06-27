@@ -65,25 +65,59 @@ const { toc } = Astro.locals.starlightRoute;
 
     private update() {
       if (!this.pairs.length) return;
+      const n = this.pairs.length;
       const navH = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
       const threshold = navH + 32;
-
-      // At (or within 2px of) the bottom, force the last item active — the case
-      // the stock observer misses.
       const doc = document.documentElement;
-      if (Math.ceil(window.scrollY + window.innerHeight) >= doc.scrollHeight - 2) {
-        this.setCurrent(this.pairs[this.pairs.length - 1].link);
-        return;
-      }
+      const scrollY = window.scrollY;
+      const maxScroll = doc.scrollHeight - window.innerHeight;
 
-      // Otherwise the active heading is the last one whose top has crossed the
-      // threshold below the nav.
-      let active = this.pairs[0].link;
-      for (const { link, heading } of this.pairs) {
-        if (heading.getBoundingClientRect().top <= threshold) active = link;
+      // Scroll-invariant absolute top of each heading.
+      const absTop = this.pairs.map(
+        (p) => p.heading.getBoundingClientRect().top + scrollY,
+      );
+
+      // Pass 1 — the active heading is the last one whose top has crossed the
+      // threshold band below the nav.
+      let idx = 0;
+      for (let i = 0; i < n; i++) {
+        if (absTop[i] <= scrollY + threshold) idx = i;
         else break;
       }
-      this.setCurrent(active);
+
+      // Pass 2 — trailing short sections. A heading is "reachable" only if there
+      // is enough content after it to scroll its top up to the threshold band;
+      // once absTop exceeds (maxScroll + threshold) the page bottoms out first,
+      // so Pass 1 freezes on the last reachable heading and a naive snap-to-last
+      // would jump over everything between it and the final item (e.g. the dense
+      // run at the end of the Hooks page). Map the remaining scroll back onto the
+      // headings' real positions so each trailing section gets a turn sized to
+      // its actual height — no section is skipped and a tall one is not cut short.
+      let lastReachable = -1;
+      for (let i = 0; i < n; i++) {
+        if (absTop[i] <= maxScroll + threshold) lastReachable = i;
+        else break;
+      }
+      if (lastReachable >= 0 && lastReachable < n - 1 && maxScroll > 0) {
+        const startScroll = absTop[lastReachable] - threshold; // R reaches the band
+        const actualSpan = maxScroll - startScroll; // scroll we actually have left
+        const naturalSpan = absTop[n - 1] - threshold - startScroll; // scroll we'd need
+        if (actualSpan > 0 && naturalSpan > 0 && scrollY >= startScroll) {
+          // Stretch real scroll into the position space the headings live in.
+          const virtual = startScroll + (scrollY - startScroll) * (naturalSpan / actualSpan);
+          for (let i = lastReachable; i < n; i++) {
+            if (absTop[i] - threshold <= virtual + 0.5) idx = i;
+            else break;
+          }
+        }
+      }
+
+      // Exact bottom always lands on the final item (rounding safety net).
+      if (Math.ceil(scrollY + window.innerHeight) >= doc.scrollHeight - 2) {
+        idx = n - 1;
+      }
+
+      this.setCurrent(this.pairs[idx].link);
     }
   }
 

@@ -5,6 +5,17 @@ description: "Use /ca:add-dep to vet a new third-party package for license compl
 
 Route every new dependency through `/ca:add-dep` before touching the package manifest. The command holds installation until the `dependency-reviewer` agent clears the package on license, provenance, and supply-chain posture.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-add-dep.svg"
+    alt="The /ca:add-dep lane in two rows: Commands (/ca:add-dep) and Agents (dependency-reviewer), with a connector from the command to the agent. The skills row is omitted because this lane uses no skills."
+    loading="lazy"
+    width="920"
+    height="190"
+  />
+  <figcaption>The <code>/ca:add-dep</code> lane by piece type: the command (gold) dispatches the reviewer agent (green), which clears the package before any install runs. This lane uses no skills.</figcaption>
+</figure>
+
 ## Run the Command
 
 Specify the package name and, when you know it, the exact version:
@@ -81,7 +92,7 @@ This is advisory only. It does not block the write. The install gate depends on 
 - **Updating an existing dependency as part of a code change.** Use `/ca:feature` or `/ca:fix`. Manifest changes reach the `dependency-reviewer` through the PR review at `/ca:pr`.
 - **Researching a package without a plan to install it.** Use `/ca:btw`.
 
-## Reference
+## Related
 
 - [add-dep command reference](/reference/commands/add-dep/)
 - [dependency-reviewer agent](/reference/agents/dependency-reviewer/)

@@ -7,6 +7,17 @@ The plugin installs once, globally. Enabling enforcement is a per-repo step you 
 
 **You will need:** Python 3 on your `PATH`, `git config user.email` set, and the plugin installed.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-opt-in.svg"
+    alt="The /ca:init lane in two rows: Commands (/ca:init, which forks to /ca:create-context for existing code or /ca:decompose for a new project) and Skills (create-context backs the first path, decompose the second). Two connectors fork from /ca:init, one to each path."
+    loading="lazy"
+    width="920"
+    height="190"
+  />
+  <figcaption>The <code>/ca:init</code> lane by piece type: commands (gold) and the skills behind them (violet). Init forks to one context-builder path: create-context for existing code, decompose for a new project.</figcaption>
+</figure>
+
 ## 1. Scaffold the State Store
 
 In a Claude Code session with the target repository open, run:

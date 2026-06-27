@@ -5,6 +5,17 @@ description: "Tag and publish a codeArbiter version with /ca:release: SemVer der
 
 `/ca:release` is the only permitted path to a version tag. It derives the SemVer bump from Conventional Commits history since the last `ca` tag, updates `CHANGELOG.md`, composes an annotated tag locally, and publishes a GitHub Release only after you explicitly authorize it.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-release.svg"
+    alt="The /ca:release lane in two rows: Commands (/ca:release) and Skills (release, then commit-gate), with a connector running in execution order from /ca:release through the release skill to commit-gate."
+    loading="lazy"
+    width="920"
+    height="190"
+  />
+  <figcaption>The <code>/ca:release</code> lane by piece type: command (gold) and the skills it routes through (violet), each loaded in execution order.</figcaption>
+</figure>
+
 ## Prerequisites
 
 Four conditions must hold before `/ca:release` will proceed:
@@ -116,7 +127,7 @@ The Release URL is reported only after the read-back confirms a non-draft Releas
 
 Any block may be bypassed only through `/ca:override`.
 
-## See Also
+## Related
 
 - [release command reference](/reference/commands/release/): arguments and hard gates
 - [release skill reference](/reference/skills/release-2/): full phase-by-phase specification

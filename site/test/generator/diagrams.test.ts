@@ -19,7 +19,20 @@ const SITE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DIAGRAM_DIR = join(SITE_ROOT, "public", "diagrams");
 const SRC_DIR = join(SITE_ROOT, "src");
 
-const DIAGRAMS = ["lane-flow.svg", "two-axis-model.svg", "gate-model.svg", "four-tier-map.svg", "provenance-drift-flow.svg"];
+const DIAGRAMS = [
+  "lane-flow.svg",
+  "two-axis-model.svg",
+  "gate-model.svg",
+  "four-tier-map.svg",
+  "provenance-drift-flow.svg",
+  // per-guide lane swimlanes (commands/skills/agents charted in execution order)
+  "lane-feature.svg",
+  "lane-sprint.svg",
+  "lane-adr.svg",
+  "lane-release.svg",
+  "lane-opt-in.svg",
+  "lane-add-dep.svg",
+];
 
 /** Recursively read every page-ish source file under src/ as one big string. */
 function readAllPageSources(dir: string): string {

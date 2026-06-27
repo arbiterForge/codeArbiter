@@ -26,7 +26,7 @@ real-world use shows it is safe to default on, and that judgment is recorded as 
 decision rather than assumed. The forge keeps the cost of trying something new low and the
 cost of trusting it honest.
 
-## Next
+## Related
 
 - [What's in the Forge](/feature-forge/whats-in-the-forge/): the live list of features currently in preview.
 - [Using features still in the Forge](/feature-forge/using-preview-features/): how to turn a preview feature on.

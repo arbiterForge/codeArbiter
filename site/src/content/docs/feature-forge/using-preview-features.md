@@ -19,11 +19,15 @@ Preview features are opt-in by design; a new plugin version never switches one o
 opt in depends on the feature:
 
 - **A preview flag** (for example `--farm` on `/ca:sprint`) is enabled by passing the flag when you
-  run the command. Some flags need supporting configuration first: `--farm`, for instance, needs
-  `FARM_API_KEY` set in your environment. See [Run an autonomous sprint](/guides/autonomous-sprints/)
-  for the full walkthrough.
-- **A preview command** (for example `/ca:prune`) is enabled simply by invoking it. It does nothing
-  until you call it.
+  run the command. Some flags need environment variables set first;
+  [What's in the Forge](/feature-forge/whats-in-the-forge/) lists the required and optional variables
+  for each preview feature (for `--farm`, `FARM_API_KEY` is required). See
+  [Run an autonomous sprint](/guides/autonomous-sprints/) for the full walkthrough.
+- **A preview command** (for example live transcript pruning) is opted into through an environment
+  variable, not just by running the command. Pruning stays dormant until you set `CODEARBITER_PRUNE`
+  (start with `dry`); [What's in the Forge](/feature-forge/whats-in-the-forge/) lists the modes.
+- **A preview plugin** (for example `ca-sandbox`) is a separate sibling plugin you install on its own.
+  It ships dormant and carries its own prerequisites (ca-sandbox needs Docker and nixpacks on PATH).
 
 ## 3. What to Expect While It's in Preview
 

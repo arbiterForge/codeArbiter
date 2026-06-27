@@ -76,7 +76,7 @@ Once written, an override line cannot be removed. The log accumulates for the li
 
 If the statusline is wired in, the arbiter row shows `over:N`, where N is the count of non-comment lines in `overrides.log` recorded after the last checkpoint. The segment turns red when N is greater than zero. Running `/ca:checkpoint` resets the counter by recording the current total as the new baseline.
 
-## Related Pages
+## Related
 
 - [override](/reference/commands/override/) command reference
 - [Enforcement & Security](/enforcement/) (H-05: append-only audit log; H-09b / H-10b: crypto and secret commit gate)

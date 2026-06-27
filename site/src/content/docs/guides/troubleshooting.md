@@ -81,7 +81,7 @@ Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` p
 | Malformed-state error on session start | Frontmatter opens with `---` but never closes | Inspect `.codearbiter/CONTEXT.md` line 2 for the closing `---` |
 | Merged PR but task still open on board | Merged-but-not-flipped task | Doctor runs a read-only reconciliation sweep and reports any such tasks |
 
-## Reference
+## Related
 
 - [Enforcement and Security](/enforcement/) for the activation contract and dual-interpreter registration
 - [Hooks reference](/hooks/) for per-hook behavior and fail postures that doctor inspects

@@ -5,6 +5,17 @@ description: "How to author, supersede, and monitor Architecture Decision Record
 
 Record an Architecture Decision Record (ADR) when a choice is significant enough to constrain future work: a data-store selection, a dependency commitment, a structural boundary, or a security posture. This guide walks through authoring, superseding, and monitoring ADRs.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/lane-adr.svg"
+    alt="The /ca:adr lane in two rows: Commands (/ca:adr, then /ca:adr-status) and Skills (decision-lifecycle), with a connector running in execution order from /ca:adr through decision-lifecycle to the later /ca:adr-status sweep."
+    loading="lazy"
+    width="920"
+    height="190"
+  />
+  <figcaption>The <code>/ca:adr</code> lane by piece type: commands (gold) and the skill that backs them (violet), each loaded in execution order.</figcaption>
+</figure>
+
 ## Before You Start
 
 Confirm codeArbiter is active. The first three lines of `.codearbiter/CONTEXT.md` must include `arbiter: enabled` inside a closed frontmatter block. If it does not, run `/ca:init` first.
@@ -43,7 +54,7 @@ This command sweeps `.codearbiter/decisions/` and reports:
 
 `/ca:adr-status` is read-only. It surfaces information and never writes. Act on its output by running `/ca:adr`.
 
-## Related Pages
+## Related
 
 - [adr](/reference/commands/adr/) command reference
 - [adr-status](/reference/commands/adr-status/) command reference
