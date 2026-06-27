@@ -136,7 +136,9 @@ Then write the surviving project-state docs. Every file holds actual content der
 
 (All under `${CLAUDE_PROJECT_DIR}/.codearbiter/`.) Set the `stage:` frontmatter value in `CONTEXT.md` to the maturity number for the MVP phase of the build plan (a single number — there is no promotion ladder).
 
-Gate: every project-state doc written with real content; no `status: draft` ADRs remain in `decisions/`; `[CONFIRM-NN]` items are acceptable in `open-questions.md` for genuinely unresolved items.
+**Provenance stubs and code-map stub:** once the project-state docs above are on disk, write a provenance stub per derived doc to `.codearbiter/.provenance/<doc>.json` via `_provenancelib.write_stub` (`interview_derived: true`, empty `entries`) — one stub for each scout/source-derived doc (`CONTEXT`, `tech-stack`, `coding-standards`, `security-controls`). Also write a `.codearbiter/code-map.md` stub — a placeholder empty coarse map. WHY: greenfield has no source code yet, so real provenance entries and code-map contents populate on the first commit-gate auto-heal (or `/ca:context-check`) once code exists.
+
+Gate: every project-state doc written with real content; no `status: draft` ADRs remain in `decisions/`; `[CONFIRM-NN]` items are acceptable in `open-questions.md` for genuinely unresolved items; provenance stubs and code-map stub written.
 
 ## Phase 6 — Initialization lock & cleanup · gate: BLOCK
 

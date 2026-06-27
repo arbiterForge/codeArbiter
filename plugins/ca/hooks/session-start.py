@@ -38,6 +38,7 @@ from _standuplib import (  # noqa: E402
     stale_worktree_candidates,
 )
 import _taskboardlib  # noqa: E402 — shared task-board count/staleness logic
+import _provenancelib  # noqa: E402 — shared provenance drift detection (T-16)
 
 INITIALIZED_RE = re.compile(r"<!--\s*INITIALIZED\s*-->")
 STAGE_RE = re.compile(r"^stage:\s*([0-9]+)", re.I | re.M)
@@ -430,6 +431,19 @@ def clear_dev_marker(root):
         pass
 
 
+def provenance_drift_line(root, runner=None):
+    """One-line SessionStart drift notice, or "" when clean/degraded.
+
+    Wraps _provenancelib.startup_drift_line; any failure degrades to "" so the
+    linchpin hook never crashes (mirrors the task-board guard). `runner` is
+    injectable so tests are deterministic/offline; production passes None which
+    lets the lib bind its default `git -C root hash-object` runner. (T-16)"""
+    try:
+        return _provenancelib.startup_drift_line(root, runner=runner)
+    except Exception:  # noqa: BLE001 — never crash session startup
+        return ""
+
+
 def main():
     utf8_stdio()
     root = project_root()
@@ -512,6 +526,13 @@ def main():
             print(f"in-flight tasks: {n}")
             print(f"codeArbiter: task-board summary degraded ({_e}); "
                   f"check .codearbiter/open-tasks.md", file=sys.stderr)
+
+    # --- Passive provenance drift notice (T-16, spec pillar 4) ---
+    # ONE line emitted only when drift > 0; silent when docs are fresh or on any
+    # degrade (wrapper swallows all exceptions — never crashes the linchpin hook).
+    _drift = provenance_drift_line(root)
+    if _drift:
+        print(_drift)
 
     print("Present this state, then await a slash command. Type /ca:commands for the catalog.")
 

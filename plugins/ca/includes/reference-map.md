@@ -19,3 +19,4 @@ then route to the owning skill or agent. This map answers *what to read before t
 | Out-of-scope finding | — | inline `[NEEDS-TRIAGE]` marker (never an ADR); promoted to `open-tasks.md` by the harvest at the workflow's terminal step |
 | Following up on workflow residue / a backlog task | `open-tasks.md` (schema), `${CLAUDE_PLUGIN_ROOT}/includes/harvest.md` | `/ca:task` writer; harvest (`extract_*` → `promote`) at a terminal step |
 | Generating a user-facing deliverable (UI, report, PR/CHANGELOG prose, slide, chart) | `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/INDEX.md` (then `core` + the medium leaf) | `design-quality-reviewer` agent |
+| Provenance drift surfaced outside a commit (merge, external edit, SessionStart drift line) | `.codearbiter/.provenance/` + `.codearbiter/code-map.md` | `context-check` skill (`/ca:context-check`) |

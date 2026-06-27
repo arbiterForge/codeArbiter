@@ -45,7 +45,9 @@ Constraints:
 
 ## Output Template
 
-Every scout returns this exact format:
+Every scout returns this exact format.
+
+**Hash field:** For each cited file, emit its `git hash-object <path>` oid in the `hash` field. The scout already Read those files and has Bash — no additional pass is needed. A git oid is not a code excerpt; the "no excerpts" rule (file path and line numbers only) is not violated by including an oid.
 
 ```markdown
 # Scout Report — <scope>
@@ -55,8 +57,8 @@ Every scout returns this exact format:
 ### <Decision Category ID>
 
 **Evidence locations:**
-- `<file path>` (lines <range>) — <what this demonstrates, max 20 words>
-- `<file path>` (lines <range>) — <what this demonstrates, max 20 words>
+- `<file path>` (lines <range>) [hash: `<git hash-object output>`] — <what this demonstrates, max 20 words>
+- `<file path>` (lines <range>) [hash: `<git hash-object output>`] — <what this demonstrates, max 20 words>
 
 **Confidence:** strong | moderate | weak
 
