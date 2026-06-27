@@ -294,3 +294,28 @@ and a ratification line in its `## Status` section. No content was superseded �
 maturation of this decision, not a new one.
 
 ---
+
+## DECISION-0009 — relicense-agplv3-dual-licensing — Relicense MIT → AGPLv3 with proprietary dual-licensing
+
+**Date:** 2026-06-27
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** licensing / strategic posture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0006 set a broad-OSS-adoption posture under permissive MIT, declining a commercial vertical.
+- **Scaffold position:** n/a — a maintainer strategic/licensing decision, not a scaffold-derived variance.
+- **Status type:** divergent
+
+### Decision
+Relicense the open-source distribution from MIT to GNU AGPLv3, with sole copyright retained by the maintainer, who reserves a proprietary dual-licensing path for a planned closed-source SaaS. Future contributions require a CLA granting relicensing rights. Recorded as ADR-0009, which supersedes ADR-0006; the project stays OSS (AGPLv3 is OSI-approved) but trades adoption breadth for SaaS-moat protection plus a commercial path.
+
+### SMARTS rationale
+A maintainer strategic decision rather than a technical multi-lens arbitration. The driving factor is protecting future commercial value: AGPLv3's network-use copyleft deters a closed-source hosted fork that MIT permits freely, while sole ownership preserves a clean dual-license. The accepted cost, weighed and chosen by the maintainer, is reduced corporate adoption (AGPL is widely banned in enterprises) and added contribution friction from the CLA.
+
+### Implementation implication
+Follow-on /ca:chore: replace LICENSE with the canonical AGPLv3 text plus a sole-owner copyright line, add a README license-transition notice and a Dual-Licensing & Contributions section, and add CLA.md. No per-file headers (single-root-LICENSE convention retained). ADR-0009 governs LICENSE, README.md, CLA.md. ADR-0006 is superseded by ADR-0009 on the forward chain; its status field stays accepted on disk per the no-edit-prior-ADR rule, and /ca:adr-status will report the supersession.
+
+---

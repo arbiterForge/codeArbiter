@@ -4,3 +4,6 @@
 # last-checkpoint marker as "overrides since last checkpoint."
 [2026-06-13T14:25:05Z] | BY: SUaDtL@users.noreply.github.com | OVERRIDE: H-02 force-push | REASON: rebase onto origin/main to resolve add/add conflicts on feature branch checkpoint-remediation-2026-06-12; no commits lost, all 4 sprint SHAs rebased cleanly, 225+56 tests green
 [2026-06-23T18:48:12Z] | BY: SUaDtL@users.noreply.github.com | OVERRIDE: release Phase-1 CHANGELOG-footer BLOCK | REASON: #125 squash-merged with no CHANGELOG: footers on its fix(release)/fix(hooks) commits; changelog 2.5.1 section composed verbatim from those commit bodies (no user-visible change dropped) and shown for review before commit. Also corrects the over-bump: ca-scoped derivation is patch 2.5.1, plugin.json was over-bumped to 2.6.0 (feat(site) is not a ca-payload change).
+2026-06-27T12:48:36Z | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: rewrite mis-set author email on two early commits to canonical identity
+[2026-06-27T13:09:42Z] | BY: session-cleanup | DEV: exit | NOTE: cleared by SessionStart (prior session ended mid-dev without /ca:arbiter)
+2026-06-27T13:12:15Z | BY: SUaDtL@users.noreply.github.com | DEV: exit
