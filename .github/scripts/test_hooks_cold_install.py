@@ -306,11 +306,35 @@ def main():
                 "fallback": fallback[0].replace("${CLAUDE_PLUGIN_ROOT}", PLUGIN_ROOT),
             }
     expected = {"session-start.py", "pre-bash.py", "pre-write.py",
-                "pre-edit.py", "post-write-edit.py", "prune-transcript.py"}
+                "pre-edit.py", "post-write-edit.py", "prune-transcript.py",
+                "pre-read.py"}
     if set(hooks) != expected:
         sys.exit(f"FATAL: hook set drifted — update this harness. "
                  f"found {sorted(hooks)}, expected {sorted(expected)}")
     print(f"hooks.json: {len(hooks)} hooks x 2 entries, all scripts present")
+
+    # ---- AC-02 Read-matcher wiring assertion -----------------------------------
+    # Focused structural check: PreToolUse must have a matcher=="Read" group,
+    # both entries must reference pre-read.py, and the pair must carry the
+    # dual-interpreter shape (primary: `python3 "<script>"`, fallback:
+    # `python3 -c "" || python "<script>"`).
+    pretooluse_groups = config["hooks"].get("PreToolUse", [])
+    read_groups = [g for g in pretooluse_groups if g.get("matcher") == "Read"]
+    if not read_groups:
+        sys.exit("FATAL: hooks.json has no PreToolUse entry with matcher == 'Read'")
+    rg = read_groups[0]
+    read_cmds = [h["command"] for h in rg["hooks"]]
+    if not all("pre-read.py" in c for c in read_cmds):
+        sys.exit(f"FATAL: Read matcher entries do not all reference pre-read.py: {read_cmds}")
+    primary_cmds = [c for c in read_cmds if '-c ""' not in c and "-c \\\"\\\"" not in c]
+    fallback_cmds = [c for c in read_cmds if c not in primary_cmds]
+    if len(primary_cmds) != 1 or len(fallback_cmds) != 1:
+        sys.exit(f"FATAL: Read matcher must have exactly one primary + one fallback, "
+                 f"got: {read_cmds}")
+    if "||" not in fallback_cmds[0] or "python" not in fallback_cmds[0]:
+        sys.exit(f"FATAL: Read matcher fallback lacks python3 || python dual-interpreter "
+                 f"shape: {fallback_cmds[0]}")
+    print("Read matcher wiring: OK (matcher='Read', pre-read.py, primary+fallback dual-interpreter)")
 
     base = tempfile.mkdtemp(prefix="ca-coldinstall-")
     try:

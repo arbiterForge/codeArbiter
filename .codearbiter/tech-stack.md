@@ -66,6 +66,14 @@ python .github/scripts/test_provenancelib.py
 # scoped to staged paths only, re-baseline rides work commit, claim-changed to
 # Phase 6 diff-review; Phase 6/7 provenance exemption + staging wiring (AC-14)
 python .github/scripts/test_provenance_wiring.py
+
+# file-scoped-context-injection lib — four-tier map/budget/dedup/index
+# (_readinjectlib): allow_output shape, context assembly, cache round-trip
+python .github/scripts/test_readinjectlib.py
+
+# pre-read hook entry point — governed-file injection, dedup, fail-open, dormancy
+# (pre-read.py): AC-03/09/10/12, miss, and dormant-repo paths
+python .github/scripts/test_pre_read.py
 ```
 
 Only when `plugins/ca/tools/**` changed:

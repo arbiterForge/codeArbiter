@@ -29,6 +29,13 @@
           { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit.py\"" },
           { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit.py\"" }
         ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-read.py\"" },
+          { "type": "command", "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-read.py\"" }
+        ]
       }
     ],
     "PostToolUse": [
