@@ -60,8 +60,23 @@ class NotesHeadingTest(unittest.TestCase):
         notes = "## v2.6.0 — 2026-06-26\n\n### Added\n- thing\n"
         self.assertTrue(_releaselib.notes_heading_matches(notes, "v2.6.0"))
 
+    def test_matching_bracket_heading(self):
+        # Keep-a-Changelog bracket form — the repo's actual CHANGELOG convention
+        # (every released section + every prior GitHub Release body). The tag is
+        # `vX.Y.Z`; the heading carries `[X.Y.Z]` with no leading `v`. Regression
+        # for the v2.6.0 publish, where this guard no-matched purely on style.
+        notes = "## [2.6.0] — 2026-06-27\n\n### Added\n- thing\n"
+        self.assertTrue(_releaselib.notes_heading_matches(notes, "v2.6.0"))
+
     def test_mismatched_heading(self):
         notes = "## v2.5.0 — 2026-06-01\n\n### Fixed\n- bug\n"
+        self.assertFalse(_releaselib.notes_heading_matches(notes, "v2.6.0"))
+
+    def test_mismatched_bracket_heading(self):
+        # Protective value preserved: a stale bracket-form notes file whose first
+        # section is an older version must still fail, so accepting the bracket
+        # style never degrades into matching any version.
+        notes = "## [2.5.0] — 2026-06-01\n\n### Fixed\n- bug\n"
         self.assertFalse(_releaselib.notes_heading_matches(notes, "v2.6.0"))
 
     def test_first_heading_is_authoritative(self):
@@ -82,6 +97,13 @@ class ReleaseDatesTest(unittest.TestCase):
     def test_consistent_dates(self):
         section = "## v2.6.0 — 2026-06-26\n\n### Added\n- thing\n"
         tagmsg = "codeArbiter 2.6.0\n\nstuff\n\nReleased-at: 2026-06-26\n"
+        self.assertTrue(_releaselib.release_dates_consistent(section, tagmsg))
+
+    def test_consistent_dates_bracket_heading(self):
+        # Bracket-form changelog section (the repo convention). The date must be
+        # read from `## [X.Y.Z] — DATE`, not only from `## vX.Y.Z — DATE`.
+        section = "## [2.6.0] — 2026-06-27\n\n### Added\n- thing\n"
+        tagmsg = "codeArbiter 2.6.0\n\nstuff\n\nReleased-at: 2026-06-27\n"
         self.assertTrue(_releaselib.release_dates_consistent(section, tagmsg))
 
     def test_inconsistent_dates(self):

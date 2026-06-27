@@ -31,12 +31,23 @@ NONE_SENTINEL = "<none>"
 _CA_RELEASE_RE = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
 _PRERELEASE_MARKERS = ("-beta", "-rc", "-alpha")
 
-# `## vX.Y.Z - YYYY-MM-DD` (any separator between version and date) and the
-# annotated-tag `Released-at:` footer.
-_HEADING_RE = re.compile(r"^##\s+(v\d+\.\d+\.\d+)\b", re.MULTILINE)
+# A changelog section heading, in either the `## vX.Y.Z - DATE` form or the
+# Keep-a-Changelog `## [X.Y.Z] - DATE` form the repo actually ships (every
+# released section + every prior GitHub Release body uses the bracket style).
+# The capture is the bare `X.Y.Z`; the optional leading `v` and the surrounding
+# brackets sit OUTSIDE the group, so heading comparison is style-agnostic. Any
+# separator is allowed between version and date. Plus the annotated-tag
+# `Released-at:` footer.
+_HEADING_RE = re.compile(r"^##\s+\[?v?(\d+\.\d+\.\d+)\]?", re.MULTILINE)
 _CHANGELOG_DATE_RE = re.compile(
-    r"^##\s+v\d+\.\d+\.\d+\D+(\d{4}-\d{2}-\d{2})", re.MULTILINE)
+    r"^##\s+\[?v?\d+\.\d+\.\d+\]?\D+(\d{4}-\d{2}-\d{2})", re.MULTILINE)
 _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
+
+
+def _bare_version(tag):
+    """`v2.6.0` / `[2.6.0]` / `2.6.0` -> `2.6.0`. Lets the heading match compare
+    a `vX.Y.Z` tag against a bracket-style heading without caring about style."""
+    return tag.strip().lstrip("v").strip("[]") if isinstance(tag, str) else tag
 
 
 def last_tag_select(tags):
@@ -63,7 +74,8 @@ def last_tag_select(tags):
 
 
 def notes_heading_matches(notes_text, tag):
-    """True iff the FIRST `## vX.Y.Z` heading in `notes_text` equals `tag`. A
+    """True iff the FIRST changelog heading in `notes_text` (either `## vX.Y.Z`
+    or the Keep-a-Changelog `## [X.Y.Z]` form) names the same version as `tag`. A
     stale notes-file (whose first section is an older version) returns False, so
     the release skill cannot publish the wrong changelog section under the right
     tag. Missing heading or non-string input -> False."""
@@ -72,12 +84,13 @@ def notes_heading_matches(notes_text, tag):
     m = _HEADING_RE.search(notes_text)
     if not m:
         return False
-    return m.group(1) == tag
+    return m.group(1) == _bare_version(tag)
 
 
 def release_dates_consistent(changelog_section, tag_message):
-    """True iff the `## vX.Y.Z - DATE` date in `changelog_section` equals the
-    `Released-at: DATE` date in `tag_message`. Guards against the date being
+    """True iff the date in `changelog_section`'s heading (`## vX.Y.Z - DATE` or
+    `## [X.Y.Z] - DATE`) equals the `Released-at: DATE` date in `tag_message`.
+    Guards against the date being
     hand-typed inconsistently across surfaces. Either date absent, or non-string
     input -> False."""
     if not isinstance(changelog_section, str) or not isinstance(tag_message, str):
