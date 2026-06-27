@@ -23,7 +23,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 ---
 
-> **License notice.** As of v2.6.0, codeArbiter is licensed under the [GNU AGPLv3](LICENSE), a change from its earlier MIT license. Copyright (C) 2026 SUaDtL. Proprietary and commercial licensing is available separately; see [Dual-Licensing & Contributions](#dual-licensing--contributions).
+> **License notice.** As of v2.6.0, codeArbiter is licensed under the [GNU AGPLv3](LICENSE), a change from its earlier MIT license. Copyright (C) 2026 SUaDtL, who reserves the right to dual-license under separate proprietary terms; commercial licenses are not offered at this time. See [Dual-Licensing & Contributions](#dual-licensing--contributions).
 
 ## What it is
 
