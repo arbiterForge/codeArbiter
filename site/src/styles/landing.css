@@ -11,7 +11,7 @@
    ========================================================= */
 
 .ca-hero {
-  max-width: 56rem;
+  max-width: 72rem;
   margin-inline: auto;
   padding-block: 1.5rem 0;
 }
@@ -41,7 +41,7 @@
    ========================================================= */
 
 .ca-terminal-section {
-  max-width: 56rem;
+  max-width: 72rem;
   margin-inline: auto;
   margin-block: 2.5rem;
 }
@@ -61,7 +61,7 @@
    ========================================================= */
 
 .ca-forge {
-  max-width: 56rem;
+  max-width: 72rem;
   margin-inline: auto;
   margin-block: 3rem 2rem;
   padding-block-start: 2rem;
@@ -72,7 +72,7 @@
   font-size: clamp(1.2rem, 2.5vw, 1.6rem);
   font-weight: 700;
   margin-block-end: 1rem;
-  color: var(--ca-gold);
+  color: var(--ca-gold-text);
 }
 
 .ca-forge p {
@@ -86,7 +86,7 @@
    ========================================================= */
 
 .ca-laneflow {
-  max-width: 56rem;
+  max-width: 72rem;
   margin-inline: auto;
   margin-block: 2rem;
 }

@@ -1,0 +1,15 @@
+---
+title: Provenance & context drift
+description: "How codeArbiter tracks source-file hashes to detect when derived documents have drifted from their backing sources, and how the commit-gate auto-heal step keeps them current."
+---
+
+Every derived document under `.codearbiter/` traces its claims to source files in the repo. codeArbiter records this mapping as **provenance**: which files back a given doc, and the `git hash-object` hash of each file at the time the doc was authored. When a tracked source changes, the stored hash no longer matches. That mismatch is **context drift**.
+
+Drift is surfaced once, passively, as a single line at SessionStart. It does not interrupt work. `.codearbiter/code-map.md` provides a coarse orientation map: it names the main source files and the docs that depend on them. `/ca:context-check` runs the same detection on demand, as a manual audit.
+
+When a commit lands, the **commit-gate auto-heal** step checks whether any staged source files have drifted their dependent docs. If they have, it re-baselines the provenance in the same commit or proposes a doc update to accompany the work. A drifted claim is suppressed rather than surfaced as if fresh. A stale assertion cannot appear as current fact.
+
+<figure class="ca-diagram">
+  <img src="/codeArbiter/diagrams/provenance-drift-flow.svg" alt="Context-drift provenance flow: a tracked source change is detected by a git hash-object mismatch, surfaced at SessionStart, and healed by commit-gate which re-baselines or proposes a doc update with the work commit." loading="lazy" />
+  <figcaption>Provenance tracks source hashes. A mismatch is detected at SessionStart and healed when the commit lands.</figcaption>
+</figure>

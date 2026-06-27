@@ -83,7 +83,7 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
 
 - **Event:** `PreToolUse`, matcher `Read`.
 - **Script:** `pre-read.py`.
-- **What it does:** On a Read of a governed file, assembles a budgeted (150-token ceiling), freshness-gated note naming the decision, control, or spec that governs that path, and delivers it via `additionalContext` while always allowing the Read. See [Concepts: just-in-time context injection](/concepts#just-in-time-context-injection) for the four-tier governing map.
+- **What it does:** On a Read of a governed file, assembles a budgeted (150-token ceiling), freshness-gated note naming the decision, control, or spec that governs that path, and delivers it via `additionalContext` while always allowing the Read. See [Concepts: just-in-time context injection](/concepts/jit-context-injection/) for the four-tier governing map.
   - Searches four tiers in priority order: `security-controls.md` for security-classified files; an accepted ADR whose `governs:` glob matches the path; an approved spec whose `**Governs:**` header matches; a provenance enrichment entry whose stored hash still equals the file's current content.
   - Each `(session, file)` pair is injected at most once. A second Read of the same file in the same session produces no injection.
   - On a Read of a non-governed file, nothing fires. No git call runs; cost is a single index lookup.

@@ -38,6 +38,7 @@
   --ca-text-muted:    #8b95a2;
   --ca-ember:         #d97757;     /* Feature Forge / preview channel */
   --ca-ember-dim:     #c0643e;
+  --ca-gold-text:     var(--ca-gold);  /* text-safe gold; see light-mode override below */
 
   /* ---- Callout palette ---- */
   --ca-callout-note-border:   #5b8dd9;
@@ -67,8 +68,8 @@
 
   /* ---- Starlight accent overrides ---- */
   --sl-color-accent-low:  var(--ca-gold-low);
-  --sl-color-accent:      #c0871d;
-  --sl-color-accent-high: #ecd083;
+  --sl-color-accent:      #9a6e1a;
+  --sl-color-accent-high: #f0dc88;
 }
 
 :root[data-theme="dark"] {
@@ -99,8 +100,36 @@
   --ca-slate-mid:     #f4f6f9;
   --ca-slate-border:  #d2d9e2;
 
-  /* Callout tints: same hues, slightly stronger alpha to register on white.
-     Borders stay saturated; they already pass on a light base. */
+  /* Starlight accent: vivid #e3b341 yields only ~2.1:1 on a white shell —
+     unusable for links or interactive text. Without explicit overrides, the
+     :root accent-low (#3b2e0a) renders as a jarring dark-brown bg tint in light
+     mode. Light mode uses a dark-gold ladder so every accent surface meets WCAG AA.
+       accent-low:  warm cream tint (~#f4e9d4) for subtle accent backgrounds.
+       accent:      #8b6212 ~5.5:1 on white (AA).
+       accent-high: #6b4a0d ~8.1:1 on white (AAA). */
+  --sl-color-accent-low:  #f4e9d4;
+  --sl-color-accent:      #8b6212;
+  --sl-color-accent-high: #6b4a0d;
+
+  /* Gold text: raw --ca-gold (#e3b341) is ~1.94:1 on white — near-invisible.
+     #8b6212 ≈ 5.5:1 on white, matching the existing AA-passing accent tone. */
+  --ca-gold-text:     #8b6212;
+
+  /* Callout borders: dark-palette borders from :root fail on a white shell.
+     #e3b341 (gate) ~1.9:1, #d29922 (warn) ~2.8:1 — both below the 3:1
+     UI-component floor and below the 4.5:1 AA floor for the small-caps label
+     text that inherits these variables. Hue-matched alternatives chosen to
+     preserve each channel's identity while clearing AA text contrast.
+       note-border:    #3e6cad ~5.3:1 on white
+       gate-border:    #9a6e1a ~4.6:1 on white (mirrors --sl-color-accent)
+       warn-border:    #7a5800 ~6.5:1 on white (amber tone intact)
+       preview-border: #b85932 ~4.7:1 on white (ember tone intact) */
+  --ca-callout-note-border:    #3e6cad;
+  --ca-callout-gate-border:    #9a6e1a;
+  --ca-callout-warn-border:    #7a5800;
+  --ca-callout-preview-border: #b85932;
+
+  /* Callout tints: same hues, slightly stronger alpha to register on white. */
   --ca-callout-note-bg:       rgba(45, 99, 173, 0.08);
   --ca-callout-warn-bg:       rgba(166, 116, 16, 0.10);
   --ca-callout-gate-bg:       rgba(176, 134, 25, 0.11);
@@ -118,13 +147,14 @@
   position: relative;
   isolation: isolate;
 }
-/* Soft gold haze behind the hero, echoing the banner — fills the dead space
-   under the title/actions without adding a heavy image. */
+/* Soft gold haze behind the hero heading, echoing the banner.
+   Four-value inset contains the element within the hero bounds (flush at
+   bottom, 20% bloom above, 8% side bleed) — no height override, no dead
+   band below the hero content. */
 .hero::before {
   content: "";
   position: absolute;
-  inset: -45% -15% auto -15%;
-  height: 150%;
+  inset: -20% -8% 0 -8%;
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(
@@ -214,7 +244,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-block-end: 0.35rem;
-  opacity: 0.75;
+  /* opacity intentionally omitted: 0.75 dropped text below WCAG AA at 0.7rem */
 }
 
 .ca-callout--note   .ca-callout__label { color: var(--ca-callout-note-border); }
