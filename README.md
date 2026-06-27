@@ -11,7 +11,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 <img alt="commands" src="https://img.shields.io/badge/commands-38-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-21-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-15-555">
-<img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
+<img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
 <sub>Install it globally; it stays dormant until you opt a repo in.</sub>
 
@@ -22,6 +22,8 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 </div>
 
 ---
+
+> **License notice.** As of v2.6.0, codeArbiter is licensed under the [GNU AGPLv3](LICENSE), a change from its earlier MIT license. Copyright (C) 2026 SUaDtL. Proprietary and commercial licensing is available separately; see [Dual-Licensing & Contributions](#dual-licensing--contributions).
 
 ## What it is
 
@@ -414,10 +416,20 @@ Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty not
 
 ## Project history
 
-codeArbiter v2 is a ground-up rebuild: from a ~13,600-line `.agents/` + vendoring framework into a native Claude Code plugin. The full story is in [`CHANGELOG.md`](./CHANGELOG.md). The v1 framework is preserved on the [`archive/v1`](../../tree/archive/v1) branch for reference.
+codeArbiter v2 is a ground-up rebuild: from a ~13,600-line `.agents/` + vendoring framework into a native Claude Code plugin. The full story is in [`CHANGELOG.md`](./CHANGELOG.md). The v1 framework is preserved in this repository's early commit history for reference.
 
 ## License
 
-[MIT](./LICENSE). Use it for anything.
+codeArbiter is licensed under the [GNU Affero General Public License v3.0](./LICENSE) (AGPLv3). You may use, study, modify, and redistribute it under those terms. Because AGPLv3 covers network use (section 13), running a modified version as a hosted service obligates you to offer that version's complete source under the same license.
+
+The AGPLv3 transition applies from v2.6.0 forward. Earlier releases, through the last MIT-tagged commit, remain available under the MIT license they shipped with.
+
+## Dual-Licensing & Contributions
+
+**Open source.** codeArbiter is available under AGPLv3 for open-source use, free of charge.
+
+**Commercial licensing.** The copyright holder (SUaDtL) retains sole ownership and offers the same code under separate proprietary terms for cases AGPLv3 does not fit, including closed-source or hosted-service products. To inquire about a commercial license, open an issue on this repository or reach the repository owner through GitHub. A dedicated licensing entity and contact will be set up later.
+
+**Contributions.** Future community contributions require a Contributor License Agreement granting the copyright holder the right to relicense the contribution under both AGPLv3 and proprietary terms, which is what keeps the dual-licensing model intact. See [CLA.md](./CLA.md). That CLA is a template pending legal review and is not yet in force.
 
 <div align="center"><sub>Built for <a href="https://claude.com/claude-code">Claude Code</a>.</sub></div>
