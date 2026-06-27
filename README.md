@@ -8,8 +8,8 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="version 2.6.0" src="https://img.shields.io/badge/version-2.6.0-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-37-555">
-<img alt="skills" src="https://img.shields.io/badge/skills-20-555">
+<img alt="commands" src="https://img.shields.io/badge/commands-38-555">
+<img alt="skills" src="https://img.shields.io/badge/skills-21-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-15-555">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-3da639">
 
@@ -243,7 +243,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | <kbd>/ca:metrics</kbd> | Read-only trend glance: override rate, small-lane rate, and sprint low-confidence ratio, each with a direction arrow vs. the prior 20-commit window. |
 
 <details>
-<summary><b>The full catalog</b>: 37 commands</summary>
+<summary><b>The full catalog</b>: 38 commands</summary>
 
 <br>
 
@@ -293,6 +293,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:statusline` | Install/wire the codeArbiter statusline |
 | `/ca:doctor` | Prove the install is enforcing: payload, cache staleness, live-fire hook probe |
 | `/ca:preview` | Zero-onboarding read-only dry-run of the reviewer fleet on the current diff: predicts reviewers, runs the state-free secret scan, writes nothing |
+| `/ca:context-check` | Optional manual drift audit: report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer; not the daily loop, `commit-gate` auto-heal owns routine maintenance |
 | `/ca:standup` | Daily hygiene: review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes, each under per-action confirmation |
 | `/ca:new-skill "gap"` | Author a new skill after the gap is proven uncovered |
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
@@ -321,7 +322,7 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (37)   skills/   (20)   agents/   (15)
+├── commands/   (38)   skills/   (21)   agents/   (15)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
