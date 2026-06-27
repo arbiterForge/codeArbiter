@@ -34,11 +34,11 @@ function readSrc(rel: string): string {
 
 const indexMdx = readSrc("src/content/docs/index.mdx");
 const terminalCmp = readSrc("src/components/GateCatchTerminal.astro");
-const forgeCmp = readSrc("src/components/ForgeShowcase.astro");
 const landingCss = readSrc("src/styles/landing.css");
 
-/** Combined source of all landing page artifacts */
-const landingSrc = indexMdx + "\n" + terminalCmp + "\n" + forgeCmp;
+/** Combined source of the landing page artifacts. The Feature Forge showcase
+ *  moved off the home page into its own section — see feature-forge-content.test.ts. */
+const landingSrc = indexMdx + "\n" + terminalCmp;
 
 // ---------------------------------------------------------------------------
 // AC-6: Bespoke landing — stock CardGrid replaced
@@ -51,10 +51,6 @@ describe("AC-6: bespoke landing replaces stock CardGrid", () => {
 
   it("landing source contains the gate-catch terminal (ca-terminal)", () => {
     expect(landingSrc).toContain("ca-terminal");
-  });
-
-  it("landing source contains the Feature Forge showcase section (ca-forge)", () => {
-    expect(landingSrc).toContain("ca-forge");
   });
 
   it("index.mdx contains the bespoke hero section (ca-hero)", () => {
@@ -117,77 +113,32 @@ describe("AC-8: terminal transcript is real DOM text, not canvas/image", () => {
 });
 
 // ---------------------------------------------------------------------------
-// AC-12: Feature Forge showcase
-// ---------------------------------------------------------------------------
-
-describe("AC-12: Feature Forge showcase with key claims", () => {
-  it("showcase states features are opt-in", () => {
-    expect(forgeCmp).toMatch(/opt.in/i);
-  });
-
-  it("showcase states features ship dormant or off by default", () => {
-    expect(forgeCmp).toMatch(/dormant|off by default/i);
-  });
-
-  it("showcase states promotion is by real-world evidence", () => {
-    expect(forgeCmp).toMatch(/evidence/i);
-  });
-
-  it("showcase mentions SemVer for whole payload versioning", () => {
-    expect(forgeCmp).toMatch(/SemVer|semver/i);
-  });
-
-  it("showcase mentions Feature Forge per-feature preview model", () => {
-    expect(forgeCmp).toMatch(/Feature Forge|per.feature/i);
-  });
-
-  it("showcase references the two-axis-model diagram", () => {
-    expect(forgeCmp).toContain("two-axis-model");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// AC-15: --farm is adjacent to / links the Feature Forge showcase
-// ---------------------------------------------------------------------------
-
-describe("AC-15: --farm is no longer context-free", () => {
-  it("--farm appears in the landing source", () => {
-    expect(landingSrc).toContain("--farm");
-  });
-
-  it("--farm appears inside the forge showcase component", () => {
-    expect(forgeCmp).toContain("--farm");
-  });
-
-  it("forge showcase component contains a preview callout for --farm", () => {
-    // The --farm must be in a visible explanatory block, not bare
-    expect(forgeCmp).toMatch(/ca-callout--preview[\s\S]*?--farm|--farm[\s\S]*?ca-callout/);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // AC-16: Above-the-fold: what / why / first command + single primary CTA
 // ---------------------------------------------------------------------------
 
 describe("AC-16: above-fold hero answers what/why/first command + one primary CTA", () => {
-  it("hero tagline is present in frontmatter", () => {
-    expect(indexMdx).toContain("tagline:");
+  it("hero tagline (the 'why') is present in the bespoke hero body", () => {
+    // The landing moved off Starlight's splash `hero:` frontmatter to a bespoke
+    // two-column hero in the MDX body (doc template + sidebar). The tagline now
+    // lives in a .ca-landing__tagline element, not frontmatter.
+    expect(indexMdx).toContain("ca-landing__tagline");
+    expect(indexMdx).toMatch(/real stops/i);
   });
 
-  it("exactly one primary CTA variant exists in the hero frontmatter actions", () => {
-    const primaryMatches = indexMdx.match(/variant: primary/g);
+  it("exactly one primary CTA exists in the hero", () => {
+    const primaryMatches = indexMdx.match(/ca-landing__cta--primary/g);
     expect(primaryMatches).not.toBeNull();
     expect(primaryMatches!.length).toBe(1);
   });
 
-  it("primary CTA links to the overview page with a base-safe relative link", () => {
-    // Hero `actions` links are emitted verbatim by Starlight's Hero/LinkButton
-    // (no base-prefixing, unlike slug-based nav). A leading-slash link like
-    // `/overview/` would render non-base-prefixed and 404 under the /codeArbiter
-    // base on GH Pages. A page-relative `./overview/` resolves against the page
-    // URL (served at /codeArbiter/) → /codeArbiter/overview/, and auto-corrects
-    // if the base changes. No hardcoded base.
-    expect(indexMdx).toMatch(/link: \.\/overview\//);
+  it("primary CTA uses a base-safe page-relative link (no hardcoded base, no leading slash)", () => {
+    // The hero CTAs are raw <a href> in the MDX body. A page-relative `./…`
+    // link resolves against the page URL (served at /codeArbiter/) and
+    // auto-corrects if the base changes — unlike a leading-slash `/…` link,
+    // which would 404 under the /codeArbiter base on GH Pages, or a hardcoded
+    // `/codeArbiter/…`, which silently desyncs if the base ever changes.
+    expect(indexMdx).toMatch(/href="\.\/getting-started\/install\//);
+    expect(indexMdx).not.toMatch(/href="\/codeArbiter/);
   });
 
   it("first command is shown in the hero section", () => {
@@ -238,12 +189,6 @@ describe("AC-19: em-dash cap on landing prose", () => {
     const emDashes = (prose.match(/—/g) ?? []).length;
     expect(emDashes).toBeLessThanOrEqual(3);
   });
-
-  it("ForgeShowcase.astro prose contains ≤3 em-dashes", () => {
-    const prose = extractProse(forgeCmp);
-    const emDashes = (prose.match(/—/g) ?? []).length;
-    expect(emDashes).toBeLessThanOrEqual(3);
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -252,7 +197,7 @@ describe("AC-19: em-dash cap on landing prose", () => {
 
 describe("lane-flow diagram embedded in landing", () => {
   it("lane-flow.svg asset exists", () => {
-    const svgPath = path.join(siteRoot, "src/assets/diagrams/lane-flow.svg");
+    const svgPath = path.join(siteRoot, "public/diagrams/lane-flow.svg");
     expect(existsSync(svgPath)).toBe(true);
   });
 

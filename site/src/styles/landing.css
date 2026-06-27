@@ -1,27 +1,145 @@
 /* codeArbiter docs — landing.css
-   Bespoke landing page layout: hero, gate-catch terminal section, Feature Forge
-   showcase. Design tokens and shared component classes live in theme.css.
-   Build on those; do not redefine tokens here.
+   Bespoke landing layout: a two-column hero (intro + gate-catch terminal), the
+   command block, the lane-flow diagram, and the Feature Forge showcase. Design
+   tokens and shared component classes live in theme.css; build on those, do not
+   redefine tokens here.
+
+   The landing runs on Starlight's `doc` template (so the sidebar is present) with
+   the right-hand table of contents disabled in frontmatter.
 */
 
 /* =========================================================
-   BESPOKE HERO
-   Replaces the stock CardGrid. Placed inside the Starlight
-   splash template body, constrained to a readable measure.
+   LANDING WRAPPER
+   Widen the content measure (no TOC on this page) so the two-column hero and the
+   wide lane-flow diagram have room. Scoped to the landing via :has().
+   ========================================================= */
+
+:root:has(.ca-landing) {
+  --sl-content-width: 60rem;
+}
+
+.ca-landing {
+  margin-block-start: -0.5rem;
+}
+
+/* =========================================================
+   TWO-COLUMN HERO
+   Intro (headline + tagline + actions) on the left; the autoplaying gate-catch
+   terminal on the right — visible above the fold on first land. Collapses to a
+   single column on narrow viewports.
+   ========================================================= */
+
+.ca-landing__hero {
+  display: grid;
+  /* 40/60 split: give the intro text less room, the terminal more, so the long
+     transcript lines breathe and the two sides balance better. */
+  grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  margin-block: 1.5rem 3rem;
+}
+
+@media (max-width: 50rem) {
+  .ca-landing__hero {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+.ca-landing__title {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 1.1rem;
+  color: var(--sl-color-white);
+}
+
+.ca-landing__tagline {
+  max-width: 44ch;
+  margin: 0 0 1.75rem;
+  color: var(--ca-text-muted);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.6;
+}
+
+.ca-landing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ca-landing__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.5rem;
+  color: var(--sl-color-white);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.ca-landing__cta:hover {
+  border-color: var(--ca-gold-dim);
+  transform: translateY(-2px);
+}
+
+.ca-landing__cta--primary {
+  background: var(--ca-gold);
+  border-color: var(--ca-gold);
+  color: #1a1206;
+}
+
+.ca-landing__cta--primary:hover {
+  background: var(--ca-gold-dim);
+  border-color: var(--ca-gold-dim);
+}
+
+/* Demo column: the gate-catch terminal with a small framing label + note. */
+.ca-landing__demo {
+  min-width: 0;
+}
+
+.ca-landing__demo-label {
+  margin: 0 0 0.6rem;
+  color: var(--ca-text-muted);
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ca-landing__demo .ca-terminal {
+  margin-block: 0;
+}
+
+.ca-landing__demo-note {
+  margin: 0.6rem 0 0;
+  color: var(--ca-text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* =========================================================
+   BELOW THE FOLD — what-line + first-command block
    ========================================================= */
 
 .ca-hero {
-  max-width: 72rem;
-  margin-inline: auto;
-  padding-block: 1.5rem 0;
+  margin-block: 1.5rem 0;
 }
 
 .ca-hero__what {
-  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  margin-block-end: 0.5rem;
   color: var(--ca-text-muted);
   font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
   letter-spacing: 0.04em;
-  margin-block-end: 0.5rem;
 }
 
 .ca-hero__first-command {
@@ -36,43 +154,28 @@
 }
 
 /* =========================================================
-   TERMINAL SECTION
-   The gate-catch demo sits in a capped-width reading column.
+   LANE FLOW DIAGRAM
    ========================================================= */
 
-.ca-terminal-section {
-  max-width: 72rem;
-  margin-inline: auto;
-  margin-block: 2.5rem;
-}
-
-.ca-terminal-section > h2 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: var(--ca-text-muted);
-  margin-block-end: 0.75rem;
+.ca-laneflow {
+  margin-block: 2rem;
 }
 
 /* =========================================================
    FORGE SHOWCASE
-   Separated from the terminal by whitespace; narrower column
-   to read like editorial prose, not a feature grid.
    ========================================================= */
 
 .ca-forge {
-  max-width: 72rem;
-  margin-inline: auto;
   margin-block: 3rem 2rem;
   padding-block-start: 2rem;
   border-block-start: 1px solid var(--ca-slate-border);
 }
 
 .ca-forge h2 {
-  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-  font-weight: 700;
   margin-block-end: 1rem;
   color: var(--ca-gold-text);
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
 }
 
 .ca-forge p {
@@ -80,28 +183,14 @@
 }
 
 /* =========================================================
-   LANE FLOW DIAGRAM
-   The lane-flow SVG is wide (900px viewBox); let it fill the
-   prose column and clip gracefully on narrow viewports.
-   ========================================================= */
-
-.ca-laneflow {
-  max-width: 72rem;
-  margin-inline: auto;
-  margin-block: 2rem;
-}
-
-/* =========================================================
    REDUCED-MOTION OVERRIDE (landing-specific)
-   theme.css handles the ca-terminal__line rule globally;
-   this block ensures any additional landing-specific motion
-   (e.g., hover lifts on the hero) collapses cleanly.
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+  .ca-landing__hero,
   .ca-hero,
-  .ca-terminal-section,
-  .ca-forge {
+  .ca-forge,
+  .ca-landing__cta {
     transition: none;
   }
 }

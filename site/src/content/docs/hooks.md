@@ -1,5 +1,5 @@
 ---
-title: Hooks reference
+title: Hooks Reference
 description: "A complete per-hook reference for codeArbiter: every registered Claude Code hook, the gates it enforces, its fail posture, and the non-event scripts behind the commands."
 ---
 
@@ -7,7 +7,7 @@ codeArbiter enforces its gates as Claude Code hooks under `plugins/ca/hooks/`. E
 
 Every hook is registered **twice** in `hooks.json`: once under `python3`, and once under a `python3 -c "" || python` fallback. On a stock Windows box that has only the `python` interpreter, the gates still fire. The two entries each receive their own stdin, so a real block is never swallowed by the fallback.
 
-## Registered hooks
+## Registered Hooks
 
 | Event | Matcher | Script |
 |-------|---------|--------|
@@ -119,7 +119,7 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
 
 ---
 
-## Non-event scripts
+## Non-Event Scripts
 
 These are not registered hooks. They are invoked by skills and slash commands, or wired into settings.
 
@@ -131,13 +131,13 @@ The settings-wired statusline renderer (installed by `wire-statusline.py`). Usag
 
 These record the gate passes that `pre-bash.py` checks. `security-pass.py` is run on PASS by the crypto-compliance / secret-handling skills: it writes the **line digests** of every sensitive line the gate approved to `security-gate-passed`. `migration-pass.py` is run on PASS by the commit gate after `migration-reviewer`: it writes the **content digests** of every approved migration to `migration-gate-passed` (no freshness window, since a migration is immutable). Both write atomically, so a half-written marker can never read as a valid pass. Binding by digest is what lets H-09b/H-10b/H-14 close the time-of-check / time-of-use window.
 
-### Command utilities
+### Command Utilities
 
 - **`init-codearbiter.py`** (`/ca:init`). Scaffolds the root-level `.codearbiter/` state store (idempotent; refuses if `CONTEXT.md` already exists). `--check` reports state and writes nothing.
 - **`taskwrite.py`** (`/ca:task`). The only sanctioned mutator of `open-tasks.md` (add / start / done), written atomically and rerun-safe.
 - **`doctor.py`** (`/ca:doctor`). Read-only health check covering interpreter health (warns loudly if no real interpreter resolves and every gate is dormant), payload integrity, stale-cache detection, repo activation, and statusline wiring. Exits non-zero on any failure but changes nothing.
 - **`wire-statusline.py`** (`/ca:statusline`). Writes or removes the absolute `statusLine.command` in `~/.claude/settings.json`. The `refresh` action is the SessionStart self-heal that rewrites only a stale codeArbiter-owned path; it refuses to overwrite an unparseable settings file.
 
-### Shared libraries
+### Shared Libraries
 
 The `_*lib.py` files (`_hooklib`, `_taskboardlib`, `_standuplib`, `_prunelib`, `_ledgerlib`, `_sloplib`, `_metricslib`, and others) are shared internal libraries imported by the hooks and utilities above. `_hooklib` is the core: it owns the activation contract, the `block`/`remind` primitives, the centralized crypto/secret/audit-path sets, and the digest helpers, so the separate hooks never drift on what they enforce.

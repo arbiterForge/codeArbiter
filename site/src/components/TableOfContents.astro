@@ -1,0 +1,91 @@
+---
+/**
+ * Desktop "On this page" override.
+ *
+ * Starlight's stock scroll-spy uses an IntersectionObserver with a thin band
+ * near the top of the viewport. The last heading's section is often too short to
+ * ever scroll into that band before the page bottom (or the footer, which maps
+ * back to the page title) takes over, so the final TOC item never highlights.
+ *
+ * This override keeps Starlight's markup and styling (via CaTocList) but swaps
+ * the scroll-spy for a position-based one that explicitly activates the last
+ * item once the page is scrolled to the bottom. Mobile TOC is untouched.
+ */
+import CaTocList from "./CaTocList.astro";
+
+const { toc } = Astro.locals.starlightRoute;
+---
+
+{
+  toc && (
+    <ca-toc>
+      <nav aria-labelledby="starlight__on-this-page">
+        <h2 id="starlight__on-this-page">{Astro.locals.t("tableOfContents.onThisPage")}</h2>
+        <CaTocList toc={toc.items} />
+      </nav>
+    </ca-toc>
+  )
+}
+
+<script>
+  class CaToc extends HTMLElement {
+    private pairs: { link: HTMLAnchorElement; heading: HTMLElement }[] = [];
+    private raf = 0;
+
+    connectedCallback() {
+      this.pairs = [...this.querySelectorAll("a")]
+        .map((link) => {
+          const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+          return heading ? { link, heading } : null;
+        })
+        .filter((p): p is { link: HTMLAnchorElement; heading: HTMLElement } => p !== null);
+
+      window.addEventListener("scroll", this.schedule, { passive: true });
+      window.addEventListener("resize", this.schedule, { passive: true });
+      this.update();
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("scroll", this.schedule);
+      window.removeEventListener("resize", this.schedule);
+      cancelAnimationFrame(this.raf);
+    }
+
+    private schedule = () => {
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => this.update());
+    };
+
+    private setCurrent(active: HTMLAnchorElement | undefined) {
+      for (const { link } of this.pairs) {
+        if (link === active) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      }
+    }
+
+    private update() {
+      if (!this.pairs.length) return;
+      const navH = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
+      const threshold = navH + 32;
+
+      // At (or within 2px of) the bottom, force the last item active — the case
+      // the stock observer misses.
+      const doc = document.documentElement;
+      if (Math.ceil(window.scrollY + window.innerHeight) >= doc.scrollHeight - 2) {
+        this.setCurrent(this.pairs[this.pairs.length - 1].link);
+        return;
+      }
+
+      // Otherwise the active heading is the last one whose top has crossed the
+      // threshold below the nav.
+      let active = this.pairs[0].link;
+      for (const { link, heading } of this.pairs) {
+        if (heading.getBoundingClientRect().top <= threshold) active = link;
+        else break;
+      }
+      this.setCurrent(active);
+    }
+  }
+
+  if (!customElements.get("ca-toc")) customElements.define("ca-toc", CaToc);
+</script>

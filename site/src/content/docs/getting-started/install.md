@@ -12,7 +12,7 @@ Confirm both before installing:
 - **Python 3 on `PATH`**: every enforcement hook is pure Python. Without it, the gates and the session-startup injection silently do not run.
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity.
 
-## 1. Add the marketplace and install the plugin
+## 1. Add the Marketplace and Install the Plugin
 
 codeArbiter self-hosts a single-plugin marketplace from its GitHub repo. In any Claude Code session, run both commands:
 
@@ -23,7 +23,7 @@ codeArbiter self-hosts a single-plugin marketplace from its GitHub repo. In any 
 
 Hooks, commands, and agents load automatically. All commands resolve under the `/ca:` namespace.
 
-## 2. Scaffold the repo state store
+## 2. Scaffold the Repo State Store
 
 Installing the plugin enforces nothing. To activate codeArbiter for a repository, open that repo in Claude Code and run:
 
@@ -38,7 +38,7 @@ Installing the plugin enforces nothing. To activate codeArbiter for a repository
 | An existing codebase | `/ca:create-context` | Back-fills `.codearbiter/` from the source already there |
 | A new project, no code yet | `/ca:decompose` | A layered interview that scaffolds `.codearbiter/` from scratch |
 
-## 3. Confirm the activation flag
+## 3. Confirm the Activation Flag
 
 `/ca:init` writes `arbiter: enabled` into `.codearbiter/CONTEXT.md` frontmatter. This is the single activation mechanism. Enforcement is off until this flag is present; the plugin install alone changes nothing.
 

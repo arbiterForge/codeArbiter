@@ -1,11 +1,11 @@
 ---
-title: "Add a dependency safely"
+title: "Add a Dependency Safely"
 description: "Use /ca:add-dep to vet a new third-party package for license compliance, provenance, and supply-chain risk before any install runs."
 ---
 
 Route every new dependency through `/ca:add-dep` before touching the package manifest. The command holds installation until the `dependency-reviewer` agent clears the package on license, provenance, and supply-chain posture.
 
-## Run the command
+## Run the Command
 
 Specify the package name and, when you know it, the exact version:
 
@@ -15,7 +15,7 @@ Specify the package name and, when you know it, the exact version:
 
 Without a pinned version, the reviewer evaluates the latest available. The version you supply here is the version that gets installed if the review clears, so pinning avoids drift between review time and install time.
 
-## What the reviewer checks
+## What the Reviewer Checks
 
 `dependency-reviewer` reads `.codearbiter/security-controls.md` and `.codearbiter/tech-stack.md` before evaluating the package. It works through four areas:
 
@@ -27,7 +27,7 @@ Without a pinned version, the reviewer evaluates the latest available. The versi
 
 **Stack fit.** The agent confirms the package is appropriate for the dependency manager and runtime described in `tech-stack.md`.
 
-## Approved licenses
+## Approved Licenses
 
 These SPDX identifiers are approved across all manifests:
 
@@ -43,7 +43,7 @@ A package declaring any other license cannot be added without an explicit review
 
 One known packaging mislabel: `argparse@2.0.1` declares `Python-2.0` in its SPDX field, but upstream is MIT. That specific package is accepted on that basis. The exception does not extend to other packages.
 
-## The CVE gate
+## The CVE Gate
 
 Once license and provenance pass, the agent runs:
 
@@ -53,11 +53,11 @@ npm audit --omit=dev --audit-level=critical
 
 A CRITICAL advisory blocks the install. Advisories at high, moderate, or low severity are surfaced as information and do not gate. If a CRITICAL advisory is present, the package cannot be installed until it resolves or until an override with documented rationale lands in `overrides.log`.
 
-## After clearance
+## After Clearance
 
 When the reviewer clears the package, the orchestrator surfaces the install command for your confirmation. Read it before approving. After the install runs, the manifest change and the lock file change are committed together. Committing one without the other is a gap the reviewer flags at PR time.
 
-## When the review fails
+## When the Review Fails
 
 A denied license or unresolved supply-chain concern blocks the install. The agent states the specific reason. From there:
 
@@ -75,7 +75,7 @@ If you edit `package.json` or a lock file directly, the H-07 advisory fires afte
 
 This is advisory only. It does not block the write. The install gate depends on using the command in the first place.
 
-## When not to use this command
+## When Not to Use This Command
 
 - **Removing a dependency.** Use `/ca:fix` or `/ca:feature` and describe the removal.
 - **Updating an existing dependency as part of a code change.** Use `/ca:feature` or `/ca:fix`. Manifest changes reach the `dependency-reviewer` through the PR review at `/ca:pr`.

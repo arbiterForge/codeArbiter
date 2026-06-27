@@ -72,74 +72,38 @@
   --sl-color-accent-high: #f0dc88;
 }
 
+/* codeArbiter is dark-only: ThemeProvider forces data-theme="dark" and the
+   theme switcher is removed (see astro.config.mjs + the ThemeSelect override).
+   The light-mode token block was removed deliberately; reinstate it and the
+   switcher before reintroducing a light palette. */
 :root[data-theme="dark"] {
   --sl-color-accent-low:  var(--ca-gold-low);
   --sl-color-accent:      var(--ca-gold);
   --sl-color-accent-high: #f3e1a6;
 }
 
-/* ---- Light-mode token overrides ----
-   medium-web §7.D — design light and dark together. The :root block above is a
-   dark palette; every custom-styled component (callouts, badges, the diagram
-   container, muted prose text) needs a light-base counterpart so Starlight's
-   light theme does not render dark blobs on a white shell.
+/* =========================================================
+   THREE-COLUMN LAYOUT BALANCE
+   Starlight hands half of a wide viewport's slack to the right "On this page"
+   rail, so on large monitors it grows wider than the left nav and squeezes the
+   content measure. Pin the rail to the nav width, widen the content measure, and
+   center it in the reclaimed space so the two rails frame the content
+   symmetrically. Scoped to toc pages; the landing (no toc) is unaffected.
+   ========================================================= */
+:root {
+  --sl-content-width: 50rem;
+}
 
-   The gate-catch terminal is deliberately NOT relit: a terminal emulator reads
-   as dark chrome by convention, and its body is internally AA (light text on
-   #0d1117). It is a self-contained dark surface in both modes, not an
-   un-adapted leak. */
-:root[data-theme="light"] {
-  /* Muted prose text must clear WCAG AA (4.5:1) on the light shell.
-     #586072 ≈ 6.3:1 on white — used by the hero lead and terminal-section
-     heading (landing.css) and diagram captions. */
-  --ca-text-muted:    #586072;
-
-  /* Slate surfaces flip to light neutrals so the diagram container and hero
-     command block read as light cards, not dark cutouts. */
-  --ca-slate:         #eef1f5;
-  --ca-slate-mid:     #f4f6f9;
-  --ca-slate-border:  #d2d9e2;
-
-  /* Starlight accent: vivid #e3b341 yields only ~2.1:1 on a white shell —
-     unusable for links or interactive text. Without explicit overrides, the
-     :root accent-low (#3b2e0a) renders as a jarring dark-brown bg tint in light
-     mode. Light mode uses a dark-gold ladder so every accent surface meets WCAG AA.
-       accent-low:  warm cream tint (~#f4e9d4) for subtle accent backgrounds.
-       accent:      #8b6212 ~5.5:1 on white (AA).
-       accent-high: #6b4a0d ~8.1:1 on white (AAA). */
-  --sl-color-accent-low:  #f4e9d4;
-  --sl-color-accent:      #8b6212;
-  --sl-color-accent-high: #6b4a0d;
-
-  /* Gold text: raw --ca-gold (#e3b341) is ~1.94:1 on white — near-invisible.
-     #8b6212 ≈ 5.5:1 on white, matching the existing AA-passing accent tone. */
-  --ca-gold-text:     #8b6212;
-
-  /* Callout borders: dark-palette borders from :root fail on a white shell.
-     #e3b341 (gate) ~1.9:1, #d29922 (warn) ~2.8:1 — both below the 3:1
-     UI-component floor and below the 4.5:1 AA floor for the small-caps label
-     text that inherits these variables. Hue-matched alternatives chosen to
-     preserve each channel's identity while clearing AA text contrast.
-       note-border:    #3e6cad ~5.3:1 on white
-       gate-border:    #9a6e1a ~4.6:1 on white (mirrors --sl-color-accent)
-       warn-border:    #7a5800 ~6.5:1 on white (amber tone intact)
-       preview-border: #b85932 ~4.7:1 on white (ember tone intact) */
-  --ca-callout-note-border:    #3e6cad;
-  --ca-callout-gate-border:    #9a6e1a;
-  --ca-callout-warn-border:    #7a5800;
-  --ca-callout-preview-border: #b85932;
-
-  /* Callout tints: same hues, slightly stronger alpha to register on white. */
-  --ca-callout-note-bg:       rgba(45, 99, 173, 0.08);
-  --ca-callout-warn-bg:       rgba(166, 116, 16, 0.10);
-  --ca-callout-gate-bg:       rgba(176, 134, 25, 0.11);
-  --ca-callout-preview-bg:    rgba(192, 100, 62, 0.10);
-
-  /* Badge pills: light tint backgrounds with darkened text that clears AA. */
-  --ca-badge-preview-bg:      rgba(217, 119, 87, 0.14);
-  --ca-badge-preview-text:    #9a4b27;
-  --ca-badge-stable-bg:       rgba(91, 141, 217, 0.13);
-  --ca-badge-stable-text:     #2f5aa0;
+@media (min-width: 72rem) {
+  .right-sidebar-container {
+    /* match the left nav instead of absorbing half the page slack */
+    width: var(--sl-sidebar-width);
+  }
+  [data-has-sidebar][data-has-toc] .main-pane {
+    /* reclaim that slack into the content area and center the measure in it */
+    width: calc(100% - var(--sl-sidebar-width));
+    --sl-content-margin-inline: auto;
+  }
 }
 
 /* ---- Splash hero: brand glow + tighter vertical rhythm ---- */
@@ -407,12 +371,24 @@
 .ca-terminal__line {
   display: flex;
   gap: 0.6rem;
+  align-items: flex-start;
   color: var(--ca-term-text);
-  white-space: pre;
+  /* Wrap long lines instead of clipping/scrolling in the narrow hero column.
+     pre-wrap keeps intentional spacing; overflow-wrap breaks overlong tokens
+     (paths, sed commands) that have no natural break point. The prompt hangs at
+     the first wrapped line thanks to align-items: flex-start. */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
   /* Animation: each line fades in after its delay */
   opacity: 0;
   animation: ca-term-fadein 0.25s ease forwards;
   animation-delay: var(--ca-term-delay, 0s);
+}
+
+/* Flex children must be allowed to shrink below their content size to wrap; the
+   prompt keeps its width via flex-shrink: 0 (below). */
+.ca-terminal__line > span {
+  min-width: 0;
 }
 
 .ca-terminal__prompt {

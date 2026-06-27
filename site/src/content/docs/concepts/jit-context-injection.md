@@ -1,5 +1,5 @@
 ---
-title: Just-in-time context injection
+title: Just-in-Time Context Injection
 description: "How codeArbiter's PreToolUse:Read hook injects a budgeted knowledge pointer for governed files using a four-tier priority map, without ever blocking the Read."
 ---
 

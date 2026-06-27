@@ -5,7 +5,7 @@ description: "Use /ca:doctor to diagnose a codeArbiter install that is not behav
 
 Run `/ca:doctor` when codeArbiter is not behaving as expected. The command is a read-only health check. It inspects the interpreter, plugin payload, cache, repo activation state, live-fire hook execution, and statusline wiring, then exits non-zero on any failure. It changes nothing.
 
-## Run the check
+## Run the Check
 
 In Claude Code, open the project where the problem appears and run:
 
@@ -15,9 +15,9 @@ In Claude Code, open the project where the problem appears and run:
 
 Doctor prints a result for each check and exits 0 if all pass, non-zero otherwise. Fix failures in the order reported: later failures are often downstream of the first.
 
-## What doctor checks
+## What Doctor Checks
 
-### Interpreter health
+### Interpreter Health
 
 Doctor confirms that at least one Python interpreter resolves. codeArbiter registers every hook twice in `hooks.json`: once under `python3`, and once under a `python3 -c "" || python` fallback. On a stock Windows machine with only `python` on PATH, the fallback fires and the gates still run. If neither name resolves, doctor warns loudly: the gates are dormant and no enforcement is active.
 
@@ -25,19 +25,19 @@ Interpreter failure is the most common cause of a silent install.
 
 **To fix:** add Python 3 to PATH. Verify outside Claude Code with `python3 --version` or `python --version`. At least one must succeed.
 
-### Payload integrity
+### Payload Integrity
 
 Doctor checks that the plugin payload is internally consistent and all expected files are present.
 
 **To fix:** if integrity fails, reinstall or update the plugin.
 
-### Stale-cache detection
+### Stale-Cache Detection
 
 Cached payload data and settings paths can lag behind a plugin update. Doctor detects outdated entries and reports which ones are stale.
 
 **To fix:** run `/ca:doctor` after every plugin update and follow the remediation it prints.
 
-### Repo activation
+### Repo Activation
 
 Doctor reads `.codearbiter/CONTEXT.md` and checks three things:
 
@@ -57,19 +57,19 @@ arbiter: enabled
 
 If the file is absent, run `/ca:init` to scaffold it.
 
-### Live-fire hook probe
+### Live-Fire Hook Probe
 
 Doctor runs a hook invocation to confirm a hook binary actually executes end-to-end, not just that an interpreter binary is on PATH. A passing interpreter check alongside a failing probe points to a registration or permissions problem with the hook files themselves.
 
 **To fix:** reinstall the plugin to repair hook registration.
 
-### Statusline wiring
+### Statusline Wiring
 
 Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` points to the current version of `statusline.py`. The stored path is absolute and version-pinned, so a plugin update can leave it pointing at the previous version. The `SessionStart` hook repairs this automatically each session, but doctor will report a stale wire before the first post-update session runs.
 
 **To fix:** run `/ca:statusline` to re-wire explicitly, or open a new Claude Code session to trigger the automatic repair.
 
-## Symptom reference
+## Symptom Reference
 
 | Symptom | Likely cause | Suggested check |
 |---------|--------------|-----------------|

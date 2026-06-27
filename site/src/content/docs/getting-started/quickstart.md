@@ -7,7 +7,7 @@ This tutorial walks three steps in order: opt a repository into enforcement, run
 
 Before starting, complete the plugin install from the [Install](/getting-started/install/) page. Python 3 must be on your `PATH` and `git config user.email` must be set.
 
-## 1. Opt the repo in
+## 1. Opt the Repo In
 
 Open the target repository in Claude Code and run:
 
@@ -33,7 +33,7 @@ arbiter: enabled
 
 With `arbiter: enabled` in a properly closed frontmatter block, the next session opens with the orchestrator active and every gate armed. A file missing that flag loads nothing and blocks nothing.
 
-## 2. Run a first command
+## 2. Run a First Command
 
 Send the first real work through a gated lane:
 
@@ -51,7 +51,7 @@ As the author writes `auth/reset.py`, the advisory hook fires immediately after 
 
 The author wrote `hashlib.md5(token.encode()).hexdigest()` to hash the reset token. MD5 is in codeArbiter's banned-primitive list. The advisory does not stop the write. It tells you the commit will.
 
-## 3. Observe the gate catch
+## 3. Observe the Gate Catch
 
 The tests pass. The author proposes to commit the work. Run it:
 

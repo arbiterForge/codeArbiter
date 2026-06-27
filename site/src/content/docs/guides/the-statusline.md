@@ -1,5 +1,5 @@
 ---
-title: "Set up the statusline"
+title: "Set Up the Statusline"
 description: "Wire codeArbiter's statusline into Claude Code so every session shows usage metrics, and enabled repos show the active project state."
 ---
 
@@ -7,7 +7,7 @@ Run `/ca:statusline` once in any Claude Code session to wire the bar. The comman
 
 **You will need:** the plugin installed (see [Install](/getting-started/install/)).
 
-## 1. Wire the statusline
+## 1. Wire the Statusline
 
 Open any Claude Code session and run:
 
@@ -19,11 +19,11 @@ If a `statusLine.command` already exists in your settings, the current value is 
 
 To inspect the current state without modifying settings, run `/ca:statusline status`. Output shows whether `settings.json` is present, the renderer path (with a found/MISSING indicator), the active `statusLine.command`, and whether it belongs to codeArbiter.
 
-## 2. What the bar shows
+## 2. What the Bar Shows
 
 The bar has two tiers of segments.
 
-### Usage segments
+### Usage Segments
 
 These render in every Claude Code session, regardless of whether the open repo is arbiter-enabled.
 
@@ -38,7 +38,7 @@ These render in every Claude Code session, regardless of whether the open repo i
 | **cost** | Cumulative API-equivalent cost from Claude Code's authoritative session total, persisted across sessions in `~/.codearbiter/ledger.json` |
 | **burn** | Per-message token sparkline built from recent transcript calls |
 
-### Arbiter segments
+### Arbiter Segments
 
 These render only when the open repo carries `arbiter: enabled` in `.codearbiter/CONTEXT.md`. The activation check uses the same frontmatter parser the enforcement hooks use, so the bar and the gates always agree on whether a repo is active. See [Enforcement & Security](/enforcement/) for the activation contract.
 
@@ -51,7 +51,7 @@ These render only when the open repo carries `arbiter: enabled` in `.codearbiter
 
 A non-zero `questions` or `overrides` count renders in red. A non-zero `tasks` count renders in white. A green dot before the arbiter row confirms the repo is active.
 
-## 3. Remove the statusline
+## 3. Remove the Statusline
 
 ```text
 /ca:statusline uninstall
@@ -59,13 +59,13 @@ A non-zero `questions` or `overrides` count renders in red. A non-zero `tasks` c
 
 If a prior `statusLine.command` was backed up at install time, it is restored. Spinner verbs are restored the same way.
 
-## SessionStart self-heal
+## SessionStart Self-Heal
 
 Every session, `session-start.py` runs the `refresh` action automatically. If the wired path points at a previous plugin version, for example after a plugin update moves the renderer, the path is rewritten to the current absolute location. The write happens only when the path actually changed; a steady-state session never modifies `settings.json`.
 
 If the renderer file is absent mid-update, the self-heal skips the write. A later session where the file is present corrects the path.
 
-## Unparseable settings file
+## Unparseable Settings File
 
 `/ca:statusline` refuses to touch `~/.claude/settings.json` when the file is not valid JSON:
 

@@ -1,0 +1,34 @@
+---
+title: What's in the Forge
+description: "The live list of codeArbiter features currently in preview: opt-in, off by default, awaiting evidence-based promotion to stable."
+---
+
+import { PREVIEW_COMMANDS } from '../../../../scripts/generator/forge-status';
+
+This is the current contents of the [Feature Forge](/feature-forge/overview/): every codeArbiter
+feature in **preview** right now. Preview features are opt-in and off by default. This list is
+generated from the same allowlist that stamps the <span class="ca-badge" data-kind="preview">preview</span>
+badge on the reference pages, so it stays in step with them automatically.
+
+## Currently in Preview
+
+<ul>
+  {Object.entries(PREVIEW_COMMANDS).map(([slug, status]) => (
+    <li>
+      <code>{status.kind === 'preview-flag' ? `/ca:${slug} ${status.flag}` : `/ca:${slug}`}</code>{' '}
+      <span class="ca-badge" data-kind="preview">preview</span><br />
+      {status.kind === 'preview-command'
+        ? 'The entire command is in preview: it ships dormant and stays off until you invoke it deliberately.'
+        : `The base command is stable; the ${status.flag} flag is the preview surface.`}{' '}
+      <a href={`${import.meta.env.BASE_URL}reference/commands/${slug}/`}>Reference for /ca:{slug}</a>.
+    </li>
+  ))}
+</ul>
+
+When this list changes it is because a feature entered or left the Forge: a new preview was added,
+or one was promoted to stable and is now on by default for everyone.
+
+## Turning One On
+
+See [Using features still in the Forge](/feature-forge/using-preview-features/) for how to enable a
+preview feature and what to expect while it is still in the Forge.

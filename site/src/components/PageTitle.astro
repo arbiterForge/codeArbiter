@@ -1,0 +1,14 @@
+---
+/* codeArbiter override: suppress the auto-rendered content-title <h1> on the
+   landing page only.
+
+   The landing uses a bespoke two-column hero (in index.mdx) that renders its own
+   <h1>, so Starlight's default page-title <h1> would be a duplicate. Every other
+   page falls through to the stock PageTitle unchanged. */
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+
+const { id } = Astro.locals.starlightRoute;
+const isHome = id === '' || id === 'index';
+---
+
+{!isHome && <Default><slot /></Default>}

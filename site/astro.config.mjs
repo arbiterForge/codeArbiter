@@ -49,6 +49,20 @@ export default defineConfig({
         alt: "codeArbiter",
       },
       favicon: "/favicon.svg",
+      // codeArbiter is dark-only: ThemeProvider forces data-theme="dark" and
+      // ThemeSelect renders nothing (the switcher is removed). See theme.css.
+      components: {
+        // dark-only: force the theme, remove the switcher
+        ThemeProvider: "./src/components/ThemeProvider.astro",
+        ThemeSelect: "./src/components/ThemeSelect.astro",
+        // SPA-like navigation via Astro view transitions
+        Head: "./src/components/Head.astro",
+        // suppress the duplicate auto-<h1> on the bespoke landing hero
+        PageTitle: "./src/components/PageTitle.astro",
+        // position-based scroll-spy so the last "On this page" item highlights
+        // when scrolled to the bottom (the stock observer misses it)
+        TableOfContents: "./src/components/TableOfContents.astro",
+      },
       customCss: [
         "./src/styles/theme.css",
         "./src/styles/callouts.css",
@@ -64,39 +78,46 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Getting started",
+          label: "Getting Started",
           items: [
             { label: "Install", slug: "getting-started/install" },
             { label: "Quickstart", slug: "getting-started/quickstart" },
-            { label: "What is codeArbiter", slug: "overview" },
+            { label: "What Is codeArbiter", slug: "overview" },
           ],
         },
         {
           label: "Guides",
           items: [
-            { label: "Opt a repository in", slug: "guides/opt-in-a-repo" },
-            { label: "Build a feature end to end", slug: "guides/feature-lane" },
-            { label: "Run an autonomous sprint", slug: "guides/autonomous-sprints" },
-            { label: "Override a gate safely", slug: "guides/overriding-a-gate" },
-            { label: "Record an architecture decision", slug: "guides/recording-adrs" },
-            { label: "Add a dependency safely", slug: "guides/adding-a-dependency" },
-            { label: "Cut a release", slug: "guides/releasing-a-version" },
-            { label: "Set up the statusline", slug: "guides/the-statusline" },
+            { label: "Opt a Repository In", slug: "guides/opt-in-a-repo" },
+            { label: "Build a Feature End to End", slug: "guides/feature-lane" },
+            { label: "Run an Autonomous Sprint", slug: "guides/autonomous-sprints" },
+            { label: "Override a Gate Safely", slug: "guides/overriding-a-gate" },
+            { label: "Record an Architecture Decision", slug: "guides/recording-adrs" },
+            { label: "Add a Dependency Safely", slug: "guides/adding-a-dependency" },
+            { label: "Cut a Release", slug: "guides/releasing-a-version" },
+            { label: "Set Up the Statusline", slug: "guides/the-statusline" },
             { label: "Troubleshooting", slug: "guides/troubleshooting" },
+          ],
+        },
+        {
+          label: "Feature Forge",
+          items: [
+            { label: "What Is the Feature Forge", slug: "feature-forge/overview" },
+            { label: "What's in the Forge", slug: "feature-forge/whats-in-the-forge" },
+            { label: "Using Features Still in the Forge", slug: "feature-forge/using-preview-features" },
           ],
         },
         {
           label: "Concepts",
           items: [
             { label: "Overview", slug: "concepts" },
-            { label: "The gated-lane model", slug: "concepts/gated-lanes" },
-            { label: "The Feature Forge", slug: "concepts/feature-forge" },
+            { label: "The Gated-Lane Model", slug: "concepts/gated-lanes" },
             { label: "SMARTS", slug: "concepts/smarts" },
-            { label: "ADRs and the decision log", slug: "concepts/adrs" },
+            { label: "ADRs and the Decision Log", slug: "concepts/adrs" },
             { label: "Checkpoints", slug: "concepts/checkpoints" },
-            { label: "The persona-register split", slug: "concepts/persona-and-context" },
-            { label: "Provenance and context drift", slug: "concepts/provenance-drift" },
-            { label: "Just-in-time context injection", slug: "concepts/jit-context-injection" },
+            { label: "The Persona-Register Split", slug: "concepts/persona-and-context" },
+            { label: "Provenance and Context Drift", slug: "concepts/provenance-drift" },
+            { label: "Just-in-Time Context Injection", slug: "concepts/jit-context-injection" },
             { label: "Auditability", slug: "concepts/auditability" },
           ],
         },
@@ -104,12 +125,12 @@ export default defineConfig({
           label: "Security",
           items: [
             { label: "Enforcement & Security", slug: "enforcement" },
-            { label: "Hooks reference", slug: "hooks" },
+            { label: "Hooks Reference", slug: "hooks" },
           ],
         },
         {
           label: "Reference",
-          items: [{ label: "All reference", slug: "reference" }, ...referenceGroups],
+          items: [{ label: "All Reference", slug: "reference" }, ...referenceGroups],
         },
       ],
     }),

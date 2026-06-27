@@ -1,5 +1,5 @@
 ---
-title: Provenance & context drift
+title: Provenance & Context Drift
 description: "How codeArbiter tracks source-file hashes to detect when derived documents have drifted from their backing sources, and how the commit-gate auto-heal step keeps them current."
 ---
 

@@ -1,0 +1,19 @@
+---
+/* codeArbiter override: dark-only.
+
+   Forces the dark theme and ignores both the system `prefers-color-scheme` and
+   any stored `starlight-theme` value. The theme switcher (ThemeSelect) is
+   overridden to render nothing, so there is no UI to change this.
+
+   Inlined in <head> so the theme is set before first paint (no FOUC), matching
+   Starlight's default ThemeProvider. The `StarlightThemeProvider` global is
+   kept as a no-op so any leftover reference does not throw. */
+---
+
+<script is:inline>
+	window.StarlightThemeProvider = { updatePickers() {} };
+	document.documentElement.dataset.theme = 'dark';
+	try {
+		localStorage.setItem('starlight-theme', 'dark');
+	} catch {}
+</script>
