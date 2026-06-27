@@ -4,7 +4,7 @@
   "description": "Locally-hosted Codespace equivalent for codeArbiter. Pulls an untrusted repo into an ephemeral, isolated Docker container with no host-filesystem access and configurable egress, caches dependencies by content hash, then tears the box down. Requires Docker and nixpacks on PATH.",
   "version": "0.1.1",
   "author": { "name": "arbiterForge" },
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/arbiterForge/codeArbiter",
   "repository": "https://github.com/arbiterForge/codeArbiter",
   "keywords": ["sandbox", "docker", "isolation", "ephemeral", "untrusted-code", "nixpacks", "codespace"]
