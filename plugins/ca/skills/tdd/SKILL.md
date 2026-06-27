@@ -16,6 +16,7 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 3.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md` — the approved spec, when `/feature` produced one. It is the primary obligation source.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — only when the change touches a security boundary (auth, crypto, secrets, a trust boundary). Optional; absent on most changes.
+- `${CLAUDE_PROJECT_DIR}/.codearbiter/code-map.md` — if present, a coarse concern→path→role map to orient before writing tests and code. Absent is fine — it is read-on-demand, populated by context-creation or commit-gate heal.
 
 ## Phase 1 — Obligation scan · gate: BLOCK
 

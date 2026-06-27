@@ -75,6 +75,15 @@ self-report.
 
 Gate: the change is proven to do what it claimed by fresh evidence — command output and exit code read in this phase. A self-reported "it works" does not pass.
 
+## Phase 5.5 — Provenance auto-heal (conditional)
+
+Compute the heal worklist from the staged set via `_provenancelib.heal_worklist(staged_paths, provenance, current_hashes)` — the subset of staged paths that are `drift_trigger:true` provenance entries whose recorded hash has diverged or is absent. **Empty worklist → skip this phase entirely; most commits pay nothing** (cost guarantee: ordinary commits touching no provenance source do zero re-scout work).
+
+Non-empty worklist → run an **incremental re-scout scoped to those paths only** (not the full repo). For each path, re-examine whether the claims in the backing doc still hold:
+
+- **Claim still holds → silently re-baseline.** Call `_provenancelib.rebaseline` to update the stored hash in `.codearbiter/.provenance/<doc>.json` and stage that file by explicit path so the re-baselined record rides THIS commit (ADR-0008 ride-along pattern — nothing is surfaced to the user). After staging, re-run the secrets scan from `tech-stack.md` over the newly-staged path(s) — any file staged after Phase 4 must still pass the automated secrets scan before the commit proceeds.
+- **Claim changed → route to the existing Phase 6 diff-review.** The doc or code-map edit required to reflect the changed claim is proposed in diff review — the user reviews it as part of the normal diff; nothing is silently rewritten.
+
 ## Phase 6 — Diff review · gate: BLOCK
 
 Read the complete staged diff (`git diff --cached`). Flag as blocking:
@@ -86,6 +95,8 @@ Read the complete staged diff (`git diff --cached`). Flag as blocking:
 - Scope creep — changes outside the agreed feature or fix boundary.
 
 **Board-edit exemption (ADR-0008):** an edit to `open-tasks.md` where `_taskboardlib.classify_board_diff(old, new)` returns a clean transition (done-flip `[~]`→`[x]`, start-flip `[ ]`→`[~]`, or a single queued-add `[ ]`) is **expected and RETAINED** — it is not scope creep and MUST NOT be unstaged. Any other `open-tasks.md` change — a reworded or deleted entry, or an arbitrary content edit — does not classify as a transition and still flags as scope creep.
+
+**Provenance re-baseline exemption (ADR-0008):** a `.codearbiter/.provenance/<doc>.json` file written by the Phase 5.5 auto-heal re-baseline is likewise **expected and RETAINED** — it is not scope creep and MUST NOT be unstaged. A heal-proposed doc or code-map edit (the claim-changed path from Phase 5.5) appears in the diff for normal review; treat it as any other finding. This exemption waives the scope-creep flag only; the secrets check is not waived — the automated re-scan in Phase 5.5 covers the provenance file.
 
 On any blocking finding, unstage the affected files, surface the finding, and STOP. An out-of-scope change that should not be lost gets an inline `[NEEDS-TRIAGE]` marker before it is set aside.
 
@@ -99,7 +110,7 @@ Gate: the diff is clean — zero blocking findings.
 
 **Atomicity rule:** a raised task riding the work commit is a **contingent default** — if the PR/branch is abandoned, the board additions are abandoned with it (self-correcting, ADR-0008). A follow-up that **must survive** PR abandonment is filed as a **GitHub issue**, not the board.
 
-Then selectively stage: if files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. When a clean task-board transition was retained by the Phase 6 board-edit exemption, include `open-tasks.md` in the selective stage by explicit path (`git add open-tasks.md`) alongside the work files, so the flip rides the same commit. Include any `open-tasks.md` additions produced by the harvest step in the same explicit-path stage. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
+Then selectively stage: if files were unstaged in Phase 6, re-stage only the clean files by explicit path: `git add path/to/file`. When a clean task-board transition was retained by the Phase 6 board-edit exemption, include `open-tasks.md` in the selective stage by explicit path (`git add open-tasks.md`) alongside the work files, so the flip rides the same commit. Include any `open-tasks.md` additions produced by the harvest step in the same explicit-path stage. When Phase 5.5 produced a re-baselined provenance record, include the affected `.codearbiter/.provenance/<doc>.json` file(s) by explicit path in the same selective stage so the re-baselined record rides the work commit. Re-run `git diff --cached --name-only` and confirm the staged list matches the intended set exactly — no extra files. Unstage any extra and report the discrepancy.
 
 Gate: the staged set contains exactly the intended files. MUST NOT use `git add -A`, `git add .`, or any wildcard.
 
@@ -136,4 +147,5 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP.
+- MUST NOT silently rewrite a doc's claims — a claim-change edit proposed by Phase 5.5 goes through diff review (Phase 6), never through the silent re-baseline path. The re-baseline path is strictly for claims that still hold; the Phase 5.5 re-baseline MUST ride the work commit (staged by explicit path in Phase 7).
 - MUST, **at Phase 7 before staging**, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — promote to `open-tasks.md` (work) or `open-questions.md` (decision) so raised tasks ride the work commit. A follow-up that must survive PR abandonment is filed as a GitHub issue, not the board.

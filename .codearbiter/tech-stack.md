@@ -57,6 +57,15 @@ python .github/scripts/test_release_lib.py
 # commit-gate board-sync chokepoint — Phase 6 board-edit exemption + prose
 # wiring (AC-04..07, ADR-0008); structural SKILL.md/command-doc assertions
 python .github/scripts/test_board_sync.py
+
+# provenance store — write_provenance/read_provenance round-trip, on-disk JSON
+# shape with schema/doc/created/interview_derived/entries[] (_provenancelib)
+python .github/scripts/test_provenancelib.py
+
+# commit-gate provenance auto-heal wiring — Phase 5.5 heal_worklist, re-scout
+# scoped to staged paths only, re-baseline rides work commit, claim-changed to
+# Phase 6 diff-review; Phase 6/7 provenance exemption + staging wiring (AC-14)
+python .github/scripts/test_provenance_wiring.py
 ```
 
 Only when `plugins/ca/tools/**` changed:

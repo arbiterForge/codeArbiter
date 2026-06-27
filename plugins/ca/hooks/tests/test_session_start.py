@@ -28,6 +28,7 @@ briefing_mode = _mod.briefing_mode
 standup_marker_path = _mod.standup_marker_path
 local_date_iso = _mod.local_date_iso
 write_standup_marker = _mod.write_standup_marker
+provenance_drift_line = _mod.provenance_drift_line
 
 
 class TestHasSource(unittest.TestCase):
@@ -387,6 +388,91 @@ class TestStandupBriefingGating(unittest.TestCase):
         # marker present -> "offer" iff actionable, else "none" (silent).
         self.assertEqual(briefing_mode(marker_present=True, actionable=True), "offer")
         self.assertEqual(briefing_mode(marker_present=True, actionable=False), "none")
+
+
+class TestProvenanceDriftLine(unittest.TestCase):
+    """T-16: provenance_drift_line — passive SessionStart drift notice.
+
+    AC-06: returns '' when docs are fresh (stored hash == current oid).
+    AC-07: returns one ASCII line with /ca:context-check when drift > 0.
+    AC-08: returns '' on any degrade (missing dir, runner raises); never raises.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        import _provenancelib
+        self._pl = _provenancelib
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _write_prov(self, doc, rel_path, stored_hash):
+        """Write a minimal provenance record with one drift_trigger:true entry."""
+        prov_dir = os.path.join(self.root, ".codearbiter", ".provenance")
+        record = self._pl.new_record(doc, entries=[{
+            "path": rel_path,
+            "hash": stored_hash,
+            "drift_trigger": True,
+            "claims": [],
+        }])
+        self._pl.write_provenance(os.path.join(prov_dir, f"{doc}.json"), record)
+
+    def _make_runner(self, oid):
+        """Return a fake batch_hash-compatible runner that returns `oid` for every path."""
+        def fake_runner(args, stdin_text):
+            paths = [ln for ln in stdin_text.splitlines() if ln]
+            return "\n".join(oid for _ in paths) + ("\n" if paths else "")
+        return fake_runner
+
+    def test_drift_gt_0_returns_line_with_context_check(self):
+        """drift_trigger:true entry with diverged hash -> non-empty line containing /ca:context-check."""
+        stored_oid = "a" * 40
+        diverged_oid = "b" * 40
+        # Create the source file under root so os.path.exists(<root>/<rel_path>) is True.
+        src_dir = os.path.join(self.root, "plugins", "ca", "tools")
+        os.makedirs(src_dir, exist_ok=True)
+        with open(os.path.join(src_dir, "package.json"), "w") as f:
+            f.write("{}\n")
+        rel_path = "plugins/ca/tools/package.json"
+        self._write_prov("tech-stack", rel_path, stored_oid)
+        result = provenance_drift_line(self.root, runner=self._make_runner(diverged_oid))
+        self.assertTrue(result, "drift>0 must return a non-empty line")
+        self.assertIn("/ca:context-check", result)
+
+    def test_clean_returns_empty_string(self):
+        """stored hash == current oid -> returns ''."""
+        stored_oid = "a" * 40
+        src_dir = os.path.join(self.root, "plugins", "ca", "tools")
+        os.makedirs(src_dir, exist_ok=True)
+        with open(os.path.join(src_dir, "package.json"), "w") as f:
+            f.write("{}\n")
+        rel_path = "plugins/ca/tools/package.json"
+        self._write_prov("tech-stack", rel_path, stored_oid)
+        result = provenance_drift_line(self.root, runner=self._make_runner(stored_oid))
+        self.assertEqual(result, "")
+
+    def test_missing_provenance_dir_returns_empty_string(self):
+        """No .codearbiter/.provenance/ dir -> '' (degrade-to-silence)."""
+        result = provenance_drift_line(self.root, runner=self._make_runner("a" * 40))
+        self.assertEqual(result, "")
+
+    def test_runner_raises_returns_empty_string_no_raise(self):
+        """runner that raises -> '' without raising; degrade never crashes startup."""
+        stored_oid = "a" * 40
+        src_dir = os.path.join(self.root, "plugins", "ca", "tools")
+        os.makedirs(src_dir, exist_ok=True)
+        with open(os.path.join(src_dir, "package.json"), "w") as f:
+            f.write("{}\n")
+        rel_path = "plugins/ca/tools/package.json"
+        self._write_prov("tech-stack", rel_path, stored_oid)
+
+        def bad_runner(args, stdin_text):
+            raise RuntimeError("git unavailable in test")
+
+        # Must not raise; must return "".
+        result = provenance_drift_line(self.root, runner=bad_runner)
+        self.assertEqual(result, "")
 
 
 if __name__ == "__main__":

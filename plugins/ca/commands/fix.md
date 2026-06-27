@@ -7,6 +7,8 @@ argument-hint: "<what's happening vs. what should happen>"
 
 The only permitted entry to bug-fix work. No fix code is written before a regression test reproduces the defect and goes red for the right reason. Give the observed behavior and the expected behavior, plus a stack trace or reproduction when you have one.
 
+**Orientation:** if `.codearbiter/code-map.md` is present, read it before diagnosing — a coarse concern→path→role map that helps locate the defect. Absent is fine; it is read-on-demand.
+
 ## Flow
 
 Routes to the `tdd` skill, bug variant — Phase 1 is framed around confirming the defect, not building

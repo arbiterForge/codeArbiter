@@ -45,6 +45,8 @@ Dispatch six scouts simultaneously. Each reads only its assigned slice:
 
 The orchestrator reads only the scout reports in later phases — never the raw source — to preserve working context. A scout that finds nothing returns an explicit "not found" report, never silence.
 
+**Content hashes:** Scouts additionally emit a `git hash-object <path>` content oid per cited file in the hash field of their evidence entry. The scout already Read those files — no additional pass is needed, and no raw content is forwarded to the orchestrator.
+
 Gate: all six scout reports returned. A missing report is a blocking gap — do not proceed with an incomplete picture. Re-dispatch a failing scout before Phase 3.
 
 ## Phase 3 — Synthesis · gate: BLOCK
@@ -93,6 +95,11 @@ Write the surviving docs to `${CLAUDE_PROJECT_DIR}/.codearbiter/`. Every doc car
 | `overrides.log` | Empty append-only audit log, created so `/override` has a sink. |
 
 If scouts found existing decision records (`docs/decisions/`, `adr/`), summarize them as entries under `.codearbiter/decisions/` in the standard ADR format. If a record cannot be fully parsed, summarize what is known, flag the uncertainty, and note the source path for review.
+
+**Provenance and code-map (small addition, not a Phase 5 rebuild):**
+
+- Write ONE provenance file per derived doc to `.codearbiter/.provenance/<doc>.json` via `_provenancelib.write_provenance` and `new_record`. Each entry carries: `path` (repo-relative), `hash` (the scout's `git hash-object` oid), `drift_trigger` (from `_provenancelib.classify_source(path)`), and the `claims` array with `lines`, `claim`, and `confidence` drawn from the scout evidence.
+- Synthesize `.codearbiter/code-map.md` (concern → path → ≤1-line role) from Scout C (architecture) evidence. Use concern headings (`## <concern>`) and column-0 bullets (`- \`path\` — role`). Keep it coarse — module/concern granularity only, no full file listing.
 
 Do NOT scaffold any cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity lives in the `stage:` frontmatter of `CONTEXT.md`, not a separate file.
 
