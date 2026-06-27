@@ -435,7 +435,7 @@ The AGPLv3 transition applies from v2.6.0 forward. Earlier releases, through the
 
 **Open source.** codeArbiter is available under AGPLv3 for open-source use, free of charge.
 
-**Commercial licensing.** The copyright holder (SUaDtL) retains sole ownership and offers the same code under separate proprietary terms for cases AGPLv3 does not fit, including closed-source or hosted-service products. To inquire about a commercial license, open an issue on this repository or reach the repository owner through GitHub. A dedicated licensing entity and contact will be set up later.
+**Commercial licensing.** The copyright holder (SUaDtL) retains sole ownership and reserves the right to offer the project under separate proprietary terms. Commercial licenses are not being offered at this time. If you have a use case that AGPLv3 does not fit, you may send an inquiry through GitHub (open an issue or reach the repository owner), and it will be considered if and when a commercial-licensing path is established.
 
 **Contributions.** Future community contributions require a Contributor License Agreement granting the copyright holder the right to relicense the contribution under both AGPLv3 and proprietary terms, which is what keeps the dual-licensing model intact. See [CLA.md](./CLA.md). That CLA is a template pending legal review and is not yet in force.
 
