@@ -1,5 +1,5 @@
 ---
-title: Overview
+title: What is codeArbiter
 description: How codeArbiter orchestrates gated software-engineering workflows in Claude Code.
 ---
 

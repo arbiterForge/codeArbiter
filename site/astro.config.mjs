@@ -16,6 +16,7 @@ try {
   );
   referenceGroups = sidebarData.map((g) => ({
     label: `${g.type.charAt(0).toUpperCase()}${g.type.slice(1)}s`,
+    collapsed: true,
     items: g.items.map((it) => ({
       label: it.label,
       slug: `reference/${g.type}s/${it.slug}`,
@@ -63,14 +64,44 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Start here",
+          label: "Getting started",
           items: [
-            { label: "Overview", slug: "overview" },
-            { label: "Concepts", slug: "concepts" },
+            { label: "Install", slug: "getting-started/install" },
+            { label: "Quickstart", slug: "getting-started/quickstart" },
+            { label: "What is codeArbiter", slug: "overview" },
           ],
         },
         {
-          label: "How it works",
+          label: "Guides",
+          items: [
+            { label: "Opt a repository in", slug: "guides/opt-in-a-repo" },
+            { label: "Build a feature end to end", slug: "guides/feature-lane" },
+            { label: "Run an autonomous sprint", slug: "guides/autonomous-sprints" },
+            { label: "Override a gate safely", slug: "guides/overriding-a-gate" },
+            { label: "Record an architecture decision", slug: "guides/recording-adrs" },
+            { label: "Add a dependency safely", slug: "guides/adding-a-dependency" },
+            { label: "Cut a release", slug: "guides/releasing-a-version" },
+            { label: "Set up the statusline", slug: "guides/the-statusline" },
+            { label: "Troubleshooting", slug: "guides/troubleshooting" },
+          ],
+        },
+        {
+          label: "Concepts",
+          items: [
+            { label: "Overview", slug: "concepts" },
+            { label: "The gated-lane model", slug: "concepts/gated-lanes" },
+            { label: "The Feature Forge", slug: "concepts/feature-forge" },
+            { label: "SMARTS", slug: "concepts/smarts" },
+            { label: "ADRs and the decision log", slug: "concepts/adrs" },
+            { label: "Checkpoints", slug: "concepts/checkpoints" },
+            { label: "The persona-register split", slug: "concepts/persona-and-context" },
+            { label: "Provenance and context drift", slug: "concepts/provenance-drift" },
+            { label: "Just-in-time context injection", slug: "concepts/jit-context-injection" },
+            { label: "Auditability", slug: "concepts/auditability" },
+          ],
+        },
+        {
+          label: "Security",
           items: [
             { label: "Enforcement & Security", slug: "enforcement" },
             { label: "Hooks reference", slug: "hooks" },

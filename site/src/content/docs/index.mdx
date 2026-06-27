@@ -1,5 +1,5 @@
 ---
-title: codeArbiter
+title: Gated workflows for Claude Code
 description: Gated software-engineering workflows for Claude Code.
 template: splash
 hero:
@@ -21,10 +21,20 @@ hero:
 import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
 import ForgeShowcase from '../../components/ForgeShowcase.astro';
 
+<div class="ca-terminal-section">
+
+## A gate catching a real mistake
+
+The conversion mechanic is not a description of gates. It is a gate doing its job.
+
+<GateCatchTerminal />
+
+</div>
+
 <div class="ca-hero">
-  <p class="ca-hero__what">
+  <div class="ca-hero__what">
     A Claude Code plugin. One orchestrator. Gated lanes for every kind of work.
-  </p>
+  </div>
 
   <div class="ca-hero__first-command">
 
@@ -35,16 +45,6 @@ import ForgeShowcase from '../../components/ForgeShowcase.astro';
 ```
 
   </div>
-</div>
-
-<div class="ca-terminal-section">
-
-## A gate catching a real mistake
-
-The conversion mechanic is not a description of gates. It is a gate doing its job.
-
-<GateCatchTerminal />
-
 </div>
 
 <div class="ca-laneflow">

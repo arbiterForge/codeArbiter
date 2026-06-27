@@ -680,3 +680,40 @@ Dispatched read-only with fresh context before the PR (nothing accepted on the a
   matching the gate/merge notes (single-sample and best-of-N parity).
 
 Verification after fixes: 169 vitest green (+2), typecheck clean, farm.js rebuilt.
+
+---
+
+# Sprint log — docs-site-product-redesign
+Started 2026-06-27. Append-only. SMARTS-scored auto-decisions; `low` = review these.
+Spec: .codearbiter/specs/docs-site-product-redesign.md · Plan: .codearbiter/plans/docs-site-product-redesign.md
+Branch: feat/docs-site-product-redesign (cut from main 3b7559c).
+
+Context (user-decided, not auto): repo was on feat/license-consistency-check with WIP; user committed the
+license work (762376c) directly, then docs branch was cut from main. Not a sprint auto-decision.
+
+## SD-01 — Author mapping for site/ tasks · confidence: high
+- **Point:** tech-stack.md has no explicit scope→author mapping for the docs site; which author writes site/ tasks (.astro/.css/.mdx/.md)?
+- **Options:** (a) ca:frontend-author; (b) ca:backend-author; (c) ca:infra-author.
+- **SMARTS:** Maintainable/Reliable favor (a) — the docs site is a frontend artifact (Astro/Starlight UI + content); frontend-author owns component/UI conventions and loads the anti-slop-design medium leaves (web/documents/diagram) this work gates on. backend/infra map to server/IaC, not present here.
+- **Chosen:** (a) ca:frontend-author for all site/ authoring tasks. Strength: strong.
+
+## SD-02 — Concurrent-build race; verification strategy · confidence: high
+- **Point:** Wave 1 dispatched two authors that each ran `npm run build` in the same site/ tree concurrently — a race on dist/ and the Vite/Astro cache (both happened to pass, by luck).
+- **Options:** (a) serialize all build-running authors (safe, slow); (b) authors edit-only, orchestrator runs ONE central `npm run build` + `npm run link-audit` per wave/slice for verification; (c) accept the race for non-colliding edits.
+- **SMARTS:** Reliable strongly favors (b) — eliminates the concurrent-build race entirely; Maintainable favors (b) — central build is also the honest Phase 5 ("orchestrator runs the verification, not the author's self-report"); Velocity neutral (parallel edits still parallel). (a) is slower; (c) risks corrupt builds.
+- **Chosen:** (b) edit-only authors + central verification build. Strength: strong. Also: run the Phase-4 design-quality review at SLICE granularity (per the plan's slice boundaries) rather than one end-of-sprint pass, so a HIGH reopens the implicated task early.
+
+## SD-03 — Remediate T-08 design-review MEDIUM/LOW findings autonomously · confidence: high
+- **Point:** T-08 landing review PASS (no CRIT/HIGH) but surfaced 2 MEDIUM (light-mode `.ca-forge h2` ~1.94:1 invisible heading = AC-13 contrast gap; `.ca-callout__label` opacity:0.75 sub-AA), 1 LOW (duplicate <title>), 1 [NEEDS-TRIAGE] invalid nested <p> in .ca-hero__what. Phase 4: MEDIUM/LOW user-decided; under /sprint I decide-as-the-user.
+- **Options:** (a) ship as-is, defer all; (b) fix contrast MEDIUMs + markup bug; (c) fix all four.
+- **SMARTS:** Reliable + spec AC-13 ("contrast intact in both modes") favor (c): MEDIUM-1 is a genuine AC-13 failure (near-invisible heading), MEDIUM-2 an a11y floor miss, the nested <p> invalid HTML; all have exact fixes, all in the slice's own diff (in-scope remediation). Enterprise-polish bar makes shipping a light-mode-invisible heading unacceptable.
+- **Chosen:** (c) remediate all four now (task T-23), re-verify via T-22 final build + re-review. Strength: strong.
+
+Note: the prior attempt to append SD-03 failed (shell cwd had drifted into site/ after a `cd site`); re-logged here from repo root.
+
+## SD-04 — T-21 BLOCK (1 HIGH + 2 MEDIUM): fix in-scope, harvest pre-existing · confidence: high
+- **Point:** T-21 docs+diagram review BLOCKED on 1 HIGH (em-dash in `Feature Forge — preview` callout label, autonomous-sprints.md, core §3.A) + 2 MEDIUM (light-mode warn-callout token ~4.2:1; two diagram SVG text nodes ~2.45:1) + 1 out-of-scope [NEEDS-TRIAGE] (gate-model.svg em-dash). Doc prose passed clean on all 4 sampled pages ("no bot voice"); both T-23 contrast fixes confirmed holding.
+- **Options:** (a) fix everything incl. pre-existing diagrams; (b) fix in-scope (HIGH label + theme.css warn token), harvest pre-existing diagram assets; (c) fix only the blocking HIGH.
+- **SMARTS:** Reliable/Maintainable favor (b): the HIGH label and the warn token are in files this sprint owns (autonomous-sprints.md, theme.css) and are trivial; the diagram SVGs (lane-flow, two-axis, gate-model) are PRE-EXISTING assets outside the plan's task paths and the findings are MEDIUM (non-blocking; AC-12 = no CRIT/HIGH). Fixing them is scope creep; harvesting respects the boundary without dropping them.
+- **Chosen:** (b). Fixed: label → "Preview"; `--ca-callout-warn-border` light #a07518 → #7a5800 (~6.5:1). Verified: build exit 0, link-audit 0 dangling, 0 em-dash callout labels in built output. HARVEST to open-tasks (pre-existing, MEDIUM): lane-flow.svg + two-axis-model.svg text fill #46505a→#6e7b8b; gate-model.svg line 172 em-dash. Strength: strong.
+- Note: re-verified the corrected diff by targeted build + grep (single-string label fix + token value) rather than a full reviewer re-dispatch — proportionate; prose/diagram structure already certified PASS by T-21.
