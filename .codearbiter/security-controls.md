@@ -124,12 +124,29 @@ npm dependencies; the docs site under `site/` is not part of that payload):
 - BSD-3-Clause
 - BlueOak-1.0.0 — permissive, OSI-approved "better-MIT"; imposes no obligations
 - CC0-1.0 — public-domain dedication; imposes no obligations
+- MPL-2.0 (build-time, `site/` ONLY): weak, file-level copyleft. The obligation
+  attaches only to the MPL-licensed source files themselves and edits made to
+  them; it never reaches files that merely consume the library. Approved solely
+  for build-time docs-site dependencies under `site/` (introduced by
+  `lightningcss` via `vite@8`). The docs site is not part of the shipped plugin
+  payload, and `lightningcss` is a build tool whose output (minified CSS) carries
+  no MPL obligation. NOT approved for the plugin payload (`plugins/**`) or any
+  distributed artifact.
 
 `BlueOak-1.0.0` and `CC0-1.0` were approved 2026-06-22 (user decision via SMARTS
 arbitration, checkpoint 2026-06-22) to cover transitive `site/` dependencies
 (`common-ancestor-path`, `lru-cache`, `sax`; `mdn-data`). `argparse@2.0.1`
 declares a `Python-2.0` SPDX field that is a packaging mislabel — upstream is
 MIT — and is accepted on that basis.
+
+`MPL-2.0` was approved 2026-06-27 (user decision, BY SUaDtL@users.noreply.github.com),
+scoped to build-time `site/` dependencies only, to cover `lightningcss@1.32.0`
+introduced by the Astro 7 / Vite 8 upgrade; the scoped entry above states the
+boundary. `satteri@0.9.3` (and its `@bruits/satteri-*` platform variants), Astro
+7's markdown processor, omits the SPDX license field in its npm metadata; upstream
+(`github.com/bruits/satteri`, published by an Astro core maintainer via OIDC)
+ships an MIT license, so it is accepted as MIT on the same packaging-mislabel
+basis as `argparse`, build-time `site/` only.
 
 Any new dependency with a license outside this list requires an explicit
 review and an entry in `overrides.log` before merging.
