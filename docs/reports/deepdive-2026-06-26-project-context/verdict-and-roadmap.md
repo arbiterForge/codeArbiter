@@ -6,6 +6,8 @@
 
 > External tools are referred to by the **concept/archetype** they represent, not by name.
 
+> **Status (2026-06-28):** All three prioritized recommendations below **shipped in v2.6.0** — the drift/staleness layer and scout-evidence provenance index (recs 1–2) via **#145** (`feat/context-drift-provenance`), and file-scoped just-in-time injection (rec 3) via **#146** (`feat/file-scoped-context-injection`). #146 also resolved the item-3 plugin-hook risk this report flagged (`additionalContext` on a plugin-scoped `PreToolUse:Read`, claude-code #16538). This document is retained as the **decision record** — the reusable "do NOT add vectors/daemons/transcript-mining" verdict and the Anthropic-docs constraint table outlive the shipped work. The two companion `kickoff-*.md` brainstorming prompts were consumed by those PRs and have been removed.
+
 ---
 
 ## VERDICT: GO — the architecture is sound. One real weakness (staleness) is worth fixing; almost everything the alternative archetypes add is not.
@@ -140,8 +142,8 @@ Concrete map of how `.codearbiter` context works today, so a fresh session can d
 
 ---
 
-## Appendix: brainstorming kickoff prompts
+## Appendix: brainstorming kickoff prompts (consumed)
 
-Two self-contained prompts live alongside this report for parallel `/ca:brainstorming` sessions:
-- `kickoff-1-drift-provenance.md` — context drift detection + scout provenance (fixes the flaw; do first).
-- `kickoff-2-file-scoped-injection.md` — file-scoped JIT injection (enhancement; depends on #1's provenance map).
+Two self-contained `/ca:brainstorming` kickoff prompts originally lived alongside this report and seeded the implementation work. Both have been **consumed and removed** now that the features shipped:
+- `kickoff-1-drift-provenance.md` — context drift detection + scout provenance → shipped in **#145** (`feat/context-drift-provenance`).
+- `kickoff-2-file-scoped-injection.md` — file-scoped JIT injection → shipped in **#146** (`feat/file-scoped-context-injection`).
