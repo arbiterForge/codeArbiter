@@ -545,14 +545,9 @@ ca-site-search {
 .ca-search__results {
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
-.ca-search__result + .ca-search__result {
-  margin-top: 0.25rem;
-}
-
-.ca-search__result a {
+.ca-search__result-link {
   display: block;
   padding: 0.55rem 0.6rem;
   border-radius: 0.4rem;
@@ -560,14 +555,21 @@ ca-site-search {
   text-decoration: none;
 }
 
-.ca-search__result a:hover {
+.ca-search__result-link + .ca-search__result-link {
+  margin-top: 0.25rem;
+}
+
+/* The active option (keyboard arrows or mouse hover) needs a clearly visible
+   highlight. Focus stays in the input under the combobox pattern, so options
+   never get :focus-visible; the active one is marked aria-selected. A bare
+   background shift is ~1.1:1 against the panel (WCAG 2.4.7), so pair it with a
+   gold ring. */
+.ca-search__result-link:hover,
+.ca-search__result-link[aria-selected="true"] {
   background: var(--ca-slate);
 }
 
-/* Keyboard focus needs a ring: the hover background shift alone is ~1.1:1
-   against the panel, effectively invisible (WCAG 2.4.7). */
-.ca-search__result a:focus-visible {
-  background: var(--ca-slate);
+.ca-search__result-link[aria-selected="true"] {
   outline: 2px solid var(--ca-gold);
   outline-offset: -2px;
 }

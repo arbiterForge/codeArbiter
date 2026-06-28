@@ -233,12 +233,31 @@ describe("inline search override (replaces Starlight's modal search)", () => {
     expect(searchCmp).toContain('type="search"');
   });
 
-  it("carries the search ARIA contract (labelled, controls + expands the panel)", () => {
+  it("implements the WAI-ARIA combobox pattern (combobox + listbox + option)", () => {
+    // Input is a combobox controlling a listbox popup; results are options the
+    // input points at via aria-activedescendant (virtual focus).
+    expect(searchCmp).toContain('role="combobox"');
+    expect(searchCmp).toContain('aria-autocomplete="list"');
+    expect(searchCmp).toContain('aria-controls="ca-search-listbox"');
+    expect(searchCmp).toContain('aria-activedescendant');
+    expect(searchCmp).toContain('id="ca-search-listbox"');
+    expect(searchCmp).toContain('role="listbox"');
+    // Result options are created in the script with role="option".
+    expect(searchCmp).toMatch(/setAttribute\("role",\s*"option"\)/);
+  });
+
+  it("carries the rest of the search ARIA contract (labelled, expands, live count)", () => {
     expect(searchCmp).toMatch(/aria-label="[^"]+"/);
-    expect(searchCmp).toContain('aria-controls="ca-search-panel"');
     expect(searchCmp).toContain('aria-expanded="false"');
-    expect(searchCmp).toContain('id="ca-search-panel"');
     expect(searchCmp).toContain('aria-live="polite"');
+  });
+
+  it("wires the combobox keyboard contract (arrows move, Enter activates)", () => {
+    expect(searchCmp).toContain('"ArrowDown"');
+    expect(searchCmp).toContain('"ArrowUp"');
+    expect(searchCmp).toContain('"Enter"');
+    // The highlight is tracked on the input via aria-activedescendant.
+    expect(searchCmp).toMatch(/setAttribute\("aria-activedescendant"/);
   });
 
   it("drives the Pagefind index via the base-safe runtime path", () => {
@@ -248,12 +267,13 @@ describe("inline search override (replaces Starlight's modal search)", () => {
     expect(searchCmp).toMatch(/\/pagefind\/pagefind\.js/);
   });
 
-  it("keyboard focus on a result is visible (no bare outline:none)", () => {
-    // Guards the WCAG 2.4.7 fix: the result focus state must use a real ring,
-    // not just the ~1.1:1 background shift.
+  it("the active option is visibly highlighted (no invisible selection)", () => {
+    // Guards the WCAG 2.4.7 concern: focus stays in the input, so the active
+    // option (aria-selected) carries a real gold ring, not just a ~1.1:1
+    // background shift.
     const themeCss = readSrc("src/styles/theme.css");
     expect(themeCss).toMatch(
-      /\.ca-search__result a:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--ca-gold\)/,
+      /\.ca-search__result-link\[aria-selected="true"\]\s*\{[^}]*outline:\s*2px solid var\(--ca-gold\)/,
     );
   });
 
