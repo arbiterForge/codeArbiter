@@ -35,6 +35,8 @@ function readSrc(rel: string): string {
 const indexMdx = readSrc("src/content/docs/index.mdx");
 const terminalCmp = readSrc("src/components/GateCatchTerminal.astro");
 const installCmp = readSrc("src/components/InstallTerminal.astro");
+const searchCmp = readSrc("src/components/Search.astro");
+const astroConfig = readSrc("astro.config.mjs");
 const landingCss = readSrc("src/styles/landing.css");
 
 /** Combined source of the landing page artifacts. The Feature Forge showcase
@@ -169,6 +171,15 @@ describe("install demo terminal (get-it-running below the fold)", () => {
     expect(indexMdx).toMatch(/wires in the statusline/i);
   });
 
+  it("the install title is a real heading, not a paragraph styled as one", () => {
+    // Hierarchy honesty + a11y: a section title must be an <h2> so it joins the
+    // document outline and screen-reader heading navigation, not a <p> wearing
+    // h1-sized type.
+    expect(indexMdx).toMatch(
+      /<h2 class="ca-hero__install-blurb">Get the Arbiter on Your Case<\/h2>/,
+    );
+  });
+
   it("the old sample-command box was removed", () => {
     expect(indexMdx).not.toContain("ca-hero__first-command");
   });
@@ -194,6 +205,63 @@ describe("install demo terminal (get-it-running below the fold)", () => {
     expect(installCmp).toContain("ca-terminal__line");
     expect(installCmp).toContain('role="list"');
     expect(installCmp).toMatch(/aria-label="[^"]+"/);
+  });
+
+  it("the install terminal carries the full screen-reader contract", () => {
+    expect(installCmp).toContain('role="region"');
+    expect(installCmp).toContain('role="listitem"');
+    expect(installCmp).toContain('aria-hidden="true"');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Inline search: custom Search.astro override (replaces Starlight's modal)
+// ---------------------------------------------------------------------------
+
+describe("inline search override (replaces Starlight's modal search)", () => {
+  it("is registered as the Starlight Search component override", () => {
+    expect(astroConfig).toMatch(/Search:\s*["']\.\/src\/components\/Search\.astro["']/);
+  });
+
+  it("defines the custom element that drives it", () => {
+    expect(searchCmp).toContain("class CaSiteSearch extends HTMLElement");
+    expect(searchCmp).toContain('customElements.define("ca-site-search"');
+  });
+
+  it("uses a semantic search form with a search input", () => {
+    expect(searchCmp).toContain('role="search"');
+    expect(searchCmp).toContain('type="search"');
+  });
+
+  it("carries the search ARIA contract (labelled, controls + expands the panel)", () => {
+    expect(searchCmp).toMatch(/aria-label="[^"]+"/);
+    expect(searchCmp).toContain('aria-controls="ca-search-panel"');
+    expect(searchCmp).toContain('aria-expanded="false"');
+    expect(searchCmp).toContain('id="ca-search-panel"');
+    expect(searchCmp).toContain('aria-live="polite"');
+  });
+
+  it("drives the Pagefind index via the base-safe runtime path", () => {
+    // Pagefind has no dev index, so the import is a runtime path (vite-ignored)
+    // built from BASE_URL, not a bundled/hardcoded one.
+    expect(searchCmp).toContain("import.meta.env.BASE_URL");
+    expect(searchCmp).toMatch(/\/pagefind\/pagefind\.js/);
+  });
+
+  it("keyboard focus on a result is visible (no bare outline:none)", () => {
+    // Guards the WCAG 2.4.7 fix: the result focus state must use a real ring,
+    // not just the ~1.1:1 background shift.
+    const themeCss = readSrc("src/styles/theme.css");
+    expect(themeCss).toMatch(
+      /\.ca-search__result a:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--ca-gold\)/,
+    );
+  });
+
+  it("Search.astro prose contains ≤3 em-dashes", () => {
+    const text = searchCmp
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\/\*[\s\S]*?\*\//g, " ");
+    expect((text.match(/—/g) ?? []).length).toBeLessThanOrEqual(3);
   });
 });
 

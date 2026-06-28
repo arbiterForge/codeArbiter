@@ -90,6 +90,11 @@
   transform: translateY(-2px);
 }
 
+.ca-landing__cta:focus-visible {
+  outline: 2px solid var(--ca-gold);
+  outline-offset: 2px;
+}
+
 .ca-landing__cta--primary {
   background: var(--ca-gold);
   border-color: var(--ca-gold);
@@ -169,9 +174,12 @@
 }
 
 /* Splashy headline, sized to match the above-the-fold hero title so the two
-   sections read as a matched pair. */
-.ca-hero__install-blurb {
+   sections read as a matched pair. It is a real <h2> (honest document outline);
+   the selector is scoped past Starlight's `.sl-markdown-content h2` chrome
+   (border + top margin) so none of that leaks in. */
+.ca-hero .ca-hero__install-blurb {
   margin: 0 0 1.1rem;
+  border: 0;
   color: var(--sl-color-white);
   font-size: clamp(2rem, 4.5vw, 3rem);
   line-height: 1.08;
@@ -251,5 +259,9 @@
   .ca-forge,
   .ca-landing__cta {
     transition: none;
+  }
+  /* Suppress the motion itself, not just its easing: no hover lift. */
+  .ca-landing__cta:hover {
+    transform: none;
   }
 }

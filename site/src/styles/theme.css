@@ -560,10 +560,16 @@ ca-site-search {
   text-decoration: none;
 }
 
-.ca-search__result a:hover,
+.ca-search__result a:hover {
+  background: var(--ca-slate);
+}
+
+/* Keyboard focus needs a ring: the hover background shift alone is ~1.1:1
+   against the panel, effectively invisible (WCAG 2.4.7). */
 .ca-search__result a:focus-visible {
   background: var(--ca-slate);
-  outline: none;
+  outline: 2px solid var(--ca-gold);
+  outline-offset: -2px;
 }
 
 .ca-search__result-title {
