@@ -292,6 +292,28 @@ class TaskwriteCliTest(unittest.TestCase):
         with open(p, encoding="utf-8") as f:
             self.assertIn("-rf important task", f.read())
 
+    def test_malformed_multipart_id_rejected_no_write(self):
+        """issue #157: a --id with more than GROUP.TYPE (e.g. a full 3-part id)
+        must be rejected (exit 1) and write nothing, rather than minting an
+        un-targetable 4-segment id like 'mvp1.store.0002.0001'."""
+        import taskwrite
+        d, p = self._board()
+        taskwrite.project_root = lambda: d
+        with open(p, encoding="utf-8") as f:
+            before = f.read()
+        self.assertEqual(taskwrite.main(["add", "--id", "mvp1.store.0002", "--", "x"]), 1)
+        with open(p, encoding="utf-8") as f:
+            self.assertEqual(f.read(), before)  # board untouched
+
+    def test_well_formed_group_type_id_still_mints(self):
+        """A proper GROUP.TYPE --id still mints group.type.NNNN (no regression)."""
+        import taskwrite
+        d, p = self._board()
+        taskwrite.project_root = lambda: d
+        self.assertEqual(taskwrite.main(["add", "--id", "mvp1.store", "--", "x"]), 0)
+        with open(p, encoding="utf-8") as f:
+            self.assertIn("mvp1.store.0001 - x", f.read())
+
     def test_atomic_write_board_survives_interrupted_write(self):
         """migration-001: the original board must survive a write interrupted after
         truncation.  We monkeypatch the temp-file write to raise, then assert the
