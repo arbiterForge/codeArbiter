@@ -84,8 +84,13 @@ def main(argv=None):
 
     if args.verb == "add":
         group = typ = None
-        if args.gid and "." in args.gid:
-            group, typ = args.gid.split(".", 1)
+        if args.gid:
+            parts = args.gid.split(".")
+            if len(parts) != 2 or not all(parts):
+                print(f"bad --id '{args.gid}' (expected GROUP.TYPE, e.g. 'mvp1.store'; "
+                      f"the 4-digit seq is minted automatically)", file=sys.stderr)
+                return 1
+            group, typ = parts
         boundaries = [b.strip() for b in args.boundaries.split(",")] if args.boundaries else None
         new = tb.add_entry(text, desc=args.desc, origin=args.origin, group=group,
                            type=typ, boundaries=boundaries, section=args.section)

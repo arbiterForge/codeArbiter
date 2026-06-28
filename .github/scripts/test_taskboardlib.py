@@ -364,6 +364,36 @@ class SetStateGuardTest(unittest.TestCase):
         self.assertIn("- [x]", out)
 
 
+class MalformedIdHardeningTest(unittest.TestCase):
+    """issue #157: an over-segmented id (e.g. 'a.b.c.d', produced by a mistyped
+    --id) must NOT be silently absorbed into the title. It parses as an id so
+    validate_id rejects it, lint_board surfaces it, and set_state can target it
+    for repair — instead of stranding an un-targetable, un-lintable task."""
+
+    BOARD = ("# Open tasks\n\n## In-flight\n"
+             "- [ ] mvp1.store.0002.0001 - Fix the thing  (from review)\n")
+
+    def test_four_segment_token_parses_as_id(self):
+        self.assertEqual(tb.parse_board(self.BOARD)[0].id, "mvp1.store.0002.0001")
+
+    def test_validate_id_rejects_four_segments(self):
+        self.assertFalse(tb.validate_id("mvp1.store.0002.0001"))
+
+    def test_lint_surfaces_the_invalid_id(self):
+        self.assertTrue(any("invalid task id" in w for w in tb.lint_board(self.BOARD)))
+
+    def test_set_state_can_target_for_repair(self):
+        out = tb.set_state(self.BOARD, "mvp1.store.0002.0001", "done", _date(2026, 6, 28))
+        self.assertIn("- [x] mvp1.store.0002.0001", out)
+        self.assertIn("(done 2026-06-28)", out)
+
+    def test_well_formed_three_segment_unaffected(self):
+        board = "# Open tasks\n\n## In-flight\n- [ ] mvp1.store.0001 - X\n"
+        self.assertEqual(tb.parse_board(board)[0].id, "mvp1.store.0001")
+        self.assertTrue(tb.validate_id("mvp1.store.0001"))
+        self.assertEqual(tb.lint_board(board), [])
+
+
 class PromoteModeGuardTest(unittest.TestCase):
     """dx-005: promote with an unknown mode must not silently auto-apply."""
 
