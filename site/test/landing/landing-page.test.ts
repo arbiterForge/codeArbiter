@@ -34,11 +34,12 @@ function readSrc(rel: string): string {
 
 const indexMdx = readSrc("src/content/docs/index.mdx");
 const terminalCmp = readSrc("src/components/GateCatchTerminal.astro");
+const installCmp = readSrc("src/components/InstallTerminal.astro");
 const landingCss = readSrc("src/styles/landing.css");
 
 /** Combined source of the landing page artifacts. The Feature Forge showcase
  *  moved off the home page into its own section — see feature-forge-content.test.ts. */
-const landingSrc = indexMdx + "\n" + terminalCmp;
+const landingSrc = indexMdx + "\n" + terminalCmp + "\n" + installCmp;
 
 // ---------------------------------------------------------------------------
 // AC-6: Bespoke landing — stock CardGrid replaced
@@ -142,12 +143,57 @@ describe("AC-16: above-fold hero answers what/why/first command + one primary CT
   });
 
   it("first command is shown in the hero section", () => {
-    // The hero body must show a copy-able first command
-    expect(indexMdx).toMatch(/\/ca:feature|\/ca:commit|\/ca:fix/);
+    // The hero now leads with the install commands (the new user's actual first
+    // commands), rendered in the animated install terminal. The old
+    // /ca:feature|/ca:fix|/ca:commit sample box was removed in favor of this
+    // get-it-running demo.
+    expect(landingSrc).toMatch(/\/plugin install/);
   });
 
   it("hero body answers 'what' (the orchestrator description)", () => {
     expect(indexMdx).toMatch(/orchestrat|gated|lane/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Install demo: the get-it-running terminal replaced the sample-command box
+// ---------------------------------------------------------------------------
+
+describe("install demo terminal (get-it-running below the fold)", () => {
+  it("index.mdx imports and renders the InstallTerminal component", () => {
+    expect(indexMdx).toContain("InstallTerminal");
+  });
+
+  it("the install title and statusline subtext are present above the demo", () => {
+    expect(indexMdx).toMatch(/Get the Arbiter on Your Case/);
+    expect(indexMdx).toMatch(/wires in the statusline/i);
+  });
+
+  it("the old sample-command box was removed", () => {
+    expect(indexMdx).not.toContain("ca-hero__first-command");
+  });
+
+  it("the install terminal shows both install commands", () => {
+    expect(installCmp).toContain("/plugin marketplace add arbiterForge/codeArbiter");
+    expect(installCmp).toContain("/plugin install ca@codearbiter");
+  });
+
+  it("the install terminal runs /ca:statusline as the third command", () => {
+    expect(installCmp).toContain("/ca:statusline");
+  });
+
+  it("the real rendered statusline sits below the terminal (single-source asset)", () => {
+    // The bar is shown below the terminal in index.mdx, using the canonical
+    // statusline.png — the same asset the statusline guide and README serve —
+    // via the base-safe root-absolute literal sanctioned for .mdx pages.
+    expect(indexMdx).toContain("ca-hero__statusline");
+    expect(indexMdx).toContain("/codeArbiter/diagrams/statusline.png");
+  });
+
+  it("the install terminal reuses the animated terminal contract (ca-terminal lines)", () => {
+    expect(installCmp).toContain("ca-terminal__line");
+    expect(installCmp).toContain('role="list"');
+    expect(installCmp).toMatch(/aria-label="[^"]+"/);
   });
 });
 
@@ -186,6 +232,12 @@ describe("AC-19: em-dash cap on landing prose", () => {
 
   it("GateCatchTerminal.astro prose contains ≤3 em-dashes", () => {
     const prose = extractProse(terminalCmp);
+    const emDashes = (prose.match(/—/g) ?? []).length;
+    expect(emDashes).toBeLessThanOrEqual(3);
+  });
+
+  it("InstallTerminal.astro prose contains ≤3 em-dashes", () => {
+    const prose = extractProse(installCmp);
     const emDashes = (prose.match(/—/g) ?? []).length;
     expect(emDashes).toBeLessThanOrEqual(3);
   });

@@ -9,6 +9,7 @@ next: false
 ---
 
 import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
+import InstallTerminal from '../../components/InstallTerminal.astro';
 
 <div class="ca-landing">
 
@@ -51,20 +52,27 @@ import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
     <figcaption>Every request flows: command → route → gate → ship → pull request. Nothing skips the gate.</figcaption>
   </figure>
 
-  <p class="ca-hero__lead">
-    You drive with slash commands. Type one and the orchestrator runs that whole lane for
-    you: planning, tests, review, and the gate, then it opens the PR. Three of the most common:
-  </p>
+  <div class="ca-hero__install">
+    <div class="ca-hero__install-demo">
+      <InstallTerminal />
+    </div>
 
-  <div class="ca-hero__first-command">
-
-```bash
-/ca:feature "add rate limiting"   # brainstorm → plan → TDD → review → PR
-/ca:fix "login 500 on empty body" # test-first bug fix, gate before commit
-/ca:commit                        # the only sanctioned path to a commit
-```
-
+    <div class="ca-hero__install-copy">
+      <p class="ca-hero__install-blurb">Get the Arbiter on Your Case</p>
+      <p class="ca-hero__install-subtext">Two commands install it. One more wires in the statusline.</p>
+    </div>
   </div>
+
+  <figure class="ca-hero__statusline">
+    <img
+      src="/codeArbiter/diagrams/statusline.png"
+      alt="The codeArbiter statusline: a folder row; a git row with repo, branch, and a model pill; rate-limit percentages with reset countdowns; an arbiter row (green dot) showing stage, tasks, open questions, and overrides; and session/today token, cost, burn, and context-usage segments."
+      loading="lazy"
+      width="2174"
+      height="406"
+    />
+    <figcaption>The statusline you get, live in every session.</figcaption>
+  </figure>
 </div>
 
 </div>

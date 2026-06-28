@@ -1,0 +1,198 @@
+---
+/**
+ * Search.astro — custom inline search, overriding Starlight's modal search.
+ *
+ * Starlight's stock search is a header button that opens a full-screen Pagefind
+ * modal the instant you click it (blank until you type). This replaces it with
+ * an inline box: results drop in a panel directly below the box, live as you
+ * type (debounced; Enter forces an immediate query). No modal, nothing pops
+ * open empty.
+ *
+ * It drives the Pagefind JS API directly (the same index Starlight builds at
+ * `astro build`), so search only works in a production build / on the deployed
+ * site, not in `astro dev` (Pagefind has no dev index). In dev the box shows a
+ * "build the site" hint instead of failing silently.
+ *
+ * Result URLs from Pagefind are site-root-relative (no base), so we prefix the
+ * configured base ourselves, guarding against double-prefixing.
+ */
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<ca-site-search class={Astro.props.class} data-base={base}>
+  <form class="ca-search__form" role="search" autocomplete="off">
+    <svg
+      class="ca-search__icon"
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input
+      class="ca-search__input"
+      type="search"
+      name="q"
+      enterkeyhint="search"
+      placeholder="Search the docs…"
+      aria-label="Search the docs"
+      aria-controls="ca-search-panel"
+      aria-expanded="false"
+    />
+  </form>
+
+  <div
+    id="ca-search-panel"
+    class="ca-search__panel"
+    role="region"
+    aria-label="Search results"
+    hidden
+  >
+    <p class="ca-search__status" aria-live="polite"></p>
+    <ul class="ca-search__results"></ul>
+  </div>
+</ca-site-search>
+
+<script>
+  class CaSiteSearch extends HTMLElement {
+    constructor() {
+      super();
+      const base = this.dataset.base || "";
+      const form = this.querySelector<HTMLFormElement>(".ca-search__form")!;
+      const input = this.querySelector<HTMLInputElement>(".ca-search__input")!;
+      const panel = this.querySelector<HTMLElement>(".ca-search__panel")!;
+      const status = this.querySelector<HTMLElement>(".ca-search__status")!;
+      const list = this.querySelector<HTMLUListElement>(".ca-search__results")!;
+
+      /** Pagefind stores root-relative urls; prefix the base, never twice. */
+      const withBase = (url: string) => {
+        if (!url.startsWith("/")) return url;
+        if (base && (url === base || url.startsWith(base + "/"))) return url;
+        return base + url;
+      };
+
+      let pagefind: any = null;
+      let loadErr = false;
+      const loadPagefind = async () => {
+        if (pagefind || loadErr) return;
+        try {
+          // Runtime path so Vite does not try to bundle the build-time asset.
+          pagefind = await import(/* @vite-ignore */ `${base}/pagefind/pagefind.js`);
+          await pagefind.options?.({ basePath: `${base}/pagefind/` });
+        } catch {
+          loadErr = true;
+        }
+      };
+
+      const open = () => {
+        panel.hidden = false;
+        input.setAttribute("aria-expanded", "true");
+      };
+      const close = () => {
+        panel.hidden = true;
+        input.setAttribute("aria-expanded", "false");
+      };
+
+      // Monotonic token so a slow query that resolves late cannot overwrite the
+      // results of a newer keystroke (live search fires overlapping queries).
+      let latest = 0;
+      const render = async (query: string) => {
+        const token = ++latest;
+        await loadPagefind();
+        if (token !== latest) return;
+        if (loadErr || !pagefind) {
+          list.replaceChildren();
+          status.textContent =
+            "Search runs on the built site. Run the production build to try it locally.";
+          open();
+          return;
+        }
+        const search = await pagefind.search(query);
+        if (token !== latest) return;
+        const results = await Promise.all(
+          search.results.slice(0, 8).map((r: any) => r.data()),
+        );
+        if (token !== latest) return;
+        list.replaceChildren();
+        if (results.length === 0) {
+          status.textContent = `No results for "${query}".`;
+          open();
+          return;
+        }
+        status.textContent = `${search.results.length} result${
+          search.results.length === 1 ? "" : "s"
+        } for "${query}".`;
+        for (const r of results) {
+          const li = document.createElement("li");
+          li.className = "ca-search__result";
+          const a = document.createElement("a");
+          a.href = withBase(r.url);
+          const title = document.createElement("span");
+          title.className = "ca-search__result-title";
+          title.textContent = r.meta?.title || r.url;
+          const excerpt = document.createElement("span");
+          excerpt.className = "ca-search__result-excerpt";
+          // Excerpt is our own content (Pagefind highlights with <mark>); safe.
+          excerpt.innerHTML = r.excerpt || "";
+          a.append(title, excerpt);
+          li.append(a);
+          list.append(li);
+        }
+        open();
+      };
+
+      // Live search: debounce keystrokes so we query as the user types without
+      // firing on every character. Enter forces an immediate query.
+      let debounceId = 0;
+      input.addEventListener("input", () => {
+        const q = input.value.trim();
+        window.clearTimeout(debounceId);
+        if (!q) {
+          close();
+          return;
+        }
+        debounceId = window.setTimeout(() => render(q), 140);
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const q = input.value.trim();
+        window.clearTimeout(debounceId);
+        if (!q) {
+          close();
+          return;
+        }
+        render(q);
+      });
+
+      // Warm the index on first focus so the first Enter is instant.
+      input.addEventListener("focus", () => void loadPagefind(), { once: true });
+
+      // Esc clears + closes; click outside closes; Ctrl/Cmd+K focuses.
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          input.value = "";
+          close();
+          input.blur();
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (!this.contains(e.target as Node)) close();
+      });
+      window.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+          e.preventDefault();
+          input.focus();
+        }
+      });
+    }
+  }
+  customElements.define("ca-site-search", CaSiteSearch);
+</script>

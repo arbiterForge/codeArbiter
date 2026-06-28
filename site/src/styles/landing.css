@@ -142,22 +142,74 @@
   letter-spacing: 0.04em;
 }
 
-.ca-hero__lead {
-  margin-block: 1.5rem 0.75rem;
-  max-width: 70ch;
-  color: var(--sl-color-gray-2);
+/* Install block: a two-column mirror of the above-the-fold hero. The hero is
+   intro (left) + terminal (right) at 4fr/6fr; this flips it to terminal (left)
+   + copy (right) at 6fr/4fr, so the two sections balance as opposites. */
+.ca-hero__install {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  margin-block: 2.5rem 0;
+}
+
+@media (max-width: 50rem) {
+  .ca-hero__install {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+.ca-hero__install-demo {
+  min-width: 0;
+}
+
+.ca-hero__install-copy {
+  min-width: 0;
+}
+
+/* Splashy headline, sized to match the above-the-fold hero title so the two
+   sections read as a matched pair. */
+.ca-hero__install-blurb {
+  margin: 0 0 1.1rem;
+  color: var(--sl-color-white);
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ca-hero__install-subtext {
+  max-width: 40ch;
+  margin: 0;
+  color: var(--ca-text-muted);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
   line-height: 1.6;
 }
 
-.ca-hero__first-command {
-  margin-block: 1.5rem;
+/* The terminal fills its (now narrower) left column. */
+.ca-hero__install .ca-terminal {
+  margin-block: 0;
 }
 
-.ca-hero__first-command pre,
-.ca-hero__first-command .expressive-code {
-  border: 1px solid color-mix(in srgb, var(--ca-gold) 28%, transparent);
-  border-radius: 0.5rem;
-  background: var(--ca-slate-mid);
+/* Payoff: the rendered statusline spans the full content width below the
+   two-column row, echoing the full-width lane-flow diagram under the splash. */
+.ca-hero__statusline {
+  margin: 1.5rem 0 0;
+}
+
+.ca-hero__statusline img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.4rem;
+}
+
+.ca-hero__statusline figcaption {
+  margin-top: 0.5rem;
+  color: var(--ca-text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
 }
 
 /* =========================================================
