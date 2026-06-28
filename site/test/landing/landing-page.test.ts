@@ -34,11 +34,14 @@ function readSrc(rel: string): string {
 
 const indexMdx = readSrc("src/content/docs/index.mdx");
 const terminalCmp = readSrc("src/components/GateCatchTerminal.astro");
+const installCmp = readSrc("src/components/InstallTerminal.astro");
+const searchCmp = readSrc("src/components/Search.astro");
+const astroConfig = readSrc("astro.config.mjs");
 const landingCss = readSrc("src/styles/landing.css");
 
 /** Combined source of the landing page artifacts. The Feature Forge showcase
  *  moved off the home page into its own section — see feature-forge-content.test.ts. */
-const landingSrc = indexMdx + "\n" + terminalCmp;
+const landingSrc = indexMdx + "\n" + terminalCmp + "\n" + installCmp;
 
 // ---------------------------------------------------------------------------
 // AC-6: Bespoke landing — stock CardGrid replaced
@@ -142,12 +145,143 @@ describe("AC-16: above-fold hero answers what/why/first command + one primary CT
   });
 
   it("first command is shown in the hero section", () => {
-    // The hero body must show a copy-able first command
-    expect(indexMdx).toMatch(/\/ca:feature|\/ca:commit|\/ca:fix/);
+    // The hero now leads with the install commands (the new user's actual first
+    // commands), rendered in the animated install terminal. The old
+    // /ca:feature|/ca:fix|/ca:commit sample box was removed in favor of this
+    // get-it-running demo.
+    expect(landingSrc).toMatch(/\/plugin install/);
   });
 
   it("hero body answers 'what' (the orchestrator description)", () => {
     expect(indexMdx).toMatch(/orchestrat|gated|lane/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Install demo: the get-it-running terminal replaced the sample-command box
+// ---------------------------------------------------------------------------
+
+describe("install demo terminal (get-it-running below the fold)", () => {
+  it("index.mdx imports and renders the InstallTerminal component", () => {
+    expect(indexMdx).toContain("InstallTerminal");
+  });
+
+  it("the install title and statusline subtext are present above the demo", () => {
+    expect(indexMdx).toMatch(/Get the Arbiter on Your Case/);
+    expect(indexMdx).toMatch(/wires in the statusline/i);
+  });
+
+  it("the install title is a real heading, not a paragraph styled as one", () => {
+    // Hierarchy honesty + a11y: a section title must be an <h2> so it joins the
+    // document outline and screen-reader heading navigation, not a <p> wearing
+    // h1-sized type.
+    expect(indexMdx).toMatch(
+      /<h2 class="ca-hero__install-blurb">Get the Arbiter on Your Case<\/h2>/,
+    );
+  });
+
+  it("the old sample-command box was removed", () => {
+    expect(indexMdx).not.toContain("ca-hero__first-command");
+  });
+
+  it("the install terminal shows both install commands", () => {
+    expect(installCmp).toContain("/plugin marketplace add arbiterForge/codeArbiter");
+    expect(installCmp).toContain("/plugin install ca@codearbiter");
+  });
+
+  it("the install terminal runs /ca:statusline as the third command", () => {
+    expect(installCmp).toContain("/ca:statusline");
+  });
+
+  it("the real rendered statusline sits below the terminal (single-source asset)", () => {
+    // The bar is shown below the terminal in index.mdx, using the canonical
+    // statusline.png — the same asset the statusline guide and README serve —
+    // via the base-safe root-absolute literal sanctioned for .mdx pages.
+    expect(indexMdx).toContain("ca-hero__statusline");
+    expect(indexMdx).toContain("/codeArbiter/diagrams/statusline.png");
+  });
+
+  it("the install terminal reuses the animated terminal contract (ca-terminal lines)", () => {
+    expect(installCmp).toContain("ca-terminal__line");
+    expect(installCmp).toContain('role="list"');
+    expect(installCmp).toMatch(/aria-label="[^"]+"/);
+  });
+
+  it("the install terminal carries the full screen-reader contract", () => {
+    expect(installCmp).toContain('role="region"');
+    expect(installCmp).toContain('role="listitem"');
+    expect(installCmp).toContain('aria-hidden="true"');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Inline search: custom Search.astro override (replaces Starlight's modal)
+// ---------------------------------------------------------------------------
+
+describe("inline search override (replaces Starlight's modal search)", () => {
+  it("is registered as the Starlight Search component override", () => {
+    expect(astroConfig).toMatch(/Search:\s*["']\.\/src\/components\/Search\.astro["']/);
+  });
+
+  it("defines the custom element that drives it", () => {
+    expect(searchCmp).toContain("class CaSiteSearch extends HTMLElement");
+    expect(searchCmp).toContain('customElements.define("ca-site-search"');
+  });
+
+  it("uses a semantic search form with a search input", () => {
+    expect(searchCmp).toContain('role="search"');
+    expect(searchCmp).toContain('type="search"');
+  });
+
+  it("implements the WAI-ARIA combobox pattern (combobox + listbox + option)", () => {
+    // Input is a combobox controlling a listbox popup; results are options the
+    // input points at via aria-activedescendant (virtual focus).
+    expect(searchCmp).toContain('role="combobox"');
+    expect(searchCmp).toContain('aria-autocomplete="list"');
+    expect(searchCmp).toContain('aria-controls="ca-search-listbox"');
+    expect(searchCmp).toContain('aria-activedescendant');
+    expect(searchCmp).toContain('id="ca-search-listbox"');
+    expect(searchCmp).toContain('role="listbox"');
+    // Result options are created in the script with role="option".
+    expect(searchCmp).toMatch(/setAttribute\("role",\s*"option"\)/);
+  });
+
+  it("carries the rest of the search ARIA contract (labelled, expands, live count)", () => {
+    expect(searchCmp).toMatch(/aria-label="[^"]+"/);
+    expect(searchCmp).toContain('aria-expanded="false"');
+    expect(searchCmp).toContain('aria-live="polite"');
+  });
+
+  it("wires the combobox keyboard contract (arrows move, Enter activates)", () => {
+    expect(searchCmp).toContain('"ArrowDown"');
+    expect(searchCmp).toContain('"ArrowUp"');
+    expect(searchCmp).toContain('"Enter"');
+    // The highlight is tracked on the input via aria-activedescendant.
+    expect(searchCmp).toMatch(/setAttribute\("aria-activedescendant"/);
+  });
+
+  it("drives the Pagefind index via the base-safe runtime path", () => {
+    // Pagefind has no dev index, so the import is a runtime path (vite-ignored)
+    // built from BASE_URL, not a bundled/hardcoded one.
+    expect(searchCmp).toContain("import.meta.env.BASE_URL");
+    expect(searchCmp).toMatch(/\/pagefind\/pagefind\.js/);
+  });
+
+  it("the active option is visibly highlighted (no invisible selection)", () => {
+    // Guards the WCAG 2.4.7 concern: focus stays in the input, so the active
+    // option (aria-selected) carries a real gold ring, not just a ~1.1:1
+    // background shift.
+    const themeCss = readSrc("src/styles/theme.css");
+    expect(themeCss).toMatch(
+      /\.ca-search__result-link\[aria-selected="true"\]\s*\{[^}]*outline:\s*2px solid var\(--ca-gold\)/,
+    );
+  });
+
+  it("Search.astro prose contains ≤3 em-dashes", () => {
+    const text = searchCmp
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\/\*[\s\S]*?\*\//g, " ");
+    expect((text.match(/—/g) ?? []).length).toBeLessThanOrEqual(3);
   });
 });
 
@@ -186,6 +320,12 @@ describe("AC-19: em-dash cap on landing prose", () => {
 
   it("GateCatchTerminal.astro prose contains ≤3 em-dashes", () => {
     const prose = extractProse(terminalCmp);
+    const emDashes = (prose.match(/—/g) ?? []).length;
+    expect(emDashes).toBeLessThanOrEqual(3);
+  });
+
+  it("InstallTerminal.astro prose contains ≤3 em-dashes", () => {
+    const prose = extractProse(installCmp);
     const emDashes = (prose.match(/—/g) ?? []).length;
     expect(emDashes).toBeLessThanOrEqual(3);
   });

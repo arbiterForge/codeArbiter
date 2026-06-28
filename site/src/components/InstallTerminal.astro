@@ -1,0 +1,74 @@
+---
+/**
+ * InstallTerminal.astro — the "get it running" companion to GateCatchTerminal.
+ *
+ * Renders an animated transcript of the commands a new user runs in Claude Code:
+ * the two install commands, then /ca:statusline to wire the bar. The rendered
+ * statusline itself is shown below the terminal (in index.mdx), using the
+ * canonical statusline.png single-source asset.
+ *
+ * Same design-system contract and animation grammar as GateCatchTerminal:
+ * CSS-only fade-in per line (--ca-term-delay), real DOM text for screen readers,
+ * and a static, fully-visible transcript under prefers-reduced-motion.
+ *
+ * Design-system contract (from theme.css):
+ *   .ca-terminal, .ca-terminal__titlebar, .ca-terminal__dot, .ca-terminal__title,
+ *   .ca-terminal__body, .ca-terminal__line, .ca-terminal__line--pass,
+ *   .ca-terminal__line--dim, .ca-terminal__prompt
+ */
+---
+
+<div
+  class="ca-terminal"
+  role="region"
+  aria-label="Install demo: the two install commands, then /ca:statusline, ending on the rendered statusline"
+>
+  <div class="ca-terminal__titlebar" aria-hidden="true">
+    <span class="ca-terminal__dot"></span>
+    <span class="ca-terminal__dot"></span>
+    <span class="ca-terminal__dot"></span>
+    <span class="ca-terminal__title">install codearbiter</span>
+  </div>
+
+  <ol
+    class="ca-terminal__body"
+    role="list"
+    aria-label="Terminal output: marketplace added, plugin installed, statusline wired, and the rendered bar"
+  >
+    <!-- Command 1: register the self-hosted marketplace -->
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 0.1s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>/plugin marketplace add arbiterForge/codeArbiter</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 0.4s">
+      <span>Marketplace added: codearbiter.</span>
+    </li>
+
+    <!-- Command 2: install the plugin -->
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 0.8s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>/plugin install ca@codearbiter</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 1.1s">
+      <span>Installing ca@codearbiter ...</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 1.5s">
+      <span>Plugin installed. Hooks, commands, and agents loaded.</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 1.8s">
+      <span>All commands resolve under the /ca: namespace.</span>
+    </li>
+
+    <!-- Command 3: wire the statusline -->
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 2.2s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>/ca:statusline</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 2.5s">
+      <span>Wiring the statusline into ~/.claude/settings.json ...</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 2.9s">
+      <span>Statusline wired. It renders on every session.</span>
+    </li>
+  </ol>
+</div>

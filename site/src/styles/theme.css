@@ -461,3 +461,145 @@
     transform: none;
   }
 }
+
+/* =========================================================
+   INLINE SEARCH (custom Search.astro — replaces the modal)
+   The box lives in the header; results drop in an absolutely
+   positioned panel below it, so nothing pops open empty.
+   ========================================================= */
+ca-site-search {
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.ca-search__form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.5rem;
+  background: var(--ca-slate);
+  color: var(--ca-text-muted);
+}
+
+.ca-search__form:focus-within {
+  border-color: var(--ca-gold);
+  color: var(--sl-color-white);
+}
+
+.ca-search__icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.ca-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sl-color-white);
+  font-size: var(--sl-text-sm);
+}
+
+.ca-search__input::placeholder {
+  color: var(--ca-text-muted);
+}
+
+.ca-search__input:focus {
+  outline: none;
+}
+
+/* Strip the native search "clear" affordance; Esc clears instead. */
+.ca-search__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.ca-search__panel {
+  position: absolute;
+  z-index: 80;
+  inset-inline: 0;
+  top: calc(100% + 0.4rem);
+  max-height: min(70vh, 32rem);
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.6rem;
+  background: var(--ca-slate-mid);
+  box-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.7);
+}
+
+.ca-search__panel[hidden] {
+  display: none;
+}
+
+.ca-search__status {
+  margin: 0.15rem 0.4rem 0.4rem;
+  color: var(--ca-text-muted);
+  font-size: var(--sl-text-xs);
+}
+
+.ca-search__results {
+  margin: 0;
+  padding: 0;
+}
+
+.ca-search__result-link {
+  display: block;
+  padding: 0.55rem 0.6rem;
+  border-radius: 0.4rem;
+  color: var(--sl-color-white);
+  text-decoration: none;
+}
+
+.ca-search__result-link + .ca-search__result-link {
+  margin-top: 0.25rem;
+}
+
+/* The active option (keyboard arrows or mouse hover) needs a clearly visible
+   highlight. Focus stays in the input under the combobox pattern, so options
+   never get :focus-visible; the active one is marked aria-selected. A bare
+   background shift is ~1.1:1 against the panel (WCAG 2.4.7), so pair it with a
+   gold ring. */
+.ca-search__result-link:hover,
+.ca-search__result-link[aria-selected="true"] {
+  background: var(--ca-slate);
+}
+
+.ca-search__result-link[aria-selected="true"] {
+  outline: 2px solid var(--ca-gold);
+  outline-offset: -2px;
+}
+
+.ca-search__result-title {
+  display: block;
+  font-weight: 600;
+  font-size: var(--sl-text-sm);
+}
+
+.ca-search__result-excerpt {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ca-text-muted);
+  font-size: var(--sl-text-xs);
+  line-height: 1.5;
+}
+
+.ca-search__result-excerpt mark {
+  background: transparent;
+  color: var(--ca-gold);
+  font-weight: 600;
+}
+
+/* Narrow viewports: let the panel grow a touch wider than the box. */
+@media (max-width: 50rem) {
+  ca-site-search {
+    max-width: 100%;
+  }
+  .ca-search__panel {
+    min-width: 16rem;
+  }
+}

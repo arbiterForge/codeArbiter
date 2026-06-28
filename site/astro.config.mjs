@@ -62,6 +62,9 @@ export default defineConfig({
         // position-based scroll-spy so the last "On this page" item highlights
         // when scrolled to the bottom (the stock observer misses it)
         TableOfContents: "./src/components/TableOfContents.astro",
+        // inline search (live as you type, results drop below the box)
+        // replacing Starlight's stock modal-on-click search
+        Search: "./src/components/Search.astro",
       },
       customCss: [
         "./src/styles/theme.css",
