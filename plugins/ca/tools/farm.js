@@ -3,6 +3,7 @@
 // farm.ts
 import { readFile as readFile2, writeFile as writeFile2, appendFile, mkdir, rm } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import path3 from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -362,6 +363,48 @@ function isInside(root, target) {
   const rel = path3.relative(root, target);
   return rel === "" || !rel.startsWith("..") && !path3.isAbsolute(rel);
 }
+function repoTopLevel() {
+  try {
+    const out = spawnSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf8",
+      timeout: 5e3
+    });
+    const top = (out.stdout || "").trim();
+    if (out.status === 0 && top) return path3.resolve(top);
+  } catch {
+  }
+  return path3.resolve(process.cwd());
+}
+function validateWorktreeRoot(rawRoot, repo, external) {
+  const root = path3.resolve(rawRoot);
+  if (!external && !isInside(path3.resolve(repo), root))
+    throw new Error(
+      `FARM_WORKTREE_ROOT resolves to '${root}', outside the repository root '${path3.resolve(repo)}'. farm recursively deletes task worktrees under this root, so an out-of-repo root is refused (#163). Point it inside the repo, or set FARM_ALLOW_EXTERNAL_WORKTREE_ROOT=1 to override.`
+    );
+  return root;
+}
+var _allowedWorktreeRoot = null;
+function allowedWorktreeRoot() {
+  if (_allowedWorktreeRoot) return _allowedWorktreeRoot;
+  _allowedWorktreeRoot = validateWorktreeRoot(
+    ENV.worktreeRoot,
+    repoTopLevel(),
+    process.env.FARM_ALLOW_EXTERNAL_WORKTREE_ROOT === "1"
+  );
+  return _allowedWorktreeRoot;
+}
+function _resetAllowedWorktreeRoot() {
+  _allowedWorktreeRoot = null;
+}
+function assertContainedWorktree(wt) {
+  const root = allowedWorktreeRoot();
+  const abs = path3.resolve(wt);
+  if (abs === root || !isInside(root, abs))
+    throw new Error(
+      `refusing to operate on worktree path '${abs}': it must be strictly inside the allowed farm worktree root '${root}' (#163).`
+    );
+  return abs;
+}
 async function runGate(cwd, commands) {
   for (const cmd of commands) {
     const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
@@ -695,6 +738,11 @@ function withMergeLock(fn) {
   return next;
 }
 async function prepareWorktree(branch, wt, from) {
+  try {
+    assertContainedWorktree(wt);
+  } catch (e) {
+    return e instanceof Error ? e.message : String(e);
+  }
   await git(["worktree", "remove", "--force", wt]).catch(() => {
   });
   await rm(wt, { recursive: true, force: true }).catch(() => {
@@ -971,6 +1019,8 @@ function validate(plan) {
   for (const t of plan.tasks) {
     if (!SAFE_TASK_ID.test(t.id))
       throw new Error(`task id "${t.id}" must match [A-Za-z0-9._-], max 64 chars`);
+    if (t.id === "." || t.id === "..")
+      throw new Error(`task id "${t.id}" is reserved (resolves to the worktree root or its parent)`);
     if (ids.has(t.id)) throw new Error(`duplicate task id: ${t.id}`);
     ids.add(t.id);
     if (!t.test || typeof t.test.path !== "string")
@@ -1301,6 +1351,9 @@ if (_thisFile === _entryFile) {
 export {
   DEFAULT_API_BASE_URL,
   SAFE_TASK_ID,
+  _resetAllowedWorktreeRoot,
+  allowedWorktreeRoot,
+  assertContainedWorktree,
   assertSecureBaseUrl,
   buildChatBody,
   buildPrompt,
@@ -1320,5 +1373,6 @@ export {
   runGate,
   runTask,
   screenEntitlements,
-  validate
+  validate,
+  validateWorktreeRoot
 };
