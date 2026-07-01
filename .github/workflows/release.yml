@@ -74,6 +74,10 @@ jobs:
           SUM="${{ github.event.inputs.summary }}"
           if [ -n "$SUM" ]; then TITLE="codeArbiter $VER: $SUM"; else TITLE="codeArbiter $VER"; fi
 
+          # An annotated tag needs a committer identity; the runner has none by default.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           if git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1; then
             echo "tag $TAG already on remote — skipping tag creation"
           else
