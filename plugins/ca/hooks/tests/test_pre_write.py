@@ -156,11 +156,28 @@ class TestH19Markers(_PreWriteFixture):
             self.run_write(os.path.join(self.markers, "adr-authoring-active"), content="x\n"), "H-19")
 
 
+def _symlinks_supported():
+    """Windows CI runners often lack the privilege to create symlinks; skip the
+    symlink cases there (ubuntu/macos exercise the #162 path fully)."""
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            os.symlink(os.path.join(d, "t"), os.path.join(d, "l"))
+        return True
+    except (OSError, NotImplementedError, AttributeError):
+        return False
+
+
+@unittest.skipUnless(_symlinks_supported(), "symlink creation not permitted here")
 class TestSymlinkAlias(_PreWriteFixture):
     """#162: a symlink whose visible path lacks .codearbiter/ but resolves into
     it must still be classified as protected."""
     def _symlink(self, link, target):
-        os.symlink(target, os.path.join(self.root, link))
+        # target_is_directory matters on Windows: a dir symlink to a
+        # (possibly not-yet-existing) directory must be created as a dir link,
+        # or realpath won't resolve paths beneath it. POSIX ignores the flag.
+        tgt_abs = os.path.join(self.root, target)
+        os.symlink(target, os.path.join(self.root, link),
+                   target_is_directory=os.path.isdir(tgt_abs))
 
     def test_symlinked_dir_to_codearbiter_blocks_audit_log(self):
         self._symlink("alias", ".codearbiter")
@@ -179,6 +196,7 @@ class TestSymlinkAlias(_PreWriteFixture):
                            content="---\narbiter: disabled\n---\n"), "H-18")
 
     def test_symlinked_marker_dir_blocks_write(self):
+        os.makedirs(self.markers, exist_ok=True)  # target must exist for a Windows dir symlink
         self._symlink("mlink", os.path.join(".codearbiter", ".markers"))
         self.assertBlocked(
             self.run_write(os.path.join(self.root, "mlink", "security-gate-passed"),
