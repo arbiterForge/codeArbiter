@@ -26,6 +26,17 @@ sys.path.insert(0, HOOKS)
 import _hooklib  # noqa: E402 — needs sys.path mutation above
 
 
+def _sym_ok():
+    """Windows CI runners often lack symlink privilege; skip symlink-dependent
+    cases there (ubuntu/macos exercise them fully)."""
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            os.symlink(os.path.join(d, "t"), os.path.join(d, "l"))
+        return True
+    except (OSError, NotImplementedError, AttributeError):
+        return False
+
+
 class CryptoReTest(unittest.TestCase):
     """CRYPTO_RE drives the H-09/H-09b crypto gate. It must see the TLS-disable
     and banned-primitive forms in BOTH Python and Node/TS, since all networked
@@ -492,6 +503,46 @@ class MarkerDigestTest(unittest.TestCase):
 
     def test_content_digest_differs_on_real_change(self):
         self.assertNotEqual(_hooklib.content_digest("a\nb\n"), _hooklib.content_digest("a\nc\n"))
+
+
+class ActivationAndMarkerHelpersTest(unittest.TestCase):
+    """#159/#160/#162 path classifiers and the text-based frontmatter check."""
+
+    def test_is_context_md(self):
+        self.assertTrue(_hooklib.is_context_md(".codearbiter/CONTEXT.md"))
+        self.assertTrue(_hooklib.is_context_md("/a/b/.codearbiter/CONTEXT.md"))
+        self.assertTrue(_hooklib.is_context_md(r".codearbiter\CONTEXT.md"))
+        self.assertFalse(_hooklib.is_context_md(".codearbiter/other.md"))
+        self.assertFalse(_hooklib.is_context_md("CONTEXT.md"))
+
+    def test_is_marker_path(self):
+        self.assertTrue(_hooklib.is_marker_path(".codearbiter/.markers/security-gate-passed"))
+        self.assertTrue(_hooklib.is_marker_path("x/.codearbiter/.markers/adr-authoring-active"))
+        self.assertFalse(_hooklib.is_marker_path(".codearbiter/CONTEXT.md"))
+        self.assertFalse(_hooklib.is_marker_path(".codearbiter/markers/x"))  # no dot
+
+    def test_frontmatter_enabled_text(self):
+        self.assertEqual(_hooklib.frontmatter_enabled_text("---\narbiter: enabled\n---\n"),
+                         (True, False))
+        self.assertEqual(_hooklib.frontmatter_enabled_text("---\narbiter: disabled\n---\n"),
+                         (False, False))
+        # opened, never closed -> malformed
+        self.assertEqual(_hooklib.frontmatter_enabled_text("---\narbiter: enabled\n"),
+                         (False, True))
+        # no frontmatter at all -> dormant, not malformed
+        self.assertEqual(_hooklib.frontmatter_enabled_text("# ctx\n"), (False, False))
+
+    @unittest.skipUnless(_sym_ok(), "symlink creation not permitted here")
+    def test_classify_protected_resolves_symlink(self):
+        with tempfile.TemporaryDirectory() as d:
+            ca = os.path.join(d, ".codearbiter")
+            os.makedirs(ca)
+            with open(os.path.join(ca, "overrides.log"), "w") as f:
+                f.write("x")
+            os.symlink(ca, os.path.join(d, "alias"))
+            # raw path lacks .codearbiter/, but realpath resolves inside it.
+            hits = _hooklib.classify_protected(os.path.join(d, "alias", "overrides.log"), d)
+            self.assertIn("audit", hits)
 
 
 if __name__ == "__main__":

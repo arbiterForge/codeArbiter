@@ -2,13 +2,13 @@
  * Unit tests for farm.ts pure-function core.
  * These test the exported helpers directly without spawning a subprocess.
  */
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, rm as fsRm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { scrubbedEnv } from "./exec.ts";
@@ -274,6 +274,17 @@ describe("validate — task id safety (B-2)", () => {
 
   it("accepts an id of exactly 64 characters", () => {
     expect(() => validate(basePlan({ id: "a".repeat(64) }))).not.toThrow();
+  });
+
+  // #163: "." and ".." satisfy SAFE_TASK_ID (all-dot strings) but as a worktree
+  // path segment resolve to the root itself / its parent, feeding a recursive
+  // delete. They must be rejected explicitly.
+  it("rejects the reserved id '.'", () => {
+    expect(() => validate(basePlan({ id: "." }))).toThrow(/reserved/);
+  });
+
+  it("rejects the reserved id '..'", () => {
+    expect(() => validate(basePlan({ id: ".." }))).toThrow(/reserved/);
   });
 });
 
@@ -1717,5 +1728,55 @@ describe("F2 — captureInScope (failed-attempt capture before reset)", () => {
     } finally {
       await fsRm(dir, { recursive: true, force: true });
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #163 — worktree-root containment. The env-controlled FARM_WORKTREE_ROOT plus a
+// plan-controlled task id feed a recursive delete; these guard that a
+// misconfigured (out-of-repo) root is refused and no worktree path escapes it.
+// ---------------------------------------------------------------------------
+describe("validateWorktreeRoot — out-of-repo root refused (#163)", () => {
+  it("rejects a root outside the repo (the /Users/alice misconfig)", () => {
+    expect(() => validateWorktreeRoot("/Users/alice", "/Users/alice/proj", false)).toThrow(
+      /outside the repository root/,
+    );
+  });
+
+  it("accepts an in-repo relative root (the default)", () => {
+    const repo = path.resolve(".");
+    expect(() => validateWorktreeRoot(".farm/worktrees", repo, false)).not.toThrow();
+    expect(validateWorktreeRoot(".farm/worktrees", repo, false)).toBe(
+      path.resolve(".farm/worktrees"),
+    );
+  });
+
+  it("accepts an in-repo absolute root", () => {
+    expect(() => validateWorktreeRoot("/repo/.farm/wt", "/repo", false)).not.toThrow();
+  });
+
+  it("permits an out-of-repo root only with the explicit override", () => {
+    expect(() => validateWorktreeRoot("/tmp/wt", "/repo", true)).not.toThrow();
+  });
+});
+
+describe("assertContainedWorktree — no path escapes the root (#163)", () => {
+  beforeEach(() => _resetAllowedWorktreeRoot());
+  afterEach(() => _resetAllowedWorktreeRoot());
+
+  it("allows a normal task worktree under the default root", () => {
+    const wt = path.resolve(allowedWorktreeRoot(), "task-a");
+    expect(assertContainedWorktree(wt)).toBe(wt);
+  });
+
+  it("refuses the root itself (a '.' id resolves here)", () => {
+    expect(() => assertContainedWorktree(allowedWorktreeRoot())).toThrow(/strictly inside/);
+  });
+
+  it("refuses a path outside the root (a '..' id / sibling escape)", () => {
+    expect(() => assertContainedWorktree(path.resolve(allowedWorktreeRoot(), "..", "evil"))).toThrow(
+      /strictly inside/,
+    );
+    expect(() => assertContainedWorktree("/etc")).toThrow(/strictly inside/);
   });
 });

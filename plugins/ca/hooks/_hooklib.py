@@ -27,6 +27,7 @@
 #   utf8_stdio() -> None                 force UTF-8 on stdout/stderr
 #   norm_path(p) -> str                  normalize path separators to forward-slash
 #   frontmatter_enabled(ctx_path) -> tuple[bool, bool]   (enabled, malformed)
+#   frontmatter_enabled_text(text) -> tuple[bool, bool]  same, over content not a path
 #   arbiter_active(root) -> bool         True iff repo opted in via CONTEXT.md frontmatter
 #   read_input() -> dict                 parse hook JSON from stdin; fail-open on error
 #   tool_input(data) -> dict             extract tool_input sub-dict from hook payload
@@ -42,6 +43,9 @@
 #   is_deploy_path(rel, root) -> bool     True iff rel is a deployment/IaC manifest (H-16)
 #   is_audit_log(rel) -> bool             True iff rel is an append-only audit log (H-05)
 #   is_decisions_path(rel) -> bool        True iff rel is an ADR under decisions/ (H-11)
+#   is_context_md(rel) -> bool            True iff rel is the CONTEXT.md activation file (#159)
+#   is_marker_path(rel) -> bool           True iff rel is under .codearbiter/.markers/ (#160)
+#   classify_protected(fpath, root) -> set  protected classes hit, raw+realpath (#162)
 #   marker_fresh(path, minutes) -> bool   True iff marker file exists and is recent
 #   write_text_atomic(path, text) -> None  crash-safe write (temp + os.replace)
 #   block(tag, msg) -> None              BLOCK tool call: print to stderr and exit 2
@@ -117,6 +121,21 @@ AUDIT_LOG_RE = re.compile(r"\.codearbiter/" + AUDIT_LOG_NAMES + r"$")
 DECISIONS_DIR_RE = r"\.codearbiter[\\/]+decisions"
 DECISIONS_PATH_RE = re.compile(DECISIONS_DIR_RE + r"[\\/]+.+\.md$")
 
+# The activation file (#159) and the gate-marker store (#160). CONTEXT.md is the
+# master switch every hook gates on via arbiter_active(); .markers/ holds the
+# gate-pass tokens (security-gate-passed, migration-gate-passed,
+# adr-authoring-active). Both were writable project state with no Write/Edit
+# guard — the token strings are centralized here beside the audit-log/decisions
+# sets so the pre-* hooks import ONE definition (same anti-drift rationale).
+CONTEXT_MD_RE = re.compile(r"\.codearbiter/CONTEXT\.md$")
+MARKERS_RE = re.compile(r"\.codearbiter/\.markers(?:/|$)")
+# The two load-bearing gate-pass markers a commit gate consumes (H-09b/H-10b,
+# H-14). Their bare filenames feed pre-bash.py's shell flank — these are NEVER
+# legitimately shell-written (the sanctioned producers are the python
+# security-pass.py / migration-pass.py helpers), unlike adr-authoring-active
+# which /adr legitimately `touch`es.
+GATE_MARKER_NAMES = r"(?:security-gate-passed|migration-gate-passed)"
+
 
 def is_audit_log(rel):
     """True iff `rel` is one of the append-only .codearbiter audit logs
@@ -128,6 +147,47 @@ def is_decisions_path(rel):
     """True iff `rel` is a `.md` ADR anywhere under .codearbiter/decisions/ —
     the H-11 guard set (a non-numbered draft or a nested path still counts)."""
     return bool(DECISIONS_PATH_RE.search(norm_path(rel)))
+
+
+def is_context_md(rel):
+    """True iff `rel` is the .codearbiter/CONTEXT.md activation file (#159) —
+    the master switch arbiter_active() reads. Guarded so it can't be flipped to
+    `arbiter: disabled` (or corrupted) to make every enforcement hook dormant."""
+    return bool(CONTEXT_MD_RE.search(norm_path(rel)))
+
+
+def is_marker_path(rel):
+    """True iff `rel` is anywhere under .codearbiter/.markers/ (#160) — the
+    gate-pass token store. Load-bearing markers turn a BLOCK into an allow, so a
+    hand-written marker must not be admitted by the Write/Edit tools."""
+    return bool(MARKERS_RE.search(norm_path(rel)))
+
+
+def classify_protected(fpath, root):
+    """The set of protected classes a Write/Edit `fpath` targets, resolving
+    symlinks (#162). Each classifier runs against BOTH the raw normalized path
+    AND the realpath-resolved repo-relative form: a symlink alias whose visible
+    path lacks `.codearbiter/` still realpaths back inside the repo, so an alias
+    can no longer launder a write past the guard. Centralized so pre-write.py and
+    pre-edit.py apply the identical symlink-safe check to every class (H-05,
+    H-11, #159 CONTEXT.md, #160 markers) instead of re-encoding it twice.
+
+    Classes: "audit", "decisions", "context", "marker". repo_rel() returns "" for
+    a target outside the repo (which cannot be a `.codearbiter` path), so that
+    flank is simply skipped."""
+    hits = set()
+    for p in (norm_path(fpath), repo_rel(fpath, root)):
+        if not p:
+            continue
+        if is_audit_log(p):
+            hits.add("audit")
+        if is_decisions_path(p):
+            hits.add("decisions")
+        if is_context_md(p):
+            hits.add("context")
+        if is_marker_path(p):
+            hits.add("marker")
+    return hits
 
 
 def utf8_stdio():
@@ -146,17 +206,13 @@ def norm_path(p):
     return (p or "").replace("\\", "/")
 
 
-def frontmatter_enabled(ctx_path):
-    """Return (enabled, malformed). `enabled` iff `arbiter: enabled` appears in a
-    properly-closed leading YAML frontmatter block. `malformed` iff a block opens
-    (`---` on line 1) but never closes — the fail-loud case. A file with no
-    frontmatter at all is simply dormant (not malformed)."""
-    try:
-        with open(ctx_path, encoding="utf-8", errors="replace") as f:
-            text = f.read()
-    except Exception:  # noqa: BLE001
-        return (False, False)
-    lines = text.split("\n")
+def frontmatter_enabled_text(text):
+    """(enabled, malformed) for CONTEXT.md *content* (see frontmatter_enabled).
+    Split out so the #159 Write/Edit guard can vet the RESULTING content of an
+    edit — 'does this edit keep the repo arbiter-enabled?' — without going to
+    disk, sharing one parser with the on-disk activation check so the two never
+    disagree on what 'enabled' means."""
+    lines = (text or "").split("\n")
     if not lines:
         return (False, False)
     first = lines[0].lstrip("﻿")  # tolerate a leading UTF-8 BOM
@@ -169,6 +225,20 @@ def frontmatter_enabled(ctx_path):
         if ARBITER_RE.match(ln):
             found = True
     return (False, True)  # opened but never closed — malformed
+
+
+def frontmatter_enabled(ctx_path):
+    """Return (enabled, malformed) for CONTEXT.md ON DISK. `enabled` iff
+    `arbiter: enabled` appears in a properly-closed leading YAML frontmatter
+    block. `malformed` iff a block opens (`---` on line 1) but never closes — the
+    fail-loud case. A file with no frontmatter at all is simply dormant (not
+    malformed). Unreadable file -> (False, False)."""
+    try:
+        with open(ctx_path, encoding="utf-8", errors="replace") as f:
+            text = f.read()
+    except Exception:  # noqa: BLE001
+        return (False, False)
+    return frontmatter_enabled_text(text)
 
 
 def arbiter_active(root):

@@ -470,6 +470,17 @@ def main():
                   "fix the frontmatter to activate.", file=sys.stderr)
         sys.exit(0)
 
+    # #161: arbiter is active — ensure the git-level enforcement backstop
+    # (pre-commit/pre-push) is installed and points at the CURRENT plugin path.
+    # Idempotent and best-effort: a foreign existing hook is preserved, and any
+    # failure here must never break session startup.
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from _githooks import install as _install_git_hooks
+        _install_git_hooks(root)
+    except Exception:  # noqa: BLE001
+        pass
+
     # --- Arbiter active: inject persona ---
     orch = os.path.join(plugin, "ORCHESTRATOR.md")
     orch_text = read_text(orch)

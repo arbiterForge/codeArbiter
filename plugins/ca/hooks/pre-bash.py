@@ -21,9 +21,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
-    AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE, SECRET_RE, arbiter_active, block,
-    content_digest, is_migration_path, line_digest, marker_fresh, project_root,
-    read_input, tool_input, utf8_stdio,
+    AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE, GATE_MARKER_NAMES, SECRET_RE,
+    arbiter_active, block, content_digest, is_migration_path, line_digest,
+    marker_fresh, project_root, read_input, tool_input, utf8_stdio,
 )
 
 # `git` followed by any run of global options (-C <dir>, -c k=v, --git-dir=…,
@@ -93,6 +93,40 @@ DECISIONS_WRITE_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|touch|truncate|ni"
     r"|New-Item|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content"
     r"|Out-File|Add-Content)\b[^|;&]*" + DECISIONS, re.I,
+)
+
+# H-18's shell flank: .codearbiter/CONTEXT.md is the activation switch every hook
+# gates on (#159). The Write/Edit tools are guarded by pre-write/pre-edit; this
+# guards the shell — a redirect into CONTEXT.md, or a write/delete verb naming
+# it, would flip `arbiter: enabled` off (or corrupt the frontmatter) and make
+# every gate dormant. Init writes CONTEXT.md via the Write tool, never the shell,
+# so no legitimate path is blocked; `cat`/`grep` reads pass untouched. Same
+# lexical limitation as the audit-log/decisions flanks (N-3): the Write/Edit
+# guard is the primary boundary, this is defense in depth.
+CONTEXT_MD = r"\.codearbiter[\\/]+CONTEXT\.md"
+CONTEXT_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + CONTEXT_MD, re.I)
+CONTEXT_WRITE_RE = re.compile(
+    r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|ni"
+    r"|New-Item|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content"
+    r"|Out-File|Add-Content)\b[^|;&]*" + CONTEXT_MD, re.I,
+)
+
+# H-19's shell flank: the two gate-pass markers (#160) are recorded ONLY by the
+# python producers (security-pass.py / migration-pass.py), which write via
+# os.replace and NEVER name the marker on the command line. So blocking any shell
+# command that names a gate marker as a redirect or write/move/copy target closes
+# the `echo <digest> > .markers/security-gate-passed` (and `cp goodmarker
+# security-gate-passed`) forge without touching the sanctioned producers.
+# adr-authoring-active is intentionally excluded: /adr legitimately `touch`es it,
+# and an empty/forged gate marker fails H-09b/H-14's digest-coverage check anyway
+# — only a marker carrying valid digests forges a pass, which shell verbs against
+# the marker name are how you'd inject.
+GATE_MARKER = r"\.markers[\\/]+" + GATE_MARKER_NAMES
+GATE_MARKER_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + GATE_MARKER, re.I)
+GATE_MARKER_WRITE_RE = re.compile(
+    r"\b(mv|cp|copy|dd|tee|sed|truncate"
+    r"|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File|Add-Content)\b"
+    r"[^|;&]*" + GATE_MARKER, re.I,
 )
 
 
@@ -409,6 +443,24 @@ def main():
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
                       "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
                       "edits, and deletions there are prohibited.")
+
+    # H-18: CONTEXT.md is the activation switch (#159) — shell flank. A shell
+    # rewrite/delete of it would make every gate dormant; init writes it via the
+    # Write tool, so nothing legitimate is blocked. Reads pass.
+    if CONTEXT_REDIRECT_RE.search(cmd) or CONTEXT_WRITE_RE.search(cmd):
+        block("H-18", ".codearbiter/CONTEXT.md is the activation switch every enforcement "
+                      "hook reads (#159) — shell rewrites, edits, or deletions that could flip "
+                      "`arbiter: enabled` off or corrupt its frontmatter are prohibited. Edit it "
+                      "through the sanctioned init path.")
+
+    # H-19: the gate-pass markers (#160) are recorded only by the sanctioned
+    # python producers — shell flank against `echo <digest> > security-gate-passed`
+    # and `cp`/`sed`/`tee` forges naming a gate marker.
+    if GATE_MARKER_REDIRECT_RE.search(cmd) or GATE_MARKER_WRITE_RE.search(cmd):
+        block("H-19", "The .codearbiter/.markers/ security-gate-passed / migration-gate-passed "
+                      "tokens are recorded only by the sanctioned gate producers (#160) — a shell "
+                      "redirect or write verb naming a gate marker forges a security/migration "
+                      "gate pass and is prohibited.")
 
     # H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     # a recorded security-gate pass. The crypto-compliance / secret-handling skills

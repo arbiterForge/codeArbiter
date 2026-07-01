@@ -36,6 +36,7 @@
  */
 import { readFile, writeFile, appendFile, mkdir, rm, stat } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 // v2.rev.0020 god-module split (architecture-003): the process/shell layer, the
@@ -200,6 +201,74 @@ const NOSIGN = ["-c", "commit.gpgsign=false"];
 function isInside(root: string, target: string): boolean {
   const rel = path.relative(root, target);
   return rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel));
+}
+
+// #163: the farm worktree root is env-controlled (FARM_WORKTREE_ROOT) and each
+// task worktree path is <root>/<task.id>, which prepareWorktree rm()'s
+// recursively BEFORE git validates it as a real worktree. Without containment, a
+// broad/misconfigured root (e.g. FARM_WORKTREE_ROOT=/Users/alice) plus a
+// plausible task id (Desktop) recursively deletes an arbitrary directory. Two
+// defenses, both fail-closed: (1) the resolved root must live inside the repo
+// unless an explicit unsafe override is set; (2) every worktree path must be
+// strictly inside that root (never the root itself) at the destructive op.
+function repoTopLevel(): string {
+  try {
+    const out = spawnSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf8",
+      timeout: 5_000,
+    });
+    const top = (out.stdout || "").trim();
+    if (out.status === 0 && top) return path.resolve(top);
+  } catch {
+    /* fall through to cwd */
+  }
+  return path.resolve(process.cwd());
+}
+
+// Pure, side-effect-free root validation (directly unit-testable): the resolved
+// worktree root must live inside `repo` unless `external` opts out. Throws with a
+// remediating message otherwise; returns the resolved absolute root.
+export function validateWorktreeRoot(rawRoot: string, repo: string, external: boolean): string {
+  const root = path.resolve(rawRoot);
+  if (!external && !isInside(path.resolve(repo), root))
+    throw new Error(
+      `FARM_WORKTREE_ROOT resolves to '${root}', outside the repository root '${path.resolve(repo)}'. ` +
+        `farm recursively deletes task worktrees under this root, so an out-of-repo root is ` +
+        `refused (#163). Point it inside the repo, or set FARM_ALLOW_EXTERNAL_WORKTREE_ROOT=1 ` +
+        `to override.`,
+    );
+  return root;
+}
+
+let _allowedWorktreeRoot: string | null = null;
+export function allowedWorktreeRoot(): string {
+  if (_allowedWorktreeRoot) return _allowedWorktreeRoot;
+  _allowedWorktreeRoot = validateWorktreeRoot(
+    ENV.worktreeRoot,
+    repoTopLevel(),
+    process.env.FARM_ALLOW_EXTERNAL_WORKTREE_ROOT === "1",
+  );
+  return _allowedWorktreeRoot;
+}
+
+// Test seam: the module-level cache would otherwise pin the first-resolved root
+// for the whole process, so a suite that varies FARM_WORKTREE_ROOT across cases
+// must reset it. No effect on production (resolved once at run start).
+export function _resetAllowedWorktreeRoot(): void {
+  _allowedWorktreeRoot = null;
+}
+
+// Assert a task worktree path is safely contained before any recursive delete /
+// worktree removal. Returns the resolved path so callers can reuse it.
+export function assertContainedWorktree(wt: string): string {
+  const root = allowedWorktreeRoot();
+  const abs = path.resolve(wt);
+  if (abs === root || !isInside(root, abs))
+    throw new Error(
+      `refusing to operate on worktree path '${abs}': it must be strictly inside the allowed ` +
+        `farm worktree root '${root}' (#163).`,
+    );
+  return abs;
 }
 
 // --------------------------------------------------------------------------
@@ -883,6 +952,15 @@ function withMergeLock<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 async function prepareWorktree(branch: string, wt: string, from: string): Promise<string | null> {
+  // #163: fail closed before the recursive delete — the resolved path must be
+  // strictly inside the allowed (in-repo) farm worktree root. This is the
+  // load-bearing guard: `rm(wt, {recursive, force})` below is the exact
+  // destructive op an out-of-repo root + plausible task id would weaponize.
+  try {
+    assertContainedWorktree(wt);
+  } catch (e) {
+    return e instanceof Error ? e.message : String(e);
+  }
   // Clean any stale worktree dir and branch so a re-run doesn't trip over the
   // leftovers of a prior run (git worktree add -b fails if the branch exists).
   await git(["worktree", "remove", "--force", wt]).catch(() => {});
@@ -1377,6 +1455,13 @@ export function validate(plan: Plan) {
     // names and worktree paths derived from it
     if (!SAFE_TASK_ID.test(t.id))
       throw new Error(`task id "${t.id}" must match [A-Za-z0-9._-], max 64 chars`);
+    // #163: SAFE_TASK_ID admits "." and ".." (both are all-dot strings), which
+    // as a worktree path segment resolve to the root itself or its parent —
+    // `path.resolve(worktreeRoot, "..")` escapes the root, and "." names the
+    // root, both feeding a recursive delete. Reject them explicitly at the
+    // authoring boundary (assertContainedWorktree is the runtime backstop).
+    if (t.id === "." || t.id === "..")
+      throw new Error(`task id "${t.id}" is reserved (resolves to the worktree root or its parent)`);
     if (ids.has(t.id)) throw new Error(`duplicate task id: ${t.id}`);
     ids.add(t.id);
 
