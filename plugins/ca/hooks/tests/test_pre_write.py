@@ -117,6 +117,74 @@ class TestH11Write(_PreWriteFixture):
         self.assertBlocked(self.run_write(os.path.join(self.ddir, "0002-new.md")), "H-11")
 
 
+class TestH18ContextMd(_PreWriteFixture):
+    """#159: CONTEXT.md is the activation switch; a Write may not drop
+    `arbiter: enabled` or corrupt the frontmatter."""
+    CTX = None
+
+    def setUp(self):
+        super().setUp()
+        self.CTX = os.path.join(self.ca, "CONTEXT.md")
+
+    def test_disable_arbiter_is_blocked(self):
+        self.assertBlocked(self.run_write(self.CTX, content="---\narbiter: disabled\n---\n"), "H-18")
+
+    def test_strip_frontmatter_is_blocked(self):
+        self.assertBlocked(self.run_write(self.CTX, content="# ctx\nno frontmatter\n"), "H-18")
+
+    def test_unclosed_frontmatter_is_blocked(self):
+        # opens '---' but never closes -> malformed -> not enabled.
+        self.assertBlocked(self.run_write(self.CTX, content="---\narbiter: enabled\n"), "H-18")
+
+    def test_keep_enabled_stage_bump_is_allowed(self):
+        self.assertAllowed(self.run_write(
+            self.CTX, content="---\narbiter: enabled\nstage: 3\n---\n<!--INITIALIZED-->\nx\n"))
+
+
+class TestH19Markers(_PreWriteFixture):
+    """#160: gate-pass markers are not writable via the Write tool."""
+    def test_write_security_gate_marker_is_blocked(self):
+        self.assertBlocked(
+            self.run_write(os.path.join(self.markers, "security-gate-passed"), content="d\n"), "H-19")
+
+    def test_write_migration_gate_marker_is_blocked(self):
+        self.assertBlocked(
+            self.run_write(os.path.join(self.markers, "migration-gate-passed"), content="d\n"), "H-19")
+
+    def test_write_adr_marker_is_blocked(self):
+        self.assertBlocked(
+            self.run_write(os.path.join(self.markers, "adr-authoring-active"), content="x\n"), "H-19")
+
+
+class TestSymlinkAlias(_PreWriteFixture):
+    """#162: a symlink whose visible path lacks .codearbiter/ but resolves into
+    it must still be classified as protected."""
+    def _symlink(self, link, target):
+        os.symlink(target, os.path.join(self.root, link))
+
+    def test_symlinked_dir_to_codearbiter_blocks_audit_log(self):
+        self._symlink("alias", ".codearbiter")
+        self.assertBlocked(
+            self.run_write(os.path.join(self.root, "alias", "overrides.log")), "H-05")
+
+    def test_symlinked_dir_to_decisions_blocks_adr(self):
+        self._symlink("dlink", os.path.join(".codearbiter", "decisions"))
+        self.assertBlocked(
+            self.run_write(os.path.join(self.root, "dlink", "0002-x.md")), "H-11")
+
+    def test_symlinked_file_to_context_blocks_disable(self):
+        self._symlink("ctxlink", os.path.join(".codearbiter", "CONTEXT.md"))
+        self.assertBlocked(
+            self.run_write(os.path.join(self.root, "ctxlink"),
+                           content="---\narbiter: disabled\n---\n"), "H-18")
+
+    def test_symlinked_marker_dir_blocks_write(self):
+        self._symlink("mlink", os.path.join(".codearbiter", ".markers"))
+        self.assertBlocked(
+            self.run_write(os.path.join(self.root, "mlink", "security-gate-passed"),
+                           content="d\n"), "H-19")
+
+
 class TestPreWriteAllowPaths(_PreWriteFixture):
     def test_disabled_arbiter_is_noop(self):
         self._disable_arbiter()

@@ -302,6 +302,75 @@ class TestMultiEditGuards(_PreEditFixture):
         self.assertAllowed(res)
 
 
+class TestH18ContextEdit(_PreEditFixture):
+    """#159: an Edit to CONTEXT.md may not drop `arbiter: enabled`."""
+
+    def _ctx(self):
+        return os.path.join(self.ca, "CONTEXT.md")
+
+    def test_edit_disabling_arbiter_is_blocked(self):
+        res = self.run_edit(self._ctx(),
+                            old_string="arbiter: enabled",
+                            new_string="arbiter: disabled")
+        self.assertBlocked(res, "H-18")
+
+    def test_edit_removing_frontmatter_delimiter_is_blocked(self):
+        # Dropping the opening '---' leaves no frontmatter -> not enabled.
+        res = self.run_edit(self._ctx(),
+                            old_string="---\narbiter: enabled",
+                            new_string="arbiter: enabled")
+        self.assertBlocked(res, "H-18")
+
+    def test_stage_bump_keeping_arbiter_enabled_is_allowed(self):
+        res = self.run_edit(self._ctx(), old_string="stage: 2", new_string="stage: 3")
+        self.assertAllowed(res)
+
+
+class TestH19MarkerEdit(_PreEditFixture):
+    """#160: gate markers are not editable via the Edit tools."""
+
+    def test_edit_security_gate_marker_is_blocked(self):
+        m = os.path.join(self.markers, "security-gate-passed")
+        os.makedirs(self.markers, exist_ok=True)
+        self._write(m, "olddigest\n")
+        res = self.run_edit(m, old_string="olddigest\n", new_string="olddigest\nforged\n")
+        self.assertBlocked(res, "H-19")
+
+    def test_multiedit_marker_is_blocked(self):
+        m = os.path.join(self.markers, "migration-gate-passed")
+        os.makedirs(self.markers, exist_ok=True)
+        self._write(m, "d\n")
+        res = self.run_multiedit(m, [{"old_string": "d", "new_string": "d\nx"}])
+        self.assertBlocked(res, "H-19")
+
+
+class TestNotebookEditGuard(_PreEditFixture):
+    """NotebookEdit is matched by the Edit hook (#159/#160 defense-in-depth): a
+    protected `.codearbiter` target is refused; a real notebook passes."""
+
+    def run_notebook(self, notebook_path):
+        payload = json.dumps({
+            "tool_name": "NotebookEdit",
+            "tool_input": {"notebook_path": notebook_path, "new_source": "print(1)"},
+        })
+        return _sh([sys.executable, PRE_EDIT], self.root, input=payload)
+
+    def test_notebookedit_targeting_context_is_blocked(self):
+        self.assertBlocked(self.run_notebook(os.path.join(self.ca, "CONTEXT.md")), "H-18")
+
+    def test_notebookedit_targeting_audit_log_is_blocked(self):
+        self.assertBlocked(self.run_notebook(os.path.join(self.ca, "overrides.log")), "H-05")
+
+    def test_notebookedit_targeting_marker_is_blocked(self):
+        self.assertBlocked(
+            self.run_notebook(os.path.join(self.markers, "security-gate-passed")), "H-19")
+
+    def test_notebookedit_on_real_notebook_is_allowed(self):
+        nb = os.path.join(self.root, "analysis.ipynb")
+        self._write(nb, "{}")
+        self.assertAllowed(self.run_notebook(nb))
+
+
 class TestPreEditAllowPaths(_PreEditFixture):
     """Cases where neither guard should fire."""
 
