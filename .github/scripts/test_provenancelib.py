@@ -74,6 +74,57 @@ class RoundTripTest(unittest.TestCase):
                 )
 
 
+class WriteProvenanceAtomicTest(unittest.TestCase):
+    """reliability-016: write_provenance is routed through the temp-file +
+    os.replace atomic-write pattern, so a crash mid-write never truncates or
+    corrupts a previously-written provenance record."""
+
+    def test_crash_mid_write_leaves_previous_record_intact(self):
+        from unittest.mock import patch
+
+        record_v1 = pl.new_record("tech-stack", created="2026-06-26")
+        record_v2 = pl.new_record("tech-stack", created="2026-07-01")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, ".codearbiter", ".provenance", "tech-stack.json")
+            pl.write_provenance(path, record_v1)
+            self.assertEqual(pl.read_provenance(path), record_v1)
+
+            # Simulate a crash between the temp-file write and the atomic
+            # rename (the exact window write_text_atomic exists to close).
+            with patch("os.replace", side_effect=OSError("simulated crash")):
+                with self.assertRaises(OSError):
+                    pl.write_provenance(path, record_v2)
+
+            # The destination must still hold the PRIOR, complete record —
+            # never truncated, never partially overwritten.
+            self.assertEqual(pl.read_provenance(path), record_v1)
+
+            # No stray .tmp file should linger in the provenance directory.
+            leftovers = [
+                n for n in os.listdir(os.path.dirname(path)) if n != "tech-stack.json"
+            ]
+            self.assertEqual(leftovers, [], f"no temp file should linger: {leftovers}")
+
+    def test_crash_during_json_serialization_leaves_previous_record_intact(self):
+        """A crash while dumping JSON (before the atomic write even starts)
+        must also never touch the previously-written file."""
+        from unittest.mock import patch
+
+        record_v1 = pl.new_record("tech-stack", created="2026-06-26")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, ".codearbiter", ".provenance", "tech-stack.json")
+            pl.write_provenance(path, record_v1)
+            self.assertEqual(pl.read_provenance(path), record_v1)
+
+            with patch("json.dumps", side_effect=ValueError("simulated crash")):
+                with self.assertRaises(ValueError):
+                    pl.write_provenance(path, pl.new_record("tech-stack", created="2026-07-01"))
+
+            self.assertEqual(pl.read_provenance(path), record_v1)
+
+
 class BatchHashTest(unittest.TestCase):
     """AC-02: batch_hash issues a single git hash-object --stdin-paths call, order-preserving."""
 

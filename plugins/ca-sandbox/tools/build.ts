@@ -34,7 +34,7 @@
  * cache/tag/relocation logic is unit-testable without real docker, while the
  * docker-gated test drives the real defaults.
  */
-import { spawn } from "node:child_process";
+import { spawn, type SpawnOptionsWithoutStdio } from "node:child_process";
 import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -66,7 +66,13 @@ const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 // explicitly so the build is robust regardless of the daemon default.
 const BUILD_ENV = { ...DOCKER_ENV, DOCKER_BUILDKIT: "1" };
 
-function run(cmd: string, args: string[], opts: object = {}): Promise<RunResult> {
+// `opts.env`, when supplied, is an explicit typed override (e.g. BUILD_ENV
+// below) rather than an unconstrained spread — a future opts literal is now
+// compiler-checked to stay a well-formed env override (must preserve
+// MSYS_NO_PATHCONV explicitly, not drop it by accident).
+type RunOpts = { env?: NodeJS.ProcessEnv } & Omit<SpawnOptionsWithoutStdio, "env">;
+
+function run(cmd: string, args: string[], opts: RunOpts = {}): Promise<RunResult> {
   return new Promise<RunResult>((resolve) => {
     const c = spawn(cmd, args, { env: DOCKER_ENV, ...opts });
     let stdout = "";

@@ -77,13 +77,7 @@ try:
     import _ledgerlib
     ledger_update = _ledgerlib.ledger_update
     _tx_accumulate = _ledgerlib._tx_accumulate
-    _agg_reqs = _ledgerlib._agg_reqs
-    _totals = _ledgerlib._totals
-    api_cost = _ledgerlib.api_cost
-    price_for = _ledgerlib.price_for
-    ledger_path = _ledgerlib.ledger_path
     persist_sess_start = _ledgerlib.persist_sess_start
-    API_PRICES = _ledgerlib.API_PRICES
 except Exception:  # pragma: no cover — never let an import break the statusline
     _ledgerlib = None
 
@@ -490,11 +484,11 @@ def _arbiter_state_uncached(cad):
 
 # --------------------------------------------------------------------------- ledger
 # The token/cost ledger (pricing table, transcript accumulation, JSON persistence,
-# burn samples) lives in _ledgerlib (extracted T-12). Its functions — ledger_update,
-# _tx_accumulate, _agg_reqs, _totals, api_cost, price_for, ledger_path, API_PRICES —
-# are bound into this module at import time (see the guarded import at the top), so
-# the cost segment and the test suite reach them unchanged. Only burn_spark stays
-# here: it is the render bridge that turns the lib's numeric samples into a colored
+# burn samples) lives in _ledgerlib (extracted T-12). Its functions actually used
+# from this module — ledger_update, _tx_accumulate, persist_sess_start — are bound
+# into this module at import time (see the guarded import at the top), so the cost
+# segment and the test suite reach them unchanged. Only burn_spark stays here: it
+# is the render bridge that turns the lib's numeric samples into a colored
 # sparkline, so it keeps the ANSI dependency out of the lib.
 def burn_spark(rec):
     """Sparkline of recent per-message token burn — real per-API-call totals

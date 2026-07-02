@@ -604,9 +604,10 @@ class TestRenderParity(unittest.TestCase):
 
     def test_ledger_functions_reachable_via_statusline(self):
         # The unmodified test suite reaches these via sl.*; the extraction must keep
-        # them bound on the statusline module.
-        for name in ("ledger_update", "_tx_accumulate", "_agg_reqs", "_totals",
-                     "api_cost", "price_for", "ledger_path", "API_PRICES"):
+        # them bound on the statusline module. Only the names this module (and its
+        # test suite) actually use are re-bound — the rest were dead re-binds
+        # removed as part of architecture-002.
+        for name in ("ledger_update", "_tx_accumulate", "persist_sess_start"):
             self.assertTrue(hasattr(sl, name), f"sl.{name} missing after extraction")
 
     def test_burn_spark_returns_string(self):
