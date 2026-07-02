@@ -2,6 +2,10 @@
 
 Triage per wave from disk. The orchestrator's calibrated values are final and override every provisional self-score downstream.
 
+## Dedup
+
+Before calibrating, dedup each new finding against all findings already on disk — match by `dedup_key` and by overlapping locations. A match decides as `duplicate` (`duplicate_of` set), distinct from `combine`.
+
 ## Severity rubric (impact x likelihood)
 
 - **critical** — exploitable security hole, data loss/corruption, or an outage path reachable with realistic input.
@@ -46,4 +50,4 @@ Below the confidence gate after calibration: medium/low → `investigate`; criti
 
 ## Per-wave plan
 
-`plans/phase-<n>.md` covers only `keep`/`combine`, grouped by type (lens/category/`group_id`): shared remediation approach, ordered sequence, cross-group `depends_on`, rolled-up acceptance criteria. Roadmap level only.
+`plans/phase-<n>.md` covers only `keep`/`combine`, grouped by type (lens/category/`group_id`): shared remediation approach, ordered sequence, cross-group `depends_on`, rolled-up acceptance criteria. Roadmap level only — no per-finding code steps. A `decision-required` item gets a one-line "ADR-candidate — resolve via `/ca:adr`" pointer, never an authored ADR.

@@ -23,11 +23,9 @@ Read these, or STOP and surface the gap — never guess a command or a path:
 This lane is expensive. Orient and get explicit go-ahead before dispatching anything.
 
 - **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. If found, check completion: incomplete (no `report-written` event in its `run.jsonl`) means either resumable or stale, judged by that run dir's latest `run.jsonl` timestamp. Younger than 7 days → recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting; skip the estimate. Older than 7 days → STOP and ask the user to resume anyway or start fresh — the codebase may have drifted under the findings, and stale-tree findings must not silently merge with fresh ones. Complete → start a fresh run.
-- **Size the job.** Count LOC, file count, and language breakdown with the commands in `references/cost-and-models.md`.
-- **Estimate cost.** Compute the token band from the v0 heuristic in `references/cost-and-models.md`. Present it plainly: the band, the inputs it came from, and that it is a rough estimate this run will help calibrate.
-- **Recommend the model.** State that this lane should be driven by the highest-reasoning model available at high effort — a cheap model inflates false positives, and these findings file real issues. Name the concrete recommendation from the roster.
-- **Offer cost control.** If the band is large, offer to narrow scope to a subtree, trim the Tier-2 lenses, or lower concurrency (`references/cost-and-models.md`).
+- **Cost acknowledgment.** Size the job, compute the token band, recommend the model (highest-reasoning available, high effort), and offer the cost-control levers. Present the band plainly; nothing dispatches until the user acknowledges it and confirms the model.
 - Establish `RUN_ID` = `<UTC-date>-<scope-slug>` on a fresh run; create `.codearbiter/reports/<run-id>/`; open `run.jsonl`. On resume, reuse the existing `RUN_ID` as-is — the date is the run's creation date and never changes on resume.
+- Procedure: `references/cost-and-models.md` — load now.
 
 Gate: the user has acknowledged the estimated cost and confirmed the model. An unacknowledged run does not pass.
 
@@ -55,13 +53,12 @@ Gate: every active lens has flushed its `findings/<lens>/` files, and each wave'
 
 ## Phase 3 — Triage & per-wave planning · gate: BLOCK
 
-Triage per wave from disk as soon as it flushes; do not wait for the whole run. Follow `references/triage.md`.
+Triage per wave from disk as soon as it flushes; do not wait for the whole run.
 
-- **Dedup** against all findings already on disk by `dedup_key` and overlapping locations.
-- **Calibrate independently.** Set `final_severity`/`final_confidence` from the evidence yourself — the lens's values are provisional input. Every critical/high carries a `counter_argument` (the strongest case it is lower or false); if compelling, downgrade. Promote under-rated findings too.
-- **Low-severity discipline.** A `low` is kept only above the confidence gate (defined in `triage.md`) with a concrete fix; beyond ~5 lows per lens, roll the remainder into one finding that still lists each `path:line`.
-- **Decide** each finding via the vocabulary; append one line to `triage.jsonl`. Below the confidence gate after calibration → `investigate` (medium/low) or `decision-required` (critical/high) — never dropped silently.
-- **Plan** the wave: write `plans/phase-<n>.md` covering `keep`/`combine` findings grouped by type — shared approach, ordered sequence, cross-group `depends_on`, rolled-up acceptance criteria. Roadmap level, no per-finding code steps. A `decision-required` item gets a one-line "ADR-candidate — resolve via `/ca:adr`" pointer, never an authored ADR.
+- **Calibrate independently.** Set `final_severity`/`final_confidence` from the evidence yourself — the lens's values are provisional input; every critical/high carries a `counter_argument`.
+- **Decide per finding, logged.** Each finding gets one decision from the vocabulary, appended as one line to `triage.jsonl`. Below the confidence gate after calibration → `investigate` (medium/low) or `decision-required` (critical/high) — never dropped silently.
+- **Plan the wave.** Write `plans/phase-<n>.md` for its kept (`keep`/`combine`) work.
+- Procedure: `references/triage.md` — load now.
 
 Gate: every wave's findings triaged into `triage.jsonl` and a `plans/phase-<n>.md` written for its kept work.
 
@@ -75,24 +72,22 @@ Gate: `report.md` regenerated from the logs and presented. No issues created.
 
 ## Phase 5 — Approval & issue filing · gate: BLOCK
 
-Findings become GitHub issues only on explicit selection and authorization. Follow `references/issue-filing.md`.
+Findings become GitHub issues only on explicit selection and authorization. Silence or ambiguity → file nothing; "looks good" is not authorization.
 
-- **Select.** Ask which findings to file ("all keep+combine critical/high", or specific ids). Silence or ambiguity → file nothing. "Looks good" is not authorization. Offer `decision-required` findings as a **separate** opt-in (discussion issues), so design questions don't masquerade as fix tickets.
-- **Dedup first.** Skip any finding already carrying an `issue_ref` in `triage.jsonl`; then search the tracker for an open issue matching each remaining finding's `dedup_key`/title and skip matches — this lane reruns over time and will re-find the same issues.
-- **Bodies.** Generate `bodies/<finding-id>.md` lazily for selected `keep`/`combine` findings above the gate — approved-only. `decision-required` bodies are framed as question + options + evidence, not a fix.
-- **File.** Default: write `issue-commands.sh` with a ready-to-run `gh issue create` per issue (tracker command from `tech-stack.md`) and print them. On explicit approval: execute; capture URLs; write `issue_ref` back into `triage.jsonl`.
-- **Report.** A table: finding/group id → created URL, or skipped (duplicate), or failed (with the error). Never silently drop a failure.
+- **Dedup first.** Skip findings already carrying an `issue_ref` in `triage.jsonl`, then dedup against the tracker — this lane reruns over time and will re-find the same issues.
+- **Default is hand-off.** Write and print `issue-commands.sh`; execute only on explicit approval, writing each `issue_ref` back into `triage.jsonl`.
 - Findings file as GitHub issues, never `open-tasks.md` — a periodic-review finding must survive PR abandonment.
+- Procedure: `references/issue-filing.md` — load now.
 
 Gate: either `issue-commands.sh` written and printed, or — on approval — issues filed with the id→result table and `issue_ref` recorded. Nothing filed without explicit selection; no duplicates against the tracker.
 
 ## Phase 6 — Telemetry · gate: STOP
 
-Optional, opt-in KPI feedback to refine the skill and the estimator. Follow `references/telemetry.md`.
+Optional, opt-in KPI feedback to refine the skill and the estimator — off by default, sent only on explicit per-run authorization.
 
-- Assemble the KPI-only payload — aggregates and per-lens exposure counts only, scrubbed of code, paths, and finding text; no repo identity unless the user adds `--tag`.
-- Write it to the run dir and show it in full. State plainly that the target is the public codeArbiter repo, so these aggregates post publicly.
-- **Default:** print the ready `gh issue create --repo arbiterforge/codearbiter --label telemetry` command for the user to run. **On explicit approval:** post it.
+- **Scrub.** The payload is aggregates and per-lens exposure counts only — no code, paths, or finding text; no repo identity unless the user adds `--tag`.
+- **Show before send.** Write the payload to the run dir and show it in full; state plainly that it posts publicly to the codeArbiter repo. Default: hand the user the ready command; post only on explicit approval.
+- Procedure: `references/telemetry.md` — load now.
 
 Gate: the payload is shown, and it is either handed to the user as a command or — on approval — posted. No telemetry leaves without per-run authorization.
 
