@@ -248,8 +248,15 @@ try:
     def _arbiter_enabled(ctx_path):
         return _arbiterstatelib._arbiter_enabled(ctx_path, _frontmatter_enabled)
 
-    def arbiter_state(root):
-        return _arbiterstatelib.arbiter_state(root, _count_in_flight, _read_board, _frontmatter_enabled)
+    def arbiter_state(root, ctx_text=None, ot_text=None, oq_text=None):
+        # performance-003 (#194): ctx_text/ot_text/oq_text let a caller (e.g.
+        # session-start.py's governance_line) that already read CONTEXT.md/
+        # open-tasks.md/open-questions.md thread that content through instead of
+        # a second disk read. Every existing caller passes nothing and is
+        # unaffected.
+        return _arbiterstatelib.arbiter_state(
+            root, _count_in_flight, _read_board, _frontmatter_enabled,
+            ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
 except Exception:  # pragma: no cover — never let an import break the statusline
     _arbiterstatelib = None
     _ARBITER_CACHE = {}
@@ -267,7 +274,7 @@ except Exception:  # pragma: no cover — never let an import break the statusli
     def _arbiter_enabled(ctx_path):
         return False
 
-    def arbiter_state(root):
+    def arbiter_state(root, ctx_text=None, ot_text=None, oq_text=None):
         return None
 
     def dev_active(root):

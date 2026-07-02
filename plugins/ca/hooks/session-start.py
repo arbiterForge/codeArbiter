@@ -18,6 +18,7 @@
 # In any repo WITHOUT the flag, the hook exits silently (dormant) — the plugin
 # can be installed globally and stays out of the way everywhere else.
 
+import concurrent.futures
 import copy
 import datetime
 import os
@@ -240,15 +241,21 @@ def head_branch(root):
         return None
 
 
-def governance_line(root):
+def governance_line(root, ctx_text=None, ot_text=None, oq_text=None):
     """Display-only governance summary reused from statusline.arbiter_state:
     `stage:N tasks:N q:N over:N`. Returns "" when arbiter isn't enabled or on any
-    failure. DISPLAY ONLY — never acts on these counts."""
+    failure. DISPLAY ONLY — never acts on these counts.
+
+    performance-003 (#194): ctx_text/ot_text/oq_text let the caller (main(),
+    which already read CONTEXT.md/open-tasks.md/open-questions.md earlier in
+    the SAME invocation) thread that content through so arbiter_state doesn't
+    re-read those three files a second time. None (the default) preserves the
+    original behavior (arbiter_state reads them itself)."""
     sl_mod = _statusline()
     if sl_mod is None:
         return ""
     try:
-        st = sl_mod.arbiter_state(root)
+        st = sl_mod.arbiter_state(root, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
     except Exception:  # noqa: BLE001
         return ""
     if not st:
@@ -257,9 +264,12 @@ def governance_line(root):
             f"q:{st['q']} over:{st['over']}")
 
 
-def render_full_briefing(root, summary):
+def render_full_briefing(root, summary, ctx_text=None, ot_text=None, oq_text=None):
     """Print the read-only daily briefing body: git hygiene state (with the
-    last-fetch staleness note) and the display-only governance line. No mutation."""
+    last-fetch staleness note) and the display-only governance line. No mutation.
+
+    ctx_text/ot_text/oq_text (performance-003) are threaded straight through to
+    governance_line — see its docstring."""
     print(f"  working tree: {'dirty' if summary['dirty'] else 'clean'} "
           f"(staged:{summary['staged']} unstaged:{summary['unstaged']} "
           f"untracked:{summary['untracked']})")
@@ -275,7 +285,7 @@ def render_full_briefing(root, summary):
               f"{', '.join(summary['prune_candidates'])}")
     if summary["stashes"]:
         print(f"  stashes: {summary['stashes']}")
-    gov = governance_line(root)
+    gov = governance_line(root, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
     if gov:
         print(f"  {gov}")
 
@@ -297,30 +307,46 @@ def assemble_summary(root, runner=None, current=None, default="main", path_exist
     OR path missing on disk). The gone/merged set is derived from the SAME
     `branch -vv` text via merged_branch_candidates (the `: gone]` branches). The
     disk check uses an injectable `path_exists` so the field is deterministic in
-    tests. Read-only: identifies candidates only — never removes a worktree."""
-    porcelain = git_read(["status", "--porcelain=v1"], root, runner)
+    tests. Read-only: identifies candidates only — never removes a worktree.
+
+    performance-002 (#194): the five reads above are independent (each degrades
+    its own field on failure; none depends on another's output), so they fan out
+    across a small thread pool instead of running strictly sequentially — on
+    Windows especially, process-creation overhead for `git` compounds when five
+    spawns block one after another. Results are gathered before any parsing runs,
+    so the parsed values are byte-identical to the sequential form."""
+    reads = {
+        "porcelain": ["status", "--porcelain=v1"],
+        "revlist": ["rev-list", "--left-right", "--count", "@{u}...HEAD"],
+        "branch_vv": ["branch", "-vv"],
+        "worktree_raw": ["worktree", "list", "--porcelain"],
+        "stash_raw": ["stash", "list"],
+    }
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(reads)) as ex:
+        futures = {name: ex.submit(git_read, args, root, runner) for name, args in reads.items()}
+        out = {name: f.result() for name, f in futures.items()}
+
+    porcelain = out["porcelain"]
     p = parse_porcelain(porcelain)
 
-    revlist = git_read(["rev-list", "--left-right", "--count", "@{u}...HEAD"], root, runner)
+    revlist = out["revlist"]
     behind, ahead = parse_ahead_behind(revlist)
     # No tracking branch -> git errors -> git_read returns "". Distinguish that from
     # an in-sync upstream (which returns "0\t0") so the briefing can suppress the
     # misleading "behind 0, ahead 0 (as of last fetch)" line when no upstream exists.
     has_upstream = bool(revlist.strip())
 
-    branch_vv = git_read(["branch", "-vv"], root, runner)
+    branch_vv = out["branch_vv"]
     prune = merged_branch_candidates(branch_vv, current=current, default=default)
 
     # Stale-worktree candidates: parse `worktree list --porcelain`, derive the
     # gone/merged branch set from the same branch -vv text, classify. A read error
     # degrades to [] (parse_worktrees("") -> []), so the field never crashes.
-    worktrees = parse_worktrees(
-        git_read(["worktree", "list", "--porcelain"], root, runner), root
-    )
+    worktrees = parse_worktrees(out["worktree_raw"], root)
     gone = set(merged_branch_candidates(branch_vv, current=current, default=default))
     stale_worktrees = stale_worktree_candidates(worktrees, gone, path_exists=path_exists)
 
-    stashes = parse_stash_count(git_read(["stash", "list"], root, runner))
+    stashes = parse_stash_count(out["stash_raw"])
 
     return {
         "dirty": p["dirty"],
@@ -646,7 +672,11 @@ def main():
         print()
         print(f"=== codeArbiter daily briefing ({date_iso}) ===")
         print("First session of the day. Daily standup briefing (read-only).")
-        render_full_briefing(root, summary)
+        # performance-003 (#194): ctx_text/ot_text/oq_text were already read
+        # above for the startup-state block — thread them through so
+        # governance_line's arbiter_state() call doesn't re-read the same three
+        # files a second time in this same invocation.
+        render_full_briefing(root, summary, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
         write_standup_marker(root, date_iso)
     elif mode == "offer":
         print(OFFER_LINE)

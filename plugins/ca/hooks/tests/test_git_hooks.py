@@ -23,6 +23,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENFORCE = os.path.join(HOOKS, "git-enforce.py")
@@ -115,6 +116,89 @@ class TestInstall(_GitFixture):
         _githooks.install(self.root)
         _githooks.uninstall(self.root)
         self.assertFalse(os.path.isfile(os.path.join(self._hooks_dir(), "pre-commit")))
+
+
+class TestInstallSkipsReprobeWhenCurrent(_GitFixture):
+    """performance-002 (#194): a second install() call for the SAME repo, with
+    nothing changed, must skip the git-config/rev-parse re-probe entirely — the
+    cheap on-disk cache proves the hooks are already current without spawning
+    git at all. This is the semantic property the acceptance criteria asks for:
+    a SPECIFIC re-probe skipped, not a raw platform-varying spawn count."""
+
+    def _hooks_dir(self):
+        return os.path.join(self.root, ".git", "hooks")
+
+    def test_second_call_makes_zero_git_hooks_dir_probe_calls(self):
+        # First call: genuine cold install — the probe (_git) legitimately runs.
+        first_calls = []
+        orig = _githooks._git
+
+        def spy1(args, cwd):
+            first_calls.append(list(args))
+            return orig(args, cwd)
+
+        _githooks._git = spy1
+        try:
+            _githooks.install(self.root)
+        finally:
+            _githooks._git = orig
+        self.assertTrue(first_calls, "cold install must resolve hooks_dir via git")
+
+        # Second call against the SAME repo, nothing changed: the cached
+        # hooks_dir + up-to-date shim check must short-circuit BEFORE hooks_dir()
+        # ever calls _git — zero git-hooks-dir-probe spawns this time.
+        second_calls = []
+
+        def spy2(args, cwd):
+            second_calls.append(list(args))
+            return orig(args, cwd)
+
+        _githooks._git = spy2
+        try:
+            result = _githooks.install(self.root)
+        finally:
+            _githooks._git = orig
+        self.assertEqual(result, [])
+        self.assertEqual(second_calls, [],
+                         "install() must skip the hooks_dir git-config/rev-parse "
+                         "re-probe when the cached hooks are already current")
+
+    def test_cache_miss_falls_through_to_full_probe(self):
+        # A cache-miss (nothing installed yet, no cache file) must still fully
+        # resolve and install via the real git-based probe — the fast path
+        # never substitutes for a genuine cold install.
+        cache_file = os.path.join(self.root, ".git", _githooks._HOOKSDIR_CACHE_NAME)
+        self.assertFalse(os.path.isfile(cache_file))
+        actions = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", actions)
+        self.assertIn("pre-push: installed", actions)
+        self.assertTrue(os.path.isfile(cache_file),
+                        "a successful resolution must persist the hooks_dir cache")
+
+    def test_stale_cached_hooks_dir_falls_through(self):
+        # A cache file naming a directory that no longer exists must be treated
+        # as a miss (never trusted blindly).
+        os.makedirs(os.path.join(self.root, ".git"), exist_ok=True)
+        cache_file = os.path.join(self.root, ".git", _githooks._HOOKSDIR_CACHE_NAME)
+        with open(cache_file, "w", encoding="utf-8") as f:
+            f.write(os.path.join(self.root, "_nonexistent_hooks_dir") + "\n")
+        actions = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", actions)
+        for phase in ("pre-commit", "pre-push"):
+            self.assertTrue(os.path.isfile(os.path.join(self._hooks_dir(), phase)))
+
+    def test_mismatched_enforcer_path_falls_through_not_silently_skipped(self):
+        # If the enforcer path changed (e.g. a plugin update moved the install
+        # dir) since the cache was written, the shim content no longer matches
+        # -> _hooks_current() must return False -> the full probe must run and
+        # refresh the shim, never silently skip a needed update.
+        _githooks.install(self.root)  # writes the cache with the real enforcer path
+        with mock.patch.object(_githooks, "_enforcer_path", return_value="/moved/enforcer.py"):
+            actions = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", actions)
+        self.assertIn("pre-push: installed", actions)
+        with open(os.path.join(self._hooks_dir(), "pre-commit"), encoding="utf-8") as f:
+            self.assertIn("/moved/enforcer.py", f.read())
 
 
 class TestPreCommitEnforce(_GitFixture):
