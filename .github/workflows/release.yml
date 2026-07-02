@@ -30,7 +30,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
 
@@ -50,9 +50,11 @@ jobs:
           echo "tag=v$MANIFEST" >> "$GITHUB_OUTPUT"
 
       - name: Extract the CHANGELOG section as release notes
+        env:
+          VER: ${{ steps.v.outputs.version }}
+          TAG: ${{ steps.v.outputs.tag }}
         run: |
           set -euo pipefail
-          VER="${{ steps.v.outputs.version }}"
           # Capture from "## [VER]" up to (not including) the next "## [" section heading.
           awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' CHANGELOG.md > notes.md
           # Trim a trailing Keep-a-Changelog "---" separator and blank lines.
@@ -63,17 +65,17 @@ jobs:
           PY
           test -s notes.md || { echo "::error::no CHANGELOG section found for $VER"; exit 1; }
           # The notes' first heading must match the tag (the same guard /ca:release Phase 3 runs).
-          python3 .github/scripts/_releaselib.py notes-match "${{ steps.v.outputs.tag }}" notes.md
+          python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
           echo "---- notes.md ----"; head -1 notes.md
 
       - name: Create the tag and GitHub Release (idempotent)
         env:
           GH_TOKEN: ${{ github.token }}
           SUMMARY: ${{ github.event.inputs.summary }}
+          TAG: ${{ steps.v.outputs.tag }}
+          VER: ${{ steps.v.outputs.version }}
         run: |
           set -euo pipefail
-          TAG="${{ steps.v.outputs.tag }}"
-          VER="${{ steps.v.outputs.version }}"
           SUM="$SUMMARY"
           if [ -n "$SUM" ]; then TITLE="codeArbiter $VER: $SUM"; else TITLE="codeArbiter $VER"; fi
 
