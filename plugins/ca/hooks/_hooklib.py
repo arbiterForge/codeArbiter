@@ -563,18 +563,22 @@ def is_deploy_path(rel, root):
     return path_in_globs(rel, root, DEPLOY_DEFAULT_GLOBS, _DEPLOY_DECL_RE)
 
 
-def write_text_atomic(path, text):
+def write_text_atomic(path, text, newline=None):
     """Write `text` to `path` atomically: a sibling temp file in the same dir,
     then os.replace() into place (atomic on POSIX; a same-volume rename on
     Windows). A crash between open() and the rename never leaves a half-written
     file at `path`. The gate-marker writers (migration-pass / security-pass) rely
     on this so a partial digest set can't be read back as an unrecognized token
     and force a spurious gate re-run (migration-002). On any failure the temp
-    file is cleaned up and the original `path` is left untouched."""
+    file is cleaned up and the original `path` is left untouched.
+
+    `newline` is passed through to open()/fdopen() unchanged (default None keeps
+    the prior text-mode translation behaviour for existing callers); pass "\\n"
+    to force LF output regardless of platform (e.g. for a canonical-EOL file)."""
     d = os.path.dirname(path) or "."
     fd, tmp = tempfile.mkstemp(dir=d, prefix=os.path.basename(path) + ".", suffix=".tmp")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, "w", encoding="utf-8", newline=newline) as f:
             f.write(text)
         os.replace(tmp, path)
     except Exception:

@@ -91,6 +91,8 @@ import os
 import re
 import subprocess
 
+import _hooklib
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -206,18 +208,19 @@ def new_record(doc, *, interview_derived=False, entries=None, created=None):
 
 
 def write_provenance(path, record):
-    """Write `record` as pretty JSON to `path`.
+    """Write `record` as pretty JSON to `path`, atomically.
 
     Format: indent=2, sorted keys, ensure_ascii=False, trailing newline, utf-8,
     LF line endings (canonical EOL for this repo). Creates the parent directory
-    if it does not exist.
+    if it does not exist. Routed through _hooklib.write_text_atomic (sibling
+    temp file + os.replace) so a crash mid-write leaves the previous provenance
+    record intact instead of a truncated/corrupt file (reliability-016).
     """
     parent = os.path.dirname(path)
     if parent:
         os.makedirs(parent, exist_ok=True)
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(record, f, indent=2, sort_keys=True, ensure_ascii=False)
-        f.write("\n")
+    text = json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    _hooklib.write_text_atomic(path, text, newline="\n")
 
 
 def read_provenance(path):

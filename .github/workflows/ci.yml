@@ -314,12 +314,15 @@ jobs:
           ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-sandbox/.claude-plugin/plugin.json','utf8')).version")
           # First introduction of the plugin: plugin.json does not exist on base.
           # That is never a silent-staleness trap (nothing is published yet), so
-          # allow it - without this, `git show` errors and `bash -e` kills the step.
-          base_json=$(git show "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" 2>/dev/null || true)
-          if [ -z "$base_json" ]; then
+          # allow it - but only when the file is genuinely absent at $BASE. Any
+          # other git failure (transient fetch error, corrupted object store,
+          # a race on origin/$BASE) must fail the step, not be swallowed as
+          # "first introduction".
+          if ! git cat-file -e "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" 2>/dev/null; then
             echo "ca-sandbox is new on $BASE (no prior plugin.json) - first introduction, version bump not required"
             exit 0
           fi
+          base_json=$(git show "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json")
           base_ver=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
           if [ "$ver" != "$base_ver" ]; then
             echo "payload changed and version bumped: $base_ver -> $ver"

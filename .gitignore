@@ -10,6 +10,11 @@ legacy/
 # never shared. Each developer's own .claude/settings.json wires the plugin hooks.
 .claude/settings.json
 
+# Local Claude Code overrides (may carry machine-local secrets like FARM_API_KEY
+# injected via `env`). Repo-tracked guardrail so the exclusion travels with the
+# repo instead of relying on each developer's global gitignore.
+.claude/settings.local.json
+
 # Transient ADR-authoring marker under the root-level state dir (set by /ca:adr).
 # Not project state.
 .codearbiter/.markers/

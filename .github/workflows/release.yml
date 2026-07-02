@@ -36,10 +36,12 @@ jobs:
 
       - name: Resolve and verify version against the manifest
         id: v
+        env:
+          CONFIRM: ${{ github.event.inputs.confirm }}
         run: |
           set -euo pipefail
           MANIFEST=$(node -p "require('./plugins/ca/.claude-plugin/plugin.json').version")
-          REQ="${{ github.event.inputs.confirm }}"
+          REQ="$CONFIRM"
           if [ "$REQ" != "$MANIFEST" ]; then
             echo "::error::requested '$REQ' does not equal plugin.json version '$MANIFEST' — bump/align first"
             exit 1
@@ -67,11 +69,12 @@ jobs:
       - name: Create the tag and GitHub Release (idempotent)
         env:
           GH_TOKEN: ${{ github.token }}
+          SUMMARY: ${{ github.event.inputs.summary }}
         run: |
           set -euo pipefail
           TAG="${{ steps.v.outputs.tag }}"
           VER="${{ steps.v.outputs.version }}"
-          SUM="${{ github.event.inputs.summary }}"
+          SUM="$SUMMARY"
           if [ -n "$SUM" ]; then TITLE="codeArbiter $VER: $SUM"; else TITLE="codeArbiter $VER"; fi
 
           # An annotated tag needs a committer identity; the runner has none by default.
