@@ -27,6 +27,13 @@ import json
 import os
 import sys
 
+# Self-sufficient regardless of how this file is loaded (direct `python
+# wire-statusline.py` run, or importlib spec_from_file_location as
+# session-start.py and the test suite both do) — always resolve _hooklib
+# relative to THIS file rather than relying on the caller's sys.path state.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _hooklib  # noqa: E402
+
 BACKUP_KEY = "_codearbiterStatuslineBackup"       # holds the prior statusLine value
 SPINNER_BACKUP_KEY = "_codearbiterSpinnerVerbsBackup"  # holds prior spinnerVerbs
 MARKER = "statusline.py"                          # how we recognize our own line
@@ -108,12 +115,18 @@ def load_settings(path):
 
 
 def save_settings(path, data):
+    """Write `data` to `path` atomically (reliability-009).
+
+    Routed through _hooklib.write_text_atomic, which stages to a UNIQUE
+    per-process temp file (tempfile.mkstemp, not a fixed `path + ".tmp"`
+    sibling name) before os.replace(). settings.json is the user's WHOLE host
+    configuration, not a ca-owned file: two sessions racing a heal/install
+    right after a plugin update previously both staged to the same fixed
+    `.tmp` name and could clobber each other's temp content on interleave. A
+    unique name per call removes that collision entirely."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-        f.write("\n")
-    os.replace(tmp, path)
+    text = json.dumps(data, indent=2) + "\n"
+    _hooklib.write_text_atomic(path, text)
 
 
 def cmd_status(settings, exists, script_abs):

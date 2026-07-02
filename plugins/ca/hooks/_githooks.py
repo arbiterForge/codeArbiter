@@ -31,6 +31,8 @@ import stat
 import subprocess
 import sys
 
+import _hooklib
+
 SENTINEL = "# codeArbiter-managed git hook (#161) — refreshed each session; edits are overwritten."
 PHASES = ("pre-commit", "pre-push")
 
@@ -123,8 +125,13 @@ def install(root):
             if existing == desired:
                 continue  # already current — no churn
         try:
-            with open(dest, "w", encoding="utf-8", newline="\n") as f:
-                f.write(desired)
+            # reliability-010: atomic sibling-temp + os.replace (mirrors
+            # write_provenance/save_state). A crash mid-write with a plain
+            # open('w') could leave a sentinel-less partial shim that the
+            # foreign-hook guard above then preserves forever; os.replace
+            # guarantees `dest` is either the complete new shim or the prior
+            # (sentinel-bearing, or absent) file — never a torn write.
+            _hooklib.write_text_atomic(dest, desired, newline="\n")
             st = os.stat(dest)
             os.chmod(dest, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
             actions.append(f"{phase}: installed")

@@ -28,6 +28,8 @@ import shutil
 import sys
 import time
 
+import _hooklib
+
 BOM = b"\xef\xbb\xbf"
 MARKER_PREFIX = "[ca-condensed "
 
@@ -1059,11 +1061,16 @@ def load_state():
 
 
 def save_state(state):
+    """Persist the global cross-session prune-state.json atomically
+    (reliability-008): a sibling temp file + os.replace via
+    _hooklib.write_text_atomic, so a crash mid-write leaves the PRIOR valid
+    state file intact instead of a torn/truncated one. Best-effort: any
+    failure (including the simulated one write_text_atomic re-raises) is
+    swallowed here — a prune-state write must never break the user's turn."""
     d = os.path.dirname(state_path())
     try:
         os.makedirs(d, exist_ok=True)
-        with open(state_path(), "w", encoding="utf-8") as f:
-            f.write(_dumps(state))
+        _hooklib.write_text_atomic(state_path(), _dumps(state))
     except Exception:  # noqa: BLE001
         pass
 
@@ -1248,15 +1255,23 @@ def hook_run(payload, env=None):
             pass
     if rec and (st.st_size - rec.get("last_pruned_size", 0)) < cfg.min_growth:
         return 0  # cheap stat short-circuit: not enough new bytes
+    # performance-001: read + parse the transcript ONCE here and thread the
+    # bytes/lines/pre_stat through to run() below, instead of letting run()
+    # re-open and re-parse the identical on-disk content a second time. The
+    # fstat is captured from the SAME open fd as the read (not a separate
+    # os.stat afterwards) so it reflects exactly the bytes just read, matching
+    # what run()'s own self-contained read would have captured.
     try:
         with open(path, "rb") as f:
             data = f.read()
+            pre_stat = os.fstat(f.fileno())
     except Exception:  # noqa: BLE001
         return 0
-    if not tail_is_settled(load_lines(data)):
+    lines = load_lines(data)
+    if not tail_is_settled(lines):
         return 0
     try:
-        res = run(path, cfg, session=session)
+        res = run(path, cfg, session=session, data=data, lines=lines, pre_stat=pre_stat)
     except Exception:  # noqa: BLE001 — never let pruning break the turn
         return 0
     b0, b1 = res["bytes_before"], res["bytes_after"]
@@ -1313,19 +1328,35 @@ def append_audit_log(record):
 # Top-level run (dry-run analysis; execute optionally writes)
 # --------------------------------------------------------------------------- #
 
-def run(path, cfg, session="session"):
+def run(path, cfg, session="session", data=None, lines=None, pre_stat=None):
     """Prune `path` per `cfg`. Always computes the report; writes only when
-    cfg.execute and validation passes. Returns a result dict."""
-    if cfg.execute:
-        # A prior prune killed between write and truncate leaves a spliced
-        # file; restore it from backup before analyzing. (Dry-run never writes,
-        # including this.)
-        self_heal(path, session)
-    with open(path, "rb") as f:
-        orig_bytes = f.read()
-        pre_stat = os.fstat(f.fileno())
+    cfg.execute and validation passes. Returns a result dict.
 
-    lines = load_lines(orig_bytes)
+    performance-001: `data`/`lines`/`pre_stat` let a caller that has ALREADY
+    read+parsed the transcript (hook_run's tail_is_settled check) hand that
+    single read straight to the pruning pass, instead of run() re-opening and
+    re-parsing the identical on-disk bytes a second time. When `data` is None
+    (the default — direct/standalone callers, e.g. the CLI and tests), run()
+    self-heals and reads the file itself exactly as before, so behavior for
+    those callers is unchanged."""
+    if data is None:
+        if cfg.execute:
+            # A prior prune killed between write and truncate leaves a spliced
+            # file; restore it from backup before analyzing. (Dry-run never
+            # writes, including this.)
+            self_heal(path, session)
+        with open(path, "rb") as f:
+            orig_bytes = f.read()
+            pre_stat = os.fstat(f.fileno())
+        lines = load_lines(orig_bytes)
+    else:
+        # Caller already read (and self-healed, if executing) the file once —
+        # reuse its bytes/parse rather than re-reading path from disk.
+        orig_bytes = data
+        if lines is None:
+            lines = load_lines(orig_bytes)
+        if pre_stat is None:
+            pre_stat = os.stat(path)
     index = build_index(lines, cfg)
     report = apply_strategies(lines, index, cfg)
     new_bytes = serialize(lines)
