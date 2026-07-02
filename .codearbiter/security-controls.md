@@ -209,6 +209,24 @@ a `-C` target that is not a real directory now fails **closed** (H-01 block).
 copies, so audit lines / the task board / installed hooks land in the
 harness-authoritative project dir.
 
+**Hooks-install re-probe fast-path is fail-safe (#194).** To cut SessionStart
+latency, `_githooks.install()` may skip the git-spawn hooks-dir probe when a
+cheap on-disk cache proves the shims are already current. The skip fires ONLY
+when it can positively, spawn-free confirm no hooks redirect: the cached dir is
+exactly `<root>/.git/hooks` AND `_confirmed_no_local_hooks_path` finds no
+`core.hooksPath` (a **grammar-free** case-insensitive substring scan of
+`.git/config`/`.git/config.worktree` for `hookspath` — cannot under-detect any
+git-config spelling) AND no `[include]` directive AND the shims still match the
+current enforcer path. Any read failure, any `hookspath` occurrence, an
+`[include]`, a cached custom hooksPath, or a global-config change (a
+`~/.gitconfig` + XDG-config mtime token invalidates the cache) → fall through to
+the full probe. The fail direction is **install-when-unsure, never
+skip-when-unsure** — the fast path can never leave the #161 git-enforce backstop
+unwired. Accepted residual: a `$GIT_CONFIG_GLOBAL`/`$GIT_CONFIG_SYSTEM`
+env-repointed config or `/etc/gitconfig` `core.hooksPath` set AFTER a
+default-location install (the cold/first install always resolves those via the
+full probe).
+
 ---
 
 ## Audit trail

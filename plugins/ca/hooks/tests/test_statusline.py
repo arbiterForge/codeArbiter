@@ -557,6 +557,85 @@ class TestArbiterStateCache(unittest.TestCase):
         sl._ARBITER_CACHE.clear()
         self.assertIsNone(sl.arbiter_state(self.tmp))
 
+
+class TestArbiterStatePreread(unittest.TestCase):
+    """performance-003 (#194): arbiter_state(root, ctx_text=, ot_text=, oq_text=)
+    must use the SUPPLIED content instead of re-reading CONTEXT.md/open-tasks.md/
+    open-questions.md from disk — SessionStart's main() already read those three
+    files earlier in the same invocation before calling into the governance
+    line. Proven two ways: (1) the returned values reflect the SUPPLIED text
+    even when it deliberately diverges from what's on disk, and (2) a spy on
+    open() shows the three preread paths are never opened a second time."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.cad = os.path.join(self.tmp, ".codearbiter")
+        os.makedirs(self.cad, exist_ok=True)
+        # Disk content deliberately WRONG — if the code fell back to reading
+        # disk instead of using the supplied text, these values would leak
+        # through and the assertions below would catch it.
+        self._write("CONTEXT.md", "---\narbiter: enabled\nstage: DISK-STAGE\n---\n")
+        self._write("open-tasks.md", "- [ ] t.t.0001 - disk task a\n"
+                                     "- [ ] t.t.0002 - disk task b\n"
+                                     "- [ ] t.t.0003 - disk task c\n")
+        self._write("open-questions.md", "no confirms here on disk\n")
+        self._write("overrides.log", "")
+        self._write("last-checkpoint", "0")
+        sl._ARBITER_CACHE.clear()
+
+    def _write(self, name, body):
+        with open(os.path.join(self.cad, name), "w", encoding="utf-8", newline="\n") as f:
+            f.write(body)
+
+    def test_supplied_text_wins_over_disk_content(self):
+        ctx_text = "---\narbiter: enabled\nstage: SUPPLIED-STAGE\n---\n"
+        ot_text = "- [ ] t.t.0009 - supplied task\n"
+        oq_text = "[CONFIRM-01] one supplied question\n"
+
+        st = sl.arbiter_state(self.tmp, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
+
+        self.assertIsNotNone(st)
+        self.assertEqual(st["stage"], "SUPPLIED-STAGE")
+        self.assertEqual(st["tasks"], 1)
+        self.assertEqual(st["q"], 1)
+
+    def test_no_preread_args_still_reads_disk_as_before(self):
+        # Backward compatibility: every existing caller passes nothing, and
+        # must see the ORIGINAL disk-derived behavior unchanged.
+        st = sl.arbiter_state(self.tmp)
+        self.assertEqual(st["stage"], "DISK-STAGE")
+        self.assertEqual(st["tasks"], 3)
+        self.assertEqual(st["q"], 0)
+
+    def test_supplied_text_means_the_three_files_are_never_reopened(self):
+        ctx_path = os.path.join(self.cad, "CONTEXT.md")
+        ot_path = os.path.join(self.cad, "open-tasks.md")
+        oq_path = os.path.join(self.cad, "open-questions.md")
+        forbidden = {os.path.normcase(ctx_path), os.path.normcase(ot_path),
+                    os.path.normcase(oq_path)}
+        opened = []
+        real_open = open
+
+        def spy_open(path, *a, **kw):
+            try:
+                norm = os.path.normcase(os.path.abspath(path))
+            except Exception:  # noqa: BLE001
+                norm = None
+            opened.append(norm)
+            if norm in forbidden:
+                raise AssertionError(f"unexpected re-open of preread path: {path}")
+            return real_open(path, *a, **kw)
+
+        ctx_text = "---\narbiter: enabled\nstage: SUPPLIED-STAGE\n---\n"
+        ot_text = "- [ ] t.t.0009 - supplied task\n"
+        oq_text = "[CONFIRM-01] one supplied question\n"
+
+        with mock.patch("builtins.open", side_effect=spy_open):
+            st = sl.arbiter_state(self.tmp, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
+
+        self.assertIsNotNone(st)
+        self.assertEqual(st["stage"], "SUPPLIED-STAGE")
+
     def test_enabled_gate_routes_through_hooklib_when_available(self):
         # When _hooklib is importable, the gate uses frontmatter_enabled — confirm
         # the activation decision still resolves correctly via that path.

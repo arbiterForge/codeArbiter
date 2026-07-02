@@ -801,6 +801,54 @@ class TestAssembleSummaryStaleWorktrees(unittest.TestCase):
         self.assertTrue(sl.any_actionable(summary))
 
 
+class TestAssembleSummaryFanOut(unittest.TestCase):
+    """performance-002 (#194): assemble_summary's five git reads are independent
+    (documented in its own docstring), so they must run CONCURRENTLY rather than
+    strictly sequentially — on Windows especially, git process-creation overhead
+    compounds when five spawns block one after another.
+
+    Proof: an injected runner that sleeps a fixed delay per call. Five
+    sequential calls would take >= 5x the delay; a fan-out takes roughly ONE
+    delay (all five overlapping). This is a semantic property of the
+    concurrency, not a raw platform-varying spawn count — the exact assertion
+    the acceptance criteria calls for."""
+
+    def test_five_reads_run_concurrently_not_sequentially(self):
+        import time as _time
+
+        DELAY = 0.15
+
+        def slow_runner(args, root):
+            _time.sleep(DELAY)
+            joined = " ".join(args)
+            if "rev-list" in joined:
+                return "0\t0"
+            if "branch" in joined:
+                return "* main aaa [origin/main] mainline\n"
+            return ""
+
+        t0 = _time.time()
+        summary = _mod.assemble_summary(
+            "/root", runner=slow_runner, current="main", default="main",
+        )
+        elapsed = _time.time() - t0
+
+        # Sanity: the summary still assembled correctly despite the fan-out.
+        self.assertFalse(summary["dirty"])
+        self.assertEqual(summary["behind"], 0)
+        self.assertEqual(summary["ahead"], 0)
+
+        # Sequential would take >= 5 * DELAY (0.75s); concurrent takes roughly
+        # one DELAY plus scheduling slack. A generous 3x-single-delay ceiling
+        # proves fan-out without being a flaky tight bound.
+        self.assertLess(
+            elapsed, DELAY * 3,
+            f"assemble_summary's 5 git reads took {elapsed:.3f}s for a "
+            f"{DELAY}s-per-call runner — they are running sequentially, not "
+            f"concurrently (sequential would take >= {DELAY * 5:.3f}s)",
+        )
+
+
 class _MainHarness(unittest.TestCase):
     """Shared scaffolding for exercising session-start.py main() deterministically.
 
@@ -1121,6 +1169,70 @@ class TestReadOnlyProof(_MainHarness):
         self.assertTrue(os.path.isfile(
             _mod.standup_marker_path(self.root, date_iso)
         ))
+
+
+class TestMainDoesNotDoubleReadGovernanceInputs(_MainHarness):
+    """performance-003 (#194): the full-briefing path's governance_line() call
+    reuses main()'s own CONTEXT.md/open-tasks.md/open-questions.md reads
+    instead of arbiter_state() re-reading them from disk a second time.
+
+    open-tasks.md and open-questions.md have exactly ONE legitimate reader in
+    main() (main()'s own read_text) — so after the fix each is opened exactly
+    once for the whole invocation. CONTEXT.md has TWO legitimate readers
+    (the up-front dormancy gate via _hooklib.frontmatter_enabled, and main()'s
+    own read_text for the INITIALIZED/stage checks) — that pre-existing pair is
+    out of scope for this fix (a different concern, #194 only targets
+    arbiter_state's re-read); the assertion pins it at exactly 2, proving the
+    THIRD and FOURTH reads (arbiter_state's own frontmatter()/_arbiter_enabled()
+    disk reads) are gone."""
+
+    def setUp(self):
+        super().setUp()
+        self._write_context(_ENABLED_INITIALIZED_CONTEXT)
+        cad = os.path.join(self.root, ".codearbiter")
+        with open(os.path.join(cad, "open-tasks.md"), "w", encoding="utf-8") as f:
+            f.write("- [ ] t.t.0001 - a task\n")
+        with open(os.path.join(cad, "open-questions.md"), "w", encoding="utf-8") as f:
+            f.write("no confirms\n")
+        _mod._default_git_runner = lambda args, root: ""
+        _mod._detached_fetch_spawner = lambda args, root: _FakeProc()
+
+    def test_ot_and_oq_opened_exactly_once_ctx_opened_exactly_twice(self):
+        ctx_path = os.path.normcase(os.path.abspath(
+            os.path.join(self.root, ".codearbiter", "CONTEXT.md")))
+        ot_path = os.path.normcase(os.path.abspath(
+            os.path.join(self.root, ".codearbiter", "open-tasks.md")))
+        oq_path = os.path.normcase(os.path.abspath(
+            os.path.join(self.root, ".codearbiter", "open-questions.md")))
+        counts = {"ctx": 0, "ot": 0, "oq": 0}
+        real_open = open
+
+        def spy_open(path, *a, **kw):
+            try:
+                norm = os.path.normcase(os.path.abspath(path))
+            except Exception:  # noqa: BLE001
+                norm = None
+            if norm == ctx_path:
+                counts["ctx"] += 1
+            elif norm == ot_path:
+                counts["ot"] += 1
+            elif norm == oq_path:
+                counts["oq"] += 1
+            return real_open(path, *a, **kw)
+
+        import unittest.mock as _mock
+        with _mock.patch("builtins.open", side_effect=spy_open):
+            out = self._run_main()
+
+        self.assertIn("daily briefing", out)  # sanity: full-briefing path ran
+        self.assertEqual(counts["ot"], 1,
+                         "open-tasks.md must be opened exactly once per invocation")
+        self.assertEqual(counts["oq"], 1,
+                         "open-questions.md must be opened exactly once per invocation")
+        self.assertEqual(counts["ctx"], 2,
+                         "CONTEXT.md's two LEGITIMATE readers (the dormancy gate + "
+                         "main()'s own read) must survive, but arbiter_state's extra "
+                         "re-reads must be gone")
 
 
 if __name__ == "__main__":

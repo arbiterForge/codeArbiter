@@ -23,6 +23,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENFORCE = os.path.join(HOOKS, "git-enforce.py")
@@ -115,6 +116,244 @@ class TestInstall(_GitFixture):
         _githooks.install(self.root)
         _githooks.uninstall(self.root)
         self.assertFalse(os.path.isfile(os.path.join(self._hooks_dir(), "pre-commit")))
+
+
+class TestInstallSkipsReprobeWhenCurrent(_GitFixture):
+    """performance-002 (#194): a second install() call for the SAME repo, with
+    nothing changed, must skip the git-config/rev-parse re-probe entirely — the
+    cheap on-disk cache proves the hooks are already current without spawning
+    git at all. This is the semantic property the acceptance criteria asks for:
+    a SPECIFIC re-probe skipped, not a raw platform-varying spawn count."""
+
+    def _hooks_dir(self):
+        return os.path.join(self.root, ".git", "hooks")
+
+    def test_second_call_makes_zero_git_hooks_dir_probe_calls(self):
+        # First call: genuine cold install — the probe (_git) legitimately runs.
+        first_calls = []
+        orig = _githooks._git
+
+        def spy1(args, cwd):
+            first_calls.append(list(args))
+            return orig(args, cwd)
+
+        _githooks._git = spy1
+        try:
+            _githooks.install(self.root)
+        finally:
+            _githooks._git = orig
+        self.assertTrue(first_calls, "cold install must resolve hooks_dir via git")
+
+        # Second call against the SAME repo, nothing changed: the cached
+        # hooks_dir + up-to-date shim check must short-circuit BEFORE hooks_dir()
+        # ever calls _git — zero git-hooks-dir-probe spawns this time.
+        second_calls = []
+
+        def spy2(args, cwd):
+            second_calls.append(list(args))
+            return orig(args, cwd)
+
+        _githooks._git = spy2
+        try:
+            result = _githooks.install(self.root)
+        finally:
+            _githooks._git = orig
+        self.assertEqual(result, [])
+        self.assertEqual(second_calls, [],
+                         "install() must skip the hooks_dir git-config/rev-parse "
+                         "re-probe when the cached hooks are already current")
+
+    def test_cache_miss_falls_through_to_full_probe(self):
+        # A cache-miss (nothing installed yet, no cache file) must still fully
+        # resolve and install via the real git-based probe — the fast path
+        # never substitutes for a genuine cold install.
+        cache_file = os.path.join(self.root, ".git", _githooks._HOOKSDIR_CACHE_NAME)
+        self.assertFalse(os.path.isfile(cache_file))
+        actions = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", actions)
+        self.assertIn("pre-push: installed", actions)
+        self.assertTrue(os.path.isfile(cache_file),
+                        "a successful resolution must persist the hooks_dir cache")
+
+    def test_stale_cached_hooks_dir_falls_through(self):
+        # A cache file naming a directory that no longer exists must be treated
+        # as a miss (never trusted blindly).
+        os.makedirs(os.path.join(self.root, ".git"), exist_ok=True)
+        cache_file = os.path.join(self.root, ".git", _githooks._HOOKSDIR_CACHE_NAME)
+        with open(cache_file, "w", encoding="utf-8") as f:
+            f.write(os.path.join(self.root, "_nonexistent_hooks_dir") + "\n")
+        actions = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", actions)
+        for phase in ("pre-commit", "pre-push"):
+            self.assertTrue(os.path.isfile(os.path.join(self._hooks_dir(), phase)))
+
+    def test_mismatched_enforcer_path_falls_through_not_silently_skipped(self):
+        # If the enforcer path changed (e.g. a plugin update moved the install
+        # dir) since the cache was written, the shim content no longer matches
+        # -> _hooks_current() must return False -> the full probe must run and
+        # refresh the shim, never silently skip a needed update.
+        _githooks.install(self.root)  # writes the cache with the real enforcer path
+        with mock.patch.object(_githooks, "_enforcer_path", return_value="/moved/enforcer.py"):
+            actions = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", actions)
+        self.assertIn("pre-push: installed", actions)
+        with open(os.path.join(self._hooks_dir(), "pre-commit"), encoding="utf-8") as f:
+            self.assertIn("/moved/enforcer.py", f.read())
+
+    # ------------------------------------------------------------------
+    # CRITICAL regression (security review, post-#194): a LOCAL core.hooksPath
+    # change after a default-location install must NEVER be skipped past. The
+    # realistic trigger is the user later adopting husky / pre-commit-
+    # framework, which sets core.hooksPath in .git/config.
+    # ------------------------------------------------------------------
+
+    def test_local_hooks_path_added_after_install_is_not_skipped(self):
+        # Cold install at the default location.
+        first = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", first)
+        default_dir = self._hooks_dir()
+        for phase in ("pre-commit", "pre-push"):
+            self.assertTrue(os.path.isfile(os.path.join(default_dir, phase)))
+
+        # The user (or a tool like husky) now points core.hooksPath at a new,
+        # repo-local directory.
+        custom_dir = os.path.join(self.root, "customhooks")
+        _git(["config", "core.hooksPath", "customhooks"], self.root)
+
+        # Re-install MUST resolve into the NEW location — never silently skip
+        # past it because the OLD (.git/hooks) shims are still "current".
+        second = _githooks.install(self.root)
+        self.assertNotEqual(second, [],
+                            "a local core.hooksPath change must never be skipped as a no-op")
+        for phase in ("pre-commit", "pre-push"):
+            dest = os.path.join(custom_dir, phase)
+            self.assertTrue(os.path.isfile(dest),
+                            f"{phase} must be installed into the NEW hooksPath dir")
+            with open(dest, encoding="utf-8") as f:
+                self.assertIn(_githooks.SENTINEL, f.read())
+
+    def test_local_hooks_path_removed_after_install_falls_back_to_default(self):
+        # Symmetric case: install with a custom hooksPath already set, then
+        # unset it — re-install must land back in the default .git/hooks, not
+        # be skipped because SOME cached location happened to be current.
+        custom_dir = os.path.join(self.root, "customhooks")
+        _git(["config", "core.hooksPath", "customhooks"], self.root)
+        first = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", first)
+        for phase in ("pre-commit", "pre-push"):
+            self.assertTrue(os.path.isfile(os.path.join(custom_dir, phase)))
+
+        _git(["config", "--unset", "core.hooksPath"], self.root)
+
+        second = _githooks.install(self.root)
+        self.assertNotEqual(second, [],
+                            "unsetting a local core.hooksPath must never be skipped as a no-op")
+        default_dir = self._hooks_dir()
+        for phase in ("pre-commit", "pre-push"):
+            dest = os.path.join(default_dir, phase)
+            self.assertTrue(os.path.isfile(dest),
+                            f"{phase} must be (re)installed into the DEFAULT hooks dir")
+            with open(dest, encoding="utf-8") as f:
+                self.assertIn(_githooks.SENTINEL, f.read())
+
+    def test_confirmed_no_local_hooks_path_true_when_config_silent(self):
+        # Direct unit coverage of the confirmation helper itself: a bare repo
+        # with no hooksPath key anywhere in .git/config confirms absent.
+        self.assertTrue(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_confirmed_no_local_hooks_path_false_when_set(self):
+        _git(["config", "core.hooksPath", "customhooks"], self.root)
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_confirmed_no_local_hooks_path_false_on_include_directive(self):
+        # An [include] directive could pull in a hooksPath from elsewhere —
+        # our grammar-free substring scan doesn't follow it, so it must fail
+        # SAFE (treat as "not confirmed absent"), never silently ignore it.
+        cfg = os.path.join(self.root, ".git", "config")
+        with open(cfg, "a", encoding="utf-8") as f:
+            f.write("[include]\n\tpath = ../shared.gitconfig\n")
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    # ------------------------------------------------------------------
+    # HIGH regression (re-review): git's config grammar honors a variable on
+    # the SAME line as its section header — `[core] hooksPath = x`,
+    # `[core]hooksPath=x`, `[CORE]HooksPath=x` are all valid, real-git-honored
+    # spellings a hand-rolled line-oriented section/key parser can miss. The
+    # grammar-free substring scan must catch every one of these regardless.
+    # ------------------------------------------------------------------
+
+    def _append_raw_config(self, text):
+        cfg = os.path.join(self.root, ".git", "config")
+        with open(cfg, "a", encoding="utf-8") as f:
+            f.write(text)
+
+    def test_confirmed_no_local_hooks_path_false_on_same_line_spaced(self):
+        self._append_raw_config("[core] hooksPath = customhooks\n")
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_confirmed_no_local_hooks_path_false_on_same_line_no_space(self):
+        self._append_raw_config("[core]hooksPath=customhooks\n")
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_confirmed_no_local_hooks_path_false_on_upper_section_and_key(self):
+        self._append_raw_config("[CORE]HooksPath=customhooks\n")
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_same_line_hooks_path_is_not_skipped_end_to_end(self):
+        # End-to-end proof (not just the unit-level confirmation helper): a
+        # cold install, then a SAME-LINE hooksPath spelling written directly
+        # into .git/config (the same-line form real `git config` itself does
+        # not produce, but real git STILL HONORS when reading — verified by
+        # the sanity assertion below), then re-install must land in the
+        # custom dir, never be skipped as a no-op.
+        first = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", first)
+
+        custom_dir = os.path.join(self.root, "customhooks")
+        os.makedirs(custom_dir, exist_ok=True)
+        self._append_raw_config("[core] hooksPath = customhooks\n")
+
+        # Sanity: real git actually honors this same-line spelling (confirms
+        # the repro is real, not an artifact of our own parsing).
+        cfg_check = _git(["config", "--get", "core.hooksPath"], self.root)
+        self.assertEqual(cfg_check.stdout.strip(), "customhooks",
+                         "real git must honor the same-line hooksPath spelling "
+                         "for this regression to be meaningful")
+
+        second = _githooks.install(self.root)
+        self.assertNotEqual(second, [],
+                            "a same-line hooksPath spelling must never be skipped as a no-op")
+        for phase in ("pre-commit", "pre-push"):
+            dest = os.path.join(custom_dir, phase)
+            self.assertTrue(os.path.isfile(dest),
+                            f"{phase} must be installed into the NEW (same-line-configured) dir")
+            with open(dest, encoding="utf-8") as f:
+                self.assertIn(_githooks.SENTINEL, f.read())
+
+    def test_cached_custom_hooks_path_is_never_fast_pathed(self):
+        # Even if the shims at a CACHED custom hooksPath are still current and
+        # no local override is newly detected, a cached hooks_dir that is not
+        # the DEFAULT location must always re-confirm via the real probe —
+        # never trust a cached custom path blindly.
+        custom_dir = os.path.join(self.root, "customhooks")
+        _git(["config", "core.hooksPath", "customhooks"], self.root)
+        _githooks.install(self.root)  # writes cache pointing at customhooks
+
+        calls = []
+        orig = _githooks._git
+
+        def spy(args, cwd):
+            calls.append(list(args))
+            return orig(args, cwd)
+
+        _githooks._git = spy
+        try:
+            result = _githooks.install(self.root)
+        finally:
+            _githooks._git = orig
+        self.assertEqual(result, [])  # still a no-op...
+        self.assertTrue(calls, "a cached CUSTOM hooksPath must always re-confirm via git, "
+                              "never take the zero-spawn fast path")
 
 
 class TestPreCommitEnforce(_GitFixture):
