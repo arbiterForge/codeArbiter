@@ -56,17 +56,20 @@
 #     is "install when unsure," never "skip when unsure."
 #
 #     Documented residual (accepted, not cheaply closable): a GLOBAL/SYSTEM
-#     core.hooksPath (~/.gitconfig, /etc/gitconfig) set AFTER a default-location
-#     install is not caught by the `.git/config` read alone — closed for the
-#     common `~/.gitconfig` case by also keying the cache on that file's mtime
-#     (below), but a `/etc/gitconfig` (or an equivalent `GIT_CONFIG_*` env/
-#     `--system` override) change is not cheaply detectable and remains
-#     residual. This is rare (a system-wide hooksPath predating a later
-#     default-location install is the unusual order), and a cold/first install
-#     always resolves it correctly via the full git-based probe regardless.
+#     core.hooksPath set AFTER a default-location install is not caught by the
+#     `.git/config` read alone. This covers ALL of git's global/system config
+#     locations, not just `~/.gitconfig`: `~/.config/git/config` (or
+#     `$XDG_CONFIG_HOME/git/config`), and a `$GIT_CONFIG_GLOBAL`/
+#     `$GIT_CONFIG_SYSTEM` env override repointing the file entirely. The cache
+#     is keyed on the mtime of `~/.gitconfig` AND the XDG path (below), which
+#     closes the common case of a later edit to either of those two files; a
+#     `GIT_CONFIG_GLOBAL`/`GIT_CONFIG_SYSTEM` env override, or an edit to
+#     `/etc/gitconfig`, is not cheaply detectable from a fixed path and remains
+#     residual. This is rare (those overrides predating a later default-location
+#     install is the unusual order), and a cold/first install always resolves
+#     it correctly via the full git-based probe regardless.
 
 import os
-import re
 import stat
 import subprocess
 import sys
@@ -81,14 +84,6 @@ PHASES = ("pre-commit", "pre-push")
 # naturally False there — the cache silently declines to engage and every call
 # falls through to the full probe, rather than ever risking a wrong-repo guess.
 _HOOKSDIR_CACHE_NAME = "codearbiter-hooksdir-cache"
-
-# Minimal git-config section/key matcher — used ONLY to detect the PRESENCE of
-# a `core.hooksPath` key (never its value) so the fast path can conservatively
-# decline whenever the answer isn't a clean "definitely not set". Deliberately
-# does not attempt full git-config-file fidelity (line continuations, quoted
-# subsections, etc.) — see _config_has_core_hooks_path's fail-direction note.
-_SECTION_RE = re.compile(r'^\[\s*([^\s\]"]+)\s*(?:"[^"]*")?\s*\]')
-_KEY_RE = re.compile(r'^([A-Za-z][A-Za-z0-9-]*)\s*(?:=.*)?$')
 
 
 def _warn(msg):
@@ -150,45 +145,12 @@ def _read(path):
         return None
 
 
-def _config_has_core_hooks_path(text):
-    """True iff git-config-file `text` sets `core.hooksPath` inside a `[core]`
-    section. Minimal section/key matcher, not a full git-config parser (no
-    line-continuation support) — it only answers "did I positively see a
-    hooksPath key under [core]?"."""
-    section = None
-    for raw in (text or "").splitlines():
-        line = raw.strip()
-        if not line or line.startswith((";", "#")):
-            continue
-        m = _SECTION_RE.match(line)
-        if m:
-            section = m.group(1).lower()
-            continue
-        if section == "core":
-            km = _KEY_RE.match(line)
-            if km and km.group(1).lower() == "hookspath":
-                return True
-    return False
-
-
-def _config_has_include_directive(text):
-    """True iff `text` contains an `[include]`/`[includeIf ...]` section —
-    git-config's mechanism for pulling in ANOTHER file (which this module's
-    minimal parser does not follow). Presence makes `.git/config` itself
-    unconfirmable for our purposes (a hooksPath could be set in the included
-    file instead), so the caller must fail safe on it — see
-    _confirmed_no_local_hooks_path."""
-    return bool(re.search(r'^\[\s*include(if\b[^\]]*)?\s*\]', text or "",
-                          re.IGNORECASE | re.MULTILINE))
-
-
 def _local_config_paths(root):
-    """git-config files whose `[core]` section could define a LOCAL
-    core.hooksPath override for `root` — `.git/config` (always checked, even
-    if the file happens to be missing — see _confirmed_no_local_hooks_path)
-    plus `.git/config.worktree` (extensions.worktreeConfig repos), when it
-    exists. Deliberately excludes global (~/.gitconfig) and system
-    (/etc/gitconfig) config — see the module header's documented residual."""
+    """git-config files that could define a LOCAL core.hooksPath override for
+    `root` — `.git/config` (always checked, even if the file happens to be
+    missing — see _confirmed_no_local_hooks_path) plus `.git/config.worktree`
+    (extensions.worktreeConfig repos), when it exists. Deliberately excludes
+    global/system config — see the module header's documented residual."""
     git_dir = os.path.join(root, ".git")
     return [os.path.join(git_dir, "config"), os.path.join(git_dir, "config.worktree")]
 
@@ -196,14 +158,33 @@ def _local_config_paths(root):
 def _confirmed_no_local_hooks_path(root):
     """True ONLY if a direct, no-git-spawn read of the config file(s) that
     could set a LOCAL core.hooksPath for `root` positively confirms NONE of
-    them do. Any read failure (a file exists but can't be read) or a detected
-    hooksPath key returns False. A simply-ABSENT `config.worktree` is not an
-    error (most repos don't have one) and contributes no override, exactly
-    like git itself.
+    them could possibly do so.
 
-    This is the fail-direction-critical check (CRITICAL fix, post-#194): the
-    fast path in install() must never trust a cached hooks_dir without this
-    positive confirmation, or a later `core.hooksPath` change (husky /
+    GRAMMAR-FREE by design (HIGH-severity fix, second spelling of the same
+    skip -> backstop-unwire class): git's config grammar honors a variable on
+    the SAME line as its section header (`[core] hooksPath = x`,
+    `[core]hooksPath=x`, `[CORE]HooksPath=x` are all valid and honored by real
+    git), plus quoting/continuation/case variations — a hand-rolled
+    line-oriented section/key parser reliably misses some of these spellings.
+    Rather than chase git's config grammar (an unbounded set of spellings),
+    this check is a single case-insensitive SUBSTRING scan for `hookspath`
+    anywhere in the file, plus a substring scan for an `[include`/`[includeif`
+    directive (which could pull a hooksPath in from elsewhere, unfollowed by
+    this check). Any occurrence of either substring — even inside a comment —
+    or any read failure, returns False (not confirmed). This can never
+    UNDER-detect a real hooksPath key (a real key always contains the
+    substring "hookspath" case-insensitively, by definition of the git-config
+    keyword), so it can only ever be OVER-cautious (an extra, harmless
+    git-spawn fall-through on a false positive, e.g. a stray comment
+    mentioning the word) — never falsely confirm an override is absent when
+    one is actually present. That asymmetry is exactly the fail-direction the
+    fast path requires: "install when unsure," never "skip when unsure." A
+    simply-ABSENT `config.worktree` is not an error (most repos don't have
+    one) and contributes no override, exactly like git itself.
+
+    This is the fail-direction-critical check (CRITICAL/HIGH fix, post-#194):
+    the fast path in install() must never trust a cached hooks_dir without
+    this positive confirmation, or a later `core.hooksPath` change (husky /
     pre-commit-framework) would silently leave the NEW hooks dir unwired."""
     for path in _local_config_paths(root):
         if not os.path.isfile(path):
@@ -211,34 +192,53 @@ def _confirmed_no_local_hooks_path(root):
         text = _read(path)
         if text is None:
             return False  # exists but unreadable -> can't confirm -> unsafe to skip
-        if _config_has_core_hooks_path(text):
-            return False
-        if _config_has_include_directive(text):
+        lowered = text.lower()
+        if "hookspath" in lowered:
+            return False  # ANY spelling/placement/casing -> can't confirm absent
+        if "[include" in lowered:
             return False  # could pull in a hooksPath from elsewhere -> can't confirm
     return True
 
 
-def _global_gitconfig_mtime_token():
-    """A cheap cache-invalidation token for ~/.gitconfig: its mtime, or the
-    literal 'absent' if the file doesn't exist. Included in the on-disk cache
-    so a LATER edit to the user's global config (e.g. adding a global
-    core.hooksPath) invalidates a previously-fast-pathable cache instead of
-    silently going unnoticed — narrows, but does not eliminate, the documented
-    global/system-config residual (module header)."""
+def _xdg_git_config_path():
+    """The XDG git global-config path git ALSO reads (lower precedence than
+    ~/.gitconfig, but still consulted): `$XDG_CONFIG_HOME/git/config`, or
+    `~/.config/git/config` when XDG_CONFIG_HOME is unset — matching git's own
+    fallback."""
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    return os.path.join(base, "git", "config")
+
+
+def _file_mtime_token(path):
+    """A cheap cache-invalidation token for `path`: its mtime, or the literal
+    'absent' if it doesn't exist."""
     try:
-        return repr(os.stat(os.path.join(os.path.expanduser("~"), ".gitconfig")).st_mtime)
+        return repr(os.stat(path).st_mtime)
     except OSError:
         return "absent"
+
+
+def _global_gitconfig_mtime_token():
+    """A cheap cache-invalidation token covering BOTH global git-config
+    locations codeArbiter can cheaply stat by a fixed path: `~/.gitconfig` and
+    the XDG `~/.config/git/config` (or `$XDG_CONFIG_HOME/git/config`).
+    Included in the on-disk cache so a LATER edit to either (e.g. adding a
+    global core.hooksPath) invalidates a previously-fast-pathable cache
+    instead of silently going unnoticed. Does NOT cover a `$GIT_CONFIG_GLOBAL`/
+    `$GIT_CONFIG_SYSTEM` env override repointing the file entirely, nor
+    `/etc/gitconfig` — see the module header's documented residual."""
+    return f"{_file_mtime_token(os.path.join(os.path.expanduser('~'), '.gitconfig'))}|" \
+           f"{_file_mtime_token(_xdg_git_config_path())}"
 
 
 def _cached_hooks_dir(root):
     """The last hooks_dir() a successful resolution used for `root`, read from
     the on-disk cache — NO git spawn. Returns None (cache miss) if the cache
     file is absent/unreadable/blank/malformed, if it names a directory that no
-    longer exists (e.g. deleted between sessions), or if ~/.gitconfig has
-    changed since the cache was written (see _global_gitconfig_mtime_token). A
-    None return always falls the caller through to the real git-based
-    hooks_dir() probe."""
+    longer exists (e.g. deleted between sessions), or if either global
+    git-config location (~/.gitconfig, the XDG git config) has changed since
+    the cache was written (see _global_gitconfig_mtime_token). A None return
+    always falls the caller through to the real git-based hooks_dir() probe."""
     git_dir = os.path.join(root, ".git")
     if not os.path.isdir(git_dir):
         return None
@@ -252,17 +252,17 @@ def _cached_hooks_dir(root):
     if not hd or not os.path.isdir(hd):
         return None
     if stored_token != _global_gitconfig_mtime_token():
-        return None  # ~/.gitconfig changed since this cache was written
+        return None  # a covered global git-config location changed since this cache was written
     return hd
 
 
 def _write_hooks_dir_cache(root, hd):
-    """Best-effort persistence of the resolved hooks_dir (+ the ~/.gitconfig
-    invalidation token) so a LATER session can skip the git-config/rev-parse
-    re-probe (performance-002) when nothing has changed. Any failure —
-    including `.git` being a FILE, not a directory, for a linked worktree — is
-    swallowed: this cache is a pure optimization and is never allowed to
-    affect whether hooks actually get installed."""
+    """Best-effort persistence of the resolved hooks_dir (+ the global
+    git-config invalidation token) so a LATER session can skip the
+    git-config/rev-parse re-probe (performance-002) when nothing has changed.
+    Any failure — including `.git` being a FILE, not a directory, for a linked
+    worktree — is swallowed: this cache is a pure optimization and is never
+    allowed to affect whether hooks actually get installed."""
     git_dir = os.path.join(root, ".git")
     if not os.path.isdir(git_dir):
         return

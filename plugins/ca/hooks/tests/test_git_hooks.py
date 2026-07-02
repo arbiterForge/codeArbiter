@@ -267,12 +267,68 @@ class TestInstallSkipsReprobeWhenCurrent(_GitFixture):
 
     def test_confirmed_no_local_hooks_path_false_on_include_directive(self):
         # An [include] directive could pull in a hooksPath from elsewhere —
-        # our minimal parser doesn't follow it, so it must fail SAFE (treat as
-        # "not confirmed absent"), never silently ignore it.
+        # our grammar-free substring scan doesn't follow it, so it must fail
+        # SAFE (treat as "not confirmed absent"), never silently ignore it.
         cfg = os.path.join(self.root, ".git", "config")
         with open(cfg, "a", encoding="utf-8") as f:
             f.write("[include]\n\tpath = ../shared.gitconfig\n")
         self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    # ------------------------------------------------------------------
+    # HIGH regression (re-review): git's config grammar honors a variable on
+    # the SAME line as its section header — `[core] hooksPath = x`,
+    # `[core]hooksPath=x`, `[CORE]HooksPath=x` are all valid, real-git-honored
+    # spellings a hand-rolled line-oriented section/key parser can miss. The
+    # grammar-free substring scan must catch every one of these regardless.
+    # ------------------------------------------------------------------
+
+    def _append_raw_config(self, text):
+        cfg = os.path.join(self.root, ".git", "config")
+        with open(cfg, "a", encoding="utf-8") as f:
+            f.write(text)
+
+    def test_confirmed_no_local_hooks_path_false_on_same_line_spaced(self):
+        self._append_raw_config("[core] hooksPath = customhooks\n")
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_confirmed_no_local_hooks_path_false_on_same_line_no_space(self):
+        self._append_raw_config("[core]hooksPath=customhooks\n")
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_confirmed_no_local_hooks_path_false_on_upper_section_and_key(self):
+        self._append_raw_config("[CORE]HooksPath=customhooks\n")
+        self.assertFalse(_githooks._confirmed_no_local_hooks_path(self.root))
+
+    def test_same_line_hooks_path_is_not_skipped_end_to_end(self):
+        # End-to-end proof (not just the unit-level confirmation helper): a
+        # cold install, then a SAME-LINE hooksPath spelling written directly
+        # into .git/config (the same-line form real `git config` itself does
+        # not produce, but real git STILL HONORS when reading — verified by
+        # the sanity assertion below), then re-install must land in the
+        # custom dir, never be skipped as a no-op.
+        first = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", first)
+
+        custom_dir = os.path.join(self.root, "customhooks")
+        os.makedirs(custom_dir, exist_ok=True)
+        self._append_raw_config("[core] hooksPath = customhooks\n")
+
+        # Sanity: real git actually honors this same-line spelling (confirms
+        # the repro is real, not an artifact of our own parsing).
+        cfg_check = _git(["config", "--get", "core.hooksPath"], self.root)
+        self.assertEqual(cfg_check.stdout.strip(), "customhooks",
+                         "real git must honor the same-line hooksPath spelling "
+                         "for this regression to be meaningful")
+
+        second = _githooks.install(self.root)
+        self.assertNotEqual(second, [],
+                            "a same-line hooksPath spelling must never be skipped as a no-op")
+        for phase in ("pre-commit", "pre-push"):
+            dest = os.path.join(custom_dir, phase)
+            self.assertTrue(os.path.isfile(dest),
+                            f"{phase} must be installed into the NEW (same-line-configured) dir")
+            with open(dest, encoding="utf-8") as f:
+                self.assertIn(_githooks.SENTINEL, f.read())
 
     def test_cached_custom_hooks_path_is_never_fast_pathed(self):
         # Even if the shims at a CACHED custom hooksPath are still current and
