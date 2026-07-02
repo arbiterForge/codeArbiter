@@ -33,6 +33,25 @@
 # through num() coercion, and every row is width-clamped so a bad value or a
 # narrow terminal degrades a segment — it never breaks the box.
 #
+# This file is a THIN ENTRY POINT (architecture-004): it parses stdin, resolves
+# the box width, and wires together the concern-group libraries below into the
+# final render. Each concern lives in its own `_<name>lib.py` sibling, imported
+# guarded the same defensive way as _taskboardlib/_hooklib below — a missing lib
+# degrades its segment(s), it never breaks the box:
+#   _colorlib        palette, glyphs, ANSI regex, width-aware clip/pad/gradient
+#   _fmtlib          token/USD/duration/path/sparkline formatting
+#   _gitlib          project root, branch, dirty-check
+#   _arbiterstatelib .codearbiter/ frontmatter + override/question counting + cache
+#   _sessionlib      true wall-clock session-start resolution
+#   _subagentslib    subagent directory scan + per-subagent labeling
+#   _boxlib          the box shell (top/row/sep/bottom) + column layout helpers
+#   _segmentslib     the individual content segments (ctx bar, rate cells, pill, …)
+#   _ledgerlib       token/cost ledger (extracted earlier, T-12)
+# `seg_update` / `plugin_root_for_render` (the update-notifier surface) and
+# `dev_active`'s render-time callers stay wired here because a test patches
+# `statusline.plugin_root_for_render` directly — that seam must resolve through
+# this module's own globals, not a lib's.
+#
 # Env:
 #   CODEARBITER_STATUSLINE=off   disable entirely
 #   CODEARBITER_COMPACT=1        drop the subagent rows (lean mode)
@@ -44,20 +63,19 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 import time
-import unicodedata
-from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Shared task-board logic so the "tasks" segment counts in-flight items the same
 # way the SessionStart hook does (excludes done). Guarded: a failed import must
 # degrade the segment, never break the box (robustness contract above).
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 try:
     from _taskboardlib import count_in_flight as _count_in_flight, read_board as _read_board
 except Exception:  # pragma: no cover — never let an import break the statusline
     _count_in_flight = None
+    _read_board = None
 
 # Reuse the enforcement-hook activation contract so the box reports "arbiter
 # enabled" exactly the way the hooks gate on it (one frontmatter parser, not two).
@@ -76,10 +94,10 @@ try:
 except Exception:  # pragma: no cover — never let an import break the statusline
     _updatelib = None
 
-# The cost/token ledger subsystem now lives in _ledgerlib (extracted T-12) with
-# zero import-time side effects. Re-bind its functions into this module so the
-# cost segment — and the existing test suite that reaches them via statusline —
-# keep working. Guarded: a missing lib leaves the names None and the cost segment
+# The cost/token ledger subsystem lives in _ledgerlib (extracted T-12) with zero
+# import-time side effects. Re-bind its functions into this module so the cost
+# segment — and the existing test suite that reaches them via statusline — keep
+# working. Guarded: a missing lib leaves the names None and the cost segment
 # safe()-degrades, never breaking the box.
 try:
     import _ledgerlib
@@ -96,46 +114,47 @@ except Exception:  # pragma: no cover — never let an import break the statusli
     def persist_sess_start(sid, value):   # no ledger lib -> nothing to persist into
         return False
 
-# --------------------------------------------------------------------------- color
-def fg(r, g, b):
-    return f"\033[38;2;{r};{g};{b}m"
+# --------------------------------------------------------------------------- color / width primitives (_colorlib)
+try:
+    import _colorlib
+    fg, bg = _colorlib.fg, _colorlib.bg
+    RESET, BOLD, DIM, ITAL = _colorlib.RESET, _colorlib.BOLD, _colorlib.DIM, _colorlib.ITAL
+    V0, V1, V2, V3 = _colorlib.V0, _colorlib.V1, _colorlib.V2, _colorlib.V3
+    GREY, WHITE, OK, WARN, DANGER, PILL_FG = (_colorlib.GREY, _colorlib.WHITE, _colorlib.OK,
+                                              _colorlib.WARN, _colorlib.DANGER, _colorlib.PILL_FG)
+    TL, TR, BL, BR = _colorlib.TL, _colorlib.TR, _colorlib.BL, _colorlib.BR
+    H, V, LT, RT = _colorlib.H, _colorlib.V, _colorlib.LT, _colorlib.RT
+    TD, TU = _colorlib.TD, _colorlib.TU
+    DOTH, DOT, SUBDOT, ELL = _colorlib.DOTH, _colorlib.DOT, _colorlib.SUBDOT, _colorlib.ELL
+    BFULL, BEMPTY = _colorlib.BFULL, _colorlib.BEMPTY
+    DN, UP, ARR, BOLT, SPARK = _colorlib.DN, _colorlib.UP, _colorlib.ARR, _colorlib.BOLT, _colorlib.SPARK
+    ANSI = _colorlib.ANSI
+    _cw, vlen, clip, pad, gradient_h = (_colorlib._cw, _colorlib.vlen, _colorlib.clip,
+                                        _colorlib.pad, _colorlib.gradient_h)
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _colorlib = None
+    ANSI = re.compile(r"\033\[[0-9;]*m")
+    fg = bg = lambda *a: ""
+    RESET = BOLD = DIM = ITAL = ""
+    V0 = V1 = V2 = V3 = GREY = WHITE = OK = WARN = DANGER = PILL_FG = ""
+    TL = TR = BL = BR = H = V = LT = RT = TD = TU = DOTH = DOT = SUBDOT = ELL = BFULL = BEMPTY = ""
+    DN = UP = ARR = BOLT = ""
+    SPARK = " "
 
-RESET, BOLD, DIM, ITAL = "\033[0m", "\033[1m", "\033[2m", "\033[3m"
+    def vlen(s):
+        return len(ANSI.sub("", s))
 
+    def clip(s, w):
+        return ANSI.sub("", s)[:max(0, w)]
 
-def bg(r, g, b):
-    return f"\033[48;2;{r};{g};{b}m"
+    def pad(s, w):
+        v = vlen(s)
+        return s if v >= w else s + " " * (w - v)
 
-# neon-violet ramp (dark -> bright) — used for the box sheen and accents
-V0 = fg(108, 70, 180)     # deep violet (border base)
-V1 = fg(150, 92, 230)     # mid violet
-V2 = fg(178, 102, 255)    # primary neon violet
-V3 = fg(208, 140, 255)    # bright violet (excitement / highlights)
-GREY = fg(150, 150, 162)
-WHITE = fg(232, 232, 240)
-OK = fg(120, 220, 150)
-WARN = fg(255, 184, 76)
-DANGER = fg(255, 86, 110)
-PILL_FG = fg(18, 14, 26)   # near-black text for contrast on a colored pill bg
+    def gradient_h(text, width, c_from=None, c_to=None):
+        return text
 
-# native-safe glyphs only
-TL, TR, BL, BR = "╭", "╮", "╰", "╯"
-H, V, LT, RT = "─", "│", "├", "┤"
-TD, TU = "┬", "┴"                 # tee down / up (column joins)
-DOTH = "┄"                        # dotted horizontal (section separators)
-DOT = "●"
-SUBDOT = "◦"
-ELL = "…"
-BFULL, BEMPTY = "█", "░"
-DN, UP = "↓", "↑"
-ARR = "▸"
-BOLT = "↯"
-SPARK = "▁▂▃▄▅▆▇█"
-
-ANSI = re.compile(r"\033\[[0-9;]*m")
-
-
-# --------------------------------------------------------------------------- coercion / width
+# --------------------------------------------------------------------------- coercion
 def num(x, default=0.0):
     """Coerce any host value to float; tolerate strings, None, and containers."""
     try:
@@ -161,343 +180,211 @@ def get(d, *path, default=None):
         cur = cur[k]
     return cur
 
+# --------------------------------------------------------------------------- format (_fmtlib)
+try:
+    import _fmtlib
+    fmt_tok, usd, usd_fine, short_path = (_fmtlib.fmt_tok, _fmtlib.usd,
+                                          _fmtlib.usd_fine, _fmtlib.short_path)
+    human_dur, parse_iso, to_epoch, sparkline = (_fmtlib.human_dur, _fmtlib.parse_iso,
+                                                 _fmtlib.to_epoch, _fmtlib.sparkline)
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _fmtlib = None
 
-def _cw(ch):
-    """Terminal column width of one character: 0 for a combining mark, 2 for an
-    East-Asian Wide/Fullwidth glyph (CJK, many emoji), 1 otherwise. Ambiguous-
-    width glyphs (box-drawing, blocks, arrows used in this bar) render as 1 in a
-    non-CJK terminal, so they stay 1 — only genuinely wide content counts as 2."""
-    if unicodedata.combining(ch):
-        return 0
-    return 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+    def fmt_tok(n):
+        return str(int(num(n)))
 
+    def usd(c):
+        return f"${num(c):.2f}"
 
-def vlen(s):
-    """Visible terminal-column width of s, ignoring ANSI codes and counting wide
-    glyphs as 2 columns — so the box never overflows on CJK/emoji content."""
-    return sum(_cw(c) for c in ANSI.sub("", s))
+    def usd_fine(c):
+        return f"${num(c):.2f}"
 
+    def short_path(p):
+        return str(p) if p else "?"
 
-def clip(s, w):
-    """Truncate a (possibly ANSI-colored) string to <= w visible columns,
-    preserving color codes and appending an ellipsis + RESET when cut."""
-    if w <= 0:
+    def human_dur(secs):
+        return f"{int(max(0, secs))}s"
+
+    def parse_iso(s):
+        return None
+
+    def to_epoch(v):
+        return None
+
+    def sparkline(vals, grad=True):
         return ""
-    if vlen(s) <= w:
-        return s
-    out, vis, i, n = [], 0, 0, len(s)
-    limit = w - 1   # leave one column for the ellipsis
-    while i < n:
-        m = ANSI.match(s, i)
-        if m:
-            out.append(m.group(0))
-            i = m.end()
-            continue
-        cw = _cw(s[i])
-        if vis + cw > limit:   # a wide glyph that would cross the limit stops here
-            break
-        out.append(s[i])
-        vis += cw
-        i += 1
-    return "".join(out) + ELL + RESET
 
+# --------------------------------------------------------------------------- git (_gitlib)
+try:
+    import _gitlib
+    project_root, head_branch, git_dirty = (_gitlib.project_root, _gitlib.head_branch,
+                                            _gitlib.git_dirty)
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _gitlib = None
 
-def pad(s, w):
-    """Return s at exactly w visible columns: clip if over, space-pad if under."""
-    v = vlen(s)
-    if v > w:
-        return clip(s, w)
-    return s + " " * (w - v)
+    def project_root(data):
+        return get(data, "workspace", "project_dir") or get(data, "cwd") or os.getcwd()
 
-
-def gradient_h(text, width, c_from=(120, 80, 200), c_to=(205, 140, 255)):
-    """Per-character violet sheen across `width` columns (dark->bright)."""
-    out = []
-    n = max(1, width - 1)
-    for i, ch in enumerate(text):
-        t = i / n
-        r = int(c_from[0] + (c_to[0] - c_from[0]) * t)
-        g = int(c_from[1] + (c_to[1] - c_from[1]) * t)
-        b = int(c_from[2] + (c_to[2] - c_from[2]) * t)
-        out.append(f"\033[38;2;{r};{g};{b}m{ch}")
-    return "".join(out) + RESET
-
-
-# --------------------------------------------------------------------------- format
-def fmt_tok(n):
-    n = num(n)
-    if n >= 999_500:                 # round into M before the K branch can print 1000.0K
-        return f"{n/1_000_000:.1f}M"
-    if n >= 1000:
-        return f"{n/1000:.1f}K"
-    return str(int(n))
-
-
-def usd(c):
-    c = num(c)
-    return f"${c:.0f}" if c >= 100 else f"${c:.2f}"
-
-
-def usd_fine(c):
-    c = num(c)
-    if c >= 100:
-        return f"${c:.0f}"
-    if c >= 10:
-        return f"${c:.1f}"
-    if 0 < c < 0.01:                 # don't render a measured nonzero cost as $0.00
-        return "<$.01"
-    return f"${c:.2f}"
-
-
-def short_path(p):
-    if not p:
-        return "?"
-    p = str(p).replace("\\", "/").rstrip("/")
-    unc = p.startswith("//")            # UNC share: \\server\share -> //server/share
-    home = os.path.expanduser("~").replace("\\", "/").rstrip("/")
-    if p == home:
-        return "~"
-    if home and p.startswith(home + "/"):
-        p = "~" + p[len(home):]
-    parts = [x for x in p.split("/") if x]
-    if not parts:
-        return "//" if unc else "/"
-    if unc:
-        # keep //server/share intact, abbreviate any deep middle
-        if len(parts) <= 3:
-            return "//" + "/".join(parts)
-        return "//" + "/".join(parts[:2] + [s[0] for s in parts[2:-2]] + parts[-2:])
-    drive = parts[0].endswith(":") or parts[0] == "~"
-    prefix = "" if drive else "/"
-    if len(parts) <= 3:
-        return prefix + "/".join(parts)
-    return prefix + "/".join([parts[0]] + [s[0] for s in parts[1:-2]] + parts[-2:])
-
-
-def human_dur(secs):
-    """Compact human duration: 3h12m, 4d6h, 45m, 30s."""
-    secs = int(max(0, secs))
-    if secs < 60:
-        return f"{secs}s"
-    m = secs // 60
-    if m < 60:
-        return f"{m}m"
-    h = m // 60
-    m = m % 60
-    if h < 24:
-        return f"{h}h{m:02d}m" if m else f"{h}h"
-    d = h // 24
-    h = h % 24
-    return f"{d}d{h}h" if h else f"{d}d"
-
-
-def parse_iso(s):
-    """Parse an ISO-8601 timestamp (tolerating a trailing Z) to epoch seconds."""
-    if not s or not isinstance(s, str):
-        return None
-    try:
-        dt = datetime.fromisoformat(s.strip().replace("Z", "+00:00"))
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)   # naive timestamps are UTC, not local
-        return dt.timestamp()
-    except Exception:
+    def head_branch(root):
         return None
 
-
-def to_epoch(v):
-    """A reset timestamp may arrive as an ISO-8601 string OR a numeric epoch
-    (seconds or milliseconds). Normalize to epoch seconds; None if unusable."""
-    if v is None or isinstance(v, bool):
-        return None
-    if isinstance(v, (int, float)):
-        v = float(v)
-        if v > 1e12:        # milliseconds
-            v /= 1000.0
-        return v if v > 0 else None
-    return parse_iso(v)
-
-
-def sparkline(vals, grad=True):
-    vals = [num(v, None) for v in vals]
-    vals = [v for v in vals if v is not None]
-    if len(vals) < 2:
-        return ""
-    lo, hi = min(vals), max(vals)
-    span = hi - lo
-    chars = []
-    for v in vals:
-        idx = 3 if span <= 0 else int((v - lo) / span * (len(SPARK) - 1) + 0.5)
-        chars.append(SPARK[max(0, min(len(SPARK) - 1, idx))])
-    s = "".join(chars)
-    return gradient_h(s, len(s)) if grad else f"{V2}{s}{RESET}"
-
-
-# --------------------------------------------------------------------------- git
-def project_root(data):
-    pd = (get(data, "workspace", "project_dir")
-          or get(data, "workspace", "current_dir")
-          or get(data, "cwd") or os.getcwd())
-    cur = os.path.abspath(pd)
-    while True:
-        if os.path.isdir(os.path.join(cur, ".git")) or os.path.isdir(os.path.join(cur, ".codearbiter")):
-            return cur
-        parent = os.path.dirname(cur)
-        if parent == cur:
-            return os.path.abspath(pd)
-        cur = parent
-
-
-def head_branch(root):
-    try:
-        with open(os.path.join(root, ".git", "HEAD"), encoding="utf-8", errors="replace") as f:
-            ref = f.read().strip()
-        if ref.startswith("ref:"):
-            name = ref.split(" ", 1)[1].strip() if " " in ref else ref[4:].strip()
-            for p in ("refs/heads/", "refs/remotes/", "refs/tags/"):
-                if name.startswith(p):
-                    return name[len(p):]
-            return name
-        return ref[:7]   # detached HEAD -> short sha
-    except OSError:
-        return None
-
-
-def git_dirty(root):
-    try:
-        out = subprocess.run(["git", "-C", root, "status", "--porcelain"],
-                             capture_output=True, text=True, timeout=1.5,
-                             encoding="utf-8", errors="replace")
-        return bool((out.stdout or "").strip())
-    except (OSError, subprocess.SubprocessError):
+    def git_dirty(root):
         return False
 
+# --------------------------------------------------------------------------- arbiter (_arbiterstatelib)
+# arbiter_state's task-in-flight count and enabled-gate dependencies
+# (_count_in_flight / _read_board / _frontmatter_enabled) are guarded-imported
+# ABOVE, in this module — arbiter_state() below passes them through EACH CALL
+# (not at import time) so a test that monkeypatches this module's fallback (e.g.
+# `mod._count_in_flight = None`) is observed on the next call, exactly as before
+# the extraction.
+try:
+    import _arbiterstatelib
+    frontmatter, count_matches = _arbiterstatelib.frontmatter, _arbiterstatelib.count_matches
+    _ARBITER_CACHE, _ARBITER_FILES = _arbiterstatelib._ARBITER_CACHE, _arbiterstatelib._ARBITER_FILES
+    _arbiter_mtime_key = _arbiterstatelib._arbiter_mtime_key
+    dev_active = _arbiterstatelib.dev_active
 
-# --------------------------------------------------------------------------- arbiter
-def frontmatter(path):
-    """Parse a properly-closed leading YAML frontmatter block into a key map. The
-    *arbiter-enabled* decision is NOT made here — that activation contract is owned
-    by _hooklib.frontmatter_enabled (see arbiter_state) so the box and the
-    enforcement hooks read it one way. This reader exists only to surface the
-    remaining display keys (e.g. `stage`) the boolean gate doesn't carry."""
-    fm = {}
-    try:
-        # utf-8-sig transparently strips a leading BOM (Windows editors / PowerShell
-        # Out-File default to UTF-8-with-BOM); plain utf-8 would leave it on line 1
-        # and break the "---" frontmatter check.
-        with open(path, encoding="utf-8-sig", errors="replace") as f:
-            lines = f.read().splitlines()
-    except OSError:
-        return fm
-    if not lines or lines[0].strip() != "---":
-        return fm
-    closed = False
-    for ln in lines[1:]:
-        if ln.strip() == "---":
-            closed = True
-            break
-        m = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", ln)
-        if m:
-            fm[m.group(1)] = m.group(2).strip()
-    # A valid YAML frontmatter block is bounded by BOTH delimiters; an unterminated
-    # block (no closing "---") is malformed — don't honor keys parsed to EOF.
-    return fm if closed else {}
+    def _arbiter_enabled(ctx_path):
+        return _arbiterstatelib._arbiter_enabled(ctx_path, _frontmatter_enabled)
 
+    def arbiter_state(root):
+        return _arbiterstatelib.arbiter_state(root, _count_in_flight, _read_board, _frontmatter_enabled)
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _arbiterstatelib = None
+    _ARBITER_CACHE = {}
+    _ARBITER_FILES = ()
 
-def count_matches(path, pattern):
-    try:
-        with open(path, encoding="utf-8", errors="replace") as f:
-            return len(re.findall(pattern, f.read(), re.MULTILINE))
-    except OSError:
+    def frontmatter(path):
+        return {}
+
+    def count_matches(path, pattern):
         return 0
 
+    def _arbiter_mtime_key(cad):
+        return -1.0
 
-# mtime-keyed memo: statusline.py is a short-lived subprocess, but a single render
-# can resolve arbiter_state more than once (safe() probes), and the StopHook fires
-# the whole script on every tool-call completion. Caching on max(input mtime) makes
-# the 5 .codearbiter/ reads happen at most once per (root, change), re-reading only
-# when one of the inputs actually changes between renders.
-_ARBITER_CACHE = {}        # root -> (mtime_key, result)
-_ARBITER_FILES = ("CONTEXT.md", "overrides.log", "last-checkpoint",
-                  "open-tasks.md", "open-questions.md", "sprint-active")
+    def _arbiter_enabled(ctx_path):
+        return False
 
-
-def _arbiter_mtime_key(cad):
-    """Max mtime across the arbiter input files (missing files stat as -1.0). Two
-    renders with the same key saw identical inputs, so the cached state is valid."""
-    latest = -1.0
-    for nm in _ARBITER_FILES:
-        try:
-            latest = max(latest, os.stat(os.path.join(cad, nm)).st_mtime)
-        except OSError:
-            pass
-    return latest
-
-
-def _arbiter_enabled(ctx_path):
-    """The arbiter-enabled gate, owned by _hooklib.frontmatter_enabled when the lib
-    is importable (so the box and the enforcement hooks agree on the activation
-    contract). Falls back to the local frontmatter() parser only if the import
-    failed — the defensive degrade path, never a hard dependency."""
-    if _frontmatter_enabled is not None:
-        try:
-            enabled, _malformed = _frontmatter_enabled(ctx_path)
-            return enabled
-        except Exception:  # noqa: BLE001 — degrade to the local parser, never crash
-            pass
-    return frontmatter(ctx_path).get("arbiter", "").lower() == "enabled"
-
-
-def arbiter_state(root):
-    cad = os.path.join(root, ".codearbiter")
-    mkey = _arbiter_mtime_key(cad)
-    cached = _ARBITER_CACHE.get(root)
-    if cached is not None and cached[0] == mkey:
-        return cached[1]
-    result = _arbiter_state_uncached(cad)
-    _ARBITER_CACHE[root] = (mkey, result)
-    return result
-
-
-def _arbiter_state_uncached(cad):
-    if not _arbiter_enabled(os.path.join(cad, "CONTEXT.md")):
+    def arbiter_state(root):
         return None
-    fm = frontmatter(os.path.join(cad, "CONTEXT.md"))
-    total_over = count_matches(os.path.join(cad, "overrides.log"), r"^(?!\s*#)(?!\s*$).+")
-    # last-checkpoint holds the override COUNT at the last /ca:checkpoint. A value
-    # outside [0, total] is not a valid count (e.g. a timestamp from a stale writer)
-    # -> fail safe to 0 so overrides are surfaced, never silently hidden.
-    try:
-        with open(os.path.join(cad, "last-checkpoint"), encoding="utf-8") as f:
-            base = int(f.read().strip() or "0")
-    except (OSError, ValueError):
-        base = 0
-    if base < 0 or base > total_over:
-        base = 0
-    ot_path = os.path.join(cad, "open-tasks.md")
-    if _count_in_flight is not None:
-        tasks = _count_in_flight(_read_board(ot_path) or "")
-    else:
-        # Degraded fallback (only if _taskboardlib failed to import): mirror
-        # count_in_flight's done-exclusion inline so the segment never silently
-        # re-inflates to the pre-schema count. Never crashes the box.
-        tasks = count_matches(ot_path, r"^- (?!\[[xX]\])")
-    return {
-        "stage": fm.get("stage", "-"),
-        "tasks": tasks,
-        "q": count_matches(os.path.join(cad, "open-questions.md"), r"CONFIRM-[0-9]+"),
-        "over": max(0, total_over - base),
-        "sprint": os.path.exists(os.path.join(cad, "sprint-active")),
-    }
+
+    def dev_active(root):
+        return False
+
+# --------------------------------------------------------------------------- subagents (_subagentslib)
+try:
+    import _subagentslib
+    subagent_dir, read_subagents, sub_label = (_subagentslib.subagent_dir,
+                                               _subagentslib.read_subagents,
+                                               _subagentslib.sub_label)
+    ACTIVE_WINDOW, SHOW_WINDOW = _subagentslib.ACTIVE_WINDOW, _subagentslib.SHOW_WINDOW
+    MAX_SUB_ROWS, MAX_SUB_FILES, MAX_SUB_LINES = (_subagentslib.MAX_SUB_ROWS,
+                                                  _subagentslib.MAX_SUB_FILES,
+                                                  _subagentslib.MAX_SUB_LINES)
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _subagentslib = None
+    ACTIVE_WINDOW = SHOW_WINDOW = MAX_SUB_ROWS = MAX_SUB_FILES = MAX_SUB_LINES = 0
+
+    def subagent_dir(data, root, sid):
+        return None
+
+    def read_subagents(sdir):
+        return 0, 0, [], (0, 0)
+
+    def sub_label(content):
+        return ""
+
+# --------------------------------------------------------------------------- box (_boxlib)
+try:
+    import _boxlib
+    Box, lr, cols = _boxlib.Box, _boxlib.lr, _boxlib.cols
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _boxlib = None
+
+    class Box:  # minimal degrade: plain lines, no box drawing
+        def __init__(self, width):
+            self.W = width
+            self.inner = max(1, width - 4)
+            self.lines = []
+
+        def top(self, title, badge=""):
+            self.lines.append(pad(title, self.inner))
+
+        def row(self, content):
+            self.lines.append(pad(content, self.inner))
+
+        def sep(self, tees=None):
+            self.lines.append(H * self.inner if H else "-" * self.inner)
+
+        def bottom(self, tees=None):
+            self.lines.append("")
+
+        def render(self):
+            return "\n".join(self.lines)
+
+    def lr(left, right, inner):
+        gap = max(1, inner - vlen(left) - vlen(right))
+        return left + " " * gap + right
+
+    def cols(cells, inner):
+        return pad(" ".join(cells), inner), []
+
+# --------------------------------------------------------------------------- segments (_segmentslib)
+try:
+    import _segmentslib
+    seg_ctx_lines = _segmentslib.seg_ctx_lines
+    seg_window_cells, seg_window_inline = _segmentslib.seg_window_cells, _segmentslib.seg_window_inline
+    EFF_DISP, model_pill, usage_row = _segmentslib.EFF_DISP, _segmentslib.model_pill, _segmentslib.usage_row
+    seg_lines, seg_pr, seg_prune = _segmentslib.seg_lines, _segmentslib.seg_pr, _segmentslib.seg_prune
+    redshift = _segmentslib.redshift
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _segmentslib = None
+    EFF_DISP = {}
+
+    def seg_ctx_lines(data, w):
+        return [f"{GREY}ctx --{RESET}", ""]
+
+    def seg_window_cells(data):
+        return []
+
+    def seg_window_inline(data):
+        return ""
+
+    def model_pill(model, effort=""):
+        return f"{V2}{model}{RESET}"
+
+    def usage_row(label, tin, tout, cost, trail=""):
+        return f"{label} {fmt_tok(tin)}/{fmt_tok(tout)} {usd_fine(cost)}"
+
+    def seg_lines(data):
+        return None
+
+    def seg_pr(data):
+        return None
+
+    def seg_prune(data, sid):
+        return None
+
+    def redshift(s):
+        return s
+
+# --------------------------------------------------------------------------- session start (_sessionlib)
+try:
+    import _sessionlib
+    session_start = _sessionlib.session_start
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _sessionlib = None
+
+    def session_start(sid, rec=None):
+        return None
 
 
-# --------------------------------------------------------------------------- ledger
-# The token/cost ledger (pricing table, transcript accumulation, JSON persistence,
-# burn samples) lives in _ledgerlib (extracted T-12). Its functions actually used
-# from this module — ledger_update, _tx_accumulate, persist_sess_start — are bound
-# into this module at import time (see the guarded import at the top), so the cost
-# segment and the test suite reach them unchanged. Only burn_spark stays here: it
-# is the render bridge that turns the lib's numeric samples into a colored
-# sparkline, so it keeps the ANSI dependency out of the lib.
+# --------------------------------------------------------------------------- ledger render-bridge
+# burn_spark stays here (not in _ledgerlib): it is the render bridge that turns
+# the lib's numeric samples into a colored sparkline, so it keeps the ANSI
+# dependency out of the lib.
 def burn_spark(rec):
     """Sparkline of recent per-message token burn — real per-API-call totals
     accumulated from the transcript (via _ledgerlib.burn_samples), not a
@@ -506,400 +393,7 @@ def burn_spark(rec):
     return sparkline(samples) if len(samples) >= 2 else ""
 
 
-def _session_start_scan(sid):
-    """The O(N) fallback: scan ~/.claude/sessions/*.json for the one whose
-    sessionId matches `sid` and read its startedAt. The metadata file is named by
-    the host PID, not the sessionId, so a direct name lookup isn't possible from
-    here — a match-on-content scan is the only correct resolver. The caller caches
-    the result in the ledger so this scan runs at most once per session."""
-    d = os.path.join(os.path.expanduser("~"), ".claude", "sessions")
-    try:
-        names = os.listdir(d)
-    except OSError:
-        return None
-    for nm in names:
-        if not nm.endswith(".json"):
-            continue
-        fp = os.path.join(d, nm)
-        try:
-            if os.path.getsize(fp) > 65536:   # metadata is <1KB; never read a large file
-                continue
-            with open(fp, encoding="utf-8") as f:
-                meta = json.load(f)
-        except (OSError, ValueError):
-            continue
-        if isinstance(meta, dict) and meta.get("sessionId") == sid:
-            sa = num(meta.get("startedAt"), None)
-            if sa:
-                return sa / 1000.0 if sa > 1e12 else sa   # ms epoch -> seconds
-    return None
-
-
-def session_start(sid, rec=None):
-    """True session start (epoch seconds) from Claude Code's own session metadata
-    (~/.claude/sessions/<pid>.json, matched on sessionId). This is the wall-clock
-    start /usage reports, INCLUDING idle/suspend gaps the current transcript can't
-    show. None if unavailable -> caller falls back to the transcript.
-
-    Fast path: the resolved value is cached in the ledger record (`rec["sess_start"]`),
-    which ledger_update persists, so subsequent renders skip the per-render directory
-    scan entirely. On a cache miss the full scan runs once and seeds the cache."""
-    if not sid:
-        return None
-    if isinstance(rec, dict):
-        cached = num(rec.get("sess_start"), None)
-        if cached:
-            return cached
-    sa = _session_start_scan(sid)
-    if sa and isinstance(rec, dict):
-        rec["sess_start"] = sa   # seed the ledger cache; ledger_update persists it
-    return sa
-
-
-# --------------------------------------------------------------------------- subagents
-def subagent_dir(data, root, sid):
-    """Resolve the current session's subagents directory: prefer transcript_path
-    (authoritative), else derive the project slug from cwd + session id."""
-    tp = data.get("transcript_path") if isinstance(data, dict) else None
-    if tp:
-        base = os.path.dirname(tp)
-        sess = os.path.splitext(os.path.basename(tp))[0]
-        cand = os.path.join(base, sess, "subagents")
-        if os.path.isdir(cand):
-            return cand
-    if sid:
-        cwd = get(data, "workspace", "current_dir") or get(data, "cwd") or root
-        slug = re.sub(r"[^A-Za-z0-9]", "-", os.path.abspath(cwd))
-        cand = os.path.join(os.path.expanduser("~"), ".claude", "projects", slug, sid, "subagents")
-        if os.path.isdir(cand):
-            return cand
-    return None
-
-
-ACTIVE_WINDOW = 150       # secs: a subagent file touched this recently is "active"
-SHOW_WINDOW = 600         # secs: still display recently-finished subagents
-MAX_SUB_ROWS = 4
-MAX_SUB_FILES = 12        # hot-path bound: parse at most this many files / render
-MAX_SUB_LINES = 2500      # per-file line cap
-
-
-def read_subagents(sdir):
-    """Return (active, recent, shown[{label,inp,out,age,active}], (tot_in, tot_out)).
-    `active` = files touched within ACTIVE_WINDOW (a liveness proxy); `recent` =
-    all files within SHOW_WINDOW (active + recently finished)."""
-    now = time.time()
-    files = []
-    try:
-        for nm in os.listdir(sdir):
-            if not nm.endswith(".jsonl"):
-                continue
-            fp = os.path.join(sdir, nm)
-            try:
-                st = os.stat(fp)
-            except OSError:
-                continue
-            if now - st.st_mtime <= SHOW_WINDOW:
-                files.append((st.st_mtime, st.st_size, fp, nm))
-    except OSError:
-        return 0, [], (0, 0)
-    files.sort(reverse=True)   # most-recently-touched first
-
-    active = sum(1 for mtime, _, _, _ in files if now - mtime <= ACTIVE_WINDOW)
-    shown, tot_in, tot_out = [], 0, 0
-    for mtime, size, fp, nm in files[:MAX_SUB_FILES]:
-        if size > 16 * 1024 * 1024:
-            continue
-        reqs = {}
-        label = None
-        try:
-            with open(fp, encoding="utf-8", errors="replace") as f:
-                for i, ln in enumerate(f):
-                    if i > MAX_SUB_LINES:
-                        break
-                    ln = ln.strip()
-                    if not ln:
-                        continue
-                    try:
-                        d = json.loads(ln)
-                    except ValueError:
-                        continue
-                    msg = d.get("message")
-                    if not isinstance(msg, dict):
-                        continue
-                    if label is None and msg.get("role") == "user":
-                        label = sub_label(msg.get("content"))
-                    u = msg.get("usage")
-                    if isinstance(u, dict):
-                        # dedupe by requestId; fresh input only (cache reads excluded)
-                        # — same definition as the Session/Today rows.
-                        reqs[d.get("requestId") or msg.get("id") or i] = (
-                            num(u.get("input_tokens")) + num(u.get("cache_creation_input_tokens")),
-                            num(u.get("output_tokens")))
-        except OSError:
-            continue
-        inp = sum(v[0] for v in reqs.values())
-        out = sum(v[1] for v in reqs.values())
-        tot_in += inp
-        tot_out += out
-        if len(shown) < MAX_SUB_ROWS:
-            shown.append({"label": label or ("agent-" + re.sub(r"\.jsonl$", "", nm)[-6:]),
-                          "inp": inp, "out": out, "age": now - mtime,
-                          "active": now - mtime <= ACTIVE_WINDOW})
-    return active, len(files), shown, (tot_in, tot_out)
-
-
-def sub_label(content):
-    """Derive a label from a subagent's first user message. A short, title-like
-    first line wins (a dispatcher may lead the prompt with one); otherwise flatten
-    and drop a boilerplate role-assignment preamble so the visible text carries
-    signal instead of "You are a...". Truncation to the row width is the render's
-    job (clip()), so this returns the full cleaned string up to a sane cap."""
-    text = ""
-    if isinstance(content, str):
-        text = content
-    elif isinstance(content, list):
-        for blk in content:
-            if isinstance(blk, dict) and blk.get("type") == "text":
-                text = blk.get("text", "")
-                break
-            if isinstance(blk, str):
-                text = blk
-                break
-    raw = str(text)
-    # strip leading reminder/system blocks up front (multi-line safe), then a lone tag
-    raw = re.sub(r"^\s*(?:<([^>\s]+)[^>]*>.*?</\1>\s*)+", "", raw, flags=re.S)
-    raw = re.sub(r"^\s*<[^>]+>\s*", "", raw)
-    # a short, title-like first line wins (rewards a leading title line)
-    first = ""
-    for ln in raw.splitlines():
-        ln = ln.strip()
-        if ln:
-            first = ln
-            break
-    if 0 < len(first) <= 60 and not re.match(r"(?i)^(you are|act as|role\s*:)\b", first):
-        return first
-    # otherwise flatten and strip a leading role-assignment preamble (one or more sentences)
-    flat = re.sub(r"\s+", " ", raw).strip()
-    flat = re.sub(r"(?i)^(?:(?:you are|you're|act as|role\s*:)\b[^.]*\.\s*)+", "", flat)
-    return flat[:80].strip()
-
-
-# --------------------------------------------------------------------------- box
-class Box:
-    def __init__(self, width):
-        self.W = width
-        self.inner = width - 4   # "│ " + content + " │"
-        self.lines = []
-
-    def top(self, title, badge=""):
-        left = f"{V0}{TL}{H}{H}{RESET} "          # 4 visible cols
-        b = f" {badge} " if badge else " "
-        budget = max(1, self.W - 5 - vlen(b))     # keep room for ╮ + >=0 fill
-        title = clip(title, budget) if vlen(title) > budget else title
-        t = gradient_h(ANSI.sub("", title), vlen(title))
-        used = 3 + vlen(title) + vlen(b)
-        fillw = max(0, self.W - 1 - used - 1)
-        fill = gradient_h(H * fillw, fillw, (90, 60, 150), (170, 110, 240)) if fillw else ""
-        self.lines.append(f"{left}{t}{b}{fill}{V0}{TR}{RESET}")
-
-    def row(self, content):
-        self.lines.append(f"{V0}{V}{RESET} {pad(content, self.inner)} {V0}{V}{RESET}")
-
-    def sep(self, tees=None):
-        mid = [DOTH] * (self.inner + 2)
-        for k in (tees or []):
-            if 0 <= k + 1 < len(mid):
-                mid[k + 1] = TD
-        self.lines.append(f"{V0}{LT}{''.join(mid)}{RT}{RESET}")
-
-    def bottom(self, tees=None):
-        mid = [H] * (self.inner + 2)
-        for k in (tees or []):
-            if 0 <= k + 1 < len(mid):
-                mid[k + 1] = TU
-        self.lines.append(f"{V0}{BL}{''.join(mid)}{BR}{RESET}")
-
-    def render(self):
-        # No trailing newline: a multi-line statusline that ends in '\n' adds a
-        # phantom row, so the host's height accounting drifts on re-render and the
-        # bar eventually clears itself. Lines are separated, not terminated.
-        return "\n".join(self.lines)
-
-
-def lr(left, right, inner):
-    """Left + right justified within inner; never exceeds inner (clips left)."""
-    right = clip(right, inner)
-    rw = vlen(right)
-    left = clip(left, max(0, inner - rw - 1))
-    gap = max(1, inner - vlen(left) - rw)
-    return left + " " * gap + right
-
-
-def cols(cells, inner):
-    """Lay out cells in equal columns with ' │ ' joins. Each cell is clamped to
-    its column via pad(), so total visible width == inner exactly and the
-    separator tees line up with the content joins. Returns (content, bounds)."""
-    n = len(cells)
-    if n == 1:
-        return pad(cells[0], inner), []
-    seps = n - 1
-    avail = inner - seps * 3
-    base = avail // n
-    widths = [base] * n
-    widths[-1] = avail - base * (n - 1)
-    parts, bounds, pos = [], [], 0
-    for i, c in enumerate(cells):
-        parts.append(pad(c, widths[i]))
-        pos += widths[i]
-        if i < n - 1:
-            parts.append(f" {V0}{V}{RESET} ")
-            bounds.append(pos + 1)
-            pos += 3
-    return "".join(parts), bounds
-
-
-# --------------------------------------------------------------------------- segments
-def seg_ctx_lines(data, w):
-    """Two lines of context-window detail for the right column: a gradient bar +
-    used% on top, then resident/window + headroom-to-compaction below. The bar
-    scales to the available width w."""
-    cw = get(data, "context_window", default={}) or {}
-    pf = num(cw.get("used_percentage"), None)
-    if pf is None:
-        return [f"{GREY}ctx --{RESET}", ""]
-    pctf = max(0.0, min(100.0, pf))
-    size_raw = cw.get("context_window_size")
-    has_size = size_raw is not None
-    size = int(num(size_raw, 200000)) or 200000
-    win = "1M" if size >= 1_000_000 else f"{size // 1000}K"
-    resident = round(pctf / 100.0 * size)
-    col = V2 if pctf < 75 else (WARN if pctf < 90 else DANGER)
-    barw = max(10, min(46, w - 12))
-    filled = max(0, min(barw, round(pctf / 100 * barw)))
-    # below WARN: the violet sheen; at/over the 75/90 thresholds the FILL itself
-    # carries the threshold color so budget pressure shows on the dominant
-    # element, not just the trailing % glyph.
-    fill = gradient_h(BFULL * filled, max(1, filled)) if pctf < 75 else f"{col}{BFULL * filled}"
-    bar = fill + f"{V0}" + BEMPTY * (barw - filled) + RESET
-    pdisp = "<1%" if 0 < pctf < 1 else f"{pctf:.0f}%"
-    line1 = f"{GREY}ctx{RESET} {bar} {col}{pdisp}{RESET}"
-    thresh = num(os.environ.get("CODEARBITER_COMPACT_AT"), 92.0)
-    head = thresh - pctf
-    if head <= 0:
-        comp = f"{DANGER}{BOLT} compact imminent{RESET}"
-    else:
-        ccol = OK if head > 30 else (WARN if head > 12 else DANGER)
-        comp = f"{GREY}{BOLT} compact{RESET} {ccol}~{head:.0f}%{RESET}"
-    # only assert resident/window when the host actually sent the window size;
-    # otherwise show just the (percentage-based) compaction headroom, no fake /200K.
-    line2 = f"{DIM}{fmt_tok(resident)} / {win}{RESET}   {comp}" if has_size else comp
-    return [line1, line2]
-
-
-def seg_window_cells(data):
-    """5h / 7d rate-limit cells: used% + reset countdown. The countdown shows when
-    the host sends rate_limits.*.resets_at (ISO string or epoch); absent that, the
-    cell still shows the used%. Rendered wherever rate_limits exists."""
-    cells = []
-    now = time.time()
-    for key, lbl in (("five_hour", "5h"), ("seven_day", "7d")):
-        p = get(data, "rate_limits", key, "used_percentage")
-        if p is None:
-            continue
-        pf = num(p, None)
-        if pf is None:
-            continue
-        c = V2 if pf < 75 else (WARN if pf < 90 else DANGER)
-        cell = f"{GREY}{lbl}{RESET} {c}{pf:.0f}%{RESET}"
-        r = to_epoch(get(data, "rate_limits", key, "resets_at"))
-        if r:
-            dt = r - now
-            # a reset already in the past is stale data, not "rolls over now"
-            tail = f"{WHITE}{human_dur(dt)}{RESET}" if dt > 0 else f"{GREY}--{RESET}"
-            cell += f" {GREY}{ARR}{RESET} {tail}"
-        cells.append(cell)
-    return cells
-
-
-def seg_window_inline(data):
-    """Compact single-string rate-limit readout for the header line."""
-    cells = seg_window_cells(data)
-    return f" {V0}·{RESET} ".join(cells) if cells else ""
-
-
-EFF_DISP = {"low": "Low", "medium": "Medium", "high": "High",
-            "xhigh": "XHigh", "max": "Max", "ultracode": "Ultracode"}
-
-
-def model_pill(model, effort=""):
-    """A gradient-filled pill carrying the model AND its effort level, e.g.
-    " Opus 4.8 │ Ultracode ", keyed by family — Fable gold, Opus violet, Sonnet
-    blue, Haiku green. The background ramps dark->bright across the pill (a sheen
-    matching the box). Plain block ends (half-circle caps don't align in a
-    monospace cell)."""
-    m = str(model)
-    ml = m.lower()
-    if "fable" in ml:
-        c = (235, 184, 90)        # gold — the tier above Opus
-    elif "opus" in ml:
-        c = (188, 120, 255)       # violet
-    elif "sonnet" in ml:
-        c = (96, 174, 235)        # blue
-    elif "haiku" in ml:
-        c = (120, 220, 150)       # green
-    else:
-        c = (150, 150, 162)       # grey (unknown)
-    eff = str(effort).strip().lower()
-    body = f" {m} {V} {EFF_DISP.get(eff, eff.capitalize())} " if eff else f" {m} "
-    lo = tuple(int(v * 0.5) for v in c)           # dark start of the sheen
-    n = max(1, len(body) - 1)
-    cells = []
-    for idx, ch in enumerate(body):
-        t = idx / n
-        rr = int(lo[0] + (c[0] - lo[0]) * t)
-        gg = int(lo[1] + (c[1] - lo[1]) * t)
-        bb = int(lo[2] + (c[2] - lo[2]) * t)
-        cells.append(f"{bg(rr, gg, bb)}{PILL_FG}{BOLD}{ch}")
-    return "".join(cells) + RESET
-
-
-def usage_row(label, tin, tout, cost, trail=""):
-    """One row of the Session/Today mini-table: label │ ↓in ↑out │ $cost. in/out are
-    fresh (sent) tokens; `cost` is Claude Code's real session cost (cost.total_cost_usd),
-    not an estimate. `trail` carries extras (session age, burn sparkline)."""
-    base = (f"{GREY}{label:<7}{RESET} {V0}{V}{RESET} "
-            f"{V2}{DN}{RESET} {WHITE}{fmt_tok(tin):>6}{RESET} "
-            f"{V2}{UP}{RESET} {WHITE}{fmt_tok(tout):>6}{RESET} {V0}{V}{RESET} "
-            f"{OK}{usd_fine(cost)}{RESET}")
-    return base + (f"  {trail}" if trail else "")
-
-
-def seg_lines(data):
-    add = get(data, "cost", "total_lines_added")
-    rem = get(data, "cost", "total_lines_removed")
-    if add is None and rem is None:
-        return None
-    return f"{GREY}diff{RESET} {OK}+{fmt_tok(add)}{RESET}{GREY}/{RESET}{DANGER}-{fmt_tok(rem)}{RESET}"
-
-
-def seg_pr(data):
-    num_ = get(data, "pr", "number")
-    if not num_:
-        return None
-    state = str(get(data, "pr", "state") or "").lower()
-    checks = str(get(data, "pr", "checks") or "").lower()
-    mark, col = "", V2
-    if checks in ("pass", "passing", "success", "green"):
-        mark, col = "✓", OK
-    elif checks in ("fail", "failing", "error", "red"):
-        mark, col = "✕", DANGER
-    elif checks in ("pending", "running", "queued"):
-        mark, col = "…", WARN
-    scol = OK if state == "open" else (V3 if state == "merged" else GREY)
-    tail = f" {col}{mark}{RESET}" if mark else ""
-    return f"{GREY}PR{RESET} {scol}#{num_}{RESET}{tail}"
-
-
+# --------------------------------------------------------------------------- update-available marker
 def plugin_root_for_render():
     """The plugin root to resolve the installed version against, for seg_update.
     Delegates to _updatelib.plugin_root() (CLAUDE_PLUGIN_ROOT, else derived from
@@ -929,44 +423,6 @@ def seg_update(plugin=None):
         return f"{V2}{UP}{RESET} {WHITE}{latest}{RESET}"
     except Exception:  # noqa: BLE001
         return None
-
-
-def seg_prune(data, sid):
-    """Transcript-pruner indicator: cumulative reduction and age of the last
-    prune for this session, read from ~/.codearbiter/prune-state.json (written
-    by prune-transcript.py). Fail-soft — returns None on any problem, and never
-    raises, so it can never break statusline rendering."""
-    if not sid:
-        return None
-    try:
-        p = os.path.join(os.path.expanduser("~"), ".codearbiter", "prune-state.json")
-        with open(p, encoding="utf-8") as f:
-            st = json.load(f)
-        rec = st.get(sid) if isinstance(st, dict) else None
-        if not isinstance(rec, dict):
-            return None
-        pct = rec.get("pct") or 0
-        if pct <= 0:
-            return None
-        age = human_dur(max(0, time.time() - num(rec.get("last_run_ts"), time.time())))
-        return f"{GREY}✂{RESET} {WHITE}{pct:.0f}%{RESET} {GREY}{age}{RESET}"
-    except Exception:  # noqa: BLE001
-        return None
-
-
-def dev_active(root):
-    """True when /dev developer-override mode is on — signalled by a transient marker
-    the orchestrator drops on /dev and clears on /arbiter (a local UI flag, not a log)."""
-    return os.path.exists(os.path.join(root, ".codearbiter", ".markers", "dev-active"))
-
-
-def redshift(s):
-    """/dev tell: recolor every truecolor SGR to a red of matching brightness, so the
-    WHOLE bar turns alarm-red — a glaring sign orchestration is suspended."""
-    def repl(m):
-        lum = max(int(m.group(2)), int(m.group(3)), int(m.group(4)))
-        return f"\033[{m.group(1)};2;{min(255, 96 + lum)};{lum // 6};{lum // 7}m"
-    return re.sub(r"\033\[(38|48);2;(\d+);(\d+);(\d+)m", repl, s)
 
 
 # --------------------------------------------------------------------------- main
