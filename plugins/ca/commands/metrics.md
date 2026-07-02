@@ -15,16 +15,17 @@ glance; reach for `/ca:audit` when you need the full evidentiary packet.
 
 ## Flow
 
-1. **Invoke the helper.** Call `compute` from `_metricslib.py` via a Windows-safe
-   `python3 … || python …` fallback one-liner. Pass `${CLAUDE_PROJECT_DIR}` as the
-   project root. If `--window N` was supplied, pass `N` as `window_size`; otherwise
-   use the default (20).
+1. **Invoke the helper.** Call the thin entry hook `metrics.py`, which wraps
+   `compute` from `_metricslib.py`, via a Windows-safe `python3 … || python …`
+   fallback. Pass `${CLAUDE_PROJECT_DIR}` as `--root`. If `--window N` was
+   supplied, pass it through as `--window N`; otherwise omit it (the helper
+   applies the default of 20).
 
    ```
-   python3 -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _metricslib, json; print(json.dumps(_metricslib.compute('${CLAUDE_PROJECT_DIR}')))" || python -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _metricslib, json; print(json.dumps(_metricslib.compute('${CLAUDE_PROJECT_DIR}')))"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "${CLAUDE_PROJECT_DIR}"
    ```
 
-   > **`ensure_ascii` note — do not remove this.** The one-liner uses `json.dumps`
+   > **`ensure_ascii` note — do not remove this.** `metrics.py` calls `json.dumps`
    > with its default `ensure_ascii=True`. This ASCII-escapes the arrow glyphs
    > (↑↓→) in the subprocess stdout, which avoids a `UnicodeEncodeError` on Windows
    > `cp1252` consoles that cannot encode those code-points raw. The rendered output
@@ -34,7 +35,7 @@ glance; reach for `/ca:audit` when you need the full evidentiary packet.
 
    With a custom window size:
    ```
-   python3 -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _metricslib, json; print(json.dumps(_metricslib.compute('${CLAUDE_PROJECT_DIR}', window_size=N)))" || python -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _metricslib, json; print(json.dumps(_metricslib.compute('${CLAUDE_PROJECT_DIR}', window_size=N)))"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "${CLAUDE_PROJECT_DIR}" --window N || python "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "${CLAUDE_PROJECT_DIR}" --window N
    ```
    Replace `N` with the integer the user supplied.
 
