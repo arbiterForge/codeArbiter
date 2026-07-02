@@ -16,7 +16,7 @@ Write each finding as its own file — `findings/<lens>/<finding-id>.json` (e.g.
 {"schema":"finding/v1","id":"<lens>-NNN","lens":"<lens>","title":"<imperative,specific>","category":"security|reliability|performance|architecture|observability|maintainability|testing|dependency|migration","severity":"critical|high|medium|low","confidence":0.0,"observed":true,"locations":[{"path":"src/...","lines":"42-58"}],"evidence":"<minimal snippet + 1-2 sentences>","impact":"<what breaks / cost>","recommendation":"<remediation shape, not a patch>","acceptance_criteria":["<verifiable close condition>"],"effort":"S|M|L","depends_on":["<id>"],"dedup_key":"<lens>:<normalized-path>:<slug>","created_at":"<iso8601>"}
 ```
 
-Minimum required: `locations` (path + lines), `evidence`, `recommendation`. Set `lens` to your own lens name; set `category` to the finding's class, which may differ from your lens (the secrets-supply lens may file a `dependency` finding). `severity`/`confidence` are **provisional** — the orchestrator recalibrates at triage; do not treat your own scores as final.
+Minimum required: `locations` (path + lines), `evidence`, `recommendation`. Set `lens` to your own lens name; set `category` to the finding's class, which may differ from your lens (the secrets-supply lens may file a `dependency` finding). `severity`/`confidence` are **provisional** — the orchestrator recalibrates at triage; do not treat your own scores as final. `observed` is `true` when the failure/behavior was directly observed or reproduced (test run, executed path, live config) and `false` when inferred from reading code; triage weighs observed findings above inferred ones at the same confidence.
 
 ## id & dedup_key
 

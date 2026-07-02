@@ -8,7 +8,7 @@ Executed by `tribunal-test-fidelity-reviewer`. Evidence-or-drop on every check. 
 - Temporariness confessions: `TODO`/`FIXME`/`HACK`, "stub until X exists/ready/implemented".
 - Cross-reference: does a real producer now exist (factory/builder, serializer/DTO, query/seed, the real module behind the mock)? Side-by-side drift evidence — missing now-required field, stale enum, wrong nullability — raises confidence.
 
-## Severity
+## Category
 `maintainability` by default; rises to `reliability` if the drift could let a real defect through — a test validating fiction actively masks regressions.
 
 ## Exposure

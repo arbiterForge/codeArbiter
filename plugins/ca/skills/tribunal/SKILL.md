@@ -61,7 +61,7 @@ Triage per wave from disk as soon as it flushes; do not wait for the whole run. 
 - **Calibrate independently.** Set `final_severity`/`final_confidence` from the evidence yourself — the lens's values are provisional input. Every critical/high carries a `counter_argument` (the strongest case it is lower or false); if compelling, downgrade. Promote under-rated findings too.
 - **Low-severity discipline.** A `low` is kept only above the confidence gate (defined in `triage.md`) with a concrete fix; beyond ~5 lows per lens, roll the remainder into one finding that still lists each `path:line`.
 - **Decide** each finding via the vocabulary; append one line to `triage.jsonl`. Below the confidence gate after calibration → `investigate` (medium/low) or `decision-required` (critical/high) — never dropped silently.
-- **Plan** the wave: write `plans/phase-<n>.md` covering `keep`/`combine` findings grouped by type — shared approach, ordered sequence, cross-group `depends_on`, rolled-up acceptance criteria. Roadmap level, no per-finding code steps. A `decision-required` item gets a one-line "ADR-candidate — resolve via `/adr`" pointer, never an authored ADR.
+- **Plan** the wave: write `plans/phase-<n>.md` covering `keep`/`combine` findings grouped by type — shared approach, ordered sequence, cross-group `depends_on`, rolled-up acceptance criteria. Roadmap level, no per-finding code steps. A `decision-required` item gets a one-line "ADR-candidate — resolve via `/ca:adr`" pointer, never an authored ADR.
 
 Gate: every wave's findings triaged into `triage.jsonl` and a `plans/phase-<n>.md` written for its kept work.
 
@@ -107,7 +107,7 @@ Gate: the payload is shown, and it is either handed to the user as a command or 
 - MUST NOT mutate the append-only logs — `manifest.yaml`, `report.md`, and `plans/` are regenerated from them, never hand-edited.
 - MUST NOT file an issue below the confidence gate or without explicit selection and authorization; findings file as GitHub issues, never `open-tasks.md`.
 - MUST NOT create a duplicate issue — skip findings carrying an `issue_ref`, and dedup against the tracker by `dedup_key`/title before filing.
-- MUST NOT author or scaffold an ADR — `decision-required` findings file as a discussion issue; ADRs are authored only via `/adr` with user attribution.
+- MUST NOT author or scaffold an ADR — `decision-required` findings file as a discussion issue; ADRs are authored only via `/ca:adr` with user attribution.
 - MUST NOT send telemetry without explicit per-run authorization, and MUST NOT include code, file paths, finding text, or repo identity (absent an explicit `--tag`) in the payload — KPI aggregates only.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP. For the tracker: use `tech-stack.md` if it documents one; else default to `gh issue create` on a GitHub origin; else STOP.
 - MUST NOT dispatch a subagent from within a dispatched specialist — only the orchestrator dispatches.

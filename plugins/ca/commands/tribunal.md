@@ -1,6 +1,6 @@
 ---
 description: Deep, rarely-convened whole-codebase audit — ten specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.
-argument-hint: "[scope-path]"
+argument-hint: "[scope-path] [--tag <label>]"
 ---
 # /ca:tribunal — deep codebase audit
 
@@ -23,6 +23,8 @@ Phase 6 (STOP) — optional, opt-in KPI telemetry to the public codeArbiter repo
 ## Arguments
 
 `"scope-path"` — focus the audit on a subtree (default: repository root). The full lens roster still runs; only the scope narrows.
+
+`--tag <label>` — freeform run label recorded in telemetry (see `references/telemetry.md`).
 
 ## Routes to
 

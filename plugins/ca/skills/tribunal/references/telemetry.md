@@ -24,5 +24,5 @@ Reading the corpus is the maintainer's judgment, not skill behavior — and a su
 
 - Write `telemetry.json`; show it in full.
 - State plainly, in one line: these aggregates post publicly to the codeArbiter repo; they carry no code, paths, or finding text, and no repo identity unless you added `--tag`.
-- **Default:** print `gh issue create --repo arbiterforge/codearbiter --label telemetry --title "run-metrics <at>" --body-file telemetry.json`. Stop.
+- **Default:** print `gh issue create --repo arbiterForge/codeArbiter --label telemetry --title "run-metrics <at>" --body-file telemetry.json`. Stop.
 - **On explicit approval:** run it; record a `telemetry-sent` event in `run.jsonl`.
