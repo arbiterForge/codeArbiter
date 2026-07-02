@@ -111,6 +111,32 @@ class TestGitCwdUnit(unittest.TestCase):
     def test_no_dash_c_falls_back_to_root(self):
         self.assertEqual(self.pb.git_cwd("git --no-pager commit -m x", "/root"), "/root")
 
+    # -- security-reviewer MEDIUM follow-up (#190): -C COMPOSES sequentially,
+    # not last-wins. A relative -C is relative to the ACCUMULATED result of
+    # every preceding -C; an absolute -C REPLACES the accumulator entirely.
+
+    def test_repeated_dash_c_absolute_then_relative_composes_onto_absolute(self):
+        # `git -C /abs/main -C . commit`: the `.` is relative to /abs/main
+        # (already seen), NOT to root — a last-wins-only reading would wrongly
+        # resolve "." against root instead.
+        self.assertEqual(
+            os.path.normpath(self.pb.git_cwd("git -C /abs/main -C . commit -m x", "/root")),
+            os.path.normpath("/abs/main/."))
+
+    def test_repeated_dash_c_absolute_then_relative_subdir_joins_onto_absolute(self):
+        # `git -C /abs/main -C sub commit` -> /abs/main/sub.
+        self.assertEqual(
+            os.path.normpath(self.pb.git_cwd("git -C /abs/main -C sub commit -m x", "/root")),
+            os.path.normpath("/abs/main/sub"))
+
+    def test_repeated_dash_c_relative_then_absolute_resets_to_absolute(self):
+        # `git -C feat -C /abs/other commit`: the LATER absolute value resets
+        # the accumulator, discarding the earlier relative "feat" entirely —
+        # not joined, not ignored in favor of a stale last-wins read.
+        self.assertEqual(
+            self.pb.git_cwd("git -C feat -C /abs/other commit -m x", "/root"),
+            "/abs/other")
+
 
 class TestGitCwdEndToEnd(unittest.TestCase):
     """Subprocess-level proof: pre-bash.py judges H-01 against the -C TARGET
@@ -172,6 +198,28 @@ class TestGitCwdEndToEnd(unittest.TestCase):
         _init_repo(feature_other, branch="feat/other")
         res = self.run_bash(f'git --no-pager -C "{feature_other}" commit -m x')
         self.assertNotIn("H-01", res.stderr)
+
+    # -- security-reviewer MEDIUM follow-up (#190): repeated -C composition,
+    # end to end. A last-wins-only fix fails OPEN on these crafted spellings —
+    # it resolves "." or "feat" against `root` (the session repo, feature
+    # branch -> ALLOWED) instead of the real git-composed target (other_root,
+    # main -> must BLOCK).
+
+    def test_absolute_then_relative_dot_dash_c_is_judged_against_absolute_target(self):
+        # `git -C /abs/main -C . commit`: "." composes onto /abs/main (already
+        # seen), not onto root/session_root.
+        res = self.run_bash(f'git -C "{self.other_root}" -C . commit -m x')
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-01", res.stderr)
+
+    def test_relative_then_absolute_dash_c_is_judged_against_the_absolute_reset(self):
+        # `git -C feat -C /abs/main commit`: the later absolute -C RESETS the
+        # accumulator — "feat" (relative to session_root) is discarded
+        # entirely, not joined or left standing as a prior last-wins target.
+        os.makedirs(os.path.join(self.session_root, "feat"), exist_ok=True)
+        res = self.run_bash(f'git -C feat -C "{self.other_root}" commit -m x')
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-01", res.stderr)
 
 
 # ---------------------------------------------------------------------------

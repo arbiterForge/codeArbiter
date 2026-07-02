@@ -266,25 +266,36 @@ def git_cwd(cmd, root):
     before the subcommand (GIT_OPTS_RUN_RE), so a `-C` preceded by other
     global options (`git --no-pager -C ../x commit`, `git -c k=v -C ../x
     commit`) is found exactly where the guards themselves look, instead of
-    only matching `-C` as the first token. Git itself allows repeated `-C`,
-    each composing relative to the previous — the LAST one in the run is what
-    actually wins, so this takes the last match.
+    only matching `-C` as the first token.
 
-    A relative `-C` value is resolved against `root` (project_root), not the
-    hook process's own cwd — the hook's cwd is not guaranteed to be the
-    project dir (mirrors _hooklib.project_root's own rationale), so a
-    lexically-relative `-C ../x` must not be joined against wherever this
-    Python process happens to be running from."""
+    Git allows REPEATED `-C` and COMPOSES them sequentially, not
+    last-wins: each `-C` is resolved relative to the ACCUMULATED result of
+    every preceding `-C` (an absolute value REPLACES the accumulator; a
+    relative value is joined onto it) — see `git --help`'s `-C <path>`. A
+    naive "take the last -C, resolve if relative against root" is wrong for a
+    mixed run: `git -C /abs/main -C . commit` must resolve to `/abs/main`
+    (the `.` is relative to `/abs/main`, not to root), and `git -C feat -C
+    /abs/main commit` must resolve to `/abs/main` (the later absolute value
+    resets the accumulator, discarding the earlier relative one entirely) —
+    a last-wins-only implementation fails OPEN on exactly these spellings
+    (security-reviewer MEDIUM, #190 follow-up).
+
+    The accumulator is seeded with `root` (project_root), not the hook
+    process's own cwd — the hook's cwd is not guaranteed to be the project
+    dir (mirrors _hooklib.project_root's own rationale), so the FIRST
+    relative `-C` in a run resolves against `root`, exactly as a bare
+    relative `-C` (no preceding `-C`) already did."""
     m = GIT_OPTS_RUN_RE.search(cmd)
     if not m:
         return root
     c_matches = GIT_C_IN_RUN_RE.findall(m.group(1))
     if not c_matches:
         return root
-    target = c_matches[-1].strip("\"'")
-    if not os.path.isabs(target):
-        target = os.path.join(root, target)
-    return target
+    acc = root
+    for raw in c_matches:
+        val = raw.strip("\"'")
+        acc = val if os.path.isabs(val) else os.path.join(acc, val)
+    return acc
 
 
 def current_branch(cwd):
