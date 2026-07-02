@@ -18,6 +18,7 @@
 # In any repo WITHOUT the flag, the hook exits silently (dormant) — the plugin
 # can be installed globally and stays out of the way everywhere else.
 
+import copy
 import datetime
 import os
 import re
@@ -372,7 +373,15 @@ def heal_statusline_wiring(plugin, settings_path=None, interp=None, loader=None)
     """Refresh a stale ca-OWNED statusLine pin to the current renderer path.
     Returns True iff settings.json was rewritten. Fully guarded: any failure —
     including a corrupt settings.json (which wire-statusline raises SystemExit on)
-    — degrades to False so it never crashes session startup."""
+    — degrades to False so it never crashes session startup.
+
+    reliability-009: settings.json is the user's WHOLE host configuration, not
+    a ca-owned file — a full read-modify-write of it must not clobber a change
+    made by a concurrent session (or the user) between our load and our save.
+    Narrow that window by reloading the file fresh immediately before writing:
+    if it differs from what we loaded, some other writer touched it in the
+    interim, so we SKIP this heal entirely (never overwrite that write with
+    our now-stale snapshot) — a later session's heal simply retries."""
     try:
         ws = (loader or _load_wire_statusline)(plugin)
         if ws is None:
@@ -383,10 +392,14 @@ def heal_statusline_wiring(plugin, settings_path=None, interp=None, loader=None)
         settings, exists = ws.load_settings(spath)
         if not exists:
             return False
-        if ws.refresh_if_stale(settings, script_abs, interp):
-            ws.save_settings(spath, settings)
-            return True
-        return False
+        original = copy.deepcopy(settings)
+        if not ws.refresh_if_stale(settings, script_abs, interp):
+            return False
+        fresh, fresh_exists = ws.load_settings(spath)
+        if not fresh_exists or fresh != original:
+            return False  # changed underneath us — skip, retry next session
+        ws.save_settings(spath, settings)
+        return True
     except (Exception, SystemExit):  # noqa: BLE001 — heal is best-effort, never fatal
         return False
 
