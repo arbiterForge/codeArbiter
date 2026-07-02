@@ -27,8 +27,9 @@
  * host->container push.
  *
  * Windows/CRLF/MSYS handling is delegated entirely to the modules (each already
- * sets MSYS_NO_PATHCONV=1 when shelling docker — Spike A/B); cli.ts shells nothing
- * by default and so needs none of it for parsing.
+ * sets MSYS_NO_PATHCONV=1 when shelling docker — Spike A/B, via the shared
+ * docker.ts primitive, architecture-007); cli.ts shells nothing by default and
+ * so needs none of it for parsing.
  */
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -39,11 +40,7 @@ import { destroySandbox, prune, type DestroyResult, type PruneResult } from "./d
 import { execInSandbox, type ExecResult } from "./exec.ts";
 import { cpOut, type RunResult } from "./cp.ts";
 import { resolveContainerId } from "./registry.ts";
-
-// On Windows + Git Bash, container paths / args handed to docker get mangled by
-// MSYS path conversion; the modules set this themselves, and the interactive
-// `shell` handler (which shells docker directly) sets it too (Spike A/B).
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
+import { DOCKER_ENV } from "./docker.ts";
 
 /** The three CLI-exposed network policies (run.ts treats the latter two as the
  * pass-through richer policies; cli.ts only accepts these known names). */

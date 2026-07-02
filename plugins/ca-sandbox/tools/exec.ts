@@ -22,13 +22,13 @@
  *     `truncated:true`. The default (1 MiB/stream) is generous for interactive
  *     use yet bounded.
  *
- * Process/shell handling mirrors farm.ts / run.ts: a spawnSync-based docker
- * runner (injectable for unit tests), and on Windows + Git Bash MSYS_NO_PATHCONV=1
- * is set so container paths / `-e` values handed to docker are not mangled
- * (Spike A/B). docker exec is run NON-interactively (no `-it`) so a wrapped call
- * never blocks on a tty.
+ * Process/shell handling routes through docker.ts (architecture-007): a
+ * spawnSync-based docker runner (injectable for unit tests), and on Windows +
+ * Git Bash MSYS_NO_PATHCONV=1 is set so container paths / `-e` values handed to
+ * docker are not mangled (Spike A/B). docker exec is run NON-interactively (no
+ * `-it`) so a wrapped call never blocks on a tty.
  */
-import { spawnSync } from "node:child_process";
+import { makeDockerRun, type RunResult } from "./docker.ts";
 
 /**
  * Default per-stream output cap in bytes (1 MiB). Bounds the host-side capture
@@ -40,12 +40,8 @@ export const DEFAULT_EXEC_MAX_BYTES = Number(
   process.env.CA_SANDBOX_EXEC_MAX_BYTES ?? 1024 * 1024,
 );
 
-// On Windows + Git Bash, container paths / args handed to docker get mangled by
-// MSYS path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B, mirrors run.ts).
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
-
 /** Raw result of a spawned docker process — farm's RunResult shape (separate streams). */
-export type RunResult = { code: number; stdout: string; stderr: string };
+export type { RunResult };
 
 /**
  * The exec JSON contract (AC-09). `exitCode` is the in-container command's exit
@@ -69,20 +65,9 @@ export type ExecOptions = {
   dockerRun?: (args: string[]) => RunResult;
 };
 
-function defaultDockerRun(args: string[]): RunResult {
-  // maxBuffer is set high so spawnSync itself does not throw on large output;
-  // our own byte cap (capBytes) is the authoritative, deterministic bound.
-  const r = spawnSync("docker", args, {
-    encoding: "utf8",
-    env: DOCKER_ENV,
-    maxBuffer: 256 * 1024 * 1024,
-  });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : ""),
-  };
-}
+// maxBuffer is set high so spawnSync itself does not throw on large output;
+// our own byte cap (capBytes) is the authoritative, deterministic bound.
+const defaultDockerRun = makeDockerRun({ maxBuffer: 256 * 1024 * 1024 });
 
 /**
  * Assemble the `docker exec` argv (everything AFTER `docker`). Pure: builds the

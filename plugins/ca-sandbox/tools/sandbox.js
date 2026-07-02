@@ -3,15 +3,12 @@
 // cli.ts
 import { fileURLToPath } from "node:url";
 import path2 from "node:path";
-import { spawnSync as spawnSync6 } from "node:child_process";
+import { spawnSync as spawnSync3 } from "node:child_process";
 
 // create.ts
-import { spawnSync as spawnSync3, spawn as spawn2 } from "node:child_process";
+import { spawnSync as spawnSync2, spawn as spawn2 } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { readdir } from "node:fs/promises";
-
-// run.ts
-import { spawnSync } from "node:child_process";
 
 // mounts.ts
 var BindMountRejectedError = class extends Error {
@@ -83,20 +80,29 @@ function buildMountArgs(specs) {
   return argv;
 }
 
-// run.ts
-var APP_DIR = "/work/repo";
-var SANDBOX_LABEL = "ca.sandbox=1";
-var SANDBOX_USER = "1000:1000";
+// docker.ts
+import { spawnSync } from "node:child_process";
 var DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
-var NETWORKED_POLICIES = /* @__PURE__ */ new Set();
-function defaultDockerRun(args) {
-  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
+function runDocker(args, extra = {}) {
+  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV, ...extra });
   return {
     code: r.status ?? 1,
     stdout: r.stdout ?? "",
     stderr: r.stderr ?? (r.error ? String(r.error) : "")
   };
 }
+function defaultDockerRun(args) {
+  return runDocker(args);
+}
+function makeDockerRun(extra) {
+  return (args) => runDocker(args, extra);
+}
+
+// run.ts
+var APP_DIR = "/work/repo";
+var SANDBOX_LABEL = "ca.sandbox=1";
+var SANDBOX_USER = "1000:1000";
+var NETWORKED_POLICIES = /* @__PURE__ */ new Set();
 function hardeningFlags() {
   return [
     "--user",
@@ -170,11 +176,10 @@ var DEPS_DIR = "/deps";
 var APP_DIR2 = "/work/repo";
 var NIXPACKS_APP_DIR = "/app";
 var NIXPACKS_INSTALL_URL = "https://nixpacks.com/install.sh";
-var DOCKER_ENV2 = { ...process.env, MSYS_NO_PATHCONV: "1" };
-var BUILD_ENV = { ...DOCKER_ENV2, DOCKER_BUILDKIT: "1" };
+var BUILD_ENV = { ...DOCKER_ENV, DOCKER_BUILDKIT: "1" };
 function run(cmd, args, opts = {}) {
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { env: DOCKER_ENV2, ...opts });
+    const c = spawn(cmd, args, { env: DOCKER_ENV, ...opts });
     let stdout = "";
     let stderr = "";
     c.stdout?.on("data", (d) => stdout += d);
@@ -419,18 +424,8 @@ nixpacks=${nixpacksVersion}`;
 }
 
 // registry.ts
-import { spawnSync as spawnSync2 } from "node:child_process";
 var SANDBOX_LABEL2 = "ca.sandbox=1";
 var SANDBOX_ID_LABEL_KEY = "ca.sandbox.id";
-var DOCKER_ENV3 = { ...process.env, MSYS_NO_PATHCONV: "1" };
-function defaultDockerRun2(args) {
-  const r = spawnSync2("docker", args, { encoding: "utf8", env: DOCKER_ENV3 });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : "")
-  };
-}
 function idLabel(id) {
   return `${SANDBOX_ID_LABEL_KEY}=${id}`;
 }
@@ -438,31 +433,31 @@ function labelFilterArgs(labels) {
   const list = Array.isArray(labels) ? labels : [labels];
   return list.flatMap((l) => ["--filter", `label=${l}`]);
 }
-function listContainers(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun2) {
+function listContainers(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
   const r = dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
   return splitLines(r.stdout);
 }
-function listVolumes(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun2) {
+function listVolumes(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
   const r = dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
   return splitLines(r.stdout);
 }
 function splitLines(out) {
   return out.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
 }
-function listAllContainers(dockerRun = defaultDockerRun2) {
+function listAllContainers(dockerRun = defaultDockerRun) {
   return listContainers(SANDBOX_LABEL2, dockerRun);
 }
-function listAllVolumes(dockerRun = defaultDockerRun2) {
+function listAllVolumes(dockerRun = defaultDockerRun) {
   return listVolumes(SANDBOX_LABEL2, dockerRun);
 }
-function findSandbox(id, dockerRun = defaultDockerRun2) {
+function findSandbox(id, dockerRun = defaultDockerRun) {
   const labels = [SANDBOX_LABEL2, idLabel(id)];
   const containers = listContainers(labels, dockerRun);
   const volumes = listVolumes(labels, dockerRun);
   if (containers.length === 0 && volumes.length === 0) return null;
   return { id, containers, volumes };
 }
-function resolveContainerId(id, dockerRun = defaultDockerRun2) {
+function resolveContainerId(id, dockerRun = defaultDockerRun) {
   const rec = findSandbox(id, dockerRun);
   const containerId = rec?.containers[0];
   if (!containerId)
@@ -473,10 +468,11 @@ function resolveContainerId(id, dockerRun = defaultDockerRun2) {
 }
 
 // create.ts
-var DOCKER_ENV4 = { ...process.env, MSYS_NO_PATHCONV: "1" };
 var CLONE_IMAGE = "alpine/git:latest";
 var APP_DIR3 = "/work/repo";
 var VOLUME_PREFIX = "ca-sbx-vol";
+var CLONE_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CLONE_TIMEOUT_MS ?? 5 * 6e4);
+var CP_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CP_TIMEOUT_MS ?? 2 * 6e4);
 var InvalidRepoUrlError = class extends Error {
   constructor(url, reason) {
     super(
@@ -500,20 +496,16 @@ function validateRepoUrl(url) {
     );
   }
 }
-function defaultDockerRun3(args) {
-  const r = spawnSync3("docker", args, { encoding: "utf8", env: DOCKER_ENV4 });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : "")
-  };
-}
 function newSandboxId() {
   return randomBytes(6).toString("hex");
 }
-function spawnAsync(cmd, args) {
+function spawnAsync(cmd, args, timeoutMs) {
   return new Promise((resolve) => {
-    const c = spawn2(cmd, args, { env: DOCKER_ENV4, stdio: ["ignore", "ignore", "pipe"] });
+    const c = spawn2(cmd, args, {
+      env: DOCKER_ENV,
+      stdio: ["ignore", "ignore", "pipe"],
+      ...timeoutMs !== void 0 ? { timeout: timeoutMs } : {}
+    });
     const stderrChunks = [];
     c.stderr?.on("data", (chunk) => stderrChunks.push(chunk));
     c.on("error", () => resolve({ code: 1, stderr: "" }));
@@ -524,10 +516,10 @@ function spawnAsync(cmd, args) {
     });
   });
 }
-async function defaultCloneRepo(url, volumeName) {
-  return spawnAsync("docker", buildCloneArgs(url, volumeName));
+async function defaultCloneRepo(url, volumeName, id) {
+  return spawnAsync("docker", buildCloneArgs(url, volumeName, id), CLONE_TIMEOUT_MS);
 }
-function buildCloneArgs(url, volumeName) {
+function buildCloneArgs(url, volumeName, id) {
   return [
     "run",
     "--rm",
@@ -535,6 +527,10 @@ function buildCloneArgs(url, volumeName) {
     // covered by the bind-rejection guarantee and there is genuinely one mount-argv
     // path. Same volume spec as before -> byte-identical argv.
     ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR3 }]),
+    "--label",
+    SANDBOX_LABEL2,
+    "--label",
+    idLabel(id),
     CLONE_IMAGE,
     "clone",
     "--depth",
@@ -544,25 +540,32 @@ function buildCloneArgs(url, volumeName) {
     APP_DIR3
   ];
 }
-async function defaultBuildImage(volumeName) {
+function buildCpHelperCreateArgs(volumeName, helperName, id) {
+  return [
+    "create",
+    "--name",
+    helperName,
+    "--label",
+    SANDBOX_LABEL2,
+    "--label",
+    idLabel(id),
+    // Same buildMountArgs chokepoint as buildCloneArgs (architecture-006).
+    ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR3 }]),
+    CLONE_IMAGE,
+    "true"
+  ];
+}
+async function defaultBuildImage(volumeName, id) {
   const { mkdtemp: mkdtemp2, rm: rm2 } = await import("node:fs/promises");
   const { tmpdir } = await import("node:os");
   const path3 = await import("node:path");
   const dir = await mkdtemp2(path3.join(tmpdir(), "ca-sbx-checkout-"));
   const helper = `ca-sbx-cp-${newSandboxId()}`;
-  const createResult = spawnSync3(
-    "docker",
-    [
-      "create",
-      "--name",
-      helper,
-      // Same buildMountArgs chokepoint as buildCloneArgs (architecture-006).
-      ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR3 }]),
-      CLONE_IMAGE,
-      "true"
-    ],
-    { env: DOCKER_ENV4, encoding: "utf8" }
-  );
+  const createResult = spawnSync2("docker", buildCpHelperCreateArgs(volumeName, helper, id), {
+    env: DOCKER_ENV,
+    encoding: "utf8",
+    timeout: CP_TIMEOUT_MS
+  });
   if ((createResult.status ?? 1) !== 0) {
     const hint = (createResult.stderr ?? "").trim();
     await rm2(dir, { recursive: true, force: true }).catch(() => {
@@ -573,9 +576,10 @@ ${hint}` : ""}`
     );
   }
   try {
-    const cpResult = spawnSync3("docker", ["cp", `${helper}:${APP_DIR3}/.`, dir], {
-      env: DOCKER_ENV4,
-      encoding: "utf8"
+    const cpResult = spawnSync2("docker", ["cp", `${helper}:${APP_DIR3}/.`, dir], {
+      env: DOCKER_ENV,
+      encoding: "utf8",
+      timeout: CP_TIMEOUT_MS
     });
     if ((cpResult.status ?? 1) !== 0) {
       const hint = (cpResult.stderr ?? "").trim();
@@ -588,7 +592,7 @@ ${hint}` : ""}`
     const dephash = computeDepHash(manifests);
     return await buildOrReuseImage(dir, dephash);
   } finally {
-    spawnSync3("docker", ["rm", "-f", helper], { env: DOCKER_ENV4 });
+    spawnSync2("docker", ["rm", "-f", helper], { env: DOCKER_ENV });
     await rm2(dir, { recursive: true, force: true }).catch(() => {
     });
   }
@@ -627,7 +631,7 @@ async function readManifests(dir, path3) {
 }
 async function createSandbox(url, opts = {}) {
   validateRepoUrl(url);
-  const dockerRun = opts.dockerRun ?? defaultDockerRun3;
+  const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const cloneRepo = opts.cloneRepo ?? defaultCloneRepo;
   const buildImage = opts.buildImage ?? defaultBuildImage;
   const netPolicy = opts.netPolicy ?? "offline";
@@ -643,7 +647,7 @@ ${mk.stderr.slice(-1e3)}`
     );
   }
   try {
-    const cloneRaw = await cloneRepo(url, volumeName);
+    const cloneRaw = await cloneRepo(url, volumeName, id);
     const cloneCode = typeof cloneRaw === "number" ? cloneRaw : cloneRaw.code;
     const cloneStderr = typeof cloneRaw === "number" ? "" : cloneRaw.stderr;
     if (cloneCode !== 0) {
@@ -653,7 +657,7 @@ ${cloneStderr.trim()}` : "";
         `ca-sandbox: clone of ${url} into ${volumeName} failed (exit ${cloneCode})${hint}`
       );
     }
-    const build = await buildImage(volumeName);
+    const build = await buildImage(volumeName, id);
     const containerId = runContainer(build.tag, volumeName, netPolicy, {
       extraLabels: [idLabel(id), ...opts.extraLabels ?? []],
       namePrefix: `ca-sbx-${id}`,
@@ -667,7 +671,6 @@ ${cloneStderr.trim()}` : "";
       notes: build.notes
     };
   } catch (err) {
-    dockerRun(["volume", "rm", "-f", volumeName]);
     const leftover = dockerRun([
       "ps",
       "-a",
@@ -679,6 +682,7 @@ ${cloneStderr.trim()}` : "";
     for (const c of leftover.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
       dockerRun(["rm", "-f", c]);
     }
+    dockerRun(["volume", "rm", "-f", volumeName]);
     throw err;
   }
 }
@@ -686,7 +690,7 @@ ${cloneStderr.trim()}` : "";
 // destroy.ts
 function destroySandbox(id, opts = {}) {
   if (!id) throw new Error("ca-sandbox: destroySandbox requires a sandbox id");
-  const dockerRun = opts.dockerRun ?? defaultDockerRun2;
+  const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const labels = [SANDBOX_LABEL2, idLabel(id)];
   const containers = listContainers(labels, dockerRun);
   const volumes = listVolumes(labels, dockerRun);
@@ -708,7 +712,7 @@ function destroySandbox(id, opts = {}) {
   return { id, removedContainers, removedVolumes, keptVolumes };
 }
 function prune(opts = {}) {
-  const dockerRun = opts.dockerRun ?? defaultDockerRun2;
+  const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const removedContainers = [];
   for (const c of listAllContainers(dockerRun)) {
     const r = dockerRun(["rm", "-f", c]);
@@ -723,23 +727,10 @@ function prune(opts = {}) {
 }
 
 // exec.ts
-import { spawnSync as spawnSync4 } from "node:child_process";
 var DEFAULT_EXEC_MAX_BYTES = Number(
   process.env.CA_SANDBOX_EXEC_MAX_BYTES ?? 1024 * 1024
 );
-var DOCKER_ENV5 = { ...process.env, MSYS_NO_PATHCONV: "1" };
-function defaultDockerRun4(args) {
-  const r = spawnSync4("docker", args, {
-    encoding: "utf8",
-    env: DOCKER_ENV5,
-    maxBuffer: 256 * 1024 * 1024
-  });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : "")
-  };
-}
+var defaultDockerRun2 = makeDockerRun({ maxBuffer: 256 * 1024 * 1024 });
 function buildExecArgs(id, argv) {
   if (!id) throw new Error("ca-sandbox: execInSandbox requires a non-empty container id");
   if (!argv || argv.length === 0)
@@ -757,7 +748,7 @@ function capBytes(s, maxBytes) {
 }
 function execInSandbox(id, argv, opts = {}) {
   const args = buildExecArgs(id, argv);
-  const dockerRun = opts.dockerRun ?? defaultDockerRun4;
+  const dockerRun = opts.dockerRun ?? defaultDockerRun2;
   const maxBytes = opts.maxBytes ?? DEFAULT_EXEC_MAX_BYTES;
   const start = Date.now();
   const r = dockerRun(args);
@@ -775,16 +766,6 @@ function execInSandbox(id, argv, opts = {}) {
 }
 
 // cp.ts
-import { spawnSync as spawnSync5 } from "node:child_process";
-var DOCKER_ENV6 = { ...process.env, MSYS_NO_PATHCONV: "1" };
-function defaultDockerRun5(args) {
-  const r = spawnSync5("docker", args, { encoding: "utf8", env: DOCKER_ENV6 });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : "")
-  };
-}
 function buildCpOutArgs(id, containerPath, hostDest) {
   if (!id) throw new Error("ca-sandbox: cpOut requires a non-empty container id");
   if (!containerPath) throw new Error("ca-sandbox: cpOut requires a non-empty container path");
@@ -793,12 +774,11 @@ function buildCpOutArgs(id, containerPath, hostDest) {
 }
 function cpOut(id, containerPath, hostDest, opts = {}) {
   const args = buildCpOutArgs(id, containerPath, hostDest);
-  const dockerRun = opts.dockerRun ?? defaultDockerRun5;
+  const dockerRun = opts.dockerRun ?? defaultDockerRun;
   return dockerRun(args);
 }
 
 // cli.ts
-var DOCKER_ENV7 = { ...process.env, MSYS_NO_PATHCONV: "1" };
 var NET_POLICIES = ["offline", "clone-then-cut", "allowlist"];
 var DEFAULT_SHELL = "sh";
 var CliError = class extends Error {
@@ -959,9 +939,9 @@ function parsePrune(args) {
 }
 function defaultShell(id, shell) {
   const containerId = resolveContainerId(id);
-  const r = spawnSync6("docker", ["exec", "-it", containerId, shell], {
+  const r = spawnSync3("docker", ["exec", "-it", containerId, shell], {
     stdio: "inherit",
-    env: DOCKER_ENV7
+    env: DOCKER_ENV
   });
   return r.status ?? 1;
 }
