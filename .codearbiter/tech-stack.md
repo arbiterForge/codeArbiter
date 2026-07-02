@@ -74,6 +74,10 @@ python .github/scripts/test_readinjectlib.py
 # pre-read hook entry point — governed-file injection, dedup, fail-open, dormancy
 # (pre-read.py): AC-03/09/10/12, miss, and dormant-repo paths
 python .github/scripts/test_pre_read.py
+
+# plugins/ca/hooks/tests/ — the hook enforcement + helper logic unittest suite
+# (statusline, _ledgerlib, guards, etc.); run in CI via unittest discover
+python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 ```
 
 Only when `plugins/ca/tools/**` changed:
