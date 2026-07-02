@@ -15,6 +15,9 @@ operation itself, where spelling no longer matters. These tests prove:
 Stdlib only; a real throwaway git repo per test (git hooks only fire against a
 real repo).
 """
+import contextlib
+import importlib.util as _ilu
+import io
 import os
 import subprocess
 import sys
@@ -26,6 +29,17 @@ ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 
 sys.path.insert(0, HOOKS)
 import _githooks  # noqa: E402
+
+
+def _load_git_enforce():
+    """Import git-enforce.py fresh as a module (hyphenated filename, so a
+    plain `import` can't name it — mirrors test_governs.py's pattern). A fresh
+    module per call means monkeypatches in one test can never leak into
+    another via a cached singleton."""
+    spec = _ilu.spec_from_file_location("git_enforce_direct", ENFORCE)
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 
 def _sh(args, cwd, **kw):
@@ -146,6 +160,92 @@ class TestPreCommitEnforce(_GitFixture):
         res = self.enforce("pre-commit")
         self.assertEqual(res.returncode, 0, res.stderr)
 
+    # coverage-002 (#193): H-10b secret-only block, H-14 migration block, and
+    # both pre_commit() fail-closed git-read branches — previously untested.
+
+    def test_secret_only_commit_without_marker_is_blocked_h10b_not_h09b(self):
+        _git(["checkout", "-q", "-b", "feat/s"], self.root)
+        # No crypto/TLS token here (no hashing or signing call) — SECRET_RE only.
+        # Built via concatenation (not a literal line in this source file) so
+        # this repo's OWN commit-gate doesn't flag test_git_hooks.py's own diff
+        # as introducing a secret — the fixture file written to disk still
+        # carries the real literal line SECRET_RE must match.
+        key_line = "api" + "_key" + ' = "' + "abcd1234efgh5678" + '"\n'
+        self._stage("s.py", key_line)
+        res = self.enforce("pre-commit")
+        self.assertEqual(res.returncode, 1, res.stderr)
+        self.assertIn("H-10b", res.stderr)
+        self.assertNotIn("H-09b", res.stderr)
+
+    def test_migration_without_gate_pass_is_blocked_h14(self):
+        _git(["checkout", "-q", "-b", "feat/m"], self.root)
+        self._stage("db/migrations/0001_init.sql", "CREATE TABLE t (id int);\n")
+        res = self.enforce("pre-commit")
+        self.assertEqual(res.returncode, 1, res.stderr)
+        self.assertIn("H-14", res.stderr)
+
+    def test_cached_diff_read_failure_fails_closed(self):
+        # Point PATH at a nonexistent dir so EVERY git spawn in pre_commit()
+        # fails, including the very first (current_branch) — the H-01 fail-closed
+        # branch fires
+        # before either the H-09b/H-10b or H-14 read site is reached. Kept as
+        # end-to-end evidence that an entirely unreadable git still fails
+        # CLOSED, not open; test_git_enforce_lib.py below isolates the two
+        # DISTINCT pre_commit() read-failure branches (cached_added_lines vs
+        # cached_names) that coverage-002 calls out, via direct monkeypatching
+        # (subprocess-level PATH-stripping can't differentiate the two, since
+        # both read sites fail identically once git itself is unspawnable).
+        _git(["checkout", "-q", "-b", "feat/g"], self.root)
+        self._stage("f.txt", "x\n")
+        # PATH is SET to a nonexistent dir (not unset): POSIX execvp falls back
+        # to its default /usr/bin:/bin when PATH is absent and would still find
+        # git, defeating the fail-closed premise on non-Windows CI.
+        env = {k: v for k, v in os.environ.items() if k.upper() != "PATHEXT"}
+        env["PATH"] = os.path.join(self.root, "_nonexistent_bin")
+        res = _sh([sys.executable, ENFORCE, "pre-commit"], self.root, env=env)
+        self.assertEqual(res.returncode, 1, res.stderr)
+        self.assertIn("failing closed", res.stderr)
+
+
+class TestPreCommitFailClosedBranches(_GitFixture):
+    """coverage-002 (#193): isolate pre_commit()'s two DISTINCT git-read
+    fail-closed branches — cached_added_lines() -> None (H-09b/H-10b) and
+    cached_names() -> None (H-14) — by calling pre_commit() in-process with one
+    read function monkeypatched to fail while the other succeeds normally. A
+    subprocess-level git-unreadable test (see test_cached_diff_read_failure_
+    fails_closed above) can't isolate these: once git itself can't be spawned,
+    BOTH reads fail identically and only ever exercises the first one
+    (current_branch, H-01)."""
+
+    def setUp(self):
+        super().setUp()
+        _git(["checkout", "-q", "-b", "feat/branches"], self.root)
+        self._write(os.path.join(self.root, "f.txt"), "x\n")
+        _git(["add", "f.txt"], self.root)
+
+    def test_added_lines_read_failure_fails_closed_h09b(self):
+        ge = _load_git_enforce()
+        ge.cached_added_lines = lambda cwd: None
+        buf = io.StringIO()
+        with contextlib.redirect_stderr(buf):
+            with self.assertRaises(SystemExit) as ctx:
+                ge.pre_commit(self.root)
+        self.assertEqual(ctx.exception.code, 1)
+        self.assertIn("H-09b", buf.getvalue())
+        self.assertIn("failing closed", buf.getvalue())
+
+    def test_staged_names_read_failure_fails_closed_h14(self):
+        ge = _load_git_enforce()
+        ge.cached_added_lines = lambda cwd: []  # no sensitive content -> pass H-09b/H-10b
+        ge.cached_names = lambda cwd: None
+        buf = io.StringIO()
+        with contextlib.redirect_stderr(buf):
+            with self.assertRaises(SystemExit) as ctx:
+                ge.pre_commit(self.root)
+        self.assertEqual(ctx.exception.code, 1)
+        self.assertIn("H-14", buf.getvalue())
+        self.assertIn("failing closed", buf.getvalue())
+
 
 class TestPrePushEnforce(_GitFixture):
     def test_push_to_protected_branch_is_blocked(self):
@@ -164,6 +264,50 @@ class TestPrePushEnforce(_GitFixture):
         line = f"refs/heads/feat/x {sha} refs/heads/feat/x {zero}\n"  # create -> no force
         res = self.enforce("pre-push", stdin=line)
         self.assertEqual(res.returncode, 0, res.stderr)
+
+    # coverage-001 (#193): H-02 (force / non-fast-forward) is otherwise
+    # completely untested — the two cases above only exercise H-01 and a
+    # create-ref push (which short-circuits H-02 via the all-zero remote sha).
+
+    def _commit(self, name, content, msg):
+        self._write(os.path.join(self.root, name), content)
+        _git(["add", name], self.root)
+        _git(["commit", "-q", "-m", msg, "--no-verify"], self.root)
+        return _git(["rev-parse", "HEAD"], self.root).stdout.strip()
+
+    def test_non_fast_forward_push_is_blocked_h02(self):
+        # A real non-fast-forward: local and remote diverge from a common base,
+        # neither a descendant of the other, both refs non-zero (not a
+        # create/delete) — merge-base --is-ancestor(remote, local) is False.
+        base = self._commit("base.txt", "base\n", "base")
+        local_sha = self._commit("local.txt", "local\n", "local")
+        _git(["checkout", "-q", "-b", "alt", base], self.root)
+        remote_sha = self._commit("remote.txt", "remote\n", "remote")
+        _git(["checkout", "-q", "main"], self.root)
+        line = f"refs/heads/feat/x {local_sha} refs/heads/feat/x {remote_sha}\n"
+        res = self.enforce("pre-push", stdin=line)
+        self.assertEqual(res.returncode, 1, res.stderr)
+        self.assertIn("H-02", res.stderr)
+
+    def test_genuine_fast_forward_update_is_allowed_h02(self):
+        # A true (non-create) fast-forward: remote_sha IS an ancestor of
+        # local_sha, both refs non-zero.
+        remote_sha = self._commit("base2.txt", "base\n", "base2")
+        local_sha = self._commit("child.txt", "child\n", "child")
+        line = f"refs/heads/feat/y {local_sha} refs/heads/feat/y {remote_sha}\n"
+        res = self.enforce("pre-push", stdin=line)
+        self.assertEqual(res.returncode, 0, res.stderr)
+
+    def test_unresolvable_merge_base_fails_closed_h02(self):
+        # remote_sha names a commit this repo has never heard of — `git
+        # merge-base --is-ancestor` errors (unknown revision), which must
+        # resolve CLOSED (block), not silently pass as "not force".
+        local_sha = self._commit("f3.txt", "x\n", "local3")
+        bogus_remote = "f" * 40
+        line = f"refs/heads/feat/z {local_sha} refs/heads/feat/z {bogus_remote}\n"
+        res = self.enforce("pre-push", stdin=line)
+        self.assertEqual(res.returncode, 1, res.stderr)
+        self.assertIn("H-02", res.stderr)
 
 
 if __name__ == "__main__":

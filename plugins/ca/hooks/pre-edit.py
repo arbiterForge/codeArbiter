@@ -16,6 +16,7 @@
 
 import os
 import sys
+import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
@@ -50,11 +51,7 @@ def _resulting_context(root, fpath, tool, ti):
     return text
 
 
-def main():
-    utf8_stdio()
-    root = project_root()
-    if not arbiter_active(root):
-        sys.exit(0)
+def _run(root):
     payload = read_input()
     tool = payload.get("tool_name", "") or ""
     ti = tool_input(payload)
@@ -136,6 +133,29 @@ def main():
             block("H-11", "ADR authoring marker is stale (>30 min). Re-run /adr.")
 
     sys.exit(0)
+
+
+def main():
+    utf8_stdio()
+    root = project_root()
+    if not arbiter_active(root):
+        sys.exit(0)
+    # reliability-002 (#189): scoped to arbiter-enabled repos only (above), so a
+    # dormant/non-codeArbiter repo can never be bricked by a crash here. An
+    # uncaught exception in the scan below must fail CLOSED (exit 2 = BLOCK),
+    # not exit 1 — a non-2 exit is a NON-blocking error under the Claude Code
+    # hook contract (_hooklib.py:11-15) and would silently ALLOW the Edit.
+    # read_input()'s documented fail-OPEN parse behavior is unaffected: it
+    # catches its own errors and returns {} before this wrapper is reached.
+    try:
+        _run(root)
+    except SystemExit:
+        raise
+    except Exception:  # noqa: BLE001 — the fail-closed backstop of last resort
+        traceback.print_exc(file=sys.stderr)
+        block("H-00", "pre-edit guard crashed while scanning this Edit — failing "
+                      "closed (ORCHESTRATOR §2) rather than silently allowing an "
+                      "unscanned edit. See the traceback above; retry, or report it.")
 
 
 if __name__ == "__main__":
