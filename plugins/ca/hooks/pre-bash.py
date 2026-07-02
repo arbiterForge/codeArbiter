@@ -46,6 +46,31 @@ def _read_err_hint():
 # `git` followed by any run of global options (-C <dir>, -c k=v, --git-dir=…,
 # --no-pager, …) before the subcommand — `git -C ../x commit` must not slip
 # past a bare `git\s+commit` match.
+# appsec-002 (#175): a literal `--no-verify` / `-n` on `git commit`/`git push`
+# skips `.git/hooks` entirely — the documented "spelling-proof backstop"
+# (git-enforce.py) never runs for that operation, voiding H-01/H-02/H-09b/
+# H-10b/H-14 for it. `-n` is git-commit's short spelling of --no-verify; `git
+# push` has NO short spelling (its own `-n` is `--dry-run`, an unrelated flag),
+# so only the long form is checked there. Token-equality (not substring) so a
+# commit MESSAGE merely quoting the text ('-m "explain --no-verify"') is never
+# misclassified — the quoted phrase tokenizes as one whole argument, never
+# equal to the bare flag. The deeper shell-indirection spelling (`g=git; $g
+# commit --no-verify`) defeats this lexical check same as it defeats COMMIT_RE
+# itself; that residual is documented separately, out of scope for this guard.
+COMMIT_NO_VERIFY_FLAGS = frozenset({"--no-verify", "-n"})
+PUSH_NO_VERIFY_FLAGS = frozenset({"--no-verify"})
+
+
+def _has_literal_flag(args, flags):
+    """True iff `args` contains one of `flags` as its own token — quote-aware
+    (a fully-quoted token, e.g. a `-m "..."` message, tokenizes as ONE token
+    and is compared whole, so it can never equal a single bare flag)."""
+    for raw in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args):
+        if raw.strip("\"'") in flags:
+            return True
+    return False
+
+
 GIT = r"\bgit(?:\s+(?:-[Cc]\s+\S+|--[\w-]+(?:=\S+)?|-\w+))*"
 # The args capture stops at an unquoted `|`, `;`, or `&` (the next shell command
 # is not this git command's business) but consumes quoted strings whole — a
@@ -452,6 +477,15 @@ def _run(root):
     commit = COMMIT_RE.search(git_view) or COMMIT_RE.search(cmd)
     cwd = git_cwd(git_view, root)
 
+    # H-20: block a literal --no-verify / -n on `git commit` — it skips
+    # .git/hooks (the git-enforce backstop) entirely, voiding every enforcement
+    # hook for that commit (appsec-002, #175).
+    if commit and _has_literal_flag(commit.group("args"), COMMIT_NO_VERIFY_FLAGS):
+        block("H-20", "'--no-verify' / '-n' on git commit skips the .git/hooks "
+                      "git-enforce backstop entirely (appsec-002) — every commit-time "
+                      "gate (H-01/H-02/H-09b/H-10b/H-14) would go unenforced for this "
+                      "commit. Remove the flag; use /override for a sanctioned bypass.")
+
     # H-01: no commit directly to main/master — case-insensitive, and a detached
     # HEAD sitting on a protected branch's tip counts (the commit lands on its
     # history regardless of the absent branch name).
@@ -465,6 +499,16 @@ def _run(root):
     push = PUSH_RE.search(git_view) or PUSH_RE.search(cmd)
     if push:
         pargs = push.group("args")
+
+        # H-20: block a literal --no-verify on `git push` (same rationale as
+        # the commit flank above). `git push` has no short `-n` spelling for
+        # this — its own `-n` is `--dry-run`, an unrelated flag — so only the
+        # long form is checked here.
+        if _has_literal_flag(pargs, PUSH_NO_VERIFY_FLAGS):
+            block("H-20", "'--no-verify' on git push skips the .git/hooks git-enforce "
+                          "backstop entirely (appsec-002) — every push-time gate would "
+                          "go unenforced for this push. Remove the flag; use /override "
+                          "for a sanctioned bypass.")
 
         # H-02: no force-push — any spelling, including --force-with-lease and +refspec
         if FORCE_RE.search(pargs) or FORCE_REFSPEC_RE.search(pargs):
@@ -667,7 +711,7 @@ def main():
     # reliability-002 (#189): everything past this point runs only in an
     # arbiter-enabled repo, so a dormant/non-codeArbiter repo can never be
     # bricked by a crash here. An uncaught exception in the scan path below
-    # (H-01/H-03/H-05/H-09b/H-10b/H-11/H-14/H-18/H-19) must fail CLOSED (exit 2,
+    # (H-01/H-03/H-05/H-09b/H-10b/H-11/H-14/H-18/H-19/H-20) must fail CLOSED (exit 2,
     # a BLOCK) rather than exit 1 — a non-2 exit is a NON-blocking error under
     # the Claude Code hook contract (_hooklib.py:11-15), which would silently
     # ALLOW the very tool call this guard exists to scan. read_input()'s

@@ -7,7 +7,9 @@
 # (#162 — raw path AND realpath-resolved repo-relative form):
 #   H-18  CONTEXT.md may not be edited to drop `arbiter: enabled` (#159).
 #   H-19  .codearbiter/.markers/* are never edited via the Edit tools (#160).
-#   H-05  audit-log Edits must be pure appends (new_string extends old_string).
+#   H-05  audit-log Edits must be pure, tail-anchored appends: old_string must
+#         be the file's REAL current trailing content, new_string must extend
+#         it, and replace_all is rejected outright (reliability-003, #172).
 #   H-11  ADRs under decisions/ are edited only via /adr.
 #
 # NotebookEdit is guarded too (a notebook has no append/frontmatter semantics, so
@@ -21,8 +23,23 @@ import traceback
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
     arbiter_active, block, classify_protected, frontmatter_enabled_text,
-    marker_fresh, project_root, read_input, tool_input, utf8_stdio,
+    is_tail_append, marker_fresh, project_root, read_input, tool_input,
+    utf8_stdio,
 )
+
+
+def _read_real_text(root, fpath):
+    """Best-effort current on-disk content of `fpath` (symlink-resolved), or
+    "" if unreadable. Shared by the #159 CONTEXT.md replay and the H-05
+    tail-anchor check (reliability-003, #172) — both need the file's REAL
+    current content, not just the edit's own old_string, to verify what the
+    edit actually does to the file."""
+    path = fpath if os.path.isabs(fpath) else os.path.join(root, fpath)
+    try:
+        with open(os.path.realpath(path), encoding="utf-8", errors="replace") as f:
+            return f.read()
+    except Exception:  # noqa: BLE001
+        return ""
 
 
 def _resulting_context(root, fpath, tool, ti):
@@ -31,12 +48,7 @@ def _resulting_context(root, fpath, tool, ti):
     Reads the real (symlink-resolved) file and replays the edit(s) the way the
     tool would. An old_string that isn't present leaves the text unchanged (the
     tool would error anyway) — harmless for the check."""
-    path = fpath if os.path.isabs(fpath) else os.path.join(root, fpath)
-    try:
-        with open(os.path.realpath(path), encoding="utf-8", errors="replace") as f:
-            text = f.read()
-    except Exception:  # noqa: BLE001
-        text = ""
+    text = _read_real_text(root, fpath)
     if tool == "MultiEdit":
         edits = ti.get("edits", []) or []
     else:
@@ -92,8 +104,9 @@ def _run(root):
                           "dormant. Keep `arbiter: enabled` in a well-formed frontmatter block.")
 
     # H-05: the audit logs (and the /sprint decision record) are append-only — an
-    # Edit must leave existing lines intact (new_string extends old_string), never
-    # alter or delete them. (path set: _hooklib.is_audit_log)
+    # Edit must be a verifiable TAIL-ANCHORED append: old_string must be the
+    # file's REAL current trailing content, and new_string must extend it.
+    # (path set: _hooklib.is_audit_log)
     if "audit" in classes:
         # MultiEdit applies a batch of edits and cannot express a verifiable pure
         # append to an append-only file — the sanctioned append path is a single
@@ -102,6 +115,18 @@ def _run(root):
             block("H-05", "MultiEdit cannot guarantee a pure append to an append-only "
                           ".codearbiter audit log (overrides.log, triage.log, sprint-log.md) "
                           "(ORCHESTRATOR §7). Append with a single Edit or '>>'.")
+        # reliability-003 (#172): replace_all can never be a verifiable append —
+        # it rewrites EVERY occurrence of old_string, not just the tail (a
+        # single-occurrence replace_all is indistinguishable from a targeted
+        # rewrite, and a multi-occurrence one alters interior lines outright).
+        # Reject it outright before even looking at old_string/new_string.
+        if ti.get("replace_all"):
+            block("H-05", "An Edit with replace_all=true on an append-only .codearbiter "
+                          "audit log (overrides.log, triage.log, sprint-log.md) cannot be a "
+                          "verifiable pure append (ORCHESTRATOR §7) — replace_all rewrites "
+                          "every matching occurrence, not just the file's tail. Append with "
+                          "'>>', or a single non-replace_all Edit whose old_string is the "
+                          "file's current trailing content.")
         old = ti.get("old_string", "") or ""
         new = ti.get("new_string", "") or ""
         # migration-003: `new.startswith("")` is ALWAYS True, so an empty
@@ -120,6 +145,20 @@ def _run(root):
                           "sprint-log.md) are append-only (ORCHESTRATOR §7). This Edit alters "
                           "existing audit lines; only pure appends are permitted (new text "
                           "must extend the old text).")
+        # reliability-003 (#172): new.startswith(old) alone is not enough — an
+        # old_string that matches an INTERIOR line (not the file's actual
+        # trailing content) still satisfies startswith, but inserts content
+        # BETWEEN existing lines rather than truly appending at the end.
+        # Tail-anchor against the REAL on-disk content: old_string must be
+        # exactly what the file currently ends with.
+        current = _read_real_text(root, fpath)
+        if not is_tail_append(current, old, new):
+            block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, "
+                          "sprint-log.md) are append-only (ORCHESTRATOR §7). This Edit's "
+                          "old_string is not the file's current TRAILING content — a mid-file "
+                          "insertion reorders the audit record even though new_string extends "
+                          "old_string. Append with '>>', or a single Edit whose old_string is "
+                          "exactly the file's current tail.")
 
     # H-11: ADRs may only be edited via /adr — any .md anywhere under decisions/
     # (a non-numbered draft or a nested path is still an immutable decision).
