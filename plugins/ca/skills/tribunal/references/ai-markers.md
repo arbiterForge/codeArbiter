@@ -18,7 +18,7 @@ Signals that raise scrutiny on a file or directory:
 
 ## Iteration-depth estimate
 
-Inspect git history. A large surface with few commits, or long runs of AI commits without human edits, indicates high AI-generation ratio and a higher feedback-loop-degradation prior — code more secure at step 1 than at the final state. Raise scrutiny on the highest-iteration areas.
+Inspect git history. A large surface with few commits, or long runs of AI commits without human edits, indicates high AI-generation ratio and a higher feedback-loop-degradation prior — code more secure at step 1 than at the final state. Identify AI commits via `Co-Authored-By: Claude` / AI-tool trailers and characteristic generated message shapes (uniform conventional-commit bodies with bullet lists) — a heuristic signal, not proof. Raise scrutiny on the highest-iteration areas.
 
 ## Risk ranking & trust boundaries
 

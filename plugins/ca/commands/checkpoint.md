@@ -46,3 +46,4 @@ not block or sign off anything.
 - Reviewing just the current diff → `/ca:review`.
 - A pre-implementation threat model → `/ca:threat-model`.
 - ADR health only → `/ca:adr-status`.
+- A whole-codebase deep audit → `/ca:tribunal` (checkpoint is the lean periodic sweep; tribunal its rare deep counterpart).

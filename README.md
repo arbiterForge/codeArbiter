@@ -10,7 +10,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 <img alt="version 2.7.1" src="https://img.shields.io/badge/version-2.7.1-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-39-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
-<img alt="agents" src="https://img.shields.io/badge/agents-27-555">
+<img alt="agents" src="https://img.shields.io/badge/agents-28-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
 ### 📖 [Read the documentation →](https://arbiterforge.github.io/codeArbiter/)
@@ -97,7 +97,7 @@ flowchart LR
 
 The same flag gates the statusline: the usage/context segment renders everywhere; the arbiter segments light up only in an enabled repo.
 
-Project state lives in **your** repo, not the plugin: a single `.codearbiter/` directory at the repo root, so stage, specs, plans, ADRs, the decision log, and the overrides audit trail commit alongside your code and survive uninstalling the plugin.
+Project state lives in **your** repo, not the plugin: a single `.codearbiter/` directory at the repo root, so stage, specs, plans, ADRs, the decision log, tribunal reports, and the overrides audit trail commit alongside your code and survive uninstalling the plugin.
 
 <table>
 <tr><th align="left">Lands in a consumer repo</th><th align="left">Lives elsewhere</th></tr>
@@ -274,7 +274,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:watch <PR>` | Watch a PR's CI server-side: diagnose on red, notify and offer merge on green; never auto-merges |
 | `/ca:review [path]` | Reviewer-fleet pass over the diff; BLOCK on CRITICAL/HIGH |
 | `/ca:checkpoint` | Lean periodic multi-reviewer sweep |
-| `/ca:tribunal [scope-path]` | Deep, rarely-run whole-codebase audit across ten specialist lenses; resumable append-only jsonl log; files GitHub issues on approval; never a required gate |
+| `/ca:tribunal [scope-path]` | Deep, rarely-run whole-codebase audit across eleven specialist lenses; resumable append-only jsonl log; files GitHub issues on approval; never a required gate |
 | `/ca:release [--dry-run]` | SemVer bump + changelog + annotated tag |
 | `/ca:add-dep "pkg"` | Vet a dependency (license, provenance, supply chain) |
 
@@ -329,7 +329,7 @@ plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (39)   skills/   (22)   agents/   (27)
+├── commands/   (39)   skills/   (22)   agents/   (28)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)

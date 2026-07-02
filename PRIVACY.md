@@ -12,8 +12,8 @@ opt-in features that can transmit or record data.
 ## What the plugin stores, and where
 
 All project state lives in a single `.codearbiter/` directory at the root of
-**your** repository: stage, specs, plans, ADRs, the decision log, and the
-append-only audit logs. These are plain files committed alongside your code.
+**your** repository: stage, specs, plans, ADRs, the decision log, tribunal
+reports, and the append-only audit logs. These are plain files committed alongside your code.
 They stay in your repository under your control and survive uninstalling the
 plugin. This project never receives a copy of them.
 
