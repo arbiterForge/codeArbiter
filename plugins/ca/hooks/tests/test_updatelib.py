@@ -7,13 +7,15 @@ refresh_if_stale best-effort refresh (AC-3/AC-4/AC-5), and the notice-line
 render helper consumed by both SessionStart and the statusline (AC-1/AC-2).
 
 Stdlib unittest only; no real network call is ever made — fetches are always
-either stubbed/injected or monkeypatched at urllib.request.urlopen.
+driven through an injected fake `opener` (see _FakeOpener/_FakeResp below), the
+same seam fetch_latest_tag exposes in production for the hardened opener.
 """
 import json
 import os
 import sys
 import tempfile
 import unittest
+import urllib.request
 from unittest import mock
 
 _HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -184,78 +186,123 @@ class TestIsStale(unittest.TestCase):
 
 
 # =========================================================================== fetch_latest_tag (AC-5)
+class _FakeResp:
+    """Minimal context-manager stand-in for the object urllib's opener.open()
+    returns — used as the injected `opener`'s return value in every
+    TestFetchLatestTag case below (fetch_latest_tag never touches real urllib
+    internals in tests)."""
+
+    def __init__(self, status=200, body=b"{}"):
+        self.status = status
+        self._body = body
+
+    def read(self):
+        return self._body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+
+class _FakeOpener:
+    """Stand-in for the object `_build_opener()` / `urllib.request.build_opener()`
+    returns. Records every `.open()` call (so a test can assert "no request was
+    made") and either returns `resp` or raises `exc`."""
+
+    def __init__(self, resp=None, exc=None):
+        self.resp = resp
+        self.exc = exc
+        self.calls = []
+
+    def open(self, req, timeout=None):
+        self.calls.append((req, timeout))
+        if self.exc is not None:
+            raise self.exc
+        return self.resp
+
+
 class TestFetchLatestTag(unittest.TestCase):
 
     def test_https_only_rejects_http_without_network_attempt(self):
-        with mock.patch("urllib.request.urlopen") as m:
-            result = U.fetch_latest_tag(url="http://api.github.com/repos/x/y/releases/latest")
-            self.assertIsNone(result)
-            m.assert_not_called()
+        opener = _FakeOpener(resp=_FakeResp())
+        result = U.fetch_latest_tag(
+            url="http://api.github.com/repos/x/y/releases/latest", opener=opener)
+        self.assertIsNone(result)
+        self.assertEqual(opener.calls, [], "a non-https url must never reach the opener")
 
     def test_success_parses_tag_name(self):
         body = json.dumps({"tag_name": "2.10.0"}).encode("utf-8")
-
-        class FakeResp:
-            status = 200
-            def read(self):
-                return body
-            def __enter__(self):
-                return self
-            def __exit__(self, *a):
-                return False
-
-        with mock.patch("urllib.request.urlopen", return_value=FakeResp()):
-            self.assertEqual(U.fetch_latest_tag(), "2.10.0")
+        opener = _FakeOpener(resp=_FakeResp(status=200, body=body))
+        self.assertEqual(U.fetch_latest_tag(opener=opener), "2.10.0")
 
     def test_network_error_fails_silent(self):
         import urllib.error
-        with mock.patch("urllib.request.urlopen",
-                         side_effect=urllib.error.URLError("no network")):
-            self.assertIsNone(U.fetch_latest_tag())
+        opener = _FakeOpener(exc=urllib.error.URLError("no network"))
+        self.assertIsNone(U.fetch_latest_tag(opener=opener))
 
     def test_timeout_fails_silent(self):
         import socket
-        with mock.patch("urllib.request.urlopen", side_effect=socket.timeout()):
-            self.assertIsNone(U.fetch_latest_tag())
+        opener = _FakeOpener(exc=socket.timeout())
+        self.assertIsNone(U.fetch_latest_tag(opener=opener))
 
     def test_non_200_fails_silent(self):
-        class FakeResp:
-            status = 500
-            def read(self):
-                return b"{}"
-            def __enter__(self):
-                return self
-            def __exit__(self, *a):
-                return False
-
-        with mock.patch("urllib.request.urlopen", return_value=FakeResp()):
-            self.assertIsNone(U.fetch_latest_tag())
+        opener = _FakeOpener(resp=_FakeResp(status=500, body=b"{}"))
+        self.assertIsNone(U.fetch_latest_tag(opener=opener))
 
     def test_unparseable_body_fails_silent(self):
-        class FakeResp:
-            status = 200
-            def read(self):
-                return b"not json"
-            def __enter__(self):
-                return self
-            def __exit__(self, *a):
-                return False
-
-        with mock.patch("urllib.request.urlopen", return_value=FakeResp()):
-            self.assertIsNone(U.fetch_latest_tag())
+        opener = _FakeOpener(resp=_FakeResp(status=200, body=b"not json"))
+        self.assertIsNone(U.fetch_latest_tag(opener=opener))
 
     def test_missing_tag_name_fails_silent(self):
-        class FakeResp:
-            status = 200
-            def read(self):
-                return json.dumps({"no_tag": True}).encode("utf-8")
-            def __enter__(self):
-                return self
-            def __exit__(self, *a):
-                return False
+        body = json.dumps({"no_tag": True}).encode("utf-8")
+        opener = _FakeOpener(resp=_FakeResp(status=200, body=body))
+        self.assertIsNone(U.fetch_latest_tag(opener=opener))
 
-        with mock.patch("urllib.request.urlopen", return_value=FakeResp()):
-            self.assertIsNone(U.fetch_latest_tag())
+    def test_default_opener_is_the_hardened_https_only_one(self):
+        # Production (no injected opener) must build via _build_opener(), the
+        # HTTPS-only-redirect-hardened factory — not a bare urllib.request.urlopen.
+        with mock.patch.object(U, "_build_opener",
+                                return_value=_FakeOpener(resp=_FakeResp(
+                                    body=json.dumps({"tag_name": "2.9.0"}).encode()))) as m:
+            self.assertEqual(U.fetch_latest_tag(), "2.9.0")
+            m.assert_called_once()
+
+    # ----------------------------------------------------------------- redirect hardening (defense-in-depth)
+    def test_redirect_handler_refuses_http_target(self):
+        """The core mechanism: _HTTPSOnlyRedirectHandler.redirect_request must
+        return None (refuse to build a follow-up request) when the Location
+        header points at a non-https url — this is what stops urllib's default
+        opener from transparently following an https->http downgrade."""
+        handler = U._HTTPSOnlyRedirectHandler()
+        req = urllib.request.Request(U.UPDATE_API_URL)
+        result = handler.redirect_request(
+            req, fp=None, code=302, msg="Found", headers={},
+            newurl="http://evil.example/steal")
+        self.assertIsNone(result, "a redirect to a non-https target must be refused")
+
+    def test_redirect_handler_allows_https_target(self):
+        handler = U._HTTPSOnlyRedirectHandler()
+        req = urllib.request.Request(U.UPDATE_API_URL)
+        result = handler.redirect_request(
+            req, fp=None, code=302, msg="Found", headers={},
+            newurl="https://api.github.com/repos/x/y/releases/999999")
+        self.assertIsNotNone(result, "a same-scheme https redirect must still be followed")
+
+    def test_fetch_returns_none_when_opener_refuses_http_redirect(self):
+        """End-to-end: when the (real or fake) opener raises because our redirect
+        handler refused an https->http downgrade, fetch_latest_tag degrades to
+        None exactly like every other fetch failure (fail-silent, AC-3/AC-5) —
+        it does NOT fall through to reading a body served over http."""
+        import urllib.error
+        refused = urllib.error.HTTPError(
+            U.UPDATE_API_URL, 302, "Found", {"Location": "http://evil.example/steal"}, None)
+        opener = _FakeOpener(exc=refused)
+        self.assertIsNone(U.fetch_latest_tag(opener=opener))
+        # Exactly one call was attempted (the initial request); no follow-up
+        # request to the http:// target was ever made through this opener.
+        self.assertEqual(len(opener.calls), 1)
 
 
 # =========================================================================== refresh_if_stale (AC-3 / AC-4)

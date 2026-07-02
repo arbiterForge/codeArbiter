@@ -36,7 +36,7 @@
 #   read_state(path=None) -> dict            {latest, checked_at} cache, or {} on any failure
 #   write_state(state, path=None) -> None    atomic cache write; best-effort, never raises
 #   is_stale(checked_at, now, interval=ONE_DAY) -> bool   True iff a refresh is due
-#   fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0) -> str|None   HTTPS GET, fail-silent
+#   fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0, opener=None) -> str|None   HTTPS GET, fail-silent
 #   refresh_if_stale(now=None, fetcher=None, path=None) -> dict   best-effort cache refresh
 
 import json
@@ -176,11 +176,40 @@ def is_stale(checked_at, now, interval=ONE_DAY):
         return True
 
 
-def fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0):
+class _HTTPSOnlyRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Refuse to follow any redirect whose target isn't `https://` (ADR-0003,
+    defense-in-depth). The pre-connection scheme guard in fetch_latest_tag below
+    only covers the INITIAL url — urllib's default opener otherwise follows a
+    3xx transparently, including an https->http downgrade, without ever
+    re-checking the scheme. Returning None here means the redirect is NOT
+    handled, so urllib's error chain raises the original HTTPError instead of
+    silently continuing the chain over a downgraded (or otherwise non-https)
+    target; fetch_latest_tag's broad except then degrades that to None, same as
+    every other fetch failure (fail-silent, AC-5)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not (isinstance(newurl, str) and newurl.lower().startswith("https://")):
+            return None
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _build_opener():
+    """Factory for the HTTPS-only-redirect opener. A thin seam — not called
+    directly by fetch_latest_tag's default path only, but exposed as a factory
+    (rather than a module-level singleton) so `opener=` injection in tests never
+    has to touch real urllib internals."""
+    return urllib.request.build_opener(_HTTPSOnlyRedirectHandler())
+
+
+def fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0, opener=None):
     """GET the GitHub Releases API and return `tag_name`, or None on ANY problem
-    (AC-5): non-https url, network error, timeout, non-200, or an unparseable/absent
-    body. HTTPS-only per ADR-0003 — a non-https url is refused before any connection
-    is attempted (no parser-differential bypass: the scheme is checked up front)."""
+    (AC-5): non-https url, network error, timeout, non-200, an unparseable/absent
+    body, or a redirect to a non-https target. HTTPS-only per ADR-0003 — a
+    non-https INITIAL url is refused before any connection is attempted, and a
+    non-https REDIRECT target is refused too (via `_HTTPSOnlyRedirectHandler`,
+    since urllib's default opener would otherwise follow an https->http
+    downgrade transparently). `opener` is injectable (tests); production builds
+    the hardened opener via `_build_opener()`."""
     if not isinstance(url, str) or not url.lower().startswith("https://"):
         return None
     try:
@@ -188,7 +217,8 @@ def fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0):
             "User-Agent": "codeArbiter-update-check",
             "Accept": "application/vnd.github+json",
         })
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        op = opener or _build_opener()
+        with op.open(req, timeout=timeout) as resp:
             status = getattr(resp, "status", None) or getattr(resp, "code", None)
             if status != 200:
                 return None
