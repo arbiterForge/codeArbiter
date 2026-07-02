@@ -21,7 +21,7 @@ The assigned path slice: async correctness, error propagation, races, resource l
 Execute `lenses/reliability.md`. Evidence-or-drop; an absence claim (no handler, no teardown) requires reading the whole unit.
 
 ## Findings
-Append one finding/v1 line to `findings/reliability.jsonl` the moment it is found — never batch. Provisional scores only.
+Write each finding/v1 record to its own file `findings/reliability/reliability-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (async sites inspected).

@@ -5,7 +5,7 @@ description: The deep, rarely-convened whole-codebase audit lane. Routed to when
 
 # tribunal
 
-The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Routed to when the user invokes `/ca:tribunal`. Ten specialist lenses judge the codebase; every finding persists to append-only jsonl under a run dir that survives compaction and disconnects, so the run resumes from disk.
+The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Routed to when the user invokes `/ca:tribunal`. Ten specialist lenses judge the codebase; every finding persists to its own file (plus append-only triage/run logs) under a run dir that survives compaction and disconnects, so the run resumes from disk.
 
 ## Pre-flight
 
@@ -41,15 +41,15 @@ Map before reviewing; the map decides what gets scrutiny.
 
 Gate: `inventory.md` written with the risk/boundary/marker overlay, and the active-lens set recorded.
 
-## Phase 2 — Roster dispatch (dual output: jsonl + summary) · gate: BLOCK
+## Phase 2 — Roster dispatch (dual output: finding files + summary) · gate: BLOCK
 
 Dispatch the active lenses in priority-ordered waves at the concurrency from `references/cost-and-models.md` (≤5 in flight). Give each agent only its scope slice, on the model/effort from `references/cost-and-models.md`; the agent itself reads its own mandate (`references/lenses/<lens>.md`) and the finding contract (`references/finding-record.md`), and loads neither the other lenses' mandates nor the orchestrator schemas. The orchestrator reads `references/finding-record.md` to read findings at triage, and consults a lens mandate only to adjudicate that lens's finding.
 
-- Each `tribunal-*` agent appends its own `findings/<lens>.jsonl` line the moment a finding is found — never a batched write at the end.
+- Each `tribunal-*` agent writes each finding to its own file `findings/<lens>/<finding-id>.json` the moment it is found — one file per finding, never a batched write at the end (write contract: `references/finding-record.md`).
 - **Evidence-or-drop.** Every finding cites a concrete `path:line` and the minimal snippet. An absence claim — "no handler", "no teardown", "missing validation" — requires reading the whole unit, never a truncated window.
 - Specialists never dispatch further subagents. Update each wave's status in `run.jsonl` as it flushes.
 
-Gate: every active lens has flushed its `findings/<lens>.jsonl`, and each wave's status is recorded.
+Gate: every active lens has flushed its `findings/<lens>/` files, and each wave's status is recorded.
 
 ## Phase 3 — Triage & per-wave planning · gate: BLOCK
 

@@ -1,10 +1,10 @@
 ---
-description: Deep, rarely-convened whole-codebase audit — ten specialist lenses, a resumable jsonl audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.
+description: Deep, rarely-convened whole-codebase audit — ten specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.
 argument-hint: "[scope-path]"
 ---
 # /ca:tribunal — deep codebase audit
 
-The deepest, most expensive review codeArbiter offers, convened rarely and on demand. Routes to the tribunal skill. Ten lenses judge the codebase; every finding persists to append-only jsonl under `.codearbiter/reports/<run-id>/`, so an interrupted run resumes from disk. Never a required gate — critical/high are blocking-severity findings, not a pipeline halt.
+The deepest, most expensive review codeArbiter offers, convened rarely and on demand. Routes to the tribunal skill. Ten lenses judge the codebase; every finding persists to its own file (plus append-only triage/run logs) under `.codearbiter/reports/<run-id>/`, so an interrupted run resumes from disk. Never a required gate — critical/high are blocking-severity findings, not a pipeline halt.
 
 Cost first — this lane routinely costs millions of tokens on a large repo. Phase 0 sizes the codebase, prints a token-cost band, recommends the highest-reasoning model, and STOPs for your acknowledgement before dispatching anything. Nothing runs unacknowledged.
 
@@ -14,7 +14,7 @@ Load and follow the tribunal skill (`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/SKILL
 
 Phase 0 (STOP) — cost estimate, model recommendation, resume check.
 Phase 1 (BLOCK) — map the codebase; risk-rank and mark trust boundaries; record AI-authorship markers and iteration depth.
-Phase 2 (BLOCK) — dispatch the ten tribunal-* lenses in priority waves (≤5 in flight); each appends findings to its own jsonl.
+Phase 2 (BLOCK) — dispatch the ten tribunal-* lenses in priority waves (≤5 in flight); each writes one file per finding under its own `findings/<lens>/` dir.
 Phase 3 (BLOCK) — triage per wave from disk: dedup, independent calibration, decision vocabulary.
 Phase 4 (BLOCK) — project the human-readable report from the logs.
 Phase 5 (BLOCK) — on explicit selection, file findings as GitHub issues; idempotent against the tracker.

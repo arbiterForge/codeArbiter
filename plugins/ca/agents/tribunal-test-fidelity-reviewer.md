@@ -21,7 +21,7 @@ Test files and fixtures in the assigned slice. Doubles, fabricated literals, esc
 Execute `lenses/test-fidelity.md`, including the cross-reference to a now-existing real producer and side-by-side drift evidence. Report observable state only. Evidence-or-drop.
 
 ## Findings
-Append one finding/v1 line to `findings/test-fidelity.jsonl` the moment it is found — never batch. Category `maintainability` by default, `reliability` where drift could let a defect through. Provisional scores only.
+Write each finding/v1 record to its own file `findings/test-fidelity/test-fidelity-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Category `maintainability` by default, `reliability` where drift could let a defect through. Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (doubles/fixtures examined).

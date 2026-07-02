@@ -21,7 +21,7 @@ Migration files in the assigned slice, cross-referenced against schema and query
 Execute `lenses/migration.md`. Evidence-or-drop; an immutability claim requires checking git history for the file.
 
 ## Findings
-Append one finding/v1 line to `findings/migration.jsonl` the moment it is found — never batch. Provisional scores only.
+Write each finding/v1 record to its own file `findings/migration/migration-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (migration files reviewed).

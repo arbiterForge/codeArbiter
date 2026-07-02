@@ -21,7 +21,7 @@ The assigned path slice, weighted to public interfaces and module boundaries. Sk
 Execute `lenses/typesafety.md`. Evidence-or-drop.
 
 ## Findings
-Append one finding/v1 line to `findings/typesafety.jsonl` the moment it is found — never batch. Provisional scores only.
+Write each finding/v1 record to its own file `findings/typesafety/typesafety-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (public interfaces/signatures inspected).

@@ -1,6 +1,6 @@
 # Report projection
 
-`report.md` is a projection of the logs, regenerated in Phase 4 — never hand-authored, never a source of truth. Rebuild it fully from `findings/*.jsonl` + `triage.jsonl` on every run and on resume; it is deterministic from the logs. Task-list-structured, not prose.
+`report.md` is a projection of the logs, regenerated in Phase 4 — never hand-authored, never a source of truth. Rebuild it fully from `findings/*/*.json` + `triage.jsonl` on every run and on resume; it is deterministic from the logs. Task-list-structured, not prose.
 
 ## Structure
 

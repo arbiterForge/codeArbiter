@@ -21,7 +21,7 @@ The assigned path slice, weighted to hot paths and data access.
 Execute `lenses/performance.md`. Flag a signature only where the path is plausibly hot — no speculative micro-optimization. Evidence-or-drop.
 
 ## Findings
-Append one finding/v1 line to `findings/performance.jsonl` the moment it is found — never batch. Provisional scores only.
+Write each finding/v1 record to its own file `findings/performance/performance-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (hot-path/data-access sites inspected).

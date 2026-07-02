@@ -21,7 +21,7 @@ The assigned path slice, weighted to trust-boundary crossings and request handle
 Execute `lenses/appsec.md`. Evidence-or-drop; an absence claim (no ownership check, no validation) requires reading the whole handler/unit.
 
 ## Findings
-Append one finding/v1 line to `findings/appsec.jsonl` in the run dir the moment it is found — never batch. Provisional scores only; the orchestrator calibrates.
+Write each finding/v1 record to its own file `findings/appsec/appsec-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only; the orchestrator calibrates.
 
 ## Output
 Return a terse summary: counts by severity, the top few ids, and the exposure count (sink sites inspected). Do not return full findings.

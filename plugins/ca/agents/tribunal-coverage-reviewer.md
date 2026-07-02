@@ -21,7 +21,7 @@ Source-and-test pairs on risk paths in the assigned slice (auth, money, data-mut
 Execute `lenses/coverage.md`. Evidence-or-drop; an "untested" claim requires confirming no test exercises the path across the whole test unit.
 
 ## Findings
-Append one finding/v1 line to `findings/coverage.jsonl` the moment it is found — never batch. Provisional scores only.
+Write each finding/v1 record to its own file `findings/coverage/coverage-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (risk paths examined).

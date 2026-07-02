@@ -21,7 +21,7 @@ The assigned path slice, weighted to critical paths and boundaries.
 Execute `lenses/observability.md` against the `inventory.md` boundary map. Evidence-or-drop; an absence claim (no metric, no correlation ID) requires reading the whole boundary crossing.
 
 ## Findings
-Append one finding/v1 line to `findings/observability.jsonl` the moment it is found — never batch. Provisional scores only.
+Write each finding/v1 record to its own file `findings/observability/observability-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (boundary crossings/critical paths inspected).

@@ -1,6 +1,6 @@
 # Orchestrator schemas & artifact layout
 
-The finding record (what agents emit) is in `finding-record.md`. This file holds the orchestrator-only logs and the run layout. Source of truth = the three append-only logs (`findings/<lens>.jsonl`, `triage.jsonl`, `run.jsonl`); everything else is a projection regenerable from them. Append one line as each record is produced — never batch.
+The finding record (what agents emit) is in `finding-record.md`. This file holds the orchestrator-only logs and the run layout. Source of truth = the per-finding files (`findings/<lens>/<finding-id>.json`) plus the two append-only logs (`triage.jsonl`, `run.jsonl`); everything else is a projection regenerable from them. Write each record as it is produced — never batch.
 
 ## Artifact tree
 
@@ -9,7 +9,9 @@ The finding record (what agents emit) is in `finding-record.md`. This file holds
   run.jsonl              # APPEND-ONLY run-state events; resume source of truth
   manifest.yaml          # projection of run.jsonl (regenerable snapshot)
   inventory.md           # map + risk/boundary/marker overlay
-  findings/<lens>.jsonl  # APPEND-ONLY, one finding/line, per lens (no write contention)
+  findings/<lens>/<finding-id>.json  # one finding per file, written on discovery
+                         # (crash-durable: a kill risks only the in-flight file;
+                         # per-lens dirs, so no write contention)
   triage.jsonl           # APPEND-ONLY, one decision/line
   bodies/<finding-id>.md # issue body, lazy, approved-only
   plans/phase-<n>.md     # per-wave path plan (projection)
@@ -39,7 +41,7 @@ The finding record (what agents emit) is in `finding-record.md`. This file holds
 1. **Position.** The resume point is fixed by the last triaged wave: `grep '"event":"wave-triaged"' run.jsonl | tail -1` returns it while reading only matching lines. If none, resume at wave 1.
 2. **Plan.** Read the active-lens/wave set from `manifest.yaml` (a small projection) or, if it is missing or stale, from the `run-started`/`lens-launched`/`lens-skipped` block at the head of `run.jsonl`. Both are bounded reads — never a full-file scan for the plan.
 3. **Re-enter** Phase 2/3 for waves after the last triaged one only.
-4. **Do not load** already-triaged waves' `findings/*.jsonl` or `triage.jsonl` into context — they are authoritative on disk. A later wave's dedup that needs a specific prior id fetches it by targeted `grep`, never a full read.
+4. **Do not load** already-triaged waves' `findings/<lens>/` files or `triage.jsonl` into context — they are authoritative on disk. A later wave's dedup that needs a specific prior id fetches it by targeted `grep` across `findings/`, never a full read.
 
 `manifest.yaml` is a convenience snapshot regenerated from `run.jsonl`; it accelerates the plan read but is never authoritative — a corrupt or stale manifest falls back to the append-only log.
 

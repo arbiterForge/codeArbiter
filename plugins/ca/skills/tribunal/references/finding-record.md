@@ -2,11 +2,13 @@
 
 Every tribunal lens agent emits findings in this format; the orchestrator reads them at triage. This is the only schema an agent needs — triage/run schemas are orchestrator-only (`schemas.md`).
 
-## Append rule
+## Write rule
 
-Append each finding as one JSON line to `findings/<lens>.jsonl` in the run directory the orchestrator gives you, the moment it is found — never a batched write at the end. A process killed mid-write then loses at most one discardable partial line.
+Write each finding as its own file — `findings/<lens>/<finding-id>.json` (e.g. `findings/appsec/appsec-001.json`), one `finding/v1` JSON object per file — in the run directory the orchestrator gives you, the moment it is found. Never a batched write at the end. Durability comes from the one-file-one-finding layout: a process killed mid-write risks only the file being written; every previously written finding is already safe on disk. (There is no append tool; a read-then-rewrite of a shared per-lens jsonl would put the lens's whole findings file at risk on every write — that layout is rejected.)
 
-**Mechanism:** you have `Read` and `Write`, not a native append. Read the current `findings/<lens>.jsonl` (treat a missing file as empty), then `Write` the full file back with the new finding line added at the end. Never use a Bash shell command to write finding content — arbitrary `evidence` text (quotes, backticks, embedded newlines) will corrupt a shell-escaped write. This is safe without locking: you are the only writer of `findings/<lens>.jsonl` — no other agent touches your lens's file.
+**Mechanism:** use `Write` only. Never use a Bash shell command to write finding content — arbitrary `evidence` text (quotes, backticks, embedded newlines) will corrupt a shell-escaped write. Never `Write` over an existing finding file. This is safe without locking: you are the only writer under `findings/<lens>/` — no other agent touches your lens's directory.
+
+**Numbering on (re-)dispatch:** before your first write, Glob `findings/<lens>/` — files may already exist if a prior attempt at this lens died partway. Continue numbering from the highest existing `NNN`; never renumber, rewrite, or delete an existing finding file. Prior findings stand; the orchestrator's triage dedups any overlap.
 
 ## finding/v1
 
