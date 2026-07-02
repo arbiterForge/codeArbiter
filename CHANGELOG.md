@@ -6,6 +6,11 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`tribunal` skill — deep resumable codebase-audit lane (#157).** Add `feat(tribunal): add deep resumable codebase-audit lane — ten specialist lenses, append-only jsonl audit log, GitHub-issue filing on approval, opt-in KPI telemetry`. `/ca:tribunal` convenes ten bespoke `tribunal-*-reviewer` specialist lenses (appsec, architecture, coverage, migration, observability, performance, reliability, secrets-supply, test-fidelity, typesafety) over the whole codebase in priority-ordered waves. Findings persist to append-only jsonl under `.codearbiter/reports/<run-id>/`, resumable from disk across compaction and disconnects; a triage pass calibrates severity independently of each lens's provisional score; approved findings file as deduped GitHub issues. Rare and opt-in by design — never a required gate, never blocks a merge or commit.
+
 ## [2.6.0] — 2026-06-27
 
 codeArbiter 2.6.0 spans several tracks. The headline additions are context-drift provenance (passive drift detection, a coarse code map, and commit-gate auto-heal) and file-scoped just-in-time context injection, which surfaces the governing decision, control, or spec at the moment an agent reads a file. The `--farm` preview gains best-of-N sampling and iterative retries for first-time-go accuracy, and commit-gate now lands task-board transitions atomically with the work (ADR-0008). This release also relicenses the project from MIT to AGPLv3 with a proprietary dual-licensing path; see the License note under Changed.

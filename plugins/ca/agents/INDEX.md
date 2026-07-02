@@ -20,6 +20,18 @@ An agent is a reviewer or author **dispatched** by a skill — never routed to, 
 | [scout](scout.md) | `decision-variance`, `context-creation` (INTERNAL) | Scans an assigned code scope, reports decision evidence — paths + line numbers only, no excerpts. Never dispatch directly. | — (internal) |
 | [grader](grader.md) | `decision-variance` (INTERNAL) | Produces a SMARTS analysis + strength-labeled recommendation for one variance. Never decides. Never dispatch directly. | — (internal) |
 | [design-quality-reviewer](design-quality-reviewer.md) | `frontend-author` on UI changes (Tier 2 `/pr`, `release` apply the reference inline, not via this agent) | Read-only review of generated user-facing output (UI, reports, slides, charts, diagrams, CLI) against the lazy-loaded `anti-slop-design` reference. Loads only the medium leaf needed. | fabricated/unmarked numbers where provenance is assessable; em/en-dash used as a prose sentence-separator (3.A exemptions excluded) |
+| [tribunal-appsec-reviewer](tribunal-appsec-reviewer.md) | `tribunal` lane | Injection, IDOR/resource-authz, input-boundary, JWT, CORS, SSRF lens over the whole codebase. | — (report-only) |
+| [tribunal-architecture-reviewer](tribunal-architecture-reviewer.md) | `tribunal` lane | Orphan/dead modules, pattern-consistency, cosmetic abstractions, god modules. General structure — distinct from `architecture-drift-reviewer` (ADR conformance). | — (report-only) |
+| [tribunal-coverage-reviewer](tribunal-coverage-reviewer.md) | `tribunal` lane | Risk-path coverage gaps, edge/boundary case gaps, implementation-coupled tests. | — (report-only) |
+| [tribunal-migration-reviewer](tribunal-migration-reviewer.md) | `tribunal` lane | Reversibility, data-classification tagging, immutability, index/lock shape. General audit — distinct from `migration-reviewer` (per-diff gate). | — (report-only) |
+| [tribunal-observability-reviewer](tribunal-observability-reviewer.md) | `tribunal` lane | Structured logging, tracing/correlation IDs, metrics on critical paths, audit-trail gaps. | — (report-only) |
+| [tribunal-performance-reviewer](tribunal-performance-reviewer.md) | `tribunal` lane | N+1 queries, redundant hot-path work, query/index shape, caching correctness, blocking IO. | — (report-only) |
+| [tribunal-reliability-reviewer](tribunal-reliability-reviewer.md) | `tribunal` lane | Async/error-propagation correctness, race surfaces, resource lifecycle/teardown, orphan state. | — (report-only) |
+| [tribunal-secrets-supply-reviewer](tribunal-secrets-supply-reviewer.md) | `tribunal` lane | Literal secrets, weak/misused crypto, cleartext transmission, secrets-in-logs, supply-chain risk. | — (report-only) |
+| [tribunal-test-fidelity-reviewer](tribunal-test-fidelity-reviewer.md) | `tribunal` lane | Tests validating fiction (stale mocks), type-escape hatches in tests, temporariness confessions. | — (report-only) |
+| [tribunal-typesafety-reviewer](tribunal-typesafety-reviewer.md) | `tribunal` lane | Footgun public interfaces, weak/implicit typing, escape hatches, undocumented invariants. | — (report-only) |
+| [map-structure](map-structure.md) | `tribunal` lane (Phase 1, large repo) | Generic extractor, not a judge: file tree, language breakdown, entry points, core/shared locations, churn. | — (report-only) |
+| [map-deps](map-deps.md) | `tribunal` lane (Phase 1, large repo) | Generic extractor, not a judge: manifests, lockfiles, integration surface, env/secret-usage surface. | — (report-only) |
 
 ## Cut in v2
 
