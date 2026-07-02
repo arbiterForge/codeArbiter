@@ -132,6 +132,16 @@ npm dependencies; the docs site under `site/` is not part of that payload):
   payload, and `lightningcss` is a build tool whose output (minified CSS) carries
   no MPL obligation. NOT approved for the plugin payload (`plugins/**`) or any
   distributed artifact.
+- LGPL-3.0-or-later (build-time, `site/` ONLY): weak, library-level copyleft
+  discharged by keeping the component replaceable. Approved solely for the 18
+  `@img/sharp-libvips-*` prebuilt binaries pulled by `sharp` as a build-time
+  docs-site image optimizer under `site/`. The obligation is low-stakes for a
+  replaceable build tool, and its output (optimized images) carries no LGPL
+  obligation. NOT approved for the plugin payload (`plugins/**`) or any
+  distributed artifact.
+- 0BSD (build-time, `site/` ONLY): a public-domain-equivalent BSD variant with no
+  attribution requirement — more permissive than MIT. Approved for the `tslib`
+  runtime helper pulled transitively under `site/`.
 
 `BlueOak-1.0.0` and `CC0-1.0` were approved 2026-06-22 (user decision via SMARTS
 arbitration, checkpoint 2026-06-22) to cover transitive `site/` dependencies
@@ -147,6 +157,12 @@ boundary. `satteri@0.9.3` (and its `@bruits/satteri-*` platform variants), Astro
 (`github.com/bruits/satteri`, published by an Astro core maintainer via OIDC)
 ships an MIT license, so it is accepted as MIT on the same packaging-mislabel
 basis as `argparse`, build-time `site/` only.
+
+`LGPL-3.0-or-later` and `0BSD` were approved 2026-07-02 (user decision,
+BY SUaDtL@users.noreply.github.com, via SMARTS arbitration; resolves
+`[CONFIRM-08]`), scoped to build-time `site/` dependencies only, to cover the 18
+`@img/sharp-libvips-*` binaries (`sharp` docs-site image optimizer) and `tslib`.
+Neither reaches the shipped plugin payload.
 
 Any new dependency with a license outside this list requires an explicit
 review and an entry in `overrides.log` before merging.
@@ -173,7 +189,14 @@ tool-call boundary.
 
 **Enforcement scope (accepted residual risk).** These guards are *integrity*
 controls, not *completeness* controls — they protect a log once written, they do
-not compel a write (see `observability-002` / the "compel a log write" CONFIRM).
+not compel a write. The completeness half is resolved by `[CONFIRM-09]`
+(2026-07-02, BY SUaDtL@users.noreply.github.com): strategy (a) — a lightweight
+staleness check (PostToolUse/UserPromptSubmit) warns when an active `/sprint`,
+`/override`, or `/dev` flow has not appended its expected log line within a
+bounded window — paired with the durable gate-events sink from `observability-001`
+(issue #186). It is a *warn*, not a hard gate: a missed write is surfaced, not
+blocked, keeping the integrity guards the sole true STOP. Implementation lands
+with #186.
 The `pre-bash.py` shell guard is lexical and anchored on the literal log name, so
 the following truncation/indirection spellings are out of scope and accepted as
 residual risk (the sanctioned bypass for legitimate log management is
@@ -200,6 +223,19 @@ framework, not a user action: on session start, if a prior session entered
 is append-only and best-effort. This is the only writer of `overrides.log` other
 than the three sanctioned mutators (`/override`, `/sprint` auto-decisions,
 `/dev` entry/exit).
+
+**Gate-marker trust boundary (ADR-0010).** codeArbiter's gate markers (e.g.
+`.codearbiter/.markers/security-gate-passed`) are *cooperative-agent
+attestations*, not tamper-proof proofs. `security-pass.py` mints the
+security-gate marker by re-deriving the sensitive-line digests from the current
+worktree; direct invocation of the sanctioned producer is the *intended*
+attestation mechanism. A Bash-capable non-cooperating agent can self-mint a pass
+(as it can defeat the `--no-verify` and shell-indirection controls, appsec-002 /
+#175) — this is an accepted trust boundary, out of scope for the product's
+cooperative-orchestrator threat model, not a defect. The marker's value is the
+friction and audit trail it adds on the cooperative path. Reopens (→ non-fabricable
+reviewer-signed binding) only if the threat model expands to untrusted agents. See
+ADR-0010 (resolves appsec-003 / #196).
 
 ---
 

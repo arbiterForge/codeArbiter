@@ -319,3 +319,28 @@ A maintainer strategic decision rather than a technical multi-lens arbitration. 
 Follow-on /ca:chore: replace LICENSE with the canonical AGPLv3 text plus a sole-owner copyright line, add a README license-transition notice and a Dual-Licensing & Contributions section, and add CLA.md. No per-file headers (single-root-LICENSE convention retained). ADR-0009 governs LICENSE, README.md, CLA.md. ADR-0006 is superseded by ADR-0009 on the forward chain; its status field stays accepted on disk per the no-edit-prior-ADR rule, and /ca:adr-status will report the supersession.
 
 ---
+
+## DECISION-0010 — security-gate-pass-cooperative-attestation — Security-gate pass is a cooperative-agent attestation, not a non-fabricable proof
+
+**Date:** 2026-07-02
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** security / trust model
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** security-controls.md documented gate markers as enforcement without stating whether minting one proves a review occurred; tribunal appsec-003 (#196) surfaced that `security-pass.py` self-mints from the worktree with no review evidence.
+- **Scaffold position:** n/a — an open trust-model design question, not a scaffold-derived variance.
+- **Status type:** open-decision-closure
+
+### Decision
+codeArbiter's gate markers are cooperative-agent attestations, not tamper-proof proofs. Direct invocation of `security-pass.py` is the intended attestation mechanism; the trust boundary is documented in `security-controls.md`. No code change. Declined binding the marker to a non-fabricable reviewer-signed artifact — it defends a non-cooperating Bash-capable agent that already bypasses surrounding controls (appsec-002/#175), outside the product's cooperative-agent threat model. Recorded as ADR-0010.
+
+### SMARTS rationale
+Security-and-audit-trail lens (level 1) weighed against maintainability (level 3): the non-fabricable binding is real, brittle M-effort complexity that raises the review bar for a threat the product explicitly does not claim to stop. For a cooperating orchestrator, the marker's value is friction plus an audit trail, both preserved. The maintainer chose the documented-boundary posture over machinery whose protection evaporates against the very agent it would target.
+
+### Implementation implication
+No producer change. Add a "Gate-marker trust boundary" note to `security-controls.md` stating markers are cooperative-agent attestations and direct `security-pass.py` invocation is the intended attestation. Close issue #196 referencing ADR-0010. Reopens if the threat model expands to untrusted/adversarial agents.
+
+---
