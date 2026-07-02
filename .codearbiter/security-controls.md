@@ -193,6 +193,22 @@ with nothing additional installed.
 Hook input parsing fails open (not closed) on malformed stdin — see
 `_hooklib.py:read_input()` for the documented rationale.
 
+**Repo resolution — the guards judge the repo the git op fires in (#190).** The
+`.git/hooks` enforcement backstop `git-enforce.py` resolves its target via
+`git rev-parse --show-toplevel` inheriting the hook's own cwd (which git sets to
+the target repo's work-tree top for `pre-commit`/`pre-push`), **not**
+`CLAUDE_PROJECT_DIR` — so a `git -C <other> commit` under a Claude session is
+gated against `<other>`, not the session's repo. The PreToolUse `pre-bash.py`
+`git_cwd` composes a **repeated** `-C` run the way git itself does (fold-left:
+absolute replaces the accumulator, relative joins onto it, seeded with
+`project_root`), closing the multi-`-C` fail-open where a crafted
+`git -C /abs/main -C . commit` would otherwise be judged against the wrong repo;
+a `-C` target that is not a real directory now fails **closed** (H-01 block).
+`session-start.py` and `taskwrite.py` resolve via the shared
+`_hooklib.project_root` (CLAUDE_PROJECT_DIR-first) rather than divergent local
+copies, so audit lines / the task board / installed hooks land in the
+harness-authoritative project dir.
+
 ---
 
 ## Audit trail
