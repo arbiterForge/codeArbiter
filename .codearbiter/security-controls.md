@@ -230,6 +230,22 @@ empty-`old_string` Edit, which is not a verifiable append). The append-only path
 set is centralized in `_hooklib` (`is_audit_log`, `AUDIT_LOG_NAMES`) so the three
 guards never drift on which files are covered.
 
+**H-05 tail-anchor + H-20 `--no-verify` (2026-07-02, #172 / #175).** The H-05
+append check (`pre-edit.py`, via `_hooklib.is_tail_append`) now **tail-anchors** —
+an audit-log Edit is admitted only as a strict append (`new` = current content +
+appended tail, with `old` occurring exactly once), and a `replace_all` Edit on an
+audit-log path is **rejected outright** (reliability-003/#172), closing the prior
+`new.startswith(old)` hole that let a mid-file insertion or a multi-site suffix
+rewrite pass as an "append". The new **H-20** guard (`pre-bash.py`) blocks a
+literal `--no-verify`/`-n` on `git commit` — including bundled and attached-value
+short-flag spellings (`-nm`, `-nm=x`, `-vnm=y`; the char-walk mirrors git's own
+cluster parsing) — and a literal `--no-verify` on `git push` (appsec-002/#175),
+because that flag skips the `.git/hooks` git-enforce backstop (voiding
+H-01/H-02/H-09b/H-10b/H-14 for that operation). The residual is the same accepted
+**shell-indirection** class listed above (`g=git; $g commit --no-verify` defeats
+the lexical `COMMIT_RE`/`PUSH_RE` matcher itself) — out of scope per ADR-0010's
+cooperative-agent trust model.
+
 **Automated writer of record.** One write to `overrides.log` is performed by the
 framework, not a user action: on session start, if a prior session entered
 `/ca:dev` and ended without `/ca:arbiter`, `session-start.py` appends a
