@@ -70,7 +70,7 @@ const BUILD_ENV = { ...DOCKER_ENV, DOCKER_BUILDKIT: "1" };
 // below) rather than an unconstrained spread — a future opts literal is now
 // compiler-checked to stay a well-formed env override (must preserve
 // MSYS_NO_PATHCONV explicitly, not drop it by accident).
-type RunOpts = { env?: NodeJS.ProcessEnv } & Omit<SpawnOptionsWithoutStdio, "env">;
+type RunOpts = { env?: NodeJS.ProcessEnv } & Omit<SpawnOptionsWithoutStdio, "env" | "shell">;
 
 function run(cmd: string, args: string[], opts: RunOpts = {}): Promise<RunResult> {
   return new Promise<RunResult>((resolve) => {

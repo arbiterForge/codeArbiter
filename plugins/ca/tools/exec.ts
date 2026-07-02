@@ -73,11 +73,12 @@ export function scrubbedEnv(extra?: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   return env;
 }
 
-// `opts` excludes `env` and `cwd` so a caller can never re-introduce a raw env
-// (and thus silently override scrubbedEnv()'s CodeQL #5 scrub) or shadow the
-// explicit `cwd` param through the spread below — the compiler now enforces
-// the single-scrub-path invariant the header comment describes.
-type RunOpts = Omit<SpawnOptionsWithoutStdio, "env" | "cwd">;
+// `opts` excludes `env`, `cwd`, and `shell` so a caller can never re-introduce
+// a raw env (and thus silently override scrubbedEnv()'s CodeQL #5 scrub),
+// shadow the explicit `cwd` param, or opt into shell interpolation through the
+// spread below — the compiler now enforces the single-scrub-path and
+// argv-array invariants the header comment describes.
+type RunOpts = Omit<SpawnOptionsWithoutStdio, "env" | "cwd" | "shell">;
 
 // `timeoutMs` (opts) bounds the child's wall-clock; 0/undefined disables the
 // timeout (used by git, which must not be killed mid-operation). On timeout the
