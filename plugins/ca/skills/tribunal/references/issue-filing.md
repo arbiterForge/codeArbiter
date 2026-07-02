@@ -8,7 +8,7 @@ File only findings the user explicitly selects ("all keep+combine critical/high"
 
 ## What is eligible
 
-`keep` (one issue each) and `combine` groups (one issue per `group_id`), only above the confidence gate. `duplicate` / `false-positive` / `defer` / `accept-risk` / `investigate` never file. `decision-required` files as a discussion/ADR-candidate issue framed as a question — never a fix ticket, and **never by authoring an ADR** (ADRs come only from `/adr`, user-attributed).
+`keep` (one issue each) and `combine` groups (one issue per `group_id`), only above the confidence gate (defined in `triage.md`). `duplicate` / `false-positive` / `defer` / `accept-risk` / `investigate` never file. `decision-required` files as a discussion/ADR-candidate issue framed as a question — never a fix ticket, and **never by authoring an ADR** (ADRs come only from `/adr`, user-attributed).
 
 ## Dedup — before generating any body
 

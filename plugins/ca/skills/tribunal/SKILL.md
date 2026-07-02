@@ -57,8 +57,8 @@ Triage per wave from disk as soon as it flushes; do not wait for the whole run. 
 
 - **Dedup** against all findings already on disk by `dedup_key` and overlapping locations.
 - **Calibrate independently.** Set `final_severity`/`final_confidence` from the evidence yourself — the lens's values are provisional input. Every critical/high carries a `counter_argument` (the strongest case it is lower or false); if compelling, downgrade. Promote under-rated findings too.
-- **Low-severity discipline.** A `low` is kept only at `final_confidence` ≥0.75 with a concrete fix; beyond ~5 lows per lens, roll the remainder into one finding that still lists each `path:line`.
-- **Decide** each finding via the vocabulary; append one line to `triage.jsonl`. Below the gate after calibration → `investigate`.
+- **Low-severity discipline.** A `low` is kept only above the confidence gate (defined in `triage.md`) with a concrete fix; beyond ~5 lows per lens, roll the remainder into one finding that still lists each `path:line`.
+- **Decide** each finding via the vocabulary; append one line to `triage.jsonl`. Below the confidence gate after calibration → `investigate` (medium/low) or `decision-required` (critical/high) — never dropped silently.
 - **Plan** the wave: write `plans/phase-<n>.md` covering `keep`/`combine` findings grouped by type — shared approach, ordered sequence, cross-group `depends_on`, rolled-up acceptance criteria. Roadmap level, no per-finding code steps. A `decision-required` item gets a one-line "ADR-candidate — resolve via `/adr`" pointer, never an authored ADR.
 
 Gate: every wave's findings triaged into `triage.jsonl` and a `plans/phase-<n>.md` written for its kept work.

@@ -7,7 +7,7 @@
 - **Header** — run-id, scope, date, model(s) used, token actuals, and a launched/skipped-lens summary with the skip reason per lens.
 - **Findings** — grouped by **calibrated** `final_severity` (critical to low), then by lens/type within each severity. Each entry on one line: `id` · `path:line(s)` · one-line description · remediation shape · triage `decision` · link to `plans/phase-<n>.md`. Only `keep`/`combine` findings appear here.
 - **Decisions needed** — a separate section for `decision-required` findings, each as its question + options. These need a decision, not a fix; do not fold them into the severity list.
-- **Investigate appendix** — findings below the confidence gate after calibration; `id` + `path:line` + one terse line each. Preserved, not filed.
+- **Investigate appendix** — medium/low findings below the confidence gate after calibration (defined in `triage.md`; below-gate critical/high land in Decisions needed instead); `id` + `path:line` + one terse line each. Preserved, not filed.
 - **Blocking-severity note** — one line: critical/high should block shipping the affected code, but this lane is not a gate and blocks nothing.
 
 ## Anti-slop

@@ -17,9 +17,19 @@ For each finding, set `final_severity`/`final_confidence` from the evidence dire
 
 Apply as priors on findings that already cleared evidence-or-drop, never to manufacture one: resource-level authz / IDOR → high or critical; injection with reachable user input → high or critical; literal secret → high or critical; async operation with no handler on a critical path → high. A high-marker/high-iteration location (per `ai-markers.md`) nudges one level at most.
 
+## Confidence gate
+
+The bar a finding's `final_confidence` must clear to file, tiered by severity — an uncertain critical is too costly to bury silently, so it gets a lower bar and a softer landing than a low:
+
+| `final_severity` | gate | below the gate |
+| --- | --- | --- |
+| critical / high | ≥0.5 | → `decision-required`, framed as a question, never dropped silently |
+| medium | ≥0.7 | → `investigate` |
+| low | ≥0.75 | → `investigate` |
+
 ## Low-severity discipline
 
-A `low` is kept only at `final_confidence` ≥0.75 with a concrete, actionable remediation. Beyond ~5 lows per lens, aggregate the remainder into a single rollup finding that still lists each `path:line`.
+A `low` is kept only above the confidence gate (≥0.75, see above) with a concrete, actionable remediation. Beyond ~5 lows per lens, aggregate the remainder into a single rollup finding that still lists each `path:line`.
 
 ## Decision vocabulary (into `triage.jsonl`)
 
@@ -30,9 +40,9 @@ A `low` is kept only at `final_confidence` ≥0.75 with a concrete, actionable r
 - **defer** — real, out of scope/priority now; preserved, not filed this run.
 - **accept-risk** — real, consciously not fixing; the risk-acceptance trail.
 - **decision-required** — real and significant, but the response is an ADR-grade design choice, not a clear fix; files as a discussion, not a fix ticket.
-- **investigate** — undecided, or below the confidence gate after calibration; never filed.
+- **investigate** — undecided, or a medium/low below the confidence gate after calibration; never filed.
 
-Below the confidence gate after calibration → `investigate`. ADR-grade questions → `decision-required`.
+Below the confidence gate after calibration: medium/low → `investigate`; critical/high → `decision-required` (see Confidence gate above — never dropped silently). ADR-grade questions also → `decision-required`.
 
 ## Per-wave plan
 
