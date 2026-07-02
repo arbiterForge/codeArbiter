@@ -39,6 +39,7 @@ from _standuplib import (  # noqa: E402
 )
 import _taskboardlib  # noqa: E402 — shared task-board count/staleness logic
 import _provenancelib  # noqa: E402 — shared provenance drift detection (T-16)
+import _updatelib  # noqa: E402 — update-available notifier (cache read + notice text)
 
 INITIALIZED_RE = re.compile(r"<!--\s*INITIALIZED\s*-->")
 STAGE_RE = re.compile(r"^stage:\s*([0-9]+)", re.I | re.M)
@@ -444,6 +445,62 @@ def provenance_drift_line(root, runner=None):
         return ""
 
 
+# --- Update-available notifier (spec: update-available-notifier.md) ---------
+# codeArbiter ships via a third-party marketplace, which Claude Code does NOT
+# auto-update by default. This surfaces a single line when the cached "latest"
+# GitHub release exceeds the installed plugin.json version — reading ONLY the
+# user-global cache (one file read, AC-3: no synchronous network call added to
+# this hot path). The cache itself is refreshed off-path by a DETACHED spawn of
+# update-refresh.py (below), mirroring spawn_background_fetch's git-fetch
+# pattern; that refresh is separately gated to at most once per day by
+# _updatelib.refresh_if_stale's own checked_at check (AC-4).
+
+
+def update_notice_line(plugin):
+    """The single-line update-available notice (AC-1/AC-2), or "" when no update
+    is due or on ANY degrade (missing/corrupt cache, missing/corrupt plugin.json)
+    — never raises (AC-3). Reads the cache and the installed version only; makes
+    no network call itself."""
+    try:
+        state = _updatelib.read_state(_updatelib.state_path())
+        latest = state.get("latest") if isinstance(state, dict) else None
+        installed = _updatelib.installed_version(plugin)
+        return _updatelib.notice_line(installed, latest) or ""
+    except Exception:  # noqa: BLE001 — never crash session startup
+        return ""
+
+
+def _detached_update_refresh_spawner(plugin):
+    """Default spawner: launch `<python> <plugin>/hooks/update-refresh.py` fully
+    DETACHED — same decoupling as _detached_fetch_spawner (child stdout/stderr to
+    DEVNULL, new session/process group so it outlives this process and is never
+    awaited)."""
+    script = os.path.join(plugin, "hooks", "update-refresh.py")
+    kw = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL,
+          "stdin": subprocess.DEVNULL}
+    if os.name == "nt":
+        flags = 0
+        flags |= getattr(subprocess, "DETACHED_PROCESS", 0x00000008)
+        flags |= getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
+        kw["creationflags"] = flags
+    else:
+        kw["start_new_session"] = True
+    return subprocess.Popen([sys.executable, script], **kw)
+
+
+def spawn_background_update_refresh(plugin, spawner=None):
+    """Kick a DETACHED update-refresh.py that does NOT block the hook (AC-3: the
+    network call this eventually makes is entirely off SessionStart's hot path).
+    Returns the spawned process handle (for tests) or None on any spawn failure —
+    NEVER awaited, so a hung or unreachable network cannot stall SessionStart.
+    `spawner(plugin) -> proc` is injectable; the default detaches per-platform."""
+    spawn = spawner or _detached_update_refresh_spawner
+    try:
+        return spawn(plugin)
+    except Exception:  # noqa: BLE001 — spawn failure tolerated silently
+        return None
+
+
 def main():
     utf8_stdio()
     root = project_root()
@@ -545,6 +602,13 @@ def main():
     if _drift:
         print(_drift)
 
+    # --- Update-available notice (AC-1/AC-2/AC-3) --------------------------
+    # ONE line, read from the cache only (no network here); silent when the
+    # installed version is current or the cache is absent/stale/corrupt.
+    _update = update_notice_line(plugin)
+    if _update:
+        print(_update)
+
     print("Present this state, then await a slash command. Type /ca:commands for the catalog.")
 
     # --- Standup briefing (SH-1 full / SH-2 offer) ---
@@ -567,6 +631,7 @@ def main():
     default = os.environ.get("CODEARBITER_BASE_BRANCH") or "main"
     summary = assemble_summary(root, current=current, default=default)
     spawn_background_fetch(root)  # detached; never awaited
+    spawn_background_update_refresh(plugin)  # detached; never awaited (AC-3/AC-4)
 
     mode = briefing_mode(marker_present, any_actionable(summary))
     if mode == "full":

@@ -9,6 +9,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 # ---------------------------------------------------------------------------
 # Make the hooks directory importable regardless of how the test runner is
@@ -616,6 +617,76 @@ class TestRenderParity(unittest.TestCase):
         out = sl.burn_spark(rec)
         self.assertIsInstance(out, str)
         self.assertGreater(len(sl.ANSI.sub("", out)), 0)
+
+
+# =========================================================================== update-available marker (AC-1/AC-2/AC-3)
+class TestSegUpdate(unittest.TestCase):
+    """The statusline's update-available marker is RENDER-ONLY off the same cache
+    SessionStart reads — it must never fetch, never spawn a refresh, and it must
+    degrade to no segment on any missing/corrupt/current-version state."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.plugin = os.path.join(self._tmp.name, "plugin")
+        os.makedirs(os.path.join(self.plugin, ".claude-plugin"))
+        with open(os.path.join(self.plugin, ".claude-plugin", "plugin.json"), "w") as f:
+            json.dump({"name": "ca", "version": "2.8.2"}, f)
+        self.state_path = os.path.join(self._tmp.name, "update-state.json")
+        self._env_saved = os.environ.get("CODEARBITER_UPDATE_STATE")
+        os.environ["CODEARBITER_UPDATE_STATE"] = self.state_path
+
+    def tearDown(self):
+        if self._env_saved is None:
+            os.environ.pop("CODEARBITER_UPDATE_STATE", None)
+        else:
+            os.environ["CODEARBITER_UPDATE_STATE"] = self._env_saved
+        self._tmp.cleanup()
+
+    def _write_cache(self, latest):
+        with open(self.state_path, "w") as f:
+            json.dump({"latest": latest, "checked_at": 1000.0}, f)
+
+    def test_ac1_newer_cached_latest_renders_marker(self):
+        self._write_cache("2.10.0")
+        seg = sl.seg_update(self.plugin)
+        self.assertIsNotNone(seg)
+        self.assertIn("2.10.0", sl.ANSI.sub("", seg))
+
+    def test_ac2_current_version_renders_nothing(self):
+        self._write_cache("2.8.2")
+        self.assertIsNone(sl.seg_update(self.plugin))
+
+    def test_ac2_no_cache_renders_nothing(self):
+        self.assertIsNone(sl.seg_update(self.plugin))
+
+    def test_ac3_corrupt_cache_degrades_to_none_no_raise(self):
+        with open(self.state_path, "w") as f:
+            f.write("{ not valid json")
+        try:
+            result = sl.seg_update(self.plugin)
+        except Exception as e:  # noqa: BLE001
+            self.fail(f"seg_update must never raise, raised: {e}")
+        self.assertIsNone(result)
+
+    def test_ac3_render_only_makes_no_network_call(self):
+        # seg_update must not import/invoke urllib at all — it is a pure cache read.
+        import urllib.request
+        self._write_cache("2.10.0")
+        with mock.patch.object(urllib.request, "urlopen") as m:
+            sl.seg_update(self.plugin)
+            m.assert_not_called()
+
+    def test_render_includes_marker_when_update_cached(self):
+        # Full render() must surface the marker without crashing or hitting network.
+        self._write_cache("2.10.0")
+        payload = json.dumps({
+            "session_id": "upd-sid",
+            "workspace": {"current_dir": self.plugin},
+            "model": {"display_name": "claude-sonnet-4-6"},
+        })
+        with mock.patch.object(sl, "plugin_root_for_render", return_value=self.plugin):
+            out = sl.render(payload)
+        self.assertIn("2.10.0", sl.ANSI.sub("", out))
 
 
 if __name__ == "__main__":

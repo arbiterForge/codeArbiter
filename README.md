@@ -7,7 +7,7 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.8.3" src="https://img.shields.io/badge/version-2.8.3-2b7489">
+<img alt="version 2.8.4" src="https://img.shields.io/badge/version-2.8.4-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-39-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-28-555">
@@ -197,6 +197,33 @@ git clone https://github.com/arbiterForge/codeArbiter
 ```
 
 </details>
+
+## Staying up to date
+
+codeArbiter self-hosts a **third-party** marketplace, and Claude Code's native plugin auto-update is
+enabled by default only for official Anthropic marketplaces — it's **off by default** for a
+third-party one like this. The official update mechanism is still the native one; you just have to
+turn it on:
+
+```text
+/plugin marketplace update codearbiter
+```
+
+Run that whenever you want the latest release, or check whether your marketplace auto-updates are
+enabled via `/plugin`.
+
+Because that's opt-in, codeArbiter also ships a small **proactive nudge**: at session start (and in
+the statusline), it surfaces a one-line notice when a newer release is published —
+
+```text
+codeArbiter: update available 2.8.2 -> 2.10.0 (run /plugin marketplace update codearbiter)
+```
+
+The check is a best-effort, **once-a-day**, fail-silent read of the GitHub Releases API
+(unauthenticated HTTPS GET, no data sent) cached to a small user-global file; it never runs
+synchronously on session start (it refreshes off to the side, so a slow or unreachable network never
+delays your session), and it stays completely silent if the check fails or you're already current. It
+only ever *tells* you — it never applies an update itself.
 
 ## Enable codeArbiter in a repo
 

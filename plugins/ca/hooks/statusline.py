@@ -68,6 +68,14 @@ try:
 except Exception:  # pragma: no cover — never let an import break the statusline
     _frontmatter_enabled = None
 
+# Update-available notifier (spec: update-available-notifier.md) — the statusline
+# renders the SAME cache SessionStart reads (RENDER ONLY: no fetch, no spawn, no
+# network here at all). Guarded the same defensive way as the imports above.
+try:
+    import _updatelib
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _updatelib = None
+
 # The cost/token ledger subsystem now lives in _ledgerlib (extracted T-12) with
 # zero import-time side effects. Re-bind its functions into this module so the
 # cost segment — and the existing test suite that reaches them via statusline —
@@ -892,6 +900,37 @@ def seg_pr(data):
     return f"{GREY}PR{RESET} {scol}#{num_}{RESET}{tail}"
 
 
+def plugin_root_for_render():
+    """The plugin root to resolve the installed version against, for seg_update.
+    Delegates to _updatelib.plugin_root() (CLAUDE_PLUGIN_ROOT, else derived from
+    this install's own file location) — a thin seam so tests can monkeypatch it
+    without touching env vars. None if _updatelib failed to import."""
+    if _updatelib is None:
+        return None
+    return _updatelib.plugin_root()
+
+
+def seg_update(plugin=None):
+    """Update-available marker (spec: update-available-notifier.md, AC-1/AC-2):
+    reads the SAME user-global cache SessionStart reads and compares against the
+    installed plugin.json version. RENDER ONLY — no fetch, no spawn, no network
+    call of any kind; a missing/corrupt cache or an up-to-date install both
+    degrade to None (no segment), and any error is swallowed (never breaks the
+    box, mirrors seg_prune)."""
+    if _updatelib is None:
+        return None
+    try:
+        plugin = plugin if plugin is not None else plugin_root_for_render()
+        state = _updatelib.read_state(_updatelib.state_path())
+        latest = state.get("latest") if isinstance(state, dict) else None
+        installed = _updatelib.installed_version(plugin)
+        if not _updatelib.update_available(installed, latest):
+            return None
+        return f"{V2}{UP}{RESET} {WHITE}{latest}{RESET}"
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def seg_prune(data, sid):
     """Transcript-pruner indicator: cumulative reduction and age of the last
     prune for this session, read from ~/.codearbiter/prune-state.json (written
@@ -1033,7 +1072,8 @@ def render(raw):
     pill = safe(model_pill, model, effort) or f"{V2}{model}{RESET}"
     rates = safe(seg_window_inline, data) or ""
     prseg = safe(seg_pr, data) or ""
-    head_bits = [b for b in (rates, prseg) if b]
+    updseg = safe(seg_update) or ""
+    head_bits = [b for b in (rates, prseg, updseg) if b]
     right = ("   ".join(head_bits) + "   " if head_bits else "") + pill
     # churn is the lowest-priority left segment: append it only if the whole
     # "+N/-M" fits beside the right cluster — never let lr() clip it to "lines …".

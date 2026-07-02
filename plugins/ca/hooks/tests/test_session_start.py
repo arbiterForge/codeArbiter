@@ -475,5 +475,104 @@ class TestProvenanceDriftLine(unittest.TestCase):
         self.assertEqual(result, "")
 
 
+class TestUpdateNoticeLine(unittest.TestCase):
+    """update-available notifier (AC-1/AC-2/AC-3) — SessionStart's read-only half.
+    update_notice_line() must read ONLY the cache + installed plugin.json version
+    (one file read, no network) and never raise."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.plugin = os.path.join(self._tmp.name, "plugin")
+        os.makedirs(os.path.join(self.plugin, ".claude-plugin"))
+        with open(os.path.join(self.plugin, ".claude-plugin", "plugin.json"), "w") as f:
+            json.dump({"name": "ca", "version": "2.8.2"}, f)
+        self.state_path = os.path.join(self._tmp.name, "update-state.json")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _write_cache(self, latest, checked_at=1000.0):
+        with open(self.state_path, "w") as f:
+            json.dump({"latest": latest, "checked_at": checked_at}, f)
+
+    def test_ac1_newer_cached_latest_yields_notice(self):
+        self._write_cache("2.10.0")
+        with mock.patch.dict(os.environ, {"CODEARBITER_UPDATE_STATE": self.state_path}):
+            line = _mod.update_notice_line(self.plugin)
+        self.assertIn("update available 2.8.2 -> 2.10.0", line)
+        self.assertIn("/plugin marketplace update codearbiter", line)
+
+    def test_ac2_equal_cached_latest_yields_no_notice(self):
+        self._write_cache("2.8.2")
+        with mock.patch.dict(os.environ, {"CODEARBITER_UPDATE_STATE": self.state_path}):
+            line = _mod.update_notice_line(self.plugin)
+        self.assertEqual(line, "")
+
+    def test_ac2_no_cache_file_yields_no_notice(self):
+        # Cache never written yet (first-ever session) — must not error or notice.
+        with mock.patch.dict(os.environ, {"CODEARBITER_UPDATE_STATE": self.state_path}):
+            line = _mod.update_notice_line(self.plugin)
+        self.assertEqual(line, "")
+
+    def test_ac3_corrupt_cache_degrades_to_no_notice_no_raise(self):
+        with open(self.state_path, "w") as f:
+            f.write("{ not valid json")
+        with mock.patch.dict(os.environ, {"CODEARBITER_UPDATE_STATE": self.state_path}):
+            try:
+                line = _mod.update_notice_line(self.plugin)
+            except Exception as e:  # noqa: BLE001
+                self.fail(f"update_notice_line must never raise, raised: {e}")
+        self.assertEqual(line, "")
+
+
+class TestSpawnBackgroundUpdateRefresh(unittest.TestCase):
+    """AC-3: the network refresh must be off the SessionStart hot path — a detached,
+    never-awaited spawn. A spawner that raises (network stack unreachable / OS
+    refuses the spawn) must degrade to None, never propagate."""
+
+    def test_spawner_invoked_with_plugin_root(self):
+        seen = {}
+
+        def fake_spawner(plugin):
+            seen["plugin"] = plugin
+            return "proc-handle"
+
+        result = _mod.spawn_background_update_refresh("/some/plugin", spawner=fake_spawner)
+        self.assertEqual(result, "proc-handle")
+        self.assertEqual(seen["plugin"], "/some/plugin")
+
+    def test_spawner_raising_is_swallowed(self):
+        def bad_spawner(plugin):
+            raise OSError("no process table slots")
+
+        try:
+            result = _mod.spawn_background_update_refresh("/some/plugin", spawner=bad_spawner)
+        except Exception as e:  # noqa: BLE001
+            self.fail(f"spawn_background_update_refresh must fail-silent, raised: {e}")
+        self.assertIsNone(result)
+
+    def test_default_spawner_never_awaited_and_returns_handle_or_none(self):
+        # Use the REAL default spawner but target a harmless, fast, no-op python
+        # invocation in place of the real refresh script, proving the call returns
+        # immediately (a Popen handle) rather than blocking on the child.
+        import time as _time
+        plugin_dir = tempfile.mkdtemp()
+        try:
+            hooks_dir = os.path.join(plugin_dir, "hooks")
+            os.makedirs(hooks_dir)
+            # A trivial script standing in for update-refresh.py.
+            with open(os.path.join(hooks_dir, "update-refresh.py"), "w") as f:
+                f.write("import time\ntime.sleep(0.05)\n")
+            t0 = _time.time()
+            proc = _mod.spawn_background_update_refresh(plugin_dir)
+            elapsed = _time.time() - t0
+            self.assertLess(elapsed, 1.0, "spawn must return immediately, never await the child")
+            if proc is not None:
+                proc.wait(timeout=5)
+        finally:
+            import shutil
+            shutil.rmtree(plugin_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main()
