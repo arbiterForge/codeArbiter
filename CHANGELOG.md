@@ -6,6 +6,75 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.8.11] — 2026-07-02
+
+Durable sink for mechanical gate decisions, plus an audit staleness warning.
+
+### Added
+- **Durable gate-events sink (#186).** `block()`/`remind()`/`warn()` — the three primitives every one of the 16 entry hooks funnels every gate decision through — now best-effort append a structured line (`[ISO-8601Z] KIND [tag] hook=<script> | msg`) to `.codearbiter/gate-events.log`, so BLOCK/REMIND/WARN events are durable and greppable instead of visible only in the live transcript. The write is fail-open: a locked, missing, or unwritable log never changes a hook's exit code nor suppresses a BLOCK. The log is append-only (added to the `AUDIT_LOG_BASENAMES` single source that `AUDIT_LOG_NAMES` and all three H-05 flanks derive from, so the protected set cannot drift).
+- **Audit staleness-warn (CONFIRM-09).** A `UserPromptSubmit` check warns (non-blocking) when an active `/sprint` or `/dev` flow has not appended its expected audit-log line within a bounded window, resolving the audit-completeness half of the log-write-compulsion question. It is a warn, never a hard gate; the H-05 integrity guards remain the sole true STOP.
+
+## [2.8.10] — 2026-07-02
+
+Lower SessionStart latency on the linchpin hook.
+
+### Changed
+- **Cut SessionStart blocking work (#194).** The hooks-install re-probe now skips its git spawns when a cheap, spawn-free on-disk check proves the shims are current — fail-safe by construction (a grammar-free `hookspath` scan of `.git/config`; any doubt, including a later `core.hooksPath` change, falls through to a real install, so the git-enforce backstop can never be silently left unwired). The five independent `assemble_summary` git reads now run concurrently, and the first-of-day briefing threads its already-read `CONTEXT.md`/`open-tasks.md`/`open-questions.md` text through instead of re-reading. Injected startup state is byte-identical.
+
+## [2.8.9] — 2026-07-02
+
+The mechanical guards now judge the repository the git operation actually fires in.
+
+### Fixed
+- **Hook repo-resolution (#190).** The `.git/hooks` git-enforce backstop resolves its target via `git rev-parse --show-toplevel` from its own working directory (not `CLAUDE_PROJECT_DIR`), so a `git -C <other> commit` is gated against `<other>`. `pre-bash.py`'s `git_cwd` now finds `-C` past global options and composes a repeated `-C` run the way git itself does (fold-left), closing a fail-open on crafted spellings; a `-C` target that is not a real directory fails closed. `session-start.py` and `taskwrite.py` drop divergent local `project_root()` copies for the shared, `CLAUDE_PROJECT_DIR`-first `_hooklib.project_root`.
+
+## [2.8.8] — 2026-07-02
+
+### Changed
+- **Thin entry points for the babysit/metrics/preview command helpers (#179).** Three command surfaces that ran a lib as a script or embedded multi-statement `python -c` blocks now call dedicated thin entry hooks, so the logic is import-covered by `py_compile` and tests. Output is byte-identical.
+
+## [2.8.7] — 2026-07-02
+
+### Fixed
+- **Atomic state writes and a single-parse prune (#191, #188).** The prune-state, git-hook shim, and statusline-settings writers route through a unique-temp + `os.replace` atomic write, so a torn write leaves the prior file intact (a partial shim can no longer silently disable the #161 backstop, and concurrent sessions no longer collide on a fixed `.tmp`). The prune hook now reads and parses the transcript once per prompt instead of twice.
+
+## [2.8.6] — 2026-07-02
+
+### Changed
+- **Statusline thin-entry refactor (#178).** `statusline.py` drops from 1186 to 642 lines, with its concern-groups extracted into focused libs behind a thin entry point. Behavior is proven unchanged by the existing suite with assertions unmodified.
+
+## [2.8.5] — 2026-07-02
+
+### Security
+- **Tail-anchored audit-log append and a literal `--no-verify` block (#172, #175).** The H-05 append check now admits an audit-log Edit only as a strict tail append and rejects a `replace_all` on an audit-log path outright, closing a hole where a mid-file insertion or multi-site suffix rewrite passed as an "append". A new H-20 guard blocks a literal `--no-verify`/`-n` on `git commit` (including bundled and attached-value short-flag clusters, mirroring git's own parsing) and on `git push`, because that flag skips the `.git/hooks` git-enforce backstop.
+
+## [2.8.4] — 2026-07-02
+
+### Added
+- **Update-available notifier (#209).** A best-effort, once-daily, fail-silent check compares the installed plugin version against the latest GitHub Release and surfaces a one-line `update available X → Y` notice at SessionStart and in the statusline. The network refresh is off the SessionStart hot path (a detached child; the hooks only read the cache), HTTPS-only per ADR-0003, unauthenticated, sends no repo or user data. The README documents native marketplace auto-update as the official mechanism.
+
+## [2.8.3] — 2026-07-02
+
+### Fixed
+- **Farm dispatcher hardening (#192, #187, #183).** The cost-arbitrage farm now bounds response-body reads, completes its abort accounting, validates numeric environment overrides, surfaces mutation-hook failures instead of swallowing them, and covers the entitlement probe.
+
+## [2.8.2] — 2026-07-02
+
+### Security
+- **Guards fail closed on a crash or an unreadable git state (#189, #193).** A crash inside a `pre-bash`/`pre-edit`/`pre-write` guard, or a git-read error while resolving branch/diff state, now blocks (H-00) rather than allowing the operation through, and the git-enforce backstops gained coverage. A guard that cannot determine whether an operation is safe treats it as unsafe.
+
+## [2.8.1] — 2026-07-02
+
+Opening of the tribunal remediation campaign: supply-chain hardening plus the quick-kill fixes.
+
+### Security
+- **Pin GitHub Actions to commit SHAs and add dependabot (#202).** Every workflow action is pinned to a full commit SHA (not a moving tag), dependabot is configured for actions and npm, and the `cat-file`/env-bind surfaces in CI are hardened.
+
+### Fixed
+- **Tribunal quick-kills (#197).** Atomic provenance/state writes, typed spawn options, and fail-closed CI scripts, closing the first wave of tribunal findings (#174, #176, #177, #182, #184, #185, #195).
+
+---
+
 ## [2.8.0] — 2026-07-01
 
 The tribunal release: a deep, resumable, whole-codebase audit lane, hardened by a full post-landing review and an eleventh lens, plus a fix for the false fail-closed commit-gate block that work surfaced.
