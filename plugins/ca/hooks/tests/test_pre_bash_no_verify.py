@@ -103,6 +103,37 @@ class TestNoVerifyCommit(_PreBashFixture):
         res = self.run_bash('git commit -mn "x"')
         self.assertNotIn("H-20", res.stderr)
 
+    # -- attached-value cluster (security-reviewer HIGH, second pass) --------
+    # A `re.fullmatch(r"-[A-Za-z]+", tok)` gate previously skipped the WHOLE
+    # token whenever any character after the dashes wasn't a letter — so a
+    # leading `-n` immediately followed by an attached value (`=x`, `123`, …)
+    # was never even inspected. Proven live against a real .git/hooks/pre-commit:
+    # -nm=x, -nm123, -vnm=y all committed with the hook skipped.
+
+    def test_commit_nm_equals_value_cluster_is_blocked(self):
+        # -nm=x: walk hits 'n' before 'm' (and before the '=') -> no-verify.
+        self.assertBlocked(self.run_bash("git commit -nm=x"), "H-20")
+
+    def test_commit_nm_digit_value_cluster_is_blocked(self):
+        # -nm123: walk hits 'n' before 'm' (and before the digits) -> no-verify.
+        self.assertBlocked(self.run_bash("git commit -nm123"), "H-20")
+
+    def test_commit_vnm_equals_value_cluster_is_blocked(self):
+        # -vnm=y: 'v' has no special meaning, walk continues to 'n' -> no-verify.
+        self.assertBlocked(self.run_bash("git commit -vnm=y"), "H-20")
+
+    def test_commit_mn_equals_value_cluster_is_not_blocked(self):
+        # -mn=x: 'm' (argument-taking) is hit FIRST -> the rest ("n=x") is the
+        # message value, not a further -n flag. Must NOT block on H-20.
+        res = self.run_bash("git commit -mn=x")
+        self.assertNotIn("H-20", res.stderr)
+
+    def test_commit_Sn_cluster_is_not_blocked(self):
+        # -Sn: 'S' (--gpg-sign, argument-taking) is hit FIRST -> "n" is its
+        # value (the signing key id), not a further -n flag.
+        res = self.run_bash("git commit -Sn -m x")
+        self.assertNotIn("H-20", res.stderr)
+
 
 class TestNoVerifyPush(_PreBashFixture):
     def test_push_with_long_no_verify_is_blocked(self):

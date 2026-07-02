@@ -51,11 +51,13 @@ def _read_err_hint():
 # (git-enforce.py) never runs for that operation, voiding H-01/H-02/H-09b/
 # H-10b/H-14 for it. `-n` is git-commit's short spelling of --no-verify — but
 # NOT only as its own token: git bundles short flags into one cluster
-# (`-nm "x"` = `-n` + `-m x`, the everyday spelling), so the exact-token check
-# alone missed it (HIGH, security-reviewer finding on the first pass). `git
-# push` has NO short spelling for this (its own `-n` is `--dry-run`, an
-# unrelated flag), so only the long form is checked there, and it never
-# clusters this way in practice for our purposes.
+# (`-nm "x"` = `-n` + `-m x`, the everyday spelling), including with an
+# attached value (`-nm=x`, `-nm123`), so the exact-token check alone missed it
+# (security-reviewer HIGH x2: the bare cluster case, then the attached-value
+# cluster case — see `_commit_no_verify_in_cluster`). `git push` has NO short
+# spelling for this (its own `-n` is `--dry-run`, an unrelated flag), so only
+# the long form is checked there, and it never clusters this way in practice
+# for our purposes.
 # Token-equality (not substring) so a commit MESSAGE merely quoting the text
 # ('-m "explain --no-verify"') is never misclassified — the quoted phrase
 # tokenizes as one whole argument, never equal to the bare flag. Scanning
@@ -91,26 +93,48 @@ def _has_literal_flag(args, flags):
 
 def _commit_no_verify_in_cluster(args):
     """True iff a `git commit` bundled short-flag cluster token (e.g. `-nm`,
-    `-vn`) carries `-n` (no-verify) BEFORE any argument-taking short option in
-    that same cluster consumes the rest of it as a value. Walks each
-    `-[A-Za-z]+` token left-to-right (never `--...`, never touching values with
-    an `=`): hitting `n` first means no-verify; hitting a
-    COMMIT_SHORT_VALUE_CHARS member first means every following character in
-    that token is that flag's value (e.g. `-mn` is `-m` with value "n" — NOT
-    no-verify), so scanning that token stops there. Complements the exact-
-    token `-n` case in COMMIT_NO_VERIFY_FLAGS, which only catches `-n` as its
-    OWN whole token. Scanning stops at a bare `--` (end-of-options)."""
+    `-vn`, `-nm=x`, `-nm123`) carries `-n` (no-verify) BEFORE any
+    argument-taking short option — or any attached-value byte — in that same
+    token ends the flag-cluster portion. Walks each token that starts with
+    `-`+letter (and is not `--...`) left-to-right past the leading `-`:
+
+      * `n`   seen first  -> no-verify -> BLOCK.
+      * a COMMIT_SHORT_VALUE_CHARS member seen first -> that flag consumes the
+        REST of the token as its value (e.g. `-mn` is `-m` with value "n") ->
+        stop scanning this token, not a match.
+      * the first NON-ALPHABETIC character (`=`, a digit, `.`, `"`, …) seen
+        first -> an attached value has begun (e.g. `-nm=x`, `-nm123`) -> stop
+        scanning this token's REMAINDER, but everything scanned so far still
+        counts — this is what closes `-nm=x`/`-nm123` (the `n` before the
+        `m`/`=`/digit still blocks) while never mis-reading the attached value
+        itself as more flag letters.
+
+    security-reviewer HIGH (second pass): a `re.fullmatch(r"-[A-Za-z]+", tok)`
+    gate previously skipped the whole token whenever ANY character after the
+    dashes wasn't a letter — so `-nm=x`/`-nm123`/`-vnm=y` (a leading `-n`
+    immediately followed by an attached value) were never even inspected,
+    silently letting `-n`/no-verify through. Matching on `-[A-Za-z]` (just the
+    first character after `-`) instead of requiring the WHOLE token to be
+    letters fixes this at the root: every token that OPENS a short-flag
+    cluster is now walked, and the walk itself (not the initial token shape)
+    decides where the flag portion ends.
+
+    Complements the exact-token `-n`/`--no-verify` case in
+    COMMIT_NO_VERIFY_FLAGS, which only catches `-n` as its OWN whole token.
+    Scanning stops at a bare `--` (end-of-options)."""
     for raw in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args):
         tok = raw.strip("\"'")
         if tok == "--":
             break
-        if not re.fullmatch(r"-[A-Za-z]+", tok):
-            continue  # not a short-flag cluster (long flag, value, pathspec, …)
+        if tok.startswith("--") or not re.match(r"-[A-Za-z]", tok):
+            continue  # a long flag, a value, a pathspec, or not a flag at all
         for ch in tok[1:]:
             if ch == "n":
                 return True
             if ch in COMMIT_SHORT_VALUE_CHARS:
                 break  # rest of THIS token is that flag's value; stop here
+            if not ch.isalpha():
+                break  # an attached value (=, digit, ., "…) has begun; stop here
     return False
 
 
