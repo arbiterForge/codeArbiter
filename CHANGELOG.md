@@ -6,10 +6,15 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
-## [Unreleased]
+## [2.8.0] — 2026-07-01
+
+The tribunal release: a deep, resumable, whole-codebase audit lane, hardened by a full post-landing review and an eleventh lens, plus a fix for the false fail-closed commit-gate block that work surfaced.
 
 ### Added
-- **`tribunal` skill — deep resumable codebase-audit lane (#157).** Add `feat(tribunal): add deep resumable codebase-audit lane — ten specialist lenses, append-only jsonl audit log, GitHub-issue filing on approval, opt-in KPI telemetry`. `/ca:tribunal` convenes ten bespoke `tribunal-*-reviewer` specialist lenses (appsec, architecture, coverage, migration, observability, performance, reliability, secrets-supply, test-fidelity, typesafety) over the whole codebase in priority-ordered waves. Findings persist to append-only jsonl under `.codearbiter/reports/<run-id>/`, resumable from disk across compaction and disconnects; a triage pass calibrates severity independently of each lens's provisional score; approved findings file as deduped GitHub issues. Rare and opt-in by design — never a required gate, never blocks a merge or commit.
+- **`/ca:tribunal` — the deep resumable codebase-audit lane (#157, #168, #170).** Convenes eleven bespoke `tribunal-*-reviewer` specialist lenses (appsec, architecture, coverage, infra, migration, observability, performance, reliability, secrets-supply, test-fidelity, typesafety) over the whole codebase in recorded priority waves. Each finding persists as its own crash-durable file under `.codearbiter/reports/<run-id>/` alongside append-only triage/run logs, so an interrupted run resumes from disk across sessions and days; a triage pass recalibrates severity and confidence against a defined, severity-tiered confidence gate; approved findings file as deduped GitHub issues, only on explicit authorization. Rare and opt-in by design: never a required gate, never blocks a merge or commit. The infra lens covers CI/CD workflow security, container posture, IaC, and deploy manifests.
+
+### Fixed
+- **The commit gate no longer fails closed on commit messages containing `;`, `|`, `&`, or a `git -C` mention (#169).** The H-09b/H-10b/H-14 pre-commit scan truncated its argument parse at the first separator character inside a quoted or heredoc commit-message body; the leftover fragment leaked message words into a pathspec query whose failure blocked the commit as an unreadable diff. Heredoc bodies are now stripped before parsing, with the raw command retained as a fallback matcher so nothing scans less than before; the argument capture is quote-aware; and a fail-closed block message now carries the underlying git error, so the next read failure is diagnosable at a glance.
 
 ## [2.6.1] — 2026-07-01
 
