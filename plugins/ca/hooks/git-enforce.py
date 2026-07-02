@@ -27,8 +27,44 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, arbiter_active, content_digest, is_migration_path,
-    line_digest, marker_fresh, project_root, utf8_stdio,
+    line_digest, marker_fresh, utf8_stdio,
 )
+
+
+def repo_root():
+    """The repo THIS git hook is firing in — deliberately does NOT use
+    _hooklib.project_root() (reliability-005, #190).
+
+    git-enforce.py is installed as `.git/hooks/pre-commit`/`pre-push` of
+    whatever repo the git OPERATION targets. _hooklib.project_root() trusts
+    CLAUDE_PROJECT_DIR first — the right contract for a Claude Code hook
+    subprocess, but the wrong one here: a `git -C ../otherRepo commit` issued
+    from a Claude session inherits CLAUDE_PROJECT_DIR pointing at the
+    session's repo, yet the pre-commit hook that fires is ../otherRepo's own,
+    invoked with its OWN cwd/GIT_DIR — never the session's. Trusting
+    CLAUDE_PROJECT_DIR here scanned the session's repo (branch/staged
+    diff/markers) while the commit actually landed in ../otherRepo, both a
+    fail-open (a dirty ../otherRepo passes if the session repo is clean) and
+    a false-block (a dirty session repo blocks a clean ../otherRepo commit).
+
+    Git invokes pre-commit/pre-push with the process cwd set to the target
+    repo's work-tree top-level, so `git rev-parse --show-toplevel` run with NO
+    cwd override (inheriting this process's actual cwd) resolves the repo the
+    hook is actually running in. GIT_DIR/GIT_WORK_TREE (set by git for some
+    invocation shapes, e.g. `git -C X commit` invoking the hook with those
+    exported) are honored by that same `git rev-parse` call automatically, so
+    no separate env read is needed here."""
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5,
+        )
+        if out.returncode == 0:
+            return out.stdout.strip()
+    except Exception:  # noqa: BLE001
+        pass
+    return os.getcwd()
 
 
 def _git(args, cwd):
@@ -241,7 +277,7 @@ def pre_push(root):
 
 def main():
     utf8_stdio()
-    root = project_root()
+    root = repo_root()
     if not arbiter_active(root):
         sys.exit(0)
     phase = sys.argv[1] if len(sys.argv) > 1 else ""

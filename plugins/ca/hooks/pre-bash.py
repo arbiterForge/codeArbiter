@@ -150,7 +150,18 @@ ARGS = r"(?P<args>(?:\"[^\"]*\"|'[^']*'|[^|;&])*)"
 COMMIT_RE = re.compile(GIT + r"\s+commit\b" + ARGS)
 PUSH_RE = re.compile(GIT + r"\s+push\b" + ARGS)
 ADD_RE = re.compile(GIT + r"\s+add\b" + ARGS)
-GIT_C_DIR_RE = re.compile(r"\bgit\s+-C\s+(\"[^\"]+\"|'[^']+'|\S+)")
+# reliability-004 (#190): GIT_C_DIR_RE previously matched `-C` ONLY as the
+# FIRST token after `git`, so a global option in front of it (`--no-pager`,
+# `-c k=v`, `--git-dir=…`) hid the -C target entirely and git_cwd() fell back
+# to `root` — while COMMIT_RE/PUSH_RE (built on the same GIT global-options
+# prefix as below) still matched, so the guards fired against the WRONG repo.
+# GIT_OPTS_RUN_RE captures the exact same global-options run GIT already
+# tolerates (group 1); GIT_C_IN_RUN_RE then finds every `-C <dir>` WITHIN that
+# captured run via findall, so a -C preceded by other global options is found
+# regardless of position.
+GIT_OPTS_RUN_RE = re.compile(
+    r"\bgit((?:\s+(?:-[Cc]\s+(?:\"[^\"]+\"|'[^']+'|\S+)|--[\w-]+(?:=\S+)?|-\w+))*)")
+GIT_C_IN_RUN_RE = re.compile(r"-C\s+(\"[^\"]+\"|'[^']+'|\S+)")
 # Force-push in any spelling: --force, --force-with-lease[=…], -f as its own
 # token (not a ref like `fix-f`), or a forcing `+refspec`.
 FORCE_RE = re.compile(r"(?:^|\s)(?:--force(?:-with-lease|-if-includes)?(?:=\S+)?|-f)(?=\s|$)")
@@ -248,11 +259,32 @@ GATE_MARKER_WRITE_RE = re.compile(
 
 
 def git_cwd(cmd, root):
-    """The directory a `git -C <dir>` invocation actually targets."""
-    m = GIT_C_DIR_RE.search(cmd)
+    """The directory a `git -C <dir>` invocation actually targets, or `root`
+    when there is no `-C` (reliability-004, #190).
+
+    Scans the SAME global-options run GIT/COMMIT_RE/PUSH_RE already tolerate
+    before the subcommand (GIT_OPTS_RUN_RE), so a `-C` preceded by other
+    global options (`git --no-pager -C ../x commit`, `git -c k=v -C ../x
+    commit`) is found exactly where the guards themselves look, instead of
+    only matching `-C` as the first token. Git itself allows repeated `-C`,
+    each composing relative to the previous — the LAST one in the run is what
+    actually wins, so this takes the last match.
+
+    A relative `-C` value is resolved against `root` (project_root), not the
+    hook process's own cwd — the hook's cwd is not guaranteed to be the
+    project dir (mirrors _hooklib.project_root's own rationale), so a
+    lexically-relative `-C ../x` must not be joined against wherever this
+    Python process happens to be running from."""
+    m = GIT_OPTS_RUN_RE.search(cmd)
     if not m:
         return root
-    return m.group(1).strip("\"'")
+    c_matches = GIT_C_IN_RUN_RE.findall(m.group(1))
+    if not c_matches:
+        return root
+    target = c_matches[-1].strip("\"'")
+    if not os.path.isabs(target):
+        target = os.path.join(root, target)
+    return target
 
 
 def current_branch(cwd):
@@ -542,7 +574,18 @@ def _run(root):
     git_view = _strip_heredoc_bodies(cmd) if "<<" in cmd else cmd
 
     commit = COMMIT_RE.search(git_view) or COMMIT_RE.search(cmd)
+    push_probe = PUSH_RE.search(git_view) or PUSH_RE.search(cmd)
     cwd = git_cwd(git_view, root)
+
+    # reliability-004 (#190): fail CLOSED for commit/push when the `-C` target
+    # git_cwd() resolved does not exist as a directory — an unresolvable -C
+    # target must not silently fall through to scanning some OTHER directory
+    # (or crash mid-scan); ambiguity resolves CLOSED here exactly as the
+    # git-read failures elsewhere in this file do.
+    if (commit or push_probe) and not os.path.isdir(cwd):
+        block("H-01", f"'git -C {cwd}' does not resolve to an existing directory — "
+                      f"failing closed (ORCHESTRATOR §2). Verify the -C target exists "
+                      f"before committing/pushing.")
 
     # H-20: block a literal --no-verify / -n on `git commit` — it skips
     # .git/hooks (the git-enforce backstop) entirely, voiding every enforcement
