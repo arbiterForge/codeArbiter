@@ -34,6 +34,35 @@ export const [SHELL_BIN, SHELL_FLAG] =
 export const SHELL_OPTS =
   process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
 
+// reliability-014: a single hardened numeric-env reader shared by farm.ts and
+// mutation.ts (every FARM_*/MUT_* numeric knob routes through here). Plain
+// `Number(process.env.X ?? default)` silently yields NaN on a typo (e.g.
+// FARM_CONCURRENCY="four"), and NaN reads FALSE in every safety comparison
+// built on it — the concurrency cap (`running.size >= ENV.concurrency`), the
+// escalation-rate circuit breaker, and retry limits all silently disable with
+// zero signal. Falls back to the default LOUDLY (stderr) on any non-finite
+// parse; an optional `min` clamps a parsed-but-too-low value up to the floor
+// the knob needs to stay meaningful (also logged). Lives in exec.ts (not
+// farm.ts) so mutation.ts can use it too without a farm.ts -> mutation.ts ->
+// farm.ts import cycle (function declarations hoist, so GATE_TIMEOUT_MS below
+// can call it before this point in file order).
+export function numEnv(name: string, def: number, opts: { min?: number } = {}): number {
+  const raw = process.env[name];
+  if (raw === undefined || raw === "") return def;
+  const n = Number(raw);
+  if (!Number.isFinite(n)) {
+    process.stderr.write(
+      `[FARM] ${name}=${JSON.stringify(raw)} is not a finite number — falling back to the default ${def}\n`,
+    );
+    return def;
+  }
+  if (opts.min !== undefined && n < opts.min) {
+    process.stderr.write(`[FARM] ${name}=${n} is below the minimum ${opts.min} — clamping to ${opts.min}\n`);
+    return opts.min;
+  }
+  return n;
+}
+
 // T-06 (reliability-001): per-command wall-clock timeout. The shared run() helper
 // previously resolved ONLY on the child's close/error event, so a gate/setup/
 // mutation command that never exits (a test blocking on stdin, a watch/dev-server
@@ -41,7 +70,7 @@ export const SHELL_OPTS =
 // scheduler's Promise.race never settled, so the whole run hung with no report.
 // This mirrors the AbortController discipline the API path already uses. Default a
 // few minutes; configurable, independent of FARM_REQUEST_TIMEOUT_MS.
-export const GATE_TIMEOUT_MS = Number(process.env.FARM_GATE_TIMEOUT_MS ?? 300_000);
+export const GATE_TIMEOUT_MS = numEnv("FARM_GATE_TIMEOUT_MS", 300_000, { min: 1000 });
 
 // Kill a spawned child and its descendants. On Windows a plain child.kill() does
 // not reap the process tree (cmd.exe /c spawns the real command as a grandchild),

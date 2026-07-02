@@ -24,7 +24,10 @@ import type { Server } from "node:http";
 // --------------------------------------------------------------------------
 // Mini mock HTTP server that returns canned file-block responses
 // --------------------------------------------------------------------------
-type MockHandler = (body: unknown) => string;
+// reliability-013 test support: a handler may return a Promise<string> to
+// deliberately delay a response, so a test can arrange one task to stay
+// "in flight" while a sibling settles fast enough to trip the circuit breaker.
+type MockHandler = (body: unknown) => string | Promise<string>;
 
 function startMockServer(handler: MockHandler): Promise<{ server: Server; port: number }> {
   return new Promise((resolve) => {
@@ -33,13 +36,14 @@ function startMockServer(handler: MockHandler): Promise<{ server: Server; port: 
       req.on("data", (chunk) => (data += chunk));
       req.on("end", () => {
         const body = JSON.parse(data || "{}");
-        const content = handler(body);
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            choices: [{ message: { content } }],
-          }),
-        );
+        Promise.resolve(handler(body)).then((content) => {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              choices: [{ message: { content } }],
+            }),
+          );
+        });
       });
     });
     server.listen(0, "127.0.0.1", () => {
@@ -102,6 +106,65 @@ function runFarm(
     child.stderr.on("data", (d: Buffer) => (out += d));
     child.on("close", (code: number | null) => resolve({ code: code ?? 1, out }));
     child.on("error", (e: Error) => resolve({ code: 1, out: String(e) }));
+  });
+}
+
+// coverage-003 (#183): same launcher as runFarm, but with an extra leading CLI
+// arg (e.g. "--canary") so runCanary's early-exit validation paths can be
+// exercised — those paths read ENV.candidateModels/ENV.apiKey, which are fixed
+// at module import time in the CHILD process, so they can only be varied via a
+// fresh subprocess per test (not a same-process unit test).
+function runFarmWithArgs(
+  repoDir: string,
+  extraArgs: string[],
+  planPath: string,
+  env: Record<string, string>,
+  // Some early-exit assertions (e.g. "FARM_API_KEY is not set") require the
+  // var to be ABSENT, not merely un-overridden — a dev/CI shell may already
+  // export a real FARM_API_KEY (this repo's one live secret), which would
+  // otherwise leak through the `...process.env` spread below and silently
+  // invalidate the "missing key" test case. `unset` deletes it from the
+  // child's env after the spread, regardless of the ambient shell.
+  unset: string[] = [],
+): Promise<{ code: number; out: string }> {
+  return new Promise((resolve) => {
+    const spawnEnv: NodeJS.ProcessEnv = {
+      ...process.env,
+      GIT_CONFIG_COUNT: "1",
+      GIT_CONFIG_KEY_0: "commit.gpgsign",
+      GIT_CONFIG_VALUE_0: "false",
+      ...env,
+    };
+    for (const k of unset) delete spawnEnv[k];
+    const child = spawn(
+      process.execPath,
+      ["--import", TSX_LOADER, farmTs, ...extraArgs, planPath],
+      { cwd: repoDir, env: spawnEnv },
+    );
+    let out = "";
+    child.stdout.on("data", (d: Buffer) => (out += d));
+    child.stderr.on("data", (d: Buffer) => (out += d));
+    child.on("close", (code: number | null) => resolve({ code: code ?? 1, out }));
+    child.on("error", (e: Error) => resolve({ code: 1, out: String(e) }));
+  });
+}
+
+// reliability-012: a raw http server that sends response HEADERS then never
+// closes/writes the body — the exact "slow-loris" / stalled-body shape the
+// fix must bound. Distinct from startMockServer (which always completes the
+// response) because callApi's OLD bug was specifically that the timer was
+// cleared right after headers arrived, leaving the body read unbounded.
+function startStalledBodyServer(): Promise<{ server: Server; port: number }> {
+  return new Promise((resolve) => {
+    const server = createServer((_req: IncomingMessage, res: ServerResponse) => {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.write("{"); // headers + partial body sent; body deliberately never closes
+      // no res.end() — the connection is held open indefinitely
+    });
+    server.listen(0, "127.0.0.1", () => {
+      const addr = server.address() as { port: number };
+      resolve({ server, port: addr.port });
+    });
   });
 }
 
@@ -1100,5 +1163,172 @@ describe("farm.ts smoke tests", () => {
     const raw = readFileSync(join(tmpDir, ".farm/farm-results.jsonl"), "utf8");
     const lines = raw.split("\n").filter((l) => l.trim().length > 0);
     expect(lines).toHaveLength(2);
+  });
+
+  // -------------------------------------------------------------------------
+  // reliability-012 — callApi must bound the response BODY read, not just the
+  // time-to-headers.
+  // -------------------------------------------------------------------------
+  it("reliability-012: a stalled response body (headers sent, body never closes) fails within FARM_REQUEST_TIMEOUT_MS instead of hanging", async () => {
+    ({ server: mockServer, port } = await startStalledBodyServer());
+
+    const plan = {
+      meta: { name: "stalled-body-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Write hello",
+          deps: [],
+          filesInScope: ["src/hello.ts"],
+          test: { path: "src/hello.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const start = Date.now();
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_REQUEST_TIMEOUT_MS: "500",
+      FARM_API_MAX_RETRIES: "0",
+    });
+    const elapsed = Date.now() - start;
+
+    // Must fail (escalate), not hang — bounded well under a "forever" wedge.
+    // Generous ceiling for CI/Windows process-spawn overhead; the point under
+    // test is "bounded", not a tight latency budget.
+    expect(elapsed).toBeLessThan(15_000);
+    expect(result.code).toBe(2);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results[0].status).toBe("escalate");
+    expect(report.results[0].note).toMatch(/timed out/i);
+  });
+
+  // -------------------------------------------------------------------------
+  // reliability-013 — a circuit-breaker abort must not drop in-flight tasks
+  // from accounting, and must not tear down the integration worktree while a
+  // merge could still be in flight.
+  // -------------------------------------------------------------------------
+  it("reliability-013: every dispatched task appears in farm-report.json with a status after a breaker abort, none vanish", async () => {
+    ({ server: mockServer, port } = await startMockServer((body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      // task-fail gets malformed (unparseable) content → escalates fast.
+      if (content.includes("src/fail.ts")) return "no code fence here, sorry";
+      // The other three tasks succeed, but only after a short delay, so they
+      // are still IN FLIGHT ("running") when task-fail's fast escalation trips
+      // the circuit breaker.
+      const file = ["src/b.ts", "src/c.ts", "src/d.ts"].find((f) => content.includes(f)) ?? "src/b.ts";
+      return new Promise<string>((resolve) => {
+        setTimeout(() => resolve(["```typescript", `// path: ${file}`, "export const x = 1;", "```"].join("\n")), 300);
+      });
+    }));
+
+    const plan = {
+      meta: { name: "breaker-abort-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        { id: "task-fail", description: "fail fast", deps: [], filesInScope: ["src/fail.ts"], test: { path: "src/fail.test.ts" }, gate: { commands: ["node -p 0"] }, maxRetries: 0 },
+        { id: "task-b", description: "b", deps: [], filesInScope: ["src/b.ts"], test: { path: "src/b.test.ts" }, gate: { commands: ["node -p 0"] } },
+        { id: "task-c", description: "c", deps: [], filesInScope: ["src/c.ts"], test: { path: "src/c.test.ts" }, gate: { commands: ["node -p 0"] } },
+        { id: "task-d", description: "d", deps: [], filesInScope: ["src/d.ts"], test: { path: "src/d.test.ts" }, gate: { commands: ["node -p 0"] } },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_CONCURRENCY: "4", // all four dispatch concurrently — no scope overlap
+      FARM_ABORT_MIN_TASKS: "1",
+      FARM_ABORT_ESCALATION_RATE: "0", // any escalation trips the breaker immediately
+    });
+
+    expect(result.out).toContain("ABORTED by circuit breaker");
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.aborted).toBe(true);
+    // The load-bearing assertion: every task the scheduler DISPATCHED appears
+    // with a real status — none vanish from the report because they were
+    // still "running" (in-flight) when the breaker tripped.
+    const ids = report.results.map((r: { id: string }) => r.id).sort();
+    expect(ids).toEqual(["task-b", "task-c", "task-d", "task-fail"]);
+    for (const r of report.results) expect(["green", "escalate"]).toContain(r.status);
+    // Nothing dispatched should show up as merely "blocked" — dispatched means
+    // it left `pending`, so it must settle to green/escalate, not blocked.
+    expect(report.blocked.map((b: { id: string }) => b.id)).not.toEqual(
+      expect.arrayContaining(["task-b", "task-c", "task-d"]),
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // observability-002 (#187) — a crashing/unparseable FARM_MUTATION_CMD must
+  // surface a diagnostic distinct from "mutation checking is not configured".
+  // -------------------------------------------------------------------------
+  it("#187: a crashing FARM_MUTATION_CMD surfaces a distinct diagnostic — never silently indistinguishable from not-configured", async () => {
+    ({ server: mockServer, port } = await startMockServer(() =>
+      ["```typescript", "// path: src/m.ts", "export const add = (a, b) => a + b;", "```"].join("\n"),
+    ));
+
+    const plan = {
+      meta: { name: "mutation-hook-fail", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+      tasks: [
+        {
+          id: "task-a",
+          description: "Add",
+          deps: [],
+          filesInScope: ["src/m.ts"],
+          test: { path: "src/m.test.ts" },
+          gate: { commands: ["node -p 0"] },
+          maxRetries: 0,
+        },
+      ],
+    };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+
+    const withCrashingHook = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_MUTATION: "on",
+      FARM_MUTATION_CMD: 'node -e "process.exit(1)"',
+    });
+    // A broken mutation-hook integration is a diagnostic, not a task failure —
+    // the task itself still goes green.
+    expect(withCrashingHook.code).toBe(0);
+    expect(withCrashingHook.out).toMatch(/mutation hook failed for task task-a/);
+
+    const withoutHook = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    expect(withoutHook.code).toBe(0);
+    expect(withoutHook.out).not.toMatch(/mutation hook failed/);
+  });
+
+  // -------------------------------------------------------------------------
+  // coverage-003 (#183) — runCanary's early-exit validation paths.
+  // -------------------------------------------------------------------------
+  it("#183: --canary exits 1 with a named error when FARM_CANDIDATE_MODELS is missing", async () => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(JSON.parse(readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"))));
+
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "test-key",
+      // FARM_CANDIDATE_MODELS deliberately unset
+    });
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("--canary requires FARM_CANDIDATE_MODELS");
+  });
+
+  it("#183: --canary exits 1 with a named error when FARM_API_KEY is missing", async () => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(JSON.parse(readFileSync(join(__dirname, "__fixtures__/simple.plan.json"), "utf8"))));
+
+    const result = await runFarmWithArgs(
+      tmpDir,
+      ["--canary"],
+      planPath,
+      { FARM_CANDIDATE_MODELS: "some-model" },
+      ["FARM_API_KEY"], // force-absent regardless of the ambient shell
+    );
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("FARM_API_KEY is not set");
   });
 });

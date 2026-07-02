@@ -45,11 +45,11 @@ import { fileURLToPath } from "node:url";
 // the members the test suite + external consumers import from "./farm.ts", so
 // this file stays the stable public surface. The graph is one-way: farm.ts ->
 // {exec, redactor, mutation} and mutation -> exec (no cycle).
-import { run, readWorktreeFile, SHELL_BIN, SHELL_FLAG, SHELL_OPTS, GATE_TIMEOUT_MS } from "./exec.ts";
+import { run, readWorktreeFile, SHELL_BIN, SHELL_FLAG, SHELL_OPTS, GATE_TIMEOUT_MS, numEnv } from "./exec.ts";
 import type { RunResult } from "./exec.ts";
 import { redactSecrets, isSecretBearingFilename } from "./redactor.ts";
 import { MUT, mutationCheck, antiGamingCheck } from "./mutation.ts";
-export { run, redactSecrets };
+export { run, redactSecrets, numEnv };
 export { extractLiterals, codeLineCount, parseMutationHookOutput } from "./mutation.ts";
 
 // --------------------------------------------------------------------------
@@ -99,24 +99,28 @@ const ENV = {
   // user who sets just FARM_API_KEY (per the docs) is not hard-blocked.
   apiBaseUrl: process.env.FARM_API_BASE_URL ?? null,
   apiKey: process.env.FARM_API_KEY ?? null,
-  concurrency: Number(process.env.FARM_CONCURRENCY ?? 4),
-  maxRetries: Number(process.env.FARM_MAX_RETRIES ?? 2),
+  // reliability-014: every numeric knob below routes through numEnv (exec.ts)
+  // so a typo'd value (e.g. FARM_CONCURRENCY="four") falls back to the default
+  // LOUDLY instead of silently becoming NaN, which reads false in every
+  // downstream safety comparison (concurrency cap, escalation breaker).
+  concurrency: numEnv("FARM_CONCURRENCY", 4, { min: 1 }),
+  maxRetries: numEnv("FARM_MAX_RETRIES", 2, { min: 0 }),
   base: process.env.FARM_BASE_BRANCH ?? "main",
   integration: process.env.FARM_INTEGRATION_BRANCH ?? "farm/integration",
   worktreeRoot: process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees",
   reportDir: process.env.FARM_REPORT_DIR ?? ".farm",
   // Per-request hard timeout so a hung endpoint can't deadlock a worker slot.
-  requestTimeoutMs: Number(process.env.FARM_REQUEST_TIMEOUT_MS ?? 120_000),
+  requestTimeoutMs: numEnv("FARM_REQUEST_TIMEOUT_MS", 120_000, { min: 1 }),
   // Per-candidate wall-clock cap for the #93 entitlement pre-screen, so one
   // slow/dead model can't dominate the probe. Kept short (35s) — a screen, not a
   // capability run — and ≤ the per-request timeout.
-  entitlementProbeTimeoutMs: Number(process.env.FARM_ENTITLEMENT_PROBE_TIMEOUT_MS ?? 35_000),
+  entitlementProbeTimeoutMs: numEnv("FARM_ENTITLEMENT_PROBE_TIMEOUT_MS", 35_000, { min: 1 }),
   // Transport-level retries (429 / 5xx) — distinct from model-quality retries.
-  apiMaxRetries: Number(process.env.FARM_API_MAX_RETRIES ?? 3),
+  apiMaxRetries: numEnv("FARM_API_MAX_RETRIES", 3, { min: 0 }),
   // Circuit breaker: abort dispatch once the escalation rate exceeds this,
   // after at least abortMinTasks have settled.
-  abortEscalationRate: Number(process.env.FARM_ABORT_ESCALATION_RATE ?? 0.5),
-  abortMinTasks: Number(process.env.FARM_ABORT_MIN_TASKS ?? 3),
+  abortEscalationRate: numEnv("FARM_ABORT_ESCALATION_RATE", 0.5, { min: 0 }),
+  abortMinTasks: numEnv("FARM_ABORT_MIN_TASKS", 3, { min: 1 }),
   // Default endpoint, used only when neither env nor plan.meta provides one.
   defaultApiBaseUrl:
     process.env.FARM_DEFAULT_API_BASE_URL ?? DEFAULT_API_BASE_URL,
@@ -134,7 +138,7 @@ const ENV = {
   // budget and to bound per-task token spend. Truncation past the cap is
   // deterministic (in-order) with a visible marker; we never silently drop the
   // boundedness guarantee.
-  enrichMaxBytes: Number(process.env.FARM_ENRICH_MAX_BYTES ?? 131_072),
+  enrichMaxBytes: numEnv("FARM_ENRICH_MAX_BYTES", 131_072, { min: 1 }),
 };
 
 // --------------------------------------------------------------------------
@@ -639,8 +643,8 @@ export type Sampling = { temperature: number; maxTokens: number };
 
 export function readSampling(): Sampling {
   return {
-    temperature: Number(process.env.FARM_TEMPERATURE ?? 0),
-    maxTokens: Number(process.env.FARM_MAX_TOKENS ?? 0),
+    temperature: numEnv("FARM_TEMPERATURE", 0),
+    maxTokens: numEnv("FARM_MAX_TOKENS", 0, { min: 0 }),
   };
 }
 
@@ -685,36 +689,62 @@ async function callApi(
       }
       return { ok: false, error: aborted ? `request timed out after ${ENV.requestTimeoutMs}ms` : `fetch failed: ${e}` };
     }
-    clearTimeout(timer);
 
-    // Transport-level failure (rate limit / server) — back off and retry the
-    // REQUEST, not the task. A 429 is not a failed implementation attempt.
-    if (resp.status === 429 || resp.status >= 500) {
-      if (attempt < ENV.apiMaxRetries) {
-        const ra = Number(resp.headers.get("retry-after"));
-        const wait = Number.isFinite(ra) && ra > 0 ? ra * 1000 : Math.min(2 ** attempt * 1000, 16_000);
-        await sleep(wait);
-        continue;
+    // reliability-012: fetch() resolving only means the HEADERS arrived — the
+    // body may still be streaming. The old code cleared the timer here, which
+    // left every subsequent resp.text() call (below, and the error-path reads)
+    // completely unbounded: an endpoint that sends headers then stalls the
+    // body (slow-loris, buggy proxy buffering, a half-open connection) wedged
+    // the worker slot forever, since the scheduler's Promise.race never
+    // settles for the wedged task. Keep `ctrl`/`timer` ARMED through every body
+    // read below — fetch's AbortSignal covers the whole request lifecycle,
+    // including body consumption, so an abort here rejects an in-flight
+    // resp.text() the same way it rejects a hung fetch() — and clear the timer
+    // exactly once, in the finally, after the LAST body read on every branch.
+    try {
+      // Transport-level failure (rate limit / server) — back off and retry the
+      // REQUEST, not the task. A 429 is not a failed implementation attempt.
+      if (resp.status === 429 || resp.status >= 500) {
+        if (attempt < ENV.apiMaxRetries) {
+          const ra = Number(resp.headers.get("retry-after"));
+          const wait = Number.isFinite(ra) && ra > 0 ? ra * 1000 : Math.min(2 ** attempt * 1000, 16_000);
+          await sleep(wait);
+          continue;
+        }
+        const body = await resp.text();
+        // D-3: log raw body to stderr for diagnostics; do NOT include it in the
+        // error field that flows into priorFailure and the next worker prompt.
+        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}\n`);
+        return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
       }
-      const body = await resp.text().catch(() => "(unreadable)");
-      // D-3: log raw body to stderr for diagnostics; do NOT include it in the
-      // error field that flows into priorFailure and the next worker prompt.
-      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}\n`);
-      return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
-    }
-    if (!resp.ok) {
-      const body = await resp.text().catch(() => "(unreadable)");
-      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}\n`);
-      return { ok: false, error: `API ${resp.status}` };
-    }
+      if (!resp.ok) {
+        const body = await resp.text();
+        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}\n`);
+        return { ok: false, error: `API ${resp.status}` };
+      }
 
-    // Read the body as text first, then parse — so a 2xx-with-non-JSON-body (the
-    // #90 stale-endpoint failure: a 200 whose body is "Not Found") yields an
-    // actionable, endpoint-naming error instead of an opaque SyntaxError. The
-    // body is consumed once, so a re-read on parse failure is not possible —
-    // parseChatCompletion works off the text we already hold.
-    const text = await resp.text().catch(() => "");
-    return parseChatCompletion(text, apiBaseUrl);
+      // Read the body as text first, then parse — so a 2xx-with-non-JSON-body
+      // (the #90 stale-endpoint failure: a 200 whose body is "Not Found")
+      // yields an actionable, endpoint-naming error instead of an opaque
+      // SyntaxError. The body is consumed once, so a re-read on parse failure
+      // is not possible — parseChatCompletion works off the text we already
+      // hold.
+      const text = await resp.text();
+      return parseChatCompletion(text, apiBaseUrl);
+    } catch (e) {
+      // reliability-012: a stalled body triggers the SAME armed AbortController
+      // as a stalled header, so this catches it as a timeout (not an opaque
+      // "fetch failed" — the request already succeeded at the transport level).
+      const aborted = (e as Error)?.name === "AbortError";
+      return {
+        ok: false,
+        error: aborted
+          ? `request timed out after ${ENV.requestTimeoutMs}ms (reading response body)`
+          : `failed reading response body: ${e}`,
+      };
+    } finally {
+      clearTimeout(timer);
+    }
   }
   return { ok: false, error: "exhausted API retries" };
 }
@@ -1159,8 +1189,12 @@ export async function runTask(
   // the run with NaN — `Math.max(1, NaN)` is NaN, which would empty every sample
   // batch and silently mass-escalate the run. `sampling` carries the temperature
   // (auto-bumped when N>1, AC-F1.3).
-  const rawSamples = Number(process.env.FARM_SAMPLES ?? 1);
-  const samples = Number.isFinite(rawSamples) ? Math.max(1, Math.floor(rawSamples)) : 1;
+  // reliability-014: FARM_SAMPLES now routes through the shared numEnv reader
+  // (generalizing this pre-existing NaN hardening to every other FARM/MUT
+  // numeric knob) — a non-finite value falls back to 1 with a stderr warning
+  // rather than poisoning the run with NaN (`Math.max(1, NaN)` is NaN, which
+  // would empty every sample batch and silently mass-escalate the run).
+  const samples = Math.max(1, Math.floor(numEnv("FARM_SAMPLES", 1, { min: 1 })));
   const sampling = effectiveSampling(samples);
 
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
@@ -1309,7 +1343,7 @@ export async function runTask(
     let riskNote = gaming.note;
     if (risk !== "high") {
       const mut = await deps.mutationCheck(wt, t);
-      if (mut) {
+      if (mut && "score" in mut) {
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
           risk = "high";
@@ -1319,6 +1353,20 @@ export async function runTask(
             risk = "warn";
             riskNote = `mutation-risk: score ${mut.score.toFixed(2)} (${mut.survivors.length}/${mut.evaluated} survived) — weak test or under-implemented logic`;
           }
+        }
+      } else if (mut && "failed" in mut) {
+        // observability-002 (#187): mutationCheck's pluggable-hook branch
+        // distinguishes "configured but failed" (non-zero exit, timeout,
+        // unparseable output) from "not configured" (both previously
+        // collapsed to `null`, so a broken FARM_MUTATION_CMD integration
+        // produced a report indistinguishable from one that never ran mutation
+        // checking). Surface it — mirroring the diagnostic discipline the
+        // primary API path already uses (callApi's stderr body dump) — without
+        // escalating or blocking the task on a hook-infrastructure failure.
+        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}\n`);
+        if (risk === "none") {
+          risk = "warn";
+          riskNote = `mutation-hook-failed: ${mut.detail}`;
         }
       }
     }
@@ -1591,7 +1639,11 @@ export async function screenEntitlements(
 // fetch so a hung socket is actually torn down (the screen's race is the
 // higher-level cap). A network/abort failure maps to status 0 → screened as a
 // survivor, not an entitlement drop (only a real 401 drops a candidate).
-function makeEntitlementProbe(apiBaseUrl: string, apiKey: string, timeoutMs: number): EntitlementProbe {
+// coverage-003 (#183): exported so the request-shape (Bearer header, POST body)
+// and the AbortController timeout behavior are directly unit-testable against a
+// mocked global fetch, rather than only through the pure screenEntitlements
+// decision logic (which is already tested with an injected fake probe).
+export function makeEntitlementProbe(apiBaseUrl: string, apiKey: string, timeoutMs: number): EntitlementProbe {
   return async (model) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -1778,34 +1830,43 @@ async function main() {
     };
 
     while (pending.size > 0 || running.size > 0) {
-      if (tripped()) {
-        aborted = true;
-        break;
-      }
-      for (const id of ready()) {
-        if (running.size >= ENV.concurrency) break;
-        pending.delete(id);
-        running.set(
-          id,
-          runTask(byId.get(id)!, model, apiBaseUrl, apiKey).then(
-            (r) => ({ id, r }),
-            // observability-003 (T-07c): a crash produces an escalate Result with
-            // a correlated, stack-bearing note. The truncated err.stack gives the
-            // post-mortem a call site (e.g. the spawn TypeError from
-            // reliability-004) instead of a one-line message with no origin.
-            (e) => ({
-              id,
-              r: {
+      // reliability-013: once tripped, stop DISPATCHING new tasks, but do NOT
+      // break out of the loop while `running` still holds in-flight promises —
+      // the old `break` here left those ids in neither `done` nor `pending`
+      // (they vanish from farm-report.json entirely) and let the `finally`
+      // remove the integration worktree while an in-flight task could still be
+      // inside its withMergeLock merge into that same worktree. Falling through
+      // to the existing drain-and-record logic below instead means every
+      // dispatched task is awaited to a real, recorded status before the loop
+      // exits, so the integration worktree is only torn down once no merge can
+      // still be in flight.
+      if (!aborted && tripped()) aborted = true;
+      if (!aborted) {
+        for (const id of ready()) {
+          if (running.size >= ENV.concurrency) break;
+          pending.delete(id);
+          running.set(
+            id,
+            runTask(byId.get(id)!, model, apiBaseUrl, apiKey).then(
+              (r) => ({ id, r }),
+              // observability-003 (T-07c): a crash produces an escalate Result with
+              // a correlated, stack-bearing note. The truncated err.stack gives the
+              // post-mortem a call site (e.g. the spawn TypeError from
+              // reliability-004) instead of a one-line message with no origin.
+              (e) => ({
                 id,
-                status: "escalate" as const,
-                attempts: 0,
-                branch: `farm/${id}`,
-                worktree: path.resolve(ENV.worktreeRoot, id),
-                note: `crashed: ${e?.message ?? e}${e?.stack ? `\n${String(e.stack).slice(0, 1500)}` : ""}`,
-              },
-            }),
-          ),
-        );
+                r: {
+                  id,
+                  status: "escalate" as const,
+                  attempts: 0,
+                  branch: `farm/${id}`,
+                  worktree: path.resolve(ENV.worktreeRoot, id),
+                  note: `crashed: ${e?.message ?? e}${e?.stack ? `\n${String(e.stack).slice(0, 1500)}` : ""}`,
+                },
+              }),
+            ),
+          );
+        }
       }
       if (running.size === 0) break;
       const { id, r } = await Promise.race(running.values());
@@ -1813,6 +1874,14 @@ async function main() {
       // observability-003 (T-07c): stamp the run-id onto every settled result —
       // crash or clean — so the JSONL line and the report header share it.
       r.runId = runId;
+      // reliability-013: a task that was still in flight when the breaker
+      // tripped settles here with its REAL outcome (the drain above waits for
+      // its actual completion, including any merge) — annotate an escalate
+      // note so the report distinguishes "aborted while in flight" from an
+      // ordinary escalation, without discarding a genuine result.
+      if (aborted && r.status === "escalate" && !/run aborted/.test(r.note ?? "")) {
+        r.note = r.note ? `${r.note} (run aborted by circuit breaker while in flight)` : "escalate: run aborted (in flight)";
+      }
       done.set(id, r);
       // Streaming rail (AC-08 / D7): append this settled task as one JSONL line
       // the moment it settles, so a pipelined consumer can act in completion

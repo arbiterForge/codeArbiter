@@ -18,11 +18,13 @@ import {
   treeKill,
   readWorktreeFile,
   scrubbedEnv,
+  numEnv,
   SHELL_BIN,
   SHELL_FLAG,
   SHELL_OPTS,
   GATE_TIMEOUT_MS,
 } from "./exec.ts";
+import { redactSecrets } from "./redactor.ts";
 import type { Task } from "./farm.ts";
 
 // Mutation guard — a zero-token quality signal. After the gate goes green we
@@ -37,10 +39,14 @@ import type { Task } from "./farm.ts";
 // and must print a trailing JSON line containing a numeric "score").
 export const MUT = {
   enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
-  sample: Number(process.env.FARM_MUTATION_SAMPLE ?? 15),
-  budgetMs: Number(process.env.FARM_MUTATION_BUDGET_MS ?? 30_000),
-  warnBelow: Number(process.env.FARM_MUTATION_WARN_BELOW ?? 0.5),
-  escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
+  // reliability-014: routed through the shared numEnv reader (exec.ts) so a
+  // typo'd FARM_MUTATION_* value falls back to the default loudly instead of
+  // silently becoming NaN (every comparison against MUT.warnBelow/escalateBelow
+  // would then read false, disabling the anti-gaming mutation signal).
+  sample: numEnv("FARM_MUTATION_SAMPLE", 15, { min: 1 }),
+  budgetMs: numEnv("FARM_MUTATION_BUDGET_MS", 30_000, { min: 0 }),
+  warnBelow: numEnv("FARM_MUTATION_WARN_BELOW", 0.5, { min: 0 }),
+  escalateBelow: numEnv("FARM_MUTATION_ESCALATE_BELOW", 0.1, { min: 0 }),
   cmd: process.env.FARM_MUTATION_CMD ?? null,
 };
 
@@ -146,6 +152,19 @@ function generateMutants(file: string, src: string): Array<{ file: string; mutat
 
 export type MutationResult = { score: number; evaluated: number; survivors: string[] };
 
+// observability-002 (#187): the pluggable-hook branch of mutationCheck used to
+// collapse EVERY failure mode (non-zero exit, timeout, crash, unparseable
+// output) to the same `null` the caller sees for "mutation checking is not
+// configured", so a broken FARM_MUTATION_CMD integration produced a report
+// indistinguishable from one that never ran mutation checking. `null` still
+// means "not configured / nothing to evaluate" (unchanged — existing callers
+// that only check truthiness keep working); MutationHookFailure is a NEW,
+// narrow, explicit member the caller uses to distinguish "configured but
+// failed" and surface a diagnostic (mirrors the primary API path's stderr body
+// dump on a callApi failure).
+export type MutationHookFailure = { failed: true; detail: string };
+export type MutationCheckResult = MutationResult | MutationHookFailure | null;
+
 // dx-002 (T-08b): parse a pluggable FARM_MUTATION_CMD's stdout for its trailing
 // JSON score line. Extracted as a pure, exported function so the shape guard is
 // unit-testable without spawning a process. The last `{...\"score\"...}` match is
@@ -167,7 +186,7 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
   return null;
 }
 
-export async function mutationCheck(wt: string, task: Task): Promise<MutationResult | null> {
+export async function mutationCheck(wt: string, task: Task): Promise<MutationCheckResult> {
   if (!MUT.enabled) return null;
   const testCmd = task.gate.commands[0];
   if (!testCmd) return null;
@@ -207,7 +226,15 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationRes
       c.on("close", (code) => finish({ code: code ?? 1, out }));
     });
     // dx-002 (T-08b): shape-guarded parse of the hook's trailing score line.
-    return parseMutationHookOutput(r.out);
+    const parsed = parseMutationHookOutput(r.out);
+    if (parsed !== null) return parsed;
+    // observability-002 (#187): MUT.cmd WAS configured but produced no
+    // parseable score (non-zero exit, timeout, crash, or unparseable trailing
+    // output) — this is a "configured but failed" outcome, distinct from "not
+    // configured". redactSecrets guards the tail the same way runGate's
+    // failure tail is guarded before it can reach a report/log.
+    const tail = redactSecrets(r.out.slice(-500)).trim();
+    return { failed: true, detail: `exit ${r.code}${tail ? `: ${tail}` : " (no output)"}` };
   }
 
   // Built-in text mutation.
