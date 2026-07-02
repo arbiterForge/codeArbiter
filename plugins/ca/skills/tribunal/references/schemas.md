@@ -31,8 +31,10 @@ The finding record (what agents emit) is in `finding-record.md`. This file holds
 ## run/v1 — one state event per line in `run.jsonl`
 
 ```json
-{"schema":"run/v1","event":"run-started|lens-launched|lens-skipped|lens-completed|wave-flushed|wave-triaged|report-written|issues-filed|telemetry-sent","wave":1,"lens":"<lens>","detail":"<optional>","surface_seen":0,"findings":0,"model":"<model>","tokens":0,"at":"<iso8601>"}
+{"schema":"run/v1","event":"run-started|lens-launched|lens-skipped|lens-completed|wave-flushed|wave-triaged|report-written|issues-filed|telemetry-sent|run-aborted","wave":1,"lens":"<lens>","detail":"<optional>","surface_seen":0,"findings":0,"model":"<model>","tokens":0,"at":"<iso8601>"}
 ```
+
+`run-aborted` records a deliberate abandon (optional `detail` = reason) and marks the run terminal.
 
 A `lens-completed` event carries `surface_seen` (int — the lens's Exposure denominator), `findings` (int — count the lens emitted), and `model` (the model the lens ran on, as dispatched); `model` also appears on `lens-launched`. `tokens` (int, optional) records the lens's observed token spend when the orchestrator can see it; null/omitted when unobserved.
 
