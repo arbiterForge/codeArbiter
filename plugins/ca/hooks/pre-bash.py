@@ -18,6 +18,7 @@ import os
 import re
 import subprocess
 import sys
+import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
@@ -25,6 +26,22 @@ from _hooklib import (  # noqa: E402
     arbiter_active, block, content_digest, is_migration_path, line_digest,
     marker_fresh, project_root, read_input, tool_input, utf8_stdio,
 )
+
+# The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
+# block message. "git unavailable or timed out" alone cost a session of root-
+# causing (2026-07-01: the real error was a pathspec-parse artifact, visible in
+# one look at git's stderr); a fail-closed message must carry its evidence.
+# Defined ahead of current_branch/head_on_protected_tip (moved up from its
+# original spot beside added_lines/_names) now that H-01's git reads use it too.
+_READ_ERRS = []
+
+
+def _note_read_err(argv, detail):
+    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
+
+
+def _read_err_hint():
+    return f" Underlying git error: {_READ_ERRS[-1]}" if _READ_ERRS else ""
 
 # `git` followed by any run of global options (-C <dir>, -c k=v, --git-dir=…,
 # --no-pager, …) before the subcommand — `git -C ../x commit` must not slip
@@ -147,15 +164,26 @@ def git_cwd(cmd, root):
 
 
 def current_branch(cwd):
+    """The current branch name, "" for a legitimate detached HEAD, or None when
+    git could not answer (nonzero exit / spawn failure / timeout). reliability-001
+    (#189): the None sentinel lets H-01 fail CLOSED on a git-read error instead of
+    silently treating "unknown" the same as "detached, not on a protected tip" —
+    the prior `except: return ""` collapsed those two states and let a commit
+    through when branch state genuinely could not be determined."""
+    argv = ["git", "branch", "--show-current"]
     try:
         out = subprocess.run(
-            ["git", "branch", "--show-current"], cwd=cwd,
+            argv, cwd=cwd,
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=5,
         )
-        return out.stdout.strip() if out.returncode == 0 else ""
-    except Exception:  # noqa: BLE001
-        return ""
+        if out.returncode != 0:
+            _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+            return None
+        return out.stdout.strip()
+    except Exception as e:  # noqa: BLE001
+        _note_read_err(argv, repr(e))
+        return None
 
 
 def is_protected_branch(branch):
@@ -176,15 +204,24 @@ def head_on_protected_tip(cwd):
     stops at the first unresolvable arg, so a missing `main` would hide a present
     `master` tip and silently allow a commit onto it.) HEAD sits on a protected
     tip iff its sha matches a listed main/master tip. A non-repo / unborn HEAD
-    lists no HEAD sha -> False."""
+    lists no HEAD sha -> False.
+
+    reliability-001 (#189): returns None (not False) when git could not answer
+    (spawn failure/timeout, or an exit code outside the two legitimate outcomes)
+    so H-01 fails CLOSED on a git-read error instead of concluding "not on a
+    protected tip" from a failed read."""
+    argv = ["git", "show-ref", "--head", "refs/heads/main", "refs/heads/master"]
     try:
         out = subprocess.run(
-            ["git", "show-ref", "--head", "refs/heads/main", "refs/heads/master"],
-            cwd=cwd, capture_output=True, text=True, encoding="utf-8",
+            argv, cwd=cwd, capture_output=True, text=True, encoding="utf-8",
             errors="replace", timeout=5,
         )
-    except Exception:  # noqa: BLE001
-        return False
+    except Exception as e:  # noqa: BLE001
+        _note_read_err(argv, repr(e))
+        return None
+    if out.returncode not in (0, 1):
+        _note_read_err(argv, out.stderr or f"exit {out.returncode}")
+        return None
     head_sha, protected = None, set()
     for ln in out.stdout.splitlines():
         parts = ln.split()
@@ -196,21 +233,6 @@ def head_on_protected_tip(cwd):
         elif ref in ("refs/heads/main", "refs/heads/master"):
             protected.add(sha)
     return head_sha is not None and head_sha in protected
-
-
-# The most recent git-read failure, surfaced in the H-09b/H-14 fail-closed
-# block message. "git unavailable or timed out" alone cost a session of root-
-# causing (2026-07-01: the real error was a pathspec-parse artifact, visible in
-# one look at git's stderr); a fail-closed message must carry its evidence.
-_READ_ERRS = []
-
-
-def _note_read_err(argv, detail):
-    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
-
-
-def _read_err_hint():
-    return f" Underlying git error: {_READ_ERRS[-1]}" if _READ_ERRS else ""
 
 
 def added_lines(cwd, ref, paths=None):
@@ -390,11 +412,31 @@ def commit_pathspecs(args):
     return out
 
 
-def main():
-    utf8_stdio()
-    root = project_root()
-    if not arbiter_active(root):
-        sys.exit(0)
+def _require_branch(cwd):
+    """current_branch(cwd), or fail-closed BLOCK on H-01 when git could not
+    answer. reliability-001 (#189): ambiguity resolves CLOSED here exactly as
+    H-09b/H-14 already do on a git-read failure — an unreadable branch state
+    must not silently evaluate as "not protected"."""
+    branch = current_branch(cwd)
+    if branch is None:
+        block("H-01", "branch state could not be determined (git unavailable or timed "
+                      "out) — failing closed (ORCHESTRATOR §2). Retry, or verify you are "
+                      "not on main/master before committing/pushing." + _read_err_hint())
+    return branch
+
+
+def _require_tip(cwd):
+    """head_on_protected_tip(cwd), or fail-closed BLOCK on H-01 when git could
+    not answer (reliability-001, #189)."""
+    tip = head_on_protected_tip(cwd)
+    if tip is None:
+        block("H-01", "HEAD's protected-branch-tip state could not be determined (git "
+                      "unavailable or timed out) — failing closed (ORCHESTRATOR §2). "
+                      "Retry, or verify HEAD before committing." + _read_err_hint())
+    return tip
+
+
+def _run(root):
     cmd = tool_input(read_input()).get("command", "") or ""
 
     # Heredoc bodies are stdin text, not arguments — match the git command over
@@ -414,8 +456,8 @@ def main():
     # HEAD sitting on a protected branch's tip counts (the commit lands on its
     # history regardless of the absent branch name).
     if commit:
-        branch = current_branch(cwd)
-        if is_protected_branch(branch) or (not branch and head_on_protected_tip(cwd)):
+        branch = _require_branch(cwd)
+        if is_protected_branch(branch) or (not branch and _require_tip(cwd)):
             target = branch or "main/master (detached HEAD)"
             block("H-01", f"Direct commit to {target} is prohibited (ORCHESTRATOR §3). "
                           f"Create a feature branch.")
@@ -445,8 +487,10 @@ def main():
             if PROTECTED_DEST_RE.fullmatch(tok):
                 block("H-01", f"Pushing to a protected branch ('{tok}') is prohibited "
                               f"(ORCHESTRATOR §3) — main moves only via a merged PR.")
-        # Bare `git push` (no refspec) publishes the current branch.
-        if len(toks) < 2 and is_protected_branch(current_branch(cwd)):
+        # Bare `git push` (no refspec) publishes the current branch. A git-read
+        # failure here fails CLOSED (reliability-001, #189) — a bare push whose
+        # branch state is unknown must not be waved through as "not protected".
+        if len(toks) < 2 and is_protected_branch(_require_branch(cwd)):
             block("H-01", "Bare `git push` from main/master publishes the protected "
                           "branch (ORCHESTRATOR §3) — main moves only via a merged PR.")
 
@@ -613,6 +657,32 @@ def main():
                               f"bypass a migration gate, /override logs the exception.")
 
     sys.exit(0)
+
+
+def main():
+    utf8_stdio()
+    root = project_root()
+    if not arbiter_active(root):
+        sys.exit(0)
+    # reliability-002 (#189): everything past this point runs only in an
+    # arbiter-enabled repo, so a dormant/non-codeArbiter repo can never be
+    # bricked by a crash here. An uncaught exception in the scan path below
+    # (H-01/H-03/H-05/H-09b/H-10b/H-11/H-14/H-18/H-19) must fail CLOSED (exit 2,
+    # a BLOCK) rather than exit 1 — a non-2 exit is a NON-blocking error under
+    # the Claude Code hook contract (_hooklib.py:11-15), which would silently
+    # ALLOW the very tool call this guard exists to scan. read_input()'s
+    # documented fail-OPEN behavior on malformed stdin is unaffected: it catches
+    # its own parse errors internally and returns {} before this wrapper is
+    # ever reached.
+    try:
+        _run(root)
+    except SystemExit:
+        raise
+    except Exception:  # noqa: BLE001 — the fail-closed backstop of last resort
+        traceback.print_exc(file=sys.stderr)
+        block("H-00", "pre-bash guard crashed while scanning this command — failing "
+                      "closed (ORCHESTRATOR §2) rather than silently allowing an "
+                      "unscanned command. See the traceback above; retry, or report it.")
 
 
 if __name__ == "__main__":

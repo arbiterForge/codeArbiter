@@ -46,21 +46,51 @@ def block(tag, msg):
     sys.exit(1)
 
 
+# The most recent git-read failure, surfaced in the H-01 fail-closed block
+# message — same rationale and format as pre-bash.py's _READ_ERRS: "git
+# unavailable or timed out" alone is not enough evidence to root-cause a false
+# block.
+_READ_ERRS = []
+
+
+def _note_read_err(argv, detail):
+    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
+
+
+def _read_err_hint():
+    return f" Underlying git error: {_READ_ERRS[-1]}" if _READ_ERRS else ""
+
+
 def is_protected_branch(branch):
     return (branch or "").lower() in ("main", "master")
 
 
 def current_branch(cwd):
-    r = _git(["branch", "--show-current"], cwd)
-    return r.stdout.strip() if r and r.returncode == 0 else ""
+    """The current branch name, "" for a legitimate detached HEAD, or None when
+    git could not answer (spawn failure/timeout/nonzero exit). reliability-001
+    (#189): the None sentinel lets H-01 fail CLOSED on a git-read error instead
+    of the prior `else ""`, which collapsed "unknown" and "detached, not on a
+    protected tip" into the same value and let a commit through."""
+    argv = ["branch", "--show-current"]
+    r = _git(argv, cwd)
+    if r is None or r.returncode != 0:
+        _note_read_err(["git"] + argv, (r.stderr if r else None) or "git spawn failed")
+        return None
+    return r.stdout.strip()
 
 
 def head_on_protected_tip(cwd):
     """True when HEAD (typically detached) points at a protected branch's tip —
-    a commit there still lands on main/master's history. Mirrors pre-bash.py."""
-    r = _git(["show-ref", "--head", "refs/heads/main", "refs/heads/master"], cwd)
+    a commit there still lands on main/master's history. Mirrors pre-bash.py.
+
+    reliability-001 (#189): returns None (not False) when git could not answer,
+    so H-01 fails CLOSED on a git-read error rather than concluding "not on a
+    protected tip" from a failed read."""
+    argv = ["show-ref", "--head", "refs/heads/main", "refs/heads/master"]
+    r = _git(argv, cwd)
     if r is None or r.returncode not in (0, 1):
-        return False
+        _note_read_err(["git"] + argv, (r.stderr if r else None) or "git spawn failed")
+        return None
     head_sha, protected = None, set()
     for ln in r.stdout.splitlines():
         parts = ln.split()
@@ -115,8 +145,22 @@ def _marker_set(root, name):
 def pre_commit(root):
     cwd = root
     # H-01: no commit onto a protected branch (or a detached HEAD on its tip).
+    # A git-read failure fails CLOSED (reliability-001, #189) — the ambiguity
+    # otherwise resolves to "not protected", the same hole H-09b/H-14 below
+    # already close.
     branch = current_branch(cwd)
-    if is_protected_branch(branch) or (not branch and head_on_protected_tip(cwd)):
+    if branch is None:
+        block("H-01", "branch state could not be determined (git unavailable or timed "
+                      "out) — failing closed (ORCHESTRATOR §2, #161 git backstop)." +
+                      _read_err_hint())
+    tip = None
+    if not branch:
+        tip = head_on_protected_tip(cwd)
+        if tip is None:
+            block("H-01", "HEAD's protected-branch-tip state could not be determined "
+                          "(git unavailable or timed out) — failing closed (ORCHESTRATOR "
+                          "§2, #161 git backstop)." + _read_err_hint())
+    if is_protected_branch(branch) or (not branch and tip):
         target = branch or "main/master (detached HEAD)"
         block("H-01", f"Direct commit to {target} is prohibited (ORCHESTRATOR §3) — this is "
                       f"the git-level backstop (#161). Create a feature branch.")
