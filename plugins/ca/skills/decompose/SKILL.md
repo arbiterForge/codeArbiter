@@ -125,7 +125,7 @@ Then write the surviving project-state docs. Every file holds actual content der
 | Source | Destination |
 |---|---|
 | Layer 1 problem + users + NOT-building, with `arbiter: enabled` and `stage:` frontmatter | `CONTEXT.md` |
-| Layer 4 stack + hard constraints | `tech-stack.md` |
+| Layer 4 stack + hard constraints + tracker command (e.g. `gh issue create`) | `tech-stack.md` |
 | Layer 4 lint, format, naming + copyright holder | `coding-standards.md` |
 | Layer 4 compliance + crypto + trust-boundary notes (thin — banned-primitive posture only) | `security-controls.md` |
 | Layer 6 unknowns + spike candidates | `open-questions.md` (`[CONFIRM-NN]` format) |

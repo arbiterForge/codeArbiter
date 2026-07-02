@@ -64,8 +64,11 @@ Work is organized into lanes. Each is a sanctioned path with gates scaled to its
 
 - **Implementation:** `/ca:feature` (checkpointed), `/ca:sprint` (autonomous), `/ca:fix`,
   `/ca:refactor`, `/ca:debug`, `/ca:chore`, `/ca:spike`.
-- **Commit & ship:** `/ca:commit`, `/ca:pr`, `/ca:watch`, `/ca:checkpoint`, `/ca:release`,
-  `/ca:add-dep`.
+- **Commit & ship:** `/ca:commit`, `/ca:pr`, `/ca:watch`, `/ca:checkpoint`, `/ca:tribunal`,
+  `/ca:release`, `/ca:add-dep`. `/ca:checkpoint` is the lean periodic sweep;
+  `/ca:tribunal` is its rare, deep counterpart: an on-demand, resumable whole-codebase
+  audit by eleven specialist lenses that files findings as GitHub issues on your approval
+  and is never a required gate.
 - **Decisions:** `/ca:adr`, `/ca:adr-status`, `/ca:reconcile`, `/ca:conflict`,
   `/ca:threat-model`.
 - **Project & meta:** `/ca:init`, `/ca:status`, `/ca:audit`, `/ca:doctor`, `/ca:btw`, and

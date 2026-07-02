@@ -5,13 +5,13 @@ description: The deep, rarely-convened whole-codebase audit lane. Routed to when
 
 # tribunal
 
-The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Routed to when the user invokes `/ca:tribunal`. Ten specialist lenses judge the codebase; every finding persists to append-only jsonl under a run dir that survives compaction and disconnects, so the run resumes from disk.
+The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Routed to when the user invokes `/ca:tribunal`. Eleven specialist lenses judge the codebase; every finding persists to its own file (plus append-only triage/run logs) under a run dir that survives compaction and disconnects, so the run resumes from disk.
 
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess a command or a path:
 
-- `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — stack, async model, concurrency primitives, test/lint/secrets commands, the tracker command. Stop if missing; do not guess.
+- `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — stack, async model, concurrency primitives, test/lint/secrets commands, and, when documented, the tracker command. Stop if the test/lint/secrets commands are missing; do not guess.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — the `stage:` maturity value and domain vocabulary.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — the conventions lenses judge against.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — trust boundaries, approved crypto/secret stores; feeds the appsec and secrets lenses. Absent on some repos — proceed without the security lenses' control-file checks if so.
@@ -22,12 +22,11 @@ Read these, or STOP and surface the gap — never guess a command or a path:
 
 This lane is expensive. Orient and get explicit go-ahead before dispatching anything.
 
-- **Resume check.** If `.codearbiter/reports/<run-id>/` exists for today's scope, recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting. On resume, skip the estimate.
-- **Size the job.** Count LOC, file count, and language breakdown with the commands in `references/cost-and-models.md`.
-- **Estimate cost.** Compute the token band from the v0 heuristic in `references/cost-and-models.md`. Present it plainly: the band, the inputs it came from, and that it is a rough estimate this run will help calibrate.
-- **Recommend the model.** State that this lane should be driven by the highest-reasoning model available at high effort — a cheap model inflates false positives, and these findings file real issues. Name the concrete recommendation from the roster.
-- **Offer cost control.** If the band is large, offer to narrow scope to a subtree, trim the Tier-2 lenses, or lower concurrency (`references/cost-and-models.md`).
-- Establish `RUN_ID` = `<UTC-date>-<scope-slug>`; create `.codearbiter/reports/<run-id>/`; open `run.jsonl`.
+- **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. If found, check completion: incomplete (no `report-written` event in its `run.jsonl`) means either resumable or stale, judged by that run dir's latest `run.jsonl` timestamp. A run whose `run.jsonl` carries `run-aborted` is terminal — never offered for resume; a fresh run starts. Younger than 7 days → recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting; skip the estimate. Older than 7 days → STOP and ask the user to resume anyway or start fresh — the codebase may have drifted under the findings, and stale-tree findings must not silently merge with fresh ones. Complete → start a fresh run.
+- **Abandon.** If the user tells the orchestrator to abandon the run, log a `run-aborted` event to `run.jsonl` before stopping.
+- **Cost acknowledgment.** Size the job, compute the token band, recommend the model (highest-reasoning available, high effort), and offer the cost-control levers. Present the band plainly; nothing dispatches until the user acknowledges it and confirms the model.
+- Establish `RUN_ID` = `<UTC-date>-<scope-slug>` on a fresh run; create `.codearbiter/reports/<run-id>/`; open `run.jsonl`. On resume, reuse the existing `RUN_ID` as-is — the date is the run's creation date and never changes on resume.
+- Procedure: `references/cost-and-models.md` — load now.
 
 Gate: the user has acknowledged the estimated cost and confirmed the model. An unacknowledged run does not pass.
 
@@ -38,28 +37,29 @@ Map before reviewing; the map decides what gets scrutiny.
 - Produce the inventory (inline, or on a large repo dispatch the optional cheap mappers per `references/cost-and-models.md`): file tree, language breakdown, entry points/routes, core-logic and shared-utility locations, dependency and integration surface. Write `inventory.md`.
 - Apply the judgment overlay in `references/ai-markers.md`: risk-rank directories (untrusted input, money, auth, PII, churn = highest), mark trust boundaries, record AI-authorship markers and an iteration-depth estimate. High-marker / high-iteration areas carry a scrutiny boost and a small severity prior.
 - Choose the active lenses — the full roster minus any whose concern is absent from scope (no migrations → drop the migration lens). Record launched/skipped as `run.jsonl` events.
+- Choose the wave partition — the default in `references/cost-and-models.md`, or a repartition for cause — and record it in the `run-started` event (`references/schemas.md`); resume reads this recorded partition, never re-derives it.
 
 Gate: `inventory.md` written with the risk/boundary/marker overlay, and the active-lens set recorded.
 
-## Phase 2 — Roster dispatch (dual output: jsonl + summary) · gate: BLOCK
+## Phase 2 — Roster dispatch (dual output: finding files + summary) · gate: BLOCK
 
-Dispatch the active lenses in priority-ordered waves at the concurrency from `references/cost-and-models.md` (≤5 in flight). Give each agent only its scope slice, on the model/effort from `references/cost-and-models.md`; the agent itself reads its own mandate (`references/lenses/<lens>.md`) and the finding contract (`references/finding-record.md`), and loads neither the other lenses' mandates nor the orchestrator schemas. The orchestrator reads `references/finding-record.md` to read findings at triage, and consults a lens mandate only to adjudicate that lens's finding.
+Dispatch the active lenses in the wave partition recorded at Phase 1 (default in `references/cost-and-models.md`) at the concurrency from `references/cost-and-models.md` (≤5 in flight). Give each agent only its scope slice, on the model/effort from `references/cost-and-models.md`; the agent itself reads its own mandate (`references/lenses/<lens>.md`) and the finding contract (`references/finding-record.md`), and loads neither the other lenses' mandates nor the orchestrator schemas. The orchestrator reads `references/finding-record.md` to read findings at triage, and consults a lens mandate only to adjudicate that lens's finding.
 
-- Each `tribunal-*` agent appends its own `findings/<lens>.jsonl` line the moment a finding is found — never a batched write at the end.
+- Each `tribunal-*` agent writes each finding to its own file `findings/<lens>/<finding-id>.json` the moment it is found — one file per finding, never a batched write at the end (write contract: `references/finding-record.md`).
 - **Evidence-or-drop.** Every finding cites a concrete `path:line` and the minimal snippet. An absence claim — "no handler", "no teardown", "missing validation" — requires reading the whole unit, never a truncated window.
 - Specialists never dispatch further subagents. Update each wave's status in `run.jsonl` as it flushes.
+- When a lens's summary returns, record a `lens-completed` event in `run.jsonl` with `surface_seen`/`findings`/`model` taken from the agent's summary, plus `tokens` when the orchestrator can observe that lens's spend.
 
-Gate: every active lens has flushed its `findings/<lens>.jsonl`, and each wave's status is recorded.
+Gate: every active lens has flushed its `findings/<lens>/` files, and each wave's status is recorded.
 
 ## Phase 3 — Triage & per-wave planning · gate: BLOCK
 
-Triage per wave from disk as soon as it flushes; do not wait for the whole run. Follow `references/triage.md`.
+Triage per wave from disk as soon as it flushes; do not wait for the whole run.
 
-- **Dedup** against all findings already on disk by `dedup_key` and overlapping locations.
-- **Calibrate independently.** Set `final_severity`/`final_confidence` from the evidence yourself — the lens's values are provisional input. Every critical/high carries a `counter_argument` (the strongest case it is lower or false); if compelling, downgrade. Promote under-rated findings too.
-- **Low-severity discipline.** A `low` is kept only at `final_confidence` ≥0.75 with a concrete fix; beyond ~5 lows per lens, roll the remainder into one finding that still lists each `path:line`.
-- **Decide** each finding via the vocabulary; append one line to `triage.jsonl`. Below the gate after calibration → `investigate`.
-- **Plan** the wave: write `plans/phase-<n>.md` covering `keep`/`combine` findings grouped by type — shared approach, ordered sequence, cross-group `depends_on`, rolled-up acceptance criteria. Roadmap level, no per-finding code steps. A `decision-required` item gets a one-line "ADR-candidate — resolve via `/adr`" pointer, never an authored ADR.
+- **Calibrate independently.** Set `final_severity`/`final_confidence` from the evidence yourself — the lens's values are provisional input; every critical/high carries a `counter_argument`.
+- **Decide per finding, logged.** Each finding gets one decision from the vocabulary, appended as one line to `triage.jsonl`. Below the confidence gate after calibration → `investigate` (medium/low) or `decision-required` (critical/high) — never dropped silently.
+- **Plan the wave.** Write `plans/phase-<n>.md` for its kept (`keep`/`combine`) work.
+- Procedure: `references/triage.md` — load now.
 
 Gate: every wave's findings triaged into `triage.jsonl` and a `plans/phase-<n>.md` written for its kept work.
 
@@ -73,24 +73,22 @@ Gate: `report.md` regenerated from the logs and presented. No issues created.
 
 ## Phase 5 — Approval & issue filing · gate: BLOCK
 
-Findings become GitHub issues only on explicit selection and authorization. Follow `references/issue-filing.md`.
+Findings become GitHub issues only on explicit selection and authorization. Silence or ambiguity → file nothing; "looks good" is not authorization.
 
-- **Select.** Ask which findings to file ("all keep+combine critical/high", or specific ids). Silence or ambiguity → file nothing. "Looks good" is not authorization. Offer `decision-required` findings as a **separate** opt-in (discussion issues), so design questions don't masquerade as fix tickets.
-- **Dedup first.** Skip any finding already carrying an `issue_ref` in `triage.jsonl`; then search the tracker for an open issue matching each remaining finding's `dedup_key`/title and skip matches — this lane reruns over time and will re-find the same issues.
-- **Bodies.** Generate `bodies/<finding-id>.md` lazily for selected `keep`/`combine` findings above the gate — approved-only. `decision-required` bodies are framed as question + options + evidence, not a fix.
-- **File.** Default: write `issue-commands.sh` with a ready-to-run `gh issue create` per issue (tracker command from `tech-stack.md`) and print them. On explicit approval: execute; capture URLs; write `issue_ref` back into `triage.jsonl`.
-- **Report.** A table: finding/group id → created URL, or skipped (duplicate), or failed (with the error). Never silently drop a failure.
+- **Dedup first.** Skip findings already carrying an `issue_ref` in `triage.jsonl`, then dedup against the tracker — this lane reruns over time and will re-find the same issues.
+- **Default is hand-off.** Write and print `issue-commands.sh`; execute only on explicit approval, writing each `issue_ref` back into `triage.jsonl`.
 - Findings file as GitHub issues, never `open-tasks.md` — a periodic-review finding must survive PR abandonment.
+- Procedure: `references/issue-filing.md` — load now.
 
 Gate: either `issue-commands.sh` written and printed, or — on approval — issues filed with the id→result table and `issue_ref` recorded. Nothing filed without explicit selection; no duplicates against the tracker.
 
 ## Phase 6 — Telemetry · gate: STOP
 
-Optional, opt-in KPI feedback to refine the skill and the estimator. Follow `references/telemetry.md`.
+Optional, opt-in KPI feedback to refine the skill and the estimator — off by default, sent only on explicit per-run authorization.
 
-- Assemble the KPI-only payload — aggregates and per-lens exposure counts only, scrubbed of code, paths, and finding text; no repo identity unless the user adds `--tag`.
-- Write it to the run dir and show it in full. State plainly that the target is the public codeArbiter repo, so these aggregates post publicly.
-- **Default:** print the ready `gh issue create --repo arbiterforge/codearbiter --label telemetry` command for the user to run. **On explicit approval:** post it.
+- **Scrub.** The payload is aggregates and per-lens exposure counts only — no code, paths, or finding text; no repo identity unless the user adds `--tag`.
+- **Show before send.** Write the payload to the run dir and show it in full; state plainly that it posts publicly to the codeArbiter repo. Default: hand the user the ready command; post only on explicit approval.
+- Procedure: `references/telemetry.md` — load now.
 
 Gate: the payload is shown, and it is either handed to the user as a command or — on approval — posted. No telemetry leaves without per-run authorization.
 
@@ -105,7 +103,7 @@ Gate: the payload is shown, and it is either handed to the user as a command or 
 - MUST NOT mutate the append-only logs — `manifest.yaml`, `report.md`, and `plans/` are regenerated from them, never hand-edited.
 - MUST NOT file an issue below the confidence gate or without explicit selection and authorization; findings file as GitHub issues, never `open-tasks.md`.
 - MUST NOT create a duplicate issue — skip findings carrying an `issue_ref`, and dedup against the tracker by `dedup_key`/title before filing.
-- MUST NOT author or scaffold an ADR — `decision-required` findings file as a discussion issue; ADRs are authored only via `/adr` with user attribution.
+- MUST NOT author or scaffold an ADR — `decision-required` findings file as a discussion issue; ADRs are authored only via `/ca:adr` with user attribution.
 - MUST NOT send telemetry without explicit per-run authorization, and MUST NOT include code, file paths, finding text, or repo identity (absent an explicit `--tag`) in the payload — KPI aggregates only.
-- MUST NOT guess the test, lint, secrets-scan, or tracker command — read `tech-stack.md` or STOP.
+- MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP. For the tracker: use `tech-stack.md` if it documents one; else default to `gh issue create` on a GitHub origin; else STOP.
 - MUST NOT dispatch a subagent from within a dispatched specialist — only the orchestrator dispatches.

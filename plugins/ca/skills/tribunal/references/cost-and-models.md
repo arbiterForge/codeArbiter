@@ -36,9 +36,24 @@ Drive this lane with the highest-reasoning model available at high effort. A che
 | tribunal-observability-reviewer | Sonnet 5 | medium |
 | tribunal-typesafety-reviewer | Sonnet 5 | medium |
 | tribunal-coverage-reviewer | Sonnet 5 | medium |
+| tribunal-infra-reviewer | Sonnet 5 | medium |
 | optional mappers (`map-structure`, `map-deps`) | Haiku 4.5 | low |
 
-API strings: `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5-20251001`. On proprietary code all tiers must be approved (Anthropic) models — never an external worker.
+Advisory only: agents ship `model: inherit`; a dispatch-time override takes an alias (`haiku`/`sonnet`/`opus`/`fable`), not a pinned ID, and there is no per-dispatch effort control. This table guides the orchestrator's dispatch choices — it is not mechanically enforced.
+
+API strings: `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5-20251001` — as of authoring; substitute the current flagship. `claude-fable-5` now sits above Opus as the highest-reasoning flagship. On proprietary code all tiers must be approved (Anthropic) models — never an external worker.
+
+## Default wave partition
+
+The default dispatch order (Phase 2), aligned with the model tiers above:
+
+| Wave | Lenses |
+|---|---|
+| 1 | appsec, architecture, reliability |
+| 2 | secrets-supply, migration, test-fidelity |
+| 3 | coverage, infra, observability, performance, typesafety |
+
+A lens dropped from the roster at Phase 1 (scope-inapplicable) is simply absent from its wave — no renumbering. Phase 0/1 MAY choose a different partition for cause (e.g. a migration-heavy repo pulling `migration` into wave 1), but whichever partition is used MUST be recorded in `run-started` (`schemas.md`) — resume reads the recorded partition, never re-derives it.
 
 ## Concurrency & cost control
 
@@ -46,4 +61,4 @@ Concurrency ≤5 lenses in flight regardless of roster size — the roster is a 
 
 ## Optional mappers
 
-On a large/sprawling repo, offload raw file-reading to two cheap mapper subagents so it stays out of the orchestrator's retained context: `map-structure` (tree, languages, entry points, core/shared/test locations, churn) and `map-deps` (manifests, lockfiles, integration surface, env/secret-usage surface). On a small repo, map inline and skip them. Either way, produce the same `inventory.md`. These are the only subagents beyond the ten lenses, and they carry no `tribunal-` prefix because they are generic extractors, not judges.
+On a large/sprawling repo, offload raw file-reading to two cheap mapper subagents so it stays out of the orchestrator's retained context: `map-structure` (tree, languages, entry points, core/shared/test locations, churn) and `map-deps` (manifests, lockfiles, integration surface, env/secret-usage surface). On a small repo, map inline and skip them. Either way, produce the same `inventory.md`. These are the only subagents beyond the eleven lenses, and they carry no `tribunal-` prefix because they are generic extractors, not judges.

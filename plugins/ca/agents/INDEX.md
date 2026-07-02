@@ -23,6 +23,7 @@ An agent is a reviewer or author **dispatched** by a skill — never routed to, 
 | [tribunal-appsec-reviewer](tribunal-appsec-reviewer.md) | `tribunal` lane | Injection, IDOR/resource-authz, input-boundary, JWT, CORS, SSRF lens over the whole codebase. | — (report-only) |
 | [tribunal-architecture-reviewer](tribunal-architecture-reviewer.md) | `tribunal` lane | Orphan/dead modules, pattern-consistency, cosmetic abstractions, god modules. General structure — distinct from `architecture-drift-reviewer` (ADR conformance). | — (report-only) |
 | [tribunal-coverage-reviewer](tribunal-coverage-reviewer.md) | `tribunal` lane | Risk-path coverage gaps, edge/boundary case gaps, implementation-coupled tests. | — (report-only) |
+| [tribunal-infra-reviewer](tribunal-infra-reviewer.md) | `tribunal` lane | CI/CD workflow correctness + security, container posture, IaC/deploy manifests, release automation. | — (report-only) |
 | [tribunal-migration-reviewer](tribunal-migration-reviewer.md) | `tribunal` lane | Reversibility, data-classification tagging, immutability, index/lock shape. General audit — distinct from `migration-reviewer` (per-diff gate). | — (report-only) |
 | [tribunal-observability-reviewer](tribunal-observability-reviewer.md) | `tribunal` lane | Structured logging, tracing/correlation IDs, metrics on critical paths, audit-trail gaps. | — (report-only) |
 | [tribunal-performance-reviewer](tribunal-performance-reviewer.md) | `tribunal` lane | N+1 queries, redundant hot-path work, query/index shape, caching correctness, blocking IO. | — (report-only) |

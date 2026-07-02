@@ -1,6 +1,6 @@
 # migration — lens mandate
 
-Executed by `tribunal-migration-reviewer`. Evidence-or-drop on every check.
+Executed by `tribunal-migration-reviewer`. Write contract + evidence discipline: `finding-record.md`.
 
 ## Checklist
 - Reversibility: rollback/down path present; destructive ops (DROP, TRUNCATE) guarded; NOT NULL added without DEFAULT/backfill; single-step rename that breaks queries mid-deploy.

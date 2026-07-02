@@ -1,6 +1,6 @@
 # Issue filing
 
-Findings become GitHub issues only on explicit selection and authorization. Read the tracker command from `tech-stack.md`; default to `gh issue create` if that is the documented tracker. This lane reruns over time, so filing is **idempotent** — never create a duplicate.
+Findings become GitHub issues only on explicit selection and authorization. Use the tracker command documented in `tech-stack.md` if present; otherwise default to `gh issue create` on a GitHub origin; otherwise STOP. This lane reruns over time, so filing is **idempotent** — never create a duplicate.
 
 ## Selection
 
@@ -8,7 +8,7 @@ File only findings the user explicitly selects ("all keep+combine critical/high"
 
 ## What is eligible
 
-`keep` (one issue each) and `combine` groups (one issue per `group_id`), only above the confidence gate. `duplicate` / `false-positive` / `defer` / `accept-risk` / `investigate` never file. `decision-required` files as a discussion/ADR-candidate issue framed as a question — never a fix ticket, and **never by authoring an ADR** (ADRs come only from `/adr`, user-attributed).
+`keep` (one issue each) and `combine` groups (one issue per `group_id`), only above the confidence gate (defined in `triage.md`). `duplicate` / `false-positive` / `defer` / `accept-risk` / `investigate` never file. `decision-required` files as a discussion/ADR-candidate issue framed as a question — never a fix ticket, and **never by authoring an ADR** (ADRs come only from `/ca:adr`, user-attributed).
 
 ## Dedup — before generating any body
 

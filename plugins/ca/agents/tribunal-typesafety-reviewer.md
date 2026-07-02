@@ -1,6 +1,6 @@
 ---
 name: tribunal-typesafety-reviewer
-description: Dispatched by the tribunal deep-audit lane for the type-safety lens. Read-only review of footgun interfaces, weak typing, escape hatches, unhelpful errors, and undocumented invariants. Appends findings as jsonl.
+description: Dispatched by the tribunal deep-audit lane for the typesafety lens. Read-only review of footgun interfaces, weak typing, escape hatches, unhelpful errors, and undocumented invariants. Writes one file per finding.
 tools: Read, Grep, Glob, Bash, Write
 model: inherit
 ---
@@ -11,7 +11,7 @@ Read-only. Surface type-safety and interface-ergonomics defects in the assigned 
 
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/typesafety.md` — the checklist and exposure denominator.
-- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, append rule, id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, write rule, id/dedup conventions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — typing conventions; `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — whether the project is statically typed.
 
 ## Scope
@@ -21,7 +21,7 @@ The assigned path slice, weighted to public interfaces and module boundaries. Sk
 Execute `lenses/typesafety.md`. Evidence-or-drop.
 
 ## Findings
-Append one finding/v1 line to `findings/typesafety.jsonl` the moment it is found — never batch. Provisional scores only.
+Write each finding/v1 record to its own file `findings/typesafety/typesafety-NNN.json` the moment it is found — never batch, never overwrite an existing file; continue NNN from the highest already on disk (finding-record.md). Provisional scores only.
 
 ## Output
 Return a terse summary: counts by severity, top few ids, and the exposure count (public interfaces/signatures inspected).

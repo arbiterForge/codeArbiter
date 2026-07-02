@@ -1,6 +1,6 @@
 # secrets-supply — lens mandate
 
-Executed by `tribunal-secrets-supply-reviewer`. Evidence-or-drop on every check.
+Executed by `tribunal-secrets-supply-reviewer`. Write contract + evidence discipline: `finding-record.md`.
 
 ## Checklist
 - Literal secrets in source or `.env.example` — JWT/signing keys, API keys, DB connection strings, OAuth secrets, passwords (CWE-798). `.env.example` populated with real values is a common AI regression.

@@ -1,6 +1,6 @@
 # appsec — lens mandate
 
-Executed by `tribunal-appsec-reviewer`. Evidence-or-drop on every check: concrete `path:line` + minimal snippet; absence claims require a whole-unit read.
+Executed by `tribunal-appsec-reviewer`. Write contract + evidence discipline: `finding-record.md` — every finding needs `path:line` evidence; write it the moment it's found.
 
 ## Checklist
 - Injection surface: user-controlled input reaching SQL (string concatenation, CWE-89), shell execution, filesystem path resolution, HTML/template rendering (XSS, CWE-79), or deserialization. Concatenating input into any query or command is critical regardless of how "clean" the input looks.

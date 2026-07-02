@@ -87,7 +87,7 @@ Write the surviving docs to `${CLAUDE_PROJECT_DIR}/.codearbiter/`. Every doc car
 | File | Content |
 |---|---|
 | `CONTEXT.md` | Project identity, purpose, scope, primary users, NOT-building. Frontmatter MUST include `arbiter: enabled` (the activation flag the SessionStart hook keys on) and `stage:` set to a single maturity number (default `1`; the user may raise it if the project is further along). |
-| `tech-stack.md` | Languages, frameworks, test runner, lint command, build command, coverage command. |
+| `tech-stack.md` | Languages, frameworks, test runner, lint command, build command, coverage command, issue-tracker command (e.g. `gh issue create`). |
 | `coding-standards.md` | Structural patterns, naming conventions, style rules. |
 | `security-controls.md` | Thin: auth mechanism, banned crypto primitives, secret-loading stance. Only what a security boundary actually requires. |
 | `open-questions.md` | Every deferred `[CONFIRM-NN]` in `CONFIRM-NN: <description>` form. |
