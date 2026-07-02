@@ -46,6 +46,98 @@ def _read_err_hint():
 # `git` followed by any run of global options (-C <dir>, -c k=v, --git-dir=…,
 # --no-pager, …) before the subcommand — `git -C ../x commit` must not slip
 # past a bare `git\s+commit` match.
+# appsec-002 (#175): a literal `--no-verify` / `-n` on `git commit`/`git push`
+# skips `.git/hooks` entirely — the documented "spelling-proof backstop"
+# (git-enforce.py) never runs for that operation, voiding H-01/H-02/H-09b/
+# H-10b/H-14 for it. `-n` is git-commit's short spelling of --no-verify — but
+# NOT only as its own token: git bundles short flags into one cluster
+# (`-nm "x"` = `-n` + `-m x`, the everyday spelling), including with an
+# attached value (`-nm=x`, `-nm123`), so the exact-token check alone missed it
+# (security-reviewer HIGH x2: the bare cluster case, then the attached-value
+# cluster case — see `_commit_no_verify_in_cluster`). `git push` has NO short
+# spelling for this (its own `-n` is `--dry-run`, an unrelated flag), so only
+# the long form is checked there, and it never clusters this way in practice
+# for our purposes.
+# Token-equality (not substring) so a commit MESSAGE merely quoting the text
+# ('-m "explain --no-verify"') is never misclassified — the quoted phrase
+# tokenizes as one whole argument, never equal to the bare flag. Scanning
+# stops at a bare `--` token (end-of-options): `git commit -- --no-verify`
+# passes `--no-verify` as a pathspec, not a flag, and must not be misblocked.
+# The deeper shell-indirection spelling (`g=git; $g commit --no-verify`)
+# defeats this lexical check same as it defeats COMMIT_RE itself; that
+# residual is documented separately, out of scope for this guard.
+COMMIT_NO_VERIFY_FLAGS = frozenset({"--no-verify", "-n"})
+PUSH_NO_VERIFY_FLAGS = frozenset({"--no-verify"})
+# `git commit` short options that consume the REST of their cluster as a
+# value (bundled short-flag form, e.g. `-mMSG`, `-Cref`): once one of these is
+# hit while scanning a cluster left-to-right, every character after it is that
+# option's value, not a further flag — so a `-mn` cluster's trailing `n` is
+# the MESSAGE "n", not `-n`/--no-verify, and must not block.
+COMMIT_SHORT_VALUE_CHARS = frozenset("mcCFtSu")
+
+
+def _has_literal_flag(args, flags):
+    """True iff `args` contains one of `flags` as its own token — quote-aware
+    (a fully-quoted token, e.g. a `-m "..."` message, tokenizes as ONE token
+    and is compared whole, so it can never equal a single bare flag).
+    Scanning stops at a bare `--` (end-of-options): anything after it is a
+    pathspec/value, never a flag."""
+    for raw in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args):
+        tok = raw.strip("\"'")
+        if tok == "--":
+            break
+        if tok in flags:
+            return True
+    return False
+
+
+def _commit_no_verify_in_cluster(args):
+    """True iff a `git commit` bundled short-flag cluster token (e.g. `-nm`,
+    `-vn`, `-nm=x`, `-nm123`) carries `-n` (no-verify) BEFORE any
+    argument-taking short option — or any attached-value byte — in that same
+    token ends the flag-cluster portion. Walks each token that starts with
+    `-`+letter (and is not `--...`) left-to-right past the leading `-`:
+
+      * `n`   seen first  -> no-verify -> BLOCK.
+      * a COMMIT_SHORT_VALUE_CHARS member seen first -> that flag consumes the
+        REST of the token as its value (e.g. `-mn` is `-m` with value "n") ->
+        stop scanning this token, not a match.
+      * the first NON-ALPHABETIC character (`=`, a digit, `.`, `"`, …) seen
+        first -> an attached value has begun (e.g. `-nm=x`, `-nm123`) -> stop
+        scanning this token's REMAINDER, but everything scanned so far still
+        counts — this is what closes `-nm=x`/`-nm123` (the `n` before the
+        `m`/`=`/digit still blocks) while never mis-reading the attached value
+        itself as more flag letters.
+
+    security-reviewer HIGH (second pass): a `re.fullmatch(r"-[A-Za-z]+", tok)`
+    gate previously skipped the whole token whenever ANY character after the
+    dashes wasn't a letter — so `-nm=x`/`-nm123`/`-vnm=y` (a leading `-n`
+    immediately followed by an attached value) were never even inspected,
+    silently letting `-n`/no-verify through. Matching on `-[A-Za-z]` (just the
+    first character after `-`) instead of requiring the WHOLE token to be
+    letters fixes this at the root: every token that OPENS a short-flag
+    cluster is now walked, and the walk itself (not the initial token shape)
+    decides where the flag portion ends.
+
+    Complements the exact-token `-n`/`--no-verify` case in
+    COMMIT_NO_VERIFY_FLAGS, which only catches `-n` as its OWN whole token.
+    Scanning stops at a bare `--` (end-of-options)."""
+    for raw in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args):
+        tok = raw.strip("\"'")
+        if tok == "--":
+            break
+        if tok.startswith("--") or not re.match(r"-[A-Za-z]", tok):
+            continue  # a long flag, a value, a pathspec, or not a flag at all
+        for ch in tok[1:]:
+            if ch == "n":
+                return True
+            if ch in COMMIT_SHORT_VALUE_CHARS:
+                break  # rest of THIS token is that flag's value; stop here
+            if not ch.isalpha():
+                break  # an attached value (=, digit, ., "…) has begun; stop here
+    return False
+
+
 GIT = r"\bgit(?:\s+(?:-[Cc]\s+\S+|--[\w-]+(?:=\S+)?|-\w+))*"
 # The args capture stops at an unquoted `|`, `;`, or `&` (the next shell command
 # is not this git command's business) but consumes quoted strings whole — a
@@ -452,6 +544,20 @@ def _run(root):
     commit = COMMIT_RE.search(git_view) or COMMIT_RE.search(cmd)
     cwd = git_cwd(git_view, root)
 
+    # H-20: block a literal --no-verify / -n on `git commit` — it skips
+    # .git/hooks (the git-enforce backstop) entirely, voiding every enforcement
+    # hook for that commit (appsec-002, #175). Checks BOTH the exact-token
+    # spelling (`-n` / `--no-verify` on its own) and the bundled short-flag
+    # cluster spelling (`-nm "x"`) — the everyday way `-n` actually gets typed
+    # alongside `-m`, missed by an exact-token-only check (security-reviewer
+    # HIGH, first pass).
+    if commit and (_has_literal_flag(commit.group("args"), COMMIT_NO_VERIFY_FLAGS)
+                   or _commit_no_verify_in_cluster(commit.group("args"))):
+        block("H-20", "'--no-verify' / '-n' on git commit skips the .git/hooks "
+                      "git-enforce backstop entirely (appsec-002) — every commit-time "
+                      "gate (H-01/H-02/H-09b/H-10b/H-14) would go unenforced for this "
+                      "commit. Remove the flag; use /override for a sanctioned bypass.")
+
     # H-01: no commit directly to main/master — case-insensitive, and a detached
     # HEAD sitting on a protected branch's tip counts (the commit lands on its
     # history regardless of the absent branch name).
@@ -465,6 +571,16 @@ def _run(root):
     push = PUSH_RE.search(git_view) or PUSH_RE.search(cmd)
     if push:
         pargs = push.group("args")
+
+        # H-20: block a literal --no-verify on `git push` (same rationale as
+        # the commit flank above). `git push` has no short `-n` spelling for
+        # this — its own `-n` is `--dry-run`, an unrelated flag — so only the
+        # long form is checked here.
+        if _has_literal_flag(pargs, PUSH_NO_VERIFY_FLAGS):
+            block("H-20", "'--no-verify' on git push skips the .git/hooks git-enforce "
+                          "backstop entirely (appsec-002) — every push-time gate would "
+                          "go unenforced for this push. Remove the flag; use /override "
+                          "for a sanctioned bypass.")
 
         # H-02: no force-push — any spelling, including --force-with-lease and +refspec
         if FORCE_RE.search(pargs) or FORCE_REFSPEC_RE.search(pargs):
@@ -667,7 +783,7 @@ def main():
     # reliability-002 (#189): everything past this point runs only in an
     # arbiter-enabled repo, so a dormant/non-codeArbiter repo can never be
     # bricked by a crash here. An uncaught exception in the scan path below
-    # (H-01/H-03/H-05/H-09b/H-10b/H-11/H-14/H-18/H-19) must fail CLOSED (exit 2,
+    # (H-01/H-03/H-05/H-09b/H-10b/H-11/H-14/H-18/H-19/H-20) must fail CLOSED (exit 2,
     # a BLOCK) rather than exit 1 — a non-2 exit is a NON-blocking error under
     # the Claude Code hook contract (_hooklib.py:11-15), which would silently
     # ALLOW the very tool call this guard exists to scan. read_input()'s

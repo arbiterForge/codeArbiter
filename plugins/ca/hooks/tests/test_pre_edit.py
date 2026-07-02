@@ -95,15 +95,15 @@ class _PreEditFixture(unittest.TestCase):
             os.utime(m, (past, past))
         return m
 
-    def run_edit(self, file_path, old_string, new_string):
-        payload = json.dumps({
-            "tool_name": "Edit",
-            "tool_input": {
-                "file_path": file_path,
-                "old_string": old_string,
-                "new_string": new_string,
-            },
-        })
+    def run_edit(self, file_path, old_string, new_string, replace_all=False):
+        ti = {
+            "file_path": file_path,
+            "old_string": old_string,
+            "new_string": new_string,
+        }
+        if replace_all:
+            ti["replace_all"] = True
+        payload = json.dumps({"tool_name": "Edit", "tool_input": ti})
         return _sh([sys.executable, PRE_EDIT], self.root, input=payload)
 
     def run_multiedit(self, file_path, edits):
@@ -215,6 +215,71 @@ class TestH05AppendOnly(_PreEditFixture):
             win_path,
             old_string="[2026-01-01T00:00:00Z] | BY: harness | GATE: none | REASON: seed\n",
             new_string="totally different content\n",
+        )
+        self.assertBlocked(res, "H-05")
+
+    # -- reliability-003 (#172): tail-anchor the append check ----------------
+
+    def test_mid_file_insertion_on_overrides_log_is_blocked(self):
+        # old_string is a real line in the file, but the file has MORE content
+        # after it, so old_string is NOT the file's actual trailing content —
+        # new.startswith(old) is satisfied, but the resulting edit would insert
+        # content between the two existing lines rather than truly append.
+        seed = "[2026-01-01T00:00:00Z] | BY: harness | GATE: none | REASON: seed\n"
+        tail = "[2026-01-02T00:00:00Z] | BY: harness | GATE: none | REASON: second\n"
+        self._write(os.path.join(self.ca, "overrides.log"), seed + tail)
+        res = self.run_edit(
+            os.path.join(self.ca, "overrides.log"),
+            old_string=seed,
+            new_string=seed + "[2099-01-01T00:00:00Z] | BY: attacker | GATE: none | REASON: injected\n",
+        )
+        self.assertBlocked(res, "H-05")
+
+    def test_replace_all_on_overrides_log_is_blocked(self):
+        # replace_all is never a verifiable append, even when new.startswith(old)
+        # holds for a tail-shaped old_string — reject outright.
+        old = "[2026-01-01T00:00:00Z] | BY: harness | GATE: none | REASON: seed\n"
+        res = self.run_edit(
+            os.path.join(self.ca, "overrides.log"),
+            old_string=old,
+            new_string=old + "extra\n",
+            replace_all=True,
+        )
+        self.assertBlocked(res, "H-05")
+
+    def test_replace_all_multi_site_suffix_rewrite_on_overrides_log_is_blocked(self):
+        # A replace_all with an old_string occurring multiple times rewrites
+        # every occurrence, not just the tail — must be rejected outright.
+        line = "REPEATED\n"
+        self._write(os.path.join(self.ca, "overrides.log"), line + line)
+        res = self.run_edit(
+            os.path.join(self.ca, "overrides.log"),
+            old_string=line,
+            new_string=line + "suffix\n",
+            replace_all=True,
+        )
+        self.assertBlocked(res, "H-05")
+
+    def test_tail_anchored_append_to_overrides_log_is_allowed(self):
+        # old_string genuinely IS the file's current trailing content — a
+        # legitimate append must still pass.
+        current = "[2026-01-01T00:00:00Z] | BY: harness | GATE: none | REASON: seed\n"
+        res = self.run_edit(
+            os.path.join(self.ca, "overrides.log"),
+            old_string=current,
+            new_string=current + "[2026-02-02T00:00:00Z] | BY: harness | GATE: H-07 | REASON: ok\n",
+        )
+        self.assertAllowed(res)
+
+    def test_mid_file_insertion_on_sprint_log_is_blocked(self):
+        head = "# Sprint log\n\n"
+        entry1 = "## SD-01 seed\n- chosen: X\n"
+        entry2 = "## SD-02\n- chosen: Y\n"
+        self._write(os.path.join(self.ca, "sprint-log.md"), head + entry1 + entry2)
+        res = self.run_edit(
+            os.path.join(self.ca, "sprint-log.md"),
+            old_string=entry1,
+            new_string=entry1 + "## SD-99 injected\n- chosen: forged\n",
         )
         self.assertBlocked(res, "H-05")
 

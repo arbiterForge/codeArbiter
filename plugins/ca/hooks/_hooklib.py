@@ -42,6 +42,8 @@
 #   is_ci_path(rel, root) -> bool         True iff rel is a CI/CD workflow (H-15)
 #   is_deploy_path(rel, root) -> bool     True iff rel is a deployment/IaC manifest (H-16)
 #   is_audit_log(rel) -> bool             True iff rel is an append-only audit log (H-05)
+#   is_tail_append(current, old, new) -> bool  True iff old_string is current's exact
+#                                          trailing content AND new_string extends it (H-05)
 #   is_decisions_path(rel) -> bool        True iff rel is an ADR under decisions/ (H-11)
 #   is_context_md(rel) -> bool            True iff rel is the CONTEXT.md activation file (#159)
 #   is_marker_path(rel) -> bool           True iff rel is under .codearbiter/.markers/ (#160)
@@ -141,6 +143,32 @@ def is_audit_log(rel):
     """True iff `rel` is one of the append-only .codearbiter audit logs
     (overrides.log, triage.log, sprint-log.md) — the H-05 guard set."""
     return bool(AUDIT_LOG_RE.search(norm_path(rel)))
+
+
+def is_tail_append(current, old, new):
+    """True iff an Edit's (old_string, new_string) pair is a verifiable,
+    TAIL-ANCHORED pure append against `current` (the file's REAL on-disk
+    content) — the H-05 guard (reliability-003, #172).
+
+    `new.startswith(old)` alone is not sufficient: `old` could be any interior
+    line that happens to be a prefix of `new`, which inserts content BETWEEN
+    existing lines rather than appending at the end. This requires TWO things:
+    `current` must literally END with `old` (old_string is the file's actual
+    trailing content, not just some substring elsewhere), and `new` must
+    extend `old`. An empty `old` is never a valid append — every string
+    "ends with" the empty string, so the tail-anchor check would trivially
+    pass and reopen the migration-003 empty-old_string hole this closes.
+
+    `old` must also occur EXACTLY ONCE in `current`: a non-unique old_string
+    that happens to also match the tail is not self-evidently an append — this
+    keeps the guard correct on its own terms rather than depending on the Edit
+    tool's own (client-side, not re-verified here) uniqueness enforcement for
+    a non-replace_all Edit."""
+    if not old:
+        return False
+    if current.count(old) != 1:
+        return False
+    return current.endswith(old) and new.startswith(old)
 
 
 def is_decisions_path(rel):
