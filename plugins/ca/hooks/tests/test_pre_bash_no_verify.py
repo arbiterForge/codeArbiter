@@ -83,6 +83,26 @@ class TestNoVerifyCommit(_PreBashFixture):
         res = self.run_bash('git commit -m "docs: explain --no-verify guard"')
         self.assertNotIn("H-20", res.stderr)
 
+    # -- bundled short-flag cluster (security-reviewer HIGH, first pass) -----
+
+    def test_commit_bundled_nm_cluster_is_blocked(self):
+        # `-nm "x"` bundles `-n` (no-verify) with `-m x` — the everyday way
+        # `-n` actually gets typed alongside a message flag. An exact-token
+        # check against "-n" alone misses this cluster spelling entirely.
+        self.assertBlocked(self.run_bash('git commit -nm "x"'), "H-20")
+
+    def test_commit_bundled_vn_cluster_is_blocked(self):
+        # `-v` (verbose) does not consume a value, so scanning continues to
+        # the trailing `n` in the same cluster -> no-verify.
+        self.assertBlocked(self.run_bash("git commit -vn -m x"), "H-20")
+
+    def test_commit_bundled_mn_cluster_is_not_blocked(self):
+        # `-mn "x"` is `-m` (message, ARGUMENT-TAKING) immediately followed by
+        # "n" -> "n" is the flag's VALUE (message text "n"), not a further
+        # `-n`/no-verify flag. Must NOT block on H-20.
+        res = self.run_bash('git commit -mn "x"')
+        self.assertNotIn("H-20", res.stderr)
+
 
 class TestNoVerifyPush(_PreBashFixture):
     def test_push_with_long_no_verify_is_blocked(self):

@@ -157,8 +157,16 @@ def is_tail_append(current, old, new):
     trailing content, not just some substring elsewhere), and `new` must
     extend `old`. An empty `old` is never a valid append — every string
     "ends with" the empty string, so the tail-anchor check would trivially
-    pass and reopen the migration-003 empty-old_string hole this closes."""
+    pass and reopen the migration-003 empty-old_string hole this closes.
+
+    `old` must also occur EXACTLY ONCE in `current`: a non-unique old_string
+    that happens to also match the tail is not self-evidently an append — this
+    keeps the guard correct on its own terms rather than depending on the Edit
+    tool's own (client-side, not re-verified here) uniqueness enforcement for
+    a non-replace_all Edit."""
     if not old:
+        return False
+    if current.count(old) != 1:
         return False
     return current.endswith(old) and new.startswith(old)
 

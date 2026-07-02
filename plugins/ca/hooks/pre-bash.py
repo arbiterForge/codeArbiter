@@ -49,25 +49,68 @@ def _read_err_hint():
 # appsec-002 (#175): a literal `--no-verify` / `-n` on `git commit`/`git push`
 # skips `.git/hooks` entirely — the documented "spelling-proof backstop"
 # (git-enforce.py) never runs for that operation, voiding H-01/H-02/H-09b/
-# H-10b/H-14 for it. `-n` is git-commit's short spelling of --no-verify; `git
-# push` has NO short spelling (its own `-n` is `--dry-run`, an unrelated flag),
-# so only the long form is checked there. Token-equality (not substring) so a
-# commit MESSAGE merely quoting the text ('-m "explain --no-verify"') is never
-# misclassified — the quoted phrase tokenizes as one whole argument, never
-# equal to the bare flag. The deeper shell-indirection spelling (`g=git; $g
-# commit --no-verify`) defeats this lexical check same as it defeats COMMIT_RE
-# itself; that residual is documented separately, out of scope for this guard.
+# H-10b/H-14 for it. `-n` is git-commit's short spelling of --no-verify — but
+# NOT only as its own token: git bundles short flags into one cluster
+# (`-nm "x"` = `-n` + `-m x`, the everyday spelling), so the exact-token check
+# alone missed it (HIGH, security-reviewer finding on the first pass). `git
+# push` has NO short spelling for this (its own `-n` is `--dry-run`, an
+# unrelated flag), so only the long form is checked there, and it never
+# clusters this way in practice for our purposes.
+# Token-equality (not substring) so a commit MESSAGE merely quoting the text
+# ('-m "explain --no-verify"') is never misclassified — the quoted phrase
+# tokenizes as one whole argument, never equal to the bare flag. Scanning
+# stops at a bare `--` token (end-of-options): `git commit -- --no-verify`
+# passes `--no-verify` as a pathspec, not a flag, and must not be misblocked.
+# The deeper shell-indirection spelling (`g=git; $g commit --no-verify`)
+# defeats this lexical check same as it defeats COMMIT_RE itself; that
+# residual is documented separately, out of scope for this guard.
 COMMIT_NO_VERIFY_FLAGS = frozenset({"--no-verify", "-n"})
 PUSH_NO_VERIFY_FLAGS = frozenset({"--no-verify"})
+# `git commit` short options that consume the REST of their cluster as a
+# value (bundled short-flag form, e.g. `-mMSG`, `-Cref`): once one of these is
+# hit while scanning a cluster left-to-right, every character after it is that
+# option's value, not a further flag — so a `-mn` cluster's trailing `n` is
+# the MESSAGE "n", not `-n`/--no-verify, and must not block.
+COMMIT_SHORT_VALUE_CHARS = frozenset("mcCFtSu")
 
 
 def _has_literal_flag(args, flags):
     """True iff `args` contains one of `flags` as its own token — quote-aware
     (a fully-quoted token, e.g. a `-m "..."` message, tokenizes as ONE token
-    and is compared whole, so it can never equal a single bare flag)."""
+    and is compared whole, so it can never equal a single bare flag).
+    Scanning stops at a bare `--` (end-of-options): anything after it is a
+    pathspec/value, never a flag."""
     for raw in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args):
-        if raw.strip("\"'") in flags:
+        tok = raw.strip("\"'")
+        if tok == "--":
+            break
+        if tok in flags:
             return True
+    return False
+
+
+def _commit_no_verify_in_cluster(args):
+    """True iff a `git commit` bundled short-flag cluster token (e.g. `-nm`,
+    `-vn`) carries `-n` (no-verify) BEFORE any argument-taking short option in
+    that same cluster consumes the rest of it as a value. Walks each
+    `-[A-Za-z]+` token left-to-right (never `--...`, never touching values with
+    an `=`): hitting `n` first means no-verify; hitting a
+    COMMIT_SHORT_VALUE_CHARS member first means every following character in
+    that token is that flag's value (e.g. `-mn` is `-m` with value "n" — NOT
+    no-verify), so scanning that token stops there. Complements the exact-
+    token `-n` case in COMMIT_NO_VERIFY_FLAGS, which only catches `-n` as its
+    OWN whole token. Scanning stops at a bare `--` (end-of-options)."""
+    for raw in re.findall(r'"[^"]+"|\'[^\']+\'|\S+', args):
+        tok = raw.strip("\"'")
+        if tok == "--":
+            break
+        if not re.fullmatch(r"-[A-Za-z]+", tok):
+            continue  # not a short-flag cluster (long flag, value, pathspec, …)
+        for ch in tok[1:]:
+            if ch == "n":
+                return True
+            if ch in COMMIT_SHORT_VALUE_CHARS:
+                break  # rest of THIS token is that flag's value; stop here
     return False
 
 
@@ -479,8 +522,13 @@ def _run(root):
 
     # H-20: block a literal --no-verify / -n on `git commit` — it skips
     # .git/hooks (the git-enforce backstop) entirely, voiding every enforcement
-    # hook for that commit (appsec-002, #175).
-    if commit and _has_literal_flag(commit.group("args"), COMMIT_NO_VERIFY_FLAGS):
+    # hook for that commit (appsec-002, #175). Checks BOTH the exact-token
+    # spelling (`-n` / `--no-verify` on its own) and the bundled short-flag
+    # cluster spelling (`-nm "x"`) — the everyday way `-n` actually gets typed
+    # alongside `-m`, missed by an exact-token-only check (security-reviewer
+    # HIGH, first pass).
+    if commit and (_has_literal_flag(commit.group("args"), COMMIT_NO_VERIFY_FLAGS)
+                   or _commit_no_verify_in_cluster(commit.group("args"))):
         block("H-20", "'--no-verify' / '-n' on git commit skips the .git/hooks "
                       "git-enforce backstop entirely (appsec-002) — every commit-time "
                       "gate (H-01/H-02/H-09b/H-10b/H-14) would go unenforced for this "
