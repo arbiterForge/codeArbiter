@@ -4,9 +4,12 @@ failure or a timeout must BLOCK a commit/push, not silently ALLOW it because
 `current_branch`/`head_on_protected_tip` collapsed the error into "" / False
 (indistinguishable from "legitimately not on a protected branch/tip").
 
-Git is made unreadable by stripping PATH from the subprocess environment, so
-`git` itself is never found — a real, deterministic spawn failure
-(FileNotFoundError) on every platform, not a mock. Contrast with the existing
+Git is made unreadable by pointing PATH at a nonexistent directory, so `git`
+itself is never found — a real, deterministic spawn failure (FileNotFoundError)
+on every platform, not a mock. (Merely *unsetting* PATH is not enough: POSIX
+`execvp` falls back to a default system path — /usr/bin:/bin — and still finds
+git, so the guard would see a readable repo; a present-but-nonexistent PATH has
+no such fallback.) Contrast with the existing
 happy-path tests in test_pre_bash_activation.py / test_git_hooks.py, which
 prove the ALLOW/BLOCK verdicts when git *can* answer; these prove the
 ambiguous case now resolves CLOSED instead of open.
@@ -58,11 +61,13 @@ class _GitUnreadableFixture(unittest.TestCase):
         self._tmp.cleanup()
 
     def _no_git_env(self):
-        """An env with no PATH (and no PATHEXT resolution) — `git` cannot be
-        spawned, only the python interpreter itself (invoked by absolute
-        sys.executable, which needs no PATH lookup)."""
-        env = {k: v for k, v in os.environ.items()
-               if k.upper() not in ("PATH", "PATHEXT")}
+        """An env whose PATH points at a nonexistent directory — `git` cannot be
+        resolved on ANY platform, only the python interpreter itself (invoked by
+        absolute sys.executable, which needs no PATH lookup). PATH is SET (not
+        unset) so POSIX execvp cannot fall back to its default /usr/bin:/bin and
+        find git anyway."""
+        env = {k: v for k, v in os.environ.items() if k.upper() != "PATHEXT"}
+        env["PATH"] = os.path.join(self.root, "_nonexistent_bin")
         env["CLAUDE_PROJECT_DIR"] = self.root
         return env
 

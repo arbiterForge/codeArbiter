@@ -185,8 +185,9 @@ class TestPreCommitEnforce(_GitFixture):
         self.assertIn("H-14", res.stderr)
 
     def test_cached_diff_read_failure_fails_closed(self):
-        # Strip PATH so EVERY git spawn in pre_commit() fails, including the
-        # very first (current_branch) — the H-01 fail-closed branch fires
+        # Point PATH at a nonexistent dir so EVERY git spawn in pre_commit()
+        # fails, including the very first (current_branch) — the H-01 fail-closed
+        # branch fires
         # before either the H-09b/H-10b or H-14 read site is reached. Kept as
         # end-to-end evidence that an entirely unreadable git still fails
         # CLOSED, not open; test_git_enforce_lib.py below isolates the two
@@ -196,7 +197,11 @@ class TestPreCommitEnforce(_GitFixture):
         # both read sites fail identically once git itself is unspawnable).
         _git(["checkout", "-q", "-b", "feat/g"], self.root)
         self._stage("f.txt", "x\n")
-        env = {k: v for k, v in os.environ.items() if k.upper() not in ("PATH", "PATHEXT")}
+        # PATH is SET to a nonexistent dir (not unset): POSIX execvp falls back
+        # to its default /usr/bin:/bin when PATH is absent and would still find
+        # git, defeating the fail-closed premise on non-Windows CI.
+        env = {k: v for k, v in os.environ.items() if k.upper() != "PATHEXT"}
+        env["PATH"] = os.path.join(self.root, "_nonexistent_bin")
         res = _sh([sys.executable, ENFORCE, "pre-commit"], self.root, env=env)
         self.assertEqual(res.returncode, 1, res.stderr)
         self.assertIn("failing closed", res.stderr)
