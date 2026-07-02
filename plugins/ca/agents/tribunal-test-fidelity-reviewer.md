@@ -1,6 +1,6 @@
 ---
 name: tribunal-test-fidelity-reviewer
-description: Dispatched by the tribunal deep-audit lane for the test-fidelity lens. Read-only review of tests validating fiction — mock/stub/fixture drift from a now-existing real producer. Appends findings as jsonl.
+description: Dispatched by the tribunal deep-audit lane for the test-fidelity lens. Read-only review of tests validating fiction — mock/stub/fixture drift from a now-existing real producer. Writes one file per finding.
 tools: Read, Grep, Glob, Bash, Write
 model: inherit
 ---
@@ -11,7 +11,7 @@ Read-only. Surface tests that validate fiction in the assigned scope. Modify not
 
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/test-fidelity.md` — the recipe, severity rule, and exposure denominator.
-- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, append rule, id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, write rule, id/dedup conventions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — mock patterns, fixture/factory conventions, the real producers (serializers, DTOs, queries).
 
 ## Scope

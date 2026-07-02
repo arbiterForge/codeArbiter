@@ -1,6 +1,6 @@
 ---
 name: tribunal-secrets-supply-reviewer
-description: Dispatched by the tribunal deep-audit lane for the secrets-supply lens. Read-only review of hardcoded secrets, weak crypto, cleartext, secrets in logs, and dependency/supply-chain hygiene. Appends findings as jsonl.
+description: Dispatched by the tribunal deep-audit lane for the secrets-supply lens. Read-only review of hardcoded secrets, weak crypto, cleartext, secrets in logs, and dependency/supply-chain hygiene. Writes one file per finding.
 tools: Read, Grep, Glob, Bash, Write
 model: inherit
 ---
@@ -11,7 +11,7 @@ Read-only. Surface secret, crypto, and supply-chain defects in the assigned scop
 
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/secrets-supply.md` — the checklist and exposure denominator.
-- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, append rule, id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, write rule, id/dedup conventions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — approved secret store and crypto; `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — dependency manifests.
 
 ## Scope

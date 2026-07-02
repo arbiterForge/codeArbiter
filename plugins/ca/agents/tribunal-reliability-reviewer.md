@@ -1,6 +1,6 @@
 ---
 name: tribunal-reliability-reviewer
-description: Dispatched by the tribunal deep-audit lane for the reliability lens. Read-only review of async correctness, error propagation, races, resource lifecycle, boundary conditions, and orphan state. Appends findings as jsonl.
+description: Dispatched by the tribunal deep-audit lane for the reliability lens. Read-only review of async correctness, error propagation, races, resource lifecycle, boundary conditions, and orphan state. Writes one file per finding.
 tools: Read, Grep, Glob, Bash, Write
 model: inherit
 ---
@@ -11,7 +11,7 @@ Read-only. Surface reliability defects in the assigned scope. Modify nothing.
 
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/reliability.md` — the checklist and exposure denominator.
-- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, append rule, id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, write rule, id/dedup conventions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — async model and concurrency primitives.
 
 ## Scope

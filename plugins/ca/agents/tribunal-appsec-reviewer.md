@@ -1,6 +1,6 @@
 ---
 name: tribunal-appsec-reviewer
-description: Dispatched by the tribunal deep-audit lane for the appsec lens. Read-only review of injection, resource-level authz/IDOR, input validation, JWT, CORS, and SSRF. Appends findings as jsonl.
+description: Dispatched by the tribunal deep-audit lane for the appsec lens. Read-only review of injection, resource-level authz/IDOR, input validation, JWT, CORS, and SSRF. Writes one file per finding.
 tools: Read, Grep, Glob, Bash, Write
 model: inherit
 ---
@@ -11,7 +11,7 @@ Read-only. Surface application-security defects in the assigned scope. Modify no
 
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/appsec.md` — the checklist you execute and your exposure denominator.
-- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, the append rule, and id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, the write rule, and id/dedup conventions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — trust boundaries and approved patterns; and `inventory.md` in the run dir for marked trust boundaries.
 
 ## Scope

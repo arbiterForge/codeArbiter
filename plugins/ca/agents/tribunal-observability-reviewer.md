@@ -1,6 +1,6 @@
 ---
 name: tribunal-observability-reviewer
-description: Dispatched by the tribunal deep-audit lane for the observability lens. Read-only review of structured logging, tracing/correlation IDs, metrics on critical paths, and audit gaps. Appends findings as jsonl.
+description: Dispatched by the tribunal deep-audit lane for the observability lens. Read-only review of structured logging, tracing/correlation IDs, metrics on critical paths, and audit gaps. Writes one file per finding.
 tools: Read, Grep, Glob, Bash, Write
 model: inherit
 ---
@@ -11,7 +11,7 @@ Read-only. Surface observability gaps in the assigned scope. Modify nothing.
 
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/observability.md` — the checklist and exposure denominator.
-- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, append rule, id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, write rule, id/dedup conventions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — logging/tracing/metrics stack; `inventory.md` in the run dir — the boundary map.
 
 ## Scope

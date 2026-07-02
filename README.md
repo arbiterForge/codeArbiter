@@ -274,7 +274,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:watch <PR>` | Watch a PR's CI server-side: diagnose on red, notify and offer merge on green; never auto-merges |
 | `/ca:review [path]` | Reviewer-fleet pass over the diff; BLOCK on CRITICAL/HIGH |
 | `/ca:checkpoint` | Lean periodic multi-reviewer sweep |
-| `/ca:tribunal [scope-path]` | Deep, rarely-run whole-codebase audit across eleven specialist lenses; resumable append-only jsonl log; files GitHub issues on approval; never a required gate |
+| `/ca:tribunal [scope-path]` | Deep, rarely-run whole-codebase audit across eleven specialist lenses; one file per finding plus append-only run/triage logs, resumable from disk; files GitHub issues on approval; never a required gate |
 | `/ca:release [--dry-run]` | SemVer bump + changelog + annotated tag |
 | `/ca:add-dep "pkg"` | Vet a dependency (license, provenance, supply chain) |
 

@@ -28,7 +28,7 @@ ONLY when that command is invoked — never bulk-read the directory.
 | `/ca:watch` | `<PR number\|url\|branch>` | Babysit a PR's CI server-side: diagnose on red, notify + offer the merge on green. Never auto-merges. Auto-attaches from `/ca:pr` when `CODEARBITER_BABYSIT` is on. |
 | `/ca:review` | `[path or scope]` | Dispatch the reviewer fleet over the diff; BLOCK on CRITICAL/HIGH. |
 | `/ca:checkpoint` | `[focus]` | Lean periodic reviewer sweep; surfaces a triaged report. |
-| `/ca:tribunal` | `[scope-path]` | Deep, rarely-run whole-codebase audit across eleven specialist lenses; resumable append-only jsonl log; files GitHub issues on approval. Never a required gate. |
+| `/ca:tribunal` | `[scope-path] [--tag <label>]` | Deep, rarely-run whole-codebase audit across eleven specialist lenses; one file per finding plus append-only run/triage logs, resumable from disk; files GitHub issues on approval. Never a required gate. |
 | `/ca:release` | `[--dry-run]` | Lean SemVer release: bump-from-commits + changelog + annotated tag. |
 | `/ca:add-dep` | `"package"` | Vet a dependency (license, provenance, supply chain) before install. |
 

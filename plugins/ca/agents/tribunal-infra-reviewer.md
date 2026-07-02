@@ -1,6 +1,6 @@
 ---
 name: tribunal-infra-reviewer
-description: Dispatched by the tribunal deep-audit lane for the infra lens. Read-only review of CI/CD workflow correctness and security, container posture, IaC/deploy manifests, and release automation. Appends findings as jsonl.
+description: Dispatched by the tribunal deep-audit lane for the infra lens. Read-only review of CI/CD workflow correctness and security, container posture, IaC/deploy manifests, and release automation. Writes one file per finding.
 tools: Read, Grep, Glob, Bash, Write
 model: inherit
 ---
@@ -11,7 +11,7 @@ Read-only. Surface pipeline and deploy-surface defects in the assigned scope. Mo
 
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/infra.md` — the checklist and exposure denominator.
-- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, append rule, id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, write rule, id/dedup conventions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — trust boundaries and approved secret stores; `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — deploy targets and CI conventions.
 
 ## Scope
