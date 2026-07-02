@@ -31,7 +31,7 @@ apply, then:
 6. **Auto-attach the babysitter** — resolve the flag with the canonical resolver, never by eyeballing
    the env var (so the accepted `on|true|1` spellings and the dormancy gate can't drift):
    ```
-   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "${CLAUDE_PROJECT_DIR}"
    ```
    It prints one JSON line, e.g. `{"enabled": true, "on_red": "propose"}`. Only when `enabled` is
    true (the global flag `CODEARBITER_BABYSIT` is on — default off, mirrors `CODEARBITER_PRUNE` — and

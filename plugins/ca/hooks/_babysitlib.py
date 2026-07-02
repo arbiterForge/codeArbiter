@@ -56,7 +56,11 @@ def main(argv=None):
     resolver instead of re-implementing the flag check in prose (no drift from
     the accepted on|true|1 spellings or the PB-10 dormancy gate). Fail-safe:
     any error degrades to the OFF default and still exits 0 — a broken resolver
-    must never become a reason to auto-attach a watcher."""
+    must never become a reason to auto-attach a watcher.
+
+    Import-only module (no `__main__` entry point, per the thin-entry-hook
+    convention): the thin entry hook `babysit.py` imports and calls this
+    function; this underscore module is never run as a script directly."""
     import argparse
     import json
     import os
@@ -70,8 +74,3 @@ def main(argv=None):
         cfg = {"enabled": False, "on_red": _ONRED_DEFAULT}
     print(json.dumps(cfg))
     return 0
-
-
-if __name__ == "__main__":
-    import sys
-    sys.exit(main())

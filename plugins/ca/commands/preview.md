@@ -15,11 +15,12 @@ not the index, not `.codearbiter/`. `git status` is unchanged by a run.
 
 ## Flow
 
-1. **Collect the diff.** Call `collect_diff` from `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It
-   unions HEAD-vs-worktree changes, staged changes, and untracked files (forward-slash paths). Run
-   it from the project root so `_hooklib` resolves on the same `sys.path`:
+1. **Collect the diff.** Call the thin entry hook `preview.py` in `diff` mode, which wraps
+   `collect_diff` from `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It unions HEAD-vs-worktree
+   changes, staged changes, and untracked files (forward-slash paths). Run it from the project
+   root so `_previewlib`/`_hooklib` resolve on the same `sys.path`:
    ```
-   python3 -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _previewlib, json; print(json.dumps({p: sorted(cf.kinds) for p, cf in _previewlib.collect_diff().items()}))" || python -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _previewlib, json; print(json.dumps({p: sorted(cf.kinds) for p, cf in _previewlib.collect_diff().items()}))"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" diff || python "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" diff
    ```
    If the result is empty (clean tree, or not a git repo), print a friendly **"Nothing to
    preview"** line and STOP. This is a clean exit, not an error: no stack trace, no failure.
@@ -31,12 +32,12 @@ not the index, not `.codearbiter/`. `git status` is unchanged by a run.
    dispatch and name the triggering path for each. This is the same mapping `/ca:review` uses, so
    the predicted set matches what a real review would dispatch.
 
-3. **Run the state-free secret scan.** Call `scan_secrets` from
-   `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It reads each changed file's current content and
-   returns `SecretFinding(path, line_no, snippet)` for every credential line, with the secret VALUE
-   already masked to `****` in `snippet`:
+3. **Run the state-free secret scan.** Call the thin entry hook `preview.py` in `secrets` mode,
+   which wraps `scan_secrets` from `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It reads each
+   changed file's current content and returns `SecretFinding(path, line_no, snippet)` for every
+   credential line, with the secret VALUE already masked to `****` in `snippet`:
    ```
-   python3 -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _previewlib, json; print(json.dumps([f._asdict() for f in _previewlib.scan_secrets()]))" || python -c "import sys; sys.path.insert(0, r'${CLAUDE_PLUGIN_ROOT}/hooks'); import _previewlib, json; print(json.dumps([f._asdict() for f in _previewlib.scan_secrets()]))"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" secrets || python "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" secrets
    ```
    Report each finding by `path:line_no` with its redacted snippet. The snippet arrives already
    masked: never reconstruct or print a raw secret value.

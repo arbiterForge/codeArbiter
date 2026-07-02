@@ -33,7 +33,7 @@ a phantom watcher.
    canonical resolver rather than reading the env var by hand (so the accepted
    values can't drift):
    ```
-   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/_babysitlib.py" --root "${CLAUDE_PROJECT_DIR}"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "${CLAUDE_PROJECT_DIR}"
    ```
    It prints one JSON line; act at its `on_red` value (`CODEARBITER_BABYSIT_ONRED`,
    default `propose`):
