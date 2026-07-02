@@ -130,7 +130,19 @@ ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
 # alternation, with no separate guard to maintain. Note this protects it only
 # from Write/Edit/Bash TOOL CALLS; the hooks' own os-level `open(..., "a")`
 # append (below) is plain file I/O, never a tool call, so H-05 never gates it.
-AUDIT_LOG_NAMES = r"(?:(?:overrides|triage|gate-events)\.log|sprint-log\.md)"
+#
+# AUDIT_LOG_BASENAMES is the single authoritative list of bare filenames — the
+# ONE place a new audit log gets added. pre-bash.py's H-05 shell guard needs
+# these as plain strings too (a cheap `n in cmd` substring pre-filter before
+# running the regexes below), so it imports this tuple directly instead of
+# re-deriving/hand-copying the name set (the exact drift this centralization
+# exists to prevent — a filter that silently skips a future audit log because
+# its literal name was never added to a second, hand-maintained copy).
+# AUDIT_LOG_NAMES is built FROM this tuple (re.escape'd, alternated) — behavior
+# is unchanged from the prior hand-written pattern (same four literal
+# filenames, same (?:...) grouping), only the source of truth moved.
+AUDIT_LOG_BASENAMES = ("overrides.log", "triage.log", "gate-events.log", "sprint-log.md")
+AUDIT_LOG_NAMES = "(?:" + "|".join(re.escape(n) for n in AUDIT_LOG_BASENAMES) + ")"
 AUDIT_LOG_RE = re.compile(r"\.codearbiter/" + AUDIT_LOG_NAMES + r"$")
 DECISIONS_DIR_RE = r"\.codearbiter[\\/]+decisions"
 DECISIONS_PATH_RE = re.compile(DECISIONS_DIR_RE + r"[\\/]+.+\.md$")
