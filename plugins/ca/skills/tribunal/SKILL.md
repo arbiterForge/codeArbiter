@@ -11,7 +11,7 @@ The deepest, most expensive review codeArbiter offers — convened rarely, on de
 
 Read these, or STOP and surface the gap — never guess a command or a path:
 
-- `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — stack, async model, concurrency primitives, test/lint/secrets commands, the tracker command. Stop if missing; do not guess.
+- `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — stack, async model, concurrency primitives, test/lint/secrets commands, and, when documented, the tracker command. Stop if the test/lint/secrets commands are missing; do not guess.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — the `stage:` maturity value and domain vocabulary.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — the conventions lenses judge against.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — trust boundaries, approved crypto/secret stores; feeds the appsec and secrets lenses. Absent on some repos — proceed without the security lenses' control-file checks if so.
@@ -107,5 +107,5 @@ Gate: the payload is shown, and it is either handed to the user as a command or 
 - MUST NOT create a duplicate issue — skip findings carrying an `issue_ref`, and dedup against the tracker by `dedup_key`/title before filing.
 - MUST NOT author or scaffold an ADR — `decision-required` findings file as a discussion issue; ADRs are authored only via `/adr` with user attribution.
 - MUST NOT send telemetry without explicit per-run authorization, and MUST NOT include code, file paths, finding text, or repo identity (absent an explicit `--tag`) in the payload — KPI aggregates only.
-- MUST NOT guess the test, lint, secrets-scan, or tracker command — read `tech-stack.md` or STOP.
+- MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP. For the tracker: use `tech-stack.md` if it documents one; else default to `gh issue create` on a GitHub origin; else STOP.
 - MUST NOT dispatch a subagent from within a dispatched specialist — only the orchestrator dispatches.

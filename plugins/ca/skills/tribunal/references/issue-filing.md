@@ -1,6 +1,6 @@
 # Issue filing
 
-Findings become GitHub issues only on explicit selection and authorization. Read the tracker command from `tech-stack.md`; default to `gh issue create` if that is the documented tracker. This lane reruns over time, so filing is **idempotent** — never create a duplicate.
+Findings become GitHub issues only on explicit selection and authorization. Use the tracker command documented in `tech-stack.md` if present; otherwise default to `gh issue create` on a GitHub origin; otherwise STOP. This lane reruns over time, so filing is **idempotent** — never create a duplicate.
 
 ## Selection
 
