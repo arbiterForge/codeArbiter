@@ -21,25 +21,19 @@
 import argparse
 import datetime
 import os
-import subprocess
 import sys
 import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _taskboardlib as tb  # noqa: E402
-from _hooklib import utf8_stdio  # noqa: E402
+from _hooklib import project_root, utf8_stdio  # noqa: E402
 
-
-def project_root():
-    try:
-        out = subprocess.run(["git", "rev-parse", "--show-toplevel"],
-                             capture_output=True, text=True, timeout=5)
-        top = out.stdout.strip()
-        if top:
-            return top
-    except Exception:  # noqa: BLE001
-        pass
-    return os.getcwd()
+# reliability-007 (#190): project_root() is now _hooklib.project_root —
+# imported above, not a local copy. The prior local copy ran `git rev-parse
+# --show-toplevel` from the hook's own cwd and fell back to os.getcwd(),
+# skipping the CLAUDE_PROJECT_DIR-first read _hooklib.project_root() exists
+# for; taskwrite mutates .codearbiter/open-tasks.md, so a wrong root silently
+# wrote into the wrong repository's board.
 
 
 def _date(s):

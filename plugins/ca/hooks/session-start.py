@@ -27,7 +27,7 @@ import sys
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _hooklib import frontmatter_enabled, utf8_stdio  # noqa: E402
+from _hooklib import frontmatter_enabled, project_root, utf8_stdio  # noqa: E402
 from _standuplib import (  # noqa: E402
     any_actionable,
     ff_pull_eligible,
@@ -46,18 +46,13 @@ INITIALIZED_RE = re.compile(r"<!--\s*INITIALIZED\s*-->")
 STAGE_RE = re.compile(r"^stage:\s*([0-9]+)", re.I | re.M)
 CONFIRM_RE = re.compile(r"CONFIRM-[0-9]+")
 
-
-def project_root():
-    try:
-        out = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True, text=True, timeout=5,
-        )
-        if out.returncode == 0:
-            return out.stdout.strip()
-    except Exception:  # noqa: BLE001
-        pass
-    return os.getcwd()
+# reliability-007 (#190): project_root() is now _hooklib.project_root — imported
+# above, not a local copy. The prior local copy ran `git rev-parse
+# --show-toplevel` from the hook's own cwd and fell back to os.getcwd(),
+# skipping the CLAUDE_PROJECT_DIR-first read _hooklib.project_root() exists
+# for. session-start is the linchpin hook (installs git-enforce hooks, writes
+# standup/dev markers, appends overrides.log) — a wrong root there silently
+# targeted the wrong repository.
 
 
 def read_text(path):
