@@ -35,12 +35,13 @@
  * Like run.ts / network.ts this module is PURE argv/script builders (so the
  * posture is unit-testable without docker); the caller shells docker. Windows
  * (Spike A/B): set MSYS_NO_PATHCONV=1 when shelling docker so `-e HOME=/...` and
- * container paths are not mangled by Git Bash path conversion.
+ * container paths are not mangled by Git Bash path conversion — routed through
+ * the shared docker.ts primitive (architecture-007).
  */
-import { spawnSync } from "node:child_process";
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
 import { applyNetworkPolicy } from "./network.ts";
 import { SANDBOX_LABEL, hardeningFlags } from "./run.ts";
+import { defaultDockerRun, type RunResult } from "./docker.ts";
 
 /**
  * The PINNED Claude Code CLI version baked into the sandbox image. Pinned (never
@@ -63,10 +64,6 @@ export const TOKEN_ENV_VAR = "CLAUDE_CODE_OAUTH_TOKEN";
 // SANDBOX_LABEL is shared from run.ts (architecture-002) so the lifecycle label
 // has a single definition; re-exported here for existing importers of this name.
 export { SANDBOX_LABEL };
-
-// On Windows + Git Bash, `-e HOME=/...` and container paths handed to docker get
-// mangled by MSYS path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B).
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 
 /**
  * The ONLY egress postures `--with-claude` permits. Both keep a stealable token
@@ -290,16 +287,9 @@ export function buildClaudeRunArgs(opts: ClaudeRunOptions): string[] {
   ];
 }
 
-export type ClaudeRunResult = { code: number; stdout: string; stderr: string };
-
-function defaultDockerRun(args: string[]): ClaudeRunResult {
-  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : ""),
-  };
-}
+/** Kept as a distinct exported name for existing importers — one underlying
+ * shape (docker.ts's RunResult), never a second parallel definition. */
+export type ClaudeRunResult = RunResult;
 
 /**
  * Start a `--with-claude` box and return the container id. Thin shell over

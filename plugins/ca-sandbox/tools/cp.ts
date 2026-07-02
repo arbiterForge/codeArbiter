@@ -17,34 +17,21 @@
  * structurally impossible to build from here — exactly the same guarantee run.ts
  * relies on.
  *
- * Process/shell handling mirrors farm.ts / run.ts: a child-process helper
- * returning a RunResult, and on Windows + Git Bash MSYS_NO_PATHCONV=1 is set so
- * the in-container path passed to `docker cp` (e.g. `<id>:/work/out.txt`) is not
- * mangled by MSYS path conversion (Spike A/B).
+ * Process/shell handling routes through docker.ts (architecture-007): a shared
+ * child-process helper returning a RunResult, and on Windows + Git Bash
+ * MSYS_NO_PATHCONV=1 is set so the in-container path passed to `docker cp`
+ * (e.g. `<id>:/work/out.txt`) is not mangled by MSYS path conversion (Spike A/B).
  */
-import { spawnSync } from "node:child_process";
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
+import { defaultDockerRun, type RunResult } from "./docker.ts";
 
-// On Windows + Git Bash, the `<id>:/work/...` container ref handed to docker gets
-// mangled by MSYS path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B).
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
-
-export type RunResult = { code: number; stdout: string; stderr: string };
+export type { RunResult };
 
 /** Optional knobs for cpOut — chiefly an injectable docker runner for tests. */
 export type CpOptions = {
   /** Injectable docker runner (defaults to spawnSync("docker", ...)). */
   dockerRun?: (args: string[]) => RunResult;
 };
-
-function defaultDockerRun(args: string[]): RunResult {
-  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : ""),
-  };
-}
 
 /**
  * Assemble the `docker cp` argv (everything AFTER `docker`) for a PULL-only copy

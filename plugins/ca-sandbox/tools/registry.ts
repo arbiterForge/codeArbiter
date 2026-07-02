@@ -9,36 +9,26 @@
  * and `docker` is the single source of truth. A manually-leaked labeled object is
  * therefore visible to `list()`/`prune()` for free — exactly what AC-11 asks for.
  *
- * Process/shell handling mirrors farm.ts / run.ts / build.ts: a thin docker
- * runner returning code/stdout/stderr, MSYS_NO_PATHCONV=1 set on Windows + Git
- * Bash so labels/paths handed to docker are not mangled (Spike A/B), and the
- * docker effect is injectable so the parsing logic is unit-testable without real
- * docker while the docker-gated tests drive the real default.
+ * Process/shell handling routes through docker.ts (architecture-007): a thin
+ * docker runner returning code/stdout/stderr, MSYS_NO_PATHCONV=1 set on
+ * Windows + Git Bash so labels/paths handed to docker are not mangled (Spike
+ * A/B), and the docker effect is injectable so the parsing logic is
+ * unit-testable without real docker while the docker-gated tests drive the
+ * real default.
  */
-import { spawnSync } from "node:child_process";
+import { defaultDockerRun, type RunResult, type DockerRun } from "./docker.ts";
+
+export { defaultDockerRun };
+export type { DockerRun };
+/** Kept as a distinct exported name for existing importers — one underlying
+ * shape (docker.ts's RunResult), never a second parallel definition. */
+export type DockerResult = RunResult;
 
 /** The label every ca-sandbox object carries — the registry membership marker. */
 export const SANDBOX_LABEL_KEY = "ca.sandbox";
 export const SANDBOX_LABEL = "ca.sandbox=1";
 /** The per-instance identity label key; value is the sandbox id. */
 export const SANDBOX_ID_LABEL_KEY = "ca.sandbox.id";
-
-// On Windows + Git Bash, label/path args handed to docker get mangled by MSYS
-// path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B).
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
-
-export type DockerResult = { code: number; stdout: string; stderr: string };
-/** Injectable docker runner (defaults to spawnSync("docker", ...)). */
-export type DockerRun = (args: string[]) => DockerResult;
-
-export function defaultDockerRun(args: string[]): DockerResult {
-  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : ""),
-  };
-}
 
 /** A discovered sandbox: its id plus the docker objects that make it up. */
 export type SandboxRecord = {

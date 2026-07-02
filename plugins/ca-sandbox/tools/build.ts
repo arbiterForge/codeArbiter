@@ -27,10 +27,15 @@
  * Toolchain note (Spike A driver note): `docker build --label` is unreliable, so
  * sandbox images are tracked by their namespaced TAG, never by an image label.
  * Windows (Spike A/B): MSYS_NO_PATHCONV=1 is set when shelling docker so in-
- * container paths and `-e HOME` are not mangled by Git Bash path conversion.
+ * container paths and `-e HOME` are not mangled by Git Bash path conversion —
+ * the guard itself is imported from the shared docker.ts primitive
+ * (architecture-007), the single definition site.
  *
  * Process/shell handling mirrors farm.ts: a `run()` child-process helper returning
- * a RunResult, and the docker/build effects are injectable (BuildDeps) so the pure
+ * a RunResult (this module's own shape — {code, out, stdout, stderr} — since
+ * callers here also want the merged stdout+stderr `out` for build logs; it is
+ * NOT the plain {code,stdout,stderr} docker.ts contract other modules share),
+ * and the docker/build effects are injectable (BuildDeps) so the pure
  * cache/tag/relocation logic is unit-testable without real docker, while the
  * docker-gated test drives the real defaults.
  */
@@ -38,6 +43,7 @@ import { spawn, type SpawnOptionsWithoutStdio } from "node:child_process";
 import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { DOCKER_ENV } from "./docker.ts";
 
 /** Image tag prefix for every sandbox image. */
 export const IMAGE_PREFIX = "ca-sbx";
@@ -56,10 +62,6 @@ export const NIXPACKS_INSTALL_URL = "https://nixpacks.com/install.sh";
 // process helper (mirrors farm.ts run()/RunResult)
 // --------------------------------------------------------------------------
 export type RunResult = { code: number; out: string; stdout: string; stderr: string };
-
-// On Windows + Git Bash, passing container paths / `-e HOME` to docker gets
-// mangled by MSYS path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B).
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 
 // docker build of the nixpacks-generated Dockerfile needs BuildKit (it emits
 // `RUN --mount=type=cache`). Docker Desktop defaults to BuildKit, but set it

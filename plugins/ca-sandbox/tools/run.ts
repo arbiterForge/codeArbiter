@@ -31,12 +31,13 @@
  * richer policy). T-06 wires only the safe default: `offline` => `--network none`.
  * Any other policy is passed through untouched here (T-10 layers the real flags).
  *
- * Process/shell handling mirrors farm.ts / build.ts: a `run()` child-process
- * helper returning a RunResult, and on Windows + Git Bash MSYS_NO_PATHCONV=1 is
- * set so in-container paths passed to docker are not mangled (Spike A/B).
+ * Process/shell handling routes through docker.ts (architecture-007): a shared
+ * docker-runner returning a RunResult, and on Windows + Git Bash
+ * MSYS_NO_PATHCONV=1 is set so in-container paths passed to docker are not
+ * mangled (Spike A/B).
  */
-import { spawnSync } from "node:child_process";
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
+import { defaultDockerRun, type RunResult } from "./docker.ts";
 
 /** In-container app dir; the live source named volume mounts here (Spike A). */
 export const APP_DIR = "/work/repo";
@@ -44,10 +45,6 @@ export const APP_DIR = "/work/repo";
 export const SANDBOX_LABEL = "ca.sandbox=1";
 /** Non-root uid:gid the container process runs as. */
 export const SANDBOX_USER = "1000:1000";
-
-// On Windows + Git Bash, container paths / `-e HOME` handed to docker get
-// mangled by MSYS path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B).
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 
 /**
  * Network policy for a sandbox run. T-06 only distinguishes the safe default
@@ -83,19 +80,10 @@ export type RunOptions = {
    */
   namePrefix?: string;
   /** Injectable docker runner (defaults to spawnSync("docker", ...)). */
-  dockerRun?: (args: string[]) => { code: number; stdout: string; stderr: string };
+  dockerRun?: (args: string[]) => RunResult;
 };
 
-export type RunResult = { code: number; stdout: string; stderr: string };
-
-function defaultDockerRun(args: string[]): RunResult {
-  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : ""),
-  };
-}
+export type { RunResult };
 
 /**
  * Assemble the full `docker run` argv (everything AFTER `docker`) for an

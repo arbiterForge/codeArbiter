@@ -9,15 +9,19 @@
  * no docker; runs everywhere. The end-to-end clone is exercised by lifecycle.test.ts.
  */
 import { describe, it, expect } from "vitest";
+import { spawnSync } from "node:child_process";
 import {
   validateRepoUrl,
   InvalidRepoUrlError,
   buildCloneArgs,
+  buildCpHelperCreateArgs,
   createSandbox,
   APP_DIR,
 } from "./create.ts";
 import type { CloneResult } from "./create.ts";
 import { buildMountArgs } from "./mounts.ts";
+import { SANDBOX_LABEL, idLabel, listAllContainers } from "./registry.ts";
+import { prune } from "./destroy.ts";
 
 describe("validateRepoUrl — clone-input trust model (AC-01)", () => {
   it("accepts plain network remotes (https / ssh / scp-like)", () => {
@@ -48,7 +52,7 @@ describe("validateRepoUrl — clone-input trust model (AC-01)", () => {
 
 describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
   const url = "https://github.com/owner/repo.git";
-  const argv = buildCloneArgs(url, "ca-sbx-vol-demo");
+  const argv = buildCloneArgs(url, "ca-sbx-vol-demo", "demo-id");
 
   it("emits an end-of-options `--` immediately before the url", () => {
     const sep = argv.indexOf("--");
@@ -82,6 +86,163 @@ describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
     // No raw bind expression hand-rolled anywhere.
     for (const tok of argv) expect(tok).not.toMatch(/type=bind/);
   });
+});
+
+// ---------------------------------------------------------------------------
+// reliability-015 — label + time-bound the clone / cp-helper containers so a
+// hung clone or a host crash mid-create doesn't orphan an unreclaimable object.
+// ---------------------------------------------------------------------------
+describe("buildCloneArgs — carries the sandbox labels (reliability-015)", () => {
+  it("labels the throwaway clone container ca.sandbox=1 + ca.sandbox.id=<id>", () => {
+    const argv = buildCloneArgs("https://github.com/owner/repo.git", "ca-sbx-vol-demo", "abc123");
+    // Two independent --label flags (docker requires one per label, same
+    // discipline as buildRunArgs / registry.ts's labelFilterArgs).
+    const labelValues: string[] = [];
+    argv.forEach((tok, i) => {
+      if (tok === "--label") labelValues.push(argv[i + 1]);
+    });
+    expect(labelValues).toContain(SANDBOX_LABEL);
+    expect(labelValues).toContain(idLabel("abc123"));
+  });
+
+  it("a different id produces a different id-label (no cross-sandbox collision)", () => {
+    const a = buildCloneArgs("https://github.com/owner/repo.git", "vol-a", "id-a");
+    const b = buildCloneArgs("https://github.com/owner/repo.git", "vol-b", "id-b");
+    expect(a).toContain(idLabel("id-a"));
+    expect(b).toContain(idLabel("id-b"));
+    expect(a).not.toContain(idLabel("id-b"));
+  });
+});
+
+describe("buildCpHelperCreateArgs — carries the sandbox labels (reliability-015)", () => {
+  it("labels the docker-cp helper container ca.sandbox=1 + ca.sandbox.id=<id>", () => {
+    const argv = buildCpHelperCreateArgs("ca-sbx-vol-demo", "ca-sbx-cp-deadbeef", "abc123");
+    const labelValues: string[] = [];
+    argv.forEach((tok, i) => {
+      if (tok === "--label") labelValues.push(argv[i + 1]);
+    });
+    expect(labelValues).toContain(SANDBOX_LABEL);
+    expect(labelValues).toContain(idLabel("abc123"));
+    expect(argv).toContain("ca-sbx-cp-deadbeef");
+  });
+
+  it("still routes the volume mount through the buildMountArgs chokepoint", () => {
+    const argv = buildCpHelperCreateArgs("ca-sbx-vol-demo", "helper", "abc123");
+    const expected = buildMountArgs([{ type: "volume", source: "ca-sbx-vol-demo", target: APP_DIR }]);
+    const m = argv.indexOf("--mount");
+    expect(m).toBeGreaterThanOrEqual(0);
+    expect(argv.slice(m, m + expected.length)).toEqual(expected);
+    for (const tok of argv) expect(tok).not.toMatch(/type=bind/);
+  });
+});
+
+describe("createSandbox failure teardown — containers before volume (reliability-015)", () => {
+  it("removes leftover labeled containers BEFORE removing the volume", async () => {
+    const calls: string[][] = [];
+    const dockerRun = (args: string[]) => {
+      calls.push(args);
+      if (args[0] === "volume" && args[1] === "create") return { code: 0, stdout: "vol", stderr: "" };
+      if (args[0] === "ps") return { code: 0, stdout: "leftover-container-id", stderr: "" };
+      return { code: 0, stdout: "", stderr: "" };
+    };
+
+    await expect(
+      createSandbox("https://github.com/owner/repo.git", {
+        id: "test-teardown-order",
+        dockerRun,
+        cloneRepo: async (): Promise<CloneResult> => ({ code: 1, stderr: "fatal: boom" }),
+      }),
+    ).rejects.toThrow();
+
+    const rmContainerIdx = calls.findIndex((c) => c[0] === "rm" && c[1] === "-f");
+    const rmVolumeIdx = calls.findIndex((c) => c[0] === "volume" && c[1] === "rm");
+    expect(rmContainerIdx).toBeGreaterThanOrEqual(0);
+    expect(rmVolumeIdx).toBeGreaterThan(rmContainerIdx);
+  });
+});
+
+// --------------------------------------------------------------------------
+// DOCKER-GATED integration layer (reliability-015).
+// Proves an orphaned clone/cp-helper-shaped container — the exact object a
+// hung clone or a host crash mid-create would leave behind — is reclaimable by
+// prune() purely because it carries the ca.sandbox=1 label, even though it is
+// not a registered sandbox object.
+// --------------------------------------------------------------------------
+function dockerAvailable(): boolean {
+  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
+  return r.status === 0;
+}
+const HAS_DOCKER = dockerAvailable();
+const d = HAS_DOCKER ? describe : describe.skip;
+
+d("orphaned helper containers [docker] — prune() reclaims them (reliability-015)", () => {
+  it("a labeled, detached clone-shaped orphan is removed by prune()", () => {
+    const id = "t173-clone-orphan";
+    const name = `ca-sbx-clone-orphan-${Date.now()}`;
+    // Simulate the crash scenario: the host process died before the `--rm`
+    // clone container exited, so a labeled, still-running container is left
+    // behind. `-d` (detached) here stands in for "the parent process is gone
+    // but the container survives" — the label is what makes it reclaimable.
+    const run = spawnSync(
+      "docker",
+      [
+        "run",
+        "-d",
+        "--label",
+        SANDBOX_LABEL,
+        "--label",
+        idLabel(id),
+        "--name",
+        name,
+        "alpine",
+        "sleep",
+        "300",
+      ],
+      { encoding: "utf8" },
+    );
+    expect(run.status, run.stderr).toBe(0);
+    const cid = run.stdout.trim();
+
+    try {
+      expect(listAllContainers()).toContain(cid);
+      const result = prune();
+      expect(result.removedContainers).toContain(cid);
+      expect(listAllContainers()).not.toContain(cid);
+    } finally {
+      spawnSync("docker", ["rm", "-f", name]);
+    }
+  }, 60_000);
+
+  it("a labeled, detached cp-helper-shaped orphan is removed by prune()", () => {
+    const id = "t173-cphelper-orphan";
+    const name = `ca-sbx-cp-orphan-${Date.now()}`;
+    const run = spawnSync(
+      "docker",
+      [
+        "run",
+        "-d",
+        "--label",
+        SANDBOX_LABEL,
+        "--label",
+        idLabel(id),
+        "--name",
+        name,
+        "alpine",
+        "sleep",
+        "300",
+      ],
+      { encoding: "utf8" },
+    );
+    expect(run.status, run.stderr).toBe(0);
+    const cid = run.stdout.trim();
+
+    try {
+      const result = prune();
+      expect(result.removedContainers).toContain(cid);
+    } finally {
+      spawnSync("docker", ["rm", "-f", name]);
+    }
+  }, 60_000);
 });
 
 // ---------------------------------------------------------------------------
