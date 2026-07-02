@@ -1,6 +1,6 @@
 # observability — lens mandate
 
-Executed by `tribunal-observability-reviewer`. Evidence-or-drop on every check.
+Executed by `tribunal-observability-reviewer`. Write contract + evidence discipline: `finding-record.md`.
 
 ## Checklist
 - Missing or inconsistent structured logging on critical paths.

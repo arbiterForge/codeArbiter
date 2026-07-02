@@ -1,6 +1,6 @@
 # performance — lens mandate
 
-Executed by `tribunal-performance-reviewer`. Evidence-or-drop on every check; flag a signature only where the path is plausibly hot — no speculative micro-optimization.
+Executed by `tribunal-performance-reviewer`. Write contract + evidence discipline: `finding-record.md`; flag a signature only where the path is plausibly hot — no speculative micro-optimization.
 
 ## Checklist
 - N+1 queries and per-iteration IO in loops.

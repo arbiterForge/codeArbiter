@@ -1,6 +1,6 @@
 # typesafety — lens mandate
 
-Executed by `tribunal-typesafety-reviewer`. Evidence-or-drop on every check. Skip entirely if the language has no static type system.
+Executed by `tribunal-typesafety-reviewer`. Write contract + evidence discipline: `finding-record.md`. Skip entirely if the language has no static type system.
 
 ## Checklist
 - Footgun public interfaces: easy to call wrong, no defaults, silent coercion.

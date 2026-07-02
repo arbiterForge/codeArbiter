@@ -1,6 +1,6 @@
 # reliability — lens mandate
 
-Executed by `tribunal-reliability-reviewer`. Evidence-or-drop on every check.
+Executed by `tribunal-reliability-reviewer`. Write contract + evidence discipline: `finding-record.md`.
 
 ## Checklist
 - Async inventory: every `await`, `Promise`, and `.then()` chain has a `.catch`/`try-catch`.
