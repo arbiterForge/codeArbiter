@@ -22,12 +22,12 @@ Read these, or STOP and surface the gap — never guess a command or a path:
 
 This lane is expensive. Orient and get explicit go-ahead before dispatching anything.
 
-- **Resume check.** If `.codearbiter/reports/<run-id>/` exists for today's scope, recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting. On resume, skip the estimate.
+- **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. If found, check completion: incomplete (no `report-written` event in its `run.jsonl`) means either resumable or stale, judged by that run dir's latest `run.jsonl` timestamp. Younger than 7 days → recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting; skip the estimate. Older than 7 days → STOP and ask the user to resume anyway or start fresh — the codebase may have drifted under the findings, and stale-tree findings must not silently merge with fresh ones. Complete → start a fresh run.
 - **Size the job.** Count LOC, file count, and language breakdown with the commands in `references/cost-and-models.md`.
 - **Estimate cost.** Compute the token band from the v0 heuristic in `references/cost-and-models.md`. Present it plainly: the band, the inputs it came from, and that it is a rough estimate this run will help calibrate.
 - **Recommend the model.** State that this lane should be driven by the highest-reasoning model available at high effort — a cheap model inflates false positives, and these findings file real issues. Name the concrete recommendation from the roster.
 - **Offer cost control.** If the band is large, offer to narrow scope to a subtree, trim the Tier-2 lenses, or lower concurrency (`references/cost-and-models.md`).
-- Establish `RUN_ID` = `<UTC-date>-<scope-slug>`; create `.codearbiter/reports/<run-id>/`; open `run.jsonl`.
+- Establish `RUN_ID` = `<UTC-date>-<scope-slug>` on a fresh run; create `.codearbiter/reports/<run-id>/`; open `run.jsonl`. On resume, reuse the existing `RUN_ID` as-is — the date is the run's creation date and never changes on resume.
 
 Gate: the user has acknowledged the estimated cost and confirmed the model. An unacknowledged run does not pass.
 
