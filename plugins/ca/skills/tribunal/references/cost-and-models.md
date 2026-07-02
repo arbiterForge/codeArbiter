@@ -40,6 +40,18 @@ Drive this lane with the highest-reasoning model available at high effort. A che
 
 API strings: `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5-20251001`. On proprietary code all tiers must be approved (Anthropic) models — never an external worker.
 
+## Default wave partition
+
+The default dispatch order (Phase 2), aligned with the model tiers above:
+
+| Wave | Lenses |
+|---|---|
+| 1 | appsec, architecture, reliability |
+| 2 | secrets-supply, migration, test-fidelity |
+| 3 | coverage, observability, performance, typesafety |
+
+A lens dropped from the roster at Phase 1 (scope-inapplicable) is simply absent from its wave — no renumbering. Phase 0/1 MAY choose a different partition for cause (e.g. a migration-heavy repo pulling `migration` into wave 1), but whichever partition is used MUST be recorded in `run-started` (`schemas.md`) — resume reads the recorded partition, never re-derives it.
+
 ## Concurrency & cost control
 
 Concurrency ≤5 lenses in flight regardless of roster size — the roster is a budget, not a simultaneous-dispatch target. Cost levers offered at Phase 0: narrow scope to a subtree; trim the Tier-2 lenses (`performance`, `observability`, `typesafety`); lower concurrency.

@@ -38,12 +38,13 @@ Map before reviewing; the map decides what gets scrutiny.
 - Produce the inventory (inline, or on a large repo dispatch the optional cheap mappers per `references/cost-and-models.md`): file tree, language breakdown, entry points/routes, core-logic and shared-utility locations, dependency and integration surface. Write `inventory.md`.
 - Apply the judgment overlay in `references/ai-markers.md`: risk-rank directories (untrusted input, money, auth, PII, churn = highest), mark trust boundaries, record AI-authorship markers and an iteration-depth estimate. High-marker / high-iteration areas carry a scrutiny boost and a small severity prior.
 - Choose the active lenses — the full roster minus any whose concern is absent from scope (no migrations → drop the migration lens). Record launched/skipped as `run.jsonl` events.
+- Choose the wave partition — the default in `references/cost-and-models.md`, or a repartition for cause — and record it in the `run-started` event (`references/schemas.md`); resume reads this recorded partition, never re-derives it.
 
 Gate: `inventory.md` written with the risk/boundary/marker overlay, and the active-lens set recorded.
 
 ## Phase 2 — Roster dispatch (dual output: finding files + summary) · gate: BLOCK
 
-Dispatch the active lenses in priority-ordered waves at the concurrency from `references/cost-and-models.md` (≤5 in flight). Give each agent only its scope slice, on the model/effort from `references/cost-and-models.md`; the agent itself reads its own mandate (`references/lenses/<lens>.md`) and the finding contract (`references/finding-record.md`), and loads neither the other lenses' mandates nor the orchestrator schemas. The orchestrator reads `references/finding-record.md` to read findings at triage, and consults a lens mandate only to adjudicate that lens's finding.
+Dispatch the active lenses in the wave partition recorded at Phase 1 (default in `references/cost-and-models.md`) at the concurrency from `references/cost-and-models.md` (≤5 in flight). Give each agent only its scope slice, on the model/effort from `references/cost-and-models.md`; the agent itself reads its own mandate (`references/lenses/<lens>.md`) and the finding contract (`references/finding-record.md`), and loads neither the other lenses' mandates nor the orchestrator schemas. The orchestrator reads `references/finding-record.md` to read findings at triage, and consults a lens mandate only to adjudicate that lens's finding.
 
 - Each `tribunal-*` agent writes each finding to its own file `findings/<lens>/<finding-id>.json` the moment it is found — one file per finding, never a batched write at the end (write contract: `references/finding-record.md`).
 - **Evidence-or-drop.** Every finding cites a concrete `path:line` and the minimal snippet. An absence claim — "no handler", "no teardown", "missing validation" — requires reading the whole unit, never a truncated window.
