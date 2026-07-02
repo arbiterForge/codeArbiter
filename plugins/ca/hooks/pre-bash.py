@@ -22,9 +22,10 @@ import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
-    AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE, GATE_MARKER_NAMES, SECRET_RE,
-    arbiter_active, block, content_digest, is_migration_path, line_digest,
-    marker_fresh, project_root, read_input, tool_input, utf8_stdio,
+    AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE,
+    GATE_MARKER_NAMES, SECRET_RE, arbiter_active, block, content_digest,
+    is_migration_path, line_digest, marker_fresh, project_root, read_input,
+    tool_input, utf8_stdio,
 )
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
@@ -680,12 +681,19 @@ def _run(root):
                           f"per file (commit-gate skill).")
 
     # H-05: the audit trail is append-only — block truncation/removal of the
-    # audit logs via shell verbs (Write/Edit are guarded separately).
-    if ("overrides.log" in cmd or "triage.log" in cmd or "sprint-log.md" in cmd) and (
+    # audit logs via shell verbs (Write/Edit are guarded separately). The
+    # substring pre-filter is a cheap short-circuit before the two regexes
+    # below (avoids running them against every command); it is DERIVED from
+    # _hooklib.AUDIT_LOG_BASENAMES (the single authoritative name list)
+    # instead of a hand-copied literal list, so a future audit log added there
+    # can never silently skip this shell flank (the exact drift
+    # security-controls.md § Audit trail centralization exists to prevent).
+    if any(n in cmd for n in AUDIT_LOG_BASENAMES) and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)):
-        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
-                      "are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting "
-                      "the audit trail is prohibited; append with '>>' only.")
+        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
+                      "gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, "
+                      "overwriting, or deleting the audit trail is prohibited; append with "
+                      "'>>' only.")
 
     # H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
     # pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,
