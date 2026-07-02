@@ -680,12 +680,18 @@ def _run(root):
                           f"per file (commit-gate skill).")
 
     # H-05: the audit trail is append-only — block truncation/removal of the
-    # audit logs via shell verbs (Write/Edit are guarded separately).
-    if ("overrides.log" in cmd or "triage.log" in cmd or "sprint-log.md" in cmd) and (
+    # audit logs via shell verbs (Write/Edit are guarded separately). The
+    # substring pre-filter is a cheap short-circuit before the two regexes
+    # below (avoids running them against every command); it must name every
+    # AUDIT_LOG_NAMES member or a new log silently skips this whole check —
+    # gate-events.log (observability-001, #186) joins the other three here.
+    if ("overrides.log" in cmd or "triage.log" in cmd or "sprint-log.md" in cmd
+            or "gate-events.log" in cmd) and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)):
-        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
-                      "are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting "
-                      "the audit trail is prohibited; append with '>>' only.")
+        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
+                      "gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, "
+                      "overwriting, or deleting the audit trail is prohibited; append with "
+                      "'>>' only.")
 
     # H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
     # pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,

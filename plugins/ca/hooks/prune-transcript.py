@@ -34,6 +34,27 @@ def utf8_stdio():
             pass
 
 
+def staleness_check(payload):
+    """(CONFIRM-09) WARN, never block, when an active /dev or /sprint flow's
+    marker has sat past the staleness window with no matching audit-log
+    activity — see _hooklib.staleness_warning for the detection rule and
+    security-controls.md § Audit trail for the accepted-strategy rationale.
+
+    Only runs when the repo has opted in (arbiter_active). Best-effort: ANY
+    failure (missing _hooklib import, a broken root, an unreadable marker)
+    degrades to doing nothing — this must never affect prune-transcript.py's
+    hook-mode exit code (always 0) or block the user's prompt."""
+    try:
+        import _hooklib
+        root = payload.get("cwd") or os.getcwd()
+        if not _hooklib.arbiter_active(root):
+            return
+        for msg in _hooklib.staleness_warning(root):
+            _hooklib.warn(msg)
+    except Exception:  # noqa: BLE001 — a missed warn is acceptable; a crash is not
+        pass
+
+
 def resolve(path_or_id):
     """Accept a direct path or a bare session id (resolved under ~/.claude)."""
     if os.path.isfile(path_or_id):
@@ -120,6 +141,12 @@ def main(argv=None):
             except Exception:  # noqa: BLE001
                 payload = {}
             if isinstance(payload, dict) and payload.get("hook_event_name"):
+                # CONFIRM-09 staleness-warn: runs unconditionally on
+                # UserPromptSubmit (independent of CODEARBITER_PRUNE, which
+                # gates hook_run's own pruning logic below) — a WARN-only
+                # check must not depend on an unrelated opt-in env var.
+                if payload.get("hook_event_name") == "UserPromptSubmit":
+                    staleness_check(payload)
                 return hook_run(payload)
         print("usage: prune-transcript.py <path|session-id> [--execute] ...",
               file=sys.stderr)

@@ -185,6 +185,28 @@ class TestH05AppendOnly(_PreEditFixture):
         )
         self.assertAllowed(res)
 
+    def test_rewrite_of_gate_events_log_is_blocked(self):
+        # gate-events.log (observability-001, #186) is the durable
+        # BLOCK/REMIND/WARN sink — an append-only audit artifact like the rest.
+        self._write(os.path.join(self.ca, "gate-events.log"),
+                    "[2026-01-01T00:00:00Z] BLOCK [H-01] hook=pre-bash.py | seed\n")
+        res = self.run_edit(
+            os.path.join(self.ca, "gate-events.log"),
+            old_string="[2026-01-01T00:00:00Z] BLOCK [H-01] hook=pre-bash.py | seed\n",
+            new_string="[2026-01-01T00:00:00Z] BLOCK [H-01] hook=pre-bash.py | tampered\n",
+        )
+        self.assertBlocked(res, "H-05")
+
+    def test_pure_append_to_gate_events_log_is_allowed(self):
+        old = "[2026-01-01T00:00:00Z] BLOCK [H-01] hook=pre-bash.py | seed\n"
+        self._write(os.path.join(self.ca, "gate-events.log"), old)
+        res = self.run_edit(
+            os.path.join(self.ca, "gate-events.log"),
+            old_string=old,
+            new_string=old + "[2026-01-01T00:01:00Z] WARN hook=session-start.py | more\n",
+        )
+        self.assertAllowed(res)
+
     def test_empty_old_string_on_audit_log_is_blocked(self):
         # migration-003: `new.startswith("")` is ALWAYS True, so an Edit with an
         # empty old_string slipped the append-only check entirely — it could

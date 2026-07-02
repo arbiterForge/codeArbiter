@@ -94,6 +94,11 @@ class TestH05Write(_PreWriteFixture):
         # sprint-log.md is the /sprint audit record — a Write overwrites it.
         self.assertBlocked(self.run_write(os.path.join(self.ca, "sprint-log.md")), "H-05")
 
+    def test_write_to_gate_events_log_is_blocked(self):
+        # gate-events.log (observability-001, #186) is the durable
+        # BLOCK/REMIND/WARN sink — an append-only audit artifact like the rest.
+        self.assertBlocked(self.run_write(os.path.join(self.ca, "gate-events.log")), "H-05")
+
 
 class TestH11Write(_PreWriteFixture):
     def test_write_to_numbered_adr_without_marker_is_blocked(self):

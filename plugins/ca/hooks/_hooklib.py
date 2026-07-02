@@ -53,7 +53,11 @@
 #   block(tag, msg) -> None              BLOCK tool call: print to stderr and exit 2
 #   remind(tag, msg) -> None             non-blocking nudge to stderr
 #   warn(msg) -> None                    loud degradation breadcrumb to stderr
+#   staleness_warning(root, now=None, window_minutes=30) -> list[str]
+#                                         (CONFIRM-09) active-flow audit-log staleness
+#                                         messages, WARN-only, never raises
 
+import datetime
 import hashlib
 import json
 import os
@@ -118,7 +122,15 @@ ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
 # and DECISIONS_PATH_RE extends it to a full ADR file path. `[\\/]+` matches the
 # norm_path'd `/` as well as a raw backslash, so both the file-path and shell
 # flanks derive from one source.
-AUDIT_LOG_NAMES = r"(?:(?:overrides|triage)\.log|sprint-log\.md)"
+#
+# gate-events.log (observability-001, #186) joins this set: it is the durable,
+# mechanical BLOCK/REMIND/WARN sink block()/remind()/warn() append to below —
+# an append-only audit artifact exactly like the other three, so it gets the
+# SAME H-05 tool-call protection (Write/Edit + shell) for free via this one
+# alternation, with no separate guard to maintain. Note this protects it only
+# from Write/Edit/Bash TOOL CALLS; the hooks' own os-level `open(..., "a")`
+# append (below) is plain file I/O, never a tool call, so H-05 never gates it.
+AUDIT_LOG_NAMES = r"(?:(?:overrides|triage|gate-events)\.log|sprint-log\.md)"
 AUDIT_LOG_RE = re.compile(r"\.codearbiter/" + AUDIT_LOG_NAMES + r"$")
 DECISIONS_DIR_RE = r"\.codearbiter[\\/]+decisions"
 DECISIONS_PATH_RE = re.compile(DECISIONS_DIR_RE + r"[\\/]+.+\.md$")
@@ -141,7 +153,8 @@ GATE_MARKER_NAMES = r"(?:security-gate-passed|migration-gate-passed)"
 
 def is_audit_log(rel):
     """True iff `rel` is one of the append-only .codearbiter audit logs
-    (overrides.log, triage.log, sprint-log.md) — the H-05 guard set."""
+    (overrides.log, triage.log, sprint-log.md, gate-events.log) — the H-05
+    guard set."""
     return bool(AUDIT_LOG_RE.search(norm_path(rel)))
 
 
@@ -625,17 +638,117 @@ def marker_fresh(path, minutes):
         return False
 
 
+def _log_gate_event(kind, tag, msg):
+    """Best-effort durable append of one gate decision to
+    .codearbiter/gate-events.log (observability-001, issue #186) — the durable
+    sink block()/remind()/warn() funnel every BLOCK/REMIND/WARN through, so a
+    decision is no longer visible ONLY in the ephemeral per-turn stderr
+    transcript.
+
+    One line per event: `[ISO-8601Z] KIND [tag] hook=<script> | msg`. `tag` may
+    be None (warn() carries no tag) — the bracket is simply omitted then.
+    `hook` is the invoking script's basename (`sys.argv[0]`), the one
+    "which hook fired this" signal available at this shared layer without
+    threading a new parameter through all 21 call sites across the 16 entry
+    hooks.
+
+    FAIL-OPEN BY CONTRACT (AC-2): this function must NEVER raise and must
+    NEVER be allowed to change the caller's exit code or suppress its stderr
+    output. A missing `.codearbiter/` dir, an unwritable/locked/missing log
+    file, or project_root() itself misbehaving are ALL swallowed silently
+    here — the ONE deliberate exception to this module's fail-loud discipline,
+    mirroring the documented fail-open exception in read_input()."""
+    try:
+        root = project_root()
+        cad = os.path.join(root, ".codearbiter")
+        if not os.path.isdir(cad):
+            return  # repo never opted in (no .codearbiter/) — nothing to append to
+        ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        hook = os.path.basename(sys.argv[0]) if sys.argv and sys.argv[0] else "-"
+        tag_part = f"[{tag}] " if tag else ""
+        line = f"[{ts}] {kind} {tag_part}hook={hook} | {msg}\n"
+        with open(os.path.join(cad, "gate-events.log"), "a",
+                  encoding="utf-8", newline="\n") as f:
+            f.write(line)
+    except Exception:  # noqa: BLE001 — fail-open: the sink must never affect the gate
+        pass
+
+
 def block(tag, msg):
     """BLOCK the tool call: stderr is surfaced to Claude, exit 2."""
+    _log_gate_event("BLOCK", tag, msg)
     print(f"BLOCKED [{tag}]: {msg}", file=sys.stderr)
     sys.exit(2)
 
 
 def remind(tag, msg):
     """Non-blocking nudge to stderr."""
+    _log_gate_event("REMIND", tag, msg)
     print(f"REMINDER [{tag}]: {msg}", file=sys.stderr)
 
 
 def warn(msg):
     """Loud degradation/diagnostic breadcrumb — never silent."""
+    _log_gate_event("WARN", None, msg)
     print(f"codeArbiter hook: {msg}", file=sys.stderr)
+
+
+# --- CONFIRM-09: audit-trail completeness staleness-warn ---------------------
+# The H-05 guards above are INTEGRITY controls (a written audit line can't be
+# rewritten/deleted) — they don't compel a write in the first place. This is
+# the accepted-strategy (a) completeness half (security-controls.md § Audit
+# trail, 2026-07-02): a lightweight WARN, never a gate, surfaced when an
+# active long-running flow's marker has sat around past `window_minutes` with
+# no matching activity in its expected audit log.
+#
+# Only /dev and /sprint have a persistent "in-progress" marker today
+# (.codearbiter/.markers/dev-active and .codearbiter/sprint-active — the same
+# state _arbiterstatelib.dev_active()/arbiter_state() already read). /override
+# is a single synchronous action (announce-then-log in one turn, per
+# override.md) with no analogous "still in progress" marker anywhere in the
+# framework, so per CONFIRM-09's own "do not invent new state" constraint it
+# is not tracked here — there is no existing signal to detect it from.
+_STALE_FLOWS = (
+    # (flow name, marker path parts, expected-log path parts)
+    ("dev", (".markers", "dev-active"), ("overrides.log",)),
+    ("sprint", ("sprint-active",), ("sprint-log.md",)),
+)
+
+
+def staleness_warning(root, now=None, window_minutes=30):
+    """(CONFIRM-09) One WARN message per active flow (see _STALE_FLOWS) whose
+    marker has existed for at least `window_minutes` with no audit-log
+    activity (marker touch OR log write) inside that same window. Returns []
+    when nothing is stale (including when no flow is active at all).
+
+    WARN-ONLY BY CONTRACT: this function only computes strings — it has no
+    side effects, never calls warn()/block() itself, and can NEVER raise (any
+    per-flow stat failure just skips that flow, exactly like marker_fresh's
+    own degrade-to-False). The caller decides whether to surface the result,
+    typically via warn(), which is itself non-blocking."""
+    now = time.time() if now is None else now
+    cad = os.path.join(root, ".codearbiter")
+    messages = []
+    for name, marker_parts, log_parts in _STALE_FLOWS:
+        try:
+            marker = os.path.join(cad, *marker_parts)
+            if not os.path.isfile(marker):
+                continue
+            marker_mtime = os.path.getmtime(marker)
+            if now - marker_mtime < window_minutes * 60:
+                continue  # flow started too recently to call it stale yet
+            log_path = os.path.join(cad, *log_parts)
+            try:
+                log_mtime = os.path.getmtime(log_path)
+            except OSError:
+                log_mtime = 0  # log never written at all -> definitely stale
+            last_activity = max(marker_mtime, log_mtime)
+            if now - last_activity >= window_minutes * 60:
+                messages.append(
+                    f"/{name} has been active for over {window_minutes} min with no "
+                    f"matching {os.path.basename(log_path)} entry since — confirm the "
+                    f"expected audit line landed (CONFIRM-09)."
+                )
+        except Exception:  # noqa: BLE001 — never raise; skip this flow, not the caller
+            continue
+    return messages

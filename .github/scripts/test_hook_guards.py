@@ -203,14 +203,21 @@ def main():
                     "echo x > .codearbiter/sprint-log.md",
                     "echo x >| .codearbiter/sprint-log.md",
                     "rm .codearbiter/sprint-log.md",
-                    "Set-Content .codearbiter/sprint-log.md 'gone'"):
+                    "Set-Content .codearbiter/sprint-log.md 'gone'",
+                    # gate-events.log (observability-001, #186) joins the append-only
+                    # set — the durable BLOCK/REMIND/WARN sink gets the same H-05
+                    # tool-call protection as the other three audit logs.
+                    "echo x > .codearbiter/gate-events.log",
+                    "rm .codearbiter/gate-events.log"):
             expect_block(fx, cmd, "H-05", f"H-05 block: {cmd}")
         for cmd in ("echo entry >> .codearbiter/overrides.log",
                     "echo entry >> .codearbiter/sprint-log.md",
+                    "echo entry >> .codearbiter/gate-events.log",
                     "cat .codearbiter/overrides.log",
                     "grep GATE .codearbiter/overrides.log",
                     "cat .codearbiter/sprint-log.md",
-                    "tail -5 .codearbiter/triage.log"):
+                    "tail -5 .codearbiter/triage.log",
+                    "cat .codearbiter/gate-events.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
 
         # ---- H-11: no shell writes into .codearbiter/decisions/ --------------
