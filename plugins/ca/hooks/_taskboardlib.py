@@ -106,9 +106,11 @@ _TOP_RE = re.compile(r"^- ")                 # any top-level bullet (column 0)
 # body; group 2 is the actual content.
 _CONTENT_RE = re.compile(r"^- (\[[ xX~]\]\s*)?(.*)$")
 _ID_RE = re.compile(r"[a-z][a-z0-9]*\.[a-z][a-z0-9]*\.[0-9]{4,}\Z")
-# A token that LOOKS like an ID (three dot-separated parts) — accepts malformed
-# IDs too, so validate_id() can later flag them rather than the parser hiding them.
-_IDISH_RE = re.compile(r"^[^\s.]+\.[^\s.]+\.[^\s.]+$")
+# A token that LOOKS like an ID (three OR MORE dot-separated parts) — accepts
+# malformed IDs too (including an over-segmented "a.b.c.d"), so validate_id() can
+# later flag them and set_state() can target them, rather than the parser hiding a
+# 4-segment token inside the title where it becomes un-targetable and un-lintable.
+_IDISH_RE = re.compile(r"^[^\s.]+(?:\.[^\s.]+){2,}$")
 _SUB_RE = re.compile(r"^\s+-\s*([^:]+):\s*(.*)$")   # indented "  - Key: value"
 # A lifecycle marker sitting at (or near) the start of a line — used by lint to
 # catch a task whose marker is NOT in the canonical column-0 "- [m] " position

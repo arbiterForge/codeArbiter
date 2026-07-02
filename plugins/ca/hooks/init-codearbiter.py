@@ -152,6 +152,19 @@ def main(argv=None):
                 f.write(content)
             created.append(fname)
 
+    # #161: install the git-level enforcement backstop (pre-commit/pre-push) so
+    # git mutations are gated at the operation itself, not only at the literal
+    # Bash command string. Best-effort — a repo without a git dir, or a foreign
+    # existing hook, is reported by install(), never fatal to scaffolding.
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from _githooks import install as _install_git_hooks
+        gh = _install_git_hooks(root)
+        if gh:
+            print("git hooks: " + ", ".join(gh))
+    except Exception as e:  # noqa: BLE001
+        print(f"git hooks: install skipped ({e})", file=sys.stderr)
+
     print(f"SCAFFOLDED .codearbiter/ at {cad}")
     print("created: " + ", ".join(created))
     print(f"arbiter: enabled (stage {args.stage}); CONTEXT.md is a stub (no <!--INITIALIZED--> sentinel).")

@@ -1,0 +1,213 @@
+#!/usr/bin/env python3
+# codeArbiter — git-level enforcement backstop (#161).
+#
+# Installed into .git/hooks/pre-commit and .git/hooks/pre-push by _githooks.py.
+# It runs at the GIT OPERATION itself, OUTSIDE Claude Code — so a commit built
+# through shell indirection (`g=git; c=commit; $g $c -m x`) still triggers it,
+# unlike the PreToolUse Bash hook (pre-bash.py), which only ever sees the literal
+# command string and is defeated by variable/expansion spellings. The two layers
+# are complementary: pre-bash.py gives fast, well-worded feedback on the common
+# spellings; this is the spelling-proof backstop underneath.
+#
+# It mirrors pre-bash.py's commit/push gates and reuses the SAME detection
+# primitives from _hooklib (CRYPTO_RE / SECRET_RE / line_digest / content_digest
+# / is_migration_path / marker_fresh), so the two enforcement points can never
+# drift on what counts as sensitive or as a migration, or on how a gate-pass
+# marker binds to the lines it approved.
+#
+# Contract: a git hook aborts its operation on ANY non-zero exit, so a BLOCK is
+# exit 1 with a loud stderr message. Exit 0 allows. The security/migration scans
+# fail CLOSED on a git read error (pre-bash's "ambiguity resolves CLOSED"
+# stance); a repo that is not arbiter-enabled is a no-op (exit 0).
+
+import os
+import subprocess
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _hooklib import (  # noqa: E402
+    CRYPTO_RE, SECRET_RE, arbiter_active, content_digest, is_migration_path,
+    line_digest, marker_fresh, project_root, utf8_stdio,
+)
+
+
+def _git(args, cwd):
+    try:
+        return subprocess.run(
+            ["git"] + args, cwd=cwd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=10,
+        )
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def block(tag, msg):
+    print(f"BLOCKED [{tag}]: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def is_protected_branch(branch):
+    return (branch or "").lower() in ("main", "master")
+
+
+def current_branch(cwd):
+    r = _git(["branch", "--show-current"], cwd)
+    return r.stdout.strip() if r and r.returncode == 0 else ""
+
+
+def head_on_protected_tip(cwd):
+    """True when HEAD (typically detached) points at a protected branch's tip —
+    a commit there still lands on main/master's history. Mirrors pre-bash.py."""
+    r = _git(["show-ref", "--head", "refs/heads/main", "refs/heads/master"], cwd)
+    if r is None or r.returncode not in (0, 1):
+        return False
+    head_sha, protected = None, set()
+    for ln in r.stdout.splitlines():
+        parts = ln.split()
+        if len(parts) != 2:
+            continue
+        sha, ref = parts
+        if ref == "HEAD":
+            head_sha = sha
+        elif ref in ("refs/heads/main", "refs/heads/master"):
+            protected.add(sha)
+    return head_sha is not None and head_sha in protected
+
+
+def cached_added_lines(cwd):
+    """Added (`+`) lines of the staged diff — exactly what a commit records
+    (including `commit -a` sweeps, which git has already staged by pre-commit
+    time). None on a git read error → caller fails closed."""
+    r = _git(["diff", "--cached"], cwd)
+    if r is None or r.returncode != 0:
+        return None
+    return [ln[1:] for ln in r.stdout.splitlines()
+            if ln.startswith("+") and not ln.startswith("+++")]
+
+
+def cached_names(cwd):
+    r = _git(["diff", "--cached", "--name-only"], cwd)
+    if r is None or r.returncode != 0:
+        return None
+    return {p for p in r.stdout.splitlines() if p.strip()}
+
+
+def read_worktree(cwd, rel):
+    p = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
+    try:
+        if os.path.getsize(p) > 1_000_000:
+            return None
+        with open(p, encoding="utf-8", errors="replace") as f:
+            return f.read()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _marker_set(root, name):
+    try:
+        with open(os.path.join(root, ".codearbiter", ".markers", name),
+                  encoding="utf-8") as f:
+            return set(f.read().split())
+    except Exception:  # noqa: BLE001
+        return set()
+
+
+def pre_commit(root):
+    cwd = root
+    # H-01: no commit onto a protected branch (or a detached HEAD on its tip).
+    branch = current_branch(cwd)
+    if is_protected_branch(branch) or (not branch and head_on_protected_tip(cwd)):
+        target = branch or "main/master (detached HEAD)"
+        block("H-01", f"Direct commit to {target} is prohibited (ORCHESTRATOR §3) — this is "
+                      f"the git-level backstop (#161). Create a feature branch.")
+
+    # H-09b / H-10b: a commit introducing crypto/secret changes needs a fresh,
+    # line-covering security-gate pass. Reuses the exact _hooklib primitives.
+    added = cached_added_lines(cwd)
+    if added is None:
+        block("H-09b", "the staged diff for the crypto/secret scan could not be read — "
+                       "failing closed (ORCHESTRATOR §2).")
+    sensitive = [ln for ln in added if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
+    if sensitive:
+        joined = "\n".join(added)
+        touches_crypto = bool(CRYPTO_RE.search(joined))
+        kind = "crypto/TLS" if touches_crypto else "secret"
+        tag = "H-09b" if touches_crypto else "H-10b"
+        skill = "crypto-compliance" if touches_crypto else "secret-handling"
+        marker = os.path.join(root, ".codearbiter", ".markers", "security-gate-passed")
+        if not marker_fresh(marker, 30):
+            block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
+                       f"recorded (#161 git backstop). Run the {skill} gate, then commit.")
+        approved = _marker_set(root, "security-gate-passed")
+        uncovered = [ln for ln in sensitive if line_digest(ln) not in approved]
+        if uncovered:
+            block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered by the "
+                       f"recorded security-gate pass (#161 git backstop) — re-run the {skill} "
+                       f"gate so it reviews the current diff, then commit.")
+
+    # H-14: a staged migration needs a content-bound migration-review pass.
+    names = cached_names(cwd)
+    if names is None:
+        block("H-14", "the staged file list for the migration scan could not be read — "
+                      "failing closed (ORCHESTRATOR §2).")
+    migs = sorted(p for p in names if is_migration_path(p, root))
+    if migs:
+        approved = _marker_set(root, "migration-gate-passed")
+        uncovered = []
+        for rel in migs:
+            text = read_worktree(cwd, rel)
+            if text is None or content_digest(text) not in approved:
+                uncovered.append(rel)
+        if uncovered:
+            block("H-14", f"{len(uncovered)} staged migration file(s) lack a recorded "
+                          f"migration-review pass (#161 git backstop): {', '.join(uncovered)}. "
+                          f"Run the migration-review gate, then commit.")
+
+
+def pre_push(root):
+    cwd = root
+    # Git feeds pre-push one line per ref: `<local ref> <local sha> <remote ref>
+    # <remote sha>`. A deletion has an all-zero local sha; a create has an
+    # all-zero remote sha.
+    data = ""
+    try:
+        data = sys.stdin.read()
+    except Exception:  # noqa: BLE001
+        data = ""
+    for ln in data.splitlines():
+        parts = ln.split()
+        if len(parts) < 4:
+            continue
+        _lref, lsha, rref, rsha = parts[0], parts[1], parts[2], parts[3]
+        # H-01: no push whose destination is a protected branch (main/master),
+        # in any refspec spelling — `HEAD:main`, `feature:main`, `:main`.
+        if rref.startswith("refs/heads/") and is_protected_branch(rref.rsplit("/", 1)[-1]):
+            block("H-01", f"Pushing to a protected branch ('{rref}') is prohibited "
+                          f"(ORCHESTRATOR §3, #161 git backstop) — main moves only via a merged PR.")
+        # H-02: no force / non-fast-forward update. Skip creates/deletes
+        # (all-zero sha). A non-ff update is one where the remote sha is NOT an
+        # ancestor of the local sha; treat an unresolvable check as force (closed).
+        zero = lambda s: set(s) == {"0"}  # noqa: E731
+        if lsha and rsha and not zero(lsha) and not zero(rsha):
+            anc = _git(["merge-base", "--is-ancestor", rsha, lsha], cwd)
+            if anc is None or anc.returncode != 0:
+                block("H-02", "Force-push / non-fast-forward update is prohibited "
+                              "(ORCHESTRATOR §3, #161 git backstop).")
+
+
+def main():
+    utf8_stdio()
+    root = project_root()
+    if not arbiter_active(root):
+        sys.exit(0)
+    phase = sys.argv[1] if len(sys.argv) > 1 else ""
+    if phase == "pre-commit":
+        pre_commit(root)
+    elif phase == "pre-push":
+        pre_push(root)
+    # Unknown phase: no-op allow.
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
