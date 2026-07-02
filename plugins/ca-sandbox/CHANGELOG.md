@@ -4,6 +4,27 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ---
 
+## [0.1.3] — 2026-07-02 — Single docker primitive + helper-container hardening
+
+Consolidation and hardening of the sandbox driver's container handling (part of the tribunal remediation).
+
+### Changed
+- **One shared docker primitive (#180).** Extracted `tools/docker.ts` as the single module every `docker` invocation flows through, replacing duplicated spawn/argv logic across build/run/exec/cp/create/registry/claude-inside — so the argv-array discipline (no `shell: true`) and the container-hardening flags cannot drift between call sites.
+
+### Fixed
+- **Helper containers are labeled and time-bound (#173).** The transient helper containers the driver spawns now carry an identifying label and a bounded lifetime, so an interrupted run cannot leak an unlabeled, unbounded container.
+
+---
+
+## [0.1.2] — 2026-07-02 — Tribunal quick-kills
+
+The ca-sandbox portion of the tribunal quick-kill fixes.
+
+### Fixed
+- **Robustness and diagnosability hardening (#197).** Atomic provenance/state writes, typed `docker` spawn options (with `shell` omitted from the typed opts), removal of dead re-binds, and fail-closed CI scripts in the sandbox tooling.
+
+---
+
 ## [0.1.1] — 2026-06-21 — Dependency bump
 
 Dev-toolchain dependency bump for the sandbox driver (`tools/`). No payload behavior change; consolidates Dependabot #112 and #114 into one synced lockfile.
