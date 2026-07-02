@@ -12,6 +12,7 @@ Read-only. Surface structural defects in the assigned scope. Modify nothing.
 ## Required Reading
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/architecture.md` — the checklist and exposure denominator.
 - `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` — the finding/v1 record, append rule, id/dedup conventions.
+- `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/ai-markers.md` — the structural thresholds the lens checklist cites.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — the conventions structure is judged against; `inventory.md` in the run dir — the import/caller map.
 
 ## Scope

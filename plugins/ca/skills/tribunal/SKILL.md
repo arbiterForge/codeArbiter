@@ -5,7 +5,7 @@ description: The deep, rarely-convened whole-codebase audit lane. Routed to when
 
 # tribunal
 
-The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Routed to when the user invokes `/ca:tribunal`. Ten specialist lenses judge the codebase; every finding persists to its own file (plus append-only triage/run logs) under a run dir that survives compaction and disconnects, so the run resumes from disk.
+The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Routed to when the user invokes `/ca:tribunal`. Eleven specialist lenses judge the codebase; every finding persists to its own file (plus append-only triage/run logs) under a run dir that survives compaction and disconnects, so the run resumes from disk.
 
 ## Pre-flight
 

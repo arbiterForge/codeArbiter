@@ -37,7 +37,6 @@ Drive this lane with the highest-reasoning model available at high effort. A che
 | tribunal-typesafety-reviewer | Sonnet 5 | medium |
 | tribunal-coverage-reviewer | Sonnet 5 | medium |
 | tribunal-infra-reviewer | Sonnet 5 | medium |
-| tribunal-infra-reviewer | Sonnet 5 | medium |
 | optional mappers (`map-structure`, `map-deps`) | Haiku 4.5 | low |
 
 Advisory only: agents ship `model: inherit`; a dispatch-time override takes an alias (`haiku`/`sonnet`/`opus`/`fable`), not a pinned ID, and there is no per-dispatch effort control. This table guides the orchestrator's dispatch choices — it is not mechanically enforced.
