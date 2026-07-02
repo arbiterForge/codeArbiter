@@ -355,6 +355,26 @@ class TaskwriteCliTest(unittest.TestCase):
             self.assertEqual(f.read(), original_content,
                              "board was truncated/corrupted by an interrupted write")
 
+    def test_missing_board_returns_1_no_file_created(self):
+        """coverage-004: an uninitialized repo (no .codearbiter/open-tasks.md)
+        must exit 1 with the 'no board at' stderr message and must not create
+        any file as a side effect."""
+        import io
+        import tempfile
+        import contextlib
+        import taskwrite
+
+        d = tempfile.mkdtemp()  # deliberately no .codearbiter/ dir at all
+        taskwrite.project_root = lambda: d
+
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            rc = taskwrite.main(["add", "x"])
+
+        self.assertEqual(rc, 1)
+        self.assertIn("no board at", stderr.getvalue())
+        self.assertEqual(os.listdir(d), [], "no file should be created for an uninitialized repo")
+
 
 if __name__ == "__main__":
     unittest.main()
