@@ -6,6 +6,11 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`tribunal` skill — deep resumable codebase-audit lane (#157).** Add `feat(tribunal): add deep resumable codebase-audit lane — ten specialist lenses, append-only jsonl audit log, GitHub-issue filing on approval, opt-in KPI telemetry`. `/ca:tribunal` convenes ten bespoke `tribunal-*-reviewer` specialist lenses (appsec, architecture, coverage, migration, observability, performance, reliability, secrets-supply, test-fidelity, typesafety) over the whole codebase in priority-ordered waves. Findings persist to append-only jsonl under `.codearbiter/reports/<run-id>/`, resumable from disk across compaction and disconnects; a triage pass calibrates severity independently of each lens's provisional score; approved findings file as deduped GitHub issues. Rare and opt-in by design — never a required gate, never blocks a merge or commit.
+
 ## [2.6.1] — 2026-07-01
 
 A security-hardening release. Five P1 reports (thanks to @tg12) showed the enforcement layer being enforced against a forgeable or lexical surface (a writable activation file, writable gate markers, raw path strings, a literal command string, an env-controlled delete root) rather than the real underlying operation. Each is closed, and the rest of the repo was swept for the same class in every case. Also fixes a task-id parsing gap and finishes two stale AGPLv3 relicense surfaces.

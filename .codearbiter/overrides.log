@@ -7,3 +7,10 @@
 2026-06-27T12:48:36Z | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: rewrite mis-set author email on two early commits to canonical identity
 [2026-06-27T13:09:42Z] | BY: session-cleanup | DEV: exit | NOTE: cleared by SessionStart (prior session ended mid-dev without /ca:arbiter)
 2026-06-27T13:12:15Z | BY: SUaDtL@users.noreply.github.com | DEV: exit
+2026-07-01T20:37:07Z | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: —
+2026-07-01T22:48:00Z | BY: SUaDtL@users.noreply.github.com | DEV: exit
+2026-07-01T22:57:12Z | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: investigate H-09b hook false-block on commit
+2026-07-01T23:15:48Z | BY: SUaDtL@users.noreply.github.com | DEV: exit
+2026-07-01T23:50:59Z | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: fix flaky H-09b hook read failure
+2026-07-01T23:53:33Z | BY: SUaDtL@users.noreply.github.com | DEV: exit
+2026-07-01T23:56:01Z | BY: SUaDtL@users.noreply.github.com | SECURITY-OVERRIDE | FINDING: H-09b flagged MD5 mention in plugins/ca/skills/tribunal/references/lenses/secrets-supply.md:7 (checklist prose, not operational use; auth-crypto-reviewer confirmed PASS, security-gate-passed marker recorded and fresh) | REASON: hook's own diff-read step intermittently fails to complete (confirmed non-deterministic subprocess timeout in pre-bash.py, not a content finding), blocking an already-reviewed commit; root-cause fix deferred to a desktop session for interactive review of the security-hook edit
