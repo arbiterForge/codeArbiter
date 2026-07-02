@@ -14,3 +14,4 @@
 2026-07-01T23:50:59Z | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: fix flaky H-09b hook read failure
 2026-07-01T23:53:33Z | BY: SUaDtL@users.noreply.github.com | DEV: exit
 2026-07-01T23:56:01Z | BY: SUaDtL@users.noreply.github.com | SECURITY-OVERRIDE | FINDING: H-09b flagged MD5 mention in plugins/ca/skills/tribunal/references/lenses/secrets-supply.md:7 (checklist prose, not operational use; auth-crypto-reviewer confirmed PASS, security-gate-passed marker recorded and fresh) | REASON: hook's own diff-read step intermittently fails to complete (confirmed non-deterministic subprocess timeout in pre-bash.py, not a content finding), blocking an already-reviewed commit; root-cause fix deferred to a desktop session for interactive review of the security-hook edit
+[2026-07-01T20:56:02-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: —
