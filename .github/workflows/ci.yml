@@ -41,8 +41,8 @@ jobs:
       hooks: ${{ steps.filter.outputs.hooks }}
       manifests: ${{ steps.filter.outputs.manifests }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: dorny/paths-filter@v4
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: filter
         with:
           # A change to shared CI infra (.github/) flags BOTH plugins so the
@@ -76,8 +76,8 @@ jobs:
       run:
         working-directory: plugins/ca/tools
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 20
           cache: npm
@@ -114,8 +114,8 @@ jobs:
       run:
         working-directory: plugins/ca-sandbox/tools
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 20
           cache: npm
@@ -160,8 +160,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
       - name: Run cold-install interpreter matrix
@@ -264,7 +264,7 @@ jobs:
     if: github.event_name == 'pull_request' && needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
       - name: Fail if a published version ships a changed payload
@@ -299,7 +299,7 @@ jobs:
     if: github.event_name == 'pull_request' && needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
       - name: Fail if a published version ships a changed payload
@@ -318,9 +318,14 @@ jobs:
           # other git failure (transient fetch error, corrupted object store,
           # a race on origin/$BASE) must fail the step, not be swallowed as
           # "first introduction".
-          if ! git cat-file -e "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" 2>/dev/null; then
+          rc=0
+          git cat-file -e "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" 2>/dev/null || rc=$?
+          if [ "$rc" = 1 ]; then
             echo "ca-sandbox is new on $BASE (no prior plugin.json) - first introduction, version bump not required"
             exit 0
+          elif [ "$rc" != 0 ]; then
+            echo "::error::git cat-file probe on origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json failed with exit $rc (not a plain absence) - bad ref or corrupt object store"
+            exit "$rc"
           fi
           base_json=$(git show "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json")
           base_ver=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
@@ -340,8 +345,8 @@ jobs:
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
       - name: Check cross-reference graph (ca)
@@ -357,8 +362,8 @@ jobs:
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
       - name: Check README badge/count/catalog consistency (ca)
@@ -370,8 +375,8 @@ jobs:
     if: needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
       - name: Check cross-reference graph (ca-sandbox)
@@ -386,7 +391,7 @@ jobs:
     if: needs.changes.outputs.manifests == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       - name: Validate every tracked JSON parses
         run: |
           fail=0
@@ -410,8 +415,8 @@ jobs:
     # specs/license-consistency-check.md.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
       - name: Check license declarations agree across surfaces

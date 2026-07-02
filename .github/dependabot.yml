@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # Keeps the commit-SHA pins in .github/workflows/*.yml current (issue #181).
+  # Actions are pinned to full 40-hex commit SHAs for supply-chain integrity;
+  # Dependabot opens a version-bump PR (new SHA + updated comment) on a weekly
+  # cadence instead of us tracking upstream releases by hand.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
