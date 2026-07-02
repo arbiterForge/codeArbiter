@@ -31,7 +31,7 @@
 #   arbiter_active(root) -> bool         True iff repo opted in via CONTEXT.md frontmatter
 #   read_input() -> dict                 parse hook JSON from stdin; fail-open on error
 #   tool_input(data) -> dict             extract tool_input sub-dict from hook payload
-#   project_root() -> str                git repo root, or cwd as fallback
+#   project_root() -> str                CLAUDE_PROJECT_DIR, else git repo root, else cwd
 #   repo_rel(fpath, root) -> str         repo-relative POSIX path, or "" if outside root
 #   line_digest(line) -> str             sha256 hex of one diff line (H-09b/H-10b gate)
 #   content_digest(text) -> str          sha256 hex of a whole file's content (H-14 gate)
@@ -270,6 +270,16 @@ def tool_input(data):
 
 
 def project_root():
+    """The project root. `CLAUDE_PROJECT_DIR` is the harness's own authoritative
+    signal and is trusted first: a hook subprocess is not guaranteed to start
+    with the project directory as its cwd, and a `git rev-parse` from elsewhere
+    can resolve to a different repo entirely (e.g. the plugin's own marketplace
+    clone). The env-first read also saves one git spawn per hook invocation.
+    Test harnesses that spawn hooks into fixture repos must pin the variable to
+    the fixture, as the production harness pins it to the project."""
+    env_root = os.environ.get("CLAUDE_PROJECT_DIR")
+    if env_root and os.path.isdir(env_root):
+        return env_root
     try:
         out = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
