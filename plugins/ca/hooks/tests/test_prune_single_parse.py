@@ -77,15 +77,19 @@ class SingleParseTest(unittest.TestCase):
 
     def test_transcript_path_opened_at_most_five_times(self):
         """Opens of the transcript path per hook_run invocation must drop from
-        7 (pre-fix baseline, measured directly against the unfixed code) to 5:
-        self_heal's corruption check (1), the ONE read now threaded through to
-        the pruning pass (1), and write_in_place's own pre-write read + write
-        + post-write verify re-read (3) — all four of those are out of scope
-        for this fix. Pre-fix, hook_run and run() each independently
-        self_heal'd and read+parsed the identical bytes, costing 2 EXTRA opens
-        (self_heal called twice, the transcript read+parsed twice) on top of
-        those same 5 — this assertion is the regression guard against that
-        duplication coming back."""
+        the pre-fix baseline (7 on Windows / 8 on POSIX, measured directly
+        against the unfixed code) to the no-duplicate baseline: self_heal's
+        corruption check (1), the ONE read now threaded through to the pruning
+        pass (1), and write_in_place's own pre-write read + write + post-write
+        verify re-read (3 on Windows, 4 on POSIX — os.replace/verify does one
+        extra open there) — all of which are out of scope for this fix. Pre-fix,
+        hook_run and run() each independently self_heal'd and read+parsed the
+        identical bytes, costing 2 EXTRA opens on top of that baseline — this
+        assertion is the regression guard against that duplication coming back.
+        The bound is 6 (the max no-duplicate baseline, on POSIX); the +2
+        regression (8/9) still trips it on either platform. The platform-
+        independent single-parse proof is the sibling `load_lines`-count-1
+        test; this one guards the raw-open regression only."""
         real_open = builtins.open
         opens_of_path = []
 
@@ -99,12 +103,12 @@ class SingleParseTest(unittest.TestCase):
 
         self.assertEqual(rc, 0)
         self.assertLessEqual(
-            len(opens_of_path), 5,
+            len(opens_of_path), 6,
             f"transcript opened {len(opens_of_path)} times per hook_run "
-            f"invocation; expected at most 5 (self_heal + the single threaded "
-            f"read + write_in_place's 3 own opens) — 7 means hook_run and "
-            f"run() are each independently self-healing and re-reading the "
-            f"transcript again")
+            f"invocation; expected at most 6 (self_heal + the single threaded "
+            f"read + write_in_place's own opens, 3 on Windows / 4 on POSIX) — "
+            f"7+ means hook_run and run() are each independently self-healing "
+            f"and re-reading the transcript again")
 
     def test_prune_still_executes_and_shrinks(self):
         """Sanity: the single-parse plumbing must not silently break pruning
