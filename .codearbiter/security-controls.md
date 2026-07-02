@@ -240,12 +240,22 @@ tool-call boundary.
 controls, not *completeness* controls — they protect a log once written, they do
 not compel a write. The completeness half is resolved by `[CONFIRM-09]`
 (2026-07-02, BY SUaDtL@users.noreply.github.com): strategy (a) — a lightweight
-staleness check (PostToolUse/UserPromptSubmit) warns when an active `/sprint`,
-`/override`, or `/dev` flow has not appended its expected log line within a
-bounded window — paired with the durable gate-events sink from `observability-001`
-(issue #186). It is a *warn*, not a hard gate: a missed write is surfaced, not
-blocked, keeping the integrity guards the sole true STOP. Implementation lands
-with #186.
+staleness check (UserPromptSubmit) warns when an active `/sprint` or `/dev`
+flow has not appended its expected log line (`sprint-log.md` / `overrides.log`)
+within a bounded window — paired with the durable gate-events sink from
+`observability-001` (issue #186). It is a *warn*, not a hard gate: a missed write
+is surfaced, not blocked, keeping the integrity guards the sole true STOP.
+**Shipped in ca 2.8.11 (#186):** `_hooklib` `block()`/`remind()`/`warn()`
+best-effort append a structured line to `.codearbiter/gate-events.log` (fail-open
+— a locked/missing/unwritable log never changes a hook's exit code nor suppresses
+a BLOCK; the write is wrapped so no exception escapes into any of the 16 entry
+hooks), and `_hooklib.staleness_warning` surfaces stale active flows only through
+`warn()` (non-blocking by construction). `gate-events.log` is append-only —
+added to `AUDIT_LOG_BASENAMES`, the single source that `AUDIT_LOG_NAMES` and all
+three H-05 flanks (shell pre-filter + regex, Write, Edit) derive from, so the set
+cannot drift. `/override` is deliberately **not** staleness-tracked: it is a
+single synchronous announce-then-log action with no in-progress marker to key
+off (per CONFIRM-09's "don't invent new state" constraint).
 The `pre-bash.py` shell guard is lexical and anchored on the literal log name, so
 the following truncation/indirection spellings are out of scope and accepted as
 residual risk (the sanctioned bypass for legitimate log management is
