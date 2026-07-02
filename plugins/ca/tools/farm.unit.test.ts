@@ -2,13 +2,13 @@
  * Unit tests for farm.ts pure-function core.
  * These test the exported helpers directly without spawning a subprocess.
  */
-import { describe, it, expect, afterEach, beforeEach } from "vitest";
+import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, rm as fsRm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { scrubbedEnv } from "./exec.ts";
@@ -1050,6 +1050,117 @@ describe("#93 screenEntitlements", () => {
     const { survivors, skipped } = await screenEntitlements(["flaky"], probe, { sleepFn: neverSleep });
     expect(survivors).toEqual(["flaky"]);
     expect(skipped).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// coverage-003 (#183) — makeEntitlementProbe: the real network-facing probe
+// screenEntitlements is fed. Only the pure decision logic above had coverage;
+// this exercises the Bearer-auth header, body shape, and AbortController
+// timeout the probe itself builds, against a mocked global fetch.
+// ---------------------------------------------------------------------------
+describe("coverage-003 (#183) makeEntitlementProbe", () => {
+  const realFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = realFetch;
+    vi.restoreAllMocks();
+  });
+
+  it("sends the Bearer apiKey header and a minimal POST body naming the model", async () => {
+    let capturedUrl: string | undefined;
+    let capturedInit: RequestInit | undefined;
+    global.fetch = vi.fn(async (url: string | URL, init?: RequestInit) => {
+      capturedUrl = String(url);
+      capturedInit = init;
+      return new Response("{}", { status: 200 });
+    }) as unknown as typeof fetch;
+
+    const probe = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY-do-not-leak", 5_000);
+    const res = await probe("candidate-model");
+
+    expect(res.status).toBe(200);
+    expect(capturedUrl).toBe("https://api.example/v1/chat/completions");
+    expect(capturedInit?.method).toBe("POST");
+    const headers = capturedInit?.headers as Record<string, string>;
+    expect(headers.Authorization).toBe("Bearer DUMMY-KEY-do-not-leak");
+    const body = JSON.parse(String(capturedInit?.body)) as { model?: string; max_tokens?: number; messages?: unknown[] };
+    expect(body.model).toBe("candidate-model");
+    expect(body.max_tokens).toBe(1);
+    expect(Array.isArray(body.messages)).toBe(true);
+  });
+
+  it("distinguishes a real 401 response from a network throw (both map to a status, not an exception)", async () => {
+    global.fetch = vi.fn(async () => new Response("nope", { status: 401 })) as unknown as typeof fetch;
+    const probe401 = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY", 5_000);
+    await expect(probe401("m")).resolves.toEqual({ status: 401 });
+
+    global.fetch = vi.fn(async () => {
+      throw new TypeError("network down");
+    }) as unknown as typeof fetch;
+    const probeNetworkFail = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY", 5_000);
+    // A network failure maps to status 0 — never an unhandled rejection — so
+    // screenEntitlements' caller can tell it apart from a genuine 401.
+    await expect(probeNetworkFail("m")).resolves.toEqual({ status: 0 });
+  });
+
+  it("the AbortController-driven timeout actually fires and maps to status 0, bounded by timeoutMs", async () => {
+    global.fetch = vi.fn((_url: string | URL, init?: RequestInit) => {
+      return new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => {
+          const e = new Error("aborted");
+          e.name = "AbortError";
+          reject(e);
+        });
+      });
+    }) as unknown as typeof fetch;
+
+    const probe = makeEntitlementProbe("https://api.example/v1", "DUMMY-KEY", 20);
+    const start = Date.now();
+    const res = await probe("slow-model");
+    const elapsed = Date.now() - start;
+
+    expect(res).toEqual({ status: 0 });
+    // Bounded — proves the AbortController actually tore the hung fetch down
+    // rather than the probe just happening to resolve on its own.
+    expect(elapsed).toBeLessThan(2_000);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// reliability-014 — numEnv: the shared hardened numeric-env reader every
+// FARM_*/MUT_* knob routes through. A non-finite parse must fall back to the
+// default LOUDLY (stderr) rather than silently becoming NaN.
+// ---------------------------------------------------------------------------
+describe("reliability-014 numEnv", () => {
+  const saved = { X: process.env.FARM_TEST_NUMENV_X };
+  afterEach(() => {
+    if (saved.X === undefined) delete process.env.FARM_TEST_NUMENV_X;
+    else process.env.FARM_TEST_NUMENV_X = saved.X;
+    vi.restoreAllMocks();
+  });
+
+  it("returns the default when the env var is unset", () => {
+    delete process.env.FARM_TEST_NUMENV_X;
+    expect(numEnv("FARM_TEST_NUMENV_X", 7)).toBe(7);
+  });
+
+  it("parses a valid numeric value", () => {
+    process.env.FARM_TEST_NUMENV_X = "42";
+    expect(numEnv("FARM_TEST_NUMENV_X", 7)).toBe(42);
+  });
+
+  it("falls back to the default AND logs a stderr warning on a non-finite value", () => {
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    process.env.FARM_TEST_NUMENV_X = "not-a-number";
+    expect(numEnv("FARM_TEST_NUMENV_X", 7)).toBe(7);
+    expect(spy).toHaveBeenCalledWith(expect.stringMatching(/FARM_TEST_NUMENV_X.*not a finite number/));
+  });
+
+  it("clamps a below-minimum value up to min and logs a warning", () => {
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    process.env.FARM_TEST_NUMENV_X = "-5";
+    expect(numEnv("FARM_TEST_NUMENV_X", 7, { min: 1 })).toBe(1);
+    expect(spy).toHaveBeenCalled();
   });
 });
 

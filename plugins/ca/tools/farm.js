@@ -13,7 +13,25 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 var [SHELL_BIN, SHELL_FLAG] = process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
 var SHELL_OPTS = process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
-var GATE_TIMEOUT_MS = Number(process.env.FARM_GATE_TIMEOUT_MS ?? 3e5);
+function numEnv(name, def, opts = {}) {
+  const raw = process.env[name];
+  if (raw === void 0 || raw === "") return def;
+  const n = Number(raw);
+  if (!Number.isFinite(n)) {
+    process.stderr.write(
+      `[FARM] ${name}=${JSON.stringify(raw)} is not a finite number \u2014 falling back to the default ${def}
+`
+    );
+    return def;
+  }
+  if (opts.min !== void 0 && n < opts.min) {
+    process.stderr.write(`[FARM] ${name}=${n} is below the minimum ${opts.min} \u2014 clamping to ${opts.min}
+`);
+    return opts.min;
+  }
+  return n;
+}
+var GATE_TIMEOUT_MS = numEnv("FARM_GATE_TIMEOUT_MS", 3e5, { min: 1e3 });
 function treeKill(child) {
   try {
     if (process.platform === "win32" && child.pid !== void 0) {
@@ -116,10 +134,14 @@ import { writeFile } from "node:fs/promises";
 import path2 from "node:path";
 var MUT = {
   enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
-  sample: Number(process.env.FARM_MUTATION_SAMPLE ?? 15),
-  budgetMs: Number(process.env.FARM_MUTATION_BUDGET_MS ?? 3e4),
-  warnBelow: Number(process.env.FARM_MUTATION_WARN_BELOW ?? 0.5),
-  escalateBelow: Number(process.env.FARM_MUTATION_ESCALATE_BELOW ?? 0.1),
+  // reliability-014: routed through the shared numEnv reader (exec.ts) so a
+  // typo'd FARM_MUTATION_* value falls back to the default loudly instead of
+  // silently becoming NaN (every comparison against MUT.warnBelow/escalateBelow
+  // would then read false, disabling the anti-gaming mutation signal).
+  sample: numEnv("FARM_MUTATION_SAMPLE", 15, { min: 1 }),
+  budgetMs: numEnv("FARM_MUTATION_BUDGET_MS", 3e4, { min: 0 }),
+  warnBelow: numEnv("FARM_MUTATION_WARN_BELOW", 0.5, { min: 0 }),
+  escalateBelow: numEnv("FARM_MUTATION_ESCALATE_BELOW", 0.1, { min: 0 }),
   cmd: process.env.FARM_MUTATION_CMD ?? null
 };
 function extractLiterals(testSrc) {
@@ -245,7 +267,10 @@ async function mutationCheck(wt, task) {
       c.on("error", (e) => finish({ code: 1, out: String(e) }));
       c.on("close", (code) => finish({ code: code ?? 1, out }));
     });
-    return parseMutationHookOutput(r.out);
+    const parsed = parseMutationHookOutput(r.out);
+    if (parsed !== null) return parsed;
+    const tail = redactSecrets(r.out.slice(-500)).trim();
+    return { failed: true, detail: `exit ${r.code}${tail ? `: ${tail}` : " (no output)"}` };
   }
   const originals = /* @__PURE__ */ new Map();
   let candidates = [];
@@ -292,24 +317,28 @@ var ENV = {
   // user who sets just FARM_API_KEY (per the docs) is not hard-blocked.
   apiBaseUrl: process.env.FARM_API_BASE_URL ?? null,
   apiKey: process.env.FARM_API_KEY ?? null,
-  concurrency: Number(process.env.FARM_CONCURRENCY ?? 4),
-  maxRetries: Number(process.env.FARM_MAX_RETRIES ?? 2),
+  // reliability-014: every numeric knob below routes through numEnv (exec.ts)
+  // so a typo'd value (e.g. FARM_CONCURRENCY="four") falls back to the default
+  // LOUDLY instead of silently becoming NaN, which reads false in every
+  // downstream safety comparison (concurrency cap, escalation breaker).
+  concurrency: numEnv("FARM_CONCURRENCY", 4, { min: 1 }),
+  maxRetries: numEnv("FARM_MAX_RETRIES", 2, { min: 0 }),
   base: process.env.FARM_BASE_BRANCH ?? "main",
   integration: process.env.FARM_INTEGRATION_BRANCH ?? "farm/integration",
   worktreeRoot: process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees",
   reportDir: process.env.FARM_REPORT_DIR ?? ".farm",
   // Per-request hard timeout so a hung endpoint can't deadlock a worker slot.
-  requestTimeoutMs: Number(process.env.FARM_REQUEST_TIMEOUT_MS ?? 12e4),
+  requestTimeoutMs: numEnv("FARM_REQUEST_TIMEOUT_MS", 12e4, { min: 1 }),
   // Per-candidate wall-clock cap for the #93 entitlement pre-screen, so one
   // slow/dead model can't dominate the probe. Kept short (35s) — a screen, not a
   // capability run — and ≤ the per-request timeout.
-  entitlementProbeTimeoutMs: Number(process.env.FARM_ENTITLEMENT_PROBE_TIMEOUT_MS ?? 35e3),
+  entitlementProbeTimeoutMs: numEnv("FARM_ENTITLEMENT_PROBE_TIMEOUT_MS", 35e3, { min: 1 }),
   // Transport-level retries (429 / 5xx) — distinct from model-quality retries.
-  apiMaxRetries: Number(process.env.FARM_API_MAX_RETRIES ?? 3),
+  apiMaxRetries: numEnv("FARM_API_MAX_RETRIES", 3, { min: 0 }),
   // Circuit breaker: abort dispatch once the escalation rate exceeds this,
   // after at least abortMinTasks have settled.
-  abortEscalationRate: Number(process.env.FARM_ABORT_ESCALATION_RATE ?? 0.5),
-  abortMinTasks: Number(process.env.FARM_ABORT_MIN_TASKS ?? 3),
+  abortEscalationRate: numEnv("FARM_ABORT_ESCALATION_RATE", 0.5, { min: 0 }),
+  abortMinTasks: numEnv("FARM_ABORT_MIN_TASKS", 3, { min: 1 }),
   // Default endpoint, used only when neither env nor plan.meta provides one.
   defaultApiBaseUrl: process.env.FARM_DEFAULT_API_BASE_URL ?? DEFAULT_API_BASE_URL,
   // Comma-separated candidate model ids for --canary mode.
@@ -323,7 +352,7 @@ var ENV = {
   // budget and to bound per-task token spend. Truncation past the cap is
   // deterministic (in-order) with a visible marker; we never silently drop the
   // boundedness guarantee.
-  enrichMaxBytes: Number(process.env.FARM_ENRICH_MAX_BYTES ?? 131072)
+  enrichMaxBytes: numEnv("FARM_ENRICH_MAX_BYTES", 131072, { min: 1 })
 };
 var git = (args, cwd) => run("git", args, cwd);
 var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -593,8 +622,8 @@ function parseChatCompletion(text, apiBaseUrl) {
 }
 function readSampling() {
   return {
-    temperature: Number(process.env.FARM_TEMPERATURE ?? 0),
-    maxTokens: Number(process.env.FARM_MAX_TOKENS ?? 0)
+    temperature: numEnv("FARM_TEMPERATURE", 0),
+    maxTokens: numEnv("FARM_MAX_TOKENS", 0, { min: 0 })
   };
 }
 function buildChatBody(model, messages, sampling = readSampling()) {
@@ -626,27 +655,36 @@ async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSamplin
       }
       return { ok: false, error: aborted ? `request timed out after ${ENV.requestTimeoutMs}ms` : `fetch failed: ${e}` };
     }
-    clearTimeout(timer);
-    if (resp.status === 429 || resp.status >= 500) {
-      if (attempt < ENV.apiMaxRetries) {
-        const ra = Number(resp.headers.get("retry-after"));
-        const wait = Number.isFinite(ra) && ra > 0 ? ra * 1e3 : Math.min(2 ** attempt * 1e3, 16e3);
-        await sleep(wait);
-        continue;
+    try {
+      if (resp.status === 429 || resp.status >= 500) {
+        if (attempt < ENV.apiMaxRetries) {
+          const ra = Number(resp.headers.get("retry-after"));
+          const wait = Number.isFinite(ra) && ra > 0 ? ra * 1e3 : Math.min(2 ** attempt * 1e3, 16e3);
+          await sleep(wait);
+          continue;
+        }
+        const body = await resp.text();
+        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}
+`);
+        return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
       }
-      const body = await resp.text().catch(() => "(unreadable)");
-      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}
+      if (!resp.ok) {
+        const body = await resp.text();
+        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}
 `);
-      return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
+        return { ok: false, error: `API ${resp.status}` };
+      }
+      const text = await resp.text();
+      return parseChatCompletion(text, apiBaseUrl);
+    } catch (e) {
+      const aborted = e?.name === "AbortError";
+      return {
+        ok: false,
+        error: aborted ? `request timed out after ${ENV.requestTimeoutMs}ms (reading response body)` : `failed reading response body: ${e}`
+      };
+    } finally {
+      clearTimeout(timer);
     }
-    if (!resp.ok) {
-      const body = await resp.text().catch(() => "(unreadable)");
-      process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}
-`);
-      return { ok: false, error: `API ${resp.status}` };
-    }
-    const text = await resp.text().catch(() => "");
-    return parseChatCompletion(text, apiBaseUrl);
   }
   return { ok: false, error: "exhausted API retries" };
 }
@@ -851,8 +889,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
   const forbidden = /* @__PURE__ */ new Set([t.test.path]);
-  const rawSamples = Number(process.env.FARM_SAMPLES ?? 1);
-  const samples = Number.isFinite(rawSamples) ? Math.max(1, Math.floor(rawSamples)) : 1;
+  const samples = Math.max(1, Math.floor(numEnv("FARM_SAMPLES", 1, { min: 1 })));
   const sampling = effectiveSampling(samples);
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
@@ -940,7 +977,7 @@ ${gate.tail}`);
     let riskNote = gaming.note;
     if (risk !== "high") {
       const mut = await deps.mutationCheck(wt, t);
-      if (mut) {
+      if (mut && "score" in mut) {
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
           risk = "high";
@@ -950,6 +987,13 @@ ${gate.tail}`);
             risk = "warn";
             riskNote = `mutation-risk: score ${mut.score.toFixed(2)} (${mut.survivors.length}/${mut.evaluated} survived) \u2014 weak test or under-implemented logic`;
           }
+        }
+      } else if (mut && "failed" in mut) {
+        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}
+`);
+        if (risk === "none") {
+          risk = "warn";
+          riskNote = `mutation-hook-failed: ${mut.detail}`;
         }
       }
     }
@@ -1237,40 +1281,42 @@ async function main() {
       return escalated.size / settled > ENV.abortEscalationRate;
     };
     while (pending.size > 0 || running.size > 0) {
-      if (tripped()) {
-        aborted = true;
-        break;
-      }
-      for (const id2 of ready()) {
-        if (running.size >= ENV.concurrency) break;
-        pending.delete(id2);
-        running.set(
-          id2,
-          runTask(byId.get(id2), model, apiBaseUrl, apiKey).then(
-            (r2) => ({ id: id2, r: r2 }),
-            // observability-003 (T-07c): a crash produces an escalate Result with
-            // a correlated, stack-bearing note. The truncated err.stack gives the
-            // post-mortem a call site (e.g. the spawn TypeError from
-            // reliability-004) instead of a one-line message with no origin.
-            (e) => ({
-              id: id2,
-              r: {
+      if (!aborted && tripped()) aborted = true;
+      if (!aborted) {
+        for (const id2 of ready()) {
+          if (running.size >= ENV.concurrency) break;
+          pending.delete(id2);
+          running.set(
+            id2,
+            runTask(byId.get(id2), model, apiBaseUrl, apiKey).then(
+              (r2) => ({ id: id2, r: r2 }),
+              // observability-003 (T-07c): a crash produces an escalate Result with
+              // a correlated, stack-bearing note. The truncated err.stack gives the
+              // post-mortem a call site (e.g. the spawn TypeError from
+              // reliability-004) instead of a one-line message with no origin.
+              (e) => ({
                 id: id2,
-                status: "escalate",
-                attempts: 0,
-                branch: `farm/${id2}`,
-                worktree: path3.resolve(ENV.worktreeRoot, id2),
-                note: `crashed: ${e?.message ?? e}${e?.stack ? `
+                r: {
+                  id: id2,
+                  status: "escalate",
+                  attempts: 0,
+                  branch: `farm/${id2}`,
+                  worktree: path3.resolve(ENV.worktreeRoot, id2),
+                  note: `crashed: ${e?.message ?? e}${e?.stack ? `
 ${String(e.stack).slice(0, 1500)}` : ""}`
-              }
-            })
-          )
-        );
+                }
+              })
+            )
+          );
+        }
       }
       if (running.size === 0) break;
       const { id, r } = await Promise.race(running.values());
       running.delete(id);
       r.runId = runId;
+      if (aborted && r.status === "escalate" && !/run aborted/.test(r.note ?? "")) {
+        r.note = r.note ? `${r.note} (run aborted by circuit breaker while in flight)` : "escalate: run aborted (in flight)";
+      }
       done.set(id, r);
       await appendFile(resultsStream, JSON.stringify(r) + "\n").catch((e) => console.error("results stream append failed:", e));
       if (r.status === "escalate") escalated.add(id);
@@ -1364,7 +1410,9 @@ export {
   extractFileBlocks,
   extractLiterals,
   httpWorker,
+  makeEntitlementProbe,
   mintRunId,
+  numEnv,
   parseChatCompletion,
   parseMutationHookOutput,
   readSampling,
