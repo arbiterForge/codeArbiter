@@ -33,6 +33,7 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
   - Prints the startup state: stage, blocking `CONFIRM-NN` open questions, and an in-flight task summary. An uninitialized repo is routed to `/ca:create-context` or `/ca:decompose`.
   - Emits a first-of-day standup briefing (working-tree state, ahead/behind annotated as possibly stale, ff-pull eligibility, prune candidates), gated by a per-day marker.
   - Spawns a fully detached `git fetch` that is never awaited, to keep ahead/behind fresh without blocking the hook.
+  - Surfaces an **update-available** notice (`update available X → Y`) when the cached check shows a newer published release than the installed plugin, and spawns a fully detached, best-effort, once-daily refresh (`update-refresh.py`) that updates that cache off the hot path. The hook only ever reads the cache; the network fetch never blocks the SessionStart injection.
 - **Why:** One always-loaded persona, plus the project state the orchestrator needs to route the first request.
 - **Fail posture:** Non-blocking (always exits 0). All git here is read-only and degrades per-field. A dormant or malformed repo prints a breadcrumb and exits.
 
@@ -43,15 +44,19 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
 - **Event:** `PreToolUse`, matcher `Bash|PowerShell`.
 - **Script:** `pre-bash.py`.
 - **What it enforces:**
-  - **H-01:** no direct commit/push to the default branch (`main`/`master` case-insensitive), including a detached HEAD on a protected tip and protected refspecs (`HEAD:main`, `:main`, `refs/heads/main`, `--all`/`--mirror`).
+  - **H-00:** fail-closed backstop. If the guard itself crashes on an unexpected input, or git cannot be read to resolve the branch/diff state, the operation is **blocked** rather than allowed through — a guard that cannot determine whether an operation is safe treats it as unsafe.
+  - **H-01:** no direct commit/push to the default branch (`main`/`master` case-insensitive), including a detached HEAD on a protected tip and protected refspecs (`HEAD:main`, `:main`, `refs/heads/main`, `--all`/`--mirror`). The branch is resolved against the repository the git command actually targets (a `git -C <dir>` composes repeated `-C` the way git does), not the session's project dir.
   - **H-02:** no force-push (`--force`, `--force-with-lease`, `--force-if-includes`, `-f`, `+refspec`).
   - **H-03:** no wildcard staging (flag forms `-A`/`--all`/`-u`/`.`; argument forms globs, directories, pathspec magic).
-  - **H-05:** append-only audit logs. Shell truncation/rewrite verbs aimed at `overrides.log`/`triage.log`/`sprint-log.md` are blocked.
+  - **H-05:** append-only audit logs. Shell truncation/rewrite verbs aimed at `overrides.log`/`triage.log`/`sprint-log.md`/`gate-events.log` are blocked. The protected name set is centralized (`_hooklib.AUDIT_LOG_BASENAMES`) so the shell, Write, and Edit flanks cannot drift.
   - **H-09b / H-10b:** crypto/secret commit gate. A commit introducing a sensitive line is blocked unless the `security-gate-passed` marker covers those exact lines (freshness under 30 min **and** per-line digest coverage). Scans the staged diff plus the worktree diff for `-a`, in-command `git add`, or a `git commit <pathspec>`.
   - **H-11:** ADRs only via `/ca:adr`. Shell redirects/verbs into `.codearbiter/decisions/` are blocked; reads pass.
   - **H-14:** migration review. A commit staging a migration is blocked unless `migration-gate-passed` covers that file's content digest.
+  - **H-18:** the activation switch is protected. A shell write that would flip `.codearbiter/CONTEXT.md` off (`arbiter: disabled` or broken frontmatter) is blocked, so the gates cannot be silenced from inside the repo they govern.
+  - **H-19:** gate-pass markers are unforgeable by hand. Shell redirects/verbs naming `security-gate-passed`/`migration-gate-passed` are blocked; only the sanctioned recorder scripts may write them.
+  - **H-20:** no `--no-verify` bypass. A literal `--no-verify`/`-n` on `git commit` (including bundled and attached-value short-flag clusters like `-nm`, mirroring git's own parsing) and a literal `--no-verify` on `git push` are blocked, because that flag skips the `.git/hooks` git-enforce backstop.
 - **Why:** This is the load-bearing commit-time gate. The branch and force-push rules keep the default branch PR-only; the crypto/secret/migration gates keep dangerous content out of the committed artifact.
-- **Fail posture:** Blocking (exit 2). Ambiguity resolves **closed**: a spelling indistinguishable from a destructive one is blocked. H-09b/H-10b and H-14 fail **closed** when git cannot read the diff or file list (a `None` sentinel, distinct from an empty diff). `/ca:override` is the sanctioned escape hatch.
+- **Fail posture:** Blocking (exit 2). Ambiguity resolves **closed**: a spelling indistinguishable from a destructive one is blocked. H-09b/H-10b and H-14 fail **closed** when git cannot read the diff or file list (a `None` sentinel, distinct from an empty diff), and a crash inside the guard itself blocks rather than allows (H-00). `/ca:override` is the sanctioned escape hatch.
 
 ---
 
@@ -60,9 +65,10 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
 - **Event:** `PreToolUse`, matcher `Write`.
 - **Script:** `pre-write.py`.
 - **What it enforces:**
-  - **H-05:** a Write is a full overwrite, so any Write to an audit log is blocked (append with Edit or `>>`).
+  - **H-05:** a Write is a full overwrite, so any Write to an audit log (`overrides.log`/`triage.log`/`sprint-log.md`/`gate-events.log`) is blocked (append with Edit or `>>`).
   - **H-11:** a Write to any `.md` under `decisions/` is blocked unless a fresh `adr-authoring-active` marker is present (set by `/ca:adr`).
-- **Why:** Closes the Write flank of the audit-trail and ADR-authoring integrity rules.
+  - **H-18 / H-19:** a Write that would disable the `CONTEXT.md` activation switch, or a Write to a `.codearbiter/.markers/` gate-pass token, is blocked (the same integrity rules pre-bash enforces on the shell flank).
+- **Why:** Closes the Write flank of the audit-trail, ADR-authoring, activation-switch, and gate-marker integrity rules.
 - **Fail posture:** Blocking (exit 2).
 
 ---
@@ -72,9 +78,10 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
 - **Event:** `PreToolUse`, matcher `Edit|MultiEdit`.
 - **Script:** `pre-edit.py`.
 - **What it enforces:**
-  - **H-05:** on an audit log, MultiEdit is blocked outright (cannot express a verifiable append), an Edit with an empty `old_string` is blocked (it can never be a pure append, since every string starts with the empty string), and any Edit whose `new_string` does not extend `old_string` is blocked.
+  - **H-05:** on an audit log, MultiEdit is blocked outright (cannot express a verifiable append), an Edit with an empty `old_string` is blocked (it can never be a pure append), a `replace_all` Edit is rejected outright, and an Edit is admitted only as a strict **tail append** — `new_string` must equal the current content plus an appended tail, with `old_string` occurring exactly once. This closes the earlier hole where a mid-file insertion or a multi-site suffix rewrite passed as an "append".
   - **H-11:** the same fresh `adr-authoring-active` marker requirement for `decisions/` `.md` files.
-- **Why:** Closes the Edit/MultiEdit flank; an append-only log accepts only verifiable appends.
+  - **H-18 / H-19:** the same activation-switch and gate-marker protections as the Write flank.
+- **Why:** Closes the Edit/MultiEdit flank; an append-only log accepts only verifiable tail appends.
 - **Fail posture:** Blocking (exit 2).
 
 ---
@@ -113,8 +120,8 @@ Every hook is registered **twice** in `hooks.json`: once under `python3`, and on
 
 - **Event:** `UserPromptSubmit` and `PreCompact`.
 - **Script:** `prune-transcript.py`.
-- **What it does:** Prunes transcript clutter to extend session lifetime, and emits a cold-miss nudge. The live transcript is only ever touched on the hook path; per-session prune state is recorded for the statusline.
-- **Why:** Keeps long sessions inside the context budget.
+- **What it does:** Prunes transcript clutter to extend session lifetime, and emits a cold-miss nudge. The live transcript is only ever touched on the hook path; per-session prune state is recorded for the statusline. On `UserPromptSubmit` it also runs an **audit staleness check**: a non-blocking warning when an active `/sprint` or `/dev` flow has not appended its expected audit-log line within a bounded window (the completeness companion to the H-05 integrity guards; a warn, never a gate).
+- **Why:** Keeps long sessions inside the context budget, and surfaces an audit flow that has gone silent.
 - **Fail posture:** Non-blocking (always exits 0).
 
 ---
@@ -125,7 +132,11 @@ These are not registered hooks. They are invoked by skills and slash commands, o
 
 ### statusline.py
 
-The settings-wired statusline renderer (installed by `wire-statusline.py`). Usage segments (folder, git, model, rate limits, context, tokens, cost, burn) render everywhere; the arbiter segments (stage, tasks, questions, overrides) render only in an enabled repo, reusing the same activation parser the hooks use. Cost reflects the host's authoritative total, with a cumulative cost ledger persisted to `~/.codearbiter/ledger.json`. Never prints a traceback; every segment degrades rather than breaks. **Read-only / display.**
+The settings-wired statusline renderer (installed by `wire-statusline.py`; the rendering concerns are split across thin `_*lib` libraries behind this entry point). Usage segments (folder, git, model, rate limits, context, tokens, cost, burn) and a compact **update-available** indicator render everywhere; the arbiter segments (stage, tasks, questions, overrides) render only in an enabled repo, reusing the same activation parser the hooks use. The update indicator reads the same cache the SessionStart notice does and adds no network call. Cost reflects the host's authoritative total, with a cumulative cost ledger persisted to `~/.codearbiter/ledger.json`. Never prints a traceback; every segment degrades rather than breaks. **Read-only / display.**
+
+### git-enforce.py
+
+The `pre-commit` / `pre-push` shim installed into the repo's own `.git/hooks/` (idempotently, at `/ca:init` and on session start; never overwriting a pre-existing foreign hook). It enforces the protected-branch, force-push, and crypto/secret/migration gates **at the git operation itself**, below the command spelling — so shell indirection (`g=git; $g commit`) that never reaches the `pre-bash.py` matcher is still gated. It resolves the repository it runs in via `git rev-parse --show-toplevel` from its own working directory, reuses the same detection primitives as `pre-bash.py` so the two cannot drift, and is written atomically so a torn install can never leave a sentinel-less partial shim. This backstop is what `pre-bash.py`'s H-20 protects (a `--no-verify` would skip it).
 
 ### security-pass.py / migration-pass.py
 
@@ -136,8 +147,11 @@ These record the gate passes that `pre-bash.py` checks. `security-pass.py` is ru
 - **`init-codearbiter.py`** (`/ca:init`). Scaffolds the root-level `.codearbiter/` state store (idempotent; refuses if `CONTEXT.md` already exists). `--check` reports state and writes nothing.
 - **`taskwrite.py`** (`/ca:task`). The only sanctioned mutator of `open-tasks.md` (add / start / done), written atomically and rerun-safe.
 - **`doctor.py`** (`/ca:doctor`). Read-only health check covering interpreter health (warns loudly if no real interpreter resolves and every gate is dormant), payload integrity, stale-cache detection, repo activation, and statusline wiring. Exits non-zero on any failure but changes nothing.
-- **`wire-statusline.py`** (`/ca:statusline`). Writes or removes the absolute `statusLine.command` in `~/.claude/settings.json`. The `refresh` action is the SessionStart self-heal that rewrites only a stale codeArbiter-owned path; it refuses to overwrite an unparseable settings file.
+- **`wire-statusline.py`** (`/ca:statusline`). Writes or removes the absolute `statusLine.command` in `~/.claude/settings.json` (atomically). The `refresh` action is the SessionStart self-heal that rewrites only a stale codeArbiter-owned path; it refuses to overwrite an unparseable settings file.
+- **`update-refresh.py`**. The thin, fully detached entry point the SessionStart hook spawns for the once-daily update check. It performs the unauthenticated HTTPS `GET` to the GitHub Releases API and writes the result to the user-global cache; fail-silent, off the hot path, never awaited.
+- **`boardsync.py`** (`/ca:task`, commit gate). Reconciles the task-board `[ ]`/`[~]`/`[x]` counters with the work, so a board transition lands atomically with its commit (ADR-0008).
+- **`babysit.py` / `metrics.py` / `preview.py`**. Thin entry points for the `/ca:pr`+`/ca:watch`, `/ca:metrics`, and `/ca:preview` command surfaces, each importing its `_*lib` so the logic is `py_compile`- and test-covered rather than embedded as inline `python -c` in command prose.
 
 ### Shared Libraries
 
-The `_*lib.py` files (`_hooklib`, `_taskboardlib`, `_standuplib`, `_prunelib`, `_ledgerlib`, `_sloplib`, `_metricslib`, and others) are shared internal libraries imported by the hooks and utilities above. `_hooklib` is the core: it owns the activation contract, the `block`/`remind` primitives, the centralized crypto/secret/audit-path sets, and the digest helpers, so the separate hooks never drift on what they enforce.
+The `_*lib.py` files are shared internal libraries imported by the hooks and utilities above: the core `_hooklib`; the statusline stack (`_segmentslib`, `_gitlib`, `_arbiterstatelib`, `_subagentslib`, `_boxlib`, `_colorlib`, `_fmtlib`, `_sessionlib`, `_ledgerlib`); and the feature/utility libs (`_prunelib`, `_taskboardlib`, `_standuplib`, `_sloplib`, `_metricslib`, `_previewlib`, `_babysitlib`, `_provenancelib`, `_readinjectlib`, `_updatelib`). `_hooklib` is the core: it owns the activation contract, the `block`/`remind`/`warn` primitives (which also best-effort append every gate decision to the durable, append-only `.codearbiter/gate-events.log`), the centralized crypto/secret/audit-path sets (`AUDIT_LOG_BASENAMES`), and the digest helpers, so the separate hooks never drift on what they enforce.
