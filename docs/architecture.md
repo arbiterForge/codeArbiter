@@ -23,8 +23,8 @@ context-minimization proof — almost nothing loads until an entry point is invo
 
 Standing context is exactly **one file**: `ORCHESTRATOR.md`, injected by the `SessionStart` hook
 only when `.codearbiter/CONTEXT.md` carries `arbiter: enabled`. Repos without the flag load
-nothing (the `DORMANT` terminal). Everything else — `routing-table.md`, `reference-map.md`, all 20
-skill bodies, all 16 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
+nothing (the `DORMANT` terminal). Everything else — `routing-table.md`, `reference-map.md`, all 22
+skill bodies, all 28 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
 only when its entry point is invoked, and only for the nodes that entry point actually reaches. A
 typical `/ca:fix` touches the persona + `tdd` + one author + maybe one reviewer, not the full
 payload. The read-only meta commands (`/ca:status`, `/ca:btw`, `/ca:commands`, `/ca:audit`) route
@@ -80,6 +80,7 @@ flowchart TD
         C_watch["/ca:watch"]
         C_review["/ca:review"]
         C_checkpoint["/ca:checkpoint"]
+        C_tribunal["/ca:tribunal"]
         C_release["/ca:release"]
         C_adddep["/ca:add-dep"]
     end
@@ -131,6 +132,7 @@ flowchart TD
         S_ctxcreate["context-creation"]
         S_skillauthor["skill-author"]
         S_worktrees["using-git-worktrees"]
+        S_tribunal["tribunal"]
     end
 
     FLEET["REVIEWER FLEET (read-only, by path matrix)<br/>security · auth-crypto · dependency<br/>migration · coverage-auditor"]
@@ -193,6 +195,11 @@ flowchart TD
     FUNNEL -->|"BLOCK on CRITICAL/HIGH"| VERDICT([triaged verdict])
     C_checkpoint -. "informational" .-> A_drift["architecture-drift-reviewer"]
     A_drift --> FUNNEL
+    C_tribunal --> S_tribunal
+    S_tribunal -->|"after cost acknowledgment (STOP gate)"| TRIBROSTER["ELEVEN tribunal-* lens reviewers<br/>(read-only, waved dispatch, resumable from<br/>.codearbiter/reports/&lt;run-id&gt;/)"]
+    S_tribunal -. "large repo" .-> A_mappers["map-structure · map-deps (optional)"]
+    TRIBROSTER --> TRIBREPORT([report.md — never a gate])
+    TRIBREPORT -. "explicit authorization only" .-> TRIBISSUES([findings filed as GitHub issues])
     C_release --> S_release
     S_release --> S_commitgate
     S_release -->|"on authorization"| TAGDONE([tag + GitHub Release])
