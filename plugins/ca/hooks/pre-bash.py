@@ -30,9 +30,17 @@ from _hooklib import (  # noqa: E402
 # --no-pager, …) before the subcommand — `git -C ../x commit` must not slip
 # past a bare `git\s+commit` match.
 GIT = r"\bgit(?:\s+(?:-[Cc]\s+\S+|--[\w-]+(?:=\S+)?|-\w+))*"
-COMMIT_RE = re.compile(GIT + r"\s+commit\b(?P<args>[^|;&]*)")
-PUSH_RE = re.compile(GIT + r"\s+push\b(?P<args>[^|;&]*)")
-ADD_RE = re.compile(GIT + r"\s+add\b(?P<args>[^|;&]*)")
+# The args capture stops at an unquoted `|`, `;`, or `&` (the next shell command
+# is not this git command's business) but consumes quoted strings whole — a
+# `;` inside `-m "scoped; and true"` is message content, not a separator.
+# Truncating inside the quoted message left an unterminated `$(cat <<'EOF'`
+# fragment whose words were then parsed as pathspecs, and a token like
+# `/ca:checkpoint)` made `git diff HEAD -- …` fatal ("outside repository"),
+# failing the H-09b scan CLOSED on a clean commit.
+ARGS = r"(?P<args>(?:\"[^\"]*\"|'[^']*'|[^|;&])*)"
+COMMIT_RE = re.compile(GIT + r"\s+commit\b" + ARGS)
+PUSH_RE = re.compile(GIT + r"\s+push\b" + ARGS)
+ADD_RE = re.compile(GIT + r"\s+add\b" + ARGS)
 GIT_C_DIR_RE = re.compile(r"\bgit\s+-C\s+(\"[^\"]+\"|'[^']+'|\S+)")
 # Force-push in any spelling: --force, --force-with-lease[=…], -f as its own
 # token (not a ref like `fix-f`), or a forcing `+refspec`.
@@ -190,6 +198,21 @@ def head_on_protected_tip(cwd):
     return head_sha is not None and head_sha in protected
 
 
+# The most recent git-read failure, surfaced in the H-09b/H-14 fail-closed
+# block message. "git unavailable or timed out" alone cost a session of root-
+# causing (2026-07-01: the real error was a pathspec-parse artifact, visible in
+# one look at git's stderr); a fail-closed message must carry its evidence.
+_READ_ERRS = []
+
+
+def _note_read_err(argv, detail):
+    _READ_ERRS.append(f"`{' '.join(argv)}` -> {(detail or '').strip()[:200]}")
+
+
+def _read_err_hint():
+    return f" Underlying git error: {_READ_ERRS[-1]}" if _READ_ERRS else ""
+
+
 def added_lines(cwd, ref, paths=None):
     """The added (`+`) lines of a diff — what a commit would introduce — or None
     when git could not produce the diff (nonzero exit / timeout / error). The
@@ -209,8 +232,10 @@ def added_lines(cwd, ref, paths=None):
             timeout=10,
         )
         if out.returncode != 0:
+            _note_read_err(argv, out.stderr or f"exit {out.returncode}")
             return None
-    except Exception:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
+        _note_read_err(argv, repr(e))
         return None
     return "\n".join(
         line[1:] for line in out.stdout.splitlines()
@@ -229,8 +254,10 @@ def _names(cwd, args):
             encoding="utf-8", errors="replace", timeout=10,
         )
         if out.returncode != 0:
+            _note_read_err(["git"] + args, out.stderr or f"exit {out.returncode}")
             return None
-    except Exception:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
+        _note_read_err(["git"] + args, repr(e))
         return None
     return {p for p in out.stdout.splitlines() if p.strip()}
 
@@ -370,8 +397,18 @@ def main():
         sys.exit(0)
     cmd = tool_input(read_input()).get("command", "") or ""
 
-    commit = COMMIT_RE.search(cmd)
-    cwd = git_cwd(cmd, root)
+    # Heredoc bodies are stdin text, not arguments — match the git command over
+    # a body-stripped view so message content (which may contain `;`/`|`/`&`,
+    # or mention `git -C`) never truncates the args capture, poisons the cwd
+    # extraction, or leaks words into the pathspec parse. The RAW command stays
+    # as a fallback matcher: a heredoc fed TO a shell (`bash <<EOF … EOF`)
+    # executes its body, so a commit/push/add visible only in the raw text must
+    # still be guarded — ambiguity resolves CLOSED, so the fallback over-blocks
+    # (e.g. a message QUOTING a force-push) rather than under-scans.
+    git_view = _strip_heredoc_bodies(cmd) if "<<" in cmd else cmd
+
+    commit = COMMIT_RE.search(git_view) or COMMIT_RE.search(cmd)
+    cwd = git_cwd(git_view, root)
 
     # H-01: no commit directly to main/master — case-insensitive, and a detached
     # HEAD sitting on a protected branch's tip counts (the commit lands on its
@@ -383,7 +420,7 @@ def main():
             block("H-01", f"Direct commit to {target} is prohibited (ORCHESTRATOR §3). "
                           f"Create a feature branch.")
 
-    push = PUSH_RE.search(cmd)
+    push = PUSH_RE.search(git_view) or PUSH_RE.search(cmd)
     if push:
         pargs = push.group("args")
 
@@ -417,7 +454,7 @@ def main():
     # flag spellings (-A/--all/-u/.) and the argument spellings (globs,
     # directories, pathspec magic) — `git add src/` stages everything beneath
     # src/ just as surely as `git add -A` does.
-    add = ADD_RE.search(cmd)
+    add = ADD_RE.search(git_view) or ADD_RE.search(cmd)
     if add:
         if WILDCARD_ADD_RE.search(add.group("args")):
             block("H-03", "'git add -A' / 'git add .' / 'git add --all' / 'git add -u' "
@@ -489,7 +526,7 @@ def main():
             block("H-09b", "the diff for the crypto/secret security scan could not be "
                            "read (git unavailable or timed out) — failing closed "
                            "(ORCHESTRATOR §2). Retry, or run the crypto-compliance / "
-                           "secret-handling gate, then commit.")
+                           "secret-handling gate, then commit." + _read_err_hint())
         added = "\n".join(parts)
         sensitive = [ln for ln in added.splitlines()
                      if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
@@ -553,7 +590,7 @@ def main():
             block("H-14", "the file list for the migration scan could not be read "
                           "(git unavailable or timed out) — failing closed "
                           "(ORCHESTRATOR §2). Retry, or run the migration-review gate, "
-                          "then commit.")
+                          "then commit." + _read_err_hint())
         staged |= extra
         migs = sorted(p for p in staged if is_migration_path(p, root))
         if migs:

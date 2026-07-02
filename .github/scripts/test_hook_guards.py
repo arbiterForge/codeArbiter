@@ -42,8 +42,13 @@ checks = 0
 
 
 def sh(args, cwd, **kw):
+    # Pin CLAUDE_PROJECT_DIR to the fixture repo: project_root() trusts the
+    # harness signal first, and a value leaking in from a live Claude session
+    # would silently point every guard at the developer's real repo.
+    env = {**os.environ, "CLAUDE_PROJECT_DIR": cwd}
     return subprocess.run(args, cwd=cwd, capture_output=True, text=True,
-                          encoding="utf-8", errors="replace", timeout=60, **kw)
+                          encoding="utf-8", errors="replace", timeout=60,
+                          env=env, **kw)
 
 
 def git(args, cwd):

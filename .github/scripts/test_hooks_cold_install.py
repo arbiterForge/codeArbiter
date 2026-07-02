@@ -56,6 +56,11 @@ import shutil
 import subprocess
 import sys
 import tempfile
+# Strip the live harness's project signal: project_root() trusts
+# CLAUDE_PROJECT_DIR first, and a value leaking in from a Claude session
+# would point every spawned hook at the real repo, not the fixture repo.
+os.environ.pop("CLAUDE_PROJECT_DIR", None)
+
 
 WIN = os.name == "nt"
 HERE = os.path.dirname(os.path.abspath(__file__))
