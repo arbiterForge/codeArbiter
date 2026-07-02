@@ -48,6 +48,7 @@ Dispatch the active lenses in priority-ordered waves at the concurrency from `re
 - Each `tribunal-*` agent writes each finding to its own file `findings/<lens>/<finding-id>.json` the moment it is found — one file per finding, never a batched write at the end (write contract: `references/finding-record.md`).
 - **Evidence-or-drop.** Every finding cites a concrete `path:line` and the minimal snippet. An absence claim — "no handler", "no teardown", "missing validation" — requires reading the whole unit, never a truncated window.
 - Specialists never dispatch further subagents. Update each wave's status in `run.jsonl` as it flushes.
+- When a lens's summary returns, record a `lens-completed` event in `run.jsonl` with `surface_seen`/`findings`/`model` taken from the agent's summary, plus `tokens` when the orchestrator can observe that lens's spend.
 
 Gate: every active lens has flushed its `findings/<lens>/` files, and each wave's status is recorded.
 
