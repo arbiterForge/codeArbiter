@@ -12,19 +12,29 @@
  *      networking UP for the clone (the only point egress is needed by default;
  *      the sandbox container itself defaults to offline). The clone container
  *      mounts the volume at /work/repo and is `--rm`'d immediately after — it is
- *      NOT a sandbox object and carries no sandbox label, and (critically) it is
- *      never co-run with the untrusted code: clone-then-cut.
+ *      NOT a sandbox object (destroy.ts never targets it directly), but it DOES
+ *      carry the `ca.sandbox=1` + `ca.sandbox.id=<id>` labels (reliability-015)
+ *      so prune()'s sweep can still reclaim it if it outlives its `--rm`, and it
+ *      is never co-run with the untrusted code: clone-then-cut.
  *   4. BUILD (or reuse) the image via build.ts (dephash-cached, deps to /deps).
  *   5. RUN the sandbox container via run.ts — structurally isolated, no host bind,
  *      offline by default — tagging it `ca.sandbox=1` + `ca.sandbox.id=<id>`.
  *
  * Everything created is labeled so destroy.ts / prune() can reclaim it by label
- * alone. On any failure AFTER the volume is created, the partial objects are torn
- * down so a failed create never leaks a labeled half-sandbox.
+ * alone — INCLUDING the throwaway clone container and the docker-cp helper
+ * (reliability-015): both now carry `ca.sandbox=1` + `ca.sandbox.id=<id>` even
+ * though neither is a sandbox object itself, so a hung clone / a host crash
+ * mid-create still leaves something `prune()` can reclaim, and each step is
+ * wall-clock timed out so a dead remote / giant repo cannot hang forever. On
+ * any failure AFTER the volume is created, the partial objects are torn down —
+ * containers FIRST, then the volume (matching destroySandbox's order, so an
+ * in-use volume never fails to remove) — so a failed create never leaks a
+ * labeled half-sandbox.
  *
- * Process/shell handling mirrors run.ts / build.ts: an injectable docker runner,
- * MSYS_NO_PATHCONV=1 on Windows + Git Bash (Spike A/B), and a deterministic id
- * derived from crypto random bytes (farm.ts hashing style).
+ * Process/shell handling routes through docker.ts (architecture-007): an
+ * injectable docker runner, MSYS_NO_PATHCONV=1 on Windows + Git Bash (Spike
+ * A/B), and a deterministic id derived from crypto random bytes (farm.ts
+ * hashing style).
  */
 import { spawnSync, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -33,14 +43,8 @@ import { runContainer, type NetPolicy } from "./run.ts";
 import { buildMountArgs } from "./mounts.ts";
 import { buildOrReuseImage, type BuildResult } from "./build.ts";
 import { computeDepHash, type ManifestFile } from "./dephash.ts";
-import {
-  SANDBOX_LABEL,
-  idLabel,
-  type DockerRun,
-  type DockerResult,
-} from "./registry.ts";
-
-const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
+import { SANDBOX_LABEL, idLabel } from "./registry.ts";
+import { DOCKER_ENV, defaultDockerRun, type DockerRun } from "./docker.ts";
 
 /** Image used for the throwaway clone step (small, git built in). */
 export const CLONE_IMAGE = "alpine/git:latest";
@@ -48,6 +52,22 @@ export const CLONE_IMAGE = "alpine/git:latest";
 export const APP_DIR = "/work/repo";
 /** Prefix for the named volume of a sandbox. */
 export const VOLUME_PREFIX = "ca-sbx-vol";
+/**
+ * Wall-clock timeout (ms) for the throwaway clone step (reliability-015). A
+ * dead remote or a giant repo must not hang the helper container forever;
+ * exceeding this kills the local `docker run` client (SIGTERM, then the
+ * process's own close handling resolves). The clone container is labeled
+ * regardless of outcome, so even a kill that outlives the client-side timeout
+ * (docker's sig-proxy is best-effort) leaves an object `prune()` reclaims.
+ * Overridable for tests via CA_SANDBOX_CLONE_TIMEOUT_MS.
+ */
+export const CLONE_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CLONE_TIMEOUT_MS ?? 5 * 60_000);
+/**
+ * Wall-clock timeout (ms) for each docker-cp helper step (create + cp) used to
+ * materialize a temp checkout for dephash/build (reliability-015). Overridable
+ * for tests via CA_SANDBOX_CP_TIMEOUT_MS.
+ */
+export const CP_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CP_TIMEOUT_MS ?? 2 * 60_000);
 
 /** Result returned by the injectable repo cloner. */
 export type CloneResult = { code: number; stderr: string };
@@ -67,12 +87,12 @@ export type CreateOptions = {
    * error messages) or a plain exit-code number (backward-compatible with existing
    * tests; treated as having no stderr).
    */
-  cloneRepo?: (url: string, volumeName: string) => Promise<CloneResult | number>;
+  cloneRepo?: (url: string, volumeName: string, id: string) => Promise<CloneResult | number>;
   /**
    * Injectable image builder. Defaults to build.ts buildOrReuseImage over a
    * temp checkout. Tests inject a fake that returns a prebuilt tag.
    */
-  buildImage?: (volumeName: string) => Promise<BuildResult>;
+  buildImage?: (volumeName: string, id: string) => Promise<BuildResult>;
 };
 
 /** Error thrown when an untrusted repo url fails the clone-input trust check. */
@@ -135,15 +155,6 @@ export type CreateResult = {
   notes: string[];
 };
 
-function defaultDockerRun(args: string[]): DockerResult {
-  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV });
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : ""),
-  };
-}
-
 /** A short, url-safe random id (12 hex chars), mirroring run.ts's name suffix. */
 export function newSandboxId(): string {
   return randomBytes(6).toString("hex");
@@ -154,10 +165,22 @@ export function newSandboxId(): string {
  * surface actionable diagnostics (e.g. "fatal: repository not found"). argv and
  * env are never included in the returned value — only the child process's own
  * stderr stream is captured, keeping the secret-free contract of the failure path.
+ *
+ * `timeoutMs` (reliability-015) bounds the wall-clock time of the spawned
+ * process: Node's own `timeout` spawn option sends `killSignal` (default
+ * SIGTERM) once it elapses, so a dead remote / hung clone cannot block this
+ * promise forever. The underlying docker container may still carry on past
+ * the client-side kill (docker's sig-proxy is best-effort against SIGTERM) —
+ * that is exactly why the CALLER must label the container so `prune()` can
+ * reclaim it regardless.
  */
-function spawnAsync(cmd: string, args: string[]): Promise<CloneResult> {
+function spawnAsync(cmd: string, args: string[], timeoutMs?: number): Promise<CloneResult> {
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { env: DOCKER_ENV, stdio: ["ignore", "ignore", "pipe"] });
+    const c = spawn(cmd, args, {
+      env: DOCKER_ENV,
+      stdio: ["ignore", "ignore", "pipe"],
+      ...(timeoutMs !== undefined ? { timeout: timeoutMs } : {}),
+    });
     const stderrChunks: Buffer[] = [];
     c.stderr?.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
     c.on("error", () => resolve({ code: 1, stderr: "" }));
@@ -174,12 +197,18 @@ function spawnAsync(cmd: string, args: string[]): Promise<CloneResult> {
 /**
  * Clone `url` INTO the named volume via a throwaway alpine/git container with
  * networking up. The container mounts the volume at /work/repo and is `--rm`'d
- * the instant the clone finishes — it carries NO sandbox label and is never the
- * sandbox itself. Cloning into an empty named volume's mount point; alpine/git's
- * entrypoint is `git`, so the args after the image are git's.
+ * the instant the clone finishes. It is NOT a sandbox object (destroy.ts never
+ * targets it directly), but it now carries `ca.sandbox=1` + `ca.sandbox.id=<id>`
+ * (reliability-015) so a hung clone / a host crash before the `--rm` fires still
+ * leaves something `prune()` can reclaim, and it is wall-clock timed out
+ * (CLONE_TIMEOUT_MS) so a dead remote cannot hang indefinitely.
  */
-export async function defaultCloneRepo(url: string, volumeName: string): Promise<CloneResult> {
-  return spawnAsync("docker", buildCloneArgs(url, volumeName));
+export async function defaultCloneRepo(
+  url: string,
+  volumeName: string,
+  id: string,
+): Promise<CloneResult> {
+  return spawnAsync("docker", buildCloneArgs(url, volumeName, id), CLONE_TIMEOUT_MS);
 }
 
 /**
@@ -190,8 +219,13 @@ export async function defaultCloneRepo(url: string, volumeName: string): Promise
  * git as a flag (belt to validateRepoUrl's suspenders). alpine/git ENTRYPOINT is
  * `git`, so the args after the image are git's; clone goes straight into the
  * volume mounted at /work/repo.
+ *
+ * Labeled `ca.sandbox=1` + `ca.sandbox.id=<id>` (reliability-015) — the ONE
+ * change from the pre-fix argv shape — so this throwaway container is
+ * discoverable by `prune()`'s label sweep even though it is never a registered
+ * sandbox object.
  */
-export function buildCloneArgs(url: string, volumeName: string): string[] {
+export function buildCloneArgs(url: string, volumeName: string, id: string): string[] {
   return [
     "run",
     "--rm",
@@ -199,6 +233,10 @@ export function buildCloneArgs(url: string, volumeName: string): string[] {
     // covered by the bind-rejection guarantee and there is genuinely one mount-argv
     // path. Same volume spec as before -> byte-identical argv.
     ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR }]),
+    "--label",
+    SANDBOX_LABEL,
+    "--label",
+    idLabel(id),
     CLONE_IMAGE,
     "clone",
     "--depth",
@@ -210,14 +248,43 @@ export function buildCloneArgs(url: string, volumeName: string): string[] {
 }
 
 /**
+ * The docker argv (everything after `docker`) for the `docker create` step of
+ * the throwaway docker-cp helper container. Pure so the labeling is
+ * unit-testable without docker. Labeled `ca.sandbox=1` + `ca.sandbox.id=<id>`
+ * (reliability-015) — the helper is never a registered sandbox object (it
+ * exists only to `docker cp` a temp checkout out of the volume), but the label
+ * makes it discoverable by `prune()`'s sweep if the host process dies before
+ * the `finally` block's `docker rm -f` runs.
+ */
+export function buildCpHelperCreateArgs(volumeName: string, helperName: string, id: string): string[] {
+  return [
+    "create",
+    "--name",
+    helperName,
+    "--label",
+    SANDBOX_LABEL,
+    "--label",
+    idLabel(id),
+    // Same buildMountArgs chokepoint as buildCloneArgs (architecture-006).
+    ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR }]),
+    CLONE_IMAGE,
+    "true",
+  ];
+}
+
+/**
  * Default image build: copy the cloned source OUT of the volume into a temp dir
  * (so build.ts can read manifests + run a docker build context), compute the
  * dephash from the manifest set, then buildOrReuseImage. The clone lives only in
  * the volume, so we materialize a transient checkout via a throwaway container's
  * `docker cp`. Kept injectable; the docker-gated lifecycle test exercises the
  * REAL default end to end on a tiny repo.
+ *
+ * The helper container is labeled and each docker step (create + cp) is
+ * wall-clock timed out (CP_TIMEOUT_MS, reliability-015) so a stuck copy cannot
+ * hang forever and, if it does, the label still makes it `prune()`-reclaimable.
  */
-async function defaultBuildImage(volumeName: string): Promise<BuildResult> {
+async function defaultBuildImage(volumeName: string, id: string): Promise<BuildResult> {
   const { mkdtemp, rm } = await import("node:fs/promises");
   const { tmpdir } = await import("node:os");
   const path = await import("node:path");
@@ -225,19 +292,11 @@ async function defaultBuildImage(volumeName: string): Promise<BuildResult> {
   // Materialize the volume contents to the host temp dir via a helper container:
   // mount the volume read-only and `docker cp` its /work/repo out.
   const helper = `ca-sbx-cp-${newSandboxId()}`;
-  const createResult = spawnSync(
-    "docker",
-    [
-      "create",
-      "--name",
-      helper,
-      // Same buildMountArgs chokepoint as buildCloneArgs (architecture-006).
-      ...buildMountArgs([{ type: "volume", source: volumeName, target: APP_DIR }]),
-      CLONE_IMAGE,
-      "true",
-    ],
-    { env: DOCKER_ENV, encoding: "utf8" },
-  );
+  const createResult = spawnSync("docker", buildCpHelperCreateArgs(volumeName, helper, id), {
+    env: DOCKER_ENV,
+    encoding: "utf8",
+    timeout: CP_TIMEOUT_MS,
+  });
   if ((createResult.status ?? 1) !== 0) {
     const hint = (createResult.stderr ?? "").trim();
     await rm(dir, { recursive: true, force: true }).catch(() => {});
@@ -249,6 +308,7 @@ async function defaultBuildImage(volumeName: string): Promise<BuildResult> {
     const cpResult = spawnSync("docker", ["cp", `${helper}:${APP_DIR}/.`, dir], {
       env: DOCKER_ENV,
       encoding: "utf8",
+      timeout: CP_TIMEOUT_MS,
     });
     if ((cpResult.status ?? 1) !== 0) {
       const hint = (cpResult.stderr ?? "").trim();
@@ -342,7 +402,7 @@ export async function createSandbox(
   // failed create never leaves a labeled half-sandbox behind.
   try {
     // 2. Clone INTO the volume via the throwaway alpine/git container (net up).
-    const cloneRaw = await cloneRepo(url, volumeName);
+    const cloneRaw = await cloneRepo(url, volumeName, id);
     // Accept either a plain exit code (backward-compatible) or a CloneResult with
     // captured stderr (preferred — surfaces actionable git diagnostics on failure).
     const cloneCode = typeof cloneRaw === "number" ? cloneRaw : cloneRaw.code;
@@ -355,7 +415,7 @@ export async function createSandbox(
     }
 
     // 3. Build (or reuse) the image — dephash-cached, deps relocated to /deps.
-    const build = await buildImage(volumeName);
+    const build = await buildImage(volumeName, id);
 
     // 4. Run the isolated sandbox container, labeled with the id.
     const containerId = runContainer(build.tag, volumeName, netPolicy, {
@@ -375,7 +435,11 @@ export async function createSandbox(
     };
   } catch (err) {
     // Best-effort teardown of the labeled objects of THIS id (label-only).
-    dockerRun(["volume", "rm", "-f", volumeName]);
+    // reliability-015: containers FIRST, then the volume — matching
+    // destroySandbox's order. A named volume still attached to a container
+    // (e.g. the clone container, now also labeled with this id) fails `volume
+    // rm` until that container is gone; removing the volume first (the old
+    // order) left it un-retried and orphaned in exactly that case.
     const leftover = dockerRun([
       "ps",
       "-a",
@@ -387,6 +451,7 @@ export async function createSandbox(
     for (const c of leftover.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
       dockerRun(["rm", "-f", c]);
     }
+    dockerRun(["volume", "rm", "-f", volumeName]);
     throw err;
   }
 }
