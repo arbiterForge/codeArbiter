@@ -165,6 +165,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { label: "Enforcement & Security", slug: "enforcement" },
+            { label: "Hardening History", slug: "concepts/hardening-history" },
             { label: "Hooks Reference", slug: "hooks" },
           ],
         },

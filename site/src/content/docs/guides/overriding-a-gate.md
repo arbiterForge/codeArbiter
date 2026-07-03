@@ -3,7 +3,7 @@ title: "Override a Gate Safely"
 description: "Bypass a blocked gate with /ca:override, the only sanctioned path: one audit line is appended to overrides.log, your identity comes from git config user.email, and the bypass is permanent in the trail."
 ---
 
-A gate blocked your command and the action is genuinely justified. Use `/ca:override "reason"` to bypass it. That is the only sanctioned path. Every other bypass is unsanctioned and leaves no record.
+A gate blocked your command and the action is genuinely justified. Use `/ca:override "reason"` to bypass it — the only sanctioned path, since any other bypass leaves no record in the audit trail.
 
 Before running it, identify which kind of gate you are facing. The two paths are different.
 
@@ -29,7 +29,7 @@ Do not use `/ca:override` when:
 - Routine work passed all gates. The command is not needed and running it creates a permanent log entry for no reason.
 - Two sources conflict rather than one blocking the other. Use `/ca:conflict` instead.
 
-The bypass is scoped to the immediate action only. It creates no standing exception for future commands.
+The bypass applies only to the immediate action; future commands still hit the gate.
 
 ## Run the Command
 
@@ -50,7 +50,7 @@ The reason must name the gate and justify the action. A vague reason such as "ju
 
 3. The blocked action proceeds. The response confirms that the override is logged.
 
-The override covers the immediate action only. Nothing else is changed.
+The override covers only the immediate action.
 
 ## Security-Critical Stops
 
