@@ -38,18 +38,18 @@ With `arbiter: enabled` in a properly closed frontmatter block, the next session
 Send the first real work through a gated lane:
 
 ```text
-/ca:fix "password reset endpoint throws 500 when token is expired"
+/ca:fix "webhook retries create duplicate payment records"
 ```
 
 The `fix` lane routes to the test-first skill. An author agent reads the relevant source, writes a failing test, then writes the minimum implementation to pass it.
 
-As the author writes `auth/reset.py`, the advisory hook fires immediately after the `Write` call:
+As the author writes `payment.ts`, the advisory hook fires immediately after the `Write` call. You should see it in the tool-call output before the write is even done:
 
 ```text
-[H-09] crypto pattern touched in auth/reset.py — run the crypto-compliance gate before commit; the commit will block until a pass is recorded.
+REMINDER [H-09]: Crypto/TLS pattern detected. Run the crypto-compliance check + dispatch auth-crypto-reviewer (no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish; do not disable TLS verification). The commit will block until the gate records a pass.
 ```
 
-The author wrote `hashlib.md5(token.encode()).hexdigest()` to hash the reset token. MD5 is in codeArbiter's banned-primitive list. The advisory does not stop the write. It tells you the commit will.
+The author wrote `createHash("md5")` to derive an idempotency key from the payment payload. MD5 is in codeArbiter's banned-primitive list. The advisory does not stop the write — it tells you the commit will. (The scan behind this gate is language-agnostic: a Python `hashlib.md5` call trips the identical H-09/H-09b pair.)
 
 ## 3. Observe the Gate Catch
 
@@ -59,17 +59,15 @@ The tests pass. The author proposes to commit the work. Run it:
 /ca:commit
 ```
 
-The commit gate runs `pre-bash.py` before the `git commit` shell call fires. It reads the staged diff, finds the MD5 line, and exits 2:
+The commit gate runs `pre-bash.py` before the `git commit` shell call fires. It reads the staged diff, finds the MD5 line, and exits 2. You should see the commit rejected:
 
 ```text
-BLOCKED [H-09b]: staged diff introduces crypto primitives not covered by a recorded gate pass.
-  auth/reset.py +47: token_hash = hashlib.md5(token.encode()).hexdigest()
-  Run the crypto-compliance gate or remove the flagged lines before retrying.
+BLOCKED [H-09b]: This commit introduces crypto/TLS changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the crypto-compliance gate (it records the pass), then commit.
 ```
 
 The `git commit` did not run. The mistake did not reach version control.
 
-To clear the gate, the crypto-compliance skill reviews the flagged lines. MD5 as a token-hashing primitive is a banned pattern. The skill proposes replacing it with `secrets.token_urlsafe()`, which requires no gate pass at all. Once the flagged line is gone and the tests still pass, `/ca:commit` succeeds.
+To clear the gate, the crypto-compliance skill reviews the flagged line. MD5 as a hashing primitive is a banned pattern; the skill proposes replacing it with `createHash("sha256")`, which is on the approved list. Once the fix lands and the tests still pass, run `/ca:commit` again — you should see it succeed, with a line confirming the security-gate pass was recorded and bound to the changed line.
 
 That is the commit gate working as designed: the advisory surfaces the problem at write time, and the hard gate closes before the mistake ships.
 
