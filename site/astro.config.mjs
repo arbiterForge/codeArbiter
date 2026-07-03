@@ -120,6 +120,9 @@ export default defineConfig({
             { label: "Quickstart", slug: "getting-started/quickstart" },
             { label: "What Is codeArbiter", slug: "overview" },
             { label: "Compatibility", slug: "getting-started/compatibility" },
+            // Temporary placement — both belong in a restructured IA (PR-3.3).
+            { label: "Glossary", slug: "glossary" },
+            { label: "FAQ", slug: "faq" },
           ],
         },
         {
@@ -175,6 +178,7 @@ export default defineConfig({
           label: "Reference",
           collapsed: true,
           items: [
+            { label: "The .codearbiter/ Directory", slug: "codearbiter-directory" },
             { label: "All Reference", slug: "reference" },
             { label: "Hook Gates", slug: "reference/hooks-gates" },
             { label: "Changelog", slug: "changelog" },

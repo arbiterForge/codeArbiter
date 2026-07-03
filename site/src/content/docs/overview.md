@@ -11,7 +11,7 @@ its gates before it ships.
 ## codeArbiter Holds the Gates; You Hold the Decisions
 
 This is the organizing principle. codeArbiter enforces process; you make the calls. It
-holds the gates: the test-first rule, the review chain, the secret and crypto checks, the
+holds the [gates](/glossary/#gate): the test-first rule, the review chain, the secret and crypto checks, the
 commit and merge boundaries. Work does not pass a gate without clearing it. But the
 decisions those gates surface belong to you. Which design? Which trade-off? Whether to
 merge? Those are yours to make. When a gate finds something worth your attention, it
