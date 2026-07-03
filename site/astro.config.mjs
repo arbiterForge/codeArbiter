@@ -172,7 +172,11 @@ export default defineConfig({
         {
           label: "Reference",
           collapsed: true,
-          items: [{ label: "All Reference", slug: "reference" }, ...referenceGroups],
+          items: [
+            { label: "All Reference", slug: "reference" },
+            { label: "Hook Gates", slug: "reference/hooks-gates" },
+            ...referenceGroups,
+          ],
         },
       ],
     }),
