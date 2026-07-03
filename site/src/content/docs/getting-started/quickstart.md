@@ -35,7 +35,7 @@ With `arbiter: enabled` in a properly closed frontmatter block, the next session
 
 ## 2. Run a First Command
 
-Send the first real work through a gated lane:
+Send the first real work through a gated [lane](/glossary/#lane):
 
 ```text
 /ca:fix "webhook retries create duplicate payment records"

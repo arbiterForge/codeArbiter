@@ -3,7 +3,7 @@ title: Enforcement & Security
 description: "How codeArbiter enforces its gates at the tool-call boundary: the activation contract, the blocking commit-time gates, advisory reminders, and the fail-loud posture."
 ---
 
-codeArbiter's gates are not advice the model can talk past. They run as Claude Code hooks at the tool-call boundary, in Python, with no network and no third-party dependencies. A blocking gate exits non-zero, and the tool call never happens. This page states what is enforced, where it fails open versus closed, and the security posture behind it.
+codeArbiter's gates are not advice the model can talk past. They run as Claude Code [hooks](/glossary/#hook) at the tool-call boundary, in Python, with no network and no third-party dependencies. A blocking gate exits non-zero, and the tool call never happens. This page states what is enforced, where it fails open versus closed, and the security posture behind it.
 
 For the per-hook breakdown, see the [Hooks reference](/hooks).
 
