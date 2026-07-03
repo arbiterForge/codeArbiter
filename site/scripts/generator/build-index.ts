@@ -1,4 +1,6 @@
 import type { RenderedPage, IndexResult, SidebarGroup, SidebarEntry } from "./types";
+import { modelTier } from "./model-tier";
+import { truncateDescription } from "./truncate-description";
 
 const FIXED_ORDER = ["command", "skill", "agent"] as const;
 
@@ -34,6 +36,9 @@ export function buildIndex(pages: RenderedPage[]): IndexResult {
       const items: SidebarEntry[] = sorted.map((p) => ({
         label: p.title,
         slug: p.slug,
+        description: p.description ? truncateDescription(p.description) : undefined,
+        tier: type === "agent" ? modelTier(p.model) : undefined,
+        preview: type === "command" ? p.forgeStatus != null : undefined,
       }));
       sidebar.push({ type, label: type, items });
     }
