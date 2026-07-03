@@ -70,7 +70,26 @@ export function generate(
     doc: parseDoc(normalize(source.raw)),
   }));
   const names = parsed.map((p) => deriveName(p.source.path, p.doc.fields));
-  const slugs = assignSlugs(names);
+
+  // Slugs are deduplicated per collection (command/skill/agent), not across the
+  // whole combined set — each collection writes to its own output directory, so
+  // a skill sharing a name with a command must not be pushed to a `-2` slug.
+  // Group indices by type (preserving relative order), assign slugs within each
+  // group, then scatter the results back into a single array aligned with
+  // `parsed`/`names` so the rest of generation is unaffected.
+  const slugs: string[] = new Array(parsed.length);
+  const indicesByType = new Map<SourceType, number[]>();
+  parsed.forEach(({ source }, i) => {
+    const list = indicesByType.get(source.type) ?? [];
+    list.push(i);
+    indicesByType.set(source.type, list);
+  });
+  for (const indices of indicesByType.values()) {
+    const groupSlugs = assignSlugs(indices.map((i) => names[i]));
+    indices.forEach((i, j) => {
+      slugs[i] = groupSlugs[j];
+    });
+  }
 
   const pages: RenderedPage[] = parsed.map(({ source, doc }, i) => {
     const name = names[i];
