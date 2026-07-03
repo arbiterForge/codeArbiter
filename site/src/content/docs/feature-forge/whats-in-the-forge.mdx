@@ -20,7 +20,7 @@ badge on the reference pages, so it stays in step with them automatically.
       {f.summary}<br />
       Opt in: <code>{f.optIn}</code>.{' '}
       {f.command ? (
-        <a href={`${import.meta.env.BASE_URL}reference/commands/${f.command}/`}>Reference for /ca:{f.command}</a>
+        <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/reference/commands/${f.command}/`}>Reference for /ca:{f.command}</a>
       ) : f.href ? (
         <a href={f.href}>Details</a>
       ) : null}
