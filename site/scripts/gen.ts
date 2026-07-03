@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { generate } from "./generator/generate";
 import { extractHookGates } from "./generator/extract-hook-gates";
 import { renderHooksReference, buildEventMap, type HooksJson } from "./generator/render-hooks-reference";
+import { renderChangelog } from "./generator/render-changelog";
 
 const here = dirname(fileURLToPath(import.meta.url)); // site/scripts
 const repoRoot = resolve(here, "..", ".."); // -> repo root
@@ -54,4 +55,18 @@ if (skipped.length > 0) {
   for (const s of skipped) {
     console.log(`  skipped (non-literal tag): ${s.file}:${s.line}`);
   }
+}
+
+// On-site changelog (docs-site-overhaul spec, decision f): the repo-root
+// CHANGELOG.md is the single source of truth for release history — this emits
+// a Starlight-ready copy rather than duplicating it by hand. Gitignored output,
+// same discipline as reference/.
+const changelogSourcePath = join(repoRoot, "CHANGELOG.md");
+const changelogOutPath = join(here, "..", "src", "content", "docs", "changelog.md");
+if (existsSync(changelogSourcePath)) {
+  const changelogSource = readFileSync(changelogSourcePath, "utf-8");
+  writeFileSync(changelogOutPath, renderChangelog(changelogSource));
+  console.log(`Generated changelog -> ${changelogOutPath}`);
+} else {
+  console.log(`Skipped changelog generation: ${changelogSourcePath} not found`);
 }
