@@ -4,19 +4,21 @@
 > stays *active* in your repo is through hooks: small Python scripts Claude Code
 > runs at defined points in a session. That deserves transparency, because you are
 > letting a plugin run code on your machine. This page documents every hook, what
-> triggers it, exactly what it reads and writes, and (explicitly) that **none of
-> them send anything off your machine**. Nothing here is obfuscated; every script is
+> triggers it, exactly what it reads and writes, and names the only two things
+> any hook sends over a network. Nothing here is obfuscated; every script is
 > plain, readable Python under [`plugins/ca/hooks/`](../plugins/ca/hooks/).
 
 ## The short version
 
 - **Language:** every hook is Python 3, stdlib only. No third-party packages, no
   compiled binaries, no `pip install`. (`Python 3 on PATH` is the one prerequisite.)
-- **Network:** **none.** No hook opens a socket, makes an HTTP request, or contacts
-  any server. The one outbound process any hook ever spawns is a local, read-only
-  `git fetch` against *your own* configured remote (see
-  [session-start](#sessionstart-session-startpy), background fetch), which is the
-  same thing you would run by hand.
+- **Network:** exactly two background touches, neither blocking. A local `git fetch`
+  against *your own* configured remote, spawned detached at session start (see
+  [session-start](#sessionstart-session-startpy)), the same thing you would run by
+  hand. And a once-a-day, fail-silent, unauthenticated HTTPS GET to the GitHub
+  Releases API (`_updatelib.py`) to check for a newer version, also spawned
+  detached so a slow or unreachable network never delays your session. No hook
+  blocks on either. No repo data leaves your machine either way.
 - **Scope:** every guard hook exits immediately (`exit 0`, does nothing) in any
   repo that has **not** opted in via `.codearbiter/CONTEXT.md` → `arbiter: enabled`.
   Install the plugin globally and it stays dormant everywhere you haven't enabled it.
@@ -234,8 +236,8 @@ unit-test suite for these scripts. Run it with `pytest` from `plugins/ca/hooks/`
 ## Verifying for yourself
 
 ```sh
-# Confirm no hook makes a network call (no socket/http/urllib/requests):
-grep -rEn 'socket|urllib|http\.client|requests\.|urlopen' plugins/ca/hooks/*.py
+# Find every hook file that touches the network:
+grep -rEln 'socket|urllib|http\.client|requests\.|urlopen' plugins/ca/hooks/*.py
 
 # See exactly what gets wired into Claude Code:
 cat plugins/ca/hooks/hooks.json
@@ -244,4 +246,8 @@ cat plugins/ca/hooks/hooks.json
 /ca:doctor
 ```
 
-The first command returns nothing, because there is no network code in any hook.
+The first command returns exactly one file, `_updatelib.py`, and that is the
+documented exception: the once-a-day GitHub Releases check described above. No
+other hook file matches, and the `git fetch` in `session-start.py` is a
+subprocess spawn, not a socket call, so it does not show up in this grep either;
+it is documented above by name.
