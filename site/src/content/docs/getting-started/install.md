@@ -23,7 +23,7 @@ codeArbiter self-hosts a single-plugin marketplace from its GitHub repo. In any 
 
 Hooks, commands, and agents load automatically. All commands resolve under the `/ca:` namespace.
 
-## 2. Scaffold the Repo State Store
+## 2. Scaffold and Activate the Repo
 
 Installing the plugin enforces nothing. To activate codeArbiter for a repository, open that repo in Claude Code and run:
 
@@ -31,25 +31,8 @@ Installing the plugin enforces nothing. To activate codeArbiter for a repository
 /ca:init
 ```
 
-`/ca:init` scaffolds `.codearbiter/` at the repo root and routes to the right context populator for your situation:
+`/ca:init` scaffolds `.codearbiter/` at the repo root, routes to the right context populator, and — once that populator finishes — writes the `arbiter: enabled` activation flag that turns enforcement on. See [Opt a Repository In](/guides/opt-in-a-repo/) for the full walkthrough, including the two populator paths and how to confirm the flag is set correctly.
 
-| You have | Routed to | What it does |
-|---|---|---|
-| An existing codebase | `/ca:create-context` | Back-fills `.codearbiter/` from the source already there |
-| A new project, no code yet | `/ca:decompose` | A layered interview that scaffolds `.codearbiter/` from scratch |
-
-## 3. Confirm the Activation Flag
-
-`/ca:init` writes `arbiter: enabled` into `.codearbiter/CONTEXT.md` frontmatter. This is the single activation mechanism. Enforcement is off until this flag is present; the plugin install alone changes nothing.
-
-```yaml
----
-arbiter: enabled
----
-```
-
-To verify, open `.codearbiter/CONTEXT.md` and confirm `arbiter: enabled` appears in a properly closed YAML frontmatter block (opening `---` on line 1, followed by a closing `---`). A file with no frontmatter at all is silently dormant. A frontmatter block that opens but never closes surfaces a malformed-state error.
-
-Once the flag is set, the next session opens with the orchestrator active.
+Once the flag is present, the next session opens with the orchestrator active.
 
 The [Enforcement & Security](/enforcement/) page covers which gates are blocking versus advisory and how the fail-loud posture works.

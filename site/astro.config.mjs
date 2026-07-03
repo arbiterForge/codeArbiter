@@ -116,12 +116,10 @@ export default defineConfig({
           label: "Getting Started",
           collapsed: true,
           items: [
+            { label: "What Is codeArbiter", slug: "overview" },
             { label: "Install", slug: "getting-started/install" },
             { label: "Quickstart", slug: "getting-started/quickstart" },
-            { label: "What Is codeArbiter", slug: "overview" },
             { label: "Compatibility", slug: "getting-started/compatibility" },
-            // Temporary placement — both belong in a restructured IA (PR-3.3).
-            { label: "Glossary", slug: "glossary" },
             { label: "FAQ", slug: "faq" },
           ],
         },
@@ -142,7 +140,7 @@ export default defineConfig({
           ],
         },
         {
-          label: "Feature Forge",
+          label: "Preview Features",
           collapsed: true,
           items: [
             { label: "What Is the Feature Forge", slug: "feature-forge/overview" },
@@ -160,18 +158,11 @@ export default defineConfig({
             { label: "ADRs and the Decision Log", slug: "concepts/adrs" },
             { label: "Just-in-Time Context Injection", slug: "concepts/jit-context-injection" },
             { label: "The Gated-Lane Model", slug: "concepts/gated-lanes" },
+            { label: "Enforcement & Security", slug: "enforcement" },
+            { label: "Hardening History", slug: "concepts/hardening-history" },
             { label: "Checkpoints", slug: "concepts/checkpoints" },
             { label: "The Persona-Register Split", slug: "concepts/persona-and-context" },
             { label: "Auditability", slug: "concepts/auditability" },
-          ],
-        },
-        {
-          label: "Security",
-          collapsed: true,
-          items: [
-            { label: "Enforcement & Security", slug: "enforcement" },
-            { label: "Hardening History", slug: "concepts/hardening-history" },
-            { label: "Hooks Reference", slug: "hooks" },
           ],
         },
         {
@@ -179,7 +170,9 @@ export default defineConfig({
           collapsed: true,
           items: [
             { label: "The .codearbiter/ Directory", slug: "codearbiter-directory" },
+            { label: "Glossary", slug: "glossary" },
             { label: "All Reference", slug: "reference" },
+            { label: "Hooks Reference", slug: "hooks" },
             { label: "Hook Gates", slug: "reference/hooks-gates" },
             { label: "Changelog", slug: "changelog" },
             ...referenceGroups,
