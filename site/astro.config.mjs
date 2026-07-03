@@ -39,6 +39,25 @@ export default defineConfig({
   //     when the Astro base is changed and is invisible to linting.
   site: "https://arbiterforge.github.io",
   base: "/codeArbiter",
+  // Old `-2` skill URLs from before per-collection slug dedup (see generate.ts):
+  // these six skills shared a name with a same-named command, so the combined
+  // dedup pass pushed the skill page to a `-2` slug. Redirect the old URLs to
+  // the now-clean ones.
+  //
+  // Astro matches redirect *keys* through `base` itself (base-relative, no
+  // "/codeArbiter" prefix). The *destination* value, however, is emitted
+  // verbatim as the redirect Location/meta-refresh target — it is NOT
+  // base-prefixed automatically — so destinations must carry the base
+  // explicitly to land on a real page, matching every other internal href in
+  // this site (see the BASE-PATH-SAFE LINK PATTERN note above).
+  redirects: {
+    "/reference/skills/context-check-2": "/codeArbiter/reference/skills/context-check",
+    "/reference/skills/debug-2": "/codeArbiter/reference/skills/debug",
+    "/reference/skills/decompose-2": "/codeArbiter/reference/skills/decompose",
+    "/reference/skills/refactor-2": "/codeArbiter/reference/skills/refactor",
+    "/reference/skills/release-2": "/codeArbiter/reference/skills/release",
+    "/reference/skills/tribunal-2": "/codeArbiter/reference/skills/tribunal",
+  },
   integrations: [
     starlight({
       title: "codeArbiter",
