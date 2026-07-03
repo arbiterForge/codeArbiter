@@ -48,7 +48,7 @@ See the [hooks and gates reference](/reference/hooks-gates/) for the full gate c
 
 Every change lands through a PR, via
 [finishing-a-development-branch](/reference/skills/finishing-a-development-branch/). Direct
-merge to the default branch is forbidden, with no exceptions.
+merge to the default branch is forbidden.
 
 The one sanctioned way around any of this is [`/ca:override`](/reference/commands/override/):
 a deliberate bypass that appends one line to `overrides.log` and proceeds. It is logged, not
