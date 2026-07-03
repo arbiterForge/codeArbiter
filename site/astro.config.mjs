@@ -2,6 +2,11 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import { readFileSync } from "node:fs";
+import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
+
+// Served from https://arbiterforge.github.io/codeArbiter/ — shared by the
+// `base` option below and the rehype plugin that base-prefixes markdown links.
+const BASE = "/codeArbiter";
 
 // Build the reference sidebar groups from the generator's output. `predev` and
 // `prebuild` run `npm run gen` first, so sidebar.json exists before this loads.
@@ -31,32 +36,40 @@ export default defineConfig({
   // `base` also applies in local dev — the dev server serves at /codeArbiter/.
   //
   // BASE-PATH-SAFE LINK PATTERN for downstream authors:
-  //   - In Starlight MDX/Markdown, use root-relative slugs (no leading slash):
-  //       [Overview](/overview)  →  Starlight maps slugs through the base automatically.
-  //   - In Astro component href props, use import.meta.env.BASE_URL:
-  //       href={`${import.meta.env.BASE_URL}overview/`}
-  //   - Never hardcode "/codeArbiter/" in href strings. That value desynchs
+  //   - Starlight does NOT rewrite root-absolute markdown links through the
+  //     base on its own. Writing [Overview](/overview) in MDX/Markdown would
+  //     render a literal `/overview` href and 404 once served from a subpath.
+  //   - Instead, `markdown.rehypePlugins` below runs our local
+  //     `rehypeBaseLinks(BASE)` plugin (scripts/rehype-base-links.ts) over
+  //     every rendered page. It walks the HAST tree and prefixes any
+  //     root-absolute href/src ("/overview") with BASE ("/codeArbiter/overview"),
+  //     idempotently, so plain root-relative markdown links stay base-safe.
+  //   - In Astro component href props (not markdown), still use
+  //     import.meta.env.BASE_URL: href={`${import.meta.env.BASE_URL}overview/`}
+  //   - Never hardcode "/codeArbiter/" in href strings. That value desyncs
   //     when the Astro base is changed and is invisible to linting.
   site: "https://arbiterforge.github.io",
-  base: "/codeArbiter",
+  base: BASE,
   // Old `-2` skill URLs from before per-collection slug dedup (see generate.ts):
   // these six skills shared a name with a same-named command, so the combined
   // dedup pass pushed the skill page to a `-2` slug. Redirect the old URLs to
   // the now-clean ones.
   //
   // Astro matches redirect *keys* through `base` itself (base-relative, no
-  // "/codeArbiter" prefix). The *destination* value, however, is emitted
-  // verbatim as the redirect Location/meta-refresh target — it is NOT
-  // base-prefixed automatically — so destinations must carry the base
-  // explicitly to land on a real page, matching every other internal href in
-  // this site (see the BASE-PATH-SAFE LINK PATTERN note above).
+  // BASE prefix). The *destination* value, however, is emitted verbatim as the
+  // redirect Location/meta-refresh target — it is NOT base-prefixed
+  // automatically — so destinations must carry the base explicitly to land on
+  // a real page (built from the shared BASE constant above).
   redirects: {
-    "/reference/skills/context-check-2": "/codeArbiter/reference/skills/context-check",
-    "/reference/skills/debug-2": "/codeArbiter/reference/skills/debug",
-    "/reference/skills/decompose-2": "/codeArbiter/reference/skills/decompose",
-    "/reference/skills/refactor-2": "/codeArbiter/reference/skills/refactor",
-    "/reference/skills/release-2": "/codeArbiter/reference/skills/release",
-    "/reference/skills/tribunal-2": "/codeArbiter/reference/skills/tribunal",
+    "/reference/skills/context-check-2": `${BASE}/reference/skills/context-check`,
+    "/reference/skills/debug-2": `${BASE}/reference/skills/debug`,
+    "/reference/skills/decompose-2": `${BASE}/reference/skills/decompose`,
+    "/reference/skills/refactor-2": `${BASE}/reference/skills/refactor`,
+    "/reference/skills/release-2": `${BASE}/reference/skills/release`,
+    "/reference/skills/tribunal-2": `${BASE}/reference/skills/tribunal`,
+  },
+  markdown: {
+    rehypePlugins: [rehypeBaseLinks(BASE)],
   },
   integrations: [
     starlight({
