@@ -27,6 +27,34 @@ export interface SourceFile {
   type: SourceType;
 }
 
+/** One row of a curated `gates:` table — a gate the entity participates in. */
+export interface GateSpec {
+  gate: string;
+  when: string;
+  effect: string;
+}
+
+/**
+ * A parsed curated companion file (`site/src/curated/{commands,agents,skills}/<basename>.md`).
+ *
+ * `entity` is the `<type-dir>/<basename>` key the file declares itself under (must match its
+ * location and a collected source — validated by `load-curated.ts`). `related` holds raw entity
+ * refs as written in frontmatter (bare basename or `type/basename`); resolution to a slug/link
+ * happens at generation time. `body` is the verbatim markdown body, inserted as-is.
+ */
+export interface CuratedDoc {
+  entity: string;
+  related?: string[];
+  gates?: GateSpec[];
+  body: string;
+}
+
+/** A related-entity link, already resolved to its collection + slug by `generate.ts`. */
+export interface RelatedLink {
+  label: string;
+  href: string;
+}
+
 /** Input to a page renderer. Fields are optional because source frontmatter is heterogeneous. */
 export interface PageInput {
   name: string;
@@ -35,6 +63,16 @@ export interface PageInput {
   tools?: string;
   /** Feature Forge preview status for this page, or null/undefined for stable features. */
   forgeStatus?: ForgeStatus | null;
+  /** The curated framing layer for this entity, or undefined when uncurated. */
+  curated?: CuratedDoc;
+  /** Resolved `related:` links, or undefined when there are none. */
+  relatedLinks?: RelatedLink[];
+  /** Verbatim raw contents of the plugin source file, for the source embed. */
+  sourceRaw: string;
+  /** Repo-relative path to the plugin source file, e.g. `plugins/ca/commands/sprint.md`. */
+  sourceRelPath: string;
+  /** The plugin's version (from `plugin.json`), for the tag-pinned view-in-repo link. */
+  pluginVersion: string;
 }
 
 /** A rendered reference page ready to write to disk. */

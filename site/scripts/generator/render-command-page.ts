@@ -1,27 +1,25 @@
 /** render-command-page.ts — codeArbiter's command reference page renderer. */
 import type { PageInput } from "./types";
 import { yamlDescriptionLine } from "./yaml-quote";
+import { renderSourceEmbed } from "./render-source-embed";
+import { renderGatesTable } from "./render-gates-table";
+import { renderRelatedLinks } from "./render-related-links";
 
 /**
  * Render a command reference page as Starlight-compatible markdown.
  *
- * Includes a `title:` frontmatter line and, when a description is present, a
- * quoted `description:` frontmatter line (used for the page's meta
- * description). Starlight renders the frontmatter `title` as the page's only
- * H1, so the body carries no `# <name>` heading. Commands have no model or
- * tools, so the page renders neither a `Model tier` nor a `Tools` section.
+ * Anatomy, in order: frontmatter (`title` + quoted `description`) → forge
+ * preview badge/callout (when `forgeStatus` is set) → description paragraph
+ * → curated body (verbatim, when `curated` is present) → gates table (when
+ * `curated.gates` is present) → `## Related` (when `relatedLinks` is
+ * present) → `## Source` verbatim embed (always).
  *
- * When `forgeStatus` is provided on the input the renderer decorates the page:
- * - `preview-command` — a preview badge (`<span class="ca-badge" data-kind="preview">`)
- *   is injected as the first body element, before the description paragraph.
- * - `preview-flag` — a preview callout (`<div class="ca-callout ca-callout--preview">`)
- *   naming the preview flag is injected as the first body element, before the
- *   description paragraph.
- * - null / undefined — no decoration; the description paragraph is the only
- *   body content.
+ * Starlight renders the frontmatter `title` as the page's only H1, so the
+ * body carries no `# <name>` heading. Commands have no model or tools, so
+ * the page renders neither a `Model tier` nor a `Tools` line.
  */
 export function renderCommandPage(input: PageInput): string {
-  const { name, description, forgeStatus } = input;
+  const { name, description, forgeStatus, curated, relatedLinks } = input;
   const desc = description ?? "";
 
   let decoration = "";
@@ -42,10 +40,34 @@ export function renderCommandPage(input: PageInput): string {
     ? `title: ${name}\n${descriptionLine}`
     : `title: ${name}`;
 
+  const sections: string[] = [`${decoration}${desc}`.trimEnd()];
+
+  if (curated?.body) {
+    sections.push(curated.body.trim());
+  }
+
+  const gatesTable = renderGatesTable(curated?.gates);
+  if (gatesTable) {
+    sections.push(`## Gates\n\n${gatesTable}`);
+  }
+
+  const related = renderRelatedLinks(relatedLinks);
+  if (related) {
+    sections.push(related);
+  }
+
+  sections.push(
+    `## Source\n\n${renderSourceEmbed(
+      input.sourceRaw,
+      input.sourceRelPath,
+      input.pluginVersion,
+    )}`,
+  );
+
   return `---
 ${frontMatter}
 ---
 
-${decoration}${desc}
+${sections.join("\n\n")}
 `;
 }

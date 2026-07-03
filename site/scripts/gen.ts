@@ -9,8 +9,9 @@ const repoRoot = resolve(here, "..", ".."); // -> repo root
 const srcDir = join(repoRoot, "plugins", "ca");
 const outDir = join(here, "..", "src", "content", "docs", "reference");
 const sidebarPath = join(here, "..", "src", "generated", "sidebar.json");
+const curatedDir = join(here, "..", "src", "curated");
 
-const result = generate(srcDir, outDir, sidebarPath);
+const result = generate(srcDir, outDir, sidebarPath, curatedDir);
 const counts = result.pages.reduce<Record<string, number>>((acc, p) => {
   acc[p.type] = (acc[p.type] ?? 0) + 1;
   return acc;
