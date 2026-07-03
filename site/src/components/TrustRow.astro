@@ -1,0 +1,59 @@
+---
+/**
+ * TrustRow.astro — the landing page's trust-signal row.
+ *
+ * Four numeric tiles (gate IDs, commands, agents, skills) computed at build
+ * time from `plugins/ca/` via `computeLandingStats()`, plus one qualitative
+ * tile. The numbers are never hand-typed here, so a payload change (a new
+ * hook gate, a new command) shows up on the next build without an edit to
+ * this file.
+ */
+import { computeLandingStats } from "../../scripts/generator/landing-stats";
+
+const stats = computeLandingStats();
+// BASE_URL is not guaranteed to carry a trailing slash — normalize before
+// joining a path onto it (same pattern as Search.astro's `base` constant).
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const tiles = [
+  {
+    value: String(stats.gateCount),
+    label: stats.gateCount === 1 ? "gate ID enforced" : "gate IDs enforced",
+    href: `${base}/reference/hooks-gates/`,
+  },
+  {
+    value: String(stats.commandCount),
+    label: "slash commands",
+    href: `${base}/reference/`,
+  },
+  {
+    value: String(stats.agentCount),
+    label: "specialist agents",
+    href: `${base}/reference/`,
+  },
+  {
+    value: String(stats.skillCount),
+    label: "skills",
+    href: `${base}/reference/`,
+  },
+];
+---
+
+<div class="ca-trust">
+  <ul class="ca-trust__row" role="list">
+    {
+      tiles.map((tile) => (
+        <li class="ca-trust__tile">
+          <a class="ca-trust__link" href={tile.href}>
+            <span class="ca-trust__num">{tile.value}</span>
+            <span class="ca-trust__label">{tile.label}</span>
+          </a>
+        </li>
+      ))
+    }
+    <li class="ca-trust__tile ca-trust__tile--qual">
+      <span class="ca-trust__num ca-trust__num--qual">stdlib-only</span>
+      <span class="ca-trust__label">every hook is stdlib-only Python, no third-party dependencies</span>
+    </li>
+  </ul>
+</div>
