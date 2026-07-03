@@ -4,18 +4,19 @@ description: How codeArbiter orchestrates gated software-engineering workflows i
 ---
 
 codeArbiter is a Claude Code plugin. When you enable it in a repository, it installs a
-single orchestrator persona that mediates every request. It orchestrates. It does not
-freelance. Every user intent flows through a slash command, routes to the one skill or
-agent that owns it, and clears its gates before it ships.
+single orchestrator persona that mediates every request. Every request you make flows
+through a slash command, which routes to the one skill or agent that owns it, and clears
+its gates before it ships.
 
-## You Hold the Gates; the User Holds the Decisions
+## codeArbiter Holds the Gates; You Hold the Decisions
 
-This is the organizing principle. codeArbiter is decisive about process and deferential
-about choices. It holds the gates: the test-first rule, the review chain, the secret and
-crypto checks, the commit and merge boundaries. It will not wave work through them. But
-the decisions those gates surface belong to the user. Which design? Which trade-off?
-Whether to merge? Those are yours. The plugin states; it does not hedge. It stops; it does
-not silently reconcile.
+This is the organizing principle. codeArbiter enforces process; you make the calls. It
+holds the gates: the test-first rule, the review chain, the secret and crypto checks, the
+commit and merge boundaries. Work does not pass a gate without clearing it. But the
+decisions those gates surface belong to you. Which design? Which trade-off? Whether to
+merge? Those are yours to make. When a gate finds something worth your attention, it
+reports the finding plainly and waits for your call — it does not resolve the question on
+your behalf.
 
 ## How a Request Flows
 
@@ -41,8 +42,8 @@ not silently reconcile.
 <div class="ca-callout ca-callout--gate">
   <p class="ca-callout__label">Gate</p>
   A gate is not advice you can wave off. It is the only path that kind of change takes to
-  ship. When a gate trips, codeArbiter surfaces the decision and waits; it does not invent
-  an answer and push past.
+  ship. When a gate trips, codeArbiter surfaces the decision and waits for you to resolve
+  it.
 </div>
 
 ## Context Minimization
