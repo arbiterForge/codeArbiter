@@ -13,13 +13,9 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 <img alt="agents" src="https://img.shields.io/badge/agents-28-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
-### 📖 [Read the documentation →](https://arbiterforge.github.io/codeArbiter/)
+### [Read the documentation →](https://arbiterforge.github.io/codeArbiter/)
 
 <sub>Install it globally; it stays dormant until you opt a repo in.</sub>
-
-<!-- DEMO: once recorded, replace this comment with the in-motion GIF. Recording shot list in docs/demo-script.md
-<div align="center"><img src="docs/demo.gif" alt="codeArbiter in motion: a gate blocks, the human resolves, the work goes green" width="900"></div>
--->
 
 </div>
 
@@ -31,7 +27,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 codeArbiter is a native Claude Code plugin that sits between you and your codebase. Instead of letting the model freelance, you drive through slash commands. Each one routes to the skill or agent that owns the work (TDD, the commit gate, decision-variance/SMARTS, the reviewer fleet) and clears its gates before anything ships.
 
-**Who it's for:** teams and power users who let agents write real code and need to prove what happened. The kind who'd rather a tool block than apologize.
+**Who it's for:** teams and power users who let agents write real code and need to prove what happened.
 
 It will not:
 
@@ -40,28 +36,18 @@ It will not:
 - resolve an open question by guessing, or
 - silently reconcile a contradiction between your docs and your code.
 
-The gates are terse and non-negotiable. The thinking is not. It brainstorms a spec, works through a bug, and weighs a decision with you conversationally. When it enforces, it states the rule and holds the line.
+The gates are terse and non-negotiable. The thinking is not: it brainstorms a spec, works through a bug, and weighs a decision with you conversationally. When it enforces, it states the rule and holds the line.
 
-Is that a lot of ceremony? It scales to the change. The heavyweight gates are what a skimmer notices first, but a one-line docs fix takes the small lane or `/ca:chore`, not the full spec-to-PR march. The weight is there because the failure mode of an eager AI assistant is *plausible-but-wrong work that ships*, and the gates exist to make that hard.
+The gates scale to the change: a one-line docs fix takes the small lane or `/ca:chore`, not the full spec-to-PR march. The weight exists because the failure mode of an eager AI assistant is *plausible-but-wrong work that ships*, and the gates make that hard.
 
-### Why the pushback is the point
+## See it catch something
 
-The first time codeArbiter blocks you, it feels like friction. Then you see what it caught.
-
-- It wouldn't let a spec say "and then a worker handles that." The function had to be described first.
-- It blocked the agent from editing a file it had never read.
-
-The usual objection is "too many gates," right up until someone watches a gate stop a real mistake. After that the gates read as protection, not ceremony. That is the whole arc.
-
-<details>
-<summary><b>What a loop actually feels like</b></summary>
-
-<br>
+The first time codeArbiter blocks you, it can feel like friction, until you see what it caught. This exchange is a real one from this project's own history: a bug fix forced through test-first, then a PR held at review until an untested seam got covered.
 
 ```text
 you      /ca:fix the statusline keeps running the old version after an update
 
-arbiter  Routing to tdd (bug variant) — a regression test before any fix.
+arbiter  Routing to tdd (bug variant): a regression test before any fix.
          → writes a failing test, confirms it's red for the right reason
          → minimal fix → suite green → coverage + lint gates clear
 
@@ -70,13 +56,56 @@ arbiter  commit-gate: ✓ permission ✓ branch ✓ tests ✓ secrets
          ✓ behavioral proof ✓ clean diff → committed.
 
 you      /ca:pr
-arbiter  reviewer fleet over the diff — coverage-auditor flags an untested seam.
+arbiter  reviewer fleet over the diff: coverage-auditor flags an untested seam.
          BLOCK. Here's the gap. → (you resolve, re-run) → PR opened.
 ```
 
-Every step is a gate you watch clear. You stay in the driver's seat; the gates keep the work honest. That exchange is a real one from this project's own history.
+Every step is a gate you watch clear. You stay in the driver's seat; the gates keep the work honest.
+
+## Install
+
+codeArbiter self-hosts a marketplace of two sibling plugins from this repo: `ca`, the governance layer, and `ca-sandbox`, an optional isolated-container plugin (see [Feature Forge](#feature-forge)).
+
+```text
+/plugin marketplace add arbiterForge/codeArbiter
+/plugin install ca@codearbiter
+```
+
+Hooks, commands, agents, and statusline wiring load automatically; everything resolves under the `/ca:` namespace.
+
+**Prerequisites:** Python 3 on `PATH` (every hook is Python, so without it the gates and the startup
+injection silently don't run) and `git config user.email` set (overrides and ADRs are attributed to
+that identity). Full version matrix: [Compatibility](https://arbiterforge.github.io/codeArbiter/getting-started/compatibility/).
+The optional <kbd>/ca:statusline</kbd> command writes the statusline entry into your
+global `~/.claude/settings.json` (it backs up what was there and restores it on removal).
+
+<details>
+<summary><b>Install from a local clone</b> (for hacking on it)</summary>
+
+<br>
+
+```sh
+git clone https://github.com/arbiterForge/codeArbiter
+```
+```text
+/plugin marketplace add ./codeArbiter
+/plugin install ca@codearbiter
+```
 
 </details>
+
+## Enable codeArbiter in a repo
+
+Installing the plugin does nothing until you opt a repo in. That silence is intentional. Open the
+repo in Claude Code and run <kbd>/ca:init</kbd>: it scaffolds `.codearbiter/` with `arbiter: enabled`
+and routes you to the right populator for your situation:
+
+| You have… | /ca:init routes to | What it does |
+|---|---|---|
+| an existing codebase | <kbd>/ca:create-context</kbd> | back-fills `.codearbiter/` from the source already there |
+| a new project, no code yet | <kbd>/ca:decompose</kbd> | a layered interview that scaffolds `.codearbiter/` (it's thorough; expect a long, resumable Q&A) |
+
+Once `.codearbiter/CONTEXT.md` carries the `<!--INITIALIZED-->` marker, you're in normal operation: the next session opens with the orchestrator active and the startup state presented. From there, everything flows through commands.
 
 ## How it works
 
@@ -84,7 +113,7 @@ One plugin, named `ca`. Claude Code namespaces every plugin command, so you invo
 
 Activation is **per-repo and explicit**. A `SessionStart` hook checks the repo for `.codearbiter/CONTEXT.md` carrying the frontmatter flag `arbiter: enabled`. Present → it injects the orchestrator persona and live startup state. Absent → it exits silently. Install the plugin globally and it stays out of the way everywhere you haven't opted in.
 
-The first session of each local day also opens with a read-only repo-hygiene briefing: branch drift against the remote, merged-but-unpruned branches, stale worktrees, and uncommitted or stashed work, all surfaced, never acted on. The full briefing fires **once per day** — later sessions that day stay quiet: a single-line offer (`run /ca:standup`) only if something is actionable, and **nothing at all when the repo is clean**. The briefing only *reports*; <kbd>/ca:standup</kbd> is the separate command that performs the cleanups under per-action confirmation (ff-only pull on a clean tree, branch and worktree pruning, never the default branch).
+The first session of each local day also opens with a read-only repo-hygiene briefing: branch drift against the remote, merged-but-unpruned branches, stale worktrees, and uncommitted or stashed work, all surfaced, never acted on. The full briefing fires **once per day**; later sessions that day stay quiet, with a single-line offer (`run /ca:standup`) only if something is actionable, and **nothing at all when the repo is clean**. The briefing only *reports*; <kbd>/ca:standup</kbd> is the separate command that performs the cleanups under per-action confirmation (ff-only pull on a clean tree, branch and worktree pruning, never the default branch).
 
 ```mermaid
 flowchart LR
@@ -115,7 +144,7 @@ The plugin itself → `~/.claude/plugins/cache/`
 </tr>
 </table>
 
-Three features added in 2.6.0 extend what the plugin tracks across a session. [Provenance and context drift](https://arbiterforge.github.io/codeArbiter/concepts/#provenance--context-drift): derived docs record their sources; stale derivations surface at `SessionStart` and the commit gate auto-heals them. [Just-in-time context injection](https://arbiterforge.github.io/codeArbiter/concepts/#just-in-time-context-injection): on a read of a governed file, the controlling decision or spec is surfaced at the point of touch. [Board transitions land with the work](https://arbiterforge.github.io/codeArbiter/enforcement/#commit-gate-board-transitions-adr-0008): `/ca:task` flips ride the work commit (ADR-0008), not a separate trailing chore.
+Three features extend what the plugin tracks across a session. [Provenance and context drift](https://arbiterforge.github.io/codeArbiter/concepts/provenance-drift/): derived docs record their sources; stale derivations surface at `SessionStart` and the commit gate auto-heals them. [Just-in-time context injection](https://arbiterforge.github.io/codeArbiter/concepts/jit-context-injection/): on a read of a governed file, the controlling decision or spec is surfaced at the point of touch. [Board transitions land with the work](https://arbiterforge.github.io/codeArbiter/concepts/hardening-history/): `/ca:task` flips ride the work commit (ADR-0008), not a separate trailing chore.
 
 ## The gates
 
@@ -131,137 +160,9 @@ The non-negotiables codeArbiter enforces in every enabled repo:
 
 When rules pull apart, they resolve by a fixed hierarchy (security & audit-trail correctness first, then data integrity, maintainability, performance, velocity), and a non-obvious tradeoff cites the level it was made at.
 
-## Decisions go through SMARTS
-
-When the arbiter hits an architectural fork — two `accepted` ADRs that disagree, a spec that says one thing and a scaffold that does another, an open question with real trade-offs — it does not pick for you and it does not hand you a naked "A or B?" Every option is scored through **SMARTS**, a fixed six-lens evaluation, and the choice it presents carries that analysis with it.
-
-The six lenses, applied evenhandedly to every option:
-
-| Lens | Asks |
-|---|---|
-| **S**calable | Does it absorb growth in users, data, throughput, geography without an architectural rewrite? |
-| **M**aintainable | Can it be understood, modified, and extended later — by a human or an agent — without prohibitive effort? |
-| **A**vailable | Is it reachable and functional when needed, including under partial failure? |
-| **R**eliable | Are outcomes correct, predictable, and durable — ACID where it matters, recovery without corruption? |
-| **T**estable | Can deterministic, fast tests cover the real failure modes? ("Tests later" is a `Weak` verdict.) |
-| **S**ecurable | Does it satisfy the project's security posture without a retrofit? |
-
-Each lens gets one cell per option, and the cells are **constrained, not prose**: verdict first — `Strong`, `Adequate`, `Weak`, or `Indifferent` (the lens doesn't separate the options at this scale) — then at most 20 words of justification, no hedging adverbs, and evidence that cites a specific property or failure mode rather than "industry standard." A cell that breaks the rules is rejected.
-
-That is what lands in front of you — a table, not an opinion:
-
-| Lens | Bundle the auth engine | Customer-provided |
-|---|---|---|
-| Scalable | Adequate. Sub-ms decisions sufficient at 50-user scale. | Adequate. Same ceiling, adds a network hop. |
-| Maintainable | Strong. One package owns versioning and integration. | Weak. Two release cycles must coordinate. |
-| Available | Strong. Available whenever the system is. | Weak. Depends on customer infrastructure. |
-| Reliable | Strong. Failure contained in the deployment boundary. | Weak. Failure surface includes customer network. |
-| Testable | Strong. Local test env is one package install. | Weak. Requires standing up two services. |
-| Securable | Strong. Self-contained mandate satisfied. | Weak. Cross-service auditing is harder. |
-
-**Recommendation:** Bundle. Strength: **strong** — Securable and Available dominate cleanly; no lens favors external enough to override.
-
-Every recommendation carries exactly one **strength label** — `strong` (dominant lenses align, confirmed by non-SMARTS factors), `moderate` (a single lens dominates, or alignment with caveats), or `tied` ("this is a coin flip under SMARTS — your call"). There is no `weak`; a slight edge is `moderate`. Below each table a `Precedent:` line cites the 1–3 most similar prior decisions and which lens they turned on, so the recommendation reflects how *you've* broken ties before — or says `none on record` rather than inventing a pattern. SMARTS deliberately stays out of cost, time-to-market, team-skill fit, and vendor lock-in; when those matter they're surfaced as **non-SMARTS considerations** beside the table, never folded into it.
-
-**You still decide.** The arbiter recommends, it does not push, and it will not record a decision you didn't explicitly make — "use your best judgment," "I trust you," "we're short on time" are declined, because the decision log is append-only and every entry is attributed to a person. Your choice is written immediately, with the SMARTS rationale that drove it, and never edited; to change course you append a superseding entry. This runs whenever a choice surfaces — interactively through <kbd>/ca:reconcile</kbd> (the full variance pass over artifacts vs. scaffold) and on any fork inside a feature.
-
-**Autonomy with a paper trail.** Go to bed, wake to a reviewed PR and a log of every call it made. <kbd>/ca:sprint</kbd> reuses the same six-lens *scoring* to decide "as the user" on every non-hard-gate point, but only the scoring, never the "never decide alone" rule. Each auto-decision is logged to `.codearbiter/sprint-log.md` with the options weighed, the verdict, the strength, and a **confidence flag**: `high` for `strong`, `low` for anything `moderate` or `tied`. Those `low`-confidence calls are exactly what you skim in the morning. Security boundaries, irreversible operations, gate bypasses, and a `[CONFIRM-NN]` the spec can't resolve still stop and wait for you.
-
-## Install
-
-codeArbiter self-hosts a single-plugin marketplace from this repo.
-
-```text
-/plugin marketplace add arbiterForge/codeArbiter
-/plugin install ca@codearbiter
-```
-
-Hooks, commands, agents, and statusline wiring load automatically; everything resolves under the `/ca:` namespace.
-
-**Prerequisites:** Python 3 on `PATH` (every hook is Python, so without it the gates and the startup
-injection silently don't run) and `git config user.email` set (overrides and ADRs are attributed to
-that identity). The optional <kbd>/ca:statusline</kbd> command writes the statusline entry into your
-global `~/.claude/settings.json` (it backs up what was there and restores it on removal).
-
-<details>
-<summary><b>Install from a local clone</b> (for hacking on it)</summary>
-
-<br>
-
-```sh
-git clone https://github.com/arbiterForge/codeArbiter
-```
-```text
-/plugin marketplace add ./codeArbiter
-/plugin install ca@codearbiter
-```
-
-</details>
-
-## Staying up to date
-
-codeArbiter self-hosts a **third-party** marketplace, and Claude Code's native plugin auto-update is
-enabled by default only for official Anthropic marketplaces — it's **off by default** for a
-third-party one like this. The official update mechanism is still the native one; you just have to
-turn it on:
-
-```text
-/plugin marketplace update codearbiter
-```
-
-Run that whenever you want the latest release, or check whether your marketplace auto-updates are
-enabled via `/plugin`.
-
-Because that's opt-in, codeArbiter also ships a small **proactive nudge**: at session start (and in
-the statusline), it surfaces a one-line notice when a newer release is published —
-
-```text
-codeArbiter: update available 2.8.2 -> 2.10.0 (run /plugin marketplace update codearbiter)
-```
-
-The check is a best-effort, **once-a-day**, fail-silent read of the GitHub Releases API
-(unauthenticated HTTPS GET, no data sent) cached to a small user-global file; it never runs
-synchronously on session start (it refreshes off to the side, so a slow or unreachable network never
-delays your session), and it stays completely silent if the check fails or you're already current. It
-only ever *tells* you — it never applies an update itself.
-
-## Enable codeArbiter in a repo
-
-Installing the plugin does nothing until you opt a repo in. That silence is intentional. Open the
-repo in Claude Code and run <kbd>/ca:init</kbd>: it scaffolds `.codearbiter/` with `arbiter: enabled`
-and routes you to the right populator for your situation:
-
-| You have… | /ca:init routes to | What it does |
-|---|---|---|
-| an existing codebase | <kbd>/ca:create-context</kbd> | back-fills `.codearbiter/` from the source already there |
-| a new project, no code yet | <kbd>/ca:decompose</kbd> | a layered interview that scaffolds `.codearbiter/` (it's thorough; expect a long, resumable Q&A) |
-
-Once `.codearbiter/CONTEXT.md` carries the `<!--INITIALIZED-->` marker, you're in normal operation: the next session opens with the orchestrator active and the startup state presented. From there, everything flows through commands.
-
-## Statusline
-
-codeArbiter ships a token-aware statusline. Wire it in with <kbd>/ca:statusline</kbd>:
-
-<div align="center"><img alt="codeArbiter statusline" src="./site/public/diagrams/statusline.png" width="880"></div>
-
-The folder, git/diff, rate limits, token usage, cost, and context segments render in every repo; the arbiter row (stage · tasks · open questions · overrides-since-checkpoint) lights up only in an enabled repo. Token counts come from the session transcript and the **cost is Claude Code's own `cost.total_cost_usd`** (what you actually pay); the context bar shifts toward red as you near compaction, the model pill carries the active model **and** its effort level, and session age sits beside the compaction headroom.
-
-Remove it any time with <kbd>/ca:statusline</kbd>; it backs up and restores whatever statusline you had before.
-
-## Configuration
-
-Every optional behavior is **off by default** and opt-in through an environment variable. codeArbiter never enables one on your behalf. Set them in your shell profile (or per session) to turn them on.
-
-| Variable | Default | Effect |
-|---|---|---|
-| `CODEARBITER_BABYSIT` | `off` | When `on`, <kbd>/ca:pr</kbd> auto-attaches a CI watcher to the PR it opens (same as running <kbd>/ca:watch</kbd> by hand). Ad-hoc <kbd>/ca:watch</kbd> works regardless. |
-| `CODEARBITER_BABYSIT_ONRED` | `propose` | The watcher's depth on a red check: `propose` (name the cause, suggest a fix, touch nothing) or `branch` (additionally stage the fix on an unmergeable `spike/fix-*`). |
-
-Every flag is shipped off, never auto-enabled, and dormant in a repo without `arbiter: enabled`. Preview features carry their own opt-ins; see [**Feature Forge**](#feature-forge) below.
-
 ## Commands
 
-Every intent flows through a command; direct off-channel instructions get redirected to the catalog. The full list is in [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md) and via <kbd>/ca:commands</kbd>.
+Every intent flows through a command; direct off-channel instructions get redirected to the catalog. The full list is in [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md), the [site reference index](https://arbiterforge.github.io/codeArbiter/reference/commands/commands/), and via <kbd>/ca:commands</kbd>.
 
 | Command | Purpose |
 |---|---|
@@ -346,80 +247,97 @@ Every intent flows through a command; direct off-channel instructions get redire
 
 </details>
 
-## What's inside
+## Decisions go through SMARTS
+
+When the arbiter hits an architectural fork, such as two `accepted` ADRs that disagree or a spec that says one thing while the scaffold does another, it does not pick for you and it does not hand you a naked "A or B?" Every option is scored through **SMARTS** (Scalable, Maintainable, Available, Reliable, Testable, Securable), a fixed six-lens evaluation, and the choice it presents carries that analysis with it.
+
+Each lens gets one cell per option: a verdict (`Strong`, `Adequate`, `Weak`, or `Indifferent`) plus at most 20 words of justification citing a specific property or failure mode, never "industry standard." That is what lands in front of you, a table, not an opinion:
+
+| Lens | Bundle the auth engine | Customer-provided |
+|---|---|---|
+| Scalable | Adequate. Sub-ms decisions sufficient at 50-user scale. | Adequate. Same ceiling, adds a network hop. |
+| Maintainable | Strong. One package owns versioning and integration. | Weak. Two release cycles must coordinate. |
+| Available | Strong. Available whenever the system is. | Weak. Depends on customer infrastructure. |
+| Reliable | Strong. Failure contained in the deployment boundary. | Weak. Failure surface includes customer network. |
+| Testable | Strong. Local test env is one package install. | Weak. Requires standing up two services. |
+| Securable | Strong. Self-contained mandate satisfied. | Weak. Cross-service auditing is harder. |
+
+**Recommendation:** Bundle. Strength: **strong**. Securable and Available dominate cleanly, and no lens favors external enough to override.
+
+Every recommendation carries exactly one strength label (`strong`, `moderate`, or `tied`; there is no `weak`) and a `Precedent:` line citing the most similar prior decisions.
+
+**You still decide.** The arbiter recommends; it never records a decision you didn't explicitly make. "Use your best judgment" is declined, because the decision log is append-only and every entry is attributed to a person.
+
+**Autonomy with a paper trail.** <kbd>/ca:sprint</kbd> reuses the same six-lens scoring to decide "as the user" on every non-hard-gate point, logging each call to `.codearbiter/sprint-log.md` with a confidence flag (`high` for `strong`, `low` for `moderate` or `tied`) so you know exactly what to skim in the morning. Security boundaries, irreversible operations, gate bypasses, and an unresolved `[CONFIRM-NN]` still stop and wait for you.
+
+More detail and the full lens definitions: [SMARTS](https://arbiterforge.github.io/codeArbiter/concepts/smarts/) and [Autonomous sprints](https://arbiterforge.github.io/codeArbiter/guides/autonomous-sprints/).
+
+## Statusline
+
+codeArbiter ships a token-aware statusline. Wire it in with <kbd>/ca:statusline</kbd>:
+
+<div align="center"><img alt="codeArbiter statusline" src="./site/public/diagrams/statusline.png" width="880"></div>
+
+The folder, git/diff, rate limits, token usage, cost, and context segments render in every repo; the arbiter row (stage · tasks · open questions · overrides-since-checkpoint) lights up only in an enabled repo. Token counts come from the session transcript and the **cost is Claude Code's own `cost.total_cost_usd`** (what you actually pay); the context bar shifts toward red as you near compaction, the model pill carries the active model **and** its effort level, and session age sits beside the compaction headroom.
+
+Remove it any time with <kbd>/ca:statusline</kbd>; it backs up and restores whatever statusline you had before.
+
+## Staying up to date
+
+codeArbiter self-hosts a **third-party** marketplace, and Claude Code's native plugin auto-update is
+enabled by default only for official Anthropic marketplaces: it's **off by default** for a
+third-party one like this. The official update mechanism is still the native one; you just have to
+turn it on:
 
 ```text
-.claude-plugin/marketplace.json     single-plugin marketplace → ./plugins/ca
-plugins/ca/                         the plugin (CLAUDE_PLUGIN_ROOT)
-├── .claude-plugin/plugin.json
-├── README.md                       plugin-directory summary (this file is the long form)
-├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
-├── COMMANDS.md                     command catalog (+ user-facing glossary)
-├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (39)   skills/   (22)   agents/   (28)
-├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
-├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
-└── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
+/plugin marketplace update codearbiter
 ```
 
-**Skills** encode gated processes: `tdd`, `commit-gate`, `decision-variance`/SMARTS, `debug`, `refactor`, and the dynamic brainstorm → plan → execute workflow layer. **Agents** are the dispatched reviewers and authors: security, auth/crypto, dependency, migration, coverage, and architecture-drift reviewers, the design-quality reviewer, plus the backend/frontend/infra authors and the scout/grader/triage plumbing.
+Run that whenever you want the latest release, or check whether your marketplace auto-updates are
+enabled via `/plugin`. Release notes: [Changelog](https://arbiterforge.github.io/codeArbiter/changelog/).
 
-**Hooks** are how the plugin stays active in your repo, and they run code on your machine — so they're documented in full: [`docs/hooks.md`](./docs/hooks.md) covers every hook, exactly what it reads and writes, and the invariant that **no hook makes a network call**.
+Because that's opt-in, codeArbiter also checks for you: at session start (and in the statusline), it
+surfaces a one-line notice when a newer release is published:
 
-<details>
-<summary><b>Why "decisive and terse"?</b></summary>
+```text
+codeArbiter: update available 2.8.11 -> 2.10.0 (run /plugin marketplace update codearbiter)
+```
 
-<br>
+That check is one of exactly two background network touches the plugin makes (see
+[What's inside](#whats-inside) for the other, a local `git fetch`): a best-effort, **once-a-day**,
+fail-silent, unauthenticated HTTPS GET to the GitHub Releases API, no repo data sent, cached to a
+small user-global file. It never blocks session start; it refreshes off to the side, so a slow or
+unreachable network never delays your session, and it stays silent if the check fails or you're
+already current. It only ever *tells* you; it never applies an update itself.
 
-codeArbiter is built to be an enforcement layer, not a collaborator that talks you out of the rules. It states, it doesn't hedge; it enforces, it doesn't negotiate. The gates exist because the failure mode of an eager AI assistant is *plausible-but-wrong work that ships*. The orchestrator's job is to make that hard.
+## Configuration
 
-</details>
+Every optional behavior is **off by default** and opt-in through an environment variable. codeArbiter never enables one on your behalf. Set them in your shell profile (or per session) to turn them on.
+
+| Variable | Default | Effect |
+|---|---|---|
+| `CODEARBITER_BABYSIT` | `off` | When `on`, <kbd>/ca:pr</kbd> auto-attaches a CI watcher to the PR it opens (same as running <kbd>/ca:watch</kbd> by hand). Ad-hoc <kbd>/ca:watch</kbd> works regardless. |
+| `CODEARBITER_BABYSIT_ONRED` | `propose` | The watcher's depth on a red check: `propose` (name the cause, suggest a fix, touch nothing) or `branch` (additionally stage the fix on an unmergeable `spike/fix-*`). |
+
+Every flag is shipped off, never auto-enabled, and dormant in a repo without `arbiter: enabled`. Preview features carry their own opt-ins; see [Feature Forge](#feature-forge) below.
 
 ## Feature Forge
 
 <div align="center"><img src="docs/feature-forge.svg" alt="The Feature Forge. Preview features: built, tested, shipping, not yet blessed" width="100%"></div>
 
-Some features are built, tested, and shipping in the box, but not yet *blessed*. They live in the **Feature Forge**: off by default, fully dormant until you opt in, and labeled `preview` until real-world data earns them a promotion to a stable release. Nothing here touches your repo or your gates unless you turn it on.
-
-**This is also where you come in.** A preview graduates when the evidence says it's ready, and that evidence comes from people running it. Each feature gives you a low-risk way to contribute that evidence — a `dry` mode, or a structured run report — see each below. Send that data back and you pull the promote date forward.
-
-### In the forge now
+Some features are built, tested, and shipping in the box, but not yet *blessed*. They live in the **Feature Forge**: off by default, fully dormant until you opt in, and labeled `preview` until real-world data earns them a promotion to a stable release. Nothing here touches your repo or your gates unless you turn it on. A preview graduates when real-world evidence says it's ready; each feature below names how to send that evidence back. Full detail: [What's in the Forge](https://arbiterforge.github.io/codeArbiter/feature-forge/whats-in-the-forge/).
 
 | Feature | Opt-in | Status | How to help it graduate |
 |---|---|---|---|
-| [Live transcript pruning](#live-transcript-pruning) | `CODEARBITER_PRUNE=dry` | `preview` | run `dry`, send the log |
-| [Pluggable execution farm](#pluggable-execution-farm) | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
-| [ca-sandbox (local Codespace)](#ca-sandbox-local-codespace) | install the `ca-sandbox` plugin | `preview` | explore real repos in it; run `--with-claude` and report |
+| Live transcript pruning | `CODEARBITER_PRUNE=dry` | `preview` | run `dry`, send the log |
+| Pluggable execution farm | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
+| ca-sandbox (local Codespace) | install the `ca-sandbox` plugin | `preview` | explore real repos in it; run `--with-claude` and report |
 
-#### Live transcript pruning
-
-**What it does.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom. The pruner trims redundant clutter so a session lives longer; gains land at resume/compaction, never mid-turn.
-
-**Opt-in.** `CODEARBITER_PRUNE` — three modes:
-
-| `CODEARBITER_PRUNE` | What happens |
-|---|---|
-| `off` *(default)* | nothing, fully dormant |
-| `dry` | **report only**: computes every prune it *would* make and logs the evidence; your transcript is untouched |
-| `on` | actually trims, at resume/compaction |
-
-Fine-tune with `CODEARBITER_PRUNE_TIER` (which passes run), `CODEARBITER_PRUNE_KEEP_RECENT` (protect the K most recent turns), and `CODEARBITER_PRUNE_MIN_GROWTH` / `CODEARBITER_PRUNE_MAXBYTES` (when a prune triggers / cap on bytes removed). Full detail in <kbd>/ca:prune</kbd>.
-
-**Why it's preview.** The `dry → on` go/no-go needs real-session evidence before pruning is blessed to touch live transcripts on by default.
-
-**Help promote it: run `dry`, send the log.**
-
-```sh
-export CODEARBITER_PRUNE=dry      # collect evidence, change nothing
-```
-
-`dry` mode appends one JSONL row per decision to `~/.codearbiter/metrics/prune-dry.jsonl` (relocate it with `CODEARBITER_PRUNE_METRICS`). Each row carries only the **would-be reduction, per-strategy savings, and a validation verdict**: sizes and strategy names, **no transcript content**. That file is the entire evidence base for the `dry → on` go/no-go.
-
-After a few sessions, [**open a "prune data" issue**](https://github.com/arbiterForge/codeArbiter/issues/new?title=Feature+Forge%3A+prune+data&labels=feature-forge,prune) and attach or paste your `prune-dry.jsonl`. The more real sessions come back, the sooner pruning leaves the forge. Thank you for forging. 🔨
+**Live transcript pruning.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom; `CODEARBITER_PRUNE=dry` computes every prune it would make and logs the evidence without touching your transcript. It's preview because the `dry → on` go/no-go needs that real-session evidence first. Details and tuning knobs: [What's in the Forge](https://arbiterforge.github.io/codeArbiter/feature-forge/whats-in-the-forge/).
 
 #### Pluggable execution farm
 
-**What it does.** <kbd>/ca:sprint --farm</kbd> runs the implementation step through a `Worker` seam in isolated git worktrees under the same hard gates, instead of a premium subagent. The cheap HTTP-chat worker ships today; the seam is built to admit **premium and agentic** workers behind the same gates (roadmap, not yet built). The worker prompt is enriched with the failing-test source and in-scope files — byte-capped and secret-redacted before transmission. Claude still writes the spec, failing tests, and plan, and **every green task still routes through the full spec-compliance + quality + fresh-verification chain** — a worker can pass the gates, never redefine them.
+**What it does.** <kbd>/ca:sprint --farm</kbd> runs the implementation step through a `Worker` seam in isolated git worktrees under the same hard gates, instead of a premium subagent. The cheap HTTP-chat worker ships today; the seam is built to admit **premium and agentic** workers behind the same gates (roadmap, not yet built). The worker prompt is enriched with the failing-test source and in-scope files, byte-capped and secret-redacted before transmission. Claude still writes the spec, failing tests, and plan, and **every green task still routes through the full spec-compliance + quality + fresh-verification chain**: a worker can pass the gates, never redefine them.
 
 **Opt-in.** <kbd>/ca:sprint --farm</kbd> (needs `FARM_API_KEY`).
 
@@ -435,25 +353,38 @@ After a few sessions, [**open a "prune data" issue**](https://github.com/arbiter
 
 **Best-of-N sampling.** Because the gate is a deterministic pass/fail oracle, `FARM_SAMPLES` candidates are drawn in parallel and the first to pass is accepted; the N-fold token cost is recorded in `farm-report.json`.
 
-Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty note) is in <kbd>/ca:sprint</kbd> and the farm setup doc.
+Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty note) is in <kbd>/ca:sprint</kbd> and the farm setup doc. It's preview because it is not yet validated on real runs; the promotion bar is the open question `CONFIRM-05`. **Help promote it:** run a real <kbd>/ca:sprint --farm</kbd> and report back the per-task pass rates and any gate escapes you see.
 
-**Why it's preview / promotion bar.** Not yet validated on real runs, so it ships off and stays `preview`. The promotion bar is the open question `CONFIRM-05`.
+**ca-sandbox (local Codespace).** A locally-hosted GitHub-Codespace equivalent, shipped as a sibling plugin per ADR-0007: pull a repo you're curious about, including untrusted code, into an ephemeral, isolated Docker container. Your host filesystem is never mounted in (no bind mounts, no docker socket, never `--privileged`), and getting work back out is a host-initiated `cp` only. It ships with a full automated suite green, but the `--with-claude` path (running Claude Code inside the box) is verified only against a dummy token, not yet a real interactive session, so it stays preview until real-world runs earn it a promotion. **Help promote it:** explore real repos in it and report how `--with-claude` behaves in a real session. Install: the `ca-sandbox` plugin from the marketplace, then `/ca-sandbox:sandbox create <repo-url>`. Details: [`plugins/ca-sandbox/README.md`](./plugins/ca-sandbox/README.md).
 
-**Help promote it: run a real sprint, report results.** Run a real <kbd>/ca:sprint --farm</kbd> and report back the per-task pass-rates and any gate escapes you see. That evidence feeds `CONFIRM-05` — real-run data is exactly what moves the farm out of the forge.
+## What's inside
 
-#### ca-sandbox (local Codespace)
+```text
+.claude-plugin/marketplace.json     two-plugin marketplace → ./plugins/ca, ./plugins/ca-sandbox
+plugins/ca/                         the governance plugin (CLAUDE_PLUGIN_ROOT)
+├── .claude-plugin/plugin.json
+├── README.md                       plugin-directory summary (this file is the long form)
+├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
+├── COMMANDS.md                     command catalog (+ user-facing glossary)
+├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
+├── commands/   (39)   skills/   (22)   agents/   (28)
+├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
+├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
+└── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
+plugins/ca-sandbox/                 the local-Codespace plugin (Feature Forge, preview)
+```
 
-**What it does.** A locally-hosted GitHub-Codespace equivalent (shipped as a sibling plugin, `ca-sandbox`, per ADR-0007). Pull a repo you're curious about — including untrusted code — into an ephemeral, isolated Docker container: the clone and all execution live inside the box, your host filesystem is never mounted in (no bind mounts, no docker socket, never `--privileged`). Network is configurable (offline / clone-then-cut / experimental allowlist); getting work back out is a host-initiated `cp` only. Images are dep-hash cached; on Windows it builds via a WSL bridge (nixpacks generates the Dockerfile, host Docker builds it). Details in [`plugins/ca-sandbox/README.md`](./plugins/ca-sandbox/README.md).
+**Skills** encode gated processes: `tdd`, `commit-gate`, `decision-variance`/SMARTS, `debug`, `refactor`, and the dynamic brainstorm → plan → execute workflow layer. **Agents** are the dispatched reviewers and authors: security, auth/crypto, dependency, migration, coverage, and architecture-drift reviewers, the design-quality reviewer, plus the backend/frontend/infra authors and the scout/grader/triage plumbing.
 
-**Opt-in.** Install the `ca-sandbox` plugin from the marketplace, then `/ca-sandbox:sandbox create <repo-url>` (and `shell` / `exec` / `cp` / `destroy`). It requires Docker; the `ca` governance plugin is unaffected and unchanged.
+**Hooks** are how the plugin stays active in your repo, and they run code on your machine, so they're documented in full: [`docs/hooks.md`](./docs/hooks.md) (also mirrored at [/hooks/](https://arbiterforge.github.io/codeArbiter/hooks/)) covers every hook, exactly what it reads and writes, and names the only two things any hook sends over a network: a detached local `git fetch` against your own remote, and a once-a-day fail-silent read of the GitHub Releases API (see [Staying up to date](#staying-up-to-date)). Neither blocks a hook, and no repo data leaves your machine either way.
 
-**Why it's preview.** It ships with a full automated suite (isolation canary, dep-cache, network policy, lifecycle, exec/cp) green, but it has **not been proven in real use** yet — in particular the `--with-claude` path (running Claude Code *inside* the box) is verified only against a dummy token, never a real interactive session. It stays `preview` until real-world runs earn it a promotion.
+## Turning it off
 
-**Help promote it: explore real repos in it, and run `--with-claude`.** Use it to poke at repos you'd otherwise hesitate to clone, and report what worked, what broke, and especially how `--with-claude` behaves in a real session. Real-use evidence is what moves it out of the forge.
+codeArbiter is dormant by default: a repo without `.codearbiter/CONTEXT.md` → `arbiter: enabled` never sees the orchestrator persona, never routes through a gate. To disable it in a repo that's already opted in, flip that frontmatter flag off; no reinstall needed. To remove the plugin entirely, uninstall it the normal Claude Code way. Either way, `.codearbiter/` survives: it's a plain directory in your repo, not plugin state, so your specs, ADRs, and audit trail stay put. Full walkthrough: [Uninstalling](https://arbiterforge.github.io/codeArbiter/guides/uninstalling/).
 
 ## Project history
 
-codeArbiter v2 is a ground-up rebuild: from a ~13,600-line `.agents/` + vendoring framework into a native Claude Code plugin. The full story is in [`CHANGELOG.md`](./CHANGELOG.md). The v1 framework is preserved in this repository's early commit history for reference.
+codeArbiter v2 is a ground-up rebuild: from a ~13,600-line `.agents/` + vendoring framework into a native Claude Code plugin. The full story is in [`CHANGELOG.md`](./CHANGELOG.md) and the [site changelog](https://arbiterforge.github.io/codeArbiter/changelog/). The v1 framework is preserved in this repository's early commit history for reference.
 
 ## License
 
