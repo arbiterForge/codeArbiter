@@ -8,6 +8,7 @@ import {
   readFileSync,
   readdirSync,
   mkdirSync,
+  writeFileSync,
 } from "node:fs";
 import { generate } from "../../scripts/generator/generate";
 
@@ -108,6 +109,78 @@ describe("generate", () => {
       // its rendered page must still carry the preview badge/markup after
       // switching slug assignment to per-collection.
       expect(prunePage!.markdown).toMatch(/preview/i);
+    });
+  });
+
+  describe("source embed + output-dir cleaning", () => {
+    it("always renders a source embed, even with no curated dir", () => {
+      const result = generate(pluginDir, outDir);
+      const anyPage = result.pages[0];
+      expect(anyPage.markdown).toContain("## Source");
+      expect(anyPage.markdown).toContain('<details class="ca-source">');
+    });
+
+    it("cleans stale files out of outDir before writing", () => {
+      mkdirSync(join(outDir, "commands"), { recursive: true });
+      writeFileSync(join(outDir, "commands", "stale-2.md"), "stale content");
+      writeFileSync(join(outDir, "index.md"), "stale index");
+      generate(pluginDir, outDir);
+      expect(existsSync(join(outDir, "commands", "stale-2.md"))).toBe(false);
+      const indexContent = readFileSync(join(outDir, "index.md"), "utf8");
+      expect(indexContent).not.toBe("stale index");
+    });
+  });
+
+  describe("curated merge", () => {
+    const curatedOutDir = join(tmpdir(), "ca-gen-test-out-curated");
+    const curatedDir = join(tmpdir(), "ca-gen-test-curated-src");
+
+    beforeEach(() => {
+      rmSync(curatedOutDir, { recursive: true, force: true });
+      rmSync(curatedDir, { recursive: true, force: true });
+      mkdirSync(curatedOutDir, { recursive: true });
+    });
+    afterEach(() => {
+      rmSync(curatedOutDir, { recursive: true, force: true });
+      rmSync(curatedDir, { recursive: true, force: true });
+    });
+
+    it("merges a curated body/gates/related for a matching source", () => {
+      mkdirSync(join(curatedDir, "commands"), { recursive: true });
+      writeFileSync(
+        join(curatedDir, "commands", "sample.md"),
+        `---\nentity: commands/sample\nrelated: [another]\ngates:\n  - gate: g1\n    when: w1\n    effect: e1\n---\n\nCurated prose for sample.\n`,
+      );
+      const result = generate(pluginDir, curatedOutDir, undefined, curatedDir);
+      const samplePage = result.pages.find(
+        (p) => p.type === "command" && p.slug === "sample",
+      );
+      expect(samplePage).toBeDefined();
+      expect(samplePage!.markdown).toContain("Curated prose for sample.");
+      expect(samplePage!.markdown).toContain("| g1 | w1 | e1 |");
+      expect(samplePage!.markdown).toContain("## Related");
+    });
+
+    it("throws when a curated file's entity has no matching collected source (orphan)", () => {
+      mkdirSync(join(curatedDir, "commands"), { recursive: true });
+      writeFileSync(
+        join(curatedDir, "commands", "ghost.md"),
+        `---\nentity: commands/ghost\n---\n\nBody.\n`,
+      );
+      expect(() => generate(pluginDir, curatedOutDir, undefined, curatedDir)).toThrow(
+        /ghost/,
+      );
+    });
+
+    it("throws when a curated related ref cannot be resolved", () => {
+      mkdirSync(join(curatedDir, "commands"), { recursive: true });
+      writeFileSync(
+        join(curatedDir, "commands", "sample.md"),
+        `---\nentity: commands/sample\nrelated: [does-not-exist]\n---\n\nBody.\n`,
+      );
+      expect(() => generate(pluginDir, curatedOutDir, undefined, curatedDir)).toThrow(
+        /unresolvable/,
+      );
     });
   });
 });
