@@ -250,6 +250,285 @@
 }
 
 /* =========================================================
+   WHY GATES
+   Two-column split: prose explaining the hook mechanism (left) and a compact
+   numbered "how it fires" list plus reference links (right). Collapses to a
+   single column on narrow viewports, matching the hero/install pattern.
+   ========================================================= */
+
+.ca-why-gates {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  margin-block: 3rem 2rem;
+  padding-block-start: 2rem;
+  border-block-start: 1px solid var(--ca-slate-border);
+}
+
+@media (max-width: 50rem) {
+  .ca-why-gates {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+.ca-why-gates h2 {
+  margin-block-end: 1rem;
+  color: var(--ca-gold-text);
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+}
+
+.ca-why-gates__copy p {
+  max-width: 60ch;
+  margin: 0 0 1rem;
+  color: var(--ca-text-muted);
+  line-height: 1.65;
+}
+
+.ca-why-gates__copy p:last-child {
+  margin-block-end: 0;
+}
+
+.ca-why-gates__copy code,
+.ca-why-gates__mechanics code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.ca-why-gates__mechanics {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.6rem;
+  background: var(--ca-slate-mid);
+}
+
+.ca-why-gates__mechanics h3 {
+  margin: 0 0 0.85rem;
+  color: var(--sl-color-white);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ca-why-gates__mechanics ol {
+  margin: 0 0 1.1rem;
+  padding-inline-start: 1.2rem;
+  color: var(--ca-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.ca-why-gates__mechanics li + li {
+  margin-block-start: 0.5rem;
+}
+
+.ca-why-gates__links {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+}
+
+.ca-why-gates__links span {
+  color: var(--ca-text-muted);
+}
+
+/* =========================================================
+   AUDIENCE SPLIT
+   Two-column honest "who this is for / who it isn't" grid. Stacks on mobile.
+   ========================================================= */
+
+.ca-audience {
+  margin-block: 2rem;
+  padding-block-start: 2rem;
+  border-block-start: 1px solid var(--ca-slate-border);
+}
+
+.ca-audience h2 {
+  margin-block-end: 1.25rem;
+  color: var(--ca-gold-text);
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+}
+
+.ca-audience__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+@media (max-width: 50rem) {
+  .ca-audience__cols {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.ca-audience__col h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.ca-audience__col--for h3 {
+  color: var(--ca-term-pass);
+}
+
+.ca-audience__col--not h3 {
+  color: var(--ca-text-muted);
+}
+
+.ca-audience__col ul {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+  color: var(--ca-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.ca-audience__col li + li {
+  margin-block-start: 0.6rem;
+}
+
+.ca-audience__col code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.9em;
+}
+
+/* =========================================================
+   TRUST ROW
+   A compact strip of build-time-computed stat tiles plus one qualitative
+   tile. Wraps to two columns, then one, on narrow viewports.
+   ========================================================= */
+
+.ca-trust {
+  margin-block: 2rem;
+  padding-block-start: 2rem;
+  border-block-start: 1px solid var(--ca-slate-border);
+}
+
+.ca-trust__row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 62rem) {
+  .ca-trust__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 30rem) {
+  .ca-trust__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ca-trust__tile {
+  padding: 1rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.6rem;
+  background: var(--ca-slate-mid);
+}
+
+.ca-trust__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ca-trust__link:focus-visible {
+  outline: 2px solid var(--ca-gold);
+  outline-offset: 2px;
+}
+
+.ca-trust__num {
+  display: block;
+  color: var(--ca-gold-text);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.ca-trust__tile--qual .ca-trust__num--qual {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+}
+
+.ca-trust__label {
+  display: block;
+  margin-block-start: 0.3rem;
+  color: var(--ca-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   THREE DOORS
+   Learn / Use / Look up: three intent-routed cards.
+   ========================================================= */
+
+.ca-doors {
+  margin-block: 2rem 3rem;
+  padding-block-start: 2rem;
+  border-block-start: 1px solid var(--ca-slate-border);
+}
+
+.ca-doors h2 {
+  margin-block-end: 1.25rem;
+  color: var(--ca-gold-text);
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+}
+
+.ca-doors__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 50rem) {
+  .ca-doors__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ca-doors__card {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.6rem;
+  background: var(--ca-slate-mid);
+}
+
+.ca-doors__label {
+  margin: 0 0 0.5rem;
+  color: var(--ca-gold-text);
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ca-doors__promise {
+  margin: 0 0 1rem;
+  color: var(--ca-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.ca-doors__card ul {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+/* =========================================================
    REDUCED-MOTION OVERRIDE (landing-specific)
    ========================================================= */
 

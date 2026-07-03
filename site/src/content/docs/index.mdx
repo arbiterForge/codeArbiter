@@ -10,6 +10,7 @@ next: false
 
 import GateCatchTerminal from '../../components/GateCatchTerminal.astro';
 import InstallTerminal from '../../components/InstallTerminal.astro';
+import TrustRow from '../../components/TrustRow.astro';
 
 <div class="ca-landing">
 
@@ -73,6 +74,100 @@ import InstallTerminal from '../../components/InstallTerminal.astro';
     />
     <figcaption>The statusline you get, live in every session.</figcaption>
   </figure>
+</div>
+
+<div class="ca-why-gates">
+  <div class="ca-why-gates__copy">
+    <h2>Gates are hooks, not suggestions</h2>
+    <p>
+      Every gate in codeArbiter is a Claude Code <a href="./glossary/#hook">hook</a>: a
+      deterministic Python script that runs at the tool-call boundary, before the tool
+      call happens. A blocking gate exits non-zero and the tool call is refused. Nothing
+      about that depends on the model choosing to comply.
+    </p>
+    <p>
+      Prompt-layer rules still matter. They are the model's judgment for everything a
+      hook does not reach. Hooks are the backstop for the moment that judgment slips: a
+      blocking gate does not ask the model to agree, it stops the call.
+    </p>
+    <p>
+      Every block names the gate that caught it. A <code>BLOCKED [H-09b]</code> line in
+      your terminal points at an entry in the hook gates reference, with the exact
+      condition and the exact message the hook prints.
+    </p>
+  </div>
+
+  <div class="ca-why-gates__mechanics">
+    <h3>How a gate fires</h3>
+    <ol>
+      <li>A tool call (Bash, Write, Edit) reaches Claude Code's <code>PreToolUse</code> boundary.</li>
+      <li>The matching hook runs first, against the repository's current state.</li>
+      <li>It exits 0 (allowed) or blocks with a non-zero exit and a <code>BLOCKED [H-xx]</code> message.</li>
+    </ol>
+    <p class="ca-why-gates__links">
+      <a href="./enforcement/">Read the enforcement guide</a>
+      <span aria-hidden="true">·</span>
+      <a href="./reference/hooks-gates/">Look up a gate ID</a>
+    </p>
+  </div>
+</div>
+
+<div class="ca-audience">
+  <h2>Who this is for</h2>
+  <div class="ca-audience__cols">
+    <div class="ca-audience__col ca-audience__col--for">
+      <h3>Built for</h3>
+      <ul>
+        <li>Teams and solo developers who want an audit trail, not a changelog written after the fact.</li>
+        <li>Compliance-minded adopters who need to show a control actually ran.</li>
+        <li>Anyone who has watched an agent commit untested code and wants that failure mode closed.</li>
+        <li>Brownfield repos that need governance layered on, not a rewrite.</li>
+      </ul>
+    </div>
+    <div class="ca-audience__col ca-audience__col--not">
+      <h3>Not built for</h3>
+      <ul>
+        <li>A quick throwaway script you plan to delete in an hour.</li>
+        <li>Anyone who finds any gate friction unacceptable, even a fixable one.</li>
+        <li>A repo where you do not want a <code>.codearbiter/</code> state directory checked in.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<TrustRow />
+
+<div class="ca-doors">
+  <h2>Three ways in</h2>
+  <div class="ca-doors__grid">
+    <div class="ca-doors__card">
+      <p class="ca-doors__label">Learn</p>
+      <p class="ca-doors__promise">Understand what a gate is and why the lane model exists before you touch a command.</p>
+      <ul>
+        <li><a href="./concepts/">Concepts overview</a></li>
+        <li><a href="./concepts/gated-lanes/">The gated-lane model</a></li>
+        <li><a href="./enforcement/">Enforcement &amp; security</a></li>
+      </ul>
+    </div>
+    <div class="ca-doors__card">
+      <p class="ca-doors__label">Use</p>
+      <p class="ca-doors__promise">Get codeArbiter installed and take your first change through a gated lane.</p>
+      <ul>
+        <li><a href="./getting-started/install/">Install</a></li>
+        <li><a href="./getting-started/quickstart/">Quickstart</a></li>
+        <li><a href="./guides/feature-lane/">Build a feature end to end</a></li>
+      </ul>
+    </div>
+    <div class="ca-doors__card">
+      <p class="ca-doors__label">Look up</p>
+      <p class="ca-doors__promise">Find the exact command, gate ID, or hook behavior you are checking against.</p>
+      <ul>
+        <li><a href="./reference/">All reference</a></li>
+        <li><a href="./reference/hooks-gates/">Hook gates</a></li>
+        <li><a href="./glossary/">Glossary</a></li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 </div>
