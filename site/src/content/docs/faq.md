@@ -65,7 +65,7 @@ account to manage.
 ## What if the gates are wrong for my project?
 
 Two knobs exist before you'd reach for a bypass. First, `stage` in `CONTEXT.md`'s frontmatter is a
-maturity signal the project can carry, see
+maturity signal the project can carry; see
 [The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd). Second,
 `security-controls.md`, `tech-stack.md`, and `coding-standards.md` are hand-editable living docs
 that every reviewer agent reads before judging a change. If a default pattern doesn't fit your
@@ -86,7 +86,7 @@ at PR review. See [Enforcement & Security](/enforcement/) for the full breakdown
 
 Both, depending on the lane. `/ca:fix`, `/ca:feature`, and `/ca:sprint` route to author agents
 that write code test-first; `/ca:refactor` restructures with proof of behavioral parity. But
-codeArbiter never freelances past a slash command, see
+codeArbiter never freelances past a slash command; see
 [What Is codeArbiter](/overview/) for the request-to-ship flow, and
 [The Gated-Lane Model](/concepts/gated-lanes/) for how each lane's gates scale to its risk.
 
@@ -94,5 +94,5 @@ codeArbiter never freelances past a slash command, see
 
 `/ca:conflict`. codeArbiter never silently reconciles a conflict between persona, docs, and code.
 It stops, presents both sides and the level at which they clash (security and audit-trail
-correctness outranks maintainability, which outranks velocity, see
+correctness outranks maintainability, which outranks velocity; see
 [What Is codeArbiter](/overview/)), and you decide.
