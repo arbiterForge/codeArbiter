@@ -37,3 +37,16 @@ rather than a forced pick.
 SMARTS deliberately does not score cost, time-to-market, team-skill fit, or vendor lock-in. When
 those matter, they are surfaced as non-SMARTS considerations alongside the table; they supplement the
 analysis, never replace it.
+
+## Where it runs
+
+The canonical rubric ships at `plugins/ca/includes/smarts/core.md`. The
+[`grader` agent](/reference/agents/grader/) produces one SMARTS analysis per
+artifact-position and scaffold-evidence pair, dispatched by the
+[decision-variance skill](/reference/skills/decision-variance/) through
+[`/ca:reconcile`](/reference/commands/reconcile/).
+
+Auto-decisions made during an autonomous [`/ca:sprint`](/reference/commands/sprint/) run
+append to `.codearbiter/sprint-log.md`. Arbitrated decisions land in `decision-log.md`,
+each carrying a SHA-256 hash of its own section, which lets a later reconcile pass detect
+when a decision has gone stale against the code it once described.
