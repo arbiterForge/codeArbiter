@@ -4,7 +4,7 @@ description: "One-to-three-sentence definitions of codeArbiter's core terms, eac
 ---
 
 Short definitions for terms used across these docs. Each entry links to the page that explains
-the concept in full — this page is a lookup, not a tutorial.
+the concept in full. This page is a lookup, not a tutorial.
 
 ## ADR
 
@@ -20,14 +20,14 @@ See [Enforcement & Security](/enforcement/#advisory-non-blocking-reminders).
 
 ## Arbiter (enabled flag)
 
-The `arbiter: enabled` line in `.codearbiter/CONTEXT.md`'s frontmatter — the single activation
+The `arbiter: enabled` line in `.codearbiter/CONTEXT.md`'s frontmatter: the single activation
 flag that turns on the orchestrator persona and every enforcement hook for a repository. A repo
 without it loads nothing and blocks nothing. See
 [The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd).
 
 ## Blocking gate
 
-A gate whose failure stops the tool call outright — the call never happens, and the only
+A gate whose failure stops the tool call outright: the call never happens, and the only
 sanctioned way past it is fixing the underlying issue or a logged `/ca:override`. Contrast with
 an [advisory](#advisory). See [Enforcement & Security](/enforcement/#blocking-commit-time-gates).
 
@@ -51,7 +51,7 @@ at. See [The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-q
 
 ## Decision log
 
-`.codearbiter/decisions/decision-log.md`, the append-only ledger mirroring every ADR file — one
+`.codearbiter/decisions/decision-log.md`, the append-only ledger mirroring every ADR file: one
 entry per recorded decision, never edited after the fact. A superseding decision appends a new
 entry rather than rewriting the old one. See [ADRs and the Decision Log](/concepts/adrs/).
 
@@ -63,7 +63,7 @@ Forge" is the internal name. See [What Is the Feature Forge](/feature-forge/over
 
 ## Gate
 
-A phase exit condition — STOP or BLOCK — that a change must clear before it proceeds. Not a
+A phase exit condition (STOP or BLOCK) that a change must clear before it proceeds. Not a
 "checkpoint" and not a "guardrail": those are different mechanisms. See
 [The Gated-Lane Model](/concepts/gated-lanes/).
 
@@ -75,20 +75,20 @@ stdlib-only, and fail loud. See [Hooks reference](/hooks/).
 
 ## Lane
 
-A sanctioned path through the system, with gates scaled to the work's risk — implementation,
+A sanctioned path through the system, with gates scaled to the work's risk: implementation,
 commit & ship, decisions, or project & meta. Not a "workflow" and not a "track." See
 [The Gated-Lane Model](/concepts/gated-lanes/).
 
 ## Marker
 
-A small file under `.codearbiter/.markers/` that records a gate's pass state — for example
+A small file under `.codearbiter/.markers/` that records a gate's pass state, for example
 `security-gate-passed`, which a commit-time gate checks for freshness and content coverage
 before allowing a commit through. See
 [The `.codearbiter/` Directory Reference](/codearbiter-directory/#markers).
 
 ## NEEDS-TRIAGE
 
-The placeholder for an out-of-scope finding set aside inline during review — recorded, never
+The placeholder for an out-of-scope finding set aside inline during review: recorded, never
 acted on in place. It typically lands as a queued item on the [board](#board). See
 [The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-tasksmd).
 
@@ -106,8 +106,8 @@ or a "skip." See [Override a Gate Safely](/guides/overriding-a-gate/).
 
 ## Persona
 
-A named voice codeArbiter speaks with — the terse orchestrator, or a focused author/reviewer
-agent — each scoped to its own job and context footprint. See
+A named voice codeArbiter speaks with: the terse orchestrator, or a focused author/reviewer
+agent, each scoped to its own job and context footprint. See
 [The Persona-Register Split](/concepts/persona-and-context/).
 
 ## Provenance
@@ -125,7 +125,7 @@ points, scoring each auto-decision and logging it with a confidence flag. See
 ## Spike
 
 A time-boxed exploration on a disposable `spike/*` branch that answers one named question. It
-never merges and never becomes the implementation — only its written findings survive. See the
+never merges and never becomes the implementation. Only its written findings survive. See the
 [`/ca:spike` reference](/reference/commands/spike/).
 
 ## Sprint

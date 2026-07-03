@@ -57,5 +57,5 @@
   <line x1="340" y1="208" x2="340" y2="166" stroke="#2a3340" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#pdf-arrow)"/>
 
   <text x="690" y="232" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#8b95a2">A drifted claim is suppressed,</text>
-  <text x="690" y="249" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#6e7b8b">never injected as if it were fresh.</text>
+  <text x="690" y="249" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#828d9a">never injected as if it were fresh.</text>
 </svg>
