@@ -76,7 +76,7 @@
   <!-- "tests · review · security" annotation above -->
   <text x="455" y="26" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1" fill="#6e7b8b">tests · review · security</text>
+        font-size="9" letter-spacing="1" fill="#828d9a">tests · review · security</text>
 
   <!-- commit dot approaching gate (hollow, unproven) -->
   <circle cx="420" cy="80" r="5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
@@ -113,6 +113,6 @@
   <!-- seam note -->
   <text x="455" y="149" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="8" letter-spacing="1" fill="#6e7b8b">never a direct write to main</text>
+        font-size="8" letter-spacing="1" fill="#828d9a">never a direct write to main</text>
   </g>
 </svg>

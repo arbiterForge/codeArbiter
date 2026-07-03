@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 190" role="img"
-     aria-label="The /ca:init lane across two rows by piece type, with a branch. Commands row: /ca:init, which routes to either /ca:create-context (existing code) or /ca:decompose (new project). Skills row: the create-context skill backs the existing-code path; the decompose skill backs the new-project path. Two connectors fork from /ca:init, one to each context-builder command and its skill.">
+     aria-label="The /ca:init lane across two rows by piece type, with a branch. Commands row: /ca:init, which routes to either /ca:create-context (existing code) or /ca:decompose (new project). Skills row: the context-creation skill backs the existing-code path; the decompose skill backs the new-project path. Two connectors fork from /ca:init, one to each context-builder command and its skill.">
   <title>The /ca:init lane: init forks to create-context (existing code) or decompose (new project)</title>
   <defs>
     <linearGradient id="loi-bg" x1="0" y1="0" x2="0" y2="1">
@@ -27,8 +27,8 @@
   <text x="116" y="144" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#8957e5">SKILLS</text>
 
   <!-- branch labels -->
-  <text x="470" y="34" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">EXISTING CODE</text>
-  <text x="730" y="34" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">NEW PROJECT</text>
+  <text x="470" y="34" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#828d9a">EXISTING CODE</text>
+  <text x="730" y="34" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#828d9a">NEW PROJECT</text>
 
   <!-- forked execution connectors (drawn first; chips sit on top) -->
   <polyline points="150,78 470,78 470,140"
@@ -46,13 +46,13 @@
   <!-- /ca:decompose -->
   <rect x="681" y="61" width="98" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
   <text x="730" y="82" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:decompose</text>
-  <!-- create-context skill -->
-  <rect x="418" y="123" width="104" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
-  <text x="470" y="144" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">create-context</text>
+  <!-- context-creation skill -->
+  <rect x="407" y="123" width="126" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
+  <text x="470" y="144" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">context-creation</text>
   <!-- decompose skill -->
   <rect x="691" y="123" width="78" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
   <text x="730" y="144" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">decompose</text>
 
   <!-- flow legend -->
-  <text x="900" y="172" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#6e7b8b">one routes to one path →</text>
+  <text x="900" y="172" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#828d9a">one routes to one path →</text>
 </svg>

@@ -35,6 +35,11 @@ Z.") are a persona-register cadence. They are budgeted to **landing page and sec
 intros only, once per page, maximum**. Everywhere else, say the positive rule plainly:
 what the gate does, not a list of what it refuses to do.
 
+## Punctuation
+
+Em-dashes are not used as sentence separators in site prose. Restructure with a period, a
+comma, a colon, or parentheses instead.
+
 ## Terminology anchors
 
 One meaning each, locked to `plugins/ca/ORCHESTRATOR.md` §0.1. Do not drift or invent a

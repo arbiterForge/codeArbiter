@@ -15,7 +15,7 @@ holds the [gates](/glossary/#gate): the test-first rule, the review chain, the s
 commit and merge boundaries. Work does not pass a gate without clearing it. But the
 decisions those gates surface belong to you. Which design? Which trade-off? Whether to
 merge? Those are yours to make. When a gate finds something worth your attention, it
-reports the finding plainly and waits for your call — it does not resolve the question on
+reports the finding plainly and waits for your call. It does not resolve the question on
 your behalf.
 
 ## How a Request Flows

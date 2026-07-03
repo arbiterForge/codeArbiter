@@ -68,13 +68,13 @@
         font-size="11" fill="#8b95a2">Which design do you want?</text>
   <text x="334" y="156" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1" fill="#6e7b8b">waiting for user</text>
+        font-size="9" letter-spacing="1" fill="#828d9a">waiting for user</text>
 
   <!-- user acts → cleared → proceeds -->
   <line x1="446" y1="130" x2="502" y2="130" stroke="#d29922" stroke-width="1.5" marker-end="url(#gm-arrow-gold)"/>
   <text x="474" y="122" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" fill="#6e7b8b">user acts</text>
+        font-size="9" fill="#828d9a">user acts</text>
   <circle cx="514" cy="130" r="5" fill="#e3b341" filter="url(#gm-glow)"/>
   <line x1="522" y1="130" x2="574" y2="130" stroke="#d29922" stroke-width="1.5" marker-end="url(#gm-arrow-gold)"/>
   <text x="616" y="134" text-anchor="middle"
@@ -86,7 +86,7 @@
         font-size="11" fill="#8b95a2">Surfaces a choice; it never blocks forever.</text>
   <text x="360" y="216" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#6e7b8b">Work resumes the moment the user decides.</text>
+        font-size="11" fill="#828d9a">Work resumes the moment the user decides.</text>
 
   <!-- band divider -->
   <line x1="40" y1="238" x2="680" y2="238" stroke="#2a3340" stroke-width="1"/>
@@ -130,7 +130,7 @@
         font-size="11" fill="#8b95a2">Not auto-decided.</text>
   <text x="334" y="381" text-anchor="middle"
         font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="10" fill="#6e7b8b">User must act to continue.</text>
+        font-size="10" fill="#828d9a">User must act to continue.</text>
 
   <!-- no-bypass marker -->
   <rect x="478" y="345" width="168" height="26" rx="3" fill="#1c1416" stroke="#3a2020" stroke-width="1"/>
@@ -143,5 +143,5 @@
         font-size="11" fill="#8b95a2">Security · auth/crypto · irreversible ops · gate bypass · merge to main</text>
   <text x="360" y="442" text-anchor="middle"
         font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1" fill="#6e7b8b">Rare by design: frequent trips signal a thin spec.</text>
+        font-size="9" letter-spacing="1" fill="#828d9a">Rare by design: frequent trips signal a thin spec.</text>
 </svg>
