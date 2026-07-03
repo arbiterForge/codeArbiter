@@ -15,23 +15,7 @@ Open the target repository in Claude Code and run:
 /ca:init
 ```
 
-`/ca:init` scaffolds `.codearbiter/` at the repo root and routes to the right context populator for your situation:
-
-| You have | Routed to | What it produces |
-|---|---|---|
-| An existing codebase | `/ca:create-context` | Fills `.codearbiter/` from the source already there |
-| A new project, no code yet | `/ca:decompose` | A layered interview that builds `.codearbiter/` from scratch |
-
-When it finishes, confirm the activation flag:
-
-```text
-# .codearbiter/CONTEXT.md — first three lines
----
-arbiter: enabled
----
-```
-
-With `arbiter: enabled` in a properly closed frontmatter block, the next session opens with the orchestrator active and every gate armed. A file missing that flag loads nothing and blocks nothing.
+`/ca:init` scaffolds `.codearbiter/` at the repo root and routes to a context populator for your situation. See [Opt a Repository In](/guides/opt-in-a-repo/) for the two routing paths and how to confirm the `arbiter: enabled` activation flag. With that flag set in a properly closed frontmatter block, the next session opens with the orchestrator active and every gate armed.
 
 ## 2. Run a First Command
 
