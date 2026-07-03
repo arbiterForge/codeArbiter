@@ -40,14 +40,35 @@ describe("extractHookGates — fixture", () => {
     expect(tags.has("H-07")).toBe(true);
   });
 
-  it("counts a variable-tag call into `skipped`, not silently dropped", () => {
+  it("resolves a bare-assignment variable tag to its single literal tag", () => {
+    const site = callSites.find((c) => c.tag === "H-14");
+    expect(site).toBeDefined();
+    expect(site!.kind).toBe("block");
+    expect(site!.message).toBe("migration gate pass missing.");
+  });
+
+  it("resolves a conditional-assignment variable tag to BOTH tags with the same message and line pin", () => {
+    const h09b = callSites.find((c) => c.tag === "H-09b");
+    const h10b = callSites.find((c) => c.tag === "H-10b");
+    expect(h09b).toBeDefined();
+    expect(h10b).toBeDefined();
+    const message =
+      "This commit introduces {kind} changes without a recorded security-gate pass.";
+    expect(h09b!.message).toBe(message);
+    expect(h10b!.message).toBe(message);
+    expect(h09b!.line).toBe(h10b!.line);
+    expect(h09b!.line).toBeGreaterThan(0);
+  });
+
+  it("counts an unresolvable variable-tag call (loop unpack) into `skipped`, not silently dropped", () => {
     expect(skipped).toHaveLength(1);
     expect(skipped[0].file).toBe("sample-hook.py");
   });
 
   it("excludes the block()/remind() definition sites themselves", () => {
-    // Only the 4 literal-tag call sites should surface — never the two `def`s.
-    expect(callSites).toHaveLength(4);
+    // 4 literal-tag sites + 1 bare-assignment + 2 from the conditional split
+    // should surface — never the two `def`s or the unresolvable loop-unpack call.
+    expect(callSites).toHaveLength(7);
   });
 
   it("records 1-based line numbers and the source file basename", () => {
@@ -61,16 +82,34 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
   // Guards against silent under-collection. Counted directly via:
   //   grep -c 'block("H-\|remind("H-' plugins/ca/hooks/*.py
   // as of this writing: git-enforce.py=8, post-write-edit.py=8, pre-bash.py=20,
-  // pre-edit.py=10, pre-write.py=6 -> 52 literal-tag call sites. A future hook
-  // addition only grows this number, so the assertion is a floor (>=), not an
-  // exact match — it must fail if the extractor starts silently missing sites,
-  // not if the source genuinely grows.
-  const REAL_CALL_SITE_FLOOR = 52;
+  // pre-edit.py=10, pre-write.py=6 -> 52 literal-tag call sites. On top of
+  // those, 4 variable-tag sites (git-enforce.py:219/224, pre-bash.py:762/774)
+  // resolve through the bounded conditional-assignment pattern
+  // (`tag = "H-09b" if … else "H-10b"`), each attributed to BOTH tags -> +8
+  // entries -> 60. (pre-edit.py:84 is a loop unpack — genuinely unresolvable,
+  // stays in `skipped`.) A future hook addition only grows this number, so the
+  // assertion is a floor (>=), not an exact match — it must fail if the
+  // extractor starts silently missing sites, not if the source genuinely grows.
+  const REAL_CALL_SITE_FLOOR = 60;
 
-  const { callSites } = extractHookGates(realHooksDir);
+  const { callSites, skipped } = extractHookGates(realHooksDir);
 
-  it(`finds at least ${REAL_CALL_SITE_FLOOR} literal-tag call sites in the real hooks`, () => {
+  it(`finds at least ${REAL_CALL_SITE_FLOOR} attributed call sites in the real hooks`, () => {
     expect(callSites.length).toBeGreaterThanOrEqual(REAL_CALL_SITE_FLOOR);
+  });
+
+  it("attributes at least one H-10b entry (the conditional-assignment split) with its real message", () => {
+    const h10b = callSites.filter((c) => c.tag === "H-10b");
+    expect(h10b.length).toBeGreaterThanOrEqual(1);
+    const noPass = h10b.find((c) => c.file === "pre-bash.py" && c.line === 762);
+    expect(noPass).toBeDefined();
+    expect(noPass!.message).toBe(
+      "This commit introduces {kind} changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the {skill} gate (it records the pass), then commit. To bypass a security gate, /override requires its heavier security-acknowledgement path.",
+    );
+  });
+
+  it("keeps the genuinely unresolvable loop-unpack call site in `skipped`", () => {
+    expect(skipped.some((s) => s.file === "pre-edit.py")).toBe(true);
   });
 
   it("extracts H-01's protected-branch commit message from pre-bash.py verbatim", () => {

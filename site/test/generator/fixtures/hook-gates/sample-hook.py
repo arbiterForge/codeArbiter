@@ -30,10 +30,22 @@ def run():
     # A second tag in the same file.
     remind("H-07", "Dependency manifest changed.")
 
-    # A call whose tag is a variable, not a literal — must land in `skipped`,
-    # not silently dropped.
-    tag = "H-09b"
-    block(tag, "sensitive content detected.")
+    # A variable tag resolved through the bare-assignment form.
+    tag = "H-14"
+    block(tag, "migration gate pass missing.")
+
+    # A variable tag resolved through the conditional-assignment form — the
+    # message is attributed to BOTH tags (the real H-09b/H-10b split idiom).
+    touches_crypto = True
+    kind = "crypto/TLS" if touches_crypto else "secret"
+    tag = "H-09b" if touches_crypto else "H-10b"
+    block(tag, f"This commit introduces {kind} changes without a recorded "
+               f"security-gate pass.")
+
+    # A variable tag from a loop unpack — NOT the bounded assignment pattern,
+    # must land in `skipped`, not silently dropped.
+    for cls, loop_tag in (("audit", "H-05"),):
+        block(loop_tag, "protected artifact touched.")
 
 
 def _hint():

@@ -14,7 +14,10 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-/** One `block()`/`remind()` call site with a literal `"H-xx"` tag. */
+/** One `block()`/`remind()` call site attributed to a gate tag — either a
+ * literal `"H-xx"` first argument, or a bare identifier resolved through the
+ * bounded nearest-preceding-assignment pattern (see resolveVariableTag; a
+ * conditional assignment yields one call site per tag). */
 export interface HookCallSite {
   tag: string;
   kind: "block" | "remind";
@@ -147,7 +150,49 @@ function scanMessage(content: string, startIdx: number): { message: string; endI
 }
 
 const LITERAL_TAG_CALL_RE = /\b(block|remind)\(\s*"(H-\d+[a-z]?)"\s*,/g;
+const VARIABLE_TAG_CALL_RE = /\b(block|remind)\(\s*([A-Za-z_]\w*)\s*,/g;
 const ANY_CALL_RE = /\b(block|remind)\(/g;
+
+/** How far back (in lines) a variable-tag call looks for its assignment. */
+const VARIABLE_TAG_LOOKBACK_LINES = 30;
+
+/**
+ * Resolve a bare-identifier tag argument (`block(tag, …)`) to its literal
+ * value(s) by scanning BACKWARD for the nearest preceding assignment.
+ *
+ * BOUNDED PATTERN ONLY — this is deliberately NOT general dataflow. Exactly
+ * two single-line assignment shapes are recognized, within
+ * {@link VARIABLE_TAG_LOOKBACK_LINES} lines above the call:
+ *
+ *     tag = "H-09b" if touches_crypto else "H-10b"   -> both tags
+ *     tag = "H-09b"                                   -> the single tag
+ *
+ * These cover the real hooks' one variable-tag idiom: the crypto-vs-secret
+ * H-09b/H-10b split in git-enforce.py and pre-bash.py, whose messages would
+ * otherwise leave H-10b with ZERO entries on the generated page even though
+ * users see `BLOCKED [H-10b]` in their terminals. Anything else — a loop
+ * unpack (`for cls, tag in _CLASS_TAG:`), a function parameter, an assignment
+ * further away — resolves to null and the call site stays in `skipped`,
+ * visibly, rather than being guessed at.
+ */
+function resolveVariableTag(
+  content: string,
+  ident: string,
+  callIndex: number,
+): string[] | null {
+  const callLine = lineOf(content, callIndex);
+  const lines = content.split("\n");
+  const firstLine = Math.max(0, callLine - 1 - VARIABLE_TAG_LOOKBACK_LINES);
+  const assignRe = new RegExp(
+    `^\\s*${ident}\\s*=\\s*"(H-\\d+[a-z]?)"(?:\\s*if\\b.*\\belse\\s*"(H-\\d+[a-z]?)")?\\s*(?:#.*)?$`,
+  );
+  // Nearest preceding assignment wins: scan upward from the line above the call.
+  for (let ln = callLine - 2; ln >= firstLine; ln--) {
+    const m = assignRe.exec(lines[ln]);
+    if (m) return m[2] ? [m[1], m[2]] : [m[1]];
+  }
+  return null;
+}
 
 /**
  * Build a per-index "is real code" mask for a whole file: `false` inside a `#`
@@ -211,6 +256,35 @@ function extractFromFile(file: string, content: string): ExtractResult {
     LITERAL_TAG_CALL_RE.lastIndex = Math.max(LITERAL_TAG_CALL_RE.lastIndex, endIdx);
   }
 
+  // Second pass: variable-tag calls (`block(tag, …)`) resolvable through the
+  // bounded nearest-preceding-assignment pattern (see resolveVariableTag). A
+  // resolved conditional assignment attributes the SAME message to BOTH tags —
+  // one HookCallSite per tag, sharing the call's line pin.
+  VARIABLE_TAG_CALL_RE.lastIndex = 0;
+  while ((m = VARIABLE_TAG_CALL_RE.exec(content)) !== null) {
+    const matchStart = m.index;
+    if (!codeMask[matchStart]) continue;
+    const before = content.slice(Math.max(0, matchStart - 4), matchStart);
+    if (before === "def ") continue;
+    if (claimedSpans.some(([s, e]) => matchStart >= s && matchStart < e)) continue;
+    const tags = resolveVariableTag(content, m[2], matchStart);
+    if (tags === null) continue; // unresolvable — the skipped pass below reports it
+    const kind = m[1] as "block" | "remind";
+    const argsStart = VARIABLE_TAG_CALL_RE.lastIndex;
+    const { message, endIdx } = scanMessage(content, argsStart);
+    claimedSpans.push([matchStart, endIdx]);
+    for (const tag of tags) {
+      callSites.push({
+        tag,
+        kind,
+        file,
+        line: lineOf(content, matchStart),
+        message,
+      });
+    }
+    VARIABLE_TAG_CALL_RE.lastIndex = Math.max(VARIABLE_TAG_CALL_RE.lastIndex, endIdx);
+  }
+
   const skipped: SkippedCallSite[] = [];
   ANY_CALL_RE.lastIndex = 0;
   while ((m = ANY_CALL_RE.exec(content)) !== null) {
@@ -221,7 +295,7 @@ function extractFromFile(file: string, content: string): ExtractResult {
     // Definition sites ("def block(tag, msg):") are not calls — skip.
     const before = content.slice(Math.max(0, matchStart - 4), matchStart);
     if (before === "def ") continue;
-    // Already captured as a literal-tag call site above — skip.
+    // Already captured as a literal-tag or resolved variable-tag call site — skip.
     if (claimedSpans.some(([s, e]) => matchStart >= s && matchStart < e)) continue;
     skipped.push({ file, line: lineOf(content, matchStart) });
   }
