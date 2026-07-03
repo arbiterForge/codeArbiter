@@ -29,28 +29,7 @@ These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit
 | **H-11** | ADRs are authored only via `/ca:adr`. Both the shell flank (redirects, `cp`, `rm`, `sed -i` into `decisions/`) and the Write/Edit flank are guarded; the skill drops a fresh authoring marker first. |
 | **H-14** | Migration review. A commit staging a database migration is blocked unless a migration-review pass is recorded for that file's current content. |
 
-### H-09b/H-10b: A Digest-Bound Gate That Closes TOCTOU
-
-The crypto/secret gate does not just check freshness. The crypto-compliance and secret-handling skills record a `security-gate-passed` marker holding the **digest of every sensitive line the gate approved**. At commit time, `pre-bash.py` requires both:
-
-- **freshness** (the marker is under 30 minutes old), and
-- **coverage** (every sensitive line in the diff being committed hashes to a line in the approved set).
-
-Coverage is what closes the time-of-check / time-of-use window: a pass minted for one diff cannot launder a *different* diff committed inside the freshness window. The scan reads the staged diff, plus the worktree diff when the commit uses `-a`/`--all`, stages files in the same command, or names a `git commit <pathspec>` (whose worktree content the `--cached` scan would miss).
-
-The gate **fails closed when the diff cannot be read.** If git is unavailable or times out, `added_lines()` returns `None` (distinct from an empty diff) and the commit is blocked rather than waved through. The same fail-closed rule governs H-14's file-list read.
-
-The detection corpus is shared. `CRYPTO_RE` and `SECRET_RE` live once in `_hooklib.py`, so the redactor and the gate cannot drift on what counts as crypto or a secret.
-
-## Commit-Gate Board Transitions (ADR-0008)
-
-`open-tasks.md` has one sanctioned writer: `/ca:task`. No other agent, hook, or workflow is permitted to modify that file directly. The three mutations it performs are a queued add (a new task in `[ ]` state), the start-flip (`[ ]` to `[~]` with a stamped date), and the done-flip (`[~]` to `[x]`).
-
-The commit gate is the single board-sync chokepoint. Phase 6 of the commit-gate skill identifies a schema-valid board transition and exempts it from the scope-creep check; Phase 7 stages it alongside the work. The board flip therefore lands atomically with the code it describes: an abandoned PR abandons the flip with it, and there is no window where the board reads done while the corresponding work is not yet merged.
-
-This replaces the old pattern of a separate, lagging `chore(board)` PR. Cross-session board drift (a task left open after its work lands) is eliminated by construction rather than by process discipline. See ADR-0008 for the full design rationale.
-
-`/ca:standup` and `/ca:doctor` each run a read-only reconciliation sweep and surface any merged-but-not-flipped task. They report; they do not write.
+H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. The board-sync behavior implied by the commit gate (only `/ca:task` writes `open-tasks.md`) follows from ADR-0008. For the design rationale behind both, see [Hardening History](/concepts/hardening-history/).
 
 ## Advisory, Non-Blocking Reminders
 
@@ -65,13 +44,9 @@ This replaces the old pattern of a separate, lagging `chore(board)` PR. Cross-se
 
 These are advisory **because they bite at a later boundary, not at commit.** A bad CI workflow, IaC manifest, or auth change does damage only once merged or applied, and `security-reviewer` is the real enforcement point at the PR. The dangerous crypto and secret primitives, which land the moment code ships, stay hard-blocked by H-09b/H-10b.
 
-## 2.5.2 Hardening
+## Sandbox Isolation for Untrusted Repositories
 
-- **Broader crypto detection.** `CRYPTO_RE` flags `rc2` and `blowfish` alongside MD5, SHA-1, DES, 3DES, and RC4, and TLS-disable forms (`rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED`, `verify=False`, `InsecureSkipVerify`).
-- **Compound-name secret detection.** `SECRET_RE` matches compound keys (`aws_secret_access_key`, `client_secret`, `private_key`) and known token shapes (`AKIA…`, `ghp_…`, `sk-ant-…`).
-- **Atomic, digest-bound gate-pass markers.** Passes are bound to line digests, so an unrelated edit inside the freshness window does not inherit the approval.
-- **Centralized audit-path sets.** `AUDIT_LOG_NAMES` and the decisions-path tokens live once in `_hooklib`, so the shell, Write, and Edit flanks never disagree on which files are append-only.
-- **ca-sandbox isolation.** The sandbox that runs untrusted repositories is non-root (`--user 1000:1000`), `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, with a **fail-closed network policy** (default `--network none`; an unknown policy is a hard error, never a silent pass-through). No host bind mounts; the docker socket is never mounted.
+codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-root (`--user 1000:1000`), with a `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, and a fail-closed network policy (default `--network none`; an unknown policy is a hard error, not a silent pass-through). No host bind mounts; the docker socket is never mounted. For how this posture evolved release over release, see [Hardening History](/concepts/hardening-history/).
 
 ## Fail-Loud, Never Silently Dormant
 
