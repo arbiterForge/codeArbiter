@@ -1,6 +1,6 @@
 ---
 entity: commands/sprint
-related: [commit, skills/tdd]
+related: [feature, commit, skills/subagent-driven-development]
 gates:
   - gate: spec + plan approval
     when: before autonomous execution starts
@@ -28,3 +28,31 @@ to approve it in the moment.
 A short goal seeds the spec conversation that opens the sprint. Add `--farm` to send
 implementation work to lower-cost worker agents while the same spec-authoring, test-writing, and
 review responsibilities stay put.
+
+## Example
+
+```text
+> /ca:sprint add rate limiting to the public webhook endpoint
+
+Opening the sprint spec conversation...
+[Socratic refinement — per-IP limit, window, response on exceed]
+Spec written to .codearbiter/specs/webhook-rate-limit.md. Plan written with 5 tasks.
+Approve spec and plan to begin autonomous execution? (y/n)
+> y
+
+Executing task 1/5... task 2/5... task 3/5 touches security-controls.md scope — this is a hard gate,
+halting for your decision rather than choosing on your behalf.
+
+Task 3 adds a Redis-backed limiter key derived from client IP. Confirm this fits the approved
+security posture before I continue? (y/n)
+> y
+
+...task 4/5... task 5/5 complete. Every auto-decision logged to sprint-log.md (1 low-confidence entry).
+Routing to commit-gate, then finishing-a-development-branch (opening a PR — sprint never merges).
+```
+
+## When to reach for it
+
+Reach for `/ca:sprint` when the spec can be made concrete up front and you want the whole plan to run
+without per-batch checkpoints. `/ca:feature` is the better fit when you want to review progress
+between batches.
