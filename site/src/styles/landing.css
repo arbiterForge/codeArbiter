@@ -528,6 +528,16 @@
   line-height: 1.7;
 }
 
+.ca-doors__footnote {
+  margin: 1.5rem 0 0;
+  color: var(--ca-text-muted);
+  font-size: 0.88rem;
+}
+
+.ca-doors__footnote a {
+  color: var(--ca-gold-text);
+}
+
 /* =========================================================
    REDUCED-MOTION OVERRIDE (landing-specific)
    ========================================================= */
