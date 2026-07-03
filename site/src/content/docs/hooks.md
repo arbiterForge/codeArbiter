@@ -7,6 +7,8 @@ codeArbiter enforces its gates as Claude Code hooks under `plugins/ca/hooks/`. E
 
 Every hook is registered **twice** in `hooks.json`: once under `python3`, and once under a `python3 -c "" || python` fallback. On a stock Windows box that has only the `python` interpreter, the gates still fire. The two entries each receive their own stdin, so a real block is never swallowed by the fallback.
 
+For the exact, word-for-word message text a hook prints for every gate ID — generated directly from each `block()`/`remind()` call site, so it can never drift from the narrative summaries below — see the [Hook Gates reference](/reference/hooks-gates/).
+
 ## Registered Hooks
 
 | Event | Matcher | Script |
