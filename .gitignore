@@ -53,6 +53,10 @@ site/*.log
 site/src/content/docs/reference/
 site/src/generated/
 
+# On-site changelog — regenerated from the repo-root CHANGELOG.md by `npm run gen`
+# (render-changelog.ts). Same never-committed discipline as reference/ above.
+site/src/content/docs/changelog.md
+
 # Farm dispatcher runtime artifacts — worktrees, reports, integration branch staging.
 # Written per-run in any project using codeArbiter. Never committed to the plugin repo.
 .farm/
