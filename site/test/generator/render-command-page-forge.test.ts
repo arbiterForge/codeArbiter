@@ -66,4 +66,32 @@ describe("renderCommandPage — forge status badges and callouts", () => {
     expect(md).toContain('class="ca-badge"');
     expect(md).toContain('data-kind="preview"');
   });
+
+  it("preview-command badge is the first body element, before the description", () => {
+    const md = renderCommandPage({
+      name: "/ca:prune",
+      description: "Trim transcript clutter.",
+      forgeStatus: { kind: "preview-command" },
+    });
+    // Body starts after the closing frontmatter `---` fence.
+    const body = md.slice(md.indexOf("---", 3) + 3);
+    const badgeIndex = body.indexOf('class="ca-badge"');
+    const descIndex = body.indexOf("Trim transcript clutter.");
+    expect(badgeIndex).toBeGreaterThan(-1);
+    expect(descIndex).toBeGreaterThan(badgeIndex);
+  });
+
+  it("preview-flag callout is the first body element, before the description", () => {
+    const md = renderCommandPage({
+      name: "/ca:sprint",
+      description: "Autonomous sprint.",
+      forgeStatus: { kind: "preview-flag", flag: "--farm" },
+    });
+    // Body starts after the closing frontmatter `---` fence.
+    const body = md.slice(md.indexOf("---", 3) + 3);
+    const calloutIndex = body.indexOf("ca-callout--preview");
+    const descIndex = body.indexOf("Autonomous sprint.");
+    expect(calloutIndex).toBeGreaterThan(-1);
+    expect(descIndex).toBeGreaterThan(calloutIndex);
+  });
 });
