@@ -81,12 +81,24 @@ export interface RenderedPage {
   slug: string;
   title: string;
   markdown: string;
+  /** First-sentence-truncated description, for the reference index table. */
+  description?: string;
+  /** Raw `model:` frontmatter value (agents only), for the index's tier column. */
+  model?: string;
+  /** Feature Forge preview status (commands only), for the index's preview marker. */
+  forgeStatus?: ForgeStatus | null;
 }
 
 /** One entry in a sidebar group. */
 export interface SidebarEntry {
   label: string;
   slug: string;
+  /** First-sentence-truncated description, for the reference index table. */
+  description?: string;
+  /** Model tier display label (agents only), via {@link modelTier}. */
+  tier?: string;
+  /** Whether this entry carries a Feature Forge preview badge (commands only). */
+  preview?: boolean;
 }
 
 /** A sidebar group (one per source type). */

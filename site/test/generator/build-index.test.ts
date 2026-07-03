@@ -32,3 +32,63 @@ describe("buildIndex", () => {
     expect(buildIndex([]).sidebar).toEqual([]);
   });
 });
+
+describe("buildIndex — roster metadata (description/tier/preview)", () => {
+  it("truncates a multi-sentence description to its first sentence per item", () => {
+    const { sidebar } = buildIndex([
+      {
+        type: "command",
+        slug: "commit",
+        title: "commit",
+        markdown: "",
+        description: "Run the commit gate. Nothing lands without it.",
+      },
+    ]);
+    const commands = sidebar.find((g) => g.type === "command");
+    expect(commands?.items[0].description).toBe("Run the commit gate.");
+  });
+
+  it("attaches a model tier to agent items only", () => {
+    const { sidebar } = buildIndex([
+      { type: "agent", slug: "scout", title: "scout", markdown: "", model: "haiku" },
+      { type: "command", slug: "commit", title: "commit", markdown: "" },
+    ]);
+    const agents = sidebar.find((g) => g.type === "agent");
+    const commands = sidebar.find((g) => g.type === "command");
+    expect(agents?.items[0].tier).toBe("Haiku");
+    expect(commands?.items[0].tier).toBeUndefined();
+  });
+
+  it("defaults an agent with no model field to the 'default' tier", () => {
+    const { sidebar } = buildIndex([
+      { type: "agent", slug: "scout", title: "scout", markdown: "" },
+    ]);
+    const agents = sidebar.find((g) => g.type === "agent");
+    expect(agents?.items[0].tier).toBe("default");
+  });
+
+  it("marks a command with a forgeStatus as preview; leaves others unmarked", () => {
+    const { sidebar } = buildIndex([
+      {
+        type: "command",
+        slug: "prune",
+        title: "prune",
+        markdown: "",
+        forgeStatus: { kind: "preview-command" },
+      },
+      { type: "command", slug: "commit", title: "commit", markdown: "" },
+    ]);
+    const commands = sidebar.find((g) => g.type === "command");
+    const bySlug = Object.fromEntries(commands!.items.map((it) => [it.slug, it]));
+    expect(bySlug.prune.preview).toBe(true);
+    expect(bySlug.commit.preview).toBe(false);
+  });
+
+  it("leaves preview undefined for non-command collections", () => {
+    const { sidebar } = buildIndex([
+      { type: "skill", slug: "tdd", title: "tdd", markdown: "" },
+    ]);
+    const skills = sidebar.find((g) => g.type === "skill");
+    expect(skills?.items[0].preview).toBeUndefined();
+  });
+});

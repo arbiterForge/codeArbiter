@@ -193,6 +193,9 @@ export function generate(
       slug: slugs[i],
       title: name,
       markdown: renderPage(source.type, input),
+      description: doc.fields.description,
+      model: doc.fields.model,
+      forgeStatus,
     };
   });
 
@@ -212,16 +215,31 @@ export function generate(
     writeFileSync(join(dir, `${page.slug}.md`), page.markdown);
   }
 
-  // Index + sidebar. buildIndex gives the grouped, sorted structure; we render a
-  // Starlight-valid index page (frontmatter title + linked groups) from it.
+  // Index + sidebar. buildIndex gives the grouped, sorted structure (each item
+  // already carrying its truncated description, and — per collection — a
+  // model tier or preview flag); we render a Starlight-valid index page
+  // (frontmatter title + one table per collection) from it.
   const { sidebar } = buildIndex(pages);
+  // Column headers per collection: agents carry a model-tier column the other
+  // two collections don't have.
+  const TABLE_HEADER: Record<SourceType, string> = {
+    command: "| Command | Description |\n|---|---|",
+    skill: "| Skill | Description |\n|---|---|",
+    agent: "| Agent | Model tier | Description |\n|---|---|---|",
+  };
   const indexBody = sidebar
     .map((group) => {
       const heading = `## ${group.type.charAt(0).toUpperCase()}${group.type.slice(1)}s`;
-      const links = group.items
-        .map((it) => `- [${it.label}](./${TYPE_DIR[group.type]}/${it.slug}/)`)
-        .join("\n");
-      return `${heading}\n\n${links}`;
+      const rows = group.items.map((it) => {
+        const nameCell =
+          `[${it.label}](./${TYPE_DIR[group.type]}/${it.slug}/)` +
+          (it.preview ? " (preview)" : "");
+        const description = it.description ?? "";
+        return group.type === "agent"
+          ? `| ${nameCell} | ${it.tier ?? "default"} | ${description} |`
+          : `| ${nameCell} | ${description} |`;
+      });
+      return `${heading}\n\n${TABLE_HEADER[group.type]}\n${rows.join("\n")}`;
     })
     .join("\n\n");
   const indexContent = `---\ntitle: Reference\ndescription: Auto-generated reference for codeArbiter commands, skills, and agents.\n---\n\nThis section is generated from the plugin's own frontmatter and regenerates on every build, so it can never drift from the source.\n\n${indexBody}\n`;

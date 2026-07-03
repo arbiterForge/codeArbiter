@@ -183,4 +183,47 @@ describe("generate", () => {
       );
     });
   });
+
+  describe("reference index — roster tables", () => {
+    it("renders one markdown table per non-empty collection, headers matching the collection", () => {
+      generate(pluginDir, outDir);
+      const indexContent = readFileSync(join(outDir, "index.md"), "utf8");
+      expect(indexContent).toContain("| Command | Description |");
+      expect(indexContent).toContain("| Skill | Description |");
+      expect(indexContent).toContain("| Agent | Model tier | Description |");
+    });
+
+    it("links the name cell to the entity's page", () => {
+      const result = generate(pluginDir, outDir);
+      const indexContent = readFileSync(join(outDir, "index.md"), "utf8");
+      const anyCommand = result.pages.find((p) => p.type === "command");
+      expect(anyCommand).toBeDefined();
+      expect(indexContent).toContain(
+        `[${anyCommand!.title}](./commands/${anyCommand!.slug}/)`,
+      );
+    });
+
+    it("marks a preview command with a (preview) suffix after its name", () => {
+      const result = generate(collisionsPluginDir, collisionsOutDir);
+      const indexContent = readFileSync(join(collisionsOutDir, "index.md"), "utf8");
+      const prunePage = result.pages.find(
+        (p) => p.type === "command" && p.slug === "prune",
+      );
+      expect(prunePage).toBeDefined();
+      expect(indexContent).toContain(
+        `[${prunePage!.title}](./commands/${prunePage!.slug}/) (preview)`,
+      );
+    });
+
+    it("carries a model-tier column value for an agent row", () => {
+      const result = generate(pluginDir, outDir);
+      const indexContent = readFileSync(join(outDir, "index.md"), "utf8");
+      const anyAgent = result.pages.find((p) => p.type === "agent");
+      expect(anyAgent).toBeDefined();
+      const rowRegex = new RegExp(
+        `\\[${anyAgent!.title}\\]\\(\\./agents/${anyAgent!.slug}/\\) \\| \\S+ \\|`,
+      );
+      expect(indexContent).toMatch(rowRegex);
+    });
+  });
 });
