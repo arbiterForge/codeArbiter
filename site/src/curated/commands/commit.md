@@ -1,6 +1,6 @@
 ---
 entity: commands/commit
-related: [sprint, skills/tdd]
+related: [sprint, pr, skills/commit-gate]
 gates:
   - gate: verification
     when: every invocation
@@ -25,3 +25,29 @@ diff review before anything is written to history.
 ```
 
 Takes no arguments — everything it needs comes from the current git state.
+
+## Example
+
+```text
+> commit this
+
+Branch: feat/export-csv (not protected — OK).
+Classification: feat, scope export.
+Running tests... 214 passed. Running lint... clean. Scanning staged files for secrets... clean.
+Behavioral proof: re-running the export endpoint against the spec's acceptance criterion — a saved
+search with zero results returns a header-only CSV. Confirmed by fresh output.
+Reviewing the staged diff... no unexpected files, no TODO markers, nothing out of scope.
+Staged set matches intended files exactly.
+Commit message drafted:
+
+  feat(export): add CSV export for saved searches
+
+  CHANGELOG: Saved searches can now be exported as CSV from the search list.
+
+Committed a1b2c3d. git status: clean.
+```
+
+## When to reach for it
+
+Reach for `/ca:commit` once staged work is ready to persist. `/ca:pr` builds on the same gate to
+check PR readiness, dispatching additional reviewers the diff's path demands.
