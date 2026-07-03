@@ -27,7 +27,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 codeArbiter is a native Claude Code plugin that sits between you and your codebase. Instead of letting the model freelance, you drive through slash commands. Each one routes to the skill or agent that owns the work (TDD, the commit gate, decision-variance/SMARTS, the reviewer fleet) and clears its gates before anything ships.
 
-**Who it's for:** teams and power users who let agents write real code and need to prove what happened. The kind who'd rather a tool block than apologize.
+**Who it's for:** teams and power users who let agents write real code and need to prove what happened.
 
 It will not:
 
@@ -42,7 +42,7 @@ The gates scale to the change: a one-line docs fix takes the small lane or `/ca:
 
 ## See it catch something
 
-The first time codeArbiter blocks you, it can feel like friction, until you see what it caught. This exchange is a real one from this project's own history: a spec tried to skip ahead, and the gate stopped it before any code got written.
+The first time codeArbiter blocks you, it can feel like friction, until you see what it caught. This exchange is a real one from this project's own history: a bug fix forced through test-first, then a PR held at review until an untested seam got covered.
 
 ```text
 you      /ca:fix the statusline keeps running the old version after an update

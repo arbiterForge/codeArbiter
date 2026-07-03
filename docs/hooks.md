@@ -154,9 +154,9 @@ so a relevant gate isn't a surprise later. It runs only in enabled repos.
 | H-07 | A dependency manifest changed; dispatch `dependency-reviewer` before committing |
 | H-09 | A crypto/TLS pattern appeared; run `crypto-compliance` (the commit will block until it records a pass) |
 | H-10 | A possible hardcoded secret appeared; run `secret-handling` (same) |
-| H-15 | A CI/CD workflow file changed; dispatch `security-reviewer` before merging — advisory, **no commit block** (a workflow runs only once merged) |
-| H-16 | A deployment/IaC manifest changed; dispatch `security-reviewer` before merging — advisory, **no commit block** (IaC bites only on apply) |
-| H-17 | Auth/authorization logic appeared (narrow high-signal patterns); dispatch `security-reviewer` — advisory, **no commit block** (the dangerous crypto/secret primitives are still hard-blocked by H-09b/H-10b) |
+| H-15 | A CI/CD workflow file changed; dispatch `security-reviewer` before merging. Advisory, **no commit block** (a workflow runs only once merged) |
+| H-16 | A deployment/IaC manifest changed; dispatch `security-reviewer` before merging. Advisory, **no commit block** (IaC bites only on apply) |
+| H-17 | Auth/authorization logic appeared (narrow high-signal patterns); dispatch `security-reviewer`. Advisory, **no commit block** (the dangerous crypto/secret primitives are still hard-blocked by H-09b/H-10b) |
 
 **Reads:** the touched `file_path` and its content; ADR frontmatter under
 `.codearbiter/decisions/`; the `ci-paths`/`deploy-paths`/`migration-paths` blocks in
@@ -184,7 +184,7 @@ Three hooks detect a scope-touch by path glob: migrations (H-14, blocking), CI
 workflows (H-15, advisory), and deployment/IaC manifests (H-16, advisory). Each
 ships sensible defaults and lets a project extend or narrow the set with a fenced
 block in `.codearbiter/security-controls.md`. The grammar is identical across all
-three — one directive per line, `+ glob` to add a path, `- glob` to exclude one
+three: one directive per line, `+ glob` to add a path, `- glob` to exclude one
 (**excludes win**). `**` spans path segments; `*`/`?` stay within one.
 
 ```markdown
@@ -203,11 +203,11 @@ three — one directive per line, `+ glob` to add a path, `- glob` to exclude on
 <!-- /deploy-paths -->
 ```
 
-Defaults (matched even with no block present): migrations — `**/migrations/**`,
+The defaults below match even with no block present. Migrations: `**/migrations/**`,
 `**/migrate/**`, `**/db/migrate/**`, `**/alembic/versions/*.py`,
-`**/prisma/migrations/**`. CI — `.github/workflows/**`, `.circleci/**`,
+`**/prisma/migrations/**`. CI: `.github/workflows/**`, `.circleci/**`,
 `**/.gitlab-ci.yml`, `**/Jenkinsfile`, `**/azure-pipelines.yml`,
-`**/bitbucket-pipelines.yml`. Deploy — `**/Dockerfile`, `**/Dockerfile.*`,
+`**/bitbucket-pipelines.yml`. Deploy: `**/Dockerfile`, `**/Dockerfile.*`,
 `**/docker-compose*.{yml,yaml}`, `**/*.tf`, `**/*.tfvars`, `**/k8s/**`,
 `**/helm/**`, `**/kustomization.{yaml,yml}`, `**/Procfile`.
 
