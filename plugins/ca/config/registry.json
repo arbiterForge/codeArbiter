@@ -1,0 +1,544 @@
+{
+  "version": 1,
+  "groups": {
+    "babysit": "PR babysitter — CI watcher attached by /ca:pr",
+    "prune": "Transcript pruning — after-each-turn service and its tuning knobs",
+    "statusline": "Statusline — the /ca:statusline renderer",
+    "session": "Session — branch and state-path plumbing",
+    "dev": "Dev mode — maintainer override gate",
+    "farm": "Execution farm — /ca:sprint --farm worker engine",
+    "farm-mutation": "Farm mutation guard — anti-gaming quality signal",
+    "sandbox": "ca-sandbox — Docker isolation plugin"
+  },
+  "settings": [
+    {
+      "name": "CODEARBITER_BABYSIT",
+      "group": "babysit",
+      "type": "enum",
+      "values": ["off", "on"],
+      "default": "off",
+      "scope": "user",
+      "description": "When on, /ca:pr auto-attaches a CI watcher to the PR it opens (same as running /ca:watch by hand)."
+    },
+    {
+      "name": "CODEARBITER_BABYSIT_ONRED",
+      "group": "babysit",
+      "type": "enum",
+      "values": ["propose", "branch"],
+      "default": "propose",
+      "scope": "user",
+      "requires": { "CODEARBITER_BABYSIT": ["on"] },
+      "description": "Watcher depth on a red check: propose (name cause, suggest fix, touch nothing) or branch (also stage the fix on spike/fix-*)."
+    },
+    {
+      "name": "CODEARBITER_PRUNE",
+      "group": "prune",
+      "type": "enum",
+      "values": ["off", "dry", "on"],
+      "default": "off",
+      "scope": "user",
+      "status": "preview",
+      "description": "After-each-turn transcript pruning service: off, dry (log would-be prunes, touch nothing), or on (execute at safe boundaries).",
+      "docs": "https://arbiterforge.github.io/codeArbiter/feature-forge/whats-in-the-forge/"
+    },
+    {
+      "name": "CODEARBITER_PRUNE_TIER",
+      "group": "prune",
+      "type": "enum",
+      "values": ["gentle", "standard", "aggressive"],
+      "default": "gentle",
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "Prune aggressiveness: gentle (sidecar + oversize clamp), standard (+ reasoning fold, aged/MCP/shell), aggressive (+ stale reads, dedup, images)."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_STRATEGIES",
+      "group": "prune",
+      "type": "string",
+      "default": null,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "Comma-separated list restricting which prune strategies run. Unset = every strategy the tier enables."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_MAXBYTES",
+      "group": "prune",
+      "type": "int",
+      "default": 8192,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "Byte threshold above which a tool output is clamped by the oversize strategy."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_KEEP_RECENT",
+      "group": "prune",
+      "type": "int",
+      "default": 10,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "K most recent tool-bearing turns kept verbatim (a turn is an assistant tool_use plus its results)."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_MIN_SIZE",
+      "group": "prune",
+      "type": "int",
+      "default": 1048576,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "Minimum transcript size in bytes before the service considers pruning at all."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_MIN_GROWTH",
+      "group": "prune",
+      "type": "int",
+      "default": 262144,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "Minimum growth in bytes since the last prune before the service acts again."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_BACKUPS",
+      "group": "prune",
+      "type": "int",
+      "default": 3,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "Rotated transcript backups kept in ~/.codearbiter/prune-backups/ before each executed prune."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_LIVE_SECS",
+      "group": "prune",
+      "type": "int",
+      "default": 90,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["dry", "on"] },
+      "description": "Live-session throttle: minimum seconds between service prunes of the same transcript."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_METRICS",
+      "group": "prune",
+      "type": "path",
+      "default": null,
+      "scope": "user",
+      "status": "preview",
+      "description": "Override the dry-run metrics log path. Unset = ~/.codearbiter/metrics/prune-dry.jsonl (~ expanded)."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_NUDGE",
+      "group": "prune",
+      "type": "enum",
+      "values": ["off", "on"],
+      "default": "off",
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE": ["on"] },
+      "description": "Cold-miss nudge: block a submit once with an advisory when a cold re-cache would land on bloated context. Needs CODEARBITER_PRUNE=on."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_NUDGE_IDLE_SECS",
+      "group": "prune",
+      "type": "int",
+      "default": 240,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE_NUDGE": ["on"] },
+      "description": "Idle seconds before the cold-miss nudge arms."
+    },
+    {
+      "name": "CODEARBITER_PRUNE_NUDGE_MIN_TOKENS",
+      "group": "prune",
+      "type": "int",
+      "default": 80000,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "requires": { "CODEARBITER_PRUNE_NUDGE": ["on"] },
+      "description": "Estimated freed tokens required before the cold-miss nudge arms."
+    },
+    {
+      "name": "CODEARBITER_STATUSLINE",
+      "group": "statusline",
+      "type": "enum",
+      "values": ["on", "off"],
+      "default": "on",
+      "scope": "user",
+      "description": "Set off to disable the statusline renderer entirely (wiring stays; /ca:statusline uninstall removes it)."
+    },
+    {
+      "name": "CODEARBITER_COMPACT",
+      "group": "statusline",
+      "type": "bool",
+      "default": false,
+      "scope": "user",
+      "description": "Lean statusline: drop the subagent rows."
+    },
+    {
+      "name": "CODEARBITER_WIDTH",
+      "group": "statusline",
+      "type": "int",
+      "default": null,
+      "min": 20,
+      "scope": "user",
+      "description": "Statusline box width. Unset = auto from the terminal (clamped 70..160); an explicit value is used verbatim."
+    },
+    {
+      "name": "CODEARBITER_COMPACT_AT",
+      "group": "statusline",
+      "type": "float",
+      "default": 92.0,
+      "min": 0,
+      "max": 100,
+      "scope": "user",
+      "description": "Context percentage treated as the compaction threshold by the statusline's context segment."
+    },
+    {
+      "name": "CODEARBITER_BASE_BRANCH",
+      "group": "session",
+      "type": "string",
+      "default": "main",
+      "scope": "project",
+      "description": "Base branch the session-start git staleness check compares against."
+    },
+    {
+      "name": "CODEARBITER_LEDGER",
+      "group": "session",
+      "type": "path",
+      "default": null,
+      "scope": "user",
+      "description": "Override the token-ledger file location. Unset = ~/.codearbiter/ledger.json."
+    },
+    {
+      "name": "CODEARBITER_UPDATE_STATE",
+      "group": "session",
+      "type": "path",
+      "default": null,
+      "scope": "user",
+      "description": "Override the update-check cache path (mainly for tests). Unset = ~/.codearbiter/update-state.json."
+    },
+    {
+      "name": "CODEARBITER_DEV",
+      "group": "dev",
+      "type": "bool",
+      "default": false,
+      "scope": "user",
+      "description": "Maintainer override gate for /ca:dev — suspends orchestration to edit codeArbiter itself. Entry/exit logged to overrides.log."
+    },
+    {
+      "name": "FARM_API_KEY",
+      "group": "farm",
+      "type": "string",
+      "default": null,
+      "scope": "user",
+      "status": "preview",
+      "sensitive": true,
+      "description": "OpenAI-compatible provider key for --farm workers. Never persisted to settings.json — export it in your shell profile."
+    },
+    {
+      "name": "FARM_MODEL",
+      "group": "farm",
+      "type": "string",
+      "default": null,
+      "scope": "user",
+      "status": "preview",
+      "description": "Force a worker model id, skipping canary selection. Unset = auto-selected at dispatch."
+    },
+    {
+      "name": "FARM_API_BASE_URL",
+      "group": "farm",
+      "type": "string",
+      "default": null,
+      "scope": "user",
+      "status": "preview",
+      "description": "Worker endpoint base URL. Unset = plan.json's recorded endpoint, then FARM_DEFAULT_API_BASE_URL."
+    },
+    {
+      "name": "FARM_DEFAULT_API_BASE_URL",
+      "group": "farm",
+      "type": "string",
+      "default": "https://opencode.ai/zen/v1",
+      "scope": "user",
+      "status": "preview",
+      "description": "Last-resort worker endpoint when neither env nor plan.meta names one."
+    },
+    {
+      "name": "FARM_CANDIDATE_MODELS",
+      "group": "farm",
+      "type": "string",
+      "default": null,
+      "scope": "user",
+      "status": "preview",
+      "description": "Comma-separated model ids for --canary probing. Normally set by the dispatch skill."
+    },
+    {
+      "name": "FARM_CONCURRENCY",
+      "group": "farm",
+      "type": "int",
+      "default": 4,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Max concurrent task workers — the shared ceiling on total in-flight worker calls, including best-of-N samples."
+    },
+    {
+      "name": "FARM_SAMPLES",
+      "group": "farm",
+      "type": "int",
+      "default": 1,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Best-of-N candidates per task attempt; the first to pass the gate wins. 1 = single-candidate path."
+    },
+    {
+      "name": "FARM_TEMPERATURE",
+      "group": "farm",
+      "type": "float",
+      "default": 0,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "description": "Worker sampling temperature. Auto-bumped to 0.7 when FARM_SAMPLES>1 and this is unset; set explicitly to override."
+    },
+    {
+      "name": "FARM_MAX_TOKENS",
+      "group": "farm",
+      "type": "int",
+      "default": null,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "description": "Max completion tokens per worker call. Unset/0 = provider default."
+    },
+    {
+      "name": "FARM_MAX_RETRIES",
+      "group": "farm",
+      "type": "int",
+      "default": 2,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "description": "Gate retries per task before escalating to the premium path."
+    },
+    {
+      "name": "FARM_BASE_BRANCH",
+      "group": "farm",
+      "type": "string",
+      "default": "main",
+      "scope": "project",
+      "status": "preview",
+      "description": "Branch the farm integration branch is cut from."
+    },
+    {
+      "name": "FARM_INTEGRATION_BRANCH",
+      "group": "farm",
+      "type": "string",
+      "default": "farm/integration",
+      "scope": "project",
+      "status": "preview",
+      "description": "Name of the integration branch farm tasks merge into."
+    },
+    {
+      "name": "FARM_WORKTREE_ROOT",
+      "group": "farm",
+      "type": "path",
+      "default": ".farm/worktrees",
+      "scope": "project",
+      "status": "preview",
+      "description": "Root directory for per-task git worktrees. Must stay inside the repo unless FARM_ALLOW_EXTERNAL_WORKTREE_ROOT=1."
+    },
+    {
+      "name": "FARM_ALLOW_EXTERNAL_WORKTREE_ROOT",
+      "group": "farm",
+      "type": "bool",
+      "default": false,
+      "scope": "project",
+      "status": "preview",
+      "description": "Security override (#163): permit a worktree root outside the repo. Leave off unless you know why you need it."
+    },
+    {
+      "name": "FARM_REPORT_DIR",
+      "group": "farm",
+      "type": "path",
+      "default": ".farm",
+      "scope": "project",
+      "status": "preview",
+      "description": "Directory farm run reports are written to."
+    },
+    {
+      "name": "FARM_REQUEST_TIMEOUT_MS",
+      "group": "farm",
+      "type": "int",
+      "default": 120000,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Per-request hard timeout so a hung endpoint can't deadlock a worker slot."
+    },
+    {
+      "name": "FARM_GATE_TIMEOUT_MS",
+      "group": "farm",
+      "type": "int",
+      "default": 300000,
+      "min": 1000,
+      "scope": "user",
+      "status": "preview",
+      "description": "Wall-clock timeout per gate command so a hung test can never stall the whole run."
+    },
+    {
+      "name": "FARM_ENTITLEMENT_PROBE_TIMEOUT_MS",
+      "group": "farm",
+      "type": "int",
+      "default": 35000,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Per-candidate wall-clock cap for the --canary entitlement pre-screen."
+    },
+    {
+      "name": "FARM_API_MAX_RETRIES",
+      "group": "farm",
+      "type": "int",
+      "default": 3,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "description": "Transport-level retries for 429/5xx responses (honors Retry-After); distinct from gate retries."
+    },
+    {
+      "name": "FARM_ABORT_ESCALATION_RATE",
+      "group": "farm",
+      "type": "float",
+      "default": 0.5,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "description": "Circuit breaker: abort dispatch once the escalation fraction exceeds this."
+    },
+    {
+      "name": "FARM_ABORT_MIN_TASKS",
+      "group": "farm",
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Minimum settled tasks before the escalation circuit breaker can fire."
+    },
+    {
+      "name": "FARM_ENRICH_MAX_BYTES",
+      "group": "farm",
+      "type": "int",
+      "default": 131072,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Byte cap on test-source + in-scope file context injected into the worker prompt (data-minimization; secret-redacted)."
+    },
+    {
+      "name": "FARM_MUTATION",
+      "group": "farm-mutation",
+      "type": "enum",
+      "values": ["on", "off"],
+      "default": "on",
+      "scope": "user",
+      "status": "preview",
+      "description": "Mutation guard on/off — mutates the worker's impl and re-runs the narrow test to catch gamed or weak tests."
+    },
+    {
+      "name": "FARM_MUTATION_SAMPLE",
+      "group": "farm-mutation",
+      "type": "int",
+      "default": 15,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Max mutants sampled per task."
+    },
+    {
+      "name": "FARM_MUTATION_BUDGET_MS",
+      "group": "farm-mutation",
+      "type": "int",
+      "default": 30000,
+      "min": 0,
+      "scope": "user",
+      "status": "preview",
+      "description": "Per-task mutation time box in milliseconds."
+    },
+    {
+      "name": "FARM_MUTATION_WARN_BELOW",
+      "group": "farm-mutation",
+      "type": "float",
+      "default": 0.5,
+      "min": 0,
+      "max": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Mutation score below this attaches a warning that rides into Phase 3 review."
+    },
+    {
+      "name": "FARM_MUTATION_ESCALATE_BELOW",
+      "group": "farm-mutation",
+      "type": "float",
+      "default": 0.1,
+      "min": 0,
+      "max": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Mutation score at/below this (with >=5 mutants) hard-escalates the task."
+    },
+    {
+      "name": "FARM_MUTATION_CMD",
+      "group": "farm-mutation",
+      "type": "string",
+      "default": null,
+      "scope": "project",
+      "status": "preview",
+      "description": "External per-language mutation framework command; runs in the worktree and must print a trailing JSON line with a numeric score."
+    },
+    {
+      "name": "CA_SANDBOX_EXEC_MAX_BYTES",
+      "group": "sandbox",
+      "type": "int",
+      "default": 1048576,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Per-stream stdout/stderr byte cap on /ca:sandbox exec output."
+    },
+    {
+      "name": "CA_SANDBOX_CLONE_TIMEOUT_MS",
+      "group": "sandbox",
+      "type": "int",
+      "default": 300000,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Repo clone timeout when creating a sandbox."
+    },
+    {
+      "name": "CA_SANDBOX_CP_TIMEOUT_MS",
+      "group": "sandbox",
+      "type": "int",
+      "default": 120000,
+      "min": 1,
+      "scope": "user",
+      "status": "preview",
+      "description": "Host-to-box copy timeout."
+    }
+  ]
+}

@@ -245,6 +245,13 @@ jobs:
         # session+file -> first injects, second silent), .codearbiter/ self-read
         # silent allow, fail-open on malformed stdin, miss, and dormant-repo paths.
         run: python .github/scripts/test_pre_read.py
+      - name: Run settings-registry anti-drift gate
+        # config/registry.json is the single source of truth for every
+        # CODEARBITER_*/FARM_*/CA_SANDBOX_* knob: coverage (a var referenced in
+        # code but absent from the registry fails), no ghosts (a registry entry
+        # nothing reads fails), and defaults equality against the Python
+        # from_env paths and the TS numEnv/nullish literals.
+        run: python .github/scripts/test_config_registry.py
       - name: Run the hooks/tests unittest suite
         # plugins/ca/hooks/tests/ - the hook enforcement + helper logic. Ran only
         # locally per CONTRIBUTING; wired here so the guards are mechanically

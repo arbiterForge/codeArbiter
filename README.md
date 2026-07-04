@@ -7,8 +7,8 @@
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.8.11" src="https://img.shields.io/badge/version-2.8.11-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-39-555">
+<img alt="version 2.9.0" src="https://img.shields.io/badge/version-2.9.0-2b7489">
+<img alt="commands" src="https://img.shields.io/badge/commands-40-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-28-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
@@ -177,7 +177,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | <kbd>/ca:metrics</kbd> | Read-only trend glance: override rate, small-lane rate, and sprint low-confidence ratio, each with a direction arrow vs. the prior 20-commit window. |
 
 <details>
-<summary><b>The full catalog</b>: 39 commands</summary>
+<summary><b>The full catalog</b>: 40 commands</summary>
 
 <br>
 
@@ -225,6 +225,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 | `/ca:init` | Scaffold the `.codearbiter/` state store |
 | `/ca:status` | Maturity, open tasks, unresolved `CONFIRM-NN`, overrides |
 | `/ca:task` | Task-board writer: add a queued task, start one (mints a dotted ID, stamps the date), or mark one done. The only blessed write to `open-tasks.md` |
+| `/ca:config` | Browse and change every setting — grouped, with value, source, default; persists to settings.json env |
 | `/ca:statusline` | Install/wire the codeArbiter statusline |
 | `/ca:doctor` | Prove the install is enforcing: payload, cache staleness, live-fire hook probe |
 | `/ca:preview` | Zero-onboarding read-only dry-run of the reviewer fleet on the current diff: predicts reviewers, runs the state-free secret scan, writes nothing |
@@ -312,7 +313,7 @@ already current. It only ever *tells* you; it never applies an update itself.
 
 ## Configuration
 
-Every optional behavior is **off by default** and opt-in through an environment variable. codeArbiter never enables one on your behalf. Set them in your shell profile (or per session) to turn them on.
+Every optional behavior is **off by default** and opt-in through an environment variable. codeArbiter never enables one on your behalf. Set them in your shell profile (or per session) to turn them on — or run <kbd>/ca:config</kbd>, which shows every knob grouped with its current value, source, and default, and persists changes into Claude Code's `settings.json` `env` blocks for you (the full inventory lives in `plugins/ca/config/registry.json`, and running `hooks/configtool.py` in a terminal gives the same picker standalone).
 
 | Variable | Default | Effect |
 |---|---|---|
@@ -367,7 +368,7 @@ plugins/ca/                         the governance plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (39)   skills/   (22)   agents/   (28)
+├── commands/   (40)   skills/   (22)   agents/   (28)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)

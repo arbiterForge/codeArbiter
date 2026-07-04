@@ -70,6 +70,8 @@ the running CLI sends its in-memory history to the API, not the file.
    genuine cold stretch re-arms. The gate is strictly opt-in, never fires in `dry`/`off` mode,
    and fails open on any error — a pruner fault will never block the session.
 
+All `CODEARBITER_PRUNE*` knobs above can be browsed and changed with `/ca:config` (group: `prune`).
+
 ## When NOT to use
 
 - Context bar nowhere near compaction — the most recent turns are protected anyway.

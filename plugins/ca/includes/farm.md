@@ -96,6 +96,10 @@ picks a model by *measurement*, not hearsay:
 
 ## Optional overrides
 
+The authoritative inventory (names, types, defaults) is `${CLAUDE_PLUGIN_ROOT}/config/registry.json`,
+CI-checked against the code; browse or set any of these with `/ca:config`. This table is the prose
+companion.
+
 | Variable | Default | Purpose |
 |---|---|---|
 | `FARM_MODEL` | _(unset)_ | Skip selection and use this model id directly. Power-user/CI override. |

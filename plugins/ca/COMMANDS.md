@@ -57,6 +57,7 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `/ca:task` | `add "<desc>" \| start <id\|"title"> \| done <id\|"title">` | The sanctioned task-board writer: add a queued task, start one (flips to in-progress + stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to `open-tasks.md`. |
 | `/ca:audit` | `[range]` | Assemble the governance packet for a window — commits, overrides, ADRs, sprint decisions, open items — into `.codearbiter/audits/`. Read-only. |
 | `/ca:metrics` | `[--window N]` | Read-only governance trend glance: override rate, small-lane rate, sprint low-confidence ratio, each with a direction arrow vs. the prior 20-commit window. Not a second `/ca:audit` packet. |
+| `/ca:config` | `(none) \| <KEY> \| <KEY> <VALUE> \| doctor \| launch` | Browse and change every codeArbiter setting — grouped, with current value, source, and default. Persists to Claude Code settings.json `env` blocks; applies at the next session start. |
 | `/ca:statusline` | `install \| uninstall \| status` | Install/wire the codeArbiter statusline, remove it, or report its state. |
 | `/ca:prune` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Trim transcript clutter to extend session lifetime. Dry-run by default; gains land on resume/compaction, not the live turn. |
 | `/ca:doctor` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, live-fire hook probe. |

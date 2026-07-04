@@ -6,6 +6,14 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.9.0] — 2026-07-04
+
+One place to see and set every knob.
+
+### Added
+- **`/ca:config` — settings browser and editor.** Every user-tunable environment variable across the plugin family (`CODEARBITER_*`, `FARM_*`, `CA_SANDBOX_*`) is now inventoried in a declarative registry (`config/registry.json`: group, type, default, description, requires, sensitive) and driven by one stdlib-only backing tool (`hooks/configtool.py` + `_configlib.py`/`_configtuilib.py`). In-session, `/ca:config` renders the grouped menu and drives changes through selectable prompts; the same script run in a real terminal is an arrow-key picker (numbered-menu fallback, no curses — Windows works), and `launch` opens it in a new terminal window (tmux split when inside tmux) where a display exists. Values persist into Claude Code `settings.json` `env` blocks (user / project / project-local scope) so every existing reader keeps reading plain env vars; changes apply at the next session start and the tool says so on every write. `set` validates against the registry (enum/bool/int/float, min/max), suggests the closest name on a typo, warns when a setting's prerequisite is off, and refuses to persist `sensitive` keys (`FARM_API_KEY` stays in your shell). `doctor` audits everything currently set. Off-by-default stays a product guarantee: the tool and command never switch a feature on unbidden.
+- **Registry anti-drift CI gate** (`.github/scripts/test_config_registry.py`). Coverage (an env var referenced in shipped code but absent from the registry fails CI), no ghosts (a registry entry nothing reads fails), and defaults equality against the Python `from_env` paths and the TypeScript `numEnv`/nullish literals — the prune/farm doc tables can no longer silently disagree with the code. The site-side Forge catalog is held to the registry too (`site/test/generator/config-registry-consistency.test.ts`). The gate immediately earned its keep by surfacing `FARM_GATE_TIMEOUT_MS`, which was undocumented everywhere.
+
 ## [2.8.11] — 2026-07-02
 
 Durable sink for mechanical gate decisions, plus an audit staleness warning.
