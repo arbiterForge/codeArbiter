@@ -1,6 +1,6 @@
 ---
 name: context-check
-description: Optional manual drift audit — report stale provenance-tracked docs (via _provenancelib drift detection across .codearbiter/.provenance/), then per stale doc offer re-scout / re-baseline / defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.
+description: Optional manual drift audit, routed to by /ca:context-check — report stale provenance-tracked docs (via _provenancelib drift detection across .codearbiter/.provenance/), then per stale doc offer re-scout / re-baseline / defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.
 ---
 
 # context-check
@@ -11,7 +11,7 @@ Phase 6 auto-heal did not fire. This skill reports stale docs and lets you
 act on each one individually.
 
 This skill is NOT in the daily loop. Commit-gate auto-heal (Phase 6,
-`heal_worklist`) owns the routine maintenance path. Invoke this only when drift
+`heal_worklist`) owns the routine maintenance path. Route here only when drift
 was introduced outside a commit (e.g. a direct push, a merge you did not
 author, a manual file edit).
 
@@ -25,9 +25,7 @@ Read these before computing drift:
 2. `.codearbiter/code-map.md` — coarse concern map; read to orient on which
    modules the stale docs govern.
 
-## Flow
-
-### Step 1 — Compute drift
+## Phase 1 — Compute drift · gate: BLOCK
 
 Use `_provenancelib` helpers in this order:
 
@@ -38,13 +36,11 @@ Use `_provenancelib` helpers in this order:
 4. `compute_drift(provenance_map, current_hashes)` — returns a drift report
    `{doc: [{path, kind}]}` for docs that have stale sources.
 
-Alternatively reuse the same logic as `startup_drift_line` by calling it for
-a human-readable summary, then inspecting `compute_drift` directly for detail.
+Gate: the drift report is computed by the four calls above — no other path.
+An empty report ends the skill here: report "no stale docs — provenance is
+fresh" and exit.
 
-If the drift report is empty: report "no stale docs — provenance is fresh"
-and exit. No further action required.
-
-### Step 2 — Report stale docs
+## Phase 2 — Report stale docs · gate: BLOCK
 
 For each doc in the drift report, call `changed_scope(doc_provenance, drift)`
 to list its drifted paths. Present a concise report before offering actions:
@@ -55,7 +51,10 @@ Stale docs (N):
   ...
 ```
 
-### Step 3 — Per-doc action loop
+Gate: every stale doc is listed with its drifted paths before any action is
+offered.
+
+## Phase 3 — Per-doc action loop · gate: STOP
 
 For each stale doc, present three choices and wait for the user to select one:
 
@@ -77,6 +76,10 @@ wait for a later commit.
 
 After processing all stale docs, summarize which docs were re-scouted,
 re-baselined, or deferred.
+
+Gate: every stale doc carries a user-selected disposition (re-scout /
+re-baseline / defer) and the summary is emitted. Nothing is dispositioned
+without the user's selection.
 
 ## Hard rule
 

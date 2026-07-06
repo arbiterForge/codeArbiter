@@ -1,6 +1,6 @@
 ---
 description: Run a single command inside a running sandbox box and capture a JSON result — exitCode, separate stdout/stderr, and a truncated flag past the byte cap. The scriptable exec seam.
-argument-hint: "<sandbox id> -- <command> [args...]"
+argument-hint: <sandbox id> -- <command> [args...]
 ---
 
 # /ca-sandbox:sandbox-exec — exec a command in the box

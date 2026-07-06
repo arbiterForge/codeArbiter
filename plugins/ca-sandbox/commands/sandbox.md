@@ -1,6 +1,6 @@
 ---
 description: Pull an untrusted repo into an ephemeral, host-FS-isolated Docker container — clone into a named volume, build a dep-cached image, run under structural isolation. Network defaults to offline. Requires Docker and nixpacks.
-argument-hint: "<repo url> [--network offline|clone-then-cut|allowlist] [--with-claude] [--keep-volume]"
+argument-hint: <repo url> [--network offline|clone-then-cut|allowlist] [--with-claude] [--keep-volume]
 ---
 
 # /ca-sandbox:sandbox — create an isolated sandbox

@@ -25,6 +25,12 @@ it never merges, never PRs, and never becomes the implementation. What survives 
      `brainstorming`; the spike code is reference material, never the implementation.
    - **Timebox expired, no answer** → record that too (a dead end is a finding), delete the branch.
 
+## When NOT to use
+
+- You already know what to build → `/ca:feature`.
+- Diagnosing a defect → `/ca:debug` (investigation with a structured exit).
+- A question answerable by reading code or docs → `/ca:btw`.
+
 ## Hard gate
 
 MUST NOT merge or PR a `spike/*` branch — its only exits are a findings file and deletion. MUST NOT
@@ -32,9 +38,3 @@ copy spike code into an implementation branch wholesale; implementation re-enter
 `/ca:feature` and `tdd`. Secret-handling and irreversibility rules hold even in a spike. Commits on
 a `spike/*` branch are exempt from `commit-gate` — the exemption is safe precisely because nothing
 on the branch can ever land.
-
-## When NOT to use
-
-- You already know what to build → `/ca:feature`.
-- Diagnosing a defect → `/ca:debug` (investigation with a structured exit).
-- A question answerable by reading code or docs → `/ca:btw`.

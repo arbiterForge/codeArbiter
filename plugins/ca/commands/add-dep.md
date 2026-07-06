@@ -10,9 +10,10 @@ this command, the orchestrator runs no install until the `dependency-reviewer` a
 package. Specify the exact version if you have one; without one, the reviewer evaluates the latest
 available version.
 
-## Routes to
+## Dispatches
 
-The `dependency-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/dependency-reviewer.md`). The agent
+The `dependency-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/dependency-reviewer.md`) — the one
+command that dispatches an agent directly, with no owning skill in between. The agent
 reads `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` (allowed/denied licenses, provenance
 and supply-chain policy) and `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` (stack fit, dependency
 manager) to judge the package.
@@ -30,10 +31,6 @@ file change is committed alongside the manifest change — never one without the
 ## Hard gate
 
 MUST NOT install before `dependency-reviewer` clears the package. BLOCK on a denied license or any
-unresolved supply-chain or provenance concern.
-
-This gate is **orchestrator-enforced, not hook-enforced**: unlike the crypto/secret gate
-(`pre-bash.py` H-09b/H-10b), there is no pre-bash rule that blocks a bare `npm`/`pip`/`yarn`/`pnpm
-install` typed outside this command. The discipline depends on routing installs through `/ca:add-dep`.
-A hook-level install block (parallel to the security-gate marker) would be a stronger posture, but is a
-deliberate behavior change — a possible future enhancement, not the current contract.
+unresolved supply-chain or provenance concern — then propose a vetted alternative, or the user may
+proceed via `/ca:override "reason"` (logged). This gate is orchestrator-enforced: every install
+routes through `/ca:add-dep`, whether or not a hook would catch a bare install typed around it.

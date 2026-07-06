@@ -54,6 +54,11 @@ Heavier path (all required, in order):
 Under `/ca:sprint`, a security-critical override is a hard-gate STOP: it surfaces to the user and is
 **never** auto-decided, even in autonomous mode (`SPRINT.md` hard gates).
 
+## When NOT to use
+
+- Routine work that passes all gates — never needed.
+- Reconciling two conflicting sources → `/ca:conflict`.
+
 ## Hard gate
 
 MUST write the log line before proceeding — it is not optional. MUST capture an operator identity —
@@ -62,8 +67,3 @@ the immediate action only; it creates no standing exception. MUST NOT edit or de
 `overrides.log` entry. MUST route a security-critical / crypto-secret / irreversible stop through the
 **Security ceiling** path — never the single-confirm flow — and MUST NOT auto-decide such an override
 under `/ca:sprint`.
-
-## When NOT to use
-
-- Routine work that passes all gates — never needed.
-- Reconciling two conflicting sources → `/ca:conflict`.

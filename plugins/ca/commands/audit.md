@@ -1,6 +1,6 @@
 ---
 description: Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only.
-argument-hint: "[<from-ref> <to-ref> | --since-checkpoint | --since <date>]"
+argument-hint: [<from-ref> <to-ref> | --since-checkpoint | --since <date>]
 ---
 
 # /ca:audit — promotion packet
@@ -37,14 +37,14 @@ authorized it, and what is still open.* Read-only over every source; its only wr
    same day appends `-2`, `-3`, … — an existing packet is never overwritten). Surface the path and
    a three-line summary: commits, overrides, open items.
 
+## When NOT to use
+
+- Live project state right now → `/ca:status`.
+- Triggering reviews → `/ca:checkpoint` (this command only reports what reviews already found).
+
 ## Hard gate
 
 Read-only over every source — MUST NOT modify any log, decision, or checkpoint while assembling.
 MUST NOT overwrite an existing packet. MUST quote override and low-confidence sprint entries
 verbatim — never paraphrase an audit line. An empty section is stated as empty, never omitted —
 "no overrides in window" is itself the finding.
-
-## When NOT to use
-
-- Live project state right now → `/ca:status`.
-- Triggering reviews → `/ca:checkpoint` (this command only reports what reviews already found).

@@ -1,6 +1,6 @@
 ---
 description: Copy a file OUT of a running sandbox box to the host — host-initiated egress only (docker cp). The reverse, a host→container bind, is impossible by construction.
-argument-hint: "<sandbox id>:/work/<file> ./dest"
+argument-hint: <sandbox id>:/work/<file> ./dest
 ---
 
 # /ca-sandbox:sandbox-cp — copy a file out of the box

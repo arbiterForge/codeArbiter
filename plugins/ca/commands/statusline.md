@@ -19,11 +19,11 @@ Token and cost figures come from the session transcript: real per-model token us
 and the cost is the estimated pay-as-you-go **API-equivalent** (labelled `api≈`) — what the same
 tokens would have cost at list API rates — not a bill.
 
-## Argument
+## Arguments
 
 `$ARGUMENTS` is one of `install` (default), `uninstall`, or `status`.
 
-## Procedure
+## Flow
 
 1. Run the backing script with the requested action, passing the resolved plugin root so the absolute
    path is written correctly:

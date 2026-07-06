@@ -14,7 +14,7 @@ both the SessionStart persona injection and the arbiter statusline segments. The
 `CONTEXT.md` is a **stub** (no initialization sentinel), so after scaffolding the project still needs
 populating before normal operation.
 
-## Procedure
+## Flow
 
 1. Run the scaffolder against the repo's git toplevel (resolved by the script):
 

@@ -1,6 +1,6 @@
 ---
 description: Open an interactive shell inside a running sandbox box at /work/repo. Read-only root, non-root user, no host-FS access — explore the untrusted code interactively, then exit.
-argument-hint: "<sandbox id>"
+argument-hint: <sandbox id>
 ---
 
 # /ca-sandbox:sandbox-shell — interactive shell in the box

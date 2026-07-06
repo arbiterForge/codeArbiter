@@ -1,6 +1,6 @@
 ---
 description: The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to open-tasks.md.
-argument-hint: "add \"<desc>\" | start <id|\"title\"> | done <id|\"title\">"
+argument-hint: add "<desc>" | start <id|"title"> | done <id|"title">
 ---
 
 # /ca:task — task-board writer

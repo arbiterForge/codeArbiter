@@ -1,13 +1,13 @@
 ---
-description: Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window.
-argument-hint: "[--window N]"
+description: Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior window (default 20 commits, --window N).
+argument-hint: [--window N]
 ---
 
 # /ca:metrics — governance trend glance
 
 A bare-numbers summary of the three governance-health metrics that `_metricslib.py`
-tracks across commit windows. Each metric shows its value for the **current** 20-commit
-window and a direction arrow (↑/↓/→) relative to the immediately preceding window.
+tracks across commit windows. Each metric shows its value for the **current** window
+(default 20 commits) and a direction arrow (↑/↓/→) relative to the immediately preceding window.
 
 This is NOT a second `/ca:audit` packet. It prints numbers and arrows only — no
 verbatim override lines, no commit list, no file write. Use it to spot a trend at a
@@ -57,6 +57,11 @@ glance; reach for `/ca:audit` when you need the full evidentiary packet.
 3. **State the window.** Append one line naming the window size used, e.g.
    `Window: 20 commits (default)` or `Window: N commits (--window N)`.
 
+## When NOT to use
+
+- Full governance packet with verbatim overrides and audit trail → `/ca:audit`.
+- Live project state (active sprint, open confirms, hook health) → `/ca:status`.
+
 ## Hard gate
 
 - Read-only. MUST NOT write, create, or modify any file. MUST NOT stage or commit.
@@ -69,8 +74,3 @@ glance; reach for `/ca:audit` when you need the full evidentiary packet.
   values as-is rather than blocking.
 - If the helper subprocess fails entirely (import error, Python not found), report
   the error and stop — do not fabricate metric values.
-
-## When NOT to use
-
-- Full governance packet with verbatim overrides and audit trail → `/ca:audit`.
-- Live project state (active sprint, open confirms, hook health) → `/ca:status`.

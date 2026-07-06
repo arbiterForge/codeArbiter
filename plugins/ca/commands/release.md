@@ -1,6 +1,6 @@
 ---
 description: Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. The only path to a version tag.
-argument-hint: ["<version>"] | --auto | --dry-run
+argument-hint: [<version>] | --auto | --dry-run
 ---
 
 # /ca:release — tagged release

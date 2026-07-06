@@ -22,7 +22,11 @@ Read these, or STOP and surface the gap — never guess a command or a path:
 
 This lane is expensive. Orient and get explicit go-ahead before dispatching anything.
 
-- **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. If found, check completion: incomplete (no `report-written` event in its `run.jsonl`) means either resumable or stale, judged by that run dir's latest `run.jsonl` timestamp. A run whose `run.jsonl` carries `run-aborted` is terminal — never offered for resume; a fresh run starts. Younger than 7 days → recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting; skip the estimate. Older than 7 days → STOP and ask the user to resume anyway or start fresh — the codebase may have drifted under the findings, and stale-tree findings must not silently merge with fresh ones. Complete → start a fresh run.
+- **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. Otherwise decide by the run dir's `run.jsonl`, in this order:
+  1. Carries `run-aborted` → terminal. Never offer resume; start a fresh run.
+  2. Carries `report-written` → complete. Start a fresh run.
+  3. Incomplete, latest timestamp **younger than 7 days** → recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting; skip the estimate.
+  4. Incomplete, **older than 7 days** → STOP and ask: resume anyway, or start fresh. The codebase may have drifted under the findings; stale-tree findings must not silently merge with fresh ones.
 - **Abandon.** If the user tells the orchestrator to abandon the run, log a `run-aborted` event to `run.jsonl` before stopping.
 - **Cost acknowledgment.** Size the job, compute the token band, recommend the model (highest-reasoning available, high effort), and offer the cost-control levers. Present the band plainly; nothing dispatches until the user acknowledges it and confirms the model.
 - Establish `RUN_ID` = `<UTC-date>-<scope-slug>` on a fresh run; create `.codearbiter/reports/<run-id>/`; open `run.jsonl`. On resume, reuse the existing `RUN_ID` as-is — the date is the run's creation date and never changes on resume.

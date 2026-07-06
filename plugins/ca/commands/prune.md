@@ -12,7 +12,7 @@ line type (including unknown future types), and the K most recent tool-bearing t
 Gains land at **`claude --resume` / restart** and the next compaction — not the current turn, because
 the running CLI sends its in-memory history to the API, not the file.
 
-## Argument
+## Arguments
 
 `$ARGUMENTS` is one of:
 

@@ -26,13 +26,13 @@ Suspends orchestration for working ON codeArbiter — skill, agent, command, and
 4. **Mode** — plain, direct coding assistant: no routing, no skills, no gates, no `[CONFIRM-NN]`
    surfacing, no redirect. Persists until `/ca:arbiter` or a new session.
 
+## When NOT to use
+
+- Bypassing a single gate on project work → `/ca:override "reason"`.
+- Asking a question → `/ca:btw`.
+
 ## Hard gate
 
 MUST refuse without `CODEARBITER_DEV=1`. MUST write the `DEV: enter` log line before suspending
 orchestration. Even in dev mode, `overrides.log` is never rewritten — the append-only rule has no
 dev exception.
-
-## When NOT to use
-
-- Bypassing a single gate on project work → `/ca:override "reason"`.
-- Asking a question → `/ca:btw`.

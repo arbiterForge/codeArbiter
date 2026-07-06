@@ -43,15 +43,15 @@ the other).
 3. Exit through `commit-gate` with the matching classification, then
    `finishing-a-development-branch` as usual.
 
+## When NOT to use
+
+- Any new or changed behavior → `/ca:feature` / `/ca:fix`.
+- Adding a NEW dependency → `/ca:add-dep`.
+- Restructuring code → `/ca:refactor`.
+
 ## Hard gate
 
 MUST reject a change containing behavioral code (beyond the revert itself) — that is `/ca:feature`
 or `/ca:fix` territory. MUST keep manifest and lockfile changes in the same commit for `deps`.
 MUST run the full suite for `deps` and `revert`. MUST run the anti-slop copy pass on any user-facing
 doc a `docs` change authors or edits. Never skips `commit-gate`.
-
-## When NOT to use
-
-- Any new or changed behavior → `/ca:feature` / `/ca:fix`.
-- Adding a NEW dependency → `/ca:add-dep`.
-- Restructuring code → `/ca:refactor`.

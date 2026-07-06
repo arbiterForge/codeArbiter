@@ -1,6 +1,6 @@
 ---
 description: Review the current diff with the reviewer fleet, funneled to one triaged verdict.
-argument-hint: "[path]" (defaults to the current diff)
+argument-hint: [path]
 ---
 
 # /ca:review — diff review
@@ -34,15 +34,15 @@ Read-only review of the current change. Routes to `dispatching-parallel-agents`:
 - **MEDIUM** — standards deviation or coverage gap.
 - **LOW** — informational or style.
 
-## Hard gate
-
-Read-only — MUST NOT modify a file. BLOCK on any CRITICAL or HIGH finding: it must be resolved before
-`/ca:pr`. MUST NOT consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator`
-verdict. MUST NOT resolve a `[CONFIRM-NN]` surfaced during review by guessing.
-
 ## When NOT to use
 
 - Opening a PR (reviews dispatch automatically) → `/ca:pr`.
 - A periodic full-codebase sweep → `/ca:checkpoint`.
 - A pre-implementation threat model → `/ca:threat-model`.
 - A question about the code → `/ca:btw`.
+
+## Hard gate
+
+Read-only — MUST NOT modify a file. BLOCK on any CRITICAL or HIGH finding: it must be resolved before
+`/ca:pr`. MUST NOT consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator`
+verdict. MUST NOT resolve a `[CONFIRM-NN]` surfaced during review by guessing.

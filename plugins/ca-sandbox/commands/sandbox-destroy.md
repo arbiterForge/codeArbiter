@@ -1,6 +1,6 @@
 ---
 description: Tear down a sandbox box — remove its container and named volume. --keep-volume leaves the volume; with no id, prune reclaims any leaked ca.sandbox=1-labeled object. Cached images are retained.
-argument-hint: "[<sandbox id>] [--keep-volume] [--prune]"
+argument-hint: [<sandbox id>] [--keep-volume] [--prune]
 ---
 
 # /ca-sandbox:sandbox-destroy — tear the box down

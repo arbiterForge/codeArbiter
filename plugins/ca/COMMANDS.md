@@ -23,13 +23,13 @@ ONLY when that command is invoked — never bulk-read the directory.
 
 | Command | Argument | Purpose |
 |---|---|---|
-| `/ca:commit` | _(none)_ | The only path to a commit; routes to `commit-gate` (nine gates). |
-| `/ca:pr` | `["title"]` | Finish a branch: open-PR / merge-via-PR / discard. No direct-to-default. |
+| `/ca:commit` | _(none)_ | The only path to a commit; routes to `commit-gate` (ten gates). |
+| `/ca:pr` | _(none)_ | Finish a branch: open-PR / merge-via-PR / discard. No direct-to-default. |
 | `/ca:watch` | `<PR number\|url\|branch>` | Babysit a PR's CI server-side: diagnose on red, notify + offer the merge on green. Never auto-merges. Auto-attaches from `/ca:pr` when `CODEARBITER_BABYSIT` is on. |
 | `/ca:review` | `[path or scope]` | Dispatch the reviewer fleet over the diff; BLOCK on CRITICAL/HIGH. |
 | `/ca:checkpoint` | `[focus]` | Lean periodic reviewer sweep; surfaces a triaged report. |
 | `/ca:tribunal` | `[scope-path] [--tag <label>]` | Deep, rarely-run whole-codebase audit across eleven specialist lenses; one file per finding plus append-only run/triage logs, resumable from disk; files GitHub issues on approval. Never a required gate. |
-| `/ca:release` | `[--dry-run]` | Lean SemVer release: bump-from-commits + changelog + annotated tag. |
+| `/ca:release` | `[<version>] \| --auto \| --dry-run` | Lean SemVer release: bump-from-commits + changelog + annotated tag. |
 | `/ca:add-dep` | `"package"` | Vet a dependency (license, provenance, supply chain) before install. |
 
 ## Decisions
@@ -39,7 +39,7 @@ ONLY when that command is invoked — never bulk-read the directory.
 | `/ca:adr` | `"title"` | Author a numbered, user-attributed ADR. |
 | `/ca:adr-status` | `[--adr N]` | List/inspect ADR status and supersede chains. |
 | `/ca:reconcile` | `["scope"]` | Reconcile artifacts vs. scaffold; arbitrate via SMARTS, user-attributed. |
-| `/ca:conflict` | `"description"` | Stop all work and surface a rule conflict. |
+| `/ca:conflict` | `["description"]` | Stop all work and surface a rule conflict. |
 | `/ca:threat-model` | `"scope"` | Optional lightweight STRIDE pass for a sensitive feature. |
 
 Which one? `/ca:conflict` when two *rules* contradict (persona vs. docs vs. code) and work cannot
@@ -56,7 +56,7 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `/ca:status` | _(none)_ | Show maturity, open tasks, unresolved `CONFIRM-NN`, overrides since checkpoint. |
 | `/ca:task` | `add "<desc>" \| start <id\|"title"> \| done <id\|"title">` | The sanctioned task-board writer: add a queued task, start one (flips to in-progress + stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to `open-tasks.md`. |
 | `/ca:audit` | `[range]` | Assemble the governance packet for a window — commits, overrides, ADRs, sprint decisions, open items — into `.codearbiter/audits/`. Read-only. |
-| `/ca:metrics` | `[--window N]` | Read-only governance trend glance: override rate, small-lane rate, sprint low-confidence ratio, each with a direction arrow vs. the prior 20-commit window. Not a second `/ca:audit` packet. |
+| `/ca:metrics` | `[--window N]` | Read-only governance trend glance: override rate, small-lane rate, sprint low-confidence ratio, each with a direction arrow vs. the prior window (default 20 commits). Not a second `/ca:audit` packet. |
 | `/ca:statusline` | `install \| uninstall \| status` | Install/wire the codeArbiter statusline, remove it, or report its state. |
 | `/ca:prune` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Trim transcript clutter to extend session lifetime. Dry-run by default; gains land on resume/compaction, not the live turn. |
 | `/ca:doctor` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, live-fire hook probe. |

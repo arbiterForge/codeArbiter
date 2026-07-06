@@ -23,4 +23,5 @@ is canonical for its phases, gates, and output format.
 ## Hard gate
 
 MUST NOT commit without `commit-gate` clearing. MUST NOT commit if the project test suite is not
-green.
+green. The sole exception is a `spike/*` branch (via `/ca:spike`), which can never merge or PR —
+per ORCHESTRATOR.md §3.

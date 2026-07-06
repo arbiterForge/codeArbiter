@@ -34,16 +34,16 @@ Periodic sweep of the entire codebase with the reviewer fleet, funneled to a sin
    to showing every override.
 5. Report the checkpoint path.
 
-## Hard gate
-
-Read-only except writing the checkpoint doc and `last-checkpoint` — MUST NOT modify code. MUST NOT
-consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator` verdict. MUST NOT
-resolve a `[CONFIRM-NN]` surfaced during the sweep by guessing. The report surfaces findings; it does
-not block or sign off anything.
-
 ## When NOT to use
 
 - Reviewing just the current diff → `/ca:review`.
 - A pre-implementation threat model → `/ca:threat-model`.
 - ADR health only → `/ca:adr-status`.
 - A whole-codebase deep audit → `/ca:tribunal` (checkpoint is the lean periodic sweep; tribunal its rare deep counterpart).
+
+## Hard gate
+
+Read-only except writing the checkpoint doc and `last-checkpoint` — MUST NOT modify code. MUST NOT
+consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator` verdict. MUST NOT
+resolve a `[CONFIRM-NN]` surfaced during the sweep by guessing. The report surfaces findings; it does
+not block or sign off anything.
