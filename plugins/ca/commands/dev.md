@@ -14,13 +14,9 @@ Suspends orchestration for working ON codeArbiter — skill, agent, command, and
 1. **Env gate** — check the `CODEARBITER_DEV` environment variable. Not set to `1` → refuse in one
    line ("dev mode requires CODEARBITER_DEV=1") and remain in orchestration. This keeps the mode a
    deliberate maintainer posture, not a casual bypass.
-2. **Log entry** — detect identity from `git config user.email`; append to
-   `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log` (append-only, `>>`):
-
-   ```
-   [ISO-8601 timestamp] | BY: <email> | DEV: enter | NOTE: <note or —>
-   ```
-
+2. **Log entry** — append the **Dev-mode entry** line to
+   `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`, exactly per
+   `${CLAUDE_PLUGIN_ROOT}/includes/audit-log-format.md` (the one schema; append-only).
 3. **Marker** — drop `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/dev-active` (gitignored UI flag);
    the statusline turns alarm-red so dev mode is unmistakable.
 4. **Mode** — plain, direct coding assistant: no routing, no skills, no gates, no `[CONFIRM-NN]`

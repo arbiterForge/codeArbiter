@@ -20,7 +20,7 @@ Read these, or STOP and surface the gap — never guess a command or a path:
 
 ## Phase 0 — Cost, model & resume · gate: STOP
 
-This lane is expensive. Orient and get explicit go-ahead before dispatching anything.
+Orient and get explicit go-ahead before dispatching anything.
 
 - **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. Otherwise decide by the run dir's `run.jsonl`, in this order:
   1. Carries `run-aborted` → terminal. Never offer resume; start a fresh run.
@@ -100,7 +100,7 @@ Gate: the payload is shown, and it is either handed to the user as a command or 
 
 - MUST NOT proceed past Phase 0 without the user acknowledging the estimated token cost — this lane can cost millions of tokens.
 - MUST NOT edit, refactor, format, or commit project code — writes are confined to `.codearbiter/reports/<run-id>/` until the filing gate.
-- MUST NOT act as a required gate or block a merge, commit, or other workflow — critical/high are blocking-severity findings, not a pipeline halt.
+- MUST NOT act as a required gate or block a merge, commit, or other workflow.
 - MUST NOT record a finding without a concrete `path:line` and a minimal evidence snippet.
 - MUST NOT assert an absence without reading the whole relevant unit — partial-window absence claims do not pass.
 - MUST NOT let a lens's provisional severity/confidence stand as final — calibrate at triage; every critical/high carries a `counter_argument`.

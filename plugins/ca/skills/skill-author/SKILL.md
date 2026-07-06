@@ -62,14 +62,11 @@ Authoring rules:
 
 ## Phase 4 — Self-review · gate: BLOCK
 
-Re-read the authored skill against the v2 quality bar. Each line below is a checkable defect, not a vibe:
+Re-read the authored skill against the v2 quality bar: verify each Phase 3 rule holds — the required shape line by line (frontmatter, H1 matching `name`, Pre-flight, numbered `· gate:` phases each ending in a `Gate:` line, Hard rules) and every authoring rule (concrete checkable gates, terse imperative prose, surviving docs only, terminology lock, `[NEEDS-TRIAGE]` handling). Each is a checkable defect, not a vibe. Additionally check:
 
-- **Single responsibility** — the skill owns one thing. If a phase belongs to a different job, it is the wrong skill; cut it.
-- **Concrete gates** — every non-declarative phase ends in a `Gate:` line stating a checkable condition. "Looks good" / "seems right" is not a gate; rewrite it.
-- **House-style prose** — terse, imperative, matches `commit-gate`/`tdd`. Strip hedging and filler.
+- **Single responsibility** — the skill owns the one thing agreed in Phase 2. If a phase belongs to a different job, it is the wrong skill; cut it.
 - **No duplicated rules** — a rule stated in a phase is not restated in Hard rules, and Hard rules carry no duplicates. State each rule once.
-- **Format conformance** — frontmatter is `name`+`description` only; H1 matches `name`; phases are numbered with `· gate:`; paths use `${CLAUDE_PLUGIN_ROOT}` / `${CLAUDE_PROJECT_DIR}` correctly; no cut docs/skills, no legacy `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}`/`.agents/` paths.
-- **No trigger language** — "routed to" / "dispatched" only, and no `## Trigger` disclaimer block.
+- **Path hygiene** — `${CLAUDE_PLUGIN_ROOT}` / `${CLAUDE_PROJECT_DIR}` used correctly; no legacy `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}`/`.agents/` paths.
 
 Compile the findings, fix each, and re-read once. Present the corrected skill and the findings list to the user.
 

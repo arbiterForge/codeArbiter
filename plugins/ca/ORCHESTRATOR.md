@@ -142,6 +142,7 @@ command.
 `/override "reason"` is the sanctioned, **logged** bypass. Detect the operator identity from
 `git config user.email` (no platform ladder); if it is unset, ask the user once to state their
 identity for the log rather than recording an empty `BY:` field — the audit trail's integrity depends
-on a real attribution. Append one line to `.codearbiter/overrides.log` (append-only, committed as a
-permanent audit artifact), then proceed and note that the override is logged. That log is the audit
+on a real attribution. Append one line to `.codearbiter/overrides.log` — exact shape per
+`${CLAUDE_PLUGIN_ROOT}/includes/audit-log-format.md` (append-only, committed as a permanent audit
+artifact) — then proceed and note that the override is logged. That log is the audit
 trail; the statusline surfaces overrides since the last checkpoint.

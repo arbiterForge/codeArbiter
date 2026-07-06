@@ -38,13 +38,10 @@ an action that has no candidates; never bundle confirmations.
    (since the last `ca`-scoped tag, or a rolling 30-day window when no tag exists)
    and pipe that text to
    `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/boardsync.py" reconcile || python "${CLAUDE_PLUGIN_ROOT}/hooks/boardsync.py" reconcile`.
-   Display the advisory drift report as-is: DRIFTED tasks (work merged but board
-   state not `[x]`) and informational UNKNOWN ids (in the log but absent from the
-   board). This step is read-only and best-effort — the dotted-id grep can miss a
-   task never named in a commit. The board is never mutated here; `open-tasks.md`
-   is never written. Any drifted task must be resolved explicitly through
-   `/ca:task done <id>` — the only blessed board writer. State this clearly to the
-   user; do not auto-flip.
+   Display its advisory drift report as-is. Read-only and best-effort — the board
+   is never mutated here; a drifted task is resolved explicitly through
+   `/ca:task done <id>`, the only blessed board writer. State this to the user;
+   do not auto-flip.
 
 Present a one-line summary of what was done and what was declined.
 

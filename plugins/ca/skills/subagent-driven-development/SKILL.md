@@ -5,9 +5,8 @@ description: The implementation engine. Routed to by /sprint (full plan, autonom
 
 # subagent-driven-development
 
-One task, one fresh subagent, two reviews, proof on a fresh run. Routed to by `/sprint` (full plan,
-autonomous) and by `executing-plans` (one batch at a time, with human checkpoints between batches).
-The loop processes tasks in dependency order and never trusts a self-report.
+Routed to by `/sprint` (full plan, autonomous) and by `executing-plans` (one batch at a time, with
+human checkpoints between batches). The loop processes tasks in dependency order.
 
 ## Pre-flight
 
@@ -37,16 +36,11 @@ Gate: exactly one task selected, dependency-clean, with its spec obligation and 
 ## Phase 2 — Implementation dispatch · gate: BLOCK
 
 **Farm path (when `<slug>.plan.json` exists alongside the `.md` plan):** skip the subagent dispatch
-loop below and follow `${CLAUDE_PLUGIN_ROOT}/skills/subagent-driven-development/references/farm-dispatch.md`.
-The farm path replaces only the *authoring* step for the plan's tasks (cheap Zen workers under hard
-gates instead of premium subagents); it does **not** replace review — every task the farm reports green
-is still routed through Phases 3–5 before acceptance. The cost arbitrage is in who *writes* the code,
-never in whether it is *reviewed*. In brief: select a model (canary-probe with a cache→websearch
-fallback ladder), dispatch `tools/farm.js`, honor a circuit-breaker abort as a hard-gate STOP, then for
-each result either accept-after-Phases-3–5 (green) or re-dispatch via premium Phase 2 (escalate).
-Results stream to `.farm/farm-results.jsonl` and are consumed in completion order — Phase 3 + Phase 4
-per green task as it lands, Phase 5 still the once-per-scope barrier (reconcile against `farm-report.json`
-on abort). The reference has the full step-by-step.
+loop below and follow `${CLAUDE_PLUGIN_ROOT}/skills/subagent-driven-development/references/farm-dispatch.md`
+— it is the full step-by-step. Two invariants hold regardless: the farm replaces only the *authoring*
+step for the plan's tasks (cheap Zen workers under hard gates instead of premium subagents), never
+review — every task the farm reports green is still routed through Phases 3–5 before acceptance; and a
+circuit-breaker abort is a hard-gate STOP.
 
 ---
 
@@ -101,8 +95,7 @@ reviewers by the diff, not blanket — dispatching an irrelevant reviewer wastes
 - `dependency-reviewer` (`${CLAUDE_PLUGIN_ROOT}/agents/dependency-reviewer.md`) — `package.json` / lockfile / base-image changes.
 - `migration-reviewer` (`${CLAUDE_PLUGIN_ROOT}/agents/migration-reviewer.md`) — DB migration add/modify.
 
-(Do NOT dispatch `grader` or `scout` — they are INTERNAL to `decision-variance` and must never be
-dispatched here.) If the change touches none of the above domains, the quality bar is `tdd`'s own gates
+(Never `grader` or `scout` — internal to `decision-variance`.) If the change touches none of the above domains, the quality bar is `tdd`'s own gates
 plus `coverage-auditor` (already run in `tdd` Phase 4) — record that and proceed.
 
 - A security CRITICAL finding halts the loop — see Hard rules.
@@ -133,12 +126,10 @@ Gate: every task in the current scope `ACCEPTED`, the suite green, ready for the
 ## Hard rules
 
 - MUST dispatch a fresh subagent per task — never reuse one context across tasks.
-- MUST NOT write implementation code before the task's `tdd` Phase 1 completes.
-- MUST accept a task only when both reviews pass AND verification passes on a fresh run.
+- MUST NOT mark a task `ACCEPTED` before it clears Phases 3–5 (Phase 6 gate).
 - MUST NOT accept a task on a subagent's self-report — run the verification command and read its exit code.
 - MUST halt and surface to the user on a `tdd` BLOCK, a security CRITICAL finding, or an unresolved `[CONFIRM-NN]` inside the loop — and on a `commit-gate` failure at the finish handoff — even under `/sprint`. These never auto-proceed.
 - MUST NOT commit — hand the accepted branch to `commit-gate`.
-- MUST mark out-of-scope findings with an inline `[NEEDS-TRIAGE]` marker and never act on them inside the task.
 - MUST NOT invoke `farm.js` before writing `meta.model` into `plan.json` (or setting `FARM_MODEL`) — the dispatcher fails loudly otherwise.
 - MUST NOT skip model selection (Step 1) when `FARM_MODEL` is not set — exhaust the canary→cache→websearch fallback ladder before BLOCKing; never blind-invoke with an unknown model id.
 - MUST route every green farm task through Phases 3–5 before acceptance — the farm replaces authoring, never review. A cheap model gets the same scrutiny as a premium subagent, not less.

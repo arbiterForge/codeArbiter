@@ -65,7 +65,7 @@ Gate: Phase 3 does not begin until either (a) the draft directory exists with `_
 
 ## Phase 3 — Layered interview · gate: BLOCK
 
-Run the six layers in strict sequence. Never skip a layer. Never advance until the current layer is solid — no open "later" items unless recorded as `[CONFIRM-NN]`, no unchallenged vague language, no forced trade-off left unresolved.
+Run the six layers in strict sequence. Never skip a layer. Never advance until the current layer is solid — no unchallenged vague language, no forced trade-off left unresolved.
 
 **Per-layer disk write (compaction contract):** when a layer's "advance when" checklist is satisfied, BEFORE the first question of the next layer, write the completed layer's full Q/A record to disk:
 
@@ -78,17 +78,15 @@ Run the six layers in strict sequence. Never skip a layer. Never advance until t
 | 5 — Integrations & Infrastructure | `.decompose-draft/layer-5-integrations.md` |
 | 6 — Risks & Unknowns | `.decompose-draft/layer-6-risks.md` |
 
-(All under `${CLAUDE_PROJECT_DIR}/.codearbiter/`.) Each file holds every question asked, the user's verbatim answer (or a faithful paraphrase), every challenge made under the three lenses, every `[CONFIRM-NN]` raised, and every DRAFT-ADR title generated. These files are the authoritative record — Phases 4 and 5 read from them, not from conversation context. The next layer does not begin until the prior layer's file exists on disk and is non-empty; if a write fails, surface the error and do not advance.
-
-**Layer 4 immediate ADR drafts:** each forced architectural choice in Layer 4 is written at the moment it is made as `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/NNNN-<slug>.md`, numbered sequentially across the existing `decisions/` directory. Do not batch the writes. Author each using the canonical ADR template — `${CLAUDE_PLUGIN_ROOT}/skills/decision-lifecycle/references/adr-template.md` (the single source of truth, shared with `decision-lifecycle`) — with frontmatter `status: draft` and `decided-by:` set to the user (or "user" if anonymous). Fill `## Context`, `## Decision`, and `## Consequences` from the forced choice; leave `## Alternatives considered` and `## Risks` populated where the interview surfaced them, or as `<none recorded>`. Phase 5 promotes each to `status: accepted`.
+(All under `${CLAUDE_PROJECT_DIR}/.codearbiter/`.) Each file holds every question asked, the user's verbatim answer (or a faithful paraphrase), every challenge made under the three lenses, every `[CONFIRM-NN]` raised, and every DRAFT-ADR title generated. These files are the authoritative record (compaction contract, Phase 2). The next layer does not begin until the prior layer's file exists on disk and is non-empty; if a write fails, surface the error and do not advance.
 
 **Layer 1 — Vision & Problem.** Unlock: the specific problem and the evidence it is real (not assumed); the primary user and any conflicting user types (name and resolve the conflict, or flag it); the demo-to-a-skeptic definition of "working"; what this project explicitly is NOT building. Advance when: problem concrete, primary user named, "working" demonstrable, NOT-building list explicit.
 
 **Layer 2 — Users & Flows.** Unlock: the core user journey from first touch to value delivered, in specific steps; every non-human actor at MVP (scheduled jobs, webhooks, callbacks, external triggers); failure-mode UX (concrete, not "we'll show an error"); admin/ops/internal privilege model. Advance when: end-to-end journey specific, non-human actors named, failure UX defined, privilege model sketched.
 
-**Layer 3 — Functional Scope.** Unlock: every capability, challenged individually — what it does (concrete verbs), who initiates it, inputs and outputs; each capability classified MVP / v1 / later; the hardest user-facing problem (the one that invalidates the product if wrong); every "later" forced to closure or recorded as `[CONFIRM-NN]`. Advance when: capability list complete and every item classified; no unresolved "later" except as `[CONFIRM-NN]`.
+**Layer 3 — Functional Scope.** Unlock: every capability, challenged individually — what it does (concrete verbs), who initiates it, inputs and outputs; each capability classified MVP / v1 / later; the hardest user-facing problem (the one that invalidates the product if wrong). Advance when: capability list complete and every item classified.
 
-**Layer 4 — Technical Shape.** Unlock: components and ownership (what each owns, where the boundaries are); core data entities, relationships, cardinality; where state lives and how it changes (write paths); the hardest technical problem; hard constraints (stack, runtime, cloud, compliance, budget, team size and skill); the copyright holder for new-file headers (record in `coding-standards.md`; if undecided, record as `[CONFIRM-NN]`); a forced trade-off for every major architectural decision (e.g. monolith vs. services, sync vs. async). Each forced choice is written immediately as a `status: draft` ADR per the rule above. Advance when: all components named, all entities sketched, all hard constraints recorded, every major trade-off resolved or deferred as `[CONFIRM-NN]`, AND `layer-4-tech-shape.md` is on disk with one DRAFT ADR per forced choice.
+**Layer 4 — Technical Shape.** Unlock: components and ownership (what each owns, where the boundaries are); core data entities, relationships, cardinality; where state lives and how it changes (write paths); the hardest technical problem; hard constraints (stack, runtime, cloud, compliance, budget, team size and skill); the copyright holder for new-file headers (record in `coding-standards.md`; if undecided, record as `[CONFIRM-NN]`); a forced trade-off for every major architectural decision (e.g. monolith vs. services, sync vs. async). Each forced choice is written at the moment it is made — never batched — as `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/NNNN-<slug>.md`, numbered sequentially across the existing `decisions/` directory, using the canonical ADR template `${CLAUDE_PLUGIN_ROOT}/skills/decision-lifecycle/references/adr-template.md` (the single source of truth, shared with `decision-lifecycle`), with frontmatter `status: draft` and `decided-by:` set to the user (or "user" if anonymous); fill `## Context`, `## Decision`, and `## Consequences` from the forced choice, and leave `## Alternatives considered` and `## Risks` populated where the interview surfaced them, or as `<none recorded>`. Advance when: all components named, all entities sketched, all hard constraints recorded, every major trade-off resolved or deferred as `[CONFIRM-NN]`, AND `layer-4-tech-shape.md` is on disk with one DRAFT ADR per forced choice.
 
 **Layer 5 — Integrations & Infrastructure.** Unlock: every external dependency (APIs, services, data sources, auth providers, payment processors, notification services), each named; commodity vs. differentiator for each; actual API contracts, data formats, and auth mechanisms for any system being integrated with; integration risks per dependency (rate limits, reliability and fallback, data ownership and portability, cost at scale). Advance when: all dependencies named, commodity/differentiator classified, integration risks surfaced for each.
 
@@ -98,7 +96,7 @@ Gate: all six layers complete (no open "later" except as `[CONFIRM-NN]`); all si
 
 ## Phase 4 — Synthesis · gate: BLOCK
 
-Begin by re-reading every `layer-*-*.md` and every `status: draft` ADR from disk. Do NOT rely on conversation context — by now an auto-compaction may have erased the original Q/A. The on-disk drafts are authoritative; this re-read makes the phase idempotent across compaction. If any expected layer file is missing, BLOCK and surface the gap rather than synthesizing from incomplete context.
+Begin by re-reading every `layer-*-*.md` and every `status: draft` ADR from disk, not from conversation context (compaction contract, Phase 2). If any expected layer file is missing, BLOCK and surface the gap rather than synthesizing from incomplete context.
 
 Produce three artifacts and write each to disk under `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/` BEFORE asking for review (the user reviews from disk, which survives a session restart):
 
@@ -116,7 +114,7 @@ Gate: all three artifact files on disk AND the user explicitly approves all thre
 
 ## Phase 5 — project-state population · gate: BLOCK
 
-Re-read every input from disk — the three approved artifacts, all six `layer-*-*.md` files, and every `status: draft` ADR. This makes population idempotent across compaction: a user may approve Phase 4, suffer a compaction, re-invoke `/decompose` (Phase 2 enters Resume, Phase 4 sees its artifacts already approved on disk), and Phase 5 proceeds from disk.
+Re-read every input from disk — the three approved artifacts, all six `layer-*-*.md` files, and every `status: draft` ADR (compaction contract, Phase 2).
 
 Promote each `status: draft` ADR to `status: accepted` — an in-place edit of the frontmatter `status:` line (and its `## Status` body mirror) only; do not duplicate or rewrite the ADR body.
 

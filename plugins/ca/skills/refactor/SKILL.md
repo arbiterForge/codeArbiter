@@ -41,13 +41,13 @@ Every public method in the surface table MUST have at least one direct test — 
 
 If surface coverage is below the maturity threshold, OR any public method has zero direct tests, halt and route to the `tdd` skill Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
 
-Gate: surface coverage at or above the maturity threshold AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
+Gate: surface coverage at or above the maturity threshold AND every public method backed by a direct test.
 
 ## Phase 3 — Red parity tests (conditional) · gate: BLOCK
 
 Pin any new test seam the refactor exposes before implementation. A new seam is one of: a newly exported symbol that did not exist; a new public method signature on an existing class; a previously private function promoted to module-public.
 
-If the refactor exposes no new seam, record "No new seams" and skip to Phase 4. Otherwise, for each seam write one or more tests that pin its contract. These tests MUST be red before implementation, and every pre-existing test MUST stay green. A seam test is scoped strictly to the restructure — it MUST NOT require behavior beyond what the original code already produced. A seam test that needs new behavior to pass means the work is a feature: route it to `tdd` and abort.
+If the refactor exposes no new seam, record "No new seams" and skip to Phase 4. Otherwise, for each seam write one or more tests that pin its contract. These tests MUST be red before implementation, and every pre-existing test MUST stay green. A seam test is scoped strictly to the restructure — one that requires behavior beyond what the original code already produced is feature work: route it to `tdd` and abort.
 
 Gate: either "No new seams", or failing seam tests with all pre-existing tests still green. BLOCK if a proposed seam test requires new behavior, or if any pre-existing test breaks as a side effect of writing the seam tests.
 
@@ -55,19 +55,19 @@ Gate: either "No new seams", or failing seam tests with all pre-existing tests s
 
 Apply the restructure with zero behavior change, to the conventions in `coding-standards.md`. Confine every edit to the surface table. Acceptable edits: rename symbols (with consumer updates); extract or inline functions and methods; move symbols between files; replace an internal implementation with an equivalent one; collapse or split modules where the public interface is preserved.
 
-Unacceptable inside a refactor: adding a behavior, branch, error path, or side effect; changing the value any public method returns for any pre-existing input; adding a public method beyond a Phase 3 seam; changing observable order of operations (event emission, logging, IO). Classify the resulting staged diff against `commit-gate` classification criteria — a diff that classifies as `feat` is not a refactor; halt and route to `tdd`.
+Unacceptable inside a refactor: adding a behavior, branch, error path, or side effect; changing the value any public method returns for any pre-existing input; adding a public method beyond a Phase 3 seam; changing observable order of operations (event emission, logging, IO). Classify the resulting staged diff against `commit-gate` classification criteria.
 
-Gate: the refactor confined to the surface table, with any Phase 3 seam tests now green. BLOCK if the diff classifies as `feat`, or if any edit falls outside the Phase 1 surface table without an explicit user-approved amendment.
+Gate: the refactor confined to the surface table, with any Phase 3 seam tests now green. BLOCK if the diff classifies as `feat` — that is not a refactor; halt and route to `tdd` — or if any edit falls outside the Phase 1 surface table without an explicit user-approved amendment.
 
 ## Phase 5 — Parity verification · gate: BLOCK
 
 Run the full project test suite from `tech-stack.md`. Every pre-existing test from Phase 2 MUST pass with NO modification to its source — inspect the diff and confirm zero edits to any pre-existing test file. A modified pre-existing test is, by definition, evidence the surface's observable behavior changed: revert it. If it cannot pass after revert, the refactor introduced a behavior change and is routed to `tdd` as a feature or fix. Phase 3 seam tests (if any) MUST pass. Record the pass/fail tally and any modified-test detection.
 
-Gate: full suite green with zero pre-existing tests modified. BLOCK if any pre-existing test was modified to pass, or if any test fails.
+Gate: full suite green with zero pre-existing tests modified.
 
 ## Phase 6 — Lint and coverage · gate: BLOCK
 
-Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold — a refactor MUST NOT reduce coverage of the surface it touched.
+Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold.
 
 Gate: clean lint and type-check, zero errors, and no coverage regression on the named surface. "Mostly passes" is not passing — this is what clears the path to `commit-gate`.
 

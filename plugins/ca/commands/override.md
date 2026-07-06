@@ -14,13 +14,9 @@ logged, always visible, never silent. Single identity, single confirm.
    vague reason ("just skip it") and ask for a specific one.
 2. Detect the operator identity from `git config user.email` only. If it is unset, ask the user once
    to state their identity for the log. (No platform ladder, no second confirmation.)
-3. Append one line to `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`:
-
-   ```
-   [ISO-8601 timestamp] | BY: <email> | GATE: <gate bypassed> | REASON: <reason>
-   ```
-
-   The log is append-only — never edited or deleted, committed as a permanent audit artifact.
+3. Append one **Override** line to `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`, exactly per
+   `${CLAUDE_PLUGIN_ROOT}/includes/audit-log-format.md` (the one schema; append-only, committed as a
+   permanent audit artifact).
 4. Proceed with the overridden action. Note in the response that the override is logged.
 
 ## Security ceiling — heavier path for security-critical stops
@@ -39,12 +35,9 @@ Heavier path (all required, in order):
 2. **Explicit per-finding acknowledgement** — the user must acknowledge *that specific finding* in
    their own words (a bare "yes"/"go ahead"/"I trust you" is declined — this mirrors `decision-variance`).
    Detect identity from `git config user.email`; if unset, ask once.
-3. **Heavier log entry** — append a line tagged `SECURITY-OVERRIDE` that records the specific finding,
-   not just the gate name:
-
-   ```
-   [ISO-8601] | BY: <email> | SECURITY-OVERRIDE | FINDING: <specific finding> | REASON: <reason>
-   ```
+3. **Heavier log entry** — append the **Security override** line (tagged `SECURITY-OVERRIDE`,
+   recording the specific finding, not just the gate name), exactly per
+   `${CLAUDE_PLUGIN_ROOT}/includes/audit-log-format.md`.
 4. **Only then** record the bypass. For the crypto/secret commit gate, that means running
    `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py"`,
    which writes `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/security-gate-passed` bound to the

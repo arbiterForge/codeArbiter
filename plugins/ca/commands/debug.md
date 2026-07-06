@@ -12,18 +12,10 @@ If the cause is already known and a regression test is already named, invoke `/c
 ## Routes to
 
 The `debug` skill (`${CLAUDE_PLUGIN_ROOT}/skills/debug/SKILL.md`) — five gated phases: symptom
-capture, hypothesis generation, evidence gathering, root-cause decision, handoff. Phase 4 forces one
-named exit:
-
-- **(a) Confirmed bug → `/ca:fix`**, carrying the confirmed bug statement, cited evidence, and a named
-  regression test obligation tied to the minimal repro.
-- **(b) Behavior/design ambiguity → `/ca:adr`**, with the ambiguity statement and evidence ledger,
-  authored only with explicit user attribution.
-- **(c) No-action close** — symptom and rationale appended to
-  `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md`.
-
-A real finding that is out of scope for those exits is marked inline `[NEEDS-TRIAGE]` and the
-investigation continues.
+capture, hypothesis generation, evidence gathering, root-cause decision, handoff. Phase 4 forces
+one named exit — (a) confirmed bug → `/ca:fix`, (b) behavior/design ambiguity → `/ca:adr`,
+(c) no-action close logged to the board. The skill is canonical for its phases, gates, and each
+exit's required payload; they are not restated here.
 
 ## When NOT to use
 

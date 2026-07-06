@@ -22,7 +22,7 @@ Read these, or STOP and surface the gap — never guess the branch name or the d
 
 Assemble the facts the decision needs. Nothing is presented until all are in hand:
 
-- **Branch** — the current branch name and its base. Confirm it is NOT the default branch; if HEAD is the default branch, STOP — there is nothing to finish and merge-to-default is forbidden.
+- **Branch** — the current branch name and its base. Confirm it is NOT the default branch; if HEAD is the default branch, STOP — there is nothing to finish.
 - **Diff summary** — files changed, insertions/deletions, and the commit list since the base. Read it, do not paraphrase from memory.
 - **Gate results** — `commit-gate` outcome and the `last-checkpoint` record. Surface any open `[NEEDS-TRIAGE]` markers left in the diff as out-of-scope findings.
 - **Plan delta** — when a plan exists, state which plan items the branch satisfied and which remain open. Open items are surfaced, not hidden.
@@ -34,7 +34,7 @@ Gate: branch confirmed non-default, diff summary read, gate results and plan del
 Present exactly three terminal options with the Phase 1 state attached, then STOP for the choice:
 
 1. **Open a PR** — push the branch and open a pull request against the default branch, then stop. The PR stays open; the merge happens later, by the user or reviewers.
-2. **Merge via PR** — push the branch, open the PR, and once its checks are green, merge it **through the PR** so the work lands on the default branch now. Distinct from option 1: this one completes the merge. Still PR-only — no direct push to the default branch, no force-push.
+2. **Merge via PR** — push the branch, open the PR, and once its checks are green, merge it **through the PR** so the work lands on the default branch now. Distinct from option 1: this one completes the merge.
 3. **Discard** — abandon the branch.
 
 Under `/feature`: STOP and let the user pick.
@@ -73,19 +73,14 @@ Report only what the assembled state supports:
 - **Suite time** — the wall-clock of the verifying run, from the gate results in hand.
 
 Close with **exactly one** warm, synthesizing sentence (per the orchestrator register) that reflects
-the run back — synthesized for this branch, not the register's canned example. One sentence, earned,
-never on a no-op close.
+the run back — synthesized for this branch, not the register's canned example; earned, and never on
+a no-op close.
 
 Gate: the Receipt is emitted from in-hand state (no fresh crawl), and the close carries at most one
 warm sentence.
 
 ## Hard rules
 
+- MUST clear every phase gate; a skipped phase is a hard-rule violation.
 - MUST NOT merge directly to the default branch or force-push — every change lands through a PR.
-- MUST NOT auto-merge under `/sprint`; auto-select "open PR" and surface the merge decision to the user.
-- MUST NOT discard a branch without explicit user confirmation that names the branch.
-- MUST NOT delete un-pushed commits silently — STOP and report the loss before any discard.
-- MUST NOT run before `commit-gate` has cleared on the current HEAD.
-- MUST NOT guess the branch or default-branch name — read `CONTEXT.md` or STOP.
-- MUST draw the Receipt only from Phase 1 state + `last-checkpoint` — never a fresh audit-trail crawl — and never build a rolling cross-branch "saves" tally.
-- MUST keep the close to at most one warm sentence; never on a no-op close.
+- MUST NOT build a rolling cross-branch "saves" tally — the Receipt reflects this branch only.

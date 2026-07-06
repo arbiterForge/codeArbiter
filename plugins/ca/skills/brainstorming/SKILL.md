@@ -15,7 +15,7 @@ Read these, or STOP and surface the gap — never guess scope or stack:
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — the stack the feature must fit; rule out incompatible designs early.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` — existing `[CONFIRM-NN]` items; new ones number sequentially from here.
 
-Per-feature and light. NOT decompose's whole-project six-layer interview — one feature, four phases.
+Per-feature and light.
 
 ## Phase 1 — Frame the problem · gate: BLOCK
 
@@ -36,7 +36,7 @@ One focused question at a time. Never advance on a hand-wavy answer. Run every a
 - **Hidden complexity** — Name what the user assumes is easy but is hard: state, concurrency, edge cases, failure modes, validation, idempotency, migration of existing data. Surface it now or it surfaces in `tdd`.
 - **Trade-off forcing** — When a real decision exists, frame it: "X gives you A but costs B; Y gives you C but costs D — choose." Do not pick for the user.
 
-Record every genuinely-unresolved unknown as `[CONFIRM-NN]` in `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md`, numbered sequentially. A finding that belongs to a different feature or a future scope gets an inline `[NEEDS-TRIAGE]` marker in the notes — never route it to a ticket.
+Record every genuinely-unresolved unknown as `[CONFIRM-NN]` in `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md`, numbered sequentially — never resolve one by guessing. A finding that belongs to a different feature or a future scope gets an inline `[NEEDS-TRIAGE]` marker in the spec draft's Open-questions section (`specs/<slug>.md`) — never route it to a ticket.
 
 Gate: every vague term made concrete; every forced trade-off resolved or recorded as `[CONFIRM-NN]`; no unresolved "later" outside a `[CONFIRM-NN]`. A blocking `[CONFIRM-NN]` that gates the spec's core stops the loop — surface it and STOP.
 
@@ -56,7 +56,7 @@ Gate: the spec file exists on disk under `specs/`, with at least one acceptance 
 
 The spec is approved before any code is written or any handoff to `tdd` occurs — no exceptions:
 
-- **Under `/feature`** — present the spec and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval — never auto-resolve it.
+- **Under `/feature`** — present the spec and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval.
 - **Under `/sprint`** — approval may be granted automatically by SMARTS scoring, logged to the `.codearbiter/` audit trail. A blocking `[CONFIRM-NN]` is never auto-approvable; it escalates to the user and STOPs the sprint flow.
 
 On approval, hand off to the `tdd` skill, which enters Phase 1 against the approved spec — one obligation per acceptance criterion.
@@ -65,11 +65,7 @@ Gate: the spec is approved (by the user under `/feature`, or by logged SMARTS au
 
 ## Hard rules
 
-- MUST NOT write implementation code or route to `tdd` before the spec is on disk under `specs/` AND approved.
-- MUST NOT write an acceptance criterion that cannot be verified by a single test.
+- MUST clear every phase gate; a skipped phase is a hard-rule violation.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing — surface it and record it in `open-questions.md`.
-- MUST NOT auto-approve a spec carrying a blocking `[CONFIRM-NN]`, even under `/sprint` — it escalates to the user.
-- MUST NOT contradict the NOT-building list or redefine domain vocabulary in `CONTEXT.md` — a contradiction is a conflict to surface, not reconcile.
 - MUST NOT run decompose's six-layer whole-project interview — this is one feature, four phases.
-- MUST log a `/sprint` auto-approval to the `.codearbiter/` audit trail.
 - MUST, at exit, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any `[NEEDS-TRIAGE]` notes raised this run — batch-confirm promoting them to `open-tasks.md` (work) or `open-questions.md` (decisions) so out-of-scope ideas don't vanish.

@@ -24,6 +24,6 @@ supersession candidates (a newer ADR or code pattern contradicts the decision), 
 
 ## Hard gate
 
-Read-only — MUST NOT modify any file. MUST NOT resolve a `[CONFIRM-NN]` found during the scan —
+Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after. MUST NOT resolve a `[CONFIRM-NN]` found during the scan —
 surface it and stop. A supersession candidate that contradicts an accepted ADR is flagged for
 `/ca:conflict`.

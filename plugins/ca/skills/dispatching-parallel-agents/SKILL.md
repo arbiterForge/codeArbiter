@@ -67,9 +67,4 @@ Gate: the caller receives only the aggregated verdict. Bypassing the funnel — 
 
 ## Hard rules
 
-- MUST NOT dispatch two units that mutate the same path in one batch; isolate via `using-git-worktrees` or serialize.
-- MUST NOT fan out unbounded; dispatch within the concurrency bound.
-- MUST NOT let one `ERRORED` unit discard or corrupt the rest of the batch.
-- MUST NOT consume agent output before the `finding-triage` → `checkpoint-aggregator` funnel runs.
-- MUST NOT trust a subagent's self-reported completion; verify with a fresh proving command.
-- MUST NOT silently drop a unit — every unit terminates with a recorded state that rides through the funnel.
+- MUST clear every phase gate — partition, dispatch, collect, dedupe, funnel; a skipped phase is a hard-rule violation.

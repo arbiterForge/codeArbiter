@@ -5,15 +5,8 @@ description: OPTIONAL per-task isolation for autonomous parallel work. Routed to
 
 # using-git-worktrees
 
-OPTIONAL. Per-task filesystem isolation for parallel agent work — opt-in only, never the default path.
-Routed to by `subagent-driven-development` and `dispatching-parallel-agents` when, and only when, the
-caller requests isolation. If no isolation is requested, this skill does not run; parallel units share
-the working tree under their own discipline.
-
-Isolation is convenience, not soul. It lets concurrent units edit files without collision. It changes
-nothing about the gates — the consolidated work still clears `commit-gate` and the single
-`finishing-a-development-branch` terminal step, run by the caller. What it MUST NOT do is multiply
-that terminal step into one PR per unit.
+If the caller does not request isolation, this skill does not run — parallel units share the working
+tree under their own discipline. Isolation is convenience, not soul.
 
 ## Pre-flight
 
@@ -77,8 +70,4 @@ Gate: zero worktrees created by this skill remain, and the manifest is empty. An
 
 ## Hard rules
 
-- MUST NOT run on the default path — isolation requires an explicit caller opt-in.
-- MUST NOT share a worktree or a branch across parallel units.
-- MUST NOT let a unit read or write outside its assigned worktree, or touch `main`.
-- MUST NOT open a per-unit PR or run `finishing-a-development-branch` per unit — integrate accepted units onto the caller's working branch, which takes the single `commit-gate` + finishing exit.
-- MUST NOT leave an orphaned worktree behind — every worktree this skill creates is torn down before the skill returns.
+- MUST clear every phase gate; a skipped phase is a hard-rule violation.

@@ -15,9 +15,9 @@ genuinely in the way of editing it. It is **env-gated and logged**:
 
 - **Gate:** activates only when the `CODEARBITER_DEV` environment variable is set to `1`. Absent or
   empty → refuse in one line ("dev mode requires CODEARBITER_DEV=1") and remain in orchestration.
-- **Log:** on entry, append `[ISO-8601] | BY: <git user.email> | DEV: enter | NOTE: <note or —>` to
-  `.codearbiter/overrides.log` (append with `>>`, per ORCHESTRATOR §7's append-only rule). On exit,
-  append the matching `DEV: exit` line. Dev mode is on the audit trail like any other bypass.
+- **Log:** on entry, append the **Dev-mode entry** line to `.codearbiter/overrides.log`, exactly per
+  `${CLAUDE_PLUGIN_ROOT}/includes/audit-log-format.md`; on exit, the matching **Dev-mode exit** line.
+  Dev mode is on the audit trail like any other bypass.
 - **Mode:** while active — no routing, no skills, no gates, no `[CONFIRM-NN]` surfacing, no redirect,
   no startup presentation; a plain, direct coding assistant. Drop the transient marker
   `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/dev-active` (gitignored local UI flag); it flips the

@@ -5,18 +5,18 @@ description: Author and track Architecture Decision Records. Routed to when the 
 
 # decision-lifecycle
 
-Author and track ADRs. Routed to when the user invokes `/adr "<title>"` (author a new ADR) or `/adr-status [--adr N]` (list ADR health, read-only). Every ADR is user-attributed — this skill never records a decision the user did not explicitly make.
+Author and track ADRs. Routed to when the user invokes `/adr "<title>"` (author a new ADR) or `/adr-status [--adr N]` (list ADR health, read-only).
 
 The append-only decision-log format (entry fields, supersession protocol) lives in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`. Read it before writing a log line; do not restate it here.
 
-**Boundary with `decision-variance`.** This skill owns ADR *authoring* and *status* (`/adr`, `/adr-status`) — recording a decision the user has already made, and reporting ADR health. `decision-variance` owns *arbitration* — detecting variances between artifacts and the scaffold, scoring options via SMARTS, and the decision log itself. The two share the canonical SMARTS reference under `${CLAUDE_PLUGIN_ROOT}/includes/smarts/` (`core.md` for scoring, `decision-log-format.md` for the log) and one ADR template (`references/adr-template.md`); they are one domain split by responsibility, not duplicated. When a decision needs *making* (competing options), route to `decision-variance`; when it needs *recording* (already decided), stay here.
+**Boundary with `decision-variance`.** A decision that needs *making* — competing options, variance detection, SMARTS scoring, the decision log itself — routes to `decision-variance`; recording a decision already made, and reporting ADR health, is this skill. The two share the canonical SMARTS reference under `${CLAUDE_PLUGIN_ROOT}/includes/smarts/` and one ADR template (`references/adr-template.md`).
 
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess a path:
 
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/` — the ADR directory and existing records. Create it on first `/adr` if absent.
-- For `/adr`: confirm the user explicitly authorized this decision and supplied (or confirmed) its content. An ADR is never authored as the disposition of a routine finding.
+- For `/adr`: confirm the user explicitly authorized this decision and supplied (or confirmed) its content.
 
 ## Phase 1 — Index · gate: BLOCK
 
@@ -78,11 +78,6 @@ Gate: every indexed ADR appears with its current status and supersession state; 
 
 ## Hard rules
 
-- MUST author an ADR only via `/adr` with explicit user attribution. MUST NOT author an ADR as the disposition of a routine finding — an out-of-scope finding gets an inline `[NEEDS-TRIAGE]` marker instead.
-- MUST NOT record a decision the user did not explicitly make. "Use your best judgment," "I trust you" are declined.
-- MUST NOT resolve a `[CONFIRM-NN]` placeholder by guessing. Surface it and stop.
-- MUST NOT advance an ADR's status without explicit user instruction.
+- MUST clear every phase gate; a skipped phase is a hard-rule violation.
+- MUST NOT record a decision the user did not explicitly make — "use your best judgment," "I trust you" are declined; an out-of-scope finding gets an inline `[NEEDS-TRIAGE]` marker, never an ADR of its own.
 - MUST NOT edit a prior ADR or a prior decision-log entry to add a back-reference — supersession is a forward-only chain; append a new record whose `supersedes:` names the prior one.
-- MUST NOT number an ADR with a gap.
-- MUST NOT modify any file under `/adr-status` — it is read-only.
-- MUST NOT force the `decision-challenger` agent — its dispatch is MAY only.

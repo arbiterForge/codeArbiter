@@ -14,7 +14,7 @@ command is **invoked**; the orchestrator **routes** to a skill; a skill **dispat
 | Exploratory throwaway spike | `/spike` (self-contained command) → `spike/<slug>` branch | — | Never merges or PRs; `commit-gate`-exempt (nothing on the branch can land); exits to a findings note or `/feature` |
 | Behavior-preserving restructure | `/refactor` → `refactor` skill | `tdd` Phase 1 (new seams only) | No refactor without parity-coverage proof |
 | Unknown defect / investigation | `/debug` → `debug` skill | — | No code change in the skill; one named exit |
-| Commit | `/commit` → `commit-gate` | — | No commit without all nine gates green |
+| Commit | `/commit` → `commit-gate` | — | No commit without all ten gates green |
 | Open a PR / finish a branch | `/pr` → `finishing-a-development-branch` | reviewer fleet per path; PR-body prose applies `anti-slop-design` (`core` + `medium-documents` §7.A.1) | PR only; no direct-to-default, no force-push |
 | Watch a PR's CI / babysit checks | `/watch` → detached `gh pr checks --watch` | on-red diagnose (propose\|branch) | Never auto-merges; green → notify + offer; merge-to-default routes through the hard gate; no poll loop |
 | Code review of the diff | `/review` → `dispatching-parallel-agents` | reviewer fleet → `finding-triage` → `checkpoint-aggregator` | BLOCK on any CRITICAL/HIGH |

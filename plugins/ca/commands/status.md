@@ -51,5 +51,5 @@ If `[CONFIRM-NN]` placeholders are open, surface them — do not resolve them he
 
 ## Hard gate
 
-Read-only. MUST NOT modify any file. MUST NOT resolve a `[CONFIRM-NN]` it surfaces. No skill is routed
-to by this command.
+Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after. MUST NOT resolve a `[CONFIRM-NN]` it surfaces. No
+skill is routed to by this command.

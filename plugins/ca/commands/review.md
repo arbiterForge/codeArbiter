@@ -43,6 +43,6 @@ Read-only review of the current change. Routes to `dispatching-parallel-agents`:
 
 ## Hard gate
 
-Read-only — MUST NOT modify a file. BLOCK on any CRITICAL or HIGH finding: it must be resolved before
+Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after. BLOCK on any CRITICAL or HIGH finding: it must be resolved before
 `/ca:pr`. MUST NOT consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator`
 verdict. MUST NOT resolve a `[CONFIRM-NN]` surfaced during review by guessing.

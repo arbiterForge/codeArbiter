@@ -15,10 +15,8 @@ not the index, not `.codearbiter/`. `git status` is unchanged by a run.
 
 ## Flow
 
-1. **Collect the diff.** Call the thin entry hook `preview.py` in `diff` mode, which wraps
-   `collect_diff` from `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It unions HEAD-vs-worktree
-   changes, staged changes, and untracked files (forward-slash paths). Run it from the project
-   root so `_previewlib`/`_hooklib` resolve on the same `sys.path`:
+1. **Collect the diff.** Call the thin entry hook `preview.py` in `diff` mode — it returns the
+   full uncommitted change set (worktree, staged, and untracked). Run it from the project root:
    ```
    python3 "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" diff || python "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" diff
    ```
@@ -32,15 +30,12 @@ not the index, not `.codearbiter/`. `git status` is unchanged by a run.
    dispatch and name the triggering path for each. This is the same mapping `/ca:review` uses, so
    the predicted set matches what a real review would dispatch.
 
-3. **Run the state-free secret scan.** Call the thin entry hook `preview.py` in `secrets` mode,
-   which wraps `scan_secrets` from `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It reads each
-   changed file's current content and returns `SecretFinding(path, line_no, snippet)` for every
-   credential line, with the secret VALUE already masked to `****` in `snippet`:
+3. **Run the state-free secret scan.** Call the thin entry hook `preview.py` in `secrets` mode:
    ```
    python3 "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" secrets || python "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" secrets
    ```
-   Report each finding by `path:line_no` with its redacted snippet. The snippet arrives already
-   masked: never reconstruct or print a raw secret value.
+   Report each finding by `path:line` with its snippet — the hook masks every secret value to
+   `****` before returning; never reconstruct or print a raw value.
 
 ## Report
 
@@ -69,8 +64,7 @@ nothing about whether the install's hooks fire: that is `/ca:doctor`. Do not ble
 
 ## Hard gate
 
-- Read-only. MUST NOT write, create, or modify any file, including anything under `.codearbiter/`;
-  MUST NOT stage or commit. `git status` MUST be unchanged after a run.
+- Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after.
 - MUST NOT require, trigger, or error on missing `/ca:init`, `.codearbiter/` state, or the
   decompose / create-context interview.
 - MUST NOT print a raw secret value: the lib returns the snippet already redacted, and the report

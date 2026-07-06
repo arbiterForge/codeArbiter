@@ -5,9 +5,7 @@ description: The brownfield back-fill. Routed to by /create-context, and by star
 
 # context-creation
 
-Wrap an existing codebase in project state, without guessing. Routed to by `/create-context`, and by startup when `.codearbiter/CONTEXT.md` exists but carries no `<!--INITIALIZED-->` body marker and meaningful source code is present. When no meaningful source exists, this is the wrong skill — route to `decompose` instead.
-
-This back-fills from existing source. It complements `/ca:init`, which scaffolds an empty `.codearbiter/` for a fresh project; here the docs are derived from what is already on disk.
+Wrap an existing codebase in project state, without guessing. Routed to by `/create-context`, and by startup when source exists but `CONTEXT.md` is uninitialized. This back-fills from existing source, complementing `/ca:init`, which scaffolds an empty `.codearbiter/` for a fresh project; here the docs are derived from what is already on disk.
 
 ## Pre-flight
 
@@ -16,7 +14,7 @@ Read these, or STOP and surface the gap — never guess project identity or a co
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — if it already carries `<!--INITIALIZED-->`, context exists. Stop and route to normal operation.
 - The repository root listing (one level deep) — the source surface this skill extracts from.
 
-The excluded set (not "meaningful source"): `.git/`, `.codearbiter/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`, `.gitignore`, `.gitmodules`, and standard tooling dotfiles (`.editorconfig`, `.prettierrc`, etc.). Meaningful source MUST exist beyond it.
+The excluded set (not "meaningful source"): `.git/`, `.codearbiter/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`, `.gitignore`, `.gitmodules`, and standard tooling dotfiles (`.editorconfig`, `.prettierrc`, etc.).
 
 ## Phase 1 — Pre-flight confirmation · gate: BLOCK
 
@@ -101,7 +99,7 @@ If scouts found existing decision records (`docs/decisions/`, `adr/`), summarize
 - Write ONE provenance file per derived doc to `.codearbiter/.provenance/<doc>.json` via `_provenancelib.write_provenance` and `new_record`. Each entry carries: `path` (repo-relative), `hash` (the scout's `git hash-object` oid), `drift_trigger` (from `_provenancelib.classify_source(path)`), and the `claims` array with `lines`, `claim`, and `confidence` drawn from the scout evidence.
 - Synthesize `.codearbiter/code-map.md` (concern → path → ≤1-line role) from Scout C (architecture) evidence. Use concern headings (`## <concern>`) and column-0 bullets (`- \`path\` — role`). Keep it coarse — module/concern granularity only, no full file listing.
 
-Do NOT scaffold any cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity lives in the `stage:` frontmatter of `CONTEXT.md`, not a separate file.
+Do NOT scaffold any cut doc (never-scaffold list: see Hard rules).
 
 Gate: every surviving doc written; `CONTEXT.md` frontmatter carries `arbiter: enabled` and `stage:`; no resolved value left as a placeholder. Deferred `[CONFIRM-NN]` items are acceptable only in `open-questions.md`.
 

@@ -7,8 +7,8 @@ description: The checkpoint coordinator for /feature. Routed to by /feature once
 
 Coordinate the plan in small, user-acknowledged batches. Routed to by `/feature` after
 `writing-plans` has produced a plan. Each batch is executed by `subagent-driven-development` — fresh
-author agent per task, spec-compliance review, quality review, fresh verification — and the user
-checkpoints between batches. The orchestrator never implements; it schedules and checkpoints.
+author agent per task, spec-compliance review, fresh verification, one quality review per scope — and the user
+checkpoints between batches.
 
 ## Pre-flight
 
@@ -45,7 +45,7 @@ Gate: a batch sequence exists and every task has a target path and a verificatio
 
 Invoke `subagent-driven-development` with `scope = [current batch task IDs]`. Pass the plan slug and
 spec slug so it can read its own pre-flight files. Do not implement anything here — the author agents,
-review chain, and verification all run inside that skill.
+review chain, and verification all execute inside that skill.
 
 `subagent-driven-development` returns when every task in the scope is `ACCEPTED` (Phase 3–5 green,
 verification passed on a fresh run). A `tdd` BLOCK, a security CRITICAL finding, or an unresolved
@@ -72,11 +72,9 @@ do not commit from here.
 
 ## Hard rules
 
+- MUST clear every phase gate; a skipped phase is a hard-rule violation.
 - MUST NOT execute tasks inline — delegate every batch to `subagent-driven-development` with an explicit `scope`.
-- MUST NOT advance past a checkpoint the user has not acknowledged.
-- MUST NOT call `commit-gate` until all batches are acknowledged and every plan task is `ACCEPTED`.
-- MUST surface any halt from `subagent-driven-development` (tdd BLOCK, CRITICAL, CONFIRM-NN) to the user — do not swallow it or re-dispatch around it.
+- MUST NOT commit; route to `commit-gate` only after every batch is acknowledged and every plan task is `ACCEPTED`.
+- MUST NOT swallow or re-dispatch around a halt from `subagent-driven-development` (tdd BLOCK, CRITICAL, CONFIRM-NN) — surfacing it to the user is the only path.
 - MUST NOT absorb scope the plan does not name — mark it `[NEEDS-TRIAGE]`.
-- MUST NOT commit; route to `commit-gate` when the plan is fully verified.
-- MUST return an underspecified task (missing path or verification command) to `writing-plans` — do not improvise the gap.
 - MUST surface a plan-versus-code conflict via `/conflict`, never silently reconcile it.

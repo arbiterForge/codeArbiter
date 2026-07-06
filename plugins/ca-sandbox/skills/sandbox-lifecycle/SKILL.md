@@ -1,11 +1,11 @@
 ---
 name: sandbox-lifecycle
-description: The lifecycle gate for a local Codespace-equivalent sandbox. Routed to when the user invokes /ca-sandbox:sandbox to pull an untrusted repo into an ephemeral, host-FS-isolated Docker container, or any of the interaction commands (/ca-sandbox:sandbox-shell, /ca-sandbox:sandbox-exec, /ca-sandbox:sandbox-cp, /ca-sandbox:sandbox-destroy) against an existing box. Five gated phases — pre-flight, clone+build, isolated run, interact, teardown. The load-bearing invariant is structural: untrusted code in the box can never reach the host filesystem (no bind mount, no docker socket, never --privileged, cap-drop ALL, non-root, read-only root). Network defaults to offline; egress out is host-initiated only. Every object is labeled ca.sandbox=1 and torn down on exit.
+description: The lifecycle gate for a local Codespace-equivalent sandbox. Routed to when the user invokes /ca-sandbox:sandbox to pull an untrusted repo into an ephemeral Docker container, or any interaction command (sandbox-shell, sandbox-exec, sandbox-cp, sandbox-destroy) against an existing box. Five gated phases — pre-flight, clone+build, isolated run, interact, teardown. Invariant: untrusted code in the box can never reach the host filesystem — no bind mount, no docker socket, never --privileged.
 ---
 
 # sandbox-lifecycle
 
-Pull an untrusted repo into a throwaway box, explore it without risking the host, then burn the box. This skill owns the whole arc — clone into a named volume, build a dep-cached image, run it under structural isolation, interact (shell / exec / cp out), destroy — and the one invariant that makes it safe: **the code inside the box can never touch the host filesystem.** That guarantee is enforced by construction (no bind mounts, no docker socket, never `--privileged`), not by trusting the repo.
+Pull an untrusted repo into a throwaway box, explore it without risking the host, then burn the box. This skill owns the whole arc — clone into a named volume, build a dep-cached image, run it under structural isolation, interact (shell / exec / cp out), destroy — and the one invariant that makes it safe: **the code inside the box can never touch the host filesystem.** That guarantee is enforced by construction, not by trusting the repo.
 
 The driver lives in `${CLAUDE_PLUGIN_ROOT}/tools`. The skill never hand-rolls a `docker run` argv — every container is started through `runContainer` in `${CLAUDE_PLUGIN_ROOT}/tools/run.ts`, whose mount argv comes only from `buildMountArgs` in `${CLAUDE_PLUGIN_ROOT}/tools/mounts.ts` (the chokepoint that throws on any bind spec).
 

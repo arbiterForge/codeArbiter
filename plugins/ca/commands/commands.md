@@ -16,5 +16,5 @@ Present the public command list. Read-only, no state change.
 
 ## Hard gate
 
-Read-only. MUST NOT modify a file or route to a skill. MUST render from `COMMANDS.md`, never from a
+Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after. MUST NOT route to a skill. MUST render from `COMMANDS.md`, never from a
 catalog copied into this file. Output the catalog only.

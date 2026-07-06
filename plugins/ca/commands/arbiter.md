@@ -9,12 +9,9 @@ The exit door for `/ca:dev`. No-op if dev mode is not active.
 
 ## Flow
 
-1. **Log exit** — append to `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log` (append-only, `>>`):
-
-   ```
-   [ISO-8601 timestamp] | BY: <email> | DEV: exit
-   ```
-
+1. **Log exit** — append the **Dev-mode exit** line to
+   `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`, exactly per
+   `${CLAUDE_PLUGIN_ROOT}/includes/audit-log-format.md` (the one schema; append-only).
 2. **Marker** — remove `${CLAUDE_PROJECT_DIR}/.codearbiter/.markers/dev-active`; the statusline
    returns to normal.
 3. **Resume** — re-present the startup state (stage, blocking `CONFIRM-NN`, in-flight tasks) and

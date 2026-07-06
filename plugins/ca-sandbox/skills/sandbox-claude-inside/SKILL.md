@@ -1,6 +1,6 @@
 ---
 name: sandbox-claude-inside
-description: Run Claude Code INSIDE a ca-sandbox box (`--with-claude`). Routed to when the user wants an agent loop running against an isolated, ephemeral sandbox rather than the host. Authenticates via an env-injected CLAUDE_CODE_OAUTH_TOKEN with no host bind of ~/.claude; the image pins the CLI and disables the autoupdater; HOME is backed by a named volume so the .claude state persists across restart. Five gated phases — posture, image, token, run, teardown. The hard default is offline or Anthropic-domains-only egress, and the token volume is NEVER co-mounted with an untrusted-code run; both are enforced, not advised.
+description: Run Claude Code INSIDE a ca-sandbox box (`--with-claude`). Routed to when the user wants an agent loop running against an isolated, ephemeral sandbox rather than the host. Five gated phases — posture, image, token, run, teardown. Two locked invariants, enforced not advised: egress is offline or Anthropic-domains-only, and the token volume is NEVER co-mounted with an untrusted-code run.
 ---
 
 # sandbox-claude-inside
@@ -10,8 +10,7 @@ CLI inside a host-FS-isolated ca-sandbox container, authenticating from an
 env-injected token with no host bind of `~/.claude` — the mechanism proven by
 Spike B (`.codearbiter/spikes/ca-sandbox-claude-auth.md`, CONFIRM-07). It is the
 deliberately-hardened lane: a token in a box is stealable, so the posture is locked
-down by construction (offline or Anthropic-only egress, token volume never shared
-with untrusted code), never left to operator discipline.
+down by construction, never left to operator discipline.
 
 ## Pre-flight
 

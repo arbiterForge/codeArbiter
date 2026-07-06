@@ -10,15 +10,10 @@ Cost first — this lane routinely costs millions of tokens on a large repo. Pha
 
 ## Flow
 
-Load and follow the tribunal skill (`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/SKILL.md`). In brief:
-
-Phase 0 (STOP) — cost estimate, model recommendation, resume check.
-Phase 1 (BLOCK) — map the codebase; risk-rank and mark trust boundaries; record AI-authorship markers and iteration depth.
-Phase 2 (BLOCK) — dispatch the eleven tribunal-* lenses in priority waves (≤5 in flight); each writes one file per finding under its own `findings/<lens>/` dir.
-Phase 3 (BLOCK) — triage per wave from disk: dedup, independent calibration, decision vocabulary.
-Phase 4 (BLOCK) — project the human-readable report from the logs.
-Phase 5 (BLOCK) — on explicit selection, file findings as GitHub issues; idempotent against the tracker.
-Phase 6 (STOP) — optional, opt-in KPI telemetry to the public codeArbiter repo.
+Load and follow the tribunal skill (`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/SKILL.md`) — seven gated
+phases: cost/model/resume (STOP), map, lens dispatch in waves, per-wave triage, report,
+approval + filing, opt-in telemetry (STOP). The skill is canonical for its phases and gates; they
+are not restated here.
 
 ## Arguments
 

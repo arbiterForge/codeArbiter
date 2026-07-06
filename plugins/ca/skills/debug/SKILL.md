@@ -68,32 +68,28 @@ If a finding is real but out of scope for any of the three exits, mark it inline
 
 If no exit can be chosen — all hypotheses INCONCLUSIVE — loop back to Phase 3 for more evidence, or take exit (b) and surface the open question. "No decision" is not a valid exit.
 
-Gate: exactly one of (a) / (b) / (c) is named. Exit (a) carries a regression test obligation. Exit (b) carries the ambiguity statement and user attribution before any `/adr`. No exit closes on "more investigation needed" without either looping to Phase 3 or selecting (b).
+Gate: exactly one of (a) / (b) / (c) is named, with its full carry set. No exit closes on "more investigation needed" without either looping to Phase 3 or selecting (b).
 
 ## Phase 5 — Handoff · gate: BLOCK
 
 Emit a summary downstream skills can consume without re-reading the session, then route:
 
 - **Summary block:** symptom (one sentence), reproduction profile, hypotheses considered (count + one-line list), evidence ledger summary (CONFIRMED / REFUTED / INCONCLUSIVE per hypothesis), the Phase 4 exit and rationale, and the handoff target.
-- **Exit (a):** route to `/fix` with the confirmed bug statement, cited evidence, and named regression test obligation. The orchestrator routes `/fix` to the `tdd` skill in bug-fix variant, where that test becomes the Phase 1 obligation that must fail before fix code. `debug` does not pre-write the test.
-- **Exit (b):** surface the chosen `/adr` with the ambiguity statement, symptom record, and evidence ledger attached as context, with user attribution.
+- **Exit (a):** route to `/fix` with the Phase 4 carry set. The orchestrator routes `/fix` to the `tdd` skill in bug-fix variant, where the carried test obligation becomes the Phase 1 obligation that must fail before fix code. `debug` does not pre-write the test.
+- **Exit (b):** route to `/adr` with the Phase 4 carry set attached as context.
 - **Exit (c):** append a schema-conformant queued entry to `${CLAUDE_PROJECT_DIR}/.codearbiter/open-tasks.md` (the format the SessionStart hook and statusline parse — see the `OPEN_TASKS` scaffold note): a top-level `- [ ] <symptom> (logged YYYY-MM-DD)` line, with the "no action" rationale as an indented `- Desc:` sub-bullet. A dotted ID is optional for a debug note. This keeps the note in the in-flight count as an open item to revisit, rather than a bare bullet that drifts from the schema. No further handoff.
 
 Surface the summary and the handoff to the user before the skill exits.
 
-Gate: the handoff is routed. Exit (a) carries an explicit regression test obligation. Exit (c) is recorded before close.
+Gate: the handoff is routed. Exit (c) is recorded before close.
 
 ## Hard rules
 
 - MUST NOT modify, refactor, or "try a fix" on any code during Phases 1–5. Code changes belong to `/fix`.
 - MUST NOT proceed past Phase 1 without a minimal repro or a documented intermittent-trigger profile.
-- MUST NOT proceed past Phase 2 with fewer than three distinct hypotheses, or with three rewordings of one suspicion.
-- MUST include at least one boring environmental / configuration / dependency hypothesis in Phase 2.
 - MUST NOT promote INCONCLUSIVE evidence to CONFIRMED or REFUTED without a cited source.
 - MUST cite the source of every piece of evidence — log path + timestamp, commit SHA, trace ID.
-- MUST exit Phase 4 with exactly one of (a) confirmed bug → `/fix`, (b) ambiguity → `/adr`, or (c) no-action close.
 - MUST NOT route to `/fix` for a bug not yet confirmed by cited evidence — `/fix` is for known bugs.
-- MUST NOT exit (a) without a named regression test obligation for `/fix` to carry into its TDD Phase 1.
-- MUST tie the exit-(a) regression test obligation to the Phase 1 minimal repro — the repro is the test that closes the loop.
-- MUST NOT author an ADR autonomously as the disposition of a debug session — exit (b) obtains user attribution and routes through `/adr`.
+- MUST NOT exit (a) without a named regression test obligation tied to the Phase 1 minimal repro — the repro-encoding test is what closes the loop.
+- MUST NOT author an ADR autonomously — exit (b) routes through `/adr` with user attribution.
 - MUST NOT guess a log path, trace tool, or test command — read `tech-stack.md` or STOP.

@@ -40,5 +40,5 @@ CLEAR TO IMPLEMENT | BLOCKED — resolve findings first
 
 ## Hard gate
 
-Read-only — modifies no file. This is an advisory pass, not a routine gate; it never runs unless
-invoked.
+Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after. This is an advisory pass, not a routine
+gate; it never runs unless invoked.

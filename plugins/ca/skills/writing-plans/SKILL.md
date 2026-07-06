@@ -5,7 +5,7 @@ description: The spec-to-plan bridge. Routed to by /feature once the brainstorme
 
 # writing-plans
 
-Turn an approved spec into an executable plan. Routed to by `/feature` (after spec approval) and `/sprint`.
+Turn an approved spec into an executable plan. Routed to by `/feature` and `/sprint`.
 
 ## Pre-flight
 
@@ -37,7 +37,7 @@ Break the work into the smallest honest units. Each **task** is ~2–5 minutes o
 - **id** — `T-01`, `T-02`, … stable.
 - **path(s)** — the exact file(s) the task touches, resolved against `coding-standards.md`. "Some files" is not a path.
 - **verification** — one concrete command or observable that proves the task done (e.g., `<test cmd> -k test_token_expiry passes`, `endpoint returns 401 on missing header`). It cites a real `tech-stack.md` invocation or a directly observable behavior — never "looks right".
-- **maps-to** — the `tdd` obligation this verification corresponds to. The verification *maps to* a tdd obligation; it does NOT replace tdd's own gates. `tdd` Phase 1 still derives and Phase 4 still verifies obligations against passing tests.
+- **maps-to** — the `tdd` obligation this verification corresponds to; it does NOT replace tdd's own gates — `tdd` Phase 1 still derives and Phase 4 still verifies obligations against passing tests.
 - **covers** — the `AC-NN`(s) this task advances.
 
 Split anything that won't fit ~5 minutes or touches unrelated paths. Reject the trap of one
@@ -90,13 +90,7 @@ artifacts exist before handing off to `subagent-driven-development`.
 
 ## Hard rules
 
-- MUST NOT plan against an absent or unapproved spec — STOP and route back to `/feature`.
-- MUST NOT emit a task without an exact path AND a concrete verification step.
+- MUST clear every phase gate; a skipped phase is a hard-rule violation.
 - MUST NOT let a task's verification stand in for a `tdd` gate — it maps to a tdd obligation, it does not replace one.
-- MUST NOT write the plan while any acceptance criterion is uncovered or any task covers nothing.
-- MUST NOT guess a verification command — cite `tech-stack.md` or STOP.
-- MUST NOT resolve an ambiguous criterion by guessing — raise a `[CONFIRM-NN]`.
-- MUST NOT emit `plan.json` in `--farm` mode without writing and confirming each failing test first.
 - MUST NOT set `meta.model` or `meta.apiBaseUrl` in `plan.json` — these belong to the dispatch step.
-- MUST NOT proceed with `--farm` if `FARM_API_KEY` is absent — cite `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` and BLOCK.
 - MUST, at exit, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any `[NEEDS-TRIAGE]` out-of-scope items — batch-confirm promoting them to `open-tasks.md` (work) or `open-questions.md` (decisions) so they don't die in the plan file.

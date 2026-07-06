@@ -59,23 +59,18 @@ never guesses.
 
 Route through the pipeline in order; each step gates the next:
 
-1. **`brainstorming`** — refine `$ARGUMENTS` into a concrete spec by Socratic questioning: challenge
-   vague language, surface hidden complexity, force trade-offs. Writes the spec to
-   `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`. **Hard gate: no plan and no code until the
-   user approves the spec.** Genuinely-unresolved unknowns become `[CONFIRM-NN]` in
-   `open-questions.md`, never guesses.
-2. **`writing-plans`** — decompose the approved spec into small tasks, each with an exact path and a
-   verification that maps to a `tdd` obligation (it does not replace one). Writes
-   `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.md` with bijective criterion↔task coverage.
-3. **`executing-plans`** — coordinates the plan in small batches with human checkpoints. Each batch is
-   delegated to `subagent-driven-development` (fresh author agent per task, spec-compliance review,
-   quality review, fresh verification). The user acknowledges between batches; nothing advances until
-   they do.
-4. **`commit-gate`** — the only path to a commit; nine gates, including behavioral proof.
-5. **`finishing-a-development-branch`** — terminal step: open-PR / merge-via-PR / discard. Every
-   change lands through a PR; never a direct write to the default branch.
+1. **`brainstorming`** — refine `$ARGUMENTS` into a concrete spec
+   (`${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`). **Hard gate: no plan and no code until
+   the user approves the spec.**
+2. **`writing-plans`** — decompose the approved spec into a task plan
+   (`${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.md`).
+3. **`executing-plans`** — execute the plan in small batches with human checkpoints; each batch is
+   delegated to `subagent-driven-development`. Nothing advances until the user acknowledges.
+4. **`commit-gate`** — the only path to a commit.
+5. **`finishing-a-development-branch`** — terminal step: open-PR / merge-via-PR / discard.
 
-The autonomous counterpart (`/ca:sprint`) runs the same spec→plan but passes the full plan to
+Each skill is canonical for its phases and gates; they are not restated here. The autonomous
+counterpart (`/ca:sprint`) runs the same spec→plan but passes the full plan to
 `subagent-driven-development` directly, without per-batch checkpoints. That path is its own entry,
 not `/feature`.
 

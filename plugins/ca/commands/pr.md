@@ -34,10 +34,10 @@ apply, then:
    python3 "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "${CLAUDE_PROJECT_DIR}"
    ```
    It prints one JSON line, e.g. `{"enabled": true, "on_red": "propose"}`. Only when `enabled` is
-   true (the global flag `CODEARBITER_BABYSIT` is on — default off, mirrors `CODEARBITER_PRUNE` — and
-   the repo is arbiter-active), attach a CI watcher to the PR just opened, equivalent to
-   `/ca:watch <new-PR>`. When `enabled` is false, do nothing here — the user can still run `/ca:watch`
-   ad-hoc. Never enable the flag on the user's behalf.
+   true, attach a CI watcher to the PR just opened, equivalent to `/ca:watch <new-PR>`. When
+   `enabled` is false, do nothing here — the user can still run `/ca:watch` ad-hoc. The
+   `CODEARBITER_BABYSIT` flag doctrine (default off, never enabled on the user's behalf) is owned
+   by `commands/watch.md` § On/off.
 
 ## Routes to
 

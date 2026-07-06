@@ -25,13 +25,8 @@ glance; reach for `/ca:audit` when you need the full evidentiary packet.
    python3 "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "${CLAUDE_PROJECT_DIR}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "${CLAUDE_PROJECT_DIR}"
    ```
 
-   > **`ensure_ascii` note — do not remove this.** `metrics.py` calls `json.dumps`
-   > with its default `ensure_ascii=True`. This ASCII-escapes the arrow glyphs
-   > (↑↓→) in the subprocess stdout, which avoids a `UnicodeEncodeError` on Windows
-   > `cp1252` consoles that cannot encode those code-points raw. The rendered output
-   > you present to the user (step 2 below) uses the real glyphs — they are written
-   > by the assistant, not piped through the subprocess stdout. Do NOT add
-   > `ensure_ascii=False` here.
+   The subprocess output ASCII-escapes the arrow glyphs by design (rationale documented
+   in `metrics.py`); step 2 renders the real glyphs from the parsed JSON.
 
    With a custom window size:
    ```
@@ -64,8 +59,7 @@ glance; reach for `/ca:audit` when you need the full evidentiary packet.
 
 ## Hard gate
 
-- Read-only. MUST NOT write, create, or modify any file. MUST NOT stage or commit.
-  `git status` MUST be unchanged after a run.
+- Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after.
 - Emits ONLY the fixed 3-metric glance: `override_rate`, `small_lane_rate`,
   `sprint_low_conf_ratio`. MUST NOT emit verbatim override log lines, verbatim
   triage entries, commit lists, or any other content from the governance logs.

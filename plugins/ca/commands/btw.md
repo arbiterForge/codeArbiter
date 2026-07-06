@@ -17,6 +17,6 @@ to, no agent dispatched, no file written. Always safe to invoke.
 
 ## Hard gate
 
-Read-only. MUST NOT write or modify any file, route to a skill, dispatch an agent, run tests, or
-resolve a `[CONFIRM-NN]`. If the question is really a request to build or fix something, say so and
+Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after. MUST NOT route to a skill, dispatch an
+agent, run tests, or resolve a `[CONFIRM-NN]`. If the question is really a request to build or fix something, say so and
 point to `/ca:feature` or `/ca:fix` — do not start implementation from `/ca:btw`.

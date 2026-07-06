@@ -5,15 +5,12 @@ description: Optional manual drift audit, routed to by /ca:context-check — rep
 
 # context-check
 
-An optional, on-demand drift audit for bypass cases: a merge or an external
-edit drifted a tracked source file you are not about to commit, so commit-gate's
-Phase 6 auto-heal did not fire. This skill reports stale docs and lets you
-act on each one individually.
-
-This skill is NOT in the daily loop. Commit-gate auto-heal (Phase 6,
-`heal_worklist`) owns the routine maintenance path. Route here only when drift
-was introduced outside a commit (e.g. a direct push, a merge you did not
-author, a manual file edit).
+An optional, on-demand drift audit — NOT the daily loop; commit-gate auto-heal
+(Phase 6, `heal_worklist`) owns the routine maintenance path. Route here only
+when drift was introduced outside a commit — a direct push, a merge you did
+not author, a manual file edit — on a tracked source you are not about to
+commit, so the auto-heal did not fire. This skill reports stale docs and lets
+you act on each one individually.
 
 ## Pre-flight
 

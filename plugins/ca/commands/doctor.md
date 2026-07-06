@@ -44,7 +44,7 @@ static check cannot perform from the inside.
 
 ## Hard gate
 
-Read-only — MUST NOT modify any file, create any marker, or stage anything (the probe is
-`--dry-run` by construction and is expected to be blocked). MUST NOT weaken, bypass, or retry a
+Read-only: MUST NOT write, stage, or modify any file; `git status` is identical before and after. The probe is `--dry-run`
+by construction and is expected to be blocked. MUST NOT weaken, bypass, or retry a
 blocked probe in a different spelling — the block IS the healthy result. MUST surface a failed
 probe as CRITICAL, never as a footnote.

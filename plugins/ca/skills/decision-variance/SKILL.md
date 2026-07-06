@@ -5,7 +5,7 @@ description: Reconcile the project's architectural artifacts against the scaffol
 
 # decision-variance
 
-Reconcile the architectural artifacts against the scaffold; present variances; the user decides. This skill never arbitrates on its own — every recorded decision carries user attribution.
+Reconcile the architectural artifacts against the scaffold; present variances; the user decides.
 
 The SMARTS lenses, cell rules, and strength labels are in
 `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` — read it before Phase 3. The append-only decision-log
@@ -95,7 +95,7 @@ than ~20 decision categories or ~50 scaffold files), MAY dispatch `scout`
 smaller passes.
 
 Gate: every qualifying variance has a conformant SMARTS table and a strength-labeled
-recommendation. No `concur`/`both-silent` noise in the report.
+recommendation.
 
 ## Phase 4 — Present variances and capture decisions · gate: STOP
 
