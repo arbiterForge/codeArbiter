@@ -59,6 +59,31 @@ Authoring rules:
 - Surviving project docs only: `CONTEXT.md`, `tech-stack.md`, `coding-standards.md`, `specs/`, `plans/`, `security-controls.md`, `decisions/`, `overrides.log`. Do not reference cut docs or cut skills.
 - Terminology lock: a skill is *routed to*; an agent is *dispatched*. Never "trigger", "fires", or "runs".
 - An out-of-scope finding gets one line with an inline `[NEEDS-TRIAGE]` marker.
+- **Word budget:** a SKILL.md targets under 500 lines; an always-on include (one the persona or a
+  hook injects every session) stays under 200 words — on-demand includes budget like skill prose.
+  Check with `wc -w`; past budget, cut restatement before content.
+
+**Match the form to the failure.** When a rule exists because a model drifts under pressure, pick
+the rhetorical form by the failure class — the form that fixes one class backfires on another:
+
+| Failure class | Right form | Wrong form |
+|---|---|---|
+| Skips a rule under pressure | Prohibition + a Rationalizations table + a Red-flags list | Soft guidance |
+| Output has the wrong shape (bloated, buried verdict) | A positive recipe stating exactly what to produce | A prohibition list — banning the bad shape yields more of it |
+| Omits a required element | A structural REQUIRED slot in the output contract | A prose reminder |
+| Behavior depends on a condition | A conditional on an observable predicate | An unconditional rule plus exemptions |
+
+Two corollaries: never append a nuance clause to a working recipe — one softening sentence degrades
+it from consistent to noisy; and exemption clauses don't scope — "this limit doesn't apply to X"
+still suppresses X. Restructure instead of carving out.
+
+**Pressure sections (optional).** A discipline skill — one whose gates a model is tempted to argue
+past — MAY carry, between the last phase and Hard rules: `## Rationalizations — already refuted`
+(an `| Excuse | Reality |` table of observed excuses, each refuted in one line) and
+`## Red flags — STOP` (thoughts that signal mid-rationalization, each naming the phase to return
+to); plus one boxed one-line **LAW** directly under the H1, followed by "Violating the letter of a
+gate is violating the gate." Populate table rows from observed slips, never invented ones. See
+`tdd` for the canonical use of all three.
 
 ## Phase 4 — Self-review · gate: BLOCK
 

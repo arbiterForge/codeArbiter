@@ -7,6 +7,9 @@ description: The test-first gate. Routed to by /feature (after the spec is appro
 
 Test-first, or it does not ship.
 
+> **THE LAW: NO IMPLEMENTATION CODE BEFORE A FAILING TEST DEMANDS IT.**
+> Violating the letter of a gate is violating the gate — there is no spirit-of-the-rule exception.
+
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess a command or a threshold:
@@ -99,6 +102,29 @@ error.
 
 Gate: clean lint and type-check, zero errors — this is what clears the path to `commit-gate`.
 "Mostly passes" is not passing.
+
+## Rationalizations — already refuted
+
+Each left-hand thought has been considered and rejected. Meeting one in your own reasoning is a
+signal to stop, not a point to negotiate.
+
+| Excuse | Reality |
+|---|---|
+| "Too simple to test" | Simple code breaks like any other; the test costs thirty seconds. |
+| "I'll add the tests right after" | "After" gates nothing — the untested code is already on the branch. Phase 2 exists so the test comes first. |
+| "An existing test basically covers this" | "Basically" is not `COVERED`. If it were covered, Phase 4 would show it — walk the ledger, don't estimate it. |
+| "The spec doesn't mention this path" | Then it is a Contract obligation (Phase 1) or a `[CONFIRM-NN]` — not a free pass. |
+| "The new test passing immediately is fine" | A test that never failed proves nothing. Red-for-the-right-reason is the evidence; go back and see it fail. |
+| "Relaxing the assertion unblocks the suite" | A weakened assertion converts a caught bug into a shipped one. Fix the code, never the assertion. |
+
+## Red flags — STOP
+
+If you catch yourself thinking any of these, stop and return to the phase that owns the work:
+
+- "I'll write the code first and backfill the test." → Phase 2.
+- "That obligation is close enough to covered." → Phase 4.
+- "The coverage threshold is arbitrary anyway." → Phase 5; the threshold is a recorded decision, not an opinion.
+- "Skip this one test, just this once." → no phase permits it. See Hard rules.
 
 ## Hard rules
 

@@ -7,6 +7,9 @@ description: The only path to a commit. Routed to when the user invokes /commit 
 
 The only permitted path to a commit. Bypassing it is a hard-rule violation. Routed to when the user invokes `/commit` or any equivalent instruction to persist staged changes.
 
+> **THE LAW: NOTHING SHIPS WITHOUT ITS GATES — "LOOKS GOOD" IS NOT A GATE.**
+> Violating the letter of a gate is violating the gate — there is no spirit-of-the-rule exception.
+
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess a command:

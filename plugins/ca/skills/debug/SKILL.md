@@ -5,7 +5,10 @@ description: Investigate-then-decide root-cause analysis for a defect whose caus
 
 # debug
 
-Find the cause first, fix it never. `debug` investigates and routes; it does not touch code. It drives one closed loop — **reproduce** (Phase 1) → confirm by cited evidence (Phases 2–3) → hand `/fix` a regression test that re-runs the repro and must pass (**verify**). The minimal repro is the anchor that closes the loop; code changes belong to `/fix`.
+Find the cause first, fix it never.
+
+> **THE LAW: NO FIX WITHOUT A REPRODUCED, EVIDENCE-CITED CAUSE.**
+> Violating the letter of a gate is violating the gate — there is no spirit-of-the-rule exception. `debug` investigates and routes; it does not touch code. It drives one closed loop — **reproduce** (Phase 1) → confirm by cited evidence (Phases 2–3) → hand `/fix` a regression test that re-runs the repro and must pass (**verify**). The minimal repro is the anchor that closes the loop; code changes belong to `/fix`.
 
 ## Pre-flight
 
@@ -82,6 +85,28 @@ Emit a summary downstream skills can consume without re-reading the session, the
 Surface the summary and the handoff to the user before the skill exits.
 
 Gate: the handoff is routed. Exit (c) is recorded before close.
+
+## Rationalizations — already refuted
+
+Each left-hand thought has been considered and rejected. Meeting one in your own reasoning is a
+signal to stop, not a point to negotiate.
+
+| Excuse | Reality |
+|---|---|
+| "The cause is obvious, skip the hypotheses" | Single-hypothesis lock-in is the most common misdiagnosis. Obvious is a rank signal for H1, not a license to skip H2 and H3. |
+| "Quick fix now, investigate later" | An unconfirmed fix is a guess wearing a diff. Later never comes; the loop exists so it doesn't have to. |
+| "Just try one small change and see" | A "try" is a code change, and Phase 3 forbids all of them. A hypothesis testable only by changing code is an exit (a) finding. |
+| "It stopped reproducing, so it's fine" | Non-reproducible is exit (c) with cited evidence and a logged note — not silence. |
+| "The evidence mostly points at H2" | "Mostly" is INCONCLUSIVE. Name the missing evidence and where it lives, or gather it. |
+
+## Red flags — STOP
+
+If you catch yourself thinking any of these, stop and return to the phase that owns the work:
+
+- "I already know what this is." → Phase 2; write the other hypotheses anyway, one of them boring.
+- "Editing the code would settle it." → Phase 3 gate; that is exit (a)'s job, not yours.
+- "Close enough to confirmed." → Phase 3; INCONCLUSIVE never rounds up.
+- "We'll figure the exit out later." → Phase 4 names exactly one exit, every time.
 
 ## Hard rules
 

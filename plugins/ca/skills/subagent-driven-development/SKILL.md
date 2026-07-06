@@ -103,6 +103,12 @@ plus `coverage-auditor` (already run in `tdd` Phase 4) — record that and proce
   quality review re-runs over the corrected combined diff.
 - MEDIUM and LOW findings are recorded; the user decides whether they block.
 
+**Receiving findings:** verify each finding against the code BEFORE acting on it — a reviewer can
+be wrong, and a suggestion the change doesn't need is declined with the reason, not built. No
+performative agreement ("You're absolutely right"), no gratitude — state the verified disposition
+and act. An author's stated rationale never downgrades a finding's severity; classification belongs
+to `finding-triage` alone.
+
 Gate: no CRITICAL, no HIGH across the scope's combined diff. Nothing in the scope is `ACCEPTED`
 until this passes.
 

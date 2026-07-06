@@ -39,6 +39,10 @@ Break the work into the smallest honest units. Each **task** is ~2–5 minutes o
 - **verification** — one concrete command or observable that proves the task done (e.g., `<test cmd> -k test_token_expiry passes`, `endpoint returns 401 on missing header`). It cites a real `tech-stack.md` invocation or a directly observable behavior — never "looks right".
 - **maps-to** — the `tdd` obligation this verification corresponds to; it does NOT replace tdd's own gates — `tdd` Phase 1 still derives and Phase 4 still verifies obligations against passing tests.
 - **covers** — the `AC-NN`(s) this task advances.
+- **interfaces** — REQUIRED when the task produces or consumes a boundary another task touches:
+  the exact signature (function, endpoint, schema shape), stated as `Consumes:` / `Produces:`
+  lines. Two tasks sharing a boundary MUST carry matching lines — a fresh subagent sees only its
+  own task, so the contract must travel with it.
 
 Split anything that won't fit ~5 minutes or touches unrelated paths. Reject the trap of one
 monolithic "implement the feature" task — that defeats the plan.
@@ -65,9 +69,12 @@ Cross the ledger against the task set, both directions:
 - Every task advances at least one `AC-NN`. A task that covers nothing is scope creep — cut it or surface it.
 
 Then write the plan to `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.md` — `<slug>` matching the
-spec — with the `AC-NN` ledger, the ordered task table (id · path(s) · verification · maps-to ·
-covers · depends-on · **status**, initialized `PENDING`), the marked MVP slice, and any out-of-scope
-item tagged inline `[NEEDS-TRIAGE]`.
+spec — with: a **Global constraints** block (the rules that bind EVERY task — from the spec,
+`security-controls.md`, `coding-standards.md` — copied **verbatim**, never paraphrased: task briefs
+quote this block, and paraphrase decays into vagueness); the `AC-NN` ledger; the ordered task table
+(id · path(s) · verification · maps-to · covers · depends-on · **status**, initialized `PENDING`,
+plus each task's `Consumes:`/`Produces:` interface lines where a boundary is shared); the marked
+MVP slice; and any out-of-scope item tagged inline `[NEEDS-TRIAGE]`.
 
 The status column is the pipeline's resume ledger: `subagent-driven-development` flips a task to
 `ACCEPTED` the moment it accepts it, so an interrupted run (crash, compaction, closed session) is
