@@ -22,9 +22,6 @@ Load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md` — it is the procedure. In br
 3. **Land & summarize (BLOCK)** — `commit-gate`, then `finishing-a-development-branch`, which
    auto-selects open-PR. `/ca:sprint` never merges and never discards; the merge decision is the user's.
 
-Hard gates — `security-controls`, crypto/secrets/auth, irreversible ops, `/override`, an
-unresolvable `[CONFIRM-NN]`, merge-to-default — are NEVER auto-decided. They halt and surface.
-
 ## Arguments
 
 - **`"goal"`** — seed for the sprint-spec brainstorm.
@@ -41,3 +38,9 @@ unresolvable `[CONFIRM-NN]`, merge-to-default — are NEVER auto-decided. They h
 - A single feature with human checkpoints → `/ca:feature`.
 - Work whose spec cannot be made concrete up front — the one interactive gate is load-bearing;
   a thin spec makes hard-gate stops frequent instead of rare.
+
+## Hard gate
+
+Hard gates are NEVER auto-decided — they halt and surface, even mid-sprint: `security-controls`,
+crypto/secrets/auth, irreversible ops, `/override`, an unresolvable `[CONFIRM-NN]`,
+merge-to-default. The full list and stop semantics live in `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`.

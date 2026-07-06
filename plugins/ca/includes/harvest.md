@@ -15,12 +15,12 @@ residue languish far *less*, not "never"; do not rely on it as a guarantee until
 | Terminal step | Residue source | Extractor (`_taskboardlib`) |
 |---|---|---|
 | `tdd` (Phase 6 exit), `brainstorming`, `writing-plans` | `[NEEDS-TRIAGE]` markers | `extract_needs_triage(text, origin)` |
-| `commit-gate` (Phase 6 set-aside) | the out-of-scope `[NEEDS-TRIAGE]` file/change | `extract_needs_triage` |
+| `commit-gate` (Phase 7 set-aside) | the out-of-scope `[NEEDS-TRIAGE]` file/change | `extract_needs_triage` |
 | `checkpoint` | the `### DEFERRABLE` section | `extract_deferrable(text, origin)` |
 | `sprint` (completion) | `confidence: low` auto-decisions in `sprint-log.md` | `extract_low_confidence(text, origin)` |
 
-**commit-gate Phase 7 — pre-commit harvest (ADR-0008):** When commit-gate invokes harvest it
-does so at **Phase 7, before staging** — not after the commit. The promoted `open-tasks.md`
+**commit-gate Phase 8 — pre-commit harvest (ADR-0008):** When commit-gate invokes harvest it
+does so at **Phase 8, before staging** — not after the commit. The promoted `open-tasks.md`
 additions are staged into and **ride the work commit** as part of the same payload. This is a
 contingent default: an abandoned branch or PR abandons the board additions with it
 (self-correcting per ADR-0008). A follow-up that **must survive** abandonment should be filed

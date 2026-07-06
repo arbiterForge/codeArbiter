@@ -1,6 +1,6 @@
 # Fresh-run verification
 
-The shared proof-by-fresh-evidence discipline. Used by `subagent-driven-development` Phase 5 (per
+The shared proof-by-fresh-evidence discipline. Used by `subagent-driven-development` Phase 4 (per
 accepted task, against the task's verification command) and `commit-gate` Phase 5 (the whole change,
 against the spec's acceptance criterion). Each caller supplies its own target; this is the common rule.
 

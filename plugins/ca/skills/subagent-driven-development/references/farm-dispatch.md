@@ -65,13 +65,13 @@ The dispatcher writes two artifacts (D7): the incremental `farm-results.jsonl` s
 `farm-report.json` summary. The escalation/acceptance handler (Step 3) MUST consume the stream in
 **completion order** — read `farm-results.jsonl` line by line (one `Result` JSON object per line) and
 process each task the moment it settles, rather than waiting to parse only the final report. Each
-`green` task is routed through **Phase 3 (spec-compliance) + Phase 5 (verification)** as it lands.
+`green` task is routed through **Phase 3 (spec-compliance) + Phase 4 (verification)** as it lands.
 
-- **Per-green-task = Phase 3 + Phase 5 only.** Only the spec-compliance and fresh-verification reviews
+- **Per-green-task = Phase 3 + Phase 4 only.** Only the spec-compliance and fresh-verification reviews
   run per green task as it streams in.
-- **Phase 4 stays a once-per-scope barrier.** The quality review (Phase 4) MUST NOT be pipelined per
+- **Phase 5 stays a once-per-scope barrier.** The quality review (Phase 5) MUST NOT be pipelined per
   task — it still runs ONCE over the combined diff of the whole scope, after every task has cleared
-  Phase 3 and Phase 5. The streaming rail moves Phase 3 + Phase 5 earlier; it does NOT move Phase 4.
+  Phases 3 and 4. The streaming rail moves Phase 3 + Phase 4 earlier; it does NOT move Phase 5.
 - **`farm-report.json` is authority on abort (D7).** `farm-report.json` is always written in the
   dispatcher's `finally` — even on a circuit-breaker abort or crash — and remains the AUTHORITATIVE
   final summary. On an abort or crash, reconcile settled-task state against `farm-report.json`, NOT the
@@ -87,7 +87,7 @@ Consume `farm-results.jsonl` in completion order (Step 2.6); `farm-report.json` 
 reconciliation source on abort. For each result:
 
 - **status `green`** — the test gate + anti-gaming guard passed, but it is NOT yet accepted. Route the
-  task through **Phase 3 (spec-compliance), Phase 4 (quality review), and Phase 5 (fresh verification)**
+  task through **Phase 3 (spec-compliance), Phase 4 (fresh verification), and Phase 5 (quality review)**
   exactly as a premium subagent's output would be, measuring the merged change against the spec line the
   task traces to. A green result carrying a `warning` (gaming-risk) gets extra attention in Phase 3.
   Only after Phases 3–5 pass does the task reach Phase 6.

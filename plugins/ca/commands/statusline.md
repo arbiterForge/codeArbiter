@@ -29,7 +29,7 @@ tokens would have cost at list API rates — not a bill.
    path is written correctly:
 
    ```
-   python "${CLAUDE_PLUGIN_ROOT}/hooks/wire-statusline.py" <action> --plugin-root "${CLAUDE_PLUGIN_ROOT}"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/wire-statusline.py" <action> --plugin-root "${CLAUDE_PLUGIN_ROOT}" || python "${CLAUDE_PLUGIN_ROOT}/hooks/wire-statusline.py" <action> --plugin-root "${CLAUDE_PLUGIN_ROOT}"
    ```
 
    On non-Windows hosts the interpreter token defaults to `python3`; override with `--interp` only if

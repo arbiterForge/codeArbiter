@@ -1,6 +1,6 @@
 ---
 description: Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation.
-argument-hint: (none)
+argument-hint: "[description]"
 ---
 
 # /ca:conflict — conflict protocol
@@ -9,6 +9,9 @@ Orchestrator protocol, not a skill route. When a rule conflict surfaces — the 
 
 ## Flow
 
+0. **Seed** — when `$ARGUMENTS` carries a description (e.g. `/ca:conflict "persona says X, doc says Y"`),
+   use it as the starting statement of the conflict and locate the sources it names. Absent arguments,
+   the conflict is the one the orchestrator just detected.
 1. **Halt** — suspend the in-progress task. No partial progress.
 2. **Identify** the conflicting sources (A and B): which document, file, or rule each is.
 3. **Quote** the exact passages side by side.

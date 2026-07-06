@@ -44,8 +44,8 @@ is still routed through Phases 3–5 before acceptance. The cost arbitrage is in
 never in whether it is *reviewed*. In brief: select a model (canary-probe with a cache→websearch
 fallback ladder), dispatch `tools/farm.js`, honor a circuit-breaker abort as a hard-gate STOP, then for
 each result either accept-after-Phases-3–5 (green) or re-dispatch via premium Phase 2 (escalate).
-Results stream to `.farm/farm-results.jsonl` and are consumed in completion order — Phase 3 + Phase 5
-per green task as it lands, Phase 4 still the once-per-scope barrier (reconcile against `farm-report.json`
+Results stream to `.farm/farm-results.jsonl` and are consumed in completion order — Phase 3 + Phase 4
+per green task as it lands, Phase 5 still the once-per-scope barrier (reconcile against `farm-report.json`
 on abort). The reference has the full step-by-step.
 
 ---
@@ -75,9 +75,19 @@ traces to — not against whether tests merely pass.
 Gate: the obligation is fully satisfied and scope is clean. A shortfall returns the task to Phase 2
 with a corrective brief.
 
-## Phase 4 — Quality review (once per scope) · gate: BLOCK
+## Phase 4 — Verification · gate: BLOCK
 
-Runs ONCE per scope — after every task in the current scope has cleared Phase 3 and Phase 5 — over
+Verification-before-completion: apply the shared fresh-run discipline in
+`${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`, with **the task's verification command from the
+plan** as the target. Run it yourself in a clean invocation; do not accept a logged result from Phase 2.
+A non-zero exit, or output that does not demonstrate the obligation, returns the task to Phase 2.
+
+Gate: the verification command exits clean and its output demonstrates the obligation. Tasks remaining
+in the scope → return to Phase 1; every task through Phase 4 → proceed to Phase 5.
+
+## Phase 5 — Quality review (once per scope) · gate: BLOCK
+
+Runs ONCE per scope — after every task in the current scope has cleared Phases 3 and 4 — over
 the **combined diff** of the scope, not per 2–5-minute task. Per-task review at that granularity
 costs more context than the work and catches nothing the batch diff doesn't; the batch boundary is
 where review pays. (A scope of one task reviews that task's diff — same rule, degenerate case.)
@@ -103,26 +113,16 @@ plus `coverage-auditor` (already run in `tdd` Phase 4) — record that and proce
 Gate: no CRITICAL, no HIGH across the scope's combined diff. Nothing in the scope is `ACCEPTED`
 until this passes.
 
-## Phase 5 — Verification · gate: BLOCK
-
-Verification-before-completion: apply the shared fresh-run discipline in
-`${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`, with **the task's verification command from the
-plan** as the target. Run it yourself in a clean invocation; do not accept a logged result from Phase 2.
-A non-zero exit, or output that does not demonstrate the obligation, returns the task to Phase 2.
-
-Gate: the verification command exits clean and its output demonstrates the obligation. Only then.
-
 ## Phase 6 — Accept and advance · gate: BLOCK
 
-Mark the task `ACCEPTED` only when its spec-compliance review and fresh verification passed AND the
-scope's Phase 4 quality review passed.
+Mark each task `ACCEPTED` only when its spec-compliance review (Phase 3) and fresh verification
+(Phase 4) passed AND the scope's Phase 5 quality review passed.
 Record acceptance **in the plan file itself** — set the task's `status` cell in
 `.codearbiter/plans/<slug>.md` to `ACCEPTED` the moment it is accepted, plus any `[NEEDS-TRIAGE]`
 markers and the `.codearbiter/` audit trail. The plan's status column is the pipeline's resume
 ledger: an interrupted run is re-entered at the first non-`ACCEPTED` task, and an acceptance that
 lives only in conversation context is lost to the interruption.
 
-- Tasks remain in the current scope → return to Phase 1.
 - **Scoped invocation** (`scope` was passed by `executing-plans`): all scoped tasks `ACCEPTED` → signal
   batch complete and return to `executing-plans`. Do NOT hand to `commit-gate`; the caller owns that decision.
 - **Full-plan invocation** (no `scope`, i.e. `/sprint`): plan complete → hand the branch to
@@ -144,4 +144,4 @@ Gate: every task in the current scope `ACCEPTED`, the suite green, ready for the
 - MUST route every green farm task through Phases 3–5 before acceptance — the farm replaces authoring, never review. A cheap model gets the same scrutiny as a premium subagent, not less.
 - MUST treat a single task's drift/gaming/tampered-test escalation as model incapacity (re-dispatch via premium Phase 2); raise `[CONFIRM-NN]` and HALT only when multiple tasks drift onto the same out-of-scope path (a real spec gap).
 - MUST treat a `farm.js` circuit-breaker abort (`aborted: true`) as a hard-gate STOP — surface to the user; do not silently re-dispatch the whole slice to premium.
-- MUST NOT dispatch `grader` or `scout` in Phase 4 — they are INTERNAL to `decision-variance`.
+- MUST NOT dispatch `grader` or `scout` in Phase 5 — they are INTERNAL to `decision-variance`.

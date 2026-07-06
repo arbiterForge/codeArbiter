@@ -7,10 +7,10 @@ description: Optional manual drift audit — report stale provenance-tracked doc
 
 An optional, on-demand drift audit for bypass cases: a merge or an external
 edit drifted a tracked source file you are not about to commit, so commit-gate's
-Phase 5.5 auto-heal did not fire. This skill reports stale docs and lets you
+Phase 6 auto-heal did not fire. This skill reports stale docs and lets you
 act on each one individually.
 
-This skill is NOT in the daily loop. Commit-gate auto-heal (Phase 5.5,
+This skill is NOT in the daily loop. Commit-gate auto-heal (Phase 6,
 `heal_worklist`) owns the routine maintenance path. Invoke this only when drift
 was introduced outside a commit (e.g. a direct push, a merge you did not
 author, a manual file edit).
@@ -60,7 +60,7 @@ Stale docs (N):
 For each stale doc, present three choices and wait for the user to select one:
 
 **re-scout** — dispatch an incremental re-scout of the drifted paths for this
-doc, scoped to those paths only (like commit-gate Phase 5.5 heal but manually
+doc, scoped to those paths only (like commit-gate Phase 6 heal but manually
 invoked). The scout re-reads the changed paths and reports whether claims still
 hold. If claims still hold: silently re-baseline the hashes via `rebaseline`.
 If claims changed: surface the proposed doc edits for the user to accept before

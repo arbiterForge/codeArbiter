@@ -19,7 +19,7 @@ populating before normal operation.
 1. Run the scaffolder against the repo's git toplevel (resolved by the script):
 
    ```
-   python "${CLAUDE_PLUGIN_ROOT}/hooks/init-codearbiter.py"
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/init-codearbiter.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/init-codearbiter.py"
    ```
 
    It is idempotent and refuses if `.codearbiter/CONTEXT.md` already exists — it never overwrites
