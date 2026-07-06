@@ -5,7 +5,7 @@ description: Optional, opt-in STRIDE threat pass for a sensitive feature — inv
 
 # security-architecture
 
-Optional, lightweight threat-modeling pass over a design before it is built. Routed to only when the user deliberately invokes `/threat-model <scope>` for a sensitive feature — never forced on an ordinary change. Reviews architectural intent before code exists; for code already written, dispatch `security-reviewer` instead.
+Reviews architectural intent before code exists — for code already written, dispatch `security-reviewer` instead.
 
 ## Pre-flight
 

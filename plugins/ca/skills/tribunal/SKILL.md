@@ -40,7 +40,7 @@ Map before reviewing; the map decides what gets scrutiny.
 
 - Produce the inventory (inline, or on a large repo dispatch the optional cheap mappers per `references/cost-and-models.md`): file tree, language breakdown, entry points/routes, core-logic and shared-utility locations, dependency and integration surface. Write `inventory.md`.
 - Apply the judgment overlay in `references/ai-markers.md`: risk-rank directories (untrusted input, money, auth, PII, churn = highest), mark trust boundaries, record AI-authorship markers and an iteration-depth estimate. High-marker / high-iteration areas carry a scrutiny boost and a small severity prior.
-- Choose the active lenses — the full roster minus any whose concern is absent from scope (no migrations → drop the migration lens). Record launched/skipped as `run.jsonl` events.
+- Choose the active lenses — the full eleven-lens roster minus any whose concern is absent from scope (no migrations → drop the migration lens). Record launched/skipped as `run.jsonl` events.
 - Choose the wave partition — the default in `references/cost-and-models.md`, or a repartition for cause — and record it in the `run-started` event (`references/schemas.md`); resume reads this recorded partition, never re-derives it.
 
 Gate: `inventory.md` written with the risk/boundary/marker overlay, and the active-lens set recorded.

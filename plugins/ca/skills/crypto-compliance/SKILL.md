@@ -5,7 +5,7 @@ description: The banned-primitive gate. Routed to when changed code hashes, sign
 
 # crypto-compliance
 
-The banned-primitive gate. Routed to when changed code uses cryptography, hashing, signing, key derivation, security-relevant random generation, or TLS configuration.
+The banned-primitive gate.
 
 ## Pre-flight
 

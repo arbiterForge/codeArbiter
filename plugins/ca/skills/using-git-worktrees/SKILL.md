@@ -6,7 +6,7 @@ description: OPTIONAL per-task isolation for autonomous parallel work. Routed to
 # using-git-worktrees
 
 If the caller does not request isolation, this skill does not run — parallel units share the working
-tree under their own discipline. Isolation is convenience, not soul.
+tree under their own discipline. Isolation changes nothing about the gates.
 
 ## Pre-flight
 

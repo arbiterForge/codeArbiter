@@ -56,13 +56,10 @@ Gate: the chosen option completed — for open-PR a PR exists against the defaul
 
 ## Phase 4 — Receipt · gate: BLOCK
 
-The loop has been a chain of gates the user watched clear. End it on its most rewarding beat, not in
-silence. Emit a tight **Receipt** — a win summary that reflects the prevention back, drawn ONLY from
-the state Phase 1 already assembled plus `${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint`. This is
-**not a fresh audit-trail crawl** — no new log scan, no `git` archaeology. If a field has no data in
-hand, omit the line rather than go digging.
-
-Report only what the assembled state supports:
+Emit a **Receipt** — a win summary of what the gates caught and prevented on this branch — drawn
+ONLY from the state Phase 1 already assembled plus
+`${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint`. No new log scan, no `git` archaeology; a field
+with no data in hand is omitted, not dug for. Report only what the assembled state supports:
 
 - **Obligations covered** — the count of `tdd` obligations that reached `COVERED` on this branch.
 - **Gates that fired and what each caught** — the gates that BLOCKed and then cleared, named with the

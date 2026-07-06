@@ -5,7 +5,7 @@ description: The test-first gate. Routed to by /feature (after the spec is appro
 
 # tdd
 
-Test-first, or it does not ship. Routed to by `/feature` (after spec approval), `/fix`, and `/refactor`.
+Test-first, or it does not ship.
 
 ## Pre-flight
 

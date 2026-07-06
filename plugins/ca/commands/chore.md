@@ -41,7 +41,7 @@ the other).
    a mechanical revert is NOT a chore — redirect to `/ca:feature` or `/ca:fix` and stop.
 2. Run the type's gates above.
 3. Exit through `commit-gate` with the matching classification, then
-   `finishing-a-development-branch` as usual.
+   `finishing-a-development-branch`.
 
 ## When NOT to use
 

@@ -73,7 +73,8 @@ Source the OAuth token and confirm it is injected as ENV, never bound from the h
   (`-e CLAUDE_CODE_OAUTH_TOKEN=…`) — this IS the auth path; no host bind of
   `~/.claude` is required or permitted.
 - The token MUST NOT be echoed to logs, written to a file the source volume can
-  read, or passed into any LLM prompt. Prefer a scoped/short-lived setup-token.
+  read, or passed into any LLM prompt. Use a scoped, short-lived setup-token
+  unless the user explicitly supplies a longer-lived one.
 - Persistence: HOME is backed by a docker NAMED VOLUME, so the credential store
   `$HOME/.claude/.credentials.json` survives a restart on the volume — not on the
   host. A fresh container on the same volume resumes the session.

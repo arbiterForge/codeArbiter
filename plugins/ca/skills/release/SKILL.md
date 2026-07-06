@@ -16,10 +16,10 @@ Read these, or STOP and surface the gap — never guess:
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — the default-branch name and project context.
 - `git status` must be clean. A dirty tree STOPs — commit or stash via `commit-gate` first.
 - The current branch MUST NOT be `main`, `master`, or the default branch. Release lands through the normal branch/PR path; if HEAD is the default branch, STOP.
-- **Resolve `LAST_TAG` from ca's SemVer tags only** — never bare `git describe --tags --abbrev=0`, which returns the nearest tag by commit-graph ancestry regardless of series. Resolve it through the tested helper — the single source of truth, do not hand-roll a grep: `LAST_TAG=$(git tag -l | python3 .github/scripts/_releaselib.py last-tag)`. `_releaselib.last_tag_select` returns the highest `vMAJOR.MINOR.PATCH`, excluding pre-releases (`-beta`/`-rc`/`-alpha`) and the `ca-sandbox-v*` series, or `<none>` (its logic is pinned by `.github/scripts/test_release_lib.py`). No matching tag → `LAST_TAG=<none>`, treat the full history as the window, base version `0.0.0`.
+- **Resolve `LAST_TAG` via the tested helper — never bare `git describe` and never a hand-rolled grep:** `LAST_TAG=$(git tag -l | python3 .github/scripts/_releaselib.py last-tag)`. It returns the highest `vMAJOR.MINOR.PATCH` — excluding pre-releases (`-beta`/`-rc`/`-alpha`) and the `ca-sandbox-v*` series — or `<none>` → treat the full history as the window, base version `0.0.0`. Its logic is pinned by `.github/scripts/test_release_lib.py`. (Bare `git describe --tags --abbrev=0` returns the nearest tag by ancestry regardless of series.)
 - **Scope the release window to the `ca` payload:** the commit set is `git log LAST_TAG..HEAD -- plugins/ca/`, NOT the whole repo. This payload-scoped set must be non-empty; if empty, STOP — nothing to release for `ca`.
 - **Manifest read:** read the `version` field of `plugins/ca/.claude-plugin/plugin.json` — Phase 1 asserts against it and updates it (and the README badges/counts).
-- **farm.js freshness — rebuild unconditionally:** every release, regardless of whether `farm.ts` changed in the window, rebuild and assert the committed bundle is in sync: `(cd plugins/ca/tools && npm run build) && git diff --quiet -- plugins/ca/tools/farm.js`. A non-empty diff means `farm.js` is stale — a release blocker (the plugin ships `farm.js`, not `farm.ts`); commit the rebuild through `commit-gate` before tagging. Scope is `ca` only — `sandbox.js` belongs to the ca-sandbox release path, not here. The mechanical backstop is the CI `tools` job, which rebuilds and `git diff --quiet`s `farm.js` on every `plugins/ca/**`-touching PR; this local check is the belt to that suspenders, not a standalone gate. (The old form gated the rebuild on an in-window `farm.ts` change and so missed a `farm.js` that went stale before the window.)
+- **Rebuild `farm.js` unconditionally and assert the committed bundle is in sync:** `(cd plugins/ca/tools && npm run build) && git diff --quiet -- plugins/ca/tools/farm.js`. A non-empty diff is a release BLOCKER — the plugin ships `farm.js`, not `farm.ts`; commit the rebuild through `commit-gate` before tagging. Scope is `ca` only (`sandbox.js` belongs to the ca-sandbox path). The CI `tools` job is the mechanical backstop. (Unconditional because gating on an in-window `farm.ts` change missed a bundle that went stale before the window.)
 
 ## Phase 1 — Version & changelog · gate: BLOCK
 
@@ -32,8 +32,34 @@ Derive the bump mechanically from the commit log; do not guess it.
    - else any `fix`, `perf`, `refactor` → **patch**.
    - `test` / `docs` / `chore` / `ci` only → no bump. If the whole window is non-bumping, STOP — there is nothing to release.
 3. Compute the next version, confirm it is strictly greater than `LAST_TAG`, and assert it **equals** the `version` in `plugins/ca/.claude-plugin/plugin.json`. If the manifest lags the derived bump, bump it now — a precondition of tagging, not an afterthought; a tag whose version runs ahead of `plugin.json` ships nothing, because `claude plugin update` no-ops on an unchanged version string. Present the version and the per-commit classification to the user for confirmation.
-4. Derive the release date **once** — `RELEASE_DATE=$(date +%F)` — and reuse that single value for the changelog header, the Phase-2 `Released-at:` footer, and the Phase-3 Release; never hand-type the date a second time (`_releaselib.release_dates_consistent` verifies the changelog-header date equals the `Released-at:` date). Roll the `CHANGELOG:` footers from each `feat` / `fix` / `perf` commit into a new `## [MAJOR.MINOR.PATCH] — $RELEASE_DATE` section in the repo's `CHANGELOG.md` (the Keep-a-Changelog bracket heading the repo ships and the `_releaselib` guards match, not the bare `v`-prefixed form), grouped Added / Fixed / Performance. Prior sections stay intact. Create the file with a `# Changelog` heading if absent. **A `feat`/`fix` commit missing its `CHANGELOG:` footer is a BLOCK**, not a soft finding: surface the `[NEEDS-TRIAGE]` and STOP — never auto-fill, and never tag a changelog that silently drops a user-visible change. The changelog is a user-facing deliverable: apply `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md` §3.A (no prose-separator em-dashes in the entry prose) and §3.B (copy self-audit), and the `medium-documents` §7.A.1 changelog guidance, to each rolled entry.
-5. **Sync the release surfaces to the repo — mechanically derived, never typed.** Update, all to the derived version / live counts: `plugins/ca/.claude-plugin/plugin.json` `version`; the README version badge (`version-X.Y.Z`); the command / skill / agent **count** badges and every prose echo of those counts (e.g. "N commands", the `commands/ (N)` tree line). Derive each count from the repo, never increment by hand: `commands = ls plugins/ca/commands/*.md | grep -v INDEX | wc -l`, `skills = ls -d plugins/ca/skills/*/ | wc -l`, `agents = ls plugins/ca/agents/*.md | grep -v INDEX | wc -l`. Then assert the canonical catalog `plugins/ca/COMMANDS.md` enumerates exactly those command files, and that the README full-catalog table lists every one of them (the `/ca:commands` body at `plugins/ca/commands/COMMANDS.md` renders from the canonical catalog and holds no rows of its own — do not treat it as a second catalog). A badge, prose-count, README-table, or catalog drift is a **BLOCK** — reconcile it before tagging. The CI badge-consistency guard (`.github/scripts/check_badge_consistency.py`) is the mechanical backstop for this step; if it is red, this step is not done.
+4. **Roll the changelog:**
+   - Derive the release date **once** — `RELEASE_DATE=$(date +%F)` — and reuse that single value for
+     the changelog header, the Phase-2 `Released-at:` footer, and the Phase-3 Release
+     (`_releaselib.release_dates_consistent` verifies header equals footer).
+   - Roll the `CHANGELOG:` footers from each `feat` / `fix` / `perf` commit into a new
+     `## [MAJOR.MINOR.PATCH] — $RELEASE_DATE` section of `CHANGELOG.md` (the Keep-a-Changelog bracket
+     heading the repo ships and the `_releaselib` guards match), grouped Added / Fixed / Performance.
+     Prior sections stay intact; create the file with a `# Changelog` heading if absent.
+   - **A `feat`/`fix` commit missing its `CHANGELOG:` footer is a BLOCK**, not a soft finding:
+     surface the `[NEEDS-TRIAGE]` and STOP — never auto-fill, never tag a changelog that silently
+     drops a user-visible change.
+   - The changelog is user-facing: apply `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md`
+     §3.A (no prose-separator em-dashes) and §3.B (copy self-audit), and the `medium-documents`
+     §7.A.1 changelog guidance, to each rolled entry.
+5. **Sync the release surfaces — mechanically derived, never typed:**
+   - Update to the derived version / live counts: `plugins/ca/.claude-plugin/plugin.json` `version`;
+     the README version badge (`version-X.Y.Z`); the command / skill / agent count badges and every
+     prose echo of those counts (e.g. "N commands", the `commands/ (N)` tree line).
+   - Derive each count from the repo, never increment by hand:
+     `commands = ls plugins/ca/commands/*.md | grep -v INDEX | wc -l`;
+     `skills = ls -d plugins/ca/skills/*/ | wc -l`;
+     `agents = ls plugins/ca/agents/*.md | grep -v INDEX | wc -l`.
+   - Assert `plugins/ca/COMMANDS.md` enumerates exactly those command files, and the README
+     full-catalog table lists every one of them (the `/ca:commands` body at
+     `plugins/ca/commands/COMMANDS.md` renders from the canonical catalog — never a second catalog).
+   - Any badge, prose-count, README-table, or catalog drift is a **BLOCK** — reconcile before
+     tagging. CI's `check_badge_consistency.py` is the mechanical backstop; if it is red, this step
+     is not done.
 6. If the changelog edit or the surface sync needs to land as a commit before tagging, route it through `commit-gate`. Do not reimplement the commit path here.
 
 Gate: version confirmed, strictly monotonic, matching the commit log, and equal to `plugin.json`; `CHANGELOG.md` updated; README badges/prose-counts and the `COMMANDS.md` catalog reconciled to the repo. BLOCK if the classification disagrees with the log, the window is non-bumping, a bumping commit's `CHANGELOG:` footer is missing, or any surface count/catalog drifts.
