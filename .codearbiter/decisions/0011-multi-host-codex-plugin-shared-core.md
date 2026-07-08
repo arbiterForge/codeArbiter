@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-07-08
 title: Multi-host support — third sibling plugin ca-codex via shared core + thin host adapters
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,8 +10,8 @@ governs: core/*, tools/sync-core.py, tools/build-surface.py, plugins/ca-codex/*,
 # ADR-0011 — Multi-host support: third sibling plugin `ca-codex` via shared core + thin host adapters
 
 ## Status
-Proposed — decision made 2026-07-08 by SUaDtL@users.noreply.github.com via approved plan
-(`.codearbiter/plans/codex-support.md`); awaiting explicit ratification to `accepted`.
+Accepted — ratified 2026-07-08 by SUaDtL@users.noreply.github.com ("I approve the adr"), after
+plan approval the same day (`.codearbiter/plans/codex-support.md`).
 
 ## Context
 `CONTEXT.md` has stated "Claude Code only" since v2 deleted v1's multi-host machinery (the AGENTS.md
