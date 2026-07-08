@@ -344,3 +344,28 @@ Security-and-audit-trail lens (level 1) weighed against maintainability (level 3
 No producer change. Add a "Gate-marker trust boundary" note to `security-controls.md` stating markers are cooperative-agent attestations and direct `security-pass.py` invocation is the intended attestation. Close issue #196 referencing ADR-0010. Reopens if the threat model expands to untrusted/adversarial agents.
 
 ---
+
+## DECISION-0011 — ADR-0011 — Multi-host support: third sibling plugin ca-codex via shared core + thin host adapters
+
+**Date:** 2026-07-08
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture / scope
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** CONTEXT.md "NOT this project" declares "Claude Code only"; v1's multi-host machinery was deliberately deleted.
+- **Scaffold position:** n/a — an open scope decision prompted by Codex CLI v0.142.x reaching extension-point parity (plugins, blocking hooks, SKILL.md skills, subagents).
+- **Status type:** open-decision-closure
+
+### Decision
+Host a third sibling plugin `plugins/ca-codex/` bringing the same governance kernel to Codex CLI, built as shared core + thin host adapters: host-neutral Python in `core/pysrc/` and markdown templates in `core/surface/`, vendored byte-exact into each plugin by stdlib generators with CI-enforced byte-identity. Independent SemVer from 0.1.0 (ADR-0007 pattern). Beta-labeled until live-Codex verification. Statusline and prune-transcript backend ledgered out of parity in docs/parity.md. Recorded as ADR-0011; amends CONTEXT.md's "Claude Code only" scope.
+
+### SMARTS rationale
+Maintainability (level 3) drove the architecture: copy-and-adapt reproduces the v1 drift failure, runtime shared imports couple to both hosts' clone layouts — build-time vendoring with a mechanical drift guard is the only option that keeps one source of truth without runtime fragility. Correctness of the audit trail (level 1) is preserved by keeping one shared `.codearbiter/` store and porting the same blocking gates. Adoption (ADR-0006 posture) motivated the scope expansion itself.
+
+### Implementation implication
+New `core/` + `tools/sync-core.py` + `tools/build-surface.py`; `plugins/ca-codex/` scaffold; CONTEXT.md identity/scope rewrite; release.yml and CI path filters parameterized for a third plugin (`core/**` triggers both suites); docs/parity.md ledger. Plan: `.codearbiter/plans/codex-support.md`. M0 spike answers the live-fire unknowns (SessionStart stdout injection, tool names, trust review) before M2 ships.
+
+---
