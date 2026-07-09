@@ -507,6 +507,26 @@ jobs:
       - name: Check license declarations agree across surfaces
         run: python3 .github/scripts/check_license_consistency.py .
 
+  orchestrator-parity:
+    name: Repo | [Check] - ORCHESTRATOR.md Parity
+    # Shared infra - plugins/ca/ORCHESTRATOR.md and plugins/ca-codex/ORCHESTRATOR.md
+    # are hand-duplicated (issue #262, architecture-010): ADR-0011 named a
+    # core/surface/ + tools/build-surface.py generator that would let the two
+    # controllably diverge, but that generator does not exist yet. Until it
+    # does, an edit to one file that forgets its twin silently ships divergent
+    # governance between the two hosts with nothing to catch it. This is a
+    # drift GUARD (byte-identity today), not the generator. Repo-wide and
+    # always-on, like license-consistency: an ORCHESTRATOR.md edit can ride
+    # any PR, not just a plugins/**-path-filtered one.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Check ORCHESTRATOR.md is byte-identical across plugins/ca and plugins/ca-codex
+        run: python3 .github/scripts/check_orchestrator_parity.py .
+
   ci-passed:
     name: Repo | [Gate] - CI Passed
     if: always()
@@ -523,6 +543,7 @@ jobs:
       - prose-sandbox
       - manifests
       - license-consistency
+      - orchestrator-parity
     runs-on: ubuntu-latest
     steps:
       - name: Require every job to have succeeded or been skipped
