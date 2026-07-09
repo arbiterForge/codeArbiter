@@ -45,8 +45,12 @@ class Host:
     # Capability flags — what surfaces this host actually has. A hook that
     # heals/queries a statusline gates on has_statusline; a hook registered
     # for a Read tool gates on has_read_tool (Codex has neither).
+    # has_prunable_transcript gates the prune ENGINE only (it rewrites
+    # Claude-Code-format transcript JSONL); the audit staleness-warn sharing
+    # that entry reads .codearbiter logs and runs on every host.
     has_statusline = True
     has_read_tool = True
+    has_prunable_transcript = True
 
     # Native tool name -> canonical category. Anything unlisted is "OTHER".
     TOOL_MAP = {

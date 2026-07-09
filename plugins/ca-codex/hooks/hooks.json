@@ -52,6 +52,19 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: audit staleness check"
+          }
+        ]
+      }
     ]
   }
 }

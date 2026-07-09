@@ -24,6 +24,7 @@ Stdlib only. Exit 0 = all tests pass.
 """
 
 import importlib.util
+import io
 import json
 import os
 import re
@@ -118,6 +119,10 @@ class TestCodexToolNormalization(unittest.TestCase):
         self.assertEqual(self.host.name, "codex")
         self.assertFalse(self.host.has_statusline)
         self.assertFalse(self.host.has_read_tool)
+        # The prune ENGINE is Claude-format-only; the staleness-warn sharing
+        # its entry is host-neutral and runs on Codex (see hooks.json test).
+        self.assertFalse(self.host.has_prunable_transcript)
+        self.assertTrue(claude_host().has_prunable_transcript)
 
     def test_bash_is_exec(self):
         self.assertEqual(self.host.normalize_tool("Bash"), "EXEC")
@@ -504,6 +509,65 @@ class TestCodexPreBashParity(_VerdictFixture):
     def test_no_verify_commit_blocks(self):
         self.assertBlocked(self.codex_bash('git commit --no-verify -m "x"'), "H-20")
 
+
+class TestPruneEntryHostGate(unittest.TestCase):
+    """prune-transcript.py hook mode: the audit staleness-warn is host-neutral
+    and runs everywhere; the prune ENGINE (hook_run, Claude-format transcript
+    JSONL) is gated by host.has_prunable_transcript (parity ledger)."""
+
+    PAYLOAD = json.dumps({"hook_event_name": "UserPromptSubmit", "prompt": "x"})
+
+    def _main_with(self, hooks_dir):
+        # Both plugins' copies get loaded in ONE interpreter, and each entry
+        # resolves hostapi/_host by sys.path + module cache — purge every
+        # hooks-dir module so this load binds to ITS plugin's _host.py.
+        saved_path = list(sys.path)
+        saved_mods = {}
+        for name, m in list(sys.modules.items()):
+            f = (getattr(m, "__file__", "") or "")
+            if f.startswith(CA_HOOKS) or f.startswith(CODEX_HOOKS):
+                saved_mods[name] = sys.modules.pop(name)
+        try:
+            mod = _load(os.path.join(hooks_dir, "prune-transcript.py"),
+                        "prune_entry_under_test_" + os.path.basename(
+                            os.path.dirname(hooks_dir)))
+            calls = []
+            mod.hook_run = lambda payload: (calls.append(payload), 0)[1]
+            mod.staleness_check = lambda payload: None  # host-neutral, separate
+            old_stdin = sys.stdin
+            try:
+                sys.stdin = io.StringIO(self.PAYLOAD)
+                rc = mod.main([])
+            finally:
+                sys.stdin = old_stdin
+            return rc, calls
+        finally:
+            sys.path[:] = saved_path
+            for name, m in saved_mods.items():
+                sys.modules[name] = m
+
+    def test_engine_skipped_on_codex_staleness_path_still_exits_zero(self):
+        rc, calls = self._main_with(CODEX_HOOKS)
+        self.assertEqual(rc, 0)
+        self.assertEqual(calls, [], "prune engine must not run on Codex")
+
+    def test_engine_still_runs_on_claude(self):
+        rc, calls = self._main_with(CA_HOOKS)
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(calls), 1, "Claude keeps the pre-gate behavior")
+
+
+class TestCodexPreBashParityTail(_VerdictFixture):
+    """Continuation of TestCodexPreBashParity (kept adjacent to the prune-gate
+    class insertion): remaining Bash-gate verdicts via ca-codex's entry."""
+
+    def codex_bash(self, command):
+        return self._spawn(
+            os.path.join(CODEX_HOOKS, "pre-bash.py"),
+            {"hook_event_name": "PreToolUse", "tool_name": "Bash",
+             "cwd": self.root, "tool_input": {"command": command}},
+            claude_env=False)
+
     def test_audit_log_truncation_blocks(self):
         self.assertBlocked(
             self.codex_bash("echo x > .codearbiter/overrides.log"), "H-05")
@@ -560,8 +624,17 @@ class TestCodexHooksJson(unittest.TestCase):
     def test_ledgered_out_surfaces_not_registered(self):
         text = json.dumps(self.cfg)
         self.assertNotIn("pre-read.py", text)       # no read tool on Codex
-        self.assertNotIn("prune-transcript.py", text)  # ledgered out
         self.assertNotIn("pre-edit.py", text)       # edits arrive as apply_patch
+        # prune-transcript.py IS registered, but only on UserPromptSubmit for
+        # the host-neutral audit staleness-warn; the prune ENGINE is gated off
+        # by has_prunable_transcript. PreCompact (engine-only) stays out.
+        self.assertNotIn("PreCompact", text)
+
+    def test_user_prompt_submit_staleness_warn_registered(self):
+        entries = self._entries("UserPromptSubmit")
+        self.assertTrue(any("prune-transcript.py" in h["command"]
+                            for _, h in entries),
+                        "audit staleness-warn (CONFIRM-09) must run on Codex")
 
     def test_windows_fallback_and_timeouts(self):
         for event in self.hooks:

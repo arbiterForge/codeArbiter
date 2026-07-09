@@ -151,6 +151,8 @@ class CodexHost(hostapi.Host):
     name = "codex"
     has_statusline = False   # no statusline surface exists on Codex
     has_read_tool = False    # no read tool; file reads happen via shell
+    has_prunable_transcript = False  # Codex transcripts are not the pruner's
+                                     # JSONL format; staleness-warn still runs
 
     # Native tool name -> canonical category. "Write"/"Edit" are Codex
     # matcher-only ALIASES for apply_patch (the payload is still the patch
