@@ -1,0 +1,11 @@
+{
+  "name": "ca-codex",
+  "displayName": "codeArbiter for Codex",
+  "description": "Beta governance kernel for OpenAI Codex CLI: the codeArbiter enforcement hooks (persona injection at SessionStart, blocking pre-exec and pre-write gates, append-only audit trail) sharing one .codearbiter/ store with the Claude Code sibling plugin. Requires Python 3 on PATH and Codex >= 0.134.0. Dormant until you opt a repo in via /ca-init.",
+  "version": "0.1.0",
+  "author": { "name": "arbiterForge" },
+  "license": "AGPL-3.0-only",
+  "homepage": "https://github.com/arbiterForge/codeArbiter",
+  "repository": "https://github.com/arbiterForge/codeArbiter",
+  "keywords": ["codex", "governance", "orchestration", "commit-gate", "audit-trail", "hooks"]
+}

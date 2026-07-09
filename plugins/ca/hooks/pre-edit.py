@@ -24,8 +24,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 from _hooklib import (  # noqa: E402
     arbiter_active, block, classify_protected, frontmatter_enabled_text,
-    is_tail_append, marker_fresh, project_root, read_input, tool_input,
-    utf8_stdio,
+    get_host, is_tail_append, marker_fresh, project_root, read_input,
+    tool_input, utf8_stdio,
 )
 
 
@@ -67,7 +67,11 @@ def _resulting_context(root, fpath, tool, ti):
 def _run(root):
     payload = read_input()
     tool = payload.get("tool_name", "") or ""
-    ti = tool_input(payload)
+    # Host seam (ADR-0011, M2): a pass-through under Claude Code (whose
+    # Edit/MultiEdit/NotebookEdit payloads already ARE the canonical shapes).
+    # Codex does not register this entry at all — its edits arrive as
+    # apply_patch and are guarded per-op by pre-write.py (docs/parity.md).
+    ti = get_host().normalize_tool_input(tool, tool_input(payload))
     # NotebookEdit carries `notebook_path`; Edit/MultiEdit carry `file_path`.
     fpath = ti.get("file_path", "") or ti.get("notebook_path", "") or ""
     classes = classify_protected(fpath, root)

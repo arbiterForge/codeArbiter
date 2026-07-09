@@ -27,10 +27,10 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CORE = os.path.join(REPO, "core", "pysrc")
 
-# Every plugin hooks dir that vendors the core. plugins/ca-codex/hooks joins
-# in M2.
+# Every plugin hooks dir that vendors the core.
 PLUGINS = (
     os.path.join("plugins", "ca", "hooks"),
+    os.path.join("plugins", "ca-codex", "hooks"),
 )
 
 # Per-plugin files that must never be synced from core even if a same-named

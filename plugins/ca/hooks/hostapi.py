@@ -114,6 +114,60 @@ class Host:
         native shape overrides this to translate."""
         return tool_input if isinstance(tool_input, dict) else {}
 
+    def iter_file_ops(self, payload):
+        """The canonical per-file operations a WRITE/EDIT-category hook payload
+        performs (codex-support M2): a list of dicts, one per touched file —
+
+            {"file_path":  the native path string,
+             "kind":       "write" | "edit" | "delete",
+             "content":    the file's FULL resulting content when knowable
+                           (a Write / patch Add File), else None,
+             "added_text": the raw text this op introduces (content for a
+                           write, new_string for an edit, joined + lines for
+                           a patch hunk),
+             "added_lines": added_text split into lines}
+
+        This is the seam the shared pre-write.py / post-write-edit.py entries
+        iterate, so a host whose one write tool carries MANY file operations
+        (Codex's apply_patch envelope) hits the same per-file guard logic as
+        Claude's one-file-per-call Write/Edit.
+
+        The Claude mapping preserves the pre-seam behavior EXACTLY:
+          * Edit / MultiEdit / NotebookEdit -> "edit" op(s) whose added_text is
+            new_string (NotebookEdit carries notebook_path and introduces no
+            reasoned-about content).
+          * Write — and ANY unrecognized/missing tool_name — -> one "write" op.
+            The pre-seam pre-write.py never read tool_name at all (it guarded
+            every payload carrying a file_path), so the default branch must
+            not narrow that: an unrecognized payload is guarded as a write,
+            with added_text falling back to new_string exactly as the
+            pre-seam post-write-edit.py's `content or new_string` read did.
+        """
+        payload = payload if isinstance(payload, dict) else {}
+        tool = payload.get("tool_name", "") or ""
+        ti = payload.get("tool_input", {}) or {}
+        if not isinstance(ti, dict):
+            return []
+        if tool == "MultiEdit":
+            fpath = ti.get("file_path", "") or ""
+            ops = []
+            for e in ti.get("edits", []) or []:
+                new = (e or {}).get("new_string", "") or ""
+                ops.append({"file_path": fpath, "kind": "edit", "content": None,
+                            "added_text": new, "added_lines": new.splitlines()})
+            return ops
+        if tool in ("Edit", "NotebookEdit"):
+            fpath = ti.get("file_path", "") or ti.get("notebook_path", "") or ""
+            new = ti.get("new_string", "") or ""
+            return [{"file_path": fpath, "kind": "edit", "content": None,
+                     "added_text": new, "added_lines": new.splitlines()}]
+        # Write, and the guard-everything default (see docstring).
+        fpath = ti.get("file_path", "") or ""
+        content = ti.get("content", "") or ""
+        added = content or (ti.get("new_string", "") or "")
+        return [{"file_path": fpath, "kind": "write", "content": content,
+                 "added_text": added, "added_lines": added.splitlines()}]
+
 
 def load_host():
     """The Host instance for this plugin: `HOST` from the `_host.py` sitting

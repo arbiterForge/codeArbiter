@@ -17,8 +17,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, arbiter_active, is_ci_path, is_deploy_path,
-    project_root, read_input, remind, repo_rel, tool_input, utf8_stdio,
+    CRYPTO_RE, SECRET_RE, arbiter_active, get_host, is_ci_path, is_deploy_path,
+    project_root, read_input, remind, repo_rel, utf8_stdio,
 )
 from _sloplib import find_prose_separator_dashes, in_antislop_doc_scope  # noqa: E402
 
@@ -93,14 +93,16 @@ def governs_index(root):
     return index
 
 
-def main():
-    utf8_stdio()
-    root = project_root()
-    if not arbiter_active(root):
-        sys.exit(0)
-    ti = tool_input(read_input())
-    fpath = ti.get("file_path", "") or ""
-    content = ti.get("content") or ti.get("new_string") or ""
+def _remind_op(root, op):
+    """Run every advisory nudge against ONE canonical file op
+    (hostapi.Host.iter_file_ops, ADR-0011 M2). Under Claude Code this receives
+    exactly the one op its Write/Edit payload maps to — op["added_text"] is
+    content-or-new_string, precisely the pre-seam `ti.get("content") or
+    ti.get("new_string")` read — so the Claude reminder path is unchanged. A
+    Codex apply_patch envelope fans out to one op per touched file, each
+    getting the same per-file nudges over its added lines."""
+    fpath = op.get("file_path", "") or ""
+    content = op.get("added_text") or ""
 
     # H-12: the touched file is governed by an accepted ADR — surface it so the
     # recorded decision pushes back at edit time, not at the next checkpoint.
@@ -166,6 +168,17 @@ def main():
                            f"{shown}{more} (anti-slop-design §3.A). Restructure the prose "
                            f"and run the §3.A/§3.B copy self-audit before committing.")
 
+
+def main():
+    utf8_stdio()
+    root = project_root()
+    if not arbiter_active(root):
+        sys.exit(0)
+    # Host seam (ADR-0011, M2): one canonical op per touched file — exactly one
+    # under Claude Code (verdict-identical to the pre-seam single-payload body),
+    # one per patched file under Codex.
+    for op in get_host().iter_file_ops(read_input()):
+        _remind_op(root, op)
     sys.exit(0)
 
 

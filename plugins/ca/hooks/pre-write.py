@@ -25,19 +25,40 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 from _hooklib import (  # noqa: E402
     arbiter_active, block, classify_protected, frontmatter_enabled_text,
-    marker_fresh, project_root, read_input, tool_input, utf8_stdio,
+    get_host, marker_fresh, project_root, read_input, utf8_stdio,
 )
 
 
-def _run(root):
-    ti = tool_input(read_input())
-    fpath = ti.get("file_path", "") or ""
+def _guard_op(root, op):
+    """Run the four protected-path guards against ONE canonical file op
+    (hostapi.Host.iter_file_ops). Under Claude Code this receives exactly the
+    one "write" op its Write payload maps to, so every check, message, and
+    check ORDER below is byte-identical to the pre-seam single-payload body.
+    The "edit"/"delete" kinds arrive only from a host whose write tool batches
+    per-file operations (Codex's apply_patch, ADR-0011 M2) — a patch hunk's
+    resulting content cannot be replayed the way pre-edit.py replays an Edit,
+    so those kinds resolve CLOSED on the content-sensitive guards."""
+    fpath = op.get("file_path", "") or ""
+    kind = op.get("kind", "write")
+
+    # H-21: an "opaque" op is a host's signal that a write-batching payload
+    # carried a recognizable envelope the adapter could NOT decompose into
+    # per-file ops (e.g. an apply_patch variant outside the mirrored grammar).
+    # Whatever it touches is unknowable here, so it can never pass unguarded —
+    # ambiguity resolves CLOSED (ORCHESTRATOR §2). Claude Code never emits
+    # this kind; its Write payload always maps to exactly one "write" op.
+    if kind == "opaque":
+        block("H-21", "This patch envelope could not be decomposed into per-file operations, "
+                      "so its targets cannot be guarded. Failing closed. Re-issue the change "
+                      "as a plain patch in the documented apply_patch grammar (or split it "
+                      "into smaller single-file patches).")
+
     classes = classify_protected(fpath, root)
 
     # H-19: the gate-pass markers are the mechanism that turns a hard-gate BLOCK
     # into an allow (#160). They are recorded only by the sanctioned producers
     # (security-pass.py / migration-pass.py) and the /adr `touch` — a Write here
-    # is a hand-forged marker. Block outright.
+    # is a hand-forged marker. Block outright (any kind: write, edit, delete).
     if "marker" in classes:
         block("H-19", "The .codearbiter/.markers/ gate tokens are not writable via the Write "
                       "tool (#160) — a hand-written marker forges a security/migration/ADR gate "
@@ -49,23 +70,43 @@ def _run(root):
     # from inside the repo it governs is exactly the kill-switch this closes (a
     # human can still opt out by editing the file outside the agent's tools).
     if "context" in classes:
-        enabled, malformed = frontmatter_enabled_text(ti.get("content", "") or "")
-        if malformed or not enabled:
-            block("H-18", "This Write would remove or alter the `arbiter: enabled` frontmatter in "
-                          ".codearbiter/CONTEXT.md (#159) — the activation switch every enforcement "
-                          "hook reads. Disabling it from inside the repo would make every gate "
-                          "dormant. Keep `arbiter: enabled` in a well-formed frontmatter block.")
+        if kind == "write":
+            enabled, malformed = frontmatter_enabled_text(op.get("content", "") or "")
+            if malformed or not enabled:
+                block("H-18", "This Write would remove or alter the `arbiter: enabled` frontmatter in "
+                              ".codearbiter/CONTEXT.md (#159) — the activation switch every enforcement "
+                              "hook reads. Disabling it from inside the repo would make every gate "
+                              "dormant. Keep `arbiter: enabled` in a well-formed frontmatter block.")
+        else:
+            # A patch edit's resulting frontmatter cannot be verified from its
+            # hunks, and a delete removes the activation switch outright —
+            # ambiguity resolves CLOSED (ORCHESTRATOR §2). /ca:override is the
+            # sanctioned escape hatch.
+            block("H-18", "This patch operation edits or deletes .codearbiter/CONTEXT.md (#159) — "
+                          "the activation switch every enforcement hook reads — and its resulting "
+                          "frontmatter cannot be verified from patch hunks. Failing closed; use the "
+                          "sanctioned init path (or /ca:override).")
 
     # H-05: the audit logs (and the /sprint decision record) are append-only —
     # a Write is a full overwrite. (path set: _hooklib.is_audit_log)
     if "audit" in classes:
+        if kind == "write":
+            block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
+                          "are append-only (ORCHESTRATOR §7). Append with Edit or '>>', never Write.")
+        # A patch edit is positional (it can rewrite interior lines) and a
+        # patch delete destroys the trail — neither can be a verifiable pure
+        # append the way pre-edit.py's tail-anchored Edit can.
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
-                      "are append-only (ORCHESTRATOR §7). Append with Edit or '>>', never Write.")
+                      "are append-only (ORCHESTRATOR §7). A patch cannot express a verifiable "
+                      "pure append; append with '>>' instead.")
 
     # H-11: ADRs may only be authored via /adr (the skill drops the marker first).
     # Any .md anywhere under decisions/ is covered — a non-numbered draft or a
     # nested path is still an immutable decision artifact. (set: is_decisions_path)
     if "decisions" in classes:
+        if kind == "delete":
+            block("H-11", "ADR files under .codearbiter/decisions/ are immutable history "
+                          "(ORCHESTRATOR §6) — deleting one is prohibited, marker or not.")
         marker = os.path.join(root, ".codearbiter", ".markers", "adr-authoring-active")
         if not os.path.isfile(marker):
             block("H-11", "ADR files are authored only via /adr (ORCHESTRATOR §3) — user "
@@ -73,6 +114,16 @@ def _run(root):
         if not marker_fresh(marker, 30):
             block("H-11", "ADR authoring marker is stale (>30 min). Re-run /adr.")
 
+
+def _run(root):
+    # The host seam (ADR-0011, M2): iter_file_ops maps this host's native
+    # payload to canonical per-file ops. Claude's Write payload maps to exactly
+    # one "write" op (same fields the pre-seam body read straight off
+    # tool_input), so the Claude verdict path is unchanged; Codex's apply_patch
+    # envelope fans out to one op per touched file, each hitting the same
+    # guards.
+    for op in get_host().iter_file_ops(read_input()):
+        _guard_op(root, op)
     sys.exit(0)
 
 

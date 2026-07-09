@@ -11,6 +11,7 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 Internal host-abstraction seam; no behavior change under Claude Code.
 
 ### Changed
+- **Per-op guard loop (ADR-0011, M2).** `pre-write.py` guards canonical per-file ops from `Host.iter_file_ops` (a Claude Write maps to exactly one op with the pre-seam fields, so its verdict path is byte-identical), with new fail-closed branches for patch-style edit/delete/opaque kinds that only a write-batching host (Codex `apply_patch`) can produce. `pre-bash.py`/`pre-edit.py` route `tool_input` through the host seam (pass-through on Claude). Proven by the unmodified 794-test suite plus the new cross-host verdict-parity suite.
 - **Shared-core extraction (ADR-0011, M1).** All 42 host-neutral hook files are now canonical in `core/pysrc/` and vendored byte-identically into `plugins/ca/hooks/` by `tools/sync-core.py` (`--check` gates drift in CI). A new `hostapi.py` seam carries host specifics (project-root resolution, tool-name normalization, capability flags); `plugins/ca/hooks/_host.py` pins the Claude Code host. Entry scripts are now importable `run(host)` functions with identical CLI, exit-code, and fail-open contracts — proven by the unmodified 794-test suite. Groundwork for the `ca-codex` sibling plugin.
 
 ## [2.8.11] — 2026-07-02

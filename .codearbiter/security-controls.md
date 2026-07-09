@@ -209,6 +209,22 @@ a `-C` target that is not a real directory now fails **closed** (H-01 block).
 copies, so audit lines / the task board / installed hooks land in the
 harness-authoritative project dir.
 
+The hook payload's `cwd` field is a **trusted-harness input** to repo
+resolution, on the same footing as the host's project-dir env var: both are
+written by the host harness itself, never by the model. Its precedence is
+per-host (`hostapi.Host.project_root`, ADR-0011): under **Claude Code** the
+env var `CLAUDE_PROJECT_DIR` is consulted first and the payload-`cwd` leg is
+inert (the harness always sets the env var); under **Codex** there is **no
+env leg at all** — `CLAUDE_PROJECT_DIR` is deliberately never consulted, so a
+value leaked from an adjacent Claude session cannot redirect the guards. The
+Codex Host method defines payload `cwd` as its first leg ahead of
+`git rev-parse --show-toplevel` and the process cwd, but the entry scripts do
+not currently feed the payload into `project_root()` — in the wired path,
+Codex resolution is `git rev-parse` from the session cwd, which is equivalent
+because the Codex harness runs every hook in the session cwd it also stamps
+into the payload. If an entry ever passes the payload, the documented
+precedence above is the contract it inherits.
+
 **Hooks-install re-probe fast-path is fail-safe (#194).** To cut SessionStart
 latency, `_githooks.install()` may skip the git-spawn hooks-dir probe when a
 cheap on-disk cache proves the shims are already current. The skip fires ONLY

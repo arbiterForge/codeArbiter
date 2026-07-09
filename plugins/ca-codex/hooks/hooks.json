@@ -1,0 +1,57 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "timeout": 60,
+            "statusMessage": "codeArbiter: activating governance"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: exec gate"
+          }
+        ]
+      },
+      {
+        "matcher": "apply_patch|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: write gate"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: scope-touch review"
+          }
+        ]
+      }
+    ]
+  }
+}

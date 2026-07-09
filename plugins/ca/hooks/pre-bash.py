@@ -25,8 +25,8 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 from _hooklib import (  # noqa: E402
     AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE,
     GATE_MARKER_NAMES, SECRET_RE, arbiter_active, block, content_digest,
-    is_migration_path, line_digest, marker_fresh, project_root, read_input,
-    tool_input, utf8_stdio,
+    get_host, is_migration_path, line_digest, marker_fresh, project_root,
+    read_input, tool_input, utf8_stdio,
 )
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
@@ -574,7 +574,15 @@ def _require_tip(cwd):
 
 
 def _run(root):
-    cmd = tool_input(read_input()).get("command", "") or ""
+    # Host seam (ADR-0011, M2): route the exec input through
+    # normalize_tool_input. A pass-through under Claude Code — and under Codex
+    # too, whose exec tool is also named "Bash" with the same {command} shape
+    # (spike §2) — kept on the seam so any future host whose exec input
+    # differs translates here, not in this guard.
+    payload = read_input()
+    ti = get_host().normalize_tool_input(payload.get("tool_name", "") or "",
+                                         tool_input(payload))
+    cmd = ti.get("command", "") or ""
 
     # Heredoc bodies are stdin text, not arguments — match the git command over
     # a body-stripped view so message content (which may contain `;`/`|`/`&`,
