@@ -21,6 +21,29 @@
 #     window before that, a missing enforcer makes the shim exit 0 (fail-OPEN on
 #     our OWN staleness only — never brick a user's commits because our path
 #     drifted; the pre-bash + Claude layers still apply).
+#
+#     Accepted residual, dual-host widening (reliability-009 / #265, LOW,
+#     ACCEPT-RISK): with BOTH `ca` and `ca-codex` installed against one repo,
+#     each SessionStart (whichever host ran last) rewrites the shim to point at
+#     THAT plugin's own `_enforcer_path()` — the two hosts manage entirely
+#     separate, independently versioned plugin caches (e.g. Claude Code's
+#     `~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/...`; Codex's
+#     cache root and layout are not fixed by anything in this repo), so the
+#     sibling plugin's absolute enforcer path is NOT reliably derivable from
+#     this file's own path at write time — no path-substitution or fixed
+#     sibling-directory guess survives an independent version bump on either
+#     side. Multiple-candidate embedding (try both known paths) and a runtime
+#     filesystem search (glob likely cache roots from inside the POSIX `sh`
+#     shim) were both considered and rejected: the former requires knowing a
+#     path this file cannot derive, and the latter would mean an unverified,
+#     host-layout-guessing filesystem search on every commit/push under
+#     Windows Git-Bash `sh` — a fragile git-level backstop is worse than the
+#     accepted trade. Net effect: uninstalling whichever plugin most recently
+#     ran SessionStart leaves the shim fail-open until the SURVIVING host's
+#     next SessionStart rewrites it (single-plugin behavior — install()
+#     writing its own current path — is unchanged and unaffected by this
+#     residual). Revisit only if a host-neutral, version-independent enforcer
+#     location becomes available (e.g. a shared non-versioned shim target).
 #   * A pre-existing NON-ours hook is NEVER clobbered — we warn loudly and skip,
 #     so an existing husky / pre-commit-framework setup is preserved.
 #   * Idempotent: an up-to-date ours-hook is left untouched (no churn); a stale
