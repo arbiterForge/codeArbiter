@@ -10,14 +10,33 @@ name: release
 # extracts the matching CHANGELOG section as the notes, and is idempotent — a
 # re-run when the tag/Release already exists is a no-op, not a failure.
 
+# ca-codex (the OpenAI Codex CLI sibling, ADR-0011) versions and releases
+# independently — its own tag namespace (ca-codex-v*), its own manifest
+# (plugins/ca-codex/.codex-plugin/plugin.json), its own CHANGELOG
+# (plugins/ca-codex/CHANGELOG.md). Both plugins share this one dispatched
+# workflow; each job is gated on its own confirm input being non-empty, so a
+# single dispatch releases exactly one plugin (never both, never neither) —
+# an empty `confirm` skips the `release` job entirely, an empty
+# `codex_confirm` skips `release-codex` entirely, and providing neither is an
+# explicit no-op the workflow does not need to special-case.
+
 on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: "ca version to release (must equal plugins/ca/.claude-plugin/plugin.json), e.g. 2.6.1"
-        required: true
+        description: "ca version to release (must equal plugins/ca/.claude-plugin/plugin.json), e.g. 2.6.1 — leave blank to release ca-codex instead"
+        required: false
+        default: ""
       summary:
         description: "Optional release-title summary (appended after the version)"
+        required: false
+        default: ""
+      codex_confirm:
+        description: "ca-codex version to release (must equal plugins/ca-codex/.codex-plugin/plugin.json), e.g. 0.1.0 — leave blank to release ca instead"
+        required: false
+        default: ""
+      codex_summary:
+        description: "Optional release-title summary for the ca-codex release"
         required: false
         default: ""
 
@@ -26,8 +45,10 @@ permissions:
 
 jobs:
   release:
-    # Publish only from the default branch, where the merged CHANGELOG section lives.
-    if: github.ref == 'refs/heads/main'
+    name: CA | [Release] - Publish
+    # Publish only from the default branch, where the merged CHANGELOG section
+    # lives, and only when this dispatch requested a ca release.
+    if: github.ref == 'refs/heads/main' && github.event.inputs.confirm != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -100,6 +121,96 @@ jobs:
               --notes-file notes.md \
               --target "$GITHUB_SHA" \
               --latest --verify-tag
+          fi
+
+          # Verify publication rather than assume it (a create can partially succeed).
+          gh release view "$TAG" --json url,isDraft,tagName
+          DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
+          [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
+
+  release-codex:
+    name: CA-Codex | [Release] - Publish
+    # Sibling twin of the `release` job (ADR-0007-style per-plugin
+    # independence, ADR-0011 for the Codex host). Publish only from the
+    # default branch, and only when this dispatch requested a ca-codex
+    # release. The tag is namespaced (ca-codex-v*) so it never collides with
+    # ca's bare v* series, and this job never passes --latest to
+    # `gh release create` — ca-codex is a BETA sibling plugin, not the
+    # repo's primary release, and must not steal the "Latest" badge from ca.
+    if: github.ref == 'refs/heads/main' && github.event.inputs.codex_confirm != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Resolve and verify version against the manifest
+        id: v
+        env:
+          CONFIRM: ${{ github.event.inputs.codex_confirm }}
+        run: |
+          set -euo pipefail
+          MANIFEST=$(node -p "require('./plugins/ca-codex/.codex-plugin/plugin.json').version")
+          REQ="$CONFIRM"
+          if [ "$REQ" != "$MANIFEST" ]; then
+            echo "::error::requested '$REQ' does not equal plugin.json version '$MANIFEST' — bump/align first"
+            exit 1
+          fi
+          echo "version=$MANIFEST" >> "$GITHUB_OUTPUT"
+          echo "tag=ca-codex-v$MANIFEST" >> "$GITHUB_OUTPUT"
+
+      - name: Extract the CHANGELOG section as release notes
+        env:
+          VER: ${{ steps.v.outputs.version }}
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          set -euo pipefail
+          # Capture from "## [VER]" up to (not including) the next "## [" section heading.
+          awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' plugins/ca-codex/CHANGELOG.md > notes.md
+          # Trim a trailing Keep-a-Changelog "---" separator and blank lines.
+          python3 - <<'PY'
+          import re
+          t = open("notes.md").read().rstrip()
+          open("notes.md", "w").write(re.sub(r"\n+---$", "", t).rstrip() + "\n")
+          PY
+          test -s notes.md || { echo "::error::no CHANGELOG section found for $VER in plugins/ca-codex/CHANGELOG.md"; exit 1; }
+          # The notes' first heading must match the tag (the same guard /ca:release Phase 3 runs).
+          python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
+          echo "---- notes.md ----"; head -1 notes.md
+
+      - name: Create the tag and GitHub Release (idempotent)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUMMARY: ${{ github.event.inputs.codex_summary }}
+          TAG: ${{ steps.v.outputs.tag }}
+          VER: ${{ steps.v.outputs.version }}
+        run: |
+          set -euo pipefail
+          SUM="$SUMMARY"
+          if [ -n "$SUM" ]; then TITLE="ca-codex $VER: $SUM"; else TITLE="ca-codex $VER"; fi
+
+          # An annotated tag needs a committer identity; the runner has none by default.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1; then
+            echo "tag $TAG already on remote — skipping tag creation"
+          else
+            printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
+            git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
+            git push origin "refs/tags/$TAG"
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG already exists — nothing to publish"
+          else
+            # Not --latest: ca-codex is a BETA sibling plugin, not the repo's
+            # primary release; it must never displace ca's "Latest" badge.
+            gh release create "$TAG" \
+              --title "$TITLE" \
+              --notes-file notes.md \
+              --target "$GITHUB_SHA" \
+              --verify-tag
           fi
 
           # Verify publication rather than assume it (a create can partially succeed).
