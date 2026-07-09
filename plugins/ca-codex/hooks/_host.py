@@ -228,6 +228,12 @@ class CodexHost(hostapi.Host):
                 return env
         return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+    def manifest_relpath(self):
+        """ca-codex ships its manifest at `.codex-plugin/plugin.json` ONLY
+        (module header above) — never `.claude-plugin/`, so doctor.py and
+        _updatelib.py must resolve THIS path under Codex (#263)."""
+        return os.path.join(".codex-plugin", "plugin.json")
+
     def normalize_tool_input(self, tool_name, tool_input):
         """Codex's exec payload ({command}) already IS the canonical EXEC
         shape, and the apply_patch envelope cannot be represented as ONE

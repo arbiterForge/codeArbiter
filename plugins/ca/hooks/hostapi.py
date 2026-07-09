@@ -131,6 +131,18 @@ class Host:
             return env
         return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+    def manifest_relpath(self):
+        """The plugin manifest's path, relative to plugin_root() (#263,
+        reliability-001/002 + observability-003): Claude Code's marketplace
+        convention is `.claude-plugin/plugin.json` — the ONLY location this
+        host ever reads or writes. A host whose manifest ships elsewhere
+        (e.g. Codex's `.codex-plugin/`) overrides this so doctor.py's
+        check_payload and _updatelib.installed_version resolve the manifest
+        that ACTUALLY exists for the running host, instead of hard-coding the
+        Claude path and reporting a healthy Codex install as UNHEALTHY /
+        silently never firing the update-available notice."""
+        return os.path.join(".claude-plugin", "plugin.json")
+
     def normalize_tool(self, tool_name):
         """Canonical category for a native tool name:
         "EXEC" | "WRITE" | "EDIT" | "READ" | "OTHER"."""

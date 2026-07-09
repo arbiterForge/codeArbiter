@@ -412,6 +412,69 @@ class TestInstalledVersion(unittest.TestCase):
         self.assertIsNotNone(U.parse_version(v))
 
 
+class TestInstalledVersionHostAware(unittest.TestCase):
+    """#263 (reliability-002/observability-003): installed_version() must
+    resolve the manifest via host.manifest_relpath(), not a hard-coded
+    `.claude-plugin/plugin.json` — a ca-codex install ships its manifest at
+    `.codex-plugin/plugin.json` ONLY, so the hard-coded path silently
+    returned None and the update-available notice never fired on Codex."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    class _FakeCodexHost:
+        def manifest_relpath(self):
+            return os.path.join(".codex-plugin", "plugin.json")
+
+    def _write_manifest(self, subdir, version):
+        d = os.path.join(self.root, subdir)
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, "plugin.json"), "w", encoding="utf-8") as f:
+            json.dump({"name": "x", "version": version}, f)
+
+    def test_codex_shaped_install_reads_codex_plugin_dir(self):
+        # No .claude-plugin/ at all — a ca-codex-shaped install.
+        self._write_manifest(".codex-plugin", "3.1.0")
+        self.assertEqual(
+            U.installed_version(self.root, host=self._FakeCodexHost()), "3.1.0")
+
+    def test_codex_host_ignores_claude_plugin_dir(self):
+        # Only .claude-plugin/ present (no .codex-plugin/) — must still miss,
+        # never accidentally fall back to the wrong host's manifest.
+        self._write_manifest(".claude-plugin", "9.9.9")
+        self.assertIsNone(U.installed_version(self.root, host=self._FakeCodexHost()))
+
+    def test_default_host_still_reads_claude_plugin_dir(self):
+        # No host arg passed at all — resolves via hostapi.load_host(), which
+        # in this bare-core checkout (no _host.py beside _updatelib.py) is the
+        # Claude default Host(); behavior must stay byte-identical to before.
+        self._write_manifest(".claude-plugin", "2.8.2")
+        self.assertEqual(U.installed_version(self.root), "2.8.2")
+
+    def test_real_ca_codex_manifest_resolves_via_codex_host(self):
+        # The actual shipped ca-codex install: root is plugins/ca-codex, its
+        # manifest lives at .codex-plugin/plugin.json ONLY. _HOOKS_DIR is
+        # .../plugins/ca/hooks, so climb two levels to plugins/ and sideways
+        # into ca-codex/ rather than string-replacing (avoids any risk of a
+        # false substring match elsewhere in the path).
+        plugins_dir = os.path.dirname(os.path.dirname(_HOOKS_DIR))
+        codex_root = os.path.join(plugins_dir, "ca-codex")
+        codex_hooks = os.path.join(codex_root, "hooks")
+        sys.path.insert(0, codex_hooks)
+        try:
+            import _host as _codex_host_mod
+            v = U.installed_version(codex_root, host=_codex_host_mod.HOST)
+        finally:
+            sys.path.remove(codex_hooks)
+            sys.modules.pop("_host", None)
+        self.assertIsNotNone(v)
+        self.assertIsNotNone(U.parse_version(v))
+
+
 class TestStatePath(unittest.TestCase):
     """The cache is user-global (~/.codearbiter/...), NOT under project .codearbiter/."""
 

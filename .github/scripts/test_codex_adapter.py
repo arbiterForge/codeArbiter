@@ -426,6 +426,30 @@ class TestCodexProjectRoot(unittest.TestCase):
             self.assertEqual(os.path.realpath(got), os.path.realpath(payload_dir))
 
 
+class TestManifestRelpath(unittest.TestCase):
+    """#263 (reliability-001/002/observability-003): CodexHost.manifest_relpath
+    must point at `.codex-plugin/plugin.json` (ca-codex's ONLY manifest
+    location, per the module header in plugins/ca-codex/hooks/_host.py), and
+    the Claude host must stay at `.claude-plugin/plugin.json` unchanged —
+    doctor.py's check_payload and _updatelib.installed_version both derive
+    the manifest path from this seam now instead of a hard-coded string."""
+
+    def test_codex_host_manifest_relpath(self):
+        self.assertEqual(codex_host().manifest_relpath(),
+                          os.path.join(".codex-plugin", "plugin.json"))
+
+    def test_claude_host_manifest_relpath_unchanged(self):
+        self.assertEqual(claude_host().manifest_relpath(),
+                          os.path.join(".claude-plugin", "plugin.json"))
+
+    def test_real_ca_codex_manifest_exists_at_resolved_path(self):
+        # The actual shipped install: root/.codex-plugin/plugin.json must
+        # exist, and NOT root/.claude-plugin/plugin.json.
+        manifest = os.path.join(CODEX_PLUGIN, codex_host().manifest_relpath())
+        self.assertTrue(os.path.isfile(manifest), manifest)
+        self.assertFalse(os.path.isdir(os.path.join(CODEX_PLUGIN, ".claude-plugin")))
+
+
 class TestClaudeIterFileOps(unittest.TestCase):
     """The Claude side of the seam: Write/Edit payloads -> the SAME canonical
     op shape the shared entries consume (Claude behavior stays identical)."""
