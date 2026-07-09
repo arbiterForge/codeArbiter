@@ -25,7 +25,6 @@
 #     (e.g. a nested/adjacent Claude session), it names the WRONG project.
 
 import os
-import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -200,24 +199,23 @@ class CodexHost(hostapi.Host):
 
           1. the hook payload's `cwd`, when given and an existing directory —
              the harness's own signal (Codex runs hooks in the session cwd
-             and repeats that cwd in every hook payload).
+             and repeats that cwd in every hook payload) — climbed to the git
+             TOPLEVEL from that cwd (hostapi.git_toplevel), falling back to
+             the cwd itself when that climb fails. A session started in a
+             repo SUBDIRECTORY must still resolve the repo ROOT, not that
+             subdirectory verbatim (reliability-005, #260) — `.codearbiter/`
+             state lives at the root, not wherever the session happened to
+             start.
           2. `git rev-parse --show-toplevel` from the process cwd.
           3. the process cwd.
         """
         if payload and isinstance(payload, dict):
             cwd = payload.get("cwd")
             if cwd and os.path.isdir(cwd):
-                return cwd
-        try:
-            out = subprocess.run(
-                ["git", "rev-parse", "--show-toplevel"],
-                capture_output=True, text=True, encoding="utf-8", errors="replace",
-                timeout=5,
-            )
-            if out.returncode == 0:
-                return out.stdout.strip()
-        except Exception:  # noqa: BLE001
-            pass
+                return hostapi.git_toplevel(cwd) or cwd
+        top = hostapi.git_toplevel()
+        if top:
+            return top
         return os.getcwd()
 
     def plugin_root(self):

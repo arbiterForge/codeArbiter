@@ -32,6 +32,35 @@ import subprocess
 import sys
 
 
+def git_toplevel(cwd=None):
+    """`git rev-parse --show-toplevel`, run FROM `cwd` when given (`git -C
+    cwd ...`) rather than the process's own cwd. Returns the resolved
+    toplevel path, or None on any failure (not a repo, git missing, timeout,
+    empty output) — callers decide the fallback.
+
+    Shared by every Host.project_root payload-cwd leg (base Host and
+    CodexHost, #260/reliability-005): a hook payload's `cwd` can be a repo
+    SUBDIRECTORY (e.g. a Codex session started below the repo root), and the
+    project root must be the repo TOPLEVEL, not that subdirectory verbatim —
+    `.codearbiter/` state lives at the root."""
+    args = ["git"]
+    if cwd:
+        args += ["-C", cwd]
+    args += ["rev-parse", "--show-toplevel"]
+    try:
+        out = subprocess.run(
+            args, capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=5,
+        )
+        if out.returncode == 0:
+            top = out.stdout.strip()
+            if top:
+                return top
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
 class Host:
     """One host's answers to the host-coupled questions the hooks ask.
 
@@ -71,9 +100,12 @@ class Host:
           1. CLAUDE_PROJECT_DIR, when set and an existing directory — the
              harness's own authoritative signal, trusted first.
           2. the hook payload's `cwd`, when a payload is given and its cwd is
-             an existing directory (no Claude call site passes a payload
-             today, so this leg is inert under Claude Code; it exists for
-             hosts with no project-dir env var).
+             an existing directory — climbed to the git TOPLEVEL from that
+             cwd (git_toplevel), falling back to the cwd itself when that
+             climb fails (not a git repo). No Claude call site passes a
+             payload today (architecture-006, #260), so this leg is inert
+             under Claude Code; it exists for hosts with no project-dir env
+             var.
           3. `git rev-parse --show-toplevel` from the process cwd.
           4. the process cwd.
         """
@@ -83,17 +115,10 @@ class Host:
         if payload:
             cwd = payload.get("cwd") if isinstance(payload, dict) else None
             if cwd and os.path.isdir(cwd):
-                return cwd
-        try:
-            out = subprocess.run(
-                ["git", "rev-parse", "--show-toplevel"],
-                capture_output=True, text=True, encoding="utf-8", errors="replace",
-                timeout=5,
-            )
-            if out.returncode == 0:
-                return out.stdout.strip()
-        except Exception:  # noqa: BLE001
-            pass
+                return git_toplevel(cwd) or cwd
+        top = git_toplevel()
+        if top:
+            return top
         return os.getcwd()
 
     def plugin_root(self):
