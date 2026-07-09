@@ -112,6 +112,18 @@ def set_host(host):
     _HOST = host
 
 
+def reset_host():
+    """Test-only: clear the injected/cached `_HOST` so the next `get_host()`
+    lazy-loads afresh. Production hook processes are single-shot and never need
+    this; but `set_host()` makes `_HOST` a process-lifetime singleton, so a test
+    that calls `run(fake_host)` must reset it in tearDown — otherwise the fake
+    leaks into any later in-process test that calls `get_host()` without its own
+    patch, silently running against the wrong host and masking a gate
+    regression (security review #257, LOW)."""
+    global _HOST
+    _HOST = None
+
+
 # project_root() memoization (performance-001/003, #260). A hook is a
 # single-shot process, so CLAUDE_PROJECT_DIR and the process cwd cannot
 # change mid-process — but the resolved VALUE is cached keyed on those two

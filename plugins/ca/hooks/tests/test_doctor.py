@@ -370,11 +370,11 @@ class TestRunHostDISeam(unittest.TestCase):
 
     def setUp(self):
         _reset()
-        _hooklib._HOST = None  # isolate from any other test's set_host()
+        _hooklib.reset_host()  # isolate from any other test's set_host()
 
     def tearDown(self):
         _reset()
-        _hooklib._HOST = None
+        _hooklib.reset_host()  # do not leak the injected fake into later tests
 
     class _FakeInjectedHost:
         """A host observably different from the real disk-loaded default
