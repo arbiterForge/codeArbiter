@@ -97,6 +97,51 @@ class TestDurableRecordAC1(_GateEventsFixture):
         text = _read_log(self.cad)
         self.assertIn("hook=pre-bash.py", text)
 
+    def test_record_carries_the_resolved_host_name(self):
+        # ADR-0012/observability-001: two hosts (Claude, Codex) can share one
+        # gate-events.log — each line must be attributable to the host that
+        # wrote it via get_host().name. project_root() itself is threaded
+        # through get_host() too (#260), so the fake host must resolve a real
+        # root, not just carry a `.name`.
+        fake_host = mock.Mock()
+        fake_host.name = "codex"
+        fake_host.project_root.return_value = self.root
+        with mock.patch.object(_hooklib, "get_host", return_value=fake_host):
+            _hooklib.warn("host-attributed line")
+        text = _read_log(self.cad)
+        self.assertIn("host=codex", text)
+
+    def test_host_field_precedes_hook_field_and_both_present(self):
+        fake_host = mock.Mock()
+        fake_host.name = "claude"
+        fake_host.project_root.return_value = self.root
+        with mock.patch.object(_hooklib, "get_host", return_value=fake_host), \
+             mock.patch.object(sys, "argv", ["/path/to/pre-write.py"]):
+            _hooklib.remind("H-01", "ordering check")
+        text = _read_log(self.cad)
+        self.assertIn("host=claude hook=pre-write.py", text)
+
+    def test_host_resolution_failure_does_not_break_fail_open_contract(self):
+        # host resolution must never turn a BLOCK into a raised exception or
+        # change its exit code — mirrors the other AC-2 fail-open guarantees.
+        # project_root() succeeds (it needs a real host to resolve a real
+        # root, #260); only the `.name` access fails, isolating the guard
+        # this test targets from the unrelated project_root() fail-open path
+        # already covered by test_block_still_exits_2_when_project_root_raises.
+        class _BoomNameHost:
+            def project_root(self, payload=None):
+                return self.root_value
+
+        boom_host = _BoomNameHost()
+        boom_host.root_value = self.root
+        type(boom_host).name = property(lambda self: (_ for _ in ()).throw(RuntimeError("boom")))
+        with mock.patch.object(_hooklib, "get_host", return_value=boom_host):
+            with self.assertRaises(SystemExit) as cm:
+                _hooklib.block("H-07", "must still block despite host resolution failure")
+        self.assertEqual(cm.exception.code, 2)
+        text = _read_log(self.cad)
+        self.assertIn("host=unknown", text)
+
 
 class TestRealHookIntegrationAC1(unittest.TestCase):
     """AC-1, end-to-end: a REAL hook (pre-bash.py) run against a real
@@ -145,7 +190,7 @@ class TestRealHookIntegrationAC1(unittest.TestCase):
             log = f.read()
         self.assertIn("BLOCK", log)
         self.assertIn("[H-20]", log)
-        self.assertIn("hook=pre-bash.py", log)
+        self.assertIn("host=claude hook=pre-bash.py", log)
 
 
 class TestFailOpenAC2(_GateEventsFixture):

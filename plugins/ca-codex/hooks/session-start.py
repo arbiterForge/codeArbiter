@@ -443,17 +443,30 @@ def has_source(root):
     return False
 
 
-def clear_dev_marker(root):
+def clear_dev_marker(root, host_name=None):
     """Clear the per-session /dev statusline marker on startup. If the marker is
     LIVE (a prior session entered /ca:dev and ended without /ca:arbiter), append a
     synthetic DEV: exit line to overrides.log BEFORE removing it
     (observability-001) — otherwise the audit trail keeps an orphaned DEV: enter
     with no matching close. Append-only (it never rewrites); best-effort — a write
-    or remove failure must never brick session startup."""
+    or remove failure must never brick session startup.
+
+    `host_name` (observability-001/ADR-0012) is the resolved host's `.name`
+    ("claude"/"codex"/"unknown"), so the synthetic close line is attributable to
+    the host that wrote it now that two hosts share one overrides.log
+    (ADR-0011). Optional and defaults to resolving it here via
+    `hostapi.load_host()` — main() already holds a Host instance and passes its
+    `.name` through to avoid a second resolution, but any other caller (tests
+    included) may omit it."""
     marker = os.path.join(root, ".codearbiter", ".markers", "dev-active")
     if os.path.isfile(marker):
+        if host_name is None:
+            try:
+                host_name = hostapi.load_host().name
+            except Exception:  # noqa: BLE001 — must never brick session startup
+                host_name = "unknown"
         ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        line = (f"[{ts}] | BY: session-cleanup | DEV: exit | NOTE: cleared by "
+        line = (f"[{ts}] | BY: session-cleanup | HOST: {host_name} | DEV: exit | NOTE: cleared by "
                 f"SessionStart (prior session ended mid-dev without /ca:arbiter)\n")
         try:
             with open(os.path.join(root, ".codearbiter", "overrides.log"),
@@ -546,7 +559,7 @@ def main():
     # /dev developer-override is per-session: clear its statusline marker on
     # startup — a new session restores orchestration. A live marker means a prior
     # session never ran /ca:arbiter, so close the DEV audit pair before clearing.
-    clear_dev_marker(root)
+    clear_dev_marker(root, host.name)
 
     # Self-heal a stale ca-owned statusLine pin before the dormant gate: the
     # statusline is wired GLOBALLY in ~/.claude/settings.json, so a plugin update
