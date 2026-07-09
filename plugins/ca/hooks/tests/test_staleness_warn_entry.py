@@ -100,6 +100,23 @@ class TestStalenessCheckFunction(_Fixture):
             pt.staleness_check(self.payload())
         self.assertEqual(buf.getvalue(), "")
 
+    def test_subdir_cwd_still_resolves_active_repo_via_host_seam(self):
+        # #264 (reliability-006): a session whose cwd is a repo SUBDIRECTORY
+        # must still resolve the repo root through the host seam
+        # (CLAUDE_PROJECT_DIR first) rather than reading payload["cwd"]
+        # verbatim — else `<subdir>/.codearbiter/CONTEXT.md` (which doesn't
+        # exist) reads as not-enabled and the WARN silently never fires.
+        subdir = os.path.join(self.root, "src", "nested")
+        os.makedirs(subdir)
+        _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        payload = {"hook_event_name": "UserPromptSubmit", "cwd": subdir}
+        buf = io.StringIO()
+        with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.root}):
+            with mock.patch.object(sys, "stderr", buf):
+                pt.staleness_check(payload)
+        self.assertIn("codeArbiter hook:", buf.getvalue())
+        self.assertIn("CONFIRM-09", buf.getvalue())
+
     def test_never_raises_when_hooklib_import_fails(self):
         _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
         with mock.patch.dict(sys.modules, {"_hooklib": None}):

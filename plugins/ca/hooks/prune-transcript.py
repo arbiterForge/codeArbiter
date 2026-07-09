@@ -50,7 +50,11 @@ def staleness_check(payload):
     hook-mode exit code (always 0) or block the user's prompt."""
     try:
         import _hooklib
-        root = payload.get("cwd") or os.getcwd()
+        # Resolve through the host seam (ADR-0011), not the raw payload cwd —
+        # a session whose cwd is a repo subdirectory must still resolve the
+        # repo root (CLAUDE_PROJECT_DIR -> payload cwd -> git toplevel ->
+        # process cwd), or this WARN silently never fires (#264).
+        root = _hooklib.get_host().project_root(payload)
         if not _hooklib.arbiter_active(root):
             return
         for msg in _hooklib.staleness_warning(root):
