@@ -243,6 +243,38 @@ class TestApplyPatchParsing(unittest.TestCase):
         self.assertEqual(len(ops), 1)
         self.assertEqual(ops[0]["kind"], "opaque")
 
+    def test_partial_envelope_unrecognized_directive_fails_closed(self):
+        # appsec-001 / coverage-001: an envelope that decomposes into >=1
+        # recognized op but ALSO carries an unrecognized "*** " directive must
+        # NOT return the partial op list (which would silently drop the
+        # unrecognized directive's file). It aborts to a single opaque op so
+        # pre-write blocks the whole envelope (H-21) — the zero-ops backstop
+        # cannot catch this because the op list is non-empty.
+        patch = ("*** Begin Patch\n"
+                 "*** Add File: safe.txt\n+hi\n"
+                 "*** Copy File: /etc/passwd\n"  # unrecognized directive
+                 "*** End Patch\n")
+        ops = self.ops(patch)
+        self.assertEqual(len(ops), 1)
+        self.assertEqual(ops[0]["kind"], "opaque")
+
+    def test_mispositioned_move_to_fails_closed(self):
+        # A "*** Move to:" with no open Update op is not a valid rename; the
+        # _MOVE branch requires an edit op, so it reaches the unrecognized-
+        # directive guard and fails closed rather than being silently skipped.
+        patch = "*** Begin Patch\n*** Move to: elsewhere.txt\n*** End Patch\n"
+        ops = self.ops(patch)
+        self.assertEqual(len(ops), 1)
+        self.assertEqual(ops[0]["kind"], "opaque")
+
+    def test_malformed_add_file_missing_space_fails_closed(self):
+        # "*** Add File:x" (no trailing space) is not the canonical grammar;
+        # Codex's lenient parser may still act on it, so the mirror fails
+        # closed rather than skip it.
+        ops = self.ops("*** Begin Patch\n*** Add File:x\n+data\n*** End Patch\n")
+        self.assertEqual(len(ops), 1)
+        self.assertEqual(ops[0]["kind"], "opaque")
+
     def test_empty_and_malformed_payloads(self):
         self.assertEqual(self.host.iter_file_ops({}), [])
         self.assertEqual(self.host.iter_file_ops(None), [])
