@@ -160,6 +160,24 @@ def check_repo():
                  "set it before gated work")
 
 
+def check_host(host):
+    """observability-004 (#268): surface which host was resolved — a dormant
+    Codex install (or any broken `_host.py`) was previously indistinguishable
+    from a working one, since nothing in doctor's output named the host at
+    all. `host.name` is "claude" / "codex" under a working install, or
+    "unknown" for the FailClosedHost hostapi.load_host() returns when a
+    declared `_host.py` is present but failed to load (#255) — that "unknown"
+    case is exactly the dormant install this check exists to surface, so it
+    WARNs (not OKs) with an actionable pointer rather than reporting green."""
+    name = getattr(host, "name", "unknown")
+    if name == "unknown":
+        warn("host resolution failed — enforcing as 'unknown' (a declared "
+             "_host.py was present but failed to load); writes fail closed. "
+             "Reinstall or fix the plugin's _host.py.")
+    else:
+        ok(f"resolved host: {name}")
+
+
 def check_statusline(root):
     settings = os.path.join(os.path.expanduser("~"), ".claude", "settings.json")
     try:
@@ -176,6 +194,7 @@ def check_statusline(root):
 def main():
     utf8_stdio()
     root = plugin_root()
+    check_host(hostapi.load_host())
     check_interpreters()
     check_payload(root)
     check_repo()

@@ -587,6 +587,10 @@ def main():
 
     # --- Inject live startup state ---
     print("=== codeArbiter startup state ===")
+    # observability-004 (#268): name the RESOLVED host so a dormant/broken
+    # host (FailClosedHost -> name "unknown", #255) is visible right in the
+    # banner instead of being indistinguishable from a working install.
+    print(f"host: {getattr(host, 'name', 'unknown')}")
 
     ctx_text = read_text(ctx) or ""
     if not INITIALIZED_RE.search(ctx_text):
