@@ -331,7 +331,10 @@ class TestApplyPatchParsing(unittest.TestCase):
 
 
 class TestCodexProjectRoot(unittest.TestCase):
-    """CodexHost.project_root: payload cwd -> git rev-parse -> cwd; NO env leg."""
+    """CodexHost.project_root: payload cwd -> git rev-parse -> cwd; NO env leg.
+    The payload-cwd leg itself climbs to the git TOPLEVEL from that cwd
+    (reliability-005/#260) rather than returning it verbatim, falling back to
+    the cwd only when the climb fails (not a repo)."""
 
     def setUp(self):
         self.host = codex_host()
@@ -391,6 +394,36 @@ class TestCodexProjectRoot(unittest.TestCase):
             finally:
                 os.chdir(self._cwd)
             self.assertEqual(os.path.realpath(got), os.path.realpath(plain))
+
+    def test_payload_cwd_in_repo_subdir_resolves_repo_root(self):
+        # reliability-005 (#260): a Codex session started in a repo
+        # SUBDIRECTORY must resolve the repo ROOT from the payload cwd leg,
+        # not that subdirectory verbatim — .codearbiter/ state lives at the
+        # root, so a wrong (subdir) root silently reads/writes nothing there.
+        os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            repo = os.path.join(top, "repo")
+            sub = os.path.join(repo, "pkg", "sub")
+            os.makedirs(sub)
+            r = subprocess.run(["git", "init", "-q"], cwd=repo,
+                               capture_output=True, timeout=30)
+            if r.returncode != 0:
+                self.skipTest("git unavailable")
+            # cwd stays OUTSIDE the repo; only the payload cwd names the
+            # subdirectory, isolating the payload leg from the process-cwd leg.
+            got = self.host.project_root({"cwd": sub})
+            self.assertEqual(os.path.realpath(got), os.path.realpath(repo))
+            self.assertNotEqual(os.path.realpath(got), os.path.realpath(sub))
+
+    def test_payload_cwd_non_repo_dir_falls_back_to_cwd_verbatim(self):
+        # The payload cwd IS an existing directory but not a git repo (or
+        # git itself is unavailable from there) — git_toplevel climb fails,
+        # so the leg falls back to the cwd itself (not a hard failure to the
+        # process-cwd leg), matching the pre-#260 behavior for a non-repo cwd.
+        os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        with tempfile.TemporaryDirectory() as payload_dir:
+            got = self.host.project_root({"cwd": payload_dir})
+            self.assertEqual(os.path.realpath(got), os.path.realpath(payload_dir))
 
 
 class TestClaudeIterFileOps(unittest.TestCase):

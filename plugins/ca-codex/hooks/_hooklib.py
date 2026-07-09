@@ -31,7 +31,9 @@
 #   arbiter_active(root) -> bool         True iff repo opted in via CONTEXT.md frontmatter
 #   read_input() -> dict                 parse hook JSON from stdin; fail-open on error
 #   tool_input(data) -> dict             extract tool_input sub-dict from hook payload
-#   project_root() -> str                CLAUDE_PROJECT_DIR, else git repo root, else cwd
+#   project_root(payload=None) -> str    CLAUDE_PROJECT_DIR, else git repo root, else cwd
+#                                         (memoized per process, keyed on the
+#                                         inputs that could change it — #260)
 #   repo_rel(fpath, root) -> str         repo-relative POSIX path, or "" if outside root
 #   line_digest(line) -> str             sha256 hex of one diff line (H-09b/H-10b gate)
 #   content_digest(text) -> str          sha256 hex of a whole file's content (H-14 gate)
@@ -82,6 +84,42 @@ def get_host():
     if _HOST is None:
         _HOST = hostapi.load_host()
     return _HOST
+
+
+# project_root() memoization (performance-001/003, #260). A hook is a
+# single-shot process, so CLAUDE_PROJECT_DIR and the process cwd cannot
+# change mid-process — but the resolved VALUE is cached keyed on those two
+# inputs (not unconditionally) rather than as one bare value, so an env/cwd
+# change is a cache MISS, never a stale hit. This keeps the production
+# single-shot contract (the same hook process always sees an unchanging
+# env/cwd, so it resolves at most once) while staying correct for the
+# in-process integration-test harnesses that legitimately re-target
+# project_root() across many fixtures/envs within one Python process
+# (`python -m unittest discover` runs the whole suite in ONE interpreter —
+# an unconditional single-value cache would leak the FIRST test's resolved
+# root into every later test that calls project_root() or warn()/block()/
+# remind() in-process). A payload's `cwd` is deliberately NOT part of the
+# cache key: within one real hook process the payload is parsed at most once
+# and never changes, so a payload-bearing call and a later no-payload call in
+# the SAME (env, cwd) context are the SAME logical resolution and must return
+# the SAME value — exactly the "payload-bearing first call, later no-arg
+# calls stay consistent" contract. (A payload-only scenario — Codex, no
+# CLAUDE_PROJECT_DIR — still resolves once: the first call's payload wins and
+# is cached against the current (env, cwd); env/cwd don't change either.)
+_ROOT_CACHE = {}
+
+
+def _root_cache_key():
+    return (os.environ.get("CLAUDE_PROJECT_DIR"), os.getcwd())
+
+
+def _reset_root_cache():
+    """Test-only: drop every memoized project_root() resolution. Production
+    hook processes never need this (each is single-shot); integration tests
+    that simulate MANY logical hook invocations in one Python process and
+    need a resolution to be genuinely re-computed (rather than served from an
+    still-valid (env, cwd) cache entry) call this between scenarios."""
+    _ROOT_CACHE.clear()
 
 # Crypto/TLS and secret patterns — shared by the post-write reminder (H-09/H-10)
 # and the blocking pre-commit gate (H-09b/H-10b) so the two never drift.
@@ -338,7 +376,7 @@ def tool_input(data):
     return (data or {}).get("tool_input", {}) or {}
 
 
-def project_root():
+def project_root(payload=None):
     """The project root. `CLAUDE_PROJECT_DIR` is the harness's own authoritative
     signal and is trusted first: a hook subprocess is not guaranteed to start
     with the project directory as its cwd, and a `git rev-parse` from elsewhere
@@ -347,10 +385,21 @@ def project_root():
     Test harnesses that spawn hooks into fixture repos must pin the variable to
     the fixture, as the production harness pins it to the project.
 
-    The resolution itself now lives on the Host seam (hostapi.Host.project_root,
-    ADR-0011) — this function keeps its public signature and delegates, so every
-    existing caller/import keeps working unchanged."""
-    return get_host().project_root()
+    The resolution itself lives on the Host seam (hostapi.Host.project_root,
+    ADR-0011) — this function keeps its public signature (now accepting an
+    optional `payload`, architecture-006/#260, so a caller that already has
+    the parsed hook payload can hand it through to the payload-cwd leg) and
+    delegates, so every existing no-arg caller/import keeps working unchanged.
+
+    Memoized per (CLAUDE_PROJECT_DIR, process cwd) — see _ROOT_CACHE above for
+    the full contract (performance-001/003, #260): at most one resolution
+    (and at most one git spawn) per that key, so the repeated project_root()
+    reads inside block()/remind()/warn()'s gate-event logging don't each pay
+    a fresh subprocess."""
+    key = _root_cache_key()
+    if key not in _ROOT_CACHE:
+        _ROOT_CACHE[key] = get_host().project_root(payload)
+    return _ROOT_CACHE[key]
 
 
 def repo_rel(fpath, root):
