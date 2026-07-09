@@ -160,24 +160,51 @@ class Host:
         """The canonical per-file operations a WRITE/EDIT-category hook payload
         performs (codex-support M2): a list of dicts, one per touched file —
 
-            {"file_path":  the native path string,
-             "kind":       "write" | "edit" | "delete",
-             "content":    the file's FULL resulting content when knowable
-                           (a Write / patch Add File), else None,
-             "added_text": the raw text this op introduces (content for a
-                           write, new_string for an edit, joined + lines for
-                           a patch hunk),
-             "added_lines": added_text split into lines}
+            {"file_path":   the native path string,
+             "kind":        "write" | "edit" | "delete",
+             "content":     the file's FULL resulting content when knowable
+                            (a Write / patch Add File), else None,
+             "added_text":  the raw text this op introduces (content for a
+                            write, new_string for an edit, joined + lines for
+                            a patch hunk),
+             "added_lines": added_text split into lines,
+             "old_string":  the text this op's added_text replaces, when the
+                            native shape carries one (Edit/MultiEdit's
+                            old_string); "" when there is none to reason
+                            about (Write, NotebookEdit, a patch hunk),
+             "replace_all": True iff this op's native shape asked to replace
+                            EVERY occurrence of old_string rather than one
+                            (Edit's replace_all); always False otherwise,
+             "batched":     True iff this op is one of several fanned from a
+                            SINGLE tool call against the same file whose
+                            per-op old_string/new_string cannot, on its own,
+                            certify a property of the call AS A WHOLE (e.g.
+                            MultiEdit's edits array — the edits apply as one
+                            atomic batch, so no single entry's old_string/
+                            new_string alone certifies something like "this
+                            call is a pure append"); callers that need a
+                            whole-call verdict must not trust an individual
+                            batched op in isolation,
+             "notebook":    True iff this op's target has no content/append/
+                            frontmatter semantics worth reasoning about
+                            (NotebookEdit) — a content-sensitive guard must
+                            treat it as opaque rather than replaying it.}
 
-        This is the seam the shared pre-write.py / post-write-edit.py entries
-        iterate, so a host whose one write tool carries MANY file operations
-        (Codex's apply_patch envelope) hits the same per-file guard logic as
-        Claude's one-file-per-call Write/Edit.
+        This is the seam the shared pre-write.py / pre-edit.py / post-write-
+        edit.py entries iterate, so a host whose one write tool carries MANY
+        file operations (Codex's apply_patch envelope) hits the same per-file
+        guard logic as Claude's one-file-per-call Write/Edit/MultiEdit/
+        NotebookEdit — and pre-edit.py's guards never have to branch on a
+        native tool name to reconstruct these properties (ADR-0011, #261).
 
         The Claude mapping preserves the pre-seam behavior EXACTLY:
-          * Edit / MultiEdit / NotebookEdit -> "edit" op(s) whose added_text is
-            new_string (NotebookEdit carries notebook_path and introduces no
-            reasoned-about content).
+          * Edit -> one "edit" op carrying its own old_string/replace_all.
+          * MultiEdit -> one "edit" op per edits[] entry, each carrying that
+            entry's own old_string, "batched": True, and "replace_all": False
+            (Claude's MultiEdit entries carry no per-edit replace_all field).
+          * NotebookEdit -> one "edit" op, "notebook": True, empty old_string
+            (NotebookEdit carries notebook_path and introduces no reasoned-
+            about content).
           * Write — and ANY unrecognized/missing tool_name — -> one "write" op.
             The pre-seam pre-write.py never read tool_name at all (it guarded
             every payload carrying a file_path), so the default branch must
@@ -194,21 +221,37 @@ class Host:
             fpath = ti.get("file_path", "") or ""
             ops = []
             for e in ti.get("edits", []) or []:
-                new = (e or {}).get("new_string", "") or ""
+                e = e or {}
+                old = e.get("old_string", "") or ""
+                new = e.get("new_string", "") or ""
                 ops.append({"file_path": fpath, "kind": "edit", "content": None,
-                            "added_text": new, "added_lines": new.splitlines()})
+                            "added_text": new, "added_lines": new.splitlines(),
+                            "old_string": old, "replace_all": False,
+                            "batched": True, "notebook": False})
             return ops
-        if tool in ("Edit", "NotebookEdit"):
-            fpath = ti.get("file_path", "") or ti.get("notebook_path", "") or ""
+        if tool == "Edit":
+            fpath = ti.get("file_path", "") or ""
+            old = ti.get("old_string", "") or ""
             new = ti.get("new_string", "") or ""
             return [{"file_path": fpath, "kind": "edit", "content": None,
-                     "added_text": new, "added_lines": new.splitlines()}]
+                     "added_text": new, "added_lines": new.splitlines(),
+                     "old_string": old, "replace_all": bool(ti.get("replace_all")),
+                     "batched": False, "notebook": False}]
+        if tool == "NotebookEdit":
+            fpath = ti.get("notebook_path", "") or ""
+            new = ti.get("new_source", "") or ""
+            return [{"file_path": fpath, "kind": "edit", "content": None,
+                     "added_text": new, "added_lines": new.splitlines(),
+                     "old_string": "", "replace_all": False,
+                     "batched": False, "notebook": True}]
         # Write, and the guard-everything default (see docstring).
         fpath = ti.get("file_path", "") or ""
         content = ti.get("content", "") or ""
         added = content or (ti.get("new_string", "") or "")
         return [{"file_path": fpath, "kind": "write", "content": content,
-                 "added_text": added, "added_lines": added.splitlines()}]
+                 "added_text": added, "added_lines": added.splitlines(),
+                 "old_string": "", "replace_all": False,
+                 "batched": False, "notebook": False}]
 
 
 class FailClosedHost(Host):
@@ -237,7 +280,9 @@ class FailClosedHost(Host):
         # per-file ops. Force the fail-closed "opaque" op unconditionally;
         # pre-write blocks it (H-21) rather than guessing a host's semantics.
         return [{"file_path": "", "kind": "opaque", "content": None,
-                 "added_text": "", "added_lines": []}]
+                 "added_text": "", "added_lines": [],
+                 "old_string": "", "replace_all": False,
+                 "batched": False, "notebook": False}]
 
 
 def load_host(hooks_dir=None):
