@@ -77,9 +77,13 @@ def parse_apply_patch(text):
     any file is touched). When a marker IS present but this parse yields zero
     ops, iter_file_ops fails CLOSED with a single "opaque" op that pre-write
     blocks outright — an envelope the adapter cannot decompose must never
-    pass unguarded. Unrecognized lines INSIDE a recognized envelope are
-    skipped rather than aborting the ops already collected — under-reporting
-    a whole envelope would un-guard every file in it.
+    pass unguarded. An unrecognized "*** " DIRECTIVE inside a recognized
+    envelope (e.g. "*** Copy File:", a mis-positioned "*** Move to:") aborts
+    the parse and returns a single "opaque" op: Codex's lenient parser may
+    still apply such an envelope, so emitting the PARTIAL op list collected so
+    far would silently drop that directive's file and un-guard it (appsec-001).
+    Non-directive unrecognized lines (context " " and removal "-" hunk lines)
+    are still skipped — they carry no file operation to guard.
 
     Op mapping:
       * Add File    -> one "write" op; the + lines ARE the file's full content.
@@ -140,7 +144,26 @@ def parse_apply_patch(text):
             continue  # hunk boundary / end-of-file marker — never content
         elif cur is not None and line.startswith("+"):
             cur[2].append(line[1:])
-        # " "/"-" hunk lines and anything unrecognized: skipped (see docstring)
+        elif marker.startswith("*** "):
+            # An unrecognized "*** " directive inside a recognized envelope —
+            # e.g. "*** Copy File:", a mis-positioned "*** Move to:" (the _MOVE
+            # branch above requires an open edit op), or a malformed
+            # "*** Add File:x" (no trailing space). The recognized markers were
+            # all matched above, and a "+" content line was consumed above, so
+            # reaching here means a structural directive this mirror does not
+            # model. Codex's LENIENT parser may still APPLY such an envelope, so
+            # returning the PARTIAL op list collected so far would silently DROP
+            # this directive's file operation and un-guard it (appsec-001). The
+            # whole-envelope backstop in iter_file_ops only fires on ZERO ops,
+            # so it cannot catch a partial parse. Fail CLOSED: discard the
+            # partial ops and return the single "opaque" op, which pre-write
+            # blocks (H-21). (A hunk content line whose text begins "*** " is
+            # matched here too, exactly as the recognized markers above already
+            # match a stripped content line — this mirrors Codex's own
+            # trim-then-match leniency, so it is parity-preserving, not a new
+            # divergence; the safe resolution of that ambiguity is to block.)
+            return [_op("", "opaque", None, [])]
+        # " "/"-" hunk lines and anything else unrecognized: skipped (docstring)
     _flush()
     return ops
 
