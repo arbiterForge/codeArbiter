@@ -160,7 +160,8 @@ def main(argv=None):
                 # parity ledger) has nothing to prune. The staleness-warn
                 # above already ran — it reads the .codearbiter audit logs,
                 # not the transcript, so it is host-neutral (ADR-0011).
-                if not hostapi.load_host().has_prunable_transcript:
+                import _hooklib
+                if not _hooklib.get_host().has_prunable_transcript:
                     return 0
                 return hook_run(payload)
         print("usage: prune-transcript.py <path|session-id> [--execute] ...",
@@ -209,7 +210,17 @@ def main(argv=None):
 def run(host, argv=None):
     """Host-seam entry point (ADR-0011): the __main__ guard calls this with the
     plugin's loaded Host. Delegates to main(argv) and returns its exit code,
-    exactly as the old `sys.exit(main())` guard propagated it."""
+    exactly as the old `sys.exit(main())` guard propagated it.
+
+    Wires `host` live (#257): primes `_hooklib`'s process-cached Host via
+    `set_host()` BEFORE main() runs, so main()'s `_hooklib.get_host()` call
+    (hook-mode path) resolves to the SAME instance the caller passed here —
+    no second `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
+    `fake_host`. Local import mirrors this module's existing lazy `_hooklib`
+    import convention (staleness_check) — the CLI (argv) paths never touch
+    _hooklib, so it stays off that path's import surface."""
+    import _hooklib
+    _hooklib.set_host(host)
     return main(argv)
 
 

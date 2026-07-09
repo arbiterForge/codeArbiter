@@ -21,7 +21,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
-from _hooklib import frontmatter_enabled, utf8_stdio  # noqa: E402
+from _hooklib import frontmatter_enabled, get_host, set_host, utf8_stdio  # noqa: E402
 
 HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
                 "pre-edit.py", "post-write-edit.py", "prune-transcript.py")
@@ -51,7 +51,9 @@ def _run_cmd(args, **kw):
 def plugin_root():
     # Host seam (ADR-0011): CLAUDE_PLUGIN_ROOT then file-relative, exactly the
     # prior inline lookup; abspath preserved from the pre-seam behavior here.
-    return os.path.abspath(hostapi.load_host().plugin_root())
+    # get_host() (#257), not a direct hostapi.load_host(): resolves the SAME
+    # Host run(host) injected instead of triggering a second disk load.
+    return os.path.abspath(get_host().plugin_root())
 
 
 def check_interpreters():
@@ -83,12 +85,13 @@ def check_interpreters():
 
 
 def check_payload(root, host=None):
-    # host-aware manifest path (#263): defaults to hostapi.load_host() so
-    # every pre-seam call site (main() below, and every existing test that
+    # host-aware manifest path (#263): defaults to get_host() (#257 — not a
+    # direct hostapi.load_host(), so this stays the SAME injected instance)
+    # so every pre-seam call site (main() below, and every existing test that
     # calls check_payload(root) positionally) keeps resolving the manifest
     # for whichever host is actually running, without threading a host
     # through every caller.
-    host = host or hostapi.load_host()
+    host = host or get_host()
     manifest = os.path.join(root, host.manifest_relpath())
     version = None
     try:
@@ -200,7 +203,9 @@ def check_statusline(root):
 def main():
     utf8_stdio()
     root = plugin_root()
-    host = hostapi.load_host()
+    # get_host() (#257): resolves the SAME Host run(host) already primed via
+    # set_host(), instead of a second hostapi.load_host() disk/probe.
+    host = get_host()
     check_host(host)
     check_interpreters()
     check_payload(root, host)
@@ -225,7 +230,14 @@ def run(host, argv=None):
     plugin's loaded Host. Wraps main() unchanged — main() still communicates
     via sys.exit/stdout/stderr, and its return value stays discarded exactly
     as the old bare `main()` guard discarded it (so the process still exits 0
-    on a normal fall-through)."""
+    on a normal fall-through).
+
+    Wires `host` live (#257): primes `_hooklib`'s process-cached Host via
+    `set_host()` BEFORE main() runs, so `plugin_root()`/`main()`'s `get_host()`
+    calls resolve to the SAME instance the caller passed here — no second
+    `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
+    `fake_host`."""
+    set_host(host)
     main()
     return 0
 

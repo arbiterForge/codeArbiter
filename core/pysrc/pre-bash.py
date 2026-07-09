@@ -26,7 +26,7 @@ from _hooklib import (  # noqa: E402
     AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE,
     GATE_MARKER_NAMES, SECRET_RE, arbiter_active, block, content_digest,
     get_host, is_migration_path, line_digest, marker_fresh, project_root,
-    read_input, tool_input, utf8_stdio,
+    read_input, set_host, tool_input, utf8_stdio,
 )
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
@@ -877,7 +877,14 @@ def run(host, argv=None):
     plugin's loaded Host. Wraps main() unchanged — main() still communicates
     via sys.exit/stdout/stderr, and its return value stays discarded exactly
     as the old bare `main()` guard discarded it (so the process still exits 0
-    on a normal fall-through)."""
+    on a normal fall-through).
+
+    Wires `host` live (#257): primes `_hooklib`'s process-cached Host via
+    `set_host()` BEFORE main() runs, so main()'s `get_host()` call resolves
+    to the SAME instance the caller passed here — no second
+    `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
+    `fake_host`."""
+    set_host(host)
     main()
     return 0
 

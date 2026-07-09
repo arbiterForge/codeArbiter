@@ -29,7 +29,9 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin root + capability flags
-from _hooklib import frontmatter_enabled, project_root, utf8_stdio  # noqa: E402
+from _hooklib import (  # noqa: E402
+    frontmatter_enabled, get_host, project_root, set_host, utf8_stdio,
+)
 from _standuplib import (  # noqa: E402
     any_actionable,
     ff_pull_eligible,
@@ -454,15 +456,17 @@ def clear_dev_marker(root, host_name=None):
     `host_name` (observability-001/ADR-0012) is the resolved host's `.name`
     ("claude"/"codex"/"unknown"), so the synthetic close line is attributable to
     the host that wrote it now that two hosts share one overrides.log
-    (ADR-0011). Optional and defaults to resolving it here via
-    `hostapi.load_host()` — main() already holds a Host instance and passes its
-    `.name` through to avoid a second resolution, but any other caller (tests
+    (ADR-0011). Optional and defaults to resolving it here via `get_host()`
+    (#257) — main() already holds a Host instance and passes its `.name`
+    through to avoid a second resolution, but any other caller (tests
     included) may omit it."""
     marker = os.path.join(root, ".codearbiter", ".markers", "dev-active")
     if os.path.isfile(marker):
         if host_name is None:
             try:
-                host_name = hostapi.load_host().name
+                # get_host() (#257), not a direct hostapi.load_host(): resolves
+                # the SAME Host run(host) injected instead of a second load.
+                host_name = get_host().name
             except Exception:  # noqa: BLE001 — must never brick session startup
                 host_name = "unknown"
         ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -551,7 +555,9 @@ def spawn_background_update_refresh(plugin, spawner=None):
 
 def main():
     utf8_stdio()
-    host = hostapi.load_host()
+    # get_host() (#257): resolves the SAME Host run(host) already primed via
+    # set_host(), instead of a second hostapi.load_host() disk/probe.
+    host = get_host()
     root = project_root()
     plugin = host.plugin_root()
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
@@ -709,7 +715,14 @@ def run(host, argv=None):
     plugin's loaded Host. Wraps main() unchanged — main() still communicates
     via sys.exit/stdout/stderr, and its return value stays discarded exactly
     as the old bare `main()` guard discarded it (so the process still exits 0
-    on a normal fall-through)."""
+    on a normal fall-through).
+
+    Wires `host` live (#257): primes `_hooklib`'s process-cached Host via
+    `set_host()` BEFORE main() runs, so main()'s `get_host()` call resolves
+    to the SAME instance the caller passed here — no second
+    `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
+    `fake_host`."""
+    set_host(host)
     main()
     return 0
 

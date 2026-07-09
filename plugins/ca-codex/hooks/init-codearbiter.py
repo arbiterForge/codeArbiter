@@ -19,6 +19,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+import _hooklib  # noqa: E402 — set_host DI seam (#257)
 
 # NOTE: this stub deliberately does NOT contain the initialization sentinel
 # (an HTML comment wrapping the word INITIALIZED). The SessionStart hook greps
@@ -178,7 +179,14 @@ def run(host, argv=None):
     """Host-seam entry point (ADR-0011): the __main__ guard calls this with the
     plugin's loaded Host. Wraps main(argv) unchanged — main()'s return value
     stays discarded exactly as the old bare `main()` guard discarded it (so
-    the process still exits 0 on a normal fall-through)."""
+    the process still exits 0 on a normal fall-through).
+
+    Wires `host` live (#257): primes `_hooklib`'s process-cached Host via
+    `set_host()` BEFORE main() runs, so any `get_host()` call downstream
+    resolves to the SAME instance the caller passed here — no second
+    `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
+    `fake_host`."""
+    _hooklib.set_host(host)
     main(argv)
     return 0
 

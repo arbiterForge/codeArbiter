@@ -277,7 +277,8 @@ class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
     (ADR-0011) must actually be exercised end-to-end under a host with no
     statusline surface (Codex), not merely asserted as a flag value. Drives the
     REAL main() entry — mirrors TestMainHealsBeforeDormantGate's harness
-    exactly, except hostapi.load_host() is patched to return a
+    exactly, except get_host() is patched (#257: main() now resolves via
+    _hooklib.get_host(), not a direct hostapi.load_host()) to return a
     has_statusline=False host — and asserts the stale ca-owned pin is left
     UNTOUCHED (the heal never runs) while the rest of startup (the dormant
     early-exit) still completes normally."""
@@ -316,7 +317,7 @@ class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
             # statusline.py exists (proving a skip, not a load-time failure).
             with mock.patch.object(os.path, "expanduser", return_value=self.home), \
                  mock.patch.dict(os.environ, {"CLAUDE_PLUGIN_ROOT": self.plugin}), \
-                 mock.patch.object(_mod.hostapi, "load_host",
+                 mock.patch.object(_mod, "get_host",
                                     return_value=no_statusline_host), \
                  contextlib.redirect_stdout(io.StringIO()), \
                  contextlib.redirect_stderr(io.StringIO()):
@@ -353,7 +354,9 @@ class TestStartupStateHostLine(unittest.TestCase):
         cwd = os.getcwd()
         os.chdir(self.repo)
         try:
-            with mock.patch.object(_mod.hostapi, "load_host", return_value=host), \
+            # get_host() (#257: main() resolves the Host via _hooklib.get_host(),
+            # not a direct hostapi.load_host(), so that is the mock target).
+            with mock.patch.object(_mod, "get_host", return_value=host), \
                  mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.repo}), \
                  contextlib.redirect_stdout(buf), \
                  contextlib.redirect_stderr(io.StringIO()):

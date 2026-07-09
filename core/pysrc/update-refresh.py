@@ -20,6 +20,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+import _hooklib  # noqa: E402 — set_host DI seam (#257)
 
 
 def main():
@@ -34,7 +35,14 @@ def run(host, argv=None):
     """Host-seam entry point (ADR-0011): the __main__ guard calls this with the
     plugin's loaded Host. Wraps main() unchanged — the refresh stays fail-silent
     and the process still exits 0 either way, exactly as the prior module-level
-    try/except did."""
+    try/except did.
+
+    Wires `host` live (#257): primes `_hooklib`'s process-cached Host via
+    `set_host()` BEFORE main() runs, so any `_updatelib` call that resolves a
+    host via `_hooklib.get_host()` gets the SAME instance the caller passed
+    here — no second `hostapi.load_host()`, and `run(fake_host)` genuinely
+    exercises `fake_host`."""
+    _hooklib.set_host(host)
     main()
     return 0
 
