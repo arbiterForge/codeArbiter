@@ -29,6 +29,7 @@
 
 import os
 import subprocess
+import sys
 
 
 class Host:
@@ -173,19 +174,67 @@ class Host:
                  "added_text": added, "added_lines": added.splitlines()}]
 
 
-def load_host():
+class FailClosedHost(Host):
+    """The host returned when a `_host.py` is PRESENT but fails to load.
+
+    A broken `_host.py` means the plugin declared a host we could not
+    construct, so we do NOT know whether this install is Claude, Codex, or a
+    future host. Silently substituting the Claude-default `Host()` (as
+    load_host once did on ANY failure) is unsafe: on a Codex install the base
+    `iter_file_ops` cannot decompose an apply_patch envelope, so it yields an
+    empty-path "write" op and every pre-write guard skips — the write gate
+    silently fails OPEN (tribunal architecture-004 / typesafety-001, both
+    reproduced). This host fails CLOSED instead: every write-batching payload
+    resolves to a single "opaque" op, which pre-write.py blocks (H-21), and the
+    capability flags are the conservative (absent-surface) values. load_host()
+    emits a stderr breadcrumb when it returns this, so a broken host is never
+    silent (observability-002)."""
+
+    name = "unknown"
+    has_statusline = False
+    has_read_tool = False
+    has_prunable_transcript = False
+
+    def iter_file_ops(self, payload):
+        # Host identity is unknown, so no payload can be safely mapped to
+        # per-file ops. Force the fail-closed "opaque" op unconditionally;
+        # pre-write blocks it (H-21) rather than guessing a host's semantics.
+        return [{"file_path": "", "kind": "opaque", "content": None,
+                 "added_text": "", "added_lines": []}]
+
+
+def load_host(hooks_dir=None):
     """The Host instance for this plugin: `HOST` from the `_host.py` sitting
-    beside this file, loaded by explicit file path (each plugin ships its own
-    `_host.py`; the shared core deliberately does not). Falls back to the
-    built-in Claude defaults (a bare Host()) when `_host.py` is absent or
-    fails to load, so a partial install degrades to today's behavior instead
-    of breaking."""
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_host.py")
+    beside this file (or in `hooks_dir`, an override for tests), loaded by
+    explicit file path (each plugin ships its own `_host.py`; the shared core
+    deliberately does not). The failure semantics distinguish two cases so a
+    broken host can never silently degrade to the WRONG host's guards:
+
+      * `_host.py` ABSENT -> the bare-core / partial-install fallback: return
+        the built-in Claude default `Host()`, exactly as before. No plugin
+        declared a host, so Claude defaults are the only meaningful answer and
+        "degrade to today's behavior" is safe.
+      * `_host.py` PRESENT but fails to load (syntax error, import error,
+        unreadable, or no `HOST` symbol) -> a declared host we could not
+        construct. Emit a stderr breadcrumb and return `FailClosedHost()`,
+        which blocks every write rather than assuming Claude semantics
+        (architecture-004 / observability-002 / typesafety-001). The old
+        blanket fallback was only safe when the intended host IS Claude."""
+    base = hooks_dir or os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(base, "_host.py")
+    if not os.path.isfile(path):
+        return Host()
     try:
         import importlib.util
         spec = importlib.util.spec_from_file_location("_host", path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         return mod.HOST
-    except Exception:  # noqa: BLE001 — no/broken _host.py -> Claude defaults
-        return Host()
+    except Exception as e:  # noqa: BLE001 — declared-but-broken host -> fail closed
+        sys.stderr.write(
+            "codeArbiter: _host.py is present but failed to load "
+            "(%s: %s) — failing closed (writes blocked) rather than assuming "
+            "the default host. Reinstall or fix the plugin's _host.py.\n"
+            % (type(e).__name__, e)
+        )
+        return FailClosedHost()
