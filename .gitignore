@@ -15,6 +15,11 @@ legacy/
 # repo instead of relying on each developer's global gitignore.
 .claude/settings.local.json
 
+# Codex CLI local project config — same guardrail as settings.local.json: can
+# carry machine-local secrets (shell_environment_policy.set). Repo-shippable
+# .codex/ content (agents/, skills/) is NOT ignored.
+.codex/config.toml
+
 # Transient ADR-authoring marker under the root-level state dir (set by /ca:adr).
 # Not project state.
 .codearbiter/.markers/

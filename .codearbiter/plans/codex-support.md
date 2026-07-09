@@ -10,6 +10,8 @@ This is newly feasible: Codex v0.142.x (verified July 2026) has near-parity exte
 
 **Governance prerequisite:** `.codearbiter/CONTEXT.md` currently declares "Claude Code only" as a scope statement. An ADR must amend it before anything user-visible ships (M0). → Recorded as ADR-0011 (2026-07-08).
 
+**Branch strategy (2026-07-08, user-directed):** all milestones stack on `feat/codex-support-m0` (PR #254) until ca-codex is functional; no merge before the user's live Codex test.
+
 **Approval caveat (2026-07-08):** approved as **beta only** — the maintainer has no Codex subscription until ~2026-07-09, so live-fire spike items (stdout injection, trust review, exit-2 feedback) are deferred to a live-verification pass; source-level verification against `openai/codex` proceeds immediately. `ca-codex` carries a beta / Feature Forge preview label until live verification completes.
 
 ## Architecture
@@ -17,8 +19,8 @@ This is newly feasible: Codex v0.142.x (verified July 2026) has near-parity exte
 ### Python core — `core/pysrc/`, vendored at build time
 
 - Move all `plugins/ca/hooks/_*lib.py` shared modules to `core/pysrc/`; extract entry-script logic into importable `core/pysrc/entries/*.run(host)` functions (session_start, pre_exec, pre_write, pre_edit, pre_read, post_write_edit, git_enforce, doctor, init_codearbiter, …).
-- `tools/sync-core.py` (stdlib) copies `core/pysrc/` byte-for-byte into `plugins/ca/hooks/_core/` and `plugins/ca-codex/hooks/_core/`; **CI fails if any vendored copy differs** (regenerate-and-diff, same pattern as `check_badge_consistency.py`). Checked-in copies keep each installed plugin self-contained — no runtime cross-plugin imports, no v1 symlink/dual-root resurrection. ADR-0004 stdlib-only posture unchanged.
-- Each plugin's `hooks/*.py` entry scripts become ~10-line shims: sys.path insert of `_core`, construct host from the plugin's `_host.py`, call the entry's `run(host)`.
+- `tools/sync-core.py` (stdlib) copies `core/pysrc/*.py` byte-for-byte **flat into each plugin's `hooks/` dir** (refined at M1 execution from the earlier `_core/` subdir idea: flat vendoring keeps every filename in place, so the 36-file test suite's subprocess and import contracts survive unmodified — the parity proof stays untouched). `_host.py` is per-plugin and excluded from sync. **CI fails if any vendored copy differs** (`sync-core.py --check`). Checked-in copies keep each installed plugin self-contained — no runtime cross-plugin imports, no v1 symlink/dual-root resurrection. ADR-0004 stdlib-only posture unchanged.
+- Entry scripts keep their CLI contract; each restructures internally to an importable `run(host)` with `if __name__ == "__main__": sys.exit(run(hostapi.load_host()))`. `hostapi.load_host()` imports the sibling `_host.py` (Claude defaults as fallback).
 
 ### The host seam — `core/pysrc/hostapi.py` + per-plugin `_host.py`
 
@@ -69,7 +71,7 @@ Canonical templates in `core/surface/{commands,skills,agents,includes}/` with th
 
 **M1 — Shared-core extraction (pure refactor, `/ca:refactor` lane).** `core/pysrc/` + `hostapi.py` + Claude `_host.py` with today's exact values; `sync-core.py` + CI byte-identity job; ca entry scripts become shims. Existing test suites (`plugins/ca/hooks/tests/` ~36 files, `.github/scripts/test_*.py`) green — subprocess entry-script contract preserved; only import paths change in tests that import libs directly.
 
-**M2 — Codex enforcement core.** Scaffold `plugins/ca-codex/` (`.codex-plugin/plugin.json`, `hooks/hooks.json` per M0 findings, `_host.py`, vendored `_core/`). Wire session-start (persona + state + git-hook install + briefing; no statusline heal), pre-exec, pre-write/edit/read, post-write-edit, git-enforce, init, doctor; prune stub. `.agents/plugins/marketplace.json`; install + trust-review walkthrough. **Exit test:** Codex session in an arbiter-enabled repo → persona injects; editing `overrides.log` by hand and `git commit --no-verify` are BLOCKED; doctor live-fire probe passes.
+**M2 — Codex enforcement core.** (Carry-in from M1 review, LOW: update security-controls.md's repo-resolution section to name hook-payload `cwd` as a trusted-harness input with its precedence, BEFORE the Codex project-root leg goes live.) Scaffold `plugins/ca-codex/` (`.codex-plugin/plugin.json`, `hooks/hooks.json` per M0 findings, `_host.py`, vendored `_core/`). Wire session-start (persona + state + git-hook install + briefing; no statusline heal), pre-exec, pre-write/edit/read, post-write-edit, git-enforce, init, doctor; prune stub. `.agents/plugins/marketplace.json`; install + trust-review walkthrough. **Exit test:** Codex session in an arbiter-enabled repo → persona injects; editing `overrides.log` by hand and `git commit --no-verify` are BLOCKED; doctor live-fire probe passes.
 
 **M3 — Command/skill surface.** Markdown → `core/surface/` templates; `build-surface.py`; regenerated `plugins/ca/{commands,skills,includes}` **byte-identical to today** (CI-diff proves zero Claude-side change), plus the Codex skill tree. Extend `check-plugin-refs.py` (already plugin-parameterized) to `ca-codex`; Codex COMMANDS.md analogue.
 
