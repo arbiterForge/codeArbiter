@@ -15,6 +15,16 @@
 # NotebookEdit is guarded too (a notebook has no append/frontmatter semantics, so
 # a protected target is refused outright) — defense in depth; none of the
 # protected files is a .ipynb, but the tool must not be a hole.
+#
+# Host seam (ADR-0011, #261): this file reasons entirely over the canonical
+# per-file ops from hostapi.Host.iter_file_ops (the same seam pre-write.py
+# already routes through) — it never branches on a native tool name
+# ("MultiEdit", "NotebookEdit"). The properties that used to be read off the
+# raw tool_input (old_string, replace_all, "this is a MultiEdit batch entry",
+# "this is a notebook with no content semantics") are host-neutral op fields
+# (old_string, replace_all, batched, notebook) instead — a future host whose
+# edit tool shares those same shapes gets the same guard semantics without
+# pre-edit.py knowing its tool names.
 
 import os
 import sys
@@ -25,7 +35,7 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 from _hooklib import (  # noqa: E402
     arbiter_active, block, classify_protected, frontmatter_enabled_text,
     get_host, is_tail_append, marker_fresh, project_root, read_input,
-    tool_input, utf8_stdio,
+    utf8_stdio,
 )
 
 
@@ -33,7 +43,7 @@ def _read_real_text(root, fpath):
     """Best-effort current on-disk content of `fpath` (symlink-resolved), or
     "" if unreadable. Shared by the #159 CONTEXT.md replay and the H-05
     tail-anchor check (reliability-003, #172) — both need the file's REAL
-    current content, not just the edit's own old_string, to verify what the
+    current content, not just an edit op's own old_string, to verify what the
     edit actually does to the file."""
     path = fpath if os.path.isabs(fpath) else os.path.join(root, fpath)
     try:
@@ -43,21 +53,21 @@ def _read_real_text(root, fpath):
         return ""
 
 
-def _resulting_context(root, fpath, tool, ti):
-    """Best-effort resulting content of an Edit/MultiEdit applied to CONTEXT.md,
-    so the #159 guard can vet whether the edit keeps the repo arbiter-enabled.
-    Reads the real (symlink-resolved) file and replays the edit(s) the way the
-    tool would. An old_string that isn't present leaves the text unchanged (the
-    tool would error anyway) — harmless for the check."""
+def _resulting_context(root, fpath, ops):
+    """Best-effort resulting content of CONTEXT.md after ALL of `ops` (one or
+    more canonical edit ops targeting the same file — a MultiEdit call fans
+    out to several, applied as one atomic batch) are replayed in order, so
+    the #159 guard can vet whether the FULL call keeps the repo
+    arbiter-enabled. Reads the real (symlink-resolved) file and replays each
+    op's old_string/added_text/replace_all against the running text, exactly
+    as the pre-seam per-tool replay did — driven off op fields instead of a
+    native tool_input shape. An old_string that isn't present leaves the text
+    unchanged (the tool would error anyway) — harmless for the check."""
     text = _read_real_text(root, fpath)
-    if tool == "MultiEdit":
-        edits = ti.get("edits", []) or []
-    else:
-        edits = [ti]
-    for e in edits:
-        old = (e.get("old_string", "") or "")
-        new = (e.get("new_string", "") or "")
-        if e.get("replace_all"):
+    for op in ops:
+        old = op.get("old_string", "") or ""
+        new = op.get("added_text", "") or ""
+        if op.get("replace_all"):
             text = text.replace(old, new)
         else:
             text = text.replace(old, new, 1)
@@ -66,24 +76,37 @@ def _resulting_context(root, fpath, tool, ti):
 
 def _run(root):
     payload = read_input()
-    tool = payload.get("tool_name", "") or ""
-    # Host seam (ADR-0011, M2): a pass-through under Claude Code (whose
-    # Edit/MultiEdit/NotebookEdit payloads already ARE the canonical shapes).
-    # Codex does not register this entry at all — its edits arrive as
-    # apply_patch and are guarded per-op by pre-write.py (docs/parity.md).
-    ti = get_host().normalize_tool_input(tool, tool_input(payload))
-    # NotebookEdit carries `notebook_path`; Edit/MultiEdit carry `file_path`.
-    fpath = ti.get("file_path", "") or ti.get("notebook_path", "") or ""
+    # Host seam (ADR-0011, M2/#261): iter_file_ops maps this host's native
+    # payload to canonical per-file ops. Under Claude Code, Edit/NotebookEdit
+    # map to exactly one op and MultiEdit fans to one op per edits[] entry —
+    # all sharing the SAME file_path, since each of these tools targets one
+    # file per call. Codex does not register this entry at all — its edits
+    # arrive as apply_patch and are guarded per-op by pre-write.py
+    # (docs/parity.md).
+    ops = list(get_host().iter_file_ops(payload))
+    if not ops:
+        sys.exit(0)
+
+    fpath = ops[0].get("file_path", "") or ""
     classes = classify_protected(fpath, root)
 
     # The tag that names each protected class, in message priority order.
     _CLASS_TAG = (("marker", "H-19"), ("context", "H-18"),
                   ("audit", "H-05"), ("decisions", "H-11"))
 
-    # NotebookEdit: a notebook is never one of the protected text artifacts, and
-    # cell edits have no append/frontmatter semantics to reason about — refuse any
-    # protected target outright with a class-appropriate tag (defense in depth).
-    if tool == "NotebookEdit":
+    # H-21: an "opaque" op is a host's signal that it could not map this
+    # payload to a known per-file shape at all (e.g. a FailClosedHost, or a
+    # future host's unparseable envelope) — ambiguity resolves CLOSED
+    # (ORCHESTRATOR §2), mirroring pre-write.py's opaque handling.
+    if any(op.get("kind") == "opaque" for op in ops):
+        block("H-21", "This edit could not be decomposed into per-file operations, so its "
+                      "targets cannot be guarded. Failing closed. Retry, or report it.")
+
+    # A "notebook" op (NotebookEdit): its target has no append/frontmatter
+    # semantics to reason about — refuse any protected target outright with a
+    # class-appropriate tag (defense in depth). A notebook call always fans to
+    # exactly one op, so checking ops[0] speaks for the whole call.
+    if ops[0].get("notebook"):
         for cls, tag in _CLASS_TAG:
             if cls in classes:
                 block(tag, "NotebookEdit may not target a protected .codearbiter artifact "
@@ -98,10 +121,13 @@ def _run(root):
                       "tools (#160) — editing one forges or tampers with a security/migration/ADR "
                       "gate pass. Markers are recorded only by the sanctioned gate producers.")
 
-    # H-18: an Edit to CONTEXT.md may not drop `arbiter: enabled` or corrupt the
-    # frontmatter (#159) — replay the edit and require the result stays enabled.
+    # H-18: an edit to CONTEXT.md may not drop `arbiter: enabled` or corrupt the
+    # frontmatter (#159) — replay every op against the file in order (a
+    # MultiEdit's edits apply as one atomic batch; the resulting text after
+    # ALL of them is what matters, not any single intermediate op) and
+    # require the FINAL result stays enabled.
     if "context" in classes:
-        enabled, malformed = frontmatter_enabled_text(_resulting_context(root, fpath, tool, ti))
+        enabled, malformed = frontmatter_enabled_text(_resulting_context(root, fpath, ops))
         if malformed or not enabled:
             block("H-18", "This Edit would remove or alter the `arbiter: enabled` frontmatter in "
                           ".codearbiter/CONTEXT.md (#159) — the activation switch every enforcement "
@@ -113,27 +139,31 @@ def _run(root):
     # file's REAL current trailing content, and new_string must extend it.
     # (path set: _hooklib.is_audit_log)
     if "audit" in classes:
-        # MultiEdit applies a batch of edits and cannot express a verifiable pure
-        # append to an append-only file — the sanctioned append path is a single
-        # Edit (or '>>'). Block it outright rather than reason about the batch.
-        if tool == "MultiEdit":
+        # A batched op (MultiEdit's edits[] fan) applies as part of a batch and
+        # no single entry's old_string/new_string can express a verifiable
+        # pure append to an append-only file — the sanctioned append path is a
+        # single Edit (or '>>'). Block it outright rather than reason about
+        # the batch.
+        if any(op.get("batched") for op in ops):
             block("H-05", "MultiEdit cannot guarantee a pure append to an append-only "
                           ".codearbiter audit log (overrides.log, triage.log, sprint-log.md) "
                           "(ORCHESTRATOR §7). Append with a single Edit or '>>'.")
+        # Exactly one non-batched op reaches this point (Edit).
+        op = ops[0]
         # reliability-003 (#172): replace_all can never be a verifiable append —
         # it rewrites EVERY occurrence of old_string, not just the tail (a
         # single-occurrence replace_all is indistinguishable from a targeted
         # rewrite, and a multi-occurrence one alters interior lines outright).
         # Reject it outright before even looking at old_string/new_string.
-        if ti.get("replace_all"):
+        if op.get("replace_all"):
             block("H-05", "An Edit with replace_all=true on an append-only .codearbiter "
                           "audit log (overrides.log, triage.log, sprint-log.md) cannot be a "
                           "verifiable pure append (ORCHESTRATOR §7) — replace_all rewrites "
                           "every matching occurrence, not just the file's tail. Append with "
                           "'>>', or a single non-replace_all Edit whose old_string is the "
                           "file's current trailing content.")
-        old = ti.get("old_string", "") or ""
-        new = ti.get("new_string", "") or ""
+        old = op.get("old_string", "") or ""
+        new = op.get("added_text", "") or ""
         # migration-003: `new.startswith("")` is ALWAYS True, so an empty
         # old_string defeats the append check entirely — it could prepend or
         # replace arbitrary content with the guard never firing. An empty
