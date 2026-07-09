@@ -6,6 +6,13 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.8.12] — 2026-07-09
+
+Internal host-abstraction seam; no behavior change under Claude Code.
+
+### Changed
+- **Shared-core extraction (ADR-0011, M1).** All 42 host-neutral hook files are now canonical in `core/pysrc/` and vendored byte-identically into `plugins/ca/hooks/` by `tools/sync-core.py` (`--check` gates drift in CI). A new `hostapi.py` seam carries host specifics (project-root resolution, tool-name normalization, capability flags); `plugins/ca/hooks/_host.py` pins the Claude Code host. Entry scripts are now importable `run(host)` functions with identical CLI, exit-code, and fail-open contracts — proven by the unmodified 794-test suite. Groundwork for the `ca-codex` sibling plugin.
+
 ## [2.8.11] — 2026-07-02
 
 Durable sink for mechanical gate decisions, plus an audit staleness warning.
