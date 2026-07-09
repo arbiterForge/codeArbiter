@@ -30,7 +30,7 @@
 #   plugin_root(explicit=None) -> str        the running plugin's own root directory
 #   installed_version(root=None, host=None) -> str|None  the version in
 #                                             <root>/<host.manifest_relpath()>
-#                                             (host defaults to hostapi.load_host())
+#                                             (host defaults to _hooklib.get_host())
 #   parse_version(s) -> tuple|None           numeric-tuple parse; None if malformed/absent
 #   version_gt(a, b) -> bool                 True iff semver a > b (numeric-tuple compare)
 #   update_available(installed, latest) -> bool   True iff latest > installed
@@ -54,8 +54,10 @@ import urllib.request
 _HOOKS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _HOOKS_DIR not in sys.path:
     sys.path.insert(0, _HOOKS_DIR)
-from _hooklib import write_text_atomic  # noqa: E402 — needs the sys.path mount above
-import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
+from _hooklib import get_host, write_text_atomic  # noqa: E402 — sys.path mount above
+# hostapi is not imported directly here (#257): plugin_root()/installed_version()
+# resolve the Host via _hooklib.get_host() (the DI seam every entry script's
+# run(host) primes via set_host()), never a fresh hostapi.load_host().
 
 ONE_DAY = 24 * 60 * 60
 
@@ -78,23 +80,28 @@ def plugin_root(explicit=None):
     """The running plugin's own root directory (parent of hooks/). `explicit` wins
     (tests); else CLAUDE_PLUGIN_ROOT; else derived from this file's own location —
     always resolves to the ACTUAL running install, not a stale env pin. The env
-    + file-relative resolution lives on the host seam (hostapi, ADR-0011)."""
-    return explicit or hostapi.load_host().plugin_root()
+    + file-relative resolution lives on the host seam (hostapi, ADR-0011).
+    Resolves via get_host() (#257), not a direct hostapi.load_host(), so a
+    caller reached from an entry script's run(host) sees the SAME injected
+    Host instead of triggering a second disk load."""
+    return explicit or get_host().plugin_root()
 
 
 def installed_version(root=None, host=None):
     """The `version` field from <root>/<host.manifest_relpath()>, or None on any
     failure (missing file, corrupt JSON, missing/blank field). `host` defaults to
-    hostapi.load_host() (#263, reliability-002/observability-003): under Claude
-    Code that resolves to `.claude-plugin/plugin.json` exactly as before; a
-    plugin whose manifest ships elsewhere (e.g. ca-codex's `.codex-plugin/`)
-    resolves the CORRECT path instead of silently reading nothing and
-    suppressing the update-available notice forever. No caller in this repo
-    threads a host through today (session-start.py calls installed_version(plugin)
-    positionally), so resolving it here — rather than plumbing it through every
-    call site — keeps the fix local to this seam."""
+    get_host() (#263, reliability-002/observability-003; #257 — get_host(), not
+    a direct hostapi.load_host(), so this resolves the SAME injected instance):
+    under Claude Code that resolves to `.claude-plugin/plugin.json` exactly as
+    before; a plugin whose manifest ships elsewhere (e.g. ca-codex's
+    `.codex-plugin/`) resolves the CORRECT path instead of silently reading
+    nothing and suppressing the update-available notice forever. No caller in
+    this repo threads a host through today (session-start.py calls
+    installed_version(plugin) positionally), so resolving it here — rather
+    than plumbing it through every call site — keeps the fix local to this
+    seam."""
     root = root or plugin_root()
-    host = host or hostapi.load_host()
+    host = host or get_host()
     try:
         with open(os.path.join(root, host.manifest_relpath()),
                   encoding="utf-8") as f:

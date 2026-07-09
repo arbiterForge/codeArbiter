@@ -24,6 +24,13 @@
 # entries each receive their own stdin, so the block survives.
 #
 # Public API:
+#   get_host() -> Host                   the process's Host instance (hostapi.load_host(), cached)
+#   set_host(host) -> None               DI seam (#257): prime the process-cached Host that
+#                                         get_host() returns. Every entry script's run(host) calls
+#                                         this BEFORE main(), so the Host the __main__ guard already
+#                                         loaded is the one get_host() serves — main() no longer
+#                                         triggers a second hostapi.load_host(), and a test calling
+#                                         run(fake_host) genuinely runs against fake_host.
 #   utf8_stdio() -> None                 force UTF-8 on stdout/stderr
 #   norm_path(p) -> str                  normalize path separators to forward-slash
 #   frontmatter_enabled(ctx_path) -> tuple[bool, bool]   (enabled, malformed)
@@ -84,6 +91,37 @@ def get_host():
     if _HOST is None:
         _HOST = hostapi.load_host()
     return _HOST
+
+
+def set_host(host):
+    """Dependency-injection seam (#257 architecture-001/performance-002).
+
+    Primes the module-cached `_HOST` that `get_host()` reads. Every entry
+    script's `run(host, argv=None)` calls this BEFORE `main()`, so the Host
+    instance the `__main__` guard already resolved via `hostapi.load_host()`
+    is the SAME object `get_host()` serves inside `main()` — closing two
+    defects at once: (1) `main()` no longer triggers its own redundant
+    `hostapi.load_host()` (a second `_host.py` load per invocation), and
+    (2) `run(host)` stops silently ignoring its `host` argument — a test that
+    calls `run(fake_host)` now genuinely exercises `fake_host`, not whatever
+    `load_host()` resolves from disk. In production the injected host IS the
+    `load_host()` result the guard already computed, so this changes no
+    behavior — it only removes the redundant second load and makes the
+    existing `run(host)` parameter live."""
+    global _HOST
+    _HOST = host
+
+
+def reset_host():
+    """Test-only: clear the injected/cached `_HOST` so the next `get_host()`
+    lazy-loads afresh. Production hook processes are single-shot and never need
+    this; but `set_host()` makes `_HOST` a process-lifetime singleton, so a test
+    that calls `run(fake_host)` must reset it in tearDown — otherwise the fake
+    leaks into any later in-process test that calls `get_host()` without its own
+    patch, silently running against the wrong host and masking a gate
+    regression (security review #257, LOW)."""
+    global _HOST
+    _HOST = None
 
 
 # project_root() memoization (performance-001/003, #260). A hook is a

@@ -1,3 +1,5 @@
+import contextlib
+import io
 import json
 import os
 import sys
@@ -11,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # doctor.py uses a module-level `results` list that accumulates (level, line)
 # tuples. We import doctor and reset that list between tests to isolate them.
 import doctor  # noqa: E402
+import _hooklib  # noqa: E402
 
 
 def _reset():
@@ -353,6 +356,65 @@ class TestCheckRepoOutputFormat(unittest.TestCase):
             self.assertIsInstance(lvl, str)
             self.assertIsInstance(line, str)
             self.assertGreater(len(line), 0)
+
+
+class TestRunHostDISeam(unittest.TestCase):
+    """#257 (architecture-001/performance-002): run(host) must WIRE the host it
+    is given, not silently discard it. Before this fix, main() re-resolved the
+    host itself via a fresh hostapi.load_host() call, so run(fake_host) ran
+    against whatever load_host() found on disk (real "claude" in this bare
+    checkout) — never the injected fake_host. Drives the REAL run(host) entry
+    point (not check_host()/main() directly) and asserts the injected host's
+    distinguishing `.name` reaches doctor's printed output, proving run(host)
+    is now a live dependency-injection seam."""
+
+    def setUp(self):
+        _reset()
+        _hooklib.reset_host()  # isolate from any other test's set_host()
+
+    def tearDown(self):
+        _reset()
+        _hooklib.reset_host()  # do not leak the injected fake into later tests
+
+    class _FakeInjectedHost:
+        """A host observably different from the real disk-loaded default
+        (name="claude") — if run(host) actually wires it, this name (never
+        "claude") is what doctor's output must carry."""
+        name = "fake-injected-host-257"
+
+        def manifest_relpath(self):
+            return os.path.join(".claude-plugin", "plugin.json")
+
+        def plugin_root(self):
+            return os.getcwd()
+
+    def test_run_host_wires_the_injected_host_not_the_disk_default(self):
+        fake = self._FakeInjectedHost()
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            try:
+                doctor.run(fake)
+            except SystemExit:
+                # main() exits 1 when any check FAILs (expected here — no real
+                # plugin payload exists at cwd) — the printed lines above the
+                # exit are what this test cares about, so tolerate it.
+                pass
+        out = buf.getvalue()
+        self.assertIn("resolved host: fake-injected-host-257", out)
+        self.assertNotIn("resolved host: claude", out)
+
+    def test_run_host_primes_get_host_before_main_runs(self):
+        # Direct proof of the DI seam itself: after run(host) starts, the
+        # process-cached Host _hooklib.get_host() serves is the SAME object
+        # identity as the one passed to run() — not a second hostapi.load_host()
+        # result.
+        fake = self._FakeInjectedHost()
+        with contextlib.redirect_stdout(io.StringIO()):
+            try:
+                doctor.run(fake)
+            except SystemExit:
+                pass
+        self.assertIs(_hooklib.get_host(), fake)
 
 
 if __name__ == "__main__":

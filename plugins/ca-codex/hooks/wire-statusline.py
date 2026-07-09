@@ -66,8 +66,10 @@ def plugin_root(opt):
         return os.path.abspath(opt)
     # Host seam (ADR-0011): CLAUDE_PLUGIN_ROOT then this script's parent —
     # exactly the prior inline lookup (hostapi.py lives in the same hooks/ dir,
-    # so its file-relative fallback names the same root).
-    return os.path.abspath(hostapi.load_host().plugin_root())
+    # so its file-relative fallback names the same root). get_host() (#257),
+    # not a direct hostapi.load_host(): resolves the SAME Host run(host)
+    # injected instead of triggering a second disk load.
+    return os.path.abspath(_hooklib.get_host().plugin_root())
 
 
 def settings_path(opt):
@@ -290,7 +292,14 @@ def run(host, argv=None):
     """Host-seam entry point (ADR-0011): the __main__ guard calls this with the
     plugin's loaded Host. Wraps main(argv) unchanged — main()'s return value
     stays discarded exactly as the old bare `main()` guard discarded it (so
-    the process still exits 0 on a normal fall-through)."""
+    the process still exits 0 on a normal fall-through).
+
+    Wires `host` live (#257): primes `_hooklib`'s process-cached Host via
+    `set_host()` BEFORE main() runs, so `plugin_root()`'s `get_host()` call
+    resolves to the SAME instance the caller passed here — no second
+    `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
+    `fake_host`."""
+    _hooklib.set_host(host)
     main(argv)
     return 0
 
