@@ -328,6 +328,24 @@ friction and audit trail it adds on the cooperative path. Reopens (→ non-fabri
 reviewer-signed binding) only if the threat model expands to untrusted agents. See
 ADR-0010 (resolves appsec-003 / #196).
 
+**MCP file-write tools out of scope (both hosts).** The write-path guards
+(`pre-write.py` / `post-write-edit.py`) are wired to each host's *native* write
+tools — Claude's `Write`/`Edit`/`MultiEdit`/`NotebookEdit`, and Codex's
+`apply_patch` (plus its `Write`/`Edit` matcher aliases). A file write performed
+through an **MCP server tool** (`mcp__<server>__<tool>`) is not covered: on Claude
+such tools escape the `Write`/`Edit` matchers, and on Codex `mcp__*` normalizes to
+the `OTHER` category (no `TOOL_MAP` entry) and matches neither the
+`apply_patch|Write|Edit` write hooks nor the `Bash` exec hook. An agent that adds
+an MCP filesystem/write server can therefore write `.codearbiter/CONTEXT.md`, a
+`.markers/` token, or an audit log without a guard firing, on either host. This is
+**accepted residual risk** under the same cooperative-agent trust model as the
+`--no-verify`, shell-indirection, and self-minted-marker gaps above (ADR-0010) — a
+cooperating orchestrator does not route protected writes through an out-of-band MCP
+tool, and a non-cooperating Bash-capable agent already has stronger bypasses.
+Bringing MCP writes under the write gate on both hosts is tracked as **near-term
+hardening (issue #270 / tribunal appsec-002)**, not a codex-branch blocker; it
+reopens if the threat model expands to untrusted agents.
+
 ---
 
 ## Boundary crossings (declared exceptions)
