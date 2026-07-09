@@ -419,6 +419,24 @@ class TestDevExitAudit(unittest.TestCase):
         # append-only: the prior DEV: enter line is preserved.
         self.assertIn("DEV: enter", log)
 
+    def test_live_marker_close_line_is_attributed_to_the_resolved_host(self):
+        # ADR-0012/observability-001: the synthetic close line must carry
+        # HOST: <name> so a shared overrides.log is host-attributable.
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root, "codex")
+        log = self._read_log()
+        self.assertIn("HOST: codex", log)
+
+    def test_live_marker_close_line_defaults_host_when_not_supplied(self):
+        # Callers that omit host_name (e.g. legacy call sites, this test suite's
+        # own default-arg calls) still get a HOST: field, resolved internally.
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root)
+        log = self._read_log()
+        self.assertRegex(log, r"HOST: \S+")
+
     def test_no_marker_appends_nothing(self):
         seed = "[2026-01-01T00:00:00Z] | BY: x | GATE: none | REASON: seed\n"
         self._seed_log(seed)

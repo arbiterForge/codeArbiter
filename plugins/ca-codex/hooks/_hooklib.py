@@ -713,19 +713,26 @@ def _log_gate_event(kind, tag, msg):
     decision is no longer visible ONLY in the ephemeral per-turn stderr
     transcript.
 
-    One line per event: `[ISO-8601Z] KIND [tag] hook=<script> | msg`. `tag` may
-    be None (warn() carries no tag) — the bracket is simply omitted then.
-    `hook` is the invoking script's basename (`sys.argv[0]`), the one
+    One line per event: `[ISO-8601Z] KIND [tag] host=<host> hook=<script> | msg`.
+    `tag` may be None (warn() carries no tag) — the bracket is simply omitted
+    then. `hook` is the invoking script's basename (`sys.argv[0]`), the one
     "which hook fired this" signal available at this shared layer without
     threading a new parameter through all 21 call sites across the 16 entry
-    hooks.
+    hooks. `host` is `get_host().name` ("claude"/"codex"/"unknown") — added
+    for observability-001/ADR-0012: with two hosts now sharing one
+    gate-events.log (ADR-0011), a line could not be attributed to the host
+    that wrote it. Placed BEFORE `hook=` (both are `key=value` tokens with no
+    internal whitespace, so the line stays trivially greppable/parseable by
+    either field, and existing `hook=<script>` substring matches are
+    unaffected).
 
     FAIL-OPEN BY CONTRACT (AC-2): this function must NEVER raise and must
     NEVER be allowed to change the caller's exit code or suppress its stderr
     output. A missing `.codearbiter/` dir, an unwritable/locked/missing log
-    file, or project_root() itself misbehaving are ALL swallowed silently
-    here — the ONE deliberate exception to this module's fail-loud discipline,
-    mirroring the documented fail-open exception in read_input()."""
+    file, project_root() itself misbehaving, or host resolution itself
+    misbehaving are ALL swallowed silently here — the ONE deliberate
+    exception to this module's fail-loud discipline, mirroring the documented
+    fail-open exception in read_input()."""
     try:
         root = project_root()
         cad = os.path.join(root, ".codearbiter")
@@ -733,8 +740,12 @@ def _log_gate_event(kind, tag, msg):
             return  # repo never opted in (no .codearbiter/) — nothing to append to
         ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         hook = os.path.basename(sys.argv[0]) if sys.argv and sys.argv[0] else "-"
+        try:
+            host = get_host().name
+        except Exception:  # noqa: BLE001 — host resolution must never break the sink
+            host = "unknown"
         tag_part = f"[{tag}] " if tag else ""
-        line = f"[{ts}] {kind} {tag_part}hook={hook} | {msg}\n"
+        line = f"[{ts}] {kind} {tag_part}host={host} hook={hook} | {msg}\n"
         with open(os.path.join(cad, "gate-events.log"), "a",
                   encoding="utf-8", newline="\n") as f:
             f.write(line)
