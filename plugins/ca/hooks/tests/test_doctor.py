@@ -180,6 +180,78 @@ class TestCheckPayloadStaleSibling(unittest.TestCase):
         self.assertTrue(any("2.0.0" in line or "1.9.0" in line for line in warn_lines))
 
 
+class TestCheckPayloadHostAware(unittest.TestCase):
+    """#263 (reliability-001): check_payload must resolve the manifest via
+    host.manifest_relpath(), not a hard-coded `.claude-plugin/plugin.json` —
+    a ca-codex-shaped install (manifest at `.codex-plugin/plugin.json` ONLY,
+    no `.claude-plugin/` at all) was previously reported UNHEALTHY (FAIL) on
+    every healthy install."""
+
+    class _FakeCodexHost:
+        def manifest_relpath(self):
+            return os.path.join(".codex-plugin", "plugin.json")
+
+    def setUp(self):
+        _reset()
+        self.tmp = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        _reset()
+        self.tmp.cleanup()
+
+    def _build_codex_shaped_root(self, version="1.2.3"):
+        root = self.tmp.name
+        plugin_dir = os.path.join(root, ".codex-plugin")
+        os.makedirs(plugin_dir)
+        with open(os.path.join(plugin_dir, "plugin.json"), "w") as f:
+            json.dump({"version": version}, f)
+        hooks_dir = os.path.join(root, "hooks")
+        os.makedirs(hooks_dir)
+        hooks_config = {"hooks": {"UserPromptSubmit": [{"hooks": ["a"]}]}}
+        with open(os.path.join(hooks_dir, "hooks.json"), "w") as f:
+            json.dump(hooks_config, f)
+        for script in doctor.HOOK_SCRIPTS:
+            open(os.path.join(hooks_dir, script), "w").close()
+        return root
+
+    def test_codex_shaped_install_is_healthy_under_codex_host(self):
+        root = self._build_codex_shaped_root()
+        doctor.check_payload(root, self._FakeCodexHost())
+        self.assertNotIn("FAIL", _levels())
+
+    def test_codex_shaped_install_version_reported(self):
+        root = self._build_codex_shaped_root("1.2.3")
+        doctor.check_payload(root, self._FakeCodexHost())
+        ok_lines = [line for lvl, line in doctor.results if lvl == "OK"]
+        self.assertTrue(any("1.2.3" in line for line in ok_lines))
+
+    def test_codex_shaped_install_fails_under_default_claude_host(self):
+        # Same root, but resolved via the default (Claude) host — no
+        # .claude-plugin/ exists here, so this must still FAIL. Confirms the
+        # fix is host-SELECTIVE, not a blanket "try both paths" workaround.
+        root = self._build_codex_shaped_root()
+        doctor.check_payload(root, doctor.hostapi.Host())
+        self.assertIn("FAIL", _levels())
+
+    def test_claude_shaped_install_still_healthy_under_default_host(self):
+        # No host arg passed at all — resolves via hostapi.load_host(), the
+        # pre-#263 default path, and must stay byte-identical for Claude.
+        root = self.tmp.name
+        plugin_dir = os.path.join(root, ".claude-plugin")
+        os.makedirs(plugin_dir)
+        with open(os.path.join(plugin_dir, "plugin.json"), "w") as f:
+            json.dump({"version": "2.1.0"}, f)
+        hooks_dir = os.path.join(root, "hooks")
+        os.makedirs(hooks_dir)
+        hooks_config = {"hooks": {"UserPromptSubmit": [{"hooks": ["a"]}]}}
+        with open(os.path.join(hooks_dir, "hooks.json"), "w") as f:
+            json.dump(hooks_config, f)
+        for script in doctor.HOOK_SCRIPTS:
+            open(os.path.join(hooks_dir, script), "w").close()
+        doctor.check_payload(root)
+        self.assertNotIn("FAIL", _levels())
+
+
 class TestCheckRepoEnabled(unittest.TestCase):
     """check_repo: arbiter-enabled CONTEXT.md → OK."""
 

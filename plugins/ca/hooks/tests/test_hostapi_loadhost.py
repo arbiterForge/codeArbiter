@@ -79,5 +79,22 @@ class LoadHostFailClosedTests(unittest.TestCase):
         self.assertEqual(h.name, "unknown")
 
 
+class ManifestRelpathTests(unittest.TestCase):
+    """#263 (reliability-001/002): the base Host's manifest_relpath() default
+    must stay exactly `.claude-plugin/plugin.json` — the pre-#263 hard-coded
+    path both doctor.py and _updatelib.py now derive from this seam instead."""
+
+    def test_default_host_manifest_relpath_is_claude_plugin(self):
+        self.assertEqual(hostapi.Host().manifest_relpath(),
+                          os.path.join(".claude-plugin", "plugin.json"))
+
+    def test_failclosed_host_inherits_claude_manifest_relpath(self):
+        # FailClosedHost overrides no manifest-related behavior — it inherits
+        # the base Host's path (doctor's own check_host WARNs separately on
+        # "unknown"; manifest resolution is not part of that fail-closed guard).
+        self.assertEqual(hostapi.FailClosedHost().manifest_relpath(),
+                          os.path.join(".claude-plugin", "plugin.json"))
+
+
 if __name__ == "__main__":
     unittest.main()

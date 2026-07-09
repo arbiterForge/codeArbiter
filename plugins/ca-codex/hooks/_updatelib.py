@@ -28,7 +28,9 @@
 #   UPDATE_API_URL                           GitHub Releases API endpoint (module constant)
 #   state_path() -> str                      resolved cache file path (env-overridable)
 #   plugin_root(explicit=None) -> str        the running plugin's own root directory
-#   installed_version(root=None) -> str|None the version in <root>/.claude-plugin/plugin.json
+#   installed_version(root=None, host=None) -> str|None  the version in
+#                                             <root>/<host.manifest_relpath()>
+#                                             (host defaults to hostapi.load_host())
 #   parse_version(s) -> tuple|None           numeric-tuple parse; None if malformed/absent
 #   version_gt(a, b) -> bool                 True iff semver a > b (numeric-tuple compare)
 #   update_available(installed, latest) -> bool   True iff latest > installed
@@ -80,12 +82,21 @@ def plugin_root(explicit=None):
     return explicit or hostapi.load_host().plugin_root()
 
 
-def installed_version(root=None):
-    """The `version` field from <root>/.claude-plugin/plugin.json, or None on any
-    failure (missing file, corrupt JSON, missing/blank field)."""
+def installed_version(root=None, host=None):
+    """The `version` field from <root>/<host.manifest_relpath()>, or None on any
+    failure (missing file, corrupt JSON, missing/blank field). `host` defaults to
+    hostapi.load_host() (#263, reliability-002/observability-003): under Claude
+    Code that resolves to `.claude-plugin/plugin.json` exactly as before; a
+    plugin whose manifest ships elsewhere (e.g. ca-codex's `.codex-plugin/`)
+    resolves the CORRECT path instead of silently reading nothing and
+    suppressing the update-available notice forever. No caller in this repo
+    threads a host through today (session-start.py calls installed_version(plugin)
+    positionally), so resolving it here — rather than plumbing it through every
+    call site — keeps the fix local to this seam."""
     root = root or plugin_root()
+    host = host or hostapi.load_host()
     try:
-        with open(os.path.join(root, ".claude-plugin", "plugin.json"),
+        with open(os.path.join(root, host.manifest_relpath()),
                   encoding="utf-8") as f:
             data = json.load(f)
     except (OSError, ValueError):

@@ -82,8 +82,14 @@ def check_interpreters():
         ok(f"python resolves ({p})")
 
 
-def check_payload(root):
-    manifest = os.path.join(root, ".claude-plugin", "plugin.json")
+def check_payload(root, host=None):
+    # host-aware manifest path (#263): defaults to hostapi.load_host() so
+    # every pre-seam call site (main() below, and every existing test that
+    # calls check_payload(root) positionally) keeps resolving the manifest
+    # for whichever host is actually running, without threading a host
+    # through every caller.
+    host = host or hostapi.load_host()
+    manifest = os.path.join(root, host.manifest_relpath())
     version = None
     try:
         with open(manifest, encoding="utf-8") as f:
@@ -194,9 +200,10 @@ def check_statusline(root):
 def main():
     utf8_stdio()
     root = plugin_root()
-    check_host(hostapi.load_host())
+    host = hostapi.load_host()
+    check_host(host)
     check_interpreters()
-    check_payload(root)
+    check_payload(root, host)
     check_repo()
     check_statusline(root)
     width = max(len(lvl) for lvl, _ in results)
