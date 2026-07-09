@@ -31,6 +31,36 @@ def _has(keyword):
     return any(keyword in line for _, line in doctor.results)
 
 
+class TestCheckHost(unittest.TestCase):
+    """observability-004 (#268): check_host() surfaces the resolved host name
+    (or a WARN when hostapi.load_host() failed closed to "unknown", #255)."""
+
+    def setUp(self):
+        _reset()
+
+    def tearDown(self):
+        _reset()
+
+    def test_named_host_is_ok(self):
+        class FakeHost:
+            name = "codex"
+
+        doctor.check_host(FakeHost())
+        ok_lines = [line for lvl, line in doctor.results if lvl == "OK"]
+        self.assertTrue(any("codex" in line for line in ok_lines))
+        self.assertNotIn("WARN", _levels())
+
+    def test_claude_host_is_ok(self):
+        doctor.check_host(doctor.hostapi.Host())
+        ok_lines = [line for lvl, line in doctor.results if lvl == "OK"]
+        self.assertTrue(any("claude" in line for line in ok_lines))
+
+    def test_unknown_host_is_warn(self):
+        doctor.check_host(doctor.hostapi.FailClosedHost())
+        self.assertEqual(_levels(), ["WARN"])
+        self.assertIn("unknown", _lines()[0])
+
+
 class TestCheckPayloadMissingScript(unittest.TestCase):
     """check_payload: missing hook scripts → FAIL."""
 

@@ -330,6 +330,53 @@ class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
         self.assertEqual(cmd, self.stale_command)
 
 
+class TestStartupStateHostLine(unittest.TestCase):
+    """observability-004 (#268): the startup-state banner names the RESOLVED
+    host (`host.name`) so a dormant/broken host (FailClosedHost -> "unknown",
+    #255) is visible right in the banner instead of looking identical to a
+    working install. The line prints for ANY arbiter-enabled repo, even one
+    not yet initialized (it sits before the INITIALIZED check in main())."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.repo = self._tmp.name
+        cad = os.path.join(self.repo, ".codearbiter")
+        os.makedirs(cad)
+        with open(os.path.join(cad, "CONTEXT.md"), "w", encoding="utf-8") as f:
+            f.write("---\narbiter: enabled\n---\n\n_stub, not initialized_\n")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _run_main(self, host):
+        buf = io.StringIO()
+        cwd = os.getcwd()
+        os.chdir(self.repo)
+        try:
+            with mock.patch.object(_mod.hostapi, "load_host", return_value=host), \
+                 mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.repo}), \
+                 contextlib.redirect_stdout(buf), \
+                 contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    _mod.main()
+        finally:
+            os.chdir(cwd)
+        return buf.getvalue()
+
+    def test_named_host_appears_in_banner(self):
+        class CodexHost(_mod.hostapi.Host):
+            name = "codex"
+
+        out = self._run_main(CodexHost())
+        self.assertIn("host: codex", out)
+
+    def test_unknown_host_appears_in_banner(self):
+        # FailClosedHost (#255) — the dormant/broken-install case this
+        # feature exists to surface.
+        out = self._run_main(_mod.hostapi.FailClosedHost())
+        self.assertIn("host: unknown", out)
+
+
 class TestDevExitAudit(unittest.TestCase):
     """observability-001: when SessionStart clears a LIVE dev-active marker (a
     prior session entered /ca:dev and ended without /ca:arbiter), it must append
