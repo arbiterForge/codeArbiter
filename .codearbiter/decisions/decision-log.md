@@ -369,3 +369,28 @@ Maintainability (level 3) drove the architecture: copy-and-adapt reproduces the 
 New `core/` + `tools/sync-core.py` + `tools/build-surface.py`; `plugins/ca-codex/` scaffold; CONTEXT.md identity/scope rewrite; release.yml and CI path filters parameterized for a third plugin (`core/**` triggers both suites); docs/parity.md ledger. Plan: `.codearbiter/plans/codex-support.md`. M0 spike answers the live-fire unknowns (SessionStart stdout injection, tool names, trust review) before M2 ships.
 
 ---
+
+## DECISION-0012 — ADR-0012 — Dual-host .codearbiter/ concurrency is at parity with same-host concurrency
+
+**Date:** 2026-07-09
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture / concurrency
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0011 keeps one shared `.codearbiter/` store across hosts but specifies no concurrency contract for two hosts writing it at once.
+- **Scaffold position:** n/a — an open-decision closure prompted by tribunal run 2026-07-09-codex-support-branch (issue #269).
+- **Status type:** open-decision-closure
+
+### Decision
+Dual-host concurrency on the shared store is accepted at parity with same-host concurrency: the Codex campaign owes no stronger guarantee than two Claude sessions already have. Host attribution (`get_host().name`) is added to the audit-log writes — the one gap genuinely new to dual-host — and ships in the codex-support sprint. File locking / CAS on read-modify-write state is NOT added under the Codex campaign; the lock-free board RMW (reliability-004) and repo-global dev-marker clobber (reliability-007) are re-scoped as pre-existing, host-agnostic debt, tracked separately, not codex-branch blockers.
+
+### SMARTS rationale
+Correctness of the audit trail (level 1) drove the one required change: two distinct host identities now share one trail, so attribution is a genuine new obligation. Maintainability and developer velocity (levels 3, 5) argued against bundling a full locking contract into the Codex campaign — the RMW race is pre-existing and host-agnostic, so fixing it under the Codex banner would hold the branch hostage to unrelated hardening. The maintainer's explicit bar (Codex ≤ Claude-today) closed it.
+
+### Implementation implication
+Recorded as ADR-0012 (governs core/pysrc/taskwrite.py, _hooklib.py, session-start.py). Sprint fix: host attribution in `_hooklib` gate-event/block/remind/warn (issue #269 / observability-001). Re-scope: reliability-004 and reliability-007 tracked as pre-existing host-agnostic concurrency debt, not codex blockers. Extends ADR-0011; relates to ADR-0010.
+
+---

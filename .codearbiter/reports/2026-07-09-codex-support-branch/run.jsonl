@@ -1,0 +1,30 @@
+{"schema":"run/v1","event":"run-started","detail":"scope=feat/codex-support-m0 branch diff vs main (merge-base ddcfc42); focus=dual-host Claude Code + Codex sharing one .codearbiter projectContext; dedup-aware reading (core/pysrc canonical, generated copies fidelity-checked only); partition: wave1=[appsec,architecture,reliability] wave2=[secrets-supply,test-fidelity] wave3=[coverage,infra,observability,performance,typesafety]; lens migration skipped (no DB migrations in scope)","at":"2026-07-09T00:00:00Z"}
+{"schema":"run/v1","event":"lens-skipped","lens":"migration","detail":"no schema/DB migrations in scope; migration-pass.py is a doc-migration hook","at":"2026-07-09T00:00:00Z"}
+{"schema":"run/v1","event":"lens-launched","wave":1,"lens":"appsec","model":"fable","at":"2026-07-09T19:28:41Z"}
+{"schema":"run/v1","event":"lens-launched","wave":1,"lens":"architecture","model":"fable","at":"2026-07-09T19:28:41Z"}
+{"schema":"run/v1","event":"lens-launched","wave":1,"lens":"reliability","model":"fable","at":"2026-07-09T19:28:41Z"}
+{"schema":"run/v1","event":"lens-completed","wave":1,"lens":"appsec","surface_seen":14,"findings":2,"model":"fable","tokens":105860,"at":"2026-07-09T19:38:18Z"}
+{"schema":"run/v1","event":"lens-completed","wave":1,"lens":"architecture","surface_seen":49,"findings":10,"model":"fable","tokens":109901,"at":"2026-07-09T19:38:39Z"}
+{"schema":"run/v1","event":"lens-completed","wave":1,"lens":"reliability","surface_seen":41,"findings":9,"model":"fable","tokens":141387,"at":"2026-07-09T19:39:43Z"}
+{"schema":"run/v1","event":"wave-flushed","wave":1,"detail":"appsec=2 architecture=10 reliability=9 (21 findings)","at":"2026-07-09T19:39:43Z"}
+{"schema":"run/v1","event":"lens-launched","wave":2,"lens":"secrets-supply","model":"sonnet","at":"2026-07-09T19:39:43Z"}
+{"schema":"run/v1","event":"lens-launched","wave":2,"lens":"test-fidelity","model":"sonnet","at":"2026-07-09T19:39:43Z"}
+{"schema":"run/v1","event":"lens-completed","wave":2,"lens":"secrets-supply","surface_seen":16,"findings":0,"model":"sonnet","tokens":84644,"at":"2026-07-09T19:44:31Z"}
+{"schema":"run/v1","event":"lens-completed","wave":2,"lens":"test-fidelity","surface_seen":62,"findings":0,"model":"sonnet","tokens":63454,"at":"2026-07-09T19:44:31Z"}
+{"schema":"run/v1","event":"wave-flushed","wave":2,"detail":"secrets-supply=0 test-fidelity=0","at":"2026-07-09T19:44:31Z"}
+{"schema":"run/v1","event":"wave-triaged","wave":1,"detail":"21 findings: 3 keep-high(incl 1 dup), mediums+lows kept/combined, 4 decision-required, 2 investigate","at":"2026-07-09T19:44:31Z"}
+{"schema":"run/v1","event":"wave-triaged","wave":2,"detail":"0 findings both lenses","at":"2026-07-09T19:44:31Z"}
+{"schema":"run/v1","event":"lens-launched","wave":3,"lens":"coverage","model":"sonnet","at":"2026-07-09T19:44:41Z"}
+{"schema":"run/v1","event":"lens-launched","wave":3,"lens":"infra","model":"sonnet","at":"2026-07-09T19:44:41Z"}
+{"schema":"run/v1","event":"lens-launched","wave":3,"lens":"observability","model":"sonnet","at":"2026-07-09T19:44:41Z"}
+{"schema":"run/v1","event":"lens-launched","wave":3,"lens":"performance","model":"sonnet","at":"2026-07-09T19:44:41Z"}
+{"schema":"run/v1","event":"lens-launched","wave":3,"lens":"typesafety","model":"sonnet","at":"2026-07-09T19:44:41Z"}
+{"schema":"run/v1","event":"lens-completed","wave":3,"lens":"infra","surface_seen":12,"findings":3,"model":"sonnet","tokens":65826,"at":"2026-07-09T19:48:11Z"}
+{"schema":"run/v1","event":"lens-completed","wave":3,"lens":"coverage","surface_seen":7,"findings":4,"model":"sonnet","tokens":76012,"at":"2026-07-09T19:48:30Z"}
+{"schema":"run/v1","event":"lens-completed","wave":3,"lens":"observability","surface_seen":6,"findings":4,"model":"sonnet","tokens":71020,"at":"2026-07-09T19:49:34Z"}
+{"schema":"run/v1","event":"lens-completed","wave":3,"lens":"performance","surface_seen":28,"findings":3,"model":"sonnet","tokens":64676,"at":"2026-07-09T19:51:06Z"}
+{"schema":"run/v1","event":"lens-completed","wave":3,"lens":"typesafety","surface_seen":20,"findings":1,"model":"sonnet","tokens":67894,"at":"2026-07-09T19:54:18Z"}
+{"schema":"run/v1","event":"wave-flushed","wave":3,"detail":"coverage=4 infra=3 observability=4 performance=3 typesafety=1 (15)","at":"2026-07-09T19:54:18Z"}
+{"schema":"run/v1","event":"wave-triaged","wave":3,"detail":"15 findings triaged","at":"2026-07-09T19:54:18Z"}
+{"schema":"run/v1","event":"report-written","detail":"report.md + manifest.yaml projected from logs","at":"2026-07-09T19:55:32Z"}
+{"schema":"run/v1","event":"issues-filed","detail":"16 issues #255-#270 filed on arbiterForge/codeArbiter; all labeled codex; branch pointer in every body","at":"2026-07-09T20:03:51Z"}
