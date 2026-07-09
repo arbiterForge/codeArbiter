@@ -272,6 +272,64 @@ class TestMainHealsBeforeDormantGate(unittest.TestCase):
         self.assertNotIn("2.0.1", cmd)
 
 
+class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
+    """coverage-004 (#267): the has_statusline gate at main()'s heal call site
+    (ADR-0011) must actually be exercised end-to-end under a host with no
+    statusline surface (Codex), not merely asserted as a flag value. Drives the
+    REAL main() entry — mirrors TestMainHealsBeforeDormantGate's harness
+    exactly, except hostapi.load_host() is patched to return a
+    has_statusline=False host — and asserts the stale ca-owned pin is left
+    UNTOUCHED (the heal never runs) while the rest of startup (the dormant
+    early-exit) still completes normally."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        # A dormant repo: no .codearbiter/CONTEXT.md -> main() exits early.
+        self.repo = os.path.join(self._tmp.name, "repo")
+        os.makedirs(self.repo)
+        # A fake HOME whose ~/.claude/settings.json carries a stale ca-owned pin.
+        self.home = os.path.join(self._tmp.name, "home")
+        os.makedirs(os.path.join(self.home, ".claude"))
+        self.settings = os.path.join(self.home, ".claude", "settings.json")
+        self.stale_command = '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump({"statusLine": {"type": "command",
+                       "command": self.stale_command}}, f)
+        self.plugin = os.path.dirname(os.path.dirname(os.path.abspath(_mod.__file__)))
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_main_skips_heal_when_host_has_no_statusline(self):
+        # A real Host subclass — the same shape production loads from _host.py —
+        # with only has_statusline flipped off (the Codex capability profile).
+        class NoStatuslineHost(_mod.hostapi.Host):
+            has_statusline = False
+
+        no_statusline_host = NoStatuslineHost()
+
+        cwd = os.getcwd()
+        os.chdir(self.repo)
+        try:
+            # expanduser("~") -> our fake HOME, so IF the heal ran it would
+            # resolve into it; CLAUDE_PLUGIN_ROOT -> the real plugin so
+            # statusline.py exists (proving a skip, not a load-time failure).
+            with mock.patch.object(os.path, "expanduser", return_value=self.home), \
+                 mock.patch.dict(os.environ, {"CLAUDE_PLUGIN_ROOT": self.plugin}), \
+                 mock.patch.object(_mod.hostapi, "load_host",
+                                    return_value=no_statusline_host), \
+                 contextlib.redirect_stdout(io.StringIO()), \
+                 contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    _mod.main()
+        finally:
+            os.chdir(cwd)
+        # The heal must NEVER have run: the stale pin is untouched byte-for-byte.
+        with open(self.settings, encoding="utf-8") as f:
+            cmd = json.load(f)["statusLine"]["command"]
+        self.assertEqual(cmd, self.stale_command)
+
+
 class TestDevExitAudit(unittest.TestCase):
     """observability-001: when SessionStart clears a LIVE dev-active marker (a
     prior session entered /ca:dev and ended without /ca:arbiter), it must append
