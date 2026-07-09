@@ -9,6 +9,13 @@
             "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
             "timeout": 60,
             "statusMessage": "codeArbiter: activating governance"
+          },
+          {
+            "type": "command",
+            "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "commandWindows": "python -c \"\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "timeout": 60,
+            "statusMessage": "codeArbiter: activating governance"
           }
         ]
       }
@@ -23,6 +30,13 @@
             "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"",
             "timeout": 30,
             "statusMessage": "codeArbiter: exec gate"
+          },
+          {
+            "type": "command",
+            "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"",
+            "commandWindows": "python -c \"\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-bash.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: exec gate"
           }
         ]
       },
@@ -33,6 +47,13 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"",
             "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: write gate"
+          },
+          {
+            "type": "command",
+            "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"",
+            "commandWindows": "python -c \"\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-write.py\"",
             "timeout": 30,
             "statusMessage": "codeArbiter: write gate"
           }
@@ -49,6 +70,13 @@
             "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"",
             "timeout": 30,
             "statusMessage": "codeArbiter: scope-touch review"
+          },
+          {
+            "type": "command",
+            "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"",
+            "commandWindows": "python -c \"\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: scope-touch review"
           }
         ]
       }
@@ -60,6 +88,13 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
             "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: audit staleness check"
+          },
+          {
+            "type": "command",
+            "command": "python3 -c \"\" || python \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
+            "commandWindows": "python -c \"\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
             "timeout": 30,
             "statusMessage": "codeArbiter: audit staleness check"
           }

@@ -16,12 +16,19 @@ name: ci
 
 on:
   pull_request:
-    branches: [main]
+    # Campaign-branch coverage (issue #258): feat/codex-support-m0 integrates
+    # every ca-codex fix PR before it lands on main, so PRs targeting it need
+    # the same CI gate PRs targeting main get - otherwise the whole codex
+    # campaign merges with zero CI. Drop this once the campaign branch is
+    # closed out and merged to main.
+    branches: [main, feat/codex-support-m0]
   push:
     branches: [main]
     paths:
       - "plugins/ca/**"
       - "plugins/ca-sandbox/**"
+      - "plugins/ca-codex/**"
+      - "core/**"
       - "**/*.json"
       - "README.md"
       - "LICENSE"
@@ -38,6 +45,7 @@ jobs:
     outputs:
       ca: ${{ steps.filter.outputs.ca }}
       ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
+      ca-codex: ${{ steps.filter.outputs.ca-codex }}
       hooks: ${{ steps.filter.outputs.hooks }}
       manifests: ${{ steps.filter.outputs.manifests }}
     steps:
@@ -48,9 +56,15 @@ jobs:
           # A change to shared CI infra (.github/) flags BOTH plugins so the
           # full mechanical surface re-runs. A plugin-only change flags just
           # that plugin - this is the path-scoping ADR-0007 requires.
+          #
+          # core/** is the canonical-copy source every host-neutral hook file
+          # is vendored FROM (tools/sync-core.py, ADR-0011 M1) into BOTH
+          # plugins/ca/hooks/ and plugins/ca-codex/hooks/ - a core/** edit can
+          # drift either vendored copy, so it flags ca, ca-codex, AND hooks.
           filters: |
             ca:
               - 'plugins/ca/**'
+              - 'core/**'
               - 'README.md'
               - '.github/workflows/ci.yml'
               - '.github/scripts/check-plugin-refs.py'
@@ -59,8 +73,14 @@ jobs:
               - 'plugins/ca-sandbox/**'
               - '.github/workflows/ci.yml'
               - '.github/scripts/check-plugin-refs.py'
+            ca-codex:
+              - 'plugins/ca-codex/**'
+              - 'core/**'
+              - '.github/workflows/ci.yml'
             hooks:
               - 'plugins/ca/hooks/**'
+              - 'plugins/ca-codex/hooks/**'
+              - 'core/**'
               - '.github/scripts/**'
               - '.github/workflows/ci.yml'
             manifests:
@@ -164,8 +184,21 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
+      - name: Sync-core drift gate (ADR-0011 M1)
+        # core/pysrc/ is the canonical copy of every host-neutral hook file;
+        # plugins/ca/hooks/ and plugins/ca-codex/hooks/ each vendor a
+        # byte-identical copy (tools/sync-core.py). A vendored copy that
+        # drifts from core silently forks the enforcement logic between the
+        # two hosts - fail the build before that ships.
+        run: python tools/sync-core.py --check
       - name: Run cold-install interpreter matrix
         run: python .github/scripts/test_hooks_cold_install.py
+      - name: Run ca-codex host-adapter parity suite
+        # ADR-0011 M2: Codex payload normalization, apply_patch envelope
+        # parsing, project_root resolution, and cross-host blocked-verdict
+        # parity (H-05/H-11/H-18/H-19/H-20/H-21) via real subprocess
+        # invocations of each plugin's vendored pre-write.py/pre-bash.py.
+        run: python .github/scripts/test_codex_adapter.py
       - name: Run guard-logic matrix
         # The cold-install matrix proves the interpreter plumbing; this proves
         # the guard decisions themselves - every blocked spelling of
@@ -339,6 +372,58 @@ jobs:
           fi
           echo "payload changed on unpublished version $ver (no tag ca-sandbox-v$ver) - allowed"
 
+  version-bump-codex:
+    name: CA-Codex | [Gate] - Version Bump on Payload Change
+    # Per-plugin twin of the ca / ca-sandbox version-bump guards (ADR-0007
+    # path-scoping, ADR-0011 Codex host): ca-codex versions independently, so
+    # a changed ca-codex payload on an already-published ca-codex version
+    # (tag ca-codex-v<version>) is the same silent-staleness trap and is
+    # failed here. Namespaced tags (ca-codex-v*) never collide with ca's bare
+    # v* series or ca-sandbox's ca-sandbox-v* series.
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-codex == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Fail if a published version ships a changed payload
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          git fetch -q origin "$BASE" --tags
+          if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca-codex; then
+            echo "no payload change - version bump not required"
+            exit 0
+          fi
+          ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-codex/.codex-plugin/plugin.json','utf8')).version")
+          # First introduction of the plugin: plugin.json does not exist on base.
+          # That is never a silent-staleness trap (nothing is published yet), so
+          # allow it - but only when the file is genuinely absent at $BASE. Any
+          # other git failure (transient fetch error, corrupted object store,
+          # a race on origin/$BASE) must fail the step, not be swallowed as
+          # "first introduction".
+          rc=0
+          git cat-file -e "origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json" 2>/dev/null || rc=$?
+          if [ "$rc" = 1 ]; then
+            echo "ca-codex is new on $BASE (no prior plugin.json) - first introduction, version bump not required"
+            exit 0
+          elif [ "$rc" != 0 ]; then
+            echo "::error::git cat-file probe on origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json failed with exit $rc (not a plain absence) - bad ref or corrupt object store"
+            exit "$rc"
+          fi
+          base_json=$(git show "origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json")
+          base_ver=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
+          if [ "$ver" != "$base_ver" ]; then
+            echo "payload changed and version bumped: $base_ver -> $ver"
+            exit 0
+          fi
+          if git rev-parse -q --verify "refs/tags/ca-codex-v$ver" > /dev/null; then
+            echo "::error file=plugins/ca-codex/.codex-plugin/plugin.json::plugins/ca-codex/** changed but version is still $ver, which is already published (tag ca-codex-v$ver exists). 'claude plugin update' no-ops on an unchanged version, so installed users would silently keep the old payload. Bump the version."
+            exit 1
+          fi
+          echo "payload changed on unpublished version $ver (no tag ca-codex-v$ver) - allowed"
+
   prose:
     name: CA | [Check] - Reference Graph
     needs: changes
@@ -432,6 +517,7 @@ jobs:
       - hooks
       - version-bump
       - version-bump-sandbox
+      - version-bump-codex
       - prose
       - badge-consistency
       - prose-sandbox
