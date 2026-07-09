@@ -291,6 +291,44 @@ class TestApplyPatchParsing(unittest.TestCase):
         self.assertEqual(ops[0]["kind"], "write")
         self.assertEqual(ops[0]["file_path"], "a.txt")
 
+    def test_non_patch_tool_with_file_path_falls_back_to_base_mapping(self):
+        # coverage-002: a non-patch tool (e.g. an mcp__* tool) is not in
+        # _PATCH_TOOLS, so the SECOND defensive fallback leg fires when the
+        # payload nonetheless carries a path-shaped field. The base mapping's
+        # tool_name branch only special-cases MultiEdit/Edit/NotebookEdit, so
+        # an unrecognized tool_name (mcp__fs__write_file included) falls to
+        # its Write/default leg: file_path + content -> one "write" op.
+        ops = self.host.iter_file_ops({
+            "tool_name": "mcp__fs__write_file",
+            "tool_input": {"file_path": "notes/mcp.txt", "content": "hi\n"}})
+        self.assertEqual(len(ops), 1)
+        self.assertEqual(ops[0]["kind"], "write")
+        self.assertEqual(ops[0]["file_path"], "notes/mcp.txt")
+        self.assertEqual(ops[0]["content"], "hi\n")
+        self.assertEqual(ops[0]["added_text"], "hi\n")
+
+    def test_non_patch_tool_with_notebook_path_falls_back_to_base_mapping(self):
+        # Base Host.iter_file_ops only reads notebook_path on the
+        # Edit/NotebookEdit leg; an unrecognized tool_name (mcp__* here) never
+        # matches that leg, so it lands on the Write/default leg, which reads
+        # ONLY file_path (never notebook_path). A notebook_path-only payload
+        # therefore still gets guarded — as a "write" op with an EMPTY
+        # file_path — never silently dropped.
+        ops = self.host.iter_file_ops({
+            "tool_name": "mcp__jupyter__edit_cell",
+            "tool_input": {"notebook_path": "nb/analysis.ipynb",
+                           "new_string": "print(1)\n"}})
+        self.assertEqual(len(ops), 1)
+        self.assertEqual(ops[0]["kind"], "write")
+        self.assertEqual(ops[0]["file_path"], "")
+
+    def test_non_patch_tool_with_no_path_shaped_fields_returns_no_ops(self):
+        # No file_path/notebook_path on a non-patch tool: nothing to guard.
+        ops = self.host.iter_file_ops({
+            "tool_name": "mcp__github__create_issue",
+            "tool_input": {"title": "bug", "body": "details"}})
+        self.assertEqual(ops, [])
+
 
 class TestCodexProjectRoot(unittest.TestCase):
     """CodexHost.project_root: payload cwd -> git rev-parse -> cwd; NO env leg."""
