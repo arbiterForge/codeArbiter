@@ -137,6 +137,45 @@ import TrustRow from '../../components/TrustRow.astro';
 
 <TrustRow />
 
+<div class="ca-source-map">
+  <div class="ca-source-map__intro">
+    <p class="ca-source-map__eyebrow">Docs source map</p>
+    <h2>Update the right layer</h2>
+    <div class="ca-source-map__body">
+      The site mixes handcrafted pages with generated reference. Edit the source
+      that owns the page, or the next generator run will overwrite the wrong change.
+    </div>
+  </div>
+
+  <div class="ca-source-map__grid">
+    <div class="ca-source-map__card">
+      <p class="ca-source-map__label">Handcrafted docs</p>
+      <div class="ca-source-map__body">
+        Guides, concepts, install, FAQ, and this landing page live under
+        <code>site/src/content/docs/</code>. These pages are safe to tune directly.
+      </div>
+    </div>
+
+    <div class="ca-source-map__card ca-source-map__card--generated">
+      <p class="ca-source-map__label">Generated reference</p>
+      <div class="ca-source-map__body">
+        Command, skill, agent, hook-gate, and changelog pages come from
+        <code>site/scripts/gen.ts</code>, <code>plugins/ca/</code>, and
+        <code>site/src/curated/</code>. Change those inputs, then regenerate.
+      </div>
+    </div>
+
+    <div class="ca-source-map__card">
+      <p class="ca-source-map__label">Root context</p>
+      <div class="ca-source-map__body">
+        Repo-level docs such as <code>README.md</code>, <code>CHANGELOG.md</code>,
+        and <code>docs/*.md</code> stay source-of-truth material. The site should
+        point at them or render from them, not drift into a fork.
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="ca-doors">
   <h2>Three ways in</h2>
   <div class="ca-doors__grid">

@@ -347,6 +347,31 @@ describe("lane-flow diagram embedded in landing", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Docs source-map: handcrafted vs generated update boundaries
+// ---------------------------------------------------------------------------
+
+describe("docs source-map section", () => {
+  it("landing page makes handcrafted and generated docs boundaries visible", () => {
+    expect(indexMdx).toContain("ca-source-map");
+    expect(indexMdx).toMatch(/Handcrafted docs/);
+    expect(indexMdx).toMatch(/Generated reference/);
+    expect(indexMdx).toMatch(/Root context/);
+  });
+
+  it("source-map points generated-reference edits at the generator/source files", () => {
+    expect(indexMdx).toContain("site/scripts/gen.ts");
+    expect(indexMdx).toContain("plugins/ca/");
+    expect(indexMdx).toContain("site/src/curated/");
+  });
+
+  it("source-map cards have dedicated visual styling", () => {
+    expect(landingCss).toContain(".ca-source-map");
+    expect(landingCss).toContain(".ca-source-map__grid");
+    expect(landingCss).toContain(".ca-source-map__card");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // MDX raw HTML: avoid nested paragraph output
 // ---------------------------------------------------------------------------
 
