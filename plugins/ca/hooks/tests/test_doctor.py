@@ -388,6 +388,13 @@ class TestRunHostDISeam(unittest.TestCase):
         def plugin_root(self):
             return os.getcwd()
 
+        def cmd_ref(self, name):
+            # Part of the Host runtime-vocabulary contract (M3/D6): doctor
+            # renders command pointers through get_host().cmd_ref(), so any
+            # injected host must supply it. Distinctive spelling (never
+            # "/ca:") so output provably carries THIS host's vocabulary.
+            return "/fake257:" + name
+
     def test_run_host_wires_the_injected_host_not_the_disk_default(self):
         fake = self._FakeInjectedHost()
         buf = io.StringIO()
@@ -415,6 +422,32 @@ class TestRunHostDISeam(unittest.TestCase):
             except SystemExit:
                 pass
         self.assertIs(_hooklib.get_host(), fake)
+
+    def test_injected_host_vocabulary_reaches_statusline_pointer(self):
+        # M3/D6 regression: check_statusline's not-wired pointer renders
+        # through get_host().cmd_ref("statusline"), a path only taken on a
+        # machine whose ~/.claude/settings.json has no statusline (CI's bare
+        # runner — a dev machine with the statusline wired skips it, which is
+        # how a fake missing cmd_ref stayed green locally). Force the bare
+        # path by pointing the home dir at an empty temp dir, and assert the
+        # INJECTED host's spelling is what the pointer carries.
+        fake = self._FakeInjectedHost()
+        _hooklib.set_host(fake)
+        with tempfile.TemporaryDirectory() as home:
+            saved = {k: os.environ.get(k) for k in ("HOME", "USERPROFILE")}
+            os.environ["HOME"] = home
+            os.environ["USERPROFILE"] = home
+            try:
+                doctor.check_statusline(os.getcwd())
+            finally:
+                for k, v in saved.items():
+                    if v is None:
+                        os.environ.pop(k, None)
+                    else:
+                        os.environ[k] = v
+        self.assertTrue(_has("/fake257:statusline"),
+                        f"expected the injected host's cmd_ref spelling in "
+                        f"the statusline pointer; got: {_lines()}")
 
 
 if __name__ == "__main__":
