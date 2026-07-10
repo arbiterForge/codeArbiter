@@ -345,3 +345,13 @@ describe("lane-flow diagram embedded in landing", () => {
     expect(indexMdx).toContain("lane-flow");
   });
 });
+
+// ---------------------------------------------------------------------------
+// MDX raw HTML: avoid nested paragraph output
+// ---------------------------------------------------------------------------
+
+describe("landing MDX paragraph wrappers", () => {
+  it("does not use multiline raw-HTML <p> wrappers that render as nested paragraphs", () => {
+    expect(indexMdx).not.toMatch(/<p(?:\s+class="[^"]+")?>\s*\n/);
+  });
+});

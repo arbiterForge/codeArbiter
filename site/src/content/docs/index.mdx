@@ -17,11 +17,11 @@ import TrustRow from '../../components/TrustRow.astro';
 <div class="ca-landing__hero">
   <div class="ca-landing__intro">
     <h1 id="_top" class="ca-landing__title">Arbitration for Claude&nbsp;Code Workflows</h1>
-    <p class="ca-landing__tagline">
+    <div class="ca-landing__tagline">
       Orchestrate every Claude Code request through a gated lane. Tests, reviews,
       and security checks are real stops: not suggestions, not optional, not
       bypassed under time pressure.
-    </p>
+    </div>
     <div class="ca-landing__actions">
       <a class="ca-landing__cta ca-landing__cta--primary" href="./getting-started/install/">Get started</a>
       <a class="ca-landing__cta" href="./concepts/">How it works</a>
@@ -31,9 +31,9 @@ import TrustRow from '../../components/TrustRow.astro';
   <div class="ca-landing__demo">
     <p class="ca-landing__demo-label">A gate catching a real mistake</p>
     <GateCatchTerminal />
-    <p class="ca-landing__demo-note">
+    <div class="ca-landing__demo-note">
       Not a description of gates. A gate doing its job.
-    </p>
+    </div>
   </div>
 </div>
 
@@ -79,22 +79,22 @@ import TrustRow from '../../components/TrustRow.astro';
 <div class="ca-why-gates">
   <div class="ca-why-gates__copy">
     <h2>Gates are hooks, not suggestions</h2>
-    <p>
+    <div class="ca-why-gates__paragraph">
       Every gate in codeArbiter is a Claude Code <a href="./glossary/#hook">hook</a>: a
       deterministic Python script that runs at the tool-call boundary, before the tool
       call happens. A blocking gate exits non-zero and the tool call is refused. Nothing
       about that depends on the model choosing to comply.
-    </p>
-    <p>
+    </div>
+    <div class="ca-why-gates__paragraph">
       Prompt-layer rules still matter. They are the model's judgment for everything a
       hook does not reach. Hooks are the backstop for the moment that judgment slips: a
       blocking gate does not ask the model to agree, it stops the call.
-    </p>
-    <p>
+    </div>
+    <div class="ca-why-gates__paragraph">
       Every block names the gate that caught it. A <code>BLOCKED [H-09b]</code> line in
       your terminal points at an entry in the hook gates reference, with the exact
       condition and the exact message the hook prints.
-    </p>
+    </div>
   </div>
 
   <div class="ca-why-gates__mechanics">
@@ -104,11 +104,11 @@ import TrustRow from '../../components/TrustRow.astro';
       <li>The matching hook runs first, against the repository's current state.</li>
       <li>It exits 0 (allowed) or blocks with a non-zero exit and a <code>BLOCKED [H-xx]</code> message.</li>
     </ol>
-    <p class="ca-why-gates__links">
+    <div class="ca-why-gates__links">
       <a href="./enforcement/">Read the enforcement guide</a>
       <span aria-hidden="true">·</span>
       <a href="./reference/hooks-gates/">Look up a gate ID</a>
-    </p>
+    </div>
   </div>
 </div>
 
@@ -168,10 +168,10 @@ import TrustRow from '../../components/TrustRow.astro';
       </ul>
     </div>
   </div>
-  <p class="ca-doors__footnote">
+  <div class="ca-doors__footnote">
     Turning it off is documented too: disable per-repo with one frontmatter flag, or
     <a href="./guides/uninstalling/">uninstall entirely</a>.
-  </p>
+  </div>
 </div>
 
 </div>

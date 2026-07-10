@@ -279,14 +279,14 @@
   font-weight: 700;
 }
 
-.ca-why-gates__copy p {
+.ca-why-gates__paragraph {
   max-width: 60ch;
   margin: 0 0 1rem;
   color: var(--ca-text-muted);
   line-height: 1.65;
 }
 
-.ca-why-gates__copy p:last-child {
+.ca-why-gates__paragraph:last-child {
   margin-block-end: 0;
 }
 
