@@ -279,14 +279,14 @@
   font-weight: 700;
 }
 
-.ca-why-gates__copy p {
+.ca-why-gates__paragraph {
   max-width: 60ch;
   margin: 0 0 1rem;
   color: var(--ca-text-muted);
   line-height: 1.65;
 }
 
-.ca-why-gates__copy p:last-child {
+.ca-why-gates__paragraph:last-child {
   margin-block-end: 0;
 }
 
@@ -465,6 +465,105 @@
   color: var(--ca-text-muted);
   font-size: 0.82rem;
   line-height: 1.4;
+}
+
+/* =========================================================
+   DOCS SOURCE MAP
+   A maintenance-oriented section that explains what can be edited directly and
+   what is generated from plugin/root sources.
+   ========================================================= */
+
+.ca-source-map {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  margin-block: 2rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 18%, transparent);
+  border-radius: 0.8rem;
+  background:
+    radial-gradient(circle at top left, rgba(227, 179, 65, 0.12), transparent 36%),
+    color-mix(in srgb, var(--ca-slate-mid) 88%, transparent);
+}
+
+@media (max-width: 56rem) {
+  .ca-source-map {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ca-source-map__intro {
+  align-self: center;
+}
+
+.ca-source-map__eyebrow,
+.ca-source-map__label {
+  margin: 0 0 0.55rem;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ca-source-map__eyebrow {
+  color: var(--ca-ember);
+}
+
+.ca-source-map h2 {
+  margin: 0 0 0.85rem;
+  border: 0;
+  color: var(--sl-color-white);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 1.12;
+}
+
+.ca-source-map__body {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--ca-text-muted);
+  line-height: 1.65;
+}
+
+.ca-source-map__body > p {
+  margin: 0;
+}
+
+.ca-source-map__grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.ca-source-map__card {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.6rem;
+  background: rgb(11 15 20 / 0.54);
+}
+
+.ca-source-map__card--generated {
+  border-color: color-mix(in srgb, var(--ca-ember) 38%, var(--ca-slate-border));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ca-ember) 10%, transparent),
+    rgb(11 15 20 / 0.54)
+  );
+}
+
+.ca-source-map__label {
+  color: var(--ca-gold-text);
+}
+
+.ca-source-map__card .ca-source-map__body {
+  margin: 0;
+  color: var(--ca-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.ca-source-map code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.86em;
 }
 
 /* =========================================================
