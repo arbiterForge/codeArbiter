@@ -347,18 +347,20 @@ jobs:
           ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-sandbox/.claude-plugin/plugin.json','utf8')).version")
           # First introduction of the plugin: plugin.json does not exist on base.
           # That is never a silent-staleness trap (nothing is published yet), so
-          # allow it - but only when the file is genuinely absent at $BASE. Any
-          # other git failure (transient fetch error, corrupted object store,
-          # a race on origin/$BASE) must fail the step, not be swallowed as
-          # "first introduction".
-          rc=0
-          git cat-file -e "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" 2>/dev/null || rc=$?
-          if [ "$rc" = 1 ]; then
+          # allow it. NOTE: `git cat-file -e` on the tree-ish:path form exits
+          # 128 (not 1) when the PATH is absent from the tree, so absence cannot
+          # be distinguished from a bad ref by exit code alone. Instead, verify
+          # the base ref resolves first; once it does, any cat-file failure on
+          # the path means the file is genuinely absent at $BASE. A ref that
+          # does not resolve (transient fetch error, a race on origin/$BASE)
+          # must fail the step, not be swallowed as "first introduction".
+          if ! git rev-parse --verify --quiet "origin/$BASE^{commit}" > /dev/null; then
+            echo "::error::origin/$BASE does not resolve to a commit - bad ref or failed fetch"
+            exit 1
+          fi
+          if ! git cat-file -e "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" 2>/dev/null; then
             echo "ca-sandbox is new on $BASE (no prior plugin.json) - first introduction, version bump not required"
             exit 0
-          elif [ "$rc" != 0 ]; then
-            echo "::error::git cat-file probe on origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json failed with exit $rc (not a plain absence) - bad ref or corrupt object store"
-            exit "$rc"
           fi
           base_json=$(git show "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json")
           base_ver=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
@@ -399,18 +401,20 @@ jobs:
           ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-codex/.codex-plugin/plugin.json','utf8')).version")
           # First introduction of the plugin: plugin.json does not exist on base.
           # That is never a silent-staleness trap (nothing is published yet), so
-          # allow it - but only when the file is genuinely absent at $BASE. Any
-          # other git failure (transient fetch error, corrupted object store,
-          # a race on origin/$BASE) must fail the step, not be swallowed as
-          # "first introduction".
-          rc=0
-          git cat-file -e "origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json" 2>/dev/null || rc=$?
-          if [ "$rc" = 1 ]; then
+          # allow it. NOTE: `git cat-file -e` on the tree-ish:path form exits
+          # 128 (not 1) when the PATH is absent from the tree, so absence cannot
+          # be distinguished from a bad ref by exit code alone. Instead, verify
+          # the base ref resolves first; once it does, any cat-file failure on
+          # the path means the file is genuinely absent at $BASE. A ref that
+          # does not resolve (transient fetch error, a race on origin/$BASE)
+          # must fail the step, not be swallowed as "first introduction".
+          if ! git rev-parse --verify --quiet "origin/$BASE^{commit}" > /dev/null; then
+            echo "::error::origin/$BASE does not resolve to a commit - bad ref or failed fetch"
+            exit 1
+          fi
+          if ! git cat-file -e "origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json" 2>/dev/null; then
             echo "ca-codex is new on $BASE (no prior plugin.json) - first introduction, version bump not required"
             exit 0
-          elif [ "$rc" != 0 ]; then
-            echo "::error::git cat-file probe on origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json failed with exit $rc (not a plain absence) - bad ref or corrupt object store"
-            exit "$rc"
           fi
           base_json=$(git show "origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json")
           base_ver=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
