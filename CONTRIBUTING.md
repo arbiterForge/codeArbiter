@@ -107,6 +107,24 @@ documents every hook, what it reads/writes, and the invariant that **no hook mak
 network call**. Preserve that invariant: hooks are stdlib-only Python, must degrade
 safely on failure, and must exit `0` (do nothing) in a repo that hasn't opted in.
 
+Hook Python is canonical in `core/pysrc/` and vendored byte-identically into each
+plugin's `hooks/` by `python tools/sync-core.py` (CI gates it with `--check`). Edit
+core, re-vendor, commit both — never a vendored copy directly. The only per-plugin
+Python file is `hooks/_host.py`.
+
+## Working with the markdown surface (generated)
+
+Commands, skills, includes, `COMMANDS.md`, `SPRINT.md`, and `ORCHESTRATOR.md` of
+**both** plugins are rendered from `core/surface/` templates by
+`python tools/build-surface.py` — see [`core/surface/README.md`](./core/surface/README.md)
+for the token/conditional grammar and the house rules. Never edit a rendered file:
+edit the template, run the tool, commit templates and outputs together. CI's
+`surface` job (`build-surface.py --check`) fails on drift in either direction.
+
+On Windows, `.gitattributes` pins the generated trees to LF; if a pre-existing
+checkout still has CRLF working copies, refresh them (`git checkout-index -f` on the
+affected paths, or re-clone) before running `--check` locally.
+
 ## Questions
 
 Open a [discussion or issue](https://github.com/arbiterForge/codeArbiter/issues).

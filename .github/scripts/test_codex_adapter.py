@@ -776,7 +776,10 @@ class TestCodexPluginJson(unittest.TestCase):
         with open(path, encoding="utf-8") as f:
             m = json.load(f)
         self.assertEqual(m["name"], "ca-codex")
-        self.assertEqual(m["version"], "0.1.0")
+        # Shape, not a pinned release: the version-bump-codex CI gate owns
+        # version discipline; pinning the literal here just breaks the suite
+        # on every legitimate bump (it did, at 0.1.0 -> 0.2.0 / M3).
+        self.assertRegex(m["version"], r"^0[.]\d+[.]\d+$")
         self.assertEqual(m["license"], "AGPL-3.0-only")
         self.assertIn("beta", m["description"].lower())
 

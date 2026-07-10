@@ -191,6 +191,12 @@ jobs:
         # drifts from core silently forks the enforcement logic between the
         # two hosts - fail the build before that ships.
         run: python tools/sync-core.py --check
+      - name: Run surface-generator unit tests
+        # codex-support M3: determinism/idempotence of tools/build-surface.py,
+        # token inversion (Claude render inverts extraction byte-exactly),
+        # host conditionals, Codex path rewrites + frontmatter synthesis, and
+        # --check drift detection in both directions against synthetic trees.
+        run: python .github/scripts/test_build_surface.py
       - name: Run cold-install interpreter matrix
         run: python .github/scripts/test_hooks_cold_install.py
       - name: Run ca-codex host-adapter parity suite
@@ -511,25 +517,40 @@ jobs:
       - name: Check license declarations agree across surfaces
         run: python3 .github/scripts/check_license_consistency.py .
 
-  orchestrator-parity:
-    name: Repo | [Check] - ORCHESTRATOR.md Parity
-    # Shared infra - plugins/ca/ORCHESTRATOR.md and plugins/ca-codex/ORCHESTRATOR.md
-    # are hand-duplicated (issue #262, architecture-010): ADR-0011 named a
-    # core/surface/ + tools/build-surface.py generator that would let the two
-    # controllably diverge, but that generator does not exist yet. Until it
-    # does, an edit to one file that forgets its twin silently ships divergent
-    # governance between the two hosts with nothing to catch it. This is a
-    # drift GUARD (byte-identity today), not the generator. Repo-wide and
-    # always-on, like license-consistency: an ORCHESTRATOR.md edit can ride
-    # any PR, not just a plugins/**-path-filtered one.
+  surface:
+    name: Repo | [Check] - Generated Surface
+    # Shared infra - the whole markdown surface (commands/skills/includes/
+    # COMMANDS.md/SPRINT.md/ORCHESTRATOR.md of BOTH plugins) is generated from
+    # core/surface/ templates by tools/build-surface.py (ADR-0011 M3). This
+    # re-renders every template in memory and byte-compares against the
+    # checked-in trees, failing on drift in EITHER direction (template edited
+    # without regenerating, or a rendered file hand-edited) and on orphans.
+    # It is the strict successor of the retired orchestrator-parity job
+    # (issue #262): the two ORCHESTRATOR.md files now deliberately diverge
+    # per host, and their shared source of truth is the template. Repo-wide
+    # and always-on, like license-consistency: a template or surface edit can
+    # ride any PR, and tools/** is not in the path filters.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
-      - name: Check ORCHESTRATOR.md is byte-identical across plugins/ca and plugins/ca-codex
-        run: python3 .github/scripts/check_orchestrator_parity.py .
+      - name: Check rendered surfaces match core/surface/ templates (both hosts)
+        run: python3 tools/build-surface.py --check
+
+  prose-codex:
+    name: CA-Codex | [Check] - Reference Graph
+    needs: changes
+    if: needs.changes.outputs.ca-codex == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Check cross-reference graph (ca-codex)
+        run: python3 .github/scripts/check-plugin-refs.py ca-codex
 
   ci-passed:
     name: Repo | [Gate] - CI Passed
@@ -547,7 +568,8 @@ jobs:
       - prose-sandbox
       - manifests
       - license-consistency
-      - orchestrator-parity
+      - surface
+      - prose-codex
     runs-on: ubuntu-latest
     steps:
       - name: Require every job to have succeeded or been skipped

@@ -34,6 +34,16 @@ REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 PLUGINS = {
     "ca": {"namespace": "ca"},
     "ca-sandbox": {"namespace": "ca-sandbox"},
+    # ca-codex (ADR-0011 M3): Codex has no command namespace — the catalog
+    # mentions `$ca-<name>` skills and the command bodies live at
+    # skills/ca-<name>/SKILL.md. `pending_prefixes` allowlists plugin-root
+    # references to surfaces a later milestone ships (agents/ arrives with M4
+    # as .codex/agents TOML scaffolding — REMOVE the allowlist entry in M4).
+    # tools/ = the farm execution backend (farm.js, plan.schema.json), which
+    # ca-codex does not vendor yet — --farm is a Feature Forge preview and its
+    # Codex packaging is an M5 distribution decision (docs/parity.md row).
+    "ca-codex": {"namespace": None, "skill_prefix": "ca-",
+                 "pending_prefixes": ("agents/", "tools/", "tools")},
 }
 
 errors = []
@@ -81,7 +91,9 @@ def check_index(index_path, present, label):
             errors.append(f"{rel(index_path)}: {label} '{name}' on disk but not listed")
 
 
-def check_plugin(name, namespace):
+def check_plugin(name, cfg):
+    namespace = cfg.get("namespace")
+    pending = tuple(cfg.get("pending_prefixes", ()))
     plugin = os.path.join(REPO, "plugins", name)
     if not os.path.isdir(plugin):
         errors.append(f"plugins/{name}: plugin directory missing")
@@ -94,6 +106,8 @@ def check_plugin(name, namespace):
             if "<" in target or ">" in target:  # placeholder, e.g. agents/<name>.md
                 continue
             target = target.rstrip(".,;:")
+            if pending and target.startswith(pending):
+                continue  # surface a declared later milestone ships (see PLUGINS)
             full = os.path.join(plugin, target)
             if not os.path.exists(full) and not gitignored(full):
                 errors.append(f"{rel(path)}: dangling ${{CLAUDE_PLUGIN_ROOT}}/{target}")
@@ -132,7 +146,35 @@ def check_plugin(name, namespace):
         }
         check_index(os.path.join(skills_dir, "INDEX.md"), skill_names, "skill")
 
-    # --- D. command catalog <-> commands/*.md -----------------------------------
+    # --- D. command catalog <-> command bodies ----------------------------------
+    # A namespace-less plugin (ca-codex) catalogs `$<prefix><name>` entry
+    # skills instead of `/<ns>:<name>` command files; same bijection contract.
+    prefix = cfg.get("skill_prefix")
+    if namespace is None and prefix:
+        skills_dir = os.path.join(plugin, "skills")
+        entry_stems = set()
+        if os.path.isdir(skills_dir):
+            entry_stems = {
+                d[len(prefix):] for d in os.listdir(skills_dir)
+                if d.startswith(prefix)
+                and os.path.isfile(os.path.join(skills_dir, d, "SKILL.md"))
+            }
+        commands_md = os.path.join(plugin, "COMMANDS.md")
+        catalog = read(commands_md) if os.path.isfile(commands_md) else ""
+        mention_re = re.compile(r"[$]" + re.escape(prefix) + r"([a-z][a-z-]*)")
+        catalog_cmds = set(mention_re.findall(catalog))
+        for stem in entry_stems:
+            if stem not in catalog_cmds:
+                errors.append(
+                    f"plugins/{name}/COMMANDS.md: skill '${prefix}{stem}' "
+                    f"(skills/{prefix}{stem}/SKILL.md) not in the catalog")
+        for cmd in catalog_cmds:
+            if cmd not in entry_stems:
+                errors.append(
+                    f"plugins/{name}/COMMANDS.md: '${prefix}{cmd}' in catalog "
+                    f"has no skills/{prefix}{cmd}/SKILL.md")
+        return
+
     commands_dir = os.path.join(plugin, "commands")
     if os.path.isdir(commands_dir):
         command_stems = {
@@ -170,7 +212,7 @@ def main():
         names = sorted(PLUGINS)
 
     for name in names:
-        check_plugin(name, PLUGINS[name]["namespace"])
+        check_plugin(name, PLUGINS[name])
 
     if errors:
         print("Plugin reference check FAILED:\n")

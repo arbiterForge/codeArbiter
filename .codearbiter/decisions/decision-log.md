@@ -394,3 +394,28 @@ Correctness of the audit trail (level 1) drove the one required change: two dist
 Recorded as ADR-0012 (governs core/pysrc/taskwrite.py, _hooklib.py, session-start.py). Sprint fix: host attribution in `_hooklib` gate-event/block/remind/warn (issue #269 / observability-001). Re-scope: reliability-004 and reliability-007 tracked as pre-existing host-agnostic concurrency debt, not codex blockers. Extends ADR-0011; relates to ADR-0010.
 
 ---
+
+## DECISION-0013 — Codex-only users are first-class: full standalone parity (closes #287)
+
+**Date:** 2026-07-10
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** scope / product
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ca-codex shipped hooks-only through M2; its manifest and doctor pointed Codex users to the Claude-side `/ca:init`, so a Codex-only user had no shipped path to opt a repo in (issue #287, surfaced from #259).
+- **Scaffold position:** ADR-0011 authorizes full parity and names `ca-init` as the M4 agent scaffolder — implying a Codex-side init — but #287 asked whether standalone Codex-only use is the requirement or a nice-to-have.
+- **Status type:** open-decision-closure
+
+### Decision
+Codex-only users are first-class arbiter users. The maintainer's directive (2026-07-09): they "should have EVERY capability just like a Claude user". #287 resolves as option 2 — the full command/skill surface ships on Codex (M3: 37 `ca-`-prefixed entry skills generated from `core/surface/`, including `ca-init` for standalone opt-in; no Claude-side install required). Host-impossible surfaces remain ledgered exceptions in `docs/parity.md` (statusline, prune engine, pre-read/pre-edit), never silent gaps; agents/review chains follow in M4 per the ADR-0011 milestone order.
+
+### SMARTS rationale
+Subsumed by ADR-0011's accepted full-parity decision — this entry closes the UX/scope question #287 left open rather than minting a new architecture. Maintainability (level 3) rejected the thin hand-authored-init alternative: hand copies of skills are the exact drift v1 died of and M3's generator replaces. Adoption posture (ADR-0006) favors standalone: requiring a Claude Code install to onboard a Codex repo contradicts the broad-OSS goal.
+
+### Implementation implication
+M3 (branch `feat/codex-surface-m3` → `feat/codex-support-m0`): `core/surface/` templates + `tools/build-surface.py` + always-on `surface` CI gate; `Host.cmd_ref` runtime vocabulary seam (ca 2.8.13, ca-codex 0.2.0); manifest/doctor first-run pointers host-native; `prose-codex` reference-graph job. Plan: `.codearbiter/plans/codex-surface-m3.md`. #287 closes on merge; #259's pointer half closes with it.
+
+---

@@ -3,3 +3,13 @@
 *.sh   text eol=lf
 *.py   text eol=lf
 hooks/* text eol=lf
+
+# The markdown surface is generated (core/surface/ -> plugin trees) and verified
+# by a BINARY byte-compare (tools/build-surface.py --check), so these trees must
+# check out LF or the gate false-fails on Windows. Deliberately scoped: operator
+# state under .codearbiter/ (audit artifacts, reports, logs) and site test
+# fixtures keep their committed bytes untouched.
+core/surface/** text eol=lf
+plugins/**/*.md text eol=lf
+docs/**/*.md    text eol=lf
+/*.md           text eol=lf

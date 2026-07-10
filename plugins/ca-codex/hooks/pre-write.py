@@ -85,7 +85,8 @@ def _guard_op(root, op):
             block("H-18", "This patch operation edits or deletes .codearbiter/CONTEXT.md (#159) — "
                           "the activation switch every enforcement hook reads — and its resulting "
                           "frontmatter cannot be verified from patch hunks. Failing closed; use the "
-                          "sanctioned init path (or /ca:override).")
+                          "sanctioned init path (or "
+                          + get_host().cmd_ref("override") + ").")
 
     # H-05: the audit logs (and the /sprint decision record) are append-only —
     # a Write is a full overwrite. (path set: _hooklib.is_audit_log)

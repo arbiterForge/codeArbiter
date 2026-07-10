@@ -111,8 +111,9 @@ def _remind_op(root, op):
         for entry in governs_index(root):
             if any(fnmatch.fnmatch(rel, g) for g in entry["globs"]):
                 remind("H-12", f"{rel} is governed by ADR-{entry['adr']} ({entry['title']}). "
-                               f"If this change contradicts it, route to /ca:reconcile or "
-                               f"/ca:adr — do not drift silently.")
+                               f"If this change contradicts it, route to "
+                               f"{get_host().cmd_ref('reconcile')} or "
+                               f"{get_host().cmd_ref('adr')} — do not drift silently.")
                 break
 
     # H-07: dependency manifest changed — review before committing.

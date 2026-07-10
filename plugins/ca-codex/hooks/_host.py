@@ -171,10 +171,17 @@ class CodexHost(hostapi.Host):
     """OpenAI Codex CLI (>= rust-v0.134.0) — the second host (ADR-0011)."""
 
     name = "codex"
+    command_noun = "command"
     has_statusline = False   # no statusline surface exists on Codex
     has_read_tool = False    # no read tool; file reads happen via shell
     has_prunable_transcript = False  # Codex transcripts are not the pruner's
                                      # JSONL format; staleness-warn still runs
+
+    def cmd_ref(self, name):
+        # Codex has no plugin command namespace: every governance command
+        # ships as a `ca-`-prefixed skill (ADR-0011 §5, M3), mentioned as
+        # $ca-<name>. Must agree with CMD_FORM["codex"] in build-surface.py.
+        return "$ca-" + name
 
     # Native tool name -> canonical category. "Write"/"Edit" are Codex
     # matcher-only ALIASES for apply_patch (the payload is still the patch

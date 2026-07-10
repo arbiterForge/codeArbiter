@@ -98,7 +98,8 @@ def should_emit_briefing(root, date_iso):
 # The later-session offer (SH-2) is a SINGLE concise line — never a full
 # briefing. Keep it one physical line (no embedded newlines): the emission must
 # stay exactly one line.
-OFFER_LINE = "codeArbiter: hygiene items pending — run /ca:standup"
+OFFER_LINE_TEMPLATE = "codeArbiter: hygiene items pending — run {standup}"
+OFFER_LINE = OFFER_LINE_TEMPLATE.format(standup="/ca:standup")
 
 
 def briefing_mode(marker_present, actionable):
@@ -282,7 +283,8 @@ def render_full_briefing(root, summary, ctx_text=None, ot_text=None, oq_text=Non
     else:
         print("  upstream: none (no tracking branch)")
     if summary.get("ff_pull_eligible"):
-        print("  ff-pull available: clean tree, behind upstream — /ca:standup to fast-forward")
+        print(f"  ff-pull available: clean tree, behind upstream — "
+              f"{get_host().cmd_ref('standup')} to fast-forward")
     if summary["prune_candidates"]:
         print(f"  merged-branch prune candidates: "
               f"{', '.join(summary['prune_candidates'])}")
@@ -469,9 +471,13 @@ def clear_dev_marker(root, host_name=None):
                 host_name = get_host().name
             except Exception:  # noqa: BLE001 — must never brick session startup
                 host_name = "unknown"
+        try:
+            arbiter_ref = get_host().cmd_ref("arbiter")
+        except Exception:  # noqa: BLE001 — must never brick session startup
+            arbiter_ref = "/ca:arbiter"
         ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         line = (f"[{ts}] | BY: session-cleanup | HOST: {host_name} | DEV: exit | NOTE: cleared by "
-                f"SessionStart (prior session ended mid-dev without /ca:arbiter)\n")
+                f"SessionStart (prior session ended mid-dev without {arbiter_ref})\n")
         try:
             with open(os.path.join(root, ".codearbiter", "overrides.log"),
                       "a", encoding="utf-8") as f:
@@ -492,7 +498,8 @@ def provenance_drift_line(root, runner=None):
     injectable so tests are deterministic/offline; production passes None which
     lets the lib bind its default `git -C root hash-object` runner. (T-16)"""
     try:
-        return _provenancelib.startup_drift_line(root, runner=runner)
+        return _provenancelib.startup_drift_line(
+            root, runner=runner, cmd_ref=get_host().cmd_ref)
     except Exception:  # noqa: BLE001 — never crash session startup
         return ""
 
@@ -614,11 +621,11 @@ def main():
     ctx_text = read_text(ctx) or ""
     if not INITIALIZED_RE.search(ctx_text):
         if has_source(root):
-            print("NOT INITIALIZED: source exists but .codearbiter/CONTEXT.md is a stub. "
-                  "Run /ca:create-context before any other command.")
+            print(f"NOT INITIALIZED: source exists but .codearbiter/CONTEXT.md is a stub. "
+                  f"Run {host.cmd_ref('create-context')} before any other command.")
         else:
-            print("NOT INITIALIZED: empty project. Run /ca:decompose to begin.")
-        print("Type /ca:commands for the catalog.")
+            print(f"NOT INITIALIZED: empty project. Run {host.cmd_ref('decompose')} to begin.")
+        print(f"Type {host.cmd_ref('commands')} for the catalog.")
         sys.exit(0)
 
     m = STAGE_RE.search(ctx_text)
@@ -669,7 +676,8 @@ def main():
     if _update:
         print(_update)
 
-    print("Present this state, then await a slash command. Type /ca:commands for the catalog.")
+    print(f"Present this state, then await a {host.command_noun}. "
+          f"Type {host.cmd_ref('commands')} for the catalog.")
 
     # --- Standup briefing (SH-1 full / SH-2 offer) ---
     # Additive, AFTER the startup-state block. Read-only: no git mutation here.
@@ -705,7 +713,7 @@ def main():
         render_full_briefing(root, summary, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
         write_standup_marker(root, date_iso)
     elif mode == "offer":
-        print(OFFER_LINE)
+        print(OFFER_LINE_TEMPLATE.format(standup=get_host().cmd_ref("standup")))
 
     sys.exit(0)
 

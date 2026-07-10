@@ -39,11 +39,11 @@ outside .claude/ so it survives even if the codeArbiter plugin is uninstalled.
 The `arbiter: enabled` frontmatter above is the activation flag.
 
 This CONTEXT.md is a stub: it carries no initialization sentinel yet, so the
-orchestrator routes you to /ca:create-context (if source already exists) or
-/ca:decompose (greenfield) to populate the real project context. That flow writes
+orchestrator routes you to {create_context} (if source already exists) or
+{decompose} (greenfield) to populate the real project context. That flow writes
 the sentinel and normal operation begins. -->
 
-_Not yet initialized. Run /ca:create-context or /ca:decompose to populate._
+_Not yet initialized. Run {create_context} or {decompose} to populate._
 """
 
 OPEN_TASKS = """\
@@ -123,6 +123,13 @@ def main(argv=None):
     root = project_root(args.root)
     cad = os.path.join(root, ".codearbiter")
     ctx = os.path.join(cad, "CONTEXT.md")
+    # Host-native command spellings for every populate pointer this scaffold
+    # emits or writes into the stub (codex-support M3): the same text must
+    # read /ca:create-context under Claude Code and $ca-create-context under
+    # Codex, or the very first thing a Codex-only user sees is a dead pointer.
+    _host = _hooklib.get_host()
+    _cc = _host.cmd_ref("create-context")
+    _dc = _host.cmd_ref("decompose")
     name = os.path.basename(root.rstrip("/\\")) or "project"
 
     if args.check:
@@ -133,7 +140,8 @@ def main(argv=None):
             import re
             initd = bool(re.search(r"(?m)^\s*<!--\s*INITIALIZED\s*-->\s*$", text))
             print("arbiter: " + ("enabled" if re.search(r"(?m)^arbiter:\s*enabled\s*$", text) else "not enabled"))
-            print("initialized body: " + ("yes" if initd else "no (run /ca:create-context or /ca:decompose)"))
+            print("initialized body: " + ("yes" if initd else
+                  "no (run " + _cc + " or " + _dc + ")"))
         else:
             print(f"NOT SCAFFOLDED: {cad} would be created. Run without --check to scaffold.")
         return
@@ -141,13 +149,14 @@ def main(argv=None):
     if os.path.exists(ctx):
         raise SystemExit(
             f"REFUSING: {ctx} already exists. .codearbiter/ is already scaffolded here. "
-            "To populate it, run /ca:create-context or /ca:decompose; to repair, edit by hand.")
+            f"To populate it, run {_cc} or {_dc}; to repair, edit by hand.")
 
     os.makedirs(cad, exist_ok=True)
     created = []
     if not os.path.exists(ctx):
         with open(ctx, "w", encoding="utf-8") as f:
-            f.write(CONTEXT.format(stage=args.stage, name=name))
+            f.write(CONTEXT.format(stage=args.stage, name=name,
+                                   create_context=_cc, decompose=_dc))
         created.append("CONTEXT.md")
     for fname, content in FILES.items():
         fp = os.path.join(cad, fname)
@@ -172,7 +181,7 @@ def main(argv=None):
     print(f"SCAFFOLDED .codearbiter/ at {cad}")
     print("created: " + ", ".join(created))
     print(f"arbiter: enabled (stage {args.stage}); CONTEXT.md is a stub (no <!--INITIALIZED--> sentinel).")
-    print("Next: run /ca:create-context (source exists) or /ca:decompose (greenfield) to populate.")
+    print(f"Next: run {_cc} (source exists) or {_dc} (greenfield) to populate.")
 
 
 def run(host, argv=None):
