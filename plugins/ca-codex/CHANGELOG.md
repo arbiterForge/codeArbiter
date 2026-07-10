@@ -4,6 +4,32 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ---
 
+## [0.2.0] — 2026-07-10 — Full command/skill surface (M3): standalone Codex support
+
+Codex-only users are first-class (DECISION-0013, closes #287): the whole
+governance surface now ships on this host, generated from `core/surface/`
+templates by `tools/build-surface.py` (CI-gated against drift in both
+directions).
+
+### Added
+- **37 user-invocable entry skills** (`skills/ca-*/SKILL.md`) — every `ca`
+  command except the two ledgered exceptions (statusline, prune;
+  `docs/parity.md`), including **`ca-init`: standalone opt-in** with no
+  Claude-side install required.
+- **22 orchestrator routine bodies** (`routines/`), the shared `includes/`
+  references, `COMMANDS.md` catalog, `SPRINT.md`, and a generated
+  `skills/INDEX.md` surface scan.
+- **Codex-native persona.** `ORCHESTRATOR.md` is now rendered per host: this
+  plugin's copy speaks `$ca-` skill vocabulary and points to
+  `includes/codex-host-notes.md` (tool mapping, degraded paths, sandbox/git
+  caveats) instead of duplicating the Claude wording byte-for-byte.
+
+### Changed
+- Manifest description: first-run is the `ca-init` skill; the previous pointer
+  to the Claude-side `/ca:init` is gone (#259).
+
+BETA until live-Codex verification (plan: `.codearbiter/plans/codex-support.md`).
+
 ## [0.1.0] — 2026-07-09 — Initial beta release
 
 The second host: OpenAI Codex CLI enforcement core (ADR-0011 M0–M2).

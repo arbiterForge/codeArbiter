@@ -1,11 +1,16 @@
 {
   "name": "ca-codex",
   "displayName": "codeArbiter for Codex",
-  "description": "Beta governance kernel for OpenAI Codex CLI: the codeArbiter enforcement hooks (persona injection at SessionStart, blocking pre-exec and pre-write gates, append-only audit trail) sharing one .codearbiter/ store with the Claude Code sibling plugin. Requires Python 3 on PATH and Codex >= 0.134.0. Dormant until the repo is opted in: it activates when the shared .codearbiter/CONTEXT.md carries 'arbiter: enabled' (the same store the Claude Code sibling scaffolds via /ca:init).",
-  "version": "0.1.0",
+  "description": "Beta governance kernel for OpenAI Codex CLI: the full codeArbiter surface — 37 ca-prefixed governance skills (spec-driven /feature pipeline, nine-gate commit gate, ADRs, audits) plus the enforcement hooks (persona injection at SessionStart, blocking pre-exec and pre-write gates, append-only audit trail) — sharing one .codearbiter/ store with the Claude Code sibling plugin. Standalone: opt a repo in with the ca-init skill (no Claude-side install required); enforcement stays dormant until the shared .codearbiter/CONTEXT.md carries 'arbiter: enabled'. Requires Python 3 on PATH and Codex >= 0.134.0.",
+  "version": "0.2.0",
   "author": { "name": "arbiterForge" },
   "license": "AGPL-3.0-only",
   "homepage": "https://github.com/arbiterForge/codeArbiter",
   "repository": "https://github.com/arbiterForge/codeArbiter",
-  "keywords": ["codex", "governance", "orchestration", "commit-gate", "audit-trail", "hooks"]
+  "keywords": ["codex", "governance", "orchestration", "commit-gate", "audit-trail", "hooks", "skills"],
+  "interface": {
+    "displayName": "codeArbiter for Codex",
+    "brandColor": "#0E8A16",
+    "defaultPrompt": "$ca-init"
+  }
 }

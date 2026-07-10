@@ -7,7 +7,7 @@ hooks on by default). Both plugins vendor the same `core/pysrc/` Python core
 byte-for-byte (`tools/sync-core.py --check` is the CI gate); the only per-host
 Python file is each plugin's `hooks/_host.py`.
 
-`ca-codex` is BETA (0.1.0): every shipped behavior is test-covered
+`ca-codex` is BETA (0.2.0): every shipped behavior is test-covered
 (`.github/scripts/test_codex_adapter.py`), but the live-fire items from the M0
 spike (stdout persona injection, trust-review walkthrough, exit-2 stderr
 feedback on a real install) remain pending a live Codex verification pass.
@@ -36,12 +36,29 @@ feedback on a real install) remain pending a live Codex verification pass.
 | `hooks/hooks.json` dual `python3` + probe-fallback registration | SHIPPED: single registration per event with a `commandWindows` variant (`python` instead of `python3`) | Codex's hook schema is Claude-compatible plus `commandWindows`/`timeout`/`statusMessage` (spike item 5). A `\|\|`-chained fallback inside ONE command would re-run the gate against drained stdin on a legitimate exit-2 block and swallow it, so the Windows variant is a plain `python` invocation (stock Windows `python3` is often the Store stub). |
 | `.claude-plugin/marketplace.json` | SHIPPED: `.agents/plugins/marketplace.json` | The catalog shape mirrors the Claude marketplace schema, which Codex accepts per the spike's loader reading; the exact native catalog schema could not be re-verified offline during M2, so any live-install mismatch lands on the live-verification pass. |
 
+## Command/skill surface (SHIPPED, M3 — generated from `core/surface/`)
+
+Both plugins' markdown surfaces are rendered from one template tree by
+`tools/build-surface.py`; CI (`surface` job, `--check`) fails on drift in
+either direction. Runtime-emitted command references (startup briefing, gate
+messages, doctor, the init scaffold) flow through the same per-host seam
+(`Host.cmd_ref`), so briefings and docs agree.
+
+| Claude surface | Codex status | Notes |
+|---|---|---|
+| 39 commands (`/ca:*`) | SHIPPED (M3): 37 generated `ca-`-prefixed entry skills (`skills/ca-*/SKILL.md`) + a generated `skills/INDEX.md` catalog | `ca-init` gives Codex-only users standalone opt-in (DECISION-0013, #287). The two exceptions are ledgered below. |
+| `/ca:statusline` | LEDGERED OUT | No statusline surface exists on Codex; no `ca-statusline` skill renders. Cross-references are host-conditional in the templates. |
+| `/ca:prune` | LEDGERED OUT | The prune ENGINE is already ledgered out (above); with no engine there is no command to ship. The audit staleness-warn half runs hook-side without one. |
+| 22 skills (orchestrator routines) | SHIPPED (M3): rendered to `routines/` | Kept out of the Codex skill-discovery root so routine bodies never register as unprefixed user-invocable skills (and six names collide with commands). |
+| `includes/`, `COMMANDS.md`, `SPRINT.md`, `ORCHESTRATOR.md` | SHIPPED (M3) | ORCHESTRATOR.md now deliberately diverges per host (Codex persona speaks `$ca-` skill vocabulary); the byte-identity guard (#262) is retired in favor of the generator's `--check`. `includes/codex-host-notes.md` is Codex-only (tool mapping, degraded paths, sandbox caveats). |
+| descriptive statusline genre mention (`includes/anti-slop-design/medium-cli.md`) | SHIPPED as-is | Design guidance about statuslines as a CLI output genre — host-neutral prose, not an instruction to use a Codex statusline. |
+| `--farm` execution backend (`tools/farm.js`, `tools/plan.schema.json`) | PENDING (M5) | The farm worker files are not vendored into ca-codex; `--farm` degrades to the premium-subagent path (see `includes/codex-host-notes.md`). Packaging is an M5 distribution decision. |
+| `${CLAUDE_PLUGIN_ROOT}` in skill PROSE | LIVE-PENDING | Hooks receive the env var (source-verified); whether Codex expands it in skill body prose is unverified until the live pass. Fallback: plugin-relative paths, one renderer rule. |
+
 ## Pending milestones
 
 | Claude surface | Codex status |
 |---|---|
-| 44 commands (`/ca:*`) | M3: generated `ca-`-prefixed Codex skills from `core/surface/` templates. Until then the injected persona still names `/ca:*` commands that do not exist on Codex; `/ca-init` opt-in is likewise M3. |
-| 23 skills | M3: same SKILL.md format, `ca-` prefixed. |
-| 30 agents + review chains (checkpoint/tribunal/SDD) | M4: `.codex/agents/*.toml` scaffolded by `ca-init` with a doctor staleness check (plugins cannot ship subagents on Codex, spike item 7); dispatch batching under `max_threads 6` / `max_depth 1`. |
+| 28 agents + review chains (checkpoint/tribunal/SDD) | M4: `.codex/agents/*.toml` scaffolded by `ca-init` with a doctor staleness check (plugins cannot ship subagents on Codex, spike item 7); dispatch batching under `max_threads 6` / `max_depth 1`. Until M4, review/author roles run inline per `includes/codex-host-notes.md` — never skipped. |
 | doctor live-fire probe, trust-state detection | M2 exit test is defined; the doctor probe extension and the trust-review walkthrough need the live install. |
-| release workflow / CI path filters for `plugins/ca-codex/` | M5. `check-plugin-refs.py` extension to ca-codex is also M5. |
+| release workflow / CI path filters for `plugins/ca-codex/` | Largely landed early (release-codex, version-bump-codex, cold-install matrix, adapter suite, and — with M3 — `prose-codex` + the `surface` job); remaining M5: distribution docs, update-notice fix (above), farm packaging. |
