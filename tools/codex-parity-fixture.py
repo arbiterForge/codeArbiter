@@ -15,8 +15,14 @@
 #   src/hello.txt                    -> allowed baseline (an ordinary edit must pass)
 #
 # Stdlib only (ADR-0004). Usage:
-#   python tools/codex-parity-fixture.py <target-dir>
+#   python tools/codex-parity-fixture.py <target-dir>          # enforcement fixture (arbiter-enabled)
+#   python tools/codex-parity-fixture.py <target-dir> --bare   # onboarding fixture (NO .codearbiter/)
 # The target dir must not already exist (refuses to clobber).
+#
+# --bare creates the OTHER half of parity: a plain repo with no .codearbiter/
+# at all, for proving a standalone Codex user can opt in from nothing — the
+# full generated command surface is present, $ca-init scaffolds the store, and
+# enforcement comes alive after — without any pre-seeded state doing the work.
 
 import os
 import subprocess
@@ -110,22 +116,30 @@ def _run(args, cwd):
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
+    bare = "--bare" in argv
+    argv = [a for a in argv if a != "--bare"]
     if len(argv) != 1 or argv[0] in ("-h", "--help"):
-        sys.stderr.write("usage: python tools/codex-parity-fixture.py <target-dir>\n")
+        sys.stderr.write("usage: python tools/codex-parity-fixture.py <target-dir> [--bare]\n")
         return 2
     target = os.path.abspath(argv[0])
     if os.path.exists(target):
         sys.stderr.write(f"refusing to clobber existing path: {target}\n")
         return 2
 
+    # --bare: only the baseline file — no .codearbiter/ anywhere. The store
+    # must be created by $ca-init / /ca:init during the test, or the
+    # onboarding scenario proves nothing.
+    files = {"src/hello.txt": HELLO} if bare else FILES
+
     os.makedirs(target)
-    for rel, body in FILES.items():
+    for rel, body in files.items():
         path = os.path.join(target, rel.replace("/", os.sep))
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8", newline="\n") as f:
             f.write(body)
-    # The markers dir must exist so an H-19 forge attempt has a home to target.
-    os.makedirs(os.path.join(target, ".codearbiter", ".markers"), exist_ok=True)
+    if not bare:
+        # The markers dir must exist so an H-19 forge attempt has a home to target.
+        os.makedirs(os.path.join(target, ".codearbiter", ".markers"), exist_ok=True)
 
     r = _run(["git", "init"], target)
     if r.returncode != 0:
@@ -133,14 +147,23 @@ def main(argv=None):
         return 1
     _run(["git", "add", "-A"], target)
     _run(["git", "-c", "user.email=fixture@local", "-c", "user.name=fixture",
-          "commit", "-m", "seed: codex/claude parity fixture"], target)
+          "commit", "-m", "seed: codex/claude parity fixture"
+                          + (" (bare)" if bare else "")], target)
 
-    print(f"Parity fixture created: {target}")
-    print("Next:")
-    print("  1. Open this directory in Codex CLI (ca-codex installed + trusted).")
-    print("  2. Confirm the codeArbiter persona is injected at session start.")
-    print("  3. Run the checklist in docs/codex-parity-testing.md.")
-    print("  4. Repeat in Claude Code (ca installed) and compare each verdict.")
+    if bare:
+        print(f"BARE onboarding fixture created: {target} (no .codearbiter/)")
+        print("Next:")
+        print("  1. Open this directory in Codex CLI (ca-codex installed + trusted).")
+        print("  2. Run the bare-repo onboarding scenario in docs/codex-parity-testing.md")
+        print("     (surface catalog -> $ca-init -> restart -> enforcement live).")
+        print("  3. Repeat in Claude Code (ca installed) from an identical fixture and compare.")
+    else:
+        print(f"Parity fixture created: {target}")
+        print("Next:")
+        print("  1. Open this directory in Codex CLI (ca-codex installed + trusted).")
+        print("  2. Confirm the codeArbiter persona is injected at session start.")
+        print("  3. Run the checklist in docs/codex-parity-testing.md.")
+        print("  4. Repeat in Claude Code (ca installed) and compare each verdict.")
     return 0
 
 
