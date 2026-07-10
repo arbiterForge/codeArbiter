@@ -83,7 +83,7 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
   //   grep -c 'block("H-\|remind("H-' plugins/ca/hooks/*.py
   // as of this writing: git-enforce.py=8, post-write-edit.py=8, pre-bash.py=20,
   // pre-edit.py=10, pre-write.py=6 -> 52 literal-tag call sites. On top of
-  // those, 4 variable-tag sites (git-enforce.py:219/224, pre-bash.py:762/774)
+  // those, 4 variable-tag sites (git-enforce.py:219/224, pre-bash.py:771/783)
   // resolve through the bounded conditional-assignment pattern
   // (`tag = "H-09b" if … else "H-10b"`), each attributed to BOTH tags -> +8
   // entries -> 60. (pre-edit.py:84 is a loop unpack — genuinely unresolvable,
@@ -101,7 +101,7 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
   it("attributes at least one H-10b entry (the conditional-assignment split) with its real message", () => {
     const h10b = callSites.filter((c) => c.tag === "H-10b");
     expect(h10b.length).toBeGreaterThanOrEqual(1);
-    const noPass = h10b.find((c) => c.file === "pre-bash.py" && c.line === 762);
+    const noPass = h10b.find((c) => c.file === "pre-bash.py" && c.line === 771);
     expect(noPass).toBeDefined();
     expect(noPass!.message).toBe(
       "This commit introduces {kind} changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the {skill} gate (it records the pass), then commit. To bypass a security gate, /override requires its heavier security-acknowledgement path.",
@@ -114,7 +114,7 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
 
   it("extracts H-01's protected-branch commit message from pre-bash.py verbatim", () => {
     const site = callSites.find(
-      (c) => c.tag === "H-01" && c.file === "pre-bash.py" && c.line === 623,
+      (c) => c.tag === "H-01" && c.file === "pre-bash.py" && c.line === 632,
     );
     expect(site).toBeDefined();
     expect(site!.message).toBe(
