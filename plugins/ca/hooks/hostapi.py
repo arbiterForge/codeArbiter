@@ -82,6 +82,19 @@ class Host:
     has_read_tool = True
     has_prunable_transcript = True
 
+    # The noun the startup briefing uses for the command channel. Claude Code
+    # namespaces plugin commands behind slash commands; a host without a
+    # command namespace overrides this (and cmd_ref below).
+    command_noun = "slash command"
+
+    def cmd_ref(self, name):
+        """The host-native spelling of governance command `name` in any
+        RUNTIME-emitted string (startup briefing, block reason, doctor line,
+        scaffold text). The markdown surface handles the same divergence at
+        build time via {{CMD:name}} in tools/build-surface.py; this method is
+        the runtime twin — the two must agree per host (codex-support M3)."""
+        return "/ca:" + name
+
     # Native tool name -> canonical category. Anything unlisted is "OTHER".
     TOOL_MAP = {
         "Bash": "EXEC",

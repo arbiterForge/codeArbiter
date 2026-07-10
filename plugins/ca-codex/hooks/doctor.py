@@ -143,7 +143,7 @@ def check_repo():
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
     if not os.path.isfile(ctx):
         ok(f"no .codearbiter/CONTEXT.md in {root} — codeArbiter is dormant here "
-           f"by design (run /ca:init to opt in)")
+           f"by design (run {get_host().cmd_ref('init')} to opt in)")
         return
     enabled, malformed = frontmatter_enabled(ctx)
     if malformed:
@@ -159,8 +159,8 @@ def check_repo():
         if "<!--INITIALIZED-->" in body:
             ok("project is initialized (<!--INITIALIZED--> marker present)")
         else:
-            warn("no <!--INITIALIZED--> marker — startup will route to "
-                 "/ca:decompose or /ca:create-context")
+            warn(f"no <!--INITIALIZED--> marker — startup will route to "
+                 f"{get_host().cmd_ref('decompose')} or {get_host().cmd_ref('create-context')}")
         email = _run_cmd(["git", "config", "user.email"]).stdout.strip()
         if email:
             ok(f"git identity for audit attribution: {email}")
@@ -197,7 +197,8 @@ def check_statusline(root):
     if "statusline.py" in cmd:
         ok("statusline wired in ~/.claude/settings.json")
     else:
-        ok("statusline not wired (optional — /ca:statusline installs it)")
+        ok(f"statusline not wired (optional — "
+           f"{get_host().cmd_ref('statusline')} installs it)")
 
 
 def main():
@@ -210,7 +211,12 @@ def main():
     check_interpreters()
     check_payload(root, host)
     check_repo()
-    check_statusline(root)
+    if getattr(host, "has_statusline", True):
+        # A host with no statusline surface (Codex) must not read
+        # ~/.claude/settings.json or advertise a statusline install path.
+        # getattr with the Claude default so a duck-typed host (tests) that
+        # declares no capability flags keeps today's behavior.
+        check_statusline(root)
     width = max(len(lvl) for lvl, _ in results)
     for lvl, line in results:
         print(f"{lvl:<{width}}  {line}")
@@ -221,8 +227,8 @@ def main():
     if fails:
         print("verdict: UNHEALTHY — at least one gate cannot function as installed")
         sys.exit(1)
-    print("verdict: healthy (static checks) — the live-fire probe in /ca:doctor "
-          "proves hooks actually fire")
+    print(f"verdict: healthy (static checks) — the live-fire probe in "
+          f"{get_host().cmd_ref('doctor')} proves hooks actually fire")
 
 
 def run(host, argv=None):

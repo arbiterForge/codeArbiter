@@ -646,7 +646,7 @@ def _make_root_runner(root):
     return runner
 
 
-def startup_drift_line(root, runner=None):
+def startup_drift_line(root, runner=None, cmd_ref=None):
     """Return a one-line drift summary for SessionStart, or '' when clean (AC-06).
 
     Pipeline:
@@ -728,9 +728,10 @@ def startup_drift_line(root, runner=None):
         # AC-07: one ASCII line: stale-source count, affected-doc count, pointer.
         stale_count = sum(len(v) for v in drift.values())
         doc_count = len(drift)
+        ref = cmd_ref("context-check") if cmd_ref else "/ca:context-check"
         return (
             "context drift: {} stale source(s) across {} doc(s)"
-            " -- run /ca:context-check".format(stale_count, doc_count)
+            " -- run {}".format(stale_count, doc_count, ref)
         )
     except Exception:
         return ""
