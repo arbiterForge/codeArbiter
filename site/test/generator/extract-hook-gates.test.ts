@@ -1,7 +1,12 @@
 import { describe, it, expect } from "vitest";
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { extractHookGates } from "../../scripts/generator/extract-hook-gates";
+import {
+  extractHookGates,
+  type HookCallSite,
+} from "../../scripts/generator/extract-hook-gates";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixtureDir = join(here, "fixtures", "hook-gates");
@@ -76,7 +81,48 @@ describe("extractHookGates — fixture", () => {
     expect(site!.file).toBe("sample-hook.py");
     expect(site!.line).toBeGreaterThan(0);
   });
+
 });
+
+type StableHookKey = Pick<HookCallSite, "kind" | "tag" | "file" | "message">;
+
+function selectUniqueCallSite(
+  callSites: HookCallSite[],
+  key: StableHookKey,
+): HookCallSite {
+  const matches = callSites.filter(
+    (site) =>
+      site.kind === key.kind &&
+      site.tag === key.tag &&
+      site.file === key.file &&
+      site.message === key.message,
+  );
+  expect(matches, `unique call site for ${key.kind} ${key.tag} in ${key.file}`).toHaveLength(1);
+  return matches[0];
+}
+
+const H10B_NO_PASS: StableHookKey = {
+  kind: "block",
+  tag: "H-10b",
+  file: "pre-bash.py",
+  message:
+    "This commit introduces {kind} changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the {skill} gate (it records the pass), then commit. To bypass a security gate, /override requires its heavier security-acknowledgement path.",
+};
+
+const H01_PROTECTED_BRANCH: StableHookKey = {
+  kind: "block",
+  tag: "H-01",
+  file: "pre-bash.py",
+  message:
+    "Direct commit to {target} is prohibited (ORCHESTRATOR §3). Create a feature branch.",
+};
+
+function assertRealStructuralSites(callSites: HookCallSite[]) {
+  return {
+    h10b: selectUniqueCallSite(callSites, H10B_NO_PASS),
+    h01: selectUniqueCallSite(callSites, H01_PROTECTED_BRANCH),
+  };
+}
 
 describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => {
   // Guards against silent under-collection. Counted directly via:
@@ -101,11 +147,7 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
   it("attributes at least one H-10b entry (the conditional-assignment split) with its real message", () => {
     const h10b = callSites.filter((c) => c.tag === "H-10b");
     expect(h10b.length).toBeGreaterThanOrEqual(1);
-    const noPass = h10b.find((c) => c.file === "pre-bash.py" && c.line === 771);
-    expect(noPass).toBeDefined();
-    expect(noPass!.message).toBe(
-      "This commit introduces {kind} changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the {skill} gate (it records the pass), then commit. To bypass a security gate, /override requires its heavier security-acknowledgement path.",
-    );
+    expect(selectUniqueCallSite(callSites, H10B_NO_PASS).message).toBe(H10B_NO_PASS.message);
   });
 
   it("keeps the genuinely unresolvable loop-unpack call site in `skipped`", () => {
@@ -113,13 +155,33 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
   });
 
   it("extracts H-01's protected-branch commit message from pre-bash.py verbatim", () => {
-    const site = callSites.find(
-      (c) => c.tag === "H-01" && c.file === "pre-bash.py" && c.line === 632,
+    expect(selectUniqueCallSite(callSites, H01_PROTECTED_BRANCH).message).toBe(
+      H01_PROTECTED_BRANCH.message,
     );
-    expect(site).toBeDefined();
-    expect(site!.message).toBe(
-      "Direct commit to {target} is prohibited (ORCHESTRATOR §3). Create a feature branch.",
-    );
+  });
+
+  it("keeps the same real-hook structural assertions after unrelated pre-bash.py line insertions", () => {
+    const shiftedRoot = mkdtempSync(join(tmpdir(), "real-hook-gates-shifted-"));
+    const shiftedHooksDir = join(shiftedRoot, "hooks");
+    try {
+      cpSync(realHooksDir, shiftedHooksDir, { recursive: true });
+      const shiftedPreBash = join(shiftedHooksDir, "pre-bash.py");
+      const source = readFileSync(shiftedPreBash, "utf8");
+      writeFileSync(
+        shiftedPreBash,
+        `# unrelated line inserted above real gates\n# exact source lines must not be structural keys\n${source}`,
+      );
+
+      const originalSites = assertRealStructuralSites(callSites);
+      const shiftedSites = assertRealStructuralSites(
+        extractHookGates(shiftedHooksDir).callSites,
+      );
+
+      expect(shiftedSites.h10b.line).toBe(originalSites.h10b.line + 2);
+      expect(shiftedSites.h01.line).toBe(originalSites.h01.line + 2);
+    } finally {
+      rmSync(shiftedRoot, { recursive: true, force: true });
+    }
   });
 
   it("extracts an H-09b message from pre-bash.py verbatim", () => {
