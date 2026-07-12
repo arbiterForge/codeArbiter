@@ -12,8 +12,8 @@ import json
 import os
 import sys
 import tempfile
-import time
 import unittest
+from unittest import mock
 
 # Ensure hooks/ and hooks/tests/ are importable.
 _TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -463,11 +463,6 @@ class TestO11Docs(unittest.TestCase):
                       "prune.md must document the CODEARBITER_PRUNE_NUDGE env var")
 
 
-def _warm_ts():
-    """A `Z` timestamp at 'now' (UTC) → idle ~ 0 → warm."""
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
-
 # ---------------------------------------------------------------------------
 # Parser + idle extraction edge cases (MEDIUM coverage gaps + the offset bug)
 # ---------------------------------------------------------------------------
@@ -597,10 +592,15 @@ class TestO10bWarmResetPersistence(_ArmedHarness):
 
         # 2) A warm, GROWN transcript arrives (recent timestamp, larger body so it
         #    exceeds min_growth and actually prunes — exercising the carry-forward).
-        self._write_transcript(_warm_ts(), result_bytes=40000)
+        warm_ts = "2026-06-18T10:00:00Z"
+        self._write_transcript(warm_ts, result_bytes=40000)
         before = os.path.getsize(self.path)
-        rc2 = P.hook_run(self._payload(), env=self._env())
-        self.assertEqual(rc2, 0, "warm submit must not block")
+        warm_epoch = P._parse_iso8601(warm_ts)
+        # Freeze hook_run's clock at the stamped assistant turn.  The one-second
+        # idle floor must not turn this warm-reset assertion into a wall-clock race.
+        with mock.patch.object(P.time, "time", return_value=warm_epoch):
+            warm_rc = P.hook_run(self._payload(), env=self._env())
+        self.assertEqual(warm_rc, 0, "warm submit must not block")
 
         # 3) The clear is persisted to disk (not just decided in memory)...
         self.assertFalse(P.load_state()["sess"].get("cold_nudged"),
