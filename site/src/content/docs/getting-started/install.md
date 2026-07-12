@@ -31,16 +31,18 @@ Verify an opted-in repository with `/ca:doctor`.
 
 ### Codex
 
-The public commands are **available after the Codex-support release** reaches the default branch:
+The public commands are **available now** and were verified against release `v2.8.13` with
+`ca-codex 0.2.4`:
 
 ```text
 codex plugin marketplace add arbiterForge/codeArbiter
 codex plugin add ca-codex@codearbiter
 ```
 
-Before that release, clone this repository, run `codex plugin marketplace add .` from its root,
-then run `codex plugin add ca-codex@codearbiter`. Open `/hooks`, trust the handlers, and start a
-fresh thread. Verify an opted-in repository with `$ca-doctor`.
+To develop against an unpublished checkout, clone this repository, run
+`codex plugin marketplace add .` from its root, then run
+`codex plugin add ca-codex@codearbiter`. Open `/hooks`, trust the handlers, and start a fresh thread.
+Verify an opted-in repository with `$ca-doctor`.
 
 ## 2. Scaffold and Activate the Repo
 

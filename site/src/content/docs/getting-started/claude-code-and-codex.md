@@ -65,15 +65,14 @@ creating another one.
 
 ## Install status
 
-The public GitHub-slug Codex commands are **available after the Codex-support release** reaches the
-repository's default branch:
+The public GitHub-slug Codex commands are **available now**:
 
 ```text
 codex plugin marketplace add arbiterForge/codeArbiter
 codex plugin add ca-codex@codearbiter
 ```
 
-Before this branch is public, the verified development flow uses a local clone:
+To develop against an unpublished checkout, use a local clone:
 
 ```powershell
 git clone https://github.com/arbiterForge/codeArbiter
@@ -86,9 +85,9 @@ Open `/hooks`, review and trust the `ca-codex` handlers, then start a fresh thre
 repository run `$ca-init` to opt in and `$ca-doctor` to prove the live gate. The expected healthy
 probe is a PreToolUse block containing `[H-03]`.
 
-The documentation announcement is not ready to publish as a currently installable public release
-until a clean Codex 0.144.1 home completes marketplace add, plugin add, version inspection, plugin
-remove, and final absence verification against the public default branch.
+On 2026-07-12, a clean isolated Codex home completed the public marketplace add, installed and
+discovered `ca-codex 0.2.4` from release `v2.8.13`, removed the plugin, and confirmed its final
+absence. That closes the public-installation gate with the same GitHub-slug commands shown above.
 
 ## Intentional host differences
 

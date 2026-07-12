@@ -1,6 +1,6 @@
 # Spec — task-board writer + workflow follow-up harvest
 
-**Slug:** `task-writer-harvest` · **Lane:** full · **Status:** draft (awaiting approval)
+**Slug:** `task-writer-harvest` · **Lane:** full · **Status:** SHIPPED — reconciled 2026-07-12 against PR #118
 **Builds on:** `task-board-lifecycle` (the schema + `_taskboardlib`). **Resolves:** D-1.
 
 ## Problem

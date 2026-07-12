@@ -87,8 +87,8 @@ Hooks, commands, agents, and statusline wiring load automatically; everything re
 
 ### Codex
 
-The public GitHub-slug flow is **available after the Codex-support release** reaches the default
-branch:
+The public GitHub-slug flow is **available now**. It was verified against release `v2.8.13` with
+`ca-codex 0.2.4`:
 
 ```text
 codex plugin marketplace add arbiterForge/codeArbiter
@@ -98,7 +98,7 @@ codex plugin add ca-codex@codearbiter
 Open `/hooks`, review and trust the `ca-codex` handlers, then start a fresh thread. Commands use the
 `$ca-*` spelling. Run `$ca-init` to opt a repository in and `$ca-doctor` to prove the hooks are live.
 
-For development before that release, use the verified local-clone flow:
+For development against an unpublished checkout, use the local-clone flow:
 
 ```text
 git clone https://github.com/arbiterForge/codeArbiter

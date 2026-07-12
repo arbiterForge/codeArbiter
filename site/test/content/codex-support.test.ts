@@ -35,7 +35,11 @@ describe("canonical Claude Code and Codex support evidence", () => {
 
   it("labels release availability and intentional differences", () => {
     const page = readFileSync(supportPath, "utf8");
-    expect(page).toContain("available after the Codex-support release");
+    expect(page).toContain("available now");
+    expect(page).toContain("v2.8.13");
+    expect(page).toContain("ca-codex 0.2.4");
+    expect(page).not.toContain("available after the Codex-support release");
+    expect(page).not.toContain("not ready to publish");
     expect(page).toMatch(/statusline/i);
     expect(page).toMatch(/transcript pruning/i);
     expect(page).toMatch(/Read hook/i);
