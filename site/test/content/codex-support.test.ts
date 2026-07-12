@@ -63,4 +63,28 @@ describe("canonical Claude Code and Codex support evidence", () => {
     expect(install).toContain("/ca:doctor");
     expect(install).toContain("$ca-doctor");
   });
+
+  it("keeps operational guidance host-correct", () => {
+    const enforcement = read("src/content/docs/enforcement.md");
+    const hooks = read("src/content/docs/hooks.md");
+    const optIn = read("src/content/docs/guides/opt-in-a-repo.md");
+    const faq = read("src/content/docs/faq.md");
+    const troubleshooting = read("src/content/docs/guides/troubleshooting.md");
+    const uninstalling = read("src/content/docs/guides/uninstalling.md");
+    const statusline = read("src/content/docs/guides/the-statusline.md");
+    const support = read("src/content/docs/getting-started/claude-code-and-codex.md");
+
+    expect(enforcement).toContain("structured deny");
+    expect(hooks).toContain("pre-tool-adapter.py");
+    expect(optIn).toContain("/ca:init");
+    expect(optIn).toContain("$ca-init");
+    expect(faq).toMatch(/two users|mixed-host/i);
+    expect(troubleshooting).toContain("/ca:doctor");
+    expect(troubleshooting).toContain("$ca-doctor");
+    expect(troubleshooting).toContain("/hooks");
+    expect(uninstalling).toContain("codex plugin remove ca-codex@codearbiter");
+    expect(uninstalling).toContain(".codearbiter/");
+    expect(statusline).toMatch(/Claude Code only/i);
+    expect(support).toContain("Documentation launch: 2026-07-12");
+  });
 });

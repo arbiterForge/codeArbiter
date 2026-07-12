@@ -5,6 +5,9 @@ description: Verified shared enforcement and project-context parity across Claud
 
 # Shared enforcement and project-context parity across Claude Code and Codex
 
+**Documentation launch: 2026-07-12.** This page announces the verified 2026-07-11 Codex support
+result while retaining the public-marketplace smoke test as a release gate.
+
 codeArbiter ships as two sibling plugins: `ca` for Claude Code and `ca-codex` for OpenAI Codex.
 Both activate from the same `.codearbiter/CONTEXT.md`, enforce the same project rules, and read and
 write the same checked-in `.codearbiter/` state. One person can alternate between hosts, or two

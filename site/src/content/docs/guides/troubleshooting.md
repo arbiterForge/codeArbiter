@@ -1,16 +1,20 @@
 ---
 title: Troubleshooting
-description: "Use /ca:doctor to diagnose a codeArbiter install that is not behaving: gates dormant, persona not loading, stale output after a plugin update."
+description: "Use /ca:doctor or $ca-doctor to diagnose dormant gates, persona loading, trust, payload, and host-specific installation problems."
 ---
 
-Run `/ca:doctor` when codeArbiter is not behaving as expected. The command is a read-only health check. It inspects the interpreter, plugin payload, cache, repo activation state, live-fire hook execution, and statusline wiring, then exits non-zero on any failure. It changes nothing.
+Run `/ca:doctor` in Claude Code or `$ca-doctor` in Codex when codeArbiter is not behaving as
+expected. The command is a read-only health check over interpreter, payload, cache, activation, and
+live-fire enforcement. Claude also checks statusline wiring. Codex instead requires its hook set to
+be trusted through `/hooks`; start a fresh thread after approving a changed set.
 
 ## Run the Check
 
-In Claude Code, open the project where the problem appears and run:
+Open the project where the problem appears and run the host-native command:
 
 ```text
 /ca:doctor
+$ca-doctor
 ```
 
 Doctor prints a result for each check and exits 0 if all pass, non-zero otherwise. Fix failures in the order reported: later failures are often downstream of the first.
@@ -64,6 +68,8 @@ Doctor runs a hook invocation to confirm a hook binary actually executes end-to-
 **To fix:** reinstall the plugin to repair hook registration.
 
 ### Statusline Wiring
+
+**Claude Code only.** Codex has no statusline surface; do not treat that absence as a failed check.
 
 Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` points to the current version of `statusline.py`. The stored path is absolute and version-pinned, so a plugin update can leave it pointing at the previous version. The `SessionStart` hook repairs this automatically each session, but doctor will report a stale wire before the first post-update session runs.
 

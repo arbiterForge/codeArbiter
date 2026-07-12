@@ -3,7 +3,12 @@ title: Enforcement & Security
 description: "How codeArbiter enforces its gates at the tool-call boundary: the activation contract, the blocking commit-time gates, advisory reminders, and the fail-loud posture."
 ---
 
-codeArbiter's gates are not advice the model can talk past. They run as Claude Code [hooks](/glossary/#hook) at the tool-call boundary, in Python, with no network and no third-party dependencies. A blocking gate exits non-zero, and the tool call never happens. This page states what is enforced, where it fails open versus closed, and the security posture behind it.
+codeArbiter's gates are not advice the model can talk past. They run as Claude Code or Codex
+[hooks](/glossary/#hook) at the tool-call boundary, in Python, with no third-party dependencies.
+Both plugins vendor the same guard core. Claude Code receives its exit-2 verdict directly; Codex's
+`pre-tool-adapter.py` converts the same verdict to a structured deny response so Windows shell exit
+handling cannot weaken the block. See the
+[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/).
 
 For the per-hook breakdown, see the [Hooks reference](/hooks).
 
@@ -52,4 +57,6 @@ codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-roo
 
 The hooks fail loud: a blocking gate prints `BLOCKED [H-NN]: …` to stderr and exits 2. The one deliberate fail-*open* is hook-input parsing. A malformed stdin must not brick the session by blocking every subsequent tool call (documented in `_hooklib.read_input()`).
 
-Enforcement is also resilient to a missing interpreter. Every hook is registered twice in `hooks.json`: once under `python3`, and once under `python` as a fallback. On a stock Windows install that ships `python` but not `python3`, the gates still fire. codeArbiter never falls silently dormant because of an interpreter name.
+Enforcement is resilient to host interpreter conventions. Claude Code carries its tested
+interpreter fallback. Codex registers one OS-specific command per event (`python3` on POSIX,
+`python` on Windows), avoiding concurrent handlers with conflicting results.
