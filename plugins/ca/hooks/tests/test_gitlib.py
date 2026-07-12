@@ -5,6 +5,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -138,6 +139,47 @@ class ProjectRootTests(unittest.TestCase):
                 f.write("gitdir: ../common/.git/worktrees/topic\n")
 
             self.assertEqual(_gitlib.project_root({"cwd": nested}), root)
+
+
+class GitDirtyTests(unittest.TestCase):
+    def test_slow_git_is_bounded_by_explicit_latency_budget(self):
+        timed_out = _gitlib.subprocess.TimeoutExpired(
+            ["git", "status"], _gitlib.DIRTY_CHECK_TIMEOUT_SECONDS)
+        with mock.patch.object(
+                _gitlib.subprocess, "run", side_effect=timed_out) as run:
+            self.assertFalse(_gitlib.git_dirty("repo"))
+
+        self.assertEqual(run.call_args.kwargs["timeout"],
+                         _gitlib.DIRTY_CHECK_TIMEOUT_SECONDS)
+        self.assertLessEqual(_gitlib.DIRTY_CHECK_TIMEOUT_SECONDS, 0.1)
+
+    def test_git_failure_fails_soft_even_if_stdout_is_present(self):
+        failed = _gitlib.subprocess.CompletedProcess(
+            ["git", "status"], returncode=128, stdout="fatal output\n", stderr="")
+        with mock.patch.object(_gitlib.subprocess, "run", return_value=failed):
+            self.assertFalse(_gitlib.git_dirty("repo"))
+
+    def test_tracked_and_untracked_changes_remain_dirty(self):
+        with tempfile.TemporaryDirectory() as root:
+            subprocess = _gitlib.subprocess
+            subprocess.run(["git", "init", "-q", root], check=True)
+            tracked = os.path.join(root, "tracked.txt")
+            with open(tracked, "w", encoding="utf-8") as f:
+                f.write("initial\n")
+            subprocess.run(["git", "-C", root, "add", "tracked.txt"], check=True)
+            subprocess.run(
+                ["git", "-C", root, "-c", "user.name=Test", "-c",
+                 "user.email=test@example.invalid", "commit", "-qm", "initial"],
+                check=True)
+
+            with open(tracked, "a", encoding="utf-8") as f:
+                f.write("changed\n")
+            self.assertTrue(_gitlib.git_dirty(root))
+
+            subprocess.run(["git", "-C", root, "restore", "tracked.txt"], check=True)
+            with open(os.path.join(root, "untracked.txt"), "w", encoding="utf-8") as f:
+                f.write("new\n")
+            self.assertTrue(_gitlib.git_dirty(root))
 
 
 class StatuslineLinkedWorktreeTests(unittest.TestCase):

@@ -21,6 +21,11 @@ import os
 import subprocess
 
 
+# Statusline rendering is UI-critical and runs in a fresh process per refresh.
+# Keep the full porcelain semantics, but never let the dirty probe stall the UI.
+DIRTY_CHECK_TIMEOUT_SECONDS = 0.1
+
+
 def _valid_ref_name(name):
     """Return whether *name* follows Git's safe reference-name shape."""
     if (not name or name == "@" or name.startswith("/") or name.endswith("/")
@@ -92,10 +97,12 @@ def head_branch(root):
 
 
 def git_dirty(root):
+    """Return dirty state, suppressing the marker when Git fails or times out."""
     try:
         out = subprocess.run(["git", "-C", root, "status", "--porcelain"],
-                             capture_output=True, text=True, timeout=1.5,
+                             capture_output=True, text=True,
+                             timeout=DIRTY_CHECK_TIMEOUT_SECONDS,
                              encoding="utf-8", errors="replace")
-        return bool((out.stdout or "").strip())
+        return out.returncode == 0 and bool((out.stdout or "").strip())
     except (OSError, subprocess.SubprocessError):
         return False
