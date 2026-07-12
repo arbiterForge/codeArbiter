@@ -16,6 +16,7 @@
 #   subagent_dir(data, root, sid) -> str|None
 #   read_subagents(sdir) -> (active, recent, shown, (tot_in, tot_out))
 #   sub_label(content) -> str
+#   display_model(model_id) -> str
 
 import json
 import os
@@ -27,6 +28,19 @@ SHOW_WINDOW = 600         # secs: still display recently-finished subagents
 MAX_SUB_ROWS = 4
 MAX_SUB_FILES = 12        # hot-path bound: parse at most this many files / render
 MAX_SUB_LINES = 2500      # per-file line cap
+
+
+def display_model(model_id):
+    """Compact a host model ID while retaining its family and version."""
+    if not isinstance(model_id, str):
+        return "model:?"
+    name = model_id.strip()
+    if not name:
+        return "model:?"
+    if name.startswith("claude-"):
+        name = name[len("claude-"):]
+    name = re.sub(r"-(?:\d{8}|\d{4}-\d{2}-\d{2})$", "", name)
+    return "model:" + name[:24]
 
 
 def num(x, default=0.0):
@@ -92,6 +106,7 @@ def read_subagents(sdir):
         if size > 16 * 1024 * 1024:
             continue
         reqs = {}
+        models = []
         label = None
         try:
             with open(fp, encoding="utf-8", errors="replace") as f:
@@ -110,6 +125,12 @@ def read_subagents(sdir):
                         continue
                     if label is None and msg.get("role") == "user":
                         label = sub_label(msg.get("content"))
+                    if msg.get("role") == "assistant":
+                        raw_model = msg.get("model")
+                        if isinstance(raw_model, str) and raw_model.strip():
+                            raw_model = raw_model.strip()
+                            if raw_model not in models:
+                                models.append(raw_model)
                     u = msg.get("usage")
                     if isinstance(u, dict):
                         # dedupe by requestId; fresh input only (cache reads excluded)
@@ -125,6 +146,8 @@ def read_subagents(sdir):
         tot_out += out
         if len(shown) < MAX_SUB_ROWS:
             shown.append({"label": label or ("agent-" + re.sub(r"\.jsonl$", "", nm)[-6:]),
+                          "model": (display_model(models[0]) if len(models) == 1 else
+                                    ("model:mixed" if models else "model:?")),
                           "inp": inp, "out": out, "age": now - mtime,
                           "active": now - mtime <= ACTIVE_WINDOW})
     return active, len(files), shown, (tot_in, tot_out)

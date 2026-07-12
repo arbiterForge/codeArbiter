@@ -598,15 +598,19 @@ def render(raw):
                         live = sub.get("active")
                         glyph = f"{OK}{DOT}{RESET}" if live else f"{GREY}✓{RESET}"
                         lcol = WHITE if live else GREY
-                        # build the token/duration tail once so its width is known
-                        tail = (f" {V2}{DN}{RESET} {GREY}{fmt_tok(sub['inp'])}{RESET}"
+                        # Keep model + metrics as the stable tail. At narrow widths the
+                        # task label yields all of its space before this information.
+                        model_tag = f"{V3}{sub.get('model', 'model:?')}{RESET}"
+                        tail = (f"  {model_tag}"
+                                f" {V2}{DN}{RESET} {GREY}{fmt_tok(sub['inp'])}{RESET}"
                                 f" {V2}{UP}{RESET} {GREY}{fmt_tok(sub['out'])}{RESET}"
                                 f"  {DIM}{human_dur(sub['age'])}{RESET}")
                         # grow the label to its natural width up to the row limit, then the
                         # tail sits right after it (was a fixed 22, wasting wide terminals);
                         # clip (not pad) keeps the metrics adjacent and leaves trailing space
-                        lw = max(22, inner - 4 - vlen(tail))   # cap so the row can't overflow
-                        box.row(f"  {glyph} {lcol}{clip(sub['label'], lw)}{RESET}{tail}")
+                        lw = max(0, inner - 4 - vlen(tail))
+                        label = f"{lcol}{clip(sub['label'], lw)}{RESET}" if lw else ""
+                        box.row(f"  {glyph} {label}{tail}")
                     tail_tees = []
 
     box.bottom(tees=tail_tees)

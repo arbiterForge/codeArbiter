@@ -19,6 +19,11 @@ Token and cost figures come from the session transcript: real per-model token us
 and the cost is the estimated pay-as-you-go **API-equivalent** (labelled `api≈`) — what the same
 tokens would have cost at list API rates — not a bill.
 
+Each visible subagent row reports its recorded model. Claude IDs retain a compact family/version
+label such as `model:sonnet-4-6`; multiple models report `model:mixed`, while absent or malformed
+metadata reports `model:?`. The tag uses the active theme's bright accent, with no model-specific
+colors.
+
 ## Argument
 
 `$ARGUMENTS` is one of `install` (default), `uninstall`, or `status`.
