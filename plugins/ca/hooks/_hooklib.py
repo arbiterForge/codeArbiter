@@ -88,13 +88,13 @@ _HOST = None
 
 # Serialize same-process Windows writers before taking the cross-process lock.
 _GATE_EVENTS_WINDOWS_LOCK = threading.Lock()
-_WINDOWS_LOCK_ATTEMPTS = 50
+_WINDOWS_LOCK_TIMEOUT_SECONDS = 5.0
 _WINDOWS_LOCK_RETRY_SECONDS = 0.01
 
 
 def _is_lock_contention(exc):
     """True only for CRT/Windows byte-range lock conflict errors."""
-    return (getattr(exc, "errno", None) == errno.EDEADLK or
+    return (getattr(exc, "errno", None) in (errno.EACCES, errno.EDEADLK) or
             getattr(exc, "winerror", None) in (32, 33))
 
 
@@ -812,7 +812,8 @@ def _log_gate_event(kind, tag, msg):
                 import msvcrt
                 os.lseek(fd, 0, os.SEEK_SET)
                 lock_mode = getattr(msvcrt, "LK_NBLCK", msvcrt.LK_LOCK)
-                for attempt in range(_WINDOWS_LOCK_ATTEMPTS):
+                lock_deadline = time.monotonic() + _WINDOWS_LOCK_TIMEOUT_SECONDS
+                while True:
                     try:
                         msvcrt.locking(fd, lock_mode, 1)
                         os_lock_acquired = True
@@ -820,7 +821,7 @@ def _log_gate_event(kind, tag, msg):
                     except OSError as exc:
                         if not _is_lock_contention(exc):
                             raise
-                        if attempt + 1 == _WINDOWS_LOCK_ATTEMPTS:
+                        if time.monotonic() >= lock_deadline:
                             raise
                         time.sleep(_WINDOWS_LOCK_RETRY_SECONDS)
             os.write(fd, line.encode("utf-8"))

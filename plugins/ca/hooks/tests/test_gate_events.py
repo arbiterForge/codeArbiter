@@ -17,6 +17,7 @@ Stdlib only. Fail-open is proven via a directory-collision on the log path and
 via a patched writer that raises — never by unsetting PATH/env (that changes
 an unrelated resolution mechanism, not writability).
 """
+import errno
 import json
 import os
 import subprocess
@@ -400,6 +401,36 @@ class TestWindowsLockAC3(_GateEventsFixture):
         self.assertIn("Windows lock violation must be retried", _read_log(self.cad))
         self.assertEqual([call[0] for call in fake.calls].count("unlock"), 1)
 
+    def test_crt_access_denied_contention_is_retried_and_event_lands(self):
+        class _CrtContentionMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def __init__(self):
+                super().__init__()
+                self.lock_attempts = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_NBLCK:
+                    self.lock_attempts += 1
+                    self.calls.append(("lock", fd, nbytes))
+                    if self.lock_attempts == 1:
+                        raise OSError(errno.EACCES,
+                                      "simulated CRT lock contention")
+                    return
+                return super().locking(fd, mode, nbytes)
+
+        fake = _CrtContentionMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib.warn("CRT access-denied contention must be retried")
+
+        self.assertEqual(fake.lock_attempts, 2)
+        sleep.assert_called_once()
+        self.assertIn("CRT access-denied contention must be retried",
+                      _read_log(self.cad))
+        self.assertEqual([call[0] for call in fake.calls].count("unlock"), 1)
+
     def test_non_contention_lock_oserror_fails_open_without_retry_or_unlock(self):
         class _InvalidHandleMsvcrt(self._FakeMsvcrt):
             LK_NBLCK = 2
@@ -435,10 +466,14 @@ class TestWindowsLockAC3(_GateEventsFixture):
         fake = _PermanentContentionMsvcrt()
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": fake}), \
-             mock.patch("time.sleep"):
+             mock.patch("time.monotonic", side_effect=(100.0, 100.0, 105.0)) as monotonic, \
+             mock.patch("time.sleep") as sleep:
             _hooklib.warn("fail open without an unowned unlock")
 
-        self.assertNotIn("unlock", [call[0] for call in fake.calls])
+        self.assertEqual([call[0] for call in fake.calls], ["lock", "lock"])
+        self.assertEqual(monotonic.call_count, 3)
+        sleep.assert_called_once_with(_hooklib._WINDOWS_LOCK_RETRY_SECONDS)
+        self.assertEqual(_read_log(self.cad), "")
 
 
 class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
