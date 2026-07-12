@@ -22,6 +22,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 from unittest import mock
@@ -341,6 +342,104 @@ class TestWindowsLockAC3(_GateEventsFixture):
                 _hooklib.block("H-08", "must still block despite lock failure")
         self.assertEqual(cm.exception.code, 2)
 
+    def test_transient_lock_contention_is_retried_and_event_lands(self):
+        class _TransientMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def __init__(self):
+                super().__init__()
+                self.lock_attempts = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_NBLCK:
+                    self.lock_attempts += 1
+                    self.calls.append(("lock", fd, nbytes))
+                    if self.lock_attempts < 3:
+                        raise OSError(36, "simulated transient contention")
+                    return
+                return super().locking(fd, mode, nbytes)
+
+        fake = _TransientMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib.warn("transient contention must not drop this event")
+
+        self.assertEqual(fake.lock_attempts, 3)
+        self.assertEqual(sleep.call_count, 2)
+        self.assertIn("transient contention must not drop this event", _read_log(self.cad))
+        self.assertEqual([call[0] for call in fake.calls].count("unlock"), 1)
+
+    def test_windows_lock_violation_is_retried_and_event_lands(self):
+        class _WinLockViolationMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def __init__(self):
+                super().__init__()
+                self.lock_attempts = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_NBLCK:
+                    self.lock_attempts += 1
+                    self.calls.append(("lock", fd, nbytes))
+                    if self.lock_attempts == 1:
+                        error = OSError(0, "simulated Windows lock violation")
+                        error.winerror = 33
+                        raise error
+                    return
+                return super().locking(fd, mode, nbytes)
+
+        fake = _WinLockViolationMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib.warn("Windows lock violation must be retried")
+
+        self.assertEqual(fake.lock_attempts, 2)
+        sleep.assert_called_once()
+        self.assertIn("Windows lock violation must be retried", _read_log(self.cad))
+        self.assertEqual([call[0] for call in fake.calls].count("unlock"), 1)
+
+    def test_non_contention_lock_oserror_fails_open_without_retry_or_unlock(self):
+        class _InvalidHandleMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def locking(self, fd, mode, nbytes):
+                kind = "lock" if mode == self.LK_NBLCK else "unlock"
+                self.calls.append((kind, fd, nbytes))
+                if kind == "lock":
+                    error = OSError(9, "simulated invalid file descriptor")
+                    error.winerror = 6
+                    raise error
+
+        fake = _InvalidHandleMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep") as sleep:
+            _hooklib.warn("invalid handle must fail open immediately")
+
+        self.assertEqual([call[0] for call in fake.calls], ["lock"])
+        sleep.assert_not_called()
+        self.assertEqual(_read_log(self.cad), "")
+
+    def test_lock_failure_never_attempts_unlock_without_acquisition(self):
+        class _PermanentContentionMsvcrt(self._FakeMsvcrt):
+            LK_NBLCK = 2
+
+            def locking(self, fd, mode, nbytes):
+                kind = "lock" if mode == self.LK_NBLCK else "unlock"
+                self.calls.append((kind, fd, nbytes))
+                if kind == "lock":
+                    raise OSError(36, "simulated permanent contention")
+
+        fake = _PermanentContentionMsvcrt()
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("time.sleep"):
+            _hooklib.warn("fail open without an unowned unlock")
+
+        self.assertNotIn("unlock", [call[0] for call in fake.calls])
+
 
 class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
     """Same-process concurrent-append coverage (FINDING 3c): many threads
@@ -348,8 +447,6 @@ class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
     no interleaving of two threads' text within a line and no truncation."""
 
     def test_concurrent_warn_calls_land_as_intact_non_interleaved_lines(self):
-        import threading
-
         n_threads = 16
         messages = [f"thread-payload-{i:03d}-{'x' * 40}" for i in range(n_threads)]
 
@@ -372,6 +469,36 @@ class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
                              f"message {msg!r} missing or duplicated: {lines}")
         for line in lines:
             self.assertIn("WARN", line)
+
+    @unittest.skipUnless(os.name == "nt", "Windows lock contention regression")
+    def test_repeated_windows_thread_bursts_land_every_message_without_stair_step(self):
+        n_rounds = 3
+        n_threads = 16
+        messages = [
+            f"burst-{round_no:02d}-payload-{thread_no:03d}"
+            for round_no in range(n_rounds)
+            for thread_no in range(n_threads)
+        ]
+
+        started = time.monotonic()
+        for round_no in range(n_rounds):
+            round_messages = messages[round_no * n_threads:(round_no + 1) * n_threads]
+            threads = [
+                threading.Thread(target=_hooklib.warn, args=(message,))
+                for message in round_messages
+            ]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join(timeout=15)
+                self.assertFalse(thread.is_alive(), "gate-event writer thread stalled")
+        elapsed = time.monotonic() - started
+
+        lines = _read_log(self.cad).splitlines()
+        self.assertEqual(len(lines), len(messages))
+        for message in messages:
+            self.assertEqual(sum(message in line for line in lines), 1, message)
+        self.assertLess(elapsed, 5.0, f"Windows lock retries stair-stepped for {elapsed:.2f}s")
 
 
 class TestStalenessWarnCONFIRM09(_GateEventsFixture):
