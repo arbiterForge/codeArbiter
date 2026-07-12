@@ -23,6 +23,56 @@ dependency-free (native font glyphs only, no Nerd Font) and renders on every ses
 
 **You will need:** the plugin installed (see [Install](/getting-started/install/)).
 
+## Choose a Color Theme
+
+The statusline defaults to its original violet palette. Set `CODEARBITER_THEME` in the
+environment that launches Claude Code to select `violet`, `blue`, `green`, `amber`, or `mono`.
+Names are case-insensitive. An unrecognized name falls back to `violet`, so a typo cannot break
+the renderer.
+
+```text
+CODEARBITER_THEME=blue
+```
+
+For a custom palette, set `CODEARBITER_THEME=custom`. The renderer reads
+`~/.codearbiter/statusline-theme.json` unless `CODEARBITER_THEME_FILE` names another local file.
+Both `~` and environment variables in that path are expanded. The file is read-only: rendering
+does not write configuration or make network requests.
+
+```json
+{
+  "accent": {
+    "deep": "#6c46b4",
+    "mid": "#965ce6",
+    "primary": "#b266ff",
+    "bright": "#d08cff"
+  },
+  "text": {
+    "muted": "#9696a2",
+    "normal": "#e8e8f0",
+    "on_accent": "#120e1a"
+  },
+  "semantic": {
+    "ok": "#78dc96",
+    "warn": "#ffb84c",
+    "danger": "#ff566e"
+  },
+  "gradient": {
+    "from": "#7850c8",
+    "to": "#cd8cff"
+  }
+}
+```
+
+Every field is optional and omitted fields inherit from `violet`. Values must use six-digit
+`#RRGGBB` notation. Unknown keys and invalid color values are ignored. A missing, unreadable,
+oversized, malformed, or non-object file rejects the custom theme as a whole and safely renders
+with `violet` instead.
+
+The standard `NO_COLOR` environment variable takes precedence over every built-in and custom
+theme. When it is present, the final statusline contains no ANSI color sequences while retaining
+the same text, glyphs, spacing, and clipping.
+
 ## What the Bar Shows
 
 The bar has two tiers of segments.

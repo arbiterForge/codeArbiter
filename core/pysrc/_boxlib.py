@@ -25,6 +25,7 @@ try:
     _TD, _TU, _DOTH = _colorlib.TD, _colorlib.TU, _colorlib.DOTH
     _pad, _vlen, _clip, _gradient_h = (_colorlib.pad, _colorlib.vlen,
                                        _colorlib.clip, _colorlib.gradient_h)
+    _box_gradient_h = _colorlib.box_gradient_h
     _ANSI = _colorlib.ANSI
 except Exception:  # pragma: no cover — never let an import break the statusline
     _colorlib = None
@@ -42,6 +43,8 @@ except Exception:  # pragma: no cover — never let an import break the statusli
 
     def _gradient_h(text, width, c_from=None, c_to=None):
         return text
+
+    _box_gradient_h = _gradient_h
 
     import re as _re
     _ANSI = _re.compile(r"\033\[[0-9;]*m")
@@ -61,7 +64,7 @@ class Box:
         t = _gradient_h(_ANSI.sub("", title), _vlen(title))
         used = 3 + _vlen(title) + _vlen(b)
         fillw = max(0, self.W - 1 - used - 1)
-        fill = _gradient_h(_H * fillw, fillw, (90, 60, 150), (170, 110, 240)) if fillw else ""
+        fill = _box_gradient_h(_H * fillw, fillw) if fillw else ""
         self.lines.append(f"{left}{t}{b}{fill}{_V0}{_TR}{_RESET}")
 
     def row(self, content):

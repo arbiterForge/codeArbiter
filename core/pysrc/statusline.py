@@ -615,7 +615,7 @@ def render(raw):
     # Honor the NO_COLOR convention by stripping SGR from the final render. Do NOT gate on
     # isatty: a Claude Code statusline is intentionally piped, so an isatty test would drop
     # color in normal use. Width math already ignores ANSI, so stripping keeps alignment.
-    if os.environ.get("NO_COLOR"):
+    if "NO_COLOR" in os.environ:
         out = ANSI.sub("", out)
     return out
 

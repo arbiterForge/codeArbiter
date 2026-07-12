@@ -21,8 +21,120 @@
 #   pad(s, w) -> str                          pad/clip to exactly w visible columns
 #   gradient_h(text, width, c_from, c_to) -> str   per-character violet sheen
 
+import json
+import os
 import re
 import unicodedata
+from dataclasses import dataclass, replace
+from types import MappingProxyType
+
+
+@dataclass(frozen=True)
+class RGB:
+    r: int
+    g: int
+    b: int
+
+    def __iter__(self):
+        return iter((self.r, self.g, self.b))
+
+    def __getitem__(self, index):
+        return (self.r, self.g, self.b)[index]
+
+
+@dataclass(frozen=True)
+class Palette:
+    accent_deep: RGB
+    accent_mid: RGB
+    accent_primary: RGB
+    accent_bright: RGB
+    text_muted: RGB
+    text_normal: RGB
+    text_on_accent: RGB
+    semantic_ok: RGB
+    semantic_warn: RGB
+    semantic_danger: RGB
+    gradient_from: RGB
+    gradient_to: RGB
+
+
+def _palette(values):
+    return Palette(*(RGB(*value) for value in values))
+
+
+BUILTIN_PALETTES = MappingProxyType({
+    "violet": _palette(((108, 70, 180), (150, 92, 230), (178, 102, 255), (208, 140, 255),
+                         (150, 150, 162), (232, 232, 240), (18, 14, 26),
+                         (120, 220, 150), (255, 184, 76), (255, 86, 110),
+                         (120, 80, 200), (205, 140, 255))),
+    "blue": _palette(((35, 91, 155), (52, 130, 205), (69, 155, 255), (125, 190, 255),
+                       (145, 158, 174), (232, 240, 248), (8, 22, 36),
+                       (107, 214, 158), (255, 187, 79), (255, 91, 109),
+                       (40, 105, 190), (113, 190, 255))),
+    "green": _palette(((31, 112, 78), (42, 157, 103), (55, 201, 132), (111, 231, 169),
+                        (142, 164, 153), (230, 242, 235), (7, 30, 20),
+                        (83, 219, 139), (255, 190, 76), (255, 91, 105),
+                        (33, 126, 86), (102, 225, 159))),
+    "amber": _palette(((145, 87, 20), (199, 123, 29), (240, 157, 43), (255, 199, 104),
+                        (165, 154, 139), (244, 237, 226), (35, 22, 7),
+                        (100, 210, 137), (255, 184, 76), (255, 83, 98),
+                        (166, 96, 20), (255, 190, 76))),
+    "mono": _palette(((104, 104, 110), (145, 145, 152), (190, 190, 198), (226, 226, 232),
+                       (145, 145, 152), (232, 232, 236), (18, 18, 20),
+                       (199, 224, 205), (235, 213, 174), (239, 174, 181),
+                       (112, 112, 118), (218, 218, 224))),
+})
+
+MAX_THEME_BYTES = 16 * 1024
+_CUSTOM_FIELDS = MappingProxyType({
+    "accent": MappingProxyType({"deep": "accent_deep", "mid": "accent_mid",
+                                "primary": "accent_primary", "bright": "accent_bright"}),
+    "text": MappingProxyType({"muted": "text_muted", "normal": "text_normal",
+                              "on_accent": "text_on_accent"}),
+    "semantic": MappingProxyType({"ok": "semantic_ok", "warn": "semantic_warn",
+                                  "danger": "semantic_danger"}),
+    "gradient": MappingProxyType({"from": "gradient_from", "to": "gradient_to"}),
+})
+_HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
+
+
+def _read_custom(path):
+    """Read one bounded local JSON object; return None for every failure mode."""
+    try:
+        path = os.path.expanduser(os.path.expandvars(path))
+        if os.path.getsize(path) > MAX_THEME_BYTES:
+            return None
+        with open(path, "rb") as handle:
+            raw = handle.read(MAX_THEME_BYTES + 1)
+        if len(raw) > MAX_THEME_BYTES:
+            return None
+        value = json.loads(raw.decode("utf-8"))
+        return value if isinstance(value, dict) else None
+    except (OSError, UnicodeError, ValueError, TypeError):
+        return None
+
+
+def resolve_palette(theme_name=None, custom_path=None):
+    """Resolve a built-in or partial custom palette, always falling back to violet."""
+    violet = BUILTIN_PALETTES["violet"]
+    name = str(theme_name or "violet").strip().lower()
+    if name != "custom":
+        return BUILTIN_PALETTES.get(name, violet)
+    path = custom_path or os.environ.get("CODEARBITER_THEME_FILE") or os.path.join(
+        "~", ".codearbiter", "statusline-theme.json")
+    data = _read_custom(path)
+    if data is None:
+        return violet
+    updates = {}
+    for group_name, fields in _CUSTOM_FIELDS.items():
+        group = data.get(group_name)
+        if not isinstance(group, dict):
+            continue
+        for key, field_name in fields.items():
+            value = group.get(key)
+            if isinstance(value, str) and _HEX.fullmatch(value):
+                updates[field_name] = RGB(int(value[1:3], 16), int(value[3:5], 16), int(value[5:7], 16))
+    return replace(violet, **updates)
 
 
 def fg(r, g, b):
@@ -36,16 +148,20 @@ def bg(r, g, b):
     return f"\033[48;2;{r};{g};{b}m"
 
 # neon-violet ramp (dark -> bright) — used for the box sheen and accents
-V0 = fg(108, 70, 180)     # deep violet (border base)
-V1 = fg(150, 92, 230)     # mid violet
-V2 = fg(178, 102, 255)    # primary neon violet
-V3 = fg(208, 140, 255)    # bright violet (excitement / highlights)
-GREY = fg(150, 150, 162)
-WHITE = fg(232, 232, 240)
-OK = fg(120, 220, 150)
-WARN = fg(255, 184, 76)
-DANGER = fg(255, 86, 110)
-PILL_FG = fg(18, 14, 26)   # near-black text for contrast on a colored pill bg
+ACTIVE_THEME_NAME = str(os.environ.get("CODEARBITER_THEME") or "violet").strip().lower()
+if ACTIVE_THEME_NAME not in (*BUILTIN_PALETTES, "custom"):
+    ACTIVE_THEME_NAME = "violet"
+ACTIVE_PALETTE = resolve_palette(ACTIVE_THEME_NAME)
+V0 = fg(*ACTIVE_PALETTE.accent_deep)
+V1 = fg(*ACTIVE_PALETTE.accent_mid)
+V2 = fg(*ACTIVE_PALETTE.accent_primary)
+V3 = fg(*ACTIVE_PALETTE.accent_bright)
+GREY = fg(*ACTIVE_PALETTE.text_muted)
+WHITE = fg(*ACTIVE_PALETTE.text_normal)
+OK = fg(*ACTIVE_PALETTE.semantic_ok)
+WARN = fg(*ACTIVE_PALETTE.semantic_warn)
+DANGER = fg(*ACTIVE_PALETTE.semantic_danger)
+PILL_FG = fg(*ACTIVE_PALETTE.text_on_accent)
 
 # native-safe glyphs only
 TL, TR, BL, BR = "╭", "╮", "╰", "╯"
@@ -112,8 +228,10 @@ def pad(s, w):
     return s + " " * (w - v)
 
 
-def gradient_h(text, width, c_from=(120, 80, 200), c_to=(205, 140, 255)):
+def gradient_h(text, width, c_from=None, c_to=None):
     """Per-character violet sheen across `width` columns (dark->bright)."""
+    c_from = ACTIVE_PALETTE.gradient_from if c_from is None else c_from
+    c_to = ACTIVE_PALETTE.gradient_to if c_to is None else c_to
     out = []
     n = max(1, width - 1)
     for i, ch in enumerate(text):
@@ -123,3 +241,10 @@ def gradient_h(text, width, c_from=(120, 80, 200), c_to=(205, 140, 255)):
         b = int(c_from[2] + (c_to[2] - c_from[2]) * t)
         out.append(f"\033[38;2;{r};{g};{b}m{ch}")
     return "".join(out) + RESET
+
+
+def box_gradient_h(text, width):
+    """Header-border sheen, retaining the original violet bytes by default."""
+    if ACTIVE_THEME_NAME == "violet":
+        return gradient_h(text, width, (90, 60, 150), (170, 110, 240))
+    return gradient_h(text, width)
