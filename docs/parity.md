@@ -2,8 +2,9 @@
 
 Status of every codeArbiter surface on each host (ADR-0011, codex-support
 campaign). The `ca` plugin targets Claude Code; the `ca-codex` sibling targets
-OpenAI Codex CLI (minimum rust-v0.134.0, the first release with plugin-bundled
-hooks on by default). Both plugins vendor the same `core/pysrc/` Python core
+OpenAI Codex CLI (minimum rust-v0.143.0, the source-verified structured-deny
+baseline; plugin-bundled hooks came on by default earlier, at 0.134.0). Both
+plugins vendor the same `core/pysrc/` Python core
 byte-for-byte (`tools/sync-core.py --check` is the CI gate); the only per-host
 Python file is each plugin's `hooks/_host.py`.
 

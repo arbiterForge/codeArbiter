@@ -191,6 +191,18 @@ jobs:
         # drifts from core silently forks the enforcement logic between the
         # two hosts - fail the build before that ships.
         run: python tools/sync-core.py --check
+      - name: Run sync-core tool unit tests
+        # FINDING 2 (2026-07 review): sync/--check pass-fail matrix (in-sync,
+        # drifted, missing), write-mode drift repair, and the hardened
+        # non-zero/clear-message error paths for an unreadable source file,
+        # an unwritable destination, and an empty/missing core dir.
+        run: python .github/scripts/test_sync_core.py
+      - name: Run codex-parity-fixture tool unit tests
+        # FINDING 4 (2026-07 review): normal + --bare fixture creation,
+        # existing-target rejection, and every git/filesystem failure path
+        # exiting non-zero with a clear stderr message (no swallowed
+        # subprocess return codes, no raw traceback on a creation failure).
+        run: python .github/scripts/test_codex_parity_fixture.py
       - name: Run surface-generator unit tests
         # codex-support M3: determinism/idempotence of tools/build-surface.py,
         # token inversion (Claude render inverts extraction byte-exactly),

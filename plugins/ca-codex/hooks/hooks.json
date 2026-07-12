@@ -15,7 +15,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|shell_command|exec_command|unified_exec",
         "hooks": [
           {
             "type": "command",

@@ -1,6 +1,6 @@
 {
   "name": "ca-codex",
-  "description": "Governance kernel for OpenAI Codex CLI: the full codeArbiter surface — 37 ca-prefixed governance skills (spec-driven /feature pipeline, nine-gate commit gate, ADRs, audits) plus enforcement hooks (persona injection, blocking pre-exec and pre-write gates, append-only audit trail) — sharing one .codearbiter/ store with the Claude Code sibling plugin. Standalone: opt a repo in with ca-init; enforcement stays dormant until .codearbiter/CONTEXT.md carries 'arbiter: enabled'. Requires Python 3 and Codex >= 0.134.0; live-verified on 0.144.1.",
+  "description": "Governance kernel for OpenAI Codex CLI: the full codeArbiter surface — 37 ca-prefixed governance skills (spec-driven /feature pipeline, nine-gate commit gate, ADRs, audits) plus enforcement hooks (persona injection, blocking pre-exec and pre-write gates, append-only audit trail) — sharing one .codearbiter/ store with the Claude Code sibling plugin. Standalone: opt a repo in with ca-init; enforcement stays dormant until .codearbiter/CONTEXT.md carries 'arbiter: enabled'. Requires Python 3 and Codex >= 0.143.0; live-verified on 0.144.1.",
   "version": "0.2.4",
   "author": { "name": "arbiterForge" },
   "license": "AGPL-3.0-only",

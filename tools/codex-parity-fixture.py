@@ -131,24 +131,34 @@ def main(argv=None):
     # onboarding scenario proves nothing.
     files = {"src/hello.txt": HELLO} if bare else FILES
 
-    os.makedirs(target)
-    for rel, body in files.items():
-        path = os.path.join(target, rel.replace("/", os.sep))
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w", encoding="utf-8", newline="\n") as f:
-            f.write(body)
-    if not bare:
-        # The markers dir must exist so an H-19 forge attempt has a home to target.
-        os.makedirs(os.path.join(target, ".codearbiter", ".markers"), exist_ok=True)
+    try:
+        os.makedirs(target)
+        for rel, body in files.items():
+            path = os.path.join(target, rel.replace("/", os.sep))
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8", newline="\n") as f:
+                f.write(body)
+        if not bare:
+            # The markers dir must exist so an H-19 forge attempt has a home to target.
+            os.makedirs(os.path.join(target, ".codearbiter", ".markers"), exist_ok=True)
+    except OSError as e:
+        sys.stderr.write(f"codex-parity-fixture: failed to create fixture files: {e}\n")
+        return 1
 
     r = _run(["git", "init"], target)
     if r.returncode != 0:
         sys.stderr.write("git init failed:\n" + r.stderr)
         return 1
-    _run(["git", "add", "-A"], target)
-    _run(["git", "-c", "user.email=fixture@local", "-c", "user.name=fixture",
-          "commit", "-m", "seed: codex/claude parity fixture"
-                          + (" (bare)" if bare else "")], target)
+    r = _run(["git", "add", "-A"], target)
+    if r.returncode != 0:
+        sys.stderr.write("git add failed:\n" + r.stderr)
+        return 1
+    r = _run(["git", "-c", "user.email=fixture@local", "-c", "user.name=fixture",
+             "commit", "-m", "seed: codex/claude parity fixture"
+                             + (" (bare)" if bare else "")], target)
+    if r.returncode != 0:
+        sys.stderr.write("git commit failed:\n" + r.stderr)
+        return 1
 
     if bare:
         print(f"BARE onboarding fixture created: {target} (no .codearbiter/)")

@@ -13,8 +13,9 @@ Verified baseline: **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows, 2026-07
 The installed hook set was approved through `/hooks`; SessionStart persona injection completed,
 and `$ca-doctor`'s `git add --all --dry-run` probe was blocked with `[H-03]`.
 
-Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.134.0** (first release with
-plugin-bundled hooks on by default), this repo checked out on `feat/codex-support-m0`, and —
+Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.143.0** (the source-verified
+structured-deny baseline; plugin-bundled hooks came on by default earlier, at 0.134.0),
+this repo checked out on `feat/codex-support-m0`, and —
 for the side-by-side comparison — Claude Code with the `ca` plugin installed.
 
 Everything below runs against **throwaway fixture repos**, never this repo or a real project.

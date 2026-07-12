@@ -255,6 +255,125 @@ class TestFailOpenAC2(_GateEventsFixture):
         self.assertIn("BLOCKED [H-06]: stderr must still say this", buf.getvalue())
 
 
+class TestWindowsLockAC3(_GateEventsFixture):
+    """FINDING 3 (HIGH/coverage): the msvcrt.locking byte-range lock around
+    gate-events.log appends (_hooklib._log_gate_event, os.name == "nt" leg)
+    has no direct coverage. These tests inject a fake `msvcrt` module into
+    sys.modules and force os.name == "nt" so the locking branch runs
+    deterministically on ANY host OS (not just when CI happens to run on
+    Windows) — the real Windows-only exercise still happens for free whenever
+    this suite runs on an actual Windows box, since os.name is genuinely
+    "nt" there and the local `import msvcrt` picks up the real module unless
+    this fixture's sys.modules patch is active."""
+
+    class _FakeMsvcrt:
+        LK_LOCK = 1
+        LK_UNLCK = 0
+
+        def __init__(self, on_unlock=None):
+            self.calls = []
+            self._on_unlock = on_unlock
+
+        def locking(self, fd, mode, nbytes):
+            kind = "lock" if mode == self.LK_LOCK else "unlock"
+            self.calls.append((kind, fd, nbytes))
+            if kind == "unlock" and self._on_unlock is not None:
+                self._on_unlock()
+
+    def test_lock_called_before_write_and_unlock_called_after(self):
+        fake = self._FakeMsvcrt()
+        order = []
+        real_write = os.write
+
+        def spy_write(fd, data):
+            order.append("write")
+            return real_write(fd, data)
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}), \
+             mock.patch("os.write", side_effect=spy_write):
+            _hooklib.warn("lock ordering check")
+
+        kinds = [c[0] for c in fake.calls]
+        self.assertIn("lock", kinds)
+        self.assertIn("unlock", kinds)
+        lock_idx = kinds.index("lock")
+        unlock_idx = kinds.index("unlock")
+        # The write happened strictly between the lock and unlock calls.
+        self.assertEqual(order, ["write"])
+        self.assertLess(lock_idx, unlock_idx)
+        self.assertEqual(unlock_idx, len(fake.calls) - 1,
+                         "unlock must be the last locking() call")
+        # Both calls lock/unlock exactly the same 1-byte range.
+        for _, _, nbytes in fake.calls:
+            self.assertEqual(nbytes, 1)
+
+    def test_unlock_oserror_is_caught_and_does_not_propagate(self):
+        def _boom():
+            raise OSError("simulated unlock failure")
+
+        fake = self._FakeMsvcrt(on_unlock=_boom)
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": fake}):
+            try:
+                _hooklib.warn("unlock failure must not propagate")
+            except Exception as e:  # noqa: BLE001
+                self.fail(f"warn() raised despite unlock-failure catch: {e!r}")
+        # The write itself happens before the (failing) unlock, so the line
+        # must still have landed durably despite the unlock error.
+        text = _read_log(self.cad)
+        self.assertIn("unlock failure must not propagate", text)
+        kinds = [c[0] for c in fake.calls]
+        self.assertIn("unlock", kinds)
+
+    def test_lock_oserror_does_not_break_fail_open_contract(self):
+        class _BoomLockMsvcrt:
+            LK_LOCK = 1
+            LK_UNLCK = 0
+
+            def locking(self, fd, mode, nbytes):
+                if mode == self.LK_LOCK:
+                    raise OSError("simulated lock failure")
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": _BoomLockMsvcrt()}):
+            with self.assertRaises(SystemExit) as cm:
+                _hooklib.block("H-08", "must still block despite lock failure")
+        self.assertEqual(cm.exception.code, 2)
+
+
+class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
+    """Same-process concurrent-append coverage (FINDING 3c): many threads
+    calling warn() concurrently must each land as exactly one intact line —
+    no interleaving of two threads' text within a line and no truncation."""
+
+    def test_concurrent_warn_calls_land_as_intact_non_interleaved_lines(self):
+        import threading
+
+        n_threads = 16
+        messages = [f"thread-payload-{i:03d}-{'x' * 40}" for i in range(n_threads)]
+
+        def worker(msg):
+            _hooklib.warn(msg)
+
+        threads = [threading.Thread(target=worker, args=(m,)) for m in messages]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=30)
+
+        text = _read_log(self.cad)
+        lines = text.splitlines()
+        self.assertEqual(len(lines), n_threads,
+                         f"expected {n_threads} intact lines, got {len(lines)}: {lines}")
+        for msg in messages:
+            matches = [line for line in lines if msg in line]
+            self.assertEqual(len(matches), 1,
+                             f"message {msg!r} missing or duplicated: {lines}")
+        for line in lines:
+            self.assertIn("WARN", line)
+
+
 class TestStalenessWarnCONFIRM09(_GateEventsFixture):
     """CONFIRM-09: active-flow audit-log staleness is a WARN, never a gate.
     Detected from EXISTING markers (.markers/dev-active, sprint-active) —

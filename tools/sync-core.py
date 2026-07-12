@@ -76,7 +76,11 @@ def main(argv=None):
         for name in names:
             src = os.path.join(CORE, name)
             dst = os.path.join(hooks_dir, name)
-            src_bytes = read_bytes(src)
+            try:
+                src_bytes = read_bytes(src)
+            except OSError as e:
+                sys.stderr.write(f"sync-core: cannot read canonical source {src}: {e}\n")
+                return 1
             try:
                 same = read_bytes(dst) == src_bytes
             except OSError:
@@ -86,8 +90,12 @@ def main(argv=None):
             if check:
                 drifted.append(os.path.join(rel_hooks, name).replace(os.sep, "/"))
                 continue
-            with open(dst, "wb") as f:  # binary: byte-exact, LF preserved
-                f.write(src_bytes)
+            try:
+                with open(dst, "wb") as f:  # binary: byte-exact, LF preserved
+                    f.write(src_bytes)
+            except OSError as e:
+                sys.stderr.write(f"sync-core: cannot write vendored copy {dst}: {e}\n")
+                return 1
             written += 1
 
     if check:

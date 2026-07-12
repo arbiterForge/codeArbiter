@@ -9,7 +9,8 @@
 #
 # Codex CLI contracts (source-verified against openai/codex rust-v0.143.0,
 # spike: .codearbiter/spikes/codex-extension-surface.md; minimum supported
-# Codex: rust-v0.134.0):
+# Codex: rust-v0.143.0 — the source-verified structured-deny baseline;
+# live-verified separately on rust-v0.144.1):
 #   * exec hooks may report legacy "Bash" or current shell handler names;
 #     each carries tool_input {"command": ...}
 #     (core/src/tools/hook_names.rs) — same canonical shape as Claude Code.
@@ -169,7 +170,7 @@ def parse_apply_patch(text):
 
 
 class CodexHost(hostapi.Host):
-    """OpenAI Codex CLI (>= rust-v0.134.0) — the second host (ADR-0011)."""
+    """OpenAI Codex CLI (>= rust-v0.143.0) — the second host (ADR-0011)."""
 
     name = "codex"
     command_noun = "command"

@@ -746,7 +746,8 @@ class TestCodexHooksJson(unittest.TestCase):
 
     def test_pre_tool_use_matchers(self):
         entries = self._entries("PreToolUse")
-        bash = [h for m, h in entries if m == "Bash"]
+        bash = [h for m, h in entries
+                if m == "Bash|shell_command|exec_command|unified_exec"]
         write = [h for m, h in entries if m == "apply_patch|Write|Edit"]
         self.assertTrue(any("pre-tool-adapter.py" in h["command"] for h in bash))
         self.assertTrue(any("pre-tool-adapter.py" in h["command"] for h in write))
@@ -779,6 +780,54 @@ class TestCodexHooksJson(unittest.TestCase):
                 self.assertIsInstance(h.get("timeout"), int)
                 self.assertIn("${CLAUDE_PLUGIN_ROOT}", h["commandWindows"])
                 self.assertIn("${CLAUDE_PLUGIN_ROOT}", h["command"])
+
+
+class TestHooksJsonToolMapDriftGuard(unittest.TestCase):
+    """FINDING 1 (HIGH/security): hooks.json's PreToolUse matchers and
+    _host.py's TOOL_MAP must never drift apart again. Every TOOL_MAP key
+    mapped to EXEC must appear in the exec-hook matcher's token set, and
+    every key mapped to a write kind (WRITE) must appear in the write-hook
+    matcher's token set — otherwise a tool Codex reports under a name the
+    adapter classifies as EXEC/WRITE could reach the model ungated because
+    no PreToolUse matcher fires for it at all."""
+
+    @classmethod
+    def setUpClass(cls):
+        with open(os.path.join(CODEX_HOOKS, "hooks.json"), encoding="utf-8") as f:
+            cls.cfg = json.load(f)
+        cls.host = codex_host()
+
+    def _matcher_token_sets(self):
+        """All PreToolUse matcher strings, split on '|', as a list of sets."""
+        out = []
+        for group in self.cfg["hooks"].get("PreToolUse", []):
+            matcher = group.get("matcher") or ""
+            out.append(set(matcher.split("|")))
+        return out
+
+    def test_every_exec_mapped_tool_appears_in_an_exec_matcher(self):
+        matcher_sets = self._matcher_token_sets()
+        exec_tools = [name for name, cat in self.host.TOOL_MAP.items()
+                     if cat == "EXEC"]
+        self.assertTrue(exec_tools, "TOOL_MAP has no EXEC entries to check")
+        for tool in exec_tools:
+            self.assertTrue(
+                any(tool in tokens for tokens in matcher_sets),
+                f"TOOL_MAP maps {tool!r} -> EXEC but no PreToolUse matcher "
+                f"in hooks.json contains {tool!r}; the exec gate would never "
+                "fire for this tool name")
+
+    def test_every_write_mapped_tool_appears_in_a_write_matcher(self):
+        matcher_sets = self._matcher_token_sets()
+        write_tools = [name for name, cat in self.host.TOOL_MAP.items()
+                      if cat == "WRITE"]
+        self.assertTrue(write_tools, "TOOL_MAP has no WRITE entries to check")
+        for tool in write_tools:
+            self.assertTrue(
+                any(tool in tokens for tokens in matcher_sets),
+                f"TOOL_MAP maps {tool!r} -> WRITE but no PreToolUse matcher "
+                f"in hooks.json contains {tool!r}; the write gate would never "
+                "fire for this tool name")
 
 
 class TestCodexPluginJson(unittest.TestCase):
