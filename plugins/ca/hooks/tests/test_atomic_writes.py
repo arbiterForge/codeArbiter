@@ -227,7 +227,7 @@ class HealReloadBeforeSaveTest(unittest.TestCase):
 
     def _stale_ours(self):
         return {"statusLine": {"type": "command",
-                "command": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'}}
+                "command": '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"'}}
 
     def test_skips_when_settings_changed_between_load_and_save(self):
         self._write(self._stale_ours())

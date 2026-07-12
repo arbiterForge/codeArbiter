@@ -27,11 +27,20 @@ def _make_settings(tmp, content=None):
 
 def _make_plugin_root(tmp):
     """Create a fake plugin root with hooks/statusline.py present."""
-    hooks_dir = os.path.join(tmp, "hooks")
+    root = os.path.join(tmp, ".claude", "plugins", "cache", "codearbiter", "ca", "9.9.9")
+    hooks_dir = os.path.join(root, "hooks")
     os.makedirs(hooks_dir, exist_ok=True)
     script = os.path.join(hooks_dir, "statusline.py")
     open(script, "w").close()
-    return tmp
+    return root
+
+
+def _make_source_plugin_root(tmp):
+    root = os.path.join(tmp, "codeArbiter", "plugins", "ca")
+    hooks_dir = os.path.join(root, "hooks")
+    os.makedirs(hooks_dir, exist_ok=True)
+    open(os.path.join(hooks_dir, "statusline.py"), "w").close()
+    return root
 
 
 def _read(path):
@@ -56,6 +65,12 @@ class TestFreshInstall(unittest.TestCase):
         data = _read(self.settings)
         sl = data.get("statusLine", {})
         self.assertIn("statusline.py", sl.get("command", ""))
+
+    def test_install_records_exact_owned_command(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        self.assertEqual(data[ws.OWNER_KEY], data["statusLine"]["command"])
 
     def test_backup_key_stored_as_none(self):
         ws.main(["install", "--settings", self.settings,
@@ -102,6 +117,18 @@ class TestInstallWithPriorThirdParty(unittest.TestCase):
         backed_cmd = backup.get("command") if isinstance(backup, dict) else backup
         self.assertEqual(backed_cmd, self.prior_cmd)
 
+    def test_statusline_filename_alone_is_unowned_and_backed_up_exactly(self):
+        prior = {
+            "type": "command",
+            "command": '"python" "C:\\tools\\statusline.py" --theme ca',
+            "padding": 7,
+            "extra": {"preserve": True},
+        }
+        spath = _make_settings(self.tmp.name, {"statusLine": prior})
+        ws.main(["install", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        self.assertEqual(_read(spath)[ws.BACKUP_KEY], prior)
+
 
 class TestUninstall(unittest.TestCase):
     """Uninstall → removes our line, restores the backed-up prior setting."""
@@ -143,6 +170,149 @@ class TestUninstall(unittest.TestCase):
         data = _read(self.settings)
         self.assertNotIn(ws.BACKUP_KEY, data)
 
+    def test_restores_exact_third_party_statusline_setting(self):
+        prior = {
+            "type": "command",
+            "command": '"python" "/opt/acme/statusline.py" --label codearbiter/ca/2.0.1/hooks/statusline.py',
+            "padding": 9,
+            "extra": ["unchanged", 3],
+        }
+        spath = _make_settings(self.tmp.name, {"statusLine": prior})
+        ws.main(["install", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        ws.main(["uninstall", "--settings", spath,
+                 "--plugin-root", self.root])
+        self.assertEqual(_read(spath)["statusLine"], prior)
+
+    def test_source_reinstall_preserves_original_backup_through_uninstall(self):
+        prior = {"type": "command", "command": "third-party --exact", "padding": 6}
+        spath = _make_settings(self.tmp.name, {"statusLine": prior})
+        ws.main(["install", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        source_root = _make_source_plugin_root(self.tmp.name)
+        ws.main(["install", "--settings", spath,
+                 "--plugin-root", source_root, "--interp", "python"])
+        installed = _read(spath)
+        self.assertEqual(installed[ws.BACKUP_KEY], prior)
+        self.assertEqual(installed.get(ws.OWNER_KEY), installed["statusLine"]["command"])
+        ws.main(["uninstall", "--settings", spath,
+                 "--plugin-root", source_root])
+        restored = _read(spath)
+        self.assertEqual(restored["statusLine"], prior)
+        self.assertNotIn(ws.OWNER_KEY, restored)
+
+    def test_stale_owner_marker_never_overwrites_user_replacement(self):
+        owned = '"python" "C:\\source\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"'
+        replacement = {"type": "command", "command": "user-new-line", "padding": 4}
+        original = {"type": "command", "command": "user-old-line"}
+        spath = _make_settings(self.tmp.name, {
+            "statusLine": replacement,
+            ws.OWNER_KEY: owned,
+            ws.BACKUP_KEY: original,
+        })
+        ws.main(["uninstall", "--settings", spath,
+                 "--plugin-root", self.root])
+        data = _read(spath)
+        self.assertEqual(data["statusLine"], replacement)
+        self.assertNotIn(ws.OWNER_KEY, data)
+        self.assertNotIn(ws.BACKUP_KEY, data)
+
+
+class TestLegacySourceMigration(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = _make_plugin_root(self.tmp.name)
+        self.legacy = '"python" "C:\\src\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"'
+        self.prior = {
+            "type": "command",
+            "command": '"node" "C:\\custom\\line.js" --theme exact',
+            "padding": 8,
+            "extra": {"keep": [1, 2]},
+        }
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _settings(self, backup=True):
+        content = {"statusLine": {"type": "command", "command": self.legacy}}
+        if backup:
+            content[ws.BACKUP_KEY] = self.prior
+        return _make_settings(self.tmp.name, content)
+
+    def _assert_migrated_then_restored(self, action):
+        spath = self._settings()
+        ws.main([action, "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        migrated = _read(spath)
+        self.assertEqual(migrated[ws.BACKUP_KEY], self.prior)
+        self.assertEqual(migrated[ws.OWNER_KEY], migrated["statusLine"]["command"])
+        ws.main(["uninstall", "--settings", spath,
+                 "--plugin-root", self.root])
+        self.assertEqual(_read(spath)["statusLine"], self.prior)
+
+    def test_install_migrates_without_replacing_original_backup(self):
+        self._assert_migrated_then_restored("install")
+
+    def test_refresh_migrates_without_replacing_original_backup(self):
+        self._assert_migrated_then_restored("refresh")
+
+    def test_old_source_install_with_none_backup_is_owned(self):
+        spath = self._settings(backup=False)
+        ws.main(["install", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(spath)
+        self.assertNotIn(ws.BACKUP_KEY, data)
+        self.assertEqual(data[ws.OWNER_KEY], data["statusLine"]["command"])
+        ws.main(["uninstall", "--settings", spath,
+                 "--plugin-root", self.root])
+        self.assertNotIn("statusLine", _read(spath))
+
+
+class TestOwnershipDetection(unittest.TestCase):
+    def test_recognizes_versioned_codearbiter_paths_with_windows_or_posix_quoting(self):
+        owned = (
+            '"C:\\Python\\python.exe" '
+            '"C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.8.13\\hooks\\statusline.py"',
+            "'/usr/bin/python3' '/home/me/.claude/plugins/cache/codearbiter/ca/2.7.0/hooks/statusline.py'",
+        )
+        for command in owned:
+            with self.subTest(command=command):
+                self.assertTrue(ws.is_ours({"type": "command", "command": command}))
+
+    def test_rejects_filename_matches_and_signature_in_non_path_arguments(self):
+        unowned = (
+            '"python" "C:\\tools\\statusline.py"',
+            'python /opt/acme/statusline.py --label codearbiter/ca/2.0.1/hooks/statusline.py',
+            'python /opt/acme/statusline.py --note="uses /cache/codearbiter/ca/2.0.1/hooks/statusline.py"',
+            'echo "codearbiter/ca/2.0.1/hooks/statusline.py"',
+        )
+        for command in unowned:
+            with self.subTest(command=command):
+                self.assertFalse(ws.is_ours({"type": "command", "command": command}))
+
+    def test_requires_real_claude_plugin_cache_boundary(self):
+        lookalike = 'python "/vendor/codearbiter/ca/2.8.13/hooks/statusline.py"'
+        actual = 'python "/home/me/.claude/plugins/cache/codearbiter/ca/2.8.13/hooks/statusline.py"'
+        self.assertFalse(ws.is_ours({"type": "command", "command": lookalike}))
+        self.assertTrue(ws.is_ours({"type": "command", "command": actual}))
+
+    def test_rejects_codex_cache_because_codex_has_no_statusline(self):
+        command = 'python "/home/me/.claude/plugins/cache/codearbiter/ca-codex/0.2.4/hooks/statusline.py"'
+        self.assertFalse(ws.is_ours({"type": "command", "command": command}))
+
+    def test_posix_cache_signature_is_case_sensitive(self):
+        commands = (
+            'python "/home/me/.claude/plugins/cache/CodeArbiter/ca/2.8.13/hooks/statusline.py"',
+            'PYTHON "/home/me/.claude/plugins/cache/codearbiter/ca/2.8.13/hooks/statusline.py"',
+        )
+        for command in commands:
+            with self.subTest(command=command):
+                self.assertFalse(ws.is_ours({"type": "command", "command": command}))
+
+    def test_windows_cache_signature_is_case_insensitive(self):
+        command = '"C:\\PYTHON\\PYTHON.EXE" "C:\\Users\\me\\.CLAUDE\\PLUGINS\\CACHE\\CODEARBITER\\CA\\2.8.13\\HOOKS\\STATUSLINE.PY"'
+        self.assertTrue(ws.is_ours({"type": "command", "command": command}))
+
 
 class TestIdempotentRefresh(unittest.TestCase):
     """Already our line → re-install refreshes cleanly, no duplicate."""
@@ -180,7 +350,7 @@ class TestCorruptedJson(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = _make_plugin_root(self.tmp.name)
         d = os.path.join(self.tmp.name, ".claude")
-        os.makedirs(d)
+        os.makedirs(d, exist_ok=True)
         self.settings = os.path.join(d, "settings.json")
         with open(self.settings, "w") as f:
             f.write("{this is not valid JSON!!")
@@ -433,7 +603,7 @@ class TestRefreshStalePathOnSessionStart(unittest.TestCase):
         # A ca-owned line pinned to an OLD version dir (note: still 'ours' — the
         # MARKER 'statusline.py' is present — but a different absolute path).
         self.stale_cmd = (
-            '"python" "C:\\old\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"')
+            '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"')
         self.settings = _make_settings(
             self.tmp.name,
             {"statusLine": {"type": "command", "command": self.stale_cmd}})
@@ -469,6 +639,32 @@ class TestRefreshStalePathOnSessionStart(unittest.TestCase):
         data = _read(spath)
         self.assertEqual(data["statusLine"]["command"], "their-statusline --x")
 
+    def test_refresh_leaves_third_party_statusline_py_untouched(self):
+        command = '"python" "C:\\tools\\statusline.py"'
+        third = {"statusLine": {"type": "command", "command": command}}
+        spath = _make_settings(self.tmp.name, third)
+        ws.main(["refresh", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        self.assertEqual(_read(spath), third)
+
+    def test_refresh_ignores_stale_owner_marker_after_user_replaces_line(self):
+        old_owned = '"python" "C:\\source\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"'
+        third_command = '"python" "C:\\tools\\statusline.py"'
+        third = {
+            ws.OWNER_KEY: old_owned,
+            "statusLine": {"type": "command", "command": third_command},
+        }
+        spath = _make_settings(self.tmp.name, third)
+        ws.main(["refresh", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        self.assertEqual(_read(spath), third)
+
+    def test_refresh_migrates_legacy_cache_command_to_owner_marker(self):
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        data = _read(self.settings)
+        self.assertEqual(data[ws.OWNER_KEY], data["statusLine"]["command"])
+
     def test_refresh_does_not_wire_when_no_statusline(self):
         # refresh HEALS an existing ours-line; it must never wire a fresh line
         # where the user has none (that's what `install` is for).
@@ -497,7 +693,7 @@ class TestRefreshStalePathOnSessionStart(unittest.TestCase):
         # refresh_if_stale must heal that shape too (not only dict-form).
         spath = _make_settings(
             self.tmp.name,
-            {"statusLine": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'})
+            {"statusLine": '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"'})
         ws.main(["refresh", "--settings", spath,
                  "--plugin-root", self.root, "--interp", "python"])
         sl = _read(spath).get("statusLine")
