@@ -27,6 +27,8 @@ differ, while generated references continue to come from their existing generato
   Read hook; `$ca-*` instead of `/ca:*`; Codex hook review through `/hooks`.
 - `.codearbiter/` is the single shared project-state and enforcement store for both hosts and users.
 - Publishing, pushing, merging, and releasing require separate authorization.
+- Tasks 1–5 are strictly sequential. Do not dispatch them in parallel: Tasks 1, 3, and 4
+  intentionally revisit the same test file, and Tasks 1 and 3 both update site configuration.
 
 ---
 
@@ -61,7 +63,7 @@ expect(page).toContain("available after the Codex-support release");
 expect(page).toMatch(/statusline/i);
 expect(page).toMatch(/transcript pruning/i);
 expect(page).toMatch(/Read hook/i);
-expect(config).toContain('slug: "getting-started/claude-code-and-codex"');
+expect(config).toContain("getting-started/claude-code-and-codex");
 ```
 
 - [ ] **Step 2: Run the focused test and confirm the missing-page failure**
@@ -77,7 +79,9 @@ Expected: FAIL because the support page does not exist.
 Create the page with these sections:
 
 1. “What parity means” with the exact headline and one-store/two-host explanation.
-2. “Verified live” with the pinned versions, date, trust flow, doctor result, and H-03 block.
+2. “Verified live on 2026-07-11” with the pinned versions, date, trust flow, that run's doctor
+   result, and H-03 block. State that the counts describe the dated evidence event rather than the
+   current number of doctor checks.
 3. “Verified continuously” naming the adapter, guard, cold-install, validator, generator,
    byte-identity, and dual-host suites with repository-relative source links.
 4. “Use one repository from either host” explaining shared `.codearbiter/` state and two-user use.
@@ -291,7 +295,7 @@ docs(site): make the getting-started journey host-aware
 - Modify: `site/src/content/docs/guides/troubleshooting.md`
 - Modify: `site/src/content/docs/guides/uninstalling.md`
 - Modify: `site/src/content/docs/guides/the-statusline.md`
-- Modify: `site/src/content/docs/changelog.md`
+- Modify: `site/src/content/docs/getting-started/claude-code-and-codex.md`
 - Modify: `site/test/content/codex-support.test.ts`
 
 **Interfaces:**
@@ -310,7 +314,7 @@ Require:
 - troubleshooting to show `/ca:doctor` and `$ca-doctor`, `/hooks`, and no Codex statusline check;
 - uninstalling to show both plugin removal commands and preservation of `.codearbiter/`;
 - statusline guide to say Claude Code only near its title;
-- changelog to contain a dated Codex support announcement with evidence link.
+- the support page to contain a dated Codex documentation-launch note with its evidence links.
 
 - [ ] **Step 2: Run the focused test and confirm failure**
 
@@ -334,10 +338,11 @@ from Codex hook trust and fresh-thread checks. Both hosts must end at the same d
 Give separate removal instructions, clarify that uninstalling either host leaves project state for
 the other, and label the entire statusline guide Claude-only without implying a Codex defect.
 
-- [ ] **Step 6: Add the site changelog announcement**
+- [ ] **Step 6: Add the dated launch note to the handcrafted support page**
 
-Record the 2026-07-11 verification and 2026-07-12 documentation launch, linking to the support page
-and stating the public marketplace release gate.
+Record the 2026-07-11 verification and 2026-07-12 documentation launch on the support page, linking
+to the repository evidence and stating the public marketplace release gate. Do not edit
+`site/src/content/docs/changelog.md`; it is generated from the root `CHANGELOG.md`.
 
 - [ ] **Step 7: Run focused tests**
 
@@ -447,6 +452,9 @@ test(docs): enforce the Codex support evidence contract
 
 State that the docs are complete but the site announcement must not be deployed until the Codex
 payload is present on the public default branch and a clean Codex 0.144.1 home passes:
+
+The `codex plugin list --json` spelling was confirmed locally on Codex 0.144.1 during development;
+the complete public-slug sequence below remains unconfirmed until the payload is published.
 
 ```text
 codex plugin marketplace add arbiterForge/codeArbiter

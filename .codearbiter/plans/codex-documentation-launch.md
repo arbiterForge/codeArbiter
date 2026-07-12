@@ -78,7 +78,7 @@ Update the following existing pages so no primary journey remains Claude-only:
 - FAQ;
 - troubleshooting;
 - uninstalling;
-- site changelog.
+- a dated launch note on the handcrafted Codex support page.
 
 Generated command/skill/agent reference pages remain generated from their canonical sources. The
 launch does not hand-edit generated reference content or pretend Codex ships Claude-only agents.
@@ -126,8 +126,10 @@ on success, remove the pre-release label and record the command output/date in t
 
 The support page will distinguish:
 
-- **Live verified:** Codex 0.144.1, ca-codex 0.2.4, Windows; trusted SessionStart injection;
-  `$ca-doctor` static result of 9 OK / 0 WARN / 0 FAIL; live H-03 block with feedback surfaced.
+- **Live verified on 2026-07-11:** Codex 0.144.1, ca-codex 0.2.4, Windows; trusted SessionStart
+  injection; that verification run's `$ca-doctor` result of 9 OK / 0 WARN / 0 FAIL; live H-03
+  block with feedback surfaced. These values describe the dated event, not a permanently fixed
+  doctor check count.
 - **CI verified:** package schema baseline; adapter tests; guard matrix; cold-install matrix;
   generator drift; shared-core byte identity; dual-host store and append-only concurrent audit test.
 - **Intentional differences:** statusline, transcript pruning, no Codex Read hook, command spelling,
