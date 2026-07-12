@@ -21,7 +21,7 @@
 <div
   class="ca-terminal"
   role="region"
-  aria-label="Install demo: the two install commands, then /ca:statusline, ending on the rendered statusline"
+  aria-label="Install demo for Claude Code and Codex"
 >
   <div class="ca-terminal__titlebar" aria-hidden="true">
     <span class="ca-terminal__dot"></span>
@@ -33,8 +33,11 @@
   <ol
     class="ca-terminal__body"
     role="list"
-    aria-label="Terminal output: marketplace added, plugin installed, statusline wired, and the rendered bar"
+    aria-label="Terminal output: Claude Code and Codex installation paths"
   >
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 0s">
+      <span>Claude Code</span>
+    </li>
     <!-- Command 1: register the self-hosted marketplace -->
     <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 0.1s">
       <span class="ca-terminal__prompt" aria-hidden="true">$</span>
@@ -69,6 +72,25 @@
     </li>
     <li class="ca-terminal__line ca-terminal__line--pass" role="listitem" style="--ca-term-delay: 2.9s">
       <span>Statusline wired. It renders on every session.</span>
+    </li>
+
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 3.2s">
+      <span>Codex (available after the Codex-support release)</span>
+    </li>
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 3.5s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>codex plugin marketplace add arbiterForge/codeArbiter</span>
+    </li>
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 3.8s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>codex plugin add ca-codex@codearbiter</span>
+    </li>
+    <li class="ca-terminal__line ca-terminal__line--dim" role="listitem" style="--ca-term-delay: 4.1s">
+      <span>Review the trusted hook set in /hooks, then start a fresh thread.</span>
+    </li>
+    <li class="ca-terminal__line" role="listitem" style="--ca-term-delay: 4.4s">
+      <span class="ca-terminal__prompt" aria-hidden="true">$</span>
+      <span>$ca-doctor</span>
     </li>
   </ol>
 </div>

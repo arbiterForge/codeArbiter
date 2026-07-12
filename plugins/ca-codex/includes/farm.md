@@ -1,0 +1,172 @@
+# codeArbiter farm — setup and configuration
+
+> **Feature Forge `preview`.** The `--farm` backend ships off by default and is not yet validated on
+> real runs; the premium subagent path is the blessed default. Promotion bar:
+> `<project-root>/.codearbiter/open-questions.md` (CONFIRM-05).
+
+`farm.ts` is the pluggable execution backend: Claude writes specs, failing tests, and a `plan.json`;
+the farm runs workers in isolated git worktrees to make each test pass; Claude reviews and merges. Its
+value is deterministic, gated, parallel, isolated execution — a worker cannot redefine the gates, only
+pass them. The `Worker` interface seam admits cheap, premium, and agentic worker implementations behind
+the same hard gates; **only the cheap HTTP-chat worker ships today** — premium (e.g. a top-tier hosted
+model) and agentic (a worker that reads files and iterates) are what the seam is designed for, roadmap
+not built. Cost arbitrage is one worker policy, not the definition.
+
+The worker prompt is enriched with the failing-test source and current in-scope file contents, byte-capped
+(`FARM_ENRICH_MAX_BYTES`) and secret-redacted before transmission to the endpoint.
+
+**Swapping the worker changes who writes the code, never whether it's reviewed.** Every task the farm
+reports green is still routed through the normal spec-compliance, quality, and fresh-verification
+gates (`subagent-driven-development` Phases 3–5) before acceptance. The dispatcher additionally runs two
+zero-token guards (below), protects the failing test from being modified, contains all worker writes
+inside the worktree, and trips a circuit breaker if too many tasks escalate (a sign the model isn't
+capable of the slice).
+
+### Zero-token quality guards
+
+1. **Literal-leak** — rejects an impl that simply hard-codes the literal value the test asserts
+   (`return 42` for `expect(f()).toBe(42)`).
+2. **Mutation** — after the gate is green, mutates the worker's in-scope impl (operator flips, return
+   replacement, boolean inversion) and re-runs **only the task's narrow test** (`gate.commands[0]`). A
+   surviving mutant is code the test does not constrain — gaming, dead code, or a weak test. The score
+   is **bounded by test strength**: a low score is a strong red flag, a high score is necessary but not
+   sufficient (Phases 3–5 remain the real quality gate). A low score attaches a **warning that rides
+   into Phase 3** for Claude to judge (worker gaming vs. weak test); only a near-zero score on a
+   non-trivial impl hard-escalates. Sampled and time-boxed so it never balloons wall-clock. Set
+   `FARM_MUTATION_CMD` to swap the built-in text mutator for a real per-language framework (Stryker,
+   mutmut, …); it runs in the worktree with `FARM_MUTATION_FILES` / `FARM_MUTATION_TEST_PATH` /
+   `FARM_MUTATION_TEST_CMD` set and must print a trailing JSON line with a numeric `score`.
+
+Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
+the mutation guard runs `gate.commands[0]` as the per-mutant test (running the full suite per mutant
+would be too slow).
+
+### Best-of-N sampling and iterative retries
+
+By default the farm draws one worker completion per task attempt (`FARM_SAMPLES=1` — unchanged
+behavior). Because the gate is a deterministic pass/fail oracle and each task runs in an isolated
+worktree, you can instead draw **N candidates in parallel** and accept the first that passes the gate:
+set `FARM_SAMPLES=N`. Each sample runs in its own scratch worktree cut from the integration HEAD; the
+winner's files are taken into the task worktree and merged, the losers discarded. Total in-flight
+worker calls never exceed `FARM_CONCURRENCY` — sampling **shares** that budget, it does not multiply
+it. The cost is up to N× worker tokens (the cheap axis) for a higher first-time-go rate;
+`farm-report.json` records both the summed sample-token spend (`promptTokens`/`completionTokens`) and
+the accepted candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`) so the
+trade-off is visible. With `FARM_SAMPLES>1` the worker temperature is auto-bumped off 0 (to 0.7) so the
+samples actually diversify; set `FARM_TEMPERATURE` to control it.
+
+On a **retry** — a failed gate, or a sampling round with no green — the worker is shown its own previous
+in-scope output, not just the gate-failure tail, so it refines rather than restarts blind. That prior
+output rides the same byte-cap (`FARM_ENRICH_MAX_BYTES`) and secret-redaction chokepoint as all other
+injected context; out-of-scope drift is never carried forward.
+
+## Required
+
+### `FARM_API_KEY`
+
+Your OpenCode Zen API key, or any OpenAI-compatible provider key. Set it in one of:
+
+- Shell environment: `export FARM_API_KEY=sk-...` (recommended for CI and development)
+- Local `.env` at `plugins/ca/tools/.env` (dev convenience, never committed)
+- `<project-root>/.claude/settings.local.json` `env` block (gitignored by default)
+
+Never commit this key. It must not appear in `.codearbiter/` audit files.
+
+### `FARM_API_BASE_URL`
+
+The OpenAI-compatible endpoint base URL. Resolution order: `FARM_API_BASE_URL` env → `plan.meta.apiBaseUrl`
+→ a built-in default of `https://opencode.ai/zen/v1` (the live OpenCode Zen host). Override for DeepSeek direct
+(`https://api.deepseek.com/v1`), Ollama (`http://localhost:11434/v1`), etc.
+
+## Model selection — measured at dispatch time
+
+`FARM_MODEL` is normally **not set**. Before a `$ca-sprint --farm` run, `subagent-driven-development`
+picks a model by *measurement*, not hearsay:
+
+1. **Cache check** — reuse `.farm/model-cache.json` if it holds a model chosen in the last 7 days with
+   an acceptable canary pass-rate. Otherwise re-select.
+2. **Discovery** — websearch the current free Zen roster to enumerate candidate ids (codenames included).
+   This finds *candidates*; it does not judge quality.
+3. **Canary** — `farm.js --canary` runs the plan's smallest task against each candidate and ranks them by
+   measured pass-rate / attempts / latency (`FARM_CANDIDATE_MODELS` carries the list). The top passer wins.
+4. **Surface** — the choice is presented with its measured basis (and a one-line websearched identity note
+   for the audit log), then written to `plan.meta.model` + `.farm/model-cache.json`.
+5. **Fallback ladder** — if the canary can't run or none pass: cached model → unmeasured websearch pick
+   (with a warning) → only then BLOCK for a manual `FARM_MODEL`. A noisy websearch never halts the feature.
+
+## Optional overrides
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `FARM_MODEL` | _(unset)_ | Skip selection and use this model id directly. Power-user/CI override. |
+| `FARM_API_BASE_URL` | `https://opencode.ai/zen/v1` | Endpoint URL (env → plan.json → this default). |
+| `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
+| `FARM_CONCURRENCY` | `4` | Max concurrent task workers — and the shared ceiling on TOTAL in-flight worker calls, including best-of-N samples. |
+| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per task attempt; first to pass the gate wins. `1` = today's single-candidate path. N>1 trades up to N× worker tokens for higher first-time-go; shares the `FARM_CONCURRENCY` budget (never N× it). |
+| `FARM_TEMPERATURE` | `0` | Sampling temperature sent to the worker. Auto-bumped to `0.7` when `FARM_SAMPLES>1` and left at `0` (so samples diversify); set explicitly to override. |
+| `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
+| `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
+| `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
+| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout (prevents worker-slot deadlock). |
+| `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx (honors `Retry-After`). |
+| `FARM_ENTITLEMENT_PROBE_TIMEOUT_MS` | `35000` | Per-candidate wall-clock cap for the `--canary` entitlement pre-screen (drops 401 promo-expired models). |
+| `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on bytes of test-source + in-scope file context injected into the worker prompt (data-minimization; redacted for secrets). |
+| `FARM_ABORT_ESCALATION_RATE` | `0.5` | Circuit breaker: abort once escalations exceed this fraction… |
+| `FARM_ABORT_MIN_TASKS` | `3` | …after at least this many tasks have settled. |
+| `FARM_MUTATION` | `on` | Mutation guard on/off. |
+| `FARM_MUTATION_SAMPLE` | `15` | Max mutants per task (sampled). |
+| `FARM_MUTATION_BUDGET_MS` | `30000` | Per-task mutation time box. |
+| `FARM_MUTATION_WARN_BELOW` | `0.5` | Score below this attaches a warning into Phase 3. |
+| `FARM_MUTATION_ESCALATE_BELOW` | `0.1` | Score at/below this (≥5 mutants) hard-escalates. |
+| `FARM_MUTATION_CMD` | _(unset)_ | Pluggable external mutation framework hook. |
+
+## Per-worktree setup (dependency hook)
+
+Each task runs in an isolated git worktree cut from the integration HEAD. Gitignored directories —
+`node_modules`, a Python `venv`, `target/`, etc. — are **not** present in a fresh worktree, so a gate
+that needs them (`vitest`, `pytest`, `cargo test`) can fail for environmental reasons. (Node's
+up-tree module resolution often papers over this for JS because the worktree lives under the repo
+root; languages without up-tree resolution get nothing.)
+
+Set **`meta.setup`** in `plan.json` — a list of shell commands the dispatcher runs **in each worktree
+before the worker**, on every attempt:
+
+```json
+{ "meta": { "name": "my-sprint", "setup": ["npm ci"] }, "tasks": [ … ] }
+```
+
+- A per-task **`task.setup`** overrides `meta.setup` for that task; otherwise `meta.setup` applies to all.
+- Setup runs through the same shell + exit-code path as `gate.commands`. A **non-zero setup command
+  escalates the task immediately** (it is environmental, not a worker failure) — the worker is not invoked.
+- **Setup-produced files must be gitignored.** Anything setup writes that is *not* ignored and *not* in
+  the task's `filesInScope` is correctly flagged as drift and escalates.
+- Cost: setup re-runs each retry (the inter-attempt reset wipes untracked deps), but most tasks pass on
+  attempt 1, so it runs once. For JS, leaving `setup` unset and relying on root `node_modules` up-tree
+  resolution is the cheaper path when it works; `setup` is the portable, explicit alternative.
+
+## Sovereignty note
+
+`FARM_MODEL` is the one-line control for model provenance on sensitivity-relevant projects.
+Many free Zen models are Chinese-origin (DeepSeek variants, GLM, etc.). Set `FARM_MODEL` to a
+sovereignty-clean model (e.g. a Mistral or Llama variant) when project sensitivity requires it.
+The dispatch skill surfaces the underlying model identity so you can make an informed choice.
+
+## Invocation
+
+Direct (dev): `cd "${CLAUDE_PLUGIN_ROOT}/tools" && npm run farm -- <plan.json>`
+Via plugin: `node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" <plan.json>`
+Normal use: `$ca-sprint --farm` — the skill handles model selection and dispatch automatically.
+
+## Report artifacts
+
+After a run, the farm writes to `<project-root>/.farm/`:
+- `farm-report.json` — structured results: per-task status, attempts, files written, worker token spend,
+  warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons.
+- `farm-report.md` — human-readable summary table.
+- `diffs/<task-id>.patch` — the actual change each task produced, for audit.
+- `canary-report.json` — model-probe ranking (when `--canary` was run).
+- `model-cache.json` — last selected model + timestamp + canary pass-rate.
+
+Escalated tasks leave their worktrees at `.farm/worktrees/<task-id>/` for inspection.
+
+Canary ranking: `FARM_CANDIDATE_MODELS=a,b,c farm.js --canary <plan.json>` (cwd at the project root).

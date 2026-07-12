@@ -6,6 +6,29 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.8.13] — 2026-07-10
+
+Host-aware runtime vocabulary; no behavior change under Claude Code.
+
+### Changed
+- Every runtime-emitted command reference (startup briefing, NOT-INITIALIZED
+  pointers, H-12/H-18 gate messages, doctor lines, the init scaffold's stub
+  text) now flows through the host seam (`Host.cmd_ref`), so the same vendored
+  core names `/ca:<cmd>` under Claude Code and `$ca-<cmd>` under Codex
+  (ADR-0011 M3). Claude output is string-identical to 2.8.12.
+- The markdown surface (`commands/`, `skills/`, `includes/`, `COMMANDS.md`,
+  `SPRINT.md`, `ORCHESTRATOR.md`) is now rendered from `core/surface/`
+  templates by `tools/build-surface.py` — byte-identical to the previous
+  hand-maintained tree, with CI (`--check`) holding it there.
+
+## [2.8.12] — 2026-07-09
+
+Internal host-abstraction seam; no behavior change under Claude Code.
+
+### Changed
+- **Per-op guard loop (ADR-0011, M2).** `pre-write.py` guards canonical per-file ops from `Host.iter_file_ops` (a Claude Write maps to exactly one op with the pre-seam fields, so its verdict path is byte-identical), with new fail-closed branches for patch-style edit/delete/opaque kinds that only a write-batching host (Codex `apply_patch`) can produce. `pre-bash.py`/`pre-edit.py` route `tool_input` through the host seam (pass-through on Claude). Proven by the unmodified 794-test suite plus the new cross-host verdict-parity suite.
+- **Shared-core extraction (ADR-0011, M1).** All 42 host-neutral hook files are now canonical in `core/pysrc/` and vendored byte-identically into `plugins/ca/hooks/` by `tools/sync-core.py` (`--check` gates drift in CI). A new `hostapi.py` seam carries host specifics (project-root resolution, tool-name normalization, capability flags); `plugins/ca/hooks/_host.py` pins the Claude Code host. Entry scripts are now importable `run(host)` functions with identical CLI, exit-code, and fail-open contracts — proven by the unmodified 794-test suite. Groundwork for the `ca-codex` sibling plugin.
+
 ## [2.8.11] — 2026-07-02
 
 Durable sink for mechanical gate decisions, plus an audit staleness warning.
@@ -470,7 +493,7 @@ The big one. codeArbiter is rebuilt from a ~13,600-line `.agents/` + vendoring f
 - **Per-repo activation** — a `SessionStart` hook injects the orchestrator persona only in a repo whose `.codearbiter/CONTEXT.md` sets `arbiter: enabled`, and exits silently everywhere else. This single mechanism replaces the entire `CLAUDE.md → AGENTS.md → _includes` chain **and** the monolith-vs-vendored dual mode.
 - **Root-level `.codearbiter/` project state** — stage, specs, plans, ADRs, decision log, and the overrides audit trail live at the repo root so they commit with your code and survive uninstalling the plugin. The sole footprint codeArbiter adds to a consumer repo.
 - **Spec-driven `/ca:feature`** — brainstorm a spec → plan → test-first build → commit → finish. The only path to implementation.
-- **Dynamic-workflow skill layer** — `brainstorming`, `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `finishing-a-development-branch`, `using-git-worktrees`, adapted from [obra/superpowers](https://github.com/obra/superpowers).
+- **Dynamic-workflow skill layer** — `brainstorming`, `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `finishing-a-development-branch`, `using-git-worktrees`.
 - **`/ca:sprint`** — the flagship autonomy mode: brainstorm a spec (the one interactive gate), then execute the plan deciding "as the user" via SMARTS on every non-hard-gate point, logging each call with a confidence flag to `.codearbiter/sprint-log.md`. Hard gates — security, crypto/secrets, irreversible ops, merge-to-default — remain true stops.
 - **`/ca:dev` / `/ca:arbiter`** — maintainer override for editing codeArbiter itself, env-gated behind `CODEARBITER_DEV=1` with entry/exit logged to `overrides.log`. Fully documented; nothing in the plugin is hidden from its operator.
 - **`/ca:chore` and `/ca:spike`** — sanctioned lanes for non-behavioral work (docs edits, dependency bumps, reverts — type-scaled gates) and for throwaway exploration (a `spike/*` branch that can never merge; exits to a findings note or `/ca:feature`).

@@ -3,6 +3,10 @@ title: Opt a Repository In
 description: "Enable codeArbiter enforcement on an existing or new repository: scaffold .codearbiter/ and set the activation flag."
 ---
 
+The repository opt-in is shared by Claude Code and Codex. Run `/ca:init` in Claude Code or
+`$ca-init` in Codex; both create or observe the same `.codearbiter/` directory. See the
+[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for mixed-host operation.
+
 The plugin installs once, globally. Enabling enforcement is a per-repo step you run once inside each repository you want covered. Complete the [plugin install](/getting-started/install/) before starting here.
 
 **You will need:** Python 3 on your `PATH`, `git config user.email` set, and the plugin installed.

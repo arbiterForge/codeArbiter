@@ -1,0 +1,23 @@
+schema: manifest/v1
+run_id: 2026-07-09-codex-support-branch
+scope: feat/codex-support-m0 vs main (merge-base ddcfc42)
+focus: dual-host Claude Code + Codex CLI sharing one .codearbiter projectContext
+lenses_launched: [appsec, architecture, reliability, secrets-supply, test-fidelity, coverage, infra, observability, performance, typesafety]
+lenses_skipped: {migration: no DB/schema migrations in scope}
+findings_total: 36
+decisions:
+  keep: 18
+  combine: 8
+  decision-required: 4
+  duplicate: 5
+  investigate: 1
+kept_by_severity:
+  high: 6
+  medium: 15
+  low: 5
+groups:
+  group-ci-vendoring: [architecture-002, architecture-003]
+  group-manifest-path: [reliability-001, reliability-002]
+  group-parser-partial-op: [coverage-001]
+  group-project-root-seam: [architecture-006, performance-001, performance-003, reliability-005]
+  group-shared-store: [architecture-007, observability-001, reliability-004, reliability-007]

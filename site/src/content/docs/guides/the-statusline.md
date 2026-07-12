@@ -3,6 +3,9 @@ title: "Set Up the Statusline"
 description: "What codeArbiter's statusline shows, and how to wire it into Claude Code so every session shows usage metrics and enabled repos show the active project state."
 ---
 
+> **Claude Code only.** Codex has no statusline surface. Its SessionStart briefing presents the
+> shared `.codearbiter/` governance state instead; this is an intentional host difference.
+
 codeArbiter ships a token-aware statusline for Claude Code: a compact, full-width box that shows
 your session usage in every repo and, in an arbiter-enabled one, the live project state. It is
 dependency-free (native font glyphs only, no Nerd Font) and renders on every session once wired.

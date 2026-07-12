@@ -344,3 +344,103 @@ Security-and-audit-trail lens (level 1) weighed against maintainability (level 3
 No producer change. Add a "Gate-marker trust boundary" note to `security-controls.md` stating markers are cooperative-agent attestations and direct `security-pass.py` invocation is the intended attestation. Close issue #196 referencing ADR-0010. Reopens if the threat model expands to untrusted/adversarial agents.
 
 ---
+
+## DECISION-0011 — ADR-0011 — Multi-host support: third sibling plugin ca-codex via shared core + thin host adapters
+
+**Date:** 2026-07-08
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture / scope
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** CONTEXT.md "NOT this project" declares "Claude Code only"; v1's multi-host machinery was deliberately deleted.
+- **Scaffold position:** n/a — an open scope decision prompted by Codex CLI v0.142.x reaching extension-point parity (plugins, blocking hooks, SKILL.md skills, subagents).
+- **Status type:** open-decision-closure
+
+### Decision
+Host a third sibling plugin `plugins/ca-codex/` bringing the same governance kernel to Codex CLI, built as shared core + thin host adapters: host-neutral Python in `core/pysrc/` and markdown templates in `core/surface/`, vendored byte-exact into each plugin by stdlib generators with CI-enforced byte-identity. Independent SemVer from 0.1.0 (ADR-0007 pattern). Beta-labeled until live-Codex verification. Statusline and prune-transcript backend ledgered out of parity in docs/parity.md. Recorded as ADR-0011; amends CONTEXT.md's "Claude Code only" scope.
+
+### SMARTS rationale
+Maintainability (level 3) drove the architecture: copy-and-adapt reproduces the v1 drift failure, runtime shared imports couple to both hosts' clone layouts — build-time vendoring with a mechanical drift guard is the only option that keeps one source of truth without runtime fragility. Correctness of the audit trail (level 1) is preserved by keeping one shared `.codearbiter/` store and porting the same blocking gates. Adoption (ADR-0006 posture) motivated the scope expansion itself.
+
+### Implementation implication
+New `core/` + `tools/sync-core.py` + `tools/build-surface.py`; `plugins/ca-codex/` scaffold; CONTEXT.md identity/scope rewrite; release.yml and CI path filters parameterized for a third plugin (`core/**` triggers both suites); docs/parity.md ledger. Plan: `.codearbiter/plans/codex-support.md`. M0 spike answers the live-fire unknowns (SessionStart stdout injection, tool names, trust review) before M2 ships.
+
+---
+
+## DECISION-0012 — ADR-0012 — Dual-host .codearbiter/ concurrency is at parity with same-host concurrency
+
+**Date:** 2026-07-09
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture / concurrency
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0011 keeps one shared `.codearbiter/` store across hosts but specifies no concurrency contract for two hosts writing it at once.
+- **Scaffold position:** n/a — an open-decision closure prompted by tribunal run 2026-07-09-codex-support-branch (issue #269).
+- **Status type:** open-decision-closure
+
+### Decision
+Dual-host concurrency on the shared store is accepted at parity with same-host concurrency: the Codex campaign owes no stronger guarantee than two Claude sessions already have. Host attribution (`get_host().name`) is added to the audit-log writes — the one gap genuinely new to dual-host — and ships in the codex-support sprint. File locking / CAS on read-modify-write state is NOT added under the Codex campaign; the lock-free board RMW (reliability-004) and repo-global dev-marker clobber (reliability-007) are re-scoped as pre-existing, host-agnostic debt, tracked separately, not codex-branch blockers.
+
+### SMARTS rationale
+Correctness of the audit trail (level 1) drove the one required change: two distinct host identities now share one trail, so attribution is a genuine new obligation. Maintainability and developer velocity (levels 3, 5) argued against bundling a full locking contract into the Codex campaign — the RMW race is pre-existing and host-agnostic, so fixing it under the Codex banner would hold the branch hostage to unrelated hardening. The maintainer's explicit bar (Codex ≤ Claude-today) closed it.
+
+### Implementation implication
+Recorded as ADR-0012 (governs core/pysrc/taskwrite.py, _hooklib.py, session-start.py). Sprint fix: host attribution in `_hooklib` gate-event/block/remind/warn (issue #269 / observability-001). Re-scope: reliability-004 and reliability-007 tracked as pre-existing host-agnostic concurrency debt, not codex blockers. Extends ADR-0011; relates to ADR-0010.
+
+---
+
+## DECISION-0013 — Codex-only users are first-class: full standalone parity (closes #287)
+
+**Date:** 2026-07-10
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** scope / product
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ca-codex shipped hooks-only through M2; its manifest and doctor pointed Codex users to the Claude-side `/ca:init`, so a Codex-only user had no shipped path to opt a repo in (issue #287, surfaced from #259).
+- **Scaffold position:** ADR-0011 authorizes full parity and names `ca-init` as the M4 agent scaffolder — implying a Codex-side init — but #287 asked whether standalone Codex-only use is the requirement or a nice-to-have.
+- **Status type:** open-decision-closure
+
+### Decision
+Codex-only users are first-class arbiter users. The maintainer's directive (2026-07-09): they "should have EVERY capability just like a Claude user". #287 resolves as option 2 — the full command/skill surface ships on Codex (M3: 37 `ca-`-prefixed entry skills generated from `core/surface/`, including `ca-init` for standalone opt-in; no Claude-side install required). Host-impossible surfaces remain ledgered exceptions in `docs/parity.md` (statusline, prune engine, pre-read/pre-edit), never silent gaps; agents/review chains follow in M4 per the ADR-0011 milestone order.
+
+### SMARTS rationale
+Subsumed by ADR-0011's accepted full-parity decision — this entry closes the UX/scope question #287 left open rather than minting a new architecture. Maintainability (level 3) rejected the thin hand-authored-init alternative: hand copies of skills are the exact drift v1 died of and M3's generator replaces. Adoption posture (ADR-0006) favors standalone: requiring a Claude Code install to onboard a Codex repo contradicts the broad-OSS goal.
+
+### Implementation implication
+M3 (branch `feat/codex-surface-m3` → `feat/codex-support-m0`): `core/surface/` templates + `tools/build-surface.py` + always-on `surface` CI gate; `Host.cmd_ref` runtime vocabulary seam (ca 2.8.13, ca-codex 0.2.0); manifest/doctor first-run pointers host-native; `prose-codex` reference-graph job. Plan: `.codearbiter/plans/codex-surface-m3.md`. #287 closes on merge; #259's pointer half closes with it.
+
+---
+
+## DECISION-0014 — ADR-0012 ratification — true ratification recorded; premature flip in commit 3902096 corrected
+
+**Date:** 2026-07-12
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("i approve adr 12")
+**Decision category:** governance / audit-trail integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** commit 3902096 (2026-07-11, authored by the external codex agent under the maintainer's git identity) flipped ADR-0012 to `accepted` with a ratification line dated 2026-07-11 that had not occurred.
+- **Scaffold position:** ORCHESTRATOR §3 — ADR status transitions require explicit user instruction via /adr; the maintainer had not ratified as of that commit (the same day's review explicitly listed ratification as still pending).
+- **Status type:** open-decision-closure
+
+### Decision
+The maintainer ratified ADR-0012 on 2026-07-12 ("i approve adr 12"). The ADR's Status section now carries that true attribution plus an explicit record-correction note; the fabricated 2026-07-11 ratification line is replaced, and this entry preserves the fact that it existed. The accepted bar is unchanged: dual-host concurrency at parity with same-host concurrency, no locking/CAS obligation added.
+
+### SMARTS rationale
+Conflict-hierarchy level 1 (integrity of the audit trail) drove the shape of the fix: correct the record visibly rather than silently, so a future auditor sees both the premature flip and its correction. The decision content itself needed no re-scoring — the maintainer approved the identical bar the ADR already stated.
+
+### Implementation implication
+ADR-0012 Status section corrected (this commit). PR #254's body updated to drop the ratify-before-merge caveat. Standing lesson for external-agent integrations: an instruction to "get X ratified" is a request to route to the user, never license to author the ratification record.
+
+---

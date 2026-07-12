@@ -1,6 +1,6 @@
 ---
-title: Arbitration for Claude Code Workflows
-description: Gated software-engineering workflows for Claude Code.
+title: Arbitration for Claude Code and Codex Workflows
+description: Shared enforcement and project-context parity across Claude Code and Codex.
 template: doc
 tableOfContents: false
 editUrl: false
@@ -16,11 +16,10 @@ import TrustRow from '../../components/TrustRow.astro';
 
 <div class="ca-landing__hero">
   <div class="ca-landing__intro">
-    <h1 id="_top" class="ca-landing__title">Arbitration for Claude&nbsp;Code Workflows</h1>
+    <h1 id="_top" class="ca-landing__title">Arbitration for Claude&nbsp;Code and Codex Workflows</h1>
     <div class="ca-landing__tagline">
-      Orchestrate every Claude Code request through a gated lane. Tests, reviews,
-      and security checks are real stops: not suggestions, not optional, not
-      bypassed under time pressure.
+      Shared enforcement and project-context parity across Claude Code and Codex.
+      Tests, reviews, and security checks are real stops in either host.
     </div>
     <div class="ca-landing__actions">
       <a class="ca-landing__cta ca-landing__cta--primary" href="./getting-started/install/">Get started</a>
@@ -39,7 +38,7 @@ import TrustRow from '../../components/TrustRow.astro';
 
 <div class="ca-hero">
   <div class="ca-hero__what">
-    A Claude Code plugin. One orchestrator. Gated lanes for every kind of work.
+    Two sibling plugins. One shared project store. Gated lanes for every kind of work.
   </div>
 
   <figure class="ca-diagram ca-laneflow">
@@ -60,7 +59,7 @@ import TrustRow from '../../components/TrustRow.astro';
 
     <div class="ca-hero__install-copy">
       <h2 class="ca-hero__install-blurb">Get the Arbiter on Your Case</h2>
-      <p class="ca-hero__install-subtext">Two commands install it. One more wires in the statusline.</p>
+      <p class="ca-hero__install-subtext">Choose Claude Code or Codex. Both enforce the same project state.</p>
     </div>
   </div>
 
@@ -72,7 +71,7 @@ import TrustRow from '../../components/TrustRow.astro';
       width="2174"
       height="406"
     />
-    <figcaption>The statusline you get, live in every session.</figcaption>
+    <figcaption>Claude Code's optional statusline. Codex presents governance state at SessionStart.</figcaption>
   </figure>
 </div>
 
@@ -80,10 +79,9 @@ import TrustRow from '../../components/TrustRow.astro';
   <div class="ca-why-gates__copy">
     <h2>Gates are hooks, not suggestions</h2>
     <div class="ca-why-gates__paragraph">
-      Every gate in codeArbiter is a Claude Code <a href="./glossary/#hook">hook</a>: a
-      deterministic Python script that runs at the tool-call boundary, before the tool
-      call happens. A blocking gate exits non-zero and the tool call is refused. Nothing
-      about that depends on the model choosing to comply.
+      Every codeArbiter gate runs at its host's <a href="./glossary/#hook">hook</a>
+      boundary before the tool call. The shared Python guard returns one verdict; the
+      Claude Code and Codex adapters surface that verdict in their native hook protocols.
     </div>
     <div class="ca-why-gates__paragraph">
       Prompt-layer rules still matter. They are the model's judgment for everything a
@@ -100,9 +98,9 @@ import TrustRow from '../../components/TrustRow.astro';
   <div class="ca-why-gates__mechanics">
     <h3>How a gate fires</h3>
     <ol>
-      <li>A tool call (Bash, Write, Edit) reaches Claude Code's <code>PreToolUse</code> boundary.</li>
+      <li>A shell or write call reaches the host's <code>PreToolUse</code> boundary.</li>
       <li>The matching hook runs first, against the repository's current state.</li>
-      <li>It exits 0 (allowed) or blocks with a non-zero exit and a <code>BLOCKED [H-xx]</code> message.</li>
+      <li>It allows the call or blocks with a <code>BLOCKED [H-xx]</code> message.</li>
     </ol>
     <div class="ca-why-gates__links">
       <a href="./enforcement/">Read the enforcement guide</a>
@@ -193,6 +191,7 @@ import TrustRow from '../../components/TrustRow.astro';
       <p class="ca-doors__promise">Get codeArbiter installed and take your first change through a gated lane.</p>
       <ul>
         <li><a href="./getting-started/install/">Install</a></li>
+        <li><a href="./getting-started/claude-code-and-codex/">Claude Code + Codex evidence</a></li>
         <li><a href="./getting-started/quickstart/">Quickstart</a></li>
         <li><a href="./guides/feature-lane/">Build a feature end to end</a></li>
       </ul>

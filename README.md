@@ -2,12 +2,13 @@
 
 <img src="docs/banner.svg" alt="codeArbiter: discipline, mechanically enforced" width="100%">
 
-**An orchestration layer for Claude Code that refuses to freelance.**
+**Shared enforcement and project-context parity across Claude Code and Codex.**
 
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
-<img alt="version 2.8.11" src="https://img.shields.io/badge/version-2.8.11-2b7489">
+<img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
+<img alt="version 2.8.13" src="https://img.shields.io/badge/version-2.8.13-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-39-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-28-555">
@@ -25,7 +26,15 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 ## What it is
 
-codeArbiter is a native Claude Code plugin that sits between you and your codebase. Instead of letting the model freelance, you drive through slash commands. Each one routes to the skill or agent that owns the work (TDD, the commit gate, decision-variance/SMARTS, the reviewer fleet) and clears its gates before anything ships.
+codeArbiter is a governance layer for Claude Code and OpenAI Codex. It ships as two sibling plugins,
+`ca` and `ca-codex`, generated from one shared surface and enforcing one checked-in `.codearbiter/`
+project store. Instead of letting the model freelance, you drive through host-native commands. Each
+one routes to the process that owns the work and clears its gates before anything ships.
+
+The Codex path was live-verified on **Codex CLI 0.144.1** with trusted SessionStart injection and a
+real `[H-03]` PreToolUse block. See the
+[Claude Code + Codex evidence](https://arbiterforge.github.io/codeArbiter/getting-started/claude-code-and-codex/)
+for the dated proof, CI coverage, and intentional host differences.
 
 **Who it's for:** teams and power users who let agents write real code and need to prove what happened.
 
@@ -64,7 +73,10 @@ Every step is a gate you watch clear. You stay in the driver's seat; the gates k
 
 ## Install
 
-codeArbiter self-hosts a marketplace of two sibling plugins from this repo: `ca`, the governance layer, and `ca-sandbox`, an optional isolated-container plugin (see [Feature Forge](#feature-forge)).
+codeArbiter self-hosts its plugins from this repository. Install the host adapter you use; both read
+the same `.codearbiter/` project state.
+
+### Claude Code
 
 ```text
 /plugin marketplace add arbiterForge/codeArbiter
@@ -72,6 +84,28 @@ codeArbiter self-hosts a marketplace of two sibling plugins from this repo: `ca`
 ```
 
 Hooks, commands, agents, and statusline wiring load automatically; everything resolves under the `/ca:` namespace.
+
+### Codex
+
+The public GitHub-slug flow is **available after the Codex-support release** reaches the default
+branch:
+
+```text
+codex plugin marketplace add arbiterForge/codeArbiter
+codex plugin add ca-codex@codearbiter
+```
+
+Open `/hooks`, review and trust the `ca-codex` handlers, then start a fresh thread. Commands use the
+`$ca-*` spelling. Run `$ca-init` to opt a repository in and `$ca-doctor` to prove the hooks are live.
+
+For development before that release, use the verified local-clone flow:
+
+```text
+git clone https://github.com/arbiterForge/codeArbiter
+cd codeArbiter
+codex plugin marketplace add .
+codex plugin add ca-codex@codearbiter
+```
 
 **Prerequisites:** Python 3 on `PATH` (every hook is Python, so without it the gates and the startup
 injection silently don't run) and `git config user.email` set (overrides and ADRs are attributed to
@@ -96,8 +130,9 @@ git clone https://github.com/arbiterForge/codeArbiter
 
 ## Enable codeArbiter in a repo
 
-Installing the plugin does nothing until you opt a repo in. That silence is intentional. Open the
-repo in Claude Code and run <kbd>/ca:init</kbd>: it scaffolds `.codearbiter/` with `arbiter: enabled`
+Installing either plugin does nothing until you opt a repo in. That silence is intentional. Open the
+repo and run <kbd>/ca:init</kbd> in Claude Code or <kbd>$ca-init</kbd> in Codex. It scaffolds
+`.codearbiter/` with `arbiter: enabled`
 and routes you to the right populator for your situation:
 
 | You have… | /ca:init routes to | What it does |
@@ -109,7 +144,9 @@ Once `.codearbiter/CONTEXT.md` carries the `<!--INITIALIZED-->` marker, you're i
 
 ## How it works
 
-One plugin, named `ca`. Claude Code namespaces every plugin command, so you invoke it as <kbd>/ca:feature</kbd>, <kbd>/ca:commit</kbd>, <kbd>/ca:commands</kbd>, and so on.
+The `ca` plugin uses Claude Code's <kbd>/ca:feature</kbd> command namespace. The `ca-codex` sibling
+exposes the same generated surface as <kbd>$ca-feature</kbd>, <kbd>$ca-commit</kbd>,
+<kbd>$ca-commands</kbd>, and so on. Both adapters load the same policy core.
 
 Activation is **per-repo and explicit**. A `SessionStart` hook checks the repo for `.codearbiter/CONTEXT.md` carrying the frontmatter flag `arbiter: enabled`. Present → it injects the orchestrator persona and live startup state. Absent → it exits silently. Install the plugin globally and it stays out of the way everywhere you haven't opted in.
 
@@ -120,11 +157,12 @@ flowchart LR
     A(["SessionStart hook"]) --> B{"CONTEXT.md:<br/>arbiter enabled?"}
     B -->|yes| C["inject ORCHESTRATOR.md<br/>+ stage · tasks · questions"]
     B -->|no| D["dormant:<br/>generic statusline only"]
-    C --> E["/ca: commands route to<br/>gated skills + reviewer agents"]
+    C --> E["host-native commands route to<br/>gated workflows + reviewers"]
     E --> F(["gates clear → it ships"])
 ```
 
-The same flag gates the statusline: the usage/context segment renders everywhere; the arbiter segments light up only in an enabled repo.
+On Claude Code, the same flag also gates the optional statusline. Codex has no statusline surface;
+its SessionStart briefing presents the governance state instead.
 
 Project state lives in **your** repo, not the plugin: a single `.codearbiter/` directory at the repo root, so stage, specs, plans, ADRs, the decision log, tribunal reports, and the overrides audit trail commit alongside your code and survive uninstalling the plugin.
 
@@ -138,7 +176,7 @@ Just `.codearbiter/`, nothing else
 </td>
 <td valign="top">
 
-The plugin itself → `~/.claude/plugins/cache/`
+The host plugin cache (`~/.claude/…` or `~/.codex/…`)
 
 </td>
 </tr>
@@ -162,7 +200,11 @@ When rules pull apart, they resolve by a fixed hierarchy (security & audit-trail
 
 ## Commands
 
-Every intent flows through a command; direct off-channel instructions get redirected to the catalog. The full list is in [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md), the [site reference index](https://arbiterforge.github.io/codeArbiter/reference/commands/commands/), and via <kbd>/ca:commands</kbd>.
+Every intent flows through a command; direct off-channel instructions get redirected to the catalog.
+Claude's `/ca:*` catalog is in [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md). Codex uses the
+generated `$ca-*` catalog in
+[`plugins/ca-codex/COMMANDS.md`](./plugins/ca-codex/COMMANDS.md); `statusline` and `prune` are absent
+there by design because Codex has neither host surface. Both catalogs derive from the same source.
 
 | Command | Purpose |
 |---|---|
@@ -272,7 +314,7 @@ Every recommendation carries exactly one strength label (`strong`, `moderate`, o
 
 More detail and the full lens definitions: [SMARTS](https://arbiterforge.github.io/codeArbiter/concepts/smarts/) and [Autonomous sprints](https://arbiterforge.github.io/codeArbiter/guides/autonomous-sprints/).
 
-## Statusline
+## Claude Code statusline
 
 codeArbiter ships a token-aware statusline. Wire it in with <kbd>/ca:statusline</kbd>:
 
@@ -360,7 +402,8 @@ Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty not
 ## What's inside
 
 ```text
-.claude-plugin/marketplace.json     two-plugin marketplace → ./plugins/ca, ./plugins/ca-sandbox
+.claude-plugin/marketplace.json     Claude marketplace
+.agents/plugins/marketplace.json    Codex marketplace
 plugins/ca/                         the governance plugin (CLAUDE_PLUGIN_ROOT)
 ├── .claude-plugin/plugin.json
 ├── README.md                       plugin-directory summary (this file is the long form)
@@ -372,6 +415,7 @@ plugins/ca/                         the governance plugin (CLAUDE_PLUGIN_ROOT)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
 plugins/ca-sandbox/                 the local-Codespace plugin (Feature Forge, preview)
+plugins/ca-codex/                   Codex sibling: generated skills + shared hook core
 ```
 
 **Skills** encode gated processes: `tdd`, `commit-gate`, `decision-variance`/SMARTS, `debug`, `refactor`, and the dynamic brainstorm → plan → execute workflow layer. **Agents** are the dispatched reviewers and authors: security, auth/crypto, dependency, migration, coverage, and architecture-drift reviewers, the design-quality reviewer, plus the backend/frontend/infra authors and the scout/grader/triage plumbing.
@@ -380,7 +424,11 @@ plugins/ca-sandbox/                 the local-Codespace plugin (Feature Forge, p
 
 ## Turning it off
 
-codeArbiter is dormant by default: a repo without `.codearbiter/CONTEXT.md` → `arbiter: enabled` never sees the orchestrator persona, never routes through a gate. To disable it in a repo that's already opted in, flip that frontmatter flag off; no reinstall needed. To remove the plugin entirely, uninstall it the normal Claude Code way. Either way, `.codearbiter/` survives: it's a plain directory in your repo, not plugin state, so your specs, ADRs, and audit trail stay put. Full walkthrough: [Uninstalling](https://arbiterforge.github.io/codeArbiter/guides/uninstalling/).
+codeArbiter is dormant by default: a repo without `.codearbiter/CONTEXT.md` → `arbiter: enabled`
+never sees the orchestrator persona and never routes through a gate. Remove `ca` with Claude Code's
+plugin manager or run `codex plugin remove ca-codex@codearbiter` for Codex. Either way,
+`.codearbiter/` survives, so the other host can keep using the same specs, ADRs, and audit trail.
+Full walkthrough: [Uninstalling](https://arbiterforge.github.io/codeArbiter/guides/uninstalling/).
 
 ## Project history
 
@@ -400,4 +448,4 @@ The AGPLv3 transition applies from v2.6.0 forward. Earlier releases, through the
 
 **Contributions.** Future community contributions require a Contributor License Agreement granting the copyright holder the right to relicense the contribution under both AGPLv3 and proprietary terms, which is what keeps the dual-licensing model intact. See [CLA.md](./CLA.md). That CLA is a template pending legal review and is not yet in force.
 
-<div align="center"><sub>Built for <a href="https://claude.com/claude-code">Claude Code</a>.</sub></div>
+<div align="center"><sub>Built for Claude Code and OpenAI Codex.</sub></div>

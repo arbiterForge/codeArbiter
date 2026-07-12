@@ -3,16 +3,24 @@ title: Quickstart
 description: "Opt a repository into codeArbiter enforcement, run a first command through a gated lane, and watch the commit gate block a real crypto mistake."
 ---
 
+This walkthrough works in Claude Code and Codex against the same `.codearbiter/` state. Where a
+step shows `/ca:<name>`, Codex uses `$ca-<name>`. The
+[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) records the live parity test
+and intentional differences.
+
 This tutorial walks three steps in order: opt a repository into enforcement, run a first command through a gated lane, and watch a gate catch a mistake before it reaches version control.
 
-Before starting, complete the plugin install from the [Install](/getting-started/install/) page. Python 3 must be on your `PATH` and `git config user.email` must be set.
+Before starting, complete the plugin install from the [Install](/getting-started/install/) page.
+Python 3 must be on your `PATH` and `git config user.email` must be set. Verify the host with
+`/ca:doctor` in Claude Code or `$ca-doctor` in Codex.
 
 ## 1. Opt the Repo In
 
-Open the target repository in Claude Code and run:
+Open the target repository in Claude Code or Codex and run the host-native form:
 
 ```text
 /ca:init
+$ca-init
 ```
 
 `/ca:init` scaffolds `.codearbiter/` at the repo root and routes to a context populator for your situation. See [Opt a Repository In](/guides/opt-in-a-repo/) for the two routing paths and how to confirm the `arbiter: enabled` activation flag. With that flag set in a properly closed frontmatter block, the next session opens with the orchestrator active and every gate armed.

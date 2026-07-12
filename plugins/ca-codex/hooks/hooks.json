@@ -1,0 +1,70 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "timeout": 60,
+            "statusMessage": "codeArbiter: activating governance"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|shell_command|exec_command|unified_exec",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-adapter.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-adapter.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: exec gate"
+          }
+        ]
+      },
+      {
+        "matcher": "apply_patch|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-adapter.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-adapter.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: write gate"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: scope-touch review"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/prune-transcript.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: audit staleness check"
+          }
+        ]
+      }
+    ]
+  }
+}

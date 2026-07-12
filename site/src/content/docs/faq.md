@@ -62,6 +62,15 @@ sees the same gates and the same history. The persona and hooks activate per-ses
 has the plugin installed and the repo opted in; there's no server component and no per-seat
 account to manage.
 
+## Can two users mix Claude Code and Codex in one repository?
+
+Yes. This mixed-host workflow is why project state lives in `.codearbiter/` instead of a host-owned
+settings directory. One user can run Claude Code while another runs Codex, or one user can alternate
+between them. Both adapters read the same context, decisions, task state, and audit records. Install
+and trust the appropriate plugin on each machine; do not initialize a second store. The
+[verified parity boundary](/getting-started/claude-code-and-codex/) lists the intentional host
+differences.
+
 ## What if the gates are wrong for my project?
 
 Two knobs exist before you'd reach for a bypass. First, `stage` in `CONTEXT.md`'s frontmatter is a

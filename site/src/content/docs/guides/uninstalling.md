@@ -5,6 +5,8 @@ description: "How to turn codeArbiter off in one repository, or remove it entire
 
 codeArbiter's pitch is enforcement, so it documents the exit. This page covers three levels: turning
 it off in one repository, removing it globally, and what to check before uninstalling mid-feature.
+Claude Code and Codex share `.codearbiter/`, so removing either plugin leaves project context and
+audit history available to the other host.
 
 ## Disable in One Repository
 
@@ -60,8 +62,16 @@ Removing codeArbiter entirely has four independent pieces. Do them in this order
 
 ### 1. Uninstall the Plugin
 
+Claude Code:
+
 ```sh
 claude plugin uninstall ca
+```
+
+Codex:
+
+```sh
+codex plugin remove ca-codex@codearbiter
 ```
 
 This removes the plugin payload (hooks, commands, agents, skills) from Claude Code's plugin cache.

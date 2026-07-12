@@ -74,7 +74,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "codeArbiter",
-      description: "Gated software-engineering workflows for Claude Code.",
+      description: "Shared enforcement and project-context parity across Claude Code and Codex.",
       logo: {
         src: "./src/assets/logo.svg",
         replacesTitle: true,
@@ -118,6 +118,7 @@ export default defineConfig({
           items: [
             { label: "What Is codeArbiter", slug: "overview" },
             { label: "Install", slug: "getting-started/install" },
+            { label: "Claude Code + Codex", slug: "getting-started/claude-code-and-codex" },
             { label: "Quickstart", slug: "getting-started/quickstart" },
             { label: "Compatibility", slug: "getting-started/compatibility" },
             { label: "FAQ", slug: "faq" },

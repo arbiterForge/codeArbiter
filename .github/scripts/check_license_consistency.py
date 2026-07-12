@@ -38,6 +38,7 @@ CANONICAL_MANIFEST = "plugins/ca/.claude-plugin/plugin.json"
 MANIFESTS = [
     "plugins/ca/.claude-plugin/plugin.json",
     "plugins/ca-sandbox/.claude-plugin/plugin.json",
+    "plugins/ca-codex/.codex-plugin/plugin.json",
 ]
 LICENSE_FILE = "LICENSE"
 README_FILE = "README.md"

@@ -209,6 +209,22 @@ a `-C` target that is not a real directory now fails **closed** (H-01 block).
 copies, so audit lines / the task board / installed hooks land in the
 harness-authoritative project dir.
 
+The hook payload's `cwd` field is a **trusted-harness input** to repo
+resolution, on the same footing as the host's project-dir env var: both are
+written by the host harness itself, never by the model. Its precedence is
+per-host (`hostapi.Host.project_root`, ADR-0011): under **Claude Code** the
+env var `CLAUDE_PROJECT_DIR` is consulted first and the payload-`cwd` leg is
+inert (the harness always sets the env var); under **Codex** there is **no
+env leg at all** — `CLAUDE_PROJECT_DIR` is deliberately never consulted, so a
+value leaked from an adjacent Claude session cannot redirect the guards. The
+Codex Host method defines payload `cwd` as its first leg ahead of
+`git rev-parse --show-toplevel` and the process cwd, but the entry scripts do
+not currently feed the payload into `project_root()` — in the wired path,
+Codex resolution is `git rev-parse` from the session cwd, which is equivalent
+because the Codex harness runs every hook in the session cwd it also stamps
+into the payload. If an entry ever passes the payload, the documented
+precedence above is the contract it inherits.
+
 **Hooks-install re-probe fast-path is fail-safe (#194).** To cut SessionStart
 latency, `_githooks.install()` may skip the git-spawn hooks-dir probe when a
 cheap on-disk cache proves the shims are already current. The skip fires ONLY
@@ -311,6 +327,24 @@ cooperative-orchestrator threat model, not a defect. The marker's value is the
 friction and audit trail it adds on the cooperative path. Reopens (→ non-fabricable
 reviewer-signed binding) only if the threat model expands to untrusted agents. See
 ADR-0010 (resolves appsec-003 / #196).
+
+**MCP file-write tools out of scope (both hosts).** The write-path guards
+(`pre-write.py` / `post-write-edit.py`) are wired to each host's *native* write
+tools — Claude's `Write`/`Edit`/`MultiEdit`/`NotebookEdit`, and Codex's
+`apply_patch` (plus its `Write`/`Edit` matcher aliases). A file write performed
+through an **MCP server tool** (`mcp__<server>__<tool>`) is not covered: on Claude
+such tools escape the `Write`/`Edit` matchers, and on Codex `mcp__*` normalizes to
+the `OTHER` category (no `TOOL_MAP` entry) and matches neither the
+`apply_patch|Write|Edit` write hooks nor the `Bash` exec hook. An agent that adds
+an MCP filesystem/write server can therefore write `.codearbiter/CONTEXT.md`, a
+`.markers/` token, or an audit log without a guard firing, on either host. This is
+**accepted residual risk** under the same cooperative-agent trust model as the
+`--no-verify`, shell-indirection, and self-minted-marker gaps above (ADR-0010) — a
+cooperating orchestrator does not route protected writes through an out-of-band MCP
+tool, and a non-cooperating Bash-capable agent already has stronger bypasses.
+Bringing MCP writes under the write gate on both hosts is tracked as **near-term
+hardening (issue #270 / tribunal appsec-002)**, not a codex-branch blocker; it
+reopens if the threat model expands to untrusted agents.
 
 ---
 
