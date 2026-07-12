@@ -7,16 +7,17 @@ hooks on by default). Both plugins vendor the same `core/pysrc/` Python core
 byte-for-byte (`tools/sync-core.py --check` is the CI gate); the only per-host
 Python file is each plugin's `hooks/_host.py`.
 
-`ca-codex` is BETA (0.2.0): every shipped behavior is test-covered
-(`.github/scripts/test_codex_adapter.py`), but the live-fire items from the M0
-spike (stdout persona injection, trust-review walkthrough, exit-2 stderr
-feedback on a real install) remain pending a live Codex verification pass.
+`ca-codex` 0.2.4 is promoted: on 2026-07-11, Codex 0.144.1 loaded the trusted
+plugin, injected the SessionStart persona, and blocked `$ca-doctor`'s live
+`git add --all --dry-run` probe with `[H-03]`. Static validation and the
+dual-host test suites remain CI requirements; this live pass closes ADR-0011's
+beta-promotion gate.
 
 ## Enforcement surface
 
 | Claude surface | Codex status | Notes |
 |---|---|---|
-| SessionStart persona injection (ORCHESTRATOR.md + startup state) | SHIPPED (M2) | Same core entry `session-start.py`. Statusline heal is skipped via the `has_statusline=False` capability flag. Live stdout-injection verification pending. |
+| SessionStart persona injection (ORCHESTRATOR.md + startup state) | VERIFIED | Same core entry `session-start.py`; live persona injection passed on Codex 0.144.1. |
 | PreToolUse Bash gate (`pre-bash.py`: H-01/02/03/05/09b/10b/11/14/18/19/20) | SHIPPED (M2) | Codex's exec tool is also named `Bash` with the same `{command}` payload; the entry is byte-identical. |
 | PreToolUse Write gate (`pre-write.py`: H-05/11/18/19) | SHIPPED (M2) | Registered for `apply_patch\|Write\|Edit`. The apply_patch envelope is parsed into per-file ops mirroring Codex's lenient parser (CRLF and whitespace-indented markers included); each op hits the same guards as a Claude Write. An envelope the adapter cannot decompose blocks outright (H-21 opaque, fail-closed) rather than passing unguarded. |
 | PreToolUse Edit gate (`pre-edit.py`, incl. H-05 tail-anchored append) | LEDGERED OUT on Codex | Codex has no separate edit tool: every edit arrives as an `apply_patch` hunk, which is positional and cannot be verified as a pure tail append. Patch ops against append-only audit logs therefore BLOCK outright on Codex (append via shell `>>` instead, which `pre-bash.py` permits). Strictly more conservative than Claude, never less. |
@@ -53,12 +54,12 @@ messages, doctor, the init scaffold) flow through the same per-host seam
 | `includes/`, `COMMANDS.md`, `SPRINT.md`, `ORCHESTRATOR.md` | SHIPPED (M3) | ORCHESTRATOR.md now deliberately diverges per host (Codex persona speaks `$ca-` skill vocabulary); the byte-identity guard (#262) is retired in favor of the generator's `--check`. `includes/codex-host-notes.md` is Codex-only (tool mapping, degraded paths, sandbox caveats). |
 | descriptive statusline genre mention (`includes/anti-slop-design/medium-cli.md`) | SHIPPED as-is | Design guidance about statuslines as a CLI output genre — host-neutral prose, not an instruction to use a Codex statusline. |
 | `--farm` execution backend (`tools/farm.js`, `tools/plan.schema.json`) | PENDING (M5) | The farm worker files are not vendored into ca-codex; `--farm` degrades to the premium-subagent path (see `includes/codex-host-notes.md`). Packaging is an M5 distribution decision. |
-| `${CLAUDE_PLUGIN_ROOT}` in skill PROSE | LIVE-PENDING | Hooks receive the env var (source-verified); whether Codex expands it in skill body prose is unverified until the live pass. Fallback: plugin-relative paths, one renderer rule. |
+| `${CLAUDE_PLUGIN_ROOT}` in skill prose | DEGRADED, LEDGERED | The hook runner resolves the placeholder, but ordinary tool calls do not inherit it. Skills derive the installed root from their own loaded path when executing plugin scripts. |
 
 ## Pending milestones
 
 | Claude surface | Codex status |
 |---|---|
 | 28 agents + review chains (checkpoint/tribunal/SDD) | M4: `.codex/agents/*.toml` scaffolded by `ca-init` with a doctor staleness check (plugins cannot ship subagents on Codex, spike item 7); dispatch batching under `max_threads 6` / `max_depth 1`. Until M4, review/author roles run inline per `includes/codex-host-notes.md` — never skipped. |
-| doctor live-fire probe, trust-state detection | M2 exit test is defined; the doctor probe extension and the trust-review walkthrough need the live install. |
+| doctor live-fire probe, trust review | VERIFIED on Codex 0.144.1 (2026-07-11): trusted hook set, SessionStart injection, structured H-03 block surfaced. |
 | release workflow / CI path filters for `plugins/ca-codex/` | Largely landed early (release-codex, version-bump-codex, cold-install matrix, adapter suite, and — with M3 — `prose-codex` + the `surface` job); remaining M5: distribution docs, update-notice fix (above), farm packaging. |

@@ -44,5 +44,6 @@ bodies name *actions* — this file is where those actions map to this host.
   commit (through the commit gate as always) and hand the push/PR step to the
   user — never bypass the gate to work around the sandbox.
 - Hooks run only after the user trusts the plugin's hook set; if gates appear
-  silent, suspect the un-trusted state and run the doctor probe
-  (`python "${CLAUDE_PLUGIN_ROOT}/hooks/doctor.py"`).
+  silent, inspect `/hooks`, then invoke `$ca-doctor`. Ordinary tool calls do
+  not inherit the hook runner's plugin-root environment; the doctor skill
+  derives its root from its own installed `SKILL.md` path.

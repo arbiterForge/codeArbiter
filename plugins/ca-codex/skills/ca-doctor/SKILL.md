@@ -16,6 +16,9 @@ static check cannot perform from the inside.
 
 1. **Static checks** — run
    `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/doctor.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/doctor.py"`
+   Codex does not export the plugin-root placeholder into ordinary tool calls. Resolve the active
+   plugin root from this loaded skill's path (`skills/ca-doctor/SKILL.md` → two parents up) before
+   running the command; do not first attempt an empty environment-variable path.
    and present its report verbatim. It checks: interpreter resolution (including the Microsoft
    Store python3 alias stub), plugin payload integrity (plugin.json, hooks.json, all five hook
    scripts), stale sibling versions in the plugin cache, repo activation state (CONTEXT.md
@@ -32,8 +35,9 @@ static check cannot perform from the inside.
 ## Remediation ladder (gates dormant despite a healthy payload)
 
 1. Restart the Codex session — hooks register at session start.
-2. `claude plugin uninstall ca` then `claude plugin install ca` — `claude plugin update` is NOT
-   sufficient when the marketplace version string is unchanged; the cache keeps the old payload.
+2. `codex plugin remove ca-codex@codearbiter` then
+   `codex plugin add ca-codex@codearbiter`; start a fresh thread and approve the changed hook set
+   in `/hooks`.
 3. If dormancy was intended (no `.codearbiter/CONTEXT.md`, or frontmatter not `arbiter: enabled`),
    that is not a defect — `$ca-init` opts the repo in.
 

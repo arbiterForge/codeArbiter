@@ -31,8 +31,9 @@ static check cannot perform from the inside.
 ## Remediation ladder (gates dormant despite a healthy payload)
 
 1. Restart the Claude Code session — hooks register at session start.
-2. `claude plugin uninstall ca` then `claude plugin install ca` — `claude plugin update` is NOT
-   sufficient when the marketplace version string is unchanged; the cache keeps the old payload.
+2. `claude plugin uninstall ca` then `claude plugin install ca` — `claude plugin update`
+   is NOT sufficient when the marketplace version string is unchanged; the cache keeps the old
+   payload.
 3. If dormancy was intended (no `.codearbiter/CONTEXT.md`, or frontmatter not `arbiter: enabled`),
    that is not a defect — `/ca:init` opts the repo in.
 

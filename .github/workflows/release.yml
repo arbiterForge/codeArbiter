@@ -135,7 +135,7 @@ jobs:
     # default branch, and only when this dispatch requested a ca-codex
     # release. The tag is namespaced (ca-codex-v*) so it never collides with
     # ca's bare v* series, and this job never passes --latest to
-    # `gh release create` — ca-codex is a BETA sibling plugin, not the
+    # `gh release create` — ca-codex is an independently versioned sibling, not the
     # repo's primary release, and must not steal the "Latest" badge from ca.
     if: github.ref == 'refs/heads/main' && github.event.inputs.codex_confirm != ''
     runs-on: ubuntu-latest
@@ -204,7 +204,7 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "release $TAG already exists — nothing to publish"
           else
-            # Not --latest: ca-codex is a BETA sibling plugin, not the repo's
+            # Not --latest: ca-codex is an independently versioned sibling, not the repo's
             # primary release; it must never displace ca's "Latest" badge.
             gh release create "$TAG" \
               --title "$TITLE" \

@@ -312,15 +312,15 @@ def assert_stub_primary(e):
 # ------------------------------------------------------------- hooks.json map
 
 def build_hooks_map(hooks_json_path, plugin_root, field_of, expected_scripts,
-                     label):
+                     label, single_events=frozenset()):
     """Parse `hooks_json_path`; return {script basename -> {"primary": cmd,
     "fallback": cmd}} with ${CLAUDE_PLUGIN_ROOT} substituted. `field_of(h)`
     extracts the OS-appropriate command string from one hook object — for
     `ca` that is always `h["command"]`; for `ca-codex` it is
     `h["commandWindows"]` on Windows and `h["command"]` on POSIX (Codex's
-    native per-OS shape). Structural invariant: every matcher group registers
-    exactly one primary and one fallback, and every referenced script exists
-    on disk."""
+    native per-OS shape). Claude groups carry primary+fallback entries. Codex
+    PreToolUse groups carry one OS-native handler because a concurrent allow
+    sibling can neutralize an exit-2 block. Every referenced script exists."""
     with open(hooks_json_path, encoding="utf-8") as f:
         config = json.load(f)
 
@@ -328,27 +328,36 @@ def build_hooks_map(hooks_json_path, plugin_root, field_of, expected_scripts,
     for event, groups in config["hooks"].items():
         for group in groups:
             cmds = [field_of(h) for h in group["hooks"]]
-            if len(cmds) != 2:
+            if event in single_events and len(cmds) == 1:
+                primary = cmds
+                fallback = []
+            elif len(cmds) != 2:
                 sys.exit(f"FATAL: {label} {event} group must register exactly 2 "
                          f"entries (primary + fallback), found {len(cmds)}: {cmds}")
-            primary = [c for c in cmds if '-c ""' not in c and "-c \\\"\\\"" not in c]
-            fallback = [c for c in cmds if c not in primary]
-            if len(primary) != 1 or len(fallback) != 1:
+            else:
+                primary = [c for c in cmds if '-c ""' not in c and "-c \\\"\\\"" not in c]
+                fallback = [c for c in cmds if c not in primary]
+            if len(primary) != 1 or len(fallback) not in (0, 1):
                 sys.exit(f"FATAL: {label} {event} group lacks a primary/fallback "
                          f"pair: {cmds}")
-            script = primary[0].split("/")[-1].rstrip('"')
+            referenced = [name for name in expected_scripts if name in primary[0]]
+            if len(referenced) != 1:
+                sys.exit(f"FATAL: {label} cannot identify one hook script in: "
+                         f"{primary[0]}")
+            script = referenced[0]
             script_path = os.path.join(plugin_root, "hooks", script)
             if not os.path.isfile(script_path):
                 sys.exit(f"FATAL: {label} hooks.json references a missing script: "
                          f"{script_path}")
             hooks[script] = {
-                "primary": primary[0].replace("${CLAUDE_PLUGIN_ROOT}", plugin_root),
-                "fallback": fallback[0].replace("${CLAUDE_PLUGIN_ROOT}", plugin_root),
+                "primary": primary[0].replace("${CLAUDE_PLUGIN_ROOT}", plugin_root).replace("%CLAUDE_PLUGIN_ROOT%", plugin_root),
+                "fallback": (fallback[0].replace("${CLAUDE_PLUGIN_ROOT}", plugin_root).replace("%CLAUDE_PLUGIN_ROOT%", plugin_root)
+                             if fallback else None),
             }
     if set(hooks) != expected_scripts:
         sys.exit(f"FATAL: {label} hook set drifted — update this harness. "
                  f"found {sorted(hooks)}, expected {sorted(expected_scripts)}")
-    print(f"{label} hooks.json: {len(hooks)} hooks x 2 entries, all scripts present")
+    print(f"{label} hooks.json: {len(hooks)} hooks, registration shape valid")
     return hooks
 
 
@@ -367,6 +376,8 @@ def make_runner(hooks, plugin_root, paths, stub_log):
     bound to one plugin's hooks map, PATH scenarios, and stub-invocation log."""
     def run(script, kind, scenario, fixture, hook_input):
         cmd = hooks[script][kind]
+        if cmd is None:
+            raise AssertionError(f"{script} has no {kind} registration")
         _CURRENT_PLUGIN_ROOT[0] = plugin_root
         env = scenario_env(paths[scenario], fixture)
         if os.path.exists(stub_log):
@@ -553,15 +564,16 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
                 "cwd": fixture, "tool_input": {"command": patch}}
 
     def allow_pairs():
-        """(scen, kind, stub_ok) triples an ordinary allow is expected over.
-        STUB is included for BOTH entries when CODEX_STUB_IS_REAL_LIKE
-        (Windows: the stub is untouched); otherwise (POSIX) only the
-        fallback is exercised under STUB, same as `ca`."""
-        pairs = [("REAL", "primary", False), ("REAL", "fallback", False)]
+        """OS-selected Codex handler scenarios expected to allow."""
+        pairs = [("REAL", "primary", False)]
         if CODEX_STUB_IS_REAL_LIKE:
-            pairs += [("STUB", "primary", False), ("STUB", "fallback", False)]
-        else:
-            pairs += [("STUB", "fallback", True)]
+            pairs.append(("STUB", "primary", False))
+        return pairs
+
+    def pretool_allow_pairs():
+        pairs = [("REAL", "primary", False)]
+        if CODEX_STUB_IS_REAL_LIKE:
+            pairs.append(("STUB", "primary", False))
         return pairs
 
     NOVERIFY_PATCH = 'git commit --no-verify -m "x"'
@@ -570,97 +582,81 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
     ORDINARY_PATCH = _patch("*** Add File: src/util.py\n+x = 1\n")
     PRUNE_IN = {"hook_event_name": "UserPromptSubmit", "prompt": "x"}
 
-    # ---- 1. SessionStart, enabled repo: persona exactly once, never twice
-    for scen in ("REAL", "STUB"):
+    def assert_codex_block(entry, gate):
+        check(entry.rc == 0, entry, "Codex adapter must return structured deny with exit 0")
+        try:
+            output = json.loads(entry.out)
+        except (TypeError, ValueError):
+            output = {}
+        check(output.get("decision") == "block" and gate in output.get("reason", ""),
+              entry, f"Codex adapter must return decision:block with {gate}")
+
+    # ---- 1. SessionStart, enabled repo: one OS-selected handler
+    for scen in (("REAL", "STUB") if CODEX_STUB_IS_REAL_LIKE else ("REAL",)):
         p = run("session-start.py", "primary", scen, enabled, session_in())
-        fb = run("session-start.py", "fallback", scen, enabled, session_in())
-        total = p.out.count(PERSONA_MARK) + fb.out.count(PERSONA_MARK)
-        check(total == 1, p if scen == "REAL" else fb,
-              f"persona must inject exactly once across both entries, got {total}")
-        if scen == "REAL" or CODEX_STUB_IS_REAL_LIKE:
-            check(p.rc == 0 and PERSONA_MARK in p.out, p,
-                  "primary must inject the persona and exit 0")
-            assert_noop_allow(fb)
-        else:
-            assert_stub_primary(p)
-            check(fb.rc == 0 and PERSONA_MARK in fb.out, fb,
-                  "STUB fallback must inject the persona via the other interpreter and exit 0")
-            check(fb.stub_invoked, fb, "fallback probe must have hit the stub")
-    for kind in ("primary", "fallback"):
-        assert_loud_failure(run("session-start.py", kind, "NONE", enabled, session_in()))
+        check(p.rc == 0 and p.out.count(PERSONA_MARK) == 1, p,
+              "selected handler must inject the persona exactly once")
+    if not CODEX_STUB_IS_REAL_LIKE:
+        assert_stub_primary(run("session-start.py", "primary", "STUB", enabled, session_in()))
+    assert_loud_failure(run("session-start.py", "primary", "NONE", enabled, session_in()))
 
     # ---- 2. SessionStart, dormant repo: no injection anywhere
     for scen in ("REAL", "STUB", "NONE"):
-        for kind in ("primary", "fallback"):
+        for kind in ("primary",):
             e = run("session-start.py", kind, scen, dormant, session_in())
             check(PERSONA_MARK not in e.out and e.out == "", e,
                   "dormant repo must never receive an injection")
             check(e.rc != 2, e, "dormant repo must never block")
             include = scen == "REAL" or (
-                scen == "STUB" and (kind == "fallback" or CODEX_STUB_IS_REAL_LIKE))
+                scen == "STUB" and CODEX_STUB_IS_REAL_LIKE)
             if include:
                 stub_ok = (scen == "STUB") and not CODEX_STUB_IS_REAL_LIKE
                 assert_noop_allow(e, stub_ok=stub_ok)
 
     # ---- 3. pre-bash `git commit --no-verify`, enabled: the H-20 block survives
-    p = run("pre-bash.py", "primary", "REAL", enabled, bash_in(NOVERIFY_PATCH, enabled))
-    check(p.rc == 2 and "H-20" in p.err, p,
-          "REAL primary must BLOCK `git commit --no-verify` (exit 2, H-20)")
-    fb = run("pre-bash.py", "fallback", "REAL", enabled, bash_in(NOVERIFY_PATCH, enabled))
-    assert_noop_allow(fb)  # fresh-stdin no-op; must not emit a conflicting pass
-
+    p = run("pre-tool-adapter.py", "primary", "REAL", enabled,
+            bash_in(NOVERIFY_PATCH, enabled))
+    assert_codex_block(p, "H-20")
     if CODEX_STUB_IS_REAL_LIKE:
-        p = run("pre-bash.py", "primary", "STUB", enabled, bash_in(NOVERIFY_PATCH, enabled))
-        check(p.rc == 2 and "H-20" in p.err, p,
-              "STUB primary (python, untouched by this python3-only stub) must still BLOCK")
-        fb = run("pre-bash.py", "fallback", "STUB", enabled, bash_in(NOVERIFY_PATCH, enabled))
-        assert_noop_allow(fb)
+        p = run("pre-tool-adapter.py", "primary", "STUB", enabled,
+                bash_in(NOVERIFY_PATCH, enabled))
+        assert_codex_block(p, "H-20")
     else:
-        p = run("pre-bash.py", "primary", "STUB", enabled, bash_in(NOVERIFY_PATCH, enabled))
+        p = run("pre-tool-adapter.py", "primary", "STUB", enabled,
+                bash_in(NOVERIFY_PATCH, enabled))
         assert_stub_primary(p)
-        fb = run("pre-bash.py", "fallback", "STUB", enabled, bash_in(NOVERIFY_PATCH, enabled))
-        check(fb.rc == 2 and "H-20" in fb.err, fb,
-              "STUB fallback must BLOCK `git commit --no-verify` via the other interpreter (exit 2, H-20)")
-        check(fb.stub_invoked, fb, "fallback probe must have hit the stub")
 
-    for kind in ("primary", "fallback"):
-        e = run("pre-bash.py", kind, "NONE", enabled, bash_in(NOVERIFY_PATCH, enabled))
-        assert_loud_failure(e)
-        check("H-20" not in e.err, e, "no interpreter, so no H-20 verdict possible")
+    e = run("pre-tool-adapter.py", "primary", "NONE", enabled,
+            bash_in(NOVERIFY_PATCH, enabled))
+    assert_loud_failure(e)
+    check("H-20" not in e.err, e, "no interpreter, so no H-20 verdict possible")
 
     # ---- 4. pre-bash benign command, enabled: no false block
-    for scen, kind, stub_ok in allow_pairs():
-        assert_noop_allow(run("pre-bash.py", kind, scen, enabled, bash_in("ls -la", enabled)),
+    for scen, kind, stub_ok in pretool_allow_pairs():
+        assert_noop_allow(run("pre-tool-adapter.py", kind, scen, enabled,
+                              bash_in("ls -la", enabled)),
                           stub_ok=stub_ok)
 
     # ---- 5. pre-write H-05 (audit log overwrite via apply_patch), enabled
-    p = run("pre-write.py", "primary", "REAL", enabled, patch_in(AUDIT_PATCH, enabled))
-    check(p.rc == 2 and "H-05" in p.err, p,
-          "REAL primary must BLOCK the audit-log apply_patch")
-    assert_noop_allow(run("pre-write.py", "fallback", "REAL", enabled,
-                          patch_in(AUDIT_PATCH, enabled)))
-
+    p = run("pre-tool-adapter.py", "primary", "REAL", enabled,
+            patch_in(AUDIT_PATCH, enabled))
+    assert_codex_block(p, "H-05")
     if CODEX_STUB_IS_REAL_LIKE:
-        p = run("pre-write.py", "primary", "STUB", enabled, patch_in(AUDIT_PATCH, enabled))
-        check(p.rc == 2 and "H-05" in p.err, p,
-              "STUB primary (python, untouched by this python3-only stub) must still BLOCK")
-        assert_noop_allow(run("pre-write.py", "fallback", "STUB", enabled,
-                              patch_in(AUDIT_PATCH, enabled)))
+        p = run("pre-tool-adapter.py", "primary", "STUB", enabled,
+                patch_in(AUDIT_PATCH, enabled))
+        assert_codex_block(p, "H-05")
     else:
-        assert_stub_primary(run("pre-write.py", "primary", "STUB", enabled,
+        assert_stub_primary(run("pre-tool-adapter.py", "primary", "STUB", enabled,
                                 patch_in(AUDIT_PATCH, enabled)))
-        fb = run("pre-write.py", "fallback", "STUB", enabled, patch_in(AUDIT_PATCH, enabled))
-        check(fb.rc == 2 and "H-05" in fb.err, fb,
-              "STUB fallback must BLOCK the audit-log apply_patch via the other interpreter")
 
-    for kind in ("primary", "fallback"):
-        e = run("pre-write.py", kind, "NONE", enabled, patch_in(AUDIT_PATCH, enabled))
-        assert_loud_failure(e)
-        check("H-05" not in e.err, e, "no interpreter, so no H-05 verdict possible")
+    e = run("pre-tool-adapter.py", "primary", "NONE", enabled,
+            patch_in(AUDIT_PATCH, enabled))
+    assert_loud_failure(e)
+    check("H-05" not in e.err, e, "no interpreter, so no H-05 verdict possible")
 
     # ---- 6. pre-write ordinary write, enabled: allow in both interpreter routes
-    for scen, kind, stub_ok in allow_pairs():
-        assert_noop_allow(run("pre-write.py", kind, scen, enabled,
+    for scen, kind, stub_ok in pretool_allow_pairs():
+        assert_noop_allow(run("pre-tool-adapter.py", kind, scen, enabled,
                               patch_in(ORDINARY_PATCH, enabled)),
                           stub_ok=stub_ok)
 
@@ -669,28 +665,23 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
     for scen, kind, stub_ok in allow_pairs():
         assert_noop_allow(run("post-write-edit.py", kind, scen, enabled, post_in),
                           stub_ok=stub_ok)
-    for kind in ("primary", "fallback"):
-        assert_loud_failure(run("post-write-edit.py", kind, "NONE", enabled, post_in))
+    assert_loud_failure(run("post-write-edit.py", "primary", "NONE", enabled, post_in))
 
     # ---- 8. prune-transcript audit staleness-warn: host-neutral, non-blocking
-    for kind in ("primary", "fallback"):
+    for kind in ("primary",):
         e = run("prune-transcript.py", kind, "REAL", enabled, PRUNE_IN)
         check(e.rc == 0, e, "the audit staleness-warn must never block (exit 0)")
         check(e.out == "", e, "the staleness-warn produces no stdout")
 
     if CODEX_STUB_IS_REAL_LIKE:
-        for kind in ("primary", "fallback"):
+        for kind in ("primary",):
             e = run("prune-transcript.py", kind, "STUB", enabled, PRUNE_IN)
             check(e.rc == 0, e, "the audit staleness-warn must never block (exit 0)")
             check(e.out == "", e, "the staleness-warn produces no stdout")
     else:
         assert_stub_primary(run("prune-transcript.py", "primary", "STUB", enabled, PRUNE_IN))
-        fb = run("prune-transcript.py", "fallback", "STUB", enabled, PRUNE_IN)
-        check(fb.rc == 0, fb, "the audit staleness-warn must never block (exit 0)")
-        check(fb.out == "", fb, "the staleness-warn produces no stdout")
 
-    for kind in ("primary", "fallback"):
-        assert_loud_failure(run("prune-transcript.py", kind, "NONE", enabled, PRUNE_IN))
+    assert_loud_failure(run("prune-transcript.py", "primary", "NONE", enabled, PRUNE_IN))
 
 
 # ------------------------------------------------------------------------- main
@@ -698,8 +689,8 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
 CA_EXPECTED = {"session-start.py", "pre-bash.py", "pre-write.py",
                "pre-edit.py", "post-write-edit.py", "prune-transcript.py",
                "pre-read.py"}
-CODEX_EXPECTED = {"session-start.py", "pre-bash.py", "pre-write.py",
-                  "post-write-edit.py", "prune-transcript.py"}
+CODEX_EXPECTED = {"session-start.py", "pre-tool-adapter.py",
+                   "post-write-edit.py", "prune-transcript.py"}
 
 
 def main():
@@ -735,7 +726,9 @@ def main():
     print("Read matcher wiring: OK (matcher='Read', pre-read.py, primary+fallback dual-interpreter)")
 
     codex_hooks = build_hooks_map(CODEX_HOOKS_JSON, CODEX_PLUGIN_ROOT, codex_field,
-                                  CODEX_EXPECTED, "ca-codex")
+                                  CODEX_EXPECTED, "ca-codex",
+                                  {"SessionStart", "PreToolUse", "PostToolUse",
+                                   "UserPromptSubmit"})
 
     base = tempfile.mkdtemp(prefix="ca-coldinstall-")
     try:

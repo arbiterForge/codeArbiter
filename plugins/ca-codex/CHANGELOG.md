@@ -4,6 +4,22 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ---
 
+## [0.2.4] — 2026-07-11 — Codex hook-launch repair
+
+### Fixed
+- Registered one OS-specific command handler per event, removing concurrent
+  interpreter fallbacks that produced spurious failures or conflicting allows.
+- Added a Codex-only PreToolUse adapter. It runs the byte-identical shared
+  guards, converts their exit-2 verdict to Codex's structured `decision:block`
+  response, and preserves the exact gate feedback across the Windows shell.
+- Corrected `$ca-doctor` path resolution and remediation for ordinary Codex
+  tool calls, which do not inherit the hook runner's plugin-root environment.
+
+### Verified
+- Codex 0.144.1 loaded the trusted plugin, injected the SessionStart persona,
+  and blocked the live `$ca-doctor` probe with `[H-03]`. This satisfies the
+  ADR-0011 promotion gate and removes the beta label.
+
 ## [0.2.1] — 2026-07-11 — Codex package validation repair
 
 ### Fixed

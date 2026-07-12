@@ -124,8 +124,9 @@ class TestCodexToolNormalization(unittest.TestCase):
         self.assertFalse(self.host.has_prunable_transcript)
         self.assertTrue(claude_host().has_prunable_transcript)
 
-    def test_bash_is_exec(self):
-        self.assertEqual(self.host.normalize_tool("Bash"), "EXEC")
+    def test_shell_handler_names_are_exec(self):
+        for name in ("Bash", "shell_command", "exec_command", "unified_exec"):
+            self.assertEqual(self.host.normalize_tool(name), "EXEC", name)
 
     def test_apply_patch_and_aliases_are_write(self):
         # Write/Edit are matcher-only aliases whose payload is still the
@@ -719,6 +720,14 @@ class TestCodexHooksJson(unittest.TestCase):
                 out.append((group.get("matcher"), h))
         return out
 
+    def test_pre_tool_groups_have_one_handler(self):
+        for event, groups in self.hooks.items():
+            for group in groups:
+                self.assertEqual(
+                    len(group.get("hooks", [])), 1,
+                    f"{event} matcher {group.get('matcher', '<all>')} must use "
+                    "one OS-specific handler")
+
     def _scripts(self, cmd):
         return re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/hooks/([\w.-]+\.py)", cmd or "")
 
@@ -739,8 +748,8 @@ class TestCodexHooksJson(unittest.TestCase):
         entries = self._entries("PreToolUse")
         bash = [h for m, h in entries if m == "Bash"]
         write = [h for m, h in entries if m == "apply_patch|Write|Edit"]
-        self.assertTrue(any("pre-bash.py" in h["command"] for h in bash))
-        self.assertTrue(any("pre-write.py" in h["command"] for h in write))
+        self.assertTrue(any("pre-tool-adapter.py" in h["command"] for h in bash))
+        self.assertTrue(any("pre-tool-adapter.py" in h["command"] for h in write))
 
     def test_post_tool_use_matcher(self):
         entries = self._entries("PostToolUse")
@@ -768,6 +777,8 @@ class TestCodexHooksJson(unittest.TestCase):
             for _, h in self._entries(event):
                 self.assertIn("commandWindows", h)
                 self.assertIsInstance(h.get("timeout"), int)
+                self.assertIn("${CLAUDE_PLUGIN_ROOT}", h["commandWindows"])
+                self.assertIn("${CLAUDE_PLUGIN_ROOT}", h["command"])
 
 
 class TestCodexPluginJson(unittest.TestCase):
@@ -781,7 +792,8 @@ class TestCodexPluginJson(unittest.TestCase):
         # on every legitimate bump (it did, at 0.1.0 -> 0.2.0 / M3).
         self.assertRegex(m["version"], r"^0[.]\d+[.]\d+$")
         self.assertEqual(m["license"], "AGPL-3.0-only")
-        self.assertIn("beta", m["description"].lower())
+        self.assertNotIn("beta", m["description"].lower())
+        self.assertIn("0.144.1", m["description"])
         self.assertNotIn("displayName", m)
         interface = m["interface"]
         for field in ("displayName", "shortDescription", "longDescription",

@@ -10,7 +10,8 @@
 # Codex CLI contracts (source-verified against openai/codex rust-v0.143.0,
 # spike: .codearbiter/spikes/codex-extension-surface.md; minimum supported
 # Codex: rust-v0.134.0):
-#   * exec tool is canonically named "Bash", tool_input {"command": ...}
+#   * exec hooks may report legacy "Bash" or current shell handler names;
+#     each carries tool_input {"command": ...}
 #     (core/src/tools/hook_names.rs) — same canonical shape as Claude Code.
 #   * ALL file writes/edits arrive as "apply_patch", tool_input
 #     {"command": "<patch envelope>"} (core/tests/suite/hooks.rs:
@@ -191,6 +192,9 @@ class CodexHost(hostapi.Host):
     # else unlisted falls through to OTHER via the base normalize_tool.
     TOOL_MAP = {
         "Bash": "EXEC",
+        "shell_command": "EXEC",
+        "exec_command": "EXEC",
+        "unified_exec": "EXEC",
         "apply_patch": "WRITE",
         "Write": "WRITE",
         "Edit": "WRITE",

@@ -4,8 +4,14 @@ Confirm the ca-codex plugin enforces **identically** to the ca (Claude Code) plu
 real Codex CLI install. This is the live half of parity — the static half (the two hosts'
 hook logic returning identical verdicts for equivalent payloads) is already covered by
 `.github/scripts/test_codex_adapter.py`, which runs in CI. What CI **cannot** prove is that
-Codex itself delivers the documented payloads, runs the hooks, and honors an exit-2 block.
+Codex itself delivers the documented payloads, runs the hooks, and honors a block. On Windows,
+the Codex adapter converts the shared guard's exit-2 verdict to Codex's structured deny output so
+the shell boundary cannot collapse the exit status.
 That is what you confirm here.
+
+Verified baseline: **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows, 2026-07-11.
+The installed hook set was approved through `/hooks`; SessionStart persona injection completed,
+and `$ca-doctor`'s `git add --all --dry-run` probe was blocked with `[H-03]`.
 
 Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.134.0** (first release with
 plugin-bundled hooks on by default), this repo checked out on `feat/codex-support-m0`, and —
