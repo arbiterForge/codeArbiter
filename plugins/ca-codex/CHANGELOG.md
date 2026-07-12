@@ -14,6 +14,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   argument hints contain mapping punctuation.
 - Added a pinned, executable package validator and CI coverage so packaging
   drift fails before release.
+- Made gate-event appends a single append write, with a Windows byte-range lock,
+  so simultaneous Claude and Codex blocks retain one host-attributed audit line
+  per event without extending concurrency guarantees to RMW project state.
 
 The plugin remains BETA until the ADR-0011 live-Codex verification gate passes.
 

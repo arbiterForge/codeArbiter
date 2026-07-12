@@ -784,9 +784,24 @@ def _log_gate_event(kind, tag, msg):
             host = "unknown"
         tag_part = f"[{tag}] " if tag else ""
         line = f"[{ts}] {kind} {tag_part}host={host} hook={hook} | {msg}\n"
-        with open(os.path.join(cad, "gate-events.log"), "a",
-                  encoding="utf-8", newline="\n") as f:
-            f.write(line)
+        flags = os.O_APPEND | os.O_CREAT | os.O_WRONLY
+        if hasattr(os, "O_BINARY"):
+            flags |= os.O_BINARY
+        fd = os.open(os.path.join(cad, "gate-events.log"), flags, 0o600)
+        try:
+            if os.name == "nt":
+                import msvcrt
+                os.lseek(fd, 0, os.SEEK_SET)
+                msvcrt.locking(fd, msvcrt.LK_LOCK, 1)
+            os.write(fd, line.encode("utf-8"))
+        finally:
+            if os.name == "nt":
+                try:
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                except Exception:  # noqa: BLE001 — outer sink remains fail-open
+                    pass
+            os.close(fd)
     except Exception:  # noqa: BLE001 — fail-open: the sink must never affect the gate
         pass
 

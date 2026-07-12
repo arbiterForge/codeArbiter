@@ -205,6 +205,11 @@ jobs:
         # parity (H-05/H-11/H-18/H-19/H-20/H-21) via real subprocess
         # invocations of each plugin's vendored pre-write.py/pre-bash.py.
         run: python .github/scripts/test_codex_adapter.py
+      - name: Run dual-host shared-store contract
+        # ADR-0012: sequential initialization shares one store; concurrency is
+        # asserted only for append-only gate events, never RMW state or the
+        # repo-global dev marker.
+        run: python .github/scripts/test_dual_host_store.py
       - name: Run guard-logic matrix
         # The cold-install matrix proves the interpreter plumbing; this proves
         # the guard decisions themselves - every blocked spelling of

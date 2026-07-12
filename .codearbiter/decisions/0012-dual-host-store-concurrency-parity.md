@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-07-09
 title: Dual-host .codearbiter/ concurrency is at parity with same-host concurrency
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,9 @@ governs: core/pysrc/taskwrite.py, core/pysrc/_hooklib.py, core/pysrc/session-sta
 # ADR-0012 — Dual-host `.codearbiter/` concurrency is at parity with same-host concurrency
 
 ## Status
-Proposed
+Accepted — ratified 2026-07-11 by the maintainer after review of the Codex
+plugin parity repair design. The accepted bar remains same-host concurrency
+parity; this decision does not authorize a stronger locking or CAS obligation.
 
 ## Context
 ADR-0011 lets Claude Code and Codex CLI share one `.codearbiter/` store per repository, so two
