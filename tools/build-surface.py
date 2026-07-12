@@ -44,6 +44,7 @@
 #   python tools/build-surface.py --check          # verify, exit 1 on drift
 #   python tools/build-surface.py --host codex     # limit to one host
 
+import json
 import os
 import re
 import sys
@@ -202,10 +203,33 @@ def extract(text):
     return _CMD_LITERAL.sub(r"{{CMD:\1}}", text)
 
 
+def _yaml_safe_scalar(value):
+    """Quote a command-frontmatter scalar when YAML could reinterpret it."""
+    if value.startswith('"'):
+        try:
+            if isinstance(json.loads(value), str):
+                return value
+        except json.JSONDecodeError:
+            return json.dumps(value, ensure_ascii=False)
+    if value.startswith(("[", "{")) or ": " in value or " | " in value:
+        return json.dumps(value, ensure_ascii=False)
+    return value
+
+
 def _synth_skill_frontmatter(text, cmd_name, where):
     if not text.startswith("---\n"):
         raise SurfaceError(f"{where}: command template lacks '---' frontmatter")
-    return f"---\nname: ca-{cmd_name}\n" + text[4:]
+    end = text.find("\n---\n", 4)
+    if end < 0:
+        raise SurfaceError(f"{where}: unterminated frontmatter")
+    lines = []
+    for line in text[4:end].split("\n"):
+        if line.startswith(("description:", "argument-hint:")):
+            key, value = line.split(":", 1)
+            line = f"{key}: {_yaml_safe_scalar(value.strip())}"
+        lines.append(line)
+    frontmatter = "\n".join(lines)
+    return f"---\nname: ca-{cmd_name}\n{frontmatter}" + text[end:]
 
 
 def _frontmatter_description(text, where):

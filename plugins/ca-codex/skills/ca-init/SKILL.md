@@ -1,7 +1,7 @@
 ---
 name: ca-init
 description: Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store.
-argument-hint: (none) | --stage N | --check
+argument-hint: "(none) | --stage N | --check"
 ---
 
 # $ca-init — first-run scaffold

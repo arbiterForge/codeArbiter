@@ -1,6 +1,6 @@
 ---
 name: ca-feature
-description: Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.
+description: "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation."
 argument-hint: "<what you want to build>"
 ---
 

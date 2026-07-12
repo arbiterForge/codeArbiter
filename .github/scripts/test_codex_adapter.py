@@ -782,13 +782,29 @@ class TestCodexPluginJson(unittest.TestCase):
         self.assertRegex(m["version"], r"^0[.]\d+[.]\d+$")
         self.assertEqual(m["license"], "AGPL-3.0-only")
         self.assertIn("beta", m["description"].lower())
+        self.assertNotIn("displayName", m)
+        interface = m["interface"]
+        for field in ("displayName", "shortDescription", "longDescription",
+                      "developerName", "category"):
+            self.assertIsInstance(interface[field], str)
+            self.assertTrue(interface[field].strip())
+        self.assertIsInstance(interface["capabilities"], list)
+        self.assertTrue(all(isinstance(value, str)
+                            for value in interface["capabilities"]))
+        self.assertIsInstance(interface["defaultPrompt"], list)
+        self.assertTrue(all(isinstance(value, str)
+                            for value in interface["defaultPrompt"]))
 
     def test_marketplace_lists_ca_codex(self):
         path = os.path.join(REPO, ".agents", "plugins", "marketplace.json")
         with open(path, encoding="utf-8") as f:
             m = json.load(f)
-        names = [p["name"] for p in m["plugins"]]
-        self.assertIn("ca-codex", names)
+        entry = next(p for p in m["plugins"] if p["name"] == "ca-codex")
+        self.assertEqual(entry["source"], {
+            "source": "local", "path": "./plugins/ca-codex"})
+        self.assertEqual(entry["policy"], {
+            "installation": "AVAILABLE", "authentication": "ON_INSTALL"})
+        self.assertEqual(entry["category"], "Developer Tools")
 
 
 if __name__ == "__main__":

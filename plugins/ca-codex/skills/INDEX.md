@@ -23,11 +23,11 @@ skill is invoked — never bulk-read this directory.
 | `$ca-decompose` | Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized. |
 | `$ca-dev` | Maintainer override — suspend orchestration to edit codeArbiter itself. Env-gated (CODEARBITER_DEV=1), entry/exit logged to overrides.log. |
 | `$ca-doctor` | Verify the install is actually enforcing — interpreter, payload, cache staleness, repo state, and a live-fire hook probe. Read-only. |
-| `$ca-feature` | Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation. |
-| `$ca-fix` | Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates. |
+| `$ca-feature` | "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation." |
+| `$ca-fix` | "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates." |
 | `$ca-init` | Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store. |
 | `$ca-metrics` | Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window. |
-| `$ca-new-skill` | Author a new codeArbiter skill: prove the gap is real, get the spec approved, then write it. |
+| `$ca-new-skill` | "Author a new codeArbiter skill: prove the gap is real, get the spec approved, then write it." |
 | `$ca-override` | Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed. |
 | `$ca-pr` | Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch. |
 | `$ca-preview` | Zero-onboarding, read-only dry-run of the reviewer fleet against the current uncommitted diff. Predicts reviewers, runs the state-free secret scan, writes nothing. |

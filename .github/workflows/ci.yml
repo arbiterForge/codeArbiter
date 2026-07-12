@@ -487,6 +487,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
       - name: Validate every tracked JSON parses
         run: |
           fail=0
@@ -499,6 +502,12 @@ jobs:
           done < <(git ls-files '*.json')
           if [ "$fail" -eq 0 ]; then echo "all tracked JSON valid"; fi
           exit $fail
+      - name: Validate ca-codex package against pinned schema
+        run: |
+          codex --version 2>/dev/null || echo "codex CLI not installed; schema baseline is recorded by the validator"
+          python3 .github/scripts/validate_codex_plugin.py
+      - name: Test the pinned ca-codex package validator
+        run: python3 .github/scripts/test_validate_codex_plugin.py
 
   license-consistency:
     name: Repo | [Check] - License Consistency

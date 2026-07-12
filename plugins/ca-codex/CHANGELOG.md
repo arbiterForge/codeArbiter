@@ -4,6 +4,19 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ---
 
+## [0.2.1] — 2026-07-11 — Codex package validation repair
+
+### Fixed
+- Updated the Codex manifest and repository marketplace to the schema validated
+  for Codex CLI 0.144.1, including complete interface metadata and explicit
+  installation policy.
+- Made generated Codex skill frontmatter valid YAML when descriptions or
+  argument hints contain mapping punctuation.
+- Added a pinned, executable package validator and CI coverage so packaging
+  drift fails before release.
+
+The plugin remains BETA until the ADR-0011 live-Codex verification gate passes.
+
 ## [0.2.0] — 2026-07-10 — Full command/skill surface (M3): standalone Codex support
 
 Codex-only users are first-class (DECISION-0013, closes #287): the whole

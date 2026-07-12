@@ -171,6 +171,24 @@ class CodexMappingTest(_RepoCase):
         text = out["skills/ca-init/SKILL.md"].decode()
         self.assertTrue(text.startswith("---\nname: ca-init\ndescription: Opt this repo in.\n"))
 
+    def test_codex_quotes_yaml_significant_frontmatter_scalars(self):
+        _write(self.repo, "core/surface/commands/init.md",
+               "---\ndescription: Initialize safely: preserve shared state.\n"
+               "argument-hint: [path] | --force\n---\n\n# {{CMD:init}}\n")
+        codex = self.render("codex")["skills/ca-init/SKILL.md"].decode()
+        self.assertIn('description: "Initialize safely: preserve shared state."\n', codex)
+        self.assertIn('argument-hint: "[path] | --force"\n', codex)
+        claude = self.render("claude")["commands/init.md"].decode()
+        self.assertIn("description: Initialize safely: preserve shared state.\n", claude)
+        self.assertIn("argument-hint: [path] | --force\n", claude)
+
+    def test_codex_quotes_partially_quoted_argument_hint(self):
+        _write(self.repo, "core/surface/commands/init.md",
+               "---\ndescription: Safe init.\n"
+               "argument-hint: \"[path]\" (defaults to cwd)\n---\n\n# {{CMD:init}}\n")
+        codex = self.render("codex")["skills/ca-init/SKILL.md"].decode()
+        self.assertIn('argument-hint: "\\\"[path]\\\" (defaults to cwd)"\n', codex)
+
     def test_excluded_commands_produce_no_codex_output(self):
         out = self.render("codex")
         self.assertNotIn("skills/ca-statusline/SKILL.md", out)

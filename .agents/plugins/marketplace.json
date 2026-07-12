@@ -1,13 +1,20 @@
 {
   "name": "codearbiter",
-  "owner": { "name": "arbiterForge" },
-  "metadata": {
-    "description": "codeArbiter for OpenAI Codex CLI: ca-codex, the beta governance kernel that enforces the codeArbiter gates (persona injection, blocking pre-exec/pre-write hooks, append-only audit trail) against the same .codearbiter/ store as the Claude Code sibling plugins."
+  "interface": {
+    "displayName": "codeArbiter"
   },
   "plugins": [
     {
       "name": "ca-codex",
-      "source": "./plugins/ca-codex"
+      "source": {
+        "source": "local",
+        "path": "./plugins/ca-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
     }
   ]
 }

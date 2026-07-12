@@ -1,7 +1,7 @@
 ---
 name: ca-watch
 description: Watch a PR's CI to completion — diagnose on red, notify and offer the merge on green. Never auto-merges.
-argument-hint: <PR number | url | branch>
+argument-hint: "<PR number | url | branch>"
 ---
 
 # $ca-watch — PR CI babysitter

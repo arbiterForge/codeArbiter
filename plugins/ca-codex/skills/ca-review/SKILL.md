@@ -1,7 +1,7 @@
 ---
 name: ca-review
 description: Review the current diff with the reviewer fleet, funneled to one triaged verdict.
-argument-hint: "[path]" (defaults to the current diff)
+argument-hint: "\"[path]\" (defaults to the current diff)"
 ---
 
 # $ca-review — diff review
