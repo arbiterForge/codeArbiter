@@ -45,4 +45,22 @@ describe("canonical Claude Code and Codex support evidence", () => {
     const config = read("astro.config.mjs");
     expect(config).toContain("getting-started/claude-code-and-codex");
   });
+
+  it("makes the primary getting-started journey host-aware", () => {
+    for (const rel of [
+      "src/content/docs/overview.md",
+      "src/content/docs/getting-started/install.md",
+      "src/content/docs/getting-started/quickstart.md",
+      "src/content/docs/getting-started/compatibility.md",
+    ]) {
+      const content = read(rel);
+      expect(content, rel).toContain("Claude Code");
+      expect(content, rel).toContain("Codex");
+      expect(content, rel).toContain(".codearbiter/");
+      expect(content, rel).toContain("getting-started/claude-code-and-codex");
+    }
+    const install = read("src/content/docs/getting-started/install.md");
+    expect(install).toContain("/ca:doctor");
+    expect(install).toContain("$ca-doctor");
+  });
 });

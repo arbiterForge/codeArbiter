@@ -166,9 +166,9 @@ describe("install demo terminal (get-it-running below the fold)", () => {
     expect(indexMdx).toContain("InstallTerminal");
   });
 
-  it("the install title and statusline subtext are present above the demo", () => {
+  it("the install title and shared-host subtext are present above the demo", () => {
     expect(indexMdx).toMatch(/Get the Arbiter on Your Case/);
-    expect(indexMdx).toMatch(/wires in the statusline/i);
+    expect(indexMdx).toMatch(/Claude Code or Codex/i);
   });
 
   it("the install title is a real heading, not a paragraph styled as one", () => {
@@ -211,6 +211,23 @@ describe("install demo terminal (get-it-running below the fold)", () => {
     expect(installCmp).toContain('role="region"');
     expect(installCmp).toContain('role="listitem"');
     expect(installCmp).toContain('aria-hidden="true"');
+  });
+});
+
+describe("Claude Code and Codex launch contract", () => {
+  it("landing metadata, heading, and tagline name both supported hosts", () => {
+    expect(indexMdx).toMatch(/Claude Code.*Codex|Codex.*Claude Code/);
+    expect(indexMdx).toContain(
+      "Shared enforcement and project-context parity across Claude Code and Codex",
+    );
+  });
+
+  it("install terminal presents both host paths", () => {
+    expect(installCmp).toContain("Claude Code");
+    expect(installCmp).toContain("Codex");
+    expect(installCmp).toContain("codex plugin marketplace add arbiterForge/codeArbiter");
+    expect(installCmp).toContain("codex plugin add ca-codex@codearbiter");
+    expect(installCmp).toContain("$ca-doctor");
   });
 });
 

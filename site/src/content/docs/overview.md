@@ -1,12 +1,13 @@
 ---
 title: What Is codeArbiter
-description: How codeArbiter orchestrates gated software-engineering workflows in Claude Code.
+description: How codeArbiter orchestrates shared gated workflows in Claude Code and Codex.
 ---
 
-codeArbiter is a Claude Code plugin. When you enable it in a repository, it installs a
-single orchestrator persona that mediates every request. Every request you make flows
-through a slash command, which routes to the one skill or agent that owns it, and clears
-its gates before it ships.
+codeArbiter ships as `ca` for Claude Code and `ca-codex` for Codex. Both inject the same
+orchestrator responsibilities, enforce the same policy core, and use one checked-in
+`.codearbiter/` directory for project context and audit state. See the
+[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
+and intentional host differences.
 
 ## codeArbiter Holds the Gates; You Hold the Decisions
 
@@ -20,12 +21,10 @@ your behalf.
 
 ## How a Request Flows
 
-1. **Command.** You invoke a namespaced slash command: `/ca:feature`, `/ca:fix`,
-   `/ca:commit`, and so on. (The plugin is named `ca`, and Claude Code namespaces every
-   command behind it.)
-2. **Route.** The orchestrator hands the command to the single skill or agent that owns
-   that lane. `/ca:fix` goes to the test-first gate, `/ca:adr` to the decision-lifecycle
-   skill.
+1. **Command.** Invoke `/ca:feature` in Claude Code or `$ca-feature` in Codex. The generated
+   command surface differs in spelling, not ownership or policy.
+2. **Route.** The orchestrator hands the command to the workflow that owns that lane.
+   `/ca:fix` and `$ca-fix` both reach the same test-first obligations.
 3. **Dispatch.** The owning skill calls the agents the change actually demands: an author
    to write code test-first, plus a reviewer fleet matched to the diff (security,
    auth/crypto, dependencies, migrations, coverage).

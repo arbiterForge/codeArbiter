@@ -74,7 +74,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "codeArbiter",
-      description: "Gated software-engineering workflows for Claude Code.",
+      description: "Shared enforcement and project-context parity across Claude Code and Codex.",
       logo: {
         src: "./src/assets/logo.svg",
         replacesTitle: true,
