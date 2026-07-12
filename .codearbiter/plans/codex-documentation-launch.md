@@ -1,5 +1,7 @@
 # Codex Documentation Launch Design
 
+**Status:** Approved by the maintainer on 2026-07-12
+
 ## Objective
 
 Announce Codex as a first-class codeArbiter host across the repository README and documentation
