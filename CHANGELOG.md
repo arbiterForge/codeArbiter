@@ -6,9 +6,17 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
-## [2.8.13] — 2026-07-10
+## [2.8.13] — 2026-07-12
 
-Host-aware runtime vocabulary; no behavior change under Claude Code.
+Host-aware runtime vocabulary, plus dual-host audit-trail hardening.
+
+### Fixed
+- Audit-log lines in `gate-events.log` now record the writing host
+  (`host=claude` / `host=codex`), restoring per-writer attribution now that two
+  hosts can share one `.codearbiter/` store (ADR-0012).
+- `gate-events.log` appends are now protected by a Windows byte-range lock and
+  the file is created `0o600`, so concurrent sessions cannot interleave or
+  truncate audit lines.
 
 ### Changed
 - Every runtime-emitted command reference (startup briefing, NOT-INITIALIZED

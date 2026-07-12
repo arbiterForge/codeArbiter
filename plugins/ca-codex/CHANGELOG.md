@@ -4,11 +4,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ---
 
-## [0.2.4] — 2026-07-11 — Codex hook-launch repair
+## [0.2.4] — 2026-07-12 — Codex hook-launch repair
 
 ### Fixed
 - Registered one OS-specific command handler per event, removing concurrent
   interpreter fallbacks that produced spurious failures or conflicting allows.
+- Widened the PreToolUse exec matcher to `Bash|shell_command|exec_command|unified_exec`
+  so the exec gate fires for every tool name the host map classifies as EXEC; a new
+  adapter-suite drift guard fails if the matcher and the tool map ever diverge.
+- Raised the documented Codex support floor to rust-v0.143.0, the earliest release
+  with source-verified structured `decision:block` handling. The live-verified
+  baseline remains 0.144.1.
 - Added a Codex-only PreToolUse adapter. It runs the byte-identical shared
   guards, converts their exit-2 verdict to Codex's structured `decision:block`
   response, and preserves the exact gate feedback across the Windows shell.
