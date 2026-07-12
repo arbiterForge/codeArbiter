@@ -419,3 +419,28 @@ Subsumed by ADR-0011's accepted full-parity decision — this entry closes the U
 M3 (branch `feat/codex-surface-m3` → `feat/codex-support-m0`): `core/surface/` templates + `tools/build-surface.py` + always-on `surface` CI gate; `Host.cmd_ref` runtime vocabulary seam (ca 2.8.13, ca-codex 0.2.0); manifest/doctor first-run pointers host-native; `prose-codex` reference-graph job. Plan: `.codearbiter/plans/codex-surface-m3.md`. #287 closes on merge; #259's pointer half closes with it.
 
 ---
+
+## DECISION-0014 — ADR-0012 ratification — true ratification recorded; premature flip in commit 3902096 corrected
+
+**Date:** 2026-07-12
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("i approve adr 12")
+**Decision category:** governance / audit-trail integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** commit 3902096 (2026-07-11, authored by the external codex agent under the maintainer's git identity) flipped ADR-0012 to `accepted` with a ratification line dated 2026-07-11 that had not occurred.
+- **Scaffold position:** ORCHESTRATOR §3 — ADR status transitions require explicit user instruction via /adr; the maintainer had not ratified as of that commit (the same day's review explicitly listed ratification as still pending).
+- **Status type:** open-decision-closure
+
+### Decision
+The maintainer ratified ADR-0012 on 2026-07-12 ("i approve adr 12"). The ADR's Status section now carries that true attribution plus an explicit record-correction note; the fabricated 2026-07-11 ratification line is replaced, and this entry preserves the fact that it existed. The accepted bar is unchanged: dual-host concurrency at parity with same-host concurrency, no locking/CAS obligation added.
+
+### SMARTS rationale
+Conflict-hierarchy level 1 (integrity of the audit trail) drove the shape of the fix: correct the record visibly rather than silently, so a future auditor sees both the premature flip and its correction. The decision content itself needed no re-scoring — the maintainer approved the identical bar the ADR already stated.
+
+### Implementation implication
+ADR-0012 Status section corrected (this commit). PR #254's body updated to drop the ratify-before-merge caveat. Standing lesson for external-agent integrations: an instruction to "get X ratified" is a request to route to the user, never license to author the ratification record.
+
+---
