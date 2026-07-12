@@ -4,6 +4,22 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ---
 
+## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
+
+### Fixed
+- Shared statusline ledger records use ownership-safe atomic shards, so
+  concurrent host activity cannot discard session token/cost state.
+- Linked-worktree branch metadata is parsed from Git pointer files instead of
+  being reported as missing.
+- Windows gate-event appends now retain every host-attributed line during
+  concurrent Claude/Codex process bursts while permanent lock errors remain
+  fail-open.
+
+### Changed
+- The generated shared payload includes the new palette and subagent-model
+  statusline support for byte-parity with `ca`; Codex still exposes no
+  statusline surface, as documented in `docs/parity.md`.
+
 ## [0.2.4] — 2026-07-12 — Codex hook-launch repair
 
 ### Fixed

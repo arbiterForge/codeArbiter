@@ -6,6 +6,29 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.9.0] — 2026-07-12
+
+Statusline customization and correctness hardening across concurrent sessions.
+
+### Added
+- Five opt-in statusline palettes (`violet`, `blue`, `green`, `amber`, and
+  `mono`) plus a bounded, partial custom JSON palette. Violet remains the
+  byte-identical default; invalid configuration fails softly, and `NO_COLOR`
+  remains authoritative.
+- Recent subagent rows now show the recorded model, `model:mixed`, or
+  `model:?`, captured during the existing bounded transcript scan.
+
+### Fixed
+- Concurrent statusline renders no longer lose ledger updates, session-start
+  metadata, or aggregate token/cost totals.
+- Linked Git worktrees report their branch correctly, third-party statusline
+  commands are no longer mistaken for codeArbiter-owned settings, and the
+  display-only dirty check has a 100 ms latency budget.
+- Windows audit events survive same-process and dual-host process bursts while
+  retaining bounded, fail-open lock behavior.
+- Prune warm-reset coverage no longer depends on wall-clock scheduling, and
+  docs-site hook snapshots no longer pin exact source line numbers.
+
 ## [2.8.13] — 2026-07-12
 
 Host-aware runtime vocabulary, plus dual-host audit-trail hardening.
