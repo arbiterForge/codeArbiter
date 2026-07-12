@@ -31,9 +31,12 @@ class PublicCodexDocsTest(unittest.TestCase):
             "$ca-init",
             "$ca-doctor",
             "/hooks",
-            "available after the Codex-support release",
+            "available now",
+            "v2.8.13",
+            "ca-codex 0.2.4",
         ):
             self.assertIn(text, self.readme)
+        self.assertNotIn("available after the Codex-support release", self.readme)
 
     def test_readme_links_catalog_and_evidence(self):
         self.assertIn("plugins/ca-codex/COMMANDS.md", self.readme)
