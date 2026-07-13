@@ -14,12 +14,12 @@
 # "BLOCKED" gates may not have been stopping the tool at all; this port closes
 # that latent gap.
 #
-# Interpreter launch: hooks.json registers every hook TWICE — `python3 <script>`
-# plus a fallback `python3 -c "" || python <script>`. Stock Windows often has no
-# real python3 (the Microsoft Store stub exits 9009), which would make every
-# gate fail OPEN; the fallback entry probes for python3 and runs `python` only
-# when it is absent. A single `python3 x || python x` entry would be wrong: when
-# python3 exists and the script BLOCKS (exit 2), `||` would re-run it against a
+# Interpreter launch: hooks.json registers every hook TWICE — `python <script>`
+# plus a fallback `python -c "" || python3 <script>`. Preferring `python` avoids
+# activating Windows' python3 MSIX app-execution alias for every hook; POSIX
+# installs that expose only python3 still use the fallback. A single
+# `python x || python3 x` entry would be wrong: when python exists and the
+# script BLOCKS (exit 2), `||` would re-run it against a
 # drained stdin and the rerun's exit 0 would swallow the block. Separate hook
 # entries each receive their own stdin, so the block survives.
 #

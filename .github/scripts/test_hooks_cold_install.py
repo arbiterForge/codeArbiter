@@ -5,8 +5,8 @@ and `ca-codex` (OpenAI Codex CLI).
 
 Every enforcement hook in plugins/ca/hooks/hooks.json is registered TWICE:
 
-    primary :  python3 "<script>"
-    fallback:  python3 -c "" || python "<script>"
+    primary :  python "<script>"
+    fallback:  python -c "" || python3 "<script>"
 
 `plugins/ca-codex/hooks/hooks.json` carries the same primary+fallback
 duplication (reliability-008), but in Codex's native per-entry
@@ -29,10 +29,10 @@ POSIX, hook-input JSON piped to stdin, one process per entry with fresh
 stdin), under three PATH scenarios:
 
     REAL  a dir providing real `python3` AND `python` is prepended to PATH.
-    STUB  a dir whose `python3` mimics the Store alias (prints "Python was
+    STUB  a dir whose preferred `python` fails (prints "Python was
           not found" to stderr, exits 9009, and logs its invocation to a
           marker file so the run is provable) is prepended FIRST; a dir
-          providing only real `python` follows it.
+          providing real `python3` follows it.
     NONE  PATH is the ambient PATH with every dir that resolves `python` or
           `python3` removed (git, node, system dirs survive).
 
@@ -144,13 +144,11 @@ def make_real_dir(base):
 
 
 def make_pyonly_dir(base):
-    """A dir resolving ONLY `python` (the STUB scenario's later-on-PATH real
-    interpreter). Windows: a second venv Scripts dir (has python.exe, no
-    python3.exe). POSIX: a single symlink."""
+    """A later-on-PATH dir providing the real fallback interpreter."""
     if not WIN:
         d = os.path.join(base, "py-only-bin")
         os.makedirs(d)
-        os.symlink(sys.executable, os.path.join(d, "python"))
+        os.symlink(sys.executable, os.path.join(d, "python3"))
         return d
     venv = os.path.join(base, "pyonly-venv")
     r = sh([sys.executable, "-m", "venv", "--without-pip", venv])
@@ -160,27 +158,52 @@ def make_pyonly_dir(base):
 
 
 def make_stub_dir(base):
-    """A dir whose `python3` behaves like the Microsoft Store alias stub:
+    """A dir whose preferred `python` fails, exercising the fallback entry:
     stderr noise, exit 9009 (POSIX: 49 — 9009 truncates mod 256 anyway), and
     an invocation log proving the fake was actually exercised."""
     d = os.path.join(base, "stub-bin")
+    os.makedirs(d)
+    log = os.path.join(d, "python-invoked.log")
+    if WIN:
+        with open(os.path.join(d, "python.bat"), "w", encoding="ascii") as f:
+            f.write("@echo off\r\n"
+                    "echo invoked>> \"%~dp0python-invoked.log\"\r\n"
+                    "echo Python was not found; run without arguments to install from the"
+                    " Microsoft Store, or disable this shortcut from Settings. 1>&2\r\n"
+                    "exit /b 9009\r\n")
+    else:
+        p = os.path.join(d, "python")
+        with open(p, "w", encoding="ascii") as f:
+            f.write("#!/bin/sh\n"
+                    "echo invoked >> \"$(dirname \"$0\")/python-invoked.log\"\n"
+                    "echo \"Python was not found; run without arguments to install from"
+                    " the Microsoft Store.\" >&2\n"
+                    "exit 49\n")
+        os.chmod(p, 0o755)
+    return d, log
+
+
+def make_success_alias_dir(base):
+    """A successful logging ``python3`` shim, modelling a Windows MSIX alias.
+
+    The real Python Install Manager alias successfully launches Python, so the
+    existing failing-STUB fixture cannot prove that hooks avoid activating it.
+    This shim delegates to the current interpreter after recording each launch.
+    """
+    d = os.path.join(base, "success-alias-bin")
     os.makedirs(d)
     log = os.path.join(d, "python3-invoked.log")
     if WIN:
         with open(os.path.join(d, "python3.bat"), "w", encoding="ascii") as f:
             f.write("@echo off\r\n"
                     "echo invoked>> \"%~dp0python3-invoked.log\"\r\n"
-                    "echo Python was not found; run without arguments to install from the"
-                    " Microsoft Store, or disable this shortcut from Settings. 1>&2\r\n"
-                    "exit /b 9009\r\n")
+                    f'"{sys.executable}" %*\r\n')
     else:
         p = os.path.join(d, "python3")
         with open(p, "w", encoding="ascii") as f:
             f.write("#!/bin/sh\n"
                     "echo invoked >> \"$(dirname \"$0\")/python3-invoked.log\"\n"
-                    "echo \"Python was not found; run without arguments to install from"
-                    " the Microsoft Store.\" >&2\n"
-                    "exit 49\n")
+                    f'exec "{sys.executable}" "$@"\n')
         os.chmod(p, 0o755)
     return d, log
 
@@ -396,6 +419,37 @@ def run_ca_campaign(hooks, paths, stub_log, enabled, dormant, base):
     ADD_A_IN = {"tool_name": "Bash", "tool_input": {"command": "git add -A"}}
     BENIGN_BASH_IN = {"tool_name": "Bash", "tool_input": {"command": "git status"}}
 
+    # Windows must prefer the real ``python`` executable without even probing
+    # a successful ``python3`` app-execution alias.  Probing the alias is the
+    # defect: each activation asks AppXSvc to perform an update check.
+    if WIN:
+        alias_log = paths["SUCCESS_ALIAS_LOG"]
+        alias_env = scenario_env(paths["SUCCESS_ALIAS"], enabled)
+        if os.path.exists(alias_log):
+            os.remove(alias_log)
+        rc, out, err = run_entry('python3 -c ""', {}, enabled, alias_env)
+        control = Entry("python3/SUCCESS_ALIAS/control", 'python3 -c ""',
+                        rc, out, err, os.path.exists(alias_log))
+        check(control.rc == 0, control,
+              "successful-alias control must resolve python3 and exit 0")
+        invocations = []
+        if os.path.exists(alias_log):
+            with open(alias_log, encoding="ascii") as f:
+                invocations = [line for line in f if line.strip()]
+        check(len(invocations) == 1, control,
+              "successful-alias control must record exactly one activation")
+        if os.path.exists(alias_log):
+            os.remove(alias_log)
+
+        alias_run = make_runner(hooks, CA_PLUGIN_ROOT, paths, alias_log)
+        p = alias_run("session-start.py", "primary", "SUCCESS_ALIAS", enabled, SESSION_IN)
+        fb = alias_run("session-start.py", "fallback", "SUCCESS_ALIAS", enabled, SESSION_IN)
+        alias_entry = p if p.stub_invoked else fb
+        check(not p.stub_invoked and not fb.stub_invoked, alias_entry,
+              "Windows ca hooks must not activate a successful python3/MSIX alias")
+        check(p.out.count(PERSONA_MARK) + fb.out.count(PERSONA_MARK) == 1,
+              p, "Windows ca hook group must execute the hook exactly once")
+
     # ---- 0. harness isolation: scenario_env MUST sandbox the home dir.
     # session-start.py self-heals the statusLine on every SessionStart by
     # writing ~/.claude/settings.json (resolved via expanduser("~")). If the
@@ -431,7 +485,7 @@ def run_ca_campaign(hooks, paths, stub_log, enabled, dormant, base):
         else:
             assert_stub_primary(p)
             check(fb.rc == 0 and PERSONA_MARK in fb.out, fb,
-                  "STUB fallback must inject the persona via `python` and exit 0")
+                  "STUB fallback must inject the persona via `python3` and exit 0")
             check(fb.stub_invoked, fb, "fallback probe must have hit the stub")
     for kind in ("primary", "fallback"):
         assert_loud_failure(run("session-start.py", kind, "NONE", enabled, SESSION_IN))
@@ -457,7 +511,7 @@ def run_ca_campaign(hooks, paths, stub_log, enabled, dormant, base):
     assert_stub_primary(p)
     fb = run("pre-bash.py", "fallback", "STUB", enabled, ADD_A_IN)
     check(fb.rc == 2 and "H-03" in fb.err, fb,
-          "STUB fallback must BLOCK `git add -A` via `python` (exit 2, H-03)")
+          "STUB fallback must BLOCK `git add -A` via `python3` (exit 2, H-03)")
     check(fb.stub_invoked, fb, "fallback probe must have hit the stub")
 
     for kind in ("primary", "fallback"):
@@ -489,7 +543,7 @@ def run_ca_campaign(hooks, paths, stub_log, enabled, dormant, base):
     assert_noop_allow(run("pre-write.py", "fallback", "REAL", enabled, write_in))
     fb = run("pre-write.py", "fallback", "STUB", enabled, write_in)
     check(fb.rc == 2 and "H-05" in fb.err, fb,
-          "STUB fallback must BLOCK the audit-log Write via `python`")
+          "STUB fallback must BLOCK the audit-log Write via `python3`")
 
     # ---- 7. pre-edit benign, enabled: allow in both interpreter routes
     edit_in = {"tool_name": "Edit", "tool_input": {
@@ -509,7 +563,7 @@ def run_ca_campaign(hooks, paths, stub_log, enabled, dormant, base):
     assert_noop_allow(run("post-write-edit.py", "fallback", "REAL", enabled, post_in))
     fb = run("post-write-edit.py", "fallback", "STUB", enabled, post_in)
     check(fb.rc == 0 and "H-09" in fb.err, fb,
-          "STUB fallback must emit the H-09 reminder via `python` and exit 0")
+          "STUB fallback must emit the H-09 reminder via `python3` and exit 0")
 
     # ---- 9. prune-transcript: CODEARBITER_PRUNE unset → always a no-op
     prune_in = {"hook_event_name": "UserPromptSubmit",
@@ -720,8 +774,8 @@ def main():
     if len(primary_cmds) != 1 or len(fallback_cmds) != 1:
         sys.exit(f"FATAL: Read matcher must have exactly one primary + one fallback, "
                  f"got: {read_cmds}")
-    if "||" not in fallback_cmds[0] or "python" not in fallback_cmds[0]:
-        sys.exit(f"FATAL: Read matcher fallback lacks python3 || python dual-interpreter "
+    if "||" not in fallback_cmds[0] or "python3" not in fallback_cmds[0]:
+        sys.exit(f"FATAL: Read matcher fallback lacks python || python3 dual-interpreter "
                  f"shape: {fallback_cmds[0]}")
     print("Read matcher wiring: OK (matcher='Read', pre-read.py, primary+fallback dual-interpreter)")
 
@@ -737,6 +791,7 @@ def main():
         real_dir = make_real_dir(base)
         pyonly_dir = make_pyonly_dir(base)
         stub_dir, stub_log = make_stub_dir(base)
+        success_alias_dir, success_alias_log = make_success_alias_dir(base)
         none_path, dropped = base_path_without_python()
         print(f"NONE PATH drops {len(dropped)} python-bearing dir(s): {dropped}")
 
@@ -745,10 +800,22 @@ def main():
             "REAL": os.pathsep.join([real_dir, ambient]),
             "STUB": os.pathsep.join([stub_dir, pyonly_dir, ambient]),
             "NONE": none_path,
+            "SUCCESS_ALIAS": os.pathsep.join(
+                [success_alias_dir, real_dir, ambient]),
+            "SUCCESS_ALIAS_LOG": success_alias_log,
         }
 
         run_ca_campaign(ca_hooks, paths, stub_log, enabled, dormant, base)
-        run_ca_codex_campaign(codex_hooks, paths, stub_log, enabled, dormant)
+        # Codex's Windows handler already prefers ``python``.  Keep its STUB
+        # matrix modelling a python3-only alias while the ca campaign above
+        # models failure of the newly preferred interpreter.
+        codex_paths = dict(paths)
+        if WIN:
+            codex_paths["STUB"] = os.pathsep.join(
+                [success_alias_dir, real_dir, ambient])
+        run_ca_codex_campaign(codex_hooks, codex_paths,
+                              success_alias_log if WIN else stub_log,
+                              enabled, dormant)
     finally:
         shutil.rmtree(base, ignore_errors=True)
 
