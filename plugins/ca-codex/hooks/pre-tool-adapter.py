@@ -5,10 +5,32 @@ import json
 import os
 import subprocess
 import sys
+import threading
+
+
+STDIN_TIMEOUT_SECONDS = 5
+
+
+def _read_stdin_bounded():
+    result = []
+
+    def read():
+        result.append(sys.stdin.read())
+
+    reader = threading.Thread(target=read, daemon=True)
+    reader.start()
+    reader.join(STDIN_TIMEOUT_SECONDS)
+    return result[0] if result else None
 
 
 def main():
-    raw = sys.stdin.read()
+    raw = _read_stdin_bounded()
+    if raw is None:
+        print(json.dumps({
+            "decision": "block",
+            "reason": "Blocked by codeArbiter policy: incomplete hook payload",
+        }))
+        return 0
     try:
         tool_name = json.loads(raw or "{}").get("tool_name", "")
     except (TypeError, ValueError):
