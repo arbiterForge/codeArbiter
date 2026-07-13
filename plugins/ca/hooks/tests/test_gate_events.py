@@ -282,6 +282,13 @@ class TestWindowsLockAC3(_GateEventsFixture):
             if kind == "unlock" and self._on_unlock is not None:
                 self._on_unlock()
 
+    def test_windows_crt_deadlock_code_is_host_errno_independent(self):
+        self.assertTrue(
+            _hooklib._is_lock_contention(
+                OSError(36, "simulated Windows CRT deadlock")
+            )
+        )
+
     def test_lock_called_before_write_and_unlock_called_after(self):
         fake = self._FakeMsvcrt()
         order = []

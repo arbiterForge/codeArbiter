@@ -90,11 +90,12 @@ _HOST = None
 _GATE_EVENTS_WINDOWS_LOCK = threading.Lock()
 _WINDOWS_LOCK_TIMEOUT_SECONDS = 5.0
 _WINDOWS_LOCK_RETRY_SECONDS = 0.01
+_WINDOWS_CRT_EDEADLK = 36
 
 
 def _is_lock_contention(exc):
     """True only for CRT/Windows byte-range lock conflict errors."""
-    return (getattr(exc, "errno", None) in (errno.EACCES, errno.EDEADLK) or
+    return (getattr(exc, "errno", None) in (errno.EACCES, _WINDOWS_CRT_EDEADLK) or
             getattr(exc, "winerror", None) in (32, 33))
 
 
