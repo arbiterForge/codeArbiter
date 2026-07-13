@@ -236,6 +236,87 @@ def main():
                     "grep -r seed .codearbiter/decisions/"):
             expect_allow(fx, cmd, f"H-11 allow: {cmd}")
 
+        # ---- H-19: interpreter one-liners forging a gate marker (#237) -------
+        # The mv/cp/tee/sed/redirect flank (below, exercised via H-05-style
+        # verbs elsewhere) misses an arbitrary interpreter invocation entirely —
+        # `python -c "..."` can hand-write the marker using the SAME public
+        # helpers the sanctioned producer uses, and no verb in the old list
+        # ever fires. Each of these must BLOCK exactly like the mv/cp forge.
+        for cmd in (
+            'python -c "open(\'.codearbiter/.markers/security-gate-passed\', '
+            '\'w\').write(\'deadbeef\')"',
+            'python3 -c "open(\'.codearbiter/.markers/security-gate-passed\', '
+            '\'w\').write(\'deadbeef\')"',
+            'node -e "require(\'fs\').writeFileSync('
+            '\'.codearbiter/.markers/security-gate-passed\', \'deadbeef\')"',
+            'perl -e \'open(my $fh, ">", ".codearbiter/.markers/'
+            'security-gate-passed"); print $fh "deadbeef"\'',
+            'ruby -e \'File.write(".codearbiter/.markers/'
+            'security-gate-passed", "deadbeef")\'',
+            'sh -c "echo deadbeef > .codearbiter/.markers/'
+            'security-gate-passed"',
+            # the segment-bound case: a `;` sits BEFORE the marker path inside
+            # the interpreter's own quoted payload. A verb-style regex whose
+            # scan stops at the first `;` (as the mv/cp flank's does, by
+            # design, to avoid reaching across an unrelated chained command)
+            # would never reach the marker here and falsely ALLOW.
+            'python -c "import sys; open(\'.codearbiter/.markers/'
+            'security-gate-passed\', \'w\').write(\'deadbeef\')"',
+            'python3 -c "d=\'deadbeef\'; open(\'.codearbiter/.markers/'
+            'migration-gate-passed\', \'w\').write(d)"',
+        ):
+            expect_block(fx, cmd, "H-19", f"H-19 block: {cmd}")
+        # must NOT over-block a benign interpreter call that never names a
+        # gate marker anywhere on the line.
+        for cmd in ('python -c "print(1)"', 'node -e "console.log(1)"',
+                    'sh -c "echo hello"'):
+            expect_allow(fx, cmd, f"H-19 allow (benign interpreter): {cmd}")
+
+        # ---- H-19 review finding: newline-crossing + heredoc/prose scoping ----
+        # Defect 1: a MULTI-LINE `-c`/`-e` payload is completely ordinary
+        # python/node/etc — the interpreter token and the marker path can sit
+        # on different physical lines of the SAME invocation. A regex whose
+        # scan cannot cross a newline (`[^\n]*`) misses this identical attack.
+        multiline_python = (
+            "python -c \"\n"
+            "open('.codearbiter/.markers/security-gate-passed', 'w')."
+            "write('deadbeef')\n\""
+        )
+        expect_block(fx, multiline_python, "H-19",
+                     f"H-19 block: multi-line python -c payload: {multiline_python!r}")
+
+        # Same attack, one level further removed: the heredoc's DIRECT consumer
+        # is `cat` (not a shell), but `bash -c` elsewhere in the command
+        # EXECUTES the substituted result — a genuine executor route
+        # (`_has_shell_executor`), so the body really runs and must still
+        # BLOCK, mirroring how commit/push/add already treat this shape.
+        bash_c_heredoc = (
+            "bash -c \"$(cat <<'EOF'\n"
+            "python -c \\\"open('.codearbiter/.markers/security-gate-passed', "
+            "'w').write('deadbeef')\\\"\n"
+            "EOF\n"
+            ")\""
+        )
+        expect_block(fx, bash_c_heredoc, "H-19",
+                     f"H-19 block: heredoc body reaching bash -c executor: {bash_c_heredoc!r}")
+
+        # Defect 2: a heredoc fed to a NON-shell consumer with no executor
+        # anywhere in the command is inert PROSE to this guard (D-3, #223) —
+        # a PR/issue body merely DESCRIBING the python-c forgery attack must
+        # not itself trip H-19, or this very sprint's own PR body would block.
+        pr_body_prose = (
+            "gh pr create --body \"$(cat <<'EOF'\n"
+            "Fixes #237: a `python -c` one-liner could write\n"
+            ".codearbiter/.markers/security-gate-passed and the gate accepted it.\n"
+            "EOF\n"
+            ")\""
+        )
+        expect_allow(fx, pr_body_prose,
+                     f"H-19 allow: PR-body prose describing the forge: {pr_body_prose!r}")
+        issue_body_prose = pr_body_prose.replace("gh pr create", "gh issue create")
+        expect_allow(fx, issue_body_prose,
+                     f"H-19 allow: issue-body prose describing the forge: {issue_body_prose!r}")
+
         # ---- H-01/H-02: protected-branch pushes ------------------------------
         for cmd in ("git push origin HEAD:main", "git push origin feat/work:main",
                     "git push origin main", "git push origin :main",

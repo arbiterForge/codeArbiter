@@ -35,7 +35,7 @@ those are noted below.
 | `overrides.log` | `/ca:override`, `/ca:dev` entry/exit | statusline, `/ca:status`, `/ca:audit`, staleness-warn | No — append-only, guarded (H-05) |
 | `triage.log` | `/ca:feature` small-lane triage | `/ca:metrics`, `/ca:audit` | No — append-only, guarded (H-05) |
 | `gate-events.log` | every `block()`/`remind()`/`warn()` call in the hooks | (durable sink; no reader ships yet) | No — append-only, guarded (H-05) |
-| `.markers/` | `security-pass.py`, `migration-pass.py`, `/ca:dev`, `/ca:adr` | the commit-gate hooks (`pre-bash.py`, `pre-write.py`, `pre-edit.py`) | No — guarded, and hand-written markers can't satisfy a gate |
+| `.markers/` | `security-pass.py`, `migration-pass.py`, `/ca:dev`, `/ca:adr` | the commit-gate hooks (`pre-bash.py`, `pre-write.py`, `pre-edit.py`) | No — guarded, and hand-writing one is friction and an audit trail, not a proof (see below) |
 | `.provenance/*.json` | `context-creation`, `decompose`, `context-check` (re-scout/re-baseline) | `SessionStart` (drift line), `commit-gate` (auto-heal) | Not by hand — regenerate via `/ca:context-check` |
 | `security-controls.md`, `tech-stack.md`, `coding-standards.md` | `/ca:init` / `/ca:create-context` / `/ca:decompose`, kept current by hand or `/ca:context-check` | every reviewer agent, the crypto/secret gates | Yes |
 | `last-checkpoint` | `checkpoint-aggregator` agent | `/ca:status`, the statusline (overrides-since-checkpoint) | Not normally — it's a counter, not a note |
@@ -256,10 +256,15 @@ the first marker-writing action runs. The load-bearing ones:
 **Writers:** `security-pass.py`, `migration-pass.py`, `/ca:dev`, `/ca:adr`.
 **Readers:** the commit-gate hooks (`pre-bash.py`) that check `security-gate-passed` and
 `migration-gate-passed` before allowing a `git commit`.
-**Editable by hand?** No, and a hand-written marker can't satisfy a gate anyway — `pre-write.py`
-and `pre-edit.py` block Write/Edit targeting this directory (issue #160), because a load-bearing
-marker that turns a BLOCK into an allow must only ever come from the process that actually ran the
-check.
+**Editable by hand?** No — `pre-write.py`/`pre-edit.py` block Write/Edit targeting this directory
+(issue #160), and `pre-bash.py`'s H-19 flank blocks the shell forge spellings too (`cp`/`mv`/`tee`/
+`sed`/a redirect, and an interpreter one-liner such as `python -c "open(...).write(...)"`). These
+flanks add real friction and leave an audit trail on the cooperative-agent path (ADR-0010) — they
+are not a proof. The marker is a *cooperative attestation*: `security-pass.py`/`migration-pass.py`
+re-derive digests from a public, pure function of the file content the forger already holds, so no
+digest scheme can make the marker unforgeable to a determined same-user process willing to
+reproduce that computation outside the sanctioned producer. Its value is the friction and the
+record it leaves, not unforgeability.
 **Delete it:** every commit-time crypto/secret/migration gate reverts to its unpassed state — the
 next sensitive commit blocks until the corresponding gate runs again and re-records a pass. No
 enforcement is weakened; you just lose the standing "already checked" credit.

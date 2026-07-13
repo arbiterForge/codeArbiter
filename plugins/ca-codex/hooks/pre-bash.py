@@ -260,6 +260,43 @@ GATE_MARKER_WRITE_RE = re.compile(
     r"|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File|Add-Content)\b"
     r"[^|;&]*" + GATE_MARKER, re.I,
 )
+# #237: an arbitrary interpreter invocation is a flank the verb list above
+# cannot see — `python -c "open('.markers/security-gate-passed','w')..."`
+# reuses the sanctioned producer's own public helpers to self-compute valid
+# digests, and no mv/cp/tee/sed spelling ever appears on the command line.
+# Interpreter one-liners get their OWN, wider regex rather than joining the
+# verb list above: the payload is a single quoted string handed to the
+# interpreter, and that string may itself contain `;` as a statement
+# separator (`python -c "x=1; open(...security-gate-passed...)"`). The
+# `[^|;&]*` bound on GATE_MARKER_WRITE_RE exists to keep a write verb from
+# reaching across an UNRELATED shell-chained command; applying that same
+# bound here would stop scanning at the interpreter's OWN internal `;` and
+# silently reopen exactly the hole this closes. There is no reliable way to
+# tell a chained shell command from a `;`-separated statement inside an
+# opaque interpreter string without full shell/language tokenization, so
+# this guard fails CLOSED: any command line invoking one of these
+# interpreters that ALSO names a gate marker anywhere on the line is
+# blocked, whether the marker is written or merely read. A read of a gate
+# marker has no legitimate reason to go through a raw interpreter one-liner
+# either (cat/grep already pass the audit-log flanks above untouched).
+#
+# review finding (post-B-2): a `-c`/`-e` payload is ordinary multi-line
+# source — the interpreter token and the marker path can sit on different
+# physical lines of the SAME invocation (`python -c "\nopen('...security-
+# gate-passed'...)\n"`). `[^\n]*` cannot cross that newline, leaving the
+# identical attack open in its multi-line spelling. `[\s\S]*` (DOTALL-
+# equivalent) closes it. This regex is applied to the heredoc-stripped
+# `git_view` at the call site below, gated on `heredoc_shell_fallback` for
+# the raw-`cmd` leg exactly like the commit/push/add guards already are —
+# scanning the raw, unstripped `cmd` unconditionally would make crossing
+# newlines here false-trip on inert PROSE inside a heredoc body fed to a
+# non-shell consumer (`gh pr create --body "$(cat <<EOF … a python -c
+# one-liner wrote .markers/security-gate-passed … EOF)"` — a PR/issue body
+# merely DESCRIBING this very fix), the same D-3 (#223) distinction the
+# other guards already draw.
+GATE_MARKER_INTERP_RE = re.compile(
+    r"\b(python3?|node|perl|ruby|sh)\b[\s\S]*" + GATE_MARKER, re.I,
+)
 
 
 def git_cwd(cmd, root):
@@ -888,12 +925,28 @@ def _run(root):
 
     # H-19: the gate-pass markers (#160) are recorded only by the sanctioned
     # python producers — shell flank against `echo <digest> > security-gate-passed`
-    # and `cp`/`sed`/`tee` forges naming a gate marker.
-    if GATE_MARKER_REDIRECT_RE.search(cmd) or GATE_MARKER_WRITE_RE.search(cmd):
+    # and `cp`/`sed`/`tee` forges naming a gate marker, plus an interpreter
+    # one-liner (#237).
+    #
+    # review finding (post-B-2): scan `git_view` (heredoc bodies stripped),
+    # with the raw-`cmd` leg gated on `heredoc_shell_fallback` — mirroring
+    # how commit/push/add already work post-D-3 (#223). Scanning raw `cmd`
+    # unconditionally, as this used to, means a heredoc body fed to a
+    # NON-shell consumer that merely QUOTES a gate-marker path (a PR/issue
+    # body describing this very fix) false-trips H-19; scanning only
+    # `git_view` would miss the genuine case where the heredoc's body DOES
+    # reach an executor (`bash -c "$(cat <<EOF … EOF)"`).
+    def _gate_marker_hit(view):
+        return (GATE_MARKER_REDIRECT_RE.search(view)
+                or GATE_MARKER_WRITE_RE.search(view)
+                or GATE_MARKER_INTERP_RE.search(view))
+
+    if _gate_marker_hit(git_view) or (heredoc_shell_fallback and _gate_marker_hit(cmd)):
         block("H-19", "The .codearbiter/.markers/ security-gate-passed / migration-gate-passed "
                       "tokens are recorded only by the sanctioned gate producers (#160) — a shell "
-                      "redirect or write verb naming a gate marker forges a security/migration "
-                      "gate pass and is prohibited.")
+                      "redirect, write verb, or interpreter invocation (python/node/perl/ruby/sh) "
+                      "naming a gate marker forges a security/migration gate pass and is "
+                      "prohibited.")
 
     # H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     # a recorded security-gate pass. The crypto-compliance / secret-handling skills
