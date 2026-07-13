@@ -24,6 +24,11 @@ import _ledgerlib as L
 from _helpers import redirect_home, restore_home
 
 
+# Successful-contention tests need scheduler headroom; production's bounded
+# fail-soft latency has separate assertions below.
+CONCURRENCY_TEST_WAIT = 5.0
+
+
 # =========================================================================== pricing
 class TestPricing(unittest.TestCase):
 
@@ -188,15 +193,18 @@ class TestPersistence(unittest.TestCase):
         """Prove the second writer cannot acquire until the first releases."""
         real_acquire = L._acquire_lock
         first_acquired = threading.Event()
+        second_attempted = threading.Event()
         second_acquired = threading.Event()
         release_first = threading.Event()
         outputs = {}
 
         def coordinated_acquire(path):
+            if threading.current_thread().name == "ledger-second":
+                second_attempted.set()
             token = real_acquire(path)
             if token is not None and threading.current_thread().name == "ledger-first":
                 first_acquired.set()
-                self.assertTrue(release_first.wait(1.0))
+                self.assertTrue(release_first.wait(CONCURRENCY_TEST_WAIT))
             elif token is not None and threading.current_thread().name == "ledger-second":
                 second_acquired.set()
             return token
@@ -205,17 +213,19 @@ class TestPersistence(unittest.TestCase):
                                name="ledger-first")
         two = threading.Thread(target=lambda: outputs.setdefault("second", second()),
                                name="ledger-second")
-        with mock.patch.object(L, "_acquire_lock", side_effect=coordinated_acquire):
+        with mock.patch.object(L, "LOCK_WAIT", CONCURRENCY_TEST_WAIT), \
+                mock.patch.object(L, "_acquire_lock", side_effect=coordinated_acquire):
             one.start()
-            self.assertTrue(first_acquired.wait(1.0))
+            self.assertTrue(first_acquired.wait(CONCURRENCY_TEST_WAIT))
             if while_first_holds:
                 while_first_holds()
             two.start()
-            self.assertFalse(second_acquired.wait(0.05))
+            self.assertTrue(second_attempted.wait(CONCURRENCY_TEST_WAIT))
+            self.assertFalse(second_acquired.is_set())
             release_first.set()
-            self.assertTrue(second_acquired.wait(1.0))
-            one.join(1.0)
-            two.join(1.0)
+            self.assertTrue(second_acquired.wait(CONCURRENCY_TEST_WAIT))
+            one.join(CONCURRENCY_TEST_WAIT)
+            two.join(CONCURRENCY_TEST_WAIT)
         self.assertFalse(one.is_alive())
         self.assertFalse(two.is_alive())
         return outputs
