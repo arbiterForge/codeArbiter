@@ -19,6 +19,7 @@ import contextlib
 import importlib.util as _ilu
 import io
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -112,10 +113,23 @@ class TestInstall(_GitFixture):
         self.assertIn("husky", body)
         self.assertNotIn(_githooks.SENTINEL, body)
 
-    def test_uninstall_removes_only_ours(self):
+    def test_uninstall_removes_only_own_dropin_entry(self):
+        # ADR-0014: uninstall() removes ONLY this plugin's own drop-in
+        # `<plugin>.path` entry -- never the shared, host-neutral shim file,
+        # which a sibling plugin may still depend on. Leaving the (now
+        # empty) drop-in dir behind is the fail-closed contract working as
+        # designed, not a bug -- see TestDropInFailClosed below.
         _githooks.install(self.root)
-        _githooks.uninstall(self.root)
-        self.assertFalse(os.path.isfile(os.path.join(self._hooks_dir(), "pre-commit")))
+        dropin = _githooks._dropin_dir(self.root)
+        plugin = _githooks._plugin_name()
+        entry = _githooks._path_entry_file(dropin, plugin)
+        self.assertTrue(os.path.isfile(entry))
+        actions = _githooks.uninstall(self.root)
+        self.assertIn(f"{plugin}.path: removed", actions)
+        self.assertFalse(os.path.isfile(entry))
+        for phase in ("pre-commit", "pre-push"):
+            self.assertTrue(os.path.isfile(os.path.join(self._hooks_dir(), phase)),
+                            f"{phase} shim must survive uninstall of a single plugin")
 
 
 class TestInstallSkipsReprobeWhenCurrent(_GitFixture):
@@ -187,18 +201,28 @@ class TestInstallSkipsReprobeWhenCurrent(_GitFixture):
         for phase in ("pre-commit", "pre-push"):
             self.assertTrue(os.path.isfile(os.path.join(self._hooks_dir(), phase)))
 
-    def test_mismatched_enforcer_path_falls_through_not_silently_skipped(self):
-        # If the enforcer path changed (e.g. a plugin update moved the install
-        # dir) since the cache was written, the shim content no longer matches
-        # -> _hooks_current() must return False -> the full probe must run and
-        # refresh the shim, never silently skip a needed update.
-        _githooks.install(self.root)  # writes the cache with the real enforcer path
+    def test_mismatched_enforcer_path_refreshes_dropin_entry_not_the_shim(self):
+        # ADR-0014: the shim is host-neutral (it depends only on the shared
+        # drop-in dir, never on this plugin's own enforcer path), so a plugin
+        # update moving the install dir no longer requires rewriting the
+        # SHIM file itself -- _hooks_current() correctly still reports
+        # "current" for the shim (the fast path may fire), but install()
+        # unconditionally refreshes THIS plugin's own `<plugin>.path` entry
+        # every call regardless, so a version-bumped enforcer path is never
+        # left stale.
+        _githooks.install(self.root)  # writes the cache + the real enforcer path
+        dropin = _githooks._dropin_dir(self.root)
+        plugin = _githooks._plugin_name()
+        entry = _githooks._path_entry_file(dropin, plugin)
+        with open(entry, encoding="utf-8") as f:
+            self.assertNotIn("/moved/enforcer.py", f.read())
         with mock.patch.object(_githooks, "_enforcer_path", return_value="/moved/enforcer.py"):
             actions = _githooks.install(self.root)
-        self.assertIn("pre-commit: installed", actions)
-        self.assertIn("pre-push: installed", actions)
-        with open(os.path.join(self._hooks_dir(), "pre-commit"), encoding="utf-8") as f:
-            self.assertIn("/moved/enforcer.py", f.read())
+        self.assertEqual(actions, [],
+                         "the shim file itself must NOT be rewritten for an enforcer-path-only change")
+        with open(entry, encoding="utf-8") as f:
+            self.assertIn("/moved/enforcer.py", f.read(),
+                         "this plugin's own drop-in entry must self-heal every call")
 
     # ------------------------------------------------------------------
     # CRITICAL regression (security review, post-#194): a LOCAL core.hooksPath
@@ -354,6 +378,116 @@ class TestInstallSkipsReprobeWhenCurrent(_GitFixture):
         self.assertEqual(result, [])  # still a no-op...
         self.assertTrue(calls, "a cached CUSTOM hooksPath must always re-confirm via git, "
                               "never take the zero-spawn fast path")
+
+
+class TestDropInSharedDir(_GitFixture):
+    """ADR-0014 / #265 (AC-7): the drop-in dir the shim reads from resolves to
+    the repo's git COMMON dir, so every linked worktree of a repo shares the
+    SAME `.git/codearbiter-hooksd/` -- never a per-worktree copy, which would
+    defeat the whole cross-host purpose (a shim installed from one worktree
+    would never see an entry another worktree/host wrote)."""
+
+    def test_linked_worktree_shares_the_same_dropin_dir_as_main(self):
+        wt_dir = os.path.join(os.path.dirname(self.root), "wt")
+        _git(["worktree", "add", "-q", "-b", "feat/wt", wt_dir], self.root)
+        main_dropin = _githooks._dropin_dir(self.root)
+        wt_dropin = _githooks._dropin_dir(wt_dir)
+        self.assertIsNotNone(main_dropin)
+        self.assertIsNotNone(wt_dropin)
+        self.assertEqual(os.path.normcase(os.path.normpath(main_dropin)),
+                         os.path.normcase(os.path.normpath(wt_dropin)))
+
+    def test_git_common_dir_resolves_without_a_git_spawn_for_the_main_repo(self):
+        # The common (non-worktree) case must be resolvable purely from the
+        # filesystem -- required so the performance-002 fast path (see
+        # TestInstallSkipsReprobeWhenCurrent) still makes zero git spawns.
+        calls = []
+        orig = _githooks._git
+
+        def spy(args, cwd):
+            calls.append(list(args))
+            return orig(args, cwd)
+
+        _githooks._git = spy
+        try:
+            common = _githooks._git_common_dir(self.root)
+        finally:
+            _githooks._git = orig
+        self.assertIsNotNone(common)
+        self.assertEqual(calls, [], "the main-repo case must resolve with zero git spawns")
+
+
+class TestDropInMultiPluginFailClosed(_GitFixture):
+    """AC-7 (#265): two plugins registered in the shared drop-in dir -- the
+    shim resolves through whichever entry is actually live, independent of
+    write order, and BLOCKS (fails closed) when NOTHING resolves."""
+
+    def _write_entry(self, dropin, name, target):
+        os.makedirs(dropin, exist_ok=True)
+        with open(os.path.join(dropin, f"{name}.path"), "w", encoding="utf-8") as f:
+            f.write(target + "\n")
+
+    def _stage(self, name, content):
+        self._write(os.path.join(self.root, name), content)
+        _git(["add", name], self.root)
+
+    def test_survivor_plugin_still_enforces_when_the_other_is_uninstalled(self):
+        # AC-7a: this plugin's own install() writes a REAL, resolvable entry.
+        # A second plugin is ALSO registered but its enforcer is gone (as if
+        # uninstalled) -- the shim must still resolve to the survivor and
+        # enforcement must still fire (a direct commit to main is BLOCKED).
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        self._write_entry(dropin, "other-plugin",
+                          os.path.join(self.root, "_removed", "git-enforce.py"))
+        self._stage("f.txt", "x\n")
+        res = _sh(["sh", "-c", "git commit -m x"], self.root)
+        self.assertNotEqual(res.returncode, 0, res.stderr)
+        self.assertIn("H-01", res.stderr + res.stdout)
+
+    def test_survivor_enforces_regardless_of_which_entry_was_written_last(self):
+        # Symmetric ordering: write the DEAD entry first, the REAL one last --
+        # the loop must not stop at (or prefer) whichever was written most
+        # recently; every entry is tried until one resolves.
+        dropin = _githooks._dropin_dir(self.root)
+        self._write_entry(dropin, "aaa-dead",
+                          os.path.join(self.root, "_removed", "git-enforce.py"))
+        _githooks.install(self.root)  # writes THIS plugin's real entry after
+        self._stage("f.txt", "x\n")
+        res = _sh(["sh", "-c", "git commit -m x"], self.root)
+        self.assertNotEqual(res.returncode, 0, res.stderr)
+        self.assertIn("H-01", res.stderr + res.stdout)
+
+    def test_zero_resolvable_enforcers_fails_closed_not_open(self):
+        # AC-7b: every registered entry points at a missing file (or the dir
+        # is emptied entirely) -- the shim must BLOCK (non-zero exit), never
+        # silently allow (exit 0) the way the old single-embedded-path shim
+        # did on its own staleness.
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        for name in os.listdir(dropin):
+            if name.endswith(".path"):
+                os.remove(os.path.join(dropin, name))
+        self.assertEqual([n for n in os.listdir(dropin) if n.endswith(".path")], [])
+        _git(["checkout", "-q", "-b", "feat/x"], self.root)  # not itself a protected branch
+        self._stage("f.txt", "x\n")
+        res = _sh(["sh", "-c", "git commit -m x"], self.root)
+        self.assertNotEqual(res.returncode, 0,
+                           "an empty drop-in dir must fail CLOSED, not silently allow")
+        log = _git(["rev-list", "--all", "--count"], self.root, check=False)
+        self.assertEqual(log.stdout.strip(), "0", "nothing must be committed on a fail-closed block")
+
+    def test_dropin_dir_missing_entirely_fails_closed(self):
+        # The un-expanded "$D/*.path" glob-literal case: the drop-in dir
+        # itself doesn't exist at all (not merely empty).
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        shutil.rmtree(dropin)
+        _git(["checkout", "-q", "-b", "feat/y"], self.root)
+        self._stage("f.txt", "x\n")
+        res = _sh(["sh", "-c", "git commit -m x"], self.root)
+        self.assertNotEqual(res.returncode, 0,
+                           "a missing drop-in dir must fail CLOSED, not silently allow")
 
 
 class TestPreCommitEnforce(_GitFixture):
