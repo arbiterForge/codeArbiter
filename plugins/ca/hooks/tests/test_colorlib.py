@@ -127,6 +127,43 @@ class TestActivePaletteCompatibility(unittest.TestCase):
             self.assertEqual(mod.V2, mod.fg(*mod.ACTIVE_PALETTE.accent_primary))
             self.assertNotEqual(mod.V2, mod.fg(178, 102, 255))
 
+    def test_failed_custom_theme_projects_effective_violet_and_legacy_bytes(self):
+        import statusline as sl
+        payload = json.dumps({"model": {"display_name": "Test"},
+                              "context_window": {"used_percentage": 20}})
+        with tempfile.TemporaryDirectory() as tmp:
+            cases = {
+                "missing": os.path.join(tmp, "missing.json"),
+                "malformed": os.path.join(tmp, "malformed.json"),
+                "oversized": os.path.join(tmp, "oversized.json"),
+            }
+            with open(cases["malformed"], "w", encoding="utf-8") as handle:
+                handle.write("{not json")
+            with open(cases["oversized"], "wb") as handle:
+                handle.write(b" " * (_colorlib.MAX_THEME_BYTES + 1))
+
+            with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "violet"}):
+                violet = sl.render(payload)
+
+            for label, path in cases.items():
+                with self.subTest(case=label), mock.patch.dict(
+                        os.environ, {"CODEARBITER_THEME": "custom",
+                                     "CODEARBITER_THEME_FILE": path}):
+                    rendered = sl.render(payload)
+                    self.assertEqual(rendered, violet)
+                    self.assertEqual(sl._colorlib.ACTIVE_THEME_NAME, "violet")
+                    self.assertIn(sl.fg(90, 60, 150), rendered)
+                    self.assertIn(sl.fg(170, 110, 240), rendered)
+
+    def test_valid_partial_custom_keeps_custom_as_effective_theme(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "partial.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump({"accent": {"primary": "#010203"}}, handle)
+            _colorlib.activate_palette("custom", path)
+            self.assertEqual(_colorlib.ACTIVE_THEME_NAME, "custom")
+            self.assertEqual(_colorlib.V2, _colorlib.fg(1, 2, 3))
+
     def test_custom_theme_file_is_not_touched_while_color_modules_import(self):
         theme_path = os.path.join(tempfile.gettempdir(), "must-not-open-theme.json")
         script = """

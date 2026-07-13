@@ -114,17 +114,17 @@ def _read_custom(path):
         return None
 
 
-def resolve_palette(theme_name=None, custom_path=None):
-    """Resolve a built-in or partial custom palette, always falling back to violet."""
+def _resolve_palette(theme_name=None, custom_path=None):
+    """Return (effective theme name, palette), falling back wholly to violet."""
     violet = BUILTIN_PALETTES["violet"]
     name = str(theme_name or "violet").strip().lower()
     if name != "custom":
-        return BUILTIN_PALETTES.get(name, violet)
+        return (name, BUILTIN_PALETTES[name]) if name in BUILTIN_PALETTES else ("violet", violet)
     path = custom_path or os.environ.get("CODEARBITER_THEME_FILE") or os.path.join(
         "~", ".codearbiter", "statusline-theme.json")
     data = _read_custom(path)
     if data is None:
-        return violet
+        return "violet", violet
     updates = {}
     for group_name, fields in _CUSTOM_FIELDS.items():
         group = data.get(group_name)
@@ -134,7 +134,12 @@ def resolve_palette(theme_name=None, custom_path=None):
             value = group.get(key)
             if isinstance(value, str) and _HEX.fullmatch(value):
                 updates[field_name] = RGB(int(value[1:3], 16), int(value[3:5], 16), int(value[5:7], 16))
-    return replace(violet, **updates)
+    return "custom", replace(violet, **updates)
+
+
+def resolve_palette(theme_name=None, custom_path=None):
+    """Resolve a built-in or partial custom palette, always falling back to violet."""
+    return _resolve_palette(theme_name, custom_path)[1]
 
 
 def fg(r, g, b):
@@ -182,8 +187,8 @@ def activate_palette(theme_name=None, custom_path=None):
                (os.environ.get("CODEARBITER_THEME") or "violet")).strip().lower()
     if name not in (*BUILTIN_PALETTES, "custom"):
         name = "violet"
-    palette = resolve_palette(name, custom_path)
-    _project_palette(name, palette)
+    effective_name, palette = _resolve_palette(name, custom_path)
+    _project_palette(effective_name, palette)
     return palette
 
 
