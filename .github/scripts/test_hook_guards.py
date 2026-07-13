@@ -430,6 +430,130 @@ def main():
         expect_allow(fx, "git commit -m 'notes only'",
                      "H-09b allow: benign commit needs no pass")
 
+        # ---- #279: gate-events.log self-poisoning exemption -------------------
+        # The gate's own audit sink echoes the detector's message text back at
+        # itself: the REAL H-09 REMIND text (post-write-edit.py) spells out
+        # "no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish", and those bare words match
+        # CRYPTO_RE just as well as a genuine algorithm choice would. An
+        # uncommitted appended REMIND line in gate-events.log must NOT be
+        # treated as a sensitive line — narrowly, only for that one file.
+        shutil.rmtree(markers, ignore_errors=True)
+        crypto_remind_line = (
+            "[2026-07-12T17:12:53Z] REMIND [H-09] host=codex "
+            "hook=post-write-edit.py | Crypto/TLS pattern detected. Run the "
+            "crypto-compliance check + dispatch auth-crypto-reviewer (no "
+            "MD5/SHA1/DES/3DES/RC2/RC4/Blowfish; do not disable TLS "
+            "verification). The commit will block until the gate records a "
+            "pass.\n"
+        )
+
+        # 6e2. gate-events.log dirty with a self-referential REMIND line, diff
+        # otherwise innocuous -> ALLOW, no marker needed.
+        gate_events = os.path.join(fx, ".codearbiter", "gate-events.log")
+        with open(gate_events, "a", encoding="utf-8") as f:
+            f.write(crypto_remind_line)
+        git(["add", ".codearbiter/gate-events.log"], fx)
+        with open(os.path.join(fx, "notes.txt"), "a", encoding="utf-8") as f:
+            f.write("another benign note\n")
+        git(["add", "notes.txt"], fx)
+        expect_allow(fx, "git commit -m 'log churn only'",
+                     "#279 allow: dirty gate-events.log alone must not block H-09b")
+
+        # 6e3. still BLOCKS: a real crypto line added to a genuine source file,
+        # over-excluding must not weaken the scan for actual source changes.
+        git(["restore", "--staged", "--worktree", ".codearbiter/gate-events.log"], fx)
+        git(["restore", "--staged", "--worktree", "notes.txt"], fx)
+        with open(crypto_file, "a", encoding="utf-8") as f:
+            f.write("const h4 = createHash('sha1');\n")
+        git(["add", "src/auth.js"], fx)
+        expect_block(fx, "git commit -m 'real crypto'", "H-09b",
+                     "#279 block: a real crypto line in a source file still blocks")
+
+        # 6e4. still BLOCKS with gate-events.log ALSO dirty — proves the log is
+        # excluded, not the whole scan.
+        with open(gate_events, "a", encoding="utf-8") as f:
+            f.write(crypto_remind_line)
+        git(["add", ".codearbiter/gate-events.log"], fx)
+        expect_block(fx, "git commit -m 'real crypto plus log churn'", "H-09b",
+                     "#279 block: real crypto still blocks even with gate-events.log dirty")
+        git(["restore", "--staged", "--worktree", "src/auth.js"], fx)
+        git(["restore", "--staged", "--worktree", ".codearbiter/gate-events.log"], fx)
+
+        # 6e5. still BLOCKS: a secret added to overrides.log — the narrow scope
+        # proves only gate-events.log is exempt, not every audit log.
+        overrides_log = os.path.join(fx, ".codearbiter", "overrides.log")
+        with open(overrides_log, "a", encoding="utf-8") as f:
+            f.write('[2026-07-12T17:14:00Z] | BY: harness | GATE: none | '
+                    'REASON: api_key="abcd1234efgh"\n')
+        git(["add", ".codearbiter/overrides.log"], fx)
+        expect_block(fx, "git commit -m 'log secret'", "H-10b",
+                     "#279 block: a secret in overrides.log still blocks (narrow scope)")
+        git(["restore", "--staged", "--worktree", ".codearbiter/overrides.log"], fx)
+
+        # 6e6/6e7. THE EVASION (2026-07 review finding): the attribution used
+        # to key off "+++ b/<path>", which a genuine ADDED CONTENT line can
+        # FORGE — a source line whose text is "++ b/.codearbiter/gate-events.
+        # log" renders in `git diff` as "+++ b/.codearbiter/gate-events.log",
+        # byte-identical to the real hunk header, hijacking attribution for
+        # every added line after it. A real crypto line placed right after
+        # such a forged line must still BLOCK with no marker recorded.
+        with open(crypto_file, "a", encoding="utf-8") as f:
+            f.write("++ b/.codearbiter/gate-events.log\n"
+                    "const h5 = createHash('md5');\n")
+        git(["add", "src/auth.js"], fx)
+        expect_block(fx, "git commit -m 'forged plusplusplus header (2-plus form)'", "H-09b",
+                     "#279 block: a forged '++ b/...' content line must not evade the scan")
+        git(["restore", "--staged", "--worktree", "src/auth.js"], fx)
+
+        # Same shape with the 3-plus content form ("+++ b/<path>" as literal
+        # SOURCE text, rendering as "++++ b/<path>" once diff-prefixed) —
+        # covers the other prefix arithmetic the reviewer called out.
+        with open(crypto_file, "a", encoding="utf-8") as f:
+            f.write("+++ b/.codearbiter/gate-events.log\n"
+                    "const h6 = createHash('md5');\n")
+        git(["add", "src/auth.js"], fx)
+        expect_block(fx, "git commit -m 'forged plusplusplus header (3-plus form)'", "H-09b",
+                     "#279 block: a forged '+++ b/...' content line must not evade the scan")
+        git(["restore", "--staged", "--worktree", "src/auth.js"], fx)
+
+        # 6e8. THE AMBIGUOUS-PATH BYPASS (2026-07 security review, round 3,
+        # HIGH): a genuine repo file whose path itself contains " b/" renders
+        # its `diff --git` header as
+        #   diff --git a/x b/.codearbiter/gate-events.log b/x b/.codearbiter/gate-events.log
+        # A greedy regex parse of that line (the round-2 fix) resolves the
+        # path to ".codearbiter/gate-events.log" (the LAST " b/" split),
+        # exempting the WHOLE unrelated source file. A real crypto call and a
+        # committed secret in that file must still BLOCK with no marker.
+        odd_dir = os.path.join(fx, "x b", ".codearbiter")
+        os.makedirs(odd_dir, exist_ok=True)
+        odd_file = os.path.join(odd_dir, "gate-events.log")
+        with open(odd_file, "w", encoding="utf-8") as f:
+            f.write("const h7 = createHash('md5');\n"
+                    'const key = api_key="abcd1234efgh";\n')
+        git(["add", "x b/.codearbiter/gate-events.log"], fx)
+        expect_block(fx, "git commit -m 'ambiguous path exploit'", "H-09b",
+                     "#279 block: a real source file named 'x b/...' must not be "
+                     "misattributed to the exempt log via a greedy diff --git parse")
+        git(["restore", "--staged", "--worktree", "x b/.codearbiter/gate-events.log"], fx)
+
+        # 6e9/6e10. THE DIFF-CONFIG BYPASS (round 3, MEDIUM-1): the REAL
+        # gate-events.log, dirty, must stay exempt (commit ALLOWED) even when
+        # the repo has `diff.mnemonicPrefix=true` or `diff.noprefix=true` set
+        # — either config, left unpinned by the H-09b/H-10b readers, changes
+        # the destination-path prefix the fixed `+++ b/` strip depends on,
+        # silently un-exempting the log and reopening the exact self-DoS this
+        # whole change exists to close.
+        for cfg_name, cfg_val in (("mnemonicPrefix", "true"), ("noprefix", "true")):
+            git(["config", f"diff.{cfg_name}", cfg_val], fx)
+            with open(gate_events, "a", encoding="utf-8") as f:
+                f.write(crypto_remind_line)
+            git(["add", ".codearbiter/gate-events.log"], fx)
+            expect_allow(
+                fx, f"git commit -m 'log churn under diff.{cfg_name}={cfg_val}'",
+                f"#279 allow: gate-events.log stays exempt under diff.{cfg_name}={cfg_val}")
+            git(["restore", "--staged", "--worktree", ".codearbiter/gate-events.log"], fx)
+            git(["config", "--unset", f"diff.{cfg_name}"], fx)
+
         # ---- 6f-6j: deep-review HIGH (v2.rev.0015) — a `git commit <pathspec>`
         # records the WORKTREE content of the named paths, bypassing the index.
         # The gate scanned only --cached (unioning worktree only on -a/add), so an

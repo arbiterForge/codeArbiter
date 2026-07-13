@@ -26,9 +26,10 @@ import _gitlib  # noqa: E402 — reused for its spawn-free, worktree-aware
                 # (.git-as-a-FILE / gitdir: pointer) project_root() climb (#223)
 from _hooklib import (  # noqa: E402
     AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE,
-    GATE_MARKER_NAMES, SECRET_RE, arbiter_active, block, content_digest,
-    get_host, is_migration_path, line_digest, marker_fresh, project_root,
-    read_input, set_host, tool_input, utf8_stdio,
+    GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, arbiter_active,
+    block, content_digest, get_host, is_migration_path, line_digest,
+    marker_fresh, project_root, read_input, sensitive_scan_added_lines,
+    set_host, tool_input, utf8_stdio,
 )
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
@@ -563,8 +564,15 @@ def added_lines(cwd, ref, paths=None):
     Decoded as UTF-8 with replacement: `text=True` alone uses the locale code
     page (cp1252 on stock Windows), where a non-cp1252 byte in the diff raised
     UnicodeDecodeError into the bare except below and the security gate
-    silently failed OPEN on exactly the platform this layer protects."""
-    argv = ["git", "diff", ref] + (["--", *paths] if paths else [])
+    silently failed OPEN on exactly the platform this layer protects.
+
+    Excludes gate-events.log (#279): `sensitive_scan_added_lines` walks the
+    diff path-aware, dropping lines that belong to the crypto/secret gate's
+    own machine-written audit sink — see its docstring in `_hooklib`. Reads
+    the diff via SECURITY_DIFF_GIT_ARGS (pinned a/ b/ prefixes, no external
+    diff) so a hostile `diff.mnemonicPrefix`/`diff.noprefix`/external-diff
+    config can never break that attribution (#279 review MEDIUM-1)."""
+    argv = ["git", *SECURITY_DIFF_GIT_ARGS, ref] + (["--", *paths] if paths else [])
     try:
         out = subprocess.run(
             argv, cwd=cwd,
@@ -577,10 +585,7 @@ def added_lines(cwd, ref, paths=None):
     except Exception as e:  # noqa: BLE001
         _note_read_err(argv, repr(e))
         return None
-    return "\n".join(
-        line[1:] for line in out.stdout.splitlines()
-        if line.startswith("+") and not line.startswith("+++")
-    )
+    return "\n".join(sensitive_scan_added_lines(out.stdout))
 
 
 def _names(cwd, args):

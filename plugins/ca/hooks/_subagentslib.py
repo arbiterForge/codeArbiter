@@ -23,6 +23,15 @@ import os
 import re
 import time
 
+try:
+    import _colorlib
+    strip_control = _colorlib.strip_control
+except Exception:  # pragma: no cover — never let an import break the statusline
+    _colorlib = None
+
+    def strip_control(s):
+        return s if not isinstance(s, str) else re.sub(r"[\000-\037]", "", s)
+
 ACTIVE_WINDOW = 150       # secs: a subagent file touched this recently is "active"
 SHOW_WINDOW = 600         # secs: still display recently-finished subagents
 MAX_SUB_ROWS = 4
@@ -34,7 +43,7 @@ def display_model(model_id):
     """Compact a host model ID while retaining its family and version."""
     if not isinstance(model_id, str):
         return "model:?"
-    name = model_id.strip()
+    name = strip_control(model_id).strip()
     if not name:
         return "model:?"
     if name.startswith("claude-"):
@@ -170,7 +179,7 @@ def sub_label(content):
             if isinstance(blk, str):
                 text = blk
                 break
-    raw = str(text)
+    raw = strip_control(str(text))
     # strip leading reminder/system blocks up front (multi-line safe), then a lone tag
     raw = re.sub(r"^\s*(?:<([^>\s]+)[^>]*>.*?</\1>\s*)+", "", raw, flags=re.S)
     raw = re.sub(r"^\s*<[^>]+>\s*", "", raw)
