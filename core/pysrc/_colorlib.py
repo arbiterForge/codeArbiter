@@ -151,17 +151,45 @@ def bg(r, g, b):
 ACTIVE_THEME_NAME = str(os.environ.get("CODEARBITER_THEME") or "violet").strip().lower()
 if ACTIVE_THEME_NAME not in (*BUILTIN_PALETTES, "custom"):
     ACTIVE_THEME_NAME = "violet"
-ACTIVE_PALETTE = resolve_palette(ACTIVE_THEME_NAME)
-V0 = fg(*ACTIVE_PALETTE.accent_deep)
-V1 = fg(*ACTIVE_PALETTE.accent_mid)
-V2 = fg(*ACTIVE_PALETTE.accent_primary)
-V3 = fg(*ACTIVE_PALETTE.accent_bright)
-GREY = fg(*ACTIVE_PALETTE.text_muted)
-WHITE = fg(*ACTIVE_PALETTE.text_normal)
-OK = fg(*ACTIVE_PALETTE.semantic_ok)
-WARN = fg(*ACTIVE_PALETTE.semantic_warn)
-DANGER = fg(*ACTIVE_PALETTE.semantic_danger)
-PILL_FG = fg(*ACTIVE_PALETTE.text_on_accent)
+ACTIVE_PALETTE = (BUILTIN_PALETTES["violet"] if ACTIVE_THEME_NAME == "custom"
+                  else resolve_palette(ACTIVE_THEME_NAME))
+
+
+def _project_palette(name, palette):
+    global ACTIVE_THEME_NAME, ACTIVE_PALETTE
+    global V0, V1, V2, V3, GREY, WHITE, OK, WARN, DANGER, PILL_FG
+    ACTIVE_THEME_NAME, ACTIVE_PALETTE = name, palette
+    V0 = fg(*palette.accent_deep)
+    V1 = fg(*palette.accent_mid)
+    V2 = fg(*palette.accent_primary)
+    V3 = fg(*palette.accent_bright)
+    GREY = fg(*palette.text_muted)
+    WHITE = fg(*palette.text_normal)
+    OK = fg(*palette.semantic_ok)
+    WARN = fg(*palette.semantic_warn)
+    DANGER = fg(*palette.semantic_danger)
+    PILL_FG = fg(*palette.text_on_accent)
+
+
+def activate_palette(theme_name=None, custom_path=None):
+    """Resolve and project the process palette at render time.
+
+    Custom themes may touch the filesystem, so callers must invoke this from a
+    runtime path rather than relying on module import. Repeated calls re-resolve
+    the current environment deterministically.
+    """
+    name = str(theme_name if theme_name is not None else
+               (os.environ.get("CODEARBITER_THEME") or "violet")).strip().lower()
+    if name not in (*BUILTIN_PALETTES, "custom"):
+        name = "violet"
+    palette = resolve_palette(name, custom_path)
+    _project_palette(name, palette)
+    return palette
+
+
+# Built-ins are pure data and retain legacy import-time exports. Custom stays
+# violet until the explicit render-time activation above.
+_project_palette(ACTIVE_THEME_NAME, ACTIVE_PALETTE)
 
 # native-safe glyphs only
 TL, TR, BL, BR = "╭", "╮", "╰", "╯"

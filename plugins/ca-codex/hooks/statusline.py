@@ -64,6 +64,7 @@ import os
 import re
 import shutil
 import sys
+import threading
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -470,7 +471,66 @@ def detect_box_width():
     return max(60, min(160, raw - WIDTH_MARGIN))
 
 
+_PALETTE_RENDER_LOCK = threading.RLock()
+_COLORLIB_PALETTE_EXPORTS = (
+    "ACTIVE_THEME_NAME", "ACTIVE_PALETTE", "V0", "V1", "V2", "V3",
+    "GREY", "WHITE", "OK", "WARN", "DANGER", "PILL_FG",
+)
+_STATUSLINE_PALETTE_EXPORTS = (
+    "V0", "V1", "V2", "V3", "GREY", "WHITE", "OK", "WARN", "DANGER", "PILL_FG",
+)
+_CONSUMER_PALETTE_EXPORTS = (
+    ("_fmtlib", ("_RESET", "_V2", "_gradient_h")),
+    ("_boxlib", ("_RESET", "_V0", "_gradient_h", "_box_gradient_h")),
+    ("_segmentslib", ("RESET", "BOLD", "DIM", "V0", "V2", "V3", "GREY",
+                       "WHITE", "OK", "WARN", "DANGER", "PILL_FG")),
+)
+
+
+def _palette_snapshot():
+    snapshot = [(globals(), {name: globals()[name] for name in _STATUSLINE_PALETTE_EXPORTS})]
+    if _colorlib is not None:
+        snapshot.append((_colorlib, {name: getattr(_colorlib, name)
+                                     for name in _COLORLIB_PALETTE_EXPORTS}))
+    for module_name, names in _CONSUMER_PALETTE_EXPORTS:
+        module = globals().get(module_name)
+        if module is not None:
+            snapshot.append((module, {name: getattr(module, name) for name in names}))
+    return snapshot
+
+
+def _restore_palette(snapshot):
+    for target, values in snapshot:
+        if isinstance(target, dict):
+            target.update(values)
+        else:
+            for name, value in values.items():
+                setattr(target, name, value)
+
+
 def render(raw):
+    # Palette exports are process-global compatibility state. Keep activation,
+    # dependent-module rebinding, and consumption in one re-entrant critical
+    # section so concurrent renders cannot observe a torn theme.
+    with _PALETTE_RENDER_LOCK:
+        snapshot = _palette_snapshot()
+        try:
+            if _colorlib is not None:
+                _colorlib.activate_palette()
+                globals().update({name: getattr(_colorlib, name) for name in
+                                  ("V0", "V1", "V2", "V3", "GREY", "WHITE", "OK",
+                                   "WARN", "DANGER", "PILL_FG")})
+                for lib in (_fmtlib, _boxlib, _segmentslib):
+                    if lib is not None:
+                        lib.sync_palette()
+        except Exception:
+            # Preserve the statusline's fail-soft contract: retain the last
+            # coherent exports if activation or a dependent rebind fails.
+            _restore_palette(snapshot)
+        return _render_active_palette(raw)
+
+
+def _render_active_palette(raw):
     try:
         data = json.loads(raw) if raw.strip() else {}
     except (ValueError, TypeError):

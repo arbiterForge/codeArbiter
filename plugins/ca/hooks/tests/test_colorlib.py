@@ -5,6 +5,8 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from unittest import mock
 
@@ -124,6 +126,130 @@ class TestActivePaletteCompatibility(unittest.TestCase):
             mod = importlib.reload(_colorlib)
             self.assertEqual(mod.V2, mod.fg(*mod.ACTIVE_PALETTE.accent_primary))
             self.assertNotEqual(mod.V2, mod.fg(178, 102, 255))
+
+    def test_custom_theme_file_is_not_touched_while_color_modules_import(self):
+        theme_path = os.path.join(tempfile.gettempdir(), "must-not-open-theme.json")
+        script = """
+import builtins, importlib, os, sys
+theme = os.environ['CODEARBITER_THEME_FILE']
+real_open = builtins.open
+real_getsize = os.path.getsize
+def guarded_open(path, *args, **kwargs):
+    if os.path.abspath(path) == os.path.abspath(theme):
+        raise AssertionError('custom theme opened during import')
+    return real_open(path, *args, **kwargs)
+def guarded_getsize(path):
+    if os.path.abspath(path) == os.path.abspath(theme):
+        raise AssertionError('custom theme statted during import')
+    return real_getsize(path)
+builtins.open = guarded_open
+os.path.getsize = guarded_getsize
+for name in ('_colorlib', '_fmtlib', '_boxlib', '_segmentslib', 'statusline'):
+    importlib.import_module(name)
+"""
+        env = dict(os.environ, PYTHONPATH=_HOOKS_DIR, CODEARBITER_THEME="custom",
+                   CODEARBITER_THEME_FILE=theme_path)
+        run = subprocess.run([sys.executable, "-c", script], text=True,
+                             capture_output=True, env=env)
+        self.assertEqual(run.returncode, 0, run.stderr)
+
+    def test_box_fallback_defines_ansi_when_colorlib_import_is_partial(self):
+        script = """
+import importlib, sys, types
+sys.modules['_colorlib'] = types.SimpleNamespace(RESET='')
+boxlib = importlib.import_module('_boxlib')
+box = boxlib.Box(20)
+box.top('status')
+assert isinstance(box.render(), str)
+"""
+        env = dict(os.environ, PYTHONPATH=_HOOKS_DIR)
+        run = subprocess.run([sys.executable, "-c", script], text=True,
+                             capture_output=True, env=env)
+        self.assertEqual(run.returncode, 0, run.stderr)
+
+    def test_custom_palette_activates_once_for_all_render_consumers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "theme.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump({"accent": {"deep": "#010203", "primary": "#040506",
+                                       "bright": "#070809"},
+                           "text": {"muted": "#0a0b0c", "normal": "#0d0e0f"},
+                           "gradient": {"from": "#101112", "to": "#131415"}}, handle)
+            script = """
+import json, os, statusline as sl
+payload = json.dumps({'model': {'display_name': 'Test'},
+                      'context_window': {'used_percentage': 20}})
+reads = 0
+real_read = sl._colorlib._read_custom
+def counted_read(path):
+    global reads
+    reads += 1
+    return real_read(path)
+sl._colorlib._read_custom = counted_read
+out = sl.render(payload)
+again = sl.render(payload)
+if reads != 2:
+    raise AssertionError('expected one custom theme read per render, got %d' % reads)
+if out != again:
+    raise AssertionError('repeated custom renders were not byte-stable')
+box = sl._boxlib.Box(40)
+box.top('status')
+combined = out + box.render() + sl._fmtlib.sparkline([1, 2, 3]) \
+           + sl._segmentslib.seg_pr({'pr': {'number': 1, 'state': 'merged'}})
+required = [(1,2,3), (4,5,6), (7,8,9), (10,11,12), (13,14,15),
+            (16,17,18), (19,20,21)]
+missing = [rgb for rgb in required if sl.fg(*rgb) not in combined]
+if missing:
+    raise AssertionError('missing custom colors: %r' % (missing,))
+if sl.V2 != sl._colorlib.V2 or sl._boxlib._V0 != sl._colorlib.V0 \
+        or sl._fmtlib._V2 != sl._colorlib.V2 or sl._segmentslib.V2 != sl._colorlib.V2:
+    raise AssertionError('consumers did not receive one coherent palette')
+"""
+            env = dict(os.environ, PYTHONPATH=_HOOKS_DIR, CODEARBITER_THEME="custom",
+                       CODEARBITER_THEME_FILE=path, COLUMNS="80")
+            run = subprocess.run([sys.executable, "-c", script], text=True,
+                                 capture_output=True, env=env)
+            self.assertEqual(run.returncode, 0, run.stderr)
+
+    def test_concurrent_theme_switches_never_mix_consumer_palettes(self):
+        import statusline as sl
+        payload = json.dumps({"model": {"display_name": "Test"},
+                              "context_window": {"used_percentage": 20}})
+        real_activate = sl._colorlib.activate_palette
+        activation_count = 0
+        count_lock = threading.Lock()
+
+        themes = {}
+
+        def slow_activate(*args, **kwargs):
+            nonlocal activation_count
+            with count_lock:
+                activation_count += 1
+            palette = real_activate(themes[threading.current_thread().name])
+            time.sleep(0.02)
+            return palette
+
+        outputs = []
+
+        def worker(theme):
+            themes[threading.current_thread().name] = theme
+            outputs.append((theme, sl.render(payload)))
+
+        with mock.patch.object(sl._colorlib, "activate_palette", side_effect=slow_activate):
+            threads = [threading.Thread(target=worker, args=(theme,))
+                       for theme in ("blue", "green", "blue", "green")]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+
+        self.assertEqual(activation_count, len(threads))
+        blue = sl.fg(*sl._colorlib.BUILTIN_PALETTES["blue"].accent_primary)
+        green = sl.fg(*sl._colorlib.BUILTIN_PALETTES["green"].accent_primary)
+        expected = {"blue": blue, "green": green}
+        unexpected = {"blue": green, "green": blue}
+        self.assertTrue(all(expected[theme] in output and unexpected[theme] not in output
+                            for theme, output in outputs))
 
     def test_gradient_defaults_to_active_palette_and_explicit_endpoints_win(self):
         with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "green"}):

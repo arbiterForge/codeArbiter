@@ -557,6 +557,43 @@ class TestRender(unittest.TestCase):
         self.assertIsInstance(result, str)
         self.assertGreater(len(result), 0)
 
+    def test_palette_activation_failure_does_not_escape_render(self):
+        with mock.patch.object(sl._colorlib, "activate_palette",
+                               side_effect=RuntimeError("palette boom")):
+            result = sl.render("{}")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_palette_consumer_sync_failure_does_not_escape_render(self):
+        with mock.patch.object(sl._boxlib, "sync_palette",
+                               side_effect=RuntimeError("sync boom")):
+            result = sl.render("{}")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_each_palette_sync_failure_restores_last_good_palette_atomically(self):
+        payload = json.dumps({"model": {"display_name": "Test"},
+                              "context_window": {"used_percentage": 20}})
+        with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "blue"}):
+            prior = sl.render(payload)
+        blue = sl.fg(*sl._colorlib.BUILTIN_PALETTES["blue"].accent_primary)
+        green = sl.fg(*sl._colorlib.BUILTIN_PALETTES["green"].accent_primary)
+        self.assertIn(blue, prior)
+
+        for failing_lib in (sl._fmtlib, sl._boxlib, sl._segmentslib):
+            with self.subTest(sync_position=failing_lib.__name__):
+                with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "green"}), \
+                     mock.patch.object(failing_lib, "sync_palette",
+                                       side_effect=RuntimeError("sync boom")):
+                    output = sl.render(payload)
+                self.assertIn(blue, output)
+                self.assertNotIn(green, output)
+                self.assertEqual(sl._colorlib.V2, blue)
+                self.assertEqual(sl.V2, blue)
+                self.assertEqual(sl._fmtlib._V2, blue)
+                self.assertEqual(sl._boxlib._V0, sl._colorlib.V0)
+                self.assertEqual(sl._segmentslib.V2, blue)
+
     def test_returns_non_empty_string(self):
         data = json.dumps({
             "session_id": "test-session",

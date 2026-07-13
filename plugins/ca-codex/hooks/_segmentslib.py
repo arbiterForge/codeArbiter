@@ -53,6 +53,16 @@ except Exception:  # pragma: no cover — never let an import break the statusli
     def _bg(r, g, b):
         return ""
 
+
+def sync_palette():
+    """Refresh captured color exports after _colorlib runtime activation."""
+    global RESET, BOLD, DIM, V0, V2, V3, GREY, WHITE, OK, WARN, DANGER, PILL_FG
+    if _colorlib is not None:
+        RESET, BOLD, DIM = _colorlib.RESET, _colorlib.BOLD, _colorlib.DIM
+        V0, V2, V3 = _colorlib.V0, _colorlib.V2, _colorlib.V3
+        GREY, WHITE, OK = _colorlib.GREY, _colorlib.WHITE, _colorlib.OK
+        WARN, DANGER, PILL_FG = _colorlib.WARN, _colorlib.DANGER, _colorlib.PILL_FG
+
 try:
     import _fmtlib
     fmt_tok, usd_fine, human_dur, to_epoch = (_fmtlib.fmt_tok, _fmtlib.usd_fine,

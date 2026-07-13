@@ -50,6 +50,14 @@ except Exception:  # pragma: no cover — never let an import break the statusli
     _ANSI = _re.compile(r"\033\[[0-9;]*m")
 
 
+def sync_palette():
+    """Refresh captured color exports after _colorlib runtime activation."""
+    global _RESET, _V0, _gradient_h, _box_gradient_h
+    if _colorlib is not None:
+        _RESET, _V0 = _colorlib.RESET, _colorlib.V0
+        _gradient_h = _colorlib.gradient_h
+        _box_gradient_h = _colorlib.box_gradient_h
+
 class Box:
     def __init__(self, width):
         self.W = width
