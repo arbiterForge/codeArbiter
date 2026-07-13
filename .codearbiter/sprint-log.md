@@ -736,3 +736,237 @@ Note: the prior attempt to append SD-03 failed (shell cwd had drifted into site/
 - **Harvest D-03:** promoted queued task `(from sprint:auto-safe-open-issues)` to benchmark and revisit the 100 ms dirty-check timeout. SMARTS: reliable/secure behavior favors measurement before changing the bounded fail-soft policy; non-blocking. Confidence: high.
 - **Harvest D-05:** promoted queued task `(from sprint:auto-safe-open-issues)` to validate annotated palette evidence with users before adding unstable bitmap captures. SMARTS: useful evidence with low maintenance cost; non-blocking. Confidence: high.
 - **Harvest D-06:** promoted queued task `(from sprint:auto-safe-open-issues)` to reconfirm version classification against the final merged diff before release/tagging. SMARTS: release accuracy without blocking this feature PR; non-blocking. Confidence: high.
+
+# Sprint log — pre-release-hardening
+Started 2026-07-13. Append-only. SMARTS-scored auto-decisions; `low` = review these.
+Spec: .codearbiter/specs/pre-release-hardening.md · Plan: .codearbiter/plans/pre-release-hardening.md
+Branch: feat/pre-release-hardening (worktree, from origin/main 32b116b).
+
+Context (user-decided, not auto): scope = #223/#237/#271/#265 + 5 harvest items; #270 DEFERRED
+(rests on an unobserved mcp__* payload schema); #237 fixed via H-19 interpreter flank + honest docs,
+NOT consumer-recompute (which would make the gate vacuously pass); #265 via .git/codearbiter-hooksd
+drop-in + fail-closed, needs ADR-0014. Worktree mandated by user (concurrent Codex session on
+feat/pi-support in the main checkout, ratifying ADR-0013 — legitimate, out of scope).
+
+## SD-01 — Serialize the lanes rather than parallelize authors · confidence: high
+- **Point:** the plan's file-conflict map allows Lane E (harvest) to run parallel with Lane A (#223).
+  Should authors run concurrently in this one worktree?
+- **Options:** (a) serial lanes, one author at a time; (b) parallel authors in the same worktree;
+  (c) parallel authors in nested per-task worktrees.
+- **SMARTS:** Reliable strongly favors (a). Every lane funnels through `python tools/sync-core.py`,
+  which rewrites the whole vendored tree under plugins/ca/hooks + plugins/ca-codex/hooks — two
+  concurrent syncs race on the same output files even when the authors' *source* edits are disjoint.
+  Prior sprint SD-02 recorded exactly this class of bug (concurrent `npm run build` in one tree).
+  (c) is sound but nested worktrees + a repo-wide generator is disproportionate for a 5-task lane.
+  Velocity cost of (a) is real but bounded; correctness of the enforcement layer outranks it (§2 L2).
+- **Chosen:** (a) serial lanes; orchestrator owns sync + full-suite verification centrally, authors
+  edit + run targeted tests only. Strength: strong.
+
+## SD-02 — Lane A review BLOCK: the heredoc narrowing opened an H-01 bypass · confidence: high
+- **Point:** Lane A's A-4 narrowed the raw-`cmd` fallback by asking "is the heredoc's DIRECT CONSUMER a
+  shell?". That is the wrong question. In `bash -c "$(cat <<'EOF' … git commit … EOF)"` the consumer is
+  `cat` (classified inert), so the fallback is suppressed and the body is stripped from `git_view` —
+  COMMIT_RE never matches and the protected-branch commit is ALLOWED. `bash -c` executes the
+  substituted result regardless. Same for `eval`/`sh -c`. The subagent's suite was green (935 tests)
+  because no test covered an executor-behind-substitution.
+- **Options:** (a) accept — the false positive is fixed and the bypass is contrived; (b) require the
+  fallback to fire when the body can reach a shell by ANY route (direct consumer OR a shell executor
+  anywhere in the command), fail-closed on unknown tokens; (c) revert A-4, accept the `gh pr create`
+  false positive.
+- **SMARTS:** Secure + Reliable decisively favor (b). (a) trades a false positive (annoying) for a
+  false NEGATIVE in the protected-branch guard (dangerous) — the exact defect class the same lane's
+  worktree half exists to close; shipping it would mean #223's fix reintroduced #223's bug in another
+  spelling. (c) is safe but abandons the issue's actual, evidenced ask. (b) preserves the original
+  "ambiguity resolves CLOSED" contract while fixing the one case #223 documents. §2 L1 (security) over
+  L5 (velocity).
+- **Chosen:** (b) — `heredoc_shell_fallback = _heredoc_fed_to_shell(cmd) or _has_shell_executor(cmd)`,
+  fail-closed; three new BLOCK regression tests (`bash -c`/`eval`/`sh -c` behind `$(cat <<EOF …)`).
+  Returned to the author test-first. Strength: strong.
+- **Note:** caught by orchestrator diff review, not by the suite. The gap was a missing test, so the
+  fix carries its own regression guard.
+
+## SD-03 — Commit per slice, not one commit at the end · confidence: high
+- **Point:** the plan puts a single commit-gate at Slice 5. Four independent bug fixes in one commit?
+- **Options:** (a) one commit at the end (as planned); (b) one commit per slice/lane.
+- **SMARTS:** Maintainable + Reviewable favor (b): each lane closes a distinct issue with its own
+  conventional-commit type and its own regression tests, so a per-lane commit gives real rollback
+  points and a reviewable history; a single 4-issue commit is a reviewer-hostile blob and cannot be
+  reverted piecewise. Velocity cost is one extra gate run per lane — bounded. No security or
+  correctness argument for (a).
+- **Chosen:** (b) commit per slice; still ONE PR at the end. Amends the plan's L-2. Strength: strong.
+
+## SD-04 — Accept Lane B's H-19 interpreter over-block (reads blocked too) · confidence: high
+- **Point:** the author flagged that a dedicated interpreter regex cannot distinguish an interpreter's
+  OWN `;` statement separator from shell chaining without real tokenization, so it must scan past the
+  `[^|;&]*` bound the verb-list regex uses — which also blocks a *read* of a gate marker through an
+  interpreter, and any marker path appearing later on the same line as an interpreter name.
+- **Options:** (a) accept the over-block (fail closed); (b) keep the segment bound and accept that
+  `python -c "x=1; open(...marker...)"` slips through; (c) build a real shell/python tokenizer.
+- **SMARTS:** Secure decisively favors (a). (b) reopens the exact hole #237 filed — the bound is
+  trivially defeated by putting a `;` in the payload, so the guard would only catch the naive spelling
+  and advertise protection it does not have. (c) is disproportionate (a tokenizer per interpreter
+  language) and is itself a new bug surface. The over-block's blast radius is narrow: reading a gate
+  marker through a raw interpreter one-liner has no legitimate use (`cat`/`grep` are untouched), and
+  the sanctioned producers write the marker from INSIDE python, never by naming it on a command line —
+  so `python .../security-pass.py` is unaffected. §2 L1 over L5.
+- **Chosen:** (a) accept. Strength: strong.
+
+## SD-05 — Lane B review BLOCK: H-19 interp regex has a newline hole AND over-blocks prose · confidence: high
+- **Point:** `GATE_MARKER_INTERP_RE` used `[^\n]*`, which cannot cross a newline. It blocks
+  `python -c "open(...marker...)"` but MISSES the identical multi-line payload
+  (`python -c "\nopen(...marker...)\n"`) — ordinary Python, and a hole in the exact shape the flank
+  exists to close. But naively crossing newlines over-blocks PROSE: H-19 scans the raw `cmd`, so a
+  `gh pr create` heredoc body *describing* the #237 fix (which necessarily names `python -c` and
+  `security-gate-passed`) would BLOCK — i.e. this sprint's own PR body.
+- **Options:** (a) leave `[^\n]*` — miss the multi-line attack; (b) cross newlines and eat the prose
+  over-block; (c) cross newlines AND scan the heredoc-stripped view, with the raw fallback gated on
+  `heredoc_shell_fallback` — reusing the exact machinery Slice 1 landed for commit/push/add.
+- **SMARTS:** (c) dominates. (a) ships a guard with a trivially-reachable hole. (b) is not "fail
+  closed", it is broken — it would dead-end a real, necessary workflow (opening the PR that ships the
+  fix). (c) answers the already-answered question: a marker path in an inert heredoc body is prose, one
+  behind `bash -c "$(cat <<EOF …)"` is code. Consistency with Slice 1 also means one concept to
+  maintain, not two.
+- **Chosen:** (c). Extends to GATE_MARKER_REDIRECT_RE / GATE_MARKER_WRITE_RE, which have the same
+  prose false-positive today. Returned to the author test-first. Strength: strong.
+- **Note:** the over-block in SD-04 is accepted; this one is not. They are different — SD-04 blocks a
+  pointless action, SD-05 blocked a necessary one.
+
+## SD-06 — Accept taskwrite's fail-HARD on a null lock handle · confidence: high
+- **Point:** `_ledgerlib`'s convention is to silently no-op when `acquire_lock` returns None (a
+  statusline render is disposable). What should `taskwrite` do — it inherits the primitive but not the
+  disposability?
+- **Options:** (a) inherit fail-soft: proceed unlocked; (b) inherit fail-soft: silently skip the write;
+  (c) fail HARD — refuse to write, exit nonzero.
+- **SMARTS:** Reliable + correctness favor (c). (a) silently reintroduces the exact race #271 closes —
+  a lock you skip under contention is not a lock. (b) is worse: the caller sees success while the board
+  update vanished. A board write is the SOLE user-visible effect of the invocation, not a disposable
+  render, so a nonzero exit the caller can retry is the honest failure. Author proposed (c) unprompted
+  and justified it; concur.
+- **Chosen:** (c). Strength: strong.
+
+## SD-07 — Lane C review BLOCK: the dev-marker liveness window slides and never expires · confidence: high
+- **Point:** C-5's sidecar ownership record (`dev-session-owner.json`) is refreshed UNCONDITIONALLY on
+  every SessionStart carrying a session id — including sessions unrelated to the live dev marker. So
+  `now - prev_ts` never grows in an actively-used repo, the 6h liveness window never elapses, and a
+  dev marker orphaned by a crashed session becomes IMMORTAL: statusline stuck alarm-red, `overrides.log`
+  left with a `DEV: enter` that never closes. The window only expires in a repo nobody is using — i.e.
+  exactly where it isn't needed. The author's own comment claimed "a THIRD session after the window
+  passes" heals it; that third session refreshes the timestamp before evaluating it.
+- **Options:** (a) accept — the false-close bug (#271's actual complaint) is fixed either way;
+  (b) anchor the timestamp to the OWNER: refresh only when there is no live marker, or when the
+  refreshing session IS the recorded owner (a resume/compaction heartbeat); (c) drop session-scoping,
+  keep today's unconditional clear.
+- **SMARTS:** (b) clearly. (a) trades a FALSE audit close for a PERMANENTLY MISSING one — strictly
+  worse against §2 L1 (audit-trail integrity), and it breaks the self-heal the design claims to have.
+  (c) abandons AC-6. (b) costs one conditional and makes the residual honest and bounded: an orphaned
+  marker heals 6h after the OWNER's last activity, and a live /dev sitting idle longer than the window
+  can still be force-closed — both stateable, both acceptable.
+- **Chosen:** (b), plus two regression tests (immortal-marker sequence; owner-heartbeat) and a corrected
+  module comment. Returned to the author test-first. Strength: strong.
+
+## SD-08 — Lane E promoted a NEEDS-TRIAGE into scope: the board contention test proved nothing · confidence: high
+- **Point:** Lane E's E-4 found that Slice 3's lock hoist silently killed a test seam
+  (`mock.patch.object(_ledgerlib, "LOCK_WAIT")` became dead — the real deadline now reads
+  `_hooklib.LOCK_WAIT`). Pulling that thread exposed that the BOARD contention test (Slice 3's whole
+  proof of AC-5) used THREADS to test a bug about PROCESSES, and asserted non-acquisition with an
+  instant `is_set()` that could pass vacuously.
+- **Orchestrator error, recorded:** I inferred "the suite is green, therefore the lock is not
+  serializing in-process." That inference was WRONG — `release_first.set()` fires microseconds after
+  the assertion, well inside the second thread's 0.2s retry budget, so it acquires on retry and the
+  test passes legitimately. The author checked empirically (two handles, one process → second returns
+  None) and corrected me. The CONCLUSION survived the bad reasoning: threads are still the wrong
+  instrument for a two-process bug.
+- **Options:** (a) accept Slice 3's test — the fix reads correctly; (b) patch LOCK_WAIT until the
+  thread test is meaningfully green; (c) rebuild the proof on real subprocesses.
+- **SMARTS:** (c). (a) leaves AC-5 unproven — a green light over an unverified fix is the precise
+  failure this sprint exists to eliminate, and I had already bounced three lanes for it. (b) manufactures
+  a green over a harness that structurally cannot exercise the production risk (two `/ca:task` OS
+  processes, each with its own fail-soft clock, racing a file-level lock).
+- **Chosen:** (c). Rebuilt on real `taskwrite.py` subprocesses; proves mutual exclusion by MEASURING the
+  gap between acquisitions rather than assuming it; validated by reintroducing the pre-#271 bug and
+  confirming all three properties fail with the predicted symptoms. **Outcome: the #271 fix is correct;
+  the evidence for it was worthless. Now it isn't.** Strength: strong.
+
+## SD-09 — [HARD GATE, user-decided] the crypto gate poisons itself with its own audit log
+- **Point:** H-09b blocked a commit whose diff has ZERO sensitive lines. Cause: `candidate_lines()`
+  scans `.codearbiter/gate-events.log`, and that log echoes the detector's own message text
+  ("Crypto/TLS pattern detected") back at it. The log is append-only and nearly always dirty, so once
+  the gate has EVER fired a crypto REMIND in a repo, H-09b carries a permanent self-perpetuating false
+  positive. Compounded by #223: the installed 2.8.11 hook resolved to the MAIN checkout and scanned the
+  concurrent Codex session's diff, not mine — i.e. I was blocked by the bug this branch fixes, because
+  the fix is not the installed one.
+- **NOT auto-decided.** Security-gate scanning scope is a hard gate under /sprint (ORCHESTRATOR §3).
+  Surfaced to the user with three options.
+- **User chose:** exclude `gate-events.log` ONLY — deliberately keeping `overrides.log` / `triage.log` /
+  `sprint-log.md` in scope, since those carry human-written prose that could legitimately leak a secret
+  worth catching. And: fix the cause rather than take a logged /override, so no security-gate bypass
+  enters the audit trail for what is our own bug.
+- **Implementation note (mine):** the exclusion MUST land in the producer (`security-pass.py`) and BOTH
+  consumers (`pre-bash.py` H-09b, `git-enforce.py`) — they derive the sensitive set independently, so a
+  partial exclusion would make the producer stop covering lines the consumer still demands, blocking
+  PERMANENTLY with no marker able to satisfy it. Must be path-anchored, not a substring match on the
+  line text (excluding any line that merely NAMES the log would be a real hole).
+
+## SD-10 — [SECURITY BLOCK] the gate-events.log exemption shipped a scanner-blinding bypass (3rd of its class) · confidence: high
+- **Point:** the log-poisoning fix (SD-09) narrows the crypto/secret scan by attributing each diff line
+  to its file. First impl keyed on `+++ ` (content-forgeable) — sent back. Second impl keyed on
+  `diff --git a/X b/X` per my instruction. A dispatched security-reviewer found that header is
+  UNSPOOFABLE but PATH-AMBIGUOUS: the greedy `b/(.+)$` resolves to the LAST ` b/`, so a file named
+  `x b/.codearbiter/gate-events.log` exempts a real source file. Reproduced end-to-end: an md5 call +
+  a committed password passed the backstop with no marker, no --no-verify. Same defect class as the
+  first two bounces, via a different mechanism. My own remediation instruction created it.
+- **Also found:** MEDIUM — `diff.mnemonicPrefix`/`diff.noprefix` git config breaks the `a/`…`b/` anchor,
+  so the REAL gate-events.log stops being exempt and the self-DoS returns (consumers don't pin diff
+  format). MEDIUM — combined/merge diffs (`diff --cc`) aren't recognized as section boundaries, so a
+  `--cc` source section inherits the prior (exempt) path — reachable via git-enforce's `git diff
+  --cached` at a merge commit; fails toward EXEMPTION. LOW — producer (ls-files) and consumers (diff
+  walk) disagree on identity for the collision path.
+- **Options:** (a) accept HIGH as contrived (a file named `x b/...` is exotic); (b) redesign attribution
+  to be both unforgeable AND unambiguous, pin diff config, treat any `^diff ` as a boundary; (c) drop the
+  exemption, revert SD-09, live with the self-poisoning false positive.
+- **SMARTS:** (b). (a) is indefensible — this is the crypto/secret backstop and the bypass needs no
+  privilege; "exotic filename" is exactly how scanner-blinding vectors read until someone uses one.
+  (c) trades a false positive for the original bug. (b): attribute off `+++ b/<path>` by stripping the
+  FIXED 6-char prefix (unambiguous even for paths containing ` b/`, unlike the twice-repeated
+  `diff --git` path), accepted only in the pre-`@@` preamble (content is post-`@@`, so unforgeable);
+  pin `-c diff.mnemonicPrefix=false -c diff.noprefix=false --no-ext-diff --src-prefix=a/ --dst-prefix=b/`
+  at all three call sites; reset attribution on ANY `^diff ` line. §2 L1.
+- **Chosen:** (b). Not a new user decision — the DECISION (exempt gate-events.log only) stands; this is
+  fixing bugs in an approved change. Returned to author test-first with the reviewer's repro as the
+  failing case. Strength: strong.
+- **Note:** the security-reviewer caught what the author's full test matrix missed, and the author had
+  written the false invariant into a code comment. The review paid for itself.
+
+## SD-11 — [landing] board reconciliation deferred to post-merge; papercuts harvested to the PR body · confidence: high
+- **Point:** the 5 harvest tasks live only in the MAIN checkout's UNCOMMITTED open-tasks.md (added by a
+  prior session from pr304-review); the worktree board is the HEAD version and lacks them. The board is
+  shared mutable state the concurrent Codex session also touches.
+- **Options:** (a) flip the harvest tasks done in the worktree board + commit; (b) leave the board out of
+  this PR, reconcile against main post-merge; (c) mutate main's board directly now.
+- **SMARTS:** (b). (a) commits a board the harvest tasks aren't in, and on merge collides three ways
+  (this PR, main's uncommitted board, Codex). (c) races the Codex session on the exact file #271 is about
+  — running the anti-race fix's cleanup THROUGH the race. (b) keeps the PR to code+ADR+artifacts and does
+  the board flip once concurrent state settles. board-done-flip-rides-with-work is overridden here by the
+  concurrent-writer hazard; noted explicitly.
+- **Chosen:** (b). Post-merge: flip the 5 pr304-review tasks done; queue the papercuts below. Strength: strong.
+
+## Papercuts found in-sprint (harvest to open-tasks post-merge, NOT fixed here — out of scope)
+- **#223-family, guard vs shell variables:** `git -C "$VAR"` fails CLOSED (guard pattern-matches the raw
+  string, never sees the expansion) — forces literal paths. Safe direction, real friction.
+- **#223-family, H-03 false positive:** a quoted `git -C "<path>"` target is mis-parsed as a staging
+  pathspec (blocked my per-slice commits until I dropped `-C` from inside the worktree). And an `echo`
+  whose text contains a `$(git diff ...)` substitution trips H-03/wildcard as if it were a real add.
+- **#223 marker-root split, ADR flow:** the installed hook reads gate/authoring markers from the MAIN
+  checkout while a worktree author writes to the worktree — I had to drop `adr-authoring-active` in BOTH
+  locations to author ADR-0014. This is the exact mismatch that CAUSED #237. Worth a real fix: resolve
+  marker root the same worktree-aware way #223 now resolves branch/diff root (but markers stay pinned per
+  D-2, so this needs its own design).
+
+## SD-12 — [landing] full-suite green; per-slice commits; one PR · confidence: high
+- Final tree: 967 hook tests OK, all 25 .github/scripts suites OK, sync-core + build-surface byte-identical,
+  site 403/403. AC-1..AC-10 met. Five commits (6738581 #223, 5cfb89a #237, e50d58b #271, a97d87b harvest+
+  gate-events-self-poisoning, 9c09172 #265+ADR-0014). Crypto-gate pass for a97d87b recorded via the
+  SANCTIONED producer (security-pass.py) after an auth-crypto-reviewer PASS — never hand-written.
+- The gate-events.log self-poisoning bug (#279-shaped) was NOT on the sprint's issue list; found by using
+  the system, surfaced as a hard gate, user-scoped, fixed under two security reviews. Recorded as the
+  sprint's one genuinely new find.
