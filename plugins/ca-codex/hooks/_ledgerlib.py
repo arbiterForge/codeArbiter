@@ -26,6 +26,7 @@
 #   ledger_update(data, sid) -> tuple        (rec, session_totals, today_totals)
 #   burn_samples(rec) -> list[float]         recent per-call token-burn values for the sparkline
 
+import hashlib
 import json
 import os
 import time
@@ -35,6 +36,7 @@ from datetime import datetime, timezone
 SESSION_TTL = 36 * 3600  # prune sessions older than ~1.5 days
 BURN_RING = 40           # recent per-call token-burn samples kept for the sparkline
 TX_MAX_NEW_LINES = 20000 # hot-path bound: transcript lines parsed per render
+LOCK_WAIT = 0.2          # bounded best-effort wait for another statusline writer
 
 # API list prices, USD per 1M tokens (captured 2026-06-10 from Anthropic's
 # pricing pages). Used ONLY to estimate the pay-as-you-go API-equivalent cost of
@@ -115,6 +117,174 @@ def api_cost(tok):
 def ledger_path():
     return os.environ.get("CODEARBITER_LEDGER") or \
         os.path.join(os.path.expanduser("~"), ".codearbiter", "ledger.json")
+
+
+def _read_json(path, default=None):
+    try:
+        with open(path, encoding="utf-8") as f:
+            value = json.load(f)
+        return value
+    except (OSError, ValueError):
+        return default
+
+
+def _atomic_json(path, value):
+    """Atomically replace one JSON file without sharing a staging pathname."""
+    tmp = None
+    try:
+        parent = os.path.dirname(path)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+        tmp = f"{path}.{os.getpid()}.{time.time_ns()}.tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(value, f)
+        os.replace(tmp, path)
+        return True
+    except OSError:
+        return False
+    finally:
+        if tmp:
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+
+
+def _acquire_lock(path):
+    """Acquire an OS-owned file lock; process death releases it automatically."""
+    lock_path = f"{os.path.abspath(path)}.lock"
+    parent = os.path.dirname(lock_path)
+    try:
+        os.makedirs(parent, exist_ok=True)
+        handle = open(lock_path, "a+b")
+        handle.seek(0, os.SEEK_END)
+        if handle.tell() == 0:
+            handle.write(b"\0")
+            handle.flush()
+    except OSError:
+        return None
+    deadline = time.monotonic() + LOCK_WAIT
+    while True:
+        try:
+            handle.seek(0)
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return handle
+        except (OSError, BlockingIOError):
+            if time.monotonic() >= deadline:
+                handle.close()
+                return None
+            time.sleep(0.005)
+
+
+def _release_lock(handle):
+    if handle is None:
+        return
+    try:
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    except OSError:
+        pass
+    finally:
+        try:
+            handle.close()
+        except OSError:
+            pass
+
+
+def _session_dir(path):
+    return f"{path}.sessions"
+
+
+def _session_key(sid):
+    return hashlib.sha256(str(sid).encode("utf-8", "replace")).hexdigest()
+
+
+def _session_file(path, sid):
+    return os.path.join(_session_dir(path), f"{_session_key(sid)}.json")
+
+
+def _start_file(path, sid):
+    return os.path.join(_session_dir(path), f"{_session_key(sid)}.start.json")
+
+
+def _load_sessions(path):
+    """Merge the legacy snapshot with authoritative independently-written shards."""
+    led = _read_json(path, {})
+    legacy = led.get("sessions") if isinstance(led, dict) else None
+    sessions = dict(legacy) if isinstance(legacy, dict) else {}
+    directory = _session_dir(path)
+    try:
+        names = os.listdir(directory)
+    except OSError:
+        names = []
+    for name in names:
+        if not name.endswith(".json") or name.endswith(".start.json"):
+            continue
+        enumerated = os.path.join(directory, name)
+        item = _read_json(enumerated)
+        if not isinstance(item, dict) or not isinstance(item.get("rec"), dict):
+            try:
+                os.remove(enumerated)
+            except OSError:
+                pass
+            continue
+        sid = str(item.get("sid"))
+        if os.path.basename(_session_file(path, sid)) != name:
+            try:
+                os.remove(enumerated)
+            except OSError:
+                pass
+            continue
+        rec = item["rec"]
+        if time.time() - num(rec.get("last_ts")) > SESSION_TTL:
+            for stale in (enumerated, _start_file(path, sid)):
+                try:
+                    os.remove(stale)
+                except OSError:
+                    pass
+            sessions.pop(sid, None)
+            continue
+        sessions[sid] = rec
+    for name in names:
+        if not name.endswith(".start.json"):
+            continue
+        enumerated = os.path.join(directory, name)
+        item = _read_json(enumerated)
+        if not isinstance(item, dict):
+            try:
+                os.remove(enumerated)
+            except OSError:
+                pass
+            continue
+        sid = str(item.get("sid"))
+        start = num(item.get("sess_start"), None)
+        valid_name = os.path.basename(_start_file(path, sid)) == name
+        if valid_name and sid in sessions and start is not None:
+            sessions[sid]["sess_start"] = float(start)
+        else:
+            try:
+                os.remove(enumerated)
+            except OSError:
+                pass
+    now = time.time()
+    sessions = {sid: rec for sid, rec in sessions.items()
+                if isinstance(rec, dict)
+                and now - num(rec.get("last_ts")) <= SESSION_TTL}
+    return sessions
+
+
+def _write_snapshot(path, sessions):
+    return _atomic_json(path, {"sessions": sessions})
 
 
 def _msg_date(ts):
@@ -250,28 +420,29 @@ def _totals(models):
 
 
 def ledger_update(data, sid):
+    blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
+    if not sid:
+        return {}, dict(blank), dict(blank)
+    path = ledger_path()
+    lock = _acquire_lock(path)
+    if lock is None:
+        return {}, dict(blank), dict(blank)
+    try:
+        return _ledger_update_unlocked(data, sid, path)
+    finally:
+        _release_lock(lock)
+
+
+def _ledger_update_unlocked(data, sid, path):
     """Read-modify-write the per-session ledger. Accumulate the session's TRUE token
     COUNTS by tailing its transcript (deduped per requestId), take the COST from the
     host's cost.total_cost_usd, and return (session record, this-session totals,
     today's totals across sessions). Best-effort; safe blanks on any failure."""
     blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
-    if not sid:
-        return {}, dict(blank), dict(blank)
-    path = ledger_path()
     now = time.time()
     today = datetime.now().strftime("%Y-%m-%d")
 
-    led = {}
-    try:
-        with open(path, encoding="utf-8") as f:
-            led = json.load(f)
-    except (OSError, ValueError):
-        led = {}
-    if not isinstance(led, dict):
-        led = {}
-    sessions = led.get("sessions")
-    if not isinstance(sessions, dict):
-        sessions = {}
+    sessions = _load_sessions(path)
 
     rec = sessions.get(sid)
     dirty = not isinstance(rec, dict)
@@ -300,17 +471,11 @@ def ledger_update(data, sid):
         if not isinstance(v, dict) or now - num(v.get("last_ts")) > SESSION_TTL:
             del sessions[k]
             dirty = True
-    led["sessions"] = sessions
-
-    if dirty:
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            tmp = f"{path}.{os.getpid()}.tmp"   # per-process staging: no concurrent clobber
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(led, f)
-            os.replace(tmp, path)
-        except OSError:
-            pass
+    # Each session owns one independently replaced shard. A writer for another
+    # session therefore cannot replace this record with an older snapshot.
+    _atomic_json(_session_file(path, sid), {"sid": sid, "rec": rec})
+    sessions = _load_sessions(path)
+    _write_snapshot(path, sessions)  # compatibility/readability cache; shards are truth
 
     # Today = each session's TODAY bucket (tokens whose transcript timestamp falls
     # on the current local day), summed across sessions — not whole-session totals.
@@ -336,30 +501,30 @@ def persist_sess_start(sid, value):
     if not sid or not value:
         return False
     path = ledger_path()
+    lock = _acquire_lock(path)
+    if lock is None:
+        return False
     try:
-        with open(path, encoding="utf-8") as f:
-            led = json.load(f)
-    except (OSError, ValueError):
-        return False
-    if not isinstance(led, dict):
-        return False
-    sessions = led.get("sessions")
-    if not isinstance(sessions, dict):
-        return False
+        return _persist_sess_start_unlocked(sid, value, path)
+    finally:
+        _release_lock(lock)
+
+
+def _persist_sess_start_unlocked(sid, value, path):
+    sessions = _load_sessions(path)
     rec = sessions.get(sid)
     if not isinstance(rec, dict):
         return False
     if num(rec.get("sess_start"), None) == float(value):
         return False                     # already cached — nothing to do
-    rec["sess_start"] = float(value)
-    try:
-        tmp = f"{path}.{os.getpid()}.tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            json.dump(led, f)
-        os.replace(tmp, path)
-        return True
-    except OSError:
+    # Cache metadata has its own file, so it cannot overwrite a concurrently
+    # refreshed token/cost shard for the same session.
+    if not _atomic_json(_start_file(path, sid),
+                        {"sid": sid, "sess_start": float(value)}):
         return False
+    sessions = _load_sessions(path)
+    _write_snapshot(path, sessions)
+    return True
 
 
 def burn_samples(rec):

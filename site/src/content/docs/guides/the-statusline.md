@@ -23,6 +23,70 @@ dependency-free (native font glyphs only, no Nerd Font) and renders on every ses
 
 **You will need:** the plugin installed (see [Install](/getting-started/install/)).
 
+## Choose a Color Theme
+
+The statusline defaults to its original violet palette. Set `CODEARBITER_THEME` in the
+environment that launches Claude Code to select `violet`, `blue`, `green`, `amber`, or `mono`.
+Names are case-insensitive. An unrecognized name falls back to `violet`, so a typo cannot break
+the renderer.
+
+```text
+CODEARBITER_THEME=blue
+```
+
+For a custom palette, set `CODEARBITER_THEME=custom`. The renderer reads
+`~/.codearbiter/statusline-theme.json` unless `CODEARBITER_THEME_FILE` names another local file.
+Both `~` and environment variables in that path are expanded. The file is read-only: rendering
+does not write configuration or make network requests.
+
+```json
+{
+  "accent": {
+    "deep": "#6c46b4",
+    "mid": "#965ce6",
+    "primary": "#b266ff",
+    "bright": "#d08cff"
+  },
+  "text": {
+    "muted": "#9696a2",
+    "normal": "#e8e8f0",
+    "on_accent": "#120e1a"
+  },
+  "semantic": {
+    "ok": "#78dc96",
+    "warn": "#ffb84c",
+    "danger": "#ff566e"
+  },
+  "gradient": {
+    "from": "#7850c8",
+    "to": "#cd8cff"
+  }
+}
+```
+
+Every field is optional and omitted fields inherit from `violet`. Values must use six-digit
+`#RRGGBB` notation. Unknown keys and invalid color values are ignored. A missing, unreadable,
+oversized, malformed, or non-object file rejects the custom theme as a whole and safely renders
+with `violet` instead.
+
+The standard `NO_COLOR` environment variable takes precedence over every built-in and custom
+theme. When it is present, the final statusline contains no ANSI color sequences while retaining
+the same text, glyphs, spacing, and clipping.
+
+### Built-in Theme Captures
+
+These deterministic, ANSI-free terminal captures show the same subagent row under every built-in
+theme. The `accent` annotation records the bright-accent RGB used for the model tag; text stays
+identical because theme selection changes color only.
+
+```text
+violet  accent #d08cff  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
+blue    accent #7dbeff  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
+green   accent #6fe7a9  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
+amber   accent #ffc768  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
+mono    accent #e2e2e8  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
+```
+
 ## What the Bar Shows
 
 The bar has two tiers of segments.
@@ -41,6 +105,7 @@ These render in every Claude Code session, regardless of whether the open repo i
 | **tokens** | Session and daily in/out token counts, deduplicated by request ID across transcript entries |
 | **cost** | Cumulative API-equivalent cost from Claude Code's authoritative session total, persisted across sessions in `~/.codearbiter/ledger.json` |
 | **burn** | Per-message token sparkline built from recent transcript calls |
+| **subagents** | Recent tasks with liveness, selected model, input/output tokens, and age; mixed or missing model metadata is explicit |
 
 ### Arbiter Segments
 

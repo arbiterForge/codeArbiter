@@ -2,6 +2,7 @@
 """Dual-host shared-store contract tests for ADR-0011 and ADR-0012."""
 
 import concurrent.futures
+import collections
 import json
 import os
 import subprocess
@@ -73,18 +74,26 @@ class DualHostStoreTest(unittest.TestCase):
             "tool_input": {"command": 'git commit --no-verify -m "x"'},
         }
         jobs = [(CA_HOOKS, True)] * 12 + [(CODEX_HOOKS, False)] * 12
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
-            results = list(pool.map(
-                lambda job: run_hook(job[0], "pre-bash.py", payload,
-                                     self.root, job[1]), jobs))
+        results = []
+        for _ in range(3):
+            with concurrent.futures.ThreadPoolExecutor(max_workers=len(jobs)) as pool:
+                results.extend(pool.map(
+                    lambda job: run_hook(job[0], "pre-bash.py", payload,
+                                         self.root, job[1]), jobs))
 
         self.assertTrue(all(result.returncode == 2 for result in results))
         self.assertTrue(all("H-20" in result.stderr for result in results))
         lines = log.read_text(encoding="utf-8").splitlines()
-        self.assertEqual(len(lines), len(jobs))
-        self.assertEqual(sum("host=claude" in line for line in lines), 12)
-        self.assertEqual(sum("host=codex" in line for line in lines), 12)
-        self.assertTrue(all("BLOCK [H-20]" in line for line in lines))
+        events = collections.Counter(line.split("] ", 1)[1] for line in lines)
+        message = ("BLOCK [H-20] host={} hook=pre-bash.py | '--no-verify' / "
+                   "'-n' on git commit skips the .git/hooks git-enforce "
+                   "backstop entirely (appsec-002) — every commit-time gate "
+                   "(H-01/H-02/H-09b/H-10b/H-14) would go unenforced for this "
+                   "commit. Remove the flag; use /override for a sanctioned bypass.")
+        self.assertEqual(events, collections.Counter({
+            message.format("claude"): 36,
+            message.format("codex"): 36,
+        }))
 
 
 if __name__ == "__main__":

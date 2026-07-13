@@ -165,11 +165,12 @@ jobs:
 
   hooks:
     name: CA | [Test] - Hooks (${{ matrix.os }})
-    # MR-10: proves the dual-registration interpreter fallback on every OS -
-    # REAL (python3 present, no double execution), STUB (Store-alias python3
-    # that exits 9009; the fallback entry must do the work, including blocking
-    # via exit 2), NONE (no Python at all; every entry must fail LOUD, never
-    # silently dormant). See .github/scripts/test_hooks_cold_install.py.
+    # MR-10: proves host-specific interpreter fallback on every OS - REAL (no
+    # double execution), STUB (preferred interpreter fails), PY2 (`python`
+    # exists but is not Python 3; ca must fall back and preserve exit-2 blocks),
+    # and NONE (no Python; fail LOUD, never silently dormant). The Windows ca
+    # path also proves a successful python3/MSIX alias is never activated.
+    # See .github/scripts/test_hooks_cold_install.py.
     # Shared infra (the ca plugin's hooks) - runs whenever CI runs; not gated
     # per-plugin because the hook payload belongs to neither sandbox driver.
     needs: changes

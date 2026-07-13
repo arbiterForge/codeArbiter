@@ -20,9 +20,95 @@ if _HOOKS_DIR not in sys.path:
     sys.path.insert(0, _HOOKS_DIR)
 
 import statusline as sl
+import _subagentslib as subs
 
 # Re-import helpers used by ledger tests.
 from _helpers import redirect_home, restore_home
+
+
+class TestSubagentModels(unittest.TestCase):
+    def _read(self, messages):
+        with tempfile.TemporaryDirectory() as td:
+            path = os.path.join(td, "agent-123456.jsonl")
+            with open(path, "w", encoding="utf-8") as f:
+                for i, message in enumerate(messages):
+                    f.write(json.dumps({"requestId": f"r{i}", "message": message}) + "\n")
+            return subs.read_subagents(td)[2][0]
+
+    def test_one_model_keeps_family_and_version(self):
+        row = self._read([
+            {"role": "user", "content": "Review parser"},
+            {"role": "assistant", "model": "claude-sonnet-4-6-20250514",
+             "usage": {"input_tokens": 12, "output_tokens": 3}},
+        ])
+        self.assertEqual(row["model"], "model:sonnet-4-6")
+
+    def test_multiple_distinct_models_are_mixed(self):
+        row = self._read([
+            {"role": "assistant", "model": "claude-opus-4-1-20250805"},
+            {"role": "assistant", "model": "claude-haiku-4-5-20251001"},
+        ])
+        self.assertEqual(row["model"], "model:mixed")
+
+    def test_absent_model_is_explicitly_unknown(self):
+        self.assertEqual(self._read([{"role": "assistant"}])["model"], "model:?")
+
+    def test_long_unknown_model_is_safely_bounded(self):
+        shown = subs.display_model("vendor-" + "x" * 80)
+        self.assertEqual(shown, "model:vendor-" + "x" * 17)
+        self.assertEqual(len(shown.removeprefix("model:")), 24)
+
+    def test_unknown_model_preserves_non_date_suffix(self):
+        self.assertEqual(subs.display_model("other-model-v2"), "model:other-model-v2")
+
+    def test_malformed_model_metadata_never_breaks_scan(self):
+        row = self._read([
+            {"role": "assistant", "model": {"unexpected": "object"}},
+            {"role": "assistant", "model": ["also", "invalid"]},
+            {"role": "assistant", "model": 123},
+        ])
+        self.assertEqual(row["model"], "model:?")
+
+
+class TestSubagentModelRendering(unittest.TestCase):
+    def _render(self, width, label="A very long delegated task label that must clip first"):
+        payload = json.dumps({"session_id": "sid", "model": {"display_name": "Opus 4.8"}})
+        shown = [{"label": label, "model": "model:sonnet-4-6", "inp": 1200,
+                  "out": 340, "age": 8, "active": True}]
+        env = {"CODEARBITER_WIDTH": str(width), "NO_COLOR": "1"}
+        with mock.patch.dict(os.environ, env, clear=False), \
+             mock.patch.object(sl, "subagent_dir", return_value="unused"), \
+             mock.patch.object(sl, "read_subagents", return_value=(1, 1, shown, (1200, 340))):
+            return sl.render(payload)
+
+    def test_every_row_renders_model_with_active_palette_accent(self):
+        shown = [{"label": "task", "model": "model:opus-4-1", "inp": 1,
+                  "out": 2, "age": 3, "active": True}]
+        with mock.patch.object(sl, "subagent_dir", return_value="unused"), \
+             mock.patch.object(sl, "read_subagents", return_value=(1, 1, shown, (1, 2))):
+            out = sl.render(json.dumps({"session_id": "sid"}))
+        self.assertIn(f"{sl.V3}model:opus-4-1{sl.RESET}", out)
+
+    def test_missing_row_model_renders_fallback(self):
+        shown = [{"label": "task", "inp": 1, "out": 2, "age": 3, "active": True}]
+        with mock.patch.object(sl, "subagent_dir", return_value="unused"), \
+             mock.patch.object(sl, "read_subagents", return_value=(1, 1, shown, (1, 2))):
+            plain = sl.ANSI.sub("", sl.render(json.dumps({"session_id": "sid"})))
+        self.assertIn("model:?", plain)
+
+    def test_narrow_row_clips_label_before_model_tokens_and_age(self):
+        plain = self._render(64)
+        row = next(line for line in plain.splitlines() if "model:sonnet-4-6" in line)
+        self.assertIn(sl.ELL, row)
+        self.assertIn("1.2K", row)
+        self.assertIn("340", row)
+        self.assertIn("8s", row)
+        self.assertLessEqual(sl.vlen(row), 64)
+
+    def test_extreme_width_degrades_without_overflow_or_exception(self):
+        plain = self._render(40)
+        self.assertTrue(plain)
+        self.assertTrue(all(sl.vlen(line) <= 40 for line in plain.splitlines()))
 
 
 # =========================================================================== vlen
@@ -470,6 +556,43 @@ class TestRender(unittest.TestCase):
         result = sl.render("not json at all {{")
         self.assertIsInstance(result, str)
         self.assertGreater(len(result), 0)
+
+    def test_palette_activation_failure_does_not_escape_render(self):
+        with mock.patch.object(sl._colorlib, "activate_palette",
+                               side_effect=RuntimeError("palette boom")):
+            result = sl.render("{}")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_palette_consumer_sync_failure_does_not_escape_render(self):
+        with mock.patch.object(sl._boxlib, "sync_palette",
+                               side_effect=RuntimeError("sync boom")):
+            result = sl.render("{}")
+        self.assertIsInstance(result, str)
+        self.assertGreater(len(result), 0)
+
+    def test_each_palette_sync_failure_restores_last_good_palette_atomically(self):
+        payload = json.dumps({"model": {"display_name": "Test"},
+                              "context_window": {"used_percentage": 20}})
+        with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "blue"}):
+            prior = sl.render(payload)
+        blue = sl.fg(*sl._colorlib.BUILTIN_PALETTES["blue"].accent_primary)
+        green = sl.fg(*sl._colorlib.BUILTIN_PALETTES["green"].accent_primary)
+        self.assertIn(blue, prior)
+
+        for failing_lib in (sl._fmtlib, sl._boxlib, sl._segmentslib):
+            with self.subTest(sync_position=failing_lib.__name__):
+                with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "green"}), \
+                     mock.patch.object(failing_lib, "sync_palette",
+                                       side_effect=RuntimeError("sync boom")):
+                    output = sl.render(payload)
+                self.assertIn(blue, output)
+                self.assertNotIn(green, output)
+                self.assertEqual(sl._colorlib.V2, blue)
+                self.assertEqual(sl.V2, blue)
+                self.assertEqual(sl._fmtlib._V2, blue)
+                self.assertEqual(sl._boxlib._V0, sl._colorlib.V0)
+                self.assertEqual(sl._segmentslib.V2, blue)
 
     def test_returns_non_empty_string(self):
         data = json.dumps({

@@ -25,6 +25,7 @@
 import argparse
 import json
 import os
+import re
 import sys
 
 # Self-sufficient regardless of how this file is loaded (direct `python
@@ -36,8 +37,12 @@ import _hooklib  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 
 BACKUP_KEY = "_codearbiterStatuslineBackup"       # holds the prior statusLine value
+OWNER_KEY = "_codearbiterStatuslineOwner"         # exact command last written by us
 SPINNER_BACKUP_KEY = "_codearbiterSpinnerVerbsBackup"  # holds prior spinnerVerbs
-MARKER = "statusline.py"                          # how we recognize our own line
+_COMMAND_RE = re.compile(
+    r'''^\s*(?P<interp>"[^"]*"|'[^']*'|\S+)\s+'''
+    r'''(?P<script>"[^"]*"|'[^']*'|\S+)\s*$''')
+_PYTHON_EXE_RE = re.compile(r"python(?:\d+(?:\.\d+)*)?(?:\.exe)?$")
 
 ARBITER_SPINNER_VERBS = {
     "mode": "replace",
@@ -95,12 +100,83 @@ def build_command(interp, script_abs):
     return f'"{interp}" "{script_abs}"'
 
 
-def is_ours(statusline):
+def _owned_command(command):
+    """Recognize legacy versioned codeArbiter renderer commands.
+
+    Accept the exact two-token command shape only when the script argument ends
+    in codearbiter/{ca|ca-codex}/VERSION/hooks/statusline.py.
+    """
+    parsed = _python_script(command)
+    if parsed is None:
+        return False
+    script, windows_path = parsed
+    suffix = re.split(r"[\\/]", script)[-8:]
+    if len(suffix) < 8:
+        return False
+    expected = [".claude", "plugins", "cache", "codearbiter", None,
+                None, "hooks", "statusline.py"]
+    compared = [part.lower() for part in suffix] if windows_path else suffix
+    fixed = [part.lower() if windows_path and part is not None else part
+             for part in expected]
+    return (
+        compared[0:4] == fixed[0:4]
+        and compared[4] == "ca"
+        and bool(suffix[5])
+        and compared[6:] == fixed[6:]
+    )
+
+
+def _python_script(command):
+    if not isinstance(command, str):
+        return None
+    match = _COMMAND_RE.fullmatch(command)
+    if not match:
+        return None
+    script = match.group("script")
+    if len(script) >= 2 and script[0] == script[-1] and script[0] in "\"'":
+        script = script[1:-1]
+    windows_path = bool(re.match(r"^[A-Za-z]:[\\/]", script)) or "\\" in script
+    interp = match.group("interp")
+    if len(interp) >= 2 and interp[0] == interp[-1] and interp[0] in "\"'":
+        interp = interp[1:-1]
+    interp_name = re.split(r"[\\/]", interp)[-1]
+    if not _PYTHON_EXE_RE.fullmatch(interp_name.lower() if windows_path else interp_name):
+        return None
+    return script, windows_path
+
+
+def _legacy_source_command(command):
+    """Recognize the exact pre-metadata source-tree install path."""
+    parsed = _python_script(command)
+    if parsed is None:
+        return False
+    script, windows_path = parsed
+    suffix = re.split(r"[\\/]", script)[-5:]
+    expected = ["codeArbiter", "plugins", "ca", "hooks", "statusline.py"]
+    if windows_path:
+        suffix = [part.lower() for part in suffix]
+        expected = [part.lower() for part in expected]
+    return suffix == expected
+def is_ours(statusline, settings=None):
+    command = statusline.get("command") if isinstance(statusline, dict) else statusline
+    if (isinstance(settings, dict)
+            and isinstance(command, str)
+            and settings.get(OWNER_KEY) == command):
+        return True
     if not isinstance(statusline, dict):
         if isinstance(statusline, str):
-            return MARKER in statusline
+            return _owned_command(statusline) or _legacy_source_command(statusline)
         return False
-    return MARKER in str(statusline.get("command", ""))
+    return (_owned_command(statusline.get("command"))
+            or _legacy_source_command(statusline.get("command")))
+
+
+def owned_statusline(command):
+    return {
+        "type": "command",
+        "command": command,
+        "padding": 0,
+    }
 
 
 def load_settings(path):
@@ -140,7 +216,7 @@ def cmd_status(settings, exists, script_abs):
     else:
         cmd = sl.get("command") if isinstance(sl, dict) else sl
         print(f"statusLine.command: {cmd}")
-        print("wired to codeArbiter: " + ("YES" if is_ours(sl) else "no (a different statusline owns it)"))
+        print("wired to codeArbiter: " + ("YES" if is_ours(sl, settings) else "no (a different statusline owns it)"))
     if BACKUP_KEY in settings:
         b = settings[BACKUP_KEY]
         print(f"backup on file: {b.get('command') if isinstance(b, dict) else b}")
@@ -158,9 +234,10 @@ def cmd_install(settings, path, script_abs, interp):
         raise SystemExit(f"ERROR: renderer not found at {script_abs}; nothing wired.")
     new_cmd = build_command(interp, script_abs)
     current = settings.get("statusLine")
-    if is_ours(current):
+    if is_ours(current, settings):
         # already ours: just refresh the path (e.g. after a plugin upgrade)
-        settings["statusLine"] = {"type": "command", "command": new_cmd, "padding": 0}
+        settings["statusLine"] = owned_statusline(new_cmd)
+        settings[OWNER_KEY] = new_cmd
         _install_spinner_verbs(settings, refresh=True)
         save_settings(path, settings)
         print(f"REFRESHED codeArbiter statusline path -> {new_cmd}")
@@ -171,7 +248,8 @@ def cmd_install(settings, path, script_abs, interp):
     # current line and restore the wrong one on uninstall.
     if BACKUP_KEY not in settings or current is not None:
         settings[BACKUP_KEY] = current  # may be None
-    settings["statusLine"] = {"type": "command", "command": new_cmd, "padding": 0}
+    settings["statusLine"] = owned_statusline(new_cmd)
+    settings[OWNER_KEY] = new_cmd
     _install_spinner_verbs(settings, refresh=False)
     save_settings(path, settings)
     print(f"WIRED codeArbiter statusline -> {new_cmd}")
@@ -196,13 +274,14 @@ def refresh_if_stale(settings, script_abs, interp):
     Returning a changed-flag lets the caller persist ONLY on a real change, so a
     steady-state session start never churns settings.json."""
     current = settings.get("statusLine")
-    if not is_ours(current):
+    if not is_ours(current, settings):
         return False
     desired = build_command(interp, script_abs)
     cur_cmd = current.get("command") if isinstance(current, dict) else current
-    if cur_cmd == desired:
+    if cur_cmd == desired and settings.get(OWNER_KEY) == desired:
         return False
-    settings["statusLine"] = {"type": "command", "command": desired, "padding": 0}
+    settings["statusLine"] = owned_statusline(desired)
+    settings[OWNER_KEY] = desired
     return True
 
 
@@ -233,7 +312,17 @@ def _install_spinner_verbs(settings, refresh):
 
 def cmd_uninstall(settings, path, script_abs):
     current = settings.get("statusLine")
-    if not is_ours(current) and BACKUP_KEY not in settings:
+    current_cmd = current.get("command") if isinstance(current, dict) else current
+    if OWNER_KEY in settings and settings.get(OWNER_KEY) != current_cmd:
+        # The user replaced our line after install. Never restore an older backup
+        # over that newer choice; only discard our now-stale bookkeeping.
+        settings.pop(OWNER_KEY, None)
+        settings.pop(BACKUP_KEY, None)
+        _uninstall_spinner_verbs(settings)
+        save_settings(path, settings)
+        print("codeArbiter statusline was replaced; preserved the current line.")
+        return
+    if not is_ours(current, settings) and BACKUP_KEY not in settings:
         print("codeArbiter statusline is not wired here; nothing to do.")
         return
     if BACKUP_KEY in settings:
@@ -248,6 +337,7 @@ def cmd_uninstall(settings, path, script_abs):
     else:
         settings.pop("statusLine", None)
         print("REMOVED codeArbiter statusline.")
+    settings.pop(OWNER_KEY, None)
     _uninstall_spinner_verbs(settings)
     save_settings(path, settings)
 

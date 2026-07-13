@@ -38,6 +38,13 @@ except Exception:  # pragma: no cover — never let an import break the statusli
         return text
 
 
+def sync_palette():
+    """Refresh captured color exports after _colorlib runtime activation."""
+    global _RESET, _V2, _gradient_h
+    if _colorlib is not None:
+        _RESET, _V2, _gradient_h = _colorlib.RESET, _colorlib.V2, _colorlib.gradient_h
+
+
 def num(x, default=0.0):
     """Coerce any host value to float; tolerate strings, None, and containers."""
     try:

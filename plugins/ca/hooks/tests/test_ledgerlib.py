@@ -7,11 +7,14 @@ pricing (price_for / api_cost), transcript accumulation (_tx_accumulate / _agg_r
 (ledger_update write + TTL prune, persist_sess_start fast-path cache).
 """
 import json
+import glob
 import os
 import sys
 import tempfile
+import threading
 import time
 import unittest
+from unittest import mock
 
 _HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _HOOKS_DIR not in sys.path:
@@ -19,6 +22,11 @@ if _HOOKS_DIR not in sys.path:
 
 import _ledgerlib as L
 from _helpers import redirect_home, restore_home
+
+
+# Successful-contention tests need scheduler headroom; production's bounded
+# fail-soft latency has separate assertions below.
+CONCURRENCY_TEST_WAIT = 5.0
 
 
 # =========================================================================== pricing
@@ -181,6 +189,47 @@ class TestPersistence(unittest.TestCase):
                 "message": {"model": "claude-sonnet-4-6",
                             "usage": {"input_tokens": inp, "output_tokens": out}}}
 
+    def _serialize_transactions(self, first, second, while_first_holds=None):
+        """Prove the second writer cannot acquire until the first releases."""
+        real_acquire = L._acquire_lock
+        first_acquired = threading.Event()
+        second_attempted = threading.Event()
+        second_acquired = threading.Event()
+        release_first = threading.Event()
+        outputs = {}
+
+        def coordinated_acquire(path):
+            if threading.current_thread().name == "ledger-second":
+                second_attempted.set()
+            token = real_acquire(path)
+            if token is not None and threading.current_thread().name == "ledger-first":
+                first_acquired.set()
+                self.assertTrue(release_first.wait(CONCURRENCY_TEST_WAIT))
+            elif token is not None and threading.current_thread().name == "ledger-second":
+                second_acquired.set()
+            return token
+
+        one = threading.Thread(target=lambda: outputs.setdefault("first", first()),
+                               name="ledger-first")
+        two = threading.Thread(target=lambda: outputs.setdefault("second", second()),
+                               name="ledger-second")
+        with mock.patch.object(L, "LOCK_WAIT", CONCURRENCY_TEST_WAIT), \
+                mock.patch.object(L, "_acquire_lock", side_effect=coordinated_acquire):
+            one.start()
+            self.assertTrue(first_acquired.wait(CONCURRENCY_TEST_WAIT))
+            if while_first_holds:
+                while_first_holds()
+            two.start()
+            self.assertTrue(second_attempted.wait(CONCURRENCY_TEST_WAIT))
+            self.assertFalse(second_acquired.is_set())
+            release_first.set()
+            self.assertTrue(second_acquired.wait(CONCURRENCY_TEST_WAIT))
+            one.join(CONCURRENCY_TEST_WAIT)
+            two.join(CONCURRENCY_TEST_WAIT)
+        self.assertFalse(one.is_alive())
+        self.assertFalse(two.is_alive())
+        return outputs
+
     def test_ledger_update_returns_three_tuple(self):
         tx = self._write_tx([self._assistant("r1")])
         out = L.ledger_update({"transcript_path": tx}, "sid-1")
@@ -248,6 +297,155 @@ class TestPersistence(unittest.TestCase):
     def test_persist_sess_start_blank_args(self):
         self.assertFalse(L.persist_sess_start(None, 5.0))
         self.assertFalse(L.persist_sess_start("sid", 0))
+
+    def test_concurrent_distinct_session_updates_both_survive(self):
+        outputs = self._serialize_transactions(
+            lambda: L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "sid-a"),
+            lambda: L.ledger_update({"cost": {"total_cost_usd": 2.0}}, "sid-b"))
+        with open(self.ledger, encoding="utf-8") as f:
+            sessions = json.load(f)["sessions"]
+        self.assertEqual(set(sessions), {"sid-a", "sid-b"})
+        self.assertEqual(sessions["sid-a"]["host_cost"], 1.0)
+        self.assertEqual(sessions["sid-b"]["host_cost"], 2.0)
+        self.assertEqual(outputs["second"][2]["cost"], 3.0)
+
+    def test_persist_sess_start_cannot_discard_concurrent_cost_update(self):
+        """The session-start cache write must not replace fresher accounting."""
+        L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "sid-race")
+        outputs = self._serialize_transactions(
+            lambda: L.persist_sess_start("sid-race", 123.0),
+            lambda: L.ledger_update({"cost": {"total_cost_usd": 9.0}}, "sid-race"))
+        self.assertTrue(outputs["first"])
+        with open(self.ledger, encoding="utf-8") as f:
+            rec = json.load(f)["sessions"]["sid-race"]
+        self.assertEqual(rec["sess_start"], 123.0)
+        self.assertEqual(rec["host_cost"], 9.0)
+
+    def test_same_session_concurrent_updates_do_not_regress_accounting(self):
+        tx = self._write_tx([self._assistant("r1", inp=100, out=50)])
+        L.ledger_update({"transcript_path": tx,
+                         "cost": {"total_cost_usd": 1.0}}, "sid-same")
+        with open(tx, "a", encoding="utf-8") as f:
+            f.write(json.dumps(self._assistant("r2", inp=200, out=80)) + "\n")
+
+        def append_newer_request():
+            with open(tx, "a", encoding="utf-8") as f:
+                f.write(json.dumps(self._assistant("r3", inp=300, out=90)) + "\n")
+
+        outputs = self._serialize_transactions(
+            lambda: L.ledger_update({"transcript_path": tx,
+                                     "cost": {"total_cost_usd": 2.0}}, "sid-same"),
+            lambda: L.ledger_update({"transcript_path": tx,
+                                     "cost": {"total_cost_usd": 3.0}}, "sid-same"),
+            append_newer_request)
+        with open(self.ledger, encoding="utf-8") as f:
+            rec = json.load(f)["sessions"]["sid-same"]
+        self.assertEqual(rec["host_cost"], 3.0)
+        self.assertEqual(set(rec["reqs"]), {"r1", "r2", "r3"})
+        self.assertEqual(rec["tx_off"], os.path.getsize(tx))
+        self.assertEqual(outputs["second"][1]["in"], 600.0)
+        self.assertEqual(outputs["second"][1]["out"], 220.0)
+
+    def test_failed_atomic_replace_preserves_target_and_removes_temp(self):
+        os.makedirs(os.path.dirname(self.ledger), exist_ok=True)
+        with open(self.ledger, "w", encoding="utf-8") as f:
+            json.dump({"valid": True}, f)
+        with mock.patch.object(L.os, "replace", side_effect=OSError("interrupted")):
+            self.assertFalse(L._atomic_json(self.ledger, {"valid": False}))
+        with open(self.ledger, encoding="utf-8") as f:
+            self.assertEqual(json.load(f), {"valid": True})
+        self.assertEqual(glob.glob(f"{self.ledger}.*.tmp"), [])
+
+    def test_expired_session_and_start_shards_are_deleted(self):
+        stale = {"last_ts": time.time() - L.SESSION_TTL - 1}
+        self.assertTrue(L._atomic_json(L._session_file(self.ledger, "expired"),
+                                       {"sid": "expired", "rec": stale}))
+        self.assertTrue(L._atomic_json(L._start_file(self.ledger, "expired"),
+                                       {"sid": "expired", "sess_start": 123.0}))
+        L.ledger_update({}, "fresh")
+        self.assertFalse(os.path.exists(L._session_file(self.ledger, "expired")))
+        self.assertFalse(os.path.exists(L._start_file(self.ledger, "expired")))
+
+    def test_bare_filename_ledger_path_works(self):
+        old_cwd = os.getcwd()
+        try:
+            os.chdir(self.tmp)
+            os.environ["CODEARBITER_LEDGER"] = "ledger.json"
+            L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "bare")
+            with open("ledger.json", encoding="utf-8") as f:
+                self.assertIn("bare", json.load(f)["sessions"])
+        finally:
+            os.chdir(old_cwd)
+
+    def test_lock_contention_times_out_fail_soft_within_latency_bound(self):
+        owner = L._acquire_lock(self.ledger)
+        self.assertIsNotNone(owner)
+        try:
+            started = time.monotonic()
+            rec, sess, day = L.ledger_update({}, "contended")
+            elapsed = time.monotonic() - started
+            self.assertEqual((rec, sess, day), ({}, {"in": 0.0, "out": 0.0,
+                                                     "cost": 0.0},
+                                                    {"in": 0.0, "out": 0.0,
+                                                     "cost": 0.0}))
+            self.assertFalse(L.persist_sess_start("contended", 123.0))
+            self.assertLessEqual(elapsed, 0.35)
+        finally:
+            L._release_lock(owner)
+
+    def test_lock_release_allows_next_transaction(self):
+        owner = L._acquire_lock(self.ledger)
+        self.assertIsNotNone(owner)
+        L._release_lock(owner)
+        next_owner = L._acquire_lock(self.ledger)
+        self.assertIsNotNone(next_owner)
+        L._release_lock(next_owner)
+
+    def test_non_owner_cannot_release_live_lock(self):
+        owner = L._acquire_lock(self.ledger)
+        self.assertIsNotNone(owner)
+        try:
+            L._release_lock(None)
+            started = time.monotonic()
+            self.assertIsNone(L._acquire_lock(self.ledger))
+            self.assertLessEqual(time.monotonic() - started, 0.35)
+        finally:
+            L._release_lock(owner)
+
+    def test_malformed_session_and_start_shards_are_deleted(self):
+        directory = L._session_dir(self.ledger)
+        os.makedirs(directory, exist_ok=True)
+        bad_session = os.path.join(directory, "bad.json")
+        bad_start = os.path.join(directory, "bad.start.json")
+        with open(bad_session, "w", encoding="utf-8") as f:
+            f.write("not json")
+        with open(bad_start, "w", encoding="utf-8") as f:
+            f.write("[]")
+        L.ledger_update({}, "fresh")
+        self.assertFalse(os.path.exists(bad_session))
+        self.assertFalse(os.path.exists(bad_start))
+
+    def test_nonnumeric_live_session_start_metadata_is_deleted(self):
+        L.ledger_update({}, "live")
+        start = L._start_file(self.ledger, "live")
+        self.assertTrue(L._atomic_json(start,
+                                       {"sid": "live", "sess_start": "invalid"}))
+        L.ledger_update({}, "other")
+        self.assertFalse(os.path.exists(start))
+
+    def test_misnamed_stale_shard_cannot_delete_embedded_sid_files(self):
+        L.ledger_update({}, "victim")
+        self.assertTrue(L.persist_sess_start("victim", 123.0))
+        victim_shard = L._session_file(self.ledger, "victim")
+        victim_start = L._start_file(self.ledger, "victim")
+        misnamed = os.path.join(L._session_dir(self.ledger), "misnamed.json")
+        stale = {"last_ts": time.time() - L.SESSION_TTL - 1}
+        self.assertTrue(L._atomic_json(misnamed,
+                                       {"sid": "victim", "rec": stale}))
+        L.ledger_update({}, "other")
+        self.assertFalse(os.path.exists(misnamed))
+        self.assertTrue(os.path.exists(victim_shard))
+        self.assertTrue(os.path.exists(victim_start))
 
 
 # =========================================================================== import-purity

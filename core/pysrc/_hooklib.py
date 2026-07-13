@@ -14,12 +14,12 @@
 # "BLOCKED" gates may not have been stopping the tool at all; this port closes
 # that latent gap.
 #
-# Interpreter launch: hooks.json registers every hook TWICE — `python3 <script>`
-# plus a fallback `python3 -c "" || python <script>`. Stock Windows often has no
-# real python3 (the Microsoft Store stub exits 9009), which would make every
-# gate fail OPEN; the fallback entry probes for python3 and runs `python` only
-# when it is absent. A single `python3 x || python x` entry would be wrong: when
-# python3 exists and the script BLOCKS (exit 2), `||` would re-run it against a
+# Interpreter launch: hooks.json registers every hook TWICE — `python <script>`
+# plus a fallback `python -c "" || python3 <script>`. Preferring `python` avoids
+# activating Windows' python3 MSIX app-execution alias for every hook; POSIX
+# installs that expose only python3 still use the fallback. A single
+# `python x || python3 x` entry would be wrong: when python exists and the
+# script BLOCKS (exit 2), `||` would re-run it against a
 # drained stdin and the rerun's exit 0 would swallow the block. Separate hook
 # entries each receive their own stdin, so the block survives.
 #
@@ -67,6 +67,7 @@
 #                                         messages, WARN-only, never raises
 
 import datetime
+import errno
 import hashlib
 import json
 import os
@@ -75,6 +76,7 @@ import subprocess  # noqa: F401 — no longer used directly; kept so any externa
 #                     consumer referencing _hooklib.subprocess keeps resolving
 import sys
 import tempfile
+import threading
 import time
 
 import hostapi
@@ -83,6 +85,18 @@ import hostapi
 # host's identity cannot change mid-process (its methods read env/payload state
 # live at call time, so caching the OBJECT changes no verdict).
 _HOST = None
+
+# Serialize same-process Windows writers before taking the cross-process lock.
+_GATE_EVENTS_WINDOWS_LOCK = threading.Lock()
+_WINDOWS_LOCK_TIMEOUT_SECONDS = 5.0
+_WINDOWS_LOCK_RETRY_SECONDS = 0.01
+_WINDOWS_CRT_EDEADLK = 36
+
+
+def _is_lock_contention(exc):
+    """True only for CRT/Windows byte-range lock conflict errors."""
+    return (getattr(exc, "errno", None) in (errno.EACCES, _WINDOWS_CRT_EDEADLK) or
+            getattr(exc, "winerror", None) in (32, 33))
 
 
 def get_host():
@@ -787,21 +801,42 @@ def _log_gate_event(kind, tag, msg):
         flags = os.O_APPEND | os.O_CREAT | os.O_WRONLY
         if hasattr(os, "O_BINARY"):
             flags |= os.O_BINARY
-        fd = os.open(os.path.join(cad, "gate-events.log"), flags, 0o600)
+        process_lock_acquired = False
+        if os.name == "nt":
+            _GATE_EVENTS_WINDOWS_LOCK.acquire()
+            process_lock_acquired = True
+        fd = None
+        os_lock_acquired = False
         try:
+            fd = os.open(os.path.join(cad, "gate-events.log"), flags, 0o600)
             if os.name == "nt":
                 import msvcrt
                 os.lseek(fd, 0, os.SEEK_SET)
-                msvcrt.locking(fd, msvcrt.LK_LOCK, 1)
+                lock_mode = getattr(msvcrt, "LK_NBLCK", msvcrt.LK_LOCK)
+                lock_deadline = time.monotonic() + _WINDOWS_LOCK_TIMEOUT_SECONDS
+                while True:
+                    try:
+                        msvcrt.locking(fd, lock_mode, 1)
+                        os_lock_acquired = True
+                        break
+                    except OSError as exc:
+                        if not _is_lock_contention(exc):
+                            raise
+                        if time.monotonic() >= lock_deadline:
+                            raise
+                        time.sleep(_WINDOWS_LOCK_RETRY_SECONDS)
             os.write(fd, line.encode("utf-8"))
         finally:
-            if os.name == "nt":
+            if os.name == "nt" and os_lock_acquired:
                 try:
                     os.lseek(fd, 0, os.SEEK_SET)
                     msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
                 except Exception:  # noqa: BLE001 — outer sink remains fail-open
                     pass
-            os.close(fd)
+            if process_lock_acquired:
+                _GATE_EVENTS_WINDOWS_LOCK.release()
+            if fd is not None:
+                os.close(fd)
     except Exception:  # noqa: BLE001 — fail-open: the sink must never affect the gate
         pass
 

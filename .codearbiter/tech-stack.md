@@ -23,7 +23,7 @@ Run all of these; ALL must pass before any commit:
 # Hook guard decisions — every blocked spelling blocks, every legit one allows
 python .github/scripts/test_hook_guards.py
 
-# Interpreter plumbing — REAL / STUB / NONE python3 matrix, dual registration
+# Interpreter plumbing — REAL / STUB / PY2 / NONE matrix, host-specific registration
 python .github/scripts/test_hooks_cold_install.py
 
 # /ca:preview helpers — diff-collection + redacting secret-scan (_previewlib)

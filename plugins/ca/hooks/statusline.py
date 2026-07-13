@@ -64,6 +64,7 @@ import os
 import re
 import shutil
 import sys
+import threading
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -470,7 +471,66 @@ def detect_box_width():
     return max(60, min(160, raw - WIDTH_MARGIN))
 
 
+_PALETTE_RENDER_LOCK = threading.RLock()
+_COLORLIB_PALETTE_EXPORTS = (
+    "ACTIVE_THEME_NAME", "ACTIVE_PALETTE", "V0", "V1", "V2", "V3",
+    "GREY", "WHITE", "OK", "WARN", "DANGER", "PILL_FG",
+)
+_STATUSLINE_PALETTE_EXPORTS = (
+    "V0", "V1", "V2", "V3", "GREY", "WHITE", "OK", "WARN", "DANGER", "PILL_FG",
+)
+_CONSUMER_PALETTE_EXPORTS = (
+    ("_fmtlib", ("_RESET", "_V2", "_gradient_h")),
+    ("_boxlib", ("_RESET", "_V0", "_gradient_h", "_box_gradient_h")),
+    ("_segmentslib", ("RESET", "BOLD", "DIM", "V0", "V2", "V3", "GREY",
+                       "WHITE", "OK", "WARN", "DANGER", "PILL_FG")),
+)
+
+
+def _palette_snapshot():
+    snapshot = [(globals(), {name: globals()[name] for name in _STATUSLINE_PALETTE_EXPORTS})]
+    if _colorlib is not None:
+        snapshot.append((_colorlib, {name: getattr(_colorlib, name)
+                                     for name in _COLORLIB_PALETTE_EXPORTS}))
+    for module_name, names in _CONSUMER_PALETTE_EXPORTS:
+        module = globals().get(module_name)
+        if module is not None:
+            snapshot.append((module, {name: getattr(module, name) for name in names}))
+    return snapshot
+
+
+def _restore_palette(snapshot):
+    for target, values in snapshot:
+        if isinstance(target, dict):
+            target.update(values)
+        else:
+            for name, value in values.items():
+                setattr(target, name, value)
+
+
 def render(raw):
+    # Palette exports are process-global compatibility state. Keep activation,
+    # dependent-module rebinding, and consumption in one re-entrant critical
+    # section so concurrent renders cannot observe a torn theme.
+    with _PALETTE_RENDER_LOCK:
+        snapshot = _palette_snapshot()
+        try:
+            if _colorlib is not None:
+                _colorlib.activate_palette()
+                globals().update({name: getattr(_colorlib, name) for name in
+                                  ("V0", "V1", "V2", "V3", "GREY", "WHITE", "OK",
+                                   "WARN", "DANGER", "PILL_FG")})
+                for lib in (_fmtlib, _boxlib, _segmentslib):
+                    if lib is not None:
+                        lib.sync_palette()
+        except Exception:
+            # Preserve the statusline's fail-soft contract: retain the last
+            # coherent exports if activation or a dependent rebind fails.
+            _restore_palette(snapshot)
+        return _render_active_palette(raw)
+
+
+def _render_active_palette(raw):
     try:
         data = json.loads(raw) if raw.strip() else {}
     except (ValueError, TypeError):
@@ -598,15 +658,19 @@ def render(raw):
                         live = sub.get("active")
                         glyph = f"{OK}{DOT}{RESET}" if live else f"{GREY}✓{RESET}"
                         lcol = WHITE if live else GREY
-                        # build the token/duration tail once so its width is known
-                        tail = (f" {V2}{DN}{RESET} {GREY}{fmt_tok(sub['inp'])}{RESET}"
+                        # Keep model + metrics as the stable tail. At narrow widths the
+                        # task label yields all of its space before this information.
+                        model_tag = f"{V3}{sub.get('model', 'model:?')}{RESET}"
+                        tail = (f"  {model_tag}"
+                                f" {V2}{DN}{RESET} {GREY}{fmt_tok(sub['inp'])}{RESET}"
                                 f" {V2}{UP}{RESET} {GREY}{fmt_tok(sub['out'])}{RESET}"
                                 f"  {DIM}{human_dur(sub['age'])}{RESET}")
                         # grow the label to its natural width up to the row limit, then the
                         # tail sits right after it (was a fixed 22, wasting wide terminals);
                         # clip (not pad) keeps the metrics adjacent and leaves trailing space
-                        lw = max(22, inner - 4 - vlen(tail))   # cap so the row can't overflow
-                        box.row(f"  {glyph} {lcol}{clip(sub['label'], lw)}{RESET}{tail}")
+                        lw = max(0, inner - 4 - vlen(tail))
+                        label = f"{lcol}{clip(sub['label'], lw)}{RESET}" if lw else ""
+                        box.row(f"  {glyph} {label}{tail}")
                     tail_tees = []
 
     box.bottom(tees=tail_tees)
@@ -615,7 +679,7 @@ def render(raw):
     # Honor the NO_COLOR convention by stripping SGR from the final render. Do NOT gate on
     # isatty: a Claude Code statusline is intentionally piped, so an isatty test would drop
     # color in normal use. Width math already ignores ANSI, so stripping keeps alignment.
-    if os.environ.get("NO_COLOR"):
+    if "NO_COLOR" in os.environ:
         out = ANSI.sub("", out)
     return out
 

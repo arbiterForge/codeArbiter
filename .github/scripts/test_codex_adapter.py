@@ -28,9 +28,11 @@ import io
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +40,58 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 CA_HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 CODEX_HOOKS = os.path.join(REPO, "plugins", "ca-codex", "hooks")
 CODEX_PLUGIN = os.path.join(REPO, "plugins", "ca-codex")
+
+
+class TestPreToolAdapterLifecycle(unittest.TestCase):
+    def test_adapter_exits_when_stdin_remains_open_and_leaves_no_descendants(self):
+        with tempfile.TemporaryDirectory() as td:
+            adapter = os.path.join(td, "pre-tool-adapter.py")
+            shutil.copyfile(
+                os.path.join(CODEX_HOOKS, "pre-tool-adapter.py"), adapter,
+            )
+            sentinel = os.path.join(td, "guard-launched")
+            guard = (
+                "from pathlib import Path\n"
+                "import time\n"
+                f"Path({sentinel!r}).write_text('launched', encoding='utf-8')\n"
+                "time.sleep(60)\n"
+            )
+            for script in ("pre-write.py", "pre-bash.py"):
+                with open(os.path.join(td, script), "w", encoding="utf-8") as f:
+                    f.write(guard)
+
+            proc = subprocess.Popen(
+                [sys.executable, adapter],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                started = time.monotonic()
+                proc.wait(timeout=7)
+                elapsed = time.monotonic() - started
+                self.assertLess(elapsed, 7, "adapter must bound an open stdin stream")
+                self.assertEqual(proc.returncode, 0)
+                stdout = proc.stdout.read()
+                self.assertEqual(
+                    json.loads(stdout).get("decision"), "block",
+                    "an incomplete payload must fail closed",
+                )
+                self.assertFalse(
+                    os.path.exists(sentinel),
+                    "timeout path must not launch a pre-write/pre-bash descendant",
+                )
+            finally:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+                if proc.stdin:
+                    proc.stdin.close()
+                if proc.stdout:
+                    proc.stdout.close()
+                if proc.stderr:
+                    proc.stderr.close()
 
 
 def _load(path, name):

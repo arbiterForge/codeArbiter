@@ -186,7 +186,7 @@ class TestHealStatuslineWiring(unittest.TestCase):
 
     def test_stale_ours_pin_is_healed(self):
         self._write({"statusLine": {"type": "command",
-                     "command": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'}})
+                     "command": '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"'}})
         changed = _mod.heal_statusline_wiring(
             self.plugin, settings_path=self.settings, interp="python")
         self.assertTrue(changed)
@@ -245,7 +245,7 @@ class TestMainHealsBeforeDormantGate(unittest.TestCase):
         self.settings = os.path.join(self.home, ".claude", "settings.json")
         with open(self.settings, "w", encoding="utf-8") as f:
             json.dump({"statusLine": {"type": "command",
-                       "command": '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'}}, f)
+                       "command": '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"'}}, f)
         self.plugin = os.path.dirname(os.path.dirname(os.path.abspath(_mod.__file__)))
         self.real_script = os.path.join(self.plugin, "hooks", "statusline.py")
 
@@ -292,7 +292,7 @@ class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
         self.home = os.path.join(self._tmp.name, "home")
         os.makedirs(os.path.join(self.home, ".claude"))
         self.settings = os.path.join(self.home, ".claude", "settings.json")
-        self.stale_command = '"python" "C:\\old\\ca\\2.0.1\\hooks\\statusline.py"'
+        self.stale_command = '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"'
         with open(self.settings, "w", encoding="utf-8") as f:
             json.dump({"statusLine": {"type": "command",
                        "command": self.stale_command}}, f)

@@ -91,4 +91,11 @@ describe("canonical Claude Code and Codex support evidence", () => {
     expect(statusline).toMatch(/Claude Code only/i);
     expect(support).toContain("Documentation launch: 2026-07-12");
   });
+
+  it("documents host attribution in the durable gate-event format", () => {
+    const directory = read("src/content/docs/codearbiter-directory.md");
+    expect(directory).toContain(
+      "[ISO-8601Z] KIND [tag] host=<host> hook=<script> | msg",
+    );
+  });
 });

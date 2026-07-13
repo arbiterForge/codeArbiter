@@ -222,7 +222,7 @@ has nothing to compare against until new entries accumulate.
 ## gate-events.log
 
 The durable, mechanical sink every `block()`, `remind()`, and `warn()` call in the hooks appends
-one line to — `[ISO-8601Z] KIND [tag] hook=<script> | msg`. Before this log existed, a gate
+one line to — `[ISO-8601Z] KIND [tag] host=<host> hook=<script> | msg`. Before this log existed, a gate
 decision was visible only in the ephemeral per-turn stderr transcript; this makes every BLOCK,
 REMIND, and WARN durable and queryable after the fact. The write is fail-open by contract: a
 missing `.codearbiter/` directory or an unwritable log file is swallowed silently rather than
