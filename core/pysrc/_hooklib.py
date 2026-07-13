@@ -59,6 +59,10 @@
 #   classify_protected(fpath, root) -> set  protected classes hit, raw+realpath (#162)
 #   marker_fresh(path, minutes) -> bool   True iff marker file exists and is recent
 #   write_text_atomic(path, text) -> None  crash-safe write (temp + os.replace)
+#   acquire_lock(path) -> handle|None     OS-owned cross-process file lock (#271 C-2);
+#                                         non-blocking + bounded LOCK_WAIT retry spin,
+#                                         fail-soft None on contention/timeout/OSError
+#   release_lock(handle) -> None          release + close; None handle is a no-op
 #   block(tag, msg) -> None              BLOCK tool call: print to stderr and exit 2
 #   remind(tag, msg) -> None             non-blocking nudge to stderr
 #   warn(msg) -> None                    loud degradation breadcrumb to stderr
@@ -91,6 +95,15 @@ _GATE_EVENTS_WINDOWS_LOCK = threading.Lock()
 _WINDOWS_LOCK_TIMEOUT_SECONDS = 5.0
 _WINDOWS_LOCK_RETRY_SECONDS = 0.01
 _WINDOWS_CRT_EDEADLK = 36
+
+# Bounded best-effort wait for another cross-process writer to release
+# acquire_lock()'s sidecar lock file (#271 C-2). Originally _ledgerlib-private
+# (the statusline's cost/token ledger); hoisted here so taskwrite.py's board
+# writer (a second, genuinely different caller) can share ONE lock
+# implementation instead of a second hand-rolled copy. _ledgerlib re-exports
+# this name (`from _hooklib import LOCK_WAIT`) so its own module-level
+# mock.patch.object(L, "LOCK_WAIT", ...) test seam keeps working unchanged.
+LOCK_WAIT = 0.2
 
 
 def _is_lock_contention(exc):
@@ -750,6 +763,74 @@ def write_text_atomic(path, text, newline=None):
         raise
 
 
+def acquire_lock(path):
+    """Acquire an OS-owned cross-process file lock keyed on `path`; process
+    death releases it automatically (#271 C-2 — hoisted from the
+    statusline-ledger-only `_ledgerlib._acquire_lock`, now shared with
+    taskwrite.py's board writer).
+
+    Sidecar lock file `f"{abspath(path)}.lock"`, opened `"a+b"` and seeded
+    with one byte so the OS byte-range lock has a byte to lock (an empty file
+    has no range to range-lock). Non-blocking (`msvcrt.locking(..., LK_NBLCK,
+    1)` on Windows, `fcntl.flock(..., LOCK_EX | LOCK_NB)` elsewhere) with a
+    bounded `LOCK_WAIT`-second retry spin; any `OSError` opening the lock file,
+    or exhausting the deadline still contended, is FAIL-SOFT: returns `None`
+    rather than raising or blocking indefinitely. Callers decide what
+    "fail-soft" means for them — `_ledgerlib.ledger_update`/`persist_sess_start`
+    treat `None` as a disposable no-op (a statusline render is throwaway), but
+    `taskwrite.py` treats it as a hard error (a board write is NOT disposable;
+    see its module docstring)."""
+    lock_path = f"{os.path.abspath(path)}.lock"
+    parent = os.path.dirname(lock_path)
+    try:
+        os.makedirs(parent, exist_ok=True)
+        handle = open(lock_path, "a+b")
+        handle.seek(0, os.SEEK_END)
+        if handle.tell() == 0:
+            handle.write(b"\0")
+            handle.flush()
+    except OSError:
+        return None
+    deadline = time.monotonic() + LOCK_WAIT
+    while True:
+        try:
+            handle.seek(0)
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return handle
+        except (OSError, BlockingIOError):
+            if time.monotonic() >= deadline:
+                handle.close()
+                return None
+            time.sleep(0.005)
+
+
+def release_lock(handle):
+    """Release + close a handle from acquire_lock(). None is a no-op —
+    callers that never got the lock don't need to guard the release call."""
+    if handle is None:
+        return
+    try:
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    except OSError:
+        pass
+    finally:
+        try:
+            handle.close()
+        except OSError:
+            pass
+
+
 def marker_fresh(path, minutes):
     """True if the marker file exists and was touched within `minutes`."""
     try:
@@ -875,6 +956,16 @@ def warn(msg):
 # override.md) with no analogous "still in progress" marker anywhere in the
 # framework, so per CONFIRM-09's own "do not invent new state" constraint it
 # is not tracked here — there is no existing signal to detect it from.
+#
+# #271 C-5: this staleness WARN is presence + age based (marker mtime vs. an
+# audit-log write), which is unaffected by session-start.py's newer
+# session-scoped CLEARING decision for the SAME dev-active marker — the two
+# consumers ask different questions ("has this sat around too long with no
+# matching log activity?" vs. "am I sure enough this belongs to nobody live
+# right now that I should force-close it?") and neither needs to agree with
+# the other's answer. A dev marker owned by a still-live different session
+# can legitimately trip THIS warning (it really has been open a while) even
+# though session-start.py correctly declines to clobber it.
 _STALE_FLOWS = (
     # (flow name, marker path parts, expected-log path parts)
     ("dev", (".markers", "dev-active"), ("overrides.log",)),

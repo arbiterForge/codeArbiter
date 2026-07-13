@@ -198,5 +198,11 @@ def _arbiter_state_uncached(cad, count_in_flight=None, read_board=None, frontmat
 
 def dev_active(root):
     """True when /dev developer-override mode is on — signalled by a transient marker
-    the orchestrator drops on /dev and clears on /arbiter (a local UI flag, not a log)."""
+    the orchestrator drops on /dev and clears on /arbiter (a local UI flag, not a log).
+
+    Presence-only by design, unaffected by #271 C-5's session-scoped clearing:
+    the marker still means "dev mode is on for SOMEONE" regardless of which
+    session owns it. Session-scoping only changes WHEN SessionStart is willing
+    to clear a live marker (never a different, possibly still-live session's
+    own marker) — it does not change what "present" means to this reader."""
     return os.path.exists(os.path.join(root, ".codearbiter", ".markers", "dev-active"))
