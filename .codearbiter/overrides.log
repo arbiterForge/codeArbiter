@@ -17,3 +17,4 @@
 [2026-07-01T20:56:02-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: —
 2026-07-02T02:05:20Z | BY: SUaDtL@users.noreply.github.com | DEV: exit
 [2026-07-12T07:43:41Z] | BY: SUaDtL@users.noreply.github.com | SECURITY-OVERRIDE | FINDING: deleting stash@{0} permanently discards its only stashed copy of the 10-line plugins/ca/hooks/_hooklib.py project_root change | REASON: current main supersedes the stashed project_root behavior through the host-abstraction seam; user explicitly acknowledged the permanent loss and requested deletion
+[2026-07-13T03:10:56Z] | BY: SUaDtL@users.noreply.github.com | GATE: H-05 append-only audit-log repair | REASON: restore sprint-log historical line endings; preserve content and stage only append-only sprint records

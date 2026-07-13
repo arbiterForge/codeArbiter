@@ -5,6 +5,9 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] Reconfirm the ca 2.9.0 and ca-codex 0.3.0 version classification against the final merged diff before any release or tag.  (from sprint:auto-safe-open-issues)
+- [ ] Validate the annotated ANSI-free palette evidence format with users; add stable visual captures only if the text artifacts are insufficient.  (from sprint:auto-safe-open-issues)
+- [ ] Benchmark the 100 ms statusline dirty-check timeout across representative large repositories and adjust it if fail-soft timeouts hide normal dirty state.  (from sprint:auto-safe-open-issues)
 - [~] codex.feature.0001 - Codex CLI support campaign (ADR-0011): M0 spike/governance through M5 release — plan .codearbiter/plans/codex-support.md, beta until live-Codex verification  (started 2026-07-08)
 - [x] docs.site.0001 - Diagram a11y/anti-slop follow-ups (pre-existing, surfaced by docs-site T-21 review): lift lane-flow.svg + two-axis-model.svg low-contrast text fill #46505a to #6e7b8b (AA); fix gate-model.svg em-dash annotation (~line 172). MEDIUM, outside docs-site PR scope.  (done 2026-06-27, branch docs-site-iteration — also lifted gate-model.svg's two #46505a annotations for consistency)
 - [ ] v2.harden.0002 - Defense-in-depth (LOW): strip control characters/newlines from tier-4 provenance claim_text + lines_range before injecting into additionalContext in _readinjectlib.provenance_pointer. Committed/PR-reviewed in-trust content today (freshness-gated + 150-token bounded), so not an active vector; belt-and-suspenders against a future malicious provenance writer. Done when: claim text is sanitized of control chars before pointer assembly, with a test.  (from security-reviewer:file-scoped-context-injection)
