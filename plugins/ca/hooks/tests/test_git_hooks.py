@@ -388,14 +388,26 @@ class TestDropInSharedDir(_GitFixture):
     would never see an entry another worktree/host wrote)."""
 
     def test_linked_worktree_shares_the_same_dropin_dir_as_main(self):
+        # realpath BOTH sides before comparing (portability, not a weakened
+        # assertion): on macOS `/var` is itself a symlink to `/private/var`,
+        # and `tempfile`-issued paths come back unresolved while git
+        # internally canonicalizes the absolute paths IT writes (the linked
+        # worktree's `gitdir:` pointer) -- so main_dropin and wt_dropin can
+        # legitimately differ as STRINGS while naming the exact same
+        # directory (the OS resolves `/var` <-> `/private/var` transparently
+        # for every open/stat/makedirs call either side of the real shim
+        # would ever make -- see the production-benign analysis in the class
+        # docstring / commit note). realpath collapses that representational
+        # difference without weakening what this test actually proves: main
+        # and worktree resolve to the SAME directory.
         wt_dir = os.path.join(os.path.dirname(self.root), "wt")
         _git(["worktree", "add", "-q", "-b", "feat/wt", wt_dir], self.root)
         main_dropin = _githooks._dropin_dir(self.root)
         wt_dropin = _githooks._dropin_dir(wt_dir)
         self.assertIsNotNone(main_dropin)
         self.assertIsNotNone(wt_dropin)
-        self.assertEqual(os.path.normcase(os.path.normpath(main_dropin)),
-                         os.path.normcase(os.path.normpath(wt_dropin)))
+        self.assertEqual(os.path.normcase(os.path.realpath(main_dropin)),
+                         os.path.normcase(os.path.realpath(wt_dropin)))
 
     def test_git_common_dir_resolves_without_a_git_spawn_for_the_main_repo(self):
         # The common (non-worktree) case must be resolvable purely from the

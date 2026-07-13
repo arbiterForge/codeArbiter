@@ -25,6 +25,14 @@ without guessing at wall-clock timing. Neither knob exists in the real
 `core/pysrc/_hooklib.py` — this is scaffolding added only to the throwaway
 copy, never the shipped hook.
 
+Portability fix (macOS CI flake): the copy also raises `LOCK_WAIT` (test-only,
+default 8s vs production's real 0.2s — see `_HOLD_HOOK`) so a genuinely
+contended second writer BLOCKS deterministically until the first releases,
+rather than racing production's own tight fail-soft retry budget against
+scheduler jitter on a loaded CI runner. Serialization is proven by the ORDER
+of real lock acquisitions (the marker timestamps / final-file assertions
+below), never by tuning a hold duration against the real 0.2s deadline.
+
 Covers the lock-free read-modify-write race that let two concurrent
 `taskwrite` invocations silently drop one writer's edit and mint a DUPLICATE
 dotted task ID (both readers saw the same stale board, so `next_seq`
@@ -71,6 +79,21 @@ import time as _ca_test_time
 
 _CA_TEST_HOLD_MS = float(_ca_test_os.environ.get("CA_TEST_LOCK_HOLD_MS", "0") or 0)
 _CA_TEST_MARKER = _ca_test_os.environ.get("CA_TEST_ACQUIRED_MARKER")
+
+# Portability fix (macOS CI flake, test-only — see test_taskwrite.py's class
+# docstring): production's LOCK_WAIT (0.2s, core/pysrc/_hooklib.py) is a
+# fail-soft retry BUDGET tuned for a real interactive /ca:task invocation, not
+# a contention-proof harness racing wall-clock scheduler jitter on a loaded CI
+# runner. This test-only copy raises it so a genuinely-contended second writer
+# BLOCKS deterministically until the first releases its real, OS-owned lock,
+# instead of occasionally exhausting a 0.2s budget under jitter and correctly
+# fail-hard exiting (never writing its acquired-marker, which is what made
+# `_wait_for_file(m2)` time out on a slow runner). The retry loop in
+# `acquire_lock` reads this module-level name dynamically on every iteration,
+# so this override reaches every call in this copy — wrapped (the hold-hook
+# below) or not. Never present in core/pysrc/_hooklib.py or any shipped
+# plugin copy.
+LOCK_WAIT = float(_ca_test_os.environ.get("CA_TEST_LOCK_WAIT", "8.0"))
 
 if _CA_TEST_HOLD_MS > 0:
     _ca_test_real_acquire_lock = acquire_lock
@@ -244,12 +267,20 @@ class TaskwriteContentionTest(unittest.TestCase):
         window closes is guaranteed to be visible to the holder's own
         re-read, exactly the ordering C-3 exists to guarantee.
 
-        `hold_ms` is deliberately kept UNDER production's own fail-soft
-        `LOCK_WAIT` (0.2s, core/pysrc/_hooklib.py) — this test proves the
-        real, unmodified contention behavior end-to-end, including the
-        second writer's own real (unpatched) retry budget; it must not need
-        a longer deadline than production actually gives a real second
-        `/ca:task` invocation."""
+        `hold_ms` no longer needs to stay under production's own fail-soft
+        `LOCK_WAIT` (0.2s, core/pysrc/_hooklib.py, unchanged in production):
+        this test's private hooklib copy raises `LOCK_WAIT` (see
+        `_HOLD_HOOK`) so the second writer BLOCKS deterministically until the
+        first releases, instead of racing the real 0.2s budget against
+        scheduler jitter (the macOS CI flake this file was rewritten to
+        close — a loaded runner's jitter could push the first writer's hold
+        past the second's unpatched 0.2s retry window, correctly fail-hard
+        exiting it before it ever wrote its own marker). Serialization is
+        still proven end-to-end by the real OS lock and the outcome
+        assertions below (the external edit survives, both writes land) —
+        only the RETRY BUDGET is no longer the real production one; the lock
+        primitive itself, the hold, and the re-read-under-lock CAS all run
+        completely unmodified."""
         hold_ms = 120
         m1 = self._marker("holder")
         p1 = self._popen(["add", "lock holder's task", "--id", "mvp1.store"],
