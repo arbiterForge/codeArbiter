@@ -24,8 +24,9 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, line_digest, project_root, set_host, utf8_stdio,
-    warn, write_text_atomic,
+    CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS, is_sensitive_scan_exempt,
+    line_digest, project_root, sensitive_scan_added_lines, set_host,
+    utf8_stdio, warn, write_text_atomic,
 )
 
 MAX_UNTRACKED_BYTES = 1_000_000  # an untracked blob bigger than this is not reviewable prose
@@ -53,19 +54,34 @@ def candidate_lines(root):
     """Every line the next commit could introduce: added lines of the
     worktree-vs-HEAD diff (staged and unstaged alike), plus the full content
     of untracked files — `git diff HEAD` never shows those, but they land in
-    the staged diff the moment commit-gate stages them."""
+    the staged diff the moment commit-gate stages them.
+
+    Excludes gate-events.log (#279, is_sensitive_scan_exempt): the crypto/
+    secret gate's own machine-written audit sink, which structurally echoes
+    the detector's message text back at itself. The diff branch drops those
+    lines via the shared path-aware `sensitive_scan_added_lines`; the
+    unborn-branch and untracked-file branches skip the file outright since
+    they read whole-file content rather than a diff.
+
+    The diff is read via SECURITY_DIFF_GIT_ARGS (not a bare `["diff", ...]`):
+    it pins the `a/`/`b/` prefix format `sensitive_scan_added_lines` depends
+    on for path attribution, regardless of the caller's `diff.mnemonicPrefix`
+    / `diff.noprefix` / external-diff config (#279 review MEDIUM-1)."""
     lines = []
-    diff = run_git(["diff", "HEAD"], root)
+    diff = run_git([*SECURITY_DIFF_GIT_ARGS, "HEAD"], root)
     if diff.returncode == 0:
-        lines += [ln[1:] for ln in diff.stdout.splitlines()
-                  if ln.startswith("+") and not ln.startswith("+++")]
+        lines += sensitive_scan_added_lines(diff.stdout)
     else:
         # Unborn branch (no HEAD yet): every tracked file is new content.
         ls = run_git(["ls-files"], root)
         for rel in ls.stdout.splitlines():
+            if is_sensitive_scan_exempt(rel):
+                continue
             lines += file_lines(root, rel)
     untracked = run_git(["ls-files", "--others", "--exclude-standard"], root)
     for rel in untracked.stdout.splitlines():
+        if is_sensitive_scan_exempt(rel):
+            continue
         lines += file_lines(root, rel)
     return lines
 

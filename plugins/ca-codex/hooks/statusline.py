@@ -134,6 +134,7 @@ try:
     ANSI = _colorlib.ANSI
     _cw, vlen, clip, pad, gradient_h = (_colorlib._cw, _colorlib.vlen, _colorlib.clip,
                                         _colorlib.pad, _colorlib.gradient_h)
+    strip_control = _colorlib.strip_control
 except Exception:  # pragma: no cover — never let an import break the statusline
     _colorlib = None
     ANSI = re.compile(r"\033\[[0-9;]*m")
@@ -156,6 +157,9 @@ except Exception:  # pragma: no cover — never let an import break the statusli
 
     def gradient_h(text, width, c_from=None, c_to=None):
         return text
+
+    def strip_control(s):
+        return s if not isinstance(s, str) else re.sub(r"[\000-\037]", "", s)
 
 # --------------------------------------------------------------------------- coercion
 def num(x, default=0.0):
@@ -593,7 +597,7 @@ def _render_active_palette(raw):
     if branch:
         dirty = "*" if safe(git_dirty, root) else ""
         gp += f" {V0}{V}{RESET} {(WARN if dirty else OK)}{branch}{dirty}{RESET}"
-    model = get(data, "model", "display_name") or get(data, "model", "id") or "?"
+    model = strip_control(get(data, "model", "display_name") or get(data, "model", "id") or "?")
     pill = safe(model_pill, model, effort) or f"{V2}{model}{RESET}"
     rates = safe(seg_window_inline, data) or ""
     prseg = safe(seg_pr, data) or ""

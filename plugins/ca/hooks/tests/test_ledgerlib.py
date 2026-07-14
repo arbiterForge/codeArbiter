@@ -20,6 +20,7 @@ _HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _HOOKS_DIR not in sys.path:
     sys.path.insert(0, _HOOKS_DIR)
 
+import _hooklib
 import _ledgerlib as L
 from _helpers import redirect_home, restore_home
 
@@ -213,7 +214,13 @@ class TestPersistence(unittest.TestCase):
                                name="ledger-first")
         two = threading.Thread(target=lambda: outputs.setdefault("second", second()),
                                name="ledger-second")
-        with mock.patch.object(L, "LOCK_WAIT", CONCURRENCY_TEST_WAIT), \
+        # NB: acquire_lock's retry deadline (core/pysrc/_hooklib.py) reads its
+        # OWN module global `LOCK_WAIT` at call time, not `_ledgerlib.LOCK_WAIT`
+        # (a same-named but distinct binding imported for back-compat re-export
+        # only — see _ledgerlib.py's header comment). Patching `L.LOCK_WAIT`
+        # alone is inert; patch `_hooklib.LOCK_WAIT`, the name the real retry
+        # loop actually consults, so this harness's headroom is real.
+        with mock.patch.object(_hooklib, "LOCK_WAIT", CONCURRENCY_TEST_WAIT), \
                 mock.patch.object(L, "_acquire_lock", side_effect=coordinated_acquire):
             one.start()
             self.assertTrue(first_acquired.wait(CONCURRENCY_TEST_WAIT))
@@ -221,7 +228,13 @@ class TestPersistence(unittest.TestCase):
                 while_first_holds()
             two.start()
             self.assertTrue(second_attempted.wait(CONCURRENCY_TEST_WAIT))
-            self.assertFalse(second_acquired.is_set())
+            # Time-bounded negative wait (E-4): waiting for second_attempted
+            # only proves the second thread got scheduled and reached the
+            # lock call — it says nothing about whether the lock actually
+            # excluded it. Give the second thread a real window to sneak an
+            # acquisition through before the first releases; if serialization
+            # were broken, this wait would very likely observe it fire.
+            self.assertFalse(second_acquired.wait(0.2))
             release_first.set()
             self.assertTrue(second_acquired.wait(CONCURRENCY_TEST_WAIT))
             one.join(CONCURRENCY_TEST_WAIT)

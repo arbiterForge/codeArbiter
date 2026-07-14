@@ -26,6 +26,10 @@ Suspends orchestration for working ON codeArbiter — skill, agent, command, and
 4. **Mode** — plain, direct coding assistant: no routing, no skills, no gates, no `[CONFIRM-NN]`
    surfacing, no redirect. Persists until `/ca:arbiter` or a new session.
 
+Note (#271): if another session starts in this repo while this marker is live, SessionStart no longer
+unconditionally clears it out from under you — it is session-scoped now, so a concurrently-running dev
+session's marker survives a different session's startup. See `/ca:arbiter` for the exit-path detail.
+
 ## Hard gate
 
 MUST refuse without `CODEARBITER_DEV=1`. MUST write the `DEV: enter` log line before suspending

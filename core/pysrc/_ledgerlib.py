@@ -29,14 +29,26 @@
 import hashlib
 import json
 import os
+import sys
 import time
 from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# _acquire_lock/_release_lock/LOCK_WAIT were hoisted to _hooklib (#271 C-2) so
+# taskwrite.py's board writer can share ONE lock implementation instead of a
+# second hand-rolled copy. Re-exported under their ORIGINAL private names so
+# this module's own call sites (ledger_update/persist_sess_start) and the test
+# suite's `mock.patch.object(L, "_acquire_lock", ...)` / `mock.patch.object(L,
+# "LOCK_WAIT", ...)` seams keep working unchanged — no import-cycle risk:
+# _hooklib imports only hostapi, never _ledgerlib.
+from _hooklib import acquire_lock as _acquire_lock  # noqa: E402
+from _hooklib import release_lock as _release_lock  # noqa: E402
+from _hooklib import LOCK_WAIT  # noqa: E402
 
 # Tunables (module constants; mirrored from the original inline statusline block).
 SESSION_TTL = 36 * 3600  # prune sessions older than ~1.5 days
 BURN_RING = 40           # recent per-call token-burn samples kept for the sparkline
 TX_MAX_NEW_LINES = 20000 # hot-path bound: transcript lines parsed per render
-LOCK_WAIT = 0.2          # bounded best-effort wait for another statusline writer
 
 # API list prices, USD per 1M tokens (captured 2026-06-10 from Anthropic's
 # pricing pages). Used ONLY to estimate the pay-as-you-go API-equivalent cost of
@@ -148,57 +160,6 @@ def _atomic_json(path, value):
                 os.remove(tmp)
             except OSError:
                 pass
-
-
-def _acquire_lock(path):
-    """Acquire an OS-owned file lock; process death releases it automatically."""
-    lock_path = f"{os.path.abspath(path)}.lock"
-    parent = os.path.dirname(lock_path)
-    try:
-        os.makedirs(parent, exist_ok=True)
-        handle = open(lock_path, "a+b")
-        handle.seek(0, os.SEEK_END)
-        if handle.tell() == 0:
-            handle.write(b"\0")
-            handle.flush()
-    except OSError:
-        return None
-    deadline = time.monotonic() + LOCK_WAIT
-    while True:
-        try:
-            handle.seek(0)
-            if os.name == "nt":
-                import msvcrt
-                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
-            else:
-                import fcntl
-                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return handle
-        except (OSError, BlockingIOError):
-            if time.monotonic() >= deadline:
-                handle.close()
-                return None
-            time.sleep(0.005)
-
-
-def _release_lock(handle):
-    if handle is None:
-        return
-    try:
-        handle.seek(0)
-        if os.name == "nt":
-            import msvcrt
-            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
-        else:
-            import fcntl
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-    except OSError:
-        pass
-    finally:
-        try:
-            handle.close()
-        except OSError:
-            pass
 
 
 def _session_dir(path):

@@ -113,6 +113,80 @@ class TestCustomPalette(unittest.TestCase):
             palette = _colorlib.resolve_palette("custom", "$THEME_HOME/theme.json")
         self.assertEqual(palette.text_normal, _colorlib.RGB(171, 205, 239))
 
+    def test_deeply_nested_theme_falls_back_instead_of_crashing(self):
+        # A pathologically nested JSON array blows the interpreter's recursion
+        # limit inside json.loads() well before it reaches MAX_THEME_BYTES —
+        # the exact bracket depth needed is CPython-build/platform-dependent
+        # (C-stack-based recursion tracking varies by version), so this test
+        # both (a) writes a real deeply-nested payload that fits under the
+        # size cap and (b) proves the catch itself by forcing RecursionError
+        # out of json.loads deterministically, the same way
+        # test_oversized_file_is_rejected_before_json_parse proves the size
+        # gate. RecursionError must be caught the same as any other
+        # malformed-input failure mode (E-1).
+        violet = _colorlib.resolve_palette("violet")
+        depth = 8000   # deep, but still well under MAX_THEME_BYTES (16 KiB)
+        payload = "[" * depth + "]" * depth
+        self.assertLessEqual(len(payload), _colorlib.MAX_THEME_BYTES)
+        with open(self.path, "w", encoding="utf-8") as handle:
+            handle.write(payload)
+        with mock.patch("_colorlib.json.loads", side_effect=RecursionError(
+                "maximum recursion depth exceeded")):
+            self.assertEqual(_colorlib.resolve_palette("custom", self.path), violet)
+
+    def test_invalid_hex_boundary_cases_fall_back_to_violet(self):
+        violet = _colorlib.resolve_palette("violet")
+        for bad_hex in ("#01020", "#0102030", "#0102GG"):
+            with self.subTest(bad_hex=bad_hex):
+                self._write({"accent": {"primary": bad_hex}})
+                palette = _colorlib.resolve_palette("custom", self.path)
+                self.assertEqual(palette.accent_primary, violet.accent_primary)
+
+
+class TestStripControl(unittest.TestCase):
+    """E-3: host/transcript-derived strings must never carry a raw C0 control
+    byte or an OSC/CSI escape sequence into the rendered statusline."""
+
+    def test_strips_c0_control_bytes(self):
+        self.assertEqual(_colorlib.strip_control("a\x00b\x01c\x1fd"), "abcd")
+
+    def test_strips_osc_title_injection(self):
+        injected = "before\x1b]0;pwned\x07after"
+        cleaned = _colorlib.strip_control(injected)
+        self.assertNotIn("\x1b", cleaned)
+        self.assertNotIn("\x07", cleaned)
+        self.assertEqual(cleaned, "beforeafter")
+
+    def test_strips_csi_sgr_sequence(self):
+        injected = "before\x1b[31mred\x1b[0mafter"
+        cleaned = _colorlib.strip_control(injected)
+        self.assertNotIn("\x1b", cleaned)
+        self.assertEqual(cleaned, "beforeredafter")
+
+    def test_non_string_passes_through(self):
+        self.assertIsNone(_colorlib.strip_control(None))
+        self.assertEqual(_colorlib.strip_control(42), 42)
+
+    def test_display_model_strips_injected_escape(self):
+        import _subagentslib
+        cleaned = _subagentslib.display_model("claude-\x1b]0;pwned\x07sonnet-4-6-20260101")
+        self.assertNotIn("\x1b", cleaned)
+        self.assertNotIn("\x07", cleaned)
+
+    def test_sub_label_strips_injected_control_bytes(self):
+        import _subagentslib
+        label = _subagentslib.sub_label("Fix the \x1b]0;pwned\x07 bug\x01now")
+        self.assertNotIn("\x1b", label)
+        self.assertNotIn("\x07", label)
+        self.assertNotIn("\x01", label)
+
+    def test_render_never_emits_injected_escape_from_model_name(self):
+        import statusline as sl
+        payload = json.dumps({"model": {"display_name": "claude\x1b]0;pwned\x07-sonnet"}})
+        out = sl.render(payload)
+        self.assertNotIn("\x1b]0;pwned\x07", out)
+        self.assertNotIn("\x07", out)
+
 
 class TestActivePaletteCompatibility(unittest.TestCase):
     def tearDown(self):

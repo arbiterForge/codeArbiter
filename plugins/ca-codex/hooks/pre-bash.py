@@ -22,11 +22,14 @@ import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+import _gitlib  # noqa: E402 — reused for its spawn-free, worktree-aware
+                # (.git-as-a-FILE / gitdir: pointer) project_root() climb (#223)
 from _hooklib import (  # noqa: E402
     AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE,
-    GATE_MARKER_NAMES, SECRET_RE, arbiter_active, block, content_digest,
-    get_host, is_migration_path, line_digest, marker_fresh, project_root,
-    read_input, set_host, tool_input, utf8_stdio,
+    GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, arbiter_active,
+    block, content_digest, get_host, is_migration_path, line_digest,
+    marker_fresh, project_root, read_input, sensitive_scan_added_lines,
+    set_host, tool_input, utf8_stdio,
 )
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
@@ -258,6 +261,43 @@ GATE_MARKER_WRITE_RE = re.compile(
     r"|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File|Add-Content)\b"
     r"[^|;&]*" + GATE_MARKER, re.I,
 )
+# #237: an arbitrary interpreter invocation is a flank the verb list above
+# cannot see — `python -c "open('.markers/security-gate-passed','w')..."`
+# reuses the sanctioned producer's own public helpers to self-compute valid
+# digests, and no mv/cp/tee/sed spelling ever appears on the command line.
+# Interpreter one-liners get their OWN, wider regex rather than joining the
+# verb list above: the payload is a single quoted string handed to the
+# interpreter, and that string may itself contain `;` as a statement
+# separator (`python -c "x=1; open(...security-gate-passed...)"`). The
+# `[^|;&]*` bound on GATE_MARKER_WRITE_RE exists to keep a write verb from
+# reaching across an UNRELATED shell-chained command; applying that same
+# bound here would stop scanning at the interpreter's OWN internal `;` and
+# silently reopen exactly the hole this closes. There is no reliable way to
+# tell a chained shell command from a `;`-separated statement inside an
+# opaque interpreter string without full shell/language tokenization, so
+# this guard fails CLOSED: any command line invoking one of these
+# interpreters that ALSO names a gate marker anywhere on the line is
+# blocked, whether the marker is written or merely read. A read of a gate
+# marker has no legitimate reason to go through a raw interpreter one-liner
+# either (cat/grep already pass the audit-log flanks above untouched).
+#
+# review finding (post-B-2): a `-c`/`-e` payload is ordinary multi-line
+# source — the interpreter token and the marker path can sit on different
+# physical lines of the SAME invocation (`python -c "\nopen('...security-
+# gate-passed'...)\n"`). `[^\n]*` cannot cross that newline, leaving the
+# identical attack open in its multi-line spelling. `[\s\S]*` (DOTALL-
+# equivalent) closes it. This regex is applied to the heredoc-stripped
+# `git_view` at the call site below, gated on `heredoc_shell_fallback` for
+# the raw-`cmd` leg exactly like the commit/push/add guards already are —
+# scanning the raw, unstripped `cmd` unconditionally would make crossing
+# newlines here false-trip on inert PROSE inside a heredoc body fed to a
+# non-shell consumer (`gh pr create --body "$(cat <<EOF … a python -c
+# one-liner wrote .markers/security-gate-passed … EOF)"` — a PR/issue body
+# merely DESCRIBING this very fix), the same D-3 (#223) distinction the
+# other guards already draw.
+GATE_MARKER_INTERP_RE = re.compile(
+    r"\b(python3?|node|perl|ruby|sh)\b[\s\S]*" + GATE_MARKER, re.I,
+)
 
 
 def git_cwd(cmd, root):
@@ -298,6 +338,148 @@ def git_cwd(cmd, root):
         val = raw.strip("\"'")
         acc = val if os.path.isabs(val) else os.path.join(acc, val)
     return acc
+
+
+def _effective_exec_root(payload, root):
+    """The git root that a `-C`-less git command in THIS Bash call actually
+    runs against — the command's effective cwd — rather than always the
+    pinned `root` (CLAUDE_PROJECT_DIR) (#223).
+
+    #223's bug: `root` is pinned to CLAUDE_PROJECT_DIR (the MAIN checkout),
+    so a `git commit` fired from a LINKED WORKTREE was judged against the
+    main checkout's branch — both a false positive (worktree on a feature
+    branch, main checkout on main -> wrongly blocked) and a false negative
+    (worktree on main/master, main checkout on a feature branch -> H-01
+    silently sidestepped, the more serious direction).
+
+    D-2 (spec pre-release-hardening): this function governs BRANCH/DIFF
+    resolution (git_cwd's seed) ONLY. Gate MARKERS always keep reading from
+    the pinned `root` regardless of this function's answer — a linked
+    worktree has `.codearbiter/` (tracked) but not `.codearbiter/.markers/`
+    (gitignored), so marker paths must stay anchored at the main checkout.
+    This split existed accidentally before #223 (pre-bash.py:769,828 already
+    read markers from `root` while everything else read from `cwd`); this is
+    now the intentional, documented contract.
+
+    Resolution reuses `_gitlib.project_root` — the existing linked-worktree-
+    aware precedent (`_gitlib.head_branch` already parses a `.git` FILE's
+    `gitdir:` pointer for exactly this case) — rather than a fresh
+    `git rev-parse --show-toplevel` spawn. It climbs from the hook payload's
+    own `cwd` (a trusted-harness input, same footing as CLAUDE_PROJECT_DIR
+    itself — see security-controls.md's Repo resolution section) or, absent
+    one, the hook process's own cwd, stopping at the nearest ancestor with a
+    `.git` (dir OR file) or a `.codearbiter` directory — a linked worktree's
+    `.git` is a FILE, and it also carries its own `.codearbiter/`, so either
+    check alone stops the climb at the worktree root, never the main
+    checkout.
+
+    When that climb lands on the SAME root as `root`, this returns `root`
+    unchanged — the overwhelmingly common (non-worktree) case sees zero
+    behavioral difference. It returns the climbed root only when it names a
+    genuinely DIFFERENT filesystem location."""
+    exec_root = _gitlib.project_root(payload if isinstance(payload, dict) else {})
+    if os.path.normpath(os.path.abspath(exec_root)) == os.path.normpath(os.path.abspath(root)):
+        return root
+    return exec_root
+
+
+# D-3 (spec pre-release-hardening, #223): the raw-`cmd` fallback below (used
+# when a heredoc is present) must fire ONLY when the heredoc body can
+# genuinely reach a shell — via EITHER of two independent routes, checked by
+# the two functions below (`_heredoc_fed_to_shell` and `_has_shell_executor`,
+# OR'd together at the call site): (1) the heredoc's DIRECT consumer is
+# itself a shell-like program whose stdin is executed as code (`bash <<EOF`),
+# or (2) some OTHER token in the command is a shell/interpreter executor that
+# runs a command-substitution result carrying the heredoc's output
+# (`bash -c "$(cat <<EOF … EOF)"` — the heredoc's direct consumer is `cat`,
+# route (1) says no, but `bash -c` EXECUTES what `cat` produced, so route (2)
+# must say yes). A heredoc handed to a non-shell consumer with NO executor
+# anywhere in the command (`gh pr create --body "$(cat <<EOF … EOF)"`) is
+# inert prose to this guard even though it is substituted into another
+# command's argument — neither route fires, so the fallback correctly stays
+# off and a PR/issue body merely QUOTING "git commit" does not false-trip.
+SHELL_HEREDOC_CONSUMERS = frozenset({
+    "bash", "sh", "zsh", "dash", "ksh",
+    "python", "python2", "python3", "perl", "ruby", "node", "nodejs",
+})
+
+
+def _heredoc_fed_to_shell(cmd):
+    """True iff at least one `<<` heredoc operator in `cmd` attaches to a
+    shell-like consumer (SHELL_HEREDOC_CONSUMERS) — a program whose stdin IS
+    executed, not merely read as inert text.
+
+    The consumer is the FIRST token of the "simple command" the heredoc
+    operator sits at the end of: scan backward from the operator to the
+    nearest unquoted `|`, `;`, `&`, or `(` (or the start of the string) —
+    that is where the current simple command began — then take its first
+    token. This correctly finds `bash` in `bash <<EOF` and `cat` (not `gh`)
+    in `gh pr create --body "$(cat <<EOF … EOF)"` (the `(` from `$(` bounds
+    the segment)."""
+    for m in re.finditer(r"<<", cmd):
+        start = m.start()
+        seg_start = 0
+        in_dq = in_sq = False
+        for i in range(start - 1, -1, -1):
+            ch = cmd[i]
+            if ch == '"' and not in_sq:
+                in_dq = not in_dq
+            elif ch == "'" and not in_dq:
+                in_sq = not in_sq
+            elif not in_dq and not in_sq and ch in "|;&(":
+                seg_start = i + 1
+                break
+        segment = cmd[seg_start:start]
+        tokens = re.findall(r'"[^"]*"|\'[^\']*\'|\S+', segment)
+        if not tokens:
+            continue
+        head = os.path.basename(tokens[0].strip("\"'"))
+        if head in SHELL_HEREDOC_CONSUMERS:
+            return True
+    return False
+
+
+# security-reviewer finding (post-A-4): `_heredoc_fed_to_shell` alone answers
+# "is the heredoc's DIRECT consumer a shell" — that is NOT the same question
+# as "does the heredoc's body reach a shell." `bash -c "$(cat <<EOF … EOF)"`
+# has `cat` as the heredoc's direct consumer (correctly classified non-shell
+# by the check above), but `bash -c` then EXECUTES the substituted result of
+# that `cat` — the body reaches a shell by a route the direct-consumer check
+# cannot see (same hole for `eval "$(cat <<EOF … EOF)"`, `sh -c "$(…)"`, and
+# any command-substitution chain ending in a shell/interpreter executor).
+# This second check asks the complementary question: does ANY token in the
+# whole command invoke something that executes a string as code, regardless
+# of where the heredoc sits relative to it. FAILS CLOSED on uncertainty —
+# `eval` and `xargs` (which can forward its input straight into an executor)
+# are treated as always-executor, no flag required.
+SHELL_C_PROGRAMS = frozenset({"bash", "sh", "zsh", "dash", "ksh"})
+INTERP_C_PROGRAMS = frozenset({"python", "python2", "python3"})
+INTERP_E_PROGRAMS = frozenset({"perl", "ruby", "node", "nodejs"})
+ALWAYS_EXECUTOR_PROGRAMS = frozenset({"eval", "xargs"})
+
+
+def _has_shell_executor(cmd):
+    """True iff `cmd` invokes ANYWHERE a program that executes a string as
+    code: `bash -c`/`sh -c`/`zsh -c`/`dash -c`/`ksh -c`, `python[23]? -c`,
+    `perl -e`/`ruby -e`/`node[js]? -e`, or a bare `eval`/`xargs` (both can
+    hand an arbitrary string straight to an executor — `xargs bash -c '...'`,
+    `eval "$var"` — so both are treated as executors unconditionally, no
+    flag needed, per the fail-closed mandate).
+
+    Scans the RAW command (heredoc bodies included) — a heredoc body that
+    happens to mention one of these tokens as prose causes a conservative
+    over-block, never an under-scan, matching this file's established
+    ambiguity-resolves-CLOSED stance (D-3)."""
+    tokens = [t.strip("\"'") for t in re.findall(r'"[^"]*"|\'[^\']*\'|\S+', cmd)]
+    basenames = [os.path.basename(t) for t in tokens]
+    if any(b in ALWAYS_EXECUTOR_PROGRAMS for b in basenames):
+        return True
+    if "-c" in tokens and any(
+            b in SHELL_C_PROGRAMS or b in INTERP_C_PROGRAMS for b in basenames):
+        return True
+    if "-e" in tokens and any(b in INTERP_E_PROGRAMS for b in basenames):
+        return True
+    return False
 
 
 def current_branch(cwd):
@@ -382,8 +564,15 @@ def added_lines(cwd, ref, paths=None):
     Decoded as UTF-8 with replacement: `text=True` alone uses the locale code
     page (cp1252 on stock Windows), where a non-cp1252 byte in the diff raised
     UnicodeDecodeError into the bare except below and the security gate
-    silently failed OPEN on exactly the platform this layer protects."""
-    argv = ["git", "diff", ref] + (["--", *paths] if paths else [])
+    silently failed OPEN on exactly the platform this layer protects.
+
+    Excludes gate-events.log (#279): `sensitive_scan_added_lines` walks the
+    diff path-aware, dropping lines that belong to the crypto/secret gate's
+    own machine-written audit sink — see its docstring in `_hooklib`. Reads
+    the diff via SECURITY_DIFF_GIT_ARGS (pinned a/ b/ prefixes, no external
+    diff) so a hostile `diff.mnemonicPrefix`/`diff.noprefix`/external-diff
+    config can never break that attribution (#279 review MEDIUM-1)."""
+    argv = ["git", *SECURITY_DIFF_GIT_ARGS, ref] + (["--", *paths] if paths else [])
     try:
         out = subprocess.run(
             argv, cwd=cwd,
@@ -396,10 +585,7 @@ def added_lines(cwd, ref, paths=None):
     except Exception as e:  # noqa: BLE001
         _note_read_err(argv, repr(e))
         return None
-    return "\n".join(
-        line[1:] for line in out.stdout.splitlines()
-        if line.startswith("+") and not line.startswith("+++")
-    )
+    return "\n".join(sensitive_scan_added_lines(out.stdout))
 
 
 def _names(cwd, args):
@@ -588,15 +774,34 @@ def _run(root):
     # a body-stripped view so message content (which may contain `;`/`|`/`&`,
     # or mention `git -C`) never truncates the args capture, poisons the cwd
     # extraction, or leaks words into the pathspec parse. The RAW command stays
-    # as a fallback matcher: a heredoc fed TO a shell (`bash <<EOF … EOF`)
-    # executes its body, so a commit/push/add visible only in the raw text must
-    # still be guarded — ambiguity resolves CLOSED, so the fallback over-blocks
-    # (e.g. a message QUOTING a force-push) rather than under-scans.
+    # as a fallback matcher, but ONLY when the heredoc's consumer is a shell
+    # (D-3, #223, `_heredoc_fed_to_shell` above): a heredoc fed TO a shell
+    # (`bash <<EOF … EOF`) genuinely executes its body, so a commit/push/add
+    # visible only in the raw text must still be guarded there — ambiguity
+    # resolves CLOSED. A heredoc fed to a non-shell consumer (`gh`, `cat`, …)
+    # is inert prose and must NOT fall back to the raw-text scan, or a PR/issue
+    # body merely QUOTING "git commit" false-trips H-01/H-09b/H-14.
     git_view = _strip_heredoc_bodies(cmd) if "<<" in cmd else cmd
+    # Both legs are OR'd: the heredoc's direct consumer being a shell
+    # (`bash <<EOF`) is one route to execution; a shell/interpreter executor
+    # appearing ANYWHERE in the command (`bash -c "$(cat <<EOF … EOF)"`,
+    # `eval "$(cat <<EOF … EOF)"`) is another that the direct-consumer check
+    # alone cannot see (security-reviewer finding, post-A-4) — either is
+    # sufficient to keep the fallback closed.
+    heredoc_shell_fallback = "<<" in cmd and (
+        _heredoc_fed_to_shell(cmd) or _has_shell_executor(cmd))
 
-    commit = COMMIT_RE.search(git_view) or COMMIT_RE.search(cmd)
-    push_probe = PUSH_RE.search(git_view) or PUSH_RE.search(cmd)
-    cwd = git_cwd(git_view, root)
+    commit = COMMIT_RE.search(git_view) or (
+        heredoc_shell_fallback and COMMIT_RE.search(cmd))
+    push_probe = PUSH_RE.search(git_view) or (
+        heredoc_shell_fallback and PUSH_RE.search(cmd))
+
+    # #223: -C-less git commands run against the command's EFFECTIVE cwd, not
+    # unconditionally CLAUDE_PROJECT_DIR — see _effective_exec_root's
+    # docstring (D-2: gate MARKERS stay pinned to `root` regardless; only
+    # branch/diff resolution follows the command's real cwd).
+    exec_root = _effective_exec_root(payload, root)
+    cwd = git_cwd(git_view, exec_root)
 
     # reliability-004 (#190): fail CLOSED for commit/push when the `-C` target
     # git_cwd() resolved does not exist as a directory — an unresolvable -C
@@ -632,7 +837,8 @@ def _run(root):
             block("H-01", f"Direct commit to {target} is prohibited (ORCHESTRATOR §3). "
                           f"Create a feature branch.")
 
-    push = PUSH_RE.search(git_view) or PUSH_RE.search(cmd)
+    push = PUSH_RE.search(git_view) or (
+        heredoc_shell_fallback and PUSH_RE.search(cmd))
     if push:
         pargs = push.group("args")
 
@@ -678,7 +884,8 @@ def _run(root):
     # flag spellings (-A/--all/-u/.) and the argument spellings (globs,
     # directories, pathspec magic) — `git add src/` stages everything beneath
     # src/ just as surely as `git add -A` does.
-    add = ADD_RE.search(git_view) or ADD_RE.search(cmd)
+    add = ADD_RE.search(git_view) or (
+        heredoc_shell_fallback and ADD_RE.search(cmd))
     if add:
         if WILDCARD_ADD_RE.search(add.group("args")):
             block("H-03", "'git add -A' / 'git add .' / 'git add --all' / 'git add -u' "
@@ -723,12 +930,28 @@ def _run(root):
 
     # H-19: the gate-pass markers (#160) are recorded only by the sanctioned
     # python producers — shell flank against `echo <digest> > security-gate-passed`
-    # and `cp`/`sed`/`tee` forges naming a gate marker.
-    if GATE_MARKER_REDIRECT_RE.search(cmd) or GATE_MARKER_WRITE_RE.search(cmd):
+    # and `cp`/`sed`/`tee` forges naming a gate marker, plus an interpreter
+    # one-liner (#237).
+    #
+    # review finding (post-B-2): scan `git_view` (heredoc bodies stripped),
+    # with the raw-`cmd` leg gated on `heredoc_shell_fallback` — mirroring
+    # how commit/push/add already work post-D-3 (#223). Scanning raw `cmd`
+    # unconditionally, as this used to, means a heredoc body fed to a
+    # NON-shell consumer that merely QUOTES a gate-marker path (a PR/issue
+    # body describing this very fix) false-trips H-19; scanning only
+    # `git_view` would miss the genuine case where the heredoc's body DOES
+    # reach an executor (`bash -c "$(cat <<EOF … EOF)"`).
+    def _gate_marker_hit(view):
+        return (GATE_MARKER_REDIRECT_RE.search(view)
+                or GATE_MARKER_WRITE_RE.search(view)
+                or GATE_MARKER_INTERP_RE.search(view))
+
+    if _gate_marker_hit(git_view) or (heredoc_shell_fallback and _gate_marker_hit(cmd)):
         block("H-19", "The .codearbiter/.markers/ security-gate-passed / migration-gate-passed "
                       "tokens are recorded only by the sanctioned gate producers (#160) — a shell "
-                      "redirect or write verb naming a gate marker forges a security/migration "
-                      "gate pass and is prohibited.")
+                      "redirect, write verb, or interpreter invocation (python/node/perl/ruby/sh) "
+                      "naming a gate marker forges a security/migration gate pass and is "
+                      "prohibited.")
 
     # H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     # a recorded security-gate pass. The crypto-compliance / secret-handling skills

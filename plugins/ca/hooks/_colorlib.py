@@ -20,6 +20,7 @@
 #   clip(s, w) -> str                         truncate to <= w visible columns (ANSI-preserving)
 #   pad(s, w) -> str                          pad/clip to exactly w visible columns
 #   gradient_h(text, width, c_from, c_to) -> str   per-character violet sheen
+#   strip_control(s) -> str                   strip C0 control bytes + OSC/CSI escape sequences
 
 import json
 import os
@@ -110,7 +111,7 @@ def _read_custom(path):
             return None
         value = json.loads(raw.decode("utf-8"))
         return value if isinstance(value, dict) else None
-    except (OSError, UnicodeError, ValueError, TypeError):
+    except (OSError, UnicodeError, ValueError, TypeError, RecursionError):
         return None
 
 
@@ -211,6 +212,26 @@ BOLT = "↯"
 SPARK = "▁▂▃▄▅▆▇█"
 
 ANSI = re.compile(r"\033\[[0-9;]*m")
+
+# Host-controlled strings (a model display name, a subagent's derived label)
+# reach the render path verbatim. Neither the host payload nor a subagent
+# transcript is a trusted source, so any C0 control byte or OSC/CSI escape
+# sequence embedded in one is terminal-escape injection into the user's
+# prompt line — strip it before the string is ever composed into a row.
+_OSC_RE = re.compile(r"\033\][^\007\033]*(?:\007|\033\\)?")
+_CSI_RE = re.compile(r"\033\[[0-?]*[ -/]*[@-~]?")
+_C0_RE = re.compile(r"[\000-\037]")
+
+
+def strip_control(s):
+    """Strip OSC/CSI escape sequences and any remaining C0 control byte
+    (0x00-0x1f) from a host- or transcript-derived string. Non-string input
+    passes through unchanged; this must never raise."""
+    if not isinstance(s, str):
+        return s
+    s = _OSC_RE.sub("", s)
+    s = _CSI_RE.sub("", s)
+    return _C0_RE.sub("", s)
 
 
 def _cw(ch):
