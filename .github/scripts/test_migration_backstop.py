@@ -270,13 +270,14 @@ def section_stdlib():
             check(False, "OB-S1", f"py_compile failed for {os.path.basename(path)}: {e}")
         if ok:
             check(True, "OB-S1", "")
-    # migration-pass.py must import only stdlib + the shared _hooklib.
+    # migration-pass.py must import only stdlib + shared dependency-free helpers.
     if os.path.isfile(MIGRATION_PASS):
         with open(MIGRATION_PASS, encoding="utf-8") as f:
             src = f.read()
         third_party = [ln for ln in src.splitlines()
                        if ln.startswith(("import ", "from "))
                        and "_hooklib" not in ln
+                       and "_gitexec" not in ln
                        and not any(m in ln for m in (
                            "import os", "import sys", "import subprocess",
                            "import hashlib", "import json", "import re"))]

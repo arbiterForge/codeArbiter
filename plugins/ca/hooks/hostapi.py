@@ -31,6 +31,8 @@ import os
 import subprocess
 import sys
 
+from _gitexec import git_executable
+
 
 def git_toplevel(cwd=None):
     """`git rev-parse --show-toplevel`, run FROM `cwd` when given (`git -C
@@ -43,7 +45,7 @@ def git_toplevel(cwd=None):
     SUBDIRECTORY (e.g. a Codex session started below the repo root), and the
     project root must be the repo TOPLEVEL, not that subdirectory verbatim —
     `.codearbiter/` state lives at the root."""
-    args = ["git"]
+    args = [git_executable()]
     if cwd:
         args += ["-C", cwd]
     args += ["rev-parse", "--show-toplevel"]

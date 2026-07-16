@@ -14,10 +14,9 @@ legacy/ASSESSMENT.md reference). Checks, per plugin:
   D. The command catalog (COMMANDS.md) and commands/*.md agree — every command
      file is cataloged, every cataloged command has a file. Nothing is hidden.
 
-The check is parameterized over a plugin list (ADR-0007: the repo hosts a second
-sibling plugin, ca-sandbox, validated under its own `/ca-sandbox:` command
-namespace). Pass plugin names as argv to scope the run (e.g. `check-plugin-refs.py
-ca-sandbox`); with no args every known plugin is checked.
+The check is parameterized over the repository's four sibling plugins. Pass
+plugin names as argv to scope the run (for example `check-plugin-refs.py ca-pi`);
+with no args every known plugin is checked.
 
 Exits non-zero listing every broken reference.
 """
@@ -42,8 +41,12 @@ PLUGINS = {
     # tools/ = the farm execution backend (farm.js, plan.schema.json), which
     # ca-codex does not vendor yet — --farm is a Feature Forge preview and its
     # Codex packaging is an M5 distribution decision (docs/parity.md row).
-    "ca-codex": {"namespace": None, "skill_prefix": "ca-",
+    "ca-codex": {"namespace": None, "skill_prefix": "ca-", "catalog_prefix": "$ca-",
                  "pending_prefixes": ("agents/", "tools/", "tools")},
+    # Pi packages generated ca-* entry skills plus /ca-* aliases. Its command
+    # catalog uses the alias spelling while the directory bijection remains the
+    # same as Codex's namespace-less skill layout.
+    "ca-pi": {"namespace": None, "skill_prefix": "ca-", "catalog_prefix": "/ca-"},
 }
 
 errors = []
@@ -150,7 +153,8 @@ def check_plugin(name, cfg):
     # A namespace-less plugin (ca-codex) catalogs `$<prefix><name>` entry
     # skills instead of `/<ns>:<name>` command files; same bijection contract.
     prefix = cfg.get("skill_prefix")
-    if namespace is None and prefix:
+    catalog_prefix = cfg.get("catalog_prefix")
+    if namespace is None and prefix and catalog_prefix:
         skills_dir = os.path.join(plugin, "skills")
         entry_stems = set()
         if os.path.isdir(skills_dir):
@@ -161,17 +165,17 @@ def check_plugin(name, cfg):
             }
         commands_md = os.path.join(plugin, "COMMANDS.md")
         catalog = read(commands_md) if os.path.isfile(commands_md) else ""
-        mention_re = re.compile(r"[$]" + re.escape(prefix) + r"([a-z][a-z-]*)")
+        mention_re = re.compile(re.escape(catalog_prefix) + r"([a-z][a-z-]*)")
         catalog_cmds = set(mention_re.findall(catalog))
         for stem in entry_stems:
             if stem not in catalog_cmds:
                 errors.append(
-                    f"plugins/{name}/COMMANDS.md: skill '${prefix}{stem}' "
+                    f"plugins/{name}/COMMANDS.md: skill '{catalog_prefix}{stem}' "
                     f"(skills/{prefix}{stem}/SKILL.md) not in the catalog")
         for cmd in catalog_cmds:
             if cmd not in entry_stems:
                 errors.append(
-                    f"plugins/{name}/COMMANDS.md: '${prefix}{cmd}' in catalog "
+                    f"plugins/{name}/COMMANDS.md: '{catalog_prefix}{cmd}' in catalog "
                     f"has no skills/{prefix}{cmd}/SKILL.md")
         return
 

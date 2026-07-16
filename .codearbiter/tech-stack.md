@@ -15,6 +15,16 @@ this file is the stale one; fix it here.
 - **Everything else** — prose (skills, commands, agents, ORCHESTRATOR.md),
   governed by the plugin's own authoring gates, not by CI.
 
+## Pi adapter
+
+`plugins/ca-pi/tools/` is strict TypeScript on Node 22.19 or newer, tested with
+Vitest and built with esbuild. The dependency-free Git package ships a parent
+extension, an enforcement-only child extension, and a Windows supervisor.
+Python 3 remains required for the shared core.
+
+The external Pi runtime is a test and install input, never a checked-in or
+runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.80.6.
+
 ## Test
 
 Run all of these; ALL must pass before any commit:
@@ -103,6 +113,26 @@ npm run build           # then: git diff --quiet -- sandbox.js  (stale build blo
 ca-sandbox's docker-gated tests build real ephemeral containers (and on Windows drive nixpacks via the
 WSL bridge), so they need Docker available and are slower; they self-skip when `docker info` fails.
 
+When `plugins/ca-pi/**`, `core/**`, or the Pi package generators changed:
+
+```sh
+npm --prefix plugins/ca-pi/tools ci
+npm --prefix plugins/ca-pi/tools run typecheck
+npm --prefix plugins/ca-pi/tools test
+npm --prefix plugins/ca-pi/tools run build
+python tools/sync-core.py --check
+python tools/build-surface.py --check
+python tools/build-host-packages.py --check
+python .github/scripts/test_pi_package.py
+python .github/scripts/test_pi_parity.py
+python .github/scripts/test_public_pi_docs.py
+```
+
+The platform aggregate is `python .github/scripts/test_pi_platform_contract.py
+--fixtures-only`. A supported-version run adds `--pi-version 0.80.5` or
+`--pi-version 0.80.6` after installing that exact external Pi version with
+scripts disabled. CI owns the Windows/macOS/Linux matrix.
+
 ## Lint / typecheck
 
 - Python hooks: no linter is configured. The floor is a syntax check —
@@ -148,3 +178,7 @@ No dedicated secrets scanner is configured. The gate is two-layered:
   no-ops on an unchanged version string (CI job `version-bump` enforces).
 - Version rides in three places; keep them in sync: `plugin.json`, the README
   version badge, and a dated `CHANGELOG.md` section.
+- `ca-pi` releases independently as `ca-pi-v<version>`. The nested
+  `plugins/ca-pi/package.json` is the version source; regenerate the root
+  `package.json`, update `plugins/ca-pi/CHANGELOG.md`, and keep both manifests
+  synchronized. Distribution is pinned Git only; there is no npm release.

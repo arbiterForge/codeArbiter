@@ -9,6 +9,24 @@ context-minimization proof — almost nothing loads until an entry point is invo
 > [`docs/patterns/lazy-load-bundles.md`](./patterns/lazy-load-bundles.md), registration moves
 > together or the routing drifts.
 
+## Three governance hosts, one kernel
+
+The repository has four sibling plugins, but only three are governance hosts.
+`ca-sandbox` is infrastructure. Claude Code, Codex CLI, and Pi are generated
+from `core/pysrc/` and `core/surface/`; host descriptors select names, paths,
+capabilities, and tool classes without copying governance policy.
+
+| Host | Adapter entry | Public command form | Runtime boundary |
+|---|---|---|---|
+| Claude Code (`ca`) | `hooks/hooks.json` | `/ca:<name>` | native hook events and Claude agents |
+| Codex CLI (`ca-codex`) | `.codex-plugin/plugin.json` + generated hooks | `$ca-<name>` | compatible hook events; unsupported role surfaces run inline |
+| Pi (`ca-pi`) | `extensions/codearbiter.js` | `/ca-<name>` with `/skill:ca-<name>` fallback | TypeScript lifecycle/tool wrappers call the bounded Python bridge; roles use hardened child Pi processes |
+
+Pi's parent extension stays dormant until the repository is enabled and Pi
+reports affirmative project trust. It registers aliases, dispatch, farm preview,
+and native compaction only after the shared enforcement lifecycle is ready. The
+enforcement-only child extension cannot register public aliases or recurse.
+
 ## How to read it
 
 - A command is **invoked** by the user; the orchestrator **routes** to the one owning skill; a
@@ -21,13 +39,14 @@ context-minimization proof — almost nothing loads until an entry point is invo
 
 ## Context minimization
 
-Standing context is exactly **one file**: `ORCHESTRATOR.md`, injected by the `SessionStart` hook
-only when `.codearbiter/CONTEXT.md` carries `arbiter: enabled`. Repos without the flag load
+Standing governance context is exactly **one file**: `ORCHESTRATOR.md`, injected at host startup
+only when `.codearbiter/CONTEXT.md` carries `arbiter: enabled` (and, on Pi, after affirmative
+project trust). Repos without the flag load
 nothing (the `DORMANT` terminal). Everything else — `routing-table.md`, `reference-map.md`, all 22
 skill bodies, all 28 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
 only when its entry point is invoked, and only for the nodes that entry point actually reaches. A
-typical `/ca:fix` touches the persona + `tdd` + one author + maybe one reviewer, not the full
-payload. The read-only meta commands (`/ca:status`, `/ca:btw`, `/ca:commands`, `/ca:audit`) route
+typical fix touches the persona + `tdd` + one author + maybe one reviewer, not the full
+payload. The read-only meta commands (`status`, `btw`, `commands`, `audit`) route
 to no skill at all.
 
 ## The chart

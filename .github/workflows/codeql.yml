@@ -1,0 +1,56 @@
+name: CodeQL
+
+on:
+  pull_request:
+    paths:
+      - "plugins/ca-pi/tools/src/**"
+      - "plugins/ca-pi/extensions/**"
+      - "plugins/ca-pi/tools/test/security.test.ts"
+      - "plugins/ca-pi/tools/test/final-arguments.test.ts"
+      - ".github/scripts/test_pi_security.py"
+      - ".github/workflows/codeql.yml"
+  push:
+    branches: [main]
+    paths:
+      - "plugins/ca-pi/tools/src/**"
+      - "plugins/ca-pi/extensions/**"
+      - ".github/scripts/test_pi_security.py"
+      - ".github/workflows/codeql.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ca-pi-javascript-typescript:
+    name: CA-Pi | CodeQL (JavaScript/TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          config: |
+            name: ca-pi-security
+            queries:
+              - uses: security-extended
+            paths:
+              - plugins/ca-pi/tools/src
+              - plugins/ca-pi/extensions
+            paths-ignore:
+              - plugins/ca-pi/tools/node_modules
+      - name: Analyze and upload CodeQL results
+        uses: github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        with:
+          category: "/language:javascript-typescript"
+          output: codeql-results
+      - name: Fail unresolved high-severity findings
+        run: python .github/scripts/test_pi_security.py --sarif codeql-results

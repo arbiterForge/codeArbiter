@@ -29,9 +29,10 @@ import sys
 import time
 
 import _hooklib
+import _prunepolicy as _policy
 
 BOM = b"\xef\xbb\xbf"
-MARKER_PREFIX = "[ca-condensed "
+MARKER_PREFIX = _policy.MARKER_PREFIX
 
 
 def _dumps(o):
@@ -43,12 +44,11 @@ def _marker(orig_text):
     """Self-describing elision marker. The 8-hex sha doubles as the idempotency
     guard: a strategy skips any content already carrying a marker, so
     prune(prune(x)) == prune(x)."""
-    b = orig_text.encode("utf-8")
-    return f"{MARKER_PREFIX}{len(b)}B #{hashlib.sha256(b).hexdigest()[:8]}]"
+    return _policy.marker_for(orig_text)
 
 
 def _has_marker(s):
-    return isinstance(s, str) and MARKER_PREFIX in s
+    return _policy.has_marker(s)
 
 
 def est_tokens(nbytes):
@@ -140,8 +140,6 @@ def build_index(lines, cfg):
     tool_result lines that follow it. (Counting result lines too would silently
     halve the protection an operator asked for via KEEP_RECENT.)"""
     idx = Index()
-    turn_anchor_idxs = []     # assistant tool_use-bearing lines: one per turn
-    result_line_idxs = []     # fallback anchors for a results-only transcript
     last_assistant = -1
     tu, tr = set(), set()
     edited = set()
@@ -154,10 +152,6 @@ def build_index(lines, cfg):
         if o.get("type") == "assistant":
             last_assistant = ln.idx
         a, b = _tool_use_ids(o), _tool_result_ids(o)
-        if a:
-            turn_anchor_idxs.append(ln.idx)
-        elif b:
-            result_line_idxs.append(ln.idx)
         tu |= a
         tr |= b
         msg = o.get("message")
@@ -173,19 +167,16 @@ def build_index(lines, cfg):
                 if name in ("Write", "Edit") and path:
                     edited.add(path)
                     edited_at[path] = max(edited_at.get(path, -1), ln.idx)
-    anchors = turn_anchor_idxs or result_line_idxs
-    keep = cfg.keep_recent
-    if keep <= 0:
-        prot_tool = len(lines)
-    elif len(anchors) > keep:
-        prot_tool = anchors[-keep]
-    elif anchors:
-        prot_tool = anchors[0]
-    else:
-        prot_tool = len(lines)
-    prot = prot_tool
-    if last_assistant >= 0:
-        prot = min(prot, last_assistant)
+    semantic = []
+    for ln in lines:
+        o = ln.obj if isinstance(ln.obj, dict) else {}
+        semantic.append(_policy.SemanticEntry(
+            id=str(ln.idx), ordinal=ln.idx, role=str(o.get("type", "other")),
+            kind=("tool-result" if _tool_result_ids(o) else "message"),
+            byte_size=len(ln.raw), tool_bearing=bool(_tool_use_ids(o)),
+            marked=_has_marker(_dumps(o)) if o else False,
+        ))
+    prot = _policy.protected_ordinal(semantic, cfg.keep_recent)
     idx.protected_from = prot
     idx.last_assistant_idx = last_assistant
     idx.tu_ids = tu
@@ -590,7 +581,7 @@ def s_inline_image_evict(lines, index, cfg, report):
 # targets BEFORE the generic aged/oversize condensers run, so each result is
 # trimmed by the most appropriate strategy exactly once (the marker enforces
 # single-processing). Selection preserves this order.
-TIERS = {"gentle": 0, "standard": 1, "aggressive": 2}
+TIERS = _policy.TIERS
 STRATEGIES = {
     "sidecar-collapse": ("gentle", s_sidecar_collapse),
     "reasoning-fold": ("standard", s_reasoning_fold),
@@ -602,26 +593,11 @@ STRATEGIES = {
     "aged-result-condense": ("standard", s_aged_result_condense),
     "oversize-result-clamp": ("gentle", s_oversize_result_clamp),
 }
-STRATEGY_ORDER = [
-    "sidecar-collapse",
-    "reasoning-fold",
-    "mcp-payload-condense",
-    "shell-tail-keep",
-    "superseded-read-condense",
-    "repeat-reminder-fold",
-    "inline-image-evict",
-    "aged-result-condense",
-    "oversize-result-clamp",
-]
+STRATEGY_ORDER = list(_policy.STRATEGY_ORDER)
 
 
 def selected_strategies(cfg):
-    if cfg.strategies:
-        want = set(cfg.strategies)
-        return [n for n in STRATEGY_ORDER if n in want and n in STRATEGIES]
-    ceil = TIERS.get(cfg.tier, 0)
-    return [n for n in STRATEGY_ORDER
-            if n in STRATEGIES and TIERS[STRATEGIES[n][0]] <= ceil]
+    return list(_policy.select_strategies(cfg.tier, cfg.strategies))
 
 
 # --------------------------------------------------------------------------- #
@@ -777,13 +753,7 @@ def audit(data):
     out = []
     objs = _parts_objs(data)
     bad = [i for i, o in enumerate(objs) if isinstance(o, tuple)]
-    if bad:
-        out.append(("FAIL", f"{len(bad)} unparseable line(s): {bad[:10]}"))
-    else:
-        out.append(("OK", f"all {sum(1 for o in objs if o is not None)} non-blank lines parse"))
     orph = _orphans(objs)
-    out.append(("WARN" if orph else "OK",
-                f"{len(orph)} orphaned parentUuid(s)" if orph else "uuid/parentUuid chain intact"))
     tu = set()
     tr = set()
     for o in objs:
@@ -791,11 +761,18 @@ def audit(data):
             tu |= _tool_use_ids(o)
             tr |= _tool_result_ids(o)
     unpaired = tr - tu
-    out.append(("WARN" if unpaired else "OK",
+    levels = _policy.audit_outcomes(len(bad), len(orph), len(unpaired))
+    if bad:
+        out.append((levels[0], f"{len(bad)} unparseable line(s): {bad[:10]}"))
+    else:
+        out.append((levels[0], f"all {sum(1 for o in objs if o is not None)} non-blank lines parse"))
+    out.append((levels[1],
+                f"{len(orph)} orphaned parentUuid(s)" if orph else "uuid/parentUuid chain intact"))
+    out.append((levels[2],
                 f"{len(unpaired)} tool_result(s) with no tool_use" if unpaired
                 else f"{len(tu)} tool_use / {len(tr)} tool_result ids paired"))
     marked = sum(1 for o in objs if MARKER_PREFIX in _dumps(o)) if objs else 0
-    out.append(("OK", f"{marked} line(s) carry ca-condensed markers"))
+    out.append((levels[3], f"{marked} line(s) carry ca-condensed markers"))
     return out
 
 
@@ -1275,6 +1252,7 @@ def hook_run(payload, env=None):
     except Exception:  # noqa: BLE001 — never let pruning break the turn
         return 0
     b0, b1 = res["bytes_before"], res["bytes_after"]
+    reduction = _policy.reduction_metrics(b0, b1)
     if not cfg.execute:
         # Dry mode: persist the would-be outcome to the shared data-collection
         # log so confidence accrues across sessions before flipping to on.
@@ -1283,12 +1261,7 @@ def hook_run(payload, env=None):
             "session": session,
             "mode": "dry",
             "tier": cfg.tier,
-            "bytes_before": b0,
-            "bytes_after": b1,
-            "pct": round(100.0 * (b0 - b1) / b0, 1) if b0 else 0.0,
-            "freed_bytes": b0 - b1,
-            "est_tokens_before": res["est_tokens_before"],
-            "est_tokens_after": res["est_tokens_after"],
+            **reduction,
             "verdict": res["verdict"],
             "validation_errors": len(res["validation_errors"]),
             "strategies": {k: v["bytes_before"] - v["bytes_after"]
@@ -1303,8 +1276,8 @@ def hook_run(payload, env=None):
         "last_size": b1 if res["executed"] else b0,
         "last_pruned_size": (b1 if res["executed"] else st.st_size),
         "last_run_ts": int(time.time()),
-        "pct": round(100.0 * (b0 - b1) / b0, 1) if b0 else 0.0,
-        "freed_bytes": b0 - b1,
+        "pct": reduction["pct"],
+        "freed_bytes": reduction["freed_bytes"],
         "verdict": res["verdict"],
     }
     if _cold_nudged:
@@ -1362,12 +1335,13 @@ def run(path, cfg, session="session", data=None, lines=None, pre_stat=None):
     new_bytes = serialize(lines)
 
     errs = validate(orig_bytes, new_bytes, lines, cfg)
+    reduction = _policy.reduction_metrics(len(orig_bytes), len(new_bytes))
     result = {
         "path": path,
-        "bytes_before": len(orig_bytes),
-        "bytes_after": len(new_bytes),
-        "est_tokens_before": est_tokens(len(orig_bytes)),
-        "est_tokens_after": est_tokens(len(new_bytes)),
+        "bytes_before": reduction["bytes_before"],
+        "bytes_after": reduction["bytes_after"],
+        "est_tokens_before": reduction["est_tokens_before"],
+        "est_tokens_after": reduction["est_tokens_after"],
         "strategies": report,
         "validation_errors": errs,
         "executed": False,

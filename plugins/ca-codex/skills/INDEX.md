@@ -22,7 +22,7 @@ skill is invoked — never bulk-read this directory.
 | `$ca-debug` | Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to $ca-fix, $ca-adr, or a no-action close. |
 | `$ca-decompose` | Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized. |
 | `$ca-dev` | Maintainer override — suspend orchestration to edit codeArbiter itself. Env-gated (CODEARBITER_DEV=1), entry/exit logged to overrides.log. |
-| `$ca-doctor` | Verify the install is actually enforcing — interpreter, payload, cache staleness, repo state, and a live-fire hook probe. Read-only. |
+| `$ca-doctor` | Verify the active host install, package, command ownership, enforcement, and harmless live-fire probe. Read-only. |
 | `$ca-feature` | "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation." |
 | `$ca-fix` | "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates." |
 | `$ca-init` | Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store. |

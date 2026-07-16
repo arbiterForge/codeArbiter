@@ -27,6 +27,8 @@ import subprocess
 import sys
 import time
 
+from _gitexec import git_executable
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin root + capability flags
 from _hooklib import (  # noqa: E402
@@ -148,7 +150,7 @@ def _default_git_runner(args, root):
     output, text mode, explicit utf-8 with replacement, a timeout. Raises on any
     failure — git_read() is what turns failure into "" so callers degrade."""
     out = subprocess.run(
-        ["git", "-C", root, *args],
+        [git_executable(), "-C", root, *args],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         timeout=GIT_READ_TIMEOUT,
     )
@@ -195,7 +197,7 @@ def _detached_fetch_spawner(args, root):
         kw["creationflags"] = flags
     else:
         kw["start_new_session"] = True
-    return subprocess.Popen(["git", "-C", root, *args], **kw)
+    return subprocess.Popen([git_executable(), "-C", root, *args], **kw)
 
 
 def spawn_background_fetch(root, spawner=None):

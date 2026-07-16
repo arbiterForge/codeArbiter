@@ -3,38 +3,34 @@
 Every host-facing markdown surface is generated from this tree by
 `tools/build-surface.py`:
 
-| Template | Claude render (`plugins/ca/`) | Codex render (`plugins/ca-codex/`) |
-|---|---|---|
-| `commands/<n>.md` | `commands/<n>.md` | `skills/ca-<n>/SKILL.md` (frontmatter gains `name: ca-<n>`) |
-| `skills/**` | `skills/**` | `routines/**` (kept out of the skill-discovery root: routine bodies must never register as unprefixed user-invocable skills, and six names collide with commands) |
-| `includes/**` | `includes/**` | `includes/**` |
-| `COMMANDS.md`, `SPRINT.md`, `ORCHESTRATOR.md` | same name | same name |
-| — | — | `skills/INDEX.md` (generated catalog) |
+| Template | Claude (`plugins/ca/`) | Codex (`plugins/ca-codex/`) | Pi (`plugins/ca-pi/`) |
+|---|---|---|---|
+| `commands/<n>.md` | `commands/<n>.md` | `skills/ca-<n>/SKILL.md` | `skills/ca-<n>/SKILL.md` |
+| `skills/**` | `skills/**` | `routines/**` | `routines/**` |
+| `includes/**` | `includes/**` | `includes/**` | `includes/**` |
+| `agents/**` | `agents/**` | not rendered | `agents/**` (explicit child input, outside discovery roots) |
+| `COMMANDS.md`, `SPRINT.md`, `ORCHESTRATOR.md` | same name | same name | same name |
+| generated catalog | none | `skills/INDEX.md` | `skills/INDEX.md` |
 
 **Never edit a rendered file.** Rendered trees carry no provenance banner — the
 Claude tree is contractually byte-identical to the hand tree it replaced — so
 the guard is CI running `python tools/build-surface.py --check` (binary
-compare, both hosts, fails on template-vs-output drift in either direction,
+compare, all hosts, fails on template-vs-output drift in either direction,
 including orphans). Workflow: edit the template here, run
 `python tools/build-surface.py`, commit templates and outputs together.
 
 ## Grammar
 
-- `{{PLUGIN_ROOT}}` → `${CLAUDE_PLUGIN_ROOT}` on both hosts (Codex ships the
-  compat alias — source-verified, M0 spike item 6).
-- `{{PROJECT_DIR}}` → `${CLAUDE_PROJECT_DIR}` (claude) | `<project-root>`
-  (codex — hooks resolve it from the payload `cwd` → git toplevel).
-- `{{CMD:name}}` → `/ca:name` (claude) | `$ca-name` (codex). Hard error if
-  `name` is not a command template, or is excluded on the render host — that
-  error is the mechanism that finds every spot needing a conditional.
-- `{{IF:claude}} … {{ELSE}} … {{END}}` / `{{IF:codex}} …` — single level, no
-  nesting. A marker alone on its line is removed together with the line.
-- Codex renders rewrite `{{PLUGIN_ROOT}}/skills/…` → `…/routines/…` (except
-  `skills/ca-*`, which is codex-native) and `{{PLUGIN_ROOT}}/commands/<n>.md`
-  → `…/skills/ca-<n>/SKILL.md`.
-- `CODEX_EXCLUDED_CMDS` (statusline, prune) render no Codex skill —
-  ledgered in `docs/parity.md`. `CODEX_ONLY` templates (e.g.
-  `includes/codex-host-notes.md`) render into the Codex tree only.
+- `{{PLUGIN_ROOT}}`, `{{PROJECT_DIR}}`, and `{{CMD:name}}` resolve from the
+  selected descriptor's `tokens` and `command_form` values.
+- The `IF:<host> … ELSE … END` conditional form accepts any name declared in
+  `core/hosts.json`; an unknown condition tag is a hard schema error. Regions
+  are single-level, and a marker alone on its line leaves no blank residue.
+- Each descriptor's ordered `surface.rules` applies the first matching source
+  prefix and expands `{relative}`, `{stem}`, and `{name}` in its output path.
+  Exclusions and synthesized skill frontmatter are rule data, not host branches.
+- `core/hosts.json` is the only host registry. Both surface generation and
+  Python-core vendoring consume it through `tools/host_descriptors.py`.
 
 ## House rules for shared prose
 
@@ -45,9 +41,9 @@ including orphans). Workflow: edit the template here, run
    harness's tool names is a documented failure mode of multi-host skill
    libraries.
 2. **Host-impossible references go inside a conditional**, never deleted from
-   the Claude side and never left to render as a dead pointer on Codex.
+   an existing host side and never left to render as a dead pointer elsewhere.
 3. **New commands are authored here** (Claude form, tokens), never in the
-   rendered trees. `tools/build-surface.py` + `--check` keep both payloads
+   rendered trees. `tools/build-surface.py` + `--check` keep every payload
    honest.
 
 ## Adding a harness (porting contract)
@@ -59,10 +55,10 @@ A new host is a table entry, not a rewrite:
    transcript prune) decide: SHIPPED, DEGRADED, or LEDGERED OUT — and record
    every exception in `docs/parity.md`. Essential (non-negotiable): session
    bootstrap injection, exec + write gating, the shared `.codearbiter/` store.
-2. **One `_host.py` per plugin** (the only per-host Python file: project-root
-   resolution, tool-name normalization, input-shape translation, capability
-   flags) plus a `HOSTS`/token/`PLUGIN_DIR` entry in `tools/build-surface.py`
-   and a vendor target in `tools/sync-core.py`.
+2. **One descriptor entry plus one thin adapter.** Add the host once in
+   `core/hosts.json`; never add a parallel list to either generator. A host may
+   ship `_host.py` or a bridge for project-root resolution, tool normalization,
+   and input translation, but governance bodies remain generated.
 3. **Injection shape.** The persona must inject at session start with zero
    per-session opt-in; if stdout injection is unavailable, a generated,
    staleness-checked instructions file is the approved fallback (ADR-0011).

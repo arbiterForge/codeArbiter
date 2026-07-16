@@ -98,6 +98,7 @@ import subprocess
 import sys
 
 import _hooklib
+from _gitexec import git_executable, trusted_git_executable, trusted_python_executable
 
 SENTINEL = "# codeArbiter-managed git hook (#161) — refreshed each session; edits are overwritten."
 PHASES = ("pre-commit", "pre-push")
@@ -116,7 +117,7 @@ def _warn(msg):
 def _git(args, cwd):
     try:
         return subprocess.run(
-            ["git"] + args, cwd=cwd, capture_output=True, text=True,
+            [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=5,
         )
     except Exception:  # noqa: BLE001
@@ -150,6 +151,26 @@ def _shim(enforcer, phase):
     # Single-interpreter selection preserves stdin (pre-push) and the BLOCK exit
     # code. `exit 0` when the enforcer file is absent is deliberate fail-open on
     # our own path staleness (see module header).
+    trusted_git = trusted_git_executable()
+    trusted_python = trusted_python_executable()
+    if (trusted_git is not None or trusted_python is not None):
+        if trusted_git is None or trusted_python is None:
+            raise RuntimeError("codeArbiter executable identity channel is incomplete")
+
+        def quote(value):
+            return "'" + value.replace("'", "'\"'\"'") + "'"
+
+        return (
+            "#!/bin/sh\n"
+            f"{SENTINEL}\n"
+            f"E={quote(enforcer)}\n"
+            f"PY={quote(trusted_python)}\n"
+            f"G={quote(trusted_git)}\n"
+            '[ -f "$E" ] || exit 0\n'
+            'export CODEARBITER_GIT_EXECUTABLE="$G"\n'
+            'export CODEARBITER_PYTHON_EXECUTABLE="$PY"\n'
+            f'exec "$PY" "$E" {phase}\n'
+        )
     return (
         "#!/bin/sh\n"
         f"{SENTINEL}\n"

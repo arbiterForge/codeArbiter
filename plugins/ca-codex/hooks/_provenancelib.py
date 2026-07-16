@@ -91,6 +91,8 @@ import os
 import re
 import subprocess
 
+from _gitexec import git_executable
+
 import _hooklib
 
 # ---------------------------------------------------------------------------
@@ -251,7 +253,7 @@ def _default_hash_runner(args, stdin_text):
     Called only by batch_hash; never called at import time (zero side effects).
     """
     result = subprocess.run(
-        ["git"] + list(args),
+        [git_executable()] + list(args),
         input=stdin_text,
         capture_output=True,
         text=True,
@@ -635,7 +637,7 @@ def _make_root_runner(root):
     """
     def runner(args, stdin_text):
         result = subprocess.run(
-            ["git", "-C", root] + list(args),
+            [git_executable(), "-C", root] + list(args),
             input=stdin_text,
             capture_output=True,
             text=True,

@@ -15,6 +15,8 @@
 import os
 import re
 import subprocess
+
+from _gitexec import git_executable
 import sys
 from collections import namedtuple
 
@@ -80,7 +82,7 @@ def _git(args, root):
     posture the non-repo edge requires."""
     try:
         return subprocess.run(
-            ["git"] + args, cwd=root,
+            [git_executable()] + args, cwd=root,
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=15,
         )

@@ -30,13 +30,22 @@ no vendoring, no dual root.
 **Commands.** The plugin is named `ca`; Claude Code namespaces every plugin command behind it, so
 the user invokes `{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:commands}}`, etc. Bare `/feature` shorthand in this
 document means `{{CMD:feature}}`. When you tell the user what to type, use the `/ca:` form.
-{{ELSE}}
+{{END}}
+{{IF:codex}}
 **Commands.** Codex has no plugin command namespace, so every governance command ships as a skill
 prefixed `ca-` — the user invokes `{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:commands}}`, etc. Bare `/feature`
 shorthand in this document means the `ca-feature` skill. When you tell the user what to type, use
 the `$ca-` form. Routine bodies under `routines/` are routed to by path, never user-invoked.
 Before dispatching review/author roles, editing audit files, or driving git in a sandbox, load
 `{{PLUGIN_ROOT}}/includes/codex-host-notes.md` — the host's tool mapping and degraded paths.
+{{END}}
+{{IF:pi}}
+**Commands.** Pi governance commands ship as generated `ca-` entry skills with top-level aliases:
+the user invokes `{{CMD:feature}}`, `{{CMD:commit}}`, `{{CMD:commands}}`, etc. Bare `/feature` shorthand
+in this document means the `ca-feature` skill. When you tell the user what to type, use `/ca-<name>`;
+`/skill:ca-<name>` is the host-native fallback. Routine bodies under `routines/` are routed to by
+path, never user-invoked. Before dispatching roles, editing audit files, or using native compaction,
+load `{{PLUGIN_ROOT}}/includes/pi-host-notes.md` for Pi's trust, tool, and process boundaries.
 {{END}}
 
 ---

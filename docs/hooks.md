@@ -1,8 +1,8 @@
 # Hooks reference
 
-> **Why this page exists.** codeArbiter is a Claude Code plugin, and the way it
-> stays *active* in your repo is through hooks: small Python scripts Claude Code
-> runs at defined points in a session. That deserves transparency, because you are
+> **Why this page exists.** codeArbiter's governance kernel targets Claude Code,
+> Codex CLI, and Pi. Its enforcement core is a set of small, readable Python
+> scripts invoked from host lifecycle and tool events. That deserves transparency, because you are
 > letting a plugin run code on your machine. This page documents every hook, what
 > triggers it, exactly what it reads and writes, and names the only two things
 > any hook sends over a network. Nothing here is obfuscated; every script is
@@ -29,6 +29,28 @@
 - **Fail-safe vs. fail-loud:** activation fails *loud* (a malformed `CONTEXT.md`
   prints a breadcrumb to stderr rather than going silently dormant); everything
   else degrades quietly so a single failing read never crashes your session.
+
+## How the three hosts invoke the core
+
+`core/pysrc/` is vendored byte-for-byte into `ca`, `ca-codex`, and `ca-pi`.
+Claude Code and Codex CLI register compatible hook events. Pi's TypeScript
+extension wraps the final built-in tool arguments, normalizes them to the shared
+request schema, and calls the same Python through `plugins/ca-pi/hooks/pi-bridge.py`.
+The Pi bridge is bounded and redacted; repository-aware calls require an enabled
+repository and affirmative Pi project trust.
+
+| Shared operation | Claude Code | Codex CLI | Pi |
+|---|---|---|---|
+| Startup | `SessionStart` hook | trusted `SessionStart` hook | `session_start` extension event |
+| EXEC | `PreToolUse` Bash/PowerShell | shell hook | final `bash` wrapper |
+| WRITE / EDIT | Write and Edit hooks | per-file `apply_patch` decomposition | final `write` and `edit` wrappers |
+| READ notice | Read hook | no native event; post-write notice remains | final `read` wrapper |
+| Status / compaction | Claude statusline and transcript codec | startup state; no transcript codec | extension status key and native compaction event |
+
+The remainder of this page names the canonical Claude event spelling because it
+is the widest hook surface. Host exceptions and evidence are in
+[`docs/parity.md`](./parity.md); Pi operational details are generated from
+`core/surface/includes/pi-host-notes.md`.
 
 ## How Claude Code invokes them
 

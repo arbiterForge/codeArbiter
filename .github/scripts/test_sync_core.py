@@ -22,6 +22,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -63,7 +64,14 @@ class _SyntheticRepoFixture(unittest.TestCase):
         self._patches = [
             mock.patch.object(S, "REPO", self.repo),
             mock.patch.object(S, "CORE", self.core),
-            mock.patch.object(S, "PLUGINS", (self.plugin_a, self.plugin_b)),
+            mock.patch.object(
+                S,
+                "load_host_descriptors",
+                return_value=(
+                    SimpleNamespace(hooks_dir=self.plugin_a),
+                    SimpleNamespace(hooks_dir=self.plugin_b),
+                ),
+            ),
         ]
         for p in self._patches:
             p.start()

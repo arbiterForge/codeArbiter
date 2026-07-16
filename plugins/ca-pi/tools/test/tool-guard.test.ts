@@ -1,0 +1,1181 @@
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { describe, expect, test } from "vitest";
+
+import type { BridgePort, BridgeRequest, BridgeResponse, ExtensionContextPort, ToolCategory } from "../src/contracts.ts";
+import { EnforcementInstaller, bridgeToolResults, guardUnknownTools, wrapBuiltins } from "../src/tool-guard.ts";
+
+type Execute = (
+  id: string,
+  params: Record<string, unknown>,
+  signal?: AbortSignal,
+  onUpdate?: unknown,
+  context?: unknown,
+) => Promise<Record<string, unknown>>;
+
+class FakeBridge implements BridgePort {
+  readonly requests: BridgeRequest[] = [];
+  constructor(private readonly response: BridgeResponse) {}
+  async call(request: BridgeRequest): Promise<BridgeResponse> {
+    this.requests.push(structuredClone(request));
+    return this.response;
+  }
+}
+
+class DelayedBridge implements BridgePort {
+  readonly requests: BridgeRequest[] = [];
+  private release!: () => void;
+  readonly entered = new Promise<void>((resolveEntered) => { this.release = resolveEntered; });
+  private continue!: () => void;
+  private readonly continued = new Promise<void>((resolveContinued) => { this.continue = resolveContinued; });
+  constructor(private readonly response: BridgeResponse = { version: 1, outcome: "allow" }) {}
+  async call(request: BridgeRequest): Promise<BridgeResponse> {
+    this.requests.push(request);
+    this.release();
+    await this.continued;
+    return this.response;
+  }
+  resume(): void { this.continue(); }
+}
+
+class RejectingDelayedBridge implements BridgePort {
+  readonly requests: BridgeRequest[] = [];
+  private first = true;
+  private releaseEntered!: () => void;
+  readonly entered = new Promise<void>((resolveEntered) => { this.releaseEntered = resolveEntered; });
+  private continueFirst!: () => void;
+  private readonly firstContinued = new Promise<void>((resolveContinued) => { this.continueFirst = resolveContinued; });
+  constructor(
+    private readonly rejection: unknown,
+    private readonly laterResponse: BridgeResponse = { version: 1, outcome: "allow" },
+  ) {}
+  async call(request: BridgeRequest): Promise<BridgeResponse> {
+    this.requests.push(structuredClone(request));
+    if (!this.first) return this.laterResponse;
+    this.first = false;
+    this.releaseEntered();
+    await this.firstContinued;
+    throw this.rejection;
+  }
+  reject(): void { this.continueFirst(); }
+}
+
+class FakePi {
+  readonly definitions = new Map<string, { name: string; execute: Execute; [key: string]: unknown }>();
+  readonly handlers = new Map<string, Array<(event: Record<string, unknown>, context: ExtensionContextPort) => unknown>>();
+  readonly sources = new Map<string, string>();
+
+  registerTool(tool: { name: string; execute: Execute }): void {
+    this.definitions.set(tool.name, tool);
+    this.sources.set(tool.name, "C:/package/extensions/codearbiter.js");
+  }
+  on(event: "tool_call" | "tool_result", handler: (event: Record<string, unknown>, context: ExtensionContextPort) => unknown): void {
+    this.handlers.set(event, [...(this.handlers.get(event) ?? []), handler]);
+  }
+  getActiveTools(): string[] { return [...this.sources.keys()]; }
+  getAllTools() {
+    return [...this.sources].map(([name, path]) => ({ name, sourceInfo: { path } }));
+  }
+  async emit(event: string, payload: Record<string, unknown>) {
+    let result: unknown;
+    const context: ExtensionContextPort = {
+      cwd: "C:/repo",
+      signal: undefined,
+      ui: { notify: () => undefined, setStatus: () => undefined },
+    };
+    for (const handler of this.handlers.get(event) ?? []) result = await handler(payload, context);
+    return result;
+  }
+}
+
+function factories(executions: Array<{ tool: string; params: Record<string, unknown> }>) {
+  const create = (name: string) => (_cwd: string) => ({
+    name,
+    label: name,
+    description: name,
+    parameters: {},
+    execute: async (_id: string, params: Record<string, unknown>) => {
+      executions.push({ tool: name, params: structuredClone(params) });
+      return { content: [{ type: "text", text: `${name} executed` }], details: undefined, isError: false };
+    },
+  });
+  return { bash: create("bash"), edit: create("edit"), read: create("read"), write: create("write") };
+}
+
+const descriptor: Readonly<Record<string, ToolCategory>> = {
+  bash: "EXEC",
+  edit: "EDIT",
+  read: "READ",
+  write: "WRITE",
+  safe_extension_read: "READ",
+};
+
+describe("final-execution Pi tool enforcement", () => {
+  test("bootstrap guard leaves dormant repositories ungoverned", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    installer.ensureBootstrap(pi, descriptor);
+
+    await expect(pi.emit("tool_call", { toolName: "write", input: {} })).resolves.toBeUndefined();
+    await expect(pi.emit("tool_call", { toolName: "mystery", input: {} })).resolves.toBeUndefined();
+  });
+
+  test("bootstrap guard blocks every potentially mutating tool until enforcement is ready", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+
+    await expect(pi.emit("tool_call", { toolName: "read", input: {} })).resolves.toBeUndefined();
+    for (const name of ["bash", "write", "edit", "mystery"]) {
+      const refusal = await pi.emit("tool_call", { toolName: name, input: {} });
+      expect(refusal).toMatchObject({ block: true, reason: expect.stringContaining("/ca-doctor") });
+    }
+  });
+
+  test("bootstrap refusal serialization omits an opaque secret-shaped control-bearing tool name", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    const opaqueName = "OPENAI_API_KEY=synthetic-secret\r\n\u0000attacker-control";
+
+    const refusal = await pi.emit("tool_call", { toolName: opaqueName, input: {} });
+    const serialized = JSON.stringify(refusal);
+
+    expect(refusal).toMatchObject({ block: true, reason: expect.stringContaining("/ca-doctor") });
+    expect(serialized).not.toContain("synthetic-secret");
+    expect(serialized).not.toContain("attacker-control");
+    expect(serialized).not.toContain("OPENAI_API_KEY");
+    expect(serialized).not.toContain("\\r");
+    expect(serialized).not.toContain("\\n");
+    expect(serialized).not.toContain("\\u0000");
+  });
+
+  test("bootstrap readiness resets for retry and releases only after explicit completion", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    await expect(pi.emit("tool_call", { toolName: "write", input: {} })).resolves.toMatchObject({ block: true });
+
+    installer.markReady();
+    await expect(pi.emit("tool_call", { toolName: "write", input: {} })).resolves.toBeUndefined();
+
+    installer.beginBootstrap();
+    await expect(pi.emit("tool_call", { toolName: "write", input: {} })).resolves.toMatchObject({ block: true });
+    installer.deactivate();
+    await expect(pi.emit("tool_call", { toolName: "write", input: {} })).resolves.toBeUndefined();
+  });
+
+  test("deactivation makes every partially installed final stage dormant without stale cwd or bridge activity", async () => {
+    const partialStages = ["guard", "results", "bash", "write", "edit", "read"] as const;
+    for (const stage of partialStages) {
+      const pi = new FakePi();
+      const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+      const executions: Array<{ tool: string; cwd: string }> = [];
+      const create = (name: string) => (cwd: string) => ({
+        name,
+        label: name,
+        description: name,
+        parameters: {},
+        execute: async () => {
+          executions.push({ tool: name, cwd });
+          return { content: [], details: undefined, isError: false };
+        },
+      });
+      const base = { bash: create("bash"), write: create("write"), edit: create("edit"), read: create("read") };
+      const failureAfter = { guard: "bash", results: "bash", bash: "write", write: "edit", edit: "read", read: undefined } as const;
+      const factoriesWithStop = Object.fromEntries(Object.entries(base).map(([name, factory]) => [name, (cwd: string) => {
+        if (name === failureAfter[stage]) throw new Error(`${name} partial stop`);
+        return factory(cwd);
+      }])) as typeof base;
+      const installer = new EnforcementInstaller();
+      installer.ensureBootstrap(pi, descriptor);
+      installer.beginBootstrap();
+      installer.ensureGuard(pi, descriptor, "C:/package/extensions/codearbiter.js");
+      if (stage !== "guard") installer.ensureResults(pi, bridge, descriptor);
+      if (stage !== "guard" && stage !== "results") {
+        const install = () => installer.ensureBuiltins(pi, bridge, {
+          cwd: "C:/enabled",
+          descriptor,
+          factories: factoriesWithStop,
+          wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+        });
+        if (stage === "read") install();
+        else expect(install).toThrow("partial stop");
+      }
+
+      installer.deactivate();
+      bridge.requests.length = 0;
+      await expect(pi.emit("tool_call", { toolName: "mystery", input: {} })).resolves.toBeUndefined();
+      await expect(pi.emit("tool_result", {
+        toolName: "write",
+        input: { path: "x" },
+        content: [],
+        isError: false,
+      })).resolves.toBeUndefined();
+      for (const definition of pi.definitions.values()) {
+        await definition.execute("dormant", {}, undefined, undefined, { cwd: "C:/dormant" });
+      }
+      expect(bridge.requests, stage).toEqual([]);
+      expect(executions, stage).toEqual([...pi.definitions.keys()].map((tool) => ({ tool, cwd: "C:/dormant" })));
+    }
+  });
+
+  test("reactivation cannot reuse an earlier cwd while bootstrap is incomplete or after readiness", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const executions: Array<{ tool: string; cwd: string }> = [];
+    const create = (name: string) => (cwd: string) => ({
+      name,
+      label: name,
+      description: name,
+      parameters: {},
+      execute: async () => {
+        executions.push({ tool: name, cwd });
+        return { content: [], details: undefined, isError: false };
+      },
+    });
+    const cwdFactories = { bash: create("bash"), write: create("write"), edit: create("edit"), read: create("read") };
+    const installer = new EnforcementInstaller();
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    installer.ensureGuard(pi, descriptor, "C:/package/extensions/codearbiter.js");
+    installer.ensureResults(pi, bridge, descriptor);
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/first-enabled",
+      descriptor,
+      factories: cwdFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    installer.deactivate();
+    installer.beginBootstrap();
+
+    await pi.definitions.get("read")!.execute("bootstrap-read", {}, undefined, undefined, { cwd: "C:/second-enabled" });
+    expect(bridge.requests).toEqual([]);
+    expect(executions).toEqual([{ tool: "read", cwd: "C:/second-enabled" }]);
+    await expect(
+      pi.definitions.get("write")!.execute("bootstrap-write", {}, undefined, undefined, { cwd: "C:/second-enabled" }),
+    ).rejects.toThrow("/ca-doctor");
+    expect(executions).toEqual([{ tool: "read", cwd: "C:/second-enabled" }]);
+
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/second-enabled",
+      descriptor,
+      factories: cwdFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    executions.length = 0;
+    await pi.definitions.get("bash")!.execute("ready-bash", {}, undefined, undefined, { cwd: "C:/second-enabled" });
+    expect(bridge.requests.at(-1)).toMatchObject({ cwd: "C:/second-enabled", tool: "bash" });
+    expect(executions).toEqual([{ tool: "bash", cwd: "C:/second-enabled" }]);
+  });
+
+  test("new-start deactivation immediately blocks retained mutators and delegates retained reads with current untrusted settings", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const executions: Array<{ mode: string; cwd: string; tool: string }> = [];
+    const makeFactories = (mode: string) => {
+      const create = (tool: string) => (cwd: string) => ({
+        name: tool,
+        execute: async () => {
+          executions.push({ mode, cwd, tool });
+          return { content: [], isError: false };
+        },
+      });
+      return { bash: create("bash"), write: create("write"), edit: create("edit"), read: create("read") };
+    };
+    let nativeMode = "untrusted-first";
+    const nativeFactories = {
+      bash: (cwd: string) => makeFactories(nativeMode).bash(cwd),
+      write: (cwd: string) => makeFactories(nativeMode).write(cwd),
+      edit: (cwd: string) => makeFactories(nativeMode).edit(cwd),
+      read: (cwd: string) => makeFactories(nativeMode).read(cwd),
+    };
+    const installer = new EnforcementInstaller();
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/same",
+      descriptor,
+      factories: makeFactories("trusted-first"),
+      nativeFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    const retainedRead = pi.definitions.get("read")!;
+    const retainedWrite = pi.definitions.get("write")!;
+
+    installer.deactivate();
+    installer.beginActivation();
+    nativeMode = "untrusted-activation-await";
+    await retainedRead.execute("activation-await", {}, undefined, undefined, { cwd: "C:/same" });
+    expect(executions.at(-1)).toEqual({ mode: "untrusted-activation-await", cwd: "C:/same", tool: "read" });
+    await expect(retainedWrite.execute("activation-await", {}, undefined, undefined, { cwd: "C:/same" })).rejects.toThrow("/ca-doctor");
+    expect(bridge.requests).toHaveLength(0);
+
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/same",
+      descriptor,
+      factories: makeFactories("trusted-second"),
+      nativeFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    await pi.definitions.get("read")!.execute("current", {}, undefined, undefined, { cwd: "C:/same" });
+    expect(executions.at(-1)).toEqual({ mode: "trusted-second", cwd: "C:/same", tool: "read" });
+
+    nativeMode = "untrusted-stale-handle";
+    const requestCount = bridge.requests.length;
+    await retainedRead.execute("stale-read", {}, undefined, undefined, { cwd: "C:/other" });
+    expect(executions.at(-1)).toEqual({ mode: "untrusted-stale-handle", cwd: "C:/other", tool: "read" });
+    expect(bridge.requests).toHaveLength(requestCount);
+    await expect(retainedWrite.execute("stale-write", {}, undefined, undefined, { cwd: "C:/other" })).rejects.toThrow("/ca-doctor");
+  });
+
+  test("blocks an old mutator approval after deactivate-reactivate and keeps the new lifecycle operational", async () => {
+    const pi = new FakePi();
+    const bridge = new DelayedBridge();
+    const executions: Array<{ tool: string; cwd: string }> = [];
+    const create = (name: string) => (cwd: string) => ({
+      name,
+      execute: async () => {
+        executions.push({ tool: name, cwd });
+        return { content: [{ type: "text", text: `${name} native` }], isError: false };
+      },
+    });
+    const cwdFactories = { bash: create("bash"), write: create("write"), edit: create("edit"), read: create("read") };
+    const installer = new EnforcementInstaller();
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/old-enabled",
+      descriptor,
+      factories: cwdFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    const oldWrite = pi.definitions.get("write")!;
+    const pendingOldWrite = oldWrite.execute(
+      "old-write",
+      { path: "old.txt", content: "old" },
+      undefined,
+      undefined,
+      { cwd: "C:/old-enabled" },
+    );
+    await bridge.entered;
+
+    installer.deactivate();
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/new-enabled",
+      descriptor,
+      factories: cwdFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    bridge.resume();
+
+    await expect(pendingOldWrite).rejects.toThrow(/lifecycle|\/ca-doctor/u);
+    expect(executions).toEqual([]);
+    await pi.definitions.get("write")!.execute(
+      "new-write",
+      { path: "new.txt", content: "new" },
+      undefined,
+      undefined,
+      { cwd: "C:/new-enabled" },
+    );
+    expect(bridge.requests.map((request) => request.cwd)).toEqual(["C:/old-enabled", "C:/new-enabled"]);
+    expect(executions).toEqual([{ tool: "write", cwd: "C:/new-enabled" }]);
+  });
+
+  test("delegates a stale read natively from the execution context without bridge decoration after deactivate", async () => {
+    const pi = new FakePi();
+    const bridge = new DelayedBridge({
+      version: 1,
+      outcome: "notice",
+      context: "STALE GOVERNANCE NOTICE",
+    });
+    const executions: Array<{ tool: string; cwd: string }> = [];
+    const create = (name: string) => (cwd: string) => ({
+      name,
+      execute: async () => {
+        executions.push({ tool: name, cwd });
+        return { content: [{ type: "text", text: `${name} native` }], isError: false };
+      },
+    });
+    const cwdFactories = { bash: create("bash"), write: create("write"), edit: create("edit"), read: create("read") };
+    const installer = new EnforcementInstaller();
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/old-enabled",
+      descriptor,
+      factories: cwdFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    const pendingRead = pi.definitions.get("read")!.execute(
+      "old-read",
+      { path: "README.md" },
+      undefined,
+      undefined,
+      { cwd: "C:/current-dormant" },
+    );
+    await bridge.entered;
+
+    installer.deactivate();
+    bridge.resume();
+
+    const result = await pendingRead;
+    expect(executions).toEqual([{ tool: "read", cwd: "C:/current-dormant" }]);
+    expect(JSON.stringify(result)).not.toContain("STALE GOVERNANCE NOTICE");
+  });
+
+  test("suppresses stale bridge decoration when deactivation happens during native execution", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({
+      version: 1,
+      outcome: "notice",
+      context: "STALE POST-NATIVE NOTICE",
+    });
+    let nativeEntered!: () => void;
+    const enteredNative = new Promise<void>((resolveEntered) => { nativeEntered = resolveEntered; });
+    let resumeNative!: () => void;
+    const nativeContinued = new Promise<void>((resolveContinued) => { resumeNative = resolveContinued; });
+    const baseFactories = factories([]);
+    const installer = new EnforcementInstaller();
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/enabled",
+      descriptor,
+      factories: {
+        ...baseFactories,
+        read: () => ({
+          name: "read",
+          execute: async () => {
+            nativeEntered();
+            await nativeContinued;
+            return { content: [{ type: "text", text: "native read" }], isError: false };
+          },
+        }),
+      },
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    const pendingRead = pi.definitions.get("read")!.execute("read", { path: "README.md" });
+    await enteredNative;
+
+    installer.deactivate();
+    resumeNative();
+
+    const result = await pendingRead;
+    expect(result).toMatchObject({ content: [{ type: "text", text: "native read" }] });
+    expect(JSON.stringify(result)).not.toContain("STALE POST-NATIVE NOTICE");
+  });
+
+  test("suppresses a stale post-result notice across deactivate-reactivate and handles the new lifecycle", async () => {
+    const pi = new FakePi();
+    const bridge = new DelayedBridge({
+      version: 1,
+      outcome: "warn",
+      message: "post bridge warning",
+    });
+    const warnings: string[] = [];
+    const context: ExtensionContextPort = {
+      cwd: "C:/old-enabled",
+      signal: undefined,
+      ui: { setStatus: () => undefined, notify: (message) => warnings.push(message) },
+    };
+    const installer = new EnforcementInstaller();
+    installer.beginBootstrap();
+    installer.ensureResults(pi, bridge, descriptor);
+    installer.markReady();
+    const resultHandler = pi.handlers.get("tool_result")![0]!;
+    const event = {
+      toolName: "write",
+      input: { path: "old.txt" },
+      content: [{ type: "text", text: "native write detail" }],
+      isError: false,
+    };
+    const pendingOldResult = resultHandler(event, context);
+    await bridge.entered;
+
+    installer.deactivate();
+    installer.beginBootstrap();
+    installer.markReady();
+    bridge.resume();
+
+    await expect(pendingOldResult).resolves.toBeUndefined();
+    expect(warnings).toEqual([]);
+    const newResult = await resultHandler({ ...event, input: { path: "new.txt" } }, { ...context, cwd: "C:/new-enabled" });
+    expect(newResult).toMatchObject({ content: [
+      { type: "text", text: "native write detail" },
+      { type: "text", text: expect.stringMatching(/codearbiter:pi-tool-result:[a-f0-9]{64}/u) },
+    ] });
+    expect(warnings).toEqual(["post bridge warning"]);
+  });
+
+  test("turns an old mutator bridge rejection into a fixed lifecycle block after deactivate-reactivate", async () => {
+    const rawBridgeError = new Error("raw old-lifecycle bridge detail");
+    const bridge = new RejectingDelayedBridge(rawBridgeError);
+    const pi = new FakePi();
+    const executions: Array<{ tool: string; cwd: string }> = [];
+    const create = (name: string) => (cwd: string) => ({
+      name,
+      execute: async () => {
+        executions.push({ tool: name, cwd });
+        return { content: [{ type: "text", text: `${name} native` }], isError: false };
+      },
+    });
+    const cwdFactories = { bash: create("bash"), write: create("write"), edit: create("edit"), read: create("read") };
+    const installer = new EnforcementInstaller();
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/old-enabled",
+      descriptor,
+      factories: cwdFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    const pendingOldWrite = pi.definitions.get("write")!.execute(
+      "old-write",
+      { path: "old.txt", content: "old" },
+      undefined,
+      undefined,
+      { cwd: "C:/old-enabled" },
+    );
+    await bridge.entered;
+
+    installer.deactivate();
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/new-enabled",
+      descriptor,
+      factories: cwdFactories,
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    bridge.reject();
+
+    let oldFailure: unknown;
+    try { await pendingOldWrite; } catch (error) { oldFailure = error; }
+    expect(oldFailure).toBeInstanceOf(Error);
+    expect((oldFailure as Error).message).toContain("lifecycle changed");
+    expect((oldFailure as Error).message).toContain("/ca-doctor");
+    expect((oldFailure as Error).message).not.toContain("raw old-lifecycle bridge detail");
+    expect(executions).toEqual([]);
+
+    await pi.definitions.get("write")!.execute(
+      "new-write",
+      { path: "new.txt", content: "new" },
+      undefined,
+      undefined,
+      { cwd: "C:/new-enabled" },
+    );
+    expect(executions).toEqual([{ tool: "write", cwd: "C:/new-enabled" }]);
+  });
+
+  test("delegates a stale rejected read once from current cwd after deactivate or reactivation", async () => {
+    for (const transition of ["deactivate", "reactivate"] as const) {
+      const rawCancellation = new DOMException(`raw stale ${transition} cancellation`, "AbortError");
+      const bridge = new RejectingDelayedBridge(rawCancellation);
+      const pi = new FakePi();
+      const executions: Array<{ tool: string; cwd: string }> = [];
+      const delegatedSignals: Array<AbortSignal | undefined> = [];
+      const create = (name: string) => (cwd: string) => ({
+        name,
+        execute: async (_id: string, _params: Record<string, unknown>, signal?: AbortSignal) => {
+          executions.push({ tool: name, cwd });
+          delegatedSignals.push(signal);
+          return { content: [{ type: "text", text: `${name} native` }], isError: false };
+        },
+      });
+      const cwdFactories = { bash: create("bash"), write: create("write"), edit: create("edit"), read: create("read") };
+      const installer = new EnforcementInstaller();
+      installer.beginBootstrap();
+      installer.ensureBuiltins(pi, bridge, {
+        cwd: "C:/old-enabled",
+        descriptor,
+        factories: cwdFactories,
+        wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      });
+      installer.markReady();
+      const originalSignal = new AbortController().signal;
+      const pendingOldRead = pi.definitions.get("read")!.execute(
+        "old-read",
+        { path: "README.md" },
+        originalSignal,
+        undefined,
+        { cwd: `C:/current-${transition}` },
+      );
+      await bridge.entered;
+
+      installer.deactivate();
+      if (transition === "reactivate") {
+        installer.beginBootstrap();
+        installer.ensureBuiltins(pi, bridge, {
+          cwd: "C:/new-enabled",
+          descriptor,
+          factories: cwdFactories,
+          wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+        });
+        installer.markReady();
+      }
+      bridge.reject();
+
+      const result = await pendingOldRead;
+      expect(executions).toEqual([{ tool: "read", cwd: `C:/current-${transition}` }]);
+      expect(delegatedSignals).toEqual([originalSignal]);
+      expect(JSON.stringify(result)).not.toContain(`raw stale ${transition} cancellation`);
+      if (transition === "reactivate") {
+        await pi.definitions.get("read")!.execute(
+          "new-read",
+          { path: "README.md" },
+          undefined,
+          undefined,
+          { cwd: "C:/new-enabled" },
+        );
+        expect(executions.at(-1)).toEqual({ tool: "read", cwd: "C:/new-enabled" });
+      }
+    }
+  });
+
+  test("suppresses stale rejected result effects after deactivate or reactivation", async () => {
+    for (const transition of ["deactivate", "reactivate"] as const) {
+      for (const toolName of ["write", "edit"] as const) {
+      const bridge = new RejectingDelayedBridge(
+        new Error(`raw stale ${transition} ${toolName} result detail`),
+        { version: 1, outcome: "warn", message: "new lifecycle warning" },
+      );
+      const pi = new FakePi();
+      const warnings: string[] = [];
+      const context: ExtensionContextPort = {
+        cwd: "C:/old-enabled",
+        signal: undefined,
+        ui: { setStatus: () => undefined, notify: (message) => warnings.push(message) },
+      };
+      const installer = new EnforcementInstaller();
+      installer.beginBootstrap();
+      installer.ensureResults(pi, bridge, descriptor);
+      installer.markReady();
+      const resultHandler = pi.handlers.get("tool_result")![0]!;
+      const event = {
+        toolName,
+        input: { path: "old.txt" },
+        content: [{ type: "text", text: "native write detail" }],
+        isError: false,
+      };
+      const pendingOldResult = resultHandler(event, context);
+      await bridge.entered;
+
+      installer.deactivate();
+      if (transition === "reactivate") {
+        installer.beginBootstrap();
+        installer.markReady();
+      }
+      bridge.reject();
+
+      await expect(pendingOldResult).resolves.toBeUndefined();
+      expect(warnings).toEqual([]);
+      if (transition === "reactivate") {
+        const newResult = await resultHandler(
+          { ...event, input: { path: "new.txt" } },
+          { ...context, cwd: "C:/new-enabled" },
+        );
+        expect(newResult).toMatchObject({ content: [
+          { type: "text", text: "native write detail" },
+          { type: "text", text: expect.stringMatching(/codearbiter:pi-tool-result:[a-f0-9]{64}/u) },
+        ] });
+        expect(warnings).toEqual(["new lifecycle warning"]);
+      }
+      }
+    }
+  });
+
+  test("propagates same-generation wrapper and result-handler bridge rejections unchanged", async () => {
+    const wrapperFailure = new Error("current wrapper bridge failure");
+    const wrapperBridge = new RejectingDelayedBridge(wrapperFailure);
+    const wrapperPi = new FakePi();
+    const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    const wrapperInstaller = new EnforcementInstaller();
+    wrapperInstaller.beginBootstrap();
+    wrapperInstaller.ensureBuiltins(wrapperPi, wrapperBridge, {
+      cwd: "C:/enabled",
+      descriptor,
+      factories: factories(executions),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    wrapperInstaller.markReady();
+    const pendingWrite = wrapperPi.definitions.get("write")!.execute("write", { path: "x", content: "x" });
+    await wrapperBridge.entered;
+    wrapperBridge.reject();
+    await expect(pendingWrite).rejects.toBe(wrapperFailure);
+    expect(executions).toEqual([]);
+
+    const resultFailure = new Error("current result bridge failure");
+    const resultBridge = new RejectingDelayedBridge(resultFailure);
+    const resultPi = new FakePi();
+    const warnings: string[] = [];
+    const resultInstaller = new EnforcementInstaller();
+    resultInstaller.beginBootstrap();
+    resultInstaller.ensureResults(resultPi, resultBridge, descriptor);
+    resultInstaller.markReady();
+    const resultHandler = resultPi.handlers.get("tool_result")![0]!;
+    const pendingResult = resultHandler({
+      toolName: "edit",
+      input: { path: "x" },
+      content: [{ type: "text", text: "native edit detail" }],
+      isError: false,
+    }, {
+      cwd: "C:/enabled",
+      signal: undefined,
+      ui: { setStatus: () => undefined, notify: (message) => warnings.push(message) },
+    });
+    await resultBridge.entered;
+    resultBridge.reject();
+    await expect(pendingResult).rejects.toBe(resultFailure);
+    expect(warnings).toEqual([]);
+  });
+
+  for (const [tool, input] of [
+    ["bash", { command: "git status", metadata: { value: "judged" } }],
+    ["write", { path: "x", content: "judged", metadata: { value: "judged" } }],
+    ["edit", { path: "x", edits: [{ oldText: "a", newText: "judged" }] }],
+  ] as const) {
+    test(`${tool} executes the same deep snapshot judged before delayed nested mutation`, async () => {
+      const pi = new FakePi();
+      const bridge = new DelayedBridge();
+      const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+      wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js" });
+      const mutable = structuredClone(input) as Record<string, unknown>;
+      const pending = pi.definitions.get(tool)!.execute("delayed", mutable);
+      await bridge.entered;
+      if (tool === "edit") (mutable.edits as Array<Record<string, unknown>>)[0]!.newText = "mutated";
+      else (mutable.metadata as Record<string, unknown>).value = "mutated";
+      bridge.resume();
+      await pending;
+      expect(executions[0]!.params).toEqual(bridge.requests[0]!.input);
+      expect(JSON.stringify(executions[0]!.params)).not.toContain("mutated");
+    });
+  }
+
+  test("cyclic mutating parameters fail closed before bridge or executor", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js" });
+    const cyclic: Record<string, unknown> = { command: "true" };
+    cyclic.secret = "OPENAI_API_KEY=synthetic-secret";
+    cyclic.self = cyclic;
+    const execution = pi.definitions.get("bash")!.execute("cycle", cyclic);
+    await expect(execution).rejects.toThrow("/ca-doctor");
+    await expect(execution).rejects.not.toThrow("synthetic-secret");
+    expect(bridge.requests).toEqual([]);
+    expect(executions).toEqual([]);
+  });
+
+  test("approved snapshots preserve ordinary builtin object and array prototypes", async () => {
+    const pi = new FakePi();
+    let judged: BridgeRequest | undefined;
+    const bridge: BridgePort = {
+      call: async (request) => { judged = request; return { version: 1, outcome: "allow" }; },
+    };
+    let executed: Record<string, unknown> | undefined;
+    const base = factories([]);
+    const snapshotFactories = {
+      ...base,
+      bash: (_cwd: string) => ({
+        name: "bash", label: "bash", description: "bash", parameters: {},
+        execute: async (_id: string, params: Record<string, unknown>) => {
+          executed = params;
+          return { content: [], details: undefined, isError: false };
+        },
+      }),
+    };
+    wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: snapshotFactories, wrapperSourcePath: "C:/package/extensions/codearbiter.js" });
+    await pi.definitions.get("bash")!.execute("plain", { command: "true", nested: { values: [1, { ok: true }] } });
+    const approved = judged!.input as Record<string, unknown>;
+    expect(executed).toBe(approved);
+    expect(Object.getPrototypeOf(approved)).toBe(Object.prototype);
+    expect(Object.getPrototypeOf(approved.nested as object)).toBe(Object.prototype);
+    expect(Array.isArray((approved.nested as { values: unknown }).values)).toBe(true);
+    expect(Object.getPrototypeOf(((approved.nested as { values: unknown[] }).values)[1] as object)).toBe(Object.prototype);
+  });
+
+  test("bridge blocks become sanitized failed Pi tool calls without executing", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "block", ruleId: "H-19", message: "OPENAI_API_KEY=synthetic-secret" });
+    const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js" });
+    const execution = pi.definitions.get("write")!.execute("blocked", { path: "x", content: "x" });
+    await expect(execution).rejects.toThrow();
+    await expect(execution).rejects.not.toThrow("synthetic-secret");
+    expect(executions).toEqual([]);
+  });
+
+  test("enforcement installation is retry-safe across guard and every builtin factory stage", () => {
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    for (const failure of ["guard", "bash", "write", "edit", "read"] as const) {
+      const pi = new FakePi();
+      const originalOn = pi.on.bind(pi);
+      let guardFailed = false;
+      if (failure === "guard") {
+        pi.on = ((event, handler) => {
+          if (event === "tool_call" && !guardFailed) { guardFailed = true; throw new Error("guard failure"); }
+          originalOn(event, handler);
+        }) as typeof pi.on;
+      }
+      const counts = new Map<string, number>();
+      let failed = false;
+      const base = factories([]);
+      const staged = Object.fromEntries(Object.entries(base).map(([name, factory]) => [name, (cwd: string) => {
+        counts.set(name, (counts.get(name) ?? 0) + 1);
+        if (name === failure && !failed) { failed = true; throw new Error(`${name} failure`); }
+        return factory(cwd);
+      }])) as ReturnType<typeof factories>;
+      const installer = new EnforcementInstaller();
+      const options = { cwd: "C:/repo", descriptor, factories: staged, wrapperSourcePath: "C:/package/extensions/codearbiter.js" };
+      expect(() => { installer.ensureGuard(pi, descriptor, options.wrapperSourcePath); installer.ensureResults(pi, bridge, descriptor); installer.ensureBuiltins(pi, bridge, options); }).toThrow();
+      installer.ensureGuard(pi, descriptor, options.wrapperSourcePath);
+      installer.ensureResults(pi, bridge, descriptor);
+      installer.ensureBuiltins(pi, bridge, options);
+      expect(pi.handlers.get("tool_call")).toHaveLength(1);
+      expect(pi.handlers.get("tool_result")).toHaveLength(1);
+      expect(pi.definitions.size).toBe(4);
+      for (const name of ["bash", "write", "edit", "read"]) {
+        expect(counts.get(name)).toBe(name === failure ? 2 : 1);
+      }
+    }
+  });
+
+  test("enforcement installation retries each failed builtin registration without duplicates", () => {
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    for (const failure of ["bash", "write", "edit", "read"] as const) {
+      const pi = new FakePi();
+      const originalRegister = pi.registerTool.bind(pi);
+      let failed = false;
+      pi.registerTool = ((tool) => {
+        if (tool.name === failure && !failed) { failed = true; throw new Error(`${failure} registration failure`); }
+        originalRegister(tool);
+      }) as typeof pi.registerTool;
+      const installer = new EnforcementInstaller();
+      const options = { cwd: "C:/repo", descriptor, factories: factories([]), wrapperSourcePath: "C:/package/extensions/codearbiter.js" };
+      installer.ensureGuard(pi, descriptor, options.wrapperSourcePath);
+      installer.ensureResults(pi, bridge, descriptor);
+      expect(() => installer.ensureBuiltins(pi, bridge, options)).toThrow();
+      installer.ensureBuiltins(pi, bridge, options);
+      expect(pi.handlers.get("tool_call")).toHaveLength(1);
+      expect(pi.handlers.get("tool_result")).toHaveLength(1);
+      expect([...pi.definitions.keys()]).toEqual(["bash", "write", "edit", "read"]);
+    }
+  });
+
+  test("judges final args inside the execution override", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "block", ruleId: "H-19", message: "blocked" });
+    const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    wrapBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories(executions),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    const finalInput = { command: "git commit --no-verify" };
+    await expect(pi.definitions.get("bash")!.execute("call-1", finalInput)).rejects.toThrow("blocked");
+    expect(bridge.requests.at(-1)?.input).toEqual(finalInput);
+    expect(executions).toEqual([]);
+  });
+
+  test("read bridge warnings delegate once and append one visible warning", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "warn", ruleId: "PI-BRIDGE", message: "run /ca-doctor" });
+    const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    wrapBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories(executions),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    const result = await pi.definitions.get("read")!.execute("call-2", { path: "README.md" });
+    expect(executions).toEqual([{ tool: "read", params: { path: "README.md" } }]);
+    expect(JSON.stringify(result).match(/run \/ca-doctor/gu)).toHaveLength(1);
+  });
+
+  test("appends governed pre-read context to the native result without changing native execution", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({
+      version: 1,
+      outcome: "notice",
+      context: "ADR-0015 (Model-visible read contract) governs this file",
+    });
+    const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    const nativeFactories = factories(executions);
+    wrapBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: {
+        ...nativeFactories,
+        read: () => ({
+          name: "read",
+          execute: async (_id: string, params: Record<string, unknown>) => {
+            executions.push({ tool: "read", params: structuredClone(params) });
+            return {
+              content: [{ type: "text", text: "native read content" }],
+              details: { path: "README.md", truncated: false },
+              isError: false,
+            };
+          },
+        }),
+      },
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+
+    const result = await pi.definitions.get("read")!.execute(
+      "governed-read",
+      { path: "README.md" },
+      undefined,
+      undefined,
+      { sessionManager: { getSessionId: () => "pi-session-123" } },
+    );
+
+    expect(bridge.requests).toEqual([expect.objectContaining({
+      event: "tool_call",
+      sessionId: "pi-session-123",
+      tool: "read",
+      input: { path: "README.md" },
+    })]);
+    expect(executions).toEqual([{ tool: "read", params: { path: "README.md" } }]);
+    expect(result).toMatchObject({
+      details: { path: "README.md", truncated: false },
+      isError: false,
+      content: [
+        { type: "text", text: "native read content" },
+        {
+          type: "text",
+          text: expect.stringContaining("ADR-0015 (Model-visible read contract) governs this file"),
+          codearbiter: { kind: "codearbiter-notice", version: 1 },
+        },
+      ],
+    });
+    expect(JSON.stringify(result).match(/ADR-0015/gu)).toHaveLength(1);
+  });
+
+  test("uses a stable private fallback for malformed Pi session identities and rotates it with the lifecycle", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const installer = new EnforcementInstaller();
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories([]),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+
+    const read = pi.definitions.get("read")!;
+    await read.execute("missing-id", { path: "README.md" });
+    await read.execute("blank-id", { path: "README.md" }, undefined, undefined, {
+      sessionManager: { getSessionId: () => "   " },
+    });
+    await read.execute("oversized-id", { path: "README.md" }, undefined, undefined, {
+      sessionManager: { getSessionId: () => "x".repeat(1_025) },
+    });
+    const firstLifecycle = bridge.requests.map((request) => request.sessionId);
+    expect(firstLifecycle[0]).toEqual(expect.any(String));
+    expect(firstLifecycle[0]).not.toBe("");
+    expect(firstLifecycle[0]!.length).toBeLessThanOrEqual(1_024);
+    expect(firstLifecycle).toEqual([firstLifecycle[0], firstLifecycle[0], firstLifecycle[0]]);
+
+    installer.deactivate();
+    let dormantGetterCalls = 0;
+    await read.execute("dormant-id", { path: "README.md" }, undefined, undefined, {
+      sessionManager: { getSessionId: () => { dormantGetterCalls += 1; return "dormant-session"; } },
+    });
+    expect(dormantGetterCalls).toBe(0);
+    expect(bridge.requests).toHaveLength(3);
+
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories([]),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    installer.markReady();
+    const refreshedRead = pi.definitions.get("read")!;
+    await refreshedRead.execute("throwing-id", { path: "README.md" }, undefined, undefined, {
+      sessionManager: { getSessionId: () => { throw new Error("unavailable"); } },
+    });
+    const secondLifecycle = bridge.requests.at(-1)!.sessionId;
+    expect(secondLifecycle).toEqual(expect.any(String));
+    expect(secondLifecycle).not.toBe(firstLifecycle[0]);
+
+    await refreshedRead.execute("native-id", { path: "README.md" }, undefined, undefined, {
+      sessionManager: { getSessionId: () => "pi-native-session" },
+    });
+    expect(bridge.requests.at(-1)!.sessionId).toBe("pi-native-session");
+  });
+
+  test("mutating bridge warnings block before the original executor runs", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "warn", ruleId: "PI-BRIDGE", message: "degraded" });
+    const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    wrapBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories(executions),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+    });
+    const result = pi.definitions.get("write")!.execute("call-3", { path: "x", content: "x" });
+    await expect(result).rejects.toThrow("/ca-doctor");
+    expect(executions).toEqual([]);
+  });
+
+  test("blocks an unknown active tool until the descriptor classifies it", async () => {
+    const pi = new FakePi();
+    pi.sources.set("mystery", "C:/foreign/extension.js");
+    guardUnknownTools(pi, descriptor, "C:/package/extensions/codearbiter.js");
+    const result = await pi.emit("tool_call", { toolName: "mystery", input: {} });
+    expect(result).toMatchObject({ block: true });
+    expect(JSON.stringify(result)).toContain("/ca-doctor");
+  });
+
+  test("ready-state unknown refusal serialization omits an opaque secret-shaped control-bearing tool name", async () => {
+    const pi = new FakePi();
+    const opaqueName = "OPENAI_API_KEY=synthetic-secret\r\n\u0000ready-attacker-control";
+    pi.sources.set(opaqueName, "C:/foreign/extension.js");
+    guardUnknownTools(pi, descriptor, "C:/package/extensions/codearbiter.js");
+
+    const refusal = await pi.emit("tool_call", { toolName: opaqueName, input: {} });
+    const serialized = JSON.stringify(refusal);
+
+    expect(refusal).toMatchObject({ block: true, reason: expect.stringContaining("/ca-doctor") });
+    expect(serialized).not.toContain("synthetic-secret");
+    expect(serialized).not.toContain("ready-attacker-control");
+    expect(serialized).not.toContain("OPENAI_API_KEY");
+    expect(serialized).not.toContain("\\r");
+    expect(serialized).not.toContain("\\n");
+    expect(serialized).not.toContain("\\u0000");
+  });
+
+  test("blocks an earlier-loaded competing definition that wins Pi's first-registration order", async () => {
+    const pi = new FakePi();
+    pi.sources.set("write", "C:/foreign/override.js");
+    guardUnknownTools(pi, descriptor, "C:/package/extensions/codearbiter.js");
+    const result = await pi.emit("tool_call", { toolName: "write", input: { path: "x", content: "x" } });
+    expect(result).toMatchObject({ block: true });
+    expect(JSON.stringify(result)).toContain("source drift");
+  });
+
+  test("allows a descriptor-declared external read without a mutation wrapper", async () => {
+    const pi = new FakePi();
+    pi.sources.set("safe_extension_read", "C:/foreign/reader.js");
+    guardUnknownTools(pi, descriptor, "C:/package/extensions/codearbiter.js");
+    await expect(pi.emit("tool_call", { toolName: "safe_extension_read", input: {} })).resolves.toBeUndefined();
+  });
+
+  test("routes post-write results through the bridge and appends a bounded warning without replacing native content", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "warn", ruleId: "PI-BRIDGE", message: "post bridge failed; run /ca-doctor" });
+    const warnings: string[] = [];
+    bridgeToolResults(pi, bridge, descriptor);
+    const context: ExtensionContextPort = {
+      cwd: "C:/repo",
+      signal: undefined,
+      ui: { setStatus: () => undefined, notify: (message) => warnings.push(message) },
+    };
+    let result: unknown;
+    for (const handler of pi.handlers.get("tool_result") ?? []) {
+      result = await handler({
+        toolName: "write",
+        input: { path: "x" },
+        content: [{ type: "text", text: "native write detail" }],
+        isError: false,
+      }, context);
+    }
+    expect(result).toMatchObject({ content: [
+      { type: "text", text: "native write detail" },
+      { type: "text", text: expect.stringMatching(/codearbiter:pi-tool-result:[a-f0-9]{64}/u) },
+    ] });
+    expect(bridge.requests.at(-1)).toMatchObject({
+      event: "tool_result",
+      tool: "write",
+      result: { content: [{ type: "text", text: "native write detail" }], isError: false },
+    });
+    expect(warnings).toEqual(["post bridge failed; run /ca-doctor"]);
+  });
+
+  test("does not fabricate a post-result READ bridge route", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "notice", context: "generated read context" });
+    bridgeToolResults(pi, bridge, descriptor);
+    const context: ExtensionContextPort = {
+      cwd: "C:/repo",
+      signal: undefined,
+      ui: { setStatus: () => undefined, notify: () => undefined },
+    };
+    let result: unknown;
+    for (const handler of pi.handlers.get("tool_result") ?? []) {
+      result = await handler({
+        toolName: "read",
+        input: { path: "README.md" },
+        content: [{ type: "text", text: "native read detail" }],
+        isError: false,
+      }, context);
+    }
+    expect(bridge.requests).toEqual([]);
+    expect(result).toBeUndefined();
+  });
+
+  test("consumes Pi tool classes directly from the generated host descriptor", async () => {
+    const hosts = JSON.parse(await readFile(fileURLToPath(new URL("../../../../core/hosts.json", import.meta.url)), "utf8")) as {
+      hosts: Array<{ name: string; tool_classes: Record<string, ToolCategory> }>;
+    };
+    const piDescriptor = hosts.hosts.find((host) => host.name === "pi")!.tool_classes;
+    const pi = new FakePi();
+    pi.sources.set("descriptor_rogue", "C:/foreign/tool.js");
+    guardUnknownTools(pi, piDescriptor, "C:/package/extensions/codearbiter.js");
+    const result = await pi.emit("tool_call", { toolName: "descriptor_rogue", input: {} });
+    expect(result).toMatchObject({ block: true });
+  });
+
+  test("allows only the parent-extension-owned Pi dispatch executable", async () => {
+    const hosts = JSON.parse(await readFile(fileURLToPath(new URL("../../../../core/hosts.json", import.meta.url)), "utf8")) as {
+      hosts: Array<{ name: string; tool_classes: Record<string, ToolCategory> }>;
+    };
+    const piDescriptor = hosts.hosts.find((host) => host.name === "pi")!.tool_classes;
+    expect(piDescriptor.codearbiter_dispatch).toBe("EXEC");
+
+    const pi = new FakePi();
+    pi.sources.set("codearbiter_dispatch", "C:/package/extensions/codearbiter.js");
+    guardUnknownTools(pi, piDescriptor, "C:/package/extensions/codearbiter.js");
+    await expect(pi.emit("tool_call", { toolName: "codearbiter_dispatch", input: {} })).resolves.toBeUndefined();
+
+    pi.sources.set("codearbiter_dispatch", "C:/foreign/replacement.js");
+    const replaced = await pi.emit("tool_call", { toolName: "codearbiter_dispatch", input: {} });
+    expect(replaced).toMatchObject({ block: true, reason: expect.stringContaining("source drift") });
+  });
+
+  test("allows only the parent-extension-owned farm preview executable", async () => {
+    const hosts = JSON.parse(await readFile(fileURLToPath(new URL("../../../../core/hosts.json", import.meta.url)), "utf8")) as {
+      hosts: Array<{ name: string; tool_classes: Record<string, ToolCategory> }>;
+    };
+    const piDescriptor = hosts.hosts.find((host) => host.name === "pi")!.tool_classes;
+    expect(piDescriptor.codearbiter_farm_preview).toBe("EXEC");
+
+    const pi = new FakePi();
+    pi.sources.set("codearbiter_farm_preview", "C:/package/extensions/codearbiter.js");
+    guardUnknownTools(pi, piDescriptor, "C:/package/extensions/codearbiter.js");
+    await expect(pi.emit("tool_call", { toolName: "codearbiter_farm_preview", input: {} })).resolves.toBeUndefined();
+
+    pi.sources.set("codearbiter_farm_preview", "C:/foreign/replacement.js");
+    const replaced = await pi.emit("tool_call", { toolName: "codearbiter_farm_preview", input: {} });
+    expect(replaced).toMatchObject({ block: true, reason: expect.stringContaining("source drift") });
+  });
+});

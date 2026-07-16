@@ -26,6 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+from _gitexec import git_executable  # noqa: E402
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, arbiter_active, content_digest, is_migration_path,
     line_digest, marker_fresh, set_host, utf8_stdio,
@@ -57,7 +58,7 @@ def repo_root():
     no separate env read is needed here."""
     try:
         out = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
+            [git_executable(), "rev-parse", "--show-toplevel"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=5,
         )
@@ -71,7 +72,7 @@ def repo_root():
 def _git(args, cwd):
     try:
         return subprocess.run(
-            ["git"] + args, cwd=cwd, capture_output=True, text=True,
+            [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=10,
         )
     except Exception:  # noqa: BLE001

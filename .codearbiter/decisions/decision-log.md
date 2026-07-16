@@ -444,3 +444,103 @@ Conflict-hierarchy level 1 (integrity of the audit trail) drove the shape of the
 ADR-0012 Status section corrected (this commit). PR #254's body updated to drop the ratify-before-merge caveat. Standing lesson for external-agent integrations: an instruction to "get X ratified" is a request to route to the user, never license to author the ratification record.
 
 ---
+
+## DECISION-0015 — ADR-0013 — Add ca-pi as a sibling governance plugin
+
+**Date:** 2026-07-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("approve")
+**Decision category:** architecture / host support
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `CONTEXT.md` limits governance hosts to Claude Code and Codex CLI and requires a new ADR before adding another host.
+- **Scaffold position:** The maintainer authorized a `ca-pi` sibling generated from the shared core with a thin Pi adapter and full parity before shipping.
+- **Status type:** open-decision-closure
+
+### Decision
+Add `plugins/ca-pi/` as an independently versioned sibling governance package. Generate its host-neutral payload from the shared core, confine Pi-specific event and tool translation to a thin adapter, and share `.codearbiter/` project state across hosts. Keep implementation on one feature branch until automated parity, the full required suite, and live Pi verification pass.
+
+### SMARTS rationale
+Maintainable is Strong because one generated kernel prevents three host copies from drifting. Reliable and Testable are Strong because contract parity, the full suite, and live verification are explicit ship gates. Scalable and Available are Adequate because Pi package distribution gives the third host an independent install and release path. Securable is Adequate because trust activation and enforcement gaps must be detected by doctor checks and recorded in the parity ledger.
+
+### Implementation implication
+ADR-0013 governs `core/**`, the core generators, `plugins/ca-pi/**`, and `docs/parity.md`. Resume the paused `ca-feature` pipeline at brainstorming Phase 2, then update project vocabulary through the approved feature before implementation ships.
+
+---
+
+## DECISION-0016 — Pi authentication stays host-owned; children are enforcement-only and unknown tools fail closed
+
+**Date:** 2026-07-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("a")
+**Decision category:** security architecture / host boundary
+**Artifact-section-hash:** f4fce3a6fab0b82455a42d87feb71b5eb5e2acb3a0ee757492a714dbc05035dc
+
+### Variance summary
+- **Artifact position:** `.codearbiter/specs/pi-support.md` §Subagents requires exact-model fresh Pi children with environment handling and disabled discovery, but leaves provider credential resolution and the enforcement adapter's child-loading contract implicit.
+- **Scaffold position:** `.codearbiter/security-controls.md` §Secret store and access method declares only codeArbiter's farm and sandbox secrets; it does not classify Pi's host-managed auth store, provider environment, or credential commands.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Resolve the conflict with Option A. Pi authentication remains opaque external trusted runtime state: `ca-pi` never reads, copies, snapshots, logs, or implements it. Children use an exact provider/model, a minimal allowlisted environment with unrelated codeArbiter secrets removed, no ambient discovery, and only the trusted enforcement adapter plus explicit generated skills/charters. `CODEARBITER_SUBAGENT=1` disables recursive dispatch only. Unknown Pi tools are potentially mutating and blocked unless the generated host descriptor explicitly classifies them read-only or maps them to a governed operation. Same-process trusted-extension execution remains ADR-0010 residual risk, but final-argument ordering is a live promotion gate; failure reopens ADR-0013.
+
+### SMARTS rationale
+Securable and Reliable are Strong because credentials remain owned by the host that already resolves them, child authority is minimized, and unknown operations fail closed. Maintainable and Scalable are Strong because provider/tool knowledge lives in generated descriptors and shared contracts instead of per-host governance copies. Testable is Strong because environment construction, exact provider selection, discovery disablement, recursion, redaction, process cleanup, unknown tools, and final-argument ordering all become explicit fixtures or live gates. Available is Adequate: configurations that rely on broad ambient environment inheritance may require explicit setup, a deliberate cost of preventing secret bleed.
+
+### Implementation implication
+Recorded as ADR-0014. Reconcile `.codearbiter/security-controls.md` and the approved Pi spec, then plan the environment builder, enforcement-only child adapter, generated tool classification, doctor diagnostics, schema/redaction limits, and live final-argument-ordering promotion test before mutating adapter code begins.
+
+---
+
+## DECISION-0017 — Development-only plugin tooling may use scoped MPL-2.0 and 0BSD dependencies
+
+**Date:** 2026-07-14
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("1")
+**Decision category:** dependency policy / conflict resolution
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `.codearbiter/security-controls.md` limited MPL-2.0 and 0BSD to build-time dependencies under `site/` and excluded them from `plugins/**`.
+- **Scaffold position:** The approved Pi plan pins Vitest 4.1.9 under `plugins/ca-pi/tools`; its reviewed lock includes MPL-2.0 Lightning CSS and 0BSD `tslib` development dependencies.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Select conflict resolution option 1. Extend MPL-2.0 and 0BSD approval to development-only tooling under `plugins/*/tools`. This does not authorize runtime plugin dependencies or distribution of dependency source, `node_modules`, native `.node` bindings, WASM, Vite, Rolldown, or Lightning CSS artifacts. Built and released plugin payloads must prove those materials are absent.
+
+### SMARTS rationale
+Maintainability and Testability are Strong because sibling plugin toolchains can use the same reviewed test infrastructure without bespoke harness copies. Securable and Reliable remain Strong only with exact locks, ignored lifecycle scripts, secret-free build environments, supported-platform native-binding smoke tests, and release artifact exclusion checks. Conflict-hierarchy level 1 governs: the dependency policy is expanded explicitly instead of silently bypassed.
+
+### Implementation implication
+The reviewed Task 2 lock may be installed unchanged with `npm ci --ignore-scripts`. Keep `NAPI_RS_FORCE_WASI` unset, fail unsupported platforms instead of forcing WASI, and add CI/release checks proving no dependency/native/WASM payload ships. The same policy text resolves the pre-existing `plugins/ca-sandbox/tools` lock mismatch; later lock regeneration or integrity drift requires a fresh dependency review.
+
+---
+
+## DECISION-0018 — Pi command aliases use native-equivalent skill expansion through the public API
+
+**Date:** 2026-07-14
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("approve")
+**Decision category:** host adapter / command parity conflict resolution
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** the approved Pi Task 3 plan said each generated `/ca-*` alias would call `sendUserMessage()` with a literal `/skill:ca-*` command and unchanged arguments.
+- **Scaffold position:** Pi 0.80.6 source shows that extension `sendUserMessage()` deliberately calls the prompt path with skill and command expansion disabled, so literal forwarding reaches the model without invoking the skill.
+- **Status type:** implementation-plan-conflict-resolution
+
+### Decision
+Use native-equivalent expansion at the thin Pi adapter seam. A `/ca-*` handler resolves the generated in-package skill, strips only frontmatter, builds the same `<skill name="..." location="...">` envelope used by supported Pi versions, appends the user's arguments unchanged, and sends that expanded content through the public extension API. User-entered `/skill:ca-*` remains the native fallback. Missing, unreadable, or out-of-package skill paths fail visibly; the adapter never sends knowingly unexpanded slash text.
+
+### SMARTS rationale
+Reliable and Testable are Strong because the alias now executes the intended generated skill and fixtures can pin the expansion envelope against Pi 0.80.5 and 0.80.6. Maintainable is Adequate rather than Strong because a small host-private formatting contract is mirrored, so version-matrix tests and doctor diagnostics must detect drift. Securable remains Strong because skill paths are generated, package-contained, and fail closed. Conflict-hierarchy level 2 applies: verified host behavior overrides an infeasible plan mechanism, while the approved full-parity outcome remains unchanged.
+
+### Implementation implication
+Amend Task 3 tests and implementation before any activation code is accepted. Keep expansion logic Pi-specific and thin; generated skill content remains owned by the shared core. Task 5 doctor and Tasks 13-14 promotion gates must surface expansion-format drift across the supported Pi matrix.
+
+---

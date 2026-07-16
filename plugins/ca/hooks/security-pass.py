@@ -19,6 +19,8 @@
 
 import os
 import subprocess
+
+from _gitexec import git_executable
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -33,7 +35,7 @@ MAX_UNTRACKED_BYTES = 1_000_000  # an untracked blob bigger than this is not rev
 
 def run_git(args, cwd):
     return subprocess.run(
-        ["git"] + args, cwd=cwd, capture_output=True, text=True,
+        [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
         encoding="utf-8", errors="replace", timeout=30,
     )
 

@@ -28,12 +28,17 @@ on:
       - "plugins/ca/**"
       - "plugins/ca-sandbox/**"
       - "plugins/ca-codex/**"
+      - "plugins/ca-pi/**"
       - "core/**"
       - "**/*.json"
       - "README.md"
       - "LICENSE"
       - ".github/workflows/ci.yml"
       - ".github/scripts/**"
+      - "tools/host_descriptors.py"
+      - "tools/build-surface.py"
+      - "tools/sync-core.py"
+      - "tools/build-host-packages.py"
 
 permissions:
   contents: read
@@ -46,6 +51,8 @@ jobs:
       ca: ${{ steps.filter.outputs.ca }}
       ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
       ca-codex: ${{ steps.filter.outputs.ca-codex }}
+      ca-pi: ${{ steps.filter.outputs.ca-pi }}
+      host-descriptors: ${{ steps.filter.outputs.host-descriptors }}
       hooks: ${{ steps.filter.outputs.hooks }}
       manifests: ${{ steps.filter.outputs.manifests }}
     steps:
@@ -77,15 +84,52 @@ jobs:
               - 'plugins/ca-codex/**'
               - 'core/**'
               - '.github/workflows/ci.yml'
+            ca-pi:
+              - 'plugins/ca-pi/**'
+              - 'core/**'
+              - 'package.json'
+              - 'tools/build-host-packages.py'
+              - '.github/scripts/test_pi_package.py'
+              - '.github/scripts/test_pi_parity.py'
+              - '.github/scripts/pi_benchmark.py'
+              - '.github/scripts/test_pi_benchmark.py'
+              - '.github/scripts/test_pi_platform_contract.py'
+              - '.github/scripts/test_pi_security.py'
+              - '.github/workflows/codeql.yml'
+              - '.github/workflows/ci.yml'
+            host-descriptors:
+              - 'core/hosts.json'
+              - 'core/surface/**'
+              - 'plugins/ca-pi/**'
+              - 'tools/host_descriptors.py'
+              - 'tools/build-surface.py'
+              - 'tools/sync-core.py'
+              - 'tools/build-host-packages.py'
+              - '.github/scripts/test_host_descriptors.py'
+              - '.github/workflows/ci.yml'
             hooks:
               - 'plugins/ca/hooks/**'
               - 'plugins/ca-codex/hooks/**'
+              - 'plugins/ca-pi/hooks/**'
               - 'core/**'
               - '.github/scripts/**'
               - '.github/workflows/ci.yml'
             manifests:
               - '**/*.json'
               - '.github/workflows/ci.yml'
+
+  host-descriptors:
+    name: Repo | [Test] - Host Descriptor Generation Contract
+    needs: changes
+    if: needs.changes.outputs.host-descriptors == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Run the complete host descriptor and generated-only suite
+        run: python .github/scripts/test_host_descriptors.py
 
   tools:
     name: CA | [Build] - Farm Dispatcher (Typecheck/Test/Artifact)
@@ -162,6 +206,106 @@ jobs:
             exit 1
           fi
           echo "sandbox.js is in sync with the TypeScript sources"
+
+  ca-pi-tools:
+    name: CA-Pi | [Build] - Adapter (${{ matrix.os }}, Pi ${{ matrix.pi-version }})
+    needs: changes
+    if: needs.changes.outputs.ca-pi == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        pi-version: ["0.80.5", "0.80.6"]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: plugins/ca-pi/tools
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.19.0
+          cache: npm
+          cache-dependency-path: plugins/ca-pi/tools/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Install external Pi host (scripts disabled)
+        run: npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts
+      - name: Install reviewed toolchain (scripts disabled)
+        run: npm ci --ignore-scripts
+      - name: Check generated root package metadata
+        working-directory: .
+        run: python tools/build-host-packages.py --check
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test package, module identity, compatibility, and native binding
+        run: npm test -- test/package.test.ts
+      - name: Test activation, commands, and status lifecycle
+        run: npm test -- test/activation.test.ts test/commands.test.ts test/status.test.ts
+      - name: Test canonical bridge and final-execution enforcement
+        run: npm test -- test/bridge.test.ts test/tool-guard.test.ts
+      - name: Test adversarial Pi security promotion contract
+        working-directory: .
+        run: python .github/scripts/test_pi_security.py
+      - name: Test three-host enforcement and descriptor parity
+        working-directory: .
+        run: python .github/scripts/test_pi_parity.py
+      - name: Rebuild externalized bundles
+        run: npm run build
+      - name: Fail if committed bundles are stale
+        working-directory: .
+        shell: bash
+        run: |
+          if ! git diff --quiet -- plugins/ca-pi/extensions plugins/ca-pi/helpers; then
+            echo "::error file=plugins/ca-pi/helpers/windows-supervisor.js::Pi bundles or the Windows supervisor are stale. Run npm --prefix plugins/ca-pi/tools run build."
+            git --no-pager diff -- plugins/ca-pi/extensions plugins/ca-pi/helpers
+            exit 1
+          fi
+      - name: Test release package contract
+        working-directory: .
+        run: python .github/scripts/test_pi_package.py
+      - name: Test real package RPC activation and aliases
+        working-directory: .
+        run: python .github/scripts/test_pi_package.py --rpc-commands
+      - name: Test cross-platform paths, encoding, cancellation, process trees, prune, and generation
+        working-directory: .
+        run: python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}
+      - name: Measure the three-host relative adapter benchmark
+        working-directory: .
+        run: python .github/scripts/pi_benchmark.py --samples 100
+
+  ca-pi-latest:
+    name: CA-Pi | [Canary] - npm Latest (Nonblocking)
+    needs: changes
+    if: needs.changes.outputs.ca-pi == 'true'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/ca-pi/tools
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.19.0
+          cache: npm
+          cache-dependency-path: plugins/ca-pi/tools/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Install reviewed toolchain and external latest Pi (scripts disabled)
+        run: |
+          npm ci --ignore-scripts
+          npm install --global @earendil-works/pi-coding-agent@latest --ignore-scripts
+      - name: Report latest version and test installed runtime admission
+        run: |
+          pi --version
+          npm test -- test/package.test.ts -t "installed Pi runtime is admitted by the production boundary"
+          npm test -- test/package.test.ts
+      - name: Run the latest Pi platform contract as a nonblocking canary
+        working-directory: .
+        run: python .github/scripts/test_pi_platform_contract.py --pi-version latest
 
   hooks:
     name: CA | [Test] - Hooks (${{ matrix.os }})
@@ -456,6 +600,20 @@ jobs:
           fi
           echo "payload changed on unpublished version $ver (no tag ca-codex-v$ver) - allowed"
 
+  version-bump-pi:
+    name: CA-Pi | [Gate] - Version Bump on Payload Change
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-pi == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Fail if a tagged Pi payload changes without synchronized release metadata
+        env:
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+        run: python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"
+
   prose:
     name: CA | [Check] - Reference Graph
     needs: changes
@@ -588,12 +746,16 @@ jobs:
     if: always()
     needs:
       - changes
+      - host-descriptors
       - tools
       - ca-sandbox-tools
+      - ca-pi-tools
+      - ca-pi-latest
       - hooks
       - version-bump
       - version-bump-sandbox
       - version-bump-codex
+      - version-bump-pi
       - prose
       - badge-consistency
       - prose-sandbox

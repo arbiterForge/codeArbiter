@@ -134,8 +134,9 @@ def main(argv=None):
     utf8_stdio()
     argv = list(sys.argv[1:] if argv is None else argv)
 
-    # Hook mode: invoked by Claude Code with no argv and a hook JSON payload on
-    # stdin. Detected by the hook_event_name field. Always exits 0.
+    # Serialized-transcript hook mode: invoked with no argv and one hook JSON
+    # payload on stdin. Semantic hosts use their native compaction event adapter
+    # instead; direct manual execution remains limited to inactive copies.
     if not argv:
         raw = ""
         try:
@@ -155,9 +156,9 @@ def main(argv=None):
                 # check must not depend on an unrelated opt-in env var.
                 if payload.get("hook_event_name") == "UserPromptSubmit":
                     staleness_check(payload)
-                # The prune ENGINE below rewrites Claude-Code-format
-                # transcript JSONL; a host without that format (Codex,
-                # parity ledger) has nothing to prune. The staleness-warn
+                # This codec below rewrites Claude-Code-format transcript
+                # JSONL; semantic hosts plan through _prunepolicy without
+                # rewriting an active session. The staleness-warn
                 # above already ran — it reads the .codearbiter audit logs,
                 # not the transcript, so it is host-neutral (ADR-0011).
                 import _hooklib

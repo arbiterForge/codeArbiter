@@ -33,6 +33,7 @@ SECURITY_PASS = os.path.join(HOOKS, "security-pass.py")
 # (the file name has a hyphen, so import via spec). Import is side-effect-free:
 # pre-bash.py only reads stdin / acts inside main(), guarded by __main__.
 import importlib.util as _ilu  # noqa: E402
+sys.path.insert(0, HOOKS)
 _spec = _ilu.spec_from_file_location("pre_bash_mod", PRE_BASH)
 pre_bash = _ilu.module_from_spec(_spec)
 _spec.loader.exec_module(pre_bash)

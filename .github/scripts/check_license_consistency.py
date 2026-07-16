@@ -6,7 +6,7 @@
 # `license`). Reads ONLY the enumerated surfaces below — never a repo-wide grep
 # — so third-party (package-lock) and historical (CHANGELOG / ADR) license
 # mentions can't false-positive. Motivated by the v2.6.0 relicense, which left
-# the ca manifest, the README callout, and the ca-sandbox manifest on stale
+# the ca manifest, the README callout, and sibling manifests on stale
 # declarations that human review kept missing.
 #
 # Design invariants (mirror the other .github/scripts checks and _*lib.py):
@@ -39,6 +39,8 @@ MANIFESTS = [
     "plugins/ca/.claude-plugin/plugin.json",
     "plugins/ca-sandbox/.claude-plugin/plugin.json",
     "plugins/ca-codex/.codex-plugin/plugin.json",
+    "plugins/ca-pi/package.json",
+    "package.json",
 ]
 LICENSE_FILE = "LICENSE"
 README_FILE = "README.md"

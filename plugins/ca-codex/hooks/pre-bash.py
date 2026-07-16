@@ -18,6 +18,8 @@ import os
 import re
 import subprocess
 import sys
+
+from _gitexec import git_executable
 import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -307,7 +309,7 @@ def current_branch(cwd):
     silently treating "unknown" the same as "detached, not on a protected tip" —
     the prior `except: return ""` collapsed those two states and let a commit
     through when branch state genuinely could not be determined."""
-    argv = ["git", "branch", "--show-current"]
+    argv = [git_executable(), "branch", "--show-current"]
     try:
         out = subprocess.run(
             argv, cwd=cwd,
@@ -347,7 +349,7 @@ def head_on_protected_tip(cwd):
     (spawn failure/timeout, or an exit code outside the two legitimate outcomes)
     so H-01 fails CLOSED on a git-read error instead of concluding "not on a
     protected tip" from a failed read."""
-    argv = ["git", "show-ref", "--head", "refs/heads/main", "refs/heads/master"]
+    argv = [git_executable(), "show-ref", "--head", "refs/heads/main", "refs/heads/master"]
     try:
         out = subprocess.run(
             argv, cwd=cwd, capture_output=True, text=True, encoding="utf-8",
@@ -383,7 +385,7 @@ def added_lines(cwd, ref, paths=None):
     page (cp1252 on stock Windows), where a non-cp1252 byte in the diff raised
     UnicodeDecodeError into the bare except below and the security gate
     silently failed OPEN on exactly the platform this layer protects."""
-    argv = ["git", "diff", ref] + (["--", *paths] if paths else [])
+    argv = [git_executable(), "diff", ref] + (["--", *paths] if paths else [])
     try:
         out = subprocess.run(
             argv, cwd=cwd,
@@ -409,7 +411,7 @@ def _names(cwd, args):
     than concluding "no migrations staged" from a failed read."""
     try:
         out = subprocess.run(
-            ["git"] + args, cwd=cwd, capture_output=True, text=True,
+            [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=10,
         )
         if out.returncode != 0:

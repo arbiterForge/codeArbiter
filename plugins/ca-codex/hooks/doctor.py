@@ -6,9 +6,8 @@
 # a stale plugin cache survived `claude plugin update` because the version
 # string was unchanged, leaving months-old hooks in place until a full
 # uninstall+reinstall. This script checks everything checkable from a single
-# process; the one thing it cannot prove from the inside — that Claude Code
-# actually fires the hooks on tool calls — is the live-fire probe step in
-# commands/doctor.md.
+# process; host-specific command surfaces add their supported execution
+# evidence separately.
 #
 # Output: one OK / WARN / FAIL line per check, then a verdict. Exit 0 when
 # nothing FAILed; exit 1 otherwise. Read-only — changes nothing.
@@ -20,11 +19,13 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _gitexec import git_executable  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 from _hooklib import frontmatter_enabled, get_host, set_host, utf8_stdio  # noqa: E402
 
 HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
                 "pre-edit.py", "post-write-edit.py", "prune-transcript.py")
+PI_BRIDGE_SCRIPTS = ("pi-bridge.py", "git-enforce.py", "_githooks.py")
 
 results = []  # (level, line)
 
@@ -100,6 +101,29 @@ def check_payload(root, host=None):
         ok(f"plugin payload at {root} (version {version})")
     except Exception as e:  # noqa: BLE001
         fail(f"plugin.json unreadable at {manifest}: {e}")
+    if getattr(host, "name", "unknown") == "pi":
+        try:
+            with open(manifest, encoding="utf-8") as f:
+                package = json.load(f)
+            pi_config = package.get("pi") if isinstance(package, dict) else None
+            extensions = pi_config.get("extensions") if isinstance(pi_config, dict) else None
+            skills = pi_config.get("skills") if isinstance(pi_config, dict) else None
+            if (package.get("name") == "ca-pi"
+                    and extensions == ["./extensions/codearbiter.js"]
+                    and skills == ["./skills"]):
+                ok("package.json declares only the ca-pi extension and generated skills")
+            else:
+                fail("package.json has an invalid ca-pi package/discovery contract; reinstall ca-pi")
+        except Exception as e:  # noqa: BLE001
+            fail(f"package.json unreadable at {manifest}: {e}")
+        required = HOOK_SCRIPTS + PI_BRIDGE_SCRIPTS
+        missing = [s for s in required
+                   if not os.path.isfile(os.path.join(root, "hooks", s))]
+        if missing:
+            fail(f"Pi shared core script(s) missing: {', '.join(missing)}")
+        else:
+            ok(f"Pi shared core present: pi-bridge.py and {len(required) - 1} support scripts")
+        return
     hooks_json = os.path.join(root, "hooks", "hooks.json")
     try:
         with open(hooks_json, encoding="utf-8") as f:
@@ -135,7 +159,7 @@ def check_payload(root, host=None):
 
 
 def check_repo():
-    r = _run_cmd(["git", "rev-parse", "--show-toplevel"])
+    r = _run_cmd([git_executable(), "rev-parse", "--show-toplevel"])
     if r.returncode != 0:
         warn("not inside a git repository — repo-level checks skipped")
         return
@@ -161,7 +185,7 @@ def check_repo():
         else:
             warn(f"no <!--INITIALIZED--> marker — startup will route to "
                  f"{get_host().cmd_ref('decompose')} or {get_host().cmd_ref('create-context')}")
-        email = _run_cmd(["git", "config", "user.email"]).stdout.strip()
+        email = _run_cmd([git_executable(), "config", "user.email"]).stdout.strip()
         if email:
             ok(f"git identity for audit attribution: {email}")
         else:
@@ -227,8 +251,12 @@ def main():
     if fails:
         print("verdict: UNHEALTHY — at least one gate cannot function as installed")
         sys.exit(1)
-    print(f"verdict: healthy (static checks) — the live-fire probe in "
-          f"{get_host().cmd_ref('doctor')} proves hooks actually fire")
+    if get_host().name == "pi":
+        print("verdict: healthy (static checks) — /ca-doctor adds a wrapper "
+              "self-test and reports the active-dispatch coverage gap")
+    else:
+        print(f"verdict: healthy (static checks) — the live-fire probe in "
+              f"{get_host().cmd_ref('doctor')} proves hooks actually fire")
 
 
 def run(host, argv=None):

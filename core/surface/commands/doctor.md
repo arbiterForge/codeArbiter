@@ -1,48 +1,59 @@
 ---
-description: Verify the install is actually enforcing — interpreter, payload, cache staleness, repo state, and a live-fire hook probe. Read-only.
+description: Verify the active host install, package, command ownership, enforcement{{IF:pi}}, wrapper self-test, and active-dispatch coverage gap{{ELSE}}, and harmless live-fire probe{{END}}. Read-only.
 argument-hint: (none)
 ---
 
 # {{CMD:doctor}} — install health
 
-Silent dormancy is the worst failure shape this plugin has: the gates look installed but never
-fire, and nothing says so. It has happened — a stale plugin cache survived `claude plugin update`
-because the version string was unchanged, leaving months-old hooks in place. This command proves
-the install is healthy, in two parts: a mechanical static check, then a live-fire probe that the
-static check cannot perform from the inside.
+Silent dormancy is the worst failure shape this plugin has: the gates look installed but never fire.
+This command proves the active host is healthy and reports every non-OK finding with an exact
+remediation.
 
 ## Flow
 
-1. **Static checks** — run
-   `python3 "{{PLUGIN_ROOT}}/hooks/doctor.py" || python "{{PLUGIN_ROOT}}/hooks/doctor.py"`
-{{IF:codex}}
-   Codex does not export the plugin-root placeholder into ordinary tool calls. Resolve the active
-   plugin root from this loaded skill's path (`skills/ca-doctor/SKILL.md` → two parents up) before
-   running the command; do not first attempt an empty environment-variable path.
+{{IF:claude}}
+1. Run `python3 "{{PLUGIN_ROOT}}/hooks/doctor.py" || python "{{PLUGIN_ROOT}}/hooks/doctor.py"`
+   and present its report verbatim.
+2. In an arbiter-enabled repo, attempt `git add --all --dry-run` via Bash. `[H-03]` means hooks are
+   firing; execution means **CRITICAL: gates dormant**.
 {{END}}
-   and present its report verbatim. It checks: interpreter resolution (including the Microsoft
-   Store python3 alias stub), plugin payload integrity (plugin.json, hooks.json, all five hook
-   scripts), stale sibling versions in the plugin cache, repo activation state (CONTEXT.md
-   frontmatter, `<!--INITIALIZED-->`), git identity for audit attribution{{IF:claude}}, and statusline wiring{{END}}.
-2. **Live-fire probe** — only in an arbiter-enabled repo (skip and say so otherwise): attempt
-   `git add --all --dry-run` via the Bash tool.
-   - **BLOCKED with `[H-03]`** → the hook layer is live. Report: hooks firing.
-   - **The command executes** (dry-run output, exit 0 — harmless by construction) → the hook layer
-     is NOT firing despite the static checks. Report **CRITICAL: gates dormant** with the
-     remediation ladder below.
-3. **Verdict** — one line: healthy / degraded (WARNs) / UNHEALTHY (any FAIL or a failed probe),
-   followed by the remediation for each non-OK finding.
+{{IF:codex}}
+1. Resolve the plugin root from this loaded skill path, then run its `hooks/doctor.py` with Python 3
+   and present the report verbatim. Do not try an empty plugin-root environment variable first.
+2. In an arbiter-enabled repo, attempt `git add --all --dry-run` via the shell tool. `[H-03]` means
+   hooks are firing; execution means **CRITICAL: gates dormant**.
+{{END}}
+{{IF:pi}}
+1. The `/ca-doctor` alias has already run the extension's structured Pi doctor report before sending
+   this generated skill. Present the `<codearbiter-doctor-report>` block below verbatim.
+2. The report inspects, without granting trust: active Git package origin/version, exact Pi CLI and
+   module package identity, stable Pi/Node/Python support, shared-core and bridge paths, command and
+   native-equivalent skill-expansion ownership, child/ambient-marker state, and final wrapper sources.
+3. Its `wrapper-self-test` row submits only `git add --all --dry-run` directly to the stored governed
+   Pi bash wrapper. The exact shared-core `[H-03]` block is healthy and cannot stage files; execution
+   or a different block is unhealthy. This self-test does not traverse Pi's active dispatcher. Do not
+   rerun or respell it.
+4. Its `active-dispatch` row remains degraded because supported Pi 0.80.5/0.80.6 public extension
+   APIs cannot submit that deterministic call through the active dispatcher. PI-AC-28 remains blocked
+   until supported-version real-host promotion/CI evidence closes the gap.
+{{END}}
 
-## Remediation ladder (gates dormant despite a healthy payload)
+## Remediation ladder
 
-1. Restart the {{IF:claude}}Claude Code{{ELSE}}Codex{{END}} session — hooks register at session start.
-2. {{IF:claude}}`claude plugin uninstall ca` then `claude plugin install ca` — `claude plugin update`
-   is NOT sufficient when the marketplace version string is unchanged; the cache keeps the old
-   payload.{{ELSE}}`codex plugin remove ca-codex@codearbiter` then
-   `codex plugin add ca-codex@codearbiter`; start a fresh thread and approve the changed hook set
-   in `/hooks`.{{END}}
-3. If dormancy was intended (no `.codearbiter/CONTEXT.md`, or frontmatter not `arbiter: enabled`),
-   that is not a defect — `{{CMD:init}}` opts the repo in.
+{{IF:claude}}
+1. Restart Claude Code so hooks register at session start.
+2. Uninstall and reinstall `ca`; an unchanged marketplace version can preserve stale cache bytes.
+{{END}}
+{{IF:codex}}
+1. Restart Codex so hooks register at session start.
+2. Remove and re-add `ca-codex@codearbiter`, then approve the changed hook set in `/hooks`.
+{{END}}
+{{IF:pi}}
+1. Restart Pi so package resources and final wrappers register in one fresh process.
+2. Reinstall `ca-pi` from the approved pinned Git tag. For project-local packages, inspect `/trust`
+   and grant trust only if you accept that source; codeArbiter never grants it.
+{{END}}
+3. If dormancy was intended, `{{CMD:init}}` opts the repository in.
 
 ## When NOT to use
 
@@ -54,7 +65,7 @@ static check cannot perform from the inside.
 
 ## Hard gate
 
-Read-only — MUST NOT modify any file, create any marker, or stage anything (the probe is
-`--dry-run` by construction and is expected to be blocked). MUST NOT weaken, bypass, or retry a
-blocked probe in a different spelling — the block IS the healthy result. MUST surface a failed
-probe as CRITICAL, never as a footnote.
+Read-only. MUST NOT create markers, stage files, grant trust, weaken a block, or {{IF:pi}}retry the
+wrapper self-test with different spelling. MUST preserve the degraded active-dispatch diagnosis until
+supported-version real-host promotion/CI evidence closes PI-AC-28.{{ELSE}}retry the live-fire
+probe with different spelling. MUST surface a failed probe as CRITICAL, never as a footnote.{{END}}

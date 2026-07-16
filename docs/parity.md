@@ -1,66 +1,90 @@
-# Claude / Codex parity ledger
+# Claude Code / Codex CLI / Pi parity ledger
 
-Status of every codeArbiter surface on each host (ADR-0011, codex-support
-campaign). The `ca` plugin targets Claude Code; the `ca-codex` sibling targets
-OpenAI Codex CLI (minimum rust-v0.143.0, the source-verified structured-deny
-baseline; plugin-bundled hooks came on by default earlier, at 0.134.0). Both
-plugins vendor the same `core/pysrc/` Python core
-byte-for-byte (`tools/sync-core.py --check` is the CI gate); the only per-host
-Python file is each plugin's `hooks/_host.py`.
+codeArbiter has three governance hosts generated from one canonical core. The
+`ca`, `ca-codex`, and `ca-pi` adapters share `core/pysrc/` and `core/surface/`;
+`tools/sync-core.py --check` and `tools/build-surface.py --check` are the drift
+gates. `ca-sandbox` is the fourth sibling plugin, but it is infrastructure, not
+a governance host.
 
-`ca-codex` 0.2.4 is promoted: on 2026-07-11, Codex 0.144.1 loaded the trusted
-plugin, injected the SessionStart persona, and blocked `$ca-doctor`'s live
-`git add --all --dry-run` probe with `[H-03]`. Static validation and the
-dual-host test suites remain CI requirements; this live pass closes ADR-0011's
-beta-promotion gate.
+Provisional Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
+and [machine-readable envelope](./reports/pi-support/promotion.json). Local Pi 0.80.5/0.80.6 checks
+are green; the hosted six-cell matrix and CodeQL remain explicitly pending until PR CI runs on a
+committed SHA.
 
-## Enforcement surface
+Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the
+H-03 structured block. Pi's implementation and local supported-version
+contracts target Pi 0.80.5 and Pi 0.80.6. The committed six-cell
+Windows/macOS/Linux promotion report is a later gate; this ledger does not
+present local verification as completed hosted evidence.
 
-| Claude surface | Codex status | Notes |
-|---|---|---|
-| SessionStart persona injection (ORCHESTRATOR.md + startup state) | VERIFIED | Same core entry `session-start.py`; live persona injection passed on Codex 0.144.1. |
-| PreToolUse Bash gate (`pre-bash.py`: H-01/02/03/05/09b/10b/11/14/18/19/20) | SHIPPED (M2) | Codex's exec tool is also named `Bash` with the same `{command}` payload; the entry is byte-identical. |
-| PreToolUse Write gate (`pre-write.py`: H-05/11/18/19) | SHIPPED (M2) | Registered for `apply_patch\|Write\|Edit`. The apply_patch envelope is parsed into per-file ops mirroring Codex's lenient parser (CRLF and whitespace-indented markers included); each op hits the same guards as a Claude Write. An envelope the adapter cannot decompose blocks outright (H-21 opaque, fail-closed) rather than passing unguarded. |
-| PreToolUse Edit gate (`pre-edit.py`, incl. H-05 tail-anchored append) | LEDGERED OUT on Codex | Codex has no separate edit tool: every edit arrives as an `apply_patch` hunk, which is positional and cannot be verified as a pure tail append. Patch ops against append-only audit logs therefore BLOCK outright on Codex (append via shell `>>` instead, which `pre-bash.py` permits). Strictly more conservative than Claude, never less. |
-| PreToolUse Read injection (`pre-read.py`, H-12 governed-file notices on Read) | LEDGERED OUT | Codex has no read tool (source-verified, spike item 2): file reads happen via shell, so there is no Read event to hook. The H-12 notice still fires post-write via `post-write-edit.py`. |
-| PostToolUse Write/Edit nudges (`post-write-edit.py`: H-07/09/10/12/13/15/16/17) | SHIPPED (M2) | Registered for `apply_patch\|Write\|Edit`; nudges run per patched file over its added lines. |
-| prune-transcript: prune ENGINE (PreCompact + the UserPromptSubmit prune path) | LEDGERED OUT | Locked out of parity by the campaign decision record: the pruner rewrites Claude-Code-format transcript JSONL, a format Codex does not share. Gated off via `has_prunable_transcript=False`; PreCompact is not registered. |
-| prune-transcript: audit staleness-warn (CONFIRM-09, UserPromptSubmit) | SHIPPED (M2) | Host-neutral (reads `.codearbiter` audit logs, not the transcript), so it IS registered on Codex UserPromptSubmit; the same entry returns before the prune engine on hosts without a prunable transcript. |
-| statusline (renderer, heal, `/ca:statusline`) | LEDGERED OUT | No statusline surface exists on Codex. `governance_line()` stays in core for the startup briefing, which Codex does get. |
-| `.git/hooks` git-enforce backstop (`_githooks.py`) | SHIPPED (M2) | Host-agnostic; installed by `session-start.py` on both hosts. |
-| Update-available notice | DEGRADED on Codex | `_updatelib.installed_version` reads `.claude-plugin/plugin.json`; `ca-codex` ships `.codex-plugin/plugin.json`, so the notice silently self-suppresses. Revisit in M5 (release/distribution). |
+## Generated surface
 
-## Payload and packaging
+| Surface | Claude Code (`ca`) | Codex CLI (`ca-codex`) | Pi (`ca-pi`) | Evidence |
+|---|---|---|---|---|
+| Public entries | 39 `/ca:*` commands | 37 `$ca-*` entry skills | 38 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, generated skill indexes |
+| Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
+| Role charters | 28 plugin agents | inline until Codex agent packaging lands | 28 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-pi/generated/roles.json` |
+| Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
+| Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
-| Claude surface | Codex status | Notes |
-|---|---|---|
-| `.claude-plugin/plugin.json` (ca 2.8.x) | SHIPPED: `plugins/ca-codex/.codex-plugin/plugin.json`, independent SemVer from 0.1.0 (ADR-0007 precedent) | Codex also accepts the `.claude-plugin/` manifest path, but the native path is used. |
-| `hooks/hooks.json` dual `python3` + probe-fallback registration | SHIPPED: single registration per event with a `commandWindows` variant (`python` instead of `python3`) | Codex's hook schema is Claude-compatible plus `commandWindows`/`timeout`/`statusMessage` (spike item 5). A `\|\|`-chained fallback inside ONE command would re-run the gate against drained stdin on a legitimate exit-2 block and swallow it, so the Windows variant is a plain `python` invocation (stock Windows `python3` is often the Store stub). |
-| `.claude-plugin/marketplace.json` | SHIPPED: `.agents/plugins/marketplace.json` | The catalog shape mirrors the Claude marketplace schema, which Codex accepts per the spike's loader reading; the exact native catalog schema could not be re-verified offline during M2, so any live-install mismatch lands on the live-verification pass. |
+Catalog counts are derived from generated outputs: `ca: 39`, `ca-codex: 37`,
+and `ca-pi: 38`.
 
-## Command/skill surface (SHIPPED, M3 — generated from `core/surface/`)
+## Enforcement and lifecycle
 
-Both plugins' markdown surfaces are rendered from one template tree by
-`tools/build-surface.py`; CI (`surface` job, `--check`) fails on drift in
-either direction. Runtime-emitted command references (startup briefing, gate
-messages, doctor, the init scaffold) flow through the same per-host seam
-(`Host.cmd_ref`), so briefings and docs agree.
+| Capability | Claude Code | Codex CLI | Pi |
+|---|---|---|---|
+| Dormant global install | `arbiter: enabled` gates startup | same shared core | enabled marker plus affirmative Pi project trust |
+| Startup persona/state | `SessionStart` hook | trusted `SessionStart` hook | `session_start` extension event through the shared bridge |
+| EXEC enforcement | `PreToolUse` Bash/PowerShell | exec hook over Codex shell | final wrapper around built-in `bash`; unknown tools fail closed |
+| WRITE/EDIT enforcement | Write and Edit hooks | `apply_patch` decomposed per file; opaque blocks | final wrappers around built-in `write` and `edit` arguments |
+| READ notices | native Read hook | host-impossible; post-write notices remain | built-in `read` wrapper and shared notice policy |
+| Git backstop | shared `.git/hooks` installer | same | same through Pi bridge |
+| Status | complete Claude statusline | startup state only | extension-owned compact status key, not a footer replacement |
+| Prune/compaction | shared policy plus Claude transcript codec | transcript engine unavailable; audit warning remains | shared policy plus Pi native compaction; no active-session rewrite |
+| Role dispatch | Claude subagents | inline review/author fallback | fresh Pi RPC children: single, chain, parallel |
+| Process cleanup | host-managed subagents | host-managed inline work | bounded cancellation/timeout plus whole-tree cleanup |
+| Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper diagnostics |
 
-| Claude surface | Codex status | Notes |
-|---|---|---|
-| 39 commands (`/ca:*`) | SHIPPED (M3): 37 generated `ca-`-prefixed entry skills (`skills/ca-*/SKILL.md`) + a generated `skills/INDEX.md` catalog | `ca-init` gives Codex-only users standalone opt-in (DECISION-0013, #287). The two exceptions are ledgered below. |
-| `/ca:statusline` | LEDGERED OUT | No statusline surface exists on Codex; no `ca-statusline` skill renders. Cross-references are host-conditional in the templates. |
-| `/ca:prune` | LEDGERED OUT | The prune ENGINE is already ledgered out (above); with no engine there is no command to ship. The audit staleness-warn half runs hook-side without one. |
-| 22 skills (orchestrator routines) | SHIPPED (M3): rendered to `routines/` | Kept out of the Codex skill-discovery root so routine bodies never register as unprefixed user-invocable skills (and six names collide with commands). |
-| `includes/`, `COMMANDS.md`, `SPRINT.md`, `ORCHESTRATOR.md` | SHIPPED (M3) | ORCHESTRATOR.md now deliberately diverges per host (Codex persona speaks `$ca-` skill vocabulary); the byte-identity guard (#262) is retired in favor of the generator's `--check`. `includes/codex-host-notes.md` is Codex-only (tool mapping, degraded paths, sandbox caveats). |
-| descriptive statusline genre mention (`includes/anti-slop-design/medium-cli.md`) | SHIPPED as-is | Design guidance about statuslines as a CLI output genre — host-neutral prose, not an instruction to use a Codex statusline. |
-| `--farm` execution backend (`tools/farm.js`, `tools/plan.schema.json`) | PENDING (M5) | The farm worker files are not vendored into ca-codex; `--farm` degrades to the premium-subagent path (see `includes/codex-host-notes.md`). Packaging is an M5 distribution decision. |
-| `${CLAUDE_PLUGIN_ROOT}` in skill prose | DEGRADED, LEDGERED | The hook runner resolves the placeholder, but ordinary tool calls do not inherit it. Skills derive the installed root from their own loaded path when executing plugin scripts. |
+Pi doctor reports the canonical active CLI and package origin. Its
+module-identity diagnosis proves self-consistency with the operator-launched Pi
+runtime; it is not publisher authenticity. Confirm the pinned source with
+`pi list`, `pi config`, and the Git tag/commit.
 
-## Pending milestones
+## Distribution and preview features
 
-| Claude surface | Codex status |
-|---|---|
-| 28 agents + review chains (checkpoint/tribunal/SDD) | M4: `.codex/agents/*.toml` scaffolded by `ca-init` with a doctor staleness check (plugins cannot ship subagents on Codex, spike item 7); dispatch batching under `max_threads 6` / `max_depth 1`. Until M4, review/author roles run inline per `includes/codex-host-notes.md` — never skipped. |
-| doctor live-fire probe, trust review | VERIFIED on Codex 0.144.1 (2026-07-11): trusted hook set, SessionStart injection, structured H-03 block surfaced. |
-| release workflow / CI path filters for `plugins/ca-codex/` | Largely landed early (release-codex, version-bump-codex, cold-install matrix, adapter suite, and — with M3 — `prose-codex` + the `surface` job); remaining M5: distribution docs, update-notice fix (above), farm packaging. |
+| Topic | Claude Code | Codex CLI | Pi |
+|---|---|---|---|
+| Distribution | Claude marketplace | Codex plugin marketplace | pinned Git package `ca-pi-v*`; no npm release |
+| Versioning | `ca` SemVer | independent `ca-codex` SemVer | independent nested/root synchronized SemVer |
+| `--farm` | Feature Forge `preview`, shared `farm.js` | degraded to the premium path until backend packaging lands | Feature Forge `preview`, parent tool calls the same contained `farm.js` |
+| Farm credentials | farm process only | no backend process | farm process only; ordinary children strip `FARM_API_KEY` |
+| Embedded worker | not applicable | not shipped | future spike on hardened child runner; not a dependency |
+
+npm packaging is a future spike. A Pi-native embedded farm worker is also a
+future spike and must retain the shared plan/result contract; neither changes
+the current Git-only install or promotes `--farm` beyond preview.
+
+## Explicit exception ledger
+
+Every exception has a status and a source-visible evidence pointer.
+
+<!-- PI-EXCEPTIONS:START -->
+| Surface | Status | Reason | Evidence |
+|---|---|---|---|
+| Codex native Read event | HOST-IMPOSSIBLE | Codex exposes no equivalent read hook; governed notices still run after writes. | `plugins/ca-codex/includes/codex-host-notes.md` |
+| Codex transcript compaction | HOST-IMPOSSIBLE | Claude transcript JSONL is not a Codex session format. | `plugins/ca-codex/includes/codex-host-notes.md` |
+| Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
+| Codex packaged agents | DEGRADED | Roles run inline until a supported packaging surface lands. | `plugins/ca-codex/includes/codex-host-notes.md` |
+| Pi complete footer | DEGRADED | Pi exposes extension status, not ownership of the full footer. | `plugins/ca-pi/includes/pi-host-notes.md` |
+| Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.80.6 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
+| Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |
+| Pi npm package | DEGRADED | Git tags are the only distribution path in this release line. | `docs/pi-parity-testing.md` |
+<!-- PI-EXCEPTIONS:END -->
+
+## Reproduce the evidence
+
+The deterministic and trusted-live procedure is
+[`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion row is
+added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.80.6 matrix
+and the separately reported nonblocking latest canary complete.

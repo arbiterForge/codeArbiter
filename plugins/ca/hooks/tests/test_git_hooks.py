@@ -19,6 +19,7 @@ import contextlib
 import importlib.util as _ilu
 import io
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -96,6 +97,29 @@ class TestInstall(_GitFixture):
             with open(dest, encoding="utf-8") as f:
                 self.assertIn(_githooks.SENTINEL, f.read())
             self.assertTrue(os.access(dest, os.X_OK))
+
+    def test_pi_identity_channel_embeds_absolute_python_and_git_while_legacy_shape_is_unchanged(self):
+        trusted_git = os.path.realpath(shutil.which("git"))
+        trusted_python = os.path.realpath(sys.executable)
+        with mock.patch.dict(
+                os.environ,
+                {
+                    "CODEARBITER_GIT_EXECUTABLE": trusted_git,
+                    "CODEARBITER_PYTHON_EXECUTABLE": trusted_python,
+                },
+                clear=False):
+            carried = _githooks._shim(ENFORCE, "pre-commit")
+        self.assertIn(trusted_git, carried)
+        self.assertIn(trusted_python, carried)
+        self.assertIn('export CODEARBITER_GIT_EXECUTABLE="$G"', carried)
+        self.assertNotIn("if python3 -c", carried)
+
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("CODEARBITER_GIT_EXECUTABLE", None)
+            os.environ.pop("CODEARBITER_PYTHON_EXECUTABLE", None)
+            legacy = _githooks._shim(ENFORCE, "pre-commit")
+        self.assertIn("if python3 -c", legacy)
+        self.assertNotIn("CODEARBITER_GIT_EXECUTABLE", legacy)
 
     def test_install_is_idempotent(self):
         _githooks.install(self.root)
