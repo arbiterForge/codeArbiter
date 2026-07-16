@@ -116,7 +116,7 @@ WSL bridge), so they need Docker available and are slower; they self-skip when `
 When `plugins/ca-pi/**`, `core/**`, or the Pi package generators changed:
 
 ```sh
-npm --prefix plugins/ca-pi/tools ci
+npm --prefix plugins/ca-pi/tools ci --ignore-scripts
 npm --prefix plugins/ca-pi/tools run typecheck
 npm --prefix plugins/ca-pi/tools test
 npm --prefix plugins/ca-pi/tools run build
