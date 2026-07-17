@@ -544,3 +544,53 @@ Reliable and Testable are Strong because the alias now executes the intended gen
 Amend Task 3 tests and implementation before any activation code is accepted. Keep expansion logic Pi-specific and thin; generated skill content remains owned by the shared core. Task 5 doctor and Tasks 13-14 promotion gates must surface expansion-format drift across the supported Pi matrix.
 
 ---
+
+## DECISION-0019 - ADR-0015 - Every live git enforcer must allow; trusted identity is atomic and persistent
+
+**Date:** 2026-07-16
+**Status:** accepted
+**Supersedes:** ADR-0014 first-resolving enforcer selection
+**Decided by:** SUaDtL@users.noreply.github.com ("resolve concerns with SMARTS")
+**Decision category:** security architecture / same-level conflict resolution
+**Artifact-section-hash:** a6efa1943f3c15f4326aed8c7af4333ea2deb179a0381fd47c01946a6453c422
+
+### Variance summary
+- **Artifact position:** accepted ADR-0014 and the pre-release hardening plan require the shared git-hook shim to execute the first resolving enforcer.
+- **Scaffold position:** independent host-plugin versions make registry order non-authoritative; Pi security controls also require absolute executable identities and fail-closed ambiguity.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Run every live, stably named enforcer and require every verdict to allow. Replay the same pre-push ref payload to each enforcer. Store trusted Python path, Git path, and owning plugin as one atomically replaced identity bundle. Identity-less hosts preserve a complete bundle; incomplete first registration, failed first persistence, and stale or malformed persisted identity fail closed. Legacy PATH lookup remains available only when no trusted identity was ever registered.
+
+### SMARTS rationale
+Securable, Reliable, and Testable are Strong because a less strict sibling cannot win by filename order, attempted trusted identity cannot downgrade to PATH, and the mixed-version, persistence-failure, PATH-poisoning, and stdin-replay cases have behavioral tests. Maintainable is Strong because plugin identity comes from manifests and security identity is one atomic state. Available is Adequate because stale state intentionally blocks until repaired. Scalable is Indifferent because host-plugin counts are bounded and sequential checks are small.
+
+### Implementation implication
+ADR-0015 supersedes the selection rule in `0014-githook-shim-dropin-fail-closed.md` without rewriting it. Reconcile the mutable pre-release hardening plan, keep all generated hook copies synchronized, and require independent security review plus the complete Pi preclosure verifier before promotion.
+
+---
+
+## DECISION-0020 - ADR-0015 - Every live git enforcer must allow; trusted identity is atomic and persistent
+
+**Date:** 2026-07-16
+**Status:** accepted
+**Supersedes:** DECISION-0019
+**Decided by:** User explicitly accepted recommendation as their decision ("approve")
+**Decision category:** security architecture / git enforcement boundary
+**Artifact-section-hash:** a6efa1943f3c15f4326aed8c7af4333ea2deb179a0381fd47c01946a6453c422
+
+### Variance summary
+- **Artifact position:** accepted `0014-githook-shim-dropin-fail-closed.md` requires the shared shim to execute the first resolving enforcer.
+- **Scaffold position:** the verified mixed-host implementation requires every live stable enforcer to allow and persists trusted executable identity atomically.
+- **Status type:** divergent
+
+### Decision
+Accept Option A. Run every live, stably named enforcer and require every verdict to allow; replay identical pre-push input to each. Persist trusted Python path, Git path, and owner atomically; identity-less hosts preserve complete state, while incomplete, stale, malformed, or failed first persistence fails closed. ADR-0015 supersedes the first-resolving selection rule in the git-hook ADR numbered 0014.
+
+### SMARTS rationale
+Securable, Reliable, and Testable are Strong because registry order cannot downgrade a stricter sibling, attempted trusted identity cannot fall back to PATH, and adversarial states are behaviorally covered. Maintainable is Strong because manifests name plugins and one bundle owns identity consistency. Available is Adequate because stale state blocks until repaired. Scalable is Indifferent because the host-plugin count is bounded.
+
+### Implementation implication
+Treat DECISION-0019 as a premature malformed record and use this entry as its forward-only correction. Reconcile `.codearbiter/security-controls.md`, `.codearbiter/plans/pi-support.md`, and the pre-release hardening plan; reject broken-symlink and extra-record identity bundles; synchronize generated hook copies; then rerun security review and the complete Pi preclosure verifier before commit.
+
+---

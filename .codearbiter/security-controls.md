@@ -251,15 +251,15 @@ because the Codex harness runs every hook in the session cwd it also stamps
 into the payload. If an entry ever passes the payload, the documented
 precedence above is the contract it inherits.
 
-**Hooks-install re-probe fast-path is fail-safe (#194).** To cut SessionStart
+**Hooks-install re-probe and shared-enforcer identity are fail-safe (#194, ADR-0015).** To cut SessionStart
 latency, `_githooks.install()` may skip the git-spawn hooks-dir probe when a
 cheap on-disk cache proves the shims are already current. The skip fires ONLY
 when it can positively, spawn-free confirm no hooks redirect: the cached dir is
 exactly `<root>/.git/hooks` AND `_confirmed_no_local_hooks_path` finds no
 `core.hooksPath` (a **grammar-free** case-insensitive substring scan of
 `.git/config`/`.git/config.worktree` for `hookspath` — cannot under-detect any
-git-config spelling) AND no `[include]` directive AND the shims still match the
-current enforcer path. Any read failure, any `hookspath` occurrence, an
+git-config spelling) AND no `[include]` directive AND the host-neutral shims
+still match the shared drop-in contract. Any read failure, any `hookspath` occurrence, an
 `[include]`, a cached custom hooksPath, or a global-config change (a
 `~/.gitconfig` + XDG-config mtime token invalidates the cache) → fall through to
 the full probe. The fail direction is **install-when-unsure, never
@@ -268,6 +268,24 @@ unwired. Accepted residual: a `$GIT_CONFIG_GLOBAL`/`$GIT_CONFIG_SYSTEM`
 env-repointed config or `/etc/gitconfig` `core.hooksPath` set AFTER a
 default-location install (the cold/first install always resolves those via the
 full probe).
+
+Each host refreshes a stable, manifest-named `<plugin>.path` entry under the
+repo-owned `.git/codearbiter-hooksd/`; version-directory-shaped legacy entries
+are not authorities. The shim runs every live registered enforcer in
+deterministic order, returns the first non-zero verdict, and blocks when none
+resolve. Pre-push input is captured once and replayed identically to every
+enforcer. Registry order therefore cannot let an older host plugin mask a
+stricter sibling.
+
+Pi's trusted Python path, Git path, and owning plugin are one atomically
+replaced three-record identity bundle. Identity-less legacy hosts preserve an
+existing complete bundle. An incomplete first registration or failed first
+write aborts Pi activation; a refresh failure preserves a prior complete
+bundle. Once an identity path exists - including a broken symlink - the shim
+requires a regular bundle containing exactly three records, non-empty owner,
+and existing executable files. Any malformed or stale state blocks before
+enforcer dispatch; it never downgrades to ambient `PATH`. Uninstall removes the
+bundle only when the uninstalling plugin owns it.
 
 ---
 

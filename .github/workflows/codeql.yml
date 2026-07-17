@@ -1,14 +1,6 @@
 name: CodeQL
 
 on:
-  pull_request:
-    paths:
-      - "plugins/ca-pi/tools/src/**"
-      - "plugins/ca-pi/extensions/**"
-      - "plugins/ca-pi/tools/test/security.test.ts"
-      - "plugins/ca-pi/tools/test/final-arguments.test.ts"
-      - ".github/scripts/test_pi_security.py"
-      - ".github/workflows/codeql.yml"
   push:
     branches: [main]
     paths:
@@ -20,7 +12,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 concurrency:
   group: codeql-${{ github.workflow }}-${{ github.ref }}
@@ -47,10 +38,11 @@ jobs:
               - plugins/ca-pi/extensions
             paths-ignore:
               - plugins/ca-pi/tools/node_modules
-      - name: Analyze and upload CodeQL results
+      - name: Analyze Pi without duplicating default code-scanning uploads
         uses: github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
         with:
           category: "/language:javascript-typescript"
           output: codeql-results
+          upload: never
       - name: Fail unresolved high-severity findings
         run: python .github/scripts/test_pi_security.py --sarif codeql-results

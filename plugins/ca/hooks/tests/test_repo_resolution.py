@@ -74,6 +74,16 @@ def _init_repo(root, branch="main"):
         f.write(ARBITER)
 
 
+def _commit(root, name="seed.txt", content="seed\n", msg="seed"):
+    """A trivial commit — `git worktree add` needs at least one commit to
+    check anything out from (an unborn-HEAD repo has nothing to branch off)."""
+    path = os.path.join(root, name)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+    _git(["add", name], root)
+    _git(["commit", "-q", "-m", msg], root)
+
+
 # ---------------------------------------------------------------------------
 # reliability-004: pre-bash.py's git_cwd() must extract -C past global options
 # ---------------------------------------------------------------------------
@@ -218,6 +228,136 @@ class TestGitCwdEndToEnd(unittest.TestCase):
         # entirely, not joined or left standing as a prior last-wins target.
         os.makedirs(os.path.join(self.session_root, "feat"), exist_ok=True)
         res = self.run_bash(f'git -C feat -C "{self.other_root}" commit -m x')
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-01", res.stderr)
+
+    # -- #223 (A-1): a `git commit` run inside a LINKED WORKTREE (no -C at
+    # all — the ordinary, everyday spelling) must be judged against the
+    # worktree's OWN branch, not CLAUDE_PROJECT_DIR's (the main checkout,
+    # which another agent may be sitting in on an unrelated branch). Both
+    # directions matter: the false NEGATIVE (a worktree on main/master
+    # sidesteps H-01 because the main checkout happens to be on a feature
+    # branch) is the more serious one — it lets a protected-branch commit
+    # through — but the false POSITIVE (a worktree on a feature branch is
+    # wrongly blocked because the main checkout is on main) must not regress
+    # either.
+
+    def test_worktree_on_main_is_blocked_even_when_main_checkout_is_on_a_feature_branch(self):
+        # The false negative: today, CLAUDE_PROJECT_DIR (main_checkout, on a
+        # feature branch) is judged instead of the worktree's actual branch
+        # (main) — so this commit wrongly sails through. Must BLOCK.
+        main_checkout = os.path.join(self._tmp.name, "wt-main-checkout")
+        _init_repo(main_checkout, branch="feat/other-work")
+        _commit(main_checkout)
+        wt_dir = os.path.join(self._tmp.name, "wt-on-main")
+        _git(["worktree", "add", "-b", "main", wt_dir], main_checkout)
+        res = _sh([sys.executable, PRE_BASH], wt_dir,
+                  input=json.dumps({"tool_name": "Bash",
+                                    "tool_input": {"command": "git commit -m x"}}),
+                  env={**os.environ, "CLAUDE_PROJECT_DIR": main_checkout})
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-01", res.stderr)
+
+    def test_worktree_on_feature_branch_is_allowed_even_when_main_checkout_is_on_main(self):
+        # The false positive: today, CLAUDE_PROJECT_DIR (main_checkout, on
+        # main) is judged instead of the worktree's actual branch (a feature
+        # branch) — so this legitimate commit is wrongly blocked. Must NOT
+        # block.
+        main_checkout = os.path.join(self._tmp.name, "wt-main-checkout-2")
+        _init_repo(main_checkout, branch="main")
+        _commit(main_checkout)
+        wt_dir = os.path.join(self._tmp.name, "wt-on-feature")
+        _git(["worktree", "add", "-b", "feat/from-worktree", wt_dir], main_checkout)
+        res = _sh([sys.executable, PRE_BASH], wt_dir,
+                  input=json.dumps({"tool_name": "Bash",
+                                    "tool_input": {"command": "git commit -m x"}}),
+                  env={**os.environ, "CLAUDE_PROJECT_DIR": main_checkout})
+        self.assertNotIn("H-01", res.stderr)
+
+
+# ---------------------------------------------------------------------------
+# #223 (A-2): heredoc BODY prose must not be mistaken for a real command
+# (D-3) — but a heredoc actually FED TO A SHELL still executes its body and
+# must still be guarded.
+# ---------------------------------------------------------------------------
+
+class TestHeredocFallbackNarrowing(unittest.TestCase):
+    """pre-bash.py's raw-cmd fallback (the one that lets a heredoc genuinely
+    fed to a shell still trip H-01) must be narrowed to shell-consuming
+    heredocs only (D-3) — a heredoc whose consumer is NOT a shell (`cat`,
+    inert text later substituted into `gh`'s --body) must not false-trip H-01
+    merely because its body happens to CONTAIN the text "git commit"."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self._tmp.name, "repo")
+        _init_repo(self.root, branch="main")  # on main: a REAL commit here blocks
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _run_bash(self, command):
+        payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": command}})
+        return _sh([sys.executable, PRE_BASH], self.root, input=payload,
+                  env={**os.environ, "CLAUDE_PROJECT_DIR": self.root})
+
+    def test_heredoc_prose_inside_gh_pr_create_body_does_not_trip_h01(self):
+        # The exact #223 evidence spelling: `cat <<'EOF' ... EOF` substituted
+        # into gh's --body. The heredoc's DIRECT consumer is `cat` (inert
+        # text), not a shell — must NOT block.
+        cmd = ('gh pr create --body "$(cat <<\'EOF\'\n'
+               'This PR includes a git commit -m x as part of the change\n'
+               'EOF\n)"')
+        res = self._run_bash(cmd)
+        self.assertNotIn("H-01", res.stderr)
+
+    def test_heredoc_fed_to_bash_still_blocks(self):
+        # A heredoc fed directly to `bash` genuinely executes its body — must
+        # still BLOCK (ambiguity resolves closed, D-3).
+        cmd = "bash <<'EOF'\ngit commit -m x\nEOF\n"
+        res = self._run_bash(cmd)
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-01", res.stderr)
+
+    def test_heredoc_prose_inside_gh_issue_create_body_does_not_trip_h01(self):
+        # Same shape as the pr-create case, different subcommand — must NOT
+        # block either.
+        cmd = ('gh issue create --body "$(cat <<\'EOF\'\n'
+               'This issue references a git commit -m x from another PR\n'
+               'EOF\n)"')
+        res = self._run_bash(cmd)
+        self.assertNotIn("H-01", res.stderr)
+
+    # -- review finding: `_heredoc_fed_to_shell` alone keys on the heredoc's
+    # DIRECT consumer only. `bash -c "$(cat <<EOF … EOF)"` has `cat` as the
+    # direct consumer (non-shell, correctly), but `bash -c` EXECUTES the
+    # substituted result of that `cat` — the heredoc body genuinely reaches a
+    # shell by a route the direct-consumer check cannot see. Narrowing must
+    # also fail closed whenever the command invokes ANY shell/interpreter
+    # executor ANYWHERE (`bash -c`, `eval`, `sh -c`, …), not only when the
+    # heredoc's immediate consumer is one.
+
+    def test_heredoc_via_command_substitution_fed_to_bash_dash_c_still_blocks(self):
+        cmd = ('bash -c "$(cat <<\'EOF\'\n'
+               'git commit -m x\n'
+               'EOF\n)"')
+        res = self._run_bash(cmd)
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-01", res.stderr)
+
+    def test_heredoc_via_command_substitution_fed_to_eval_still_blocks(self):
+        cmd = ('eval "$(cat <<\'EOF\'\n'
+               'git commit -m x\n'
+               'EOF\n)"')
+        res = self._run_bash(cmd)
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-01", res.stderr)
+
+    def test_heredoc_via_command_substitution_fed_to_sh_dash_c_still_blocks(self):
+        cmd = ('sh -c "$(cat <<\'EOF\'\n'
+               'git commit -m x\n'
+               'EOF\n)"')
+        res = self._run_bash(cmd)
         self.assertEqual(res.returncode, 2, res.stderr)
         self.assertIn("H-01", res.stderr)
 

@@ -307,6 +307,42 @@ jobs:
         working-directory: .
         run: python .github/scripts/test_pi_platform_contract.py --pi-version latest
 
+  ca-pi-codeql:
+    name: CA-Pi | CodeQL (JavaScript/TypeScript)
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-pi == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Initialize scoped Pi CodeQL database
+        uses: github/codeql-action/init@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          config: |
+            name: ca-pi-security
+            queries:
+              - uses: security-extended
+            paths:
+              - plugins/ca-pi/tools/src
+              - plugins/ca-pi/extensions
+            paths-ignore:
+              - plugins/ca-pi/tools/node_modules
+      - name: Analyze Pi without duplicating default code-scanning uploads
+        uses: github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        with:
+          category: "/language:javascript-typescript"
+          output: codeql-results
+          upload: never
+      - name: Fail unresolved high-severity findings
+        run: python .github/scripts/test_pi_security.py --sarif codeql-results
+
   hooks:
     name: CA | [Test] - Hooks (${{ matrix.os }})
     # MR-10: proves host-specific interpreter fallback on every OS - REAL (no

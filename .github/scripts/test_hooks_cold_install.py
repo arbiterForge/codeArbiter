@@ -835,6 +835,26 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
 
     assert_loud_failure(run("prune-transcript.py", "primary", "NONE", enabled, PRUNE_IN))
 
+    # ---- 9. PY2-only Windows host (E-5): Codex's PreToolUse group has no
+    # allow-valued fallback sibling (a concurrent allow could neutralize a
+    # structured block — see the module docstring), so every commandWindows
+    # entry must never exit 0 when the selected `python` is Python-2-only.
+    # A silent exit 0 here would mean the hook layer never actually ran and
+    # Codex would treat the tool call as ungated-allow. Codex's POSIX command
+    # always selects `python3`, which the PY2 fixture never touches (it only
+    # shims `python`), so this is Windows-only.
+    if WIN:
+        py2_inputs = {
+            "session-start.py": session_in(),
+            "pre-tool-adapter.py": bash_in("git status", enabled),
+            "post-write-edit.py": patch_in(ORDINARY_PATCH, enabled),
+            "prune-transcript.py": PRUNE_IN,
+        }
+        for script, hook_input in py2_inputs.items():
+            e = run(script, "primary", "PY2", enabled, hook_input)
+            check(e.rc != 0, e,
+                  f"PY2-only Windows host: {script}'s selected commandWindows "
+                  "entry must never exit 0 (ungated allow)")
 
 # ------------------------------------------------------------------------- main
 

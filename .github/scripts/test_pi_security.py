@@ -15,8 +15,16 @@ from verify_pi_support import strict_promotion
 
 REPO = Path(__file__).resolve().parents[2]
 WORKFLOW = REPO / ".github" / "workflows" / "codeql.yml"
+CI_WORKFLOW = REPO / ".github" / "workflows" / "ci.yml"
 CODEQL_SHA = "7188fc363630916deb702c7fdcf4e481b751f97a"
 SCHEMA = "codearbiter-pi-security-v1"
+PREVIEW_ENTRYPOINTS = (
+    REPO / "core" / "pysrc" / "preview.py",
+    REPO / "plugins" / "ca" / "hooks" / "preview.py",
+    REPO / "plugins" / "ca-codex" / "hooks" / "preview.py",
+    REPO / "plugins" / "ca-pi" / "hooks" / "preview.py",
+)
+PREVIEW_LIBRARY = REPO / "core" / "pysrc" / "_previewlib.py"
 
 
 def result(code: str, passed: bool, count: int | None = None) -> dict[str, object]:
@@ -29,8 +37,13 @@ def result(code: str, passed: bool, count: int | None = None) -> dict[str, objec
 def workflow_results() -> list[dict[str, object]]:
     try:
         text = WORKFLOW.read_text(encoding="utf-8")
+        ci_text = CI_WORKFLOW.read_text(encoding="utf-8")
     except (OSError, UnicodeError):
-        return [result("PI-SEC-ACTIONS-PIN", False), result("PI-SEC-CODEQL-SCOPE", False)]
+        return [
+            result("PI-SEC-ACTIONS-PIN", False),
+            result("PI-SEC-CODEQL-SCOPE", False),
+            result("PI-SEC-CODEQL-PR-JOB", False),
+        ]
     pins = (
         f"github/codeql-action/init@{CODEQL_SHA}" in text
         and f"github/codeql-action/analyze@{CODEQL_SHA}" in text
@@ -44,9 +57,43 @@ def workflow_results() -> list[dict[str, object]]:
             "plugins/ca-pi/extensions",
             "plugins/ca-pi/tools/node_modules",
             "test_pi_security.py --sarif",
+            "upload: never",
+        )
+    ) and "security-events: write" not in text
+    pr_job = all(
+        marker in ci_text
+        for marker in (
+            "ca-pi-codeql:",
+            "name: CA-Pi | CodeQL (JavaScript/TypeScript)",
+            "github.event_name == 'pull_request'",
+            "needs.changes.outputs.ca-pi == 'true'",
+            f"github/codeql-action/init@{CODEQL_SHA}",
+            f"github/codeql-action/analyze@{CODEQL_SHA}",
+            "upload: never",
+            "test_pi_security.py --sarif codeql-results",
         )
     )
-    return [result("PI-SEC-ACTIONS-PIN", pins), result("PI-SEC-CODEQL-SCOPE", scope)]
+    return [
+        result("PI-SEC-ACTIONS-PIN", pins),
+        result("PI-SEC-CODEQL-SCOPE", scope),
+        result("PI-SEC-CODEQL-PR-JOB", pr_job),
+    ]
+
+
+def preview_output_result() -> dict[str, object]:
+    """Preview findings are a redacted stdout protocol, never a logging sink."""
+    try:
+        sources = [path.read_text(encoding="utf-8") for path in PREVIEW_ENTRYPOINTS]
+        library = PREVIEW_LIBRARY.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return result("PI-SEC-PREVIEW-OUTPUT", False)
+    safe = all(
+        "json.dump(result, sys.stdout)" in source
+        and 'sys.stdout.write("\\n")' in source
+        and "print(json.dumps(result))" not in source
+        for source in sources
+    ) and "SECRET_RE.sub(_SECRET_MASK, line)" in library
+    return result("PI-SEC-PREVIEW-OUTPUT", safe)
 
 
 def security_severity(rule: dict[str, Any], finding: dict[str, Any]) -> float | None:
@@ -132,7 +179,7 @@ def main() -> int:
     parser.add_argument("--sarif", type=Path)
     parser.add_argument("--evidence", type=Path)
     args = parser.parse_args()
-    rows = workflow_results()
+    rows = [*workflow_results(), preview_output_result()]
     if args.sarif is not None:
         rows.append(sarif_result(args.sarif))
     elif args.evidence is not None:

@@ -11,9 +11,10 @@
 #
 # It mirrors pre-bash.py's commit/push gates and reuses the SAME detection
 # primitives from _hooklib (CRYPTO_RE / SECRET_RE / line_digest / content_digest
-# / is_migration_path / marker_fresh), so the two enforcement points can never
-# drift on what counts as sensitive or as a migration, or on how a gate-pass
-# marker binds to the lines it approved.
+# / is_migration_path / marker_fresh / sensitive_scan_added_lines), so the two
+# enforcement points can never drift on what counts as sensitive or as a
+# migration, on how a gate-pass marker binds to the lines it approved, or on
+# which path (gate-events.log, #279) is exempt from the sensitive-line scan.
 #
 # Contract: a git hook aborts its operation on ANY non-zero exit, so a BLOCK is
 # exit 1 with a loud stderr message. Exit 0 allows. The security/migration scans
@@ -28,8 +29,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 from _gitexec import git_executable  # noqa: E402
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, arbiter_active, content_digest, is_migration_path,
-    line_digest, marker_fresh, set_host, utf8_stdio,
+    CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS, arbiter_active,
+    content_digest, is_migration_path, line_digest, marker_fresh,
+    sensitive_scan_added_lines, set_host, utf8_stdio,
 )
 
 
@@ -145,12 +147,23 @@ def head_on_protected_tip(cwd):
 def cached_added_lines(cwd):
     """Added (`+`) lines of the staged diff — exactly what a commit records
     (including `commit -a` sweeps, which git has already staged by pre-commit
-    time). None on a git read error → caller fails closed."""
-    r = _git(["diff", "--cached"], cwd)
+    time). None on a git read error -> caller fails closed.
+
+    Excludes gate-events.log (#279): `sensitive_scan_added_lines` walks the
+    diff path-aware, dropping lines that belong to the crypto/secret gate's
+    own machine-written audit sink, so this backstop's view of "sensitive
+    lines" never drifts from the producer (security-pass.py) or the
+    PreToolUse gate (pre-bash.py) — see the shared helper's docstring in
+    `_hooklib`. Reads the diff via SECURITY_DIFF_GIT_ARGS (pinned a/ b/
+    prefixes, no external diff) so a hostile `diff.mnemonicPrefix`/
+    `diff.noprefix`/external-diff config can never break that attribution
+    (#279 review MEDIUM-1) — a merge commit's `--cc` combined-diff sections
+    are also handled correctly (MEDIUM-2): the diff walk resets attribution on
+    ANY `diff ` section header, not just `diff --git`."""
+    r = _git([*SECURITY_DIFF_GIT_ARGS, "--cached"], cwd)
     if r is None or r.returncode != 0:
         return None
-    return [ln[1:] for ln in r.stdout.splitlines()
-            if ln.startswith("+") and not ln.startswith("+++")]
+    return sensitive_scan_added_lines(r.stdout)
 
 
 def cached_names(cwd):

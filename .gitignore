@@ -33,6 +33,11 @@ legacy/
 # Removed when the sprint completes. Local-only, never committed.
 .codearbiter/sprint-active
 
+# OS-owned sidecar lock file for the task-board writer (#271 C-2/C-3):
+# taskwrite.py takes a cross-process file lock on open-tasks.md.lock while it
+# reads/mutates/writes the board. It is not project state and is never committed.
+.codearbiter/open-tasks.md.lock
+
 # Python bytecode (e.g. the statusline dev harnesses under plugins/ca/hooks/).
 __pycache__/
 

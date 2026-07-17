@@ -1600,6 +1600,13 @@ class PiPackageTests(unittest.TestCase):
                 capture_output=True,
                 timeout=30,
             )
+            identity_dir = enabled / ".git" / "codearbiter-hooksd"
+            identity_lines = (identity_dir / "trusted-executables.identity").read_text(
+                encoding="utf-8").splitlines()
+            self.assertEqual(len(identity_lines), 3, identity_lines)
+            installed_python = Path(identity_lines[0]).resolve()
+            installed_git = Path(identity_lines[1]).resolve()
+            self.assertEqual(identity_lines[2], "ca-pi")
             poison_observed = sentinel.exists()
 
         self.assertFalse(poison_observed, "enabled session_start executed project-local git.exe")
@@ -1608,17 +1615,12 @@ class PiPackageTests(unittest.TestCase):
             records,
         )
         self.assertEqual(hook_result.returncode, 0, hook_result.stdout + hook_result.stderr)
-        git_identity = re.search(r"^G='([^']+)'$", hook, re.MULTILINE)
-        python_identity = re.search(r"^PY='([^']+)'$", hook, re.MULTILINE)
-        self.assertIsNotNone(git_identity, hook)
-        self.assertIsNotNone(python_identity, hook)
-        installed_git = Path(git_identity.group(1)).resolve()
-        installed_python = Path(python_identity.group(1)).resolve()
         self.assertTrue(installed_git.is_file(), installed_git)
         self.assertTrue(installed_python.is_file(), installed_python)
         self.assertFalse(installed_git.is_relative_to(enabled), installed_git)
         self.assertFalse(installed_python.is_relative_to(enabled), installed_python)
-        self.assertNotIn("if python3 -c", hook)
+        self.assertIn("trusted-executables.identity", hook)
+        self.assertIn('export CODEARBITER_GIT_EXECUTABLE="$G"', hook)
 
     def test_rpc_decode_failure_terminates_process_tree_and_reader(self):
         observed: list[tuple[subprocess.Popen[str], threading.Thread]] = []

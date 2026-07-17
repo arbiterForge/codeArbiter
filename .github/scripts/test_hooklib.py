@@ -561,5 +561,198 @@ class ActivationAndMarkerHelpersTest(unittest.TestCase):
             self.assertIn("audit", hits)
 
 
+class DiffAddedLinesTest(unittest.TestCase):
+    """#279 review (three rounds): `diff_added_lines` must attribute added
+    lines to the correct file using ONLY:
+      (1) a bare `diff ` section header (`--git`/`--cc`/`--combined`) to mark
+          a NEW section and reset attribution to None (content can't forge an
+          unprefixed line at column 0) — never inheriting the PREVIOUS
+          section's path (round 3, MEDIUM-2: combined/merge diffs);
+      (2) within that section's PREAMBLE (before its first `@@`), a `+++
+          b/<path>` line, read via a FIXED 6-character prefix strip — never a
+          regex search for a separator, which is ambiguous when the path
+          itself contains " b/" (round 3, HIGH) — and never trusted once
+          INSIDE the hunk body, where an identical-looking string is content,
+          not a header (round 2)."""
+
+    def _one_file_diff(self, path, added_lines, removed_lines=()):
+        lines = [
+            f"diff --git a/{path} b/{path}",
+            "index 1111111..2222222 100644",
+            f"--- a/{path}",
+            f"+++ b/{path}",
+            "@@ -1,1 +1,2 @@",
+        ]
+        for ln in removed_lines:
+            lines.append("-" + ln)
+        for ln in added_lines:
+            lines.append("+" + ln)
+        return "\n".join(lines) + "\n"
+
+    def test_simple_single_file_diff(self):
+        diff = self._one_file_diff("src/app.py", ["print('hi')"])
+        self.assertEqual(_hooklib.diff_added_lines(diff),
+                          [("src/app.py", "print('hi')")])
+
+    def test_multi_file_diff_attributes_each_hunk(self):
+        diff = (self._one_file_diff("a.py", ["line a"]) +
+                self._one_file_diff("b.py", ["line b"]))
+        self.assertEqual(_hooklib.diff_added_lines(diff),
+                          [("a.py", "line a"), ("b.py", "line b")])
+
+    def test_forged_plusplusplus_header_does_not_hijack_attribution(self):
+        # A genuine source file adds a line whose CONTENT is the text
+        # "++ b/.codearbiter/gate-events.log" — in real `git diff` output this
+        # renders as "+++ b/.codearbiter/gate-events.log" (one '+' prefix +
+        # the two-'+' content), byte-identical to a real hunk header. Every
+        # added line must still attribute to the REAL file (src/auth.js), not
+        # get silently reassigned to gate-events.log.
+        diff = self._one_file_diff(
+            "src/auth.js",
+            [
+                "++ b/.codearbiter/gate-events.log",
+                "const h = createHash('md5');",
+            ],
+        )
+        result = _hooklib.diff_added_lines(diff)
+        self.assertEqual(len(result), 2)
+        for path, _line in result:
+            self.assertEqual(path, "src/auth.js")
+
+    def test_forged_full_plusplusplus_content_line(self):
+        # Same shape, but the forged content line is itself "+++ b/<path>"
+        # (three literal plus signs in the source) — renders in the diff as
+        # "++++ b/<path>", which must ALSO never be mistaken for the header
+        # (the header line is never `+`-prefixed at all).
+        diff = self._one_file_diff(
+            "src/auth.js",
+            [
+                "+++ b/.codearbiter/gate-events.log",
+                "const h = createHash('md5');",
+            ],
+        )
+        result = _hooklib.diff_added_lines(diff)
+        self.assertEqual(len(result), 2)
+        for path, _line in result:
+            self.assertEqual(path, "src/auth.js")
+
+    def test_ambiguous_diff_git_path_does_not_hijack_attribution(self):
+        # #279 review HIGH: a real repo file named "x b/.codearbiter/
+        # gate-events.log" renders its `diff --git` header as
+        #   diff --git a/x b/.codearbiter/gate-events.log b/x b/.codearbiter/gate-events.log
+        # A greedy regex parse of that line resolves group(1) to
+        # ".codearbiter/gate-events.log" (the LAST " b/" split), exempting the
+        # whole unrelated source file. The fix must NOT parse `diff --git` for
+        # the path at all — attribution comes only from the fixed-prefix
+        # `+++ b/<path>` strip, which is unambiguous no matter what the path
+        # contains.
+        odd_path = "x b/.codearbiter/gate-events.log"
+        diff = (
+            f"diff --git a/{odd_path} b/{odd_path}\n"
+            "index 1111111..2222222 100644\n"
+            f"--- a/{odd_path}\n"
+            f"+++ b/{odd_path}\n"
+            "@@ -1,1 +1,2 @@\n"
+            " context\n"
+            "+const h = createHash('md5');\n"
+            '+api_key="abcd1234efgh"\n'
+        )
+        result = _hooklib.diff_added_lines(diff)
+        self.assertEqual(len(result), 2, f"expected 2 added lines, got {result!r}")
+        for path, _line in result:
+            self.assertEqual(path, odd_path,
+                              f"lines must attribute to the REAL path {odd_path!r}, "
+                              f"not the exempt log; got {path!r}")
+        # And the sensitive-scan-exempt check on that real path must be False
+        # (it is a source file, not the audit log itself).
+        self.assertFalse(_hooklib.is_sensitive_scan_exempt(odd_path))
+
+    def test_combined_diff_cc_section_does_not_inherit_prior_path(self):
+        # #279 review MEDIUM-2: a merge commit's `git diff --cached` can emit
+        # `diff --cc <path>` combined-diff sections. If attribution resets
+        # only on `diff --git` (not on `diff --cc`), a `--cc` section that
+        # follows an exempt gate-events.log section would silently inherit
+        # that path and its added lines would be dropped from the scan — the
+        # dangerous (exempting) direction. Attribution must reset to None on
+        # ANY `diff ` header and pick up the `--cc` section's OWN `+++
+        # b/<path>` line.
+        diff = (
+            "diff --git a/.codearbiter/gate-events.log b/.codearbiter/gate-events.log\n"
+            "index 1111111..2222222 100644\n"
+            "--- a/.codearbiter/gate-events.log\n"
+            "+++ b/.codearbiter/gate-events.log\n"
+            "@@ -1,0 +1,1 @@\n"
+            "+REMIND: no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish\n"
+            "diff --cc src/evil.py\n"
+            "index 1111111,3333333..4444444\n"
+            "--- a/src/evil.py\n"
+            "+++ b/src/evil.py\n"
+            "@@@ -1,2 -1,2 +1,3 @@@\n"
+            "  context\n"
+            "+const h = createHash('md5');\n"
+        )
+        result = _hooklib.diff_added_lines(diff)
+        evil_lines = [ln for path, ln in result if path == "src/evil.py"]
+        self.assertTrue(any("createHash" in ln for ln in evil_lines),
+                         f"the --cc section's crypto line must attribute to "
+                         f"src/evil.py, not inherit gate-events.log; got {result!r}")
+        gate_events_lines = [ln for path, ln in result
+                             if path == ".codearbiter/gate-events.log"]
+        self.assertEqual(len(gate_events_lines), 1)
+
+    def test_unattributed_line_is_not_silently_dropped(self):
+        # A stray '+' line before any `diff --git` header (not producible by
+        # real git output) attributes to path=None, not to a guess.
+        diff = "+orphan added line\n"
+        self.assertEqual(_hooklib.diff_added_lines(diff), [(None, "orphan added line")])
+
+    def test_dev_null_destination_has_no_added_lines(self):
+        # A deleted file's diff only has removed lines; nothing to attribute.
+        diff = self._one_file_diff("gone.py", [], removed_lines=["bye"])
+        self.assertEqual(_hooklib.diff_added_lines(diff), [])
+
+
+class SensitiveScanAddedLinesTest(unittest.TestCase):
+    """#279: sensitive_scan_added_lines applies the gate-events.log exemption
+    using diff_added_lines' unspoofable attribution."""
+
+    def test_gate_events_log_lines_excluded(self):
+        diff = (
+            "diff --git a/.codearbiter/gate-events.log b/.codearbiter/gate-events.log\n"
+            "index 1111111..2222222 100644\n"
+            "--- a/.codearbiter/gate-events.log\n"
+            "+++ b/.codearbiter/gate-events.log\n"
+            "@@ -1,0 +1,1 @@\n"
+            "+REMIND: no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish\n"
+        )
+        self.assertEqual(_hooklib.sensitive_scan_added_lines(diff), [])
+
+    def test_forged_header_line_does_not_exempt_real_source(self):
+        diff = (
+            "diff --git a/src/auth.js b/src/auth.js\n"
+            "index 1111111..2222222 100644\n"
+            "--- a/src/auth.js\n"
+            "+++ b/src/auth.js\n"
+            "@@ -1,1 +1,3 @@\n"
+            "+++ b/.codearbiter/gate-events.log\n"
+            "+const h = createHash('md5');\n"
+        )
+        result = _hooklib.sensitive_scan_added_lines(diff)
+        self.assertTrue(any("createHash" in ln for ln in result),
+                         f"the real crypto line must still be scanned, got {result!r}")
+
+    def test_other_audit_logs_stay_in_scope(self):
+        diff = (
+            "diff --git a/.codearbiter/overrides.log b/.codearbiter/overrides.log\n"
+            "index 1111111..2222222 100644\n"
+            "--- a/.codearbiter/overrides.log\n"
+            "+++ b/.codearbiter/overrides.log\n"
+            "@@ -1,0 +1,1 @@\n"
+            '+api_key="abcd1234efgh"\n'
+        )
+        result = _hooklib.sensitive_scan_added_lines(diff)
+        self.assertEqual(len(result), 1)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -44,7 +44,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     result = diff_json() if args.mode == "diff" else secrets_json()
-    print(json.dumps(result))
+    json.dump(result, sys.stdout)
+    sys.stdout.write("\n")
     return 0
 
 

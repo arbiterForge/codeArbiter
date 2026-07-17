@@ -11,6 +11,7 @@ Stdlib only. Run as: python .github/scripts/test_preview_lib.py
 Exit 0 = all tests pass; non-zero = failure.
 """
 
+import json
 import os
 import subprocess
 import sys
@@ -25,6 +26,7 @@ os.environ.pop("CLAUDE_PROJECT_DIR", None)
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
+SECRET_CORPUS = os.path.join(HOOKS, "secret-detection-corpus.json")
 sys.path.insert(0, HOOKS)
 
 import _previewlib  # noqa: E402  — needs sys.path mutation above
@@ -210,9 +212,23 @@ class ScanSecretsTest(unittest.TestCase):
                 self.SECRET_VALUE, snippet,
                 "snippet leaked the plaintext secret value: %r" % snippet,
             )
-            # The keyword context must survive so the preview stays useful.
-            self.assertIn("api_key", snippet,
-                          "redaction stripped the useful keyword context")
+            self.assertIn("****", snippet, "redaction mask is missing")
+
+    def test_shared_secret_corpus_never_leaves_plaintext_in_preview_snippets(self):
+        with open(SECRET_CORPUS, encoding="utf-8") as f:
+            secret_lines = json.load(f)["must_match"]
+        import _hooklib  # noqa: E402 — same sys.path mutation as _previewlib
+        for line in secret_lines:
+            with self.subTest(line=line):
+                matches = [match.group(0) for match in _hooklib.SECRET_RE.finditer(line)]
+                self.assertTrue(matches, "shared secret corpus drifted out of SECRET_RE")
+                redacted = _previewlib._redact_secret(line)
+                self.assertIn("****", redacted)
+                for plaintext in matches:
+                    self.assertNotIn(
+                        plaintext, redacted,
+                        "preview redaction leaked a SECRET_RE match: %r" % plaintext,
+                    )
 
     def test_clean_changed_file_yields_no_finding(self):
         root = self._repo("clean-repo")

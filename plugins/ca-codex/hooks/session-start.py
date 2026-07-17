@@ -21,6 +21,7 @@
 import concurrent.futures
 import copy
 import datetime
+import json
 import os
 import re
 import subprocess
@@ -33,6 +34,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin root + capability flags
 from _hooklib import (  # noqa: E402
     frontmatter_enabled, get_host, project_root, set_host, utf8_stdio,
+    write_text_atomic,
 )
 from _standuplib import (  # noqa: E402
     any_actionable,
@@ -449,7 +451,80 @@ def has_source(root):
     return False
 
 
-def clear_dev_marker(root, host_name=None):
+# #271 C-5 — session-scoping the repo-global dev marker. The marker itself
+# carries no owner: it is dropped by /dev's own prose (dev.md), which has no
+# reliable way to stamp a real session_id into its content (slash-command
+# prose never receives the hook JSON payload — only actual HOOKS do). So
+# ownership is tracked SEPARATELY, by SessionStart itself: every invocation
+# records (its OWN session_id, now) as "the last session known to have
+# started in this repo" BEFORE deciding what to do with the dev marker.
+#
+# This is a heuristic, not true liveness detection (there is no SessionEnd
+# signal this hook can rely on) — documented tradeoff, not a defect. The
+# record's timestamp is ANCHORED TO THE OWNER, not to "whatever session
+# started most recently" — that distinction is load-bearing (a review caught
+# an earlier draft that refreshed it unconditionally on every invocation,
+# which meant an unrelated session B/C/D/... starting in an otherwise-active
+# repo kept sliding the window forward forever and the marker became
+# immortal). The write is therefore CONDITIONAL, decided AFTER checking the
+# marker, not before:
+#   - no live marker at all: refresh freely — "the session that could next
+#     enter /dev is me" is exactly the fact this record exists to hold.
+#   - live marker AND session_id == prev_sid: refresh. This is the owner
+#     heartbeating through a resume/compaction, and it's what keeps a
+#     genuinely long /ca:dev sitting from being force-closed at the 6h mark.
+#   - live marker AND a DIFFERENT session_id: do NOT write. `prev_ts` stays
+#     anchored to the OWNER's last known activity — a different session
+#     merely observing the marker must not reset that clock, or it would
+#     never elapse in any repo that sees regular unrelated activity.
+#
+# Net effect: a marker owned by a session that crashed is left alone by every
+# later, unrelated session (they cannot know it is dead) but self-heals
+# DEV_SESSION_LIVENESS_WINDOW after the OWNER's own last recorded activity —
+# not after the most recent unrelated SessionStart. Symmetric residual: a
+# genuinely live /ca:dev sitting untouched (no resume/compaction of its own)
+# for longer than the window can still be force-closed by a later session,
+# same as the pre-#271 behavior would have done immediately. No session_id
+# available on this invocation/host (Codex parity unverified), or no prior
+# record at all, degrades to the original unconditional clear — a marker that
+# can NEVER be cleared is a worse failure mode than one cleared too eagerly.
+DEV_SESSION_LIVENESS_WINDOW = 6 * 3600  # 6h: generous single-sitting bound
+
+
+def _dev_session_owner_path(root):
+    return os.path.join(root, ".codearbiter", ".markers", "dev-session-owner.json")
+
+
+def _read_dev_session_owner(root):
+    """(session_id, ts) last recorded by ANY SessionStart invocation in this
+    repo, or (None, None) on an absent/corrupt/malformed record. Never
+    raises."""
+    try:
+        with open(_dev_session_owner_path(root), encoding="utf-8") as f:
+            data = json.load(f)
+        sid = data.get("session_id")
+        ts = data.get("ts")
+        if isinstance(sid, str) and sid and isinstance(ts, (int, float)):
+            return sid, float(ts)
+    except Exception:  # noqa: BLE001 — corrupt/absent record -> no signal
+        pass
+    return None, None
+
+
+def _write_dev_session_owner(root, session_id, ts):
+    """Best-effort refresh of the last-known-active-session record. Never
+    raises — a write failure just means the NEXT SessionStart degrades to the
+    conservative no-prior-record fallback, exactly as if this were the first
+    session ever."""
+    try:
+        path = _dev_session_owner_path(root)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        write_text_atomic(path, json.dumps({"session_id": session_id, "ts": ts}))
+    except Exception:  # noqa: BLE001 — must never brick session startup
+        pass
+
+
+def clear_dev_marker(root, host_name=None, session_id=None, now=None):
     """Clear the per-session /dev statusline marker on startup. If the marker is
     LIVE (a prior session entered /ca:dev and ended without /ca:arbiter), append a
     synthetic DEV: exit line to overrides.log BEFORE removing it
@@ -463,29 +538,77 @@ def clear_dev_marker(root, host_name=None):
     (ADR-0011). Optional and defaults to resolving it here via `get_host()`
     (#257) — main() already holds a Host instance and passes its `.name`
     through to avoid a second resolution, but any other caller (tests
-    included) may omit it."""
+    included) may omit it.
+
+    `session_id` (#271 C-5) is THIS invocation's own session id from the
+    SessionStart hook payload, when the host supplies one. See the module
+    comment above `DEV_SESSION_LIVENESS_WINDOW` for the full session-scoping
+    contract: a live marker is only force-closed when there is no reason to
+    believe a DIFFERENT, still-running session currently owns it — and the
+    ownership record's timestamp is refreshed ONLY by the owner itself (never
+    by an unrelated session merely observing the marker), so the liveness
+    window is anchored to the owner's last activity, not reset by every
+    passerby SessionStart. `now` (epoch seconds) is injectable for
+    deterministic tests; defaults to `time.time()`."""
+    now = time.time() if now is None else now
+    prev_sid, prev_ts = _read_dev_session_owner(root)
+
     marker = os.path.join(root, ".codearbiter", ".markers", "dev-active")
-    if os.path.isfile(marker):
-        if host_name is None:
-            try:
-                # get_host() (#257), not a direct hostapi.load_host(): resolves
-                # the SAME Host run(host) injected instead of a second load.
-                host_name = get_host().name
-            except Exception:  # noqa: BLE001 — must never brick session startup
-                host_name = "unknown"
+    marker_live = os.path.isfile(marker)
+
+    if not marker_live:
+        # No live marker: this record is purely "who could next enter /dev" —
+        # any session refreshing it is harmless and correct. Nothing else to
+        # do — there is no marker to clear and no close to log.
+        if session_id:
+            _write_dev_session_owner(root, session_id, now)
+        return
+
+    if session_id and prev_sid:
+        if prev_sid == session_id:
+            # The owner itself, resuming/compacting mid-dev — refresh ITS OWN
+            # heartbeat (this is the only case where a write is safe while the
+            # marker is live) and leave the marker untouched.
+            _write_dev_session_owner(root, session_id, now)
+            return
+        if (now - prev_ts) < DEV_SESSION_LIVENESS_WINDOW:
+            # A different session, and the OWNER's own clock hasn't elapsed
+            # yet — do NOT touch the record (an unrelated observer must never
+            # reset a clock it doesn't own) and do not clobber the marker.
+            return
+        # Different session AND the owner's own record is stale beyond the
+        # window: proceed to the force-close below. Deliberately do not write
+        # a fresh record here either — there is no live owner left to anchor
+        # a new one to; the write happens naturally next time /dev is entered.
+
+    if session_id and not prev_sid:
+        # No prior record at all (first session ever, or a dropped record) —
+        # no signal to protect a concurrent owner; seed the record for next
+        # time and fall through to the pre-#271 unconditional-clear behavior.
+        _write_dev_session_owner(root, session_id, now)
+
+    # Force-close: either no session_id/no prior record (unconditional-clear
+    # fallback), or a genuinely stale owner beyond the window.
+    if host_name is None:
         try:
-            arbiter_ref = get_host().cmd_ref("arbiter")
+            # get_host() (#257), not a direct hostapi.load_host(): resolves
+            # the SAME Host run(host) injected instead of a second load.
+            host_name = get_host().name
         except Exception:  # noqa: BLE001 — must never brick session startup
-            arbiter_ref = "/ca:arbiter"
-        ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        line = (f"[{ts}] | BY: session-cleanup | HOST: {host_name} | DEV: exit | NOTE: cleared by "
-                f"SessionStart (prior session ended mid-dev without {arbiter_ref})\n")
-        try:
-            with open(os.path.join(root, ".codearbiter", "overrides.log"),
-                      "a", encoding="utf-8") as f:
-                f.write(line)
-        except OSError:
-            pass
+            host_name = "unknown"
+    try:
+        arbiter_ref = get_host().cmd_ref("arbiter")
+    except Exception:  # noqa: BLE001 — must never brick session startup
+        arbiter_ref = "/ca:arbiter"
+    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    line = (f"[{ts}] | BY: session-cleanup | HOST: {host_name} | DEV: exit | NOTE: cleared by "
+            f"SessionStart (prior session ended mid-dev without {arbiter_ref})\n")
+    try:
+        with open(os.path.join(root, ".codearbiter", "overrides.log"),
+                  "a", encoding="utf-8") as f:
+            f.write(line)
+    except OSError:
+        pass
     try:
         os.remove(marker)
     except OSError:
@@ -562,6 +685,30 @@ def spawn_background_update_refresh(plugin, spawner=None):
         return None
 
 
+def _session_id_from_stdin():
+    """Best-effort session_id from the SessionStart hook's own JSON payload
+    (#271 C-5) — session-start.py has never read its stdin before this. Reads
+    directly rather than via `_hooklib.read_input()` so an absent/empty
+    session_id degrades SILENTLY (it is a normal, expected condition on a host
+    that doesn't supply one — not a parse error worth a `warn()` breadcrumb on
+    every single session start). Guards against a blocking read on an
+    interactive stdin the same way statusline.py's `main()` does (`isatty()`
+    check) — this hook must never hang session startup waiting for input that
+    will never arrive. Returns "" on any failure, absence, or malformed
+    payload; the caller treats an empty session_id as "unavailable" and
+    degrades to the pre-#271 unconditional-clear behavior."""
+    try:
+        if sys.stdin.isatty():
+            return ""
+        raw = sys.stdin.read()
+        if not raw.strip():
+            return ""
+        data = json.loads(raw)
+        return str(data.get("session_id") or "") if isinstance(data, dict) else ""
+    except Exception:  # noqa: BLE001 — must never brick session startup
+        return ""
+
+
 def main():
     utf8_stdio()
     # get_host() (#257): resolves the SAME Host run(host) already primed via
@@ -570,11 +717,15 @@ def main():
     root = project_root()
     plugin = host.plugin_root()
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
+    session_id = _session_id_from_stdin()
 
     # /dev developer-override is per-session: clear its statusline marker on
     # startup — a new session restores orchestration. A live marker means a prior
     # session never ran /ca:arbiter, so close the DEV audit pair before clearing.
-    clear_dev_marker(root, host.name)
+    # session_id (#271 C-5) lets this distinguish "the same session resuming"
+    # and "a different, possibly still-live session" from a genuinely
+    # abandoned marker — see clear_dev_marker's docstring.
+    clear_dev_marker(root, host.name, session_id)
 
     # Self-heal a stale ca-owned statusLine pin before the dormant gate: the
     # statusline is wired GLOBALLY in ~/.claude/settings.json, so a plugin update
@@ -601,7 +752,12 @@ def main():
         from _githooks import install as _install_git_hooks
         _install_git_hooks(root)
     except Exception:  # noqa: BLE001
-        pass
+        # Legacy hosts retain the historical best-effort startup contract.
+        # Pi supplies an authenticated absolute executable pair; losing that
+        # boundary must surface to the bridge so activation remains fail closed.
+        if (os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+                or os.environ.get("CODEARBITER_PYTHON_EXECUTABLE")):
+            raise
 
     # --- Arbiter active: inject persona ---
     orch = os.path.join(plugin, "ORCHESTRATOR.md")

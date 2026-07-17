@@ -447,6 +447,117 @@ class TestDevExitAudit(unittest.TestCase):
         _mod.clear_dev_marker(self.root)
         self.assertEqual(self._read_log(), seed, "no marker -> overrides.log untouched")
 
+    # -- #271 C-4/C-5: session-scoped clearing -------------------------------
+    # A repo-global marker with no owner concept meant ANY SessionStart
+    # (including one from a totally different, concurrently-running session)
+    # would unconditionally clear it and write a false DEV: exit. These tests
+    # simulate two sessions sharing one repo: session A's own SessionStart
+    # runs (recording itself as the last-known active session) BEFORE it
+    # enters /dev; session B's SessionStart must not clobber A's still-live
+    # marker.
+
+    def test_concurrent_live_session_marker_is_not_clobbered(self):
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        # Session A's own SessionStart, BEFORE it enters /dev (no marker yet).
+        _mod.clear_dev_marker(self.root, session_id="sess-A")
+        # A enters /dev.
+        self._drop_marker()
+        # Session B starts concurrently, while A is still live in dev mode.
+        _mod.clear_dev_marker(self.root, session_id="sess-B")
+        self.assertTrue(os.path.isfile(self.marker),
+                         "session B must not clear session A's live marker")
+        log = self._read_log()
+        self.assertNotIn("DEV: exit", log,
+                          "session B must not write a false DEV: exit for session A")
+
+    def test_same_session_resume_does_not_clobber_its_own_marker(self):
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        _mod.clear_dev_marker(self.root, session_id="sess-A")
+        self._drop_marker()
+        # The SAME session resumes/compacts mid-dev — not "ended".
+        _mod.clear_dev_marker(self.root, session_id="sess-A")
+        self.assertTrue(os.path.isfile(self.marker))
+        self.assertNotIn("DEV: exit", self._read_log())
+
+    def test_stale_owner_beyond_liveness_window_is_still_cleared(self):
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        _mod.clear_dev_marker(self.root, session_id="sess-A", now=1000.0)
+        self._drop_marker()
+        later = 1000.0 + _mod.DEV_SESSION_LIVENESS_WINDOW + 1
+        _mod.clear_dev_marker(self.root, session_id="sess-B", now=later)
+        self.assertFalse(os.path.isfile(self.marker),
+                          "a genuinely abandoned marker must still self-heal eventually")
+        self.assertIn("DEV: exit", self._read_log())
+
+    def test_no_session_id_degrades_to_unconditional_clear(self):
+        # Codex parity unverified: a host that supplies no session_id at all
+        # must fall back to today's behavior rather than never clearing.
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        _mod.clear_dev_marker(self.root, session_id="sess-A")
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root, session_id=None)
+        self.assertFalse(os.path.isfile(self.marker))
+        self.assertIn("DEV: exit", self._read_log())
+
+    def test_no_prior_owner_record_degrades_to_unconditional_clear(self):
+        # A marker present with NO recorded owner at all (e.g. a legacy
+        # marker, or the very first session ever) — no signal to protect a
+        # concurrent session, so proceed exactly as before #271.
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root, session_id="sess-B")
+        self.assertFalse(os.path.isfile(self.marker))
+        self.assertIn("DEV: exit", self._read_log())
+
+    def test_unrelated_sessions_do_not_reset_the_owners_clock(self):
+        """The liveness window must be anchored to the OWNER's last activity,
+        never to whatever session most recently started. A sequence of
+        unrelated sessions (B, C, D, ...), each only minutes apart, must NOT
+        keep resetting the clock — the marker must still self-heal once
+        DEV_SESSION_LIVENESS_WINDOW has elapsed from A's own last activity,
+        even though many other unrelated sessions started in the meantime."""
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        t0 = 1000.0
+        _mod.clear_dev_marker(self.root, session_id="sess-A", now=t0)
+        self._drop_marker()
+
+        # A crashes. Unrelated sessions B, C, D, ... start every 5 minutes —
+        # each individually well inside the window relative to the LAST
+        # observer, but the total elapsed time relative to A's t0 exceeds it.
+        step = 5 * 60
+        t = t0
+        for i in range(200):  # 200 * 5min = ~16.7h of unrelated activity
+            t += step
+            _mod.clear_dev_marker(self.root, session_id=f"sess-unrelated-{i}", now=t)
+            if t - t0 >= _mod.DEV_SESSION_LIVENESS_WINDOW:
+                break
+
+        self.assertGreaterEqual(t - t0, _mod.DEV_SESSION_LIVENESS_WINDOW,
+                                 "test setup must actually cross the window")
+        self.assertFalse(os.path.isfile(self.marker),
+                          "unrelated sessions must not reset A's clock and keep the marker immortal")
+        self.assertIn("DEV: exit", self._read_log())
+
+    def test_owner_heartbeat_past_window_is_never_clobbered(self):
+        """The OWNER itself resuming/compacting repeatedly, well past the 6h
+        mark, must keep its own marker alive indefinitely — only an UNRELATED
+        session's passive observation must decline to refresh the clock."""
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
+        t0 = 1000.0
+        _mod.clear_dev_marker(self.root, session_id="sess-A", now=t0)
+        self._drop_marker()
+
+        t = t0
+        for _ in range(10):
+            t += _mod.DEV_SESSION_LIVENESS_WINDOW - 1  # always just under the bound
+            _mod.clear_dev_marker(self.root, session_id="sess-A", now=t)
+
+        self.assertGreater(t - t0, _mod.DEV_SESSION_LIVENESS_WINDOW,
+                            "test setup must actually run past one window's worth of elapsed time")
+        self.assertTrue(os.path.isfile(self.marker),
+                         "the owner's own heartbeat must never be clobbered by its own resume")
+        self.assertNotIn("DEV: exit", self._read_log())
+
     def test_append_is_a_single_line_after_existing_content(self):
         seed = "[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: —\n"
         self._seed_log(seed)

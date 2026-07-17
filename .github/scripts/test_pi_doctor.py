@@ -67,10 +67,14 @@ class RepoFixture(unittest.TestCase):
 
     def assert_current_and_enforcing(self, final_host):
         expected = str((HOST_HOOKS[final_host] / "git-enforce.py").resolve()).replace("\\", "/")
+        dropin = self.root / ".git" / "codearbiter-hooksd"
+        entry = dropin / f"ca-{final_host}.path" if final_host != "claude" else dropin / "ca.path"
+        self.assertEqual(entry.read_text(encoding="utf-8").strip(), expected)
         for phase in ("pre-commit", "pre-push"):
             body = (self.hook_path() / phase).read_text(encoding="utf-8")
             self.assertEqual(body.count("codeArbiter-managed git hook"), 1)
-            self.assertIn(expected, body.replace("\\", "/"))
+            self.assertIn(str(dropin).replace("\\", "/"), body.replace("\\", "/"))
+            self.assertNotIn(expected, body.replace("\\", "/"))
         (self.root / "probe.txt").write_text("Task 5 subprocess enforcement\n", encoding="utf-8")
         run(["git", "add", "probe.txt"], self.root)
         blocked = run(["git", "commit", "-m", "task 5 hook probe"], self.root, check=False)

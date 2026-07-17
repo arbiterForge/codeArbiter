@@ -795,9 +795,12 @@ scan existing content for that marker so parallel/retry events never duplicate i
 - [ ] **Step 4: Prove shared Git-hook installation is host-idempotent**
 
 Exercise Claude then Pi, Pi then Codex, and Pi twice against one repo. `_githooks.py` must leave one
-current shim targeting the shared enforcer, preserve custom hooksPath behavior, and keep every
-existing cold-install case green. Invoke the installed hook as a subprocess; do not assert only on
-file contents.
+host-neutral shim over stable manifest-named registry entries, run every live enforcer with any block
+winning, replay identical pre-push input, and preserve custom hooksPath behavior. Pi's Python/Git/owner
+identity must persist as one atomic bundle: identity-less hosts preserve it, while incomplete first
+registration, failed first persistence, stale paths, broken symlinks, and extra records fail closed
+without PATH fallback. Keep every existing cold-install case green. Invoke the installed hook as a
+subprocess; do not assert only on file contents.
 
 - [ ] **Step 5: Implement doctor origin/trust/collision/bridge/child/wrapper checks**
 

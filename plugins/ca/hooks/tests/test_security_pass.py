@@ -122,6 +122,44 @@ class TestSecurityPassBranches(_Fixture):
         self.assertEqual(res.returncode, 0)
         self.assertIn("1 sensitive line", res.stdout)
 
+    def test_gate_events_log_untracked_contributes_no_digests(self):
+        # #279: gate-events.log is the gate's own machine-written audit sink —
+        # its REMIND text ("no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish") matches
+        # CRYPTO_RE just as well as a genuine algorithm choice would, so an
+        # UNTRACKED gate-events.log full of such lines must contribute ZERO
+        # digests to the marker (the untracked-file branch of candidate_lines).
+        self._ca()
+        self._write(".codearbiter/gate-events.log", CRYPTO_LINE * 3)
+        res = self.run_pass()
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("0 sensitive line", res.stdout)
+        self.assertEqual(self.marker(), "")
+
+    def test_gate_events_log_diff_contributes_no_digests(self):
+        # #279: same exemption via the `git diff HEAD` branch — a COMMITTED
+        # gate-events.log with a new, uncommitted REMIND line appended must
+        # still contribute zero digests, proving the diff walk (not just the
+        # untracked-file walk) is path-aware.
+        self._ca()
+        self._write(".codearbiter/gate-events.log", "seed\n")
+        _git(["add", ".codearbiter/gate-events.log"], self.root)
+        _git(["commit", "-q", "-m", "seed log"], self.root)
+        self._write(".codearbiter/gate-events.log", "seed\n" + CRYPTO_LINE)
+        res = self.run_pass()
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("0 sensitive line", res.stdout)
+        self.assertEqual(self.marker(), "")
+
+    def test_gate_events_log_exemption_is_narrow(self):
+        # #279 non-weakening proof: the SAME sensitive line, in a DIFFERENT
+        # file, must still be recorded — only gate-events.log is exempt.
+        self._ca()
+        self._write(".codearbiter/overrides.log", CRYPTO_LINE)
+        res = self.run_pass()
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("1 sensitive line", res.stdout)
+        self.assertTrue(self.marker().strip())
+
     def test_marker_write_leaves_no_temp_file(self):
         # migration-002: the marker is written atomically (temp + os.replace), so
         # after a successful run the .markers dir holds the marker and no .tmp.
