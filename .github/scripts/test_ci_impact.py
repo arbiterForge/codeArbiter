@@ -273,6 +273,42 @@ class ReceiptCommandTest(unittest.TestCase):
             self.assertIn("Predicted not selected", markdown)
             self.assertIn("advisory", markdown)
 
+    def test_a_malformed_map_falls_back_to_broad_validation_without_failing(self):
+        # main()'s documented fail-safe contract (tools/ci-impact.py ~422-448):
+        # any planner error (ImpactMapError/OSError/ValueError) degrades to the
+        # broad-lane receipt rather than propagating, and the exit code stays 0
+        # so a planner bug can never fail-closed the merge gate itself.
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary_path = Path(temporary)
+            malformed_map = temporary_path / "impact-map.json"
+            malformed_map.write_text("not valid json", encoding="utf-8")
+            output = temporary_path / "impact.json"
+            summary = temporary_path / "summary.md"
+            rc = module.main(
+                [
+                    "--map",
+                    str(malformed_map),
+                    "--hosts",
+                    str(REPO_ROOT / "core/hosts.json"),
+                    "--changed-files",
+                    "plugins/ca-pi/tools/src/extension.ts",
+                    "--output",
+                    str(output),
+                    "--summary",
+                    str(summary),
+                ]
+            )
+            self.assertEqual(rc, 0)
+            receipt = json.loads(output.read_text(encoding="utf-8"))
+            self.assertTrue(receipt["fallback"])
+            self.assertEqual(
+                [check["id"] for check in receipt["selected"]],
+                ["broad-lane"],
+            )
+            self.assertTrue(receipt["reason"].startswith("planner error:"))
+            markdown = summary.read_text(encoding="utf-8")
+            self.assertIn("## CI impact receipt", markdown)
+
 
 if __name__ == "__main__":
     unittest.main()
