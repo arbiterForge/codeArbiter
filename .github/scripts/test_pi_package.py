@@ -31,6 +31,17 @@ def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def expected_pi_package_source(agent_dir: Path) -> str:
+    """Mirror Node path.relative, including its absolute cross-volume result."""
+    repo = REPO.resolve()
+    configured_agent_dir = agent_dir.absolute()
+    repo_drive, _ = os.path.splitdrive(str(repo))
+    agent_drive, _ = os.path.splitdrive(str(configured_agent_dir))
+    if repo_drive.casefold() != agent_drive.casefold():
+        return str(repo)
+    return os.path.relpath(repo, configured_agent_dir)
+
+
 def live_pi_cli() -> tuple[str, Path]:
     """Resolve the already-installed Pi CLI from PATH without npm/config reads."""
     executable = shutil.which("pi.cmd" if os.name == "nt" else "pi") or shutil.which("pi")
@@ -1165,11 +1176,8 @@ class PiPackageTests(unittest.TestCase):
                 ["git", "diff", "--cached", "--name-only"], cwd=enabled, check=True,
                 text=True, encoding="utf-8", capture_output=True,
             ).stdout
-            expected_bare_source = os.path.relpath(REPO.resolve(), (root / "agent-bare").resolve())
-            expected_enabled_source = os.path.relpath(
-                REPO.resolve(),
-                (root / "agent-enabled").resolve(),
-            )
+            expected_bare_source = expected_pi_package_source(root / "agent-bare")
+            expected_enabled_source = expected_pi_package_source(root / "agent-enabled")
 
         def response(records: list[dict]) -> dict:
             matches = [record for record in records if record.get("id") == "commands"]

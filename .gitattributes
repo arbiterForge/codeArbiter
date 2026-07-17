@@ -7,6 +7,14 @@ hooks/* text eol=lf
 # The generated root Pi manifest is compared byte-for-byte on every host.
 /package.json text eol=lf
 
+# Pi release metadata and TypeScript/JavaScript artifacts are also checked as
+# exact UTF-8/LF bytes after checkout and regeneration on every hosted OS.
+plugins/ca-pi/**/*.json text eol=lf
+plugins/ca-pi/**/*.js   text eol=lf
+plugins/ca-pi/**/*.mjs  text eol=lf
+plugins/ca-pi/**/*.ts   text eol=lf
+plugins/ca-pi/**/*.txt  text eol=lf
+
 # The markdown surface is generated (core/surface/ -> plugin trees) and verified
 # by a BINARY byte-compare (tools/build-surface.py --check), so these trees must
 # check out LF or the gate false-fails on Windows. Deliberately scoped: operator
