@@ -102,10 +102,16 @@ def main(argv=None):
             if check:
                 drifted.append(os.path.join(rel_hooks, name).replace(os.sep, "/"))
                 continue
+            tmp = dst + ".tmp-sync"
             try:
-                with open(dst, "wb") as f:  # binary: byte-exact, LF preserved
+                with open(tmp, "wb") as f:  # binary: byte-exact, LF preserved
                     f.write(src_bytes)
+                os.replace(tmp, dst)  # atomic: never leaves a partially-written dst
             except OSError as e:
+                try:
+                    os.remove(tmp)
+                except OSError:
+                    pass
                 sys.stderr.write(f"sync-core: cannot write vendored copy {dst}: {e}\n")
                 return 1
             written += 1
