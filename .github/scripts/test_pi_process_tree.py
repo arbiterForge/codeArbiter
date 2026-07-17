@@ -235,12 +235,15 @@ def isolated_environment(directory: Path, label: str) -> dict[str, str]:
     return environment
 
 
-def parse_lines(completed: subprocess.CompletedProcess[str]) -> tuple[dict, dict]:
+def parse_lines(completed: subprocess.CompletedProcess[str], variant: str) -> tuple[dict, dict]:
     lines = [line for line in completed.stdout.splitlines() if line.strip()]
     pids_line = next((line for line in lines if line.startswith("PIDS ")), None)
     final_line = next((line for line in lines if line.startswith("FINAL ")), None)
     if completed.returncode != 0 or pids_line is None or final_line is None:
-        raise AssertionError(f"controller failed ({completed.returncode}): stdout={completed.stdout!r} stderr={completed.stderr!r}")
+        raise AssertionError(
+            f"{variant} controller failed ({completed.returncode}): "
+            f"stdout={completed.stdout!r} stderr={completed.stderr!r}"
+        )
     return json.loads(pids_line[5:]), json.loads(final_line[6:])
 
 
@@ -263,7 +266,7 @@ def run_variant(directory: Path, reason: str, mode: str) -> None:
         raise AssertionError(
             f"{reason}/{mode} controller timed out: stdout={error.stdout!r} stderr={error.stderr!r} native={native!r}"
         ) from error
-    header, observed = parse_lines(completed)
+    header, observed = parse_lines(completed, f"{reason}/{mode}")
     pids = [int(header["pids"][name]) for name in ("parent", "child", "grandchild")]
     try:
         assert len(set(pids)) == 3 and all(pid > 0 for pid in pids), observed

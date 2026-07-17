@@ -1574,7 +1574,7 @@ var DEFAULT_VERIFY_MS = 2e3;
 var DEFAULT_POLL_MS = 25;
 var MAX_STEP_MS = 3e4;
 var MAX_POLL_MS = 1e3;
-var WINDOWS_JOB_READY_MS = 3e3;
+var WINDOWS_JOB_READY_MS = 5e3;
 var WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
 var WINDOWS_JOB_READY = "ATTACHED";
 var WINDOWS_SUPERVISOR_START = "START\n";
@@ -2175,7 +2175,7 @@ async function spawnProcessTree(command, args, options) {
   if (process.platform !== "win32") {
     return spawn2(canonicalCommand, [...args], { ...processTreeSpawnOptions(process.platform), cwd: canonicalCwd, env: options.env, stdio: [...options.stdio] });
   }
-  const timing = normalizedTiming({});
+  const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS });
   const supervisorPath = canonicalSupervisorPath();
   const plan = windowsSupervisorLaunchPlan(canonicalCommand, supervisorPath, options.env);
   const launchRecord = JSON.stringify({ args: [...args], command: canonicalCommand, cwd: canonicalCwd });

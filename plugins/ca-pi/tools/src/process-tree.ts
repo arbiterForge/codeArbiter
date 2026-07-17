@@ -12,7 +12,10 @@ const DEFAULT_VERIFY_MS = 2_000;
 const DEFAULT_POLL_MS = 25;
 const MAX_STEP_MS = 30_000;
 const MAX_POLL_MS = 1_000;
-const WINDOWS_JOB_READY_MS = 3_000;
+// Cold hosted Windows runners may need several seconds to start PowerShell and
+// compile the constant Job Object helper. This remains a bounded fail-closed
+// launch budget and is intentionally independent of cleanup verification.
+const WINDOWS_JOB_READY_MS = 5_000;
 const WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
 const WINDOWS_JOB_READY = "ATTACHED";
 const WINDOWS_SUPERVISOR_START = "START\n";
@@ -594,7 +597,7 @@ export async function spawnProcessTree(command: string, args: readonly string[],
   if (process.platform !== "win32") {
     return spawn(canonicalCommand, [...args], { ...processTreeSpawnOptions(process.platform), cwd: canonicalCwd, env: options.env, stdio: [...options.stdio] }) as ChildProcessWithoutNullStreams;
   }
-  const timing = normalizedTiming({});
+  const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS });
   const supervisorPath = canonicalSupervisorPath();
   const plan = windowsSupervisorLaunchPlan(canonicalCommand, supervisorPath, options.env);
   const launchRecord = JSON.stringify({ args: [...args], command: canonicalCommand, cwd: canonicalCwd });
