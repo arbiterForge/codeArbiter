@@ -1,4 +1,5 @@
 import { access, chmod, copyFile, mkdtemp, mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, isAbsolute, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -120,7 +121,7 @@ describe("BridgeClient", () => {
       process.platform,
       [project, "", "relative-bin", trusted].join(delimiter),
     );
-    expect(resolved).toBe(await realpath(trustedGit));
+    expect(resolved).toBe(realpathSync(trustedGit));
   });
 
   test("resolves launcher-only Windows, skips Python 2, and prefers python3 on POSIX", () => {

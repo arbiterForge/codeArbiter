@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import { mkdir, mkdtemp, rm, utimes, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, realpath, rm, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { PassThrough } from "node:stream";
@@ -27,7 +27,7 @@ class FakeFarmChild extends EventEmitter {
 }
 
 async function fixture(): Promise<FarmPreviewInput> {
-  const checkout = await mkdtemp(resolve(tmpdir(), "ca-pi-farm-"));
+  const checkout = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-farm-")));
   temporaryRoots.push(checkout);
   const packageRoot = resolve(checkout, "plugins", "ca-pi");
   const backendRoot = resolve(checkout, "plugins", "ca", "tools");

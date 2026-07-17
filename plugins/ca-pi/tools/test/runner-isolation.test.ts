@@ -1,7 +1,7 @@
 /** runner-isolation.test.ts - Task 6 exact launch, protocol, role, and child enforcement obligations. */
 import { EventEmitter } from "node:events";
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { PassThrough, Readable } from "node:stream";
@@ -85,7 +85,7 @@ const temporaryRoots: string[] = [];
 const testValidation = new WeakMap<object, Record<string, unknown>>();
 
 async function materializedRequest(task = "task-secret-sentinel") {
-  const root = await mkdtemp(resolve(tmpdir(), "ca-pi-task6-"));
+  const root = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-task6-")));
   temporaryRoots.push(root);
   const packageRoot = resolve(import.meta.dirname, "..", "..");
   const piRoot = resolve(root, "pi-runtime");
