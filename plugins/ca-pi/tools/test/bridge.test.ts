@@ -161,7 +161,8 @@ describe("BridgeClient", () => {
     const hooks = resolve(packageRoot, "hooks");
     await mkdir(hooks);
     const bridgeScript = resolve(hooks, "pi-bridge.py");
-    const trustedGit = gitExecutable();
+    const trustedGit = await realpath(gitExecutable());
+    const trustedPython = await realpath(pythonExecutable());
     await writeFile(
       bridgeScript,
       "import json, os\nprint(json.dumps({'version':1,'outcome':'notice','context':json.dumps({'cwd':os.getcwd(),'git':os.environ.get('CODEARBITER_GIT_EXECUTABLE'),'python':os.environ.get('CODEARBITER_PYTHON_EXECUTABLE'),'path':os.environ.get('PATH')})}))\n",
@@ -170,7 +171,7 @@ describe("BridgeClient", () => {
     const bridge = new BridgeClient({
       bridgeScript,
       packageRoot,
-      pythonExecutable: pythonExecutable(),
+      pythonExecutable: trustedPython,
       gitExecutable: trustedGit,
       toolClasses: { read: "READ" },
     } as ConstructorParameters<typeof BridgeClient>[0]);
@@ -182,7 +183,7 @@ describe("BridgeClient", () => {
     const observed = JSON.parse(response.context ?? "{}") as Record<string, string | undefined>;
     expect(observed.cwd).toBe(packageRoot);
     expect(observed.git).toBe(trustedGit);
-    expect(observed.python).toBe(pythonExecutable());
+    expect(observed.python).toBe(trustedPython);
     const searchEntries = (observed.path ?? "").split(delimiter).filter(Boolean);
     expect(searchEntries.length).toBeGreaterThan(0);
     expect(searchEntries.every((entry) => isAbsolute(entry))).toBe(true);

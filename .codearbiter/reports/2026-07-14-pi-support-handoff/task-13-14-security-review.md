@@ -76,7 +76,7 @@ None.
 
 ## Fresh independent evidence
 
-- The sprint controller's post-remediation preclosure aggregate passed all 42 command gates plus
+- The sprint controller's post-remediation preclosure aggregate passed all 43 command gates plus
   three structural gates; the focused independent reproductions below cover the security-sensitive
   portions of that aggregate.
 - `python .github/scripts/test_verify_pi_support.py` — 17/17 passed, including committed,
@@ -96,6 +96,7 @@ None.
 ## Pending final gate
 
 Do not convert this report into hosted success. After the governed checkpoint commit and PR, the
-same evidence SHA must have seven exact successful check runs (six supported Pi cells plus CodeQL),
+same evidence SHA must have eight exact successful check runs (six supported Pi cells, CodeQL, and
+the repository aggregate),
 Task 13/PI-AC-35 must be independently accepted, and the final status/evidence update must pass the
 second preclosure and final verifier phases before the PR is closure-complete.

@@ -89,6 +89,7 @@ function minimalEnvironment(
     NPM_CONFIG_IGNORE_SCRIPTS: "true",
     NPM_CONFIG_OFFLINE: "true",
     NPM_CONFIG_REGISTRY: registryUrl,
+    NPM_CONFIG_UPDATE_NOTIFIER: "false",
     NPM_CONFIG_USERCONFIG: resolve(isolationRoot, "npmrc"),
     PATH: parentEnvironment.PATH ?? "",
     SystemRoot: parentEnvironment.SystemRoot ?? "",
@@ -111,7 +112,7 @@ async function prepareIsolatedEnvironment(
   await writeFile(environment.GIT_CONFIG_GLOBAL!, "", "utf8");
   await writeFile(
     environment.NPM_CONFIG_USERCONFIG!,
-    `offline=true\naudit=false\nfund=false\nignore-scripts=true\nregistry=${registryUrl}\n`,
+    `offline=true\naudit=false\nfund=false\nignore-scripts=true\nupdate-notifier=false\nregistry=${registryUrl}\n`,
     "utf8",
   );
   return environment;
@@ -451,6 +452,7 @@ describe("ca-pi package", () => {
       expect(environment.APPDATA).toBe(resolve(root, "appdata"));
       expect(environment.GIT_CONFIG_NOSYSTEM).toBe("1");
       expect(environment.NPM_CONFIG_OFFLINE).toBe("true");
+      expect(environment.NPM_CONFIG_UPDATE_NOTIFIER).toBe("false");
       expect(environment.NPM_CONFIG_REGISTRY).toBe("http://127.0.0.1:9/");
     } finally {
       await rm(root, { recursive: true, force: true });
@@ -565,9 +567,13 @@ describe("ca-pi package", () => {
         `require("node:fs").writeFileSync(${JSON.stringify(localConfigSentinel)}, "GIT_PROXY_SENTINEL_INVOKED\\n"); process.exit(73);\n`,
         "utf8",
       );
-      let registryRequests = 0;
-      const registry = createHttpServer((_request, response) => {
-        registryRequests += 1;
+      const registryRequests: Array<{ method: string | undefined; url: string | undefined; authorization: boolean }> = [];
+      const registry = createHttpServer((request, response) => {
+        registryRequests.push({
+          method: request.method,
+          url: request.url,
+          authorization: request.headers.authorization !== undefined,
+        });
         response.writeHead(500);
         response.end("registry access forbidden");
       });
@@ -631,7 +637,7 @@ describe("ca-pi package", () => {
       const host = await import(pathToFileURL(entry).href);
       const settings = host.SettingsManager.inMemory({
         packages: [source],
-        npmCommand: ["npm", "--offline", "--no-audit", "--no-fund", "--ignore-scripts"],
+        npmCommand: ["npm", "--offline", "--no-audit", "--no-fund", "--ignore-scripts", "--update-notifier=false"],
       }, { projectTrusted: true });
       const manager = new host.DefaultPackageManager({ cwd, agentDir, settingsManager: settings });
       const resolved = await manager.resolve(async () => "install");
@@ -871,7 +877,7 @@ describe("ca-pi package", () => {
       expect(result.localConfigOutput).not.toMatch(/REPO_LOCAL_(?:REDIRECT|PROXY)_SENTINEL/u);
       expect(localConfigSentinelObserved).toBe(false);
       expect(cleanProjectIsRepository).toBe(false);
-      expect(registryRequests).toBe(0);
+      expect(registryRequests).toEqual([]);
       expect(environment.HOME).not.toBe(poisonHome);
       expect(environment.APPDATA).not.toBe(poisonHome);
       expect(environment.USERPROFILE).not.toBe(poisonHome);

@@ -850,6 +850,18 @@ class PiPackageTests(unittest.TestCase):
         self.assertTrue(expected.endswith(b"\n"))
         self.assertNotIn(b"\r\n", expected)
 
+    def test_generated_root_manifest_is_forced_to_lf_on_every_checkout(self):
+        attributes = subprocess.run(
+            ["git", "check-attr", "text", "eol", "--", "package.json"],
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=True,
+        ).stdout
+        self.assertIn("package.json: text: set", attributes)
+        self.assertIn("package.json: eol: lf", attributes)
+
     def test_host_package_write_is_idempotent_in_an_isolated_target(self):
         module = load_build_host_packages()
         with tempfile.TemporaryDirectory(prefix="ca-pi-package-idempotency-") as raw:

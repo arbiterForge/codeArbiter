@@ -54,7 +54,7 @@ REQUIRED_HOSTED_CHECKS = frozenset(
         for os_name in ("ubuntu-latest", "windows-latest", "macos-latest")
         for version in SUPPORTED
     }
-    | {"CA-Pi | CodeQL (JavaScript/TypeScript)"}
+    | {"CA-Pi | CodeQL (JavaScript/TypeScript)", "Repo | [Gate] - CI Passed"}
 )
 FINAL_EVIDENCE_PATHS = frozenset({
     ".codearbiter/gate-events.log",
@@ -378,6 +378,7 @@ def _gate_commands() -> tuple[tuple[str, tuple[str, ...]], ...]:
         ("pre-read", "test_pre_read.py"), ("hooklib", "test_hooklib.py"),
         ("host-descriptors", "test_host_descriptors.py"), ("pi-package", "test_pi_package.py"),
         ("pi-parity", "test_pi_parity.py"), ("public-pi-docs", "test_public_pi_docs.py"),
+        ("public-codex-docs", "test_public_codex_docs.py"),
         ("pi-security", "test_pi_security.py"), ("pi-doctor", "test_pi_doctor.py"),
         ("pi-compaction", "test_pi_compaction_surface.py"), ("prune-policy-parity", "test_prune_policy_parity.py"),
         ("pi-process-tree", "test_pi_process_tree.py", "--fixture-only"),
@@ -494,7 +495,7 @@ def verify(root: Path, mode: str, fixture_mode: bool) -> int:
             hosted_detail = "fixture-hosted attestation"
         else:
             hosted_ok = _load_hosted_checks(root, document["commit"])
-            hosted_detail = "seven exact successful check runs on evidence commit"
+            hosted_detail = "eight exact successful check runs on evidence commit"
         verdict.add(hosted_ok, "hosted attestation", hosted_detail)
         check_results["promotion"] = promotion_ok
         check_results["promotion-markdown"] = markdown_ok

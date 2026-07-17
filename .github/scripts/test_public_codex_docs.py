@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Public documentation contract for the Claude Code + Codex launch."""
+"""Public documentation contract for the supported governance hosts."""
 
 import pathlib
 import re
@@ -14,14 +14,15 @@ class PublicCodexDocsTest(unittest.TestCase):
     def setUpClass(cls):
         cls.readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
-    def test_readme_announces_both_hosts_and_shared_parity(self):
+    def test_readme_announces_all_hosts_and_shared_parity(self):
         self.assertIn(
-            "Shared enforcement and project-context parity across Claude Code and Codex",
+            "Shared enforcement and project-context parity across Claude Code, Codex CLI, and Pi",
             self.readme,
         )
         opening = self.readme.split("## See it catch something", 1)[0]
         self.assertNotIn("codeArbiter is a native Claude Code plugin", opening)
         self.assertIn("ca-codex", opening)
+        self.assertIn("ca-pi", opening)
         self.assertIn(".codearbiter/", opening)
 
     def test_readme_contains_codex_install_and_verification_path(self):

@@ -4,6 +4,9 @@
 *.py   text eol=lf
 hooks/* text eol=lf
 
+# The generated root Pi manifest is compared byte-for-byte on every host.
+/package.json text eol=lf
+
 # The markdown surface is generated (core/surface/ -> plugin trees) and verified
 # by a BINARY byte-compare (tools/build-surface.py --check), so these trees must
 # check out LF or the gate false-fails on Windows. Deliberately scoped: operator

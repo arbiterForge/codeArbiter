@@ -82,6 +82,15 @@ def run_verifier(root: Path, mode: str = "preclosure") -> subprocess.CompletedPr
 
 
 class VerifyPiSupportTest(unittest.TestCase):
+    def test_real_gate_plan_includes_public_codex_docs(self):
+        module = load_verifier()
+        labels = {label for label, _command in module._gate_commands()}
+        self.assertIn("public-codex-docs", labels)
+
+    def test_final_hosted_attestation_requires_repo_aggregate(self):
+        module = load_verifier()
+        self.assertIn("Repo | [Gate] - CI Passed", module.REQUIRED_HOSTED_CHECKS)
+
     def test_promotion_rejects_extra_rows_and_nonfinite_timing(self):
         module = load_verifier()
         extra = evidence()
