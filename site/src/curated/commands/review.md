@@ -24,6 +24,10 @@ Findings are surfaced by severity (CRITICAL/HIGH/MEDIUM/LOW), file:line, remedia
 security findings — the specific control in `.codearbiter/security-controls.md` they map to. Raw
 per-reviewer output is never consumed directly; only the triaged, aggregated verdict is.
 
+On Codex, these reviewer roles execute inline in the current thread rather than through isolated
+`Task`-tool dispatch — see [Claude Code + Codex → Intentional host
+differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
+
 ## Usage
 
 ```

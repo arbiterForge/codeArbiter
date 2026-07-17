@@ -25,6 +25,10 @@ draft cold until it's addressed. Once everything clears, the PR itself gets writ
 summary, a test plan, and links to any decision record it touches — then, if you've opted into CI
 babysitting, a watcher attaches to follow the checks through to green.
 
+On Codex, the dispatched reviewers execute inline in the current thread rather than through
+isolated `Task`-tool dispatch — see [Claude Code + Codex → Intentional host
+differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
+
 ## Usage
 
 ```
