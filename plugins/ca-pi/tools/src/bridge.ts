@@ -134,6 +134,11 @@ function validResponse(value: unknown): value is BridgeResponse {
   return true;
 }
 
+// Mirrors process-tree.ts's WINDOWS_HELPER_CLEANUP_MS: taskkill must never block the event loop.
+const WINDOWS_TASKKILL_TIMEOUT_MS = 1_000;
+// Bounded backstop: if 'close' never arrives after a kill attempt, force-settle the pending call.
+const KILL_SETTLE_DEADLINE_MS = 2_000;
+
 function killTree(child: ReturnType<typeof spawn>, taskkillExecutable: string | undefined): void {
   if (child.pid === undefined) return;
   if (process.platform === "win32") {
@@ -141,12 +146,14 @@ function killTree(child: ReturnType<typeof spawn>, taskkillExecutable: string | 
       child.kill("SIGKILL");
       return;
     }
-    spawnSync(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
+    const result = spawnSync(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
       env: minimalEnvironment(),
       shell: false,
       stdio: "ignore",
+      timeout: WINDOWS_TASKKILL_TIMEOUT_MS,
       windowsHide: true,
     });
+    if (result.error !== undefined || result.status !== 0) child.kill("SIGKILL");
     return;
   }
   try { process.kill(-child.pid, "SIGKILL"); } catch { child.kill("SIGKILL"); }
@@ -163,6 +170,13 @@ function sanitizedResponse(response: BridgeResponse): BridgeResponse {
   };
 }
 
+export type BridgeSpawnImpl = typeof spawn;
+let spawnImpl: BridgeSpawnImpl = spawn;
+/** Test-only seam: overrides the spawn implementation used by BridgeClient#call. Pass undefined to restore the default. */
+export function __setBridgeSpawnForTests(impl: BridgeSpawnImpl | undefined): void {
+  spawnImpl = impl ?? spawn;
+}
+
 export class BridgeClient implements BridgePort {
   private readonly ready: Promise<{ git: string; python: string; root: string; script: string; taskkill?: string }>;
   private readonly timeoutMs: number;
@@ -174,6 +188,10 @@ export class BridgeClient implements BridgePort {
     this.maxRequestBytes = options.maxRequestBytes ?? 262_144;
     this.maxStreamBytes = options.maxStreamBytes ?? 1_048_576;
     this.ready = this.validatePaths();
+    // call() attaches its own handler only when the first request awaits `ready`, which can be
+    // much later than construction; without this, an interim rejection is unhandled and crashes
+    // the process on modern Node. The chained catch does not alter what call() observes.
+    this.ready.catch(() => undefined);
   }
 
   private async validatePaths(): Promise<{ git: string; python: string; root: string; script: string; taskkill?: string }> {
@@ -269,7 +287,7 @@ export class BridgeClient implements BridgePort {
     return await new Promise<BridgeResponse>((resolveResponse) => {
       let child: ReturnType<typeof spawn>;
       try {
-        child = spawn(paths.python, [...(this.options.pythonPrefixArgs ?? []), paths.script], {
+        child = spawnImpl(paths.python, [...(this.options.pythonPrefixArgs ?? []), paths.script], {
           cwd: paths.root,
           detached: process.platform !== "win32",
           env: minimalEnvironment({ git: paths.git, python: paths.python }),
@@ -292,10 +310,12 @@ export class BridgeClient implements BridgePort {
       let reason: BridgeFailureDetail | undefined;
       let settled = false;
       let finishing = false;
+      let settleDeadline: NodeJS.Timeout | undefined;
       const finish = (response: BridgeResponse) => {
         if (settled) return;
         settled = true;
         clearTimeout(timer);
+        if (settleDeadline !== undefined) clearTimeout(settleDeadline);
         signal.removeEventListener("abort", abort);
         resolveResponse(response);
       };
@@ -303,6 +323,10 @@ export class BridgeClient implements BridgePort {
         if (reason !== undefined) return;
         reason = value;
         killTree(child, paths.taskkill);
+        // If the kill attempt fails silently or 'close' otherwise never arrives, force-settle
+        // with the already-recorded failure reason rather than hanging the caller forever.
+        settleDeadline = setTimeout(() => finishFailure(value), KILL_SETTLE_DEADLINE_MS);
+        settleDeadline.unref?.();
       };
       const finishFailure = (detail: BridgeFailureDetail) => {
         if (settled || finishing) return;

@@ -172,6 +172,8 @@ function validResponse(value) {
   }
   return true;
 }
+var WINDOWS_TASKKILL_TIMEOUT_MS = 1e3;
+var KILL_SETTLE_DEADLINE_MS = 2e3;
 function killTree(child, taskkillExecutable) {
   if (child.pid === void 0) return;
   if (process.platform === "win32") {
@@ -179,12 +181,14 @@ function killTree(child, taskkillExecutable) {
       child.kill("SIGKILL");
       return;
     }
-    spawnSync(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
+    const result = spawnSync(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
       env: minimalEnvironment(),
       shell: false,
       stdio: "ignore",
+      timeout: WINDOWS_TASKKILL_TIMEOUT_MS,
       windowsHide: true
     });
+    if (result.error !== void 0 || result.status !== 0) child.kill("SIGKILL");
     return;
   }
   try {
@@ -203,6 +207,7 @@ function sanitizedResponse(response) {
     ...response.resultPatch === void 0 ? {} : { resultPatch: redactJson(response.resultPatch) }
   };
 }
+var spawnImpl = spawn;
 var BridgeClient = class {
   constructor(options) {
     this.options = options;
@@ -210,6 +215,7 @@ var BridgeClient = class {
     this.maxRequestBytes = options.maxRequestBytes ?? 262144;
     this.maxStreamBytes = options.maxStreamBytes ?? 1048576;
     this.ready = this.validatePaths();
+    this.ready.catch(() => void 0);
   }
   options;
   ready;
@@ -295,7 +301,7 @@ var BridgeClient = class {
     return await new Promise((resolveResponse) => {
       let child;
       try {
-        child = spawn(paths.python, [...this.options.pythonPrefixArgs ?? [], paths.script], {
+        child = spawnImpl(paths.python, [...this.options.pythonPrefixArgs ?? [], paths.script], {
           cwd: paths.root,
           detached: process.platform !== "win32",
           env: minimalEnvironment({ git: paths.git, python: paths.python }),
@@ -318,10 +324,12 @@ var BridgeClient = class {
       let reason;
       let settled = false;
       let finishing = false;
+      let settleDeadline;
       const finish = (response) => {
         if (settled) return;
         settled = true;
         clearTimeout(timer);
+        if (settleDeadline !== void 0) clearTimeout(settleDeadline);
         signal.removeEventListener("abort", abort);
         resolveResponse(response);
       };
@@ -329,6 +337,8 @@ var BridgeClient = class {
         if (reason !== void 0) return;
         reason = value;
         killTree(child, paths.taskkill);
+        settleDeadline = setTimeout(() => finishFailure(value), KILL_SETTLE_DEADLINE_MS);
+        settleDeadline.unref?.();
       };
       const finishFailure = (detail) => {
         if (settled || finishing) return;

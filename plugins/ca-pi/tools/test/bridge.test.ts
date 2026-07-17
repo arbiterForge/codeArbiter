@@ -1,5 +1,6 @@
 import { access, chmod, copyFile, mkdtemp, mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
+import { EventEmitter } from "node:events";
 import { tmpdir } from "node:os";
 import { delimiter, isAbsolute, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -7,7 +8,8 @@ import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, test } from "vitest";
 
-import { BridgeClient, resolveGitExecutable, resolvePythonCommand } from "../src/bridge.ts";
+import { BridgeClient, __setBridgeSpawnForTests, resolveGitExecutable, resolvePythonCommand } from "../src/bridge.ts";
+import type { BridgeSpawnImpl } from "../src/bridge.ts";
 import type { BridgePort, BuiltinToolFactories, ToolDefinitionPort, ToolGuardPiPort } from "../src/contracts.ts";
 import { applyToolResultNotice } from "../src/notices.ts";
 import { wrapBuiltins } from "../src/tool-guard.ts";
@@ -94,6 +96,7 @@ async function executeWrappedRead(bridge: BridgePort, cwd: string): Promise<Reco
 }
 
 afterEach(async () => {
+  __setBridgeSpawnForTests(undefined);
   await Promise.all(roots.splice(0).map((root) => rm(root, { force: true, recursive: true })));
 });
 
@@ -449,6 +452,48 @@ describe("BridgeClient", () => {
       await expect(access(sentinel)).rejects.toThrow();
     } finally {
       await rm(sentinel, { force: true });
+    }
+  });
+
+  test("force-settles a call whose child never emits close after a failed kill", async () => {
+    const bridge = await clientFor("import time\ntime.sleep(30)\n", { timeoutMs: 50 });
+    const fakeStdout = new EventEmitter();
+    const fakeStderr = new EventEmitter();
+    const fakeStdin = { on: () => undefined, end: () => undefined };
+    const fakeChild = Object.assign(new EventEmitter(), {
+      pid: 999_999,
+      stdout: fakeStdout,
+      stderr: fakeStderr,
+      stdin: fakeStdin,
+      kill: () => true,
+    }) as unknown as ReturnType<BridgeSpawnImpl>;
+    __setBridgeSpawnForTests((() => fakeChild) as unknown as BridgeSpawnImpl);
+    const started = Date.now();
+    const response = await bridge.call(request("bash", { command: "true" }), new AbortController().signal);
+    const elapsed = Date.now() - started;
+    expect(response).toMatchObject({ outcome: "block", ruleId: "PI-BRIDGE" });
+    expect(response.message).toContain("timed out");
+    expect(elapsed).toBeLessThan(5_000);
+  });
+
+  test("a rejecting validatePaths produces no unhandledRejection and a later call() still fails with the validation error", async () => {
+    let unhandled: unknown;
+    const onUnhandled = (reason: unknown) => { unhandled = reason; };
+    process.once("unhandledRejection", onUnhandled);
+    try {
+      const bridge = new BridgeClient({
+        bridgeScript: resolve(tmpdir(), "ca-pi-missing-bridge.py"),
+        packageRoot: tmpdir(),
+        toolClasses: { read: "READ" },
+      });
+      await new Promise((done) => setImmediate(done));
+      await new Promise((done) => setTimeout(done, 0));
+      expect(unhandled).toBeUndefined();
+      const response = await bridge.call(request("read", { path: "README.md" }), new AbortController().signal);
+      expect(response.outcome).toBe("warn");
+      expect(response.message).toContain("path validation failed");
+    } finally {
+      process.removeListener("unhandledRejection", onUnhandled);
     }
   });
 });
