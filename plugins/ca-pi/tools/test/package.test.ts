@@ -20,6 +20,10 @@ const bundles = [
   resolve(pluginRoot, "extensions", "codearbiter-child.js"),
 ];
 const windowsSupervisor = resolve(pluginRoot, "helpers", "windows-supervisor.js");
+// This real-host isolation proof starts a loopback Git daemon, clones the pinned
+// package, and loads the external Pi runtime. Cold hosted Windows I/O can exceed
+// Vitest's default without any individual product operation hanging.
+const LIVE_DUPLICATE_HOST_TIMEOUT_MS = 45_000;
 
 async function exists(path: string): Promise<boolean> {
   try {
@@ -881,7 +885,7 @@ describe("ca-pi package", () => {
       expect(environment.HOME).not.toBe(poisonHome);
       expect(environment.APPDATA).not.toBe(poisonHome);
       expect(environment.USERPROFILE).not.toBe(poisonHome);
-  }, 15_000);
+  }, LIVE_DUPLICATE_HOST_TIMEOUT_MS);
 
   test("exact supported Pi versions and prerequisites return fixed directions", () => {
     for (const piVersion of ["0.80.5", "0.80.6"]) {

@@ -2,15 +2,15 @@
 
 **Originally recorded:** 2026-07-14
 
-**Closed:** 2026-07-17 after hosted recovery verification
+**Reopened:** 2026-07-17 after evidence-head Windows/Pi 0.80.5 test timeout
 
 **Branch:** `feat/pi-support`
 
 **Pull request:** [#313](https://github.com/arbiterForge/codeArbiter/pull/313)
 
-**Attested implementation:** `3a1046d4254c44baf49a547b251589111af1fd88`
+**Prior attested implementation:** `3a1046d4254c44baf49a547b251589111af1fd88` (superseded by the test-harness recovery)
 
-**Promotion state:** Tasks 1-14 accepted; PI-AC-01 through PI-AC-38 covered
+**Promotion state:** Tasks 1-12 accepted; Tasks 13-14 in progress; hosted promotion pending
 
 ## Final resume boundary
 
@@ -29,12 +29,18 @@ fixed non-sensitive admission-stage diagnostics. Local live process-tree proof i
 security and SMARTS reviews are CLEAN. Recovery run
 [29552647068](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068) passed the complete
 supported matrix and aggregate gate on the attested implementation. The feature is again at its
-governed terminal state: an open PR with final hosted promotion evidence.
+governed terminal state, but evidence-head run
+[29553244197](https://github.com/arbiterForge/codeArbiter/actions/runs/29553244197) reopened it when the
+real duplicate-host/package isolation proof hit its own fifteen-second Vitest timeout on Windows/Pi
+0.80.5. No product assertion failed, and the paired 0.80.6 cell passed. Recovery raises only that
+real-host integration-test ceiling to forty-five seconds. Commit, fresh hosted matrix, and final
+evidence rebinding remain.
 
-## Hosted promotion evidence
+## Prior hosted promotion evidence (superseded)
 
 Workflow run [29552647068](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068)
-completed successfully on the attested implementation SHA.
+completed successfully on the prior attested implementation SHA. A fresh matrix is required for the
+test-harness recovery commit.
 
 | Required check | Result | Evidence |
 |---|---|---|
@@ -50,7 +56,7 @@ completed successfully on the attested implementation SHA.
 The npm-latest canary remained visibly red and nonblocking as designed. It exercised unsupported Pi
 0.80.10 and did not expand the supported set beyond 0.80.5 and 0.80.6.
 
-## Final verification
+## Prior final verification (superseded)
 
 - The local preclosure verifier passed all 46 canonical gates before the attested push.
 - The Windows live process-tree proof passed all 8 variants on the stock PowerShell fallback.

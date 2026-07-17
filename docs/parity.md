@@ -6,16 +6,16 @@ codeArbiter has three governance hosts generated from one canonical core. The
 gates. `ca-sandbox` is the fourth sibling plugin, but it is infrastructure, not
 a governance host.
 
-Final Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
-and [machine-readable envelope](./reports/pi-support/promotion.json). Local checks and the hosted
-Windows/macOS/Linux matrix for Pi 0.80.5/0.80.6 are green on commit `3a1046d4254c`; scoped CodeQL and
-the repository aggregate gate are green on that same commit.
+Provisional Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
+and [machine-readable envelope](./reports/pi-support/promotion.json). Local Pi 0.80.5/0.80.6 checks
+are green; the hosted six-cell matrix and CodeQL remain explicitly pending until PR CI runs on the
+new committed SHA.
 
 Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the
 H-03 structured block. Pi's implementation and local supported-version
-contracts target Pi 0.80.5 and Pi 0.80.6. The completed hosted
-Windows/macOS/Linux promotion report records x64 Windows/Linux and arm64 macOS evidence without
-presenting the deliberately nonblocking unsupported-latest canary as supported.
+contracts target Pi 0.80.5 and Pi 0.80.6. The committed six-cell
+Windows/macOS/Linux promotion report is a later gate; this ledger does not
+present local verification as completed hosted evidence.
 
 ## Generated surface
 
@@ -85,6 +85,6 @@ Every exception has a status and a source-visible evidence pointer.
 ## Reproduce the evidence
 
 The deterministic and trusted-live procedure is
-[`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion record binds the completed
-Windows/macOS/Linux by Pi 0.80.5/0.80.6 matrix and scoped CodeQL result to `3a1046d4254c`. The
-separately reported npm-latest canary remains nonblocking and unsupported.
+[`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion row is
+added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.80.6 matrix
+and the separately reported nonblocking latest canary complete.
