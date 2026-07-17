@@ -8,10 +8,12 @@ description: Verified shared enforcement and project-context parity across Claud
 **Documentation launch: 2026-07-12.** This page announces the verified 2026-07-11 Codex support
 result while retaining the public-marketplace smoke test as a release gate.
 
-codeArbiter ships as two sibling plugins: `ca` for Claude Code and `ca-codex` for OpenAI Codex.
-Both activate from the same `.codearbiter/CONTEXT.md`, enforce the same project rules, and read and
-write the same checked-in `.codearbiter/` state. One person can alternate between hosts, or two
-people can use different hosts in the same repository, without creating parallel governance state.
+Of codeArbiter's four sibling plugins, this page covers two: `ca` for Claude Code and `ca-codex` for
+OpenAI Codex (see [Pi](/getting-started/pi/) for the third governance host, and
+[ca-sandbox](/guides/ca-sandbox/) for the non-governance infrastructure plugin). Both activate from
+the same `.codearbiter/CONTEXT.md`, enforce the same project rules, and read and write the same
+checked-in `.codearbiter/` state. One person can alternate between hosts, or two people can use
+different hosts in the same repository, without creating parallel governance state.
 
 Parity here has a precise boundary. The enforcement decisions and project context are shared. The
 host interfaces are not identical, and this page lists those intentional differences rather than

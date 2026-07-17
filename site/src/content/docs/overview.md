@@ -3,11 +3,13 @@ title: What Is codeArbiter
 description: How codeArbiter orchestrates shared gated workflows in Claude Code and Codex.
 ---
 
-codeArbiter ships as `ca` for Claude Code and `ca-codex` for Codex. Both inject the same
-orchestrator responsibilities, enforce the same policy core, and use one checked-in
+codeArbiter ships four sibling plugins from one marketplace: three governance hosts — `ca` for Claude
+Code, `ca-codex` for Codex, and `ca-pi` for Pi — plus `ca-sandbox`, an infrastructure plugin unrelated
+to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)). All three governance hosts inject the
+same orchestrator responsibilities, enforce the same policy core, and use one checked-in
 `.codearbiter/` directory for project context and audit state. See the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
-and intentional host differences.
+between those two, and [Pi](/getting-started/pi/) for the third host's install and trust model.
 
 ## codeArbiter Holds the Gates; You Hold the Decisions
 
@@ -62,8 +64,9 @@ like `/ca:status`, `/ca:btw`, and `/ca:commands` route to no skill at all.
 
 Work is organized into lanes. Each is a sanctioned path with gates scaled to its risk.
 
-- **Implementation:** `/ca:feature` (checkpointed), `/ca:sprint` (autonomous), `/ca:fix`,
-  `/ca:refactor`, `/ca:debug`, `/ca:chore`, `/ca:spike`.
+- **Implementation:** `/ca:feature` (checkpointed), `/ca:sprint` ([autonomous](/concepts/smarts/),
+  every auto-decision SMARTS-scored), `/ca:fix`, `/ca:refactor`, `/ca:debug`, `/ca:chore`,
+  `/ca:spike`.
 - **Commit & ship:** `/ca:commit`, `/ca:pr`, `/ca:watch`, `/ca:checkpoint`, `/ca:tribunal`,
   `/ca:release`, `/ca:add-dep`. `/ca:checkpoint` is the lean periodic sweep;
   `/ca:tribunal` is its rare, deep counterpart: an on-demand, resumable whole-codebase

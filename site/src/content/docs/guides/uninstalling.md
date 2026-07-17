@@ -96,6 +96,12 @@ Codex:
 codex plugin remove ca-codex@codearbiter
 ```
 
+Pi (Git-only; see [Pi](#pi) above for pinning and version-specific removal):
+
+```sh
+pi remove git:arbiterForge/codeArbiter@ca-pi-v<version>
+```
+
 This removes the plugin payload (hooks, commands, agents, skills) from Claude Code's plugin cache.
 Hooks, commands, and the statusline wiring stop loading from the next session onward. `claude plugin
 update` is **not** sufficient for a full removal — it can leave a stale cached payload behind when the

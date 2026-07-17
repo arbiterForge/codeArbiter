@@ -17,7 +17,8 @@ authn/crypto/key handling, `dependency-reviewer` for manifest/lockfile changes,
 reviewer runs as one read-only unit through `dispatching-parallel-agents`; the results are
 deduped, then funneled through `finding-triage` (severity plus an inline `[NEEDS-TRIAGE]` marker
 on anything out of scope) and `checkpoint-aggregator` down to a single verdict. No file is
-modified by a run.
+modified by a run. A finding that turns on a genuinely-unresolved unknown surfaces as a numbered
+[`CONFIRM-NN`](/glossary/#confirm-nn) rather than being resolved by guessing.
 
 Findings are surfaced by severity (CRITICAL/HIGH/MEDIUM/LOW), file:line, remediation, and — for
 security findings — the specific control in `.codearbiter/security-controls.md` they map to. Raw

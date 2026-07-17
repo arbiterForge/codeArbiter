@@ -7,7 +7,7 @@ description: "What codeArbiter's statusline shows, and how to wire it into Claud
 > shared `.codearbiter/` governance state instead; this is an intentional host difference.
 
 codeArbiter ships a token-aware statusline for Claude Code: a compact, full-width box that shows
-your session usage in every repo and, in an arbiter-enabled one, the live project state. It is
+your session usage in every repo and, in an [arbiter-enabled](/glossary/#arbiter-enabled-flag) one, the live project state. It is
 dependency-free (native font glyphs only, no Nerd Font) and renders on every session once wired.
 
 <figure class="ca-diagram">

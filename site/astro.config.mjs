@@ -139,6 +139,7 @@ export default defineConfig({
             { label: "Cut a Release", slug: "guides/releasing-a-version" },
             { label: "Troubleshooting", slug: "guides/troubleshooting" },
             { label: "Uninstall & Disable", slug: "guides/uninstalling" },
+            { label: "ca-sandbox: Explore Untrusted Code", slug: "guides/ca-sandbox" },
           ],
         },
         {
