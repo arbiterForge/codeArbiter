@@ -2,15 +2,15 @@
 
 **Originally recorded:** 2026-07-14
 
-**Closed:** 2026-07-16
+**Reopened:** 2026-07-17 after PR-head Windows/Pi 0.80.5 launch-admission failure
 
 **Branch:** `feat/pi-support`
 
 **Pull request:** [#313](https://github.com/arbiterForge/codeArbiter/pull/313)
 
-**Attested implementation:** `54080beadc8ff1fe6c8a5e0da81ad699c3ad0920`
+**Prior attested implementation:** `54080beadc8ff1fe6c8a5e0da81ad699c3ad0920` (superseded by the recovery patch)
 
-**Promotion state:** Tasks 1-14 accepted; PI-AC-01 through PI-AC-38 covered
+**Promotion state:** Tasks 1-12 accepted; Tasks 13-14 in progress; hosted promotion pending
 
 ## Final resume boundary
 
@@ -19,14 +19,20 @@ activation, enforcement-installation, version-boundary, read-context, doctor, se
 cross-platform, and Windows process-containment findings were recovered and resolved test-first.
 Do not resume implementation from the former Task 6 boundary.
 
-The feature is now at its governed terminal state: an open PR with final hosted promotion evidence.
-Do not change implementation code after the attested SHA unless a new failure reopens the sprint;
-the final evidence verifier permits only its evidence/status/report allowlist in descendants.
+PR-head run [29551679372](https://github.com/arbiterForge/codeArbiter/actions/runs/29551679372)
+reopened the sprint when Windows/Pi 0.80.5 job
+[87795375675](https://github.com/arbiterForge/codeArbiter/actions/runs/29551679372/job/87795375675)
+missed the five-second canonical PowerShell Job-helper admission ceiling. The same implementation had
+passed the same runner image previously, and the paired Windows/Pi 0.80.6 cell passed. Recovery raises
+only the bounded cold admission budget to fifteen seconds, expands the live harness ceiling, and adds
+fixed non-sensitive admission-stage diagnostics. Local live process-tree proof is 8/8; independent
+security and SMARTS reviews are CLEAN. Commit, hosted matrix, and final evidence rebinding remain.
 
-## Hosted promotion evidence
+## Prior hosted promotion evidence (superseded)
 
 Workflow run [29550379456](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456)
-completed successfully on the attested implementation SHA.
+completed successfully on the prior attested implementation SHA. These results explain the recovered
+race but do not promote the new implementation; a fresh matrix is required.
 
 | Required check | Result | Evidence |
 |---|---|---|
@@ -42,7 +48,7 @@ completed successfully on the attested implementation SHA.
 The npm-latest canary remained visibly red and nonblocking as designed. It exercised unsupported Pi
 0.80.10 and did not expand the supported set beyond 0.80.5 and 0.80.6.
 
-## Final verification
+## Prior final verification (superseded)
 
 - The local preclosure verifier passed all 46 canonical gates before the attested push.
 - The Windows live process-tree proof passed all 8 variants on the stock PowerShell fallback.

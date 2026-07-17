@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MODULE = ROOT / "plugins" / "ca-pi" / "tools" / "src" / "process-tree.ts"
 SUPERVISOR = ROOT / "plugins" / "ca-pi" / "helpers" / "windows-supervisor.js"
 NODE = shutil.which("node")
-MAX_RUN_SECONDS = 15.0
+MAX_RUN_SECONDS = 45.0
 
 
 FIXTURE_SOURCE = r'''
@@ -94,6 +94,15 @@ CONTROLLER_SOURCE = r'''
 import { pathToFileURL } from "node:url";
 
 const [modulePath, fixture, reason, mode] = process.argv.slice(2);
+const admissionFailureCodes = new Map([
+  ["process-tree launch identities are invalid", "identity-refused"],
+  ["canonical Windows supervisor artifact unavailable", "supervisor-artifact-refused"],
+  ["Windows inert supervisor failed to start", "supervisor-start-refused"],
+  ["Windows Job Object holder refused containment", "job-attach-refused"],
+  ["Windows parent-death leash unavailable", "parent-leash-refused"],
+  ["Windows contained Pi launch was refused", "child-launch-refused"],
+  ["Windows contained Pi exit watch was refused", "exit-watch-refused"],
+]);
 const childEnvironment = { ...process.env };
 if (reason === "attach_refusal") {
   delete process.env.SystemRoot;
@@ -215,11 +224,13 @@ try {
     if (outputFailure !== undefined) throw outputFailure;
     process.stdout.write("FINAL " + JSON.stringify({ durationMs: Date.now() - started, pids, actualPid: child.pid, result }) + "\n");
   }
-} catch {
+} catch (error) {
   if (cleanup !== undefined) {
     try { await cleanup.terminate("startup_failure"); } catch {}
   }
-  process.stderr.write("controller failure phase=" + phase + "\n");
+  const message = error instanceof Error ? error.message : "";
+  const code = phase === "launch-admission" ? " code=" + (admissionFailureCodes.get(message) ?? "unknown") : "";
+  process.stderr.write("controller failure phase=" + phase + code + "\n");
   process.stdout.write("REFUSED\n");
 }
 '''
@@ -511,6 +522,7 @@ def run_attach_failure(directory: Path) -> None:
         cwd=ROOT, env=environment, check=False, capture_output=True, text=True, timeout=MAX_RUN_SECONDS,
     )
     assert completed.returncode == 0 and completed.stdout.strip() == "REFUSED", completed
+    assert completed.stderr.strip() == "controller failure phase=launch-admission code=job-attach-refused", completed
     assert not marker.exists(), "Pi fixture spawned after Job holder refusal"
 
 

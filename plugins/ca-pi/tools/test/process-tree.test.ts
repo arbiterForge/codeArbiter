@@ -108,6 +108,13 @@ describe("process-tree cleanup", () => {
     }
   });
 
+  test("reserves a bounded fifteen-second cold admission budget before any Windows child starts", () => {
+    const source = readFileSync(new URL("../src/process-tree.ts", import.meta.url), "utf8");
+    expect(source).toContain("const WINDOWS_JOB_READY_MS = 15_000;");
+    expect(source).toContain("normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS })");
+    expect(source).toContain("Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs)");
+  });
+
   test("orders canonical PowerShell 7 before the stock Windows fallback without PATH lookup", () => {
     expect(windowsPowerShellCandidatePaths("C:\\Windows")).toEqual([
       "C:\\Program Files\\PowerShell\\7\\pwsh.exe",

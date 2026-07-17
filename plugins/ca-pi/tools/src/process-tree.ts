@@ -15,7 +15,7 @@ const MAX_POLL_MS = 1_000;
 // Cold hosted Windows runners may need several seconds to start PowerShell and
 // compile the constant Job Object helper. This remains a bounded fail-closed
 // launch budget and is intentionally independent of cleanup verification.
-const WINDOWS_JOB_READY_MS = 5_000;
+const WINDOWS_JOB_READY_MS = 15_000;
 const WINDOWS_HELPER_CLEANUP_MS = 1_000;
 const WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
 const WINDOWS_JOB_READY = "ATTACHED";
