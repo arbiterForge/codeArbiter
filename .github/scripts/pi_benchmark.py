@@ -32,6 +32,10 @@ PUBLIC_KEYS = (
 )
 PI_BOUNDARY_SOURCE = ROOT / "plugins" / "ca-pi" / "tools" / "test" / "benchmark-boundary.ts"
 PI_TOOLS = ROOT / "plugins" / "ca-pi" / "tools"
+PI_BRIDGE_SCRIPT = ROOT / "plugins" / "ca-pi" / "hooks" / "pi-bridge.py"
+REAL_SPAWN_WARMUP = 2
+REAL_SPAWN_SAMPLES = 8
+REAL_SPAWN_PUBLIC_KEYS = ("platform", "host", "mode", "sampleCount", "medianMs", "p95Ms")
 
 
 def promotion_limit(claude_p95, codex_p95):
@@ -240,9 +244,99 @@ def run_benchmark(samples=REQUIRED_SAMPLES):
     return [_measure_host(host_name, samples) for host_name in ("claude", "codex", "pi")]
 
 
+def _real_spawn_python_executable():
+    """Locate a real, standalone Python interpreter for the REAL-SPAWN mode.
+
+    Deliberately independent of sys.executable: the mode exists to measure the
+    actual cost a host pays when it spawns `python <pi-bridge.py>` as a child
+    process, so it resolves the interpreter the same way an external caller
+    would (via PATH), and skips gracefully if none is resolvable there.
+    """
+    names = ("python3", "python") if platform.system().lower() != "windows" else ("py", "python")
+    for name in names:
+        found = shutil.which(name)
+        if found:
+            return found
+    return None
+
+
+def real_spawn_benchmark(warmup=REAL_SPAWN_WARMUP, samples=REAL_SPAWN_SAMPLES):
+    """Measure the REAL python spawn cost of the Pi per-call bridge path.
+
+    Unlike _measure_host("pi", ...), which exercises only the bundled JS
+    adapter boundary against a stubbed BridgePort, this drives the actual
+    `python pi-bridge.py` child process BridgeClient spawns in production,
+    round-tripping one cheap, read-only, idempotent route (tool_call/READ,
+    routed to pre-read.py) against a temporary governed project fixture.
+    """
+    python = _real_spawn_python_executable()
+    if python is None:
+        return {
+            "platform": platform.system().lower(),
+            "host": "pi",
+            "mode": "REAL-SPAWN-SKIPPED",
+            "sampleCount": 0,
+            "medianMs": None,
+            "p95Ms": None,
+        }
+    if not PI_BRIDGE_SCRIPT.is_file():
+        raise RuntimeError("pi-bridge.py is missing; cannot measure the real spawn path")
+
+    with tempfile.TemporaryDirectory(prefix="ca pi real spawn π ") as raw:
+        repo = pathlib.Path(raw)
+        state = repo / ".codearbiter"
+        state.mkdir()
+        (state / "CONTEXT.md").write_text(
+            "---\narbiter: enabled\n---\n<!--INITIALIZED-->\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        (repo / "fixture.txt").write_text("fixture\n", encoding="utf-8", newline="\n")
+
+        request_body = json.dumps({
+            "version": 1,
+            "event": "tool_call",
+            "cwd": str(repo),
+            "tool": "read",
+            "input": {"path": "fixture.txt"},
+        }).encode("utf-8")
+
+        timings = []
+        for index in range(warmup + samples):
+            start = time.perf_counter_ns()
+            completed = subprocess.run(
+                [python, str(PI_BRIDGE_SCRIPT)],
+                input=request_body,
+                capture_output=True,
+                timeout=10,
+                check=False,
+            )
+            elapsed = time.perf_counter_ns() - start
+            if completed.returncode != 0:
+                raise RuntimeError("real Pi bridge spawn failed: " + completed.stderr.decode("utf-8", "replace"))
+            response = json.loads(completed.stdout.decode("utf-8"))
+            if response.get("outcome") != "allow":
+                raise RuntimeError("real Pi bridge spawn returned an unexpected outcome")
+            if index >= warmup:
+                timings.append(_round_ms(elapsed))
+
+    return {
+        "platform": platform.system().lower(),
+        "host": "pi",
+        "mode": "REAL-SPAWN",
+        "sampleCount": len(timings),
+        "medianMs": percentile(timings, 50),
+        "p95Ms": percentile(timings, 95),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--samples", type=int, default=REQUIRED_SAMPLES)
+    parser.add_argument(
+        "--real-spawn", action="store_true",
+        help="Also measure the real python spawn cost of the Pi bridge (adds a REAL-SPAWN record).",
+    )
     args = parser.parse_args()
     records = run_benchmark(args.samples)
     for record in records:
@@ -250,11 +344,19 @@ def main():
             raise RuntimeError("benchmark record shape drifted")
         print(json.dumps(record, ensure_ascii=True, separators=(",", ":"), sort_keys=False))
     by_host = {record["host"]: record for record in records}
-    return 0 if benchmark_passes(
+    exit_code = 0 if benchmark_passes(
         by_host["pi"]["adapterP95Ms"],
         by_host["claude"]["adapterP95Ms"],
         by_host["codex"]["adapterP95Ms"],
     ) else 1
+
+    if args.real_spawn:
+        real_record = real_spawn_benchmark()
+        if tuple(real_record) != REAL_SPAWN_PUBLIC_KEYS:
+            raise RuntimeError("real-spawn benchmark record shape drifted")
+        print(json.dumps(real_record, ensure_ascii=True, separators=(",", ":"), sort_keys=False))
+
+    return exit_code
 
 
 if __name__ == "__main__":

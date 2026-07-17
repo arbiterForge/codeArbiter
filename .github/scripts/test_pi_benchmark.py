@@ -82,6 +82,44 @@ class PiBenchmarkTests(unittest.TestCase):
             for key in expected - {"platform", "host", "sampleCount"}:
                 self.assertGreaterEqual(record[key], 0.0)
 
+    def test_real_spawn_skips_gracefully_when_no_python_is_resolvable_on_path(self):
+        original = self.benchmark._real_spawn_python_executable
+        self.benchmark._real_spawn_python_executable = lambda: None
+        try:
+            record = self.benchmark.real_spawn_benchmark()
+        finally:
+            self.benchmark._real_spawn_python_executable = original
+        self.assertEqual(record["mode"], "REAL-SPAWN-SKIPPED")
+        self.assertEqual(record["sampleCount"], 0)
+        self.assertIsNone(record["medianMs"])
+        self.assertIsNone(record["p95Ms"])
+
+    def test_real_spawn_drives_the_actual_pi_bridge_script_over_a_cheap_read_route(self):
+        record = self.benchmark.real_spawn_benchmark(warmup=1, samples=2)
+        self.assertEqual(set(record), set(self.benchmark.REAL_SPAWN_PUBLIC_KEYS))
+        self.assertEqual(record["host"], "pi")
+        self.assertIn(record["mode"], ("REAL-SPAWN", "REAL-SPAWN-SKIPPED"))
+        if record["mode"] == "REAL-SPAWN":
+            self.assertEqual(record["sampleCount"], 2)
+            self.assertGreater(record["medianMs"], 0.0)
+            self.assertGreaterEqual(record["p95Ms"], record["medianMs"])
+
+    def test_cli_real_spawn_flag_adds_a_fourth_labeled_record(self):
+        completed = subprocess.run(
+            [sys.executable, str(BENCHMARK), "--samples", "100", "--real-spawn"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=30,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        records = [json.loads(line) for line in completed.stdout.splitlines() if line]
+        self.assertEqual(len(records), 4)
+        real_record = records[-1]
+        self.assertIn(real_record["mode"], ("REAL-SPAWN", "REAL-SPAWN-SKIPPED"))
+
     def test_cli_emits_only_three_bounded_json_records(self):
         completed = subprocess.run(
             [sys.executable, str(BENCHMARK), "--samples", "100"],
