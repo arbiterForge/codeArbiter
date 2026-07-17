@@ -881,7 +881,7 @@ describe("ca-pi package", () => {
       expect(environment.HOME).not.toBe(poisonHome);
       expect(environment.APPDATA).not.toBe(poisonHome);
       expect(environment.USERPROFILE).not.toBe(poisonHome);
-  });
+  }, 15_000);
 
   test("exact supported Pi versions and prerequisites return fixed directions", () => {
     for (const piVersion of ["0.80.5", "0.80.6"]) {

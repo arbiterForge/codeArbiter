@@ -297,7 +297,7 @@ export function windowsSupervisorLaunchPlan(nodePath: string, supervisorPath: st
     args: Object.freeze([supervisorPath]),
     control: WINDOWS_SUPERVISOR_START,
     options: Object.freeze({
-      cwd: dirname(supervisorPath),
+      cwd: win32.dirname(supervisorPath),
       env: Object.freeze({ ...childEnvironment }),
       detached: false,
       shell: false,

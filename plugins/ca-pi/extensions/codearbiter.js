@@ -1810,7 +1810,7 @@ function windowsSupervisorLaunchPlan(nodePath, supervisorPath, childEnvironment)
     args: Object.freeze([supervisorPath]),
     control: WINDOWS_SUPERVISOR_START,
     options: Object.freeze({
-      cwd: dirname4(supervisorPath),
+      cwd: win322.dirname(supervisorPath),
       env: Object.freeze({ ...childEnvironment }),
       detached: false,
       shell: false,
