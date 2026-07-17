@@ -228,6 +228,14 @@ class WorkflowContractTest(unittest.TestCase):
         for name in expected:
             self.assertIn(f'name: "{name}"', ci)
 
+    def test_documentation_contract_is_always_required_by_merge_readiness(self):
+        ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        self.assertIn("  documentation-contract:\n", ci)
+        self.assertIn('name: "[CHECK] | [REPO] | Documentation contract"', ci)
+        aggregate = ci.split("  ci-passed:\n", 1)[1]
+        self.assertIn("      - documentation-contract\n", aggregate)
+        self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)
+
 
 class ReceiptCommandTest(unittest.TestCase):
     def test_cli_writes_deterministic_json_and_a_markdown_summary(self):

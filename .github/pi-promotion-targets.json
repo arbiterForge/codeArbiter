@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "policy": {
+    "compatibility_source": "plugins/ca-pi/tools/src/compatibility.ts",
+    "supported_versions_pattern": "new Set\\(\\[(?P<versions>[^]]+)\\]\\)",
+    "node_floor_pattern": "MINIMUM_NODE = \\[(?P<major>\\d+), (?P<minor>\\d+), (?P<patch>\\d+)\\]"
+  },
+  "release": {
+    "package_path": "plugins/ca-pi/package.json",
+    "changelog_path": "plugins/ca-pi/CHANGELOG.md"
+  },
+  "targets": [
+    {
+      "id": "compatibility-policy",
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "class": "policy",
+      "before": "new Set([\"{minimum}\", \"{last_verified}\"])",
+      "after": "new Set([\"{minimum}\", \"{candidate}\"])"
+    },
+    {
+      "id": "compatibility-guidance",
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "class": "policy",
+      "before": "requires Pi {minimum} or {last_verified}; install a supported Pi version",
+      "after": "requires Pi {minimum} or {candidate}; install a supported Pi version"
+    },
+    {
+      "id": "host-fingerprint-window",
+      "path": "core/hosts.json",
+      "class": "policy",
+      "before": "\"{last_verified}\": \"12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51\"",
+      "after": "\"{candidate}\": \"12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51\""
+    },
+    {
+      "id": "bundle-fingerprint-window",
+      "path": "plugins/ca-pi/tools/build.mjs",
+      "class": "generated",
+      "before": "JSON.stringify([\"{minimum}\", \"{last_verified}\"])",
+      "after": "JSON.stringify([\"{minimum}\", \"{candidate}\"])"
+    },
+    {
+      "id": "adapter-matrix",
+      "path": ".github/workflows/ci.yml",
+      "class": "ci",
+      "before": "pi-version: [\"{minimum}\", \"{last_verified}\"]",
+      "after": "pi-version: [\"{minimum}\", \"{candidate}\"]"
+    },
+    {
+      "id": "platform-contract-window",
+      "path": ".github/scripts/test_pi_platform_contract.py",
+      "class": "ci",
+      "before": "SUPPORTED = (\"{minimum}\", \"{last_verified}\")",
+      "after": "SUPPORTED = (\"{minimum}\", \"{candidate}\")"
+    },
+    {
+      "id": "package-contract-expectations",
+      "path": ".github/scripts/test_pi_package.py",
+      "class": "ci",
+      "before": "{last_verified}",
+      "after": "{candidate}",
+      "occurrences": "all"
+    },
+    {
+      "id": "host-descriptor-expectations",
+      "path": ".github/scripts/test_host_descriptors.py",
+      "class": "ci",
+      "before": "{{\"{minimum}\", \"{last_verified}\"}}",
+      "after": "{{\"{minimum}\", \"{candidate}\"}}"
+    },
+    {
+      "id": "platform-contract-expectations",
+      "path": ".github/scripts/test_pi_platform_contract.py",
+      "class": "ci",
+      "before": "{last_verified}",
+      "after": "{candidate}",
+      "occurrences": "all"
+    },
+    {
+      "id": "package-test-expectations",
+      "path": "plugins/ca-pi/tools/test/package.test.ts",
+      "class": "policy",
+      "before": "{last_verified}",
+      "after": "{candidate}",
+      "occurrences": "all"
+    },
+    {
+      "id": "doctor-test-expectations",
+      "path": "plugins/ca-pi/tools/test/doctor.test.ts",
+      "class": "policy",
+      "before": "{last_verified}",
+      "after": "{candidate}",
+      "occurrences": "all"
+    },
+    {
+      "id": "doctor-runtime-policy",
+      "path": "plugins/ca-pi/tools/src/doctor.ts",
+      "class": "policy",
+      "before": "{last_verified}",
+      "after": "{candidate}",
+      "occurrences": "all"
+    },
+    {
+      "id": "readme-supported-hosts",
+      "path": "README.md",
+      "class": "current-doc",
+      "before": "Pi {minimum} and Pi {last_verified} are the supported hosts",
+      "after": "Pi {minimum} and Pi {candidate} are the supported hosts"
+    },
+    {
+      "id": "parity-supported-hosts",
+      "path": "docs/parity.md",
+      "class": "current-doc",
+      "before": "contracts target Pi {minimum} and Pi {last_verified}.",
+      "after": "contracts target Pi {minimum} and Pi {candidate}."
+    },
+    {
+      "id": "parity-testing-supported-hosts",
+      "path": "docs/pi-parity-testing.md",
+      "class": "current-doc",
+      "before": "Pi {minimum} is the minimum supported host and Pi {last_verified} is",
+      "after": "Pi {minimum} is the minimum supported host and Pi {candidate} is"
+    },
+    {
+      "id": "core-host-notes",
+      "path": "core/surface/includes/pi-host-notes.md",
+      "class": "generated",
+      "before": "Supported promotion targets are Pi {minimum} and Pi {last_verified}.",
+      "after": "Supported promotion targets are Pi {minimum} and Pi {candidate}."
+    },
+    {
+      "id": "core-doctor-guidance",
+      "path": "core/surface/commands/doctor.md",
+      "class": "generated",
+      "before": "supported Pi {minimum}/{last_verified} public extension",
+      "after": "supported Pi {minimum}/{candidate} public extension"
+    },
+    {
+      "id": "pi-support-live-verification",
+      "path": ".codearbiter/specs/pi-support.md",
+      "class": "current-doc",
+      "before": "- Last live-verified Pi: `{last_verified}`.",
+      "after": "- Last live-verified Pi: `{candidate}`."
+    },
+    {
+      "id": "technical-stack-supported-hosts",
+      "path": ".codearbiter/tech-stack.md",
+      "class": "current-doc",
+      "before": "Supported promotion versions are Pi {minimum} and Pi {last_verified}.",
+      "after": "Supported promotion versions are Pi {minimum} and Pi {candidate}."
+    }
+  ]
+}

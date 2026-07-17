@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "classes": [
+    {
+      "name": "generated",
+      "include": [
+        "plugins/ca-pi/agents/**",
+        "plugins/ca-pi/commands/**",
+        "plugins/ca-pi/includes/**",
+        "plugins/ca-pi/skills/**"
+      ]
+    },
+    {
+      "name": "historical",
+      "include": [
+        "CHANGELOG.md",
+        "plugins/*/CHANGELOG.md",
+        ".codearbiter/checkpoints/**",
+        ".codearbiter/decisions/**",
+        ".codearbiter/plans/**",
+        ".codearbiter/reports/**",
+        ".codearbiter/spikes/**",
+        ".codearbiter/sprint-log.md",
+        "docs/reports/**"
+      ]
+    },
+    {
+      "name": "current",
+      "include": ["**/*.md"],
+      "exclude": [
+        "CHANGELOG.md",
+        "plugins/*/CHANGELOG.md",
+        ".codearbiter/checkpoints/**",
+        ".codearbiter/decisions/**",
+        ".codearbiter/plans/**",
+        ".codearbiter/reports/**",
+        ".codearbiter/spikes/**",
+        ".codearbiter/sprint-log.md",
+        "docs/reports/**",
+        "plugins/ca-pi/agents/**",
+        "plugins/ca-pi/commands/**",
+        "plugins/ca-pi/includes/**",
+        "plugins/ca-pi/skills/**"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "path": ".codearbiter/specs/pi-support.md",
+      "template": "- Last live-verified Pi: `{last_verified}`."
+    },
+    {
+      "path": ".codearbiter/tech-stack.md",
+      "template": "Supported promotion versions are Pi {minimum} and Pi {last_verified}."
+    },
+    {
+      "path": "README.md",
+      "template": "Pi {minimum} and Pi {last_verified} are the supported hosts for this release line."
+    },
+    {
+      "path": "core/surface/commands/doctor.md",
+      "template": "supported Pi {minimum}/{last_verified} public extension"
+    },
+    {
+      "path": "core/surface/includes/pi-host-notes.md",
+      "template": "Supported promotion targets are Pi {minimum} and Pi {last_verified}."
+    },
+    {
+      "path": "docs/parity.md",
+      "template": "contracts target Pi {minimum} and Pi {last_verified}."
+    },
+    {
+      "path": "docs/pi-parity-testing.md",
+      "template": "Pi {minimum} is the minimum supported host and Pi {last_verified} is"
+    }
+  ],
+  "generator_checks": [
+    ["python", "tools/build-surface.py", "--check"]
+  ]
+}
