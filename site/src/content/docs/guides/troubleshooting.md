@@ -75,6 +75,24 @@ Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` p
 
 **To fix:** run `/ca:statusline` to re-wire explicitly, or open a new Claude Code session to trigger the automatic repair.
 
+## Pi
+
+On Pi, run `/ca-doctor` first — it is the diagnostic entry point, checking the active package path,
+canonical Pi CLI and package origin, command ownership, supported-version fingerprints,
+Python/core/bridge health, child fingerprint, final mutator wrappers, and the H-03 wrapper
+self-test.
+
+Pi has several distinct silent-inactivity states that look alike but have different fixes:
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Nothing enforces, no orchestrator persona | `.codearbiter/CONTEXT.md` missing or `arbiter: enabled` not set | Run `/ca-init`, per [Repo Activation](#repo-activation) above |
+| Repo is enabled but still dormant | Pi project trust not granted | Grant Pi project trust for the repo, then start a fresh session |
+| Trust was just granted but still dormant | Trust was granted in the current session, not a fresh one | Start a new session after granting trust — the parent registers repository-aware dispatch only on a fresh session that reports the trust decision |
+| Mutating calls fail, or an interpreter breadcrumb appears | Python 3 not on `PATH` | Add Python 3 to `PATH`; `ca-pi` blocks mutating calls rather than failing silently when the interpreter is missing |
+| `/ca-<name>` doesn't do anything | Wrong invocation syntax | Pi uses `/ca-<name>` generated aliases with `/skill:ca-<name>` as the host-native fallback — this differs from Codex's `$ca-<name>` convention |
+| Doctor reports an unsupported version | Pi CLI is not 0.80.5 or 0.80.6 | Only Pi 0.80.5 and Pi 0.80.6 are supported in this release line; see [Compatibility](/getting-started/compatibility/) |
+
 ## Symptom Reference
 
 | Symptom | Likely cause | Suggested check |
