@@ -127,10 +127,10 @@ AC-17, AC-29, and AC-36 before approval.
 | PI-AC-32 cross-platform contract | AC 32 | 11 | COVERED |
 | PI-AC-33 independent release guard | AC 33 | 2 | COVERED |
 | PI-AC-34 documentation parity | AC 34 | 12 | COVERED |
-| PI-AC-35 live promotion evidence | AC 35 | 13 | OPEN |
+| PI-AC-35 live promotion evidence | AC 35 | 13 | COVERED |
 | PI-AC-36 threat-model gate | AC 36 | 10 | COVERED |
-| PI-AC-37 repository regression gate | AC 37 | 14 | OPEN |
-| PI-AC-38 single-branch/full-parity gate | AC 38 | 14 | OPEN |
+| PI-AC-37 repository regression gate | AC 37 | 14 | COVERED |
+| PI-AC-38 single-branch/full-parity gate | AC 38 | 14 | COVERED |
 
 ## Status protocol and checkpoints
 
@@ -1403,7 +1403,7 @@ python tools/build-host-packages.py --check
 
 ### Task 13: Live supported-version promotion evidence
 
-**Status:** IN_PROGRESS
+**Status:** ACCEPTED
 **Owns:** PI-AC-35
 
 **Review ledger from Batch 1:** Promotion evidence must include every committed Windows/macOS/Linux
@@ -1461,7 +1461,7 @@ git diff --check -- docs/reports/pi-support docs/parity.md
 
 ### Task 14: Full repository gate, parity closure, and governed handoff
 
-**Status:** IN_PROGRESS
+**Status:** ACCEPTED
 **Owns:** PI-AC-37, PI-AC-38
 
 **Review ledger from Tasks 1-2:** Derive package-contract version expectations from the nested
