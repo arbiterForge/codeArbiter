@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "checks": [
+    {
+      "id": "broad-lane",
+      "lane": "CHECK",
+      "scope": "REPO",
+      "contract": "Broad validation"
+    },
+    {
+      "id": "pi-adapter",
+      "lane": "CHECK",
+      "scope": "PI",
+      "contract": "Adapter contract",
+      "reproduce": "npm --prefix plugins/ca-pi/tools test"
+    },
+    {
+      "id": "ca-surface",
+      "lane": "CHECK",
+      "scope": "CA",
+      "contract": "Generated surface",
+      "reproduce": "python tools/build-surface.py --check"
+    },
+    {
+      "id": "codex-surface",
+      "lane": "CHECK",
+      "scope": "CDX",
+      "contract": "Generated surface",
+      "reproduce": "python tools/build-surface.py --check"
+    },
+    {
+      "id": "pi-surface",
+      "lane": "CHECK",
+      "scope": "PI",
+      "contract": "Generated surface",
+      "reproduce": "python tools/build-surface.py --check"
+    },
+    {
+      "id": "pi-latest",
+      "lane": "WATCH",
+      "scope": "PI",
+      "contract": "Upstream compatibility"
+    }
+  ],
+  "edges": [
+    {
+      "glob": "plugins/ca-pi/**",
+      "checks": ["pi-adapter", "pi-latest"]
+    },
+    {
+      "glob": "core/pysrc/**",
+      "checks": ["broad-lane"]
+    },
+    {
+      "kind": "descriptor_surface",
+      "source_prefix": "core/surface/",
+      "checks": {
+        "claude": "ca-surface",
+        "codex": "codex-surface",
+        "pi": "pi-surface"
+      }
+    }
+  ]
+}
