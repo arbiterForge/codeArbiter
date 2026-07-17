@@ -22,8 +22,9 @@ const bundles = [
 const windowsSupervisor = resolve(pluginRoot, "helpers", "windows-supervisor.js");
 // This real-host isolation proof starts a loopback Git daemon, clones the pinned
 // package, and loads the external Pi runtime. Cold hosted Windows I/O can exceed
-// Vitest's default without any individual product operation hanging.
-const LIVE_DUPLICATE_HOST_TIMEOUT_MS = 45_000;
+// Vitest's default without any individual product operation hanging. Keep the
+// aggregate fixture bound below the platform runner's 180-second command cap.
+const LIVE_DUPLICATE_HOST_TIMEOUT_MS = 120_000;
 
 async function exists(path: string): Promise<boolean> {
   try {

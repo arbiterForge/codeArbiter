@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -14,6 +15,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SUPPORTED = ("0.80.5", "0.80.6")
+PLATFORM_COMMAND_TIMEOUT_SECONDS = 180
 
 
 def version_policy(version):
@@ -30,8 +32,13 @@ def fixture_commands(fixtures_only):
     commands = [
         [python, ".github/scripts/test_host_descriptors.py"],
         [python, ".github/scripts/test_pi_package.py"],
+        # The real-host package fixture owns a Git daemon, temp repository, and
+        # external Pi loader. Give it a fresh Vitest process so the platform
+        # rerun cannot inherit state from the process-tree fixture files.
         [npm, "--prefix", "plugins/ca-pi/tools", "test", "--", "--run",
-         "test/bridge.test.ts", "test/package.test.ts", "test/runner-isolation.test.ts",
+         "test/package.test.ts"],
+        [npm, "--prefix", "plugins/ca-pi/tools", "test", "--", "--run",
+         "test/bridge.test.ts", "test/runner-isolation.test.ts",
          "test/process-tree.test.ts"],
         [python, ".github/scripts/test_pi_parity.py"],
         [python, ".github/scripts/test_pi_process_tree.py", "--fixture-only"],
@@ -107,6 +114,35 @@ class PlatformContractFixtures(unittest.TestCase):
         ):
             self.assertIn(required, rendered)
 
+    def test_process_heavy_package_fixture_uses_a_fresh_vitest_process(self):
+        commands = fixture_commands(fixtures_only=True)
+        vitest_commands = [
+            command for command in commands
+            if "plugins/ca-pi/tools" in command and "test" in command
+        ]
+        self.assertEqual(len(vitest_commands), 2)
+        self.assertEqual(vitest_commands[0][-1], "test/package.test.ts")
+        self.assertNotIn("test/package.test.ts", vitest_commands[1])
+        for required in (
+            "test/bridge.test.ts",
+            "test/runner-isolation.test.ts",
+            "test/process-tree.test.ts",
+        ):
+            self.assertIn(required, vitest_commands[1])
+
+    def test_live_duplicate_host_budget_fits_inside_platform_command_deadline(self):
+        package_test = (
+            ROOT / "plugins" / "ca-pi" / "tools" / "test" / "package.test.ts"
+        ).read_text(encoding="utf-8")
+        match = re.search(
+            r"const LIVE_DUPLICATE_HOST_TIMEOUT_MS = ([\d_]+);",
+            package_test,
+        )
+        self.assertIsNotNone(match)
+        budget_ms = int(match.group(1).replace("_", ""))
+        self.assertEqual(budget_ms, 120_000)
+        self.assertLess(budget_ms, PLATFORM_COMMAND_TIMEOUT_SECONDS * 1_000)
+
 
 def run_contract(pi_version, fixtures_only):
     policy = None if pi_version is None else version_policy(pi_version)
@@ -126,7 +162,8 @@ def run_contract(pi_version, fixtures_only):
     for index, command in enumerate(fixture_commands(fixtures_only), start=1):
         completed = subprocess.run(
             command, cwd=ROOT, env=environment, check=False, capture_output=True,
-            text=True, encoding="utf-8", errors="replace", timeout=180,
+            text=True, encoding="utf-8", errors="replace",
+            timeout=PLATFORM_COMMAND_TIMEOUT_SECONDS,
         )
         label = pathlib.Path(command[1] if len(command) > 1 else command[0]).name
         if completed.returncode != 0:
