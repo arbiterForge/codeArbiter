@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { appendFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-import type { BridgePort, LifecycleLease } from "./contracts.ts";
+import type { BridgePort, ExtensionContextPort, LifecycleLease } from "./contracts.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { runPiChild, type ChildResult, type PiChildRequest } from "./runner.ts";
 
@@ -104,7 +104,7 @@ export interface PiCompactionRuntime {
 export type PiChildRunner = (request: PiChildRequest, signal: AbortSignal) => Promise<ChildResult>;
 
 export interface PiCompactionInstallPort {
-  on(event: string, handler: (event: Record<string, unknown>, context: Record<string, unknown>) => unknown): void;
+  on(event: string, handler: (event: Record<string, unknown>, context: ExtensionContextPort) => unknown): void;
 }
 
 export interface PiCompactionAuditRecord {
@@ -380,7 +380,7 @@ export async function handleAfterCompact(
   await audit.record({ auditCodes, metrics, planFingerprint: details.planFingerprint });
 }
 
-function trustedContext(context: Record<string, unknown>): context is Record<string, unknown> & {
+function trustedContext(context: ExtensionContextPort): context is ExtensionContextPort & {
   cwd: string;
   model: { provider?: unknown; id?: unknown };
   isProjectTrusted: () => boolean;

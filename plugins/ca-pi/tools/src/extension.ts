@@ -425,20 +425,20 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
     unavailableBridge = undefined;
   };
   const enforcement = new EnforcementInstaller();
-  enforcement.ensureBootstrap(pi as unknown as ToolGuardPiPort, toolClasses);
-  installParent(pi as unknown as ParentPiPort, {
+  enforcement.ensureBootstrap(pi, toolClasses);
+  installParent(pi, {
     bridge,
     catalog,
     packageRoot,
     enforcementReadiness: enforcement,
     loadPersona: async () => await readFile(resolve(packageRoot, "ORCHESTRATOR.md"), "utf8"),
     resetBridge,
-    installDispatch: (currentLifecycle) => installPiDispatch(pi as unknown as ToolGuardPiPort, {
+    installDispatch: (currentLifecycle) => installPiDispatch(pi, {
       packageRoot,
       piCliPath: runtime.cliEntry,
       currentLifecycle,
     }),
-    installCompaction: (currentLifecycle) => installPiCompaction(pi as never, {
+    installCompaction: (currentLifecycle) => installPiCompaction(pi, {
       packageRoot,
       currentLifecycle,
       runner: createPiCompactionRunner({
@@ -454,7 +454,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
       }),
       audit: appendPiCompactionAudit,
     }),
-    installFarmPreview: (currentLifecycle) => installPiFarmPreview(pi as unknown as ToolGuardPiPort, {
+    installFarmPreview: (currentLifecycle) => installPiFarmPreview(pi, {
       packageRoot,
       nodePath: process.execPath,
       environment: process.env,
@@ -475,7 +475,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
     doctorReport: async (context) => {
       const enabledForDoctor = await isEnabled(context.cwd);
       const trustedForDoctor = hasAffirmativeProjectTrust(context);
-      const commands = (pi as unknown as ParentPiPort).getCommands();
+      const commands = pi.getCommands();
       const doctorAlias = commands.find((command) => command.name === "ca-doctor");
       const packageScope = doctorAlias?.sourceInfo.scope ?? "temporary";
       const input = await collectPiDoctorInput({
@@ -498,8 +498,8 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
         projectTrustRequired: enabledForDoctor,
         childPath: resolve(packageRoot, "extensions", "codearbiter-child.js"),
         wrapperSourcePath: modulePath,
-        activeTools: (pi as unknown as ToolGuardPiPort).getActiveTools(),
-        allTools: (pi as unknown as ToolGuardPiPort).getAllTools(),
+        activeTools: pi.getActiveTools(),
+        allTools: pi.getAllTools(),
         expansionFingerprints,
         childFingerprint: __CODEARBITER_PI_CHILD_SHA256__,
       });
@@ -511,7 +511,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
       return formatPiDoctorReport([...diagnosePi(input), wrapperSelfTest]);
     },
     installEnforcement: (cwd, context) => {
-      const guardPi = pi as unknown as ToolGuardPiPort;
+      const guardPi = pi;
       enforcement.ensureGuard(guardPi, toolClasses, modulePath);
       const factoriesFor = (projectTrusted: boolean): BuiltinToolFactories => ({
         bash: (root) => {
@@ -534,7 +534,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
       // installer can run. Do not re-read a mutable host signal mid-bootstrap.
       const factories = factoriesFor(true);
       const nativeFactories = factoriesFor(false);
-      enforcement.ensureResults(pi as unknown as ToolResultPiPort, bridge, toolClasses);
+      enforcement.ensureResults(pi, bridge, toolClasses);
       enforcement.ensureBuiltins(guardPi, bridge, {
         cwd,
         descriptor: toolClasses,

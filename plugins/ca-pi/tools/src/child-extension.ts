@@ -206,7 +206,7 @@ export default async function codeArbiterPiChild(pi: ExtensionAPI): Promise<void
     edit: (root) => runtime.createEditToolDefinition(root),
     write: (root) => runtime.createWriteToolDefinition(root),
   };
-  installChild(pi as unknown as ChildPiPort, {
+  installChild(pi, {
     marker: process.env.CODEARBITER_SUBAGENT,
     expectedNonce,
     cwd,

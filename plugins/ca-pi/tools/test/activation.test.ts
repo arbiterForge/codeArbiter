@@ -14,6 +14,7 @@ import type {
   ExtensionContextPort,
   ParentPiPort,
 } from "../src/contracts.ts";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import * as extensionModule from "../src/extension.ts";
 import { createCodeArbiterPi, installParent, renderPiDoctorReportBlock } from "../src/extension.ts";
 import { collectPiDoctorInput, diagnosePi, formatPiDoctorReport } from "../src/doctor.ts";
@@ -489,7 +490,7 @@ describe("Pi activation", () => {
     expect("HOST_PI_VERSION" in extensionModule).toBe(false);
     expect("HOST_RUNTIME_IDENTITY" in extensionModule).toBe(false);
     let apiAccesses = 0;
-    const api = new Proxy({}, { get: () => { apiAccesses += 1; return () => undefined; } }) as ParentPiPort;
+    const api = new Proxy({}, { get: () => { apiAccesses += 1; return () => undefined; } }) as ExtensionAPI;
     expect(() => createCodeArbiterPi({
       piVersion: "0.80.4",
       nodeVersion: "24.0.0",
