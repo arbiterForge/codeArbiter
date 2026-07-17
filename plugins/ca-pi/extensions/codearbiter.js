@@ -619,7 +619,7 @@ function assertCommandOwnership(pi, packageRoot, catalog) {
 }
 
 // src/runtime-resolver.ts
-import { readFile as readFile2, realpath as realpath2 } from "node:fs/promises";
+import { lstat, readFile as readFile2, realpath as realpath2 } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname as dirname3, isAbsolute as isAbsolute3, relative as relative3, resolve as resolve4 } from "node:path";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
@@ -704,11 +704,13 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
     if (inside3(packageRoot, extensionPackageRoot)) return fail();
     const declaredBin = resolve4(packageRoot, binTarget(manifest));
     if (!inside3(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
+    if (!(await lstat(canonicalAnchor)).isFile()) return fail();
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
     const requireFromPi = createRequire(resolve4(packageRoot, "package.json"));
     const moduleEntry = await realpath2(requireFromPi.resolve(declaredExport));
     if (!inside3(moduleEntry, packageRoot)) return fail();
+    if (!(await lstat(moduleEntry)).isFile()) return fail();
     const identity2 = Object.freeze({
       cliEntry: canonicalAnchor,
       manifestPath: canonicalManifest,
@@ -4310,7 +4312,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "082ce345df901dff44605c19a2b87d918b8bcdc4829f7c7858df257027db10d6"
+        childFingerprint: "879b869479f922bd9692640e820380f0334d726a19c76777d56cb068da12d29a"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

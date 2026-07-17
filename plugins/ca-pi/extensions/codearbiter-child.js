@@ -437,7 +437,7 @@ function compatibilityDirection(input) {
 }
 
 // src/runtime-resolver.ts
-import { readFile, realpath as realpath2 } from "node:fs/promises";
+import { lstat, readFile, realpath as realpath2 } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname as dirname2, isAbsolute as isAbsolute2, relative as relative2, resolve as resolve2 } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -522,11 +522,13 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
     if (inside2(packageRoot, extensionPackageRoot)) return fail();
     const declaredBin = resolve2(packageRoot, binTarget(manifest));
     if (!inside2(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
+    if (!(await lstat(canonicalAnchor)).isFile()) return fail();
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
     const requireFromPi = createRequire(resolve2(packageRoot, "package.json"));
     const moduleEntry = await realpath2(requireFromPi.resolve(declaredExport));
     if (!inside2(moduleEntry, packageRoot)) return fail();
+    if (!(await lstat(moduleEntry)).isFile()) return fail();
     const identity2 = Object.freeze({
       cliEntry: canonicalAnchor,
       manifestPath: canonicalManifest,

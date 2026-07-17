@@ -1,5 +1,5 @@
 /** Resolve Pi runtime exports exclusively from the canonical CLI package anchor. */
-import { readFile, realpath } from "node:fs/promises";
+import { lstat, readFile, realpath } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -61,6 +61,11 @@ async function owningPackageRoot(file: string, expectedName: string): Promise<st
     const candidate = resolve(cursor, "package.json");
     try {
       const manifest = JSON.parse(await readFile(candidate, "utf8")) as { name?: unknown };
+      // By design: resolution is anchored to the shipped bundle layout (extensions/ under the
+      // ca-pi package root), so the first package.json found is expected to already be "ca-pi";
+      // a dev-tree src/ import walking up to an intermediate workspace package.json (e.g.
+      // tools/package.json) is not a supported runtime path and fails closed here rather than
+      // continuing to search further ancestors.
       if (manifest.name !== expectedName) return fail();
       const canonicalRoot = await realpath(cursor);
       if (!inside(file, canonicalRoot) || !inside(await realpath(candidate), canonicalRoot)) return fail();
@@ -136,12 +141,14 @@ export async function resolvePiRuntimeIdentity(cliCandidate?: string): Promise<R
 
     const declaredBin = resolve(packageRoot, binTarget(manifest));
     if (!inside(declaredBin, packageRoot) || await realpath(declaredBin) !== canonicalAnchor) return fail();
+    if (!(await lstat(canonicalAnchor)).isFile()) return fail();
 
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
     const requireFromPi = createRequire(resolve(packageRoot, "package.json"));
     const moduleEntry = await realpath(requireFromPi.resolve(declaredExport));
     if (!inside(moduleEntry, packageRoot)) return fail();
+    if (!(await lstat(moduleEntry)).isFile()) return fail();
 
     const identity = Object.freeze({
       cliEntry: canonicalAnchor,
