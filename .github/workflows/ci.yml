@@ -851,11 +851,13 @@ jobs:
       - prose-codex
     runs-on: ubuntu-latest
     steps:
-      - name: Require every job to have succeeded or been skipped
+      - name: Require every required job to have succeeded or been skipped
         run: |
-          results="${{ join(needs.*.result, ' ') }}"
-          echo "upstream results: $results"
-          for r in $results; do
+          required_results="${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }}"
+          canary_result="${{ needs.ca-pi-latest.result }}"
+          echo "upstream required results: $required_results"
+          echo "advisory Pi canary result: $canary_result"
+          for r in $required_results; do
             case "$r" in
               success|skipped) ;;
               *) echo "::error::a required CI job concluded '$r'"; exit 1 ;;

@@ -762,6 +762,16 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     for dependency in ("ca-pi-tools", "ca-pi-latest", "version-bump-pi"):
         if dependency not in needs:
             violations.append(f"ci-passed.needs missing {dependency}")
+    required_results = re.search(
+        r'(?m)^\s{10}required_results="(?P<body>[^"\n]*)"\s*$',
+        aggregate,
+    )
+    if required_results is None:
+        violations.append("ci-passed must enumerate required results separately from the advisory canary")
+    elif "needs.ca-pi-latest.result" in required_results.group("body"):
+        violations.append("ci-passed must not promote the advisory ca-pi-latest result into required results")
+    if 'canary_result="${{ needs.ca-pi-latest.result }}"' not in aggregate:
+        violations.append("ci-passed must report the advisory ca-pi-latest result separately")
     return violations
 
 
@@ -1018,6 +1028,12 @@ class PiPackageTests(unittest.TestCase):
         latest_job = ci.split("  ca-pi-latest:", 1)[1].split("\n  hooks:", 1)[0]
         self.assertIn("Report latest version and test installed runtime admission", latest_job)
         self.assertEqual(pi_ci_contract_violations(ci), [])
+
+        security_contract = (REPO / ".github/scripts/test_pi_security.py").read_text(encoding="utf-8")
+        self.assertIn(
+            'name: "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>"',
+            security_contract,
+        )
 
         for path in (".github/scripts/test_pi_security.py", ".github/workflows/codeql.yml"):
             mutated = ci.replace(f"              - '{path}'\n", "", 1)

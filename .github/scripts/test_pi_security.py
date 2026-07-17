@@ -64,7 +64,7 @@ def workflow_results() -> list[dict[str, object]]:
         marker in ci_text
         for marker in (
             "ca-pi-codeql:",
-            "name: CA-Pi | CodeQL (JavaScript/TypeScript)",
+            'name: "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>"',
             "github.event_name == 'pull_request'",
             "needs.changes.outputs.ca-pi == 'true'",
             f"github/codeql-action/init@{CODEQL_SHA}",
