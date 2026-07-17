@@ -869,7 +869,10 @@ def main():
         # governance_line's arbiter_state() call doesn't re-read the same three
         # files a second time in this same invocation.
         render_full_briefing(root, summary, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
-        write_standup_marker(root, date_iso)
+        try:
+            write_standup_marker(root, date_iso)
+        except Exception:  # noqa: BLE001 — must never brick session startup
+            pass
     elif mode == "offer":
         print(OFFER_LINE_TEMPLATE.format(standup=get_host().cmd_ref("standup")))
 
