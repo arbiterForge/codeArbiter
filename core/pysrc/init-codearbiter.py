@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _gitexec import git_executable  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _hooklib  # noqa: E402 — set_host DI seam (#257)
+import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 
 # NOTE: this stub deliberately does NOT contain the initialization sentinel
 # (an HTML comment wrapping the word INITIALIZED). The SessionStart hook greps
@@ -196,9 +197,8 @@ def run(host, argv=None):
     resolves to the SAME instance the caller passed here — no second
     `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
     `fake_host`."""
-    _hooklib.set_host(host)
-    main(argv)
-    return 0
+    return _entrylib.dispatch(host, argv, main, _hooklib.set_host,
+                               pass_argv=True, propagate_result=False)
 
 
 if __name__ == "__main__":

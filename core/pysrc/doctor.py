@@ -21,6 +21,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _gitexec import git_executable  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
+import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import frontmatter_enabled, get_host, set_host, utf8_stdio  # noqa: E402
 
 HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
@@ -271,9 +272,8 @@ def run(host, argv=None):
     calls resolve to the SAME instance the caller passed here — no second
     `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
     `fake_host`."""
-    set_host(host)
-    main()
-    return 0
+    return _entrylib.dispatch(host, argv, main, set_host,
+                               pass_argv=False, propagate_result=False)
 
 
 if __name__ == "__main__":
