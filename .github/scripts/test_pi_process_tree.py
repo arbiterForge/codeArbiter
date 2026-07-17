@@ -78,9 +78,9 @@ if (mode === "leaf" || mode === "stubborn-leaf") {
     new Promise((resolve, reject) => { left.once("spawn", resolve); left.once("error", reject); }),
     new Promise((resolve, reject) => { right.once("spawn", resolve); right.once("error", reject); }),
   ]).then(() => {
-    process.stdout.write(JSON.stringify({ parent: process.pid, child: left.pid, grandchild: right.pid }) + "\n");
     process.stdout.write(
-      "FINAL_RECORD:" + "x".repeat(60_000) + ":END\n",
+      JSON.stringify({ parent: process.pid, child: left.pid, grandchild: right.pid }) + "\n" +
+        "FINAL_RECORD:" + "x".repeat(60_000) + ":END\n",
       () => process.exit(mode === "fast-nonzero" ? 23 : 0),
     );
   }, () => process.exit(33));
@@ -100,39 +100,108 @@ if (reason === "attach_refusal") {
   delete process.env.WINDIR;
 }
 const { createProcessTreeCleanup, spawnProcessTree } = await import(pathToFileURL(modulePath).href);
+const PID_HEADER_MAX_BYTES = 4_096;
+const FIXTURE_OUTPUT_MAX_BYTES = 131_072;
+function createFixtureOutputProtocol() {
+  return { buffer: "", header: undefined, overflow: false, totalBytes: 0 };
+}
+function acceptFixtureOutput(protocol, chunk) {
+  const chunkBytes = Buffer.byteLength(chunk, "utf8");
+  if (protocol.totalBytes + chunkBytes > FIXTURE_OUTPUT_MAX_BYTES) {
+    protocol.overflow = true;
+    throw new Error("fixture output protocol overflow");
+  }
+  protocol.totalBytes += chunkBytes;
+  protocol.buffer += chunk;
+  if (protocol.header !== undefined) return;
+  const newline = protocol.buffer.indexOf("\n");
+  if (newline < 0) {
+    if (Buffer.byteLength(protocol.buffer, "utf8") > PID_HEADER_MAX_BYTES) {
+      throw new Error("fixture pid protocol overflow");
+    }
+    return;
+  }
+  const header = protocol.buffer.slice(0, newline);
+  if (Buffer.byteLength(header, "utf8") > PID_HEADER_MAX_BYTES) {
+    throw new Error("fixture pid protocol overflow");
+  }
+  protocol.header = JSON.parse(header);
+}
+if (reason === "parser_probe") {
+  const combined = JSON.stringify({ parent: 11, child: 12, grandchild: 13 }) + "\n" +
+    "FINAL_RECORD:" + "x".repeat(60_000) + ":END\n";
+  const protocol = createFixtureOutputProtocol();
+  acceptFixtureOutput(protocol, combined);
+  if (protocol.header?.parent !== 11 || !protocol.buffer.includes(":END\n")) {
+    throw new Error("combined fixture output was not retained");
+  }
+  for (const invalid of ["x".repeat(PID_HEADER_MAX_BYTES + 1), "not-json\n"]) {
+    let refused = false;
+    try { acceptFixtureOutput(createFixtureOutputProtocol(), invalid); }
+    catch { refused = true; }
+    if (!refused) throw new Error("invalid fixture header was accepted");
+  }
+  await new Promise((resolve) => process.stdout.write("PARSER_OK\n", resolve));
+  process.exit(0);
+}
+let child;
+let cleanup;
+let phase = "launch-admission";
 try {
-  const child = await spawnProcessTree(process.execPath, [fixture, mode], {
+  child = await spawnProcessTree(process.execPath, [fixture, mode], {
     cwd: process.cwd(), env: childEnvironment, stdio: ["pipe", "pipe", "pipe", "pipe"],
   });
-  const cleanup = createProcessTreeCleanup(child, { graceMs: 300, pollMs: 20, verifyMs: 3_000 });
+  cleanup = createProcessTreeCleanup(child, { graceMs: 300, pollMs: 20, verifyMs: 3_000 });
+  phase = "containment-ready";
   if (!await cleanup.ready()) throw new Error("containment not ready");
-  let buffer = "";
+  phase = "pid-protocol";
+  const output = createFixtureOutputProtocol();
+  let outputFailure;
+  let pidSettled = false;
   const pids = await new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error("fixture pid protocol timed out")), 5_000);
-    child.once("error", reject);
+    let timer;
+    const fail = (error) => {
+      if (pidSettled) return;
+      pidSettled = true;
+      if (timer !== undefined) clearTimeout(timer);
+      reject(error);
+    };
+    timer = setTimeout(() => fail(new Error("fixture pid protocol timed out")), 5_000);
+    child.once("error", fail);
     child.stdout.setEncoding("utf8");
     child.stdout.on("data", (chunk) => {
-      buffer += chunk;
-      if (Buffer.byteLength(buffer, "utf8") > 4_096) reject(new Error("fixture pid protocol overflow"));
-      const newline = buffer.indexOf("\n");
-      if (newline < 0) return;
-      clearTimeout(timer);
-      resolve(JSON.parse(buffer.slice(0, newline)));
+      try {
+        acceptFixtureOutput(output, chunk);
+        if (!pidSettled && output.header !== undefined) {
+          pidSettled = true;
+          clearTimeout(timer);
+          resolve(output.header);
+        }
+      } catch (error) {
+        outputFailure = error;
+        if (!pidSettled) fail(error);
+        else void cleanup.terminate("protocol_overflow");
+      }
     });
   });
   process.stdout.write("PIDS " + JSON.stringify({ actualPid: child.pid, pids }) + "\n");
   if (reason === "hold") {
     setInterval(() => {}, 1_000);
   } else if (reason === "helper_failure") {
+    phase = "helper-close";
     const code = await new Promise((resolve) => child.once("close", resolve));
+    if (outputFailure !== undefined) throw outputFailure;
     process.stdout.write("FINAL " + JSON.stringify({ code, exitCode: child.exitCode, signalCode: child.signalCode }) + "\n");
   } else if (reason === "normal_close") {
+    phase = "normal-close";
     const code = await new Promise((resolve) => child.once("close", resolve));
+    if (outputFailure !== undefined) throw outputFailure;
     process.stdout.write("FINAL " + JSON.stringify({
       code, pids, actualPid: child.pid, normalClose: true,
-      finalOutput: buffer.includes("FINAL_RECORD:") && buffer.includes(":END\n"),
+      finalOutput: output.buffer.includes("FINAL_RECORD:") && output.buffer.includes(":END\n"),
     }) + "\n");
   } else {
+    phase = "termination";
     const started = Date.now();
     const result = await new Promise((resolve) => {
       if (reason === "cancelled") {
@@ -143,9 +212,14 @@ try {
         setTimeout(() => void cleanup.terminate("timeout").then(resolve), 25);
       }
     });
+    if (outputFailure !== undefined) throw outputFailure;
     process.stdout.write("FINAL " + JSON.stringify({ durationMs: Date.now() - started, pids, actualPid: child.pid, result }) + "\n");
   }
 } catch {
+  if (cleanup !== undefined) {
+    try { await cleanup.terminate("startup_failure"); } catch {}
+  }
+  process.stderr.write("controller failure phase=" + phase + "\n");
   process.stdout.write("REFUSED\n");
 }
 '''
@@ -245,6 +319,16 @@ def parse_lines(completed: subprocess.CompletedProcess[str], variant: str) -> tu
             f"stdout={completed.stdout!r} stderr={completed.stderr!r}"
         )
     return json.loads(pids_line[5:]), json.loads(final_line[6:])
+
+
+def run_parser_probe(directory: Path) -> None:
+    completed = subprocess.run(
+        [str(NODE), "--experimental-strip-types", str(directory / "controller.mjs"), str(MODULE),
+         str(directory / "fixture.mjs"), "parser_probe", "combined"],
+        cwd=ROOT, env=isolated_environment(directory, "parser-probe"), check=False,
+        capture_output=True, text=True, timeout=MAX_RUN_SECONDS,
+    )
+    assert completed.returncode == 0 and completed.stdout.strip() == "PARSER_OK", completed
 
 
 def run_variant(directory: Path, reason: str, mode: str) -> None:
@@ -459,6 +543,7 @@ def main() -> int:
         directory = Path(raw)
         (directory / "fixture.mjs").write_text(FIXTURE_SOURCE, encoding="utf-8", newline="\n")
         (directory / "controller.mjs").write_text(CONTROLLER_SOURCE, encoding="utf-8", newline="\n")
+        run_parser_probe(directory)
         if os.name == "nt":
             run_variant(directory, "normal_close", "root-first")
             run_variant(directory, "normal_close", "fast-nonzero")
