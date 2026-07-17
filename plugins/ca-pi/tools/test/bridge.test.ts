@@ -181,7 +181,7 @@ describe("BridgeClient", () => {
       cwd: projectCwd,
     }, new AbortController().signal);
     const observed = JSON.parse(response.context ?? "{}") as Record<string, string | undefined>;
-    expect(observed.cwd).toBe(packageRoot);
+    expect(observed.cwd).toBe(await realpath(packageRoot));
     expect(observed.git).toBe(trustedGit);
     expect(observed.python).toBe(trustedPython);
     const searchEntries = (observed.path ?? "").split(delimiter).filter(Boolean);

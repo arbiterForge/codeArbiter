@@ -1,5 +1,5 @@
-import { mkdir, mkdtemp, readFile, realpath, rm, symlink, unlink, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { mkdir, mkdtemp, readFile, rm, symlink, unlink, writeFile } from "node:fs/promises";
+import { existsSync, realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, resolve } from "node:path";
 
@@ -96,7 +96,7 @@ describe("generated Pi command aliases", () => {
       ui: { setStatus: () => undefined, notify: (message) => notifications.push(message) },
     });
 
-    const expectedPath = await realpath(resolve(fixture.root, "skills", "ca-feature", "SKILL.md"));
+    const expectedPath = realpathSync(resolve(fixture.root, "skills", "ca-feature", "SKILL.md"));
     expect(userMessages).toEqual([
       `<skill name="ca-feature" location="${expectedPath}">\n` +
       `References are relative to ${dirname(expectedPath)}.\n\n` +
