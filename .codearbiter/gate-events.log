@@ -864,3 +864,26 @@
 [2026-07-17T06:07:11Z] REMIND [H-15] host=codex hook=post-write-edit.py | CI/CD workflow changed. Dispatch security-reviewer before merging (it reviews workflow/secrets/permissions exposure). Advisory — not a commit block.
 [2026-07-17T06:27:35Z] REMIND [H-12] host=codex hook=post-write-edit.py | .github/workflows/ci.yml is governed by ADR-0014 (Treat Pi host authentication as opaque runtime state and fail closed on unknown tools). If this change contradicts it, route to $ca-reconcile or $ca-adr — do not drift silently.
 [2026-07-17T06:27:35Z] REMIND [H-15] host=codex hook=post-write-edit.py | CI/CD workflow changed. Dispatch security-reviewer before merging (it reviews workflow/secrets/permissions exposure). Advisory — not a commit block.
+[2026-07-17T07:36:06Z] REMIND [H-12] hook=post-write-edit.py | .github/workflows/ci.yml is governed by ADR-0014 (Treat Pi host authentication as opaque runtime state and fail closed on unknown tools). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:36:06Z] REMIND [H-15] hook=post-write-edit.py | CI/CD workflow changed. Dispatch security-reviewer before merging (it reviews workflow/secrets/permissions exposure). Advisory — not a commit block.
+[2026-07-17T07:36:11Z] REMIND [H-12] hook=post-write-edit.py | .github/workflows/ci.yml is governed by ADR-0014 (Treat Pi host authentication as opaque runtime state and fail closed on unknown tools). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:36:11Z] REMIND [H-15] hook=post-write-edit.py | CI/CD workflow changed. Dispatch security-reviewer before merging (it reviews workflow/secrets/permissions exposure). Advisory — not a commit block.
+[2026-07-17T07:36:40Z] REMIND [H-12] hook=post-write-edit.py | core/pysrc/session-start.py is governed by ADR-0011 (Multi-host support — third sibling plugin ca-codex via shared core + thin host adapters). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:36:49Z] REMIND [H-12] hook=post-write-edit.py | tools/sync-core.py is governed by ADR-0011 (Multi-host support — third sibling plugin ca-codex via shared core + thin host adapters). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:37:09Z] REMIND [H-12] hook=post-write-edit.py | plugins/ca-pi/tools/src/bridge.ts is governed by ADR-0013 (Add ca-pi as a sibling governance plugin using the shared core and a thin Pi adapter). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:37:10Z] REMIND [H-12] hook=post-write-edit.py | plugins/ca-pi/tools/src/compaction.ts is governed by ADR-0013 (Add ca-pi as a sibling governance plugin using the shared core and a thin Pi adapter). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:37:12Z] REMIND [H-12] hook=post-write-edit.py | plugins/ca-pi/tools/src/attestation.ts is governed by ADR-0013 (Add ca-pi as a sibling governance plugin using the shared core and a thin Pi adapter). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:37:49Z] REMIND [H-12] hook=post-write-edit.py | plugins/ca/hooks/tests/test_gitexec.py is governed by ADR-0004 (Database-free architecture; Python hooks are stdlib-only). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:38:32Z] REMIND [H-12] hook=post-write-edit.py | core/pysrc/_gitexec.py is governed by ADR-0011 (Multi-host support — third sibling plugin ca-codex via shared core + thin host adapters). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:38:37Z] REMIND [H-12] hook=post-write-edit.py | core/pysrc/_prunepolicy.py is governed by ADR-0011 (Multi-host support — third sibling plugin ca-codex via shared core + thin host adapters). If this change contradicts it, route to /ca:reconcile or /ca:adr — do not drift silently.
+[2026-07-17T07:52:14Z] BLOCK [H-18] hook=pre-bash.py | .codearbiter/CONTEXT.md is the activation switch every enforcement hook reads (#159) — shell rewrites, edits, or deletions that could flip `arbiter: enabled` off or corrupt its frontmatter are prohibited. Edit it through the sanctioned init path.
+[2026-07-17T07:53:44Z] BLOCK [H-03] hook=pre-bash.py | Wildcard staging is prohibited — a glob pattern ('docs(core): add Public API headers to _gitexec and _prunepolicy
+
+Both new-this-branch modules lacked the mandated header convention
+that every other _*lib carries; the header is the contract readers
+and reviewers navigate by. Comments only, zero behavior change,
+synced byte-identical to all three hosts.
+
+Closes #328
+Claude-Session: https://claude.ai/code/session_015ZDVU1BzUqnnPVHbZ397bX') stages a non-explicit file set. Stage files explicitly, one path per file (commit-gate skill).
+[2026-07-17T07:54:01Z] BLOCK [H-03] hook=pre-bash.py | Wildcard staging is prohibited — a directory ('.codearbiter/reports/2026-07-17-pi-support-branch') stages a non-explicit file set. Stage files explicitly, one path per file (commit-gate skill).

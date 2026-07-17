@@ -1,0 +1,22 @@
+schema: manifest/v1
+run_id: 2026-07-17-pi-support-branch
+scope: repo-root
+branch: feat/pi-support
+created: 2026-07-17
+status: report-written
+models:
+  orchestrator: fable-5
+  wave1: fable-5
+  waves2-3: sonnet-5
+  mappers: haiku-4.5
+lenses:
+  launched: [appsec, architecture, reliability, secrets-supply, test-fidelity, coverage, infra, observability, performance, typesafety]
+  skipped: [{lens: migration, reason: no db/schema migrations in scope}]
+sidecar: [docs-content-claude-code, docs-content-codex, docs-content-pi, docs-visuals]
+findings:
+  calibrated: {critical: 0, high: 4, medium: 8, low: 5}
+  decisions: {keep: 13, combine: 4, investigate: 3, decision-required: 1}
+tokens:
+  estimated_band: [7000000, 29000000]
+  observed_subagent: 1322000
+plans: [plans/phase-1.md, plans/phase-3.md]
