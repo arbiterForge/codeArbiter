@@ -481,7 +481,7 @@ def run_helper_failure(directory: Path) -> None:
         header = json.loads(line[5:])
         pids = [int(header["pids"][name]) for name in ("parent", "child", "grandchild")]
         children = windows_child_processes(process.pid)
-        helpers = [pid for pid, name in children if name == "powershell.exe"]
+        helpers = [pid for pid, name in children if name in ("powershell.exe", "pwsh.exe")]
         supervisors = [pid for pid, name in children if name == "node.exe"]
         assert len(helpers) == 1 and len(supervisors) == 1, children
         supervisor_pid = supervisors[0]

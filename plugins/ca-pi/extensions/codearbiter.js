@@ -1565,7 +1565,7 @@ function childAttestationDigest(input) {
 
 // src/process-tree.ts
 import { EventEmitter } from "node:events";
-import { spawn as spawn2 } from "node:child_process";
+import { spawn as spawn2, spawnSync as spawnSync2 } from "node:child_process";
 import { readFileSync as readFileSync2, realpathSync as realpathSync5, statSync as statSync2 } from "node:fs";
 import { dirname as dirname4, isAbsolute as isAbsolute6, relative as relative6, resolve as resolve7, win32 as win322 } from "node:path";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
@@ -1575,6 +1575,7 @@ var DEFAULT_POLL_MS = 25;
 var MAX_STEP_MS = 3e4;
 var MAX_POLL_MS = 1e3;
 var WINDOWS_JOB_READY_MS = 5e3;
+var WINDOWS_HELPER_CLEANUP_MS = 1e3;
 var WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
 var WINDOWS_JOB_READY = "ATTACHED";
 var WINDOWS_SUPERVISOR_START = "START\n";
@@ -1790,7 +1791,36 @@ function canonicalWindowsSystemFile(parts, basename) {
 function resolveWindowsTaskkillExecutable() {
   return canonicalWindowsSystemFile(["taskkill.exe"], "taskkill.exe");
 }
+function windowsPowerShellCandidatePaths(systemRoot) {
+  if (!win322.isAbsolute(systemRoot)) throw new Error("Windows PowerShell candidates require an absolute system root");
+  return Object.freeze([
+    win322.join(win322.parse(systemRoot).root, "Program Files", "PowerShell", "7", "pwsh.exe"),
+    win322.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
+  ]);
+}
+function canonicalWindowsFileWithin(candidatePath, rootPath, basename) {
+  try {
+    const root = realpathSync5(rootPath);
+    const parent = realpathSync5(dirname4(candidatePath));
+    const candidate = realpathSync5(candidatePath);
+    if (!statSync2(candidate).isFile() || !pathInsideWindows(parent, root) || !pathInsideWindows(candidate, parent) || win322.basename(candidate).toLowerCase() !== basename) return void 0;
+    return candidate;
+  } catch {
+    return void 0;
+  }
+}
 function resolveWindowsPowerShellExecutable() {
+  if (process.platform !== "win32") return void 0;
+  const configuredRoot = process.env.SystemRoot ?? process.env.WINDIR;
+  if (configuredRoot === void 0 || !win322.isAbsolute(configuredRoot)) return void 0;
+  try {
+    const root = realpathSync5(configuredRoot);
+    const [modern] = windowsPowerShellCandidatePaths(root);
+    const programFiles = win322.join(win322.parse(root).root, "Program Files");
+    const resolvedModern = canonicalWindowsFileWithin(modern, programFiles, "pwsh.exe");
+    if (resolvedModern !== void 0) return resolvedModern;
+  } catch {
+  }
   return canonicalWindowsSystemFile(["WindowsPowerShell", "v1.0", "powershell.exe"], "powershell.exe");
 }
 function windowsJobHelperArgv(powershellExecutable) {
@@ -1823,6 +1853,28 @@ function helperEnvironment(command) {
   const environment = { PATH: dirname4(command) };
   for (const key of ["SystemRoot", "WINDIR", "TEMP", "TMP"]) if (process.env[key] !== void 0) environment[key] = process.env[key];
   return environment;
+}
+function windowsHelperNeedsTermination(helper, alreadyClosed = false) {
+  return !alreadyClosed && positivePid(helper.pid) && helper.exitCode === null && helper.signalCode === null;
+}
+function terminateWindowsHelperTree(helper, alreadyClosed) {
+  if (!windowsHelperNeedsTermination(helper, alreadyClosed)) return;
+  const taskkill = resolveWindowsTaskkillExecutable();
+  if (taskkill !== void 0) {
+    const result3 = spawnSync2(taskkill, ["/PID", String(helper.pid), "/T", "/F"], {
+      cwd: dirname4(taskkill),
+      env: helperEnvironment(taskkill),
+      shell: false,
+      stdio: "ignore",
+      timeout: WINDOWS_HELPER_CLEANUP_MS,
+      windowsHide: true
+    });
+    if (result3.error === void 0 && result3.status === 0) return;
+  }
+  if (windowsHelperNeedsTermination(helper)) try {
+    helper.kill("SIGKILL");
+  } catch {
+  }
 }
 function startWindowsJobGuard(pid, timing) {
   const powershell = resolveWindowsPowerShellExecutable();
@@ -1924,10 +1976,7 @@ function startWindowsJobGuard(pid, timing) {
           helper.stdin.end();
         } catch {
         }
-        try {
-          helper.kill("SIGKILL");
-        } catch {
-        }
+        terminateWindowsHelperTree(helper, closed);
       }
     };
     const timer = setTimeout(() => finish(false), Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs));

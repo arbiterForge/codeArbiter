@@ -1,6 +1,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { Writable } from "node:stream";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync } from "node:fs";
+import { win32 } from "node:path";
 
 import { describe, expect, test } from "vitest";
 
@@ -9,8 +10,11 @@ import {
   createProcessTreeCleanup,
   processTreeSpawnOptions,
   processTreeTerminationPlan,
+  resolveWindowsPowerShellExecutable,
   resolveWindowsTaskkillExecutable,
   writeBoundedControl,
+  windowsHelperNeedsTermination,
+  windowsPowerShellCandidatePaths,
   windowsSupervisorLaunchPlan,
   windowsJobHelperArgv,
 } from "../src/process-tree.ts";
@@ -104,6 +108,29 @@ describe("process-tree cleanup", () => {
     }
   });
 
+  test("orders canonical PowerShell 7 before the stock Windows fallback without PATH lookup", () => {
+    expect(windowsPowerShellCandidatePaths("C:\\Windows")).toEqual([
+      "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    ]);
+  });
+
+  test.skipIf(process.platform !== "win32")("selects the installed canonical helper despite a PATH shadow", () => {
+    const previous = process.env.PATH;
+    process.env.PATH = "C:\\fixture\\attacker-bin";
+    try {
+      const resolved = resolveWindowsPowerShellExecutable();
+      expect(resolved).toBeDefined();
+      expect(resolved!.toLowerCase()).not.toContain("attacker-bin");
+      const modern = windowsPowerShellCandidatePaths(process.env.SystemRoot ?? process.env.WINDIR!)[0];
+      if (existsSync(modern)) expect(resolved!.toLowerCase()).toBe(realpathSync(modern).toLowerCase());
+      else expect(win32.basename(resolved!).toLowerCase()).toBe("powershell.exe");
+    } finally {
+      if (previous === undefined) delete process.env.PATH;
+      else process.env.PATH = previous;
+    }
+  });
+
   test("launches only the canonical inert supervisor before Job attachment with a minimal environment", () => {
     const node = "C:\\Program Files\\nodejs\\node.exe";
     const supervisor = "C:\\fixture\\ca-pi\\helpers\\windows-supervisor.js";
@@ -151,6 +178,23 @@ describe("process-tree cleanup", () => {
   test("supervisor fail-closed path delegates force cleanup to the Job boundary", () => {
     const source = readFileSync(new URL("../src/windows-supervisor.ts", import.meta.url), "utf8");
     expect(source).not.toContain('child.kill("SIGKILL")');
+  });
+
+  test("rejected Job helpers receive bounded canonical subtree cleanup", () => {
+    const source = readFileSync(new URL("../src/process-tree.ts", import.meta.url), "utf8");
+    expect(source).toContain('spawnSync(taskkill, ["/PID", String(helper.pid), "/T", "/F"]');
+    expect(source).toContain("timeout: WINDOWS_HELPER_CLEANUP_MS");
+    expect(source).toContain("result.error === undefined && result.status === 0");
+    expect(source).toContain("cwd: dirname(taskkill)");
+    expect(source).toContain("env: helperEnvironment(taskkill)");
+  });
+
+  test("never sends subtree cleanup to an already-exited helper PID", () => {
+    expect(windowsHelperNeedsTermination({ pid: 42, exitCode: null, signalCode: null })).toBe(true);
+    expect(windowsHelperNeedsTermination({ pid: 42, exitCode: 0, signalCode: null })).toBe(false);
+    expect(windowsHelperNeedsTermination({ pid: 42, exitCode: null, signalCode: "SIGTERM" })).toBe(false);
+    expect(windowsHelperNeedsTermination({ pid: undefined, exitCode: null, signalCode: null })).toBe(false);
+    expect(windowsHelperNeedsTermination({ pid: 42, exitCode: null, signalCode: null }, true)).toBe(false);
   });
 
   test("returns bounded refusal results for every cleanup trigger without throwing", async () => {

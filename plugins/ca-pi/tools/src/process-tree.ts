@@ -1,7 +1,7 @@
 /** process-tree.ts - bounded cross-platform launch and child-tree cleanup. */
 
 import { EventEmitter } from "node:events";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import type { ChildProcess, ChildProcessWithoutNullStreams, SpawnOptions } from "node:child_process";
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, win32 } from "node:path";
@@ -16,6 +16,7 @@ const MAX_POLL_MS = 1_000;
 // compile the constant Job Object helper. This remains a bounded fail-closed
 // launch budget and is intentionally independent of cleanup verification.
 const WINDOWS_JOB_READY_MS = 5_000;
+const WINDOWS_HELPER_CLEANUP_MS = 1_000;
 const WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
 const WINDOWS_JOB_READY = "ATTACHED";
 const WINDOWS_SUPERVISOR_START = "START\n";
@@ -280,7 +281,34 @@ function canonicalWindowsSystemFile(parts: readonly string[], basename: string):
   } catch { return undefined; }
 }
 export function resolveWindowsTaskkillExecutable(): string | undefined { return canonicalWindowsSystemFile(["taskkill.exe"], "taskkill.exe"); }
+export function windowsPowerShellCandidatePaths(systemRoot: string): readonly string[] {
+  if (!win32.isAbsolute(systemRoot)) throw new Error("Windows PowerShell candidates require an absolute system root");
+  return Object.freeze([
+    win32.join(win32.parse(systemRoot).root, "Program Files", "PowerShell", "7", "pwsh.exe"),
+    win32.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe"),
+  ]);
+}
+function canonicalWindowsFileWithin(candidatePath: string, rootPath: string, basename: string): string | undefined {
+  try {
+    const root = realpathSync(rootPath);
+    const parent = realpathSync(dirname(candidatePath));
+    const candidate = realpathSync(candidatePath);
+    if (!statSync(candidate).isFile() || !pathInsideWindows(parent, root) || !pathInsideWindows(candidate, parent)
+      || win32.basename(candidate).toLowerCase() !== basename) return undefined;
+    return candidate;
+  } catch { return undefined; }
+}
 export function resolveWindowsPowerShellExecutable(): string | undefined {
+  if (process.platform !== "win32") return undefined;
+  const configuredRoot = process.env.SystemRoot ?? process.env.WINDIR;
+  if (configuredRoot === undefined || !win32.isAbsolute(configuredRoot)) return undefined;
+  try {
+    const root = realpathSync(configuredRoot);
+    const [modern] = windowsPowerShellCandidatePaths(root);
+    const programFiles = win32.join(win32.parse(root).root, "Program Files");
+    const resolvedModern = canonicalWindowsFileWithin(modern, programFiles, "pwsh.exe");
+    if (resolvedModern !== undefined) return resolvedModern;
+  } catch { /* The stock Windows host remains the compatibility fallback. */ }
   return canonicalWindowsSystemFile(["WindowsPowerShell", "v1.0", "powershell.exe"], "powershell.exe");
 }
 export function windowsJobHelperArgv(powershellExecutable: string): WindowsJobHelperArgv {
@@ -314,6 +342,28 @@ function helperEnvironment(command: string): NodeJS.ProcessEnv {
   const environment: NodeJS.ProcessEnv = { PATH: dirname(command) };
   for (const key of ["SystemRoot", "WINDIR", "TEMP", "TMP"] as const) if (process.env[key] !== undefined) environment[key] = process.env[key];
   return environment;
+}
+export function windowsHelperNeedsTermination(
+  helper: Pick<ChildProcess, "pid" | "exitCode" | "signalCode">,
+  alreadyClosed = false,
+): boolean {
+  return !alreadyClosed && positivePid(helper.pid) && helper.exitCode === null && helper.signalCode === null;
+}
+function terminateWindowsHelperTree(helper: ChildProcess, alreadyClosed: boolean): void {
+  if (!windowsHelperNeedsTermination(helper, alreadyClosed)) return;
+  const taskkill = resolveWindowsTaskkillExecutable();
+  if (taskkill !== undefined) {
+    const result = spawnSync(taskkill, ["/PID", String(helper.pid), "/T", "/F"], {
+      cwd: dirname(taskkill),
+      env: helperEnvironment(taskkill),
+      shell: false,
+      stdio: "ignore",
+      timeout: WINDOWS_HELPER_CLEANUP_MS,
+      windowsHide: true,
+    });
+    if (result.error === undefined && result.status === 0) return;
+  }
+  if (windowsHelperNeedsTermination(helper)) try { helper.kill("SIGKILL"); } catch {}
 }
 function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJobGuard | undefined {
   const powershell = resolveWindowsPowerShellExecutable();
@@ -396,7 +446,7 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
       settled = true;
       clearTimeout(timer);
       resolveReady(accepted);
-      if (!accepted) { try { helper.stdin.end(); } catch {} try { helper.kill("SIGKILL"); } catch {} }
+      if (!accepted) { try { helper.stdin.end(); } catch {} terminateWindowsHelperTree(helper, closed); }
     };
     const timer = setTimeout(() => finish(false), Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs));
     helper.stderr.on("data", (chunk: Buffer | string) => { stderrBytes += Buffer.byteLength(chunk); if (stderrBytes > MAX_JOB_PROTOCOL_BYTES) finish(false); });
