@@ -179,7 +179,7 @@ export default async function codeArbiterPiChild(pi: ExtensionAPI): Promise<void
       // Continue to the owning distribution root.
     }
     const parent = dirname(packageRoot);
-    if (parent === packageRoot) throw fixedFailure("package origin is invalid");
+    if (parent === packageRoot) throw fixedFailure("could not locate the ca-pi package");
     packageRoot = parent;
   }
   const cwd = process.cwd();

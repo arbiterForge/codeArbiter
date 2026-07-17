@@ -920,6 +920,17 @@ describe("ca-pi package", () => {
     );
   });
 
+  test("a malformed Node version is never treated as satisfying the minimum floor", () => {
+    // "22.19.0next" is not a valid semver: doctor.ts's anchored parse (/^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u)
+    // requires the three numeric groups to be followed by end-of-string or a prerelease/build separator,
+    // so it refuses to parse this and treats the version as below the floor. compatibility.ts's atLeast()
+    // must use the same anchored parse rather than the looser /^(\d+)\.(\d+)\.(\d+)/u, which would greedily
+    // match the "22.19.0" prefix and wrongly report the malformed/unparseable version as compatible.
+    expect(compatibilityDirection({ piVersion: "0.80.6", nodeVersion: "22.19.0next", pythonMajor: 3 })).toBe(
+      "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.",
+    );
+  });
+
   test.each(["0.80.7", "0.80.6-rc.1", "1.0.0"])(
     "rejects unsupported Pi %s before API access",
     (piVersion) => {

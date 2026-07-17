@@ -12,8 +12,9 @@ import { fileURLToPath as fileURLToPath5 } from "node:url";
 // src/compatibility.ts
 var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.80.5", "0.80.6"]);
 var MINIMUM_NODE = [22, 19, 0];
+var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
-  const match = /^(\d+)\.(\d+)\.(\d+)/u.exec(version.replace(/^v/u, ""));
+  const match = SEMVER_PREFIX.exec(version.replace(/^v/u, ""));
   if (match === null) return false;
   const actual = match.slice(1).map(Number);
   for (let index = 0; index < minimum.length; index += 1) {
@@ -1217,16 +1218,6 @@ function diagnosis(id, healthy, healthyMessage, unhealthyMessage) {
     remediation: REMEDIATION[id]
   };
 }
-function versionAtLeast(version, minimum) {
-  const match = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u.exec(version.replace(/^v/u, ""));
-  if (match === null) return false;
-  const actual = match.slice(1).map(Number);
-  for (let index = 0; index < minimum.length; index += 1) {
-    if (actual[index] > minimum[index]) return true;
-    if (actual[index] < minimum[index]) return false;
-  }
-  return true;
-}
 function canonical(path) {
   try {
     return realpathSync4.native(path);
@@ -1248,8 +1239,8 @@ function diagnosePi(input) {
   const packageHealthy = input.package.declared && input.package.name === "ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && inside4(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
-  const versionHealthy = ["0.80.5", "0.80.6"].includes(input.runtime.piVersion) && versionAtLeast(input.runtime.nodeVersion, [22, 19, 0]);
-  const piBelowMinimum = !versionAtLeast(input.runtime.piVersion, [0, 80, 5]);
+  const versionHealthy = ["0.80.5", "0.80.6"].includes(input.runtime.piVersion) && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
+  const piBelowMinimum = !atLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
   const expectedDoctorSkill = resolve5(input.package.root, "skills", "ca-doctor", "SKILL.md");
   const ownerPathsHealthy = input.commands.ownerPaths.length > 0 && input.commands.ownerPaths.every((path) => inside4(path, input.package.root)) && input.commands.ownerPaths.some((path) => samePath2(path, expectedExtension)) && input.commands.ownerPaths.some((path) => samePath2(path, expectedDoctorSkill));
@@ -4312,7 +4303,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "879b869479f922bd9692640e820380f0334d726a19c76777d56cb068da12d29a"
+        childFingerprint: "ae9277d95051760f751d8c131ee3099417145c1ee7e0a12c4a302fc41505018d"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

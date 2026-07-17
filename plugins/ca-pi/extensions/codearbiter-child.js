@@ -413,8 +413,9 @@ function resolvePythonCommand(platform = process.platform, probe = systemPythonP
 // src/compatibility.ts
 var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.80.5", "0.80.6"]);
 var MINIMUM_NODE = [22, 19, 0];
+var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
-  const match = /^(\d+)\.(\d+)\.(\d+)/u.exec(version.replace(/^v/u, ""));
+  const match = SEMVER_PREFIX.exec(version.replace(/^v/u, ""));
   if (match === null) return false;
   const actual = match.slice(1).map(Number);
   for (let index = 0; index < minimum.length; index += 1) {
@@ -1034,7 +1035,7 @@ async function codeArbiterPiChild(pi) {
     } catch {
     }
     const parent = dirname3(packageRoot);
-    if (parent === packageRoot) throw fixedFailure("package origin is invalid");
+    if (parent === packageRoot) throw fixedFailure("could not locate the ca-pi package");
     packageRoot = parent;
   }
   const cwd = process.cwd();

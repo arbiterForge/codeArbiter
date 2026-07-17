@@ -12,6 +12,7 @@ import { existsSync, realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { isAbsolute, relative, resolve } from "node:path";
 import { assertCommandOwnership, nativeSkillExpansion } from "./commands.ts";
+import { atLeast as versionAtLeast } from "./compatibility.ts";
 
 export type DiagnosisState = "healthy" | "degraded" | "unhealthy";
 
@@ -213,17 +214,6 @@ function diagnosis(
     message: healthy ? healthyMessage : unhealthyMessage,
     remediation: REMEDIATION[id],
   };
-}
-
-function versionAtLeast(version: string, minimum: readonly number[]): boolean {
-  const match = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u.exec(version.replace(/^v/u, ""));
-  if (match === null) return false;
-  const actual = match.slice(1).map(Number);
-  for (let index = 0; index < minimum.length; index += 1) {
-    if (actual[index] > minimum[index]) return true;
-    if (actual[index] < minimum[index]) return false;
-  }
-  return true;
 }
 
 function canonical(path: string): string {
