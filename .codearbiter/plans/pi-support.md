@@ -127,10 +127,10 @@ AC-17, AC-29, and AC-36 before approval.
 | PI-AC-32 cross-platform contract | AC 32 | 11 | COVERED |
 | PI-AC-33 independent release guard | AC 33 | 2 | COVERED |
 | PI-AC-34 documentation parity | AC 34 | 12 | COVERED |
-| PI-AC-35 live promotion evidence | AC 35 | 13 | OPEN |
+| PI-AC-35 live promotion evidence | AC 35 | 13 | COVERED |
 | PI-AC-36 threat-model gate | AC 36 | 10 | COVERED |
-| PI-AC-37 repository regression gate | AC 37 | 14 | OPEN |
-| PI-AC-38 single-branch/full-parity gate | AC 38 | 14 | OPEN |
+| PI-AC-37 repository regression gate | AC 37 | 14 | COVERED |
+| PI-AC-38 single-branch/full-parity gate | AC 38 | 14 | COVERED |
 
 ## Status protocol and checkpoints
 
@@ -143,35 +143,35 @@ review. Checkpoints occur after Tasks 1-2 (generation/package), 3-5 (enforcement
 
 Tasks 3-5 passed their focused tests and were individually accepted, but the combined integration
 and security review found cross-task failures that those focused tests did not detect. The combined
-checkpoint therefore supersedes the individual task acceptances for promotion purposes. Tasks 6-9
-must not start until this checkpoint receives a fresh independent clean review.
+checkpoint therefore temporarily superseded the individual task acceptances for promotion purposes.
+Tasks 6-9 were held until this checkpoint received a fresh independent clean review.
 
-Confirmed blockers, in required fix order:
+Historical blockers, resolved in this order:
 
 1. **CRITICAL - pre-trust/dormancy Python resolution:** extension load resolves and may spawn a bare
    interpreter candidate before activation or trust. A poisoned working-directory `py.exe` was
-   executed in the review probe. Defer resolution until activation/trust and eliminate project-cwd
-   executable search; add a poisoned-cwd live regression test.
+   executed in the review probe. Resolution was deferred until activation/trust, project-cwd
+   executable search was eliminated, and a poisoned-cwd live regression test was added.
 2. **HIGH - activation parser drift:** the TypeScript parser rejects canonical inputs accepted by
-   `core/pysrc/_hooklib.py`, including case, indentation, and BOM variants. Generate or share one
-   parser contract and add cross-host fixtures.
+   `core/pysrc/_hooklib.py`, including case, indentation, and BOM variants. One parser contract was
+   shared and cross-host fixtures were added.
 3. **HIGH - enforcement installation is not fail-closed in real Pi:** Pi catches ordinary lifecycle
-   handler errors and continues after an installation failure. Add an always-installed bootstrap
-   guard or explicit host shutdown, then prove it through real-Pi RPC fault injection.
+   handler errors and continues after an installation failure. An always-installed bootstrap guard
+   was added and proved through real-Pi RPC fault injection.
 4. **HIGH - supported-version split:** the adapter accepts every version at or above 0.80.5 while
-   the approved contract supports exactly 0.80.5 and 0.80.6. Enforce the exact set before tool
-   registration and test 0.80.7, prereleases, and 1.x, including the latest-version canary.
+   the approved contract supports exactly 0.80.5 and 0.80.6. The exact set was enforced before tool
+   registration and tested against 0.80.7, prereleases, and 1.x, including the latest-version canary.
 5. **HIGH - read-context parity false-green:** native Pi `{path: ...}` read input is not normalized
-   to `{file_path: ...}` before `pre-read.py`, and model-visible context is dropped. Integrate the
-   canonical payload normalization, preserve context on the real result route, and assert exact
-   model-visible output.
+   to `{file_path: ...}` before `pre-read.py`, and model-visible context is dropped. Canonical payload
+   normalization was integrated, context was preserved on the real result route, and exact
+   model-visible output was asserted.
 6. **MEDIUM - doctor live-fire overstates host coverage:** the current probe calls the stored wrapper
-   directly instead of the active Pi dispatcher. Exercise active dispatch or relabel the check as a
-   wrapper self-test while keeping PI-AC-28 open.
+   directly instead of the active Pi dispatcher. The check was relabeled as a wrapper self-test while
+   PI-AC-28 remained open until active dispatch was separately proved.
 
-Before accepting the checkpoint, re-audit two unresolved security candidates: structured doctor
-values may bypass shared-corpus redaction, and enforcement wrappers may survive shutdown or
-deactivation in a reused Pi process. These are audit questions, not yet confirmed findings.
+Before acceptance, reviewers re-audited two unresolved security candidates: whether structured doctor
+values could bypass shared-corpus redaction, and whether enforcement wrappers could survive shutdown
+or deactivation in a reused Pi process. Neither became a confirmed finding.
 
 The subsequent security rereview confirmed one additional HIGH: a globally discovered extension
 could begin repository-aware Git startup before affirmative project trust. The 2026-07-15 residual
@@ -180,8 +180,8 @@ the prior lifecycle and enters an activation-check fail-closed generation, reads
 marker, and then requires `context.isProjectTrusted?.() === true` before Python/Git resolution,
 bridge/shared startup, enforcement, hooks, Git reads, or fetch. Missing/false trust retains guarded
 mutation, fresh native untrusted reads, one fixed trust direction, and side-effect-free doctor;
-false-to-true same-process retry clears cached identities and performs a normal activation. The
-The final same-reviewer rereviews accepted the correction on 2026-07-15: integration returned
+false-to-true same-process retry clears cached identities and performs a normal activation. The final
+same-reviewer rereviews accepted the correction on 2026-07-15: integration returned
 Spec YES / APPROVED with zero findings, and security returned PASS with zero CRITICAL/HIGH/MEDIUM/LOW
 findings. Fresh controller verification reproduced Pi 138/138, package/RPC 20/20, parity 19/19,
 doctor 7/7, clean generation, and the deterministic parent hash recorded below. The combined
@@ -223,7 +223,7 @@ full-regression gate must close or explicitly retain this note.
   optional `package`.
 - Consumers: Tasks 2-14; no later task may add a parallel host list.
 
-- [ ] **Step 1: Write descriptor and generator tests first**
+- [x] **Step 1: Write descriptor and generator tests first**
 
 ```python
 def test_three_governance_hosts_are_data_not_binary_switches():
@@ -247,7 +247,7 @@ def test_generation_is_clean_on_second_run():
     assert snapshot_generated_trees() == first
 ```
 
-- [ ] **Step 2: Run the new tests red while all existing generator tests stay green**
+- [x] **Step 2: Run the new tests red while all existing generator tests stay green**
 
 Run:
 
@@ -260,7 +260,7 @@ python .github/scripts/test_sync_core.py
 Expected: the new suite fails because `core/hosts.json`/`host_descriptors.py` and the Pi target do not
 exist; existing Claude/Codex cases pass.
 
-- [ ] **Step 3: Add the strict descriptor schema and generic transform rules**
+- [x] **Step 3: Add the strict descriptor schema and generic transform rules**
 
 `tools/host_descriptors.py` must expose these exact immutable types and reject unknown keys, duplicate
 names/paths, escaping paths, malformed command templates, unknown condition tags, and noncanonical
@@ -294,20 +294,20 @@ class HostDescriptor:
 Conditionals accept any descriptor name. `sync-core.py` derives every hooks target from the same
 descriptors.
 
-- [ ] **Step 4: Extract and generate role charters without changing Claude bytes**
+- [x] **Step 4: Extract and generate role charters without changing Claude bytes**
 
 Copy each current `plugins/ca/agents/*.md` into `core/surface/agents/` as canonical input, teach the
 generic rules to render Claude agents and Pi charters, and add a byte comparison before deleting no
 source. Pi charters use descriptor token substitution and remain non-discoverable except when passed
 explicitly to a child.
 
-- [ ] **Step 5: Prove no governance policy was handwritten into Pi**
+- [x] **Step 5: Prove no governance policy was handwritten into Pi**
 
 Add a structural test that normalizes generated Pi command/skill/charter bodies back to template
 tokens and compares them with `core/surface/`. Permit only `_host.py`, `pi-bridge.py`, built extension
 artifacts, package metadata, catalogs, and host notes outside generated trees.
 
-- [ ] **Step 6: Regenerate twice and run the complete generator gate**
+- [x] **Step 6: Regenerate twice and run the complete generator gate**
 
 ```powershell
 python tools/build-surface.py
@@ -359,7 +359,7 @@ owned by Tasks 13-14, not a substitute for this accepted local package contract.
   `../extensions/codearbiter.js` and `../extensions/codearbiter-child.js`.
 - Consumes Task 1 descriptors.
 
-- [ ] **Step 1: Write red packaging and identity tests**
+- [x] **Step 1: Write red packaging and identity tests**
 
 ```python
 def test_root_manifest_is_private_dependency_free_pi_metadata():
@@ -381,7 +381,7 @@ def test_pi_runtime_is_not_present_beneath_plugin():
 `package.test.ts` asserts both bundles contain external host imports, contain no copied Pi source,
 and load against the live host's single module registry in the isolated integration fixture.
 
-- [ ] **Step 2: Run packaging tests red**
+- [x] **Step 2: Run packaging tests red**
 
 ```powershell
 python .github/scripts/test_pi_package.py
@@ -389,7 +389,7 @@ python .github/scripts/test_pi_package.py
 
 Expected: FAIL because no Pi manifests, build workspace, bundles, or generated root package exist.
 
-- [ ] **Step 3: Create the dependency-free package pair and isolated build workspace**
+- [x] **Step 3: Create the dependency-free package pair and isolated build workspace**
 
 Use independent initial version `0.1.0`. The build workspace pins only already-vetted development
 tools and runs installs with lifecycle scripts disabled:
@@ -426,7 +426,7 @@ secret-bearing environment to build/test jobs, smoke-test native binding selecti
 platform, and prove no dependency source, `.node`, `.wasm`, `node_modules`, Vite, or Rolldown artifact
 enters the distributed `ca-pi` payload.
 
-- [ ] **Step 4: Generate root metadata and externalized bundles**
+- [x] **Step 4: Generate root metadata and externalized bundles**
 
 `build-host-packages.py` reads only the nested version and descriptor paths, writes deterministic
 two-space JSON with LF, and checks version equality. `build.mjs` bundles local adapter modules but
@@ -436,14 +436,14 @@ map and no lifecycle script. The initial entrypoints import one host runtime sym
 resolution and otherwise register nothing; Task 3 replaces the parent no-op with lifecycle wiring and
 Task 6 replaces the child no-op with enforcement-only wiring.
 
-- [ ] **Step 5: Prove Pi 0.80.5/0.80.6 and Node failure directions without real auth**
+- [x] **Step 5: Prove Pi 0.80.5/0.80.6 and Node failure directions without real auth**
 
 Run isolated `PI_CODING_AGENT_DIR` fixtures with a deterministic local provider. Verify 0.80.5 and
 0.80.6 discover the root package; an older captured capability fixture, Node below 22.19.0, and
 missing Python each return the exact doctor direction and never partially activate. The npm-latest
 probe reports separately and is nonblocking.
 
-- [ ] **Step 6: Add the independent release guard and verify clean generation**
+- [x] **Step 6: Add the independent release guard and verify clean generation**
 
 Add `ca-pi` to CI path outputs and a `version-bump-pi` job using tag namespace `ca-pi-v<version>`.
 First introduction passes; a changed previously tagged payload with unchanged version fails; version,
@@ -497,7 +497,7 @@ unset and register nothing.
 - Consumes: Task 2 entrypoint. Task 3 uses an injected `BridgePort` fake; Task 4 supplies the concrete
   process-backed implementation without changing the lifecycle interface.
 
-- [ ] **Step 1: Write lifecycle tests against a fake ExtensionAPI**
+- [x] **Step 1: Write lifecycle tests against a fake ExtensionAPI**
 
 ```typescript
 it("stays fully dormant without arbiter: enabled", async () => {
@@ -533,7 +533,7 @@ it("clears only codearbiter status at agent_settled", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the three test files red**
+- [x] **Step 2: Run the three test files red**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/activation.test.ts test/commands.test.ts test/status.test.ts
@@ -541,7 +541,7 @@ npm --prefix plugins/ca-pi/tools exec vitest run test/activation.test.ts test/co
 
 Expected: FAIL because the parent extension and generated command catalog do not exist.
 
-- [ ] **Step 3: Implement activation and per-turn persona refresh**
+- [x] **Step 3: Implement activation and per-turn persona refresh**
 
 `session_start` invalidates prior lifecycle/bridge identities, enters the activation-check blocked
 generation, resolves the current cwd, and checks only `.codearbiter/CONTEXT.md` frontmatter without
@@ -553,7 +553,7 @@ one fixed trust direction. Cache the generated persona/state in memory only afte
 live state through the bridge; it never replaces user/system prompt content and never persists raw
 prompt text.
 
-- [ ] **Step 4: Generate and register aliases with provenance checks**
+- [x] **Step 4: Generate and register aliases with provenance checks**
 
 The catalog is generated from command templates and contains `{name, description, skillPath}` only.
 Pi's public extension `sendUserMessage()` disables slash-command and skill expansion, so each
@@ -567,13 +567,13 @@ provenance from the installed `ca-pi` package. A suffix, duplicate, project owne
 fallback sets a visible degraded status and makes doctor unhealthy; it never silently selects a
 different owner.
 
-- [ ] **Step 5: Implement composable status and settled semantics**
+- [x] **Step 5: Implement composable status and settled semantics**
 
 Use only `ctx.ui.setStatus("codearbiter", value)`. Start/update status on governed bridge/agent work,
 retain it through `agent_end`, retries, and compaction continuations, and clear only on
 `agent_settled` or `session_shutdown`.
 
-- [ ] **Step 6: Run focused tests and a real isolated RPC discovery probe**
+- [x] **Step 6: Run focused tests and a real isolated RPC discovery probe**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/activation.test.ts test/commands.test.ts test/status.test.ts
@@ -624,7 +624,7 @@ and retain unknown-tool fail-closed mutation coverage.
   where outcome is `allow | block | warn | notice`.
 - Consumes Task 1 `tool_classes` and Task 2 host-provided built-in tool factories.
 
-- [ ] **Step 1: Write bridge framing, failure-direction, and wrapper tests**
+- [x] **Step 1: Write bridge framing, failure-direction, and wrapper tests**
 
 ```typescript
 it("blocks a mutating call when Python returns malformed protocol", async () => {
@@ -651,7 +651,7 @@ it("judges the final args inside the execution override", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the bridge and tool tests red**
+- [x] **Step 2: Run the bridge and tool tests red**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/bridge.test.ts test/tool-guard.test.ts
@@ -660,7 +660,7 @@ python .github/scripts/test_pi_parity.py --fixtures-only
 
 Expected: FAIL because no canonical bridge, Pi host adapter, or execution wrappers exist.
 
-- [ ] **Step 3: Implement the one-process canonical bridge**
+- [x] **Step 3: Implement the one-process canonical bridge**
 
 `pi-bridge.py` validates one UTF-8 JSON object against exact allowed keys/types/byte limits, converts
 it to the existing shared entry payload, and invokes exactly one shared entry inside that Python
@@ -682,7 +682,7 @@ No H-rule lives in the bridge. Exit 2 becomes `block`; shared stdout becomes bou
 `notice`; crashes/malformed output become a bridge error for the TypeScript failure classifier.
 Audit fields are fixed codes, host, rule ID, correlation ID, and byte counts only.
 
-- [ ] **Step 4: Implement bounded process transport and redaction-before-truncation**
+- [x] **Step 4: Implement bounded process transport and redaction-before-truncation**
 
 Resolve Python once through an absolute-path probe, validate `pi-bridge.py` beneath the installed
 package, use `spawn(executable, [script], {shell: false, cwd, env})`, write one request then close
@@ -690,7 +690,7 @@ stdin, cap each stream before accumulation, normalize control/newline characters
 secret corpus through `redaction.ts`, then truncate. Timeout/crash/protocol overflow blocks mutation
 and warns for read/post/status.
 
-- [ ] **Step 5: Wrap built-in execution instead of trusting handler order**
+- [x] **Step 5: Wrap built-in execution instead of trusting handler order**
 
 Create Pi's built-in `bash`, `write`, `edit`, and `read` definitions through the host-provided factory
 APIs. Spread the original definition and replace `execute()` with a wrapper that sends the final
@@ -701,7 +701,7 @@ mutating built-in's `sourceInfo` still points to the installed `ca-pi` wrapper; 
 therefore blocks rather than silently replacing governance. Descriptor-declared external tools may be
 read-only; a mutating external tool cannot be admitted without its own final executor wrapper.
 
-- [ ] **Step 6: Run the shared parity corpus across all three hosts**
+- [x] **Step 6: Run the shared parity corpus across all three hosts**
 
 `test_pi_parity.py` invokes real Claude/Codex Python entries and `pi-bridge.py` with equivalent
 fixtures for H-01, H-03, H-05, H-09b, H-10b, H-11, H-18, H-19, H-20, dormant input, malformed input,
@@ -755,7 +755,7 @@ drift in the native-equivalent skill expansion contract.
 - Diagnosis has exact fields `{id, state: "healthy" | "degraded" | "unhealthy", message,
   remediation}`.
 
-- [ ] **Step 1: Write notice de-duplication, backstop, and doctor fixture tests**
+- [x] **Step 1: Write notice de-duplication, backstop, and doctor fixture tests**
 
 ```typescript
 it("adds each governed notice once", () => {
@@ -777,7 +777,7 @@ it.each([
 The Python integration creates an enabled temporary Git repo, runs Pi session start, and verifies the
 installed `.git/hooks/pre-commit` rejects a prohibited staged operation with the expected H-ID.
 
-- [ ] **Step 2: Run focused tests red**
+- [x] **Step 2: Run focused tests red**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/notices.test.ts test/doctor.test.ts
@@ -786,13 +786,13 @@ python .github/scripts/test_pi_doctor.py
 
 Expected: FAIL because notice patching and Pi diagnoses are absent.
 
-- [ ] **Step 3: Wire pre-read and post-write/edit notices through shared responses**
+- [x] **Step 3: Wire pre-read and post-write/edit notices through shared responses**
 
 Map Pi read/write/edit result shapes without replacing their native details. Add generated context or
 reminders in a bounded text content block carrying a stable codeArbiter marker. Before insertion,
 scan existing content for that marker so parallel/retry events never duplicate it.
 
-- [ ] **Step 4: Prove shared Git-hook installation is host-idempotent**
+- [x] **Step 4: Prove shared Git-hook installation is host-idempotent**
 
 Exercise Claude then Pi, Pi then Codex, and Pi twice against one repo. `_githooks.py` must leave one
 host-neutral shim over stable manifest-named registry entries, run every live enforcer with any block
@@ -802,7 +802,7 @@ registration, failed first persistence, stale paths, broken symlinks, and extra 
 without PATH fallback. Keep every existing cold-install case green. Invoke the installed hook as a
 subprocess; do not assert only on file contents.
 
-- [ ] **Step 5: Implement doctor origin/trust/collision/bridge/child/wrapper checks**
+- [x] **Step 5: Implement doctor origin/trust/collision/bridge/child/wrapper checks**
 
 Use Pi's command provenance and extension context without granting trust. Report package origin and
 version, supported Pi/Node/Python, enabled context, exact command owners, host-module identity,
@@ -814,7 +814,7 @@ directly to the stored governed wrapper, requires the exact shared H-03 block, a
 repository mutation. Report active-dispatch coverage as degraded until supported-version real-host
 promotion/CI evidence closes PI-AC-28.
 
-- [ ] **Step 6: Run doctor, cold-install, and hook regression suites**
+- [x] **Step 6: Run doctor, cold-install, and hook regression suites**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/notices.test.ts test/doctor.test.ts
@@ -850,7 +850,7 @@ python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 - `ChildLaunchInput` includes exact `nodePath`, `piCliPath`, `provider`, `model`, `tools`, `cwd`,
   `childExtensionPath`, `skillPaths`, and `charterPath`; task text is not a field in argv/env builders.
 
-- [ ] **Step 1: Write environment and argv exclusion tests**
+- [x] **Step 1: Write environment and argv exclusion tests**
 
 ```typescript
 it("starts from a minimal provider-specific environment", () => {
@@ -878,7 +878,7 @@ it("puts no task, prompt, or secret in argv", () => {
 });
 ```
 
-- [ ] **Step 2: Run child isolation tests red**
+- [x] **Step 2: Run child isolation tests red**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/child-env.test.ts test/runner-isolation.test.ts
@@ -887,7 +887,7 @@ python .github/scripts/test_pi_child_live.py --fixture-only
 
 Expected: FAIL because no minimal environment, exact argv, runner, or child extension exists.
 
-- [ ] **Step 3: Implement explicit OS and provider allowlists**
+- [x] **Step 3: Implement explicit OS and provider allowlists**
 
 OS baselines are explicit per platform. Provider secret/config names are parsed into a reviewed map
 from the pinned help fixture and checked for drift against 0.80.5/0.80.6 help output. After every
@@ -895,14 +895,14 @@ merge, delete `FARM_API_KEY` and `CLAUDE_CODE_OAUTH_TOKEN` again so a caller can
 Keep `HOME`/`USERPROFILE` and Pi config-location variables so Pi itself can resolve its opaque auth;
 never open or stat the auth file from `ca-pi`.
 
-- [ ] **Step 4: Implement exact node+CLI launch and stdin-only RPC**
+- [x] **Step 4: Implement exact node+CLI launch and stdin-only RPC**
 
 Launch `[process.execPath, absolute dist/cli.js, ...argv]`, never a shell/shim. Validate both paths as
 absolute real files, send bounded RPC `prompt` content over stdin, and allow only strict JSONL record
 types/keys. Use a random correlation ID unrelated to task content. Never echo malformed input,
 provider errors, or raw JSONL in diagnostics.
 
-- [ ] **Step 5: Build the enforcement-only child adapter and role catalog**
+- [x] **Step 5: Build the enforcement-only child adapter and role catalog**
 
 Generate role names, charter paths, mapped Pi tools, and author/reviewer classification from canonical
 agent frontmatter. The child adapter installs Task 4 wrappers and notices only. It registers no
@@ -911,7 +911,7 @@ is unhealthy; a validated child launch requires both the marker and a one-use pa
 correlated through the private stdin handshake, never environment. The nonce is defense-in-depth
 against accidental ambient-marker reuse, not a same-user security proof or OS sandbox boundary.
 
-- [ ] **Step 6: Prove fresh PID/context and no-inline promotion**
+- [x] **Step 6: Prove fresh PID/context and no-inline promotion**
 
 Run two children against the deterministic provider. Assert distinct PIDs, empty session files,
 disabled saved/default trust, no project/global resource discovery, correct exact tools, active H-03
@@ -947,7 +947,7 @@ python .github/scripts/test_pi_child_live.py
 - Modes are exactly `single | chain | parallel`; concurrency/depth/output/time limits come from one
   immutable policy object.
 
-- [ ] **Step 1: Write orchestration state-table tests**
+- [x] **Step 1: Write orchestration state-table tests**
 
 ```typescript
 it.each([
@@ -965,28 +965,28 @@ it.each(["cancelled", "timeout", "depth_exceeded", "oversized", "protocol_error"
 );
 ```
 
-- [ ] **Step 2: Run dispatch and process tests red**
+- [x] **Step 2: Run dispatch and process tests red**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/dispatch.test.ts test/process-tree.test.ts
 python .github/scripts/test_pi_process_tree.py --fixture-only
 ```
 
-- [ ] **Step 3: Implement bounded mode semantics**
+- [x] **Step 3: Implement bounded mode semantics**
 
 Single runs one role. Chain passes only the prior child's bounded structured result to the next role,
 never raw JSONL. Parallel uses a FIFO semaphore, preserves requested result ordering, and aborts all
 siblings on parent cancellation. Validate role names before spawning; reject duplicate authors,
 depth above policy, zero/negative limits, and aggregate output above the cap.
 
-- [ ] **Step 4: Implement cross-platform process-tree termination**
+- [x] **Step 4: Implement cross-platform process-tree termination**
 
 POSIX launches a detached process group and signals group `SIGTERM`, then `SIGKILL` after the bounded
 grace. Windows launches a distinct process group, uses `taskkill /PID <pid> /T` without a shell, waits,
 and verifies exit. Cleanup is idempotent and runs for timeout, cancellation, protocol overflow,
 startup failure, and parent shutdown.
 
-- [ ] **Step 5: Live-test a child that spawns a grandchild**
+- [x] **Step 5: Live-test a child that spawns a grandchild**
 
 The fixture reports parent/child/grandchild PIDs over bounded JSON before waiting. Cancel and timeout
 variants must prove all PIDs are gone on Windows, macOS, and Linux; absence is checked by OS-native
@@ -1023,7 +1023,7 @@ python .github/scripts/test_pi_process_tree.py
 - Produces TypeScript `handleBeforeCompact(event, ctx, runner) -> Promise<CompactionResult | void>`.
 - Consumes Task 7 hardened runner for a no-tool, exact-provider/model summarization child.
 
-- [ ] **Step 1: Write equivalent Claude/Pi semantic fixture tests**
+- [x] **Step 1: Write equivalent Claude/Pi semantic fixture tests**
 
 ```python
 def test_codecs_choose_identical_policy_outcomes():
@@ -1041,7 +1041,7 @@ def test_codecs_choose_identical_policy_outcomes():
 `firstKeptEntryId` is policy-selected, summaries are bounded/redacted, and a second identical plan is
 idempotent.
 
-- [ ] **Step 2: Run prune/compaction tests red and existing prune tests green**
+- [x] **Step 2: Run prune/compaction tests red and existing prune tests green**
 
 ```powershell
 python .github/scripts/test_prune_policy_parity.py
@@ -1050,13 +1050,13 @@ python -m unittest plugins.ca.hooks.tests.test_prune_cli plugins.ca.hooks.tests.
 npm --prefix plugins/ca-pi/tools exec vitest run test/compaction.test.ts
 ```
 
-- [ ] **Step 3: Extract selection policy without changing Claude serialization**
+- [x] **Step 3: Extract selection policy without changing Claude serialization**
 
 Move protected-tail, tier ordering, marker/idempotency decisions, dry metrics, and audit outcome
 selection into `_prunepolicy.py`. Keep Claude JSONL parse/mutation/write/backup logic in `_prunelib.py`.
 Run existing byte, shrink-only, live-file, and self-heal tests unchanged as the refactor proof.
 
-- [ ] **Step 4: Implement Pi semantic codec and custom compaction result**
+- [x] **Step 4: Implement Pi semantic codec and custom compaction result**
 
 Convert Pi session entries into `SemanticEntry` without writing the session. Use the policy-selected
 kept boundary. Generate the native summary through a no-tools, no-session RPC child using the current
@@ -1064,13 +1064,13 @@ exact provider/model, the generated compaction charter, and stdin-only bounded c
 Pi remains the credential resolver. Return `{summary, firstKeptEntryId, tokensBefore}` and record only
 redacted metrics/audit codes after `session_compact` confirms success.
 
-- [ ] **Step 5: Render full prune command parity for Pi**
+- [x] **Step 5: Render full prune command parity for Pi**
 
 Pi's `/ca-prune` alias and `/skill:ca-prune` expose `status`, `dry`, `run <inactive-copy>`, `audit`,
 `on`, and `off`. Active sessions may use event-driven native compaction only; manual `run` rejects an
 active target and retains existing opt-in/inactive-copy rules.
 
-- [ ] **Step 6: Run all prune gates**
+- [x] **Step 6: Run all prune gates**
 
 ```powershell
 python .github/scripts/test_prune_policy_parity.py
@@ -1101,7 +1101,7 @@ python tools/build-surface.py --check
   `plugins/ca/tools/farm.js` contract by absolute path for Git distribution.
 - Consumes Task 7 dispatch as the Pi-native fallback/preview integration seam; no second farm engine.
 
-- [ ] **Step 1: Write farm routing and three-pair store tests**
+- [x] **Step 1: Write farm routing and three-pair store tests**
 
 ```typescript
 it("routes preview farm to the one shared built backend", async () => {
@@ -1118,28 +1118,28 @@ it("routes preview farm to the one shared built backend", async () => {
 same fixture and requires parseable append-only lines containing `HOST: pi`, with no guarantee
 stronger than ADR-0012's existing same-host baseline.
 
-- [ ] **Step 2: Run farm/store tests red**
+- [x] **Step 2: Run farm/store tests red**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/farm.test.ts
 python .github/scripts/test_pi_shared_store.py
 ```
 
-- [ ] **Step 3: Reuse the built farm contract without copying it**
+- [x] **Step 3: Reuse the built farm contract without copying it**
 
 Resolve `plugins/ca/tools/farm.js` inside the Git-installed checkout, validate containment and build
 freshness, and invoke it with argv arrays and its existing plan schema. Do not pass ordinary child
 provider credentials to farm and do not pass `FARM_API_KEY` to ordinary Pi children. Missing backend
 is a visible preview degradation, never a silent alternate implementation.
 
-- [ ] **Step 4: Preserve preview labeling and log the future embedded spike**
+- [x] **Step 4: Preserve preview labeling and log the future embedded spike**
 
 Render Pi-native instructions that select the same plan contract and retain `[CONFIRM-05]` as the
 stable-promotion bar. Add a non-shipping parity-ledger note for a future spike: evaluate whether the
 hardened Pi child runner can become an embedded farm worker while preserving the shared plan/result
 contract and avoiding a second dispatcher.
 
-- [ ] **Step 5: Run farm and store regression gates**
+- [x] **Step 5: Run farm and store regression gates**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/farm.test.ts
@@ -1170,7 +1170,7 @@ python .github/scripts/test_dual_host_store.py
 - Produces machine-readable security result codes consumed by Task 13 promotion evidence; no raw
   prompt, environment value, provider body, tool result, or stderr is retained.
 
-- [ ] **Step 1: Write adversarial tests for every ADR-0014 constraint**
+- [x] **Step 1: Write adversarial tests for every ADR-0014 constraint**
 
 ```typescript
 it("blocks a later extension's mutation at final execution", async () => {
@@ -1202,7 +1202,7 @@ Add fixtures for prototype keys, escaping paths, oversized JSON/JSONL, control/n
 command/skill collision, ambient marker, saved parent trust, `defaultProjectTrust=always`, provider
 fallback, environment reintroduction, real-home path access, compaction content, and farm-key bleed.
 
-- [ ] **Step 2: Run security tests red**
+- [x] **Step 2: Run security tests red**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/security.test.ts test/final-arguments.test.ts
@@ -1212,21 +1212,21 @@ python .github/scripts/test_pi_security.py
 Expected: at least final-executor ordering, trust, and static-analysis coverage fail before the gates
 are wired.
 
-- [ ] **Step 3: Close only implementation gaps; do not relax ADR-0014**
+- [x] **Step 3: Close only implementation gaps; do not relax ADR-0014**
 
 Fix the adapter/runner/descriptors until every adversarial fixture is non-executing or safely
 redacted. If a later handler can still alter final executed arguments, if Pi auth must be interpreted
 by `ca-pi`, or if a mutating external tool must be allowed without a wrapper, stop the feature and
 reopen ADR-0013. No override can promote that result as parity.
 
-- [ ] **Step 4: Add TypeScript CodeQL coverage and preserve existing workflow pin policy**
+- [x] **Step 4: Add TypeScript CodeQL coverage and preserve existing workflow pin policy**
 
 Configure JavaScript/TypeScript analysis for `plugins/ca-pi/tools/src/**` and the checked-in built
 extensions, with generated/vendor exclusions limited to shared Python copies and `node_modules`.
 Pin every action to a reviewed commit SHA. CI fails on unresolved high-severity results; lower findings
 remain visible and route through the normal review/triage policy.
 
-- [ ] **Step 5: Run the full security evidence set**
+- [x] **Step 5: Run the full security evidence set**
 
 ```powershell
 npm --prefix plugins/ca-pi/tools exec vitest run test/security.test.ts test/final-arguments.test.ts
@@ -1258,7 +1258,7 @@ touch, and the live two-extension final-argument proof passes.
 - Pass formula: `pi_p95 <= slower_existing_p95 + max(slower_existing_p95 * 0.25, 10.0)`.
 - Cross-platform runner accepts `--pi-version 0.80.5|0.80.6|latest` and marks only `latest` nonblocking.
 
-- [ ] **Step 1: Write benchmark math and deterministic platform tests**
+- [x] **Step 1: Write benchmark math and deterministic platform tests**
 
 ```python
 def test_relative_limit_uses_slower_host_plus_larger_margin():
@@ -1273,21 +1273,21 @@ def test_pi_p95_must_fit_relative_limit():
 Platform fixtures exercise spaces/non-ASCII paths, LF/CRLF input, Windows/POSIX executable
 resolution, UTF-8 JSONL, cancellation, process trees, generated paths, and second-run idempotency.
 
-- [ ] **Step 2: Run the new benchmark/platform tests red**
+- [x] **Step 2: Run the new benchmark/platform tests red**
 
 ```powershell
 python .github/scripts/test_pi_benchmark.py
 python .github/scripts/test_pi_platform_contract.py --fixtures-only
 ```
 
-- [ ] **Step 3: Implement 100-event warm measurements with separated timing**
+- [x] **Step 3: Implement 100-event warm measurements with separated timing**
 
 Measure the same canonical read/exec/write fixture corpus for Claude, Codex, and Pi. Record cold
 startup once, shared Python core time separately, and adapter-only p50/p95 from 100 warm events after
 five warmups. Use `time.perf_counter_ns()`, deterministic local IO, no provider request, and a
 temporary enabled repo per sample group.
 
-- [ ] **Step 4: Add Windows/macOS/Linux CI matrices**
+- [x] **Step 4: Add Windows/macOS/Linux CI matrices**
 
 Use Python 3 and Node 22.19; install exact external Pi versions with `npm install -g --ignore-scripts`
 only in live-host jobs. Deterministic adapter tests do not require network or real auth. Run package
@@ -1295,7 +1295,7 @@ discovery, paths, encoding, bridge, tool enforcement, subagent cancellation, pro
 and benchmark on every OS. A macOS live credentialed run is required only if the matrix differs from
 Windows/Linux behavior.
 
-- [ ] **Step 5: Run local benchmark and platform checks**
+- [x] **Step 5: Run local benchmark and platform checks**
 
 ```powershell
 python .github/scripts/test_pi_benchmark.py
@@ -1338,7 +1338,7 @@ CLI/package-origin diagnostic.
   `/ca-init`, `/ca-doctor`, and `/skill:ca-init` with evidence-backed version/platform limits.
 - Documents Git distribution only; npm is explicitly future work, not an available install path.
 
-- [ ] **Step 1: Write public-doc structural tests**
+- [x] **Step 1: Write public-doc structural tests**
 
 ```python
 def test_public_surfaces_name_all_three_governance_hosts():
@@ -1357,21 +1357,21 @@ def test_pi_install_claims_are_pinned_and_not_npm():
 Also assert command counts/catalog links match generated output, every Pi exception has a status and
 evidence pointer, `--farm` remains preview, and the future embedded-farm item is labeled a spike.
 
-- [ ] **Step 2: Run doc/reference tests red**
+- [x] **Step 2: Run doc/reference tests red**
 
 ```powershell
 python .github/scripts/test_public_pi_docs.py
 python .github/scripts/check-plugin-refs.py ca-pi
 ```
 
-- [ ] **Step 3: Update project vocabulary and technical conventions**
+- [x] **Step 3: Update project vocabulary and technical conventions**
 
 Describe four sibling plugins (`ca`, `ca-codex`, `ca-pi`, `ca-sandbox`) while keeping three
 governance hosts generated from one core. Add Pi TypeScript commands, Node floor, exact build/test
 commands, external-host dependency rule, Git package layout, trust boundary, status/compaction/tool
 mapping, and independent tag/version rules to the canonical docs.
 
-- [ ] **Step 4: Write the install/live-test runbook and three-host parity ledger**
+- [x] **Step 4: Write the install/live-test runbook and three-host parity ledger**
 
 The runbook starts with isolated homes/dummy local providers, then a local opt-in credentialed pass
 whose artifact contains only result codes/timings. Cover package origin, project trust, activation,
@@ -1379,13 +1379,13 @@ aliases, final mutation block, subagents, cancellation, status, compaction, farm
 and shared-state continuity. Convert `docs/parity.md` from a two-host comparison into a matrix with
 Claude/Codex/Pi evidence and explicit exceptions.
 
-- [ ] **Step 5: Record the Git-only release shape and future spikes**
+- [x] **Step 5: Record the Git-only release shape and future spikes**
 
 Document `ca-pi-v*` tags, synchronized nested/root versions, and no npm release today. Record two
 future spikes without making them current dependencies: npm packaging, and a Pi-native embedded farm
 worker built on the hardened child runner while retaining the shared farm contract.
 
-- [ ] **Step 6: Run prose and generation checks**
+- [x] **Step 6: Run prose and generation checks**
 
 ```powershell
 python tools/build-surface.py
@@ -1403,7 +1403,7 @@ python tools/build-host-packages.py --check
 
 ### Task 13: Live supported-version promotion evidence
 
-**Status:** IN_PROGRESS
+**Status:** ACCEPTED
 **Owns:** PI-AC-35
 
 **Review ledger from Batch 1:** Promotion evidence must include every committed Windows/macOS/Linux
@@ -1422,7 +1422,7 @@ real loop and prove their expanded skill bodies execute rather than reaching the
   summary, and redacted diagnostic code. It forbids task text, prompts, repo content, paths beneath a
   user home, environment values, provider response bodies, and raw JSONL/stderr.
 
-- [ ] **Step 1: Run trusted Windows interactive evidence on Pi 0.80.5 and 0.80.6**
+- [x] **Step 1: Run trusted Windows interactive evidence on Pi 0.80.5 and 0.80.6**
 
 Use a disposable enabled repo and the exact Git checkout. Verify package discovery/origin, trust UX,
 persona, every alias catalog entry, H-03/H-05/H-20 final mutation blocks, read/write notices, keyed
@@ -1431,7 +1431,7 @@ shared-state attribution, and farm preview. The harness must perform no filesyst
 the operator's real auth path; Pi may resolve or refresh its own host state, and no path/value/hash
 from that state enters the evidence.
 
-- [ ] **Step 2: Run Linux non-interactive evidence on both supported versions**
+- [x] **Step 2: Run Linux non-interactive evidence on both supported versions**
 
 Use isolated `PI_CODING_AGENT_DIR`, deterministic local provider, `--no-approve`, and the same package
 commit. Exercise activation, command discovery, final tool wrappers, child runner, process tree,
@@ -1439,13 +1439,13 @@ compaction, doctor wrapper self-test, and independent active-dispatch evidence. 
 with Windows; require macOS live execution if
 any matrix-only difference remains.
 
-- [ ] **Step 3: Run latest canary without promoting it**
+- [x] **Step 3: Run latest canary without promoting it**
 
 Install npm `latest` externally with `--ignore-scripts`, record version and pass/fail separately, and
 leave minimum/last-verified unchanged. A canary failure opens a compatibility task but does not falsify
 the 0.80.5/0.80.6 supported matrix.
 
-- [ ] **Step 4: Write sanitized evidence and independently verify it**
+- [x] **Step 4: Write sanitized evidence and independently verify it**
 
 Generate `promotion.json` from result codes, then render `promotion.md`. Run the shared secret corpus
 and home/path scan over both. A reviewer must reproduce at least the doctor/final-argument/child
@@ -1461,7 +1461,7 @@ git diff --check -- docs/reports/pi-support docs/parity.md
 
 ### Task 14: Full repository gate, parity closure, and governed handoff
 
-**Status:** IN_PROGRESS
+**Status:** ACCEPTED
 **Owns:** PI-AC-37, PI-AC-38
 
 **Review ledger from Tasks 1-2:** Derive package-contract version expectations from the nested
@@ -1482,7 +1482,7 @@ must bind DECISION-0018's expansion envelope to both supported Pi versions.
   non-exception row.
 - No verifier writes markers, versions, changelogs, tags, branches, or evidence.
 
-- [ ] **Step 1: Write verifier self-tests**
+- [x] **Step 1: Write verifier self-tests**
 
 ```python
 def test_verifier_rejects_one_missing_obligation(tmp_repo):
@@ -1498,13 +1498,13 @@ def test_verifier_rejects_partial_or_dirty_generation(tmp_repo):
     assert "generated surface" in result.stdout
 ```
 
-- [ ] **Step 2: Run verifier tests red**
+- [x] **Step 2: Run verifier tests red**
 
 ```powershell
 python .github/scripts/test_verify_pi_support.py
 ```
 
-- [ ] **Step 3: Implement the read-only aggregate verifier**
+- [x] **Step 3: Implement the read-only aggregate verifier**
 
 The verifier reads commands from `.codearbiter/tech-stack.md` plus its fixed Pi groups, streams each
 exit/result without shell composition, and checks: branch exactly `feat/pi-support`; all 38 plan
@@ -1512,7 +1512,7 @@ obligations `COVERED`; Tasks 1-14 `ACCEPTED`; no unresolved non-host-impossible 
 promotion evidence; clean second generation; no Pi runtime tree; no forbidden policy duplication;
 and no unexpected tracked/untracked files inside generated/package trees.
 
-- [ ] **Step 4: Run every existing and new required suite**
+- [x] **Step 4: Run every existing and new required suite**
 
 ```powershell
 python .github/scripts/verify_pi_support.py
@@ -1554,14 +1554,14 @@ git diff --check
 Expected: every command exits 0; rebuilding `farm.js` and both Pi extensions leaves their checked-in
 bytes unchanged.
 
-- [ ] **Step 5: Verify CI and perform the final governed review**
+- [x] **Step 5: Verify CI and perform the final governed review**
 
 Push only through the later PR path, require every Windows/macOS/Linux, security, generated-surface,
 version, prose, and aggregate job green, then route the complete diff through `$ca-review`. Clear all
 BLOCK findings and rerun affected suites. Preserve the user's unrelated dirty files and verify no
 milestone was merged, tagged, or published.
 
-- [ ] **Step 6: Exit through the sanctioned commit/PR route**
+- [x] **Step 6: Exit through the sanctioned commit/PR route**
 
 After all task cells are `ACCEPTED` and every obligation is `COVERED`, run `$ca-commit`, then `$ca-pr`.
 Do not tag or publish `ca-pi`; release remains a later explicitly authorized action.
@@ -1570,16 +1570,16 @@ Do not tag or publish `ca-pi`; release remains a later explicitly authorized act
 
 ## Self-review checklist
 
-- [ ] Every spec section maps to at least one task.
-- [ ] PI-AC-01 through PI-AC-38 appear exactly once in the obligation ledger and once in an owning
+- [x] Every spec section maps to at least one task.
+- [x] PI-AC-01 through PI-AC-38 appear exactly once in the obligation ledger and once in an owning
   task's `Owns` row.
-- [ ] Every code-producing task begins with a failing observable test and names the expected failure.
-- [ ] Interfaces, terminal states, version floors, command spellings, environment rules, and paths are
+- [x] Every code-producing task begins with a failing observable test and names the expected failure.
+- [x] Interfaces, terminal states, version floors, command spellings, environment rules, and paths are
   consistent across tasks.
-- [ ] No placeholder language, unresolved Pi-specific confirmation marker, partial-release path, npm
+- [x] No placeholder language, unresolved Pi-specific confirmation marker, partial-release path, npm
   publication step, duplicate Pi runtime, real credential fixture, or second governance
   implementation appears. `[CONFIRM-05]` remains ledgered only for future farm stable promotion.
-- [ ] The future embedded-farm idea is recorded only as a spike; current farm parity reuses the one
+- [x] The future embedded-farm idea is recorded only as a spike; current farm parity reuses the one
   shared backend contract.
 
 ## Approval gate

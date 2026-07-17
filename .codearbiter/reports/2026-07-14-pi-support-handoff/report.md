@@ -1,149 +1,72 @@
 # ca-pi reboot-safe handoff
 
-**Recorded:** 2026-07-14
+**Originally recorded:** 2026-07-14
+
+**Closed:** 2026-07-16
+
 **Branch:** `feat/pi-support`
-**Git common directory:** `.git`
-**Promotion state:** Batch 2 combined checkpoint (Tasks 3-5) is **BLOCKED**
 
-## Resume boundary
+**Pull request:** [#313](https://github.com/arbiterForge/codeArbiter/pull/313)
 
-Batch 1 was accepted. Tasks 3-5 were individually accepted after their focused author/reviewer
-loops, but the subsequent combined integration and security review found cross-task failures. Treat
-the combined Batch 2 verdict as authoritative: do not start Tasks 6-9 until all confirmed blockers
-are fixed test-first and fresh combined reviews are clean.
+**Attested implementation:** `54080beadc8ff1fe6c8a5e0da81ad699c3ad0920`
 
-This handoff intentionally does not commit, stash, reset, clean, switch branches, publish, install an
-npm release, or begin Tasks 6-9. A reboot does not require a commit; the working tree is the durable
-feature state.
+**Promotion state:** Tasks 1-14 accepted; PI-AC-01 through PI-AC-38 covered
 
-## Confirmed combined-review blockers
+## Final resume boundary
 
-### 1. CRITICAL - pre-trust/dormancy Python resolution
+The blocked Batch 2 handoff that originally occupied this file is superseded. Its interpreter,
+activation, enforcement-installation, version-boundary, read-context, doctor, security, packaging,
+cross-platform, and Windows process-containment findings were recovered and resolved test-first.
+Do not resume implementation from the former Task 6 boundary.
 
-- `plugins/ca-pi/tools/src/extension.ts` resolves Python during extension load, before activation and
-  trust are established.
-- `plugins/ca-pi/tools/src/bridge.ts` tries bare `py`, `python`, and `python3` candidates without a
-  safe working-directory boundary.
-- The security review proved that a poisoned working-directory `py.exe` can execute.
-- Required proof: defer resolution until activation/trust, eliminate project-cwd executable search,
-  validate an absolute interpreter, and add a poisoned-cwd live regression test.
+The feature is now at its governed terminal state: an open PR with final hosted promotion evidence.
+Do not change implementation code after the attested SHA unless a new failure reopens the sprint;
+the final evidence verifier permits only its evidence/status/report allowlist in descendants.
 
-### 2. HIGH - activation parser drift
+## Hosted promotion evidence
 
-- `plugins/ca-pi/tools/src/activation.ts` requires an exact lowercase, column-zero marker and exactly
-  one match.
-- `core/pysrc/_hooklib.py` is case-insensitive, whitespace/BOM tolerant, and permits duplicates.
-- Review probe: `---\n  ArBiTeR:enabled\n---\n` was inactive in TypeScript and active in Python.
-- Required proof: one generated or shared parser contract with cross-host fixtures.
+Workflow run [29550379456](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456)
+completed successfully on the attested implementation SHA.
 
-### 3. HIGH - real Pi can swallow enforcement installation failure
+| Required check | Result | Evidence |
+|---|---|---|
+| Windows, Pi 0.80.5 | success | [job 87791467011](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87791467011) |
+| Windows, Pi 0.80.6 | success | [job 87791467010](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87791467010) |
+| Linux, Pi 0.80.5 | success | [job 87791467013](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87791467013) |
+| Linux, Pi 0.80.6 | success | [job 87791466989](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87791466989) |
+| macOS arm64, Pi 0.80.5 | success | [job 87791467006](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87791467006) |
+| macOS arm64, Pi 0.80.6 | success | [job 87791467051](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87791467051) |
+| Scoped CodeQL | success | [job 87791466968](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87791466968) |
+| Repository aggregate | success | [job 87792299157](https://github.com/arbiterForge/codeArbiter/actions/runs/29550379456/job/87792299157) |
 
-- The parent extension throws when enforcement installation fails.
-- Pi's lifecycle runner catches ordinary handler failures, emits `extension_error`, and continues.
-- Required proof: an always-installed bootstrap guard that blocks mutators until enforcement is
-  complete, or an explicit host shutdown, verified through real-Pi RPC fault injection.
+The npm-latest canary remained visibly red and nonblocking as designed. It exercised unsupported Pi
+0.80.10 and did not expand the supported set beyond 0.80.5 and 0.80.6.
 
-### 4. HIGH - supported-version split
+## Final verification
 
-- `plugins/ca-pi/tools/src/compatibility.ts` accepts every version `>=0.80.5`.
-- The approved spec, descriptor, and doctor contract support exactly 0.80.5 and 0.80.6.
-- Required proof: reject 0.80.7, prereleases, and 1.x before tool registration; exercise installed
-  runtime compatibility in the latest-version canary.
+- The local preclosure verifier passed all 46 canonical gates before the attested push.
+- The Windows live process-tree proof passed all 8 variants on the stock PowerShell fallback.
+- Canonical PowerShell 7 selection passed on hosted Windows; both supported Windows cells completed.
+- Security review cleared executable identity, fail-closed launch ordering, bounded helper-subtree
+  cleanup, stale-PID avoidance, minimal environment, and generated-bundle parity.
+- `promotion.json` and `promotion.md` contain only the verifier's bounded sanitized fields and bind
+  the six-cell matrix plus CodeQL to the attested implementation SHA.
 
-### 5. HIGH - read-context parity test is false-green
+## Preserved unrelated state
 
-- `plugins/ca-pi/hooks/_host.py` defines `{path}` to `{file_path}` normalization.
-- `plugins/ca-pi/hooks/pi-bridge.py` does not apply that normalization before `pre-read.py`.
-- The adapter drops response context, and the current fake `tool_result` test targets a route that
-  does not establish real Pi model-visible parity.
-- An isolated probe allowed native `{path: src/app.py}` while the shared `{file_path: ...}` input
-  produced an ADR-context notice.
-- Required proof: normalize the integrated payload, preserve context through the actual native
-  result route, and assert exact model-visible output.
+The user-owned `stash@{0}` containing unrelated `.codearbiter/open-tasks.md` review tasks was not
+applied, dropped, or rewritten. No release, tag, merge, direct default-branch write, or publication
+was performed.
 
-### 6. MEDIUM - doctor live-fire overstates active-host coverage
+## Resume command
 
-- The doctor invokes its stored enforcement wrapper directly instead of Pi's active dispatcher.
-- This proves the wrapper/shared core, not that the host is dispatching through it.
-- Required proof: test active dispatch, or relabel the check as a wrapper self-test and keep PI-AC-28
-  open until a live-host test exists.
-
-## Security candidates requiring re-audit
-
-The security review did not complete a final adjudication of these two candidates. Do not report
-them as confirmed defects without a fresh source-backed review:
-
-- Structured doctor report values may not pass through the shared-corpus redaction path.
-- Installed enforcement wrappers may persist after shutdown/deactivation in a reused Pi process.
-
-## Green evidence that is necessary but insufficient
-
-These checks passed before the combined review found the blockers above. They are useful baselines,
-not promotion evidence:
-
-- Pi tests: 92/92.
-- Package/RPC tests: 15/15.
-- Descriptor/oracle tests: 13/13.
-- Pi doctor/backstop tests: 5/5.
-- Parity tests: 18/18; the read-context finding proves this suite currently permits a false green.
-- Shared Python suite: 931/931.
-- Cold-install verification: 218 assertions.
-- Hook guards: 106.
-- Surface generator: 34/34.
-- `sync-core`: 13 tests with one skip; `--check` reported all three host copies byte-identical.
-- Package check, typecheck, deterministic builds, and diff check passed.
-
-Recorded SHA-256 hashes:
-
-| Artifact | SHA-256 |
-|---|---|
-| `plugins/ca-pi/tools/package-lock.json` | `9D3FE616FFBC306BC77B25F2C1CFEA3A4A2A41354F9C170CE102A101C1871CC2` |
-| `plugins/ca-pi/extensions/codearbiter.js` | `CC9B98CE62184A11EDDFC2FCFF131FADD624C986EF59C83FCB172F31BB09118F` |
-| `plugins/ca-pi/extensions/codearbiter-child.js` | `E04A1CF31ABF22F7EB7FFE77B5584E7892EC46DAED2CB6915E725172EDABD328` |
-
-## Preserved user-owned dirt
-
-Do not alter, stage, stash, reset, clean, or attribute these to the ca-pi work:
-
-- `.codearbiter/gate-events.log`
-- `.codearbiter/open-tasks.md`
-- The untracked scratch file whose displayed name resembles
-  `C:Users...scratchpadtest_output.txt` and contains a private-use separator glyph.
-- Pre-existing July 13 temporary directories:
-  `ca-pi-child-32732-ok`, `ca-pi-child-32732-cancel`, `ca-pi-child-94260-ok`, and
-  `ca-pi-child-94260-cancel`.
-
-Preserve any additional untracked caches or temporary artifacts until their ownership is proven.
-
-## Required next sequence
-
-1. Confirm branch and working-tree identity; do not clean or normalize the tree.
-2. Fix the poisoned-cwd/pre-trust interpreter path test-first.
-3. Fix canonical activation parsing with cross-host fixtures.
-4. Add fail-closed bootstrap enforcement and real-Pi installation-failure coverage.
-5. Enforce the exact supported-version set and strengthen the canary.
-6. Fix native read normalization and exact model-visible context propagation.
-7. Correct or relabel doctor live-fire coverage.
-8. Re-audit both unresolved security candidates.
-9. Run the focused tests, full suites, deterministic generation checks, and a fresh combined
-   integration/security review.
-10. Only after a clean combined checkpoint may Tasks 6-9 begin.
-
-## Fresh-context resume prompt
-
-Use `$ca-feature` to resume the approved feature on `feat/pi-support` from this report. Treat the
-Batch 2 combined checkpoint as blocked, fix the recorded blockers test-first in order with fresh
-author/reviewer loops, and re-audit the two unresolved security candidates. Do not start Tasks 6-9,
-commit, publish, switch branches, stash, reset, or clean user-owned dirt until the combined
-checkpoint is independently clean.
-
-First read-only checks after reboot:
+If this session is interrupted, resume by checking PR #313 and running:
 
 ```powershell
-git rev-parse --abbrev-ref HEAD
 git status --short
-git diff --check
-Get-FileHash -Algorithm SHA256 plugins/ca-pi/tools/package-lock.json
-Get-FileHash -Algorithm SHA256 plugins/ca-pi/extensions/codearbiter.js
-Get-FileHash -Algorithm SHA256 plugins/ca-pi/extensions/codearbiter-child.js
+python .github/scripts/verify_pi_support.py --mode final
+gh pr checks 313
 ```
+
+Expected state: the final verifier is green, the PR remains open, and only an explicitly authorized
+merge or later release workflow remains outside this sprint.
