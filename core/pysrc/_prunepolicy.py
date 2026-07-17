@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
+# codeArbiter — host-neutral semantic selection policy for transcript pruning.
 """Host-neutral semantic selection policy for transcript pruning.
 
 Codecs own host serialization. This module owns only deterministic selection,
 tier ordering, markers, dry metrics, and audit outcomes.
 """
+#
+# Public API:
+#   reduction_metrics(bytes_before, bytes_after) -> dict  dry/run reduction metrics
+#                                            with the shared token estimate
+#   audit_outcomes(parse_errors, orphans, unpaired) -> tuple  host-neutral integrity
+#                                            levels; codecs retain native messages
+#   marker_for(original_text) -> str        deterministic condensed-content marker;
+#                                            an existing marker is returned unchanged
+#   has_marker(value) -> bool               True iff value already carries the marker
+#   select_strategies(tier, strategies=None) -> tuple  strategies admitted by tier,
+#                                            or an explicit requested subset
+#   protected_ordinal(entries, keep_recent) -> int  the protected-tail boundary
+#   plan_prune(entries, policy) -> PrunePlan  full selection/action/audit plan over
+#                                            a SemanticEntry sequence
 
 from dataclasses import dataclass
 import hashlib

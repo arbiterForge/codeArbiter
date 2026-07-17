@@ -5,6 +5,14 @@
 # variables are absent. The Pi bridge supplies validated absolute identities;
 # every shared Git subprocess then consumes the same identity, and the managed
 # Git hook carries it into the later hook process.
+#
+# Public API:
+#   trusted_git_executable() -> str|None     validated CODEARBITER_GIT_EXECUTABLE, or
+#                                             None if unset
+#   trusted_python_executable() -> str|None  validated CODEARBITER_PYTHON_EXECUTABLE, or
+#                                             None if unset
+#   git_executable() -> str                  trusted_git_executable() or the bare "git"
+#                                             fallback
 
 import os
 
