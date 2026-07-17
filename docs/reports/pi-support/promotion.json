@@ -1,17 +1,17 @@
 {
   "schema": "codearbiter-pi-promotion-v1",
-  "mode": "preclosure",
-  "commit": null,
+  "mode": "final",
+  "commit": "f457decbf799ef197ca7b8bc235aa414db5c0832",
   "rows": [
     {"version":"0.80.5","platform":"windows-local","architecture":"x64","resultCode":"PI-LOCAL-SUPPORTED","passed":true,"timingMs":69246,"diagnosticCode":"NONE"},
-    {"version":"0.80.5","platform":"windows","architecture":"pending","resultCode":"PI-HOSTED-PENDING","passed":false,"timingMs":0,"diagnosticCode":"HOSTED_PENDING"},
-    {"version":"0.80.5","platform":"linux","architecture":"pending","resultCode":"PI-HOSTED-PENDING","passed":false,"timingMs":0,"diagnosticCode":"HOSTED_PENDING"},
-    {"version":"0.80.5","platform":"macos","architecture":"pending","resultCode":"PI-HOSTED-PENDING","passed":false,"timingMs":0,"diagnosticCode":"HOSTED_PENDING"},
+    {"version":"0.80.5","platform":"windows","architecture":"x64","resultCode":"PI-HOSTED-SUPPORTED","passed":true,"timingMs":347000,"diagnosticCode":"NONE"},
+    {"version":"0.80.5","platform":"linux","architecture":"x64","resultCode":"PI-HOSTED-SUPPORTED","passed":true,"timingMs":98000,"diagnosticCode":"NONE"},
+    {"version":"0.80.5","platform":"macos","architecture":"arm64","resultCode":"PI-HOSTED-SUPPORTED","passed":true,"timingMs":175000,"diagnosticCode":"NONE"},
     {"version":"0.80.6","platform":"windows-local","architecture":"x64","resultCode":"PI-LOCAL-SUPPORTED","passed":true,"timingMs":68678,"diagnosticCode":"NONE"},
-    {"version":"0.80.6","platform":"windows","architecture":"pending","resultCode":"PI-HOSTED-PENDING","passed":false,"timingMs":0,"diagnosticCode":"HOSTED_PENDING"},
-    {"version":"0.80.6","platform":"linux","architecture":"pending","resultCode":"PI-HOSTED-PENDING","passed":false,"timingMs":0,"diagnosticCode":"HOSTED_PENDING"},
-    {"version":"0.80.6","platform":"macos","architecture":"pending","resultCode":"PI-HOSTED-PENDING","passed":false,"timingMs":0,"diagnosticCode":"HOSTED_PENDING"},
-    {"version":"codeql","platform":"github","architecture":"pending","resultCode":"PI-CODEQL-PENDING","passed":false,"timingMs":0,"diagnosticCode":"HOSTED_PENDING"},
+    {"version":"0.80.6","platform":"windows","architecture":"x64","resultCode":"PI-HOSTED-SUPPORTED","passed":true,"timingMs":387000,"diagnosticCode":"NONE"},
+    {"version":"0.80.6","platform":"linux","architecture":"x64","resultCode":"PI-HOSTED-SUPPORTED","passed":true,"timingMs":100000,"diagnosticCode":"NONE"},
+    {"version":"0.80.6","platform":"macos","architecture":"arm64","resultCode":"PI-HOSTED-SUPPORTED","passed":true,"timingMs":148000,"diagnosticCode":"NONE"},
+    {"version":"codeql","platform":"github","architecture":"x64","resultCode":"PI-CODEQL-HIGH","passed":true,"timingMs":74000,"diagnosticCode":"NONE"},
     {"version":"0.80.9","platform":"windows-local","architecture":"x64","resultCode":"PI-LATEST-CANARY","passed":false,"timingMs":15143,"diagnosticCode":"VERSION_UNSUPPORTED"}
   ]
 }

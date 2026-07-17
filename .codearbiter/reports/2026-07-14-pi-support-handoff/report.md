@@ -2,15 +2,15 @@
 
 **Originally recorded:** 2026-07-14
 
-**Reopened:** 2026-07-17 after evidence-head Windows/Pi 0.80.5 test timeout
+**Closed:** 2026-07-17 after hosted recovery verification
 
 **Branch:** `feat/pi-support`
 
 **Pull request:** [#313](https://github.com/arbiterForge/codeArbiter/pull/313)
 
-**Prior attested implementation:** `3a1046d4254c44baf49a547b251589111af1fd88` (superseded by the test-harness recovery)
+**Attested implementation:** `f457decbf799ef197ca7b8bc235aa414db5c0832`
 
-**Promotion state:** Tasks 1-12 accepted; Tasks 13-14 in progress; hosted promotion pending
+**Promotion state:** Tasks 1-14 accepted; PI-AC-01 through PI-AC-38 covered
 
 ## Final resume boundary
 
@@ -27,43 +27,50 @@ passed the same runner image previously, and the paired Windows/Pi 0.80.6 cell p
 only the bounded cold admission budget to fifteen seconds, expands the live harness ceiling, and adds
 fixed non-sensitive admission-stage diagnostics. Local live process-tree proof is 8/8; independent
 security and SMARTS reviews are CLEAN. Recovery run
-[29552647068](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068) passed the complete
-supported matrix and aggregate gate on the attested implementation. The feature is again at its
-governed terminal state, but evidence-head run
-[29553244197](https://github.com/arbiterForge/codeArbiter/actions/runs/29553244197) reopened it when the
-real duplicate-host/package isolation proof hit its own fifteen-second Vitest timeout on Windows/Pi
-0.80.5. No product assertion failed, and the paired 0.80.6 cell passed. Recovery raises only that
-real-host integration-test ceiling to forty-five seconds. Commit, fresh hosted matrix, and final
-evidence rebinding remain.
+[29552647068](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068) first passed the
+complete supported matrix and aggregate gate. Later evidence-head runs exposed two additional
+test-harness flakes without a failed product assertion: the real duplicate-host proof exceeded first
+fifteen and then forty-five seconds on hosted Windows while its loopback Git clone continued making
+progress. The final recovery gives that aggregate fixture a bounded 120-second budget beneath the
+platform runner's 180-second cap and runs it in a fresh Vitest process before the remaining
+process-tree fixtures. Independent security and SMARTS reviews are CLEAN.
 
-## Prior hosted promotion evidence (superseded)
+Final PR-head run [29554559519](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519)
+passed both supported Windows cells, both supported macOS cells, Ubuntu/Pi 0.80.5, scoped CodeQL, and
+the repository aggregate. Ubuntu/Pi 0.80.6 had one transient opaque `PI-SEC-PACKAGE` result even
+though the same package suite passed earlier in that job; the same-head rerun passed that security
+step and the complete cell. No security gate was reordered, retried in code, skipped, or weakened.
+The feature is at its governed terminal state: an open PR with final hosted promotion evidence.
 
-Workflow run [29552647068](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068)
-completed successfully on the prior attested implementation SHA. A fresh matrix is required for the
-test-harness recovery commit.
+## Hosted promotion evidence
+
+Workflow run [29554559519](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519)
+completed successfully on the attested implementation SHA.
 
 | Required check | Result | Evidence |
 |---|---|---|
-| Windows, Pi 0.80.5 | success | [job 87798366352](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87798366352) |
-| Windows, Pi 0.80.6 | success | [job 87798366366](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87798366366) |
-| Linux, Pi 0.80.5 | success | [job 87798366376](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87798366376) |
-| Linux, Pi 0.80.6 | success | [job 87798366364](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87798366364) |
-| macOS arm64, Pi 0.80.5 | success | [job 87798366387](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87798366387) |
-| macOS arm64, Pi 0.80.6 | success | [job 87798366358](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87798366358) |
-| Scoped CodeQL | success | [job 87798366321](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87798366321) |
-| Repository aggregate | success | [job 87799295412](https://github.com/arbiterForge/codeArbiter/actions/runs/29552647068/job/87799295412) |
+| Windows, Pi 0.80.5 | success | [job 87804797391](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804797391) |
+| Windows, Pi 0.80.6 | success | [job 87804797511](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804797511) |
+| Linux, Pi 0.80.5 | success | [job 87804797641](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804797641) |
+| Linux, Pi 0.80.6 | success | [job 87804797198](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804797198) |
+| macOS arm64, Pi 0.80.5 | success | [job 87804797464](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804797464) |
+| macOS arm64, Pi 0.80.6 | success | [job 87804797875](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804797875) |
+| Scoped CodeQL | success | [job 87804797602](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804797602) |
+| Repository aggregate | success | [job 87804991186](https://github.com/arbiterForge/codeArbiter/actions/runs/29554559519/job/87804991186) |
 
 The npm-latest canary remained visibly red and nonblocking as designed. It exercised unsupported Pi
 0.80.10 and did not expand the supported set beyond 0.80.5 and 0.80.6.
 
-## Prior final verification (superseded)
+## Final verification
 
 - The local preclosure verifier passed all 46 canonical gates before the attested push.
-- The Windows live process-tree proof passed all 8 variants on the stock PowerShell fallback.
+- The Windows live process-tree proof passed all 8 variants with bounded canonical Job containment.
 - Canonical PowerShell 7 selection and bounded cold admission passed on hosted Windows; both supported
   Windows cells completed.
 - Security review cleared executable identity, fail-closed launch ordering, bounded helper-subtree
   cleanup, stale-PID avoidance, minimal environment, and generated-bundle parity.
+- The duplicate-host proof keeps every offline/auth, counterfeit-host, canonical-runtime,
+  exact-source, shutdown, and cleanup assertion under nested 120/180-second bounds.
 - `promotion.json` and `promotion.md` contain only the verifier's bounded sanitized fields and bind
   the six-cell matrix plus CodeQL to the attested implementation SHA.
 
