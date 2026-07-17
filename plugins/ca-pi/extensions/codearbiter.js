@@ -3821,10 +3821,6 @@ async function appendPiCompactionAudit(record) {
   } catch {
   }
 }
-var compactionLimits = Object.freeze({
-  conversationBytes: MAX_CONVERSATION_BYTES,
-  summaryBytes: MAX_SUMMARY_BYTES
-});
 
 // src/extension.ts
 var PI_TRUST_REQUIRED_STATUS = "codeArbiter host: pi waiting for project trust - run /trust in Pi, approve this project, then start a new session";

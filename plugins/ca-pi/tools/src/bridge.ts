@@ -402,7 +402,3 @@ export function resolvePythonCommand(
   }
   throw new Error("codeArbiter could not resolve an absolute Python interpreter; run /ca-doctor.");
 }
-
-export function resolvePythonExecutable(): string {
-  return resolvePythonCommand().executable;
-}

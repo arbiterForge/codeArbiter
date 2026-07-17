@@ -449,8 +449,3 @@ export async function appendPiCompactionAudit(record: PiCompactionAuditRecord): 
     // A confirmed compaction remains valid if its append-only audit sink is unavailable.
   }
 }
-
-export const compactionLimits = Object.freeze({
-  conversationBytes: MAX_CONVERSATION_BYTES,
-  summaryBytes: MAX_SUMMARY_BYTES,
-});
