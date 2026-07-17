@@ -2,6 +2,7 @@
 import { spawn } from "node:child_process";
 import { isAbsolute } from "node:path";
 import { createReadStream, createWriteStream } from "node:fs";
+import { Socket } from "node:net";
 var MAX_LAUNCH_BYTES = 262144;
 var MAX_CONTROL_BYTES = 16;
 var PROXY_DRAIN_MS = 500;
@@ -9,7 +10,7 @@ var START = "START\n";
 var launchInput = createReadStream("", { fd: 4, autoClose: false });
 var controlInput = createReadStream("", { fd: 5, autoClose: false });
 var statusOutput = createWriteStream("", { fd: 6, autoClose: false });
-var parentLeash = createReadStream("", { fd: 7, autoClose: false });
+var parentLeash = new Socket({ fd: 7, readable: true, writable: false });
 function exactObject(value, keys) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
   const actual = Object.keys(value).sort();
@@ -49,6 +50,22 @@ var child;
 var failureReason;
 var failClosed = () => {
   process.exitCode = 70;
+  try {
+    parentLeash.destroy();
+  } catch {
+  }
+  try {
+    launchInput.destroy();
+  } catch {
+  }
+  try {
+    controlInput.destroy();
+  } catch {
+  }
+  try {
+    statusOutput.destroy();
+  } catch {
+  }
   setImmediate(() => process.exit(70));
 };
 function waitForReadableDrain(stream) {
@@ -133,7 +150,6 @@ try {
     ])).finally(() => process.exit(typeof code === "number" ? code : 71));
   };
   child.once("exit", finalizeExit);
-  child.once("error", failClosed);
   failureReason = "spawn-error";
   await new Promise((resolve, reject) => {
     child.once("spawn", resolve);
@@ -157,8 +173,15 @@ try {
   if (observedExit !== void 0) queueMicrotask(() => finalizeExit(observedExit.code));
 } catch {
   try {
-    statusOutput.end(`REFUSED${failureReason === void 0 ? "" : ` ${failureReason}`}
-`);
+    await Promise.race([
+      new Promise((resolveFlush) => {
+        statusOutput.end(`REFUSED${failureReason === void 0 ? "" : ` ${failureReason}`}
+`, () => resolveFlush());
+      }),
+      new Promise((resolveTimeout) => {
+        setTimeout(resolveTimeout, PROXY_DRAIN_MS).unref?.();
+      })
+    ]);
   } catch {
   }
   failClosed();

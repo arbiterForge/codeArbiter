@@ -8,6 +8,7 @@
 import { spawn } from "node:child_process";
 import { isAbsolute } from "node:path";
 import { createReadStream, createWriteStream } from "node:fs";
+import { Socket } from "node:net";
 
 import type { WindowsSupervisorRefusalReason } from "./process-tree.ts";
 
@@ -18,7 +19,15 @@ const START = "START\n";
 const launchInput = createReadStream("", { fd: 4, autoClose: false });
 const controlInput = createReadStream("", { fd: 5, autoClose: false });
 const statusOutput = createWriteStream("", { fd: 6, autoClose: false });
-const parentLeash = createReadStream("", { fd: 7, autoClose: false });
+// parentLeash is read via net.Socket rather than fs.createReadStream. Unlike launchInput/
+// controlInput (which are read once to completion before this process ever tries to exit),
+// parentLeash stays in flowing mode (parentLeash.resume() below) for the whole process
+// lifetime so it can detect the parent's death by EOF. A flowing fs.ReadStream over a raw pipe
+// fd services its reads via libuv's threadpool with a blocking, uncancellable syscall; once
+// that read is in flight, this platform's process.exit() shutdown path waits on it and can
+// hang indefinitely instead of terminating. net.Socket over the same fd uses overlapped
+// (non-blocking, IOCP-based) I/O instead, so a still-pending read never blocks process.exit().
+const parentLeash = new Socket({ fd: 7, readable: true, writable: false });
 
 interface LaunchRecord {
   readonly command: string;
@@ -69,8 +78,16 @@ let child: ReturnType<typeof spawn> | undefined;
 // throw so the catch-all below can report it. A never-set reason falls back to the legacy bare
 // "REFUSED\n" token, which the parent (process-tree.ts) still fully accepts.
 let failureReason: WindowsSupervisorRefusalReason | undefined;
+// Destroys every stream this module holds open before forcing exit, so no dangling read/write
+// keeps a handle referenced past the point this process must be gone. (parentLeash itself is
+// now a net.Socket rather than an fs.ReadStream specifically so its permanently-flowing read
+// can never block the process.exit() call below — see the parentLeash comment above.)
 const failClosed = () => {
   process.exitCode = 70;
+  try { parentLeash.destroy(); } catch { /* Already gone. */ }
+  try { launchInput.destroy(); } catch { /* Already gone. */ }
+  try { controlInput.destroy(); } catch { /* Already gone. */ }
+  try { statusOutput.destroy(); } catch { /* Already gone. */ }
   setImmediate(() => process.exit(70));
 };
 
@@ -160,7 +177,12 @@ try {
     ])).finally(() => process.exit(typeof code === "number" ? code : 71));
   };
   child.once("exit", finalizeExit);
-  child.once("error", failClosed);
+  // Intentionally no separate child.once("error", failClosed) here: a spawn-time "error" is
+  // caught below by the awaited promise's reject(), which unwinds through the outer catch block
+  // so the REFUSED <reason> status line is written before the process exits. A second, earlier
+  // "error" listener that called failClosed() directly used to race the outer catch's status
+  // write — harmless while process.exit() itself hung, but a real bug now that fail-closed exit
+  // is reliable: failClosed() could win the race and exit before REFUSED was ever written.
   failureReason = "spawn-error";
   await new Promise<void>((resolve, reject) => {
     child!.once("spawn", resolve);
@@ -182,6 +204,17 @@ try {
   statusOutput.end(`STARTED ${child.pid}\n`);
   if (observedExit !== undefined) queueMicrotask(() => finalizeExit(observedExit!.code));
 } catch {
-  try { statusOutput.end(`REFUSED${failureReason === undefined ? "" : ` ${failureReason}`}\n`); } catch { /* Parent treats EOF as refusal. */ }
+  try {
+    // Wait for the write to actually flush before destroying statusOutput in failClosed(), so
+    // the parent reliably observes the REFUSED <reason> line rather than a bare EOF race. Bounded
+    // by the same PROXY_DRAIN_MS budget used elsewhere for pipe drains, so a wedged status pipe
+    // can never stop failClosed() from being reached — the flush is best-effort, not a gate.
+    await Promise.race([
+      new Promise<void>((resolveFlush) => {
+        statusOutput.end(`REFUSED${failureReason === undefined ? "" : ` ${failureReason}`}\n`, () => resolveFlush());
+      }),
+      new Promise<void>((resolveTimeout) => { setTimeout(resolveTimeout, PROXY_DRAIN_MS).unref?.(); }),
+    ]);
+  } catch { /* Parent treats EOF as refusal. */ }
   failClosed();
 }
