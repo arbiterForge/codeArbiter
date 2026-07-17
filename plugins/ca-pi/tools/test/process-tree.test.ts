@@ -7,7 +7,9 @@ import { describe, expect, test } from "vitest";
 
 import {
   PROCESS_TREE_CLEANUP_REASONS,
+  WINDOWS_SUPERVISOR_REFUSAL_REASONS,
   createProcessTreeCleanup,
+  parseWindowsSupervisorStatusLine,
   processTreeSpawnOptions,
   processTreeTerminationPlan,
   resolveWindowsPowerShellExecutable,
@@ -15,6 +17,7 @@ import {
   writeBoundedControl,
   windowsHelperNeedsTermination,
   windowsPowerShellCandidatePaths,
+  windowsRefusalReasonFromMessage,
   windowsSupervisorLaunchPlan,
   windowsJobHelperArgv,
 } from "../src/process-tree.ts";
@@ -41,6 +44,39 @@ function forceFixtureCleanup(pid: number | undefined): void {
   }
   try { process.kill(-pid, "SIGKILL"); } catch { /* The tree is already gone. */ }
 }
+
+describe("Windows inert-supervisor refusal reason protocol", () => {
+  test("parses a bare legacy STARTED/REFUSED line with no reason", () => {
+    expect(parseWindowsSupervisorStatusLine("STARTED 4242")).toEqual({ outcome: "started", pid: 4242 });
+    expect(parseWindowsSupervisorStatusLine("REFUSED")).toEqual({ outcome: "refused" });
+  });
+
+  test.each(WINDOWS_SUPERVISOR_REFUSAL_REASONS)("parses the reasoned REFUSED %s form", (reason) => {
+    expect(parseWindowsSupervisorStatusLine(`REFUSED ${reason}`)).toEqual({ outcome: "refused", reason });
+  });
+
+  test.each([
+    "REFUSED not-a-real-reason",
+    "REFUSED ",
+    "started 4242",
+    "STARTED 0",
+    "STARTED -1",
+    "STARTED abc",
+    "",
+    "garbage",
+  ])("rejects a malformed or unrecognized status line %s", (line) => {
+    expect(parseWindowsSupervisorStatusLine(line)).toBeUndefined();
+  });
+
+  test.each(WINDOWS_SUPERVISOR_REFUSAL_REASONS)("extracts %s from a trailing process-tree diagnostic message", (reason) => {
+    expect(windowsRefusalReasonFromMessage(`Windows contained Pi launch was refused: ${reason}`)).toBe(reason);
+  });
+
+  test("does not extract a reason from a message with no recognized trailing token", () => {
+    expect(windowsRefusalReasonFromMessage("Windows contained Pi launch was refused")).toBeUndefined();
+    expect(windowsRefusalReasonFromMessage("some other error: not-a-reason-code")).toBeUndefined();
+  });
+});
 
 describe("process-tree cleanup", () => {
   test.each(["linux", "darwin", "win32"] as const)(

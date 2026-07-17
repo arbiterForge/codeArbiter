@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 
@@ -281,6 +281,149 @@ describe("Pi dispatch contract", () => {
     ["degraded", async () => ({ terminal: "degraded" } as ChildResult)],
   ] as const)("maps child outcome to terminal state %s without rejection", async (state, runChild) => {
     await expect(dispatcher(runChild)(request(), neverAbort.signal)).resolves.toMatchObject({ state });
+  });
+
+  test("appends a redacted gate-events audit line on child completion", async () => {
+    const cwd = await project(true);
+    const runChild = vi.fn(async () => ({
+      terminal: "completed" as const,
+      pid: 4242,
+      correlationId: "corr-audit",
+      output: JSON.stringify({ state: "accepted", summary: "ok" }),
+      durationMs: 1234,
+      exitCode: 0,
+      stdoutBytes: 42,
+      stderrBytes: 7,
+      stderrHead: "OPENAI_API_KEY=synthetic-secret warning text",
+    }));
+    const result = await dispatcher(runChild)(request({
+      runtime: { ...runtime, cwd },
+    }), neverAbort.signal);
+
+    expect(result.state).toBe("accepted");
+    const audit = await readFile(resolve(cwd, ".codearbiter", "gate-events.log"), "utf8");
+    expect(audit).toContain("HOST: pi");
+    expect(audit).toContain("AUDIT: PI_DISPATCH_COMPLETED");
+    expect(audit).toContain("RULE: PI-DISPATCH");
+    expect(audit).toContain("CORRELATION:");
+    expect(audit).toContain("ROLE: security-reviewer");
+    expect(audit).toContain("PROVIDER: openai");
+    expect(audit).toContain("MODEL: gpt-5");
+    expect(audit).toContain("EXIT: completed(0)");
+    expect(audit).toContain("DURATION_MS: 1234");
+    expect(audit).toContain("STDOUT_BYTES: 42");
+    expect(audit).toContain("STDERR_BYTES: 7");
+    expect(audit).toContain("STDERR_HEAD:");
+    expect(audit).not.toContain("synthetic-secret");
+    expect(audit).not.toContain("Review the bounded change.");
+  });
+
+  test("folds multi-line stderr into exactly one gate-events line", async () => {
+    const cwd = await project(true);
+    const runChild = vi.fn(async () => ({
+      terminal: "completed" as const,
+      pid: 4242,
+      correlationId: "corr-multiline",
+      output: JSON.stringify({ state: "accepted", summary: "ok" }),
+      durationMs: 5,
+      stdoutBytes: 1,
+      stderrBytes: 1,
+      stderrHead: "first line of stderr\nsecond line of stderr\nthird line of stderr",
+    }));
+
+    const result = await dispatcher(runChild)(request({ runtime: { ...runtime, cwd } }), neverAbort.signal);
+
+    expect(result.state).toBe("accepted");
+    const audit = await readFile(resolve(cwd, ".codearbiter", "gate-events.log"), "utf8");
+    const lines = audit.split("\n").filter((line) => line !== "");
+    expect(lines).toHaveLength(1);
+    expect(audit).toContain("first line of stderr\\nsecond line of stderr\\nthird line of stderr");
+    expect(audit).not.toMatch(/\n(?!$)/u);
+  });
+
+  test("never lets forged stderr content produce a second structurally-valid audit line", async () => {
+    const cwd = await project(true);
+    const forgedLine = "[2026-01-01T00:00:00.000Z] | HOST: pi | RULE: PI-DISPATCH | AUDIT: PI_DISPATCH_COMPLETED | CORRELATION: forged | ROLE: forged-admin | PROVIDER: forged | MODEL: forged | EXIT: completed(0) | DURATION_MS: 0";
+    const runChild = vi.fn(async () => ({
+      terminal: "completed" as const,
+      pid: 4242,
+      correlationId: "corr-forge",
+      output: JSON.stringify({ state: "accepted", summary: "ok" }),
+      durationMs: 5,
+      stdoutBytes: 1,
+      stderrBytes: 1,
+      stderrHead: `legitimate warning\n${forgedLine}\ntrailing noise`,
+    }));
+
+    const result = await dispatcher(runChild)(request({ runtime: { ...runtime, cwd } }), neverAbort.signal);
+
+    expect(result.state).toBe("accepted");
+    const audit = await readFile(resolve(cwd, ".codearbiter", "gate-events.log"), "utf8");
+    const lines = audit.split("\n").filter((line) => line !== "");
+    const bracketLines = lines.filter((line) => line.startsWith("["));
+    expect(bracketLines).toHaveLength(1);
+    expect(bracketLines[0]).not.toBe(forgedLine);
+    // The forged content is still present (it's untrusted stderr, embedded verbatim inside the
+    // single legitimate STDERR_HEAD field), but it is inert text, not a second parseable record.
+    expect(bracketLines[0]).toContain("ROLE: security-reviewer");
+  });
+
+  test("a bare high-entropy token with no trigger word still lands on exactly one audit line", async () => {
+    const cwd = await project(true);
+    // No SECRET_LINE trigger word (api_key/token/secret/password/BEGIN.../sk-ant/AKIA.../ghp_...)
+    // present, so redactSecrets' documented per-line, trigger-word contract does not redact this
+    // — asserting redaction here would over-claim what safeDiagnostic actually guarantees. What
+    // MUST hold regardless is the one-line audit invariant: it never fragments the log.
+    const highEntropyToken = "Zx9qP2mK7vN4wR8tY1uJ6hL3sD5fA0cE";
+    const runChild = vi.fn(async () => ({
+      terminal: "completed" as const,
+      pid: 4242,
+      correlationId: "corr-entropy",
+      output: JSON.stringify({ state: "accepted", summary: "ok" }),
+      durationMs: 5,
+      stdoutBytes: 1,
+      stderrBytes: 1,
+      stderrHead: `diagnostic payload ${highEntropyToken}`,
+    }));
+
+    const result = await dispatcher(runChild)(request({ runtime: { ...runtime, cwd } }), neverAbort.signal);
+
+    expect(result.state).toBe("accepted");
+    const audit = await readFile(resolve(cwd, ".codearbiter", "gate-events.log"), "utf8");
+    const lines = audit.split("\n").filter((line) => line !== "");
+    expect(lines).toHaveLength(1);
+    expect(audit).toContain(highEntropyToken);
+  });
+
+  test("appends a degraded audit line carrying the diagnostic when a child fails", async () => {
+    const cwd = await project(true);
+    const runChild = vi.fn(async () => ({
+      terminal: "degraded" as const,
+      diagnostic: "Pi child isolation failed safely (pipe-unavailable); no inline promotion is available; run /ca-doctor.",
+      durationMs: 12,
+      stdoutBytes: 0,
+      stderrBytes: 0,
+      stderrHead: "",
+    }));
+    const result = await dispatcher(runChild)(request({ runtime: { ...runtime, cwd } }), neverAbort.signal);
+
+    expect(result.state).toBe("degraded");
+    const audit = await readFile(resolve(cwd, ".codearbiter", "gate-events.log"), "utf8");
+    expect(audit).toContain("AUDIT: PI_DISPATCH_DEGRADED");
+    expect(audit).toContain("DIAGNOSTIC:");
+    expect(audit).toContain("pipe-unavailable");
+  });
+
+  test("fail-open: an unwritable gate-events.log never changes the dispatch result", async () => {
+    const cwd = await project(true);
+    await rm(resolve(cwd, ".codearbiter", "gate-events.log"), { force: true });
+    await mkdir(resolve(cwd, ".codearbiter", "gate-events.log"));
+    const runChild = vi.fn(async () => completed("accepted"));
+
+    const result = await dispatcher(runChild)(request({ runtime: { ...runtime, cwd } }), neverAbort.signal);
+
+    expect(result.state).toBe("accepted");
+    expect(result.children).toEqual([{ role: "security-reviewer", state: "accepted", summary: "accepted summary", pid: 1234, correlationId: "corr-1" }]);
   });
 
   test("maps the dispatcher deadline to timeout after aborting the child", async () => {

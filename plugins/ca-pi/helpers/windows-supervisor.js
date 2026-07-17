@@ -46,6 +46,7 @@ function boundedRead(stream, maximum) {
 }
 var started = false;
 var child;
+var failureReason;
 var failClosed = () => {
   process.exitCode = 70;
   setImmediate(() => process.exit(70));
@@ -87,13 +88,16 @@ parentLeash.once("error", failClosed);
 parentLeash.resume();
 process.once("disconnect", failClosed);
 try {
+  failureReason = "proto-overflow";
   const [launchText, control] = await Promise.all([
     boundedRead(launchInput, MAX_LAUNCH_BYTES),
     boundedRead(controlInput, MAX_CONTROL_BYTES)
   ]);
+  failureReason = "launch-malformed";
   if (control !== START || started) throw new Error("invalid supervisor control state");
   started = true;
   const launch = parseLaunch(launchText);
+  failureReason = "spawn-error";
   child = spawn(launch.command, [...launch.args], {
     cwd: launch.cwd,
     env: process.env,
@@ -104,6 +108,7 @@ try {
   });
   const capability = child.stdio[3];
   if (child.stdin === null || child.stdout === null || child.stderr === null || capability === null || capability === void 0 || typeof capability.write !== "function") {
+    failureReason = "pipe-unavailable";
     throw new Error("Pi proxy pipes unavailable");
   }
   let proxyReady = false;
@@ -129,10 +134,12 @@ try {
   };
   child.once("exit", finalizeExit);
   child.once("error", failClosed);
+  failureReason = "spawn-error";
   await new Promise((resolve, reject) => {
     child.once("spawn", resolve);
     child.once("error", reject);
   });
+  failureReason = "pid-invalid";
   if (child.pid === void 0 || !Number.isSafeInteger(child.pid) || child.pid <= 0) {
     throw new Error("Pi pid unavailable");
   }
@@ -150,7 +157,8 @@ try {
   if (observedExit !== void 0) queueMicrotask(() => finalizeExit(observedExit.code));
 } catch {
   try {
-    statusOutput.end("REFUSED\n");
+    statusOutput.end(`REFUSED${failureReason === void 0 ? "" : ` ${failureReason}`}
+`);
   } catch {
   }
   failClosed();

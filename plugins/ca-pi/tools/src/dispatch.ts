@@ -1,4 +1,6 @@
 /** dispatch.ts - bounded single, chained, and FIFO-parallel Pi orchestration. */
+import { randomUUID } from "node:crypto";
+import { appendFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import type {
@@ -6,10 +8,61 @@ import type {
   ToolDefinitionPort,
   ToolExecutionContextPort,
 } from "./contracts.ts";
+import { safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog } from "./roles.ts";
 import type { PiRole } from "./roles.ts";
 import { runPiChild } from "./runner.ts";
 import type { ChildResult, PiChildRequest } from "./runner.ts";
+
+// Mirrors runner.ts's own bounded stderr capture: never re-widen the head beyond what runner.ts
+// already collected.
+const MAX_AUDIT_STDERR_HEAD_CHARS = 4_000;
+
+interface DispatchAuditRecord {
+  cwd: string;
+  role: string;
+  provider: string;
+  model: string;
+  terminal: ChildResult["terminal"];
+  exitCode?: number;
+  durationMs?: number;
+  stdoutBytes?: number;
+  stderrBytes?: number;
+  stderrHead?: string;
+  diagnostic?: string;
+}
+
+/** Appends one gate-events.log line per Pi child dispatch completion (success or failure),
+ * mirroring bridge.ts's auditFailure and compaction.ts's appendPiCompactionAudit: same target
+ * resolution, same append-only best-effort fail-open contract. An unwritable audit sink NEVER
+ * changes dispatch behavior or its result. Task/prompt content is never included; stderr is
+ * always routed through safeDiagnostic before it is written. */
+export async function appendDispatchAudit(record: DispatchAuditRecord): Promise<void> {
+  const line = [
+    `[${new Date().toISOString()}]`,
+    "HOST: pi",
+    "RULE: PI-DISPATCH",
+    `AUDIT: ${record.terminal === "completed" ? "PI_DISPATCH_COMPLETED" : "PI_DISPATCH_DEGRADED"}`,
+    `CORRELATION: ${randomUUID()}`,
+    `ROLE: ${safeDiagnostic(record.role, 100)}`,
+    `PROVIDER: ${safeDiagnostic(record.provider, 100)}`,
+    `MODEL: ${safeDiagnostic(record.model, 100)}`,
+    `EXIT: ${record.terminal}${record.exitCode === undefined ? "" : `(${record.exitCode})`}`,
+    `DURATION_MS: ${record.durationMs ?? 0}`,
+    `STDOUT_BYTES: ${record.stdoutBytes ?? 0}`,
+    `STDERR_BYTES: ${record.stderrBytes ?? 0}`,
+    // safeDiagnostic intentionally preserves newlines for other callers; a raw child stderr head
+    // must never introduce a newline into this append-only, one-record-per-line audit sink, or a
+    // child could forge extra structurally-valid audit lines. Fold after redaction, before embed.
+    `STDERR_HEAD: ${safeDiagnostic(record.stderrHead ?? "", MAX_AUDIT_STDERR_HEAD_CHARS).replace(/\n/gu, "\\n")}`,
+    ...(record.diagnostic === undefined ? [] : [`DIAGNOSTIC: ${safeDiagnostic(record.diagnostic, 200)}`]),
+  ].join(" | ") + "\n";
+  try {
+    await appendFile(resolve(record.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
+  } catch {
+    // A dispatch outcome remains valid if its append-only audit sink is unavailable.
+  }
+}
 
 export const DISPATCH_MODES = Object.freeze(["single", "chain", "parallel"] as const);
 export type DispatchMode = (typeof DISPATCH_MODES)[number];
@@ -270,8 +323,22 @@ export function createDispatcher(dependencies: DispatchDependencies) {
         timedOut = true;
         controller.abort(new Error("Pi dispatch timed out."));
       }, limits.timeoutMs);
+      const startedAt = Date.now();
       try {
         const result = await dependencies.runChild(roleLaunch(request.runtime, role, task, limits.timeoutMs), controller.signal);
+        await appendDispatchAudit({
+          cwd: request.runtime.cwd,
+          role: role.name,
+          provider: request.runtime.provider,
+          model: request.runtime.model,
+          terminal: result.terminal,
+          durationMs: result.durationMs ?? (Date.now() - startedAt),
+          ...(result.exitCode === undefined ? {} : { exitCode: result.exitCode }),
+          ...(result.stdoutBytes === undefined ? {} : { stdoutBytes: result.stdoutBytes }),
+          ...(result.stderrBytes === undefined ? {} : { stderrBytes: result.stderrBytes }),
+          ...(result.stderrHead === undefined ? {} : { stderrHead: result.stderrHead }),
+          ...(result.diagnostic === undefined ? {} : { diagnostic: result.diagnostic }),
+        });
         if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };
         if (timedOut) return { role: role.name, state: "timeout", outputBytes: 0 };
         if (result.terminal === "degraded") return { role: role.name, state: "degraded", outputBytes: 0 };

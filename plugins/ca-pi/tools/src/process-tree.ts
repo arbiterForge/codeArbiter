@@ -172,6 +172,51 @@ export const PROCESS_TREE_CLEANUP_REASONS = Object.freeze([
   "timeout", "cancelled", "protocol_error", "protocol_overflow", "startup_failure", "parent_shutdown",
 ] as const);
 export type ProcessTreeCleanupReason = typeof PROCESS_TREE_CLEANUP_REASONS[number];
+
+// Stable short reason codes for a Windows inert-supervisor refusal. Carried on the existing
+// bare "REFUSED\n" protocol token as an optional trailing token ("REFUSED <reason>\n") so an
+// older supervisor build (bare "REFUSED\n") remains a valid, fully-supported refusal.
+export const WINDOWS_SUPERVISOR_REFUSAL_REASONS = Object.freeze([
+  "launch-malformed",
+  "spawn-error",
+  "pipe-unavailable",
+  "pid-invalid",
+  "ready-timeout",
+  "proto-overflow",
+] as const);
+export type WindowsSupervisorRefusalReason = typeof WINDOWS_SUPERVISOR_REFUSAL_REASONS[number];
+export interface WindowsSupervisorStatus {
+  readonly outcome: "started" | "refused";
+  readonly pid?: number;
+  readonly reason?: WindowsSupervisorRefusalReason;
+}
+
+/** Parses one line of the supervisor's bounded status protocol. Accepts both the legacy bare
+ * "REFUSED" form and the reasoned "REFUSED <reason>" form; returns undefined for anything else. */
+export function parseWindowsSupervisorStatusLine(line: string): WindowsSupervisorStatus | undefined {
+  const started = /^STARTED ([1-9][0-9]*)$/u.exec(line);
+  if (started !== null) {
+    const pid = Number(started[1]);
+    return positivePid(pid) ? Object.freeze({ outcome: "started" as const, pid }) : undefined;
+  }
+  if (line === "REFUSED") return Object.freeze({ outcome: "refused" as const });
+  const refused = /^REFUSED ([a-z][a-z0-9-]{0,63})$/u.exec(line);
+  if (refused !== null && (WINDOWS_SUPERVISOR_REFUSAL_REASONS as readonly string[]).includes(refused[1]!)) {
+    return Object.freeze({ outcome: "refused" as const, reason: refused[1] as WindowsSupervisorRefusalReason });
+  }
+  return undefined;
+}
+
+/** Extracts a trailing ": <reason-code>" token from a process-tree diagnostic Error message,
+ * if present and a recognized Windows refusal reason. Used to thread a stable reason code onto
+ * runner.ts's existing childFailure() diagnostic channel without widening it unsafely. */
+export function windowsRefusalReasonFromMessage(message: string): WindowsSupervisorRefusalReason | undefined {
+  const match = /: ([a-z][a-z0-9-]{0,63})$/u.exec(message);
+  const candidate = match?.[1];
+  return candidate !== undefined && (WINDOWS_SUPERVISOR_REFUSAL_REASONS as readonly string[]).includes(candidate)
+    ? candidate as WindowsSupervisorRefusalReason
+    : undefined;
+}
 export type ProcessTreeCleanupState = "terminated" | "already_exited" | "refused" | "failed";
 
 export interface ProcessTreeTarget { readonly pid?: number }
@@ -517,12 +562,12 @@ export function writeBoundedControl(stream: NodeJS.WritableStream | null, value:
     try { stream.end(value, "utf8", () => finish(true)); } catch { finish(false); }
   });
 }
-function readStarted(stream: NodeJS.ReadableStream | null, timeoutMs: number): Promise<number | undefined> {
+function readStarted(stream: NodeJS.ReadableStream | null, timeoutMs: number): Promise<WindowsSupervisorStatus | undefined> {
   if (stream === null) return Promise.resolve(undefined);
   return new Promise((resolveStarted) => {
     let settled = false;
     let text = "";
-    const finish = (pid?: number) => { if (!settled) { settled = true; clearTimeout(timer); resolveStarted(pid); } };
+    const finish = (status?: WindowsSupervisorStatus) => { if (!settled) { settled = true; clearTimeout(timer); resolveStarted(status); } };
     const timer = setTimeout(() => finish(), timeoutMs);
     stream.setEncoding?.("utf8");
     stream.on("data", (chunk: string | Buffer) => {
@@ -530,11 +575,10 @@ function readStarted(stream: NodeJS.ReadableStream | null, timeoutMs: number): P
       if (Buffer.byteLength(text, "utf8") > MAX_JOB_PROTOCOL_BYTES) return finish();
       const newline = text.indexOf("\n");
       if (newline < 0) return;
-      const match = /^STARTED ([1-9][0-9]*)$/u.exec(text.slice(0, newline).replace(/\r$/u, ""));
-      const pid = match === null ? undefined : Number(match[1]);
-      finish(positivePid(pid) && text.slice(newline + 1) === "" ? pid : undefined);
+      const line = text.slice(0, newline).replace(/\r$/u, "");
+      finish(text.slice(newline + 1) === "" ? parseWindowsSupervisorStatusLine(line) : undefined);
     });
-    stream.once("end", () => { if (!/^STARTED [1-9][0-9]*\r?\n$/u.test(text)) finish(); });
+    stream.once("end", () => finish());
     stream.once("error", () => finish());
   });
 }
@@ -651,36 +695,37 @@ export async function spawnProcessTree(command: string, args: readonly string[],
   const supervisorPath = canonicalSupervisorPath();
   const plan = windowsSupervisorLaunchPlan(canonicalCommand, supervisorPath, options.env);
   const launchRecord = JSON.stringify({ args: [...args], command: canonicalCommand, cwd: canonicalCwd });
-  if (Buffer.byteLength(launchRecord, "utf8") > MAX_LAUNCH_PROTOCOL_BYTES) throw new Error("Windows supervisor launch record exceeds protocol limit");
+  if (Buffer.byteLength(launchRecord, "utf8") > MAX_LAUNCH_PROTOCOL_BYTES) throw new Error("Windows supervisor launch record exceeds protocol limit: proto-overflow");
   const supervisor = spawn(plan.command, [...plan.args], {
     ...plan.options,
     stdio: [...plan.options.stdio] as SpawnOptions["stdio"],
   }) as ChildProcessWithoutNullStreams;
-  if (!await waitSpawn(supervisor, timing.verifyMs) || !positivePid(supervisor.pid)) { try { supervisor.kill("SIGKILL"); } catch {} throw new Error("Windows inert supervisor failed to start"); }
+  if (!await waitSpawn(supervisor, timing.verifyMs) || !positivePid(supervisor.pid)) { try { supervisor.kill("SIGKILL"); } catch {} throw new Error("Windows inert supervisor failed to start: pid-invalid"); }
   const rootPid = supervisor.pid;
   const guard = startWindowsJobGuard(rootPid, timing);
-  if (guard === undefined || !await guard.ready) { try { supervisor.kill("SIGKILL"); } catch {} throw new Error("Windows Job Object holder refused containment"); }
+  if (guard === undefined || !await guard.ready) { try { supervisor.kill("SIGKILL"); } catch {} throw new Error("Windows Job Object holder refused containment: ready-timeout"); }
   const supervisorStdio = supervisor.stdio as unknown as Array<NodeJS.ReadableStream | NodeJS.WritableStream | null>;
   const launchPipe = supervisorStdio[4] as NodeJS.WritableStream | null;
   const controlPipe = supervisorStdio[5] as NodeJS.WritableStream | null;
   const statusPipe = supervisorStdio[6] as NodeJS.ReadableStream | null;
   const leashPipe = supervisorStdio[7] as NodeJS.WritableStream | null;
-  if (leashPipe === null) { await guard.close(timing.verifyMs); throw new Error("Windows parent-death leash unavailable"); }
+  if (leashPipe === null) { await guard.close(timing.verifyMs); throw new Error("Windows parent-death leash unavailable: pipe-unavailable"); }
   leashPipe.on?.("error", () => undefined);
   const launchWritten = await writeBoundedControl(launchPipe, launchRecord, timing.verifyMs);
   const controlWritten = launchWritten && await writeBoundedControl(controlPipe, plan.control, timing.verifyMs);
-  const actualPid = controlWritten ? await readStarted(statusPipe, timing.verifyMs) : undefined;
+  const status = controlWritten ? await readStarted(statusPipe, timing.verifyMs) : undefined;
+  const actualPid = status?.outcome === "started" ? status.pid : undefined;
   if (!positivePid(actualPid) || actualPid === rootPid) {
     try { leashPipe.end(); } catch {}
     await guard.close(timing.verifyMs);
     try { supervisor.kill("SIGKILL"); } catch {}
-    throw new Error("Windows contained Pi launch was refused");
+    throw new Error(`Windows contained Pi launch was refused${status?.reason === undefined ? "" : `: ${status.reason}`}`);
   }
   if (!await guard.arm(actualPid)) {
     try { leashPipe.end(); } catch {}
     await guard.close(timing.verifyMs);
     try { supervisor.kill("SIGKILL"); } catch {}
-    throw new Error("Windows contained Pi exit watch was refused");
+    throw new Error("Windows contained Pi exit watch was refused: ready-timeout");
   }
   return new WindowsContainedProcess(supervisor, actualPid, guard, rootPid) as unknown as ManagedChildProcess;
 }

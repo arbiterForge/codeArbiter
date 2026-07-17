@@ -16,9 +16,12 @@ import { safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog } from "./roles.ts";
 import { resolvePiRuntimeIdentity } from "./runtime-resolver.ts";
 import {
+  WINDOWS_SUPERVISOR_REFUSAL_REASONS,
   createProcessTreeCleanup,
   spawnProcessTree,
+  windowsRefusalReasonFromMessage,
   type ProcessTreeCleanupReason,
+  type WindowsSupervisorRefusalReason,
 } from "./process-tree.ts";
 
 const MAX_TASK_BYTES = 65_536;
@@ -71,6 +74,17 @@ export interface ChildResult {
   correlationId?: string;
   output?: string;
   diagnostic?: string;
+  /** Best-effort observability metrics for the audit sink; never a substitute for the
+   * fail-open/fail-closed protocol decision itself, which is driven by `terminal`. */
+  durationMs?: number;
+  exitCode?: number;
+  stdoutBytes?: number;
+  stderrBytes?: number;
+  /** Bounded, UNREDACTED raw stderr bytes captured from the child — the leading MAX_STDERR_BYTES
+   * of stderr, not a rolling tail (named for what it holds, not stream position). Callers (e.g.
+   * dispatch.ts's audit writer) MUST redact this via redaction.ts's safeDiagnostic before it is
+   * ever logged, displayed, or otherwise persisted. */
+  stderrHead?: string;
 }
 
 interface RuntimeIdentityPort {
@@ -545,10 +559,19 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
   return record;
 }
 
-export function childFailure(_detail?: unknown): ChildResult {
+/** `detail`, only when it is a recognized WindowsSupervisorRefusalReason, is appended as a
+ * stable short identifier to the diagnostic — anything else (arbitrary error text, provider
+ * material, etc.) is silently dropped, never interpolated or leaked. This keeps a Windows
+ * containment refusal's cause observable without widening this channel unsafely. */
+export function childFailure(detail?: unknown): ChildResult {
+  const reason = typeof detail === "string" && (WINDOWS_SUPERVISOR_REFUSAL_REASONS as readonly string[]).includes(detail)
+    ? detail as WindowsSupervisorRefusalReason
+    : undefined;
   return Object.freeze({
     terminal: "degraded",
-    diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor.",
+    diagnostic: reason === undefined
+      ? "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor."
+      : `Pi child isolation failed safely (${reason}); no inline promotion is available; run /ca-doctor.`,
   });
 }
 
@@ -600,6 +623,7 @@ export async function runPiChild(
   if (handshakeRecord === undefined || taskRecord === undefined) return childFailure();
   if (signal.aborted) return childFailure();
 
+  const startedAt = Date.now();
   let child;
   try {
     child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
@@ -611,8 +635,8 @@ export async function runPiChild(
       }),
       stdio: ["pipe", "pipe", "pipe", "pipe"],
     });
-  } catch {
-    return childFailure();
+  } catch (error) {
+    return childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : undefined);
   }
   const cleanup = createProcessTreeCleanup(child);
   let abortedDuringReadiness: boolean = signal.aborted;
@@ -639,8 +663,24 @@ export async function runPiChild(
     let failed = false;
     let stdoutBytes = 0;
     let stderrBytes = 0;
+    let stderrHead = "";
+    let lastExitCode: number | undefined;
     let pending = "";
     let output: string | undefined;
+    // Best-effort observability metrics attached only to a successful completion. A degraded
+    // result carries no metrics or stderr head at all — it stays a fixed diagnostic-only shape
+    // (see "returns the same fixed degraded result for every isolated-runner failure branch"),
+    // varying only in its diagnostic string, and only by an allowlisted refusal reason code
+    // (childFailure's WINDOWS_SUPERVISOR_REFUSAL_REASONS check), never by raw error content or
+    // byte counts. The dispatch-layer audit measures its own duration around the runChild call
+    // for degraded outcomes instead.
+    const metrics = () => ({
+      durationMs: Date.now() - startedAt,
+      stdoutBytes,
+      stderrBytes,
+      stderrHead,
+      ...(lastExitCode === undefined ? {} : { exitCode: lastExitCode }),
+    });
     const stdoutDecoder = new StringDecoder("utf8");
     let stdoutDecoderEnded = false;
     const expectedAttestation = childAttestationDigest({
@@ -761,12 +801,16 @@ export async function runPiChild(
       if (Buffer.byteLength(pending, "utf8") > MAX_JSONL_LINE_BYTES) finishFailure("protocol_overflow");
     });
     child.stderr.on("data", (chunk: Buffer | string) => {
-      stderrBytes += Buffer.byteLength(chunk, "utf8");
+      const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
+      stderrBytes += raw.byteLength;
+      const remaining = Math.max(0, MAX_STDERR_BYTES - Buffer.byteLength(stderrHead, "utf8"));
+      if (remaining > 0) stderrHead += raw.subarray(0, remaining).toString("utf8");
       if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
     });
     child.on("error", () => finishFailure("startup_failure"));
     timer = setTimeout(() => finishFailure("timeout"), Math.max(1, request.timeoutMs ?? 120_000));
     const handleClose = (code: number | null) => {
+      if (code !== null) lastExitCode = code;
       if (!stdoutDecoderEnded) {
         stdoutDecoderEnded = true;
         pending += stdoutDecoder.end();
@@ -779,7 +823,7 @@ export async function runPiChild(
       }
       void cleanup.terminate("parent_shutdown").then((cleanupResult) => {
         if (!cleanupResult.verified) settle(childFailure());
-        else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...(output === undefined ? {} : { output }) }));
+        else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...(output === undefined ? {} : { output }) }));
       }, () => settle(childFailure()));
     };
     child.on("close", handleClose);

@@ -1410,6 +1410,8 @@ function formatPiDoctorReport(diagnoses) {
 }
 
 // src/dispatch.ts
+import { randomUUID as randomUUID4 } from "node:crypto";
+import { appendFile as appendFile2 } from "node:fs/promises";
 import { resolve as resolve9 } from "node:path";
 
 // src/roles.ts
@@ -1742,6 +1744,32 @@ var PROCESS_TREE_CLEANUP_REASONS = Object.freeze([
   "startup_failure",
   "parent_shutdown"
 ]);
+var WINDOWS_SUPERVISOR_REFUSAL_REASONS = Object.freeze([
+  "launch-malformed",
+  "spawn-error",
+  "pipe-unavailable",
+  "pid-invalid",
+  "ready-timeout",
+  "proto-overflow"
+]);
+function parseWindowsSupervisorStatusLine(line) {
+  const started = /^STARTED ([1-9][0-9]*)$/u.exec(line);
+  if (started !== null) {
+    const pid = Number(started[1]);
+    return positivePid(pid) ? Object.freeze({ outcome: "started", pid }) : void 0;
+  }
+  if (line === "REFUSED") return Object.freeze({ outcome: "refused" });
+  const refused = /^REFUSED ([a-z][a-z0-9-]{0,63})$/u.exec(line);
+  if (refused !== null && WINDOWS_SUPERVISOR_REFUSAL_REASONS.includes(refused[1])) {
+    return Object.freeze({ outcome: "refused", reason: refused[1] });
+  }
+  return void 0;
+}
+function windowsRefusalReasonFromMessage(message) {
+  const match = /: ([a-z][a-z0-9-]{0,63})$/u.exec(message);
+  const candidate = match?.[1];
+  return candidate !== void 0 && WINDOWS_SUPERVISOR_REFUSAL_REASONS.includes(candidate) ? candidate : void 0;
+}
 var windowsMetadata = /* @__PURE__ */ new WeakMap();
 function positivePid(pid) {
   return Number.isSafeInteger(pid) && (pid ?? 0) > 0;
@@ -2097,11 +2125,11 @@ function readStarted(stream, timeoutMs) {
   return new Promise((resolveStarted) => {
     let settled = false;
     let text = "";
-    const finish = (pid) => {
+    const finish = (status) => {
       if (!settled) {
         settled = true;
         clearTimeout(timer);
-        resolveStarted(pid);
+        resolveStarted(status);
       }
     };
     const timer = setTimeout(() => finish(), timeoutMs);
@@ -2111,13 +2139,10 @@ function readStarted(stream, timeoutMs) {
       if (Buffer.byteLength(text, "utf8") > MAX_JOB_PROTOCOL_BYTES) return finish();
       const newline = text.indexOf("\n");
       if (newline < 0) return;
-      const match = /^STARTED ([1-9][0-9]*)$/u.exec(text.slice(0, newline).replace(/\r$/u, ""));
-      const pid = match === null ? void 0 : Number(match[1]);
-      finish(positivePid(pid) && text.slice(newline + 1) === "" ? pid : void 0);
+      const line = text.slice(0, newline).replace(/\r$/u, "");
+      finish(text.slice(newline + 1) === "" ? parseWindowsSupervisorStatusLine(line) : void 0);
     });
-    stream.once("end", () => {
-      if (!/^STARTED [1-9][0-9]*\r?\n$/u.test(text)) finish();
-    });
+    stream.once("end", () => finish());
     stream.once("error", () => finish());
   });
 }
@@ -2238,7 +2263,7 @@ async function spawnProcessTree(command, args, options) {
   const supervisorPath = canonicalSupervisorPath();
   const plan = windowsSupervisorLaunchPlan(canonicalCommand, supervisorPath, options.env);
   const launchRecord = JSON.stringify({ args: [...args], command: canonicalCommand, cwd: canonicalCwd });
-  if (Buffer.byteLength(launchRecord, "utf8") > MAX_LAUNCH_PROTOCOL_BYTES) throw new Error("Windows supervisor launch record exceeds protocol limit");
+  if (Buffer.byteLength(launchRecord, "utf8") > MAX_LAUNCH_PROTOCOL_BYTES) throw new Error("Windows supervisor launch record exceeds protocol limit: proto-overflow");
   const supervisor = spawn2(plan.command, [...plan.args], {
     ...plan.options,
     stdio: [...plan.options.stdio]
@@ -2248,7 +2273,7 @@ async function spawnProcessTree(command, args, options) {
       supervisor.kill("SIGKILL");
     } catch {
     }
-    throw new Error("Windows inert supervisor failed to start");
+    throw new Error("Windows inert supervisor failed to start: pid-invalid");
   }
   const rootPid = supervisor.pid;
   const guard = startWindowsJobGuard(rootPid, timing);
@@ -2257,7 +2282,7 @@ async function spawnProcessTree(command, args, options) {
       supervisor.kill("SIGKILL");
     } catch {
     }
-    throw new Error("Windows Job Object holder refused containment");
+    throw new Error("Windows Job Object holder refused containment: ready-timeout");
   }
   const supervisorStdio = supervisor.stdio;
   const launchPipe = supervisorStdio[4];
@@ -2266,12 +2291,13 @@ async function spawnProcessTree(command, args, options) {
   const leashPipe = supervisorStdio[7];
   if (leashPipe === null) {
     await guard.close(timing.verifyMs);
-    throw new Error("Windows parent-death leash unavailable");
+    throw new Error("Windows parent-death leash unavailable: pipe-unavailable");
   }
   leashPipe.on?.("error", () => void 0);
   const launchWritten = await writeBoundedControl(launchPipe, launchRecord, timing.verifyMs);
   const controlWritten = launchWritten && await writeBoundedControl(controlPipe, plan.control, timing.verifyMs);
-  const actualPid = controlWritten ? await readStarted(statusPipe, timing.verifyMs) : void 0;
+  const status = controlWritten ? await readStarted(statusPipe, timing.verifyMs) : void 0;
+  const actualPid = status?.outcome === "started" ? status.pid : void 0;
   if (!positivePid(actualPid) || actualPid === rootPid) {
     try {
       leashPipe.end();
@@ -2282,7 +2308,7 @@ async function spawnProcessTree(command, args, options) {
       supervisor.kill("SIGKILL");
     } catch {
     }
-    throw new Error("Windows contained Pi launch was refused");
+    throw new Error(`Windows contained Pi launch was refused${status?.reason === void 0 ? "" : `: ${status.reason}`}`);
   }
   if (!await guard.arm(actualPid)) {
     try {
@@ -2294,7 +2320,7 @@ async function spawnProcessTree(command, args, options) {
       supervisor.kill("SIGKILL");
     } catch {
     }
-    throw new Error("Windows contained Pi exit watch was refused");
+    throw new Error("Windows contained Pi exit watch was refused: ready-timeout");
   }
   return new WindowsContainedProcess(supervisor, actualPid, guard, rootPid);
 }
@@ -2785,10 +2811,11 @@ function parseChildJsonLine(line) {
   }
   return record;
 }
-function childFailure(_detail) {
+function childFailure(detail) {
+  const reason = typeof detail === "string" && WINDOWS_SUPERVISOR_REFUSAL_REASONS.includes(detail) ? detail : void 0;
   return Object.freeze({
     terminal: "degraded",
-    diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor."
+    diagnostic: reason === void 0 ? "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." : `Pi child isolation failed safely (${reason}); no inline promotion is available; run /ca-doctor.`
   });
 }
 function assistantText(message) {
@@ -2832,6 +2859,7 @@ async function runPiChild(request, signal) {
   const [handshakeRecord, taskRecord] = records.trimEnd().split("\n");
   if (handshakeRecord === void 0 || taskRecord === void 0) return childFailure();
   if (signal.aborted) return childFailure();
+  const startedAt = Date.now();
   let child;
   try {
     child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
@@ -2843,8 +2871,8 @@ async function runPiChild(request, signal) {
       }),
       stdio: ["pipe", "pipe", "pipe", "pipe"]
     });
-  } catch {
-    return childFailure();
+  } catch (error) {
+    return childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : void 0);
   }
   const cleanup = createProcessTreeCleanup(child);
   let abortedDuringReadiness = signal.aborted;
@@ -2870,8 +2898,17 @@ async function runPiChild(request, signal) {
     let failed = false;
     let stdoutBytes = 0;
     let stderrBytes = 0;
+    let stderrHead = "";
+    let lastExitCode;
     let pending = "";
     let output;
+    const metrics = () => ({
+      durationMs: Date.now() - startedAt,
+      stdoutBytes,
+      stderrBytes,
+      stderrHead,
+      ...lastExitCode === void 0 ? {} : { exitCode: lastExitCode }
+    });
     const stdoutDecoder = new StringDecoder("utf8");
     let stdoutDecoderEnded = false;
     const expectedAttestation = childAttestationDigest({
@@ -3031,12 +3068,16 @@ async function runPiChild(request, signal) {
       if (Buffer.byteLength(pending, "utf8") > MAX_JSONL_LINE_BYTES) finishFailure("protocol_overflow");
     });
     child.stderr.on("data", (chunk) => {
-      stderrBytes += Buffer.byteLength(chunk, "utf8");
+      const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
+      stderrBytes += raw.byteLength;
+      const remaining = Math.max(0, MAX_STDERR_BYTES - Buffer.byteLength(stderrHead, "utf8"));
+      if (remaining > 0) stderrHead += raw.subarray(0, remaining).toString("utf8");
       if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
     });
     child.on("error", () => finishFailure("startup_failure"));
     timer = setTimeout(() => finishFailure("timeout"), Math.max(1, request.timeoutMs ?? 12e4));
     const handleClose = (code) => {
+      if (code !== null) lastExitCode = code;
       if (!stdoutDecoderEnded) {
         stdoutDecoderEnded = true;
         pending += stdoutDecoder.end();
@@ -3049,7 +3090,7 @@ async function runPiChild(request, signal) {
       }
       void cleanup.terminate("parent_shutdown").then((cleanupResult) => {
         if (!cleanupResult.verified) settle(childFailure());
-        else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...output === void 0 ? {} : { output } }));
+        else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...output === void 0 ? {} : { output } }));
       }, () => settle(childFailure()));
     };
     child.on("close", handleClose);
@@ -3061,6 +3102,32 @@ async function runPiChild(request, signal) {
 }
 
 // src/dispatch.ts
+var MAX_AUDIT_STDERR_HEAD_CHARS = 4e3;
+async function appendDispatchAudit(record) {
+  const line = [
+    `[${(/* @__PURE__ */ new Date()).toISOString()}]`,
+    "HOST: pi",
+    "RULE: PI-DISPATCH",
+    `AUDIT: ${record.terminal === "completed" ? "PI_DISPATCH_COMPLETED" : "PI_DISPATCH_DEGRADED"}`,
+    `CORRELATION: ${randomUUID4()}`,
+    `ROLE: ${safeDiagnostic(record.role, 100)}`,
+    `PROVIDER: ${safeDiagnostic(record.provider, 100)}`,
+    `MODEL: ${safeDiagnostic(record.model, 100)}`,
+    `EXIT: ${record.terminal}${record.exitCode === void 0 ? "" : `(${record.exitCode})`}`,
+    `DURATION_MS: ${record.durationMs ?? 0}`,
+    `STDOUT_BYTES: ${record.stdoutBytes ?? 0}`,
+    `STDERR_BYTES: ${record.stderrBytes ?? 0}`,
+    // safeDiagnostic intentionally preserves newlines for other callers; a raw child stderr head
+    // must never introduce a newline into this append-only, one-record-per-line audit sink, or a
+    // child could forge extra structurally-valid audit lines. Fold after redaction, before embed.
+    `STDERR_HEAD: ${safeDiagnostic(record.stderrHead ?? "", MAX_AUDIT_STDERR_HEAD_CHARS).replace(/\n/gu, "\\n")}`,
+    ...record.diagnostic === void 0 ? [] : [`DIAGNOSTIC: ${safeDiagnostic(record.diagnostic, 200)}`]
+  ].join(" | ") + "\n";
+  try {
+    await appendFile2(resolve9(record.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
+  } catch {
+  }
+}
 var DISPATCH_MODES = Object.freeze(["single", "chain", "parallel"]);
 var DISPATCH_TERMINALS = Object.freeze([
   "accepted",
@@ -3227,8 +3294,22 @@ function createDispatcher(dependencies) {
         timedOut = true;
         controller.abort(new Error("Pi dispatch timed out."));
       }, limits.timeoutMs);
+      const startedAt = Date.now();
       try {
         const result3 = await dependencies.runChild(roleLaunch(request.runtime, role, task, limits.timeoutMs), controller.signal);
+        await appendDispatchAudit({
+          cwd: request.runtime.cwd,
+          role: role.name,
+          provider: request.runtime.provider,
+          model: request.runtime.model,
+          terminal: result3.terminal,
+          durationMs: result3.durationMs ?? Date.now() - startedAt,
+          ...result3.exitCode === void 0 ? {} : { exitCode: result3.exitCode },
+          ...result3.stdoutBytes === void 0 ? {} : { stdoutBytes: result3.stdoutBytes },
+          ...result3.stderrBytes === void 0 ? {} : { stderrBytes: result3.stderrBytes },
+          ...result3.stderrHead === void 0 ? {} : { stderrHead: result3.stderrHead },
+          ...result3.diagnostic === void 0 ? {} : { diagnostic: result3.diagnostic }
+        });
         if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };
         if (timedOut) return { role: role.name, state: "timeout", outputBytes: 0 };
         if (result3.terminal === "degraded") return { role: role.name, state: "degraded", outputBytes: 0 };
@@ -3555,8 +3636,8 @@ function createFarmPreviewTool(dependencies) {
 }
 
 // src/compaction.ts
-import { randomUUID as randomUUID4 } from "node:crypto";
-import { appendFile as appendFile2 } from "node:fs/promises";
+import { randomUUID as randomUUID5 } from "node:crypto";
+import { appendFile as appendFile3 } from "node:fs/promises";
 import { resolve as resolve11 } from "node:path";
 var MAX_CONVERSATION_BYTES = 48e3;
 var MAX_SUMMARY_BYTES = 16e3;
@@ -3822,12 +3903,12 @@ async function appendPiCompactionAudit(record) {
     "HOST: pi",
     "RULE: PI-PRUNE",
     `AUDIT: ${record.auditCodes.join(",") || "CA-PRUNE-CONFIRMED"}`,
-    `CORRELATION: ${randomUUID4()}`,
+    `CORRELATION: ${randomUUID5()}`,
     `PLAN: ${record.planFingerprint}`,
     `METRICS: ${JSON.stringify(record.metrics)}`
   ].join(" | ") + "\n";
   try {
-    await appendFile2(resolve11(record.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
+    await appendFile3(resolve11(record.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
   } catch {
   }
 }

@@ -9,6 +9,8 @@ import { spawn } from "node:child_process";
 import { isAbsolute } from "node:path";
 import { createReadStream, createWriteStream } from "node:fs";
 
+import type { WindowsSupervisorRefusalReason } from "./process-tree.ts";
+
 const MAX_LAUNCH_BYTES = 262_144;
 const MAX_CONTROL_BYTES = 16;
 const PROXY_DRAIN_MS = 500;
@@ -63,6 +65,10 @@ function boundedRead(stream: NodeJS.ReadableStream, maximum: number): Promise<st
 
 let started = false;
 let child: ReturnType<typeof spawn> | undefined;
+// Stable short reason code for the terminal REFUSED status line; set immediately before each
+// throw so the catch-all below can report it. A never-set reason falls back to the legacy bare
+// "REFUSED\n" token, which the parent (process-tree.ts) still fully accepts.
+let failureReason: WindowsSupervisorRefusalReason | undefined;
 const failClosed = () => {
   process.exitCode = 70;
   setImmediate(() => process.exit(70));
@@ -108,13 +114,16 @@ parentLeash.resume();
 process.once("disconnect", failClosed);
 
 try {
+  failureReason = "proto-overflow";
   const [launchText, control] = await Promise.all([
     boundedRead(launchInput, MAX_LAUNCH_BYTES),
     boundedRead(controlInput, MAX_CONTROL_BYTES),
   ]);
+  failureReason = "launch-malformed";
   if (control !== START || started) throw new Error("invalid supervisor control state");
   started = true;
   const launch = parseLaunch(launchText);
+  failureReason = "spawn-error";
   child = spawn(launch.command, [...launch.args], {
     cwd: launch.cwd,
     env: process.env,
@@ -126,6 +135,7 @@ try {
   const capability = child.stdio[3];
   if (child.stdin === null || child.stdout === null || child.stderr === null || capability === null || capability === undefined
     || typeof (capability as NodeJS.WritableStream).write !== "function") {
+    failureReason = "pipe-unavailable";
     throw new Error("Pi proxy pipes unavailable");
   }
   let proxyReady = false;
@@ -151,10 +161,12 @@ try {
   };
   child.once("exit", finalizeExit);
   child.once("error", failClosed);
+  failureReason = "spawn-error";
   await new Promise<void>((resolve, reject) => {
     child!.once("spawn", resolve);
     child!.once("error", reject);
   });
+  failureReason = "pid-invalid";
   if (child.pid === undefined || !Number.isSafeInteger(child.pid) || child.pid <= 0) {
     throw new Error("Pi pid unavailable");
   }
@@ -170,6 +182,6 @@ try {
   statusOutput.end(`STARTED ${child.pid}\n`);
   if (observedExit !== undefined) queueMicrotask(() => finalizeExit(observedExit!.code));
 } catch {
-  try { statusOutput.end("REFUSED\n"); } catch { /* Parent treats EOF as refusal. */ }
+  try { statusOutput.end(`REFUSED${failureReason === undefined ? "" : ` ${failureReason}`}\n`); } catch { /* Parent treats EOF as refusal. */ }
   failClosed();
 }
