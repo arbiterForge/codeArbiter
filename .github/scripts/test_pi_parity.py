@@ -96,6 +96,8 @@ def verdict(host, root, *, command=None, path=None, content="x\n"):
         response = json.loads(result.stdout)
         return response["outcome"], response.get("ruleId"), response.get("message", "")
     match = RULE_RE.search(result.stderr)
+    if result.returncode not in (0, 2):
+        return "hook-error", None, result.stderr
     return ("block" if result.returncode == 2 else "allow"), (match.group(1) if match else None), result.stderr
 
 
@@ -180,6 +182,17 @@ class PiParityFixtures(unittest.TestCase):
     def test_h20_no_verify_commit(self):
         with tempfile.TemporaryDirectory() as td:
             self.assert_shared(fixture(td), "H-20", command="git commit --no-verify -m x")
+
+    def test_enabled_repo_allows_benign_operations_on_every_host(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = fixture(td)
+            for host in HOOKS:
+                outcome, rule, detail = verdict(host, root, command="git status")
+                self.assertIn(outcome, ("allow", "notice"), f"{host} command: {detail[:500]}")
+                self.assertIsNone(rule, f"{host} command: {detail[:500]}")
+                outcome, rule, detail = verdict(host, root, path="src/new_module.py", content="print('benign')\n")
+                self.assertIn(outcome, ("allow", "notice"), f"{host} write: {detail[:500]}")
+                self.assertIsNone(rule, f"{host} write: {detail[:500]}")
 
     def test_dormant_repo_allows_equivalent_write(self):
         with tempfile.TemporaryDirectory() as td:

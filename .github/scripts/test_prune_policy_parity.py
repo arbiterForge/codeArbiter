@@ -82,6 +82,7 @@ class PrunePolicyParityTests(unittest.TestCase):
         right = plan_prune(pi_codec(pi), policy)
         self.assertEqual(left.protected_ids, right.protected_ids)
         self.assertEqual(left.first_kept_id, "a3")
+        self.assertTrue(left.actions, "parity fixture produced an empty prune plan")
         self.assertEqual(left.actions, right.actions)
         self.assertEqual(left.metrics, right.metrics)
         self.assertEqual(left.audit_codes, right.audit_codes)
