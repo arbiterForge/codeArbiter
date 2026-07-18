@@ -1,6 +1,6 @@
 ---
 title: Pi
-description: "Install codeArbiter for Pi, grant project trust, and verify enforcement — the ca-pi Git-only install, supported versions, and version pinning."
+description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi Git-only install, supported versions, and version pinning."
 ---
 
 codeArbiter ships `ca-pi` as a third sibling plugin, alongside `ca` (Claude Code) and `ca-codex`

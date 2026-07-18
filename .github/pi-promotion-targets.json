@@ -209,8 +209,8 @@
       "id": "site-compatibility-supported",
       "path": "site/src/content/docs/getting-started/compatibility.md",
       "class": "current-doc",
-      "before": "Pi {minimum} or Pi {last_verified} (this release line)",
-      "after": "Pi {minimum} or Pi {candidate} (this release line)"
+      "before": "{minimum} or {last_verified} (this release line)",
+      "after": "{minimum} or {candidate} (this release line)"
     },
     {
       "id": "site-troubleshooting-cause",
@@ -223,8 +223,8 @@
       "id": "site-troubleshooting-fix",
       "path": "site/src/content/docs/guides/troubleshooting.md",
       "class": "current-doc",
-      "before": "Only Pi {minimum} and Pi {last_verified} are supported in this release line",
-      "after": "Only Pi {minimum} and Pi {candidate} are supported in this release line"
+      "before": "Upgrade to Pi {minimum} or Pi {last_verified}, the only supported versions in this release line",
+      "after": "Upgrade to Pi {minimum} or Pi {candidate}, the only supported versions in this release line"
     },
     {
       "id": "parity-doctor-exception",
