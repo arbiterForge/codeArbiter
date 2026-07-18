@@ -260,6 +260,28 @@
       "class": "generated",
       "before": "the Pi {minimum}/{last_verified} external runtime.",
       "after": "the Pi {minimum}/{candidate} external runtime."
+    },
+    {
+      "id": "verify-support-window",
+      "path": ".github/scripts/verify_pi_support.py",
+      "class": "ci",
+      "before": "SUPPORTED = (\"{minimum}\", \"{last_verified}\")",
+      "after": "SUPPORTED = (\"{minimum}\", \"{candidate}\")"
+    },
+    {
+      "id": "verify-support-fixture-local",
+      "path": ".github/scripts/test_verify_pi_support.py",
+      "class": "ci",
+      "before": "for version in (\"{minimum}\", \"{last_verified}\"):",
+      "after": "for version in (\"{minimum}\", \"{candidate}\"):"
+    },
+    {
+      "id": "verify-support-fixture-hosted",
+      "path": ".github/scripts/test_verify_pi_support.py",
+      "class": "ci",
+      "occurrences": "all",
+      "before": "if row[\"version\"] in {{\"{minimum}\", \"{last_verified}\"}} and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:",
+      "after": "if row[\"version\"] in {{\"{minimum}\", \"{candidate}\"}} and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:"
     }
   ]
 }

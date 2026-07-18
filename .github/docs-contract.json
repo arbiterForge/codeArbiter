@@ -26,7 +26,9 @@
     },
     {
       "name": "current",
-      "include": ["**/*.md"],
+      "include": [
+        "**/*.md"
+      ],
       "exclude": [
         "CHANGELOG.md",
         "plugins/*/CHANGELOG.md",
@@ -75,6 +77,14 @@
     }
   ],
   "generator_checks": [
-    ["python", "tools/build-surface.py", "--check"]
+    [
+      "python",
+      "tools/build-surface.py",
+      "--check"
+    ]
+  ],
+  "version_claim_exempt": [
+    ".codearbiter/specs/pi-support.md",
+    ".codearbiter/specs/pi-support-review.md"
   ]
 }

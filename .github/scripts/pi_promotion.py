@@ -25,6 +25,8 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     ".github/scripts/test_public_pi_docs.py",
     ".github/scripts/test_pi_package.py",
     ".github/scripts/test_pi_platform_contract.py",
+    ".github/scripts/test_verify_pi_support.py",
+    ".github/scripts/verify_pi_support.py",
     ".github/workflows/ci.yml",
     "README.md",
     "core/hosts.json",

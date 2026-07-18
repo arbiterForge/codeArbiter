@@ -42,6 +42,7 @@ class DocsContract:
     rules: tuple[Rule, ...]
     bindings: tuple[Binding, ...]
     generator_checks: tuple[tuple[str, ...], ...]
+    version_claim_exempt: tuple[PurePosixPath, ...] = ()
 
 
 @dataclass(frozen=True, order=True)
@@ -49,6 +50,9 @@ class Finding:
     code: str
     path: str
     detail: str = ""
+
+
+PI_VERSION_CLAIM = re.compile(r"\b0\.80\.\d+\b")
 
 
 def load_contract(path: Path) -> DocsContract:
@@ -100,7 +104,13 @@ def load_contract(path: Path) -> DocsContract:
     generator_checks = tuple(tuple(command) for command in raw_checks)
     if any(command not in ALLOWED_GENERATOR_CHECKS for command in generator_checks):
         raise ContractError("generator_checks contains an unapproved command")
-    return DocsContract(tuple(rules), tuple(bindings), generator_checks)
+    raw_exempt = document.get("version_claim_exempt", [])
+    if not isinstance(raw_exempt, list) or not all(isinstance(item, str) and item for item in raw_exempt):
+        raise ContractError("version_claim_exempt must contain repository-relative paths")
+    exempt = tuple(PurePosixPath(item) for item in raw_exempt)
+    if any(item.is_absolute() or ".." in item.parts for item in exempt):
+        raise ContractError("version_claim_exempt paths must be repository-relative")
+    return DocsContract(tuple(rules), tuple(bindings), generator_checks, exempt)
 
 
 def tracked_markdown(repo: Path) -> tuple[Path, ...]:
@@ -236,6 +246,10 @@ def check_documentation(
             finding = _link_finding(repo, Path(relative), target)
             if finding is not None:
                 findings.append(finding)
+        if classes[0] == "current" and relative not in contract.version_claim_exempt:
+            allowed_versions = {policy.minimum, policy.last_verified}
+            for stale in sorted(set(PI_VERSION_CLAIM.findall(text)) - allowed_versions):
+                findings.append(Finding("DOC-VERSION-STALE", relative.as_posix(), stale))
         binding = bindings.get(relative)
         if binding is not None and classes[0] != "current":
             findings.append(Finding("DOC-BINDING-NONCURRENT", relative.as_posix()))
