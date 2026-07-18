@@ -64,13 +64,13 @@ the `ca`/`ca-codex` release cadence. There is no npm release and no auto-update.
 **Upgrade or pin a version:** re-run `pi install` with the new pinned tag:
 
 ```text
-pi install git:arbiterForge/codeArbiter@ca-pi-v<new-version>
+pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<new-version>
 ```
 
 **Uninstall:**
 
 ```text
-pi remove git:arbiterForge/codeArbiter@ca-pi-v<version>
+pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
 (`pi uninstall` is the equivalent alias.) Confirm removal with `pi list`.
@@ -99,7 +99,7 @@ codex plugin remove ca-codex@codearbiter
 Pi (Git-only; see [Pi](#pi) above for pinning and version-specific removal):
 
 ```sh
-pi remove git:arbiterForge/codeArbiter@ca-pi-v<version>
+pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
 This removes the plugin payload (hooks, commands, agents, skills) from Claude Code's plugin cache.

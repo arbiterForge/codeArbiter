@@ -116,7 +116,7 @@ Pi distribution is Git-only. Pin the independent `ca-pi` release tag, then inspe
 source and enabled resources:
 
 ```text
-pi install git:arbiterForge/codeArbiter@ca-pi-v<version>
+pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 pi list
 pi config
 ```

@@ -14,7 +14,7 @@ supported Pi versions are bound to the commit in the later promotion report.
 Use a release tag, never a moving branch:
 
 ```sh
-pi install git:arbiterForge/codeArbiter@ca-pi-v<version>
+pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 pi list
 pi config
 ```
@@ -102,7 +102,7 @@ Verify each observable surface:
     visibly if it is missing or stale.
 11. **Shared-state continuity:** write concurrent Claude/Pi, Codex/Pi, and Pi/Pi
     audit events in the fixture and require parseable `HOST: pi` attribution.
-12. **Uninstall:** run `pi remove git:arbiterForge/codeArbiter@ca-pi-v<version>`
+12. **Uninstall:** run `pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`
     (or the equivalent `pi uninstall` alias), confirm removal with `pi list`,
     and verify that the repository-owned `.codearbiter/` store remains.
 
