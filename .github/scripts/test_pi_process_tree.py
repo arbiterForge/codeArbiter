@@ -229,7 +229,11 @@ try {
     try { await cleanup.terminate("startup_failure"); } catch {}
   }
   const message = error instanceof Error ? error.message : "";
-  const code = phase === "launch-admission" ? " code=" + (admissionFailureCodes.get(message) ?? "unknown") : "";
+  // Implementation refusals carry a ": <reason>" diagnostic suffix; classify on
+  // the base message so the admission code survives suffix additions.
+  const admissionCode = [...admissionFailureCodes].find(
+    ([base]) => message === base || message.startsWith(base + ":"))?.[1];
+  const code = phase === "launch-admission" ? " code=" + (admissionCode ?? "unknown") : "";
   process.stderr.write("controller failure phase=" + phase + code + "\n");
   process.stdout.write("REFUSED\n");
 }
