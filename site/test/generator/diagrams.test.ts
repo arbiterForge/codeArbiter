@@ -32,6 +32,9 @@ const DIAGRAMS = [
   "lane-release.svg",
   "lane-opt-in.svg",
   "lane-add-dep.svg",
+  // pipeline + host fan-out diagrams
+  "commit-gate-phases.svg",
+  "core-fanout.svg",
 ];
 
 /** Recursively read every page-ish source file under src/ as one big string. */
