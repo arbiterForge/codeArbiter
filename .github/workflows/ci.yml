@@ -264,7 +264,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        pi-version: ["0.80.5", "0.80.6"]
+        pi-version: ["0.80.5", "0.80.10"]
     runs-on: ${{ matrix.os }}
     defaults:
       run:

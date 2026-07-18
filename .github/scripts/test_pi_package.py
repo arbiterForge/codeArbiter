@@ -715,7 +715,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["0.80.5", "0.80.6"]',
+        'pi-version: ["0.80.5", "0.80.10"]',
         "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
         "npm ci --ignore-scripts",
     ):
@@ -801,7 +801,7 @@ class PiPackageTests(unittest.TestCase):
     def test_root_manifest_is_private_dependency_free_pi_metadata(self):
         data = read_json(REPO / "package.json")
         self.assertEqual(data["name"], "ca-pi")
-        self.assertEqual(data["version"], "0.1.0")
+        self.assertEqual(data["version"], read_json(PLUGIN / "package.json")["version"])
         self.assertIs(data["private"], True)
         self.assertEqual(data["engines"], {"node": ">=22.19.0"})
         self.assertEqual(
@@ -815,7 +815,10 @@ class PiPackageTests(unittest.TestCase):
     def test_nested_manifest_is_the_single_version_source(self):
         data = read_json(PLUGIN / "package.json")
         self.assertEqual(data["name"], "ca-pi")
-        self.assertEqual(data["version"], "0.1.0")
+        changelog = (PLUGIN / "CHANGELOG.md").read_text(encoding="utf-8")
+        newest = re.search(r"^## \[(\d+\.\d+\.\d+)\] - \d{4}-\d{2}-\d{2}$", changelog, re.M)
+        self.assertIsNotNone(newest, "CHANGELOG.md has no dated release section")
+        self.assertEqual(data["version"], newest.group(1))
         self.assertIs(data["private"], True)
         self.assertEqual(data["engines"], {"node": ">=22.19.0"})
         self.assertEqual(data["pi"]["extensions"], ["./extensions/codearbiter.js"])
@@ -865,7 +868,7 @@ class PiPackageTests(unittest.TestCase):
     def test_generated_root_manifest_matches_renderer_bytes(self):
         module = load_build_host_packages()
         host = module.host_descriptor("pi", str(REPO))
-        expected = module.render_package(host, "0.1.0")
+        expected = module.render_package(host, read_json(PLUGIN / "package.json")["version"])
         self.assertIsInstance(expected, bytes)
         self.assertEqual((REPO / "package.json").read_bytes(), expected)
         self.assertTrue(expected.endswith(b"\n"))
@@ -1009,7 +1012,7 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["0.80.5", "0.80.6"]',
+            'pi-version: ["0.80.5", "0.80.10"]',
             "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
@@ -1319,7 +1322,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 0.80.5/0.80.6 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 0.80.5/0.80.10 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,

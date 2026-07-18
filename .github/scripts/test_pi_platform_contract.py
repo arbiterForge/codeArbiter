@@ -14,7 +14,7 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SUPPORTED = ("0.80.5", "0.80.6")
+SUPPORTED = ("0.80.5", "0.80.10")
 PLATFORM_COMMAND_TIMEOUT_SECONDS = 180
 
 
@@ -23,7 +23,7 @@ def version_policy(version):
         return {"version": version, "blocking": True}
     if version == "latest":
         return {"version": version, "blocking": False}
-    raise ValueError("Pi version must be 0.80.5, 0.80.6, or latest")
+    raise ValueError("Pi version must be 0.80.5, 0.80.10, or latest")
 
 
 def fixture_commands(fixtures_only):
@@ -81,9 +81,9 @@ def resolve_executable(name):
 class PlatformContractFixtures(unittest.TestCase):
     def test_supported_versions_block_and_only_latest_is_nonblocking(self):
         self.assertEqual(version_policy("0.80.5"), {"version": "0.80.5", "blocking": True})
-        self.assertEqual(version_policy("0.80.6"), {"version": "0.80.6", "blocking": True})
+        self.assertEqual(version_policy("0.80.10"), {"version": "0.80.10", "blocking": True})
         self.assertEqual(version_policy("latest"), {"version": "latest", "blocking": False})
-        with self.assertRaisesRegex(ValueError, "0.80.5, 0.80.6, or latest"):
+        with self.assertRaisesRegex(ValueError, "0.80.5, 0.80.10, or latest"):
             version_policy("0.81.0")
 
     def test_utf8_jsonl_accepts_lf_and_crlf_in_a_unicode_space_path(self):

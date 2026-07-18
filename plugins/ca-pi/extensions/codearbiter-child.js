@@ -411,7 +411,7 @@ function resolvePythonCommand(platform = process.platform, probe = systemPythonP
 }
 
 // src/compatibility.ts
-var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.80.5", "0.80.6"]);
+var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.80.5", "0.80.10"]);
 var MINIMUM_NODE = [22, 19, 0];
 var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
@@ -426,7 +426,7 @@ function atLeast(version, minimum) {
 }
 function compatibilityDirection(input) {
   if (!SUPPORTED_PI_VERSIONS.has(input.piVersion)) {
-    return "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.";
+    return "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.";
   }
   if (!atLeast(input.nodeVersion, MINIMUM_NODE)) {
     return "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.";

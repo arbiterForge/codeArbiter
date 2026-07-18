@@ -222,7 +222,7 @@ describe("Task 8 hardened runner seam (RED until Task 7 is stable)", () => {
       await mkdir(resolve(piRoot, "dist"), { recursive: true });
       await mkdir(cwd, { recursive: true });
       await writeFile(piCliPath, "// Pi fixture\n", "utf8");
-      await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.80.6"}\n', "utf8");
+      await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.80.10"}\n', "utf8");
       const request = {
         launchKind: "internal-compaction",
         nodePath: process.execPath,
@@ -238,7 +238,7 @@ describe("Task 8 hardened runner seam (RED until Task 7 is stable)", () => {
       const dependencies = {
         activeNodePath: process.execPath,
         packageRoot,
-        resolveRuntimeIdentity: async () => ({ cliEntry: piCliPath, packageRoot: piRoot, version: "0.80.6" }),
+        resolveRuntimeIdentity: async () => ({ cliEntry: piCliPath, packageRoot: piRoot, version: "0.80.10" }),
       };
       await expect(validateChildLaunch(request as never, dependencies)).resolves.toMatchObject({
         launchKind: "internal-compaction", tools: [], skillPaths: [], charterPath: request.charterPath,

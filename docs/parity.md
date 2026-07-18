@@ -13,7 +13,7 @@ the repository aggregate gate are green on that same commit.
 
 Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the
 H-03 structured block. Pi's implementation and local supported-version
-contracts target Pi 0.80.5 and Pi 0.80.6. The completed hosted
+contracts target Pi 0.80.5 and Pi 0.80.10. The completed hosted
 Windows/macOS/Linux promotion report records x64 Windows/Linux and arm64 macOS evidence without
 presenting the deliberately nonblocking unsupported-latest canary as supported.
 

@@ -191,7 +191,7 @@ operator to Pi's trust workflow and a new session. Project-local install remains
 Pi's own load-time trust rules and the same adapter authorization check.
 
 - Minimum supported Pi: `0.80.5` (source-derived capability floor; must pass the matrix).
-- Last live-verified Pi: `0.80.6`.
+- Last live-verified Pi: `0.80.10`.
 - Latest-canary lane: current npm `latest`, non-blocking until explicitly promoted to last-verified.
 - Minimum Node: `22.19.0` for Pi surfaces; existing Node-20 tools remain unchanged.
 - Python: supported Python 3 interpreters already covered by the cold-install matrix.

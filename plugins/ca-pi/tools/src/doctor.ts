@@ -190,10 +190,10 @@ export async function collectPiDoctorInput(
 const REMEDIATION = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 0.80.5 or 0.80.6 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 0.80.5 or 0.80.10 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 0.80.5/0.80.6, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 0.80.5/0.80.10, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
@@ -239,7 +239,7 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
     && inside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
-  const versionHealthy = ["0.80.5", "0.80.6"].includes(input.runtime.piVersion)
+  const versionHealthy = ["0.80.5", "0.80.10"].includes(input.runtime.piVersion)
     && versionAtLeast(input.runtime.nodeVersion, [22, 19, 0]);
   const piBelowMinimum = !versionAtLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
@@ -372,7 +372,7 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
     {
       id: "active-dispatch",
       state: "degraded",
-      message: "Supported Pi 0.80.5/0.80.6 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
+      message: "Supported Pi 0.80.5/0.80.10 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
       remediation: REMEDIATION["active-dispatch"],
     },
   ];

@@ -21,6 +21,8 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     ".codearbiter/specs/pi-support.md",
     ".codearbiter/tech-stack.md",
     ".github/scripts/test_host_descriptors.py",
+    ".github/scripts/test_pi_child_live.py",
+    ".github/scripts/test_public_pi_docs.py",
     ".github/scripts/test_pi_package.py",
     ".github/scripts/test_pi_platform_contract.py",
     ".github/workflows/ci.yml",
@@ -35,8 +37,10 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/build.mjs",
     "plugins/ca-pi/tools/src/compatibility.ts",
     "plugins/ca-pi/tools/src/doctor.ts",
+    "plugins/ca-pi/tools/test/compaction.test.ts",
     "plugins/ca-pi/tools/test/doctor.test.ts",
     "plugins/ca-pi/tools/test/package.test.ts",
+    "plugins/ca-pi/tools/test/runner-isolation.test.ts",
 })
 
 

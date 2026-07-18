@@ -35,8 +35,8 @@
       "id": "bundle-fingerprint-window",
       "path": "plugins/ca-pi/tools/build.mjs",
       "class": "generated",
-      "before": "JSON.stringify([\"{minimum}\", \"{last_verified}\"])",
-      "after": "JSON.stringify([\"{minimum}\", \"{candidate}\"])"
+      "before": "JSON.stringify([\"{minimum}\", \"{last_verified}\"].sort())",
+      "after": "JSON.stringify([\"{minimum}\", \"{candidate}\"].sort())"
     },
     {
       "id": "adapter-matrix",
@@ -147,6 +147,56 @@
       "class": "current-doc",
       "before": "Supported promotion versions are Pi {minimum} and Pi {last_verified}.",
       "after": "Supported promotion versions are Pi {minimum} and Pi {candidate}."
+    },
+    {
+      "id": "runner-isolation-package-fixture",
+      "path": "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+      "class": "ci",
+      "before": "\"version\":\"{last_verified}\",\"bin\"",
+      "after": "\"version\":\"{candidate}\",\"bin\""
+    },
+    {
+      "id": "runner-isolation-mock-identity",
+      "path": "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+      "class": "ci",
+      "occurrences": "all",
+      "before": "version: \"{last_verified}\"",
+      "after": "version: \"{candidate}\""
+    },
+    {
+      "id": "compaction-package-fixture",
+      "path": "plugins/ca-pi/tools/test/compaction.test.ts",
+      "class": "ci",
+      "before": "\"version\":\"{last_verified}\"}}",
+      "after": "\"version\":\"{candidate}\"}}"
+    },
+    {
+      "id": "compaction-mock-identity",
+      "path": "plugins/ca-pi/tools/test/compaction.test.ts",
+      "class": "ci",
+      "before": "version: \"{last_verified}\"",
+      "after": "version: \"{candidate}\""
+    },
+    {
+      "id": "child-live-supported-set",
+      "path": ".github/scripts/test_pi_child_live.py",
+      "class": "ci",
+      "before": "{{\"{minimum}\", \"{last_verified}\"}}",
+      "after": "{{\"{minimum}\", \"{candidate}\"}}"
+    },
+    {
+      "id": "public-docs-supported-versions",
+      "path": ".github/scripts/test_public_pi_docs.py",
+      "class": "ci",
+      "before": "assertIn(\"Pi {last_verified}\", text)",
+      "after": "assertIn(\"Pi {candidate}\", text)"
+    },
+    {
+      "id": "parity-runbook-supported-run",
+      "path": "docs/pi-parity-testing.md",
+      "class": "current-doc",
+      "before": "--pi-version {last_verified}",
+      "after": "--pi-version {candidate}"
     }
   ]
 }

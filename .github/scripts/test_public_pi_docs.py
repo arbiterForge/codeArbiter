@@ -61,7 +61,7 @@ class PiInstallRunbookTest(unittest.TestCase):
         text = read("docs/pi-parity-testing.md")
         self.assertIn("pi install git:arbiterForge/codeArbiter@ca-pi-v", text)
         self.assertIn("Pi 0.80.5", text)
-        self.assertIn("Pi 0.80.6", text)
+        self.assertIn("Pi 0.80.10", text)
         self.assertIn("Git-only", text)
         self.assertNotIn("npm publish", text)
 

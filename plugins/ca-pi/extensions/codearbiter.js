@@ -1,5 +1,5 @@
 // <define:__CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS__>
-var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "0.80.5": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51", "0.80.6": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
+var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "0.80.5": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51", "0.80.10": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
 
 // <define:__CODEARBITER_PI_TOOL_CLASSES__>
 var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", codearbiter_dispatch: "EXEC", codearbiter_farm_preview: "EXEC", write: "WRITE", edit: "EDIT", read: "READ" };
@@ -10,7 +10,7 @@ import { dirname as dirname6, resolve as resolve12 } from "node:path";
 import { fileURLToPath as fileURLToPath5 } from "node:url";
 
 // src/compatibility.ts
-var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.80.5", "0.80.6"]);
+var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.80.5", "0.80.10"]);
 var MINIMUM_NODE = [22, 19, 0];
 var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
@@ -25,7 +25,7 @@ function atLeast(version, minimum) {
 }
 function compatibilityDirection(input) {
   if (!SUPPORTED_PI_VERSIONS.has(input.piVersion)) {
-    return "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.";
+    return "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.";
   }
   if (!atLeast(input.nodeVersion, MINIMUM_NODE)) {
     return "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.";
@@ -1199,10 +1199,10 @@ async function collectPiDoctorInput(dependencies) {
 var REMEDIATION = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 0.80.5 or 0.80.6 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 0.80.5 or 0.80.10 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 0.80.5/0.80.6, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 0.80.5/0.80.10, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
@@ -1239,7 +1239,7 @@ function diagnosePi(input) {
   const packageHealthy = input.package.declared && input.package.name === "ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && inside4(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
-  const versionHealthy = ["0.80.5", "0.80.6"].includes(input.runtime.piVersion) && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
+  const versionHealthy = ["0.80.5", "0.80.10"].includes(input.runtime.piVersion) && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
   const piBelowMinimum = !atLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
   const expectedDoctorSkill = resolve5(input.package.root, "skills", "ca-doctor", "SKILL.md");
@@ -1342,7 +1342,7 @@ function diagnosePi(input) {
     {
       id: "active-dispatch",
       state: "degraded",
-      message: "Supported Pi 0.80.5/0.80.6 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
+      message: "Supported Pi 0.80.5/0.80.10 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
       remediation: REMEDIATION["active-dispatch"]
     }
   ];
@@ -2779,7 +2779,7 @@ function parseChildJsonLine(line) {
       break;
     case "message_start":
     case "message_end":
-      if (!exactKeys(record, ["type", "message"]) || !validMessage(record.message)) invalidProtocol();
+      if (!exactKeys(record, ["type", "message"]) || !validMessage(record.message) && !validPartialAssistantMessage(record.message)) invalidProtocol();
       break;
     case "message_update":
       if (!exactKeys(record, ["type", "message", "assistantMessageEvent"]) || !validPartialAssistantMessage(record.message) || !validAssistantEvent(record.assistantMessageEvent)) invalidProtocol();
@@ -4303,7 +4303,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "ae9277d95051760f751d8c131ee3099417145c1ee7e0a12c4a302fc41505018d"
+        childFingerprint: "67640637b05b2de7b534c7a0b32b142041b5ee610ed173148cecfc038e0ce539"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

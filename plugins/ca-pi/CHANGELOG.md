@@ -2,6 +2,13 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.1] - 2026-07-18
+
+### Changed
+
+- Promote the verified Pi host window through exact Pi 0.80.10.
+
+
 ## [0.1.0] - 2026-07-14
 
 ### Added

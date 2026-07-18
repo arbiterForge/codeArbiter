@@ -23,7 +23,7 @@ extension, an enforcement-only child extension, and a Windows supervisor.
 Python 3 remains required for the shared core.
 
 The external Pi runtime is a test and install input, never a checked-in or
-runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.80.6.
+runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.80.10.
 
 ## Test
 

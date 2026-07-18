@@ -151,7 +151,7 @@ def live_help_contract(
         [node, str(cli), "--version"], cwd=cwd, env=environment, text=True, encoding="utf-8",
         errors="replace", capture_output=True, check=False, timeout=30,
     ).stdout.strip()
-    if version not in {"0.80.5", "0.80.6"}:
+    if version not in {"0.80.5", "0.80.10"}:
         raise AssertionError(f"unsupported live Pi version: {version!r}")
     actual = runtime_help(node, cli, cwd, environment)
     for flag in REQUIRED_FLAGS:

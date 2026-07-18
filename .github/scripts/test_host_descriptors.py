@@ -419,7 +419,7 @@ class DescriptorContractTest(unittest.TestCase):
         module = _descriptors()
         pi = module.host_descriptor("pi", str(REPO))
         fingerprints = dict(pi.package["skill_expansion_fingerprints"])
-        self.assertEqual(set(fingerprints), {"0.80.5", "0.80.6"})
+        self.assertEqual(set(fingerprints), {"0.80.5", "0.80.10"})
         self.assertTrue(all(re.fullmatch(r"[a-f0-9]{64}", value) for value in fingerprints.values()))
         doctor_source = (REPO / "plugins/ca-pi/tools/src/doctor.ts").read_text(encoding="utf-8")
         for fingerprint in fingerprints.values():

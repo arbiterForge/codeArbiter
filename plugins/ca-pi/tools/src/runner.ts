@@ -522,7 +522,11 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
       break;
     case "message_start":
     case "message_end":
-      if (!exactKeys(record, ["type", "message"]) || !validMessage(record.message)) invalidProtocol();
+      // Pi 0.80.10 leaves the streaming partialArgs scratch buffer on assistant
+      // toolCall blocks here, not only in message_update; the partial validator
+      // normalizes those known streaming keys and re-validates strictly (#337).
+      if (!exactKeys(record, ["type", "message"])
+        || (!validMessage(record.message) && !validPartialAssistantMessage(record.message))) invalidProtocol();
       break;
     case "message_update":
       if (!exactKeys(record, ["type", "message", "assistantMessageEvent"])

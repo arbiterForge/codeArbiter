@@ -121,7 +121,7 @@ pi list
 pi config
 ```
 
-Pi 0.80.5 and Pi 0.80.6 are the supported hosts for this release line. `ca-pi` also requires Node
+Pi 0.80.5 and Pi 0.80.10 are the supported hosts for this release line. `ca-pi` also requires Node
 22.19+ and Python 3. After inspecting the project, grant Pi project trust, start a fresh session,
 then run `/ca-init` and `/ca-doctor`. Generated aliases use `/ca-*`; `/skill:ca-*` is the native
 fallback. The [Pi parity runbook](./docs/pi-parity-testing.md) covers isolated installation, live

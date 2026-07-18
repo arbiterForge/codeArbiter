@@ -314,13 +314,13 @@ async function createPinnedGitFixture(root: string, environment: NodeJS.ProcessE
   await mkdir(resolve(escapeRoot, "dist"), { recursive: true });
   await writeFile(
     resolve(poisonRoot, "package.json"),
-    '{"name":"@earendil-works/pi-coding-agent","version":"0.80.6","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"./dist/index.js"}}}\n',
+    '{"name":"@earendil-works/pi-coding-agent","version":"0.80.10","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"./dist/index.js"}}}\n',
     "utf8",
   );
   await writeFile(resolve(poisonRoot, "dist", "cli.js"), "// poisoned fake CLI anchor\n", "utf8");
   await writeFile(
     resolve(poisonRoot, "dist", "index.js"),
-    'globalThis.__CA_PI_POISON_HOST_EVALUATED__ = true; console.error("COUNTERFEIT_HOST_RUNTIME_EVALUATED"); export class ModelRegistry {} export const VERSION = "0.80.6";\n',
+    'globalThis.__CA_PI_POISON_HOST_EVALUATED__ = true; console.error("COUNTERFEIT_HOST_RUNTIME_EVALUATED"); export class ModelRegistry {} export const VERSION = "0.80.10";\n',
     "utf8",
   );
   await writeFile(
@@ -330,23 +330,23 @@ async function createPinnedGitFixture(root: string, environment: NodeJS.ProcessE
   );
   await writeFile(
     resolve(wrongRoot, "package.json"),
-    '{"name":"not-pi","version":"0.80.6","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"./dist/index.js"}}}\n',
+    '{"name":"not-pi","version":"0.80.10","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"./dist/index.js"}}}\n',
     "utf8",
   );
   await writeFile(resolve(wrongRoot, "dist", "cli.js"), "// wrong package CLI\n", "utf8");
-  await writeFile(resolve(wrongRoot, "dist", "index.js"), "export class ModelRegistry {} export const VERSION = '0.80.6';\n", "utf8");
+  await writeFile(resolve(wrongRoot, "dist", "index.js"), "export class ModelRegistry {} export const VERSION = '0.80.10';\n", "utf8");
   await writeFile(
     resolve(escapeRoot, "package.json"),
-    '{"name":"@earendil-works/pi-coding-agent","version":"0.80.6","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"../outside-runtime.js"}}}\n',
+    '{"name":"@earendil-works/pi-coding-agent","version":"0.80.10","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"../outside-runtime.js"}}}\n',
     "utf8",
   );
   await writeFile(resolve(escapeRoot, "dist", "cli.js"), "// escaping export CLI\n", "utf8");
-  await writeFile(resolve(extensionRoot, "outside-runtime.js"), "export class ModelRegistry {} export const VERSION = '0.80.6';\n", "utf8");
+  await writeFile(resolve(extensionRoot, "outside-runtime.js"), "export class ModelRegistry {} export const VERSION = '0.80.10';\n", "utf8");
   if (process.platform !== "win32") {
     await mkdir(resolve(symlinkRoot, "dist"), { recursive: true });
     await writeFile(
       resolve(symlinkRoot, "package.json"),
-      '{"name":"@earendil-works/pi-coding-agent","version":"0.80.6","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"./dist/index.js"}}}\n',
+      '{"name":"@earendil-works/pi-coding-agent","version":"0.80.10","type":"module","bin":{"pi":"dist/cli.js"},"exports":{".":{"import":"./dist/index.js"}}}\n',
       "utf8",
     );
     await writeFile(resolve(symlinkRoot, "dist", "cli.js"), "// symlink escape CLI\n", "utf8");
@@ -671,20 +671,20 @@ describe("ca-pi package", () => {
       const compatibility = [];
       for (const input of [
         { piVersion: "0.80.5", nodeVersion: "22.19.0", pythonMajor: 3 },
-        { piVersion: "0.80.6", nodeVersion: "24.16.0", pythonMajor: 3 },
+        { piVersion: "0.80.10", nodeVersion: "24.16.0", pythonMajor: 3 },
         { piVersion: "0.80.4", nodeVersion: "24.16.0", pythonMajor: 3 },
         { piVersion: "0.80.7", nodeVersion: "24.16.0", pythonMajor: 3 },
         { piVersion: "0.81.0", nodeVersion: "24.16.0", pythonMajor: 3 },
-        { piVersion: "0.80.6-rc.1", nodeVersion: "24.16.0", pythonMajor: 3 },
-        { piVersion: "0.80.6+build.1", nodeVersion: "24.16.0", pythonMajor: 3 },
-        { piVersion: "v0.80.6", nodeVersion: "24.16.0", pythonMajor: 3 },
-        { piVersion: " 0.80.6", nodeVersion: "24.16.0", pythonMajor: 3 },
-        { piVersion: "0.80.6 ", nodeVersion: "24.16.0", pythonMajor: 3 },
+        { piVersion: "0.80.10-rc.1", nodeVersion: "24.16.0", pythonMajor: 3 },
+        { piVersion: "0.80.10+build.1", nodeVersion: "24.16.0", pythonMajor: 3 },
+        { piVersion: "v0.80.10", nodeVersion: "24.16.0", pythonMajor: 3 },
+        { piVersion: " 0.80.10", nodeVersion: "24.16.0", pythonMajor: 3 },
+        { piVersion: "0.80.10 ", nodeVersion: "24.16.0", pythonMajor: 3 },
         { piVersion: "0.80", nodeVersion: "24.16.0", pythonMajor: 3 },
         { piVersion: "not-a-version", nodeVersion: "24.16.0", pythonMajor: 3 },
         { piVersion: "1.0.0", nodeVersion: "24.16.0", pythonMajor: 3 },
-        { piVersion: "0.80.6", nodeVersion: "22.18.0", pythonMajor: 3 },
-        { piVersion: "0.80.6", nodeVersion: "24.16.0", pythonMajor: null },
+        { piVersion: "0.80.10", nodeVersion: "22.18.0", pythonMajor: 3 },
+        { piVersion: "0.80.10", nodeVersion: "24.16.0", pythonMajor: null },
       ]) {
         let apiAccesses = 0;
         const api = new Proxy({}, { get() { apiAccesses += 1; return () => undefined; } });
@@ -862,17 +862,17 @@ describe("ca-pi package", () => {
       expect(result.compatibility).toEqual([
         { diagnosis: null, apiAccesses: 0 },
         { diagnosis: null, apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
         { diagnosis: "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.", apiAccesses: 0 },
         { diagnosis: "codeArbiter requires Python 3; install Python 3 and run /ca-doctor.", apiAccesses: 0 },
       ]);
@@ -889,22 +889,22 @@ describe("ca-pi package", () => {
   }, LIVE_DUPLICATE_HOST_TIMEOUT_MS);
 
   test("exact supported Pi versions and prerequisites return fixed directions", () => {
-    for (const piVersion of ["0.80.5", "0.80.6"]) {
+    for (const piVersion of ["0.80.5", "0.80.10"]) {
       expect(compatibilityDirection({ piVersion, nodeVersion: "24.16.0", pythonMajor: 3 })).toBeNull();
     }
     const unsupportedDirection =
-      "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.";
+      "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.";
     for (const piVersion of [
       "0.80.4",
       "0.80.7",
       "0.81.0",
-      "0.80.6-rc.1",
-      "0.80.6+build.1",
-      "v0.80.6",
-      " 0.80.6",
-      "0.80.6 ",
+      "0.80.10-rc.1",
+      "0.80.10+build.1",
+      "v0.80.10",
+      " 0.80.10",
+      "0.80.10 ",
       "0.80",
-      "0.80.6.0",
+      "0.80.10.0",
       "not-a-version",
       "1.0.0",
     ]) {
@@ -912,10 +912,10 @@ describe("ca-pi package", () => {
         unsupportedDirection,
       );
     }
-    expect(compatibilityDirection({ piVersion: "0.80.6", nodeVersion: "22.18.0", pythonMajor: 3 })).toBe(
+    expect(compatibilityDirection({ piVersion: "0.80.10", nodeVersion: "22.18.0", pythonMajor: 3 })).toBe(
       "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.",
     );
-    expect(compatibilityDirection({ piVersion: "0.80.6", nodeVersion: "24.16.0", pythonMajor: null })).toBe(
+    expect(compatibilityDirection({ piVersion: "0.80.10", nodeVersion: "24.16.0", pythonMajor: null })).toBe(
       "codeArbiter requires Python 3; install Python 3 and run /ca-doctor.",
     );
   });
@@ -926,12 +926,12 @@ describe("ca-pi package", () => {
     // so it refuses to parse this and treats the version as below the floor. compatibility.ts's atLeast()
     // must use the same anchored parse rather than the looser /^(\d+)\.(\d+)\.(\d+)/u, which would greedily
     // match the "22.19.0" prefix and wrongly report the malformed/unparseable version as compatible.
-    expect(compatibilityDirection({ piVersion: "0.80.6", nodeVersion: "22.19.0next", pythonMajor: 3 })).toBe(
+    expect(compatibilityDirection({ piVersion: "0.80.10", nodeVersion: "22.19.0next", pythonMajor: 3 })).toBe(
       "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.",
     );
   });
 
-  test.each(["0.80.7", "0.80.6-rc.1", "1.0.0"])(
+  test.each(["0.80.7", "0.80.10-rc.1", "1.0.0"])(
     "rejects unsupported Pi %s before API access",
     (piVersion) => {
       let apiAccesses = 0;
@@ -941,7 +941,7 @@ describe("ca-pi package", () => {
         nodeVersion: "24.16.0",
         pythonMajor: 3,
       })(api as never)).toThrow(
-        "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.",
+        "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.",
       );
       expect(apiAccesses).toBe(0);
     },
@@ -984,7 +984,7 @@ describe("ca-pi package", () => {
         moduleEvaluated: (globalThis as Record<string, unknown>)[sentinelName] === true,
       }).toEqual({
         apiAccesses: 0,
-        diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.6; install a supported Pi version and run /ca-doctor.",
+        diagnosis: "codeArbiter requires Pi 0.80.5 or 0.80.10; install a supported Pi version and run /ca-doctor.",
         moduleEvaluated: false,
       });
     } finally {
@@ -1005,7 +1005,7 @@ describe("ca-pi package", () => {
     const executableName = process.platform === "win32" ? "pi.cmd" : "pi";
     const previousPath = process.env.PATH;
     try {
-      for (const [packageRoot, version] of [[stalePackage, "0.80.5"], [actualPackage, "0.80.6"]]) {
+      for (const [packageRoot, version] of [[stalePackage, "0.80.5"], [actualPackage, "0.80.10"]]) {
         await mkdir(resolve(packageRoot, "dist"), { recursive: true });
         await writeFile(
           resolve(packageRoot, "package.json"),

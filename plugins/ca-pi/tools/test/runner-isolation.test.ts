@@ -113,18 +113,18 @@ async function materializedRequest(task = "task-secret-sentinel") {
   await mkdir(request.cwd, { recursive: true });
   await mkdir(dirname(request.piCliPath), { recursive: true });
   await writeFile(request.piCliPath, "// Task 6 Pi CLI fixture\n", "utf8");
-  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.80.6","bin":{"pi":"dist/cli.js"}}\n', "utf8");
+  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.80.10","bin":{"pi":"dist/cli.js"}}\n', "utf8");
   runnerMocks.resolveRuntimeIdentity.mockImplementation(async (candidate: string) => ({
     cliEntry: candidate,
     packageRoot: resolve(dirname(candidate), ".."),
-    version: "0.80.6",
+    version: "0.80.10",
   }));
   testValidation.set(request, {
     activeNodePath: process.execPath,
     packageRoot,
     resolveRuntimeIdentity: async (candidate: string) => {
       if (candidate !== request.piCliPath) throw new Error("counterfeit Pi CLI");
-      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "0.80.6" };
+      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "0.80.10" };
     },
   });
   return request;
@@ -305,6 +305,10 @@ describe("Task 6 exact Pi child launch", () => {
       [{ type: "turn_start" }, { type: "turn_start", turnIndex: 1 }],
       [{ type: "turn_end", message: assistantMessage, toolResults: [] }, { type: "turn_end", message: assistantMessage, toolResults: "none" }],
       [{ type: "message_start", message: userMessage }, { type: "message_start", message: { role: "user", content: "task" } }],
+      // Pi 0.80.10 streams the partialArgs scratch buffer inside message_start/end
+      // assistant records; accepted via the same partial normalization as message_update.
+      [{ type: "message_start", message: partialToolCallMessage }, { type: "message_start", message: { ...partialToolCallMessage, content: [{ ...partialToolCallMessage.content[0], partialArgs: 7 }] } }],
+      [{ type: "message_end", message: partialToolCallMessage }, { type: "message_end", message: { ...partialToolCallMessage, content: [{ ...partialToolCallMessage.content[0], streamIndex: -1 }] } }],
       [{ type: "message_update", message: partialToolCallMessage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, partial: partialToolCallMessage } }, { type: "message_update", message: { ...partialToolCallMessage, content: [{ ...partialToolCallMessage.content[0], partialArgs: 7 }] }, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, partial: partialToolCallMessage } }],
       [{ type: "message_end", message: assistantMessage }, { type: "message_end", message: { ...assistantMessage, content: "done" } }],
       [{ type: "tool_execution_start", toolCallId: "call", toolName: "bash", args: {} }, { type: "tool_execution_start", toolCallId: 3, toolName: "bash", args: {} }],
@@ -775,7 +779,7 @@ describe("Task 6 exact Pi child launch", () => {
     const request = await materializedRequest();
     runnerMocks.resolveRuntimeIdentity.mockImplementationOnce(async (candidate: string) => {
       controller.abort();
-      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "0.80.6" };
+      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "0.80.10" };
     });
     expect(await runPiChild(request as never, controller.signal)).toEqual({
       terminal: "degraded",

@@ -46,5 +46,5 @@ file maps those actions to Pi's extension API.
   operator-launched Pi CLI, imported module, package root, and reported version.
   It does not prove publisher authenticity. Verify the source separately with
   `pi list` and `pi config`.
-- Supported promotion targets are Pi 0.80.5 and Pi 0.80.6. npm packaging and a
+- Supported promotion targets are Pi 0.80.5 and Pi 0.80.10. npm packaging and a
   Pi-native embedded farm worker are future spikes, not installed dependencies.
