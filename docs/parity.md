@@ -8,7 +8,7 @@ a governance host.
 
 Final Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
 and [machine-readable envelope](./reports/pi-support/promotion.json). Local checks and the hosted
-Windows/macOS/Linux matrix for Pi 0.80.5/0.80.6 are green on commit `f457decbf799`; scoped CodeQL and
+Windows/macOS/Linux matrix for Pi 0.80.5/0.80.10 are green on commit `11df92890722`; scoped CodeQL and
 the repository aggregate gate are green on that same commit.
 
 Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the

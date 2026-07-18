@@ -1,18 +1,18 @@
 # Pi support promotion evidence
 
-Status: final hosted evidence bound to commit `f457decbf799ef197ca7b8bc235aa414db5c0832`.
+Status: final hosted evidence bound to commit `11df92889cb64c9ce3af41580111acec01b46555`.
 
 | Version | Platform | Architecture | Result | Passed | Timing (ms) | Diagnostic |
 |---|---|---|---|---:|---:|---|
-| 0.80.5 | windows-local | x64 | PI-LOCAL-SUPPORTED | true | 69246 | NONE |
-| 0.80.5 | windows | x64 | PI-HOSTED-SUPPORTED | true | 347000 | NONE |
-| 0.80.5 | linux | x64 | PI-HOSTED-SUPPORTED | true | 98000 | NONE |
-| 0.80.5 | macos | arm64 | PI-HOSTED-SUPPORTED | true | 175000 | NONE |
-| 0.80.6 | windows-local | x64 | PI-LOCAL-SUPPORTED | true | 68678 | NONE |
-| 0.80.6 | windows | x64 | PI-HOSTED-SUPPORTED | true | 387000 | NONE |
-| 0.80.6 | linux | x64 | PI-HOSTED-SUPPORTED | true | 100000 | NONE |
-| 0.80.6 | macos | arm64 | PI-HOSTED-SUPPORTED | true | 148000 | NONE |
-| codeql | github | x64 | PI-CODEQL-HIGH | true | 74000 | NONE |
-| 0.80.9 | windows-local | x64 | PI-LATEST-CANARY | false | 15143 | VERSION_UNSUPPORTED |
+| 0.80.5 | windows-local | x64 | PI-LOCAL-SUPPORTED | true | 70747 | NONE |
+| 0.80.10 | windows-local | x64 | PI-LOCAL-SUPPORTED | true | 70887 | NONE |
+| 0.80.10 | linux | x64 | PI-HOSTED-SUPPORTED | true | 107000 | NONE |
+| 0.80.5 | linux | x64 | PI-HOSTED-SUPPORTED | true | 96000 | NONE |
+| 0.80.5 | windows | x64 | PI-HOSTED-SUPPORTED | true | 438000 | NONE |
+| 0.80.10 | macos | arm64 | PI-HOSTED-SUPPORTED | true | 131000 | NONE |
+| 0.80.10 | windows | x64 | PI-HOSTED-SUPPORTED | true | 366000 | NONE |
+| 0.80.5 | macos | arm64 | PI-HOSTED-SUPPORTED | true | 187000 | NONE |
+| codeql | github | x64 | PI-CODEQL-HIGH | true | 114000 | NONE |
+| 0.80.6 | windows-local | x64 | PI-LATEST-CANARY | false | 780 | VERSION_UNSUPPORTED |
 
 This document is generated only from the bounded fields in [promotion.json](./promotion.json). It contains no prompts, task text, provider responses, environment values, auth paths, raw JSONL, stdout, stderr, or repository payloads.
