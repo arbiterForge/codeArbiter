@@ -106,7 +106,9 @@ _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/fixtures/pi-0.80.6-help.txt",
     "tools/test/process-tree.test.ts",
     "tools/test/runner-isolation.test.ts",
+    "tools/test/runtime-resolver.test.ts",
     "tools/test/security.test.ts",
+    "tools/test/windows-supervisor.test.ts",
     "tools/test/benchmark-boundary.ts",
 })
 

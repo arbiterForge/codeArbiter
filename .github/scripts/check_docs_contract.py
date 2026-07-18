@@ -185,6 +185,10 @@ def _link_finding(repo: Path, source: Path, target: str) -> Finding | None:
         while route.startswith("../"):
             route = route[3:]
         route = route.removeprefix("./")
+        # Routes produced by `npm run gen` are gitignored (see .gitignore), so
+        # they are absent from a fresh checkout; accept them structurally.
+        if route == "changelog/" or route.startswith("reference/"):
+            return None
         candidate = (site_root / route).resolve()
         if candidate.is_relative_to(site_root.resolve()) and candidate.is_dir():
             return None

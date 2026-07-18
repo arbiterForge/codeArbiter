@@ -204,7 +204,9 @@ class TestUnwritableDestination(_SyntheticRepoFixture):
         real_open = open
 
         def _boom_open(path, mode="r", *a, **kw):
-            if os.path.abspath(path) == os.path.abspath(bad_dst) and "w" in mode:
+            # sync-core writes atomically via dst + ".tmp-sync" then os.replace;
+            # fail any write destined for bad_dst, including its tmp sibling.
+            if os.path.abspath(str(path)).startswith(os.path.abspath(bad_dst)) and "w" in mode:
                 raise OSError("simulated write failure")
             return real_open(path, mode, *a, **kw)
 
