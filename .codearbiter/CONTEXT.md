@@ -26,8 +26,8 @@ Four sibling plugins in one repository (ADR-0007, ADR-0011, ADR-0013):
 - **`ca-codex` (governance, Codex CLI host)** — the same kernel targeting Codex CLI.
   Generated from shared sources (`core/pysrc/`, `core/surface/`) alongside `ca`;
   CI enforces byte-identity between `core/` and each plugin's vendored copy. One
-  `.codearbiter/` store per project serves both hosts. Beta until live-Codex
-  verification (ADR-0011).
+  `.codearbiter/` store per project serves all three governance hosts. Beta until
+  live-Codex verification (ADR-0011).
 - **`ca-pi` (governance, Pi host)** — the same generated kernel behind a thin
   TypeScript extension and the shared stdlib-only Python core. The Git-installed
   package is independently versioned, requires Node 22.19+ and Python 3, and

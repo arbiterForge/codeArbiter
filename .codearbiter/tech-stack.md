@@ -130,7 +130,7 @@ python .github/scripts/test_public_pi_docs.py
 
 The platform aggregate is `python .github/scripts/test_pi_platform_contract.py
 --fixtures-only`. A supported-version run adds `--pi-version 0.80.5` or
-`--pi-version 0.80.6` after installing that exact external Pi version with
+`--pi-version 0.80.10` after installing that exact external Pi version with
 scripts disabled. CI owns the Windows/macOS/Linux matrix.
 
 ## Lint / typecheck

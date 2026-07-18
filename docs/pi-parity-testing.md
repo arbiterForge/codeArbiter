@@ -19,7 +19,7 @@ pi list
 pi config
 ```
 
-For the initial release, `<version>` is `0.1.0`. `pi list` must show the pinned
+For the initial release, `<version>` is `0.1.1`. `pi list` must show the pinned
 Git source. In `pi config`, confirm that the package contributes one parent
 extension and the generated `ca-*` skills. Use `-l` only when you deliberately
 want a project-local Pi setting.

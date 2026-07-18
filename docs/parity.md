@@ -77,7 +77,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex packaged agents | DEGRADED | Roles run inline until a supported packaging surface lands. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Pi complete footer | DEGRADED | Pi exposes extension status, not ownership of the full footer. | `plugins/ca-pi/includes/pi-host-notes.md` |
-| Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.80.6 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
+| Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.80.10 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |
 | Pi npm package | DEGRADED | Git tags are the only distribution path in this release line. | `docs/pi-parity-testing.md` |
 <!-- PI-EXCEPTIONS:END -->
@@ -86,5 +86,5 @@ Every exception has a status and a source-visible evidence pointer.
 
 The deterministic and trusted-live procedure is
 [`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion row is
-added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.80.6 matrix
+added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.80.10 matrix
 and the separately reported nonblocking latest canary complete.

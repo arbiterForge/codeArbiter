@@ -6,7 +6,7 @@ declare module "@earendil-works/pi-coding-agent" {
   /**
    * Structural surface of Pi's extension host object, as observed by
    * codeArbiter's parent (extension.ts) and child (child-extension.ts)
-   * adapters against the Pi 0.80.5/0.80.6 external runtime.
+   * adapters against the Pi 0.80.5/0.80.10 external runtime.
    *
    * Only members actually consumed by those adapters are declared here.
    * `context` is typed as ExtensionContextPort (contracts.ts) because that

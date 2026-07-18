@@ -1,6 +1,6 @@
 ---
 title: What Is codeArbiter
-description: How codeArbiter orchestrates shared gated workflows in Claude Code and Codex.
+description: How codeArbiter orchestrates shared gated workflows in Claude Code, Codex, and Pi.
 ---
 
 codeArbiter ships four sibling plugins from one marketplace: three governance hosts — `ca` for Claude

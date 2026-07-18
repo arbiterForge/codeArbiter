@@ -1,10 +1,10 @@
 ---
 title: Hooks Reference
-description: "A complete per-hook reference for codeArbiter: every registered Claude Code hook, the gates it enforces, its fail posture, and the non-event scripts behind the commands."
+description: "A complete per-hook reference for codeArbiter: every registered hook across the three governance hosts, the gates it enforces, its fail posture, and the non-event scripts behind the commands."
 ---
 
-The `ca` and `ca-codex` plugins share the same Python guard core and `.codearbiter/` activation
-state. Claude Code consumes the guard's exit-2 block directly. Codex routes shell and write events
+The `ca`, `ca-codex`, and `ca-pi` plugins share the same Python guard core and `.codearbiter/`
+activation state. Claude Code consumes the guard's exit-2 block directly. Codex routes shell and write events
 through `pre-tool-adapter.py`, which returns Codex's structured deny result with the same gate ID and
 feedback. Codex has no Read hook, statusline, or Claude-format transcript-pruning engine; see the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/).

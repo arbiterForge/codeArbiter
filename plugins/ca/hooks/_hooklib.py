@@ -1041,7 +1041,7 @@ def _log_gate_event(kind, tag, msg):
     "which hook fired this" signal available at this shared layer without
     threading a new parameter through all 21 call sites across the 16 entry
     hooks. `host` is `get_host().name` ("claude"/"codex"/"unknown") — added
-    for observability-001/ADR-0012: with two hosts now sharing one
+    for observability-001/ADR-0012: with three hosts now sharing one
     gate-events.log (ADR-0011), a line could not be attributed to the host
     that wrote it. Placed BEFORE `hook=` (both are `key=value` tokens with no
     internal whitespace, so the line stays trivially greppable/parseable by

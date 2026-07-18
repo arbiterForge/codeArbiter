@@ -74,7 +74,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "codeArbiter",
-      description: "Shared enforcement and project-context parity across Claude Code and Codex.",
+      description: "Shared enforcement and project-context parity across Claude Code, Codex, and Pi.",
       logo: {
         src: "./src/assets/logo.svg",
         replacesTitle: true,

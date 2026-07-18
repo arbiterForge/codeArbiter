@@ -253,7 +253,7 @@ permission to lower full-parity acceptance.
    skills through synchronized root package metadata.
 6. **No runtime Pi dependency:** Distribution manifests contain no bundled/direct Pi runtime
    dependency and a module-identity test proves adapter imports resolve to the host Pi instance.
-7. **Version contract:** Pi `0.80.5` and `0.80.6` pass; an older Pi, Node below `22.19.0`, or missing
+7. **Version contract:** Pi `0.80.5` and `0.80.10` pass; an older Pi, Node below `22.19.0`, or missing
    Python returns an explicit diagnosis instead of partial activation. Latest-canary results report
    separately.
 8. **Dormancy:** A repo without enabled context receives no persona, enforcement, audit mutation, or

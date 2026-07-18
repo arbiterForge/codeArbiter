@@ -534,7 +534,7 @@ def clear_dev_marker(root, host_name=None, session_id=None, now=None):
 
     `host_name` (observability-001/ADR-0012) is the resolved host's `.name`
     ("claude"/"codex"/"unknown"), so the synthetic close line is attributable to
-    the host that wrote it now that two hosts share one overrides.log
+    the host that wrote it now that three hosts share one overrides.log
     (ADR-0011). Optional and defaults to resolving it here via `get_host()`
     (#257) — main() already holds a Host instance and passes its `.name`
     through to avoid a second resolution, but any other caller (tests

@@ -16,7 +16,7 @@ Confirm all before installing:
   a missing interpreter blocks mutating calls and points to `/ca-doctor` rather than silently
   disabling governance.
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity.
-- **A supported Pi host**: Pi 0.80.5 or Pi 0.80.6 for this release line. See
+- **A supported Pi host**: Pi 0.80.5 or Pi 0.80.10 for this release line. See
   [Compatibility](/getting-started/compatibility/) for the full matrix.
 
 ## 1. Install
