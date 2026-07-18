@@ -197,6 +197,69 @@
       "class": "current-doc",
       "before": "--pi-version {last_verified}",
       "after": "--pi-version {candidate}"
+    },
+    {
+      "id": "site-pi-install-supported",
+      "path": "site/src/content/docs/getting-started/pi.md",
+      "class": "current-doc",
+      "before": "Pi {minimum} or Pi {last_verified} for this release line.",
+      "after": "Pi {minimum} or Pi {candidate} for this release line."
+    },
+    {
+      "id": "site-compatibility-supported",
+      "path": "site/src/content/docs/getting-started/compatibility.md",
+      "class": "current-doc",
+      "before": "Pi {minimum} or Pi {last_verified} (this release line)",
+      "after": "Pi {minimum} or Pi {candidate} (this release line)"
+    },
+    {
+      "id": "site-troubleshooting-cause",
+      "path": "site/src/content/docs/guides/troubleshooting.md",
+      "class": "current-doc",
+      "before": "Pi CLI is not {minimum} or {last_verified}",
+      "after": "Pi CLI is not {minimum} or {candidate}"
+    },
+    {
+      "id": "site-troubleshooting-fix",
+      "path": "site/src/content/docs/guides/troubleshooting.md",
+      "class": "current-doc",
+      "before": "Only Pi {minimum} and Pi {last_verified} are supported in this release line",
+      "after": "Only Pi {minimum} and Pi {candidate} are supported in this release line"
+    },
+    {
+      "id": "parity-doctor-exception",
+      "path": "docs/parity.md",
+      "class": "current-doc",
+      "before": "Public {minimum}/{last_verified} APIs cannot submit the deterministic wrapper probe",
+      "after": "Public {minimum}/{candidate} APIs cannot submit the deterministic wrapper probe"
+    },
+    {
+      "id": "parity-promotion-matrix",
+      "path": "docs/parity.md",
+      "class": "current-doc",
+      "before": "the committed Windows/macOS/Linux by Pi {minimum}/{last_verified} matrix",
+      "after": "the committed Windows/macOS/Linux by Pi {minimum}/{candidate} matrix"
+    },
+    {
+      "id": "tech-stack-supported-run",
+      "path": ".codearbiter/tech-stack.md",
+      "class": "current-doc",
+      "before": "`--pi-version {minimum}` or\n`--pi-version {last_verified}`",
+      "after": "`--pi-version {minimum}` or\n`--pi-version {candidate}`"
+    },
+    {
+      "id": "spec-ac7-version-contract",
+      "path": ".codearbiter/specs/pi-support.md",
+      "class": "current-doc",
+      "before": "Pi `{minimum}` and `{last_verified}` pass",
+      "after": "Pi `{minimum}` and `{candidate}` pass"
+    },
+    {
+      "id": "pi-api-header-window",
+      "path": "plugins/ca-pi/tools/src/pi-api.d.ts",
+      "class": "generated",
+      "before": "the Pi {minimum}/{last_verified} external runtime.",
+      "after": "the Pi {minimum}/{candidate} external runtime."
     }
   ]
 }
