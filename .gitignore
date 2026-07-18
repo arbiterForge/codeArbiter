@@ -48,8 +48,8 @@ __pycache__/
 # Node dependencies — never committed. Root-level appears from ad-hoc tooling;
 # farm.ts dev deps live under plugins/ca/tools and are only needed to build farm.js.
 /node_modules/
-plugins/ca/tools/node_modules/
-plugins/ca-pi/tools/node_modules/
+plugins/ca/tools/node_modules
+plugins/ca-pi/tools/node_modules
 
 # Docs site (Astro Starlight) — local deps, build output, and Astro cache.
 site/node_modules/
