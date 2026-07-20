@@ -970,3 +970,9 @@ feat/pi-support in the main checkout, ratifying ADR-0013 — legitimate, out of 
 - The gate-events.log self-poisoning bug (#279-shaped) was NOT on the sprint's issue list; found by using
   the system, surfaced as a hard gate, user-scoped, fixed under two security reviews. Recorded as the
   sprint's one genuinely new find.
+
+## SD-13 - [selection] provenance path confinement ahead of deferred refactors | confidence: high
+- **Point:** With the active pull requests green, select the next high-value backlog item without opening a parallel refactor lane.
+- **Options:** (a) begin one of the broader clone/refactor candidates; (b) harden provenance hashing under `v2.harden.0001`; (c) take a documentation-only cleanup.
+- **SMARTS:** (b). The user explicitly deferred refactoring, and this task closes a concrete trust-boundary gap with a small stdlib-only change and direct regression coverage. It is independently testable and does not alter dependencies or public workflow behavior.
+- **Chosen:** (b). Reject control-character, absolute, root-self, and root-escaping provenance paths before `git hash-object`; exclude rejected entries from drift comparison so they cannot create false missing-file alarms. Strength: strong.
