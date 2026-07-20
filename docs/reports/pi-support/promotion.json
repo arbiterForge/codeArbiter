@@ -1,7 +1,7 @@
 {
  "schema": "codearbiter-pi-promotion-v1",
  "mode": "final",
- "commit": "11df92889cb64c9ce3af41580111acec01b46555",
+ "commit": "6a766a019a79899be581cd1e66e3a28641142b7e",
  "rows": [
   {
    "version": "0.80.5",
@@ -9,7 +9,7 @@
    "architecture": "x64",
    "resultCode": "PI-LOCAL-SUPPORTED",
    "passed": true,
-   "timingMs": 70747,
+   "timingMs": 118937,
    "diagnosticCode": "NONE"
   },
   {
@@ -18,16 +18,7 @@
    "architecture": "x64",
    "resultCode": "PI-LOCAL-SUPPORTED",
    "passed": true,
-   "timingMs": 70887,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.10",
-   "platform": "linux",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 107000,
+   "timingMs": 117196,
    "diagnosticCode": "NONE"
   },
   {
@@ -36,25 +27,7 @@
    "architecture": "x64",
    "resultCode": "PI-HOSTED-SUPPORTED",
    "passed": true,
-   "timingMs": 96000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.5",
-   "platform": "windows",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 438000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.10",
-   "platform": "macos",
-   "architecture": "arm64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 131000,
+   "timingMs": 127000,
    "diagnosticCode": "NONE"
   },
   {
@@ -63,7 +36,34 @@
    "architecture": "x64",
    "resultCode": "PI-HOSTED-SUPPORTED",
    "passed": true,
-   "timingMs": 366000,
+   "timingMs": 491000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "linux",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 122000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.5",
+   "platform": "windows",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 510000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "macos",
+   "architecture": "arm64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 142000,
    "diagnosticCode": "NONE"
   },
   {
@@ -72,7 +72,7 @@
    "architecture": "arm64",
    "resultCode": "PI-HOSTED-SUPPORTED",
    "passed": true,
-   "timingMs": 187000,
+   "timingMs": 150000,
    "diagnosticCode": "NONE"
   },
   {
@@ -81,7 +81,7 @@
    "architecture": "x64",
    "resultCode": "PI-CODEQL-HIGH",
    "passed": true,
-   "timingMs": 114000,
+   "timingMs": 96000,
    "diagnosticCode": "NONE"
   },
   {
