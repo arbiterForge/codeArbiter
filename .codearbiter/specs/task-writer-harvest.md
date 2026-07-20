@@ -32,7 +32,9 @@ its origin, under confirmation.
     section="## In-flight") -> str` — append a queued entry. ID-LESS by default:
     `- [ ] <desc>  (from <origin>)`. When `group`+`type` are given, mints
     `<group>.<type>.<NNNN>` via `next_seq`. Result is lint-clean; creates `section`
-    if absent.
+    if absent. The description must be nonblank and single-line; the section must
+    be one canonical level-two heading; origin and boundary values must be
+    single-line. Invalid input returns the original text unchanged.
   - `set_state(text, target, state, today, *, assign=None) -> str` — flip a task's
     marker (`target` = a dotted id, or the title of an ID-less item). `in_progress`
     accepts a queued task and ALWAYS stamps `(started <today>)`; `done` accepts an
@@ -88,7 +90,9 @@ suite; reuses existing vocab (`NEEDS-TRIAGE`, DEFERRABLE, `[CONFIRM-NN]`).
    desc="X", origin="checkpoint-2026-06-13#H-2")` appends
    `- [ ] X  (from checkpoint-2026-06-13#H-2)` under `## In-flight`; `count_in_flight`
    +1 and `lint_board` clean. Given `group="v2", type="followup"` it instead appends
-   `- [ ] v2.followup.0001 - X  (from …)`.
+   `- [ ] v2.followup.0001 - X  (from …)`. Blank or multiline descriptions,
+   non-heading/multiline sections, multiline origins, and multiline boundary values
+   are rejected unchanged; the CLI reports the invalid field before writing.
 3. **AC-03 — start/done transitions are ordered and dated.** `set_state(board,
    "v2.api.0001", "in_progress", date(2026,6,21))` flips `[ ]`→`[~]` and adds
    `(started 2026-06-21)`; applying `"done"` to that in-progress result flips

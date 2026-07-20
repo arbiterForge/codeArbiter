@@ -93,12 +93,17 @@ def _apply(args, text):
     interleaved external Edit are both resolved against current text, never a
     stale snapshot."""
     if args.verb == "add":
+        boundaries = ([b.strip() for b in args.boundaries.split(",")]
+                      if args.boundaries is not None else None)
+        err = tb.add_error(desc=args.desc, origin=args.origin,
+                           boundaries=boundaries, section=args.section)
+        if err:
+            return None, err
         group = typ = None
         if args.gid is not None:
             group, typ, err = _parse_gid(args.gid)
             if err:
                 return None, err
-        boundaries = [b.strip() for b in args.boundaries.split(",")] if args.boundaries else None
         new = tb.add_entry(text, desc=args.desc, origin=args.origin, group=group,
                            type=typ, boundaries=boundaries, section=args.section)
         return new, f"added queued task: {args.desc}"

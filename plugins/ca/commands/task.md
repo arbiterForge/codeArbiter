@@ -18,7 +18,8 @@ parsed as a flag. Interpreter fallback, same shape as the hooks: `python3 … ||
 
 - **add** — append a queued task. ID-less by default; pass `--id <group>.<type>` to mint
   a dotted ID now, `--from <origin>` for a harvest back-ref, `--boundaries a,b` for the
-  security/trust boundaries it touches.
+  security/trust boundaries it touches. The description must be nonblank and
+  single-line; origin and boundary values must also stay on one line.
   - `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add [--id group.type] [--from origin] [--boundaries a,b] -- "<desc>" || python "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add ... -- "<desc>"`
 - **start** — flip a task to in-progress and **stamp the started date** (so it can never
   be a dateless `[~]`). On an ID-less item, pass `--as <group>.<type>` to mint its dotted
@@ -29,7 +30,8 @@ parsed as a flag. Interpreter fallback, same shape as the hooks: `python3 … ||
   - `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" done [--date YYYY-MM-DD] -- "<id|title>"`
 
 A missing target, an already-matching state, an out-of-order transition, a malformed
-`--date`, or an invalid `GROUP.TYPE` namespace is reported and writes nothing (exit 1).
+add field or `--date`, or an invalid `GROUP.TYPE` namespace is reported and writes
+nothing (exit 1).
 A queued `done` identifies the task as queued and tells the caller to `start` it first.
 **Targeting by title is best-effort:**
 prefer the dotted ID, and

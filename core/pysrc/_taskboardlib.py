@@ -38,6 +38,8 @@
 #   read_board(path) -> str | None       thin file reader (not unit-tested)
 #   next_seq(text, group, type) -> int   next free seq in a group.type namespace
 #   add_entry(text, *, desc, origin, group, type, boundaries, section) -> str
+#   add_error(*, desc, origin, boundaries, section) -> str | None
+#                                        field-specific validation error for add input
 #   set_state(text, target, state, today, *, assign) -> str
 #                                        state in {"queued","in_progress","done"}; unknown
 #                                        state degrades gracefully (returns text unchanged)
@@ -130,6 +132,7 @@ _STAMP_FULL_RE = re.compile(r'\s*\((?:started|done)\s+\d{4}-\d{2}-\d{2}\)')
 _STATE_MARK_RE = re.compile(r'^- \[([ xX~])\]\s*')
 _QUEUED_TOP_RE = re.compile(r'^- \[ \] .+')
 _INDENTED_BULLET_RE = re.compile(r'^\s+- ')
+_LINE_BREAK_RE = re.compile(r'[\n\r\v\f\x1c-\x1e\x85\u2028\u2029]')
 # extract_task_ids search pattern — non-anchored; two-part negative lookahead so
 # trailing sentence punctuation (e.g. "mvp1.ui.0005.") is not blocked, while an
 # extended alphanumeric suffix ("poc.auth.0001x") and a continuing dot-segment
@@ -624,13 +627,47 @@ def _insert_under_section(text, block, section):
     return f"{base}{section}\n{block}\n"
 
 
+def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
+    """Return a field-specific error for an add input, else ``None``.
+
+    These constraints keep every accepted field on the physical line where the
+    board schema expects it. The section must be one canonical level-two heading;
+    descriptions are nonblank; optional metadata cannot contain line breaks.
+    """
+    if not isinstance(desc, str) or not desc.strip():
+        return "bad description: expected nonblank single-line text"
+    if _LINE_BREAK_RE.search(desc):
+        return "bad description: expected nonblank single-line text"
+    if (not isinstance(section, str)
+            or _LINE_BREAK_RE.search(section)
+            or re.fullmatch(r"## \S(?:.*\S)?", section) is None):
+        return ("bad --section: expected one canonical level-two heading, "
+                "e.g. '## In-flight'")
+    if origin is not None and (not isinstance(origin, str)
+                               or _LINE_BREAK_RE.search(origin)):
+        return "bad --from: expected single-line text"
+    if boundaries is not None:
+        if not isinstance(boundaries, (list, tuple)):
+            return "bad --boundaries: expected comma-separated single-line values"
+        invalid = any(not isinstance(boundary, str)
+                      or not boundary.strip()
+                      or _LINE_BREAK_RE.search(boundary)
+                      for boundary in boundaries)
+        if invalid:
+            return ("bad --boundaries: each comma-separated boundary must be "
+                    "nonblank single-line text")
+    return None
+
+
 def add_entry(text, *, desc, origin=None, group=None, type=None,
               boundaries=None, section="## In-flight"):
     """Append a queued entry. ID-less by default; mints `<group>.<type>.<NNNN>`
     when both group and type are given. Optional `(from <origin>)` back-ref and a
-    `Boundaries` sub-bullet. The desc is collapsed to one physical line so a
-    multi-line candidate can never inject an orphan/malformed second bullet."""
-    desc = (desc or "").replace("\r", " ").replace("\n", " ").strip()
+    `Boundaries` sub-bullet. Invalid fields fail soft by returning ``text``
+    unchanged, so no input can inject an orphan/malformed physical line."""
+    if add_error(desc=desc, origin=origin, boundaries=boundaries, section=section):
+        return text
+    desc = desc.strip()
     tid = f"{group}.{type}.{next_seq(text, group, type):04d}" if (group and type) else None
     body = f"{tid} - {desc}" if tid else desc
     line = f"- [ ] {body}"

@@ -80,11 +80,36 @@ class AddEntryTest(unittest.TestCase):
         self.assertIn("- [ ] first", out)
         self.assertEqual(tb.count_in_flight(out), 1)
 
-    def test_sanitizes_multiline_desc(self):
-        # M3: a multi-line candidate desc must not inject an orphan second line.
-        out = tb.add_entry(BOARD, desc="line one\nline two", origin="o")
-        self.assertIn("- [ ] line one line two  (from o)", out)
-        self.assertEqual(tb.lint_board(out), [])
+    def test_rejects_blank_or_multiline_desc_unchanged(self):
+        for desc in ("", "   ", "line one\nline two", "line one\rline two",
+                     "line one\u2028line two"):
+            with self.subTest(desc=desc):
+                self.assertEqual(tb.add_entry(BOARD, desc=desc, origin="o"), BOARD)
+
+    def test_rejects_malformed_section_unchanged(self):
+        for section in ("Other", "### Other", " ## Other", "## Other ",
+                        "## Other\nmalicious", "## Other\rmalicious"):
+            with self.subTest(section=section):
+                self.assertEqual(
+                    tb.add_entry(BOARD, desc="new thing", section=section), BOARD
+                )
+
+    def test_rejects_multiline_origin_or_boundary_unchanged(self):
+        self.assertEqual(
+            tb.add_entry(BOARD, desc="new thing", origin="source\ninjected"), BOARD
+        )
+        self.assertEqual(
+            tb.add_entry(BOARD, desc="new thing", boundaries=["auth\ninjected"]), BOARD
+        )
+        self.assertEqual(
+            tb.add_entry(BOARD, desc="new thing", origin="source\u2028injected"), BOARD
+        )
+
+    def test_valid_custom_section_creation_classifies(self):
+        old = "# Open tasks\n\n## Done\n- [x] a.b.0001 - old  (done 2026-07-19)\n"
+        out = tb.add_entry(old, desc="new thing", section="## Other")
+        self.assertIn("## Other\n- [ ] new thing", out)
+        self.assertTrue(tb.classify_board_diff(old, out))
 
 
 class SetStateTest(unittest.TestCase):
@@ -411,6 +436,33 @@ class TaskwriteCliTest(unittest.TestCase):
             after = f.read()
         self.assertIn("## In-flight\n- [ ] new work", after)
         self.assertTrue(tb.classify_board_diff(before, after))
+
+    def test_add_rejects_malformed_fields_before_write(self):
+        import contextlib
+        import io
+        import taskwrite
+        cases = (
+            (["add", ""], "description"),
+            (["add", "   "], "description"),
+            (["add", "line one\nline two"], "description"),
+            (["add", "new work", "--section", "Other"], "--section"),
+            (["add", "new work", "--section", "## Other\nmalicious"], "--section"),
+            (["add", "new work", "--from", "source\ninjected"], "--from"),
+            (["add", "new work", "--boundaries", "auth\ninjected"], "--boundaries"),
+        )
+        for argv, field in cases:
+            with self.subTest(argv=argv):
+                d, p = self._board()
+                taskwrite.project_root = lambda: d
+                with open(p, encoding="utf-8") as f:
+                    before = f.read()
+                stderr = io.StringIO()
+                with contextlib.redirect_stderr(stderr):
+                    rc = taskwrite.main(argv)
+                self.assertEqual(rc, 1)
+                self.assertIn(field, stderr.getvalue())
+                with open(p, encoding="utf-8") as f:
+                    self.assertEqual(f.read(), before)
 
     def test_malformed_multipart_id_rejected_no_write(self):
         """issue #157: a --id with more than GROUP.TYPE (e.g. a full 3-part id)
