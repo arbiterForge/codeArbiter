@@ -1,7 +1,7 @@
 {
  "schema": "codearbiter-pi-promotion-v1",
  "mode": "final",
- "commit": "6a766a019a79899be581cd1e66e3a28641142b7e",
+ "commit": "98e770566252723af862a8802a0b9c7773629a59",
  "rows": [
   {
    "version": "0.80.5",
@@ -23,38 +23,11 @@
   },
   {
    "version": "0.80.5",
-   "platform": "linux",
-   "architecture": "x64",
+   "platform": "macos",
+   "architecture": "arm64",
    "resultCode": "PI-HOSTED-SUPPORTED",
    "passed": true,
-   "timingMs": 127000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.10",
-   "platform": "windows",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 491000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.10",
-   "platform": "linux",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 122000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.5",
-   "platform": "windows",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 510000,
+   "timingMs": 193000,
    "diagnosticCode": "NONE"
   },
   {
@@ -63,16 +36,43 @@
    "architecture": "arm64",
    "resultCode": "PI-HOSTED-SUPPORTED",
    "passed": true,
-   "timingMs": 142000,
+   "timingMs": 138000,
    "diagnosticCode": "NONE"
   },
   {
    "version": "0.80.5",
-   "platform": "macos",
-   "architecture": "arm64",
+   "platform": "linux",
+   "architecture": "x64",
    "resultCode": "PI-HOSTED-SUPPORTED",
    "passed": true,
-   "timingMs": 150000,
+   "timingMs": 130000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "linux",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 108000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "windows",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 482000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.5",
+   "platform": "windows",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 493000,
    "diagnosticCode": "NONE"
   },
   {
@@ -81,7 +81,7 @@
    "architecture": "x64",
    "resultCode": "PI-CODEQL-HIGH",
    "passed": true,
-   "timingMs": 96000,
+   "timingMs": 113000,
    "diagnosticCode": "NONE"
   },
   {
