@@ -352,11 +352,51 @@ class SetStateGuardTest(unittest.TestCase):
     """dx-004: set_state with an unknown state must degrade gracefully (no KeyError)."""
 
     def test_unknown_state_returns_text_unchanged(self):
-        # dx-004: an unknown state string must NOT raise KeyError; degrade by
-        # returning the text unchanged so the hook-stdin path cannot crash.
-        result = tb.set_state(SAMPLE, "poc.auth.0001", "pending", _date(2026, 6, 21))
-        self.assertEqual(result, SAMPLE,
-                         "set_state with unknown state must return text unchanged")
+        # dx-004: unsupported and malformed states must not raise; degrade by
+        # returning the exact original text so the hook-stdin path cannot crash.
+        cases = (
+            ("unknown string", "pending"),
+            ("empty string", ""),
+            ("none", None),
+            ("unhashable list", []),
+            ("unhashable dict", {}),
+        )
+        for label, state in cases:
+            with self.subTest(label=label, state=state):
+                try:
+                    result = tb.set_state(
+                        SAMPLE, "poc.auth.0001", state, _date(2026, 6, 21)
+                    )
+                except Exception as exc:
+                    self.fail(f"set_state raised for {label}: {exc!r}")
+                self.assertEqual(
+                    result,
+                    SAMPLE,
+                    f"set_state must return original text for {label}",
+                )
+
+    def test_queued_state_cannot_rewind_in_progress_task(self):
+        result = tb.set_state(SAMPLE, "poc.auth.0001", "queued", _date(2026, 6, 21))
+        self.assertEqual(
+            result, SAMPLE,
+            "set_state queued must not rewind an in-progress task",
+        )
+
+    def test_queued_state_cannot_rewind_done_task(self):
+        result = tb.set_state(SAMPLE, "poc.auth.0003", "queued", _date(2026, 6, 21))
+        self.assertEqual(
+            result, SAMPLE,
+            "set_state queued must not rewind a done task",
+        )
+
+    def test_public_contract_advertises_only_forward_target_states(self):
+        contract = tb.set_state.__doc__ or ""
+        self.assertIn(
+            'Valid target states: "in_progress", "done".',
+            contract,
+            "set_state must advertise only its forward lifecycle targets",
+        )
+        self.assertNotIn('Valid state values: "queued"', contract)
 
     def test_known_states_still_work(self):
         # Regression guard: the fix must not break valid state transitions.

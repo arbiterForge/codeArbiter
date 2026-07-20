@@ -41,7 +41,7 @@
 #   add_error(*, desc, origin, boundaries, section) -> str | None
 #                                        field-specific validation error for add input
 #   set_state(text, target, state, today, *, assign) -> str
-#                                        state in {"queued","in_progress","done"}; unknown
+#                                        target state in {"in_progress","done"}; unsupported
 #                                        state degrades gracefully (returns text unchanged)
 #   transition_error(text, target, state) -> str | None
 #                                        actionable error for a found task whose requested
@@ -735,8 +735,8 @@ def set_state(text, target, state, today, *, assign=None):
     gracefully: returns `text` unchanged rather than raising KeyError (coding
     standard: never raise on malformed user input — this is a hook-stdin path).
 
-    Valid state values: "queued", "in_progress", "done"."""
-    if (state not in _MARK_BY_STATE
+    Valid target states: "in_progress", "done"."""
+    if (state not in ("in_progress", "done")
             or (assign is not None and not validate_id(f"{assign}.0000"))
             or transition_error(text, target, state)):
         return text

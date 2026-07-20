@@ -36,11 +36,13 @@ its origin, under confirmation.
     be one canonical level-two heading; origin and boundary values must be
     single-line. Invalid input returns the original text unchanged.
   - `set_state(text, target, state, today, *, assign=None) -> str` — flip a task's
-    marker (`target` = a dotted id, or the title of an ID-less item). `in_progress`
-    accepts a queued task and ALWAYS stamps `(started <today>)`; `done` accepts an
-    in-progress task and stamps `(done <today>)`. A direct queued-to-done transition
-    is rejected unchanged. When `assign` = `group.type` and the target is ID-less,
-    mints its dotted ID at the same time (the "ID on pick-up" path).
+    marker (`target` = a dotted id, or the title of an ID-less item). Valid target
+    states are only `in_progress` and `done`; `queued` remains a parse/add state,
+    never a transition target. `in_progress` accepts a queued task and ALWAYS stamps
+    `(started <today>)`; `done` accepts an in-progress task and stamps `(done
+    <today>)`. A direct queued-to-done transition is rejected unchanged. When
+    `assign` = `group.type` and the target is ID-less, mints its dotted ID at the
+    same time (the "ID on pick-up" path).
   - `already_promoted(text, origin) -> bool` — True iff an open (non-done) entry
     carries `(from <origin>)`.
 - **Three pure extractors** (artifact text + origin → candidate list):
