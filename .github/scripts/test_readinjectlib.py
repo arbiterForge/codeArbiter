@@ -1343,6 +1343,74 @@ class ProvenancePointerTest(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertIn("12-40", result[0]["text"])
 
+    def test_fresh_pointer_strips_controls_from_claim_text(self):
+        provenance = self._fresh_provenance()
+        provenance["tech-stack"]["entries"][0]["claims"][0]["claim"] = (
+            "safe\x00\t\n\r\x1b\x85\u2028\u2029\u202eclaim"
+        )
+
+        result = ril.provenance_pointer(
+            "package.json",
+            provenance,
+            {"package.json": "abc123"},
+        )
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(
+            result[0]["text"],
+            "tech-stack.md notes (lines 12-40): safeclaim",
+        )
+
+    def test_fresh_pointer_strips_controls_from_lines_range(self):
+        provenance = self._fresh_provenance()
+        provenance["tech-stack"]["entries"][0]["claims"][0]["lines"] = (
+            "12-40\x00\t\n\r\x1b\x85\u2028\u2029\u202e"
+        )
+
+        result = ril.provenance_pointer(
+            "package.json",
+            provenance,
+            {"package.json": "abc123"},
+        )
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(
+            result[0]["text"],
+            "tech-stack.md notes (lines 12-40): Node 20 runtime declared",
+        )
+
+    def test_fresh_pointer_strips_controls_from_document_name(self):
+        provenance = self._fresh_provenance()
+        provenance["tech\x00\t\n\r\x1b\x85\u2028\u2029\u202estack"] = provenance.pop(
+            "tech-stack"
+        )
+
+        result = ril.provenance_pointer(
+            "package.json",
+            provenance,
+            {"package.json": "abc123"},
+        )
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(
+            result[0]["text"],
+            "techstack.md notes (lines 12-40): Node 20 runtime declared",
+        )
+
+    def test_fresh_pointer_suppresses_control_only_document_name(self):
+        provenance = self._fresh_provenance()
+        provenance["\x00\t\n\r\x1b\x85\u2028\u2029\u202e"] = provenance.pop(
+            "tech-stack"
+        )
+
+        result = ril.provenance_pointer(
+            "package.json",
+            provenance,
+            {"package.json": "abc123"},
+        )
+
+        self.assertEqual(result, [])
+
     def test_fresh_pointer_text_within_token_budget(self):
         """FRESH: token_estimate(pointer['text']) must be <= 150."""
         result = ril.provenance_pointer(
