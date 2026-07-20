@@ -374,12 +374,12 @@ class SurfaceWiringTests(unittest.TestCase):
         self.assertIn('"tokens_unavailable_reasons":[]', telemetry)
         self.assertIn("`run-log-over-limit`", telemetry)
 
-    def test_claude_tribunal_does_not_reference_codex_session_parser(self):
+    def test_claude_tribunal_does_not_reference_codex_thread_parser(self):
         claude = self._read("plugins", "ca", "skills", "tribunal", "SKILL.md")
         telemetry = self._read(
             "plugins", "ca", "skills", "tribunal", "references", "telemetry.md")
 
-        self.assertNotIn("tribunal-usage.py", claude)
+        self.assertNotIn("observe --thread-id", claude)
         self.assertNotIn("tokens_actual_status", telemetry)
 
 

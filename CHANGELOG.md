@@ -6,6 +6,13 @@ The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.
 
 ---
 
+## [2.9.1] — 2026-07-20
+
+### Fixed
+- Tribunal runs recover exact per-reviewer token usage from Claude Code
+  subagent transcripts, retaining fresh input, cache creation, cache reads,
+  output, and explicit unavailable reasons.
+
 ## [2.9.0] — 2026-07-12
 
 Statusline customization and correctness hardening across concurrent sessions.
