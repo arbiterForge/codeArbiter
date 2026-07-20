@@ -9,7 +9,7 @@ a governance host.
 Final Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
 and [machine-readable envelope](./reports/pi-support/promotion.json). Local checks and the hosted
 Windows/macOS/Linux matrix for Pi 0.80.5/0.80.10 are green on implementation candidate
-`394f5f311f47624c1826d8e6ad03e26adbef4a36`; scoped CodeQL and the repository aggregate gate are green
+`f764929e02fbb67b43a3b828686c0007445a0316`; scoped CodeQL and the repository aggregate gate are green
 on that same candidate. The final verifier restricts later commits to the sanitized promotion
 artifacts, this public parity ledger, and the append-only governance evidence for that update.
 

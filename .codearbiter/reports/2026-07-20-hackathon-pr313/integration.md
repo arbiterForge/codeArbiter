@@ -127,6 +127,20 @@ exact admission of only those two files; arbitrary report or plan paths remain
 rejected. The generated promotion pair was restored to its prior committed
 state until this verifier change earns a new hosted candidate.
 
-Replacement-candidate CI, strict final verification, the evidence-only commit
-and final CI, and source PR closure remain governed by T-13 through T-15 of the
-approved plan.
+Replacement candidate `f764929e02fbb67b43a3b828686c0007445a0316`
+completed main CI run `29777295584`, CodeQL run `29777291834`, and docs run
+`29777295518` successfully on the exact head. The same full candidate inventory
+is green, including all six supported Pi cells and merge readiness.
+
+Post-candidate Windows-local contracts pass on Pi 0.80.5 in 104,547 ms and
+Pi 0.80.10 in 103,745 ms, with the global CLI again restored to 0.80.10. The
+sanitized promotion pair now binds those measurements and candidate-matched
+hosted durations to `f764929e02fbb67b43a3b828686c0007445a0316`; the unchanged
+real 0.80.6 refusal canary remains `VERSION_UNSUPPORTED`.
+
+The strict final verifier passes all 46 canonical repository gates, the exact
+hosted attestation and sanitized rendering, and PI-AC-01 through PI-AC-38 in an
+isolated `feat/pi-support` clone at the exact candidate SHA. T-13 is accepted.
+
+The evidence-only commit and final CI, and source PR closure remain governed by
+T-14 and T-15 of the approved plan.
