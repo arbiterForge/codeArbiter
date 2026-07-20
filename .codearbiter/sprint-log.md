@@ -970,3 +970,15 @@ feat/pi-support in the main checkout, ratifying ADR-0013 — legitimate, out of 
 - The gate-events.log self-poisoning bug (#279-shaped) was NOT on the sprint's issue list; found by using
   the system, surfaced as a hard gate, user-scoped, fixed under two security reviews. Recorded as the
   sprint's one genuinely new find.
+
+## SD-13 [#333] complete only the unshipped visual-doc findings | confidence: high
+- **Point:** Findings 01 and 02 already ship on PR #313. Finding 07 needs real brand assets. Findings 03, 04, 08, and 09 are independent documentation improvements that can be verified on main.
+- **Options:** (a) recreate all nine opportunities; (b) implement 03, 04, 08, and 09, leave 01 and 02 on PR #313, and keep 07 deferred; (c) defer the whole issue until PR #313 merges.
+- **SMARTS:** (b). It avoids divergent copies of the two shipped diagrams, does not fabricate brand artwork, and produces a focused docs-only diff with no dependency or runtime change. (a) duplicates live work. (c) blocks independent low-risk work without a technical dependency.
+- **Chosen:** (b). Strength: strong.
+
+## SD-14 [#333] preserve the real statusline capture and use reviewable native assets | confidence: high
+- **Point:** The statusline must remain a real renderer capture. The activation flow needs one shared visual, but the site has no Mermaid pipeline and adding one would be disproportionate.
+- **Options:** (a) redraw or regenerate the statusline and add Mermaid; (b) keep statusline.png unchanged, overlay responsive HTML markers, and hand-author two precise SVGs in the existing house style; (c) omit findings 04 and 09.
+- **SMARTS:** (b). It keeps the evidence image byte-for-byte intact, gives table rows an exact visual key, avoids a new dependency, and makes the security claims directly reviewable in source. (a) violates the real-capture constraint and expands the dependency surface. (c) leaves approved comprehension gaps open.
+- **Chosen:** (b). Strength: strong.

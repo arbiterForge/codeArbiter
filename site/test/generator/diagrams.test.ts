@@ -25,6 +25,8 @@ const DIAGRAMS = [
   "gate-model.svg",
   "four-tier-map.svg",
   "provenance-drift-flow.svg",
+  "activation-states.svg",
+  "sandbox-boundary.svg",
   // per-guide lane swimlanes (commands/skills/agents charted in execution order)
   "lane-feature.svg",
   "lane-sprint.svg",
@@ -49,6 +51,10 @@ function readAllPageSources(dir: string): string {
 }
 
 const allPageSources = readAllPageSources(SRC_DIR);
+const statuslineGuide = readFileSync(
+  join(SRC_DIR, "content", "docs", "guides", "the-statusline.md"),
+  "utf8",
+);
 
 describe("concept diagrams (AC-9)", () => {
   for (const name of DIAGRAMS) {
@@ -70,4 +76,18 @@ describe("concept diagrams (AC-9)", () => {
       });
     });
   }
+
+  it("references the activation-state visual from all three contract explanations", () => {
+    const references = allPageSources.match(/activation-states\.svg/g) ?? [];
+    expect(references).toHaveLength(3);
+  });
+
+  it("annotates the unchanged statusline capture with nine table keys", () => {
+    expect(statuslineGuide).toContain("/codeArbiter/diagrams/statusline.png");
+    expect(statuslineGuide.match(/ca-statusline-map__marker--\d/g)).toHaveLength(9);
+    for (let key = 1; key <= 9; key += 1) {
+      expect(statuslineGuide).toContain(`| ${key} |`);
+    }
+    expect(statuslineGuide).toContain("| not shown | **subagents** |");
+  });
 });

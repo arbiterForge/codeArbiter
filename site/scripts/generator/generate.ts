@@ -242,7 +242,7 @@ export function generate(
       return `${heading}\n\n${TABLE_HEADER[group.type]}\n${rows.join("\n")}`;
     })
     .join("\n\n");
-  const indexContent = `---\ntitle: Reference\ndescription: Auto-generated reference for codeArbiter commands, skills, and agents.\n---\n\nThis section is generated from the plugin's own frontmatter and regenerates on every build, so it can never drift from the source.\n\n${indexBody}\n`;
+  const indexContent = `---\ntitle: Reference\ndescription: Auto-generated reference for codeArbiter commands, skills, and agents.\n---\n\nThis section is generated from the plugin's own frontmatter and regenerates on every build, so it can never drift from the source. See how the three catalogs cooperate in [How a Request Flows](/overview/#how-a-request-flows): a command routes to an owning skill, which may dispatch specialist agents.\n\n${indexBody}\n`;
 
   mkdirSync(outDir, { recursive: true });
   mkdirSync(dirname(resolvedSidebarPath), { recursive: true });
