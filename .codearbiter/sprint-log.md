@@ -1018,3 +1018,16 @@ Started 2026-07-20T01:40:46-04:00. Append-only. SMARTS-scored auto-decisions;
   matrix still runs in the real dirty worktree and passes.
 - **Chosen:** (c). Clean-cwd hook suite passed 967/967; all canonical script gates and static checks also
   passed. Strength: strong.
+### SD-04 — [hosted CI block] restore shared-core source-of-truth parity · confidence: high
+
+- **Point:** PR #347 failed all three hook jobs before tests at `python tools/sync-core.py --check`.
+  `plugins/ca/hooks/pre-bash.py` differed from `core/pysrc/pre-bash.py`; the initial fix had edited a
+  generated host copy instead of the canonical shared source.
+- **Options:** (a) weaken or remove the sync check; (b) patch only the other host copy; (c) move the
+  exact fix into `core/pysrc/pre-bash.py` and regenerate both governed host copies.
+- **SMARTS:** Reliable and Maintainable decisively favor (c). The sync check caught genuine source drift,
+  so (a) would remove the invariant and (b) would create three manually maintained clones. Shared core is
+  the recorded architecture and keeps both hosts byte-identical.
+- **Chosen:** (c). `sync-core --check` now passes 42 core files across two plugins. The full script gate,
+  reference graph, syntax checks, focused 142-case guard matrix, and clean-cwd 967-test suite all pass.
+  Strength: strong.

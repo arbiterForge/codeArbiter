@@ -144,8 +144,8 @@ def _commit_no_verify_in_cluster(args):
 
 
 GIT_OPTION_VALUE = r'(?:"[^"]+"|\'[^\']+\'|\S+)'
-# Git's path/namespace/executable/config global options accept both
-# `--flag=value` and `--flag value`. The generic long-option leg covers the
+# Git's path/namespace/executable/config global options accept both the
+# equals and separated-value forms. The generic long-option leg covers the
 # equals form and valueless flags; this explicit leg keeps a separated value
 # from being mistaken for the subcommand (#335 coverage review).
 GIT_LONG_VALUE_OPTION = (
@@ -231,7 +231,7 @@ LOG_DESTROY_RE = re.compile(
 # #335: checkout/restore rewrite tracked worktree files through Git itself, so
 # they bypass every filesystem verb above. Keep the match bounded to one shell
 # command and require a literal audit-log basename in that Git invocation.
-# This intentionally does not guess what a pathless `stash apply` or broad
+# This intentionally does not guess what a pathless stash apply or broad
 # checkout/restore pathspec might touch; H-05's shell flank remains lexical.
 LOG_GIT_RESTORE_RE = re.compile(
     GIT + r"\s+(?:checkout|restore)\b[^|;&]*" + LOG_NAMES, re.I,

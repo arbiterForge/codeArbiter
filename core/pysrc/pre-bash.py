@@ -143,7 +143,20 @@ def _commit_no_verify_in_cluster(args):
     return False
 
 
-GIT = r"\bgit(?:\s+(?:-[Cc]\s+\S+|--[\w-]+(?:=\S+)?|-\w+))*"
+GIT_OPTION_VALUE = r'(?:"[^"]+"|\'[^\']+\'|\S+)'
+# Git's path/namespace/executable/config global options accept both the
+# equals and separated-value forms. The generic long-option leg covers the
+# equals form and valueless flags; this explicit leg keeps a separated value
+# from being mistaken for the subcommand (#335 coverage review).
+GIT_LONG_VALUE_OPTION = (
+    r"--(?:git-dir|work-tree|namespace|exec-path|super-prefix|config-env)"
+)
+GIT_GLOBAL_OPTION = (
+    r"(?:-[Cc]\s+" + GIT_OPTION_VALUE
+    + r"|" + GIT_LONG_VALUE_OPTION + r"\s+" + GIT_OPTION_VALUE
+    + r"|--[\w-]+(?:=\S+)?|-\w+)"
+)
+GIT = r"\bgit(?:\s+" + GIT_GLOBAL_OPTION + r")*"
 # The args capture stops at an unquoted `|`, `;`, or `&` (the next shell command
 # is not this git command's business) but consumes quoted strings whole — a
 # `;` inside `-m "scoped; and true"` is message content, not a separator.
@@ -165,7 +178,7 @@ ADD_RE = re.compile(GIT + r"\s+add\b" + ARGS)
 # captured run via findall, so a -C preceded by other global options is found
 # regardless of position.
 GIT_OPTS_RUN_RE = re.compile(
-    r"\bgit((?:\s+(?:-[Cc]\s+(?:\"[^\"]+\"|'[^']+'|\S+)|--[\w-]+(?:=\S+)?|-\w+))*)")
+    r"\bgit((?:\s+" + GIT_GLOBAL_OPTION + r")*)")
 GIT_C_IN_RUN_RE = re.compile(r"-C\s+(\"[^\"]+\"|'[^']+'|\S+)")
 # Force-push in any spelling: --force, --force-with-lease[=…], -f as its own
 # token (not a ref like `fix-f`), or a forcing `+refspec`.
@@ -214,6 +227,14 @@ LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
     r"|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File)\b"
     r"[^|;&]*" + LOG_NAMES, re.I,
+)
+# #335: checkout/restore rewrite tracked worktree files through Git itself, so
+# they bypass every filesystem verb above. Keep the match bounded to one shell
+# command and require a literal audit-log basename in that Git invocation.
+# This intentionally does not guess what a pathless stash apply or broad
+# checkout/restore pathspec might touch; H-05's shell flank remains lexical.
+LOG_GIT_RESTORE_RE = re.compile(
+    GIT + r"\s+(?:checkout|restore)\b[^|;&]*" + LOG_NAMES, re.I,
 )
 # H-11's shell flank: ADRs are authored only via /adr (pre-write/pre-edit
 # guard the Write/Edit tools; this guards redirection and file verbs). Any
@@ -905,7 +926,8 @@ def _run(root):
     # can never silently skip this shell flank (the exact drift
     # security-controls.md § Audit trail centralization exists to prevent).
     if any(n in cmd for n in AUDIT_LOG_BASENAMES) and (
-            LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)):
+            LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
+            or LOG_GIT_RESTORE_RE.search(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
                       "gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, "
                       "overwriting, or deleting the audit trail is prohibited; append with "
