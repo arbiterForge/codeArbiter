@@ -198,6 +198,12 @@ class VerifyPiSupportTest(unittest.TestCase):
             report.write_text("{}\n", encoding="utf-8")
             git("add", report.relative_to(root).as_posix()); git("commit", "-m", "evidence")
             self.assertTrue(module._descendant_is_evidence_only(root, evidence_commit))
+            sprint_log = root / ".codearbiter" / "sprint-log.md"
+            sprint_log.parent.mkdir(parents=True)
+            sprint_log.write_text("- decision\n", encoding="utf-8")
+            self.assertTrue(module._descendant_is_evidence_only(root, evidence_commit))
+            git("add", sprint_log.relative_to(root).as_posix()); git("commit", "-m", "audit evidence")
+            self.assertTrue(module._descendant_is_evidence_only(root, evidence_commit))
             (root / "seed.txt").write_text("unstaged code drift\n", encoding="utf-8")
             self.assertFalse(module._descendant_is_evidence_only(root, evidence_commit))
             git("restore", "seed.txt")

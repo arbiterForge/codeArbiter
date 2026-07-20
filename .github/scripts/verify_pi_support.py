@@ -62,6 +62,7 @@ REQUIRED_HOSTED_CHECKS = frozenset(
 FINAL_EVIDENCE_PATHS = frozenset({
     ".codearbiter/gate-events.log",
     ".codearbiter/plans/pi-support.md",
+    ".codearbiter/sprint-log.md",
     "docs/parity.md",
     "docs/reports/pi-support/promotion.json",
     "docs/reports/pi-support/promotion.md",
