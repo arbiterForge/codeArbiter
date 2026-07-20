@@ -168,7 +168,27 @@ class TestHook(unittest.TestCase):
         self.assertEqual(r["validation_errors"], 0)
         self.assertGreater(r["bytes_before"], r["bytes_after"])
         self.assertIn("strategies", r)
+        self.assertIn("file_bytes_freed", r)
+        self.assertIn("context_bytes_freed", r)
+        self.assertIn("context_est_tokens_freed", r)
+        self.assertIn("strategy_scopes", r)
         self.assertIn("ts", r)
+
+    def test_sidecar_only_dry_metrics_report_zero_context_savings(self):
+        before = os.path.getsize(self.path)
+        rc = P.hook_run(self.payload(), env=self.env(
+            CODEARBITER_PRUNE="dry",
+            CODEARBITER_PRUNE_STRATEGIES="sidecar-collapse",
+        ))
+        self.assertEqual(rc, 0)
+        self.assertEqual(os.path.getsize(self.path), before)
+        record = self._read_jsonl(P.dry_metrics_path(self.env()))[0]
+        self.assertGreater(record["file_bytes_freed"], 0)
+        self.assertEqual(record["context_bytes_freed"], 0)
+        self.assertEqual(record["context_est_tokens_freed"], 0)
+        self.assertEqual(record["strategy_scopes"], {
+            "sidecar-collapse": "file-only",
+        })
 
     def test_dry_only_on_mode_does_not_write_dry_metrics(self):
         rc = P.hook_run(self.payload(), env=self.env(CODEARBITER_PRUNE="on"))

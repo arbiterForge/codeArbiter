@@ -202,7 +202,12 @@ def _is_small_scalar(v, limit=200):
 # --------------------------------------------------------------------------- #
 
 def _record(report, name, touched, before, after):
-    report[name] = {"lines": touched, "bytes_before": before, "bytes_after": after}
+    report[name] = {
+        "lines": touched,
+        "bytes_before": before,
+        "bytes_after": after,
+        "metric_scope": _policy.STRATEGY_METRIC_SCOPES[name],
+    }
 
 
 def s_sidecar_collapse(lines, index, cfg, report):
@@ -224,13 +229,15 @@ def s_sidecar_collapse(lines, index, cfg, report):
         new = dict(kept)
         new["_ca_condensed"] = _marker(orig)
         new_s = _dumps(new)
-        if len(new_s) >= len(orig):  # net-negative guard
+        if len(new_s) >= len(orig):  # preserve legacy transformation eligibility
             continue
+        orig_size = len(orig.encode("utf-8"))
+        new_size = len(new_s.encode("utf-8"))
         ln.obj["toolUseResult"] = new
         ln.dirty = True
         touched += 1
-        before += len(orig)
-        after += len(new_s)
+        before += orig_size
+        after += new_size
     _record(report, "sidecar-collapse", touched, before, after)
 
 
@@ -348,7 +355,7 @@ def s_reasoning_fold(lines, index, cfg, report):
         if not keep:  # never empty a message
             continue
         for b in thinking:
-            before += len(_dumps(b))
+            before += len(_dumps(b).encode("utf-8"))
         ln.obj["message"]["content"] = keep
         ln.dirty = True
         touched += 1
@@ -406,11 +413,14 @@ def s_mcp_payload_condense(lines, index, cfg, report):
                     if isinstance(inp, dict) else {})
             new = dict(kept)
             new["_ca_condensed"] = _marker(orig)
-            if len(_dumps(new)) >= len(orig):
+            new_s = _dumps(new)
+            if len(new_s) >= len(orig):  # preserve legacy transformation eligibility
                 continue
+            orig_size = len(orig.encode("utf-8"))
+            new_size = len(new_s.encode("utf-8"))
             blk["input"] = new
-            before += len(orig)
-            after += len(_dumps(new))
+            before += orig_size
+            after += new_size
             changed = True
         if changed:
             ln.dirty = True
@@ -1112,14 +1122,12 @@ def _idle_seconds(data, now):
 
 def _nudge_advisory(rec):
     """Build the advisory string from state-record numbers only.
-    Never includes transcript content — only sizes / est-tokens / percent."""
-    freed = int(rec.get("freed_bytes", 0) or 0)
-    pruned = int(rec.get("last_pruned_size", 0) or 0)
-    approx_tokens = est_tokens(pruned + freed)   # ~ in-memory (bloated) size
-    pct = rec.get("pct", 0)
-    return (f"Cold cache miss imminent on ~{approx_tokens // 1000}k tokens. "
-            f"/compact or exit + --resume lands that re-cache on pruned context "
-            f"(~{pct}% smaller). Submit again to proceed.")
+    Never includes transcript content — only context-byte/token aggregates."""
+    context_freed = int(rec.get("context_bytes_freed", 0) or 0)
+    context_tokens = est_tokens(context_freed)
+    return (f"Cold cache miss can re-cache ~{context_tokens // 1000}k avoidable "
+            f"context tokens. /compact or exit + --resume lands that re-cache "
+            f"on pruned context. Submit again to proceed.")
 
 
 def nudge_decision(rec, idle_secs, e):
@@ -1151,8 +1159,8 @@ def nudge_decision(rec, idle_secs, e):
             return (False, "", nr)
         return (False, "", rec)
 
-    freed = rec.get("freed_bytes", 0)
-    if not isinstance(freed, (int, float)) or est_tokens(int(freed)) < min_tokens:
+    freed = rec.get("context_bytes_freed")
+    if type(freed) is not int or freed < 0 or est_tokens(freed) < min_tokens:
         return (False, "", rec)
 
     if rec.get("cold_nudged"):              # already fired this cold window
@@ -1252,7 +1260,11 @@ def hook_run(payload, env=None):
     except Exception:  # noqa: BLE001 — never let pruning break the turn
         return 0
     b0, b1 = res["bytes_before"], res["bytes_after"]
-    reduction = _policy.reduction_metrics(b0, b1)
+    strategy_savings = {
+        name: row["bytes_before"] - row["bytes_after"]
+        for name, row in res["strategies"].items()
+    }
+    reduction = _policy.reduction_metrics(b0, b1, strategy_savings)
     if not cfg.execute:
         # Dry mode: persist the would-be outcome to the shared data-collection
         # log so confidence accrues across sessions before flipping to on.
@@ -1266,6 +1278,8 @@ def hook_run(payload, env=None):
             "validation_errors": len(res["validation_errors"]),
             "strategies": {k: v["bytes_before"] - v["bytes_after"]
                            for k, v in res["strategies"].items()},
+            "strategy_scopes": {k: v["metric_scope"]
+                                for k, v in res["strategies"].items()},
         }, env=e)
     # Carry cold_nudged forward so the once-per-cold-window marker survives a
     # normal (non-armed) prune run. Re-read from state in case the nudge block
@@ -1278,6 +1292,11 @@ def hook_run(payload, env=None):
         "last_run_ts": int(time.time()),
         "pct": reduction["pct"],
         "freed_bytes": reduction["freed_bytes"],
+        "file_pct": reduction["file_pct"],
+        "file_bytes_freed": reduction["file_bytes_freed"],
+        "file_est_tokens_freed": reduction["file_est_tokens_freed"],
+        "context_bytes_freed": reduction["context_bytes_freed"],
+        "context_est_tokens_freed": reduction["context_est_tokens_freed"],
         "verdict": res["verdict"],
     }
     if _cold_nudged:
@@ -1335,13 +1354,15 @@ def run(path, cfg, session="session", data=None, lines=None, pre_stat=None):
     new_bytes = serialize(lines)
 
     errs = validate(orig_bytes, new_bytes, lines, cfg)
-    reduction = _policy.reduction_metrics(len(orig_bytes), len(new_bytes))
+    strategy_savings = {
+        name: row["bytes_before"] - row["bytes_after"]
+        for name, row in report.items()
+    }
+    reduction = _policy.reduction_metrics(
+        len(orig_bytes), len(new_bytes), strategy_savings)
     result = {
         "path": path,
-        "bytes_before": reduction["bytes_before"],
-        "bytes_after": reduction["bytes_after"],
-        "est_tokens_before": reduction["est_tokens_before"],
-        "est_tokens_after": reduction["est_tokens_after"],
+        **reduction,
         "strategies": report,
         "validation_errors": errs,
         "executed": False,
@@ -1357,9 +1378,10 @@ def run(path, cfg, session="session", data=None, lines=None, pre_stat=None):
         append_audit_log({
             "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "session": session, "path": path,
-            "bytes_before": len(orig_bytes), "bytes_after": len(new_bytes),
+            **reduction,
             "strategies": {k: v["bytes_before"] - v["bytes_after"]
                            for k, v in report.items()},
+            "strategy_scopes": {k: v["metric_scope"] for k, v in report.items()},
             "verdict": verdict,
         })
     return result

@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [0.1.1] - 2026-07-18
 
+### Fixed
+
+- Shared prune metrics now distinguish model-visible context savings from
+  file-only sidecar cleanup, including explicit strategy scopes and corrected
+  footer and cold-cache decisions.
+
 ### Changed
 
 - Promote the verified Pi host window through exact Pi 0.80.10.

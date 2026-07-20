@@ -7,6 +7,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 ## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
 
 ### Fixed
+- Prune metrics now separate model-visible context savings from file-only
+  sidecar cleanup, preventing sidecar bytes from inflating the context-benefit
+  decision or cold-cache nudge.
 - Shared statusline ledger records use ownership-safe atomic shards, so
   concurrent host activity cannot discard session token/cost state.
 - Linked-worktree branch metadata is parsed from Git pointer files instead of

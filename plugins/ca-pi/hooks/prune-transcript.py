@@ -94,15 +94,18 @@ def _fmt_bytes(n):
 def print_report(res):
     rows = res["strategies"]
     if rows:
-        print(f"{'strategy':<24}{'lines':>7}{'before':>12}{'after':>12}{'est≈ saved':>12}")
+        print(f"{'strategy':<24}{'scope':>11}{'lines':>7}{'before':>12}"
+              f"{'after':>12}{'est≈ saved':>12}")
         for name, r in rows.items():
             saved = est_tokens(r["bytes_before"] - r["bytes_after"])
-            print(f"{name:<24}{r['lines']:>7}{r['bytes_before']:>12}"
+            print(f"{name:<24}{r['metric_scope']:>11}{r['lines']:>7}"
+                  f"{r['bytes_before']:>12}"
                   f"{r['bytes_after']:>12}{saved:>12}")
-    b0, b1 = res["bytes_before"], res["bytes_after"]
-    pct = (100.0 * (b0 - b1) / b0) if b0 else 0.0
-    print(f"\ntotal: {_fmt_bytes(b0)} -> {_fmt_bytes(b1)}  "
-          f"({pct:.1f}% smaller, est≈{est_tokens(b0 - b1)} tokens freed)")
+    print(f"\nfile: {_fmt_bytes(res['bytes_before'])} -> "
+          f"{_fmt_bytes(res['bytes_after'])}  "
+          f"({res['file_pct']:.1f}% smaller, "
+          f"{res['file_bytes_freed']} bytes freed)")
+    print(f"context: {res['context_est_tokens_freed']} estimated tokens freed")
     if res["validation_errors"]:
         print("VALIDATION FAILED:", file=sys.stderr)
         for e in res["validation_errors"]:
