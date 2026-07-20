@@ -31,3 +31,26 @@ Record the introducing commit dates for the board-sync source contract and the
 curated pages. If the mirrors predate or omit any required semantic, update the
 curated page. If they postdate the source change and already carry every
 semantic, record the task as stale-complete without rewriting equivalent prose.
+
+## Evidence
+
+- The board-sync contract landed in `943554c` on 2026-06-26.
+- The curated `task` and `standup` pages landed later in `f51063d` on
+  2026-07-02.
+- Canonical `task.md` routes mutations through `taskwrite.py`, requires dated
+  starts, and states that done flips, start flips, and queued adds ride the work
+  commit.
+- Curated `task.md` carries the same writer-only, dated-transition, and
+  co-located-commit semantics. No rewrite is needed.
+- Canonical `standup.md` defines an advisory, read-only drift sweep, prohibits
+  board mutation and auto-flips, and routes resolution through `task done`.
+- Curated `standup.md` already said advisory, prohibited auto-flips, and routed
+  resolution through `task done`, but it did not explicitly state that the
+  sweep itself is read-only. The mirror now names that property directly.
+
+## Decision
+
+The mirrors now cover every evaluation criterion. Preserve the curated public
+layout and wording rather than forcing byte identity with command source. The
+only required content change is the explicit read-only qualifier on the
+curated standup sweep.
