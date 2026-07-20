@@ -48,7 +48,7 @@ async function piDescriptor(): Promise<Readonly<Record<string, ToolCategory>>> {
 
 describe("ADR-0014 adversarial promotion contract", () => {
   test("permission audit is append-only and rejects attacker-controlled row fields", async () => {
-    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-audit-"));
+    const root = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-permission-audit-")));
     try {
       const state = resolve(root, ".codearbiter");
       const audit = resolve(state, "gate-events.log");
@@ -80,7 +80,7 @@ describe("ADR-0014 adversarial promotion contract", () => {
   });
 
   test("permission audit rejects hardlinks and nonregular sinks", async () => {
-    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-sinks-"));
+    const root = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-permission-sinks-")));
     try {
       const state = resolve(root, ".codearbiter");
       const target = resolve(state, "gate-events.log");
@@ -103,7 +103,7 @@ describe("ADR-0014 adversarial promotion contract", () => {
   });
 
   test("permission audit rejects validation-open path swaps and opened-handle mismatches", async () => {
-    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-race-"));
+    const root = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-permission-race-")));
     try {
       const state = resolve(root, ".codearbiter");
       const target = resolve(state, "gate-events.log");
@@ -154,7 +154,7 @@ describe("ADR-0014 adversarial promotion contract", () => {
   });
 
   test("permission audit creates exclusively and rejects a hardlink raced into an absent target", async () => {
-    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-create-"));
+    const root = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-permission-create-")));
     try {
       const state = resolve(root, ".codearbiter");
       const target = resolve(state, "gate-events.log");
