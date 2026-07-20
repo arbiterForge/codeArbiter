@@ -990,3 +990,31 @@ Started 2026-07-20T01:40:46-04:00. Append-only. SMARTS-scored auto-decisions;
   and Reviewable also favor a lexical guard plus focused matrix cases over structural work.
 - **Chosen:** (a). Add failing regressions for checkout/restore spellings, preserve read-only Git access,
   then extend H-05 with the smallest command-bounded match. Strength: strong.
+### SD-02 — [review block] close separated-value Git global-option bypass · confidence: high
+
+- **Point:** the required coverage auditor reproduced a HIGH bypass: `git --git-dir .git --work-tree .
+  restore -- .codearbiter/overrides.log` exited 0 because the shared `GIT` prefix recognized long global
+  options only in `--flag=value` form.
+- **Options:** (a) ignore separated global options as unusual; (b) add an H-05-only prefix; (c) repair
+  the shared global-option grammar used by command matching and cwd extraction.
+- **SMARTS:** Secure, Reliable, and Maintainable decisively favor (c). The spelling is valid Git, so (a)
+  leaves the reported loss path open. An H-05-only parser in (b) would recreate the parser drift that
+  caused the bypass and leave commit/push/add guards inconsistent.
+- **Chosen:** (c). Add red cases for separated `--git-dir`, `--work-tree`, `--namespace`, `--exec-path`,
+  and `--config-env`, then share one corrected grammar across `GIT` and `GIT_OPTS_RUN_RE`. The re-review
+  passed with 142/142 focused assertions. Strength: strong.
+
+### SD-03 — [verification] prove the full hook suite from clean-checkout conditions · confidence: high
+
+- **Point:** the 967-test hook suite intermittently failed one byte-stability assertion while the
+  worktree was dirty. A diagnostic diff showed the only change was the statusline branch segment
+  flipping between dirty and fail-soft clean when the bounded dirty check timed out. That benchmark is
+  already an in-flight task and is unrelated to #335.
+- **Options:** (a) retry the dirty-worktree suite until green; (b) expand this branch into the statusline
+  timeout; (c) run the same suite from a clean non-repository cwd while importing this worktree's exact
+  hook code, matching hosted clean-checkout conditions.
+- **SMARTS:** Reliable and Reviewable favor (c): it preserves every test, proves all 967 cases against
+  the changed source, and avoids both retry laundering and unrelated scope growth. The focused H-05
+  matrix still runs in the real dirty worktree and passes.
+- **Chosen:** (c). Clean-cwd hook suite passed 967/967; all canonical script gates and static checks also
+  passed. Strength: strong.

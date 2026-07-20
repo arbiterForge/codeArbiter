@@ -143,7 +143,20 @@ def _commit_no_verify_in_cluster(args):
     return False
 
 
-GIT = r"\bgit(?:\s+(?:-[Cc]\s+\S+|--[\w-]+(?:=\S+)?|-\w+))*"
+GIT_OPTION_VALUE = r'(?:"[^"]+"|\'[^\']+\'|\S+)'
+# Git's path/namespace/executable/config global options accept both
+# `--flag=value` and `--flag value`. The generic long-option leg covers the
+# equals form and valueless flags; this explicit leg keeps a separated value
+# from being mistaken for the subcommand (#335 coverage review).
+GIT_LONG_VALUE_OPTION = (
+    r"--(?:git-dir|work-tree|namespace|exec-path|super-prefix|config-env)"
+)
+GIT_GLOBAL_OPTION = (
+    r"(?:-[Cc]\s+" + GIT_OPTION_VALUE
+    + r"|" + GIT_LONG_VALUE_OPTION + r"\s+" + GIT_OPTION_VALUE
+    + r"|--[\w-]+(?:=\S+)?|-\w+)"
+)
+GIT = r"\bgit(?:\s+" + GIT_GLOBAL_OPTION + r")*"
 # The args capture stops at an unquoted `|`, `;`, or `&` (the next shell command
 # is not this git command's business) but consumes quoted strings whole — a
 # `;` inside `-m "scoped; and true"` is message content, not a separator.
@@ -165,7 +178,7 @@ ADD_RE = re.compile(GIT + r"\s+add\b" + ARGS)
 # captured run via findall, so a -C preceded by other global options is found
 # regardless of position.
 GIT_OPTS_RUN_RE = re.compile(
-    r"\bgit((?:\s+(?:-[Cc]\s+(?:\"[^\"]+\"|'[^']+'|\S+)|--[\w-]+(?:=\S+)?|-\w+))*)")
+    r"\bgit((?:\s+" + GIT_GLOBAL_OPTION + r")*)")
 GIT_C_IN_RUN_RE = re.compile(r"-C\s+(\"[^\"]+\"|'[^']+'|\S+)")
 # Force-push in any spelling: --force, --force-with-lease[=…], -f as its own
 # token (not a ref like `fix-f`), or a forcing `+refspec`.

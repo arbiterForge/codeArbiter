@@ -215,7 +215,13 @@ def main():
                     "git checkout HEAD -- .codearbiter/sprint-log.md",
                     "git restore .codearbiter/overrides.log",
                     "git restore --source=HEAD -- .codearbiter/triage.log",
-                    "git -C . restore -- .codearbiter/overrides.log"):
+                    "git -C . restore -- .codearbiter/overrides.log",
+                    # Git accepts these global options with a separated value;
+                    # they must not hide checkout/restore from the H-05 flank.
+                    "git --git-dir .git --work-tree . restore -- .codearbiter/overrides.log",
+                    "git --namespace fixture checkout -- .codearbiter/triage.log",
+                    "git --exec-path fixture restore -- .codearbiter/gate-events.log",
+                    "git --config-env fixture.name=FIXTURE_ENV restore -- .codearbiter/sprint-log.md"):
             expect_block(fx, cmd, "H-05", f"H-05 block: {cmd}")
         for cmd in ("echo entry >> .codearbiter/overrides.log",
                     "echo entry >> .codearbiter/sprint-log.md",
