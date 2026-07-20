@@ -204,6 +204,15 @@ class VerifyPiSupportTest(unittest.TestCase):
             self.assertTrue(module._descendant_is_evidence_only(root, evidence_commit))
             git("add", sprint_log.relative_to(root).as_posix()); git("commit", "-m", "audit evidence")
             self.assertTrue(module._descendant_is_evidence_only(root, evidence_commit))
+            consolidation_plan = root / ".codearbiter" / "plans" / "hackathon-pr313-consolidation.md"
+            consolidation_plan.parent.mkdir(parents=True, exist_ok=True)
+            consolidation_plan.write_text("# consolidation plan\n", encoding="utf-8")
+            integration_receipt = root / ".codearbiter" / "reports" / "2026-07-20-hackathon-pr313" / "integration.md"
+            integration_receipt.parent.mkdir(parents=True, exist_ok=True)
+            integration_receipt.write_text("# integration receipt\n", encoding="utf-8")
+            self.assertTrue(module._descendant_is_evidence_only(root, evidence_commit))
+            consolidation_plan.unlink()
+            integration_receipt.unlink()
             (root / "seed.txt").write_text("unstaged code drift\n", encoding="utf-8")
             self.assertFalse(module._descendant_is_evidence_only(root, evidence_commit))
             git("restore", "seed.txt")

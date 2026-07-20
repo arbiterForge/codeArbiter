@@ -106,5 +106,27 @@ bounded outcomes; no production admission, output, or cleanup timeout changed.
 Typecheck and three consecutive focused Windows runs pass locally. A new hosted
 candidate is still required before T-12 can be accepted.
 
-Pi evidence rebinding, final CI, and source PR closure remain governed by T-12
-through T-15 of the approved plan.
+Replacement candidate `64086bb1b6a1f75676db36fe9bbeb18367333297`
+completed main CI run `29775519583`, CodeQL run `29775517282`, and docs run
+`29775519576` successfully on the exact head. All six supported Pi cells,
+Pi security, all hook platforms, sandbox, farm, docs, generators, references,
+version gates, the repository aggregate, and merge readiness are green. T-12
+is accepted.
+
+Fresh Windows-local platform contracts pass on Pi 0.80.5 in 104,240 ms and
+Pi 0.80.10 in 103,985 ms. The global Pi CLI was restored to 0.80.10. The
+sanitized evidence generator successfully assembled those measurements and
+candidate-matched hosted durations for
+`64086bb1b6a1f75676db36fe9bbeb18367333297`; the unchanged real 0.80.6 refusal
+canary remains `VERSION_UNSUPPORTED`.
+
+The strict final replay then exposed a consolidation-boundary gap: its legacy
+evidence-only allowlist admitted the Pi plan and handoff receipt but not this
+approved hackathon plan and integration receipt. A regression now requires
+exact admission of only those two files; arbitrary report or plan paths remain
+rejected. The generated promotion pair was restored to its prior committed
+state until this verifier change earns a new hosted candidate.
+
+Replacement-candidate CI, strict final verification, the evidence-only commit
+and final CI, and source PR closure remain governed by T-13 through T-15 of the
+approved plan.
