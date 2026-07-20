@@ -20,12 +20,13 @@ bodies name *actions* — this file is where those actions map to this host.
 
 ## Degraded / pending surfaces (ledgered in docs/parity.md)
 
-- **No subagents yet** — Codex plugins cannot ship agents; generated
-  `.codex/agents/*.toml` scaffolding arrives with M4. Until then, when a
-  routine says to dispatch a reviewer or author agent, perform that role
-  inline: load the named agent's charter from the `ca` plugin repo if
-  available, otherwise apply the routine's stated review obligations yourself.
-  A review is never skipped because the agent is unavailable.
+- **Subagents are host-provided** — current Codex releases can dispatch and
+  inspect agent threads, but this plugin does not yet vendor custom agent
+  definitions. Load the named reviewer/author charter, dispatch an available
+  host agent with that role, and retain the returned thread ID when a workflow
+  needs an exact per-agent receipt. If an older host exposes no subagents,
+  perform the role inline; a review is never skipped because dispatch is
+  unavailable.
 - **No statusline** — governance state (stage, overrides-since-checkpoint,
   in-flight tasks) appears in the startup briefing instead.
 - **No transcript prune** — the prune engine is Claude-transcript-specific;
