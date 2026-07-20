@@ -73,5 +73,26 @@ and existing worktrees have not been modified or cleaned.
   activation-state diagram reference in `enforcement.md`; restoring the source
   PR's figure made the full site lane green.
 
-Candidate commit/CI, Pi evidence rebinding, final CI, and source PR closure
-remain governed by T-11 through T-15 of the approved plan.
+## First hosted candidate feedback
+
+Candidate `bff646957a60e001ae54eaec1f9dcf0c62d34025` passed its commit gate,
+was pushed to `feat/pi-support`, and became PR #313's hackathon candidate.
+The PR title/body enumerate all sixteen absorbed PRs and their issue closures,
+so T-11 is accepted.
+
+Hosted run `29772317278` passed the supported Pi matrix, Pi security, farm,
+sandbox, and site lanes; CodeQL run `29772314303` also passed. The generated
+surface, hook, and documentation contracts correctly rejected one source-of-
+truth drift: #351's isolated-scout behavior was present in the Claude render,
+but absent from canonical `core/surface/agents/scout.md` and therefore from the
+Pi render. The existing generator regression reproduced the defect RED.
+
+The canonical scout contract now carries the isolated `context-creation`
+boundary and regenerates the Pi copy. The exact surface and documentation
+checks pass, all 25 hook-contract steps pass, and the hook unittest suite passes
+1,057 tests when Git Bash is available on Windows as required by that fixture.
+This repair requires a new candidate commit and hosted run before T-12 can be
+accepted.
+
+Pi evidence rebinding, final CI, and source PR closure remain governed by T-12
+through T-15 of the approved plan.
