@@ -970,3 +970,9 @@ feat/pi-support in the main checkout, ratifying ADR-0013 — legitimate, out of 
 - The gate-events.log self-poisoning bug (#279-shaped) was NOT on the sprint's issue list; found by using
   the system, surfaced as a hard gate, user-scoped, fixed under two security reviews. Recorded as the
   sprint's one genuinely new find.
+
+## SD-14 - [selection] sanitize provenance context before lower-priority work | confidence: high
+- **Point:** Select the next independent item after PR #349 reached green CI and the PR #313 findings were reconciled.
+- **Options:** (a) begin a deferred refactor or clone cleanup; (b) sanitize tier-4 provenance claim fields before context injection; (c) take a user-validation benchmark or unresolved feature decision.
+- **SMARTS:** (b). Refactors are explicitly deferred. The benchmark needs representative user repositories, while the feature items need specification choices. `v2.harden.0002` has a narrow trust boundary, an exact acceptance criterion, no dependency impact, and direct regression coverage.
+- **Chosen:** (b). Strip control characters from both claim text and line-range metadata before pointer assembly while preserving the existing freshness and token-budget gates. Strength: strong.
