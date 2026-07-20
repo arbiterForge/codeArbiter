@@ -3,7 +3,7 @@
 #
 # The ONLY blessed way to write .codearbiter/open-tasks.md: add a queued task,
 # start one (flip to [~] + stamp the date, minting a dotted ID on pick-up), or
-# mark one done. All board LOGIC is the pure text->text transforms in
+# mark an in-progress task done. All board LOGIC is the pure text->text transforms in
 # _taskboardlib; this is the thin I/O wrapper (read board -> transform -> write),
 # the same shape as doctor.py / security-pass.py.
 #
@@ -74,12 +74,13 @@ def _date(s):
         return None
 
 
-def _parse_gid(gid):
-    """Split a `--id GROUP.TYPE` value, or None with an error message on a bad
+def _parse_gid(gid, option="--id"):
+    """Split a ``GROUP.TYPE`` value, or None with an error message on a bad
     spelling. Pure — no I/O — so it can run before OR after the lock is held."""
     parts = gid.split(".")
-    if len(parts) != 2 or not all(parts):
-        return None, None, (f"bad --id '{gid}' (expected GROUP.TYPE, e.g. 'mvp1.store'; "
+    if (len(parts) != 2 or not all(parts)
+            or not tb.validate_id(f"{gid}.0000")):
+        return None, None, (f"bad {option} '{gid}' (expected GROUP.TYPE, e.g. 'mvp1.store'; "
                              f"the 4-digit seq is minted automatically)")
     return parts[0], parts[1], None
 
@@ -93,7 +94,7 @@ def _apply(args, text):
     stale snapshot."""
     if args.verb == "add":
         group = typ = None
-        if args.gid:
+        if args.gid is not None:
             group, typ, err = _parse_gid(args.gid)
             if err:
                 return None, err
@@ -108,6 +109,13 @@ def _apply(args, text):
     if day is None:
         return None, f"bad --date '{args.date}' (expected YYYY-MM-DD)"
     assign = getattr(args, "assign", None)
+    if assign is not None:
+        _, _, err = _parse_gid(assign, option="--as")
+        if err:
+            return None, err
+    transition_error = tb.transition_error(text, args.target, state)
+    if transition_error:
+        return None, transition_error
     new = tb.set_state(text, args.target, state, day, assign=assign)
     if new == text:
         return None, f"no change: '{args.target}' not found or already {state}"

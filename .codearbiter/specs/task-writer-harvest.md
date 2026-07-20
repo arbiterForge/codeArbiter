@@ -35,9 +35,10 @@ its origin, under confirmation.
     if absent.
   - `set_state(text, target, state, today, *, assign=None) -> str` — flip a task's
     marker (`target` = a dotted id, or the title of an ID-less item). `in_progress`
-    ALWAYS stamps `(started <today>)`; `done` stamps `(done <today>)`. When `assign`
-    = `group.type` and the target is ID-less, mints its dotted ID at the same time
-    (the "ID on pick-up" path).
+    accepts a queued task and ALWAYS stamps `(started <today>)`; `done` accepts an
+    in-progress task and stamps `(done <today>)`. A direct queued-to-done transition
+    is rejected unchanged. When `assign` = `group.type` and the target is ID-less,
+    mints its dotted ID at the same time (the "ID on pick-up" path).
   - `already_promoted(text, origin) -> bool` — True iff an open (non-done) entry
     carries `(from <origin>)`.
 - **Three pure extractors** (artifact text + origin → candidate list):
@@ -88,14 +89,18 @@ suite; reuses existing vocab (`NEEDS-TRIAGE`, DEFERRABLE, `[CONFIRM-NN]`).
    `- [ ] X  (from checkpoint-2026-06-13#H-2)` under `## In-flight`; `count_in_flight`
    +1 and `lint_board` clean. Given `group="v2", type="followup"` it instead appends
    `- [ ] v2.followup.0001 - X  (from …)`.
-3. **AC-03 — start/done transitions are dated.** `set_state(board, "v2.api.0001",
-   "in_progress", date(2026,6,21))` flips `[ ]`→`[~]` and adds `(started 2026-06-21)`;
-   `"done"` flips to `[x]` and adds `(done 2026-06-21)`. A re-`done` is a safe no-op.
+3. **AC-03 — start/done transitions are ordered and dated.** `set_state(board,
+   "v2.api.0001", "in_progress", date(2026,6,21))` flips `[ ]`→`[~]` and adds
+   `(started 2026-06-21)`; applying `"done"` to that in-progress result flips
+   `[~]`→`[x]` and adds `(done 2026-06-21)`. Applying `done` directly to a queued
+   task is rejected unchanged, and the writer tells the caller to `start` it first.
+   A re-`done` is a safe no-op.
 4. **AC-04 — start of an ID-less item mints + dates** (the pick-up path, D-1 hole
    closed): `set_state(board, "<title>", "in_progress", date(2026,6,21),
    assign="v2.api")` assigns the next `v2.api.NNNN` dotted ID AND stamps
    `(started 2026-06-21)`; `undated_in_progress` on the result is empty and the item
-   validates.
+   validates. A malformed `assign`/`--as` namespace (extra or empty component,
+   whitespace, or a character outside the ID grammar) is rejected before write.
 5. **AC-05 — set_state on a missing target** returns the text unchanged and signals
    not-found (no silent partial write, no raise).
 6. **AC-06 — dedup by origin.** `already_promoted(board, origin)` is True once an open

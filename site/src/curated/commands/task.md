@@ -4,7 +4,7 @@ related: [status, standup]
 gates:
   - gate: writer-only mutation
     when: any add, start, or done invocation
-    effect: the write goes through the taskwrite.py transforms only, never a free-hand edit — a malformed target, an already-matching state, or a bad --date is reported and writes nothing
+    effect: the write goes through the taskwrite.py transforms only, never a free-hand edit — a malformed target, an already-matching state, an out-of-order transition, an invalid GROUP.TYPE namespace, or a bad --date is reported and writes nothing
 ---
 
 ## What it does
@@ -23,9 +23,10 @@ tracks.
 ```
 
 `add` appends a queued task (optionally minting a dotted ID with `--id`); `start` flips a task to
-in-progress and stamps today's date (or mints an ID at pick-up with `--as`); `done` flips a task to
-done and stamps the done date. Targeting by title is best-effort — prefer the dotted ID once one
-exists.
+in-progress and stamps today's date (or mints an ID at pick-up with `--as`); `done` flips an
+in-progress task to done and stamps the done date. A queued task must be started first; attempting
+to complete it directly writes nothing and tells the caller to use `start`. Targeting by title is
+best-effort — prefer the dotted ID once one exists.
 
 ## Example
 
