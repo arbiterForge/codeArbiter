@@ -970,3 +970,14 @@ feat/pi-support in the main checkout, ratifying ADR-0013 — legitimate, out of 
 - The gate-events.log self-poisoning bug (#279-shaped) was NOT on the sprint's issue list; found by using
   the system, surfaced as a hard gate, user-scoped, fixed under two security reviews. Recorded as the
   sprint's one genuinely new find.
+
+## SD-13 - codex.feature.0001 stale-campaign reconciliation - confidence: high
+- Decision: close the campaign; leave it unchanged; or reconcile current evidence while keeping the unfinished campaign in progress.
+- Scalable: Close=Weak. Partial milestones become invisible. Unchanged=Weak. Stale status compounds. Reconcile=Strong. Remaining milestones stay bounded and visible.
+- Maintainable: Close=Weak. Future work loses its parent plan. Unchanged=Weak. Readers reconstruct history. Reconcile=Strong. One table states evidence and remaining work.
+- Available: Close=Indifferent. No runtime effect. Unchanged=Indifferent. No runtime effect. Reconcile=Indifferent. No runtime effect.
+- Reliable: Close=Weak. M4 and M5 contradict completion. Unchanged=Weak. Beta wording contradicts release evidence. Reconcile=Strong. Status matches tags, PRs, and parity ledger.
+- Testable: Close=Weak. No evidence proves M4. Unchanged=Weak. Completion cannot be audited quickly. Reconcile=Strong. Each milestone cites an authoritative receipt or gap.
+- Securable: Close=Weak. It obscures degraded review isolation. Unchanged=Adequate. Controls remain intact. Reconcile=Strong. H-18 remains enforced and degraded boundaries stay explicit.
+- Chosen: reconcile the campaign status, keep codex.feature.0001 in progress, and preserve M4/M5 as completion obligations. Strength: strong.
+- Hard gate: H-18 blocked the attempted CONTEXT.md beta-wording correction because CONTEXT.md is the activation switch. No override was taken. The plan records the exact protected-file follow-up.
