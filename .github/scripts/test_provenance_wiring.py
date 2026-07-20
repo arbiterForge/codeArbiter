@@ -326,6 +326,43 @@ def test_context_check_command():
     )
 
 
+def test_context_creation_scout_isolation():
+    skill = read_repo("plugins/ca/skills/context-creation/SKILL.md")
+    codex_skill = read_repo("plugins/ca-codex/routines/context-creation/SKILL.md")
+    scout = read_repo("plugins/ca/agents/scout.md")
+    codex_notes = read_repo("plugins/ca-codex/includes/codex-host-notes.md")
+
+    phase2_start = skill.find("## Phase 2")
+    phase3_start = skill.find("## Phase 3")
+    codex_phase2_start = codex_skill.find("## Phase 2")
+    codex_phase3_start = codex_skill.find("## Phase 3")
+    if min(phase2_start, phase3_start, codex_phase2_start, codex_phase3_start) == -1:
+        check(False, "context-creation scout-isolation sections must exist")
+        return
+    phase2 = skill[phase2_start:phase3_start]
+    codex_phase2 = codex_skill[codex_phase2_start:codex_phase3_start]
+    scout_words = " ".join(scout.lower().split())
+
+    check(
+        "isolated subagent" in phase2.lower() and "block" in phase2.lower(),
+        "context-creation Phase 2 must block when isolated scout subagents are unavailable",
+    )
+    check(
+        "inline one scope" not in codex_phase2.lower(),
+        "Codex context-creation must not claim inline scopes preserve report-only isolation",
+    )
+    check(
+        "`context-creation` always" in scout_words
+        and "decision-variance" in scout_words,
+        "scout charter must scope the small-repo shortcut away from context-creation",
+    )
+    check(
+        "context-creation" in codex_notes.lower()
+        and "must not run inline" in codex_notes.lower(),
+        "Codex host notes must record the context-creation exception to inline fallback",
+    )
+
+
 # --- APPEND NEW test_* FUNCTIONS ABOVE THIS LINE --------------------------------
 # Each new function must also be added to TESTS and (if it reads a new file)
 # to REQUIRED_FILES below.
@@ -338,6 +375,8 @@ REQUIRED_FILES = [
     "plugins/ca/skills/commit-gate/SKILL.md",
     # --- APPEND NEW REQUIRED FILES HERE ----------------------------------------
     "plugins/ca/skills/context-creation/SKILL.md",
+    "plugins/ca-codex/routines/context-creation/SKILL.md",
+    "plugins/ca-codex/includes/codex-host-notes.md",
     "plugins/ca/agents/scout.md",
     "plugins/ca/skills/decompose/SKILL.md",
     "plugins/ca/skills/tdd/SKILL.md",
@@ -352,6 +391,7 @@ TESTS = [
     test_commit_gate_heal_phase,
     # --- APPEND NEW TESTS HERE --------------------------------------------------
     test_context_creation_provenance,
+    test_context_creation_scout_isolation,
     test_decompose_provenance_stub,
     test_code_map_read_on_demand,
     test_context_check_command,

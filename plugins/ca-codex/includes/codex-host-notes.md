@@ -25,7 +25,9 @@ bodies name *actions* — this file is where those actions map to this host.
   routine says to dispatch a reviewer or author agent, perform that role
   inline: load the named agent's charter from the `ca` plugin repo if
   available, otherwise apply the routine's stated review obligations yourself.
-  A review is never skipped because the agent is unavailable.
+  A review is never skipped because the agent is unavailable. Exception:
+  `context-creation` requires isolated scout reports and MUST NOT run inline;
+  it blocks until the host exposes isolated subagents.
 - **No statusline** — governance state (stage, overrides-since-checkpoint,
   in-flight tasks) appears in the startup briefing instead.
 - **No transcript prune** — the prune engine is Claude-transcript-specific;

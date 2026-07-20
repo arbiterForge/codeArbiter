@@ -11,12 +11,14 @@ Dispatched by `decision-variance` and `context-creation` to scan an assigned cod
 
 ## When Scouts Are Dispatched
 
-`decision-variance` and `context-creation` dispatch scouts when:
+`decision-variance` dispatches scouts when:
 - A single inline scan would consume significant context.
 - Codebase sections have natural ownership boundaries that map to scout assignments.
 - Parallel evidence gathering across multiple areas is needed.
 
-Under ~50 files, the dispatching skill scans inline — no scout.
+Under ~50 files, `decision-variance` scans inline. `context-creation` always
+dispatches its six fixed, isolated scout assignments because its report-only
+synthesis boundary depends on the orchestrator not reading raw source.
 
 ## Scout Assignment Format
 
@@ -84,7 +86,9 @@ The scout reports file path and line number only — no code excerpts, quoted te
 1. **Signal-to-noise** — excerpts grow unbounded under load; entire files get pasted "for context" and reports become unreadable.
 2. **Sensitive content** — scaffold may carry secrets, internal URLs, cloud account IDs, credentials, hostnames. Quoting those leaks them into the dispatching skill's working files.
 
-When the dispatching skill needs actual content, it reads the file directly. The scout finds the evidence; the skill reads it.
+When `decision-variance` needs actual content, it may read the file directly.
+`context-creation` never does so after Phase 1; it synthesizes only from the six
+scout reports.
 
 ## Scout Confidence Levels
 
@@ -110,7 +114,7 @@ The scout MUST NOT:
 
 A scope must be readable in one focused pass:
 
-- **Small (10–30 files):** inline scout, single dispatch.
+- **Small (10–30 files):** one scout assignment; no further split.
 - **Medium (30–100 files):** single scout, may focus on a subset of categories.
 - **Large (100+ files):** split into multiple scouts by area.
 
