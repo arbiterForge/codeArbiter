@@ -32,9 +32,18 @@ Gate: `<!--INITIALIZED-->` absent AND meaningful source present. If the marker i
 
 ## Phase 2 — Scout dispatch · gate: BLOCK
 
-A **scout** is a `general-purpose` agent dispatched in parallel to read one targeted slice of the codebase and return a structured findings report — file paths, line numbers, and named values only, never raw code excerpts. Scouts are internal to this skill; they are never invoked from a slash command.
+A **scout** is a restricted, read-only role, not an unconstrained
+`general-purpose` agent. A scout reads one targeted slice of the codebase and
+returns a structured findings report — file paths, line numbers, and named
+values only, never raw code excerpts. Scouts are internal to this skill; they
+are never invoked from a command.
 
-Dispatch six scouts simultaneously. Each reads only its assigned slice:
+Dispatch six isolated `scout` subagents simultaneously. If the active host
+cannot provide isolated subagents, BLOCK context creation and report the host
+capability gap. The general inline-role fallback does not apply here: this
+skill's report-only synthesis contract depends on the orchestrator never
+loading the scouts' raw source into its own context.
+Each reads only its assigned slice:
 
 - **Scout A — Tech stack.** Read `package.json`, lockfiles, `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `*.gemspec`, `Gemfile`. Report languages, runtime versions, frameworks, key dependencies, the dependency manager, license fields.
 - **Scout B — Infrastructure.** Read CI/CD config (`.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/config.yml`), `Dockerfile*`, `docker-compose*.yml`, `Makefile`, `*.tf`, IaC. Report CI/CD platform, build/test/lint commands, deployment targets, environment names, containerization, IaC tool.
@@ -121,6 +130,7 @@ Gate: `arbiter: enabled` set and `<!--INITIALIZED-->` present in `CONTEXT.md`; e
 - MUST NOT write `<!--INITIALIZED-->` while any `[CONFIRM-NN]` is unaddressed — every gap must be resolved or explicitly deferred to `open-questions.md` first.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing — surface the question to the user or defer it.
 - MUST NOT proceed past Phase 2 with fewer than six scout reports.
+- MUST NOT run Phase 2 inline — isolated scout subagents are required for the report-only synthesis boundary.
 - MUST NOT load raw source into the orchestrator context after Phase 1 — synthesize from scout reports only.
 - MUST NOT record a scout finding that exposes a secret value — paths and line numbers only.
 - MUST NOT scaffold a cut doc — see `<plugin-root>/includes/cut-docs.md` for the canonical never-scaffold list. Maturity is the `stage:` frontmatter number in `CONTEXT.md`.

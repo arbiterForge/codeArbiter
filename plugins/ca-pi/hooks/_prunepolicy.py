@@ -7,8 +7,9 @@ tier ordering, markers, dry metrics, and audit outcomes.
 """
 #
 # Public API:
-#   reduction_metrics(bytes_before, bytes_after) -> dict  dry/run reduction metrics
-#                                            with the shared token estimate
+#   reduction_metrics(bytes_before, bytes_after, strategy_savings) -> dict
+#                                            file and model-context reductions
+#                                            with shared token estimates
 #   audit_outcomes(parse_errors, orphans, unpaired) -> tuple  host-neutral integrity
 #                                            levels; codecs retain native messages
 #   marker_for(original_text) -> str        deterministic condensed-content marker;
@@ -50,6 +51,17 @@ STRATEGY_ORDER = (
     "aged-result-condense",
     "oversize-result-clamp",
 )
+STRATEGY_METRIC_SCOPES = {
+    "sidecar-collapse": "file-only",
+    "reasoning-fold": "context",
+    "mcp-payload-condense": "context",
+    "shell-tail-keep": "context",
+    "superseded-read-condense": "context",
+    "repeat-reminder-fold": "context",
+    "inline-image-evict": "context",
+    "aged-result-condense": "context",
+    "oversize-result-clamp": "context",
+}
 
 
 @dataclass(frozen=True)
@@ -85,19 +97,36 @@ class PrunePlan:
 STANDARD_POLICY = PrunePolicy(tier="standard")
 
 
-def reduction_metrics(bytes_before, bytes_after):
-    """Host-neutral dry/run reduction metrics with the shared token estimate."""
+def reduction_metrics(bytes_before, bytes_after, strategy_savings):
+    """Host-neutral file and model-context reduction metrics."""
     if type(bytes_before) is not int or type(bytes_after) is not int \
             or bytes_before < 0 or bytes_after < 0:
         raise ValueError("prune byte metrics are invalid")
+    if not isinstance(strategy_savings, dict):
+        raise ValueError("prune strategy savings are invalid")
+    context_bytes_freed = 0
+    for name, value in strategy_savings.items():
+        if name not in STRATEGY_METRIC_SCOPES or type(value) is not int or value < 0:
+            raise ValueError("prune strategy savings are invalid")
+        if STRATEGY_METRIC_SCOPES[name] == "context":
+            context_bytes_freed += value
+    file_bytes_freed = bytes_before - bytes_after
+    file_pct = (round(100.0 * file_bytes_freed / bytes_before, 1)
+                if bytes_before else 0.0)
     return {
         "bytes_before": bytes_before,
         "bytes_after": bytes_after,
-        "freed_bytes": bytes_before - bytes_after,
+        "freed_bytes": file_bytes_freed,
         "est_tokens_before": bytes_before // 4,
         "est_tokens_after": bytes_after // 4,
-        "pct": round(100.0 * (bytes_before - bytes_after) / bytes_before, 1)
-        if bytes_before else 0.0,
+        "pct": file_pct,
+        "file_bytes_freed": file_bytes_freed,
+        "file_est_tokens_before": bytes_before // 4,
+        "file_est_tokens_after": bytes_after // 4,
+        "file_est_tokens_freed": file_bytes_freed // 4,
+        "file_pct": file_pct,
+        "context_bytes_freed": context_bytes_freed,
+        "context_est_tokens_freed": context_bytes_freed // 4,
     }
 
 

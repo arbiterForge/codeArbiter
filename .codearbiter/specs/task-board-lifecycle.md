@@ -112,7 +112,9 @@ stage-blocking). MVP ships without any of them.
 
 - **D-1 — Transition writer surface.** New `/ca:task` (add/start/done) vs. extend
   `/ca:standup`/`/ca:status` vs. manual edit. MVP ships with the schema + counters +
-  nudge; transitions are hand-edited until decided. Gates AC-11.
+  nudge; transitions are hand-edited until decided. Gates AC-11. **Resolved
+  post-MVP:** `/ca:task` now enforces `[ ]`→`[~]`→`[x]`; `done` rejects a queued task
+  and tells the caller to `start` it first (see `task-writer-harvest.md`).
 - **D-2 — Archival sweep owner + cutoff.** Which command runs the confirmed
   done→`done-tasks.md` sweep, and the "long-settled" age (done >N days). Archival is
   post-MVP.

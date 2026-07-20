@@ -26,8 +26,14 @@ Pi session file.
   `~/.codearbiter/metrics/prune-dry.jsonl` (override with `CODEARBITER_PRUNE_METRICS`). That log is
   the evidence base for the `dry`→`on` decision: a clean record (every row `verdict: dry-run`,
   `validation_errors: 0`) over a representative set of sessions is the signal that enabling is safe.
+  Read `context_bytes_freed` / `context_est_tokens_freed` for model-context benefit and
+  `file_bytes_freed` / `file_pct` for disk and resume-parse benefit. `sidecar-collapse` is explicitly
+  `file-only`; it must not count toward the context-benefit or cold-cache decision.
+  The legacy `freed_bytes`, `pct`, and `est_tokens_before` / `est_tokens_after` fields remain
+  whole-file compatibility aliases; do not use them as model-context evidence.
 - `dry` — create a read-only semantic plan (or analyze a scratch copy where the host exposes a
-  serialized transcript); present the per-strategy reduction table. Never writes the active session.
+  serialized transcript); present the per-strategy reduction table with every strategy labeled
+  `context` or `file-only`. Never writes the active session.
 - `run <path>` — prune the target with `--execute`. Targets a **copy or an old/inactive
   transcript only** — the tool refuses an active or recently-modified target by construction.
 - `audit <path>` — read-only integrity report: line-parse, uuid chain, tool-pair coverage,
@@ -65,10 +71,12 @@ Pi session file.
    **Cold-miss nudge** [Feature Forge — `preview`]: when `CODEARBITER_PRUNE` is `on`, an
    optional submit-time speed bump warns once before a cold cache re-cache lands on bloated
    context. Enable with `CODEARBITER_PRUNE_NUDGE=on` (default `off`). When all arming conditions
-   hold (idle ≥ `CODEARBITER_PRUNE_NUDGE_IDLE_SECS`, default 240 s; estimated freed tokens ≥
+   hold (idle ≥ `CODEARBITER_PRUNE_NUDGE_IDLE_SECS`, default 240 s; estimated model-context
+   tokens freed ≥
    `CODEARBITER_PRUNE_NUDGE_MIN_TOKENS`, default 80 000), the hook blocks the submit once with
-   an advisory on stderr and returns exit code 2. The advisory names the approximate token count,
-   saving percentage, and the host-native actions that move the re-cache to pruned context:
+   an advisory on stderr and returns exit code 2. File-only sidecar reduction never arms it. The
+   advisory names the approximate avoidable context-token count and the host-native actions that
+   move the re-cache to pruned context:
    native compaction or a normal exit + resume/restart. Resubmitting immediately proceeds. The block fires at most
    once per cold window; a subsequent warm submit (idle < floor) resets the window so the next
    genuine cold stretch re-arms. The gate is strictly opt-in, never fires in `dry`/`off` mode,

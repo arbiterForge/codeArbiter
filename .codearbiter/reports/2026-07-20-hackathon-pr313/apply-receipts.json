@@ -1,0 +1,75 @@
+{
+  "schema": "codearbiter-hackathon-pr313-apply-receipts-v1",
+  "targetPr": 313,
+  "baseOid": "139694cbd55797b4f9daa399df19d13329b0915d",
+  "sourceManifest": ".codearbiter/reports/2026-07-20-hackathon-pr313/source-prs.json",
+  "recoveryPatchDirectory": "C:/Users/brenn/AppData/Local/Temp/ca-hackathon-apply-74b1c39cf5714703a0cb53ecf50ced05",
+  "counts": {
+    "pullRequests": 16,
+    "commits": 29,
+    "manifestPaths": 126,
+    "directManifestPathsChanged": 123,
+    "architecturalPortSourcePaths": 3,
+    "architecturalPortTargetPaths": 4,
+    "sprintLogLinesAtReplayCheckpoint": 121,
+    "gateEventLinesAppended": 5
+  },
+  "commits": [
+    { "oid": "ccf45c3e200da30a8cff7f28c164293e940b16fc", "status": "applied" },
+    { "oid": "05e691e03fbfbac742dc61e53697547593066039", "status": "applied" },
+    { "oid": "fa53c73672e50157d4c501f8f45ba4e91cc168db", "status": "applied" },
+    { "oid": "9a307a86757e1a120c96c1fe9387dbe07fe710af", "status": "applied" },
+    { "oid": "48eeae8eedb507fbc4de511bc2f0aaab64a07dd3", "status": "applied" },
+    { "oid": "757cb44f425fca98e1e070a29a1a10493c9b7245", "status": "applied" },
+    { "oid": "2243057d1648224d6dee3f9ebd6422d5a376d0d6", "status": "applied" },
+    { "oid": "8c7cf94f28f64a23a31ed04ac6fb41d55161e9f9", "status": "applied" },
+    { "oid": "5f5d66e5bf97e4e90934d6703d92059bd676b571", "status": "applied" },
+    { "oid": "4db693f366dd23e3e096b1a29c1fe80371f817e8", "status": "applied" },
+    { "oid": "43166cf0df4a926c6160520dcfd679a22fae3f55", "status": "applied" },
+    { "oid": "3f548e03b91283cba03b9141ecb097567eee7d46", "status": "applied" },
+    { "oid": "9c79aa8bd34b6ed2f9f92f85c7724261ff9ef1fd", "status": "applied" },
+    { "oid": "ca7d9ea9c783c80eea257b86119f18e92ba57629", "status": "applied" },
+    { "oid": "47f103db5e2f21ec2f1a971487fd4baaf2d5ee83", "status": "applied" },
+    { "oid": "9f4c9f4869425ca9ed9f5b7be03123597e94685d", "status": "applied" },
+    { "oid": "eff294caf89f4ee16533d5d1056bffc87e437ca8", "status": "applied" },
+    { "oid": "997dcbe5132a3d4f869d7a2998c48aca05d2969a", "status": "applied" },
+    { "oid": "6bc180b279873b817e23d578cda0426cb66f4aa6", "status": "applied" },
+    { "oid": "b2b5b067954819e93f79ca8a6c91eeaa012a8d3b", "status": "applied" },
+    { "oid": "7743d71ccabb6f0ada03168b86582cbc391334ff", "status": "applied" },
+    { "oid": "04dee7f68564acd5c8a9f8f97166d7a340c59efc", "status": "applied" },
+    { "oid": "5a95818ab436ca97a2e9ae55695a41366315efba", "status": "applied" },
+    { "oid": "d4e86cfc29ad0d3a49afb52d760881c8df549191", "status": "applied" },
+    { "oid": "0f3ba852051e78fd80abb3b05228e5e54b662f6e", "status": "applied" },
+    { "oid": "09d7818ae2de527b7c4d3d320beaa81ccff81e28", "status": "applied-with-append-only-normalization" },
+    { "oid": "b3343eda2f75435b6d980670f45ac302ae507dd9", "status": "applied" },
+    { "oid": "5a6cb2115d10181ee3e5871750d12b8f9a92032d", "status": "applied" },
+    { "oid": "9b208f77ad3c991e88bd259c8128f13b1a2145a3", "status": "applied" }
+  ],
+  "pathTransform": {
+    "source": [
+      "core/pysrc/pre-bash.py",
+      "plugins/ca/hooks/pre-bash.py",
+      "plugins/ca-codex/hooks/pre-bash.py"
+    ],
+    "target": [
+      "core/pysrc/_bashguardlib.py",
+      "plugins/ca/hooks/_bashguardlib.py",
+      "plugins/ca-codex/hooks/_bashguardlib.py",
+      "plugins/ca-pi/hooks/_bashguardlib.py"
+    ],
+    "reason": "PR 313 extracted the H-05 implementation from the host entry point into the shared guard core; the exact rollback behavior was ported to that canonical core and regenerated for all hosts."
+  },
+  "auditNormalization": {
+    "sourceCommit": "09d7818ae2de527b7c4d3d320beaa81ccff81e28",
+    "result": "The intended PR-gate remediation and its audit-correction were appended as separate records. No existing audit byte was rewritten."
+  },
+  "conflicts": [
+    "H-05 monolith-to-shared-core architectural port",
+    "site reference host note plus request-flow link composition",
+    "sandbox diagram retained before the Pi trust section",
+    "Codex host-provided subagents reconciled with isolated context-scout requirement",
+    "root and host changelog entries composed without dropping Pi release notes",
+    "README retains the Pi badge and advances the ca version badge to 2.9.1",
+    "completed docs-mirror task state retained over an earlier in-progress source state"
+  ]
+}

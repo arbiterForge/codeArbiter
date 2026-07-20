@@ -55,7 +55,7 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `{{CMD:create-context}}` | _(none)_ | Brownfield: back-fill `.codearbiter/` from existing source. |
 | `{{CMD:init}}` | `[--stage N \| --check]` | Scaffold the root-level `.codearbiter/` state store, or `--check` to report detection state without writing. |
 | `{{CMD:status}}` | _(none)_ | Show maturity, open tasks, unresolved `CONFIRM-NN`, overrides since checkpoint. |
-| `{{CMD:task}}` | `add "<desc>" \| start <id\|"title"> \| done <id\|"title">` | The sanctioned task-board writer: add a queued task, start one (flips to in-progress + stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to `open-tasks.md`. |
+| `{{CMD:task}}` | `add "<desc>" \| start <id\|"title"> \| done <id\|"title">` | The sanctioned task-board writer: add a queued task, start one (flips to in-progress + stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to `open-tasks.md`. |
 | `{{CMD:audit}}` | `[range]` | Assemble the governance packet for a window — commits, overrides, ADRs, sprint decisions, open items — into `.codearbiter/audits/`. Read-only. |
 | `{{CMD:metrics}}` | `[--window N]` | Read-only governance trend glance: override rate, small-lane rate, sprint low-confidence ratio, each with a direction arrow vs. the prior 20-commit window. Not a second `{{CMD:audit}}` packet. |
 {{IF:claude}}

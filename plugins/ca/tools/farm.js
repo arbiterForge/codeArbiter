@@ -600,22 +600,27 @@ function extractFileBlocks(content) {
   }
   return blocks;
 }
+function diagnosticApiOrigin(apiBaseUrl) {
+  try {
+    return new URL(apiBaseUrl).origin;
+  } catch {
+    return "<configured endpoint>";
+  }
+}
 function parseChatCompletion(text, apiBaseUrl) {
   let data;
   try {
     data = JSON.parse(text);
   } catch {
-    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
     return {
       ok: false,
-      error: `endpoint ${apiBaseUrl} returned a non-JSON body (${JSON.stringify(snippet)}) \u2014 check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned a non-JSON body \u2014 check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`
     };
   }
   if (!data || typeof data !== "object" || !Array.isArray(data.choices)) {
-    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
     return {
       ok: false,
-      error: `endpoint ${apiBaseUrl} returned an unexpected shape (no 'choices' array): ${JSON.stringify(snippet)} \u2014 check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected shape (no 'choices' array) \u2014 check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`
     };
   }
   return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
@@ -632,6 +637,11 @@ function buildChatBody(model, messages, sampling = readSampling()) {
   return body;
 }
 async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSampling()) {
+  try {
+    assertSecureBaseUrl(apiBaseUrl);
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "apiBaseUrl must use HTTPS" };
+  }
   for (let attempt = 0; attempt <= ENV.apiMaxRetries; attempt++) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ENV.requestTimeoutMs);
@@ -644,7 +654,10 @@ async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSamplin
           Authorization: `Bearer ${apiKey}`
         },
         body: JSON.stringify(buildChatBody(model, [{ role: "user", content: prompt }], sampling)),
-        signal: ctrl.signal
+        signal: ctrl.signal,
+        // A validated HTTPS URL is not permission to follow a 307/308 onto an
+        // unvalidated cleartext endpoint with the same POST body.
+        redirect: "error"
       });
     } catch (e) {
       clearTimeout(timer);
@@ -663,15 +676,11 @@ async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSamplin
           await sleep(wait);
           continue;
         }
-        const body = await resp.text();
-        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}
-`);
+        await resp.text();
         return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
       }
       if (!resp.ok) {
-        const body = await resp.text();
-        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}
-`);
+        await resp.text();
         return { ok: false, error: `API ${resp.status}` };
       }
       const text = await resp.text();
@@ -1042,12 +1051,14 @@ function assertSecureBaseUrl(url) {
   try {
     parsed = new URL(url);
   } catch {
-    throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+    throw new Error("apiBaseUrl must use HTTPS (HTTP is allowed only for bare loopback hosts)");
+  }
+  if (parsed.username !== "" || parsed.password !== "") {
+    throw new Error("apiBaseUrl must use HTTPS without embedded credentials");
   }
   if (parsed.protocol === "https:") return;
-  if (parsed.protocol === "http:" && LOOPBACK_HOSTS.has(parsed.hostname) && parsed.username === "" && parsed.password === "")
-    return;
-  throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+  if (parsed.protocol === "http:" && LOOPBACK_HOSTS.has(parsed.hostname)) return;
+  throw new Error("apiBaseUrl must use HTTPS (HTTP is allowed only for bare loopback hosts)");
 }
 function validate(plan) {
   if (plan.meta.apiBaseUrl) assertSecureBaseUrl(plan.meta.apiBaseUrl);
@@ -1147,6 +1158,7 @@ async function screenEntitlements(models, probe, opts = {}) {
   return { survivors, skipped };
 }
 function makeEntitlementProbe(apiBaseUrl, apiKey, timeoutMs) {
+  assertSecureBaseUrl(apiBaseUrl);
   return async (model) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -1155,7 +1167,8 @@ function makeEntitlementProbe(apiBaseUrl, apiKey, timeoutMs) {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({ model, messages: [{ role: "user", content: "ping" }], max_tokens: 1 }),
-        signal: ctrl.signal
+        signal: ctrl.signal,
+        redirect: "error"
       });
       return { status: resp.status };
     } catch {

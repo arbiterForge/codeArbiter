@@ -32,6 +32,21 @@ predate the plugin rewrite and are grouped by date.
   affirmative host project trust; unknown or foreign tool replacements fail
   closed.
 
+### Fixed
+
+- Prune dry-run records, audit logs, CLI, footer, and cold-cache metrics now separate
+  model-visible context savings from file-only sidecar cleanup; sidecar bytes
+  no longer inflate the context-benefit decision or arm the cold-cache nudge.
+- Prune hooks now ignore and repair malformed per-session state instead of
+  allowing invalid legacy values to escape fail-open handling.
+
+## [2.9.1] — 2026-07-20
+
+### Fixed
+- Tribunal runs recover exact per-reviewer token usage from Claude Code
+  subagent transcripts, retaining fresh input, cache creation, cache reads,
+  output, and explicit unavailable reasons.
+
 ## [2.9.0] — 2026-07-12
 
 Statusline customization and correctness hardening across concurrent sessions.
@@ -45,6 +60,9 @@ Statusline customization and correctness hardening across concurrent sessions.
   `model:?`, captured during the existing bounded transcript scan.
 
 ### Fixed
+- Farm API calls now reject credential-bearing base URLs, revalidate at each
+  network boundary, refuse automatic redirects, and keep provider-controlled
+  response bodies out of logs and retry/report diagnostics.
 - Concurrent statusline renders no longer lose ledger updates, session-start
   metadata, or aggregate token/cost totals.
 - Linked Git worktrees report their branch correctly, third-party statusline

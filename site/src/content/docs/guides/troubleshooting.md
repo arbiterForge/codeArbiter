@@ -61,6 +61,17 @@ arbiter: enabled
 
 If the file is absent, run `/ca:init` to scaffold it.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/activation-states.svg"
+    alt="Activation classification flow: a missing CONTEXT.md or missing leading frontmatter is dormant; an unclosed block is malformed and surfaces an error; a closed block containing arbiter enabled activates the persona and gates."
+    loading="lazy"
+    width="900"
+    height="430"
+  />
+  <figcaption>Use the same three-state classification when reading doctor output.</figcaption>
+</figure>
+
 ### Live-Fire Hook Probe
 
 Doctor runs a hook invocation to confirm a hook binary actually executes end-to-end, not just that an interpreter binary is on PATH. A passing interpreter check alongside a failing probe points to a registration or permissions problem with the hook files themselves.

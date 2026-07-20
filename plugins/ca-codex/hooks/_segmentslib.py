@@ -242,7 +242,7 @@ def seg_pr(data):
 
 
 def seg_prune(data, sid):
-    """Transcript-pruner indicator: cumulative reduction and age of the last
+    """Transcript-pruner indicator: model-context reduction and age of the last
     prune for this session, read from ~/.codearbiter/prune-state.json (written
     by prune-transcript.py). Fail-soft — returns None on any problem, and never
     raises, so it can never break statusline rendering."""
@@ -255,11 +255,16 @@ def seg_prune(data, sid):
         rec = st.get(sid) if isinstance(st, dict) else None
         if not isinstance(rec, dict):
             return None
-        pct = rec.get("pct") or 0
-        if pct <= 0:
+        file_freed = num(rec.get("file_bytes_freed", rec.get("freed_bytes")), 0)
+        if file_freed <= 0:
             return None
         age = human_dur(max(0, time.time() - num(rec.get("last_run_ts"), time.time())))
-        return f"{GREY}✂{RESET} {WHITE}{pct:.0f}%{RESET} {GREY}{age}{RESET}"
+        if "context_est_tokens_freed" not in rec:
+            pct = num(rec.get("file_pct", rec.get("pct")), 0)
+            return f"{GREY}✂{RESET} {WHITE}file:{pct:.0f}%{RESET} {GREY}{age}{RESET}"
+        context_tokens = max(0, num(rec.get("context_est_tokens_freed"), 0))
+        return (f"{GREY}✂{RESET} {WHITE}ctx:{fmt_tok(context_tokens)}{RESET} "
+                f"{GREY}{age}{RESET}")
     except Exception:  # noqa: BLE001
         return None
 

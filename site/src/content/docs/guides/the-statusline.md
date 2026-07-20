@@ -11,14 +11,36 @@ your session usage in every repo and, in an [arbiter-enabled](/glossary/#arbiter
 dependency-free (native font glyphs only, no Nerd Font) and renders on every session once wired.
 
 <figure class="ca-diagram">
-  <img
-    src="/codeArbiter/diagrams/statusline.png"
-    alt="The codeArbiter statusline: a folder row; a git row with repo, branch, and a model pill; rate-limit percentages with reset countdowns; an arbiter row (green dot) showing stage, tasks, open questions, and overrides; and session/today token, cost, burn, and context-usage segments."
-    loading="lazy"
-    width="2174"
-    height="406"
-  />
-  <figcaption>The statusline in an arbiter-enabled repo: usage segments plus the arbiter row (green dot). Rendered from the live `statusline.py` with mock values.</figcaption>
+  <div class="ca-statusline-map">
+    <img
+      src="/codeArbiter/diagrams/statusline.png"
+      alt="The codeArbiter statusline: a folder row; a git row with repo, branch, and a model pill; rate-limit percentages with reset countdowns; an arbiter row showing stage, tasks, open questions, and overrides; and session/today token, cost, burn, and context-usage segments."
+      loading="lazy"
+      width="2174"
+      height="406"
+    />
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--1" aria-hidden="true">1</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--2" aria-hidden="true">2</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--3" aria-hidden="true">3</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--4" aria-hidden="true">4</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--5" aria-hidden="true">5</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--6" aria-hidden="true">6</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--7" aria-hidden="true">7</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--8" aria-hidden="true">8</span>
+    <span class="ca-statusline-map__marker ca-statusline-map__marker--9" aria-hidden="true">9</span>
+  </div>
+  <ol class="ca-statusline-map__legend" aria-label="Statusline capture key">
+    <li><span>1</span> folder</li>
+    <li><span>2</span> git</li>
+    <li><span>3</span> rate limits</li>
+    <li><span>4</span> model</li>
+    <li><span>5</span> arbiter</li>
+    <li><span>6</span> tokens</li>
+    <li><span>7</span> cost</li>
+    <li><span>8</span> burn</li>
+    <li><span>9</span> context</li>
+  </ol>
+  <figcaption>The real renderer capture, annotated in HTML so the image remains unchanged. Values are deterministic test data.</figcaption>
 </figure>
 
 **You will need:** the plugin installed (see [Install](/getting-started/install/)).
@@ -95,28 +117,28 @@ The bar has two tiers of segments.
 
 These render in every Claude Code session, regardless of whether the open repo is arbiter-enabled.
 
-| Segment | Shows |
-|---------|-------|
-| **folder** | Active working directory, abbreviated to key path components |
-| **git** | Repo owner/name and current branch, with a dirty-state marker when uncommitted changes are present |
-| **model** | Model display name and effort level as a colored pill |
-| **rate limits** | 5-hour and 7-day API usage percentages, with reset countdowns when the host supplies them |
-| **context** | Context window usage bar, used percentage, and remaining headroom before auto-compaction |
-| **tokens** | Session and daily in/out token counts, deduplicated by request ID across transcript entries |
-| **cost** | Cumulative API-equivalent cost from Claude Code's authoritative session total, persisted across sessions in `~/.codearbiter/ledger.json` |
-| **burn** | Per-message token sparkline built from recent transcript calls |
-| **subagents** | Recent tasks with liveness, selected model, input/output tokens, and age; mixed or missing model metadata is explicit |
+| Key | Segment | Shows |
+|-----|---------|-------|
+| 1 | **folder** | Active working directory, abbreviated to key path components |
+| 2 | **git** | Repo owner/name and current branch, with a dirty-state marker when uncommitted changes are present |
+| 4 | **model** | Model display name and effort level as a colored pill |
+| 3 | **rate limits** | 5-hour and 7-day API usage percentages, with reset countdowns when the host supplies them |
+| 9 | **context** | Context window usage bar, used percentage, and remaining headroom before auto-compaction |
+| 6 | **tokens** | Session and daily in/out token counts, deduplicated by request ID across transcript entries |
+| 7 | **cost** | Cumulative API-equivalent cost from Claude Code's authoritative session total, persisted across sessions in `~/.codearbiter/ledger.json` |
+| 8 | **burn** | Per-message token sparkline built from recent transcript calls |
+| not shown | **subagents** | Recent tasks with liveness, selected model, input/output tokens, and age; mixed or missing model metadata is explicit |
 
 ### Arbiter Segments
 
 These render only when the open repo carries `arbiter: enabled` in `.codearbiter/CONTEXT.md`. The activation check uses the same frontmatter parser the enforcement hooks use, so the bar and the gates always agree on whether a repo is active. See [Enforcement & Security](/enforcement/) for the activation contract.
 
-| Segment | Shows |
-|---------|-------|
-| **stage** | Current project stage from the `stage` key in `CONTEXT.md` frontmatter |
-| **tasks** | In-flight task count from `open-tasks.md`; done tasks are excluded |
-| **questions** | Count of open `CONFIRM-NN` questions in `open-questions.md` |
-| **overrides** | Override entries logged since the last `/ca:checkpoint` |
+| Key | Segment | Shows |
+|-----|---------|-------|
+| 5 | **stage** | Current project stage from the `stage` key in `CONTEXT.md` frontmatter |
+| 5 | **tasks** | In-flight task count from `open-tasks.md`; done tasks are excluded |
+| 5 | **questions** | Count of open `CONFIRM-NN` questions in `open-questions.md` |
+| 5 | **overrides** | Override entries logged since the last `/ca:checkpoint` |
 
 A non-zero `questions` or `overrides` count renders in red. A non-zero `tasks` count renders in white. A green dot before the arbiter row confirms the repo is active.
 

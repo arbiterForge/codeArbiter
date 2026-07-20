@@ -14,8 +14,8 @@ gates:
 
 The daily hygiene checklist, made routine and gated: fetch and offer a fast-forward pull, list
 locally-merged branches and stale worktrees for individual confirm-and-delete, surface stashes,
-uncommitted changes, and un-pushed commits with a suggested next step, and run an advisory
-board-drift sweep comparing recent merge history against `open-tasks.md`. Nothing destructive
+uncommitted changes, and un-pushed commits with a suggested next step, and run a read-only,
+advisory board-drift sweep comparing recent merge history against `open-tasks.md`. Nothing destructive
 happens without an explicit per-item yes, and the task board is never auto-flipped — a drifted task
 is resolved only through `/ca:task done <id>`.
 
@@ -41,8 +41,8 @@ Locally-merged branches:
 > y
 Deleted fix/typo-in-readme.
 
-Board-drift sweep: 1 DRIFTED task (2.3a merged but not marked [x] in open-tasks.md).
-Resolve with /ca:task done 2.3a — not auto-flipped here.
+Board-drift sweep: 1 DRIFTED task (poc.docs.0001 merged but not marked [x] in open-tasks.md).
+Resolve with /ca:task done poc.docs.0001. The sweep never auto-flips tasks.
 ```
 
 ## When to reach for it

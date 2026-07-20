@@ -15,6 +15,7 @@ sys.path.insert(0, CORE)
 from _prunepolicy import (  # noqa: E402
     PrunePolicy,
     SemanticEntry,
+    STRATEGY_METRIC_SCOPES,
     audit_outcomes,
     has_marker,
     marker_for,
@@ -110,11 +111,25 @@ class PrunePolicyParityTests(unittest.TestCase):
         self.assertEqual(once.metrics["entries_before"], 5)
         self.assertEqual(once.metrics["candidate_entries"], 4)
         self.assertEqual(once.audit_codes, ("CA-PRUNE-PLAN",))
-        self.assertEqual(reduction_metrics(1000, 600), {
+        self.assertEqual(set(STRATEGY_METRIC_SCOPES), set(select_strategies("aggressive")))
+        self.assertEqual(STRATEGY_METRIC_SCOPES["sidecar-collapse"], "file-only")
+        self.assertTrue(all(
+            scope == "context"
+            for name, scope in STRATEGY_METRIC_SCOPES.items()
+            if name != "sidecar-collapse"
+        ))
+        self.assertEqual(reduction_metrics(1000, 600, {
+            "sidecar-collapse": 300,
+            "aged-result-condense": 100,
+        }), {
             "bytes_before": 1000, "bytes_after": 600, "freed_bytes": 400,
             "est_tokens_before": 250, "est_tokens_after": 150, "pct": 40.0,
+            "file_bytes_freed": 400, "file_est_tokens_freed": 100,
+            "file_est_tokens_before": 250, "file_est_tokens_after": 150,
+            "file_pct": 40.0, "context_bytes_freed": 100,
+            "context_est_tokens_freed": 25,
         })
-        self.assertEqual(reduction_metrics(100, 120)["freed_bytes"], -20)
+        self.assertEqual(reduction_metrics(100, 120, {})["freed_bytes"], -20)
         self.assertEqual(audit_outcomes(parse_errors=1, orphans=0, unpaired=2),
                          ("FAIL", "OK", "WARN", "OK"))
 

@@ -171,7 +171,7 @@
   },
   {
     "name": "task",
-    "description": "The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to open-tasks.md.",
+    "description": "The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md.",
     "skillPath": "skills/ca-task/SKILL.md"
   },
   {

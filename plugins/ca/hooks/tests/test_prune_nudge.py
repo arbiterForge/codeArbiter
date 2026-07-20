@@ -46,10 +46,11 @@ def _make_transcript_with_ts(n_pairs=4, result_bytes=5000,
 
 
 def _big_rec(cold_nudged=False):
-    """A session state record with a large freed_bytes (> 80 000 tokens @ 4 B)."""
+    """A state record with large context savings (> 80 000 tokens at 4 B)."""
     # 80 000 tokens * 4 bytes/token = 320 000 bytes freed — well above the floor.
     return {
         "freed_bytes": 400_000,
+        "context_bytes_freed": 400_000,
         "last_pruned_size": 1_200_000,
         "pct": 33.0,
         "cold_nudged": cold_nudged,
@@ -139,13 +140,27 @@ class TestO2WrongMode(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# O3 — cold + freed_bytes below floor → not-armed
+# O3 — cold + context_bytes_freed below floor → not-armed
 # ---------------------------------------------------------------------------
 
 class TestO3SmallDelta(unittest.TestCase):
-    def test_below_floor_freed_bytes(self):
-        # est_tokens(freed_bytes) < 80 000 when freed_bytes < 320 000
-        rec = {"freed_bytes": 100_000, "last_pruned_size": 500_000, "pct": 20.0}
+    def test_file_only_savings_never_arm_context_recache_nudge(self):
+        rec = {
+            "freed_bytes": 800_000,
+            "context_bytes_freed": 0,
+            "last_pruned_size": 1_000_000,
+            "pct": 44.4,
+        }
+        armed, advisory, _ = P.nudge_decision(
+            rec, idle_secs=300,
+            e={"CODEARBITER_PRUNE_NUDGE": "on"})
+        self.assertFalse(armed)
+        self.assertEqual(advisory, "")
+
+    def test_below_floor_context_bytes(self):
+        # est_tokens(context_bytes_freed) stays below the 80 000-token floor.
+        rec = {"freed_bytes": 500_000, "context_bytes_freed": 100_000,
+               "last_pruned_size": 500_000, "pct": 20.0}
         armed, _, _ = P.nudge_decision(
             rec, idle_secs=300,
             e={"CODEARBITER_PRUNE_NUDGE": "on"})
@@ -153,15 +168,17 @@ class TestO3SmallDelta(unittest.TestCase):
 
     def test_exactly_at_floor_tokens_passes(self):
         # 80 000 tokens * 4 = 320 000 bytes — on the threshold; should arm
-        rec = {"freed_bytes": 320_000, "last_pruned_size": 1_000_000, "pct": 32.0}
+        rec = {"freed_bytes": 900_000, "context_bytes_freed": 320_000,
+               "last_pruned_size": 1_000_000, "pct": 32.0}
         armed, _, _ = P.nudge_decision(
             rec, idle_secs=300,
             e={"CODEARBITER_PRUNE_NUDGE": "on"})
         self.assertTrue(armed)
 
     def test_custom_min_tokens_env(self):
-        # With MIN_TOKENS=50 000 tokens, freed_bytes=210_000 (52 500 tokens) arms.
-        rec = {"freed_bytes": 210_000, "last_pruned_size": 600_000, "pct": 35.0}
+        # With MIN_TOKENS=50 000, 210_000 context bytes (52 500 tokens) arms.
+        rec = {"freed_bytes": 700_000, "context_bytes_freed": 210_000,
+               "last_pruned_size": 600_000, "pct": 35.0}
         armed, _, _ = P.nudge_decision(
             rec, idle_secs=300,
             e={"CODEARBITER_PRUNE_NUDGE": "on",
@@ -270,14 +287,19 @@ class TestO8FailOpen(unittest.TestCase):
         except Exception as ex:
             self.fail(f"nudge_decision(None, ...) raised {ex!r}")
 
-    def test_nudge_decision_freed_bytes_non_int(self):
-        rec = {"freed_bytes": "not-a-number", "pct": 10.0}
-        try:
-            armed, _, _ = P.nudge_decision(rec, idle_secs=300,
-                                           e={"CODEARBITER_PRUNE_NUDGE": "on"})
-            self.assertFalse(armed)
-        except Exception as ex:
-            self.fail(f"nudge_decision with bad freed_bytes raised {ex!r}")
+    def test_nudge_decision_invalid_context_bytes_fail_open(self):
+        for value in ("not-a-number", True, float("nan"), -1):
+            with self.subTest(value=value):
+                rec = {"freed_bytes": 400_000,
+                       "context_bytes_freed": value, "pct": 10.0}
+                try:
+                    armed, _, _ = P.nudge_decision(
+                        rec, idle_secs=300,
+                        e={"CODEARBITER_PRUNE_NUDGE": "on"})
+                    self.assertFalse(armed)
+                except Exception as ex:
+                    self.fail(
+                        f"nudge_decision with bad context_bytes_freed raised {ex!r}")
 
     def test_last_assistant_ts_bad_json(self):
         result = P._last_assistant_ts(b"{bad json\n")
@@ -331,23 +353,26 @@ class TestO8FailOpen(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 class TestO9Advisory(unittest.TestCase):
-    def test_advisory_contains_token_count_and_pct(self):
-        rec = {"freed_bytes": 400_000, "last_pruned_size": 800_000,
-               "pct": 33.0}
+    def test_advisory_contains_context_token_count(self):
+        rec = {"freed_bytes": 800_000, "context_bytes_freed": 400_000,
+               "last_pruned_size": 800_000, "pct": 33.0}
         advisory = P._nudge_advisory(rec)
-        # ~(400_000 + 800_000) / 4 = 300_000 tokens → 300k
-        self.assertIn("300k", advisory)
-        self.assertIn("33", advisory)
+        # 400_000 model-visible bytes / 4 = 100_000 tokens.
+        self.assertIn("100k", advisory)
+        self.assertIn("context tokens", advisory)
+        self.assertNotIn("33", advisory)
 
     def test_advisory_contains_action_words(self):
-        rec = {"freed_bytes": 400_000, "last_pruned_size": 800_000, "pct": 33.0}
+        rec = {"freed_bytes": 800_000, "context_bytes_freed": 400_000,
+               "last_pruned_size": 800_000, "pct": 33.0}
         advisory = P._nudge_advisory(rec)
         self.assertIn("/compact", advisory)
         self.assertIn("--resume", advisory)
         self.assertIn("Submit again", advisory)
 
     def test_advisory_no_transcript_filler(self):
-        rec = {"freed_bytes": 400_000, "last_pruned_size": 800_000, "pct": 33.0}
+        rec = {"freed_bytes": 800_000, "context_bytes_freed": 400_000,
+               "last_pruned_size": 800_000, "pct": 33.0}
         advisory = P._nudge_advisory(rec)
         # The filler used in make_transcript is "X" * result_bytes
         self.assertNotIn("X" * 20, advisory,
@@ -355,7 +380,8 @@ class TestO9Advisory(unittest.TestCase):
 
     def test_advisory_pure_function_of_numbers(self):
         # Same rec → same advisory regardless of call order
-        rec = {"freed_bytes": 500_000, "last_pruned_size": 1_000_000, "pct": 50.0}
+        rec = {"freed_bytes": 900_000, "context_bytes_freed": 500_000,
+               "last_pruned_size": 1_000_000, "pct": 50.0}
         a1 = P._nudge_advisory(rec)
         a2 = P._nudge_advisory(rec)
         self.assertEqual(a1, a2)
@@ -514,7 +540,7 @@ class TestParseAndIdleEdges(unittest.TestCase):
 
 class _ArmedHarness(unittest.TestCase):
     """setUp builds an arbiter repo + a cold transcript whose state record has a
-    large freed_bytes and a SMALL last_pruned_size (so a later warm submit's
+    large context_bytes_freed and a SMALL last_pruned_size (so a later warm submit's
     grown transcript actually prunes, exercising the carry-forward path)."""
 
     def setUp(self):
@@ -528,7 +554,8 @@ class _ArmedHarness(unittest.TestCase):
         os.makedirs(self.claude_dir, exist_ok=True)
         self.path = os.path.join(self.claude_dir, "sess.jsonl")
         self._write_transcript("2026-06-17T00:00:00Z")  # cold
-        P.save_state({"sess": {"freed_bytes": 400_000,
+        P.save_state({"sess": {"freed_bytes": 800_000,
+                               "context_bytes_freed": 400_000,
                                "last_pruned_size": 1000, "pct": 33.0}})
 
     def tearDown(self):

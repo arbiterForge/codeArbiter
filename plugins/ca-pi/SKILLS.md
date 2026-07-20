@@ -40,7 +40,7 @@ skill is invoked — never bulk-read this directory.
 | `/ca-sprint` | Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops. |
 | `/ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |
 | `/ca-status` | Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only. |
-| `/ca-task` | The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to open-tasks.md. |
+| `/ca-task` | The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md. |
 | `/ca-threat-model` | Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought. |
 | `/ca-tribunal` | Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate. |
 | `/ca-watch` | Watch a PR's CI to completion — diagnose on red, notify and offer the merge on green. Never auto-merges. |

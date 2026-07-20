@@ -969,3 +969,8 @@ assertions unweakened; call-site floor comment updated.
 
 Ref: #320
 Claude-Session: https://claude.ai/code/session_015ZDVU1BzUqnnPVHbZ397bX') stages a non-explicit file set. Stage files explicitly, one path per file (commit-gate skill).
+[2026-07-20T05:51:32Z] BLOCK [H-05] host=claude hook=pre-bash.py | The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit trail is prohibited; append with '>>' only.
+[2026-07-20T05:54:33Z] BLOCK [H-05] host=claude hook=pre-bash.py | The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit trail is prohibited; append with '>>' only.
+[2026-07-20T05:54:34Z] BLOCK [H-05] host=claude hook=pre-bash.py | The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit trail is prohibited; append with '>>' only.
+[2026-07-20T05:54:34Z] BLOCK [H-05] host=claude hook=pre-bash.py | The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit trail is prohibited; append with '>>' only.
+[2026-07-20T05:54:34Z] BLOCK [H-05] host=claude hook=pre-bash.py | The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit trail is prohibited; append with '>>' only.

@@ -123,6 +123,7 @@ import json
 import math
 import os
 import re
+import unicodedata
 
 import _provenancelib
 
@@ -562,6 +563,21 @@ def spec_pointers(rel, index):
 # ---------------------------------------------------------------------------
 
 
+_CONTEXT_CONTROL_CATEGORIES = frozenset(("Cc", "Cf", "Zl", "Zp"))
+
+
+def _strip_context_controls(value):
+    """Return value as text without controls that can restructure context."""
+    try:
+        text = value if isinstance(value, str) else str(value)
+        return "".join(
+            char for char in text
+            if unicodedata.category(char) not in _CONTEXT_CONTROL_CATEGORIES
+        )
+    except Exception:  # noqa: BLE001 - malformed provenance degrades to empty
+        return ""
+
+
 def provenance_pointer(rel, provenance, current_hashes):
     """Tier-4 pure comparator.  Freshness-gated pointers from provenance entries.
 
@@ -594,6 +610,9 @@ def provenance_pointer(rel, provenance, current_hashes):
       {"text": "<doc>.md notes (lines L-M): <claim>", "tier": "standards"}
       If the first claim has no "lines" key:
       {"text": "<doc>.md notes: <claim>", "tier": "standards"}
+      Document names, claim text, and line-range metadata are stripped of
+      control, formatting, and line/paragraph separator characters before
+      pointer assembly. A document name that becomes empty is suppressed.
       Uses the FIRST claim in entry["claims"].  Long texts are truncated at the
       150-token budget (same proxy as token_estimate: ceil(len/4)) with a
       trailing "…" marker so the payload is never silently cut.
@@ -612,6 +631,9 @@ def provenance_pointer(rel, provenance, current_hashes):
         for doc_name, record in provenance.items():
             try:
                 if not isinstance(record, dict):
+                    continue
+                safe_doc_name = _strip_context_controls(doc_name)
+                if not safe_doc_name:
                     continue
                 entries = record.get("entries")
                 if not isinstance(entries, list):
@@ -647,10 +669,13 @@ def provenance_pointer(rel, provenance, current_hashes):
                                 claim_text = str(claim_text)
                             except Exception:
                                 claim_text = ""
+                        claim_text = _strip_context_controls(claim_text)
                         lines_range = first_claim.get("lines")
+                        if lines_range:
+                            lines_range = _strip_context_controls(lines_range)
 
                         # Assemble pointer text; include lines range when present.
-                        doc_part = "{}.md".format(doc_name)
+                        doc_part = "{}.md".format(safe_doc_name)
                         if lines_range:
                             text = "{} notes (lines {}): {}".format(
                                 doc_part, lines_range, claim_text

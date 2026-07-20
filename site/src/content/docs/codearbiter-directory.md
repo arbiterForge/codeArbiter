@@ -60,6 +60,17 @@ checks for it: present with source code in the repo but the marker absent routes
 `/ca:create-context`; absent with no source routes to `/ca:decompose`. Once the marker and
 frontmatter are both in place, the orchestrator persona loads on every session in this repo.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/activation-states.svg"
+    alt="Activation classification flow: a missing CONTEXT.md or missing leading frontmatter is dormant; an unclosed block is malformed and surfaces an error; a closed block containing arbiter enabled activates the persona and gates."
+    loading="lazy"
+    width="900"
+    height="430"
+  />
+  <figcaption>`CONTEXT.md` is classified on each activation check; the file does not carry hidden activation state.</figcaption>
+</figure>
+
 **Writers:** `/ca:init` (scaffold), `/ca:decompose` and `/ca:create-context` (populate + lock).
 **Readers:** every enforcement hook, the `SessionStart` injector, the statusline.
 **Editable by hand?** The prose body, yes. The frontmatter is guarded: a Write/Edit that would
