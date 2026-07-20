@@ -1,7 +1,7 @@
 {
  "schema": "codearbiter-pi-promotion-v1",
  "mode": "final",
- "commit": "98e770566252723af862a8802a0b9c7773629a59",
+ "commit": "394f5f311f47624c1826d8e6ad03e26adbef4a36",
  "rows": [
   {
    "version": "0.80.5",
@@ -9,7 +9,7 @@
    "architecture": "x64",
    "resultCode": "PI-LOCAL-SUPPORTED",
    "passed": true,
-   "timingMs": 118937,
+   "timingMs": 122521,
    "diagnosticCode": "NONE"
   },
   {
@@ -18,52 +18,7 @@
    "architecture": "x64",
    "resultCode": "PI-LOCAL-SUPPORTED",
    "passed": true,
-   "timingMs": 117196,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.5",
-   "platform": "macos",
-   "architecture": "arm64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 193000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.10",
-   "platform": "macos",
-   "architecture": "arm64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 138000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.5",
-   "platform": "linux",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 130000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.10",
-   "platform": "linux",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 108000,
-   "diagnosticCode": "NONE"
-  },
-  {
-   "version": "0.80.10",
-   "platform": "windows",
-   "architecture": "x64",
-   "resultCode": "PI-HOSTED-SUPPORTED",
-   "passed": true,
-   "timingMs": 482000,
+   "timingMs": 107780,
    "diagnosticCode": "NONE"
   },
   {
@@ -72,7 +27,52 @@
    "architecture": "x64",
    "resultCode": "PI-HOSTED-SUPPORTED",
    "passed": true,
-   "timingMs": 493000,
+   "timingMs": 551000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "windows",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 417000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "macos",
+   "architecture": "arm64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 208000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.5",
+   "platform": "macos",
+   "architecture": "arm64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 174000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.5",
+   "platform": "linux",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 134000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "linux",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 123000,
    "diagnosticCode": "NONE"
   },
   {
@@ -81,7 +81,7 @@
    "architecture": "x64",
    "resultCode": "PI-CODEQL-HIGH",
    "passed": true,
-   "timingMs": 113000,
+   "timingMs": 114000,
    "diagnosticCode": "NONE"
   },
   {
