@@ -970,3 +970,23 @@ feat/pi-support in the main checkout, ratifying ADR-0013 — legitimate, out of 
 - The gate-events.log self-poisoning bug (#279-shaped) was NOT on the sprint's issue list; found by using
   the system, surfaced as a hard gate, user-scoped, fixed under two security reviews. Recorded as the
   sprint's one genuinely new find.
+
+## Sprint: backlog-burn-2026-07-20
+
+Started 2026-07-20T01:40:46-04:00. Append-only. SMARTS-scored auto-decisions;
+`low` = review these.
+
+### SD-01 — [selection] close the Git-native H-05 rollback gap before lower-risk cleanup · confidence: high
+
+- **Point:** PR #313's current head is fully green. Its open high-severity Pi findings are already
+  implemented with `Closes` trailers, so selecting them again would duplicate in-flight work. The next
+  unblocked security finding is #335: literal `git checkout` and `git restore` commands can revert an
+  append-only audit artifact without crossing H-05's filesystem-verb flank. The operator explicitly
+  deferred the clone refactor.
+- **Options:** (a) fix #335 test-first; (b) start a medium architecture refactor; (c) take a low-severity
+  cleanup item.
+- **SMARTS:** Secure and Reliable decisively favor (a): the observed failure loses audit history and is
+  directly reproducible, while (b) is deferred and both (b)/(c) have lower operational impact. Small
+  and Reviewable also favor a lexical guard plus focused matrix cases over structural work.
+- **Chosen:** (a). Add failing regressions for checkout/restore spellings, preserve read-only Git access,
+  then extend H-05 with the smallest command-bounded match. Strength: strong.

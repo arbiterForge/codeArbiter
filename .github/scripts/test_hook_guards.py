@@ -208,7 +208,14 @@ def main():
                     # set — the durable BLOCK/REMIND/WARN sink gets the same H-05
                     # tool-call protection as the other three audit logs.
                     "echo x > .codearbiter/gate-events.log",
-                    "rm .codearbiter/gate-events.log"):
+                    "rm .codearbiter/gate-events.log",
+                    # #335: Git-native worktree restoration rewrites tracked audit
+                    # logs without using any of the filesystem verbs above.
+                    "git checkout -- .codearbiter/gate-events.log",
+                    "git checkout HEAD -- .codearbiter/sprint-log.md",
+                    "git restore .codearbiter/overrides.log",
+                    "git restore --source=HEAD -- .codearbiter/triage.log",
+                    "git -C . restore -- .codearbiter/overrides.log"):
             expect_block(fx, cmd, "H-05", f"H-05 block: {cmd}")
         for cmd in ("echo entry >> .codearbiter/overrides.log",
                     "echo entry >> .codearbiter/sprint-log.md",
@@ -217,7 +224,14 @@ def main():
                     "grep GATE .codearbiter/overrides.log",
                     "cat .codearbiter/sprint-log.md",
                     "tail -5 .codearbiter/triage.log",
-                    "cat .codearbiter/gate-events.log"):
+                    "cat .codearbiter/gate-events.log",
+                    # Git reads of audit history remain legitimate; only checkout
+                    # and restore are destructive to the worktree audit trail.
+                    "git diff -- .codearbiter/overrides.log",
+                    "git show HEAD:.codearbiter/overrides.log",
+                    # A later read-only command naming an audit log must not
+                    # make an unrelated restore look destructive.
+                    "git restore notes.txt; cat .codearbiter/overrides.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
 
         # ---- H-11: no shell writes into .codearbiter/decisions/ --------------

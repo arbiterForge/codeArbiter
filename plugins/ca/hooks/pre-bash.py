@@ -215,6 +215,14 @@ LOG_DESTROY_RE = re.compile(
     r"|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File)\b"
     r"[^|;&]*" + LOG_NAMES, re.I,
 )
+# #335: checkout/restore rewrite tracked worktree files through Git itself, so
+# they bypass every filesystem verb above. Keep the match bounded to one shell
+# command and require a literal audit-log basename in that Git invocation.
+# This intentionally does not guess what a pathless `stash apply` or broad
+# checkout/restore pathspec might touch; H-05's shell flank remains lexical.
+LOG_GIT_RESTORE_RE = re.compile(
+    GIT + r"\s+(?:checkout|restore)\b[^|;&]*" + LOG_NAMES, re.I,
+)
 # H-11's shell flank: ADRs are authored only via /adr (pre-write/pre-edit
 # guard the Write/Edit tools; this guards redirection and file verbs). Any
 # redirect into .codearbiter/decisions/, or any write/delete verb naming it,
@@ -905,7 +913,8 @@ def _run(root):
     # can never silently skip this shell flank (the exact drift
     # security-controls.md § Audit trail centralization exists to prevent).
     if any(n in cmd for n in AUDIT_LOG_BASENAMES) and (
-            LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)):
+            LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
+            or LOG_GIT_RESTORE_RE.search(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
                       "gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, "
                       "overwriting, or deleting the audit trail is prohibited; append with "
