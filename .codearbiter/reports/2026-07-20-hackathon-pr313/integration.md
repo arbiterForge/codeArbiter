@@ -142,5 +142,14 @@ The strict final verifier passes all 46 canonical repository gates, the exact
 hosted attestation and sanitized rendering, and PI-AC-01 through PI-AC-38 in an
 isolated `feat/pi-support` clone at the exact candidate SHA. T-13 is accepted.
 
-The evidence-only commit and final CI, and source PR closure remain governed by
-T-14 and T-15 of the approved plan.
+Evidence-only commit `6173b1d4d2ae6380ef577fd631131c9469a898c1`
+passed the commit gate and exact-head main CI run `29778968354`, CodeQL run
+`29778964688`, and docs run `29778968433`. Both Windows Pi cells, sandbox, all
+other repository checks, and merge readiness are green. T-14 is accepted.
+
+After that exact-head success, source PRs #347, #348, #349, #350, #351, #354,
+#356, #357, #358, #359, #360, #362, #363, #365, #367, and #368 were each
+closed unmerged with one redirect comment to #313. A fresh API audit proves all
+16 remain at their manifest-recorded heads, all 16 redirects cite the final
+evidence head, all 16 appear in #313's body, and #313 remains open and
+unmerged. T-15 is accepted; the single-PR consolidation is complete.
