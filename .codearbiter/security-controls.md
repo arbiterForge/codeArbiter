@@ -94,11 +94,16 @@ be used for API calls, except loopback (`127.0.0.1`/`localhost`) for test mocks
 — see the boundary-crossings table.
 
 The **resolved** `apiBaseUrl` — after the `FARM_API_BASE_URL` env override,
-`plan.meta.apiBaseUrl`, and the built-in default are applied in that precedence —
-is validated before every outbound call by `assertSecureBaseUrl` (`farm.ts`),
-which requires the `https://` scheme (or the documented loopback `http://`
-exception, no userinfo). Validation uses WHATWG `URL` parsing — the same parser
-`fetch` uses for connection targeting — so there is no parser-differential bypass.
+`plan.meta.apiBaseUrl`, `FARM_DEFAULT_API_BASE_URL`, and the built-in default are
+applied in that precedence — is validated by `assertSecureBaseUrl` (`farm.ts`)
+both during configuration resolution and again at each fetch-producing boundary.
+The guard requires the `https://` scheme (or the documented loopback `http://`
+exception) and rejects userinfo on every scheme. Validation uses WHATWG `URL`
+parsing — the same parser `fetch` uses for connection targeting — so there is no
+parser-differential bypass. Both farm POSTs refuse automatic redirects, preventing
+a validated endpoint from forwarding request bodies to an unvalidated transport.
+Provider-controlled response bodies are consumed but never copied into stderr,
+retry prompts, or reports; endpoint diagnostics emit only the parsed origin.
 This supersedes the prior parse-time check that covered only `plan.meta.apiBaseUrl`.
 
 **Outbound surface — the update-available notifier.** The update-notifier
@@ -356,6 +361,6 @@ reopens if the threat model expands to untrusted agents.
 | Fail-open on hook input parse | `_hooklib.py:read_input()` | Parse failure must not brick the session |
 | Unsigned dispatcher commits | `NOSIGN` constant in `farm.ts` | CI signing servers reject unattended commits; the integration PR is the signed artifact |
 | Gate command shell execution | `plan.json` `gate.commands` / `test.command` and `FARM_MUTATION_CMD` run via `cmd.exe /c` / `bash -c` in `farm.ts` | Operator-authored, length-capped (≤1024), PR-reviewed; deterministic gate by design — no untrusted source. See ADR for the trust model |
-| Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo) | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, no cleartext-to-remote path |
+| Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo); farm POSTs use `redirect: "error"` | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, and redirect refusal prevents a mock from forwarding the body to a remote cleartext target |
 | Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
 | `curl \| bash` nixpacks install | `build.ts` runs `curl -fsSL https://nixpacks.com/install.sh \| bash` when nixpacks is absent | Build-time host convenience; the URL is a hardcoded constant (not attacker-controllable). Tracked: prefer declaring nixpacks a prerequisite or pinning a checksum (NEEDS-TRIAGE in the ca-sandbox plan) |

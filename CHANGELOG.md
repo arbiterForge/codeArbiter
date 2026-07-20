@@ -19,6 +19,9 @@ Statusline customization and correctness hardening across concurrent sessions.
   `model:?`, captured during the existing bounded transcript scan.
 
 ### Fixed
+- Farm API calls now reject credential-bearing base URLs, revalidate at each
+  network boundary, refuse automatic redirects, and keep provider-controlled
+  response bodies out of logs and retry/report diagnostics.
 - Concurrent statusline renders no longer lose ledger updates, session-start
   metadata, or aggregate token/cost totals.
 - Linked Git worktrees report their branch correctly, third-party statusline

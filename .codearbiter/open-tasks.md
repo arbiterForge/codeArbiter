@@ -52,7 +52,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
   - Desc: `.codearbiter/coding-standards.md` is named as required pre-flight reading by `tdd`, `refactor`, `writing-plans`, and the author agents, but the file is absent from this repo. Confirmed still missing 2026-06-21 during the task-board-lifecycle tdd pre-flight.
   - Done when: either the file exists (style/structure/naming for the plugin's Python + TS) OR those pre-flight reads tolerate its absence.
   - Boundaries: none
-- [~] v2.security.0003 - Record/close the farm.ts assertSecureBaseUrl focused re-review (SD-02)  (started 2026-07-20)
+- [x] v2.security.0003 - Record/close the farm.ts assertSecureBaseUrl focused re-review (SD-02)  (done 2026-07-20)
   - Desc: the farm.ts `new URL()` host-normalization loosening was flagged for a focused security re-review the sprint log never records. Pass-D re-examined `assertSecureBaseUrl` and confirmed it is loopback-bounded and well-tested (https unconditional, http only for bare loopback, userinfo rejected) — risk is low, but the formally-requested focused pass is still unrecorded.
   - Done when: acceptance is confirmed in writing OR the focused pass is run and recorded.
   - Boundaries: egress, secrets

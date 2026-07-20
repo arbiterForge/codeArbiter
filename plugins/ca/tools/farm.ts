@@ -592,9 +592,19 @@ export type WorkerResult = {
 // network round-trip, and so the error it produces is actionable rather than an
 // opaque `non-JSON response: SyntaxError`. A stale/misconfigured endpoint (the
 // #90 failure: a 200 whose body is the literal "Not Found") is the common cause,
-// so the error names the endpoint and the FARM_API_BASE_URL knob the operator
-// must fix. The body snippet is bounded so a large HTML error page can't flood
-// the message.
+// so the error names a sanitized endpoint origin and the FARM_API_BASE_URL knob
+// the operator must fix. Provider-controlled response bodies are never copied
+// into logs, retry prompts, or reports.
+function diagnosticApiOrigin(apiBaseUrl: string): string {
+  try {
+    // origin excludes userinfo, path, query, and fragment, any of which may
+    // carry credentials or attacker-controlled terminal content.
+    return new URL(apiBaseUrl).origin;
+  } catch {
+    return "<configured endpoint>";
+  }
+}
+
 export function parseChatCompletion(
   text: string,
   apiBaseUrl: string,
@@ -605,10 +615,9 @@ export function parseChatCompletion(
   try {
     data = JSON.parse(text) as typeof data;
   } catch {
-    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
     return {
       ok: false,
-      error: `endpoint ${apiBaseUrl} returned a non-JSON body (${JSON.stringify(snippet)}) — check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned a non-JSON body — check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`,
     };
   }
   // dx-001 (T-08a): the `as typeof data` cast is unsound — valid JSON of an
@@ -618,10 +627,9 @@ export function parseChatCompletion(
   // chat-completions shape (a `choices` array) before trusting it; on a mismatch
   // return an actionable, endpoint-naming error.
   if (!data || typeof data !== "object" || !Array.isArray((data as { choices?: unknown }).choices)) {
-    const snippet = text.trim().slice(0, 120).replace(/\s+/g, " ");
     return {
       ok: false,
-      error: `endpoint ${apiBaseUrl} returned an unexpected shape (no 'choices' array): ${JSON.stringify(snippet)} — check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected shape (no 'choices' array) — check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`,
     };
   }
   return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
@@ -665,6 +673,14 @@ async function callApi(
   apiKey: string,
   sampling: Sampling = readSampling(),
 ): Promise<{ ok: true; content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } } | { ok: false; error: string }> {
+  // Validate at the fetch-producing boundary as well as at CLI config
+  // resolution. Exported callers (for example httpWorker/runTask) must not be
+  // able to bypass the transport rule by supplying their own base URL.
+  try {
+    assertSecureBaseUrl(apiBaseUrl);
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "apiBaseUrl must use HTTPS" };
+  }
   for (let attempt = 0; attempt <= ENV.apiMaxRetries; attempt++) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ENV.requestTimeoutMs);
@@ -678,6 +694,9 @@ async function callApi(
         },
         body: JSON.stringify(buildChatBody(model, [{ role: "user", content: prompt }], sampling)),
         signal: ctrl.signal,
+        // A validated HTTPS URL is not permission to follow a 307/308 onto an
+        // unvalidated cleartext endpoint with the same POST body.
+        redirect: "error",
       });
     } catch (e) {
       clearTimeout(timer);
@@ -711,15 +730,13 @@ async function callApi(
           await sleep(wait);
           continue;
         }
-        const body = await resp.text();
-        // D-3: log raw body to stderr for diagnostics; do NOT include it in the
-        // error field that flows into priorFailure and the next worker prompt.
-        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 300)}\n`);
+        // Consume the body while the timeout is armed, but never reflect
+        // provider-controlled content into stderr, retry prompts, or reports.
+        await resp.text();
         return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
       }
       if (!resp.ok) {
-        const body = await resp.text();
-        process.stderr.write(`API ${resp.status} body: ${body.slice(0, 500)}\n`);
+        await resp.text();
         return { ok: false, error: `API ${resp.status}` };
       }
 
@@ -1455,11 +1472,13 @@ export const SAFE_TASK_ID = /^[A-Za-z0-9._-]{1,64}$/;
 // (127.0.0.1 / localhost). Parsed with new URL() rather than a regex so the
 // host is the *resolved* host: userinfo tricks like
 // `http://localhost@evil.example` (whose real host is evil.example) cannot be
-// mistaken for loopback, and any userinfo on the loopback path is rejected
-// outright. A malformed/unparseable URL is treated as insecure and rejected.
+// mistaken for loopback. Userinfo is rejected on every scheme: fetch refuses
+// credential-bearing URLs, and echoing one through an error could disclose it.
+// A malformed/unparseable URL is treated as insecure and rejected without
+// reflecting attacker-controlled configuration into logs.
 // This guards the Authorization: Bearer <FARM_API_KEY> header against
-// cleartext transport — the error message intentionally echoes only the
-// offending url, never the key.
+// cleartext transport. Rejection messages are fixed text and never echo the
+// offending URL or key.
 const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost"]);
 
 export function assertSecureBaseUrl(url: string) {
@@ -1467,19 +1486,16 @@ export function assertSecureBaseUrl(url: string) {
   try {
     parsed = new URL(url);
   } catch {
-    throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+    throw new Error("apiBaseUrl must use HTTPS (HTTP is allowed only for bare loopback hosts)");
   }
-  // https keeps the secret inside TLS regardless of host/userinfo — scheme alone governs.
+  if (parsed.username !== "" || parsed.password !== "") {
+    throw new Error("apiBaseUrl must use HTTPS without embedded credentials");
+  }
+  // HTTPS keeps the Bearer secret inside TLS regardless of host.
   if (parsed.protocol === "https:") return;
-  // http is permitted only for a bare loopback host with no embedded credentials.
-  if (
-    parsed.protocol === "http:" &&
-    LOOPBACK_HOSTS.has(parsed.hostname) &&
-    parsed.username === "" &&
-    parsed.password === ""
-  )
-    return;
-  throw new Error(`apiBaseUrl must use HTTPS, got: ${url}`);
+  // HTTP is permitted only for a bare loopback host.
+  if (parsed.protocol === "http:" && LOOPBACK_HOSTS.has(parsed.hostname)) return;
+  throw new Error("apiBaseUrl must use HTTPS (HTTP is allowed only for bare loopback hosts)");
 }
 
 export function validate(plan: Plan) {
@@ -1644,6 +1660,9 @@ export async function screenEntitlements(
 // mocked global fetch, rather than only through the pure screenEntitlements
 // decision logic (which is already tested with an injected fake probe).
 export function makeEntitlementProbe(apiBaseUrl: string, apiKey: string, timeoutMs: number): EntitlementProbe {
+  // This function is exported and may be called without runCanary's earlier
+  // config resolution, so enforce the transport boundary at construction.
+  assertSecureBaseUrl(apiBaseUrl);
   return async (model) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -1653,6 +1672,7 @@ export function makeEntitlementProbe(apiBaseUrl: string, apiKey: string, timeout
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({ model, messages: [{ role: "user", content: "ping" }], max_tokens: 1 }),
         signal: ctrl.signal,
+        redirect: "error",
       });
       return { status: resp.status };
     } catch {
