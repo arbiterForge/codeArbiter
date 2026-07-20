@@ -50,11 +50,14 @@ SEMVER = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 FORBIDDEN_TEXT = re.compile(r"(?:[A-Za-z]:[/\\]Users[/\\]|/home/|/Users/|BEGIN [A-Z ]*PRIVATE|(?:api[_-]?key|token|secret|password)\s*[:=])", re.I)
 REQUIRED_HOSTED_CHECKS = frozenset(
     {
-        f"CA-Pi | [Build] - Adapter ({os_name}, Pi {version})"
+        f"[CHECK] | [PI  ] | Adapter contract  <os: {os_name} · runtime: Pi {version}>"
         for os_name in ("ubuntu-latest", "windows-latest", "macos-latest")
         for version in SUPPORTED
     }
-    | {"CA-Pi | CodeQL (JavaScript/TypeScript)", "Repo | [Gate] - CI Passed"}
+    | {
+        "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
+        "[GATE ] | [REPO] | Merge readiness",
+    }
 )
 FINAL_EVIDENCE_PATHS = frozenset({
     ".codearbiter/gate-events.log",

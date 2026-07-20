@@ -89,7 +89,22 @@ class VerifyPiSupportTest(unittest.TestCase):
 
     def test_final_hosted_attestation_requires_repo_aggregate(self):
         module = load_verifier()
-        self.assertIn("Repo | [Gate] - CI Passed", module.REQUIRED_HOSTED_CHECKS)
+        expected = {
+            f"[CHECK] | [PI  ] | Adapter contract  <os: {os_name} · runtime: Pi {version}>"
+            for os_name in ("ubuntu-latest", "windows-latest", "macos-latest")
+            for version in ("0.80.5", "0.80.10")
+        } | {
+            "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
+            "[GATE ] | [REPO] | Merge readiness",
+        }
+        self.assertEqual(module.REQUIRED_HOSTED_CHECKS, expected)
+        workflow = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        self.assertIn(
+            'name: "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>"',
+            workflow,
+        )
+        for name in expected - {candidate for candidate in expected if "Adapter contract" in candidate}:
+            self.assertIn(f'name: "{name}"', workflow)
 
     def test_promotion_rejects_extra_rows_and_nonfinite_timing(self):
         module = load_verifier()
