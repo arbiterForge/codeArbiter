@@ -952,6 +952,118 @@ class StartupDriftLineSilentTest(unittest.TestCase):
             shutil.rmtree(tmp2, True)
 
 
+class StartupDriftLinePathConfinementTest(unittest.TestCase):
+    """v2.harden.0001: untrusted provenance paths never reach git hashing."""
+
+    def _write_record(self, root, entries):
+        provenance_dir = os.path.join(root, ".codearbiter", ".provenance")
+        os.makedirs(provenance_dir, exist_ok=True)
+        record = pl.new_record(
+            "tech-stack",
+            created="2026-07-20",
+            entries=entries,
+        )
+        pl.write_provenance(os.path.join(provenance_dir, "tech-stack.json"), record)
+
+    def test_startup_drift_line_drops_unsafe_paths_before_hashing(self):
+        known_oid = "abcdef1234567890abcdef1234567890abcdef12"
+        with tempfile.TemporaryDirectory() as sandbox:
+            root = os.path.join(sandbox, "repo")
+            os.makedirs(root)
+            with open(os.path.join(root, "package.json"), "w", encoding="utf-8") as fh:
+                fh.write('{"name": "test"}\n')
+            with open(os.path.join(sandbox, "outside.json"), "w", encoding="utf-8") as fh:
+                fh.write('{"outside": true}\n')
+            self._write_record(
+                root,
+                [
+                    {
+                        "path": "package.json",
+                        "hash": known_oid,
+                        "drift_trigger": True,
+                        "claims": [],
+                    },
+                    {"path": "../outside.json", "drift_trigger": True},
+                    {"path": os.path.join(sandbox, "outside.json"), "drift_trigger": True},
+                    {"path": r"C:\outside.json", "drift_trigger": True},
+                    {"path": "/outside.json", "drift_trigger": True},
+                    {"path": ".", "drift_trigger": True},
+                ],
+            )
+            calls = []
+
+            def fake_runner(args, stdin_text):
+                calls.append((args, stdin_text))
+                return known_oid + "\n"
+
+            self.assertEqual(pl.startup_drift_line(root, runner=fake_runner), "")
+            self.assertEqual(calls, [(["hash-object", "--stdin-paths"], "package.json\n")])
+
+    def test_startup_drift_line_drops_control_paths_without_losing_valid_hashes(self):
+        known_oid = "abcdef1234567890abcdef1234567890abcdef12"
+        for unsafe_path in ("bad\x00path", "bad\npath", "bad\rpath"):
+            with self.subTest(unsafe_path=repr(unsafe_path)), tempfile.TemporaryDirectory() as root:
+                with open(os.path.join(root, "package.json"), "w", encoding="utf-8") as fh:
+                    fh.write('{"name": "test"}\n')
+                self._write_record(
+                    root,
+                    [
+                        {
+                            "path": "package.json",
+                            "hash": known_oid,
+                            "drift_trigger": True,
+                            "claims": [],
+                        },
+                        {"path": unsafe_path, "drift_trigger": True},
+                    ],
+                )
+                calls = []
+
+                def fake_runner(args, stdin_text):
+                    calls.append((args, stdin_text))
+                    return known_oid + "\n"
+
+                self.assertEqual(pl.startup_drift_line(root, runner=fake_runner), "")
+                self.assertEqual(calls, [(["hash-object", "--stdin-paths"], "package.json\n")])
+
+    def test_startup_drift_line_drops_symlink_escape_before_hashing(self):
+        known_oid = "abcdef1234567890abcdef1234567890abcdef12"
+        with tempfile.TemporaryDirectory() as sandbox:
+            root = os.path.join(sandbox, "repo")
+            outside = os.path.join(sandbox, "outside")
+            os.makedirs(root)
+            os.makedirs(outside)
+            with open(os.path.join(root, "package.json"), "w", encoding="utf-8") as fh:
+                fh.write('{"name": "test"}\n')
+            with open(os.path.join(outside, "data.json"), "w", encoding="utf-8") as fh:
+                fh.write('{"outside": true}\n')
+            try:
+                os.symlink(outside, os.path.join(root, "linked"), target_is_directory=True)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest("symlink fixture unavailable: {}".format(exc))
+
+            self._write_record(
+                root,
+                [
+                    {
+                        "path": "package.json",
+                        "hash": known_oid,
+                        "drift_trigger": True,
+                        "claims": [],
+                    },
+                    {"path": "linked/data.json", "drift_trigger": True},
+                ],
+            )
+            calls = []
+
+            def fake_runner(args, stdin_text):
+                calls.append((args, stdin_text))
+                return known_oid + "\n"
+
+            self.assertEqual(pl.startup_drift_line(root, runner=fake_runner), "")
+            self.assertEqual(calls, [(["hash-object", "--stdin-paths"], "package.json\n")])
+
+
 class StartupDriftLineEmitTest(unittest.TestCase):
     """AC-07: startup_drift_line returns exactly one informative line when drift > 0.
 

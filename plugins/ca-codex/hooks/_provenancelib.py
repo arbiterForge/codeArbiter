@@ -87,7 +87,9 @@
 import datetime
 import glob
 import json
+import ntpath
 import os
+import posixpath
 import re
 import subprocess
 
@@ -646,13 +648,46 @@ def _make_root_runner(root):
     return runner
 
 
+def _is_confined_provenance_path(root, path):
+    """Return whether path is a safe, non-root descendant of root.
+
+    Provenance JSON is repository data, so treat its paths as untrusted before
+    feeding them to git's newline-delimited ``--stdin-paths`` protocol.  Check
+    both POSIX and Windows absolute/drive syntax so a record remains safe when
+    a checkout moves between hosts, then resolve on the current host to catch
+    traversal and symlink escapes.
+    """
+    try:
+        if not isinstance(path, str) or not path:
+            return False
+        if any(char in path for char in ("\x00", "\n", "\r")):
+            return False
+        if posixpath.isabs(path) or ntpath.isabs(path) or ntpath.splitdrive(path)[0]:
+            return False
+
+        portable_path = posixpath.normpath(path.replace("\\", "/"))
+        if portable_path in (".", "..") or portable_path.startswith("../"):
+            return False
+
+        confined_root = os.path.realpath(os.path.abspath(root))
+        candidate = os.path.realpath(os.path.join(confined_root, path))
+        return (
+            candidate != confined_root
+            and os.path.commonpath((confined_root, candidate)) == confined_root
+        )
+    except (OSError, TypeError, ValueError):
+        return False
+
+
 def startup_drift_line(root, runner=None, cmd_ref=None):
     """Return a one-line drift summary for SessionStart, or '' when clean (AC-06).
 
     Pipeline:
       1. Load all provenance records from <root>/.codearbiter/.provenance/.
       2. If the map is empty, return '' immediately (nothing to check).
-      3. Collect the set of paths that have drift_trigger:true across all docs.
+      3. Reject unsafe drift-trigger paths, then collect the safe set across all
+         docs. Rejected entries are also excluded from drift comparison so they
+         cannot become false missing-file alarms.
       4. Split into existing paths (os.path.exists(<root>/<path>)) and missing
          ones.  Hash only the existing ones via batch_hash — git hash-object
          errors on non-existent paths and would corrupt the batch.  Absent paths
@@ -687,24 +722,37 @@ def startup_drift_line(root, runner=None, cmd_ref=None):
         if not pm:
             return ""
 
-        # Collect drift_trigger:true paths across all docs (deduped, order-stable)
+        # Collect safe drift_trigger:true paths across all docs (deduped,
+        # order-stable). Build a filtered in-memory map at the same time so a
+        # rejected path cannot reappear as a false missing-file drift result.
         drift_trigger_paths = []
+        safe_pm = {}
         seen = set()
-        for record in pm.values():
+        for doc, record in pm.items():
             try:
                 entries = record.get("entries") or []
+                safe_entries = []
                 for entry in entries:
                     try:
-                        if entry.get("drift_trigger") is not True:
-                            continue
-                        path = entry.get("path")
-                        if path and path not in seen:
-                            drift_trigger_paths.append(path)
-                            seen.add(path)
+                        if entry.get("drift_trigger") is True:
+                            path = entry.get("path")
+                            if not _is_confined_provenance_path(root, path):
+                                continue
+                            if path not in seen:
+                                drift_trigger_paths.append(path)
+                                seen.add(path)
+                        safe_entries.append(entry)
                     except Exception:
                         continue
+                safe_record = dict(record)
+                safe_record["entries"] = safe_entries
+                safe_pm[doc] = safe_record
             except Exception:
                 continue
+        pm = safe_pm
+
+        if not pm:
+            return ""
 
         # Existence-aware hashing: only hash files that exist on disk.
         # Non-existent paths are intentionally absent from current_hashes so
