@@ -3,17 +3,19 @@ import { Writable } from "node:stream";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { win32 } from "node:path";
 
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import {
   PROCESS_TREE_CLEANUP_REASONS,
   WINDOWS_SUPERVISOR_REFUSAL_REASONS,
   createProcessTreeCleanup,
+  openProcessTree,
   parseWindowsSupervisorStatusLine,
   processTreeSpawnOptions,
   processTreeTerminationPlan,
   resolveWindowsPowerShellExecutable,
   resolveWindowsTaskkillExecutable,
+  spawnProcessTree,
   writeBoundedControl,
   windowsHelperNeedsTermination,
   windowsPowerShellCandidatePaths,
@@ -177,11 +179,19 @@ describe("process-tree cleanup", () => {
   test("launches only the canonical inert supervisor before Job attachment with a minimal environment", () => {
     const node = "C:\\Program Files\\nodejs\\node.exe";
     const supervisor = "C:\\fixture\\ca-pi\\helpers\\windows-supervisor.js";
-    const launch = windowsSupervisorLaunchPlan(node, supervisor, {
-      SystemRoot: process.env.SystemRoot,
-      PATH: process.env.PATH,
-      OPENAI_API_KEY: "dummy-openai-value",
-    });
+    const previousNodeOptions = process.env.NODE_OPTIONS;
+    const previousOpenAiKey = process.env.OPENAI_API_KEY;
+    process.env.NODE_OPTIONS = '--import=data:text/javascript,console.error("task-secret-sentinel")';
+    process.env.OPENAI_API_KEY = "dummy-openai-value";
+    let launch: ReturnType<typeof windowsSupervisorLaunchPlan>;
+    try {
+      launch = windowsSupervisorLaunchPlan(node, supervisor);
+    } finally {
+      if (previousNodeOptions === undefined) delete process.env.NODE_OPTIONS;
+      else process.env.NODE_OPTIONS = previousNodeOptions;
+      if (previousOpenAiKey === undefined) delete process.env.OPENAI_API_KEY;
+      else process.env.OPENAI_API_KEY = previousOpenAiKey;
+    }
     expect(launch).toMatchObject({
       command: node,
       args: [supervisor],
@@ -196,10 +206,42 @@ describe("process-tree cleanup", () => {
     });
     const exposed = JSON.stringify({ args: launch.args, env: launch.options.env, control: launch.control });
     expect(exposed).not.toContain("task-secret-sentinel");
-    expect(exposed).toContain("dummy-openai-value");
+    expect(exposed).not.toContain("dummy-openai-value");
     expect(exposed).not.toContain("dummy-farm-value");
-    expect(exposed).not.toContain("task-secret-sentinel");
   });
+
+  test.runIf(process.platform === "win32")("starts Node with scrubbed controls and delivers them only to the contained child", async () => {
+    const supervisorSentinel = "UNCONTAINED_SUPERVISOR_PRELOAD";
+    const preloadSource = `if(process.argv[1]?.toLowerCase().endsWith("windows-supervisor.js"))console.error("${supervisorSentinel}");process.env.CA_PI_CHILD_PRELOAD="contained"`;
+    const nodeOptions = `--import=data:text/javascript,${encodeURIComponent(preloadSource)}`;
+    const child = await spawnProcessTree(process.execPath, [
+      "-e",
+      'process.stdout.write(`${process.env.CA_PI_CHILD_PRELOAD}|${process.env.CA_PI_EXPLICIT}`);setInterval(() => {}, 1000)',
+    ], {
+      cwd: process.cwd(),
+      env: {
+        CA_PI_EXPLICIT: "delivered",
+        NODE_OPTIONS: nodeOptions,
+        SystemRoot: process.env.SystemRoot,
+        TEMP: process.env.TEMP,
+        TMP: process.env.TMP,
+      },
+      stdio: ["pipe", "pipe", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk: string) => { stdout += chunk; });
+    child.stderr.on("data", (chunk: string) => { stderr += chunk; });
+    try {
+      await vi.waitFor(() => expect(stdout).toBe("contained|delivered"), { timeout: 10_000 });
+      expect(stderr).not.toContain(supervisorSentinel);
+    } finally {
+      const cleanup = createProcessTreeCleanup(child, { graceMs: 250, verifyMs: 5_000 });
+      await expect(cleanup.terminate("completed")).resolves.toMatchObject({ verified: true });
+    }
+  }, 20_000);
 
   test("refuses invalid process identities, relative taskkill paths, and unbounded timing", () => {
     expect(() => processTreeTerminationPlan("linux", 0)).toThrow("positive integer");
@@ -248,6 +290,11 @@ describe("process-tree cleanup", () => {
       "protocol_overflow",
       "startup_failure",
       "parent_shutdown",
+      "completed",
+      "session_switch",
+      "shutdown",
+      "unload",
+      "fatal_error",
     ]);
     for (const reason of PROCESS_TREE_CLEANUP_REASONS) {
       const started = Date.now();
@@ -287,4 +334,19 @@ describe("process-tree cleanup", () => {
       forceFixtureCleanup(child.pid);
     }
   }, 10_000);
+
+  test("exposes one minimal child plus cleanup handle", async () => {
+    const child = spawn(process.execPath, ["-e", "process.exit(0)"], {
+      ...processTreeSpawnOptions(process.platform), stdio: ["pipe", "pipe", "pipe", "pipe"],
+    });
+    const spawnTree = vi.fn(async () => child as never);
+    const cleanup = { ready: async () => true, terminate: vi.fn() };
+    const createCleanup = vi.fn(() => cleanup as never);
+    const managed = await openProcessTree(process.execPath, ["-e", "process.exit(0)"], {
+      cwd: process.cwd(), env: {}, stdio: ["pipe", "pipe", "pipe", "pipe"],
+    }, { spawnTree, createCleanup });
+    expect(managed).toEqual({ child, cleanup });
+    expect(spawnTree).toHaveBeenCalledOnce();
+    expect(createCleanup).toHaveBeenCalledWith(child);
+  });
 });

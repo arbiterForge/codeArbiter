@@ -115,6 +115,8 @@ WSL bridge), so they need Docker available and are slower; they self-skip when `
 
 When `plugins/ca-pi/**`, `core/**`, or the Pi package generators changed:
 
+The Pi tools install is an aggregate prerequisite: `npm --prefix plugins/ca-pi/tools ci --ignore-scripts`.
+
 ```sh
 npm --prefix plugins/ca-pi/tools ci --ignore-scripts
 npm --prefix plugins/ca-pi/tools run typecheck

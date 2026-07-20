@@ -483,6 +483,142 @@ describe("Pi dispatch contract", () => {
     expect(result).toMatchObject({ details: { state: "accepted", children: [] } });
   });
 
+  test("publishes bounded role activity and contains reporting failures", async () => {
+    const events: unknown[] = [];
+    const run = vi.fn(async () => ({ state: "accepted" as DispatchTerminal, children: [] }));
+    const tool = createDispatchTool({
+      authorize: async () => true,
+      resolveRuntime: () => runtime,
+      dispatch: run,
+      activity: () => ({ publish: (event) => {
+        events.push(event);
+        if (events.length === 1) throw new Error("display unavailable");
+      } }),
+    });
+    const result = await tool.execute("call-1", {
+      mode: "parallel",
+      roles: ["security-reviewer", "auth-crypto-reviewer"],
+      task: "secret task text",
+    }, undefined, undefined, {
+      cwd: runtime.cwd,
+      signal: undefined,
+      model: { provider: runtime.provider, id: runtime.model },
+    });
+
+    expect(result).toMatchObject({ details: { state: "accepted" } });
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(events).toHaveLength(4);
+    expect(events).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "child", label: "security-reviewer", state: "active" }),
+      expect.objectContaining({ kind: "child", label: "security-reviewer", state: "completed" }),
+      expect.objectContaining({ kind: "child", label: "auth-crypto-reviewer", state: "active" }),
+      expect.objectContaining({ kind: "child", label: "auth-crypto-reviewer", state: "completed" }),
+    ]));
+    expect(JSON.stringify(events)).not.toMatch(/secret task text|nodePath|parentEnv/u);
+  });
+
+  test("does not let activity identity generation change dispatch authority", async () => {
+    const createActivityId = vi.fn(() => { throw new Error("display identity unavailable"); });
+    const run = vi.fn(async () => ({ state: "accepted" as DispatchTerminal, children: [] }));
+    const events: unknown[] = [];
+    const tool = createDispatchTool({
+      authorize: async () => true,
+      resolveRuntime: () => runtime,
+      dispatch: run,
+      createActivityId,
+      activity: () => ({ publish: (event) => { events.push(event); } }),
+    });
+
+    const result = await tool.execute("call-activity-id-failure", {
+      mode: "single", roles: ["security-reviewer"], task: "Review this.",
+    }, undefined, undefined, {
+      cwd: runtime.cwd,
+      signal: undefined,
+      model: { provider: runtime.provider, id: runtime.model },
+    });
+
+    expect(result).toMatchObject({ details: { state: "accepted" } });
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(createActivityId).toHaveBeenCalledTimes(1);
+    expect(events).toEqual([]);
+  });
+
+  test("does not publish activity for structurally invalid dispatch requests", async () => {
+    const events: unknown[] = [];
+    const run = vi.fn(async () => ({ state: "accepted" as DispatchTerminal, children: [] }));
+    const tool = createDispatchTool({
+      authorize: async () => true,
+      resolveRuntime: () => runtime,
+      dispatch: run,
+      activity: () => ({ publish: (event) => { events.push(event); } }),
+    });
+
+    const result = await tool.execute("call-oversized-roles", {
+      mode: "parallel",
+      roles: Array.from({ length: DISPATCH_POLICY.maxRoles + 1 }, (_, index) => `reviewer-${index}`),
+      task: "Review this.",
+    }, undefined, undefined, {
+      cwd: runtime.cwd,
+      signal: undefined,
+      model: { provider: runtime.provider, id: runtime.model },
+    });
+
+    expect(result).toMatchObject({ details: { state: "protocol_error" } });
+    expect(run).not.toHaveBeenCalled();
+    expect(events).toEqual([]);
+  });
+
+  test("rejects proxy and accessor request fields before activity work", async () => {
+    let roleReads = 0;
+    const run = vi.fn(async () => ({ state: "accepted" as DispatchTerminal, children: [] }));
+    const events: unknown[] = [];
+    const tool = createDispatchTool({
+      authorize: async () => true,
+      resolveRuntime: () => runtime,
+      dispatch: run,
+      activity: () => ({ publish: (event) => { events.push(event); } }),
+    });
+    const accessor = { mode: "single", task: "Review this." } as Record<string, unknown>;
+    Object.defineProperty(accessor, "roles", {
+      enumerable: true,
+      get: () => { roleReads += 1; return ["security-reviewer"]; },
+    });
+    const proxy = new Proxy({ mode: "single", roles: ["security-reviewer"], task: "Review this." }, {});
+
+    for (const params of [accessor, proxy]) {
+      const result = await tool.execute("call-hostile-request", params, undefined, undefined, {
+        cwd: runtime.cwd,
+        signal: undefined,
+        model: { provider: runtime.provider, id: runtime.model },
+      });
+      expect(result).toMatchObject({ details: { state: "protocol_error" } });
+    }
+    expect(roleReads).toBe(0);
+    expect(run).not.toHaveBeenCalled();
+    expect(events).toEqual([]);
+  });
+
+  test("does not project invalid role paths through the production dispatcher", async () => {
+    const events: unknown[] = [];
+    const tool = createDispatchTool({
+      authorize: async () => true,
+      resolveRuntime: () => runtime,
+      activity: () => ({ publish: (event) => { events.push(event); } }),
+    });
+
+    const result = await tool.execute("call-invalid-role-path", {
+      mode: "single", roles: ["C:/private/prompt.txt"], task: "Review this.",
+    }, undefined, undefined, {
+      cwd: runtime.cwd,
+      signal: undefined,
+      model: { provider: runtime.provider, id: runtime.model },
+    });
+
+    expect(result).toMatchObject({ details: { state: "protocol_error" } });
+    expect(events).toEqual([]);
+    expect(JSON.stringify(events)).not.toContain("C:/private/prompt.txt");
+  });
+
   test("tool input is exact and fails closed before dispatch", async () => {
     const run = vi.fn(async () => ({ state: "accepted" as DispatchTerminal, children: [] }));
     const tool = createDispatchTool({ authorize: async () => true, resolveRuntime: () => runtime, dispatch: run });

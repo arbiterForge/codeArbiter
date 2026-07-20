@@ -14,7 +14,7 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 |---|---|---|
 | **Claude Code** | Any version with plugin support | `plugin.json` states no explicit minimum version; the plugin uses standard hook events (`SessionStart`, `PreToolUse`, `PostToolUse`) and the plugin/marketplace install commands documented in [Install](/getting-started/install/). |
 | **Codex** | Minimum 0.143.0; live-verified on 0.144.1 | `ca-codex` uses one OS-specific handler per event and a Codex adapter that converts the shared guard verdict to structured deny output. Trust the hook set through `/hooks`. |
-| **Pi** | 0.80.5 or 0.80.10 (this release line) | `ca-pi` is Git-only: `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`. Also requires Node.js 22.19+. Requires an affirmative project-trust decision before repository-aware startup. See [Install for Pi](/getting-started/pi/). |
+| **Pi** | 0.80.5 or 0.80.10 (this release line) | `ca-pi` is Git-only: `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`. Also requires Node.js 22.19+. Requires an affirmative project-trust decision before repository-aware startup. Its human-readable generated catalog is `plugins/ca-pi/SKILLS.md`. See [Install for Pi](/getting-started/pi/). |
 | **Python** | Python 3, stdlib only, resolvable as `python3` **or** `python` on `PATH` | Every hook is registered twice in `hooks.json` — once under `python3`, once under a `python3 -c "" \|\| python` fallback — so it runs on a machine where only `python` resolves. No third-party Python packages are ever installed or imported (ADR-0004: database-free, stdlib-only architecture). On Pi, a missing interpreter blocks mutating calls and surfaces an interpreter breadcrumb rather than failing silently. |
 | **Operating system** | Windows, macOS, or Linux | Hooks are pure Python stdlib and carry no OS-specific code path beyond the interpreter-name fallback above. The `.git/hooks` backstop shim is a POSIX `sh` script; on Windows this runs under Git for Windows' bundled `sh.exe`, which ships with every standard Git install. Windows is also a promoted, tested platform for `ca-pi`; see [Windows notes](/getting-started/pi/#windows). |
 | **git** | Any reasonably current git | Required regardless of codeArbiter — the plugin reads repo state (`git config user.email`, branch, diff) via subprocess calls to your existing `git` binary, and installs the `.git/hooks` backstop through it. |
@@ -29,7 +29,10 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 | Plugin | `ca` | `ca-codex` | `ca-pi` |
 | Distribution | Marketplace + npm-backed release | Marketplace + npm-backed release | Git tags only (`ca-pi-v<version>`); no npm release |
 | Trust/approval | Claude Code plugin trust flow | Review through `/hooks`; start a fresh thread | Affirmative project-trust decision, then a fresh session |
-| Statusline | Available | No statusline surface | No statusline; `ctx.ui.setStatus` reports compact governance state but does not replace Pi's footer |
+| Statusline / footer | Available | No statusline surface | Rich footer in every interactive parent repository; governance row only when enabled and affirmatively trusted; rate-window telemetry is omitted |
+| Mutation permission | Host permission flow plus gates | Codex approval plus gates | Execute mode asks before governed mutations or external side effects; hard blocks deny first |
+| Plan mode | Host plan workflow | Read-only collaboration mode | Plan mode is read-only except for the current canonical spec, plan, and plan ledger |
+| Background jobs | Host managed | Host managed | Bounded session-only jobs, never restored from Pi session entries; unverified cleanup blocks later launches with `/ca-doctor` direction |
 | `/ca:sprint --farm` | `preview`, shared `farm.js` backend | `preview`, shared `farm.js` backend | `preview`, same shared `farm.js` backend through the trusted parent extension; no Pi-native farm engine |
 | Subagent/child dispatch | Plugin agents dispatched directly | Roles run inline (packaging pending) | Fresh child Pi processes via the parent-only `codearbiter_dispatch` EXEC tool; single/chain/parallel modes share bounded depth, concurrency, timeout, cancellation, and process-tree cleanup |
 | Transcript pruning / compaction | Claude transcript-pruning engine | No transcript pruning; host-neutral staleness warning | Native Pi compaction event; codeArbiter does not rewrite Pi session JSONL |
@@ -37,6 +40,13 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 
 The full exception ledger with status and evidence for every host delta lives in
 [`docs/parity.md`](https://github.com/arbiterForge/codeArbiter/blob/main/docs/parity.md).
+
+The Pi platform aggregate has a cold prerequisite: if the tools workspace lacks
+its resolved Vitest binary, it returns `missing_prerequisite` before fixtures
+start and directs the operator to
+`npm --prefix plugins/ca-pi/tools ci --ignore-scripts`. It never installs on the
+verification path. Footer, permission UI, plan UI, and background jobs are
+parent-interactive only and absent from JSON, RPC, print, and hardened children.
 
 ## Prerequisites Checklist
 

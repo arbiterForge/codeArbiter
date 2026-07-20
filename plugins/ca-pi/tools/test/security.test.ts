@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, utimes, writeFile } from "node:fs/promises";
+import { link, lstat, mkdir, mkdtemp, open, readFile, realpath, rm, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -6,7 +6,7 @@ import { describe, expect, test } from "vitest";
 import { buildChildEnv } from "../src/child-env.ts";
 import { createFarmPreviewTool } from "../src/farm.ts";
 import { installParent, installPiFarmPreview } from "../src/extension.ts";
-import { guardUnknownTools } from "../src/tool-guard.ts";
+import { appendPermissionAudit, appendPermissionAuditWithIo, guardUnknownTools } from "../src/tool-guard.ts";
 import type { BridgePort, ExtensionContextPort, ParentPiPort, ToolCategory, ToolDefinitionPort } from "../src/contracts.ts";
 
 type ToolCallHandler = (event: Record<string, unknown>) => unknown;
@@ -47,6 +47,149 @@ async function piDescriptor(): Promise<Readonly<Record<string, ToolCategory>>> {
 }
 
 describe("ADR-0014 adversarial promotion contract", () => {
+  test("permission audit is append-only and rejects attacker-controlled row fields", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-audit-"));
+    try {
+      const state = resolve(root, ".codearbiter");
+      const audit = resolve(state, "gate-events.log");
+      await mkdir(state);
+      await writeFile(audit, "sentinel\n", "utf8");
+      await expect(appendPermissionAudit(root, {
+        timestamp: "2026-07-19T00:00:00.000Z",
+        correlation: "a".repeat(64),
+        toolClass: "EXEC",
+        actionClasses: ["shell-mutation", "push"],
+        decision: "approved",
+      })).resolves.toBe(true);
+      const afterValid = await readFile(audit, "utf8");
+      expect(afterValid.startsWith("sentinel\n")).toBe(true);
+      expect(afterValid).toContain("ACTION_CLASSES: shell-mutation,push");
+      expect(afterValid).not.toContain(root);
+
+      await expect(appendPermissionAudit(root, {
+        timestamp: "2026-07-19T00:00:00.000Z\nOPENAI_API_KEY=synthetic-secret",
+        correlation: "not-a-correlation",
+        toolClass: "EXEC\nFORGED" as never,
+        actionClasses: ["shell-mutation\nFORGED"] as never,
+        decision: "approved\nFORGED" as never,
+      })).resolves.toBe(false);
+      expect(await readFile(audit, "utf8")).toBe(afterValid);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  test("permission audit rejects hardlinks and nonregular sinks", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-sinks-"));
+    try {
+      const state = resolve(root, ".codearbiter");
+      const target = resolve(state, "gate-events.log");
+      const other = resolve(root, "other.log");
+      await mkdir(state);
+      await writeFile(other, "other\n", "utf8");
+      await link(other, target);
+      const row = {
+        timestamp: "2026-07-19T00:00:00.000Z", correlation: "b".repeat(64), toolClass: "WRITE" as const,
+        actionClasses: ["source-write"] as const, decision: "approved" as const,
+      };
+      await expect(appendPermissionAudit(root, row)).resolves.toBe(false);
+      expect(await readFile(other, "utf8")).toBe("other\n");
+      await rm(target);
+      await mkdir(target);
+      await expect(appendPermissionAudit(root, row)).resolves.toBe(false);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  test("permission audit rejects validation-open path swaps and opened-handle mismatches", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-race-"));
+    try {
+      const state = resolve(root, ".codearbiter");
+      const target = resolve(state, "gate-events.log");
+      const replacement = resolve(state, "replacement.log");
+      await mkdir(state);
+      await writeFile(target, "target\n", "utf8");
+      await writeFile(replacement, "replacement\n", "utf8");
+      const targetStats = await lstat(target);
+      const replacementStats = await lstat(replacement);
+      const row = {
+        timestamp: "2026-07-19T00:00:00.000Z", correlation: "c".repeat(64), toolClass: "EXEC" as const,
+        actionClasses: ["shell-mutation"] as const, decision: "approved" as const,
+      };
+      let targetLstats = 0;
+      const swappedIo = {
+        realpath,
+        lstat: async (path: string) => {
+          if (path === target) return ++targetLstats === 1 ? targetStats : replacementStats;
+          return await lstat(path);
+        },
+        open: async () => await open(replacement, "a"),
+      };
+      await expect(appendPermissionAuditWithIo(root, row, swappedIo)).resolves.toBe(false);
+      expect(await readFile(replacement, "utf8")).toBe("replacement\n");
+
+      const mismatchedIo = {
+        realpath,
+        lstat,
+        open: async () => await open(replacement, "a"),
+      };
+      await expect(appendPermissionAuditWithIo(root, row, mismatchedIo)).resolves.toBe(false);
+      expect(await readFile(replacement, "utf8")).toBe("replacement\n");
+
+      let afterAppendLstats = 0;
+      const afterAppendSwapIo = {
+        realpath,
+        lstat: async (path: string) => {
+          if (path === target) return ++afterAppendLstats < 4 ? targetStats : replacementStats;
+          return await lstat(path);
+        },
+        open: async () => await open(target, "a"),
+      };
+      await expect(appendPermissionAuditWithIo(root, row, afterAppendSwapIo)).resolves.toBe(false);
+      expect(await readFile(replacement, "utf8")).toBe("replacement\n");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  test("permission audit creates exclusively and rejects a hardlink raced into an absent target", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-permission-create-"));
+    try {
+      const state = resolve(root, ".codearbiter");
+      const target = resolve(state, "gate-events.log");
+      const other = resolve(root, "other.log");
+      await mkdir(state);
+      const row = {
+        timestamp: "2026-07-19T00:00:00.000Z", correlation: "d".repeat(64), toolClass: "EDIT" as const,
+        actionClasses: ["source-edit"] as const, decision: "approved" as const,
+      };
+      await expect(appendPermissionAudit(root, row)).resolves.toBe(true);
+      const created = await lstat(target);
+      expect(created.isFile()).toBe(true);
+      expect(created.nlink).toBe(1);
+
+      await rm(target);
+      await writeFile(other, "other\n", "utf8");
+      let raced = false;
+      const raceIo = {
+        realpath,
+        lstat,
+        open: async (path: string, flags: number, mode?: number) => {
+          if (path === target && !raced) {
+            raced = true;
+            await link(other, target);
+          }
+          return await open(path, flags, mode);
+        },
+      };
+      await expect(appendPermissionAuditWithIo(root, row, raceIo)).resolves.toBe(false);
+      expect(await readFile(other, "utf8")).toBe("other\n");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   test.each(["project_write_anywhere", "__proto__", "constructor", "prototype"])(
     "blocks undeclared potentially mutating tool %s without echoing attacker input",
     async (toolName) => {

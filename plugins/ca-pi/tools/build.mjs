@@ -7,8 +7,15 @@ const descriptor = JSON.parse(await readFile(resolve("../../../core/hosts.json")
 const secretCorpusDocument = JSON.parse(await readFile(resolve("../../ca/hooks/secret-detection-corpus.json"), "utf8"));
 const piHost = descriptor.hosts?.find((host) => host.name === "pi");
 const toolClasses = piHost?.tool_classes;
+const childToolNames = ["bash", "write", "edit", "read"];
+const permissionPolicySurfaces = piHost?.permission_policy?.surfaces;
 const expansionFingerprints = piHost?.package?.skill_expansion_fingerprints;
 const categories = new Set(["EXEC", "WRITE", "EDIT", "READ", "OTHER"]);
+const permissionActions = new Set([
+  "read", "inspection", "source-write", "source-edit", "config-write", "config-edit",
+  "planning-write", "shell-mutation", "dependency-change", "network-side-effect",
+  "external-side-effect", "background-launch", "push", "release",
+]);
 if (
   toolClasses === null
   || typeof toolClasses !== "object"
@@ -16,6 +23,24 @@ if (
   || Object.entries(toolClasses).some(([name, category]) => name === "" || !categories.has(category))
 ) {
   throw new Error("core/hosts.json has no valid Pi tool_classes descriptor");
+}
+const childToolClasses = Object.freeze(Object.fromEntries(
+  childToolNames.map((name) => [name, toolClasses[name]]),
+));
+if (Object.values(childToolClasses).some((category) => !categories.has(category))) {
+  throw new Error("core/hosts.json has no exact Pi child tool descriptor");
+}
+if (
+  permissionPolicySurfaces === null
+  || typeof permissionPolicySurfaces !== "object"
+  || Array.isArray(permissionPolicySurfaces)
+  || Object.getPrototypeOf(permissionPolicySurfaces) !== Object.prototype
+  || Object.entries(permissionPolicySurfaces).length > 128
+  || Object.entries(permissionPolicySurfaces).some(([name, action]) => (
+    !/^[a-z][a-z0-9_-]{0,127}$/u.test(name) || !permissionActions.has(action)
+  ))
+) {
+  throw new Error("core/hosts.json has no valid Pi permission_policy.surfaces descriptor");
 }
 if (!Array.isArray(secretCorpusDocument.must_match) || secretCorpusDocument.must_match.some((item) => typeof item !== "string" || item === "")) {
   throw new Error("shared secret-detection-corpus.json has no valid must_match corpus");
@@ -48,6 +73,7 @@ const shared = {
   target: "node22",
   define: {
     __CODEARBITER_PI_TOOL_CLASSES__: JSON.stringify(toolClasses),
+    __CODEARBITER_PI_PERMISSION_POLICY_SURFACES__: JSON.stringify(permissionPolicySurfaces),
     __CODEARBITER_SECRET_CORPUS__: JSON.stringify(secretCorpusDocument.must_match),
     __CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS__: JSON.stringify(expansionFingerprints),
   },
@@ -61,6 +87,10 @@ await build({
 
 await build({
   ...shared,
+  define: {
+    ...shared.define,
+    __CODEARBITER_PI_TOOL_CLASSES__: JSON.stringify(childToolClasses),
+  },
   entryPoints: ["src/child-extension.ts"],
   outfile: "../extensions/codearbiter-child.js",
 });

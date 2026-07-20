@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { guardUnknownTools, wrapBuiltins } from "../src/tool-guard.ts";
+import { compileBuiltinPermissionPolicy, guardUnknownTools, wrapBuiltins } from "../src/tool-guard.ts";
 import type { BridgeRequest, BridgeResponse, ToolCategory } from "../src/contracts.ts";
 
 type Handler = (event: Record<string, unknown>) => unknown;
@@ -22,6 +22,8 @@ const descriptor: Readonly<Record<string, ToolCategory>> = {
   read: "READ",
   codearbiter_farm_preview: "EXEC",
 };
+const permissionPolicy = compileBuiltinPermissionPolicy(descriptor, {});
+if (permissionPolicy === undefined) throw new Error("test permission policy did not compile");
 
 class OrderedPi {
   readonly handlers: Handler[] = [];
@@ -72,6 +74,7 @@ describe("live-order final-argument promotion proof", () => {
     const pi = new OrderedPi();
     const requests: BridgeRequest[] = [];
     const executions: Array<{ name: string; input: Record<string, unknown> }> = [];
+    let confirmations = 0;
     const bridge = {
       call: async (request: BridgeRequest): Promise<BridgeResponse> => {
         requests.push(request);
@@ -86,6 +89,7 @@ describe("live-order final-argument promotion proof", () => {
       descriptor,
       factories: factories(executions),
       wrapperSourcePath: WRAPPER,
+      permissionPolicy,
     });
     // Pi 0.80.5/0.80.6 run tool_call handlers in extension order over one input
     // object, then pass the resulting object to the registered tool executor.
@@ -95,9 +99,32 @@ describe("live-order final-argument promotion proof", () => {
     const event = { toolName: "bash", input: { command: "git status" } };
 
     await expect(pi.beforeExecution(event)).resolves.toBeUndefined();
-    await expect(pi.definitions.get("bash")!.execute("call-final", event.input)).rejects.toThrow("H-20");
+    await expect(pi.definitions.get("bash")!.execute("call-final", event.input, undefined, undefined, {
+      cwd: "C:/repo", mode: "tui", hasUI: true,
+      ui: { confirm: async () => { confirmations += 1; return true; } },
+    })).rejects.toThrow("H-20");
     expect(requests.at(-1)?.input).toEqual({ command: "git commit --no-verify" });
+    expect(confirmations).toBe(0);
     expect(executions).toEqual([]);
+  });
+
+  test("malformed final action classification denies without UI", async () => {
+    const pi = new OrderedPi();
+    const executions: Array<{ name: string; input: Record<string, unknown> }> = [];
+    let confirmations = 0;
+    const audits: unknown[] = [];
+    wrapBuiltins(pi as never, { call: async () => ({ version: 1, outcome: "allow" }) }, {
+      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: WRAPPER, permissionPolicy,
+      permissionAudit: async (_cwd, row) => { audits.push(row); return true; },
+    });
+
+    await expect(pi.definitions.get("bash")!.execute("malformed-final", { command: 42 }, undefined, undefined, {
+      cwd: "C:/repo", mode: "tui", hasUI: true,
+      ui: { confirm: async () => { confirmations += 1; return true; } },
+    })).rejects.toThrow("policy denied");
+    expect(confirmations).toBe(0);
+    expect(executions).toEqual([]);
+    expect(audits).toEqual([expect.objectContaining({ auditCode: "PI_PERMISSION_UNCLASSIFIED" })]);
   });
 
   test("a later extension cannot replace a governed built-in owner", async () => {

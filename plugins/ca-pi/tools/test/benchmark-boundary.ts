@@ -49,9 +49,17 @@ wrapBuiltins(pi, bridge, {
   descriptor: { bash: "EXEC", edit: "EDIT", read: "READ", write: "WRITE" },
   factories,
   wrapperSourcePath: import.meta.filename,
+  permissionAudit: async () => true,
 });
 const registrationMs = performance.now() - startup;
 process.stdout.write(JSON.stringify({ phase: "ready", wrapperCount: definitions.size, registrationMs }) + "\n");
+const executionContext = {
+  cwd: process.cwd(),
+  mode: "tui" as const,
+  hasUI: true,
+  ui: { confirm: async () => true },
+  sessionManager: { getSessionId: () => "benchmark-session" },
+};
 const corpus: ReadonlyArray<readonly [string, Record<string, unknown>]> = [
   ["read", { path: "fixture π.txt" }],
   ["bash", { command: "git status --short" }],
@@ -61,7 +69,7 @@ const timings: number[] = [];
 for (let index = 0; index < samples + 5; index += 1) {
   const [name, input] = corpus[index % corpus.length]!;
   const begin = performance.now();
-  await definitions.get(name)!.execute(`benchmark-${index}`, input);
+  await definitions.get(name)!.execute(`benchmark-${index}`, input, undefined, undefined, executionContext);
   const elapsed = performance.now() - begin;
   if (index >= 5) timings.push(elapsed);
 }

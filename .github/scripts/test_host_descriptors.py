@@ -13,6 +13,7 @@ import importlib.util
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -93,7 +94,11 @@ _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS = frozenset({
     "tools/src/compaction.ts",
     "tools/src/dispatch.ts",
     "tools/src/farm.ts",
+    "tools/src/footer-state.ts",
+    "tools/src/footer.ts",
+    "tools/src/plan-mode.ts",
     "tools/src/process-tree.ts",
+    "tools/src/policy.ts",
     "tools/src/roles.ts",
     "tools/src/runner.ts",
     "tools/src/windows-supervisor.ts",
@@ -102,14 +107,25 @@ _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/dispatch.test.ts",
     "tools/test/farm.test.ts",
     "tools/test/final-arguments.test.ts",
+    "tools/test/footer.test.ts",
+    "tools/test/plan-mode.test.ts",
     "tools/test/fixtures/pi-0.80.5-help.txt",
     "tools/test/fixtures/pi-0.80.6-help.txt",
     "tools/test/process-tree.test.ts",
+    "tools/test/policy.test.ts",
     "tools/test/runner-isolation.test.ts",
     "tools/test/runtime-resolver.test.ts",
     "tools/test/security.test.ts",
     "tools/test/windows-supervisor.test.ts",
     "tools/test/benchmark-boundary.ts",
+})
+
+# Exact new implementation and test artifacts approved by Tasks 11 through 14.
+_TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/src/activity.ts",
+    "tools/src/background-jobs.ts",
+    "tools/test/activity.test.ts",
+    "tools/test/background-jobs.test.ts",
 })
 
 
@@ -338,6 +354,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_TASK_4_NON_POLICY_ARTIFACTS)
         | set(_TASK_5_NON_POLICY_ARTIFACTS)
         | set(_TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS)
+        | set(_TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
@@ -415,6 +432,21 @@ def _host_descriptor_ci_contract_violations(ci):
 
 
 class DescriptorContractTest(unittest.TestCase):
+    def test_live_experience_catalog_paths_are_host_specific(self):
+        module = _descriptors()
+        catalogs = {
+            host.name: host.catalog
+            for host in module.load_host_descriptors(str(REPO))
+        }
+        self.assertEqual(
+            catalogs,
+            {
+                "claude": None,
+                "codex": "skills/INDEX.md",
+                "pi": "SKILLS.md",
+            },
+        )
+
     def test_pi_decision_0018_oracle_is_exact_versioned_and_descriptor_owned(self):
         module = _descriptors()
         pi = module.host_descriptor("pi", str(REPO))
@@ -450,7 +482,27 @@ class DescriptorContractTest(unittest.TestCase):
             host.capabilities["statusline"] = True
         with self.assertRaises(TypeError):
             host.tool_classes["rogue"] = "READ"
+        with self.assertRaises(TypeError):
+            host.permission_policy.surfaces["rogue"] = "read"
         self.assertIsInstance(host.surface_rules[0].exclude, frozenset)
+
+    def test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned(self):
+        module = _descriptors()
+        hosts = module.load_host_descriptors(str(REPO))
+        pi = next(host for host in hosts if host.name == "pi")
+        self.assertEqual(
+            dict(pi.permission_policy.surfaces),
+            {
+                "ca-plan": "planning-write",
+                "codearbiter_background_bash": "background-launch",
+            },
+        )
+        self.assertEqual(pi.tool_classes["codearbiter_background_bash"], "EXEC")
+        self.assertNotIn("ca-plan", pi.tool_classes)
+        for host in hosts:
+            if host.name != "pi":
+                self.assertIsNone(host.permission_policy)
+                self.assertNotIn("codearbiter_background_bash", host.tool_classes)
 
     def test_pi_ac_01_schema_rejects_invalid_documents(self):
         module = _descriptors()
@@ -485,6 +537,30 @@ class DescriptorContractTest(unittest.TestCase):
         noncanonical_tool["hosts"][0]["tool_classes"][first_tool] = "SHELL"
         cases.append(("noncanonical tool class", noncanonical_tool))
 
+        unknown_policy_key = _valid_document()
+        unknown_policy_key["hosts"][2]["permission_policy"] = {
+            "surfaces": {}, "persistent_grants": True,
+        }
+        cases.append(("unknown permission policy key", unknown_policy_key))
+
+        unknown_policy_action = _valid_document()
+        unknown_policy_action["hosts"][2]["permission_policy"] = {
+            "surfaces": {"ca-plan": "always-allow"},
+        }
+        cases.append(("unknown permission action", unknown_policy_action))
+
+        malformed_policy_name = _valid_document()
+        malformed_policy_name["hosts"][2]["permission_policy"] = {
+            "surfaces": {"ca-plan\u001b[2J": "planning-write"},
+        }
+        cases.append(("malformed permission surface name", malformed_policy_name))
+
+        oversized_policy_name = _valid_document()
+        oversized_policy_name["hosts"][2]["permission_policy"] = {
+            "surfaces": {"a" * 129: "planning-write"},
+        }
+        cases.append(("oversized permission surface name", oversized_policy_name))
+
         for label, document in cases:
             with self.subTest(label=label), tempfile.TemporaryDirectory() as repo:
                 core = Path(repo) / "core"
@@ -518,6 +594,46 @@ class DescriptorContractTest(unittest.TestCase):
 
 
 class GenerationContractTest(unittest.TestCase):
+    def test_plugin_reference_checker_follows_custom_pi_catalog_descriptor_path(self):
+        with tempfile.TemporaryDirectory() as repo:
+            root = Path(repo)
+            (root / ".github/scripts").mkdir(parents=True)
+            (root / "tools").mkdir()
+            (root / "core").mkdir()
+            (root / "plugins/ca-pi/skills/ca-demo").mkdir(parents=True)
+            shutil.copy2(REPO / ".github/scripts/check-plugin-refs.py",
+                         root / ".github/scripts/check-plugin-refs.py")
+            shutil.copy2(REPO / "tools/host_descriptors.py",
+                         root / "tools/host_descriptors.py")
+            shutil.copy2(REPO / "core/hosts.json", root / "core/hosts.json")
+            hosts_path = root / "core/hosts.json"
+            document = json.loads(hosts_path.read_text(encoding="utf-8"))
+            pi = next(host for host in document["hosts"] if host["name"] == "pi")
+            pi["surface"]["catalog"] = "docs/ENTRY-CATALOG.md"
+            hosts_path.write_text(
+                json.dumps(document), encoding="utf-8", newline="\n"
+            )
+            (root / "plugins/ca-pi/skills/ca-demo/SKILL.md").write_text(
+                "# demo\n", encoding="utf-8", newline="\n"
+            )
+            (root / "plugins/ca-pi/docs").mkdir()
+            (root / "plugins/ca-pi/docs/ENTRY-CATALOG.md").write_text(
+                "# Skills\n\nca-demo\n", encoding="utf-8", newline="\n"
+            )
+            (root / "plugins/ca-pi/COMMANDS.md").write_text(
+                "# Commands\n\n/ca-demo\n", encoding="utf-8", newline="\n"
+            )
+
+            result = subprocess.run(
+                [sys.executable, str(root / ".github/scripts/check-plugin-refs.py"),
+                 "ca-pi"],
+                cwd=root,
+                text=True,
+                capture_output=True,
+                timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_pi_ac_02_generation_is_clean_on_second_run(self):
         _run_generator("tools/build-surface.py")
         _run_generator("tools/sync-core.py")
@@ -572,7 +688,7 @@ class GenerationContractTest(unittest.TestCase):
         self.assertNotIn("tools/rogue.js", exemptions)
         self.assertNotIn("dist/rogue.js", exemptions)
 
-    def test_pi_ac_04_exact_task_2_through_10_non_policy_files_are_the_only_new_exemptions(self):
+    def test_pi_ac_04_exact_task_2_through_14_non_policy_files_are_the_only_new_exemptions(self):
         module = _descriptors()
         descriptors = module.load_host_descriptors(str(REPO))
         pi_host = next(item for item in descriptors if item.name == "pi")
@@ -581,7 +697,7 @@ class GenerationContractTest(unittest.TestCase):
         _assert_pi_policy_matches_core(actual, expected)
         for rel in (_TASK_2_NON_POLICY_ARTIFACTS | _TASK_3_NON_POLICY_ARTIFACTS
                     | _TASK_4_NON_POLICY_ARTIFACTS | _TASK_5_NON_POLICY_ARTIFACTS
-                    | _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS):
+                    | _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS | _TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS):
             with self.subTest(rel=rel):
                 self.assertIn(rel, exemptions)
         self.assertFalse(any(item.startswith("tools/") and item.endswith("/**") for item in exemptions))

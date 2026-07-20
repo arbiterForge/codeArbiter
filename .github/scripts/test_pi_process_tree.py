@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import queue
+import re
 import shutil
 import signal
 import subprocess
@@ -20,6 +21,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 MODULE = ROOT / "plugins" / "ca-pi" / "tools" / "src" / "process-tree.ts"
+BACKGROUND_MODULE = ROOT / "plugins" / "ca-pi" / "tools" / "src" / "background-jobs.ts"
 SUPERVISOR = ROOT / "plugins" / "ca-pi" / "helpers" / "windows-supervisor.js"
 NODE = shutil.which("node")
 MAX_RUN_SECONDS = 45.0
@@ -37,7 +39,31 @@ const hold = () => {
   setInterval(() => {}, 1_000);
 };
 
-if (mode === "leaf" || mode === "stubborn-leaf") {
+if (mode === "natural-leaf") {
+  setTimeout(() => process.exit(0), 75);
+} else if (mode === "natural-middle") {
+  const leaf = spawn(process.execPath, [process.argv[1], "natural-leaf"], {
+    detached: false, shell: false, stdio: "ignore", windowsHide: true,
+  });
+  leaf.once("spawn", () => process.stdout.write(JSON.stringify({ child: process.pid, grandchild: leaf.pid }) + "\n"));
+  leaf.once("close", () => process.exit(0));
+  leaf.once("error", () => process.exit(34));
+} else if (mode === "natural-tree") {
+  const middle = spawn(process.execPath, [process.argv[1], "natural-middle"], {
+    detached: false, shell: false, stdio: ["ignore", "pipe", "inherit"], windowsHide: true,
+  });
+  let buffer = "";
+  middle.stdout.setEncoding("utf8");
+  middle.stdout.on("data", (chunk) => {
+    buffer += chunk;
+    const newline = buffer.indexOf("\n");
+    if (newline < 0) return;
+    process.stdout.write(JSON.stringify({ parent: process.pid, ...JSON.parse(buffer.slice(0, newline)) }) + "\n");
+    middle.stdout.removeAllListeners("data");
+  });
+  middle.once("close", () => process.exit(0));
+  middle.once("error", () => process.exit(35));
+} else if (mode === "leaf" || mode === "stubborn-leaf") {
   if (mode === "stubborn-leaf" && process.platform !== "win32") process.on("SIGTERM", () => {});
   setInterval(() => {}, 1_000);
 } else if (mode === "middle" || mode === "stubborn-middle") {
@@ -218,7 +244,7 @@ try {
         controller.signal.addEventListener("abort", () => void cleanup.terminate("cancelled").then(resolve), { once: true });
         setTimeout(() => controller.abort(), 25);
       } else {
-        setTimeout(() => void cleanup.terminate("timeout").then(resolve), 25);
+        setTimeout(() => void cleanup.terminate(reason).then(resolve), 25);
       }
     });
     if (outputFailure !== undefined) throw outputFailure;
@@ -237,6 +263,89 @@ try {
   process.stderr.write("controller failure phase=" + phase + code + "\n");
   process.stdout.write("REFUSED\n");
 }
+'''
+
+BACKGROUND_CONTROLLER_SOURCE = r'''
+import { EventEmitter } from "node:events";
+import { PassThrough } from "node:stream";
+import { pathToFileURL } from "node:url";
+
+const [backgroundPath, processTreePath, fixturePath, shellPath, variant] = process.argv.slice(2);
+const background = await import(pathToFileURL(backgroundPath).href);
+const processTree = await import(pathToFileURL(processTreePath).href);
+const lease = Object.freeze({});
+const authorization = { lease, isCurrent: (candidate) => candidate === lease };
+const fakeChild = () => Object.assign(new EventEmitter(), {
+  pid: 7001, stdin: new PassThrough(), stdout: new PassThrough(), stderr: new PassThrough(),
+});
+
+if (variant === "legacy-stdin") {
+  const child = fakeChild();
+  let stdin = "";
+  child.stdin.on("data", (chunk) => { stdin += chunk.toString("utf8"); });
+  let observed;
+  const runtime = background.createBackgroundJobRuntime({ openTree: async (command, args, options) => {
+    observed = { command, args, shell: false, stdio: options.stdio };
+    return { child, cleanup: { ready: async () => true, terminate: async (reason) => ({ reason, state: "terminated", escalated: false, verified: true }) } };
+  }});
+  const job = await runtime.launch({ authorization, command: "printf ok", commandPrefix: "set -e", cwd: process.cwd(), env: [], label: "legacy", shellPath: "C:\\Windows\\System32\\bash.exe" });
+  await new Promise((resolve) => setImmediate(resolve));
+  await runtime.cancel(job.id);
+  process.stdout.write("FINAL " + JSON.stringify({ observed, stdin, state: runtime.getJob(job.id).state }) + "\n");
+  process.exit(0);
+}
+
+if (variant === "unhealthy") {
+  const child = fakeChild();
+  let opens = 0;
+  const runtime = background.createBackgroundJobRuntime({ openTree: async () => {
+    opens += 1;
+    return { child, cleanup: { ready: async () => true, terminate: async (reason) => ({ reason, state: "failed", escalated: true, verified: false }) } };
+  }});
+  const input = { authorization, command: "hold", cwd: process.cwd(), env: [], label: "unhealthy", shellPath };
+  const job = await runtime.launch(input);
+  const cancelled = await runtime.cancel(job.id);
+  const later = await runtime.launch({ ...input, label: "blocked" });
+  process.stdout.write("FINAL " + JSON.stringify({ cancelled, health: runtime.health(), later, opens, state: runtime.getJob(job.id).state }) + "\n");
+  process.exit(0);
+}
+
+const events = [];
+let observed;
+let runtime;
+const openTree = async (command, args, options) => {
+  observed = { command, args, shell: false, stdio: options.stdio };
+  let tree;
+  try {
+    const child = await processTree.spawnProcessTree(process.execPath, [fixturePath, fixtureMode], options);
+    tree = { child, cleanup: processTree.createProcessTreeCleanup(child) };
+  }
+  catch (error) { process.stderr.write(`openTree failed: ${error instanceof Error ? error.message : "unknown"}\n`); throw error; }
+  return { child: tree.child, cleanup: {
+    ready: () => tree.cleanup.ready(),
+    terminate: async (reason) => {
+      events.push({ event: "cleanup-start", reason, state: runtime?.getJob(1)?.state });
+      const result = await tree.cleanup.terminate(reason);
+      events.push({ event: "cleanup-done", reason, state: runtime?.getJob(1)?.state, verified: result.verified });
+      return result;
+    },
+  }};
+};
+runtime = background.createBackgroundJobRuntime({ openTree });
+const fixtureMode = variant === "natural" ? "natural-tree" : "stubborn";
+const input = { authorization, command: "fixture-command", commandPrefix: "set -e", cwd: process.cwd(), env: Object.entries(process.env), label: variant, shellPath, ...(variant === "timeout" ? { timeoutMs: 1000 } : {}) };
+const job = await runtime.launch(input);
+if (!job) throw new Error("background launch refused");
+if (variant !== "natural") {
+  const deadline = Date.now() + 7000;
+  while (!(runtime.tail(job.id) ?? "").includes('"parent"') && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 20));
+}
+if (variant === "cancel") await runtime.cancel(job.id);
+await runtime.settled(job.id);
+const tail = runtime.tail(job.id) ?? "";
+const pidLine = tail.split(/\r?\n/u).find((line) => line.startsWith("PIDS "));
+const jsonPidLine = tail.split(/\r?\n/u).find((line) => line.startsWith('{"parent"'));
+process.stdout.write("FINAL " + JSON.stringify({ events, observed, pids: pidLine ? JSON.parse(pidLine.slice(5)).pids : jsonPidLine ? JSON.parse(jsonPidLine) : undefined, state: runtime.getJob(job.id)?.state }) + "\n");
 '''
 
 
@@ -387,6 +496,66 @@ def run_variant(directory: Path, reason: str, mode: str) -> None:
         force_cleanup([pid for pid in pids if is_alive(pid)])
 
 
+def resolve_pi_shell() -> Path:
+    if os.name != "nt":
+        bash = Path("/bin/bash")
+        if bash.is_file():
+            return bash.resolve()
+    else:
+        candidates = []
+        for name in ("ProgramFiles", "ProgramW6432", "ProgramFiles(x86)"):
+            root = os.environ.get(name)
+            if root:
+                candidates.append(Path(root) / "Git" / "bin" / "bash.exe")
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate.resolve()
+    discovered = shutil.which("bash")
+    if discovered:
+        candidate = Path(discovered).resolve()
+        normalized = str(candidate).replace("/", "\\").lower()
+        if not re.match(r"^[a-z]:\\windows\\(?:system32|sysnative)\\bash\.exe$", normalized):
+            return candidate
+    raise AssertionError("an absolute Pi-compatible bash identity is required for background fixtures")
+
+
+def run_background_variant(directory: Path, variant: str, shell: Path) -> None:
+    completed = subprocess.run(
+        [str(NODE), "--experimental-strip-types", str(directory / "background-controller.mjs"),
+         str(BACKGROUND_MODULE), str(MODULE), str(directory / "fixture.mjs"), str(shell), variant],
+        cwd=ROOT, env=isolated_environment(directory, f"background-{variant}"), check=False,
+        capture_output=True, text=True, timeout=MAX_RUN_SECONDS,
+    )
+    line = next((item for item in completed.stdout.splitlines() if item.startswith("FINAL ")), None)
+    if completed.returncode != 0 or line is None:
+        raise AssertionError(
+            f"background/{variant} failed ({completed.returncode}): stdout={completed.stdout!r} stderr={completed.stderr!r}"
+        )
+    observed = json.loads(line[6:])
+    if variant == "legacy-stdin":
+        assert observed["observed"]["args"] == ["-s"], observed
+        assert observed["observed"]["shell"] is False, observed
+        assert observed["stdin"] == "set -e\nprintf ok" and observed["state"] == "cancelled", observed
+        return
+    if variant == "unhealthy":
+        assert observed["cancelled"] is False and observed["opens"] == 1, observed
+        assert observed["health"] == {"healthy": False, "diagnostic": "Background job cleanup could not be verified; run /ca-doctor."}, observed
+        assert "later" not in observed and observed["state"] == "active", observed
+        return
+    assert observed["observed"]["args"] == ["-c", "set -e\nfixture-command"] and observed["observed"]["shell"] is False, observed
+    assert observed["observed"]["stdio"] == ["pipe", "pipe", "pipe", "pipe"], observed
+    expected = {"natural": ("completed", "completed"), "cancel": ("cancelled", "cancelled"), "timeout": ("timed-out", "timeout")}[variant]
+    assert observed["state"] == expected[0], observed
+    assert [event["event"] for event in observed["events"]] == ["cleanup-start", "cleanup-done"], observed
+    assert all(event["state"] in ("queued", "active") for event in observed["events"]), observed
+    assert observed["events"][1]["verified"] is True and observed["events"][1]["reason"] == expected[1], observed
+    pids = [int(observed["pids"][name]) for name in ("parent", "child", "grandchild")]
+    try:
+        assert wait_gone(pids) == [], f"background/{variant} left live fixture pids"
+    finally:
+        force_cleanup([pid for pid in pids if is_alive(pid)])
+
+
 def _readline_with_timeout(stream, timeout: float) -> str:
     observed: queue.Queue[str] = queue.Queue(maxsize=1)
     threading.Thread(target=lambda: observed.put(stream.readline()), daemon=True).start()
@@ -533,6 +702,7 @@ def run_attach_failure(directory: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture-only", action="store_true")
+    parser.add_argument("--background-only", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if NODE is None:
         raise AssertionError("Node is required for the Pi process-tree proof")
@@ -540,6 +710,7 @@ def main() -> int:
         raise AssertionError(f"missing process-tree implementation: {MODULE}")
     if args.fixture_only:
         source = MODULE.read_text(encoding="utf-8")
+        background = BACKGROUND_MODULE.read_text(encoding="utf-8")
         supervisor = (ROOT / "plugins" / "ca-pi" / "tools" / "src" / "windows-supervisor.ts").read_text(encoding="utf-8")
         for required in (
             "spawnProcessTree", "createProcessTreeCleanup", "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE",
@@ -551,6 +722,14 @@ def main() -> int:
         for required in ("parentLeash.resume()", "STARTED", "fd: 3", "fd: 4", "fd: 5", "fd: 6", "fd: 7"):
             if required not in supervisor:
                 raise AssertionError(f"supervisor static contract missing {required}")
+        for required in (
+            "piShellLaunch", 'Object.freeze(["-c", command])', 'Object.freeze(["-s"])',
+            "openProcessTree", "JOB_MANAGER_UNHEALTHY_MESSAGE", "/ca-doctor",
+            '"session-switch": "session_switch"', 'shutdown: "shutdown"', 'unload: "unload"',
+            'fatal: "fatal_error"',
+        ):
+            if required not in background:
+                raise AssertionError(f"background process-tree static contract missing {required}")
         print("pi process-tree fixture: ready")
         return 0
     if os.name == "nt" and not SUPERVISOR.is_file():
@@ -559,17 +738,28 @@ def main() -> int:
         directory = Path(raw)
         (directory / "fixture.mjs").write_text(FIXTURE_SOURCE, encoding="utf-8", newline="\n")
         (directory / "controller.mjs").write_text(CONTROLLER_SOURCE, encoding="utf-8", newline="\n")
-        run_parser_probe(directory)
-        if os.name == "nt":
-            run_variant(directory, "normal_close", "root-first")
-            run_variant(directory, "normal_close", "fast-nonzero")
-        run_variant(directory, "cancelled", "root")
-        run_variant(directory, "timeout", "root")
-        run_variant(directory, "timeout", "stubborn")
-        run_controller_death(directory)
-        run_helper_failure(directory)
-        run_attach_failure(directory)
-    variants = 8 if os.name == "nt" else 3
+        (directory / "background-controller.mjs").write_text(BACKGROUND_CONTROLLER_SOURCE, encoding="utf-8", newline="\n")
+        if not args.background_only:
+            run_parser_probe(directory)
+            if os.name == "nt":
+                run_variant(directory, "normal_close", "root-first")
+                run_variant(directory, "normal_close", "fast-nonzero")
+            run_variant(directory, "cancelled", "root")
+            run_variant(directory, "timeout", "root")
+            run_variant(directory, "timeout", "stubborn")
+            run_variant(directory, "completed", "stubborn")
+            run_variant(directory, "session_switch", "root")
+            run_variant(directory, "shutdown", "root")
+            run_variant(directory, "unload", "root")
+            run_variant(directory, "fatal_error", "root")
+        shell = resolve_pi_shell()
+        for background_variant in ("natural", "cancel", "timeout", "legacy-stdin", "unhealthy"):
+            run_background_variant(directory, background_variant, shell)
+        if not args.background_only:
+            run_controller_death(directory)
+            run_helper_failure(directory)
+            run_attach_failure(directory)
+    variants = 5 if args.background_only else (18 if os.name == "nt" else 13)
     print(f"pi process-tree live proof: {variants}/{variants} variants passed")
     return 0
 

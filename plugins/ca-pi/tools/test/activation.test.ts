@@ -1,10 +1,11 @@
-import { access, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 import { afterEach, describe, expect, test } from "vitest";
 
-import { isEnabled } from "../src/activation.ts";
+import { isEnabled, readCachedUpdateVersion } from "../src/activation.ts";
 import { BridgeClient } from "../src/bridge.ts";
 import type {
   BridgePort,
@@ -16,8 +17,9 @@ import type {
 } from "../src/contracts.ts";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import * as extensionModule from "../src/extension.ts";
-import { createCodeArbiterPi, installParent, renderPiDoctorReportBlock } from "../src/extension.ts";
+import { boundedPiEnvironment, createCodeArbiterPi, installParent, renderPiDoctorReportBlock, resolvePiBackgroundShell } from "../src/extension.ts";
 import { collectPiDoctorInput, diagnosePi, formatPiDoctorReport } from "../src/doctor.ts";
+import type { NativeBackgroundController } from "../src/commands.ts";
 
 type Handler = (event: Record<string, unknown>, context: ExtensionContextPort) => unknown;
 
@@ -50,6 +52,7 @@ class FakePi implements ParentPiPort {
   readonly userMessages: string[] = [];
   readonly statusCalls: Array<{ key: string; text: string | undefined }> = [];
   readonly notifications: Array<{ message: string; level?: "info" | "warning" | "error" }> = [];
+  readonly extraCommands: ReturnType<ParentPiPort["getCommands"]> = [];
 
   constructor(private readonly packageRoot: string, private readonly catalog: CommandCatalogEntry[]) {}
 
@@ -88,6 +91,7 @@ class FakePi implements ParentPiPort {
           path: resolve(this.packageRoot, ...entry.skillPath.split("/")),
         },
       })),
+      ...this.extraCommands,
     ];
   }
 
@@ -129,6 +133,199 @@ afterEach(async () => {
 });
 
 describe("Pi activation", () => {
+  test("bounds the OS environment and resolves the configured shell to an absolute identity", async () => {
+    expect(boundedPiEnvironment({ SAFE: "1", OMITTED: undefined })).toEqual([["SAFE", "1"], ["OMITTED", undefined]]);
+    expect(boundedPiEnvironment(Object.fromEntries(Array.from({ length: 257 }, (_, index) => [`K${index}`, "v"])))).toBeUndefined();
+    expect(boundedPiEnvironment(new Proxy({}, {}))).toBeUndefined();
+    await expect(resolvePiBackgroundShell(process.execPath, {}, process.platform)).resolves.toBe(await realpath(process.execPath));
+    await expect(resolvePiBackgroundShell("definitely-not-a-shell", {}, process.platform)).resolves.toBeUndefined();
+  });
+  test("installs parent jobs only for trusted interactive sessions and waits for verified shutdown cleanup", async () => {
+    const cwd = await project("---\narbiter: enabled\n---\n");
+    const packageRoot = await project("");
+    await mkdir(resolve(packageRoot, "extensions"), { recursive: true });
+    await writeFile(resolve(packageRoot, "extensions", "codearbiter.js"), "export default () => {};\n", "utf8");
+    const host = new FakePi(packageRoot, []);
+    const stops: string[] = [];
+    let currentLifecycle: (() => object | undefined) | undefined;
+    let dispatchActivity: (() => { publish(event: never): void } | undefined) | undefined;
+    let backgroundActivity: (() => { publish(event: never): void } | undefined) | undefined;
+    let releaseStop!: () => void;
+    let blockStop = false;
+    const stopped = new Promise<void>((resolveStopped) => { releaseStop = resolveStopped; });
+    let installedBackgroundFactory = false;
+    const controller: NativeBackgroundController = {
+      register: (context) => {
+        if (context.mode !== "tui" || context.hasUI !== true || context.isProjectTrusted?.() !== true) return false;
+        host.registerCommand("ca-jobs", { handler: () => undefined });
+        return true;
+      },
+      activate: () => true,
+      toolFactory: () => ({ name: "codearbiter_background_bash", execute: async () => ({}) }),
+      stop: async (reason) => {
+        expect(currentLifecycle?.()).toBeUndefined();
+        stops.push(reason);
+        if (blockStop) await stopped;
+        return true;
+      },
+      healthy: () => true,
+    };
+    installParent(host, {
+      bridge: new FakeBridge(), catalog: [], packageRoot,
+      loadPersona: async () => "persona",
+      readActivation: async () => true,
+      installDispatch: (_lifecycle, activity) => { dispatchActivity = activity; },
+      installBackground: (lifecycle, activity) => {
+        currentLifecycle = lifecycle;
+        backgroundActivity = activity;
+        return controller;
+      },
+      installEnforcement: async (_root, _context, _mode, backgroundFactory) => {
+        installedBackgroundFactory = backgroundFactory !== undefined;
+      },
+    });
+    const printContext = { ...host.context(cwd), mode: "print" as const, hasUI: false, sessionManager: { getSessionId: () => "print" } };
+    await host.emit("session_start", {}, printContext);
+    expect(host.registered.has("ca-jobs")).toBe(false);
+    expect(installedBackgroundFactory).toBe(false);
+
+    const context = { ...host.context(cwd), mode: "tui" as const, hasUI: true, sessionManager: { getSessionId: () => "session-1" } };
+    await host.emit("session_start", {}, context);
+    expect(dispatchActivity?.()).toBeDefined();
+    expect(backgroundActivity?.()).toBe(dispatchActivity?.());
+    expect(host.registered.has("ca-jobs")).toBe(true);
+    expect(installedBackgroundFactory).toBe(true);
+    const before = stops.length;
+    await host.emit("session_before_switch", { reason: "resume" }, context);
+    expect(stops).toHaveLength(before);
+
+    blockStop = true;
+    const shutdown = host.emit("session_shutdown", { reason: "resume" }, context);
+    await Promise.resolve();
+    expect(stops.at(-1)).toBe("session-switch");
+    expect(backgroundActivity?.()).toBeDefined();
+    let complete = false;
+    void shutdown.then(() => { complete = true; });
+    await Promise.resolve();
+    expect(complete).toBe(false);
+    releaseStop();
+    await shutdown;
+    expect(complete).toBe(true);
+    expect(backgroundActivity?.()).toBeUndefined();
+  });
+  test("wires the native plan mode only to the current parent interactive lifecycle", async () => {
+    const cwd = await project("---\narbiter: enabled\n---\n");
+    const packageRoot = await project("");
+    await mkdir(resolve(packageRoot, "extensions"), { recursive: true });
+    await writeFile(resolve(packageRoot, "extensions", "codearbiter.js"), "export default () => {};\n", "utf8");
+    await writeFile(resolve(packageRoot, "package.json"), JSON.stringify({
+      name: "ca-pi", pi: { extensions: ["./extensions/codearbiter.js"], skills: ["./skills"] },
+    }), "utf8");
+    const ledger = "| Task | Status |\n|---|---|\n| T01 | PENDING |\n";
+    const appended: Array<{ customType: string; data: unknown }> = [];
+    let getMode: (() => "plan" | "execute") | undefined;
+    const bridge: BridgePort = {
+      call: async (request) => request.event === "plan_file"
+        ? {
+          version: 1, outcome: "notice", resultPatch: { planFile: {
+            status: "unchanged", exists: true,
+            hash: createHash("sha256").update(ledger).digest("hex"),
+            contentBase64: Buffer.from(ledger).toString("base64"),
+          } },
+        }
+        : { version: 1, outcome: "notice", context: "host: pi" },
+    };
+    const host = new FakePi(packageRoot, []);
+    installParent(host, {
+      bridge,
+      catalog: [],
+      packageRoot,
+      loadPersona: async () => "PERSONA",
+      planCommandDescriptor: { "ca-plan": "planning-write" },
+      appendPlanEntry: (customType, data) => { appended.push({ customType, data }); },
+      installEnforcement: (_root, _context, currentMode) => { getMode = currentMode; },
+    });
+    const context = host.context(cwd);
+    context.mode = "tui";
+    context.hasUI = true;
+    context.sessionManager = { getSessionId: () => "session-1", getEntries: () => [] };
+
+    await host.emit("session_start", {}, context);
+    expect(host.registered.has("ca-plan")).toBe(true);
+    expect(getMode?.()).toBe("execute");
+    await host.registered.get("ca-plan")!.handler("enter sprint-alpha", context);
+    expect(getMode?.()).toBe("plan");
+    expect(appended).toHaveLength(1);
+    const planNotice = host.notifications.at(-1);
+
+    await host.emit("session_before_switch", { reason: "new" }, context);
+    expect(getMode?.()).toBe("plan");
+    expect(appended).toHaveLength(1);
+    expect(host.notifications.at(-1)).toEqual(planNotice);
+    await host.registered.get("ca-plan")!.handler("status", context);
+    expect(getMode?.()).toBe("plan");
+    expect(appended).toHaveLength(1);
+    await host.emit("session_shutdown", { reason: "new" }, context);
+    expect(getMode?.()).toBe("execute");
+  });
+
+  test("reports a truthful native ownership startup collision and blocks invocation before effects", async () => {
+    const cwd = await project("---\narbiter: enabled\n---\n");
+    const packageRoot = await project("");
+    await mkdir(resolve(packageRoot, "extensions"), { recursive: true });
+    await writeFile(resolve(packageRoot, "extensions", "codearbiter.js"), "export default () => {};\n", "utf8");
+    await writeFile(resolve(packageRoot, "package.json"), JSON.stringify({
+      name: "ca-pi", pi: { extensions: ["./extensions/codearbiter.js"], skills: ["./skills"] },
+    }), "utf8");
+    const bridge = new FakeBridge();
+    const appended: unknown[] = [];
+    const host = new FakePi(packageRoot, []);
+    host.extraCommands.push({
+      name: "ca-plan:foreign", source: "extension",
+      sourceInfo: {
+        path: resolve(packageRoot, "extensions", "foreign.js"), source: "foreign", scope: "project",
+        origin: "top-level",
+      },
+    });
+    installParent(host, {
+      bridge, catalog: [], packageRoot, loadPersona: async () => "PERSONA",
+      planCommandDescriptor: { "ca-plan": "planning-write" },
+      appendPlanEntry: (_customType, data) => { appended.push(data); },
+    });
+    const context = host.context(cwd);
+    context.mode = "tui";
+    context.hasUI = true;
+    context.sessionManager = { getSessionId: () => "session-1", getEntries: () => [] };
+    await host.emit("session_start", {}, context);
+    const status = host.statusCalls.at(-1)?.text ?? "";
+    expect(status).toContain("native plan command ownership conflict");
+    expect(status).toContain("operations blocked");
+    expect(status).not.toContain("/ca-doctor");
+    const calls = bridge.calls.length;
+    await host.registered.get("ca-plan")!.handler("enter sprint-alpha", context);
+    expect(bridge.calls).toHaveLength(calls);
+    expect(appended).toEqual([]);
+    expect(host.notifications.at(-1)).toEqual({
+      message: "Pi plan command ownership changed; operation blocked.", level: "error",
+    });
+  });
+
+  test.each(["rpc", "json", "print"] as const)("does not register native plan in %s mode", async (mode) => {
+    const cwd = await project("---\narbiter: enabled\n---\n");
+    const packageRoot = await project("");
+    const host = new FakePi(packageRoot, []);
+    installParent(host, {
+      bridge: new FakeBridge(), catalog: [], packageRoot, loadPersona: async () => "PERSONA",
+      planCommandDescriptor: { "ca-plan": "planning-write" }, appendPlanEntry: () => undefined,
+    });
+    const context = host.context(cwd);
+    context.mode = mode;
+    context.hasUI = mode === "rpc";
+    context.sessionManager = { getSessionId: () => "session-1", getEntries: () => [] };
+    await host.emit("session_start", {}, context);
+    expect(host.registered.has("ca-plan")).toBe(false);
+  });
+
   test("redacts and bounds adversarial doctor data inside one fixed non-injectable report boundary", () => {
     const injected = [
       "/tmp/<owner>&/extension.js",
@@ -186,6 +383,32 @@ describe("Pi activation", () => {
     await expect(isEnabled(eofDelimiter)).resolves.toBe(true);
     await expect(isEnabled(duplicate)).resolves.toBe(true);
     await expect(isEnabled(bare)).resolves.toBe(false);
+  });
+
+  test.skipIf(process.platform !== "win32")("reads update availability only from the fixed user-global cache and installed package version", async () => {
+    const packageRoot = await project("");
+    const fakeHome = await project("");
+    const stateRoot = resolve(fakeHome, ".codearbiter");
+    await mkdir(stateRoot);
+    await writeFile(resolve(packageRoot, "package.json"), '{"name":"ca-pi","version":"1.4.0"}\n', "utf8");
+    await writeFile(resolve(stateRoot, "update-state.json"), '{"latest":"1.5.0","checked_at":1}\n', "utf8");
+    const previousProfile = process.env.USERPROFILE;
+    process.env.USERPROFILE = fakeHome;
+    try {
+      await expect(readCachedUpdateVersion(packageRoot)).resolves.toBe("1.5.0");
+      await writeFile(resolve(stateRoot, "update-state.json"), '{"latest":"1.3.9","checked_at":1}\n', "utf8");
+      await expect(readCachedUpdateVersion(packageRoot)).resolves.toBeUndefined();
+      await writeFile(resolve(stateRoot, "update-state.json"), "x".repeat(4_097), "utf8");
+      await expect(readCachedUpdateVersion(packageRoot)).resolves.toBeUndefined();
+      const target = resolve(fakeHome, "update-target.json");
+      await writeFile(target, '{"latest":"9.9.9","checked_at":1}\n', "utf8");
+      await rm(resolve(stateRoot, "update-state.json"));
+      await symlink(target, resolve(stateRoot, "update-state.json"), "file");
+      await expect(readCachedUpdateVersion(packageRoot)).resolves.toBeUndefined();
+    } finally {
+      if (previousProfile === undefined) delete process.env.USERPROFILE;
+      else process.env.USERPROFILE = previousProfile;
+    }
   });
 
   test("matches the canonical shared activation contract", async () => {
@@ -356,12 +579,14 @@ describe("Pi activation", () => {
         toolClasses: {},
       }).call(request, signal),
     };
+    let doctorHealth: unknown;
     installParent(host, {
       bridge,
       catalog,
       packageRoot,
       loadPersona: async () => "GENERATED PERSONA",
-      doctorReport: async (context) => {
+      doctorReport: async (context, health) => {
+        doctorHealth = health;
         const input = await collectPiDoctorInput({
           packageRoot,
           packageScope: "user",
@@ -379,6 +604,11 @@ describe("Pi activation", () => {
           catalog,
           bridge,
           bridgePrepared: false,
+          footerExpected: health.footer.expected,
+          footerInitialized: health.footer.initialized,
+          backgroundExpected: health.background.expected,
+          backgroundInitialized: health.background.initialized,
+          backgroundHealthy: health.background.healthy,
           projectTrustRequired: false,
           childPath,
           wrapperSourcePath: extensionPath,
@@ -400,6 +630,10 @@ describe("Pi activation", () => {
     await expect(readdir(cwd)).resolves.toEqual(rootEntriesBefore);
     await expect(readdir(stateRoot)).resolves.toEqual(stateEntriesBefore);
     expect(host.userMessages).toHaveLength(1);
+    expect(doctorHealth).toEqual({
+      footer: { expected: false, initialized: false },
+      background: { expected: false, initialized: false, healthy: false },
+    });
   });
 
   test("appends generated persona and refreshed state without retaining the raw prompt", async () => {

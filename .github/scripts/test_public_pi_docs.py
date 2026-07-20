@@ -96,6 +96,49 @@ class PiInstallRunbookTest(unittest.TestCase):
 
 
 class PiCatalogAndParityTest(unittest.TestCase):
+    def test_public_docs_state_the_complete_pi_live_behavior_contract(self):
+        shared = {
+            "footer": r"rich footer",
+            "governance": r"governance row.{0,180}enabled.{0,180}(?:affirmatively )?trusted",
+            "rate-window": r"rate-window telemetry is omitted|rate windows omitted",
+            "execute": r"execute mode asks|execute permission asks|governed mutation.{0,100}ask once",
+            "plan": r"plan mode is read-only",
+            "jobs": r"never restored from pi session entries",
+            "cleanup": r"unverified cleanup",
+            "parent-only": r"parent-interactive only",
+        }
+        catalog_and_cold = {
+            "catalog": r"plugins/ca-pi/skills\.md",
+            "cold-result": r"missing_prerequisite",
+            "cold-remediation": r"npm --prefix plugins/ca-pi/tools ci --ignore-scripts",
+        }
+        expected = {
+            "README.md": {**shared, **catalog_and_cold},
+            "docs/pi-parity-testing.md": {**shared, **catalog_and_cold},
+            "docs/parity.md": {**shared, **catalog_and_cold},
+            "site/src/content/docs/getting-started/compatibility.md": {
+                **shared,
+                **catalog_and_cold,
+            },
+            "site/src/content/docs/hooks.md": shared,
+        }
+        contradictions = {
+            "legacy-status": r"no statusline;\s*`ctx\.ui\.setstatus`|not a footer replacement",
+            "degraded-footer": r"\| pi complete footer \| degraded \|",
+            "invented-rate-window": r"rate-window telemetry (?:is )?(?:available|fabricated)",
+            "persistent-jobs": r"persistent background jobs|jobs (?:are|can be|may be) restored from pi session entries",
+            "writable-plan": r"plan mode (?:allows|permits) (?:source|configuration|external) (?:writes|mutations)",
+            "silent-mutation": r"execute mode (?:allows|performs) governed mutations without (?:asking|confirmation)",
+        }
+        for path, facts in expected.items():
+            text = re.sub(r"\s+", " ", read(path).lower())
+            for fact, pattern in facts.items():
+                with self.subTest(path=path, fact=fact):
+                    self.assertRegex(text, pattern)
+            for contradiction, pattern in contradictions.items():
+                with self.subTest(path=path, contradiction=contradiction):
+                    self.assertNotRegex(text, pattern)
+
     def test_public_catalog_counts_match_generated_payloads(self):
         readme = read("README.md")
         runbook = read("docs/pi-parity-testing.md")

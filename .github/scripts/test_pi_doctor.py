@@ -3,6 +3,7 @@
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,23 @@ HOST_HOOKS = {
     "codex": REPO / "plugins" / "ca-codex" / "hooks",
     "pi": REPO / "plugins" / "ca-pi" / "hooks",
 }
+
+
+def resolve_posix_shell():
+    direct = shutil.which("sh")
+    if direct:
+        return direct
+    git = shutil.which("git")
+    if git and os.name == "nt":
+        git_dir = Path(git).resolve().parent
+        for candidate in (
+            git_dir / "sh.exe",
+            git_dir.parent / "bin" / "sh.exe",
+            git_dir.parent / "usr" / "bin" / "sh.exe",
+        ):
+            if candidate.is_file():
+                return str(candidate)
+    raise AssertionError("A POSIX sh executable is required for the real Git-hook probe")
 
 
 def run(args, cwd, *, input_text=None, check=True):
@@ -82,7 +100,7 @@ class RepoFixture(unittest.TestCase):
         self.assertIn("[H-01]", blocked.stdout + blocked.stderr)
         push_input = f"refs/heads/main {'1' * 40} refs/heads/main {'0' * 40}\n"
         pushed = run(
-            ["sh", self.hook_path() / "pre-push", "origin", "fixture"],
+            [resolve_posix_shell(), self.hook_path() / "pre-push", "origin", "fixture"],
             self.root,
             input_text=push_input,
             check=False,
@@ -116,6 +134,23 @@ class GitBackstopContract(RepoFixture):
 
 
 class SharedDoctorContract(RepoFixture):
+    def test_pi_doctor_exposes_only_closed_footer_and_background_health_facts(self):
+        doctor = (REPO / "plugins" / "ca-pi" / "tools" / "src" / "doctor.ts").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("footer: { expected: boolean; initialized: boolean }", doctor)
+        self.assertIn("background: { expected: boolean; initialized: boolean; healthy: boolean }", doctor)
+        declarations = re.findall(
+            r"^  (?:footer|background): \{[^\n]+\};$", doctor, flags=re.MULTILINE
+        )
+        self.assertEqual(declarations, [
+            "  footer: { expected: boolean; initialized: boolean };",
+            "  background: { expected: boolean; initialized: boolean; healthy: boolean };",
+        ])
+        self.assertIn('diagnosis(\n      "footer"', doctor)
+        self.assertIn('diagnosis(\n      "background"', doctor)
+        self.assertIn("run /ca-doctor before launching another background job", doctor)
+
     def test_pi_payload_check_uses_package_and_bridge_contract_not_hooks_json(self):
         script = HOST_HOOKS["pi"] / "doctor.py"
         result = run([sys.executable, script], self.root, check=False)
@@ -139,9 +174,10 @@ class SharedDoctorContract(RepoFixture):
                 encoding="utf-8"
             )
         )
-        index = (REPO / "plugins" / "ca-pi" / "skills" / "INDEX.md").read_text(
+        index = (REPO / "plugins" / "ca-pi" / "SKILLS.md").read_text(
             encoding="utf-8"
         )
+        self.assertFalse((REPO / "plugins" / "ca-pi" / "skills" / "INDEX.md").exists())
         doctor = next(entry for entry in catalog if entry["name"] == "doctor")
         expected_description = (
             "Verify the active host install, package, command ownership, enforcement, wrapper "

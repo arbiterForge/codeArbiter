@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Bounded one-request Pi codec for exactly one shared core entry."""
 
+import base64
+import binascii
 import contextlib
 import importlib.util
 import io
@@ -15,8 +17,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from _host import PiHost  # noqa: E402
 from _prunepolicy import PrunePolicy, SemanticEntry, plan_prune  # noqa: E402
+import _arbiterstatelib  # noqa: E402
+import _hooklib  # noqa: E402
+import _ledgerlib  # noqa: E402
+import _planfilelib  # noqa: E402
+import _segmentslib  # noqa: E402
+import _taskboardlib  # noqa: E402
 
 MAX_REQUEST_BYTES = 262_144
+MAX_PLAN_CONTENT_BYTES = 92_160
 MAX_CAPTURE_CHARS = 1_048_576
 ALLOWED_KEYS = frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "result"})
 EVENT_KEYS = {
@@ -25,6 +34,9 @@ EVENT_KEYS = {
     "tool_call": (frozenset({"version", "event", "cwd", "tool", "input"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input"})),
     "tool_result": (frozenset({"version", "event", "cwd", "tool", "input", "result"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "result"})),
     "prune_plan": (frozenset({"version", "event", "cwd", "input"}), frozenset({"version", "event", "cwd", "input"})),
+    "footer_usage_update": (frozenset({"version", "event", "cwd", "input"}), frozenset({"version", "event", "cwd", "input"})),
+    "footer_status_snapshot": (frozenset({"version", "event", "cwd"}), frozenset({"version", "event", "cwd", "sessionId"})),
+    "plan_file": (frozenset({"version", "event", "cwd", "input"}), frozenset({"version", "event", "cwd", "input"})),
 }
 ENTRY_BY_EVENT = {
     ("session_start", None): "session-start.py",
@@ -36,6 +48,18 @@ ENTRY_BY_EVENT = {
     ("tool_result", "EDIT"): "post-write-edit.py",
 }
 RULE_RE = re.compile(r"\[((?:H|PI)-[A-Za-z0-9]+)\]")
+ANSI_RE = re.compile(r"\x1b(?:\[[0-?]*[ -/]*[@-~]?|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[@-_])")
+FOOTER_USAGE_KEYS = frozenset({"sessionKey", "scanStart", "scanEnd", "facts"})
+FOOTER_USAGE_RESULT_KEYS = frozenset({
+    "status", "session", "today", "acceptedThrough", "highWater",
+})
+FOOTER_USAGE_TOTAL_KEYS = frozenset({
+    "inputTokens", "outputTokens", "cacheReadTokens", "cacheWriteTokens", "costUsd",
+})
+FOOTER_USAGE_STATUSES = frozenset({"ok", "invalid", "corrupt", "lock_failed", "write_failed"})
+FOOTER_MAX_COUNT = 1_000_000
+FOOTER_MAX_STAGE = 128
+FOOTER_MAX_PRUNE = 256
 
 
 class ProtocolError(ValueError):
@@ -259,7 +283,197 @@ def _prune_plan(request):
     }
 
 
+def _footer_usage_totals(value):
+    if not isinstance(value, dict) or set(value) != FOOTER_USAGE_TOTAL_KEYS:
+        return None
+    for key in FOOTER_USAGE_TOTAL_KEYS - {"costUsd"}:
+        amount = value[key]
+        if type(amount) is not int or not 0 <= amount <= _ledgerlib.PI_MAX_TOKENS:
+            return None
+    cost = value["costUsd"]
+    if type(cost) not in (int, float) or not math.isfinite(cost) \
+            or not 0 <= cost <= _ledgerlib.PI_MAX_COST_USD:
+        return None
+    return {
+        "inputTokens": value["inputTokens"],
+        "outputTokens": value["outputTokens"],
+        "cacheReadTokens": value["cacheReadTokens"],
+        "cacheWriteTokens": value["cacheWriteTokens"],
+        "costUsd": round(float(cost), 9),
+    }
+
+
+def _footer_usage_result(value):
+    if not isinstance(value, dict) or set(value) != FOOTER_USAGE_RESULT_KEYS \
+            or value.get("status") not in FOOTER_USAGE_STATUSES:
+        return None
+    session = _footer_usage_totals(value.get("session"))
+    today = _footer_usage_totals(value.get("today"))
+    accepted_through = value.get("acceptedThrough")
+    high_water = value.get("highWater")
+    if session is None or today is None or type(accepted_through) is not int \
+            or not -1 <= accepted_through <= _ledgerlib.PI_MAX_POSITION \
+            or type(high_water) is not int \
+            or not -1 <= high_water <= _ledgerlib.PI_MAX_POSITION:
+        return None
+    return {
+        "status": value["status"],
+        "session": session,
+        "today": today,
+        "acceptedThrough": accepted_through,
+        "highWater": high_water,
+    }
+
+
+def _footer_usage_update(request):
+    """Project-independent bounded crossing into the shared user-global ledger."""
+    value = request.get("input")
+    if not isinstance(value, dict) or set(value) != FOOTER_USAGE_KEYS:
+        result = None
+    else:
+        try:
+            result = _footer_usage_result(_ledgerlib.pi_ledger_update(
+                value["sessionKey"], value["scanStart"], value["scanEnd"], value["facts"]
+            ))
+        except Exception:  # noqa: BLE001 - footer accounting is advisory and fail-soft
+            result = None
+    if result is None:
+        blank = {
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "costUsd": 0.0,
+        }
+        result = {
+            "status": "corrupt",
+            "session": dict(blank),
+            "today": dict(blank),
+            "acceptedThrough": -1,
+            "highWater": -1,
+        }
+    return {
+        "version": 1,
+        "outcome": "notice",
+        "auditCode": "PI_FOOTER_USAGE",
+        "resultPatch": {"footerUsage": result},
+    }
+
+
+def _bounded_footer_text(value, maximum):
+    if not isinstance(value, str):
+        return None
+    clean = ANSI_RE.sub("", value)
+    clean = "".join(char for char in clean if ord(char) >= 32 and not 127 <= ord(char) <= 159)
+    return "".join(list(clean)[:maximum]) or None
+
+
+def _footer_status_snapshot(request):
+    """Read the existing shared status sources after the TypeScript trust gate."""
+    unavailable = {"version": 1, "outcome": "allow", "auditCode": "PI_FOOTER_STATUS_UNAVAILABLE"}
+    try:
+        state = _arbiterstatelib.arbiter_state(
+            request["cwd"],
+            _taskboardlib.count_in_flight,
+            _taskboardlib.read_board,
+            _hooklib.frontmatter_enabled,
+        )
+    except Exception:  # noqa: BLE001 - one unavailable segment never breaks the footer
+        state = None
+    if not isinstance(state, dict):
+        return unavailable
+    stage = _bounded_footer_text(state.get("stage"), FOOTER_MAX_STAGE)
+    counts = (state.get("tasks"), state.get("q"), state.get("over"))
+    sprint = state.get("sprint")
+    if stage is None or any(type(value) is not int or not 0 <= value <= FOOTER_MAX_COUNT
+                            for value in counts) or type(sprint) is not bool:
+        return unavailable
+    session_id = request.get("sessionId")
+    prune = None
+    if isinstance(session_id, str) and session_id:
+        try:
+            prune = _bounded_footer_text(_segmentslib.seg_prune({}, session_id), FOOTER_MAX_PRUNE)
+        except Exception:  # noqa: BLE001 - prune is an independent optional segment
+            prune = None
+    try:
+        dev = _arbiterstatelib.dev_active(request["cwd"])
+    except Exception:  # noqa: BLE001 - dev is a fail-soft display fact
+        return unavailable
+    if type(dev) is not bool:
+        return unavailable
+    return {
+        "version": 1,
+        "outcome": "notice",
+        "auditCode": "PI_FOOTER_STATUS",
+        "resultPatch": {"footerStatus": {
+            "status": "ok",
+            "stage": stage,
+            "tasks": counts[0],
+            "questions": counts[1],
+            "overrides": counts[2],
+            "sprint": sprint,
+            "dev": dev,
+            "prune": prune,
+        }},
+    }
+
+
+def _plan_file_request(value):
+    if not isinstance(value, dict) or value.get("action") not in ("read", "replace"):
+        raise ProtocolError("plan file input is invalid")
+    if value["action"] == "read":
+        if set(value) != {"slug", "kind", "action"}:
+            raise ProtocolError("plan file input is invalid")
+        return value
+    if set(value) != {"slug", "kind", "action", "expectedHash", "contentBase64"}:
+        raise ProtocolError("plan file input is invalid")
+    encoded = value["contentBase64"]
+    if not isinstance(encoded, str) or len(encoded) > ((MAX_PLAN_CONTENT_BYTES + 2) // 3) * 4:
+        raise ProtocolError("plan file content is invalid")
+    try:
+        raw = encoded.encode("ascii", "strict")
+        decoded = base64.b64decode(raw, validate=True)
+    except (UnicodeEncodeError, binascii.Error) as exc:
+        raise ProtocolError("plan file content is invalid") from exc
+    if base64.b64encode(decoded) != raw or len(decoded) > MAX_PLAN_CONTENT_BYTES:
+        raise ProtocolError("plan file content is invalid")
+    try:
+        content = decoded.decode("utf-8", "strict")
+    except UnicodeDecodeError as exc:
+        raise ProtocolError("plan file content is invalid") from exc
+    return {"slug": value.get("slug"), "kind": value.get("kind"), "action": "replace",
+            "expectedHash": value.get("expectedHash"), "content": content}
+
+
+def _plan_file_response(result):
+    output = dict(result)
+    if "content" in output:
+        content = output.pop("content")
+        if content is None:
+            output["contentBase64"] = None
+        elif isinstance(content, str):
+            raw = content.encode("utf-8", "strict")
+            if len(raw) > MAX_PLAN_CONTENT_BYTES:
+                raise ProtocolError("plan file result is invalid")
+            output["contentBase64"] = base64.b64encode(raw).decode("ascii")
+        else:
+            raise ProtocolError("plan file result is invalid")
+    return output
+
+
 def dispatch(request):
+    if request["event"] == "plan_file":
+        result = _planfilelib.plan_file_operation(request["cwd"], _plan_file_request(request["input"]))
+        return {
+            "version": 1,
+            "outcome": "notice",
+            "auditCode": "PI_PLAN_FILE",
+            "resultPatch": {"planFile": _plan_file_response(result)},
+        }
+    if request["event"] == "footer_usage_update":
+        return _footer_usage_update(request)
+    if request["event"] == "footer_status_snapshot":
+        return _footer_status_snapshot(request)
     if request["event"] == "prune_plan":
         return _prune_plan(request)
     host = PiHost(request["cwd"])

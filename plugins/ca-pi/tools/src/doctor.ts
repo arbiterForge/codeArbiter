@@ -49,6 +49,8 @@ export interface PiDoctorInput {
     expansionMatches: boolean;
   };
   bridge: { healthy: boolean };
+  footer: { expected: boolean; initialized: boolean };
+  background: { expected: boolean; initialized: boolean; healthy: boolean };
   child: { present: boolean; artifact: "enforced" | "unknown"; path: string };
   ambientMarker: { present: boolean; validatedChild: boolean };
   moduleIdentity: { selfConsistent: boolean };
@@ -70,6 +72,11 @@ export interface PiDoctorCollectorDependencies {
   catalog: readonly CommandCatalogEntry[];
   bridge: BridgePort;
   bridgePrepared: boolean;
+  footerExpected: boolean;
+  footerInitialized: boolean;
+  backgroundExpected: boolean;
+  backgroundInitialized: boolean;
+  backgroundHealthy: boolean;
   projectTrustRequired: boolean;
   childPath: string;
   wrapperSourcePath: string;
@@ -168,6 +175,15 @@ export async function collectPiDoctorInput(
     },
     commands: { collisions, ownerPaths, expansionVerifiedVersions: verifiedVersions, expansionMatches },
     bridge: { healthy: bridgeHealthy },
+    footer: {
+      expected: dependencies.footerExpected === true,
+      initialized: dependencies.footerInitialized === true,
+    },
+    background: {
+      expected: dependencies.backgroundExpected === true,
+      initialized: dependencies.backgroundInitialized === true,
+      healthy: dependencies.backgroundHealthy === true,
+    },
     child: {
       present: existsSync(dependencies.childPath),
       artifact: await inspectChildArtifact(
@@ -199,6 +215,8 @@ const REMEDIATION = {
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
   "module-identity": "Reinstall the active Pi CLI and ca-pi from their approved origins, then restart Pi.",
   "final-arguments": "Reinstall ca-pi, remove competing mutating tool definitions, and run /ca-doctor again.",
+  footer: "Restart Pi in an interactive parent session; if the rich footer still fails, reinstall ca-pi and run /ca-doctor again.",
+  background: "Stop active work, restart Pi, and run /ca-doctor before launching another background job.",
   "active-dispatch": "Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28.",
 } as const;
 
@@ -336,6 +354,30 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
           "The bounded canonical Python bridge is healthy.",
           "The bounded canonical Python bridge failed its health check.",
         ),
+    diagnosis(
+      "footer",
+      input.footer.expected ? input.footer.initialized : !input.footer.initialized,
+      input.footer.expected
+        ? "The rich footer initialized in the current interactive parent session."
+        : "The rich footer is intentionally absent outside an active interactive parent session.",
+      input.footer.expected
+        ? "The rich footer did not initialize in the current interactive parent session."
+        : "The rich footer initialized outside an active interactive parent session; isolation is breached.",
+    ),
+    diagnosis(
+      "background",
+      input.background.expected
+        ? input.background.initialized && input.background.healthy
+        : !input.background.initialized,
+      input.background.expected
+        ? "The session-only background manager is initialized and healthy."
+        : "The background manager is intentionally absent outside a trusted enabled interactive parent session.",
+      !input.background.expected && input.background.initialized
+        ? "The background manager initialized outside a trusted enabled interactive parent session; isolation is breached."
+        : input.background.initialized
+          ? "The session-only background manager is unhealthy and later launches are blocked."
+          : "The trusted enabled interactive parent session did not initialize its background manager.",
+    ),
     diagnosis(
       "child",
       input.child.present && input.child.artifact === "enforced" && childPathHealthy,

@@ -22,6 +22,11 @@ class SurfaceRule:
 
 
 @dataclass(frozen=True)
+class PermissionPolicy:
+    surfaces: Mapping[str, str]
+
+
+@dataclass(frozen=True)
 class HostDescriptor:
     name: str
     plugin_dir: str
@@ -33,6 +38,7 @@ class HostDescriptor:
     managed_subtrees: tuple[str, ...]
     catalog: str | None
     tool_classes: Mapping[str, str]
+    permission_policy: PermissionPolicy | None
     package: Mapping[str, object] | None
 
 
@@ -43,15 +49,24 @@ class DescriptorError(ValueError):
 _ROOT_KEYS = frozenset({"hosts"})
 _HOST_KEYS = frozenset({
     "name", "plugin_dir", "hooks_dir", "command_form", "tokens",
-    "capabilities", "surface", "tool_classes", "package",
+    "capabilities", "surface", "tool_classes", "permission_policy", "package",
 })
+_HOST_REQUIRED_KEYS = _HOST_KEYS - {"permission_policy"}
 _SURFACE_KEYS = frozenset({"rules", "managed_subtrees", "catalog"})
+_PERMISSION_POLICY_KEYS = frozenset({"surfaces"})
 _RULE_KEYS = frozenset({
     "source_prefix", "output_pattern", "exclude", "add_skill_frontmatter",
 })
 _TOKENS = frozenset({"PLUGIN_ROOT", "PROJECT_DIR"})
 _TOOL_CLASSES = frozenset({"EXEC", "WRITE", "EDIT", "READ", "OTHER"})
+_PERMISSION_ACTIONS = frozenset({
+    "read", "inspection", "source-write", "source-edit", "config-write",
+    "config-edit", "planning-write", "shell-mutation", "dependency-change",
+    "network-side-effect", "external-side-effect", "background-launch", "push",
+    "release",
+})
 _NAME = re.compile(r"^[a-z][a-z0-9-]*$")
+_PERMISSION_SURFACE_NAME = re.compile(r"^[a-z][a-z0-9_-]{0,127}$")
 _CONDITION_START = "{{IF:"
 _FORMATTER = string.Formatter()
 
@@ -155,6 +170,25 @@ def _freeze(value, where):
     raise DescriptorError(f"{where}: unsupported JSON value")
 
 
+def _permission_policy(value, where):
+    value = _mapping(value, where)
+    _keys(value, _PERMISSION_POLICY_KEYS, where)
+    surfaces = _mapping(value["surfaces"], f"{where}.surfaces")
+    validated = {}
+    for name, action in surfaces.items():
+        if not isinstance(name, str) or not _PERMISSION_SURFACE_NAME.fullmatch(name):
+            raise DescriptorError(
+                f"{where}.surfaces: names must be bounded lowercase surface identifiers"
+            )
+        action = _string(action, f"{where}.surfaces.{name}")
+        if action not in _PERMISSION_ACTIONS:
+            raise DescriptorError(
+                f"{where}.surfaces.{name}: noncanonical permission action {action!r}"
+            )
+        validated[name] = action
+    return PermissionPolicy(surfaces=MappingProxyType(validated))
+
+
 def _rule(value, where):
     value = _mapping(value, where)
     _keys(value, _RULE_KEYS, where,
@@ -181,7 +215,7 @@ def _rule(value, where):
 def _host(value, index):
     where = f"hosts[{index}]"
     value = _mapping(value, where)
-    _keys(value, _HOST_KEYS, where)
+    _keys(value, _HOST_KEYS, where, required=_HOST_REQUIRED_KEYS)
     name = _string(value["name"], f"{where}.name")
     if not _NAME.fullmatch(name):
         raise DescriptorError(f"{where}.name: expected lowercase host slug")
@@ -206,6 +240,11 @@ def _host(value, index):
     package = value["package"]
     if package is not None:
         package = _freeze(_mapping(package, f"{where}.package"), f"{where}.package")
+    permission_policy = value.get("permission_policy")
+    if permission_policy is not None:
+        permission_policy = _permission_policy(
+            permission_policy, f"{where}.permission_policy"
+        )
     return HostDescriptor(
         name=name,
         plugin_dir=_relative_path(value["plugin_dir"], f"{where}.plugin_dir"),
@@ -220,6 +259,7 @@ def _host(value, index):
         tool_classes=_string_mapping(
             value["tool_classes"], f"{where}.tool_classes", _TOOL_CLASSES
         ),
+        permission_policy=permission_policy,
         package=package,
     )
 

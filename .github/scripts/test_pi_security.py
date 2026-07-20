@@ -25,6 +25,8 @@ PREVIEW_ENTRYPOINTS = (
     REPO / "plugins" / "ca-pi" / "hooks" / "preview.py",
 )
 PREVIEW_LIBRARY = REPO / "core" / "pysrc" / "_previewlib.py"
+PI_BRIDGE = REPO / "plugins" / "ca-pi" / "hooks" / "pi-bridge.py"
+PI_BRIDGE_CLIENT = REPO / "plugins" / "ca-pi" / "tools" / "src" / "bridge.ts"
 
 
 def result(code: str, passed: bool, count: int | None = None) -> dict[str, object]:
@@ -96,6 +98,42 @@ def preview_output_result() -> dict[str, object]:
     return result("PI-SEC-PREVIEW-OUTPUT", safe)
 
 
+def footer_bridge_results() -> list[dict[str, object]]:
+    """Pin the two footer crossings to fixed events and the adapter trust gate."""
+    try:
+        bridge = PI_BRIDGE.read_text(encoding="utf-8")
+        client = PI_BRIDGE_CLIENT.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return [
+            result("PI-SEC-FOOTER-USAGE", False),
+            result("PI-SEC-FOOTER-TRUST", False),
+        ]
+    usage = all(marker in bridge for marker in (
+        '"footer_usage_update"',
+        "def _footer_usage_update(",
+        "_ledgerlib.pi_ledger_update(",
+        '"footerUsage"',
+        '"PI_FOOTER_USAGE"',
+    ))
+    trust = all(marker in bridge for marker in (
+        '"footer_status_snapshot"',
+        "def _footer_status_snapshot(",
+        "_arbiterstatelib.arbiter_state(",
+        "_arbiterstatelib.dev_active(",
+        "_segmentslib.seg_prune(",
+        '"footerStatus"',
+    )) and all(marker in client for marker in (
+        "activation.enabled !== true",
+        'typeof context.isProjectTrusted !== "function"',
+        "context.isProjectTrusted() !== true",
+        'event: "footer_status_snapshot"',
+    ))
+    return [
+        result("PI-SEC-FOOTER-USAGE", usage),
+        result("PI-SEC-FOOTER-TRUST", trust),
+    ]
+
+
 def security_severity(rule: dict[str, Any], finding: dict[str, Any]) -> float | None:
     values = (
         finding.get("properties", {}).get("security-severity"),
@@ -139,7 +177,7 @@ def adversarial_results() -> list[dict[str, object]]:
     if npm is None:
         return [result("PI-SEC-ADVERSARIAL", False)]
     suites = (
-        ("PI-SEC-ADVERSARIAL", ("test/security.test.ts", "test/final-arguments.test.ts")),
+        ("PI-SEC-ADVERSARIAL", ("test/security.test.ts", "test/final-arguments.test.ts", "test/bridge.test.ts")),
         ("PI-SEC-ISOLATION", ("test/child-env.test.ts", "test/runner-isolation.test.ts")),
         ("PI-SEC-OWNERSHIP", ("test/activation.test.ts", "test/commands.test.ts", "test/tool-guard.test.ts")),
         ("PI-SEC-COMPACTION", ("test/compaction.test.ts",)),
@@ -179,7 +217,7 @@ def main() -> int:
     parser.add_argument("--sarif", type=Path)
     parser.add_argument("--evidence", type=Path)
     args = parser.parse_args()
-    rows = [*workflow_results(), preview_output_result()]
+    rows = [*workflow_results(), preview_output_result(), *footer_bridge_results()]
     if args.sarif is not None:
         rows.append(sarif_result(args.sarif))
     elif args.evidence is not None:

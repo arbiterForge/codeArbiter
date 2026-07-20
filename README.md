@@ -127,6 +127,11 @@ then run `/ca-init` and `/ca-doctor`. Generated aliases use `/ca-*`; `/skill:ca-
 fallback. The [Pi parity runbook](./docs/pi-parity-testing.md) covers isolated installation, live
 verification, uninstall, and the scope of the module-identity diagnostic. There is no npm release.
 
+Pi's generated human-readable skill catalog is `plugins/ca-pi/SKILLS.md`, outside the
+loader-scanned `skills/` directory. Before the platform aggregate runs any fixture, it checks the
+resolved tools workspace; a cold checkout exits with `missing_prerequisite` and directs you to
+`npm --prefix plugins/ca-pi/tools ci --ignore-scripts` rather than installing dependencies itself.
+
 **Prerequisites:** Python 3 on `PATH`. Pi installs its final TypeScript wrappers before bridge
 readiness, so a missing interpreter blocks mutating calls and points to `/ca-doctor`; Claude Code
 and Codex host shims surface an interpreter breadcrumb instead of silently disabling governance.
@@ -194,8 +199,16 @@ flowchart LR
 ```
 
 On Claude Code, the same flag also gates the optional statusline. Codex has no statusline surface;
-its SessionStart briefing presents the governance state instead. Pi publishes compact governance
-state under an extension-owned status key without replacing the complete footer.
+its SessionStart briefing presents the governance state instead. ca-pi installs its rich footer in
+every interactive parent repository. The governance row appears only when the repository is enabled
+and affirmatively trusted; rate-window telemetry is omitted rather than fabricated.
+
+Pi execute mode asks before governed mutations and external side effects. Plan mode is read-only
+except for the current canonical spec, plan, and plan ledger. Background jobs are bounded and
+session-only: they terminate at session switch or shutdown and are never restored from Pi session
+entries. Unverified cleanup marks the manager unhealthy, blocks later launches, and points to
+`/ca-doctor`. Footer, permission, plan, and background surfaces are parent-interactive only and do
+not recurse into hardened children.
 
 Project state lives in **your** repo, not the plugin: a single `.codearbiter/` directory at the repo root, so stage, specs, plans, ADRs, the decision log, tribunal reports, and the overrides audit trail commit alongside your code and survive uninstalling the plugin.
 

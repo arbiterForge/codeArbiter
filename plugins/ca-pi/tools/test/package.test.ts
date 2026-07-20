@@ -11,7 +11,7 @@ import { pathToFileURL } from "node:url";
 import { describe, expect, test } from "vitest";
 
 import { compatibilityDirection } from "../src/compatibility.ts";
-import { createCodeArbiterPi } from "../src/extension.ts";
+import { createCodeArbiterPi, createPiFooterMetricsLoader } from "../src/extension.ts";
 
 const toolsRoot = resolve(import.meta.dirname, "..");
 const pluginRoot = resolve(toolsRoot, "..");
@@ -533,6 +533,95 @@ describe("ca-pi package", () => {
       expect(text).not.toContain("class ExtensionRunner");
       expect(text).not.toContain("sourceMappingURL");
       if (index === 0) expect(text).toContain("@earendil-works/pi-coding-agent");
+    }
+  });
+
+  test("keeps the rich footer and its bridge events out of the hardened child inventory", async () => {
+    const child = await readFile(resolve(pluginRoot, "extensions", "codearbiter-child.js"), "utf8");
+    const childSource = await readFile(resolve(toolsRoot, "src", "child-extension.ts"), "utf8");
+    for (const forbidden of [
+      "PiFooterLifecycle",
+      "setFooter",
+      "footer_usage_update",
+      "footer_status_snapshot",
+      "codeArbiter footer unavailable",
+      "codearbiter_background_bash",
+      "ca-jobs",
+      "createBackgroundJobRuntime",
+    ]) {
+      expect(child).not.toContain(forbidden);
+      expect(childSource).not.toContain(forbidden);
+    }
+    expect(childSource).not.toMatch(/from\s+["']\.\/(?:footer|footer-state|status)\.ts["']/u);
+  });
+
+  test("loads footer metrics lazily from the validated runtime-owned Pi TUI package and rejects a counterfeit owner", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-footer-metrics-"));
+    try {
+      const runtimeRoot = resolve(root, "pi");
+      const moduleEntry = resolve(runtimeRoot, "dist", "index.js");
+      const tuiRoot = resolve(runtimeRoot, "node_modules", "@earendil-works", "pi-tui");
+      await mkdir(resolve(runtimeRoot, "dist"), { recursive: true });
+      await mkdir(resolve(tuiRoot, "dist"), { recursive: true });
+      await writeFile(moduleEntry, "export {};\n", "utf8");
+      await writeFile(resolve(runtimeRoot, "package.json"), JSON.stringify({
+        name: "@earendil-works/pi-coding-agent", type: "module",
+      }) + "\n", "utf8");
+      await writeFile(resolve(tuiRoot, "package.json"), JSON.stringify({
+        name: "@earendil-works/pi-tui", type: "module", exports: "./dist/index.js",
+      }) + "\n", "utf8");
+      await writeFile(
+        resolve(tuiRoot, "dist", "index.js"),
+        "export const visibleWidth = (text) => text.length; export const truncateToWidth = (text, width) => text.slice(0, width);\n",
+        "utf8",
+      );
+
+      const load = createPiFooterMetricsLoader({ moduleEntry, packageRoot: runtimeRoot });
+      const metrics = await load();
+      expect(metrics.visibleWidth("abc")).toBe(3);
+      expect(metrics.truncateToWidth("abcd", 2, "")).toBe("ab");
+
+      await writeFile(resolve(tuiRoot, "package.json"), JSON.stringify({
+        name: "counterfeit-tui", type: "module", exports: "./dist/index.js",
+      }) + "\n", "utf8");
+      await expect(createPiFooterMetricsLoader({ moduleEntry, packageRoot: runtimeRoot })()).rejects.toThrow(
+        "Pi terminal width support",
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  test("rejects a Pi TUI package root linked outside the canonical runtime package", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-footer-metrics-escape-"));
+    try {
+      const runtimeRoot = resolve(root, "pi");
+      const moduleEntry = resolve(runtimeRoot, "dist", "index.js");
+      const ownerParent = resolve(runtimeRoot, "node_modules", "@earendil-works");
+      const linkedRoot = resolve(ownerParent, "pi-tui");
+      const outsideRoot = resolve(root, "outside-tui");
+      await mkdir(resolve(runtimeRoot, "dist"), { recursive: true });
+      await mkdir(resolve(outsideRoot, "dist"), { recursive: true });
+      await mkdir(ownerParent, { recursive: true });
+      await writeFile(moduleEntry, "export {};\n", "utf8");
+      await writeFile(resolve(runtimeRoot, "package.json"), JSON.stringify({
+        name: "@earendil-works/pi-coding-agent", type: "module",
+      }) + "\n", "utf8");
+      await writeFile(resolve(outsideRoot, "package.json"), JSON.stringify({
+        name: "@earendil-works/pi-tui", type: "module", exports: "./dist/index.js",
+      }) + "\n", "utf8");
+      await writeFile(
+        resolve(outsideRoot, "dist", "index.js"),
+        "export const visibleWidth = (text) => text.length; export const truncateToWidth = (text, width) => text.slice(0, width);\n",
+        "utf8",
+      );
+      await symlink(outsideRoot, linkedRoot, process.platform === "win32" ? "junction" : "dir");
+
+      await expect(createPiFooterMetricsLoader({ moduleEntry, packageRoot: runtimeRoot })()).rejects.toThrow(
+        "Pi terminal width support",
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
     }
   });
 

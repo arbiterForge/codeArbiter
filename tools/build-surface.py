@@ -454,6 +454,9 @@ def _disk_files(repo, descriptor):
     plugin = os.path.join(repo, descriptor.plugin_dir)
     found = set()
     managed_subtrees = descriptor.managed_subtrees
+    if (descriptor.catalog is not None
+            and descriptor.catalog not in managed_subtrees):
+        managed_subtrees = managed_subtrees + (descriptor.catalog,)
     if descriptor.command_form == "/ca-{name}":
         managed_subtrees = managed_subtrees + ("generated",)
     for sub in managed_subtrees:

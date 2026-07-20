@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -17,6 +18,7 @@ HOOKS = {
     "pi": REPO / "plugins" / "ca-pi" / "hooks",
 }
 RULE_RE = re.compile(r"\[((?:H|PI)-[A-Za-z0-9]+)\]")
+PI_EXTENSION_NATIVE_TOOL_CLASSES = {"codearbiter_background_bash": "EXEC"}
 
 
 def run(args, cwd, *, payload=None, env=None, timeout=60):
@@ -101,7 +103,7 @@ def verdict(host, root, *, command=None, path=None, content="x\n"):
     return ("block" if result.returncode == 2 else "allow"), (match.group(1) if match else None), result.stderr
 
 
-def live_tool_map(host):
+def runtime_hook_tool_map(host):
     hooks = HOOKS[host]
     code = (
         "import json,sys; "
@@ -130,16 +132,61 @@ def load_pi_bridge():
 
 
 class PiParityFixtures(unittest.TestCase):
+    def test_parity_ledger_classifies_the_new_pi_surfaces_exactly(self):
+        parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
+        for capability in (
+            "Rich footer",
+            "Execute permission asks",
+            "Read-only plan mode",
+            "Session-only background jobs",
+            "Generated skill catalog",
+            "Cold platform prerequisite",
+        ):
+            with self.subTest(capability=capability):
+                self.assertRegex(parity, rf"(?m)^\| {re.escape(capability)} .*\| SUPPORTED \|")
+        self.assertRegex(
+            parity,
+            r"(?m)^\| Pi rate-window telemetry \| HOST-IMPOSSIBLE \|",
+        )
+        self.assertNotIn("| Pi complete footer | DEGRADED |", parity)
+
     def assert_shared(self, root, expected, **operation):
         values = {host: verdict(host, root, **operation) for host in HOOKS}
         for host, (outcome, rule, detail) in values.items():
             self.assertEqual((outcome, rule), ("block", expected), f"{host}: {detail[:500]}")
 
-    def test_descriptor_tool_classes_equal_live_host_maps(self):
+    def test_descriptor_tool_classes_equal_runtime_hook_maps(self):
         descriptor = json.loads((REPO / "core" / "hosts.json").read_text(encoding="utf-8"))
         configured = {host["name"]: host["tool_classes"] for host in descriptor["hosts"]}
-        for host in ("claude", "codex", "pi"):
-            self.assertEqual(configured[host], live_tool_map(host), host)
+        for host in ("claude", "codex"):
+            self.assertEqual(configured[host], runtime_hook_tool_map(host), host)
+        pi_runtime = runtime_hook_tool_map("pi")
+        pi_extension = {
+            name: category
+            for name, category in configured["pi"].items()
+            if name not in pi_runtime
+        }
+        self.assertEqual(pi_extension, PI_EXTENSION_NATIVE_TOOL_CLASSES)
+        self.assertEqual(
+            {name: category for name, category in configured["pi"].items() if name not in pi_extension},
+            pi_runtime,
+        )
+
+    def test_extension_native_tool_uses_the_live_registration_seam(self):
+        npm = shutil.which("npm.cmd" if sys.platform == "win32" else "npm") or shutil.which("npm")
+        self.assertIsNotNone(npm, "npm is required for the focused Pi registration contract")
+        result = run([
+            npm,
+            "--prefix",
+            "plugins/ca-pi/tools",
+            "exec",
+            "vitest",
+            "run",
+            "test/tool-guard.test.ts",
+            "-t",
+            "registers the core-descriptor background tool through the enforcement installer",
+        ], REPO)
+        self.assertEqual(result.returncode, 0, (result.stdout + result.stderr)[-2_000:])
 
     def test_h01_protected_branch_push(self):
         with tempfile.TemporaryDirectory() as td:

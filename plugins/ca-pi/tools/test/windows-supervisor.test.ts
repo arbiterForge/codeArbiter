@@ -79,11 +79,17 @@ const missingCommand = process.platform === "win32"
   ? "C:\\__codearbiter_missing__\\ghost.exe"
   : "/__codearbiter_missing__/ghost";
 
-function validLaunch(overrides: Partial<{ command: string; args: readonly string[]; cwd: string }> = {}): string {
+function validLaunch(overrides: Partial<{
+  command: string;
+  args: readonly string[];
+  cwd: string;
+  env: readonly (readonly [string, string])[];
+}> = {}): string {
   return JSON.stringify({
     command: validCommand,
     args: ["-e", "process.exit(0)"],
     cwd: validCwd,
+    env: [],
     ...overrides,
   });
 }
@@ -134,16 +140,29 @@ describe("windows-supervisor helper (real child process)", () => {
     await expectStatusLine(validLaunch({ args: Array.from({ length: 257 }, () => "x") }), "START\n", "REFUSED launch-malformed\n");
   });
 
-  test("REFUSED launch-malformed: a single arg over the 65,536-byte cap", async () => {
-    await expectStatusLine(validLaunch({ args: ["x".repeat(65_537)] }), "START\n", "REFUSED launch-malformed\n");
+  test("REFUSED launch-malformed: child environment over the 256-entry cap", async () => {
+    const env = Array.from({ length: 257 }, (_, index) => [`K${index}`, "v"] as const);
+    await expectStatusLine(validLaunch({ env }), "START\n", "REFUSED launch-malformed\n");
+  });
+
+  test.each([
+    { env: [["", "value"]] as const },
+    { env: [["KEY", "x".repeat(32_769)]] as const },
+    { env: [["DUPLICATE", "left"], ["DUPLICATE", "right"]] as const },
+  ])("REFUSED launch-malformed: invalid bounded child environment %#", async ({ env }) => {
+    await expectStatusLine(validLaunch({ env }), "START\n", "REFUSED launch-malformed\n");
+  });
+
+  test("REFUSED launch-malformed: a single arg over the 262,144-byte cap", async () => {
+    await expectStatusLine(validLaunch({ args: ["x".repeat(262_145)] }), "START\n", "REFUSED launch-malformed\n");
   });
 
   test("REFUSED launch-malformed: control record is not the exact START token", async () => {
     await expectStatusLine(validLaunch(), "GO\n", "REFUSED launch-malformed\n");
   });
 
-  test("REFUSED proto-overflow: launch payload exceeds the 262,144-byte bound", async () => {
-    await expectStatusLine("x".repeat(262_145), "START\n", "REFUSED proto-overflow\n");
+  test("REFUSED proto-overflow: launch payload exceeds the 3,145,728-byte bound", async () => {
+    await expectStatusLine("x".repeat(3_145_729), "START\n", "REFUSED proto-overflow\n");
   });
 
   test("REFUSED proto-overflow: control payload exceeds the 16-byte bound", async () => {

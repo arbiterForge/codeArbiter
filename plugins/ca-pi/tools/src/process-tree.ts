@@ -6,6 +6,7 @@ import type { ChildProcess, ChildProcessWithoutNullStreams, SpawnOptions } from 
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, win32 } from "node:path";
 import { fileURLToPath } from "node:url";
+import { types as utilTypes } from "node:util";
 
 const DEFAULT_GRACE_MS = 500;
 const DEFAULT_VERIFY_MS = 2_000;
@@ -21,7 +22,9 @@ const WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
 const WINDOWS_JOB_READY = "ATTACHED";
 const WINDOWS_SUPERVISOR_START = "START\n";
 const MAX_JOB_PROTOCOL_BYTES = 64;
-const MAX_LAUNCH_PROTOCOL_BYTES = 262_144;
+const MAX_LAUNCH_PROTOCOL_BYTES = 3_145_728;
+const MAX_LAUNCH_ENV_ENTRIES = 256;
+const MAX_LAUNCH_ENV_BYTES = 262_144;
 
 const WINDOWS_JOB_HELPER_SOURCE = String.raw`$ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
@@ -170,6 +173,7 @@ const WINDOWS_JOB_HELPER_ENCODED = Buffer.from(WINDOWS_JOB_HELPER_SOURCE, "utf16
 
 export const PROCESS_TREE_CLEANUP_REASONS = Object.freeze([
   "timeout", "cancelled", "protocol_error", "protocol_overflow", "startup_failure", "parent_shutdown",
+  "completed", "session_switch", "shutdown", "unload", "fatal_error",
 ] as const);
 export type ProcessTreeCleanupReason = typeof PROCESS_TREE_CLEANUP_REASONS[number];
 
@@ -243,12 +247,26 @@ export interface WindowsSupervisorLaunchPlan {
   readonly control: "START\n";
   readonly options: Readonly<Omit<SpawnOptions, "stdio"> & { readonly stdio: readonly string[] }>;
 }
+interface WindowsSupervisorLaunchRecord {
+  readonly command: string;
+  readonly args: readonly string[];
+  readonly cwd: string;
+  readonly env: readonly (readonly [string, string])[];
+}
 export interface ProcessTreeSpawnInput {
   readonly cwd: string;
   readonly env: NodeJS.ProcessEnv;
   readonly stdio: readonly ["pipe", "pipe", "pipe", "pipe"];
 }
 export type ManagedChildProcess = ChildProcessWithoutNullStreams;
+export interface ManagedProcessTree {
+  readonly child: ManagedChildProcess;
+  readonly cleanup: ProcessTreeCleanup;
+}
+export interface OpenProcessTreeDependencies {
+  readonly spawnTree?: typeof spawnProcessTree;
+  readonly createCleanup?: typeof createProcessTreeCleanup;
+}
 export type ProcessTreeTerminationStep =
   | Readonly<{ kind: "signal-group"; pid: number; signal: "SIGTERM" | "SIGKILL" }>
   | Readonly<{ kind: "taskkill"; command: string; args: readonly string[]; options: Readonly<{ shell: false; windowsHide: true }>; timeoutMs: number }>
@@ -364,7 +382,7 @@ export function windowsJobHelperArgv(powershellExecutable: string): WindowsJobHe
     options: Object.freeze({ shell: false as const, windowsHide: true as const }),
   });
 }
-export function windowsSupervisorLaunchPlan(nodePath: string, supervisorPath: string, childEnvironment: NodeJS.ProcessEnv): WindowsSupervisorLaunchPlan {
+export function windowsSupervisorLaunchPlan(nodePath: string, supervisorPath: string): WindowsSupervisorLaunchPlan {
   if (!win32.isAbsolute(nodePath) || !win32.isAbsolute(supervisorPath) || win32.basename(supervisorPath).toLowerCase() !== "windows-supervisor.js") {
     throw new Error("Windows supervisor launch requires canonical absolute artifacts");
   }
@@ -374,13 +392,63 @@ export function windowsSupervisorLaunchPlan(nodePath: string, supervisorPath: st
     control: WINDOWS_SUPERVISOR_START,
     options: Object.freeze({
       cwd: win32.dirname(supervisorPath),
-      env: Object.freeze({ ...childEnvironment }),
+      env: Object.freeze(helperEnvironment(nodePath)),
       detached: false,
       shell: false,
       stdio: Object.freeze(["pipe", "pipe", "pipe", "pipe", "pipe", "pipe", "pipe", "pipe"]),
       windowsHide: true,
     }),
   });
+}
+
+function windowsSupervisorChildEnvironment(environment: NodeJS.ProcessEnv): readonly (readonly [string, string])[] {
+  if (environment === null || typeof environment !== "object" || utilTypes.isProxy(environment)) {
+    throw new Error("Windows supervisor child environment is invalid");
+  }
+  const prototype = Object.getPrototypeOf(environment);
+  if (prototype !== Object.prototype && prototype !== null) throw new Error("Windows supervisor child environment is invalid");
+  const keys = Reflect.ownKeys(environment);
+  if (keys.length > MAX_LAUNCH_ENV_ENTRIES || keys.some((key) => typeof key !== "string")) {
+    throw new Error("Windows supervisor child environment exceeds entry limit");
+  }
+  let totalBytes = 0;
+  const entries: Array<readonly [string, string]> = [];
+  for (const key of keys as string[]) {
+    const descriptor = Object.getOwnPropertyDescriptor(environment, key);
+    if (descriptor === undefined || !descriptor.enumerable || !("value" in descriptor)) {
+      throw new Error("Windows supervisor child environment is invalid");
+    }
+    const value = descriptor.value as unknown;
+    if (key.length === 0 || key.length > 256 || key.includes("\0") || Buffer.byteLength(key, "utf8") > 512
+      || (value !== undefined && (typeof value !== "string" || value.length > 32_768 || value.includes("\0")
+        || Buffer.byteLength(value, "utf8") > 65_536))) {
+      throw new Error("Windows supervisor child environment is invalid");
+    }
+    if (value === undefined) continue;
+    totalBytes += Buffer.byteLength(key, "utf8") + Buffer.byteLength(value, "utf8");
+    if (totalBytes > MAX_LAUNCH_ENV_BYTES) throw new Error("Windows supervisor child environment exceeds byte limit");
+    entries.push(Object.freeze([key, value] as const));
+  }
+  return Object.freeze(entries);
+}
+
+function windowsSupervisorLaunchRecord(
+  command: string,
+  args: readonly string[],
+  cwd: string,
+  environment: NodeJS.ProcessEnv,
+): string {
+  const record: WindowsSupervisorLaunchRecord = Object.freeze({
+    args: Object.freeze([...args]),
+    command,
+    cwd,
+    env: windowsSupervisorChildEnvironment(environment),
+  });
+  const serialized = JSON.stringify(record);
+  if (Buffer.byteLength(serialized, "utf8") > MAX_LAUNCH_PROTOCOL_BYTES) {
+    throw new Error("Windows supervisor launch record exceeds protocol limit: proto-overflow");
+  }
+  return serialized;
 }
 
 function helperEnvironment(command: string): NodeJS.ProcessEnv {
@@ -693,9 +761,8 @@ export async function spawnProcessTree(command: string, args: readonly string[],
   }
   const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS });
   const supervisorPath = canonicalSupervisorPath();
-  const plan = windowsSupervisorLaunchPlan(canonicalCommand, supervisorPath, options.env);
-  const launchRecord = JSON.stringify({ args: [...args], command: canonicalCommand, cwd: canonicalCwd });
-  if (Buffer.byteLength(launchRecord, "utf8") > MAX_LAUNCH_PROTOCOL_BYTES) throw new Error("Windows supervisor launch record exceeds protocol limit: proto-overflow");
+  const plan = windowsSupervisorLaunchPlan(realpathSync(process.execPath), supervisorPath);
+  const launchRecord = windowsSupervisorLaunchRecord(canonicalCommand, args, canonicalCwd, options.env);
   const supervisor = spawn(plan.command, [...plan.args], {
     ...plan.options,
     stdio: [...plan.options.stdio] as SpawnOptions["stdio"],
@@ -728,6 +795,18 @@ export async function spawnProcessTree(command: string, args: readonly string[],
     throw new Error("Windows contained Pi exit watch was refused: ready-timeout");
   }
   return new WindowsContainedProcess(supervisor, actualPid, guard, rootPid) as unknown as ManagedChildProcess;
+}
+
+/** The smallest reusable ownership handle: the spawned child and its mandatory tree cleanup. */
+export async function openProcessTree(
+  command: string,
+  args: readonly string[],
+  options: ProcessTreeSpawnInput,
+  dependencies: OpenProcessTreeDependencies = {},
+): Promise<ManagedProcessTree> {
+  const child = await (dependencies.spawnTree ?? spawnProcessTree)(command, args, options);
+  const cleanup = (dependencies.createCleanup ?? createProcessTreeCleanup)(child);
+  return Object.freeze({ child, cleanup });
 }
 
 function processTreeIsAlive(platform: NodeJS.Platform, pid: number): boolean {

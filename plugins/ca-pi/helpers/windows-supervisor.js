@@ -3,8 +3,10 @@ import { spawn } from "node:child_process";
 import { isAbsolute } from "node:path";
 import { createReadStream, createWriteStream } from "node:fs";
 import { Socket } from "node:net";
-var MAX_LAUNCH_BYTES = 262144;
+var MAX_LAUNCH_BYTES = 3145728;
 var MAX_CONTROL_BYTES = 16;
+var MAX_ENV_ENTRIES = 256;
+var MAX_ENV_BYTES = 262144;
 var PROXY_DRAIN_MS = 500;
 var START = "START\n";
 var launchInput = createReadStream("", { fd: 4, autoClose: false });
@@ -23,12 +25,27 @@ function parseLaunch(value) {
   } catch {
     throw new Error("invalid launch record");
   }
-  if (!exactObject(parsed, ["args", "command", "cwd"])) throw new Error("invalid launch record");
-  const { args, command, cwd } = parsed;
-  if (typeof command !== "string" || !isAbsolute(command) || typeof cwd !== "string" || !isAbsolute(cwd) || !Array.isArray(args) || args.length > 256 || args.some((item) => typeof item !== "string" || Buffer.byteLength(item, "utf8") > 65536)) {
+  if (!exactObject(parsed, ["args", "command", "cwd", "env"])) throw new Error("invalid launch record");
+  const { args, command, cwd, env } = parsed;
+  if (typeof command !== "string" || !isAbsolute(command) || typeof cwd !== "string" || !isAbsolute(cwd) || !Array.isArray(args) || args.length > 256 || args.some((item) => typeof item !== "string" || Buffer.byteLength(item, "utf8") > 262144) || !Array.isArray(env) || env.length > MAX_ENV_ENTRIES) {
     throw new Error("invalid launch record");
   }
-  return Object.freeze({ args: Object.freeze([...args]), command, cwd });
+  let environmentBytes = 0;
+  const environment = /* @__PURE__ */ Object.create(null);
+  for (const entry of env) {
+    if (!Array.isArray(entry) || entry.length !== 2) throw new Error("invalid launch record");
+    const [key, value2] = entry;
+    if (typeof key !== "string" || key.length === 0 || key.length > 256 || key.includes("\0") || Buffer.byteLength(key, "utf8") > 512 || typeof value2 !== "string" || value2.length > 32768 || value2.includes("\0") || Buffer.byteLength(value2, "utf8") > 65536 || Object.hasOwn(environment, key)) throw new Error("invalid launch record");
+    environmentBytes += Buffer.byteLength(key, "utf8") + Buffer.byteLength(value2, "utf8");
+    if (environmentBytes > MAX_ENV_BYTES) throw new Error("invalid launch record");
+    environment[key] = value2;
+  }
+  return Object.freeze({
+    args: Object.freeze([...args]),
+    command,
+    cwd,
+    env: Object.freeze(environment)
+  });
 }
 function boundedRead(stream, maximum) {
   return new Promise((resolve, reject) => {
@@ -117,7 +134,7 @@ try {
   failureReason = "spawn-error";
   child = spawn(launch.command, [...launch.args], {
     cwd: launch.cwd,
-    env: process.env,
+    env: launch.env,
     detached: false,
     shell: false,
     stdio: ["pipe", "pipe", "pipe", "pipe"],

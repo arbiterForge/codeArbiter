@@ -1,3 +1,6 @@
+/** Descriptor-owned Pi permission action surfaces, embedded by build.mjs for T08 composition. */
+declare const __CODEARBITER_PI_PERMISSION_POLICY_SURFACES__: unknown;
+
 declare module "@earendil-works/pi-coding-agent" {
   export const VERSION: string;
 
@@ -38,6 +41,10 @@ declare module "@earendil-works/pi-coding-agent" {
       },
     ): void;
     sendUserMessage(content: string, options?: { deliverAs?: "steer" | "followUp" }): void;
+    /** Source-verified in Pi 0.80.5 and 0.80.10; optional locally for fail-soft adaptation. */
+    getSessionName?(): unknown;
+    /** Source-verified in Pi 0.80.5 and 0.80.10; optional locally for fail-soft adaptation. */
+    getThinkingLevel?(): unknown;
     getCommands(): Array<{
       name: string;
       description?: string;

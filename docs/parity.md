@@ -21,7 +21,7 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 
 | Surface | Claude Code (`ca`) | Codex CLI (`ca-codex`) | Pi (`ca-pi`) | Evidence |
 |---|---|---|---|---|
-| Public entries | 39 `/ca:*` commands | 37 `$ca-*` entry skills | 38 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, generated skill indexes |
+| Public entries | 39 `/ca:*` commands | 37 `$ca-*` entry skills | 38 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
 | Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
 | Role charters | 28 plugin agents | inline until Codex agent packaging lands | 28 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
@@ -40,11 +40,27 @@ and `ca-pi: 38`.
 | WRITE/EDIT enforcement | Write and Edit hooks | `apply_patch` decomposed per file; opaque blocks | final wrappers around built-in `write` and `edit` arguments |
 | READ notices | native Read hook | host-impossible; post-write notices remain | built-in `read` wrapper and shared notice policy |
 | Git backstop | shared `.git/hooks` installer | same | same through Pi bridge |
-| Status | complete Claude statusline | startup state only | extension-owned compact status key, not a footer replacement |
+| Status | complete Claude statusline | startup state only | rich footer globally; governance row only when enabled and affirmatively trusted; rate windows omitted |
 | Prune/compaction | shared policy plus Claude transcript codec | transcript engine unavailable; audit warning remains | shared policy plus Pi native compaction; no active-session rewrite |
 | Role dispatch | Claude subagents | inline review/author fallback | fresh Pi RPC children: single, chain, parallel |
-| Process cleanup | host-managed subagents | host-managed inline work | bounded cancellation/timeout plus whole-tree cleanup |
-| Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper diagnostics |
+| Process cleanup | host-managed subagents | host-managed inline work | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
+| Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper plus footer/background health |
+
+## Pi live surface classifications
+
+| Capability | Status | Pi behavior | Evidence |
+|---|---|---|---|
+| Rich footer | SUPPORTED | Installed in every interactive parent repository; the governance row requires enabled plus affirmatively trusted state. | `plugins/ca-pi/tools/src/status.ts` |
+| Execute permission asks | SUPPORTED | Classified reads allow silently; governed mutation and external side effects ask once for the current invocation. | `plugins/ca-pi/tools/src/policy.ts` |
+| Read-only plan mode | SUPPORTED | Plan mode is read-only except for the current canonical spec, plan, and plan ledger. | `plugins/ca-pi/tools/src/plan-mode.ts` |
+| Session-only background jobs | SUPPORTED | Jobs terminate and verify descendants at shutdown and are never restored from Pi session entries. | `plugins/ca-pi/tools/src/background-jobs.ts` |
+| Generated skill catalog | SUPPORTED | The human catalog is `plugins/ca-pi/SKILLS.md`, outside the loader directory. | `core/hosts.json` |
+| Cold platform prerequisite | SUPPORTED | Missing Vitest returns `missing_prerequisite` before fixture execution with `npm --prefix plugins/ca-pi/tools ci --ignore-scripts`. | `.github/scripts/test_pi_platform_contract.py` |
+
+Footer, permission UI, plan UI, and background jobs are parent-interactive only.
+Rate-window telemetry is omitted because Pi exposes no supported source. An
+unverified cleanup makes the background manager unhealthy, blocks later
+launches, and directs the operator to `/ca-doctor`; job state never persists.
 
 Pi doctor reports the canonical active CLI and package origin. Its
 module-identity diagnosis proves self-consistency with the operator-launched Pi
@@ -76,7 +92,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex transcript compaction | HOST-IMPOSSIBLE | Claude transcript JSONL is not a Codex session format. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex packaged agents | DEGRADED | Roles run inline until a supported packaging surface lands. | `plugins/ca-codex/includes/codex-host-notes.md` |
-| Pi complete footer | DEGRADED | Pi exposes extension status, not ownership of the full footer. | `plugins/ca-pi/includes/pi-host-notes.md` |
+| Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
 | Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.80.10 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |
 | Pi npm package | DEGRADED | Git tags are the only distribution path in this release line. | `docs/pi-parity-testing.md` |

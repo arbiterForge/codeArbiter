@@ -68,6 +68,8 @@ function healthyInput(): PiDoctorInput {
       expansionMatches: true,
     },
     bridge: { healthy: true },
+    footer: { expected: true, initialized: true },
+    background: { expected: true, initialized: true, healthy: true },
     child: { present: true, artifact: "enforced", path: `${ROOT}/extensions/codearbiter-child.js` },
     ambientMarker: { present: false, validatedChild: false },
     moduleIdentity: { selfConsistent: true },
@@ -97,6 +99,8 @@ const remediation = {
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
   "module-identity": "Reinstall the active Pi CLI and ca-pi from their approved origins, then restart Pi.",
   "final-arguments": "Reinstall ca-pi, remove competing mutating tool definitions, and run /ca-doctor again.",
+  footer: "Restart Pi in an interactive parent session; if the rich footer still fails, reinstall ca-pi and run /ca-doctor again.",
+  background: "Stop active work, restart Pi, and run /ca-doctor before launching another background job.",
 } as const;
 
 const ACTIVE_DISPATCH_MESSAGE =
@@ -118,6 +122,8 @@ function brokenFixture(id: keyof typeof remediation): PiDoctorInput {
     case "ambient-marker": input.ambientMarker.present = true; break;
     case "module-identity": input.runtime.moduleEntry = "C:/unrelated/index.js"; break;
     case "final-arguments": input.finalArguments.wrapperSourcePath = "C:/foreign.js"; break;
+    case "footer": input.footer.initialized = false; break;
+    case "background": input.background.healthy = false; break;
   }
   return input;
 }
@@ -138,7 +144,7 @@ describe("Pi structured doctor", () => {
 
   test("reports exact active origins and limits the module-identity claim", () => {
     const result = diagnosePi(healthyInput());
-    expect(result).toHaveLength(12);
+    expect(result).toHaveLength(14);
     expect(result.filter((row) => !["child", "active-dispatch"].includes(row.id)).every((row) => row.state === "healthy")).toBe(true);
     expect(result.find((row) => row.id === "child")).toMatchObject({ state: "healthy" });
     expect(result.find((row) => row.id === "active-dispatch")).toEqual({
@@ -157,6 +163,8 @@ describe("Pi structured doctor", () => {
     );
     expect(result.find((row) => row.id === "trust")?.message).toContain("repository is dormant");
     expect(result.find((row) => row.id === "commands")?.message).toContain("0.80.5, 0.80.10");
+    expect(result.find((row) => row.id === "footer")).toMatchObject({ state: "healthy" });
+    expect(result.find((row) => row.id === "background")).toMatchObject({ state: "healthy" });
   });
 
   test("diagnoses both command ownership collisions and DECISION-0018 expansion drift", () => {
@@ -199,6 +207,11 @@ describe("Pi structured doctor", () => {
       catalog: [{ name: "doctor", description: "doctor", skillPath: "skills/ca-doctor/SKILL.md" }],
       bridge: { call: async () => ({ version: 1, outcome: "allow" }) },
       bridgePrepared: true,
+      footerExpected: true,
+      footerInitialized: true,
+      backgroundExpected: true,
+      backgroundInitialized: true,
+      backgroundHealthy: true,
       projectTrustRequired: false,
       childPath,
       wrapperSourcePath: extensionPath,
@@ -208,6 +221,10 @@ describe("Pi structured doctor", () => {
       childFingerprint: SHIPPED_CHILD_SHA256,
     });
     expect(collected.child.artifact).toBe("enforced");
+    expect(collected.footer).toEqual({ expected: true, initialized: true });
+    expect(collected.background).toEqual({ expected: true, initialized: true, healthy: true });
+    expect(Object.keys(collected.footer).sort()).toEqual(["expected", "initialized"]);
+    expect(Object.keys(collected.background).sort()).toEqual(["expected", "healthy", "initialized"]);
     expect(diagnosePi(collected).find((row) => row.id === "child")).toMatchObject({ state: "healthy" });
 
     for (const suffix of [
@@ -225,6 +242,11 @@ describe("Pi structured doctor", () => {
         catalog: [{ name: "doctor", description: "doctor", skillPath: "skills/ca-doctor/SKILL.md" }],
         bridge: { call: async () => ({ version: 1, outcome: "allow" }) },
         bridgePrepared: true,
+        footerExpected: true,
+        footerInitialized: true,
+        backgroundExpected: true,
+        backgroundInitialized: true,
+        backgroundHealthy: true,
         projectTrustRequired: false,
         childPath,
         wrapperSourcePath: extensionPath,
@@ -263,6 +285,11 @@ describe("Pi structured doctor", () => {
       catalog: [{ name: "doctor", description: "doctor", skillPath: "skills/ca-doctor/SKILL.md" }],
       bridge: { call: async () => { bridgeCalls += 1; return { version: 1, outcome: "allow" }; } },
       bridgePrepared: false,
+      footerExpected: true,
+      footerInitialized: true,
+      backgroundExpected: false,
+      backgroundInitialized: false,
+      backgroundHealthy: true,
       projectTrustRequired: true,
       childPath: resolve(ROOT, "extensions", "codearbiter-child.js"),
       wrapperSourcePath: extensionPath,
@@ -285,6 +312,8 @@ describe("Pi structured doctor", () => {
     expect(diagnoses.find((row) => row.id === "python")).toMatchObject({ state: "degraded" });
     expect(diagnoses.find((row) => row.id === "bridge")).toMatchObject({ state: "degraded" });
     expect(diagnoses.find((row) => row.id === "final-arguments")).toMatchObject({ state: "degraded" });
+    expect(diagnoses.find((row) => row.id === "footer")).toMatchObject({ state: "healthy" });
+    expect(diagnoses.find((row) => row.id === "background")).toMatchObject({ state: "healthy" });
     expect(wrapper).toMatchObject({ state: "degraded", message: expect.stringContaining("project trust") });
   });
 
@@ -299,6 +328,32 @@ describe("Pi structured doctor", () => {
     for (const id of ["package", "core", "child", "module-identity", "final-arguments"]) {
       expect(result.find((row) => row.id === id), id).toMatchObject({ state: "unhealthy" });
     }
+  });
+
+  test("distinguishes intentionally absent probes from expected initialization failures", () => {
+    const absent = healthyInput();
+    absent.footer = { expected: false, initialized: false };
+    absent.background = { expected: false, initialized: false, healthy: false };
+    expect(diagnosePi(absent).find((row) => row.id === "footer")).toMatchObject({ state: "healthy" });
+    expect(diagnosePi(absent).find((row) => row.id === "background")).toMatchObject({ state: "healthy" });
+
+    const failed = healthyInput();
+    failed.footer = { expected: true, initialized: false };
+    failed.background = { expected: true, initialized: false, healthy: false };
+    expect(diagnosePi(failed).find((row) => row.id === "footer")).toMatchObject({ state: "unhealthy" });
+    expect(diagnosePi(failed).find((row) => row.id === "background")).toMatchObject({ state: "unhealthy" });
+
+    const isolationBreach = healthyInput();
+    isolationBreach.footer = { expected: false, initialized: true };
+    isolationBreach.background = { expected: false, initialized: true, healthy: true };
+    expect(diagnosePi(isolationBreach).find((row) => row.id === "footer")).toMatchObject({
+      state: "unhealthy",
+      message: expect.stringContaining("isolation is breached"),
+    });
+    expect(diagnosePi(isolationBreach).find((row) => row.id === "background")).toMatchObject({
+      state: "unhealthy",
+      message: expect.stringContaining("isolation is breached"),
+    });
   });
 
   test("wrapper self-test calls only the stored wrapper with the exact H-03 dry-run", async () => {

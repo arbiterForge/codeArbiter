@@ -212,6 +212,11 @@ class CodexMappingTest(_RepoCase):
         self.assertNotIn("$ca-statusline", text)
         self.assertLess(text.index("$ca-init"), text.index("$ca-status"))
 
+    def test_codex_catalog_location_is_unchanged(self):
+        out = self.render("codex")
+        self.assertIn("skills/INDEX.md", out)
+        self.assertNotIn("SKILLS.md", out)
+
     def test_readme_never_rendered(self):
         for host in ("claude", "codex"):
             for rel in self.render(host):
@@ -222,9 +227,31 @@ class PiMappingTest(_RepoCase):
     def test_pi_commands_use_pi_aliases_in_bodies_and_catalog(self):
         out = self.render("pi")
         self.assertIn("# /ca-init", out["skills/ca-init/SKILL.md"].decode())
-        catalog = out["skills/INDEX.md"].decode()
+        catalog = out["SKILLS.md"].decode()
         self.assertIn("`/ca-init`", catalog)
         self.assertNotIn("`$ca-init`", catalog)
+
+    def test_pi_catalog_relocation_removes_loader_scanned_markdown_orphan(self):
+        old_catalog = _write(
+            self.repo, "plugins/ca-pi/skills/INDEX.md", "stale catalog\n"
+        )
+        B.write_all(self.repo, hosts=("pi",))
+        plugin = Path(self.repo) / "plugins/ca-pi"
+        self.assertTrue((plugin / "SKILLS.md").is_file())
+        self.assertFalse(old_catalog.exists())
+        self.assertEqual(list((plugin / "skills").glob("*.md")), [])
+
+    def test_pi_skill_author_keeps_the_routine_catalog_for_authoring(self):
+        template = (
+            REPO_ROOT / "core/surface/skills/skill-author/SKILL.md"
+        ).read_text(encoding="utf-8")
+        _write(self.repo, "core/surface/skills/skill-author/SKILL.md", template)
+
+        pi_text = self.render("pi")["routines/skill-author/SKILL.md"].decode()
+        codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()
+        self.assertIn("<plugin-root>/routines/INDEX.md", pi_text)
+        self.assertNotIn("<plugin-root>/SKILLS.md", pi_text)
+        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/INDEX.md", codex_text)
 
     def test_pi_generated_command_catalog_is_an_orphan_cleaned_managed_surface(self):
         B.write_all(self.repo, hosts=("pi",))
@@ -376,6 +403,31 @@ class CollisionTest(_RepoCase):
 
 
 class WriteAndCheckTest(_RepoCase):
+    def test_custom_catalog_outside_managed_subtrees_is_discovered_and_replaced(self):
+        hosts_path = Path(self.repo) / "core/hosts.json"
+        document = json.loads(hosts_path.read_text(encoding="utf-8"))
+        pi = next(host for host in document["hosts"] if host["name"] == "pi")
+        pi["surface"]["catalog"] = "docs/ENTRY-CATALOG.md"
+        hosts_path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+        stale_catalog = _write(
+            self.repo,
+            "plugins/ca-pi/docs/ENTRY-CATALOG.md",
+            "stale descriptor catalog\n",
+        )
+
+        descriptor = next(
+            host for host in B.load_host_descriptors(self.repo)
+            if host.name == "pi"
+        )
+        self.assertNotIn("docs", descriptor.managed_subtrees)
+        self.assertIn(
+            "docs/ENTRY-CATALOG.md", B._disk_files(self.repo, descriptor)
+        )
+        B.write_all(self.repo, hosts=("pi",))
+        self.assertNotEqual(stale_catalog.read_text(encoding="utf-8"),
+                            "stale descriptor catalog\n")
+        self.assertIn("`/ca-init`", stale_catalog.read_text(encoding="utf-8"))
+
     def test_write_then_check_green_then_idempotent(self):
         wrote = B.write_all(self.repo)
         self.assertGreater(wrote, 0)

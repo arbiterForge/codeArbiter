@@ -13,6 +13,10 @@ export interface PiRole {
 }
 
 const ROLE_NAME = /^[a-z][a-z0-9-]{0,63}$/u;
+
+export function validRoleName(value: unknown): value is string {
+  return typeof value === "string" && ROLE_NAME.test(value);
+}
 const ALLOWED_TOOLS = new Set(["read", "bash", "edit", "write"]);
 
 function inside(path: string, root: string): boolean {
@@ -35,7 +39,7 @@ function parseRole(value: unknown): PiRole {
     throw new Error("Generated Pi role catalog is invalid; run /ca-doctor.");
   }
   if (
-    typeof role.name !== "string" || !ROLE_NAME.test(role.name)
+    !validRoleName(role.name)
     || (role.classification !== "author" && role.classification !== "reviewer")
     || !validRelativeResource(role.charterPath, "agents/")
     || !Array.isArray(role.skillPaths) || role.skillPaths.some((item) => !validRelativeResource(item, "routines/"))

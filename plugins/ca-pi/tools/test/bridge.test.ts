@@ -1,18 +1,125 @@
-import { access, chmod, copyFile, mkdtemp, mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { access, chmod, copyFile, mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { EventEmitter } from "node:events";
 import { tmpdir } from "node:os";
 import { delimiter, isAbsolute, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, test } from "vitest";
 
-import { BridgeClient, __setBridgeSpawnForTests, resolveGitExecutable, resolvePythonCommand } from "../src/bridge.ts";
+import {
+  BridgeClient,
+  __setBridgeSpawnForTests,
+  callPlanFileBridge,
+  readFooterStatusSnapshot,
+  resolveGitExecutable,
+  resolvePythonCommand,
+  updateFooterUsageSnapshot,
+} from "../src/bridge.ts";
 import type { BridgeSpawnImpl } from "../src/bridge.ts";
-import type { BridgePort, BuiltinToolFactories, ToolDefinitionPort, ToolGuardPiPort } from "../src/contracts.ts";
+import type {
+  BridgePort,
+  BridgeRequest,
+  BridgeResponse,
+  BuiltinToolFactories,
+  ExtensionContextPort,
+  PiFooterUsageUpdateResult,
+  ToolDefinitionPort,
+  ToolGuardPiPort,
+} from "../src/contracts.ts";
 import { applyToolResultNotice } from "../src/notices.ts";
 import { wrapBuiltins } from "../src/tool-guard.ts";
+
+function wirePlanFile(planFile: Record<string, unknown>): Record<string, unknown> {
+  const output = { ...planFile };
+  if (output.status === "committed" && output.observed === undefined) output.observed = true;
+  if (Object.hasOwn(output, "content")) {
+    const content = output.content;
+    delete output.content;
+    output.contentBase64 = content === null ? null : Buffer.from(String(content), "utf8").toString("base64");
+  }
+  return output;
+}
+
+describe("plan-file bridge protocol", () => {
+  test("emits the fixed path-free request and accepts bounded exact results", async () => {
+    const calls: BridgeRequest[] = [];
+    const bridge: BridgePort = { call: async (request) => {
+      calls.push(request);
+      return {
+        version: 1, outcome: "notice", resultPatch: { planFile: {
+          status: "unchanged", exists: true, hash: createHash("sha256").update("plan").digest("hex"),
+          contentBase64: Buffer.from("plan", "utf8").toString("base64"),
+        } },
+      };
+    } };
+    await expect(callPlanFileBridge(bridge, "C:/repo", {
+      slug: "demo", kind: "plan", action: "read",
+    })).resolves.toMatchObject({ status: "unchanged", content: "plan" });
+    expect(calls).toEqual([{
+      version: 1, event: "plan_file", cwd: "C:/repo",
+      input: { slug: "demo", kind: "plan", action: "read" },
+    }]);
+  });
+
+  test("rejects malformed, oversized, and hash-incoherent response shapes", async () => {
+    const values: unknown[] = [
+      { status: "conflict", extra: true },
+      { status: "error", code: "raw path C:/secret" },
+      { status: "unchanged", exists: false, hash: null, content: "not-empty" },
+      { status: "committed", exists: true, hash: "x", content: "ok", directoryDurable: true },
+      { status: "unchanged", exists: true, hash: "0".repeat(64), content: "x".repeat(92_161) },
+      { status: "unchanged", exists: true, hash: "0".repeat(64), contentBase64: "Zg" },
+      { status: "unchanged", exists: true, hash: "0".repeat(64), contentBase64: "/w==" },
+    ];
+    for (const planFile of values) {
+      const bridge: BridgePort = { call: async () => ({
+        version: 1, outcome: "notice", resultPatch: {
+          planFile: wirePlanFile(planFile as Record<string, unknown>),
+        },
+      }) };
+      await expect(callPlanFileBridge(bridge, "C:/repo", {
+        slug: "demo", kind: "spec", action: "read",
+      })).resolves.toBeUndefined();
+    }
+  });
+
+  test("rejects content beyond the shared decoded bound before transport", async () => {
+    let calls = 0;
+    const bridge: BridgePort = { call: async () => {
+      calls += 1;
+      throw new Error("must not be called");
+    } };
+    await expect(callPlanFileBridge(bridge, "C:/repo", {
+      slug: "demo", kind: "plan", action: "replace", expectedHash: null, content: "x".repeat(92_161),
+    })).resolves.toBeUndefined();
+    expect(calls).toBe(0);
+  });
+
+  test("round-trips the maximum escaped and non-ASCII payload through a real BridgeClient envelope", async () => {
+    const content = '"\\é'.repeat(23_040);
+    expect(Buffer.byteLength(content, "utf8")).toBe(92_160);
+    const cwd = await mkdtemp(resolve(tmpdir(), "ca-pi-plan-envelope-"));
+    roots.push(cwd);
+    await mkdir(resolve(cwd, ".codearbiter", "specs"), { recursive: true });
+    await mkdir(resolve(cwd, ".codearbiter", "plans"));
+    const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+    const bridge = new BridgeClient({
+      bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
+      maxStreamBytes: 262_144,
+      packageRoot,
+      pythonExecutable: pythonExecutable(),
+      gitExecutable: gitExecutable(),
+      toolClasses: {},
+    });
+    await expect(callPlanFileBridge(bridge, cwd, {
+      slug: "demo", kind: "spec", action: "replace", expectedHash: null, content,
+    })).resolves.toMatchObject({ status: "committed", observed: true, content });
+    await expect(readFile(resolve(cwd, ".codearbiter", "specs", "demo.md"), "utf8")).resolves.toBe(content);
+  });
+});
 
 const roots: string[] = [];
 
@@ -33,7 +140,11 @@ function gitExecutable(): string {
   return resolveGitExecutable(tmpdir());
 }
 
-async function clientFixture(source: string, options: { timeoutMs?: number; maxStreamBytes?: number } = {}) {
+async function clientFixture(source: string, options: {
+  timeoutMs?: number;
+  maxStreamBytes?: number;
+  shouldAuditFailure?: (request: BridgeRequest) => boolean;
+} = {}) {
   const packageRoot = await mkdtemp(resolve(tmpdir(), "ca-pi-bridge-"));
   roots.push(packageRoot);
   const hooks = resolve(packageRoot, "hooks");
@@ -48,6 +159,7 @@ async function clientFixture(source: string, options: { timeoutMs?: number; maxS
     gitExecutable: gitExecutable(),
     timeoutMs: options.timeoutMs ?? 2_000,
     toolClasses: { bash: "EXEC", read: "READ", write: "WRITE", edit: "EDIT" },
+    ...(options.shouldAuditFailure === undefined ? {} : { shouldAuditFailure: options.shouldAuditFailure }),
   }) };
 }
 
@@ -495,5 +607,899 @@ describe("BridgeClient", () => {
     } finally {
       process.removeListener("unhandledRejection", onUnhandled);
     }
+  });
+});
+
+describe("Pi footer bridge adapters", () => {
+  test("rejects C1 controls in usage timestamps before facts cross the bridge", async () => {
+    const requests: BridgeRequest[] = [];
+    const totals = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 };
+    const bridge: BridgePort = {
+      call: async (bridgeRequest) => {
+        requests.push(bridgeRequest);
+        return {
+          version: 1,
+          outcome: "notice",
+          resultPatch: { footerUsage: { status: "ok", session: totals, today: totals, acceptedThrough: 0, highWater: 0 } },
+        };
+      },
+    };
+    const context = {
+      cwd: "C:/work/c1-usage",
+      signal: new AbortController().signal,
+      sessionManager: {
+        getSessionId: () => "c1-usage-session",
+        getEntries: () => [{
+          type: "message",
+          timestamp: "2026-07-19T12:00:00Z\u0080hidden",
+          message: {
+            role: "assistant",
+            usage: { input: 1, output: 1, cacheRead: 0, cacheWrite: 0, cost: { total: 0.01 } },
+          },
+        }],
+      },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    await expect(updateFooterUsageSnapshot(bridge, context, -1)).resolves.toMatchObject({
+      acknowledgedCursor: 0,
+      retryRequired: false,
+    });
+    expect(requests[0]?.input).toMatchObject({ scanStart: 0, scanEnd: 0, facts: [] });
+  });
+
+  test("sends project-independent bounded usage ranges and returns only the fixed validated snapshot", async () => {
+    const sessionId = `full-session-${"s".repeat(990)}-tail`;
+    const sessionFile = "C:/private/session/location/session.jsonl";
+    const entries = Array.from({ length: 258 }, (_value, position) => position === 1 || position === 257
+      ? {
+          type: "message",
+          id: `assistant-${position}`,
+          parentId: "must-not-cross",
+          timestamp: `2026-07-19T12:00:${position === 1 ? "01" : "02"}-04:00`,
+          message: {
+            role: "assistant",
+            content: `private-message-${position}`,
+            usage: {
+              input: position === 1 ? 10 : 20,
+              output: position === 1 ? 4 : 8,
+              cacheRead: position === 1 ? 3 : 6,
+              cacheWrite: position === 1 ? 2 : 4,
+              cost: { total: position === 1 ? 0.25 : 0.5 },
+            },
+          },
+        }
+      : { type: "message", timestamp: "2026-07-19T12:00:00-04:00", message: { role: "user", content: `private-${position}` } });
+    const requests: Array<Record<string, unknown>> = [];
+    const bridge: BridgePort = {
+      call: async (bridgeRequest) => {
+        requests.push(bridgeRequest as unknown as Record<string, unknown>);
+        const input = bridgeRequest.input as { scanEnd: number };
+        const final = input.scanEnd === 257;
+        return {
+          version: 1,
+          outcome: "notice",
+          auditCode: "PI_FOOTER_USAGE",
+          resultPatch: {
+            footerUsage: {
+              status: "ok",
+              session: {
+                inputTokens: final ? 30 : 10,
+                outputTokens: final ? 12 : 4,
+                cacheReadTokens: final ? 9 : 3,
+                cacheWriteTokens: final ? 6 : 2,
+                costUsd: final ? 0.75 : 0.25,
+              },
+              today: {
+                inputTokens: final ? 30 : 10,
+                outputTokens: final ? 12 : 4,
+                cacheReadTokens: final ? 9 : 3,
+                cacheWriteTokens: final ? 6 : 2,
+                costUsd: final ? 0.75 : 0.25,
+              },
+              acceptedThrough: input.scanEnd,
+              highWater: input.scanEnd,
+            },
+          },
+        };
+      },
+    };
+    const context = {
+      cwd: "C:/work/project-a",
+      signal: new AbortController().signal,
+      sessionManager: {
+        getSessionId: () => sessionId,
+        getSessionFile: () => sessionFile,
+        getEntries: () => entries,
+      },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    const result = await updateFooterUsageSnapshot(bridge, context, -1);
+
+    expect(result).toEqual({
+      acknowledgedCursor: 257,
+      retryRequired: false,
+      snapshot: {
+        session: {
+          inputTokens: 30,
+          outputTokens: 12,
+          cacheReadTokens: 9,
+          cacheWriteTokens: 6,
+          costUsd: 0.75,
+        },
+        today: { inputTokens: 30, outputTokens: 12, costUsd: 0.75 },
+      },
+    });
+    expect(requests).toHaveLength(2);
+    const expectedKey = createHash("sha256")
+      .update(JSON.stringify([sessionId, sessionFile]), "utf8")
+      .digest("hex");
+    expect(requests.map((entry) => entry.input)).toEqual([
+      {
+        sessionKey: expectedKey,
+        scanStart: 0,
+        scanEnd: 255,
+        facts: [{
+          position: 1,
+          timestamp: "2026-07-19T12:00:01-04:00",
+          inputTokens: 10,
+          outputTokens: 4,
+          cacheReadTokens: 3,
+          cacheWriteTokens: 2,
+          costUsd: 0.25,
+        }],
+      },
+      {
+        sessionKey: expectedKey,
+        scanStart: 256,
+        scanEnd: 257,
+        facts: [{
+          position: 257,
+          timestamp: "2026-07-19T12:00:02-04:00",
+          inputTokens: 20,
+          outputTokens: 8,
+          cacheReadTokens: 6,
+          cacheWriteTokens: 4,
+          costUsd: 0.5,
+        }],
+      },
+    ]);
+    expect(requests.every((entry) => entry.event === "footer_usage_update")).toBe(true);
+    const crossing = JSON.stringify(requests);
+    expect(crossing).not.toContain(sessionId);
+    expect(crossing).not.toContain(sessionFile);
+    expect(crossing).not.toContain("private-message");
+    expect(crossing).not.toContain("must-not-cross");
+  });
+
+  test("makes zero governance bridge calls unless activation is enabled and Pi trust is affirmative", async () => {
+    const calls: Array<Record<string, unknown>> = [];
+    const bridge: BridgePort = {
+      call: async (bridgeRequest) => {
+        calls.push(bridgeRequest as unknown as Record<string, unknown>);
+        return {
+          version: 1,
+          outcome: "notice",
+          auditCode: "PI_FOOTER_STATUS",
+          resultPatch: {
+            footerStatus: {
+              status: "ok",
+              stage: "implementation",
+              tasks: 2,
+              questions: 1,
+              overrides: 0,
+              sprint: true,
+              dev: false,
+              prune: null,
+            },
+          },
+        };
+      },
+    };
+    const context = (trust?: () => boolean) => ({
+      cwd: "C:/work/project-b",
+      signal: new AbortController().signal,
+      ...(trust === undefined ? {} : { isProjectTrusted: trust }),
+      sessionManager: { getSessionId: () => "pi-session" },
+    }) as Pick<ExtensionContextPort, "cwd" | "signal" | "isProjectTrusted" | "sessionManager">;
+
+    await expect(readFooterStatusSnapshot(bridge, context(() => true), { enabled: false })).resolves.toBeUndefined();
+    await expect(readFooterStatusSnapshot(bridge, context(() => false), { enabled: true })).resolves.toBeUndefined();
+    await expect(readFooterStatusSnapshot(bridge, context(), { enabled: true })).resolves.toBeUndefined();
+    await expect(readFooterStatusSnapshot(bridge, context(() => { throw new Error("trust unavailable"); }), { enabled: true })).resolves.toBeUndefined();
+    expect(calls).toEqual([]);
+
+    await expect(readFooterStatusSnapshot(bridge, context(() => true), { enabled: true })).resolves.toEqual({
+      stage: "implementation",
+      tasks: 2,
+      questions: 1,
+      overrides: 0,
+      sprint: true,
+      dev: false,
+      prune: undefined,
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ version: 1, event: "footer_status_snapshot", cwd: "C:/work/project-b", sessionId: "pi-session" });
+    expect(calls[0]).not.toHaveProperty("input");
+  });
+
+  test("dispatches footer usage only to the user-global ledger and never writes cwd project state or audit", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-footer-usage-event-"));
+    roots.push(root);
+    const cwd = resolve(root, "project-without-codearbiter");
+    const isolatedHome = resolve(root, "home");
+    await mkdir(cwd);
+    await mkdir(isolatedHome);
+    const timestamp = new Date().toISOString();
+    const bridgeRequest = {
+      version: 1,
+      event: "footer_usage_update",
+      cwd,
+      input: {
+        sessionKey: "a".repeat(64),
+        scanStart: 0,
+        scanEnd: 1,
+        facts: [{
+          position: 1,
+          timestamp,
+          inputTokens: 10,
+          outputTokens: 4,
+          cacheReadTokens: 3,
+          cacheWriteTokens: 2,
+          costUsd: 0.25,
+        }],
+      },
+    } as const;
+    const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+    const bridge = new BridgeClient({
+      bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
+      packageRoot,
+      pythonExecutable: pythonExecutable(),
+      gitExecutable: gitExecutable(),
+      toolClasses: {},
+    });
+    const previousHome = process.env.HOME;
+    const previousProfile = process.env.USERPROFILE;
+    process.env.HOME = isolatedHome;
+    process.env.USERPROFILE = isolatedHome;
+    let response;
+    try {
+      response = await bridge.call(bridgeRequest, new AbortController().signal);
+    } finally {
+      if (previousHome === undefined) delete process.env.HOME;
+      else process.env.HOME = previousHome;
+      if (previousProfile === undefined) delete process.env.USERPROFILE;
+      else process.env.USERPROFILE = previousProfile;
+    }
+
+    expect(response).toEqual({
+      version: 1,
+      outcome: "notice",
+      auditCode: "PI_FOOTER_USAGE",
+      resultPatch: {
+        footerUsage: {
+          status: "ok",
+          session: {
+            inputTokens: 10,
+            outputTokens: 4,
+            cacheReadTokens: 3,
+            cacheWriteTokens: 2,
+            costUsd: 0.25,
+          },
+          today: {
+            inputTokens: 10,
+            outputTokens: 4,
+            cacheReadTokens: 3,
+            cacheWriteTokens: 2,
+            costUsd: 0.25,
+          },
+          acceptedThrough: 1,
+          highWater: 1,
+        },
+      },
+    });
+    expect(await readdir(cwd)).toEqual([]);
+    await expect(access(resolve(isolatedHome, ".codearbiter", "pi-usage-ledger.json"))).resolves.toBeUndefined();
+  });
+
+  test("resumes from a stale local cursor through the real bridge without replay deadlock or double-counting", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-footer-replay-cross-layer-"));
+    roots.push(root);
+    const cwd = resolve(root, "project");
+    const isolatedHome = resolve(root, "home");
+    await mkdir(cwd);
+    await mkdir(isolatedHome);
+    const timestamp = new Date().toISOString();
+    const entries = Array.from({ length: 300 }, (_value, position) => position === 1 || position === 257
+      ? {
+          type: "message",
+          timestamp,
+          message: {
+            role: "assistant",
+            usage: {
+              input: position === 1 ? 10 : 20,
+              output: 0,
+              cacheRead: 0,
+              cacheWrite: 0,
+              cost: { total: position === 1 ? 0.1 : 0.2 },
+            },
+          },
+        }
+      : { type: "message", timestamp, message: { role: "user" } });
+    const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+    const client = new BridgeClient({
+      bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
+      packageRoot,
+      pythonExecutable: pythonExecutable(),
+      gitExecutable: gitExecutable(),
+      toolClasses: {},
+    });
+    let calls = 0;
+    const bridge: BridgePort = {
+      call: async (request, signal) => {
+        calls += 1;
+        return await client.call(request, signal);
+      },
+    };
+    const context = {
+      cwd,
+      signal: new AbortController().signal,
+      sessionManager: { getSessionId: () => "cross-layer-replay", getEntries: () => entries },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+    const previousHome = process.env.HOME;
+    const previousProfile = process.env.USERPROFILE;
+    process.env.HOME = isolatedHome;
+    process.env.USERPROFILE = isolatedHome;
+    let first: PiFooterUsageUpdateResult;
+    let resumed: PiFooterUsageUpdateResult;
+    try {
+      first = await updateFooterUsageSnapshot(bridge, context, -1);
+      expect(calls).toBe(2);
+      calls = 0;
+      resumed = await updateFooterUsageSnapshot(bridge, context, -1);
+    } finally {
+      if (previousHome === undefined) delete process.env.HOME;
+      else process.env.HOME = previousHome;
+      if (previousProfile === undefined) delete process.env.USERPROFILE;
+      else process.env.USERPROFILE = previousProfile;
+    }
+
+    expect(first).toMatchObject({ acknowledgedCursor: 299, retryRequired: false });
+    expect(first.snapshot?.session?.inputTokens).toBe(30);
+    expect(resumed).toEqual(first);
+    expect(calls).toBe(1);
+    const sessionKey = createHash("sha256")
+      .update(JSON.stringify(["cross-layer-replay", null]), "utf8")
+      .digest("hex");
+    const shard = JSON.parse(await readFile(
+      resolve(isolatedHome, ".codearbiter", `pi-usage-ledger.json.sessions/${sessionKey}.json`),
+      "utf8",
+    )) as { highWater: number; totals: { inputTokens: number } };
+    expect(shard).toMatchObject({ highWater: 299, totals: { inputTokens: 30 } });
+  });
+
+  test("rejects a C1 timestamp at the real Python ledger boundary", async () => {
+    const root = await mkdtemp(resolve(tmpdir(), "ca-pi-footer-c1-ledger-"));
+    roots.push(root);
+    const cwd = resolve(root, "project");
+    const isolatedHome = resolve(root, "home");
+    await mkdir(cwd);
+    await mkdir(isolatedHome);
+    const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+    const bridge = new BridgeClient({
+      bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
+      packageRoot,
+      pythonExecutable: pythonExecutable(),
+      gitExecutable: gitExecutable(),
+      toolClasses: {},
+    });
+    const previousHome = process.env.HOME;
+    const previousProfile = process.env.USERPROFILE;
+    process.env.HOME = isolatedHome;
+    process.env.USERPROFILE = isolatedHome;
+    let response: BridgeResponse;
+    try {
+      response = await bridge.call({
+        version: 1,
+        event: "footer_usage_update",
+        cwd,
+        input: {
+          sessionKey: "b".repeat(64),
+          scanStart: 0,
+          scanEnd: 0,
+          facts: [{
+            position: 0,
+            timestamp: "2026-07-19\u008012:00:00+00:00",
+            inputTokens: 1,
+            outputTokens: 0,
+            cacheReadTokens: 0,
+            cacheWriteTokens: 0,
+            costUsd: 0,
+          }],
+        },
+      }, new AbortController().signal);
+    } finally {
+      if (previousHome === undefined) delete process.env.HOME;
+      else process.env.HOME = previousHome;
+      if (previousProfile === undefined) delete process.env.USERPROFILE;
+      else process.env.USERPROFILE = previousProfile;
+    }
+
+    expect(response.resultPatch).toEqual({
+      footerUsage: {
+        status: "invalid",
+        session: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 },
+        today: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 },
+        acceptedThrough: -1,
+        highWater: -1,
+      },
+    });
+  });
+
+  test("does not append a project audit row when the project-independent usage bridge fails", async () => {
+    const { bridge, packageRoot } = await clientFixture("raise RuntimeError('synthetic failure')\n", {
+      shouldAuditFailure: (request) => request.event !== "footer_usage_update",
+    });
+    await mkdir(resolve(packageRoot, ".codearbiter"));
+    const auditPath = resolve(packageRoot, ".codearbiter", "gate-events.log");
+    await writeFile(auditPath, "", "utf8");
+
+    const response = await bridge.call({
+      version: 1,
+      event: "footer_usage_update",
+      cwd: packageRoot,
+      input: { sessionKey: "a".repeat(64), scanStart: 0, scanEnd: 0, facts: [] },
+    }, new AbortController().signal);
+
+    expect(response).toMatchObject({ outcome: "warn", ruleId: "PI-BRIDGE" });
+    expect(await readFile(auditPath, "utf8")).toBe("");
+  });
+
+  test("stops at the first non-ok usage range and replays that exact range from the returned cursor", async () => {
+    const entries = Array.from({ length: 300 }, () => ({
+      type: "message",
+      timestamp: "2026-07-19T12:00:00-04:00",
+      message: { role: "user", content: "never-crosses" },
+    }));
+    const calls: Array<{ scanStart: number; scanEnd: number; facts: unknown[] }> = [];
+    let failSecond = true;
+    const totals = {
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+      costUsd: 0,
+    };
+    const bridge: BridgePort = {
+      call: async (bridgeRequest) => {
+        const input = bridgeRequest.input as { scanStart: number; scanEnd: number; facts: unknown[] };
+        calls.push(input);
+        return {
+          version: 1,
+          outcome: "notice",
+          resultPatch: {
+            footerUsage: {
+              status: failSecond && input.scanStart === 256 ? "write_failed" : "ok",
+              session: totals,
+              today: totals,
+              acceptedThrough: failSecond && input.scanStart === 256 ? -1 : input.scanEnd,
+              highWater: input.scanEnd,
+            },
+          },
+        };
+      },
+    };
+    const context = {
+      cwd: "C:/work/retry-project",
+      signal: new AbortController().signal,
+      sessionManager: {
+        getSessionId: () => "retry-session",
+        getEntries: () => entries,
+      },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    const failed = await updateFooterUsageSnapshot(bridge, context, -1);
+    expect(failed).toEqual({ acknowledgedCursor: 255, retryRequired: true });
+    expect(failed).not.toHaveProperty("snapshot");
+    expect(calls.map(({ scanStart, scanEnd }) => ({ scanStart, scanEnd }))).toEqual([
+      { scanStart: 0, scanEnd: 255 },
+      { scanStart: 256, scanEnd: 299 },
+    ]);
+
+    failSecond = false;
+    calls.length = 0;
+    const retried = await updateFooterUsageSnapshot(bridge, context, failed.acknowledgedCursor);
+    expect(retried).toMatchObject({ acknowledgedCursor: 299, retryRequired: false });
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ scanStart: 256, scanEnd: 299, facts: [] });
+  });
+
+  test("bounds one refresh to one requested 256-entry range and reports remaining work", async () => {
+    const entries = Array.from({ length: 600 }, () => ({ type: "message", message: { role: "user" } }));
+    const calls: Array<{ scanStart: number; scanEnd: number }> = [];
+    const totals = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 };
+    const bridge: BridgePort = {
+      call: async (request) => {
+        const input = request.input as { scanStart: number; scanEnd: number };
+        calls.push({ scanStart: input.scanStart, scanEnd: input.scanEnd });
+        return {
+          version: 1,
+          outcome: "notice",
+          resultPatch: { footerUsage: {
+            status: "ok",
+            session: totals,
+            today: totals,
+            acceptedThrough: input.scanEnd,
+            highWater: input.scanEnd,
+          } },
+        };
+      },
+    };
+    const context = {
+      cwd: "C:/work/bounded-refresh",
+      signal: new AbortController().signal,
+      sessionManager: { getSessionId: () => "bounded-refresh", getEntries: () => entries },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    await expect(updateFooterUsageSnapshot(bridge, context, -1, { maxRanges: 1 })).resolves.toEqual({
+      acknowledgedCursor: 255,
+      retryRequired: false,
+      morePending: true,
+      snapshot: {
+        session: totals,
+        today: { inputTokens: 0, outputTokens: 0, costUsd: 0 },
+      },
+    });
+    expect(calls).toEqual([{ scanStart: 0, scanEnd: 255 }]);
+  });
+
+  test("rejects malformed or oversized fixed usage outputs without fabricating a snapshot", async () => {
+    const entries = [{ type: "message", message: { role: "user", content: "private" } }];
+    const base = {
+      status: "ok",
+      session: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 },
+      today: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 },
+      acceptedThrough: 0,
+      highWater: 0,
+    };
+    const invalid = [
+      { ...base, extra: "not-fixed" },
+      { ...base, session: { ...base.session, inputTokens: 1_000_000_000_000_001 } },
+      { ...base, today: { ...base.today, costUsd: Number.POSITIVE_INFINITY } },
+      { ...base, acceptedThrough: 2_147_483_648 },
+      { ...base, highWater: 2_147_483_648 },
+      { ...base, status: "invented" },
+    ];
+    const context = {
+      cwd: "C:/work/malformed-project",
+      signal: new AbortController().signal,
+      sessionManager: { getSessionId: () => "malformed-session", getEntries: () => entries },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    for (const footerUsage of invalid) {
+      const bridge: BridgePort = {
+        call: async () => ({ version: 1, outcome: "notice", resultPatch: { footerUsage } }),
+      };
+      const result = await updateFooterUsageSnapshot(bridge, context, -1);
+      expect(result).toEqual({ acknowledgedCursor: -1, retryRequired: true });
+      expect(result).not.toHaveProperty("snapshot");
+    }
+  });
+
+  test("refuses to cross usage facts when the source-verified session file identity is not stable", async () => {
+    let fileReads = 0;
+    let bridgeCalls = 0;
+    const bridge: BridgePort = {
+      call: async () => {
+        bridgeCalls += 1;
+        return { version: 1, outcome: "allow" };
+      },
+    };
+    const context = {
+      cwd: "C:/work/session-switch",
+      signal: new AbortController().signal,
+      sessionManager: {
+        getSessionId: () => "same-session-id",
+        getSessionFile: () => (++fileReads === 1 ? "C:/private/one.jsonl" : "C:/private/two.jsonl"),
+        getEntries: () => [{ type: "message", message: { role: "user", content: "private" } }],
+      },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    await expect(updateFooterUsageSnapshot(bridge, context, -1)).resolves.toEqual({
+      acknowledgedCursor: -1,
+      retryRequired: true,
+    });
+    expect(fileReads).toBe(2);
+    expect(bridgeCalls).toBe(0);
+  });
+
+  test("maps absent or explicitly undefined session files to null while rejecting other present invalid implementations", async () => {
+    let bridgeCalls = 0;
+    let entryReads = 0;
+    const sessionKeys: string[] = [];
+    const totals = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 };
+    const bridge: BridgePort = {
+      call: async (request) => {
+        bridgeCalls += 1;
+        sessionKeys.push((request.input as { sessionKey: string }).sessionKey);
+        return {
+          version: 1,
+          outcome: "notice",
+          resultPatch: { footerUsage: { status: "ok", session: totals, today: totals, acceptedThrough: 0, highWater: 0 } },
+        };
+      },
+    };
+    const makeContext = (sessionManager: Record<string, unknown>) => ({
+      cwd: "C:/work/session-file-capability",
+      signal: new AbortController().signal,
+      sessionManager: {
+        getSessionId: () => "session-file-capability",
+        getEntries: () => { entryReads += 1; return [{ type: "message", message: { role: "user" } }]; },
+        ...sessionManager,
+      },
+    }) as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    await expect(updateFooterUsageSnapshot(bridge, makeContext({}), -1)).resolves.toMatchObject({
+      acknowledgedCursor: 0,
+      retryRequired: false,
+    });
+    expect(entryReads).toBe(1);
+    expect(bridgeCalls).toBe(1);
+
+    await expect(updateFooterUsageSnapshot(
+      bridge,
+      makeContext({ getSessionFile: () => undefined }),
+      -1,
+    )).resolves.toMatchObject({ acknowledgedCursor: 0, retryRequired: false });
+    const expectedNullIdentity = createHash("sha256")
+      .update(JSON.stringify(["session-file-capability", null]), "utf8")
+      .digest("hex");
+    expect(sessionKeys).toEqual([expectedNullIdentity, expectedNullIdentity]);
+    expect(entryReads).toBe(2);
+    expect(bridgeCalls).toBe(2);
+
+    for (const getSessionFile of [
+      () => { throw new Error("unavailable"); },
+      () => "",
+      () => null,
+      () => 42,
+      () => ({}),
+      () => "bad\u0080control",
+      () => "p".repeat(32_769),
+      "not-callable",
+    ]) {
+      await expect(updateFooterUsageSnapshot(bridge, makeContext({ getSessionFile }), -1)).resolves.toEqual({
+        acknowledgedCursor: -1,
+        retryRequired: true,
+      });
+    }
+    expect(entryReads).toBe(2);
+    expect(bridgeCalls).toBe(2);
+  });
+
+  test("reads the real fixed governance snapshot through shared state readers", async () => {
+    const cwd = await mkdtemp(resolve(tmpdir(), "ca-pi-footer-status-project-"));
+    roots.push(cwd);
+    const state = resolve(cwd, ".codearbiter");
+    await mkdir(resolve(state, ".markers"), { recursive: true });
+    await writeFile(resolve(state, "CONTEXT.md"), "---\narbiter: enabled\nstage: implementation\n---\n", "utf8");
+    await writeFile(resolve(state, "open-tasks.md"), "- [ ] queued\n- [~] active\n- [x] done\n", "utf8");
+    await writeFile(resolve(state, "open-questions.md"), "[CONFIRM-01] choose\n", "utf8");
+    await writeFile(resolve(state, "overrides.log"), "one\ntwo\n", "utf8");
+    await writeFile(resolve(state, "last-checkpoint"), "1\n", "utf8");
+    await writeFile(resolve(state, "sprint-active"), "active\n", "utf8");
+    await writeFile(resolve(state, ".markers", "dev-active"), "active\n", "utf8");
+    const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+    const bridge = new BridgeClient({
+      bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
+      packageRoot,
+      pythonExecutable: pythonExecutable(),
+      gitExecutable: gitExecutable(),
+      toolClasses: {},
+    });
+    const context = {
+      cwd,
+      signal: new AbortController().signal,
+      isProjectTrusted: () => true,
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "isProjectTrusted" | "sessionManager">;
+
+    await expect(readFooterStatusSnapshot(bridge, context, { enabled: true })).resolves.toEqual({
+      stage: "implementation",
+      tasks: 2,
+      questions: 1,
+      overrides: 1,
+      sprint: true,
+      dev: true,
+      prune: undefined,
+    });
+  });
+
+  test.skipIf(process.platform !== "win32")("passes only a canonical non-project Windows home into the actual BridgeClient child environment", async () => {
+    const home = await mkdtemp(resolve(tmpdir(), "ca-pi-trusted-home-"));
+    roots.push(home);
+    const previousProfile = process.env.USERPROFILE;
+    const previousSentinel = process.env.CA_PI_PROJECT_SENTINEL;
+    process.env.USERPROFILE = home;
+    process.env.CA_PI_PROJECT_SENTINEL = "must-not-cross";
+    try {
+      const { bridge, packageRoot } = await clientFixture([
+        "import json, os",
+        "value = {'profile': os.environ.get('USERPROFILE'), 'expanded': os.path.expanduser('~'), 'sentinel': os.environ.get('CA_PI_PROJECT_SENTINEL')}",
+        "print(json.dumps({'version': 1, 'outcome': 'notice', 'context': json.dumps(value)}))",
+      ].join("\n"));
+      const response = await bridge.call({
+        version: 1,
+        event: "footer_usage_update",
+        cwd: packageRoot,
+        input: { sessionKey: "a".repeat(64), scanStart: 0, scanEnd: 0, facts: [] },
+      }, new AbortController().signal);
+      const observed = JSON.parse(response.context ?? "{}") as Record<string, unknown>;
+      expect(observed.profile).toBe(await realpath(home));
+      expect(observed.expanded).toBe(await realpath(home));
+      expect(observed.sentinel).toBeNull();
+    } finally {
+      if (previousProfile === undefined) delete process.env.USERPROFILE;
+      else process.env.USERPROFILE = previousProfile;
+      if (previousSentinel === undefined) delete process.env.CA_PI_PROJECT_SENTINEL;
+      else process.env.CA_PI_PROJECT_SENTINEL = previousSentinel;
+    }
+  });
+
+  test.skipIf(process.platform !== "win32")("rejects a Windows home resolved inside the request project before spawning", async () => {
+    const previousProfile = process.env.USERPROFILE;
+    const { bridge, packageRoot } = await clientFixture(
+      "import json\nprint(json.dumps({'version': 1, 'outcome': 'notice', 'context': 'child-ran'}))\n",
+    );
+    process.env.USERPROFILE = packageRoot;
+    try {
+      const response = await bridge.call({
+        version: 1,
+        event: "footer_usage_update",
+        cwd: packageRoot,
+        input: { sessionKey: "a".repeat(64), scanStart: 0, scanEnd: 0, facts: [] },
+      }, new AbortController().signal);
+      expect(response).toMatchObject({ outcome: "warn", ruleId: "PI-BRIDGE" });
+      expect(response.context).not.toBe("child-ran");
+    } finally {
+      if (previousProfile === undefined) delete process.env.USERPROFILE;
+      else process.env.USERPROFILE = previousProfile;
+    }
+  });
+
+  test("rejects a forged per-call acknowledgment that does not equal scanEnd", async () => {
+    const entries = Array.from({ length: 257 }, () => ({ type: "message", message: { role: "user" } }));
+    let calls = 0;
+    const totals = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 };
+    const bridge: BridgePort = {
+      call: async () => {
+        calls += 1;
+        return {
+          version: 1,
+          outcome: "notice",
+          resultPatch: { footerUsage: { status: "ok", session: totals, today: totals, acceptedThrough: 256, highWater: 256 } },
+        };
+      },
+    };
+    const context = {
+      cwd: "C:/work/no-skip",
+      signal: new AbortController().signal,
+      sessionManager: { getSessionId: () => "no-skip-session", getEntries: () => entries },
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    await expect(updateFooterUsageSnapshot(bridge, context, -1)).resolves.toEqual({
+      acknowledgedCursor: -1,
+      retryRequired: true,
+    });
+    expect(calls).toBe(1);
+  });
+
+  test("rejects C1 controls in fixed TypeScript governance stage and prune fields", async () => {
+    const context = {
+      cwd: "C:/work/c1",
+      signal: new AbortController().signal,
+      isProjectTrusted: () => true,
+    } as Pick<ExtensionContextPort, "cwd" | "signal" | "isProjectTrusted" | "sessionManager">;
+    for (const footerStatus of [
+      { status: "ok", stage: "impl\u0080hidden", tasks: 0, questions: 0, overrides: 0, sprint: false, dev: false, prune: null },
+      { status: "ok", stage: "impl", tasks: 0, questions: 0, overrides: 0, sprint: false, dev: false, prune: "cut\u009fhidden" },
+    ]) {
+      const bridge: BridgePort = {
+        call: async () => ({ version: 1, outcome: "notice", resultPatch: { footerStatus } }),
+      };
+      await expect(readFooterStatusSnapshot(bridge, context, { enabled: true })).resolves.toBeUndefined();
+    }
+  });
+
+  test("strips C1 controls from the real Python governance normalization boundary", async () => {
+    const cwd = await mkdtemp(resolve(tmpdir(), "ca-pi-footer-status-c1-"));
+    roots.push(cwd);
+    const state = resolve(cwd, ".codearbiter");
+    await mkdir(state);
+    await writeFile(resolve(state, "CONTEXT.md"), "---\narbiter: enabled\nstage: impl\u0080hidden\n---\n", "utf8");
+    const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+    const bridge = new BridgeClient({
+      bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
+      packageRoot,
+      pythonExecutable: pythonExecutable(),
+      gitExecutable: gitExecutable(),
+      toolClasses: {},
+    });
+    const response = await bridge.call({
+      version: 1,
+      event: "footer_status_snapshot",
+      cwd,
+    }, new AbortController().signal);
+    const patch = response.resultPatch as { footerStatus?: { stage?: unknown } } | undefined;
+    expect(patch?.footerStatus?.stage).toBe("implhidden");
+    expect(JSON.stringify(response)).not.toContain("\u0080");
+  });
+
+  test("strips C1 controls from both Python stage and prune normalization inputs", () => {
+    const bridgeScript = fileURLToPath(new URL("../../hooks/pi-bridge.py", import.meta.url));
+    const hooks = resolve(bridgeScript, "..");
+    const source = [
+      "import importlib.util, json, sys",
+      `sys.path.insert(0, ${JSON.stringify(hooks)})`,
+      `spec = importlib.util.spec_from_file_location('ca_pi_bridge_c1', ${JSON.stringify(bridgeScript)})`,
+      "module = importlib.util.module_from_spec(spec)",
+      "spec.loader.exec_module(module)",
+      "print(json.dumps([module._bounded_footer_text('stage\\u0080x', 128), module._bounded_footer_text('prune\\u009fx', 256)]))",
+    ].join("\n");
+    const completed = spawnSync(pythonExecutable(), ["-c", source], {
+      cwd: resolve(import.meta.dirname, "../.."),
+      encoding: "utf8",
+      shell: false,
+      windowsHide: true,
+    });
+
+    expect(completed.status, completed.stderr).toBe(0);
+    expect(JSON.parse(completed.stdout)).toEqual(["stagex", "prunex"]);
+  });
+
+  test("does not grow the project audit log when configured display polling calls fail", async () => {
+    let decisions = 0;
+    const { bridge, packageRoot } = await clientFixture("raise RuntimeError('poll failure')\n", {
+      shouldAuditFailure: () => { decisions += 1; return false; },
+    });
+    await mkdir(resolve(packageRoot, ".codearbiter"));
+    const auditPath = resolve(packageRoot, ".codearbiter", "gate-events.log");
+    await writeFile(auditPath, "existing\n", "utf8");
+    const request = { version: 1 as const, event: "tool_call", cwd: packageRoot, tool: "read" };
+
+    await bridge.call(request, new AbortController().signal);
+    await bridge.call(request, new AbortController().signal);
+
+    expect(decisions).toBe(2);
+    expect(await readFile(auditPath, "utf8")).toBe("existing\n");
+  });
+
+  test("fails soft before reading entries or hashing oversized session identity parts", async () => {
+    let bridgeCalls = 0;
+    let entryReads = 0;
+    const bridge: BridgePort = {
+      call: async () => {
+        bridgeCalls += 1;
+        return { version: 1, outcome: "allow" };
+      },
+    };
+    const makeContext = (sessionId: string, sessionFile: string) => ({
+      cwd: "C:/work/identity-bounds",
+      signal: new AbortController().signal,
+      sessionManager: {
+        getSessionId: () => sessionId,
+        getSessionFile: () => sessionFile,
+        getEntries: () => { entryReads += 1; return []; },
+      },
+    }) as Pick<ExtensionContextPort, "cwd" | "signal" | "sessionManager">;
+
+    await expect(updateFooterUsageSnapshot(bridge, makeContext("s".repeat(1_025), "C:/safe/session.jsonl"), -1)).resolves.toEqual({
+      acknowledgedCursor: -1,
+      retryRequired: true,
+    });
+    await expect(updateFooterUsageSnapshot(bridge, makeContext("bounded", `C:/${"p".repeat(32_768)}`), -1)).resolves.toEqual({
+      acknowledgedCursor: -1,
+      retryRequired: true,
+    });
+    expect(entryReads).toBe(0);
+    expect(bridgeCalls).toBe(0);
   });
 });

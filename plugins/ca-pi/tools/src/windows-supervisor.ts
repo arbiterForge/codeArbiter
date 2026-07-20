@@ -12,8 +12,10 @@ import { Socket } from "node:net";
 
 import type { WindowsSupervisorRefusalReason } from "./process-tree.ts";
 
-const MAX_LAUNCH_BYTES = 262_144;
+const MAX_LAUNCH_BYTES = 3_145_728;
 const MAX_CONTROL_BYTES = 16;
+const MAX_ENV_ENTRIES = 256;
+const MAX_ENV_BYTES = 262_144;
 const PROXY_DRAIN_MS = 500;
 const START = "START\n";
 const launchInput = createReadStream("", { fd: 4, autoClose: false });
@@ -33,6 +35,7 @@ interface LaunchRecord {
   readonly command: string;
   readonly args: readonly string[];
   readonly cwd: string;
+  readonly env: NodeJS.ProcessEnv;
 }
 
 function exactObject(value: unknown, keys: readonly string[]): value is Record<string, unknown> {
@@ -45,15 +48,34 @@ function parseLaunch(value: string): LaunchRecord {
   let parsed: unknown;
   try { parsed = JSON.parse(value); }
   catch { throw new Error("invalid launch record"); }
-  if (!exactObject(parsed, ["args", "command", "cwd"])) throw new Error("invalid launch record");
-  const { args, command, cwd } = parsed;
+  if (!exactObject(parsed, ["args", "command", "cwd", "env"])) throw new Error("invalid launch record");
+  const { args, command, cwd, env } = parsed;
   if (typeof command !== "string" || !isAbsolute(command)
     || typeof cwd !== "string" || !isAbsolute(cwd)
     || !Array.isArray(args) || args.length > 256
-    || args.some((item) => typeof item !== "string" || Buffer.byteLength(item, "utf8") > 65_536)) {
+    || args.some((item) => typeof item !== "string" || Buffer.byteLength(item, "utf8") > 262_144)
+    || !Array.isArray(env) || env.length > MAX_ENV_ENTRIES) {
     throw new Error("invalid launch record");
   }
-  return Object.freeze({ args: Object.freeze([...args] as string[]), command, cwd });
+  let environmentBytes = 0;
+  const environment: NodeJS.ProcessEnv = Object.create(null) as NodeJS.ProcessEnv;
+  for (const entry of env) {
+    if (!Array.isArray(entry) || entry.length !== 2) throw new Error("invalid launch record");
+    const [key, value] = entry as unknown[];
+    if (typeof key !== "string" || key.length === 0 || key.length > 256 || key.includes("\0")
+      || Buffer.byteLength(key, "utf8") > 512 || typeof value !== "string" || value.length > 32_768
+      || value.includes("\0") || Buffer.byteLength(value, "utf8") > 65_536
+      || Object.hasOwn(environment, key)) throw new Error("invalid launch record");
+    environmentBytes += Buffer.byteLength(key, "utf8") + Buffer.byteLength(value, "utf8");
+    if (environmentBytes > MAX_ENV_BYTES) throw new Error("invalid launch record");
+    environment[key] = value;
+  }
+  return Object.freeze({
+    args: Object.freeze([...args] as string[]),
+    command,
+    cwd,
+    env: Object.freeze(environment),
+  });
 }
 
 function boundedRead(stream: NodeJS.ReadableStream, maximum: number): Promise<string> {
@@ -143,7 +165,7 @@ try {
   failureReason = "spawn-error";
   child = spawn(launch.command, [...launch.args], {
     cwd: launch.cwd,
-    env: process.env,
+    env: launch.env,
     detached: false,
     shell: false,
     stdio: ["pipe", "pipe", "pipe", "pipe"],

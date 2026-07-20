@@ -36,6 +36,16 @@ The generated public catalog counts are:
 The source catalogs are [Claude](../plugins/ca/COMMANDS.md),
 [Codex](../plugins/ca-codex/COMMANDS.md), and
 [Pi](../plugins/ca-pi/COMMANDS.md).
+Pi's generated human-readable skill catalog is `plugins/ca-pi/SKILLS.md`; it is
+outside the loader-scanned `plugins/ca-pi/skills/` directory.
+
+Before any platform fixture subprocess starts, the aggregate resolves the Pi
+tools workspace's Vitest binary. A cold checkout returns
+`missing_prerequisite` with this exact remediation and performs no install:
+
+```sh
+npm --prefix plugins/ca-pi/tools ci --ignore-scripts
+```
 
 ## Establish an isolated test boundary
 
@@ -93,16 +103,26 @@ Verify each observable surface:
    results, distinct child PIDs, exact role tools, and no recursive dispatch.
 7. **Cancellation:** cancel and time out a child with descendants; the process
    tree must be gone before the result returns.
-8. **Status:** the extension-owned status key appears for an enabled trusted
-   repository and clears at shutdown; it does not replace Pi's full footer.
-9. **Compaction:** run `/ca-prune status`, a dry selection, and native
+8. **Rich footer:** verify the footer in dormant and enabled repositories. Pi-owned
+   session facts render globally, rate-window telemetry is omitted, and the
+   governance row appears only for an enabled and affirmatively trusted repository.
+9. **Permissions and plan mode:** classified reads silently allow in execute mode;
+   execute mode asks before governed mutations or external side effects. Plan mode
+   is read-only except for the current canonical spec, plan, and plan ledger.
+10. **Background jobs:** exercise `/ca-jobs list|tail|cancel`, completion activity,
+    timeout, cancel, switch, and shutdown. Jobs are session-only and are never
+    restored from Pi session entries. Unverified cleanup must block later launches
+    and direct the operator to `/ca-doctor`.
+11. **Parent isolation:** footer, permission UI, plan UI, and background jobs are
+    parent-interactive only; JSON, RPC, print, and hardened children expose none.
+12. **Compaction:** run `/ca-prune status`, a dry selection, and native
    compaction. The active Pi session must not be rewritten directly.
-10. **Farm preview:** invoke `/ca-sprint --farm` only as an opted-in preview.
+13. **Farm preview:** invoke `/ca-sprint --farm` only as an opted-in preview.
     Confirm that Pi resolves the shared checked-in farm backend and degrades
     visibly if it is missing or stale.
-11. **Shared-state continuity:** write concurrent Claude/Pi, Codex/Pi, and Pi/Pi
+14. **Shared-state continuity:** write concurrent Claude/Pi, Codex/Pi, and Pi/Pi
     audit events in the fixture and require parseable `HOST: pi` attribution.
-12. **Uninstall:** run `pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`
+15. **Uninstall:** run `pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`
     (or the equivalent `pi uninstall` alias), confirm removal with `pi list`,
     and verify that the repository-owned `.codearbiter/` store remains.
 
@@ -118,6 +138,9 @@ The `active-dispatch` doctor row remains a documented degradation on the
 supported public extension API: the deterministic wrapper self-test cannot be
 submitted through the active dispatcher. Promotion closes that gap with the
 separate live dispatch evidence rather than overstating what doctor proved.
+Doctor also reports bounded footer initialization and background-manager health
+booleans. It never reports job labels or IDs, commands, environment data, or
+output.
 
 ## Release and future work
 

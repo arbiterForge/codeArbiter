@@ -2,6 +2,7 @@
 """Task 11 cross-platform contract runner and its deterministic fixtures."""
 
 import argparse
+import io
 import json
 import os
 import pathlib
@@ -11,11 +12,17 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SUPPORTED = ("0.80.5", "0.80.10")
 PLATFORM_COMMAND_TIMEOUT_SECONDS = 180
+PI_TOOLS_VITEST_LAUNCHER = (
+    ROOT / "plugins" / "ca-pi" / "tools" / "node_modules" / ".bin" /
+    ("vitest.cmd" if os.name == "nt" else "vitest")
+)
+PI_TOOLS_INSTALL_REMEDIATION = "npm --prefix plugins/ca-pi/tools ci --ignore-scripts"
 
 
 def version_policy(version):
@@ -79,6 +86,43 @@ def resolve_executable(name):
 
 
 class PlatformContractFixtures(unittest.TestCase):
+    def test_cold_aggregate_reports_missing_vitest_prerequisite_before_fixture_subprocesses(self):
+        with tempfile.TemporaryDirectory() as raw_dir:
+            missing_launcher = pathlib.Path(raw_dir) / PI_TOOLS_VITEST_LAUNCHER.name
+            with (
+                mock.patch.object(
+                    sys.modules[__name__],
+                    "PI_TOOLS_VITEST_LAUNCHER",
+                    missing_launcher,
+                ),
+                mock.patch.object(
+                    sys.modules[__name__],
+                    "fixture_commands",
+                    return_value=[[sys.executable, "fixture-that-must-not-run"]],
+                ),
+                mock.patch.object(
+                    subprocess,
+                    "run",
+                    side_effect=AssertionError("fixture subprocess must not run"),
+                ),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as output,
+            ):
+                self.assertEqual(run_contract(None, fixtures_only=True), 1)
+
+        self.assertEqual(json.loads(output.getvalue()), {
+            "piVersion": "fixtures",
+            "result": "missing_prerequisite",
+            "remediation": "npm --prefix plugins/ca-pi/tools ci --ignore-scripts",
+        })
+
+    def test_tech_stack_declares_the_pi_tools_install_an_aggregate_prerequisite(self):
+        tech_stack = (ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        self.assertIn(
+            "The Pi tools install is an aggregate prerequisite: "
+            "`npm --prefix plugins/ca-pi/tools ci --ignore-scripts`.",
+            tech_stack,
+        )
+
     def test_supported_versions_block_and_only_latest_is_nonblocking(self):
         self.assertEqual(version_policy("0.80.5"), {"version": "0.80.5", "blocking": True})
         self.assertEqual(version_policy("0.80.10"), {"version": "0.80.10", "blocking": True})
@@ -156,6 +200,14 @@ def run_contract(pi_version, fixtures_only):
         if policy["blocking"] and installed != pi_version:
             print(json.dumps({"piVersion": pi_version, "blocking": True, "result": "version_mismatch"}))
             return 1
+
+    if not PI_TOOLS_VITEST_LAUNCHER.is_file():
+        print(json.dumps({
+            "piVersion": pi_version or "fixtures",
+            "result": "missing_prerequisite",
+            "remediation": PI_TOOLS_INSTALL_REMEDIATION,
+        }))
+        return 1
 
     environment = os.environ.copy()
     environment.update({"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"})

@@ -97,7 +97,7 @@
       },
       "surface": {
         "rules": [
-          {"source_prefix": "commands/", "output_pattern": "skills/ca-{name}/SKILL.md", "exclude": ["commands/statusline.md"], "add_skill_frontmatter": true},
+          {"source_prefix": "commands/", "output_pattern": "skills/ca-{name}/SKILL.md", "exclude": ["commands/plan.md", "commands/statusline.md"], "add_skill_frontmatter": true},
           {"source_prefix": "skills/", "output_pattern": "routines/{relative}", "exclude": []},
           {"source_prefix": "includes/", "output_pattern": "includes/{relative}", "exclude": ["includes/codex-host-notes.md"]},
           {"source_prefix": "agents/", "output_pattern": "agents/{relative}", "exclude": []},
@@ -107,15 +107,22 @@
           {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
         ],
         "managed_subtrees": ["skills", "routines", "includes", "agents", "COMMANDS.md", "SPRINT.md", "ORCHESTRATOR.md"],
-        "catalog": "skills/INDEX.md"
+        "catalog": "SKILLS.md"
       },
       "tool_classes": {
         "bash": "EXEC",
+        "codearbiter_background_bash": "EXEC",
         "codearbiter_dispatch": "EXEC",
         "codearbiter_farm_preview": "EXEC",
         "write": "WRITE",
         "edit": "EDIT",
         "read": "READ"
+      },
+      "permission_policy": {
+        "surfaces": {
+          "ca-plan": "planning-write",
+          "codearbiter_background_bash": "background-launch"
+        }
       },
       "package": {
         "skill_expansion_fingerprints": {

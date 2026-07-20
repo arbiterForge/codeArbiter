@@ -27,6 +27,12 @@ export type ToolCategory = "EXEC" | "WRITE" | "EDIT" | "READ" | "OTHER";
 export interface ToolExecutionContextPort {
   cwd?: unknown;
   signal?: AbortSignal;
+  mode?: "tui" | "rpc" | "json" | "print";
+  hasUI?: boolean;
+  ui?: {
+    confirm?(title: string, message: string, options?: { timeout?: number; signal?: AbortSignal }): Promise<boolean>;
+    notify?(message: string, type?: "info" | "warning" | "error"): void;
+  };
   model?: { provider?: unknown; id?: unknown };
   isProjectTrusted?: () => boolean;
   sessionManager?: {
@@ -86,7 +92,95 @@ export interface BuiltinToolFactories {
 export interface ExtensionUiPort {
   setStatus(key: string, text: string | undefined): void;
   notify(message: string, type?: "info" | "warning" | "error"): void;
-  confirm?(title: string, message: string, options?: { timeout?: number }): Promise<boolean>;
+  confirm?(title: string, message: string, options?: { timeout?: number; signal?: AbortSignal }): Promise<boolean>;
+  /** Source-verified in Pi 0.80.5 and 0.80.10; undefined restores the native footer. */
+  setFooter?(factory: PiFooterFactoryPort | undefined): void;
+}
+
+export interface PiFooterTuiPort {
+  requestRender(): void;
+}
+
+export interface PiFooterDataLifecyclePort extends PiFooterDataPort {
+  onBranchChange?(callback: () => void): (() => void) | void;
+}
+
+export interface PiFooterComponentPort {
+  render(width: number): string[];
+  invalidate(): void;
+  dispose?(): void;
+}
+
+export type PiFooterFactoryPort = (
+  tui: PiFooterTuiPort,
+  theme: unknown,
+  footerData: PiFooterDataLifecyclePort,
+) => PiFooterComponentPort;
+
+/** Runtime-guarded subset shared by Pi 0.80.5 and 0.80.10 footer adaptation. */
+export interface PiFooterSessionManagerPort {
+  getSessionId?: () => unknown;
+  /** Source-verified in Pi 0.80.5 and 0.80.10; consumed only inside a one-way identity digest. */
+  getSessionFile?: () => unknown;
+  getSessionName?: () => unknown;
+  getHeader?: () => unknown;
+  getEntries?: () => unknown;
+}
+
+export interface PiUsageSnapshotSessionPort {
+  readonly inputTokens: number;
+  readonly outputTokens: number;
+  readonly cacheReadTokens?: number;
+  readonly cacheWriteTokens?: number;
+  readonly costUsd: number;
+}
+
+export interface PiUsageSnapshotTodayPort {
+  readonly inputTokens: number;
+  readonly outputTokens: number;
+  readonly costUsd: number;
+}
+
+/** Bounded usage facts prepared by composition outside the footer paint path. */
+export interface PiUsageSnapshotPortResult {
+  readonly session?: PiUsageSnapshotSessionPort;
+  readonly today?: PiUsageSnapshotTodayPort;
+}
+
+export interface PiFooterUsageUpdateResult {
+  readonly acknowledgedCursor: number;
+  readonly retryRequired: boolean;
+  readonly morePending?: boolean;
+  readonly snapshot?: PiUsageSnapshotPortResult;
+}
+
+export interface PiFooterActivationState {
+  readonly enabled: boolean;
+}
+
+export interface PiFooterStatusSnapshotPortResult {
+  readonly stage: string;
+  readonly tasks: number;
+  readonly questions: number;
+  readonly overrides: number;
+  readonly sprint: boolean;
+  readonly dev: boolean;
+  readonly prune?: string;
+}
+
+export interface PiFooterModelPort {
+  provider?: unknown;
+  id?: unknown;
+  contextWindow?: unknown;
+}
+
+export interface PiFooterDataPort {
+  getGitBranch?: () => unknown;
+}
+
+export interface PiFooterApiPort {
+  getSessionName?: () => unknown;
+  getThinkingLevel?: () => unknown;
 }
 
 export interface ExtensionContextPort {
@@ -96,7 +190,9 @@ export interface ExtensionContextPort {
   isProjectTrusted?: () => boolean;
   mode?: "tui" | "rpc" | "json" | "print";
   hasUI?: boolean;
-  model?: { provider?: unknown; id?: unknown };
+  model?: PiFooterModelPort;
+  sessionManager?: PiFooterSessionManagerPort;
+  getContextUsage?: () => unknown;
 }
 
 export interface SourceInfo {
@@ -127,6 +223,8 @@ export interface ParentPiPort {
     },
   ): void;
   sendUserMessage(content: string, options?: { deliverAs?: "steer" | "followUp" }): void;
+  getSessionName?(): unknown;
+  getThinkingLevel?(): unknown;
   getCommands(): SlashCommand[];
 }
 

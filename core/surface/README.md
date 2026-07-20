@@ -10,7 +10,7 @@ Every host-facing markdown surface is generated from this tree by
 | `includes/**` | `includes/**` | `includes/**` | `includes/**` |
 | `agents/**` | `agents/**` | not rendered | `agents/**` (explicit child input, outside discovery roots) |
 | `COMMANDS.md`, `SPRINT.md`, `ORCHESTRATOR.md` | same name | same name | same name |
-| generated catalog | none | `skills/INDEX.md` | `skills/INDEX.md` |
+| generated catalog | none | `skills/INDEX.md` | `SKILLS.md` |
 
 **Never edit a rendered file.** Rendered trees carry no provenance banner — the
 Claude tree is contractually byte-identical to the hand tree it replaced — so
@@ -29,6 +29,8 @@ including orphans). Workflow: edit the template here, run
 - Each descriptor's ordered `surface.rules` applies the first matching source
   prefix and expands `{relative}`, `{stem}`, and `{name}` in its output path.
   Exclusions and synthesized skill frontmatter are rule data, not host branches.
+- Each descriptor's `surface.catalog` owns the generated human-readable skill
+  catalog path; consumers must not assume it lives beneath `skills/`.
 - `core/hosts.json` is the only host registry. Both surface generation and
   Python-core vendoring consume it through `tools/host_descriptors.py`.
 

@@ -2,14 +2,17 @@
 import { randomUUID } from "node:crypto";
 import { appendFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { types as utilTypes } from "node:util";
 
 import type {
   LifecycleAuthorization,
   ToolDefinitionPort,
   ToolExecutionContextPort,
 } from "./contracts.ts";
+import { publishActivity } from "./activity.ts";
+import type { ActivityPublisher } from "./activity.ts";
 import { safeDiagnostic } from "./redaction.ts";
-import { loadRoleCatalog } from "./roles.ts";
+import { loadRoleCatalog, validRoleName } from "./roles.ts";
 import type { PiRole } from "./roles.ts";
 import { runPiChild } from "./runner.ts";
 import type { ChildResult, PiChildRequest } from "./runner.ts";
@@ -407,26 +410,84 @@ interface DispatchToolDependencies {
   authorize(context: ToolExecutionContextPort): boolean | LifecycleAuthorization | undefined | Promise<boolean | LifecycleAuthorization | undefined>;
   resolveRuntime(context: ToolExecutionContextPort): DispatchRuntime | Promise<DispatchRuntime>;
   dispatch?: (request: DispatchRequest, signal: AbortSignal) => Promise<DispatchResult>;
+  activity?: () => ActivityPublisher | undefined;
+  createActivityId?: () => string;
 }
 
-function exactObject(value: unknown, allowed: ReadonlySet<string>): value is Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value)
-    && Object.keys(value as Record<string, unknown>).every((key) => allowed.has(key));
+function currentActivity(source: DispatchToolDependencies["activity"]): ActivityPublisher | undefined {
+  try { return source?.(); } catch { return undefined; }
+}
+
+function activityIds(count: number, create: () => string): readonly string[] | undefined {
+  try {
+    return Object.freeze(Array.from({ length: count }, () => create()));
+  } catch {
+    return undefined;
+  }
+}
+
+function exactDataRecord(
+  value: unknown,
+  allowed: ReadonlySet<string>,
+): Readonly<Record<string, PropertyDescriptor>> | undefined {
+  if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes.isProxy(value)) return undefined;
+  if (Object.getPrototypeOf(value) !== Object.prototype) return undefined;
+  const keys = Reflect.ownKeys(value);
+  if (keys.length > allowed.size || keys.some((key) => typeof key !== "string" || !allowed.has(key))) return undefined;
+  const fields: Record<string, PropertyDescriptor> = {};
+  for (const key of keys as string[]) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (descriptor === undefined || !descriptor.enumerable || !("value" in descriptor)) return undefined;
+    fields[key] = descriptor;
+  }
+  return Object.freeze(fields);
+}
+
+function fixedRoles(value: unknown): readonly string[] | undefined {
+  if (!Array.isArray(value) || utilTypes.isProxy(value)) return undefined;
+  const length = Object.getOwnPropertyDescriptor(value, "length");
+  if (length === undefined || !("value" in length) || !Number.isSafeInteger(length.value)
+    || length.value === 0 || length.value > DISPATCH_POLICY.maxRoles) return undefined;
+  const roles: string[] = [];
+  for (let index = 0; index < length.value; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    if (descriptor === undefined || !descriptor.enumerable || !("value" in descriptor)
+      || !validRoleName(descriptor.value)) return undefined;
+    roles.push(descriptor.value);
+  }
+  return new Set(roles).size === roles.length ? Object.freeze(roles) : undefined;
 }
 
 function parseToolRequest(params: Record<string, unknown>, runtime: DispatchRuntime): DispatchRequest | undefined {
-  if (!exactObject(params, new Set(["mode", "roles", "task", "depth", "limits"]))) return undefined;
-  if (typeof params.mode !== "string" || !MODE_SET.has(params.mode)
-    || !Array.isArray(params.roles) || params.roles.some((role) => typeof role !== "string")
-    || typeof params.task !== "string"
-    || (params.depth !== undefined && !Number.isSafeInteger(params.depth))
-    || (params.limits !== undefined && !exactObject(params.limits, LIMIT_KEYS))) return undefined;
+  const fields = exactDataRecord(params, new Set(["mode", "roles", "task", "depth", "limits"]));
+  if (fields === undefined || fields.mode === undefined || fields.roles === undefined || fields.task === undefined) return undefined;
+  const mode = fields.mode.value as unknown;
+  const roles = fixedRoles(fields.roles.value);
+  const task = fields.task.value as unknown;
+  const depth = fields.depth?.value as unknown;
+  const rawLimits = fields.limits?.value;
+  const limitFields: Readonly<Record<string, PropertyDescriptor>> | undefined = rawLimits === undefined
+    ? Object.freeze({} as Record<string, PropertyDescriptor>)
+    : exactDataRecord(rawLimits, LIMIT_KEYS);
+  if (limitFields === undefined) return undefined;
+  const limitValues = Object.freeze(Object.fromEntries(
+    Object.keys(limitFields).map((key) => [key, limitFields[key]!.value]),
+  )) as DispatchLimits;
+  if (typeof mode !== "string" || !MODE_SET.has(mode)
+    || roles === undefined || (mode === "single" && roles.length !== 1)
+    || typeof task !== "string"
+    || task.length === 0 || task.length > DISPATCH_POLICY.maxTaskBytes
+    || task.trim() === "" || Buffer.byteLength(task, "utf8") > DISPATCH_POLICY.maxTaskBytes
+    || (depth !== undefined && (!Number.isSafeInteger(depth) || (depth as number) < 0))) return undefined;
+  const limits = resolveLimits(limitValues);
+  if (limits === undefined || ((depth as number | undefined) ?? 0) > limits.maxDepth
+    || Buffer.byteLength(taskEnvelope(task), "utf8") > DISPATCH_POLICY.maxTaskBytes) return undefined;
   return {
-    mode: params.mode as DispatchMode,
-    roles: params.roles as string[],
-    task: params.task,
-    ...(params.depth === undefined ? {} : { depth: params.depth as number }),
-    ...(params.limits === undefined ? {} : { limits: params.limits as DispatchLimits }),
+    mode: mode as DispatchMode,
+    roles,
+    task,
+    ...(depth === undefined ? {} : { depth: depth as number }),
+    ...(rawLimits === undefined ? {} : { limits: limitValues }),
     runtime,
   };
 }
@@ -477,7 +538,32 @@ export function createDispatchTool(dependencies: DispatchToolDependencies): Tool
         if (authorization !== true && !authorization.isCurrent(authorization.lease)) {
           result = fixedResult("degraded");
         } else {
-          result = request === undefined ? fixedResult("protocol_error") : await runDispatch(request, activeSignal);
+          if (request === undefined) {
+            result = fixedResult("protocol_error");
+          } else {
+            const activity = currentActivity(dependencies.activity);
+            const ids = activity === undefined
+              ? undefined
+              : activityIds(request.roles.length, dependencies.createActivityId ?? randomUUID);
+            if (ids !== undefined) {
+              for (let index = 0; index < request.roles.length; index += 1) {
+                publishActivity(activity, {
+                  kind: "child", id: ids[index]!, label: request.roles[index]!, state: "active",
+                });
+              }
+            }
+            try {
+              result = await runDispatch(request, activeSignal);
+            } finally {
+              if (ids !== undefined) {
+                for (let index = 0; index < request.roles.length; index += 1) {
+                  publishActivity(activity, {
+                    kind: "child", id: ids[index]!, label: request.roles[index]!, state: "completed",
+                  });
+                }
+              }
+            }
+          }
         }
       } catch {
         result = fixedResult("degraded");
