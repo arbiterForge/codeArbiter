@@ -396,8 +396,9 @@ if sl.V2 != sl._colorlib.V2 or sl._boxlib._V0 != sl._colorlib.V0 \
 
     def test_no_color_makes_every_builtin_layout_byte_identical(self):
         renderer = os.path.join(_HOOKS_DIR, "statusline.py")
-        payload = json.dumps({"session_id": "palette-layout-test",
-                              "workspace": {"current_dir": self.tmp_path()},
+        # Keep this theme-only comparison independent of the mutable user ledger.
+        # Without a session id, every subprocess renders a call-local 0s age.
+        payload = json.dumps({"workspace": {"current_dir": self.tmp_path()},
                               "model": {"display_name": "Test"}})
         outputs = []
         for theme in ("violet", "blue", "green", "amber", "mono"):
