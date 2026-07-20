@@ -47,6 +47,40 @@ function forceFixtureCleanup(pid: number | undefined): void {
   try { process.kill(-pid, "SIGKILL"); } catch { /* The tree is already gone. */ }
 }
 
+const WINDOWS_JOB_ATTACH_REFUSAL = "Windows Job Object holder refused containment";
+const PROOF_ATTEMPT_DIAGNOSTIC_MAX_CHARS = 512;
+
+function isWindowsJobAttachRefusal(error: unknown): error is Error {
+  return error instanceof Error && (
+    error.message === WINDOWS_JOB_ATTACH_REFUSAL
+    || error.message.startsWith(`${WINDOWS_JOB_ATTACH_REFUSAL}:`)
+  );
+}
+
+function boundedProofAttemptDiagnostic(attempt: number, error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  const bounded = message.length <= PROOF_ATTEMPT_DIAGNOSTIC_MAX_CHARS
+    ? message
+    : `${message.slice(0, PROOF_ATTEMPT_DIAGNOSTIC_MAX_CHARS)}[truncated]`;
+  const code = isWindowsJobAttachRefusal(error) ? "job-attach-refused" : "unknown";
+  return `attempt ${attempt} code=${code} message=${JSON.stringify(bounded)}`;
+}
+
+async function runWindowsLaunchAdmissionProof<T>(launch: () => Promise<T>): Promise<T> {
+  try {
+    return await launch();
+  } catch (firstError) {
+    if (!isWindowsJobAttachRefusal(firstError)) throw firstError;
+    try {
+      return await launch();
+    } catch (secondError) {
+      throw new Error(
+        `Windows launch-admission proof failed after one retry: ${boundedProofAttemptDiagnostic(1, firstError)}; ${boundedProofAttemptDiagnostic(2, secondError)}`,
+      );
+    }
+  }
+}
+
 describe("Windows inert-supervisor refusal reason protocol", () => {
   test("parses a bare legacy STARTED/REFUSED line with no reason", () => {
     expect(parseWindowsSupervisorStatusLine("STARTED 4242")).toEqual({ outcome: "started", pid: 4242 });
@@ -210,11 +244,97 @@ describe("process-tree cleanup", () => {
     expect(exposed).not.toContain("dummy-farm-value");
   });
 
+  test("retries only an exact Job-holder admission refusal once with bounded diagnostics", async () => {
+    const failures: string[] = [];
+    const check = async (name: string, probe: () => Promise<void>): Promise<void> => {
+      try {
+        await probe();
+      } catch (error) {
+        failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    };
+
+    await check("matching refusal then success", async () => {
+      let attempts = 0;
+      const result = await runWindowsLaunchAdmissionProof(async () => {
+        attempts += 1;
+        if (attempts === 1) {
+          throw new Error("Windows Job Object holder refused containment: ready-timeout");
+        }
+        return "started";
+      });
+      expect(result).toBe("started");
+      expect(attempts).toBe(2);
+    });
+
+    await check("second matching refusal is terminal", async () => {
+      let attempts = 0;
+      let observed: unknown;
+      try {
+        await runWindowsLaunchAdmissionProof(async () => {
+          attempts += 1;
+          throw new Error("Windows Job Object holder refused containment: ready-timeout");
+        });
+      } catch (error) {
+        observed = error;
+      }
+      expect(attempts).toBe(2);
+      expect(observed).toBeInstanceOf(Error);
+      expect((observed as Error).message).toContain("attempt 1 code=job-attach-refused");
+      expect((observed as Error).message).toContain("attempt 2 code=job-attach-refused");
+    });
+
+    await check("nonmatching admission failure is not retried", async () => {
+      const refusal = new Error("Windows contained Pi launch was refused: ready-timeout");
+      let attempts = 0;
+      let observed: unknown;
+      try {
+        await runWindowsLaunchAdmissionProof(async () => {
+          attempts += 1;
+          throw refusal;
+        });
+      } catch (error) {
+        observed = error;
+      }
+      expect(attempts).toBe(1);
+      expect(observed).toBe(refusal);
+    });
+
+    await check("post-admission failure is not retried", async () => {
+      let attempts = 0;
+      const runProof = async (): Promise<void> => {
+        await runWindowsLaunchAdmissionProof(async () => {
+          attempts += 1;
+          return "started";
+        });
+        throw new Error("containment-ready proof failed");
+      };
+      await expect(runProof()).rejects.toThrow("containment-ready proof failed");
+      expect(attempts).toBe(1);
+    });
+
+    await check("two-attempt diagnostics are bounded", async () => {
+      let observed: unknown;
+      try {
+        await runWindowsLaunchAdmissionProof(async () => {
+          throw new Error(`Windows Job Object holder refused containment: ${"x".repeat(10_000)}`);
+        });
+      } catch (error) {
+        observed = error;
+      }
+      expect(observed).toBeInstanceOf(Error);
+      expect((observed as Error).message).toContain("[truncated]");
+      expect((observed as Error).message.length).toBeLessThan(1_300);
+    });
+
+    expect(failures).toEqual([]);
+  });
+
   test.runIf(process.platform === "win32")("starts Node with scrubbed controls and delivers them only to the contained child", async () => {
     const supervisorSentinel = "UNCONTAINED_SUPERVISOR_PRELOAD";
     const preloadSource = `if(process.argv[1]?.toLowerCase().endsWith("windows-supervisor.js"))console.error("${supervisorSentinel}");process.env.CA_PI_CHILD_PRELOAD="contained"`;
     const nodeOptions = `--import=data:text/javascript,${encodeURIComponent(preloadSource)}`;
-    const child = await spawnProcessTree(process.execPath, [
+    const child = await runWindowsLaunchAdmissionProof(() => spawnProcessTree(process.execPath, [
       "-e",
       'process.stdout.write(`${process.env.CA_PI_CHILD_PRELOAD}|${process.env.CA_PI_EXPLICIT}`);setInterval(() => {}, 1000)',
     ], {
@@ -227,7 +347,7 @@ describe("process-tree cleanup", () => {
         TMP: process.env.TMP,
       },
       stdio: ["pipe", "pipe", "pipe", "pipe"],
-    });
+    }));
     let stdout = "";
     let stderr = "";
     child.stdout.setEncoding("utf8");
