@@ -164,12 +164,12 @@ function sameOrInside(path, root, platform) {
   const suffix = pathApi.relative(root, path);
   return suffix === "" || !suffix.startsWith("..") && !pathApi.isAbsolute(suffix);
 }
-function canonicalUserHome(projectRoot, packageRoot, platform = process.platform) {
+async function canonicalUserHome(projectRoot, packageRoot, platform = process.platform) {
   const pathApi = platform === "win32" ? win32 : posix;
   const candidate = platform === "win32" ? process.env.USERPROFILE : process.env.HOME;
   if (typeof candidate !== "string" || candidate.length < 1 || candidate.length > PI_MAX_HOME_CHARS || candidate !== candidate.trim() || CONTROL_RE.test(candidate) || !pathApi.isAbsolute(candidate)) return void 0;
   try {
-    const canonical2 = realpathSync(candidate);
+    const canonical2 = await realpath(candidate);
     if (!statSync(canonical2).isDirectory() || sameOrInside(canonical2, projectRoot, platform) || sameOrInside(canonical2, packageRoot, platform)) return void 0;
     return canonical2;
   } catch {
@@ -659,7 +659,7 @@ var BridgeClient = class {
       if (inside(paths.git, project) || inside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
-      const canonicalHome = canonicalUserHome(project, paths.root);
+      const canonicalHome = await canonicalUserHome(project, paths.root);
       if (canonicalHome === void 0) return await this.failed(request, "path validation failed");
       userHome = canonicalHome;
     } catch {
@@ -8396,7 +8396,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "46714887c4de7e7fbe361856196c90cd2f0d0706f3b20ff705290aa7c24adc49"
+        childFingerprint: "a4f28245fc06ed9beacaa200996f1bb62dff884b148a731fb16b4bca54c5176c"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

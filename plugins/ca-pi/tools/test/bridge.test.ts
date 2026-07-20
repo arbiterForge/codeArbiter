@@ -101,7 +101,7 @@ describe("plan-file bridge protocol", () => {
   test("round-trips the maximum escaped and non-ASCII payload through a real BridgeClient envelope", async () => {
     const content = '"\\é'.repeat(23_040);
     expect(Buffer.byteLength(content, "utf8")).toBe(92_160);
-    const cwd = await mkdtemp(resolve(tmpdir(), "ca-pi-plan-envelope-"));
+    const cwd = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-plan-envelope-")));
     roots.push(cwd);
     await mkdir(resolve(cwd, ".codearbiter", "specs"), { recursive: true });
     await mkdir(resolve(cwd, ".codearbiter", "plans"));
@@ -138,6 +138,27 @@ function pythonExecutable(): string {
 
 function gitExecutable(): string {
   return resolveGitExecutable(tmpdir());
+}
+
+function windowsShortPath(input: string): string {
+  const systemRoot = process.env.SystemRoot ?? process.env.WINDIR;
+  if (process.platform !== "win32" || systemRoot === undefined) {
+    throw new Error("Windows system root is required for the short-path regression");
+  }
+  const result = spawnSync(resolve(systemRoot, "System32", "cmd.exe"), [
+    "/d", "/s", "/c", 'for %I in ("%CA_PI_LONG_PATH%") do @echo %~sI',
+  ], {
+    encoding: "utf8",
+    env: { SystemRoot: systemRoot, CA_PI_LONG_PATH: input },
+    shell: false,
+    windowsVerbatimArguments: true,
+    windowsHide: true,
+  });
+  const value = result.stdout.trim();
+  if (result.status !== 0 || !isAbsolute(value) || value.toLowerCase() === input.toLowerCase()) {
+    throw new Error("Windows short-path alias is unavailable for the containment regression");
+  }
+  return value;
 }
 
 async function clientFixture(source: string, options: {
@@ -1314,11 +1335,12 @@ describe("Pi footer bridge adapters", () => {
   });
 
   test.skipIf(process.platform !== "win32")("passes only a canonical non-project Windows home into the actual BridgeClient child environment", async () => {
-    const home = await mkdtemp(resolve(tmpdir(), "ca-pi-trusted-home-"));
+    const home = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-trusted-home-")));
     roots.push(home);
+    const homeAlias = windowsShortPath(home);
     const previousProfile = process.env.USERPROFILE;
     const previousSentinel = process.env.CA_PI_PROJECT_SENTINEL;
-    process.env.USERPROFILE = home;
+    process.env.USERPROFILE = homeAlias;
     process.env.CA_PI_PROJECT_SENTINEL = "must-not-cross";
     try {
       const { bridge, packageRoot } = await clientFixture([
@@ -1332,6 +1354,7 @@ describe("Pi footer bridge adapters", () => {
         cwd: packageRoot,
         input: { sessionKey: "a".repeat(64), scanStart: 0, scanEnd: 0, facts: [] },
       }, new AbortController().signal);
+      expect(response.outcome).toBe("notice");
       const observed = JSON.parse(response.context ?? "{}") as Record<string, unknown>;
       expect(observed.profile).toBe(await realpath(home));
       expect(observed.expanded).toBe(await realpath(home));
@@ -1344,22 +1367,30 @@ describe("Pi footer bridge adapters", () => {
     }
   });
 
-  test.skipIf(process.platform !== "win32")("rejects a Windows home resolved inside the request project before spawning", async () => {
+  test.skipIf(process.platform !== "win32")("rejects a Windows short-path home alias inside the request project before spawning", async () => {
     const previousProfile = process.env.USERPROFILE;
     const { bridge, packageRoot } = await clientFixture(
       "import json\nprint(json.dumps({'version': 1, 'outcome': 'notice', 'context': 'child-ran'}))\n",
     );
-    process.env.USERPROFILE = packageRoot;
+    const canonicalPackageRoot = await realpath(packageRoot);
+    process.env.USERPROFILE = windowsShortPath(canonicalPackageRoot);
+    let spawnCalls = 0;
+    __setBridgeSpawnForTests((() => {
+      spawnCalls += 1;
+      throw new Error("contained home aliases must fail before spawn");
+    }) as BridgeSpawnImpl);
     try {
       const response = await bridge.call({
         version: 1,
         event: "footer_usage_update",
-        cwd: packageRoot,
+        cwd: canonicalPackageRoot,
         input: { sessionKey: "a".repeat(64), scanStart: 0, scanEnd: 0, facts: [] },
       }, new AbortController().signal);
       expect(response).toMatchObject({ outcome: "warn", ruleId: "PI-BRIDGE" });
       expect(response.context).not.toBe("child-ran");
+      expect(spawnCalls).toBe(0);
     } finally {
+      __setBridgeSpawnForTests(undefined);
       if (previousProfile === undefined) delete process.env.USERPROFILE;
       else process.env.USERPROFILE = previousProfile;
     }

@@ -123,17 +123,17 @@ function sameOrInside(path: string, root: string, platform: NodeJS.Platform): bo
   return suffix === "" || (!suffix.startsWith("..") && !pathApi.isAbsolute(suffix));
 }
 
-function canonicalUserHome(
+async function canonicalUserHome(
   projectRoot: string,
   packageRoot: string,
   platform: NodeJS.Platform = process.platform,
-): string | undefined {
+): Promise<string | undefined> {
   const pathApi = platform === "win32" ? win32 : posix;
   const candidate = platform === "win32" ? process.env.USERPROFILE : process.env.HOME;
   if (typeof candidate !== "string" || candidate.length < 1 || candidate.length > PI_MAX_HOME_CHARS
     || candidate !== candidate.trim() || CONTROL_RE.test(candidate) || !pathApi.isAbsolute(candidate)) return undefined;
   try {
-    const canonical = realpathSync(candidate);
+    const canonical = await realpath(candidate);
     if (!statSync(canonical).isDirectory()
       || sameOrInside(canonical, projectRoot, platform)
       || sameOrInside(canonical, packageRoot, platform)) return undefined;
@@ -726,7 +726,7 @@ export class BridgeClient implements BridgePort {
       if (inside(paths.git, project) || inside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
-      const canonicalHome = canonicalUserHome(project, paths.root);
+      const canonicalHome = await canonicalUserHome(project, paths.root);
       if (canonicalHome === undefined) return await this.failed(request, "path validation failed");
       userHome = canonicalHome;
     } catch {

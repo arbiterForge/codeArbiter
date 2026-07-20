@@ -122,12 +122,12 @@ function sameOrInside(path, root, platform) {
   const suffix = pathApi.relative(root, path);
   return suffix === "" || !suffix.startsWith("..") && !pathApi.isAbsolute(suffix);
 }
-function canonicalUserHome(projectRoot, packageRoot, platform = process.platform) {
+async function canonicalUserHome(projectRoot, packageRoot, platform = process.platform) {
   const pathApi = platform === "win32" ? win32 : posix;
   const candidate = platform === "win32" ? process.env.USERPROFILE : process.env.HOME;
   if (typeof candidate !== "string" || candidate.length < 1 || candidate.length > PI_MAX_HOME_CHARS || candidate !== candidate.trim() || CONTROL_RE.test(candidate) || !pathApi.isAbsolute(candidate)) return void 0;
   try {
-    const canonical = realpathSync(candidate);
+    const canonical = await realpath(candidate);
     if (!statSync(canonical).isDirectory() || sameOrInside(canonical, projectRoot, platform) || sameOrInside(canonical, packageRoot, platform)) return void 0;
     return canonical;
   } catch {
@@ -312,7 +312,7 @@ var BridgeClient = class {
       if (inside(paths.git, project) || inside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
-      const canonicalHome = canonicalUserHome(project, paths.root);
+      const canonicalHome = await canonicalUserHome(project, paths.root);
       if (canonicalHome === void 0) return await this.failed(request, "path validation failed");
       userHome = canonicalHome;
     } catch {
