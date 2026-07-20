@@ -94,5 +94,17 @@ checks pass, all 25 hook-contract steps pass, and the hook unittest suite passes
 This repair requires a new candidate commit and hosted run before T-12 can be
 accepted.
 
+The replacement candidate's first hosted attempt then encountered two
+independent runner outcomes. Pi security failed before checkout after three
+action-download timeouts and passed unchanged on retry. Windows Pi 0.80.5
+repeatedly reached the same Vitest ceiling in the live contained-child proof:
+117 sibling checks passed, but the proof was limited to 20 seconds after #367
+had added a second bounded 15-second admission attempt. Its own allowed work
+also includes a 10-second output wait and a 5.25-second cleanup window. The
+test-only ceiling is now 60 seconds so Vitest can observe those existing
+bounded outcomes; no production admission, output, or cleanup timeout changed.
+Typecheck and three consecutive focused Windows runs pass locally. A new hosted
+candidate is still required before T-12 can be accepted.
+
 Pi evidence rebinding, final CI, and source PR closure remain governed by T-12
 through T-15 of the approved plan.

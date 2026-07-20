@@ -49,6 +49,11 @@ function forceFixtureCleanup(pid: number | undefined): void {
 
 const WINDOWS_JOB_ATTACH_REFUSAL = "Windows Job Object holder refused containment";
 const PROOF_ATTEMPT_DIAGNOSTIC_MAX_CHARS = 512;
+// The live proof may consume two bounded 15-second admission windows, then its
+// 10-second child-output wait and 5.25-second cleanup window. Keep Vitest's
+// ceiling outside those product bounds so it observes the proof result instead
+// of racing a valid retry on a loaded Windows runner.
+const WINDOWS_LIVE_PROOF_TEST_TIMEOUT_MS = 60_000;
 
 function isWindowsJobAttachRefusal(error: unknown): error is Error {
   return error instanceof Error && (
@@ -361,7 +366,7 @@ describe("process-tree cleanup", () => {
       const cleanup = createProcessTreeCleanup(child, { graceMs: 250, verifyMs: 5_000 });
       await expect(cleanup.terminate("completed")).resolves.toMatchObject({ verified: true });
     }
-  }, 20_000);
+  }, WINDOWS_LIVE_PROOF_TEST_TIMEOUT_MS);
 
   test("refuses invalid process identities, relative taskkill paths, and unbounded timing", () => {
     expect(() => processTreeTerminationPlan("linux", 0)).toThrow("positive integer");
