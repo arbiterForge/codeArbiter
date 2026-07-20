@@ -30,9 +30,9 @@ exists.
 ## Example
 
 ```text
-> /ca:task done 2.3a
+> /ca:task done poc.docs.0001
 
-Flipped 2.3a to done, dated 2026-07-02.
+Flipped poc.docs.0001 to done, dated 2026-07-02.
 open-tasks.md updated via taskwrite.py.
 ```
 

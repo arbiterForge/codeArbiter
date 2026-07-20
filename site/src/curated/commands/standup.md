@@ -41,8 +41,8 @@ Locally-merged branches:
 > y
 Deleted fix/typo-in-readme.
 
-Board-drift sweep: 1 DRIFTED task (2.3a merged but not marked [x] in open-tasks.md).
-Resolve with /ca:task done 2.3a — not auto-flipped here.
+Board-drift sweep: 1 DRIFTED task (poc.docs.0001 merged but not marked [x] in open-tasks.md).
+Resolve with /ca:task done poc.docs.0001. The sweep never auto-flips tasks.
 ```
 
 ## When to reach for it

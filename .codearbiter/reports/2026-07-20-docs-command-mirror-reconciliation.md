@@ -54,3 +54,10 @@ The mirrors now cover every evaluation criterion. Preserve the curated public
 layout and wording rather than forcing byte identity with command source. The
 only required content change is the explicit read-only qualifier on the
 curated standup sweep.
+
+## Review remediation
+
+The curated examples used `2.3a`, which does not satisfy the board's
+`group.type.sequence` dotted-ID grammar and therefore cannot appear in a
+board-sync drift report. Both `task` and `standup` examples now use the valid
+`poc.docs.0001` ID so the documented resolution path is executable.
