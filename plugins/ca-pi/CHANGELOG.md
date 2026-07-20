@@ -9,6 +9,8 @@ All notable changes to `ca-pi` are documented in this file.
 - Shared prune metrics now distinguish model-visible context savings from
   file-only sidecar cleanup, including explicit strategy scopes and corrected
   footer and cold-cache decisions.
+- Shared prune hooks ignore and repair malformed per-session state rather than
+  allowing invalid legacy values to escape fail-open handling.
 
 ### Changed
 

@@ -37,6 +37,8 @@ predate the plugin rewrite and are grouped by date.
 - Prune dry-run records, audit logs, CLI, footer, and cold-cache metrics now separate
   model-visible context savings from file-only sidecar cleanup; sidecar bytes
   no longer inflate the context-benefit decision or arm the cold-cache nudge.
+- Prune hooks now ignore and repair malformed per-session state instead of
+  allowing invalid legacy values to escape fail-open handling.
 
 ## [2.9.0] — 2026-07-12
 

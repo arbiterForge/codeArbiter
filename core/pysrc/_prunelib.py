@@ -22,6 +22,7 @@
 import calendar
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -1222,6 +1223,9 @@ def hook_run(payload, env=None):
     except Exception:  # noqa: BLE001 — fail open on any state-read fault
         return 0
     rec = state.get(session, {})
+    if not isinstance(rec, dict):
+        rec = {}
+        state[session] = rec
     # Cold-miss nudge (opt-in): the ONLY non-zero return in this hook. Evaluated
     # before the growth short-circuit so an idle user (no new bytes) still nudges.
     if cfg.execute and (e.get("CODEARBITER_PRUNE_NUDGE", "off") or "off").lower() == "on":
@@ -1238,7 +1242,14 @@ def hook_run(payload, env=None):
                 return 2
         except Exception:  # noqa: BLE001 — fail open; pruner fault must never block
             pass
-    if rec and (st.st_size - rec.get("last_pruned_size", 0)) < cfg.min_growth:
+    last_pruned_size = rec.get("last_pruned_size")
+    valid_last_pruned_size = (
+        (type(last_pruned_size) is int and last_pruned_size >= 0)
+        or (type(last_pruned_size) is float
+            and last_pruned_size >= 0 and math.isfinite(last_pruned_size))
+    )
+    if valid_last_pruned_size \
+            and (st.st_size - last_pruned_size) < cfg.min_growth:
         return 0  # cheap stat short-circuit: not enough new bytes
     # performance-001: read + parse the transcript ONCE here and thread the
     # bytes/lines/pre_stat through to run() below, instead of letting run()

@@ -75,6 +75,37 @@ class TestHook(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(os.path.getsize(self.path), size_after)
 
+    def test_malformed_session_state_is_ignored_and_repaired(self):
+        malformed_records = (
+            "not-a-record",
+            True,
+            [],
+            {},
+            {"last_pruned_size": True},
+            {"last_pruned_size": "not-a-number"},
+            {"last_pruned_size": float("nan")},
+            {"last_pruned_size": float("inf")},
+            {"last_pruned_size": -1},
+            {"last_pruned_size": []},
+            {"last_pruned_size": {}},
+        )
+        for record in malformed_records:
+            with self.subTest(record=record):
+                with open(self.path, "wb") as handle:
+                    handle.write(make_transcript(n_pairs=8, result_bytes=30000))
+                P.save_state({"sess": record})
+                before = os.path.getsize(self.path)
+                rc = P.hook_run(self.payload(), env=self.env(
+                    CODEARBITER_PRUNE="on",
+                    CODEARBITER_PRUNE_MIN_GROWTH="999999999",
+                ))
+                self.assertEqual(rc, 0)
+                self.assertLess(os.path.getsize(self.path), before)
+                repaired = P.load_state().get("sess")
+                self.assertIsInstance(repaired, dict)
+                self.assertEqual(
+                    repaired.get("last_pruned_size"), os.path.getsize(self.path))
+
     def test_min_size_floor(self):
         small = os.path.join(self.repo, "small.jsonl")
         with open(small, "wb") as f:

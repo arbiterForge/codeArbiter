@@ -10,6 +10,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Prune metrics now separate model-visible context savings from file-only
   sidecar cleanup, preventing sidecar bytes from inflating the context-benefit
   decision or cold-cache nudge.
+- Prune hooks ignore and repair malformed per-session state rather than letting
+  invalid legacy values escape fail-open handling.
 - Shared statusline ledger records use ownership-safe atomic shards, so
   concurrent host activity cannot discard session token/cost state.
 - Linked-worktree branch metadata is parsed from Git pointer files instead of
