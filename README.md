@@ -52,6 +52,60 @@ The gates are terse and non-negotiable. The thinking is not: it brainstorms a sp
 
 The gates scale to the change: a one-line docs fix takes the small lane or `/ca:chore`, not the full spec-to-PR march. The weight exists because the failure mode of an eager AI assistant is *plausible-but-wrong work that ships*, and the gates make that hard.
 
+## OpenAI Build Week submission
+
+codeArbiter predates OpenAI Build Week. The submission is the work added from July 13 through July
+21, 2026: full Pi host support plus a corrective campaign over the existing governance core. The
+new work is consolidated in [PR #313](https://github.com/arbiterForge/codeArbiter/pull/313). Its
+verified implementation head is `ec64809c1b6c32f69e3d9787ab205f7bbd563d50`.
+
+The Pi adapter adds a rich global footer, trust-aware repository activation, an extensible
+`allow | ask | deny` execution policy, read-only plan mode, session-only background jobs, bounded
+child-agent dispatch, native compaction, diagnostics, and shared-state continuity. Background jobs
+never survive Pi shutdown. Parent-only UI does not leak into JSON, RPC, print, or child modes.
+
+### How Codex and GPT-5.6 contributed
+
+Codex was the primary development and orchestration environment for the submission. GPT-5.6 was
+used to design and implement the Pi adapter, compare its behavior with the established host,
+investigate failures found during live testing, review older implementation paths, and consolidate
+the resulting corrections. The work includes decisions and fixes across permissions, Windows
+process-tree cleanup, provenance handling, audit integrity, generated-source drift, CI contracts,
+and documentation.
+
+The final candidate passed the six supported Pi platform cells for Pi 0.80.5 and 0.80.10 on Windows,
+macOS, and Linux. It also passed Pi security analysis, CodeQL, the shared-core and generated-surface
+contracts, and the repository's 46-gate final verifier. The sanitized evidence is available in
+[`docs/reports/pi-support/promotion.md`](docs/reports/pi-support/promotion.md) and
+[`docs/reports/pi-support/promotion.json`](docs/reports/pi-support/promotion.json).
+
+### Judge quick start
+
+The submission supports Windows, macOS, and Linux. It requires Pi 0.80.10, Node.js 22.19 or newer,
+Python 3, and Git. No account or sample data is required.
+
+Install the immutable candidate rather than a moving branch:
+
+```text
+pi install git:github.com/arbiterForge/codeArbiter@ec64809c1b6c32f69e3d9787ab205f7bbd563d50
+pi list
+pi config
+```
+
+Open a disposable Git repository, inspect it, grant Pi project trust, and start a fresh Pi session.
+Then run:
+
+```text
+/ca-init
+/ca-doctor
+```
+
+The rich footer appears globally. Repository-specific governance appears only in an enabled,
+affirmatively trusted repository. The complete deterministic and trusted-live procedure is in the
+[Pi parity-testing runbook](docs/pi-parity-testing.md). Judges can inspect the exact implementation,
+review discussion, and hosted check results in [PR #313](https://github.com/arbiterForge/codeArbiter/pull/313)
+without rebuilding the project from source.
+
 ## See it catch something
 
 The first time codeArbiter blocks you, it can feel like friction, until you see what it caught. This exchange is a real one from this project's own history: a bug fix forced through test-first, then a PR held at review until an untested seam got covered.
