@@ -227,6 +227,22 @@ export function generate(
     skill: "| Skill | Description |\n|---|---|",
     agent: "| Agent | Model tier | Description |\n|---|---|---|",
   };
+  // Host-scope note (docs-codex findings 01/02): every page below is generated
+  // from the `ca` (Claude Code) plugin payload — its command syntax and its
+  // 27-agent `Task`-dispatch catalog describe Claude Code specifically. Codex
+  // uses `ca-codex` (same command names, `$ca-<name>` instead of `/ca:<name>`)
+  // and runs the same reviewer/author roles inline in the current thread
+  // rather than dispatching them as isolated subagents. Stated once here,
+  // generator-side, so it can't drift out of sync across 65+ per-page edits;
+  // see docs/parity.md's "Role charters" row for the canonical wording.
+  const hostNote =
+    "Commands, skills, and agents below are generated from the `ca` (Claude Code) plugin " +
+    "payload. Codex CLI (`ca-codex`) uses the same names with `$ca-<name>` in place of " +
+    "`/ca:<name>`; Pi (`ca-pi`) uses `/ca-<name>`. The Agents catalog below describes Claude " +
+    "Code's isolated `Task`-tool dispatch — Codex executes the same reviewer and author roles " +
+    "inline in the current thread instead, until packaged agent dispatch lands for that host. " +
+    "See [Compatibility → Host Differences](/getting-started/compatibility/#host-differences) " +
+    "for the full per-surface breakdown across all three hosts.";
   const indexBody = sidebar
     .map((group) => {
       const heading = `## ${group.type.charAt(0).toUpperCase()}${group.type.slice(1)}s`;
@@ -242,7 +258,7 @@ export function generate(
       return `${heading}\n\n${TABLE_HEADER[group.type]}\n${rows.join("\n")}`;
     })
     .join("\n\n");
-  const indexContent = `---\ntitle: Reference\ndescription: Auto-generated reference for codeArbiter commands, skills, and agents.\n---\n\nThis section is generated from the plugin's own frontmatter and regenerates on every build, so it can never drift from the source.\n\n${indexBody}\n`;
+  const indexContent = `---\ntitle: Reference\ndescription: Auto-generated reference for codeArbiter commands, skills, and agents.\n---\n\nThis section is generated from the plugin's own frontmatter and regenerates on every build, so it can never drift from the source. See how the three catalogs cooperate in [How a Request Flows](/overview/#how-a-request-flows): a command routes to an owning skill, which may dispatch specialist agents.\n\n${hostNote}\n\n${indexBody}\n`;
 
   mkdirSync(outDir, { recursive: true });
   mkdirSync(dirname(resolvedSidebarPath), { recursive: true });

@@ -185,6 +185,15 @@ describe("generate", () => {
   });
 
   describe("reference index — roster tables", () => {
+    it("links the three catalogs to the request-flow explanation", () => {
+      generate(pluginDir, outDir);
+      const indexContent = readFileSync(join(outDir, "index.md"), "utf8");
+      expect(indexContent).toContain(
+        "[How a Request Flows](/overview/#how-a-request-flows)",
+      );
+      expect(indexContent).toMatch(/command routes to an owning skill.*specialist agents/);
+    });
+
     it("renders one markdown table per non-empty collection, headers matching the collection", () => {
       generate(pluginDir, outDir);
       const indexContent = readFileSync(join(outDir, "index.md"), "utf8");

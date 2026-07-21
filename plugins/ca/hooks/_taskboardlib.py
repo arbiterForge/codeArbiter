@@ -38,9 +38,14 @@
 #   read_board(path) -> str | None       thin file reader (not unit-tested)
 #   next_seq(text, group, type) -> int   next free seq in a group.type namespace
 #   add_entry(text, *, desc, origin, group, type, boundaries, section) -> str
+#   add_error(*, desc, origin, boundaries, section) -> str | None
+#                                        field-specific validation error for add input
 #   set_state(text, target, state, today, *, assign) -> str
-#                                        state in {"queued","in_progress","done"}; unknown
+#                                        target state in {"in_progress","done"}; unsupported
 #                                        state degrades gracefully (returns text unchanged)
+#   transition_error(text, target, state) -> str | None
+#                                        actionable error for a found task whose requested
+#                                        transition violates queued -> in-progress -> done
 #   already_promoted(text, origin) -> bool
 #   extract_needs_triage(text, origin) -> list[Candidate]
 #   extract_deferrable(text, origin) -> list[Candidate]
@@ -50,7 +55,8 @@
 #                                        raises ValueError
 #   classify_board_diff(old_text, new_text) -> bool
 #                                        True iff the change is a clean done-flip,
-#                                        start-flip, or single queued add; never raises
+#                                        start-flip, or single queued add (with its
+#                                        missing section heading if needed); never raises
 #   extract_task_ids(text) -> list[str]  valid dotted task-ids found in arbitrary text
 #                                        (e.g. git log output); deduped, first-seen
 #                                        order; never raises
@@ -126,6 +132,7 @@ _STAMP_FULL_RE = re.compile(r'\s*\((?:started|done)\s+\d{4}-\d{2}-\d{2}\)')
 _STATE_MARK_RE = re.compile(r'^- \[([ xX~])\]\s*')
 _QUEUED_TOP_RE = re.compile(r'^- \[ \] .+')
 _INDENTED_BULLET_RE = re.compile(r'^\s+- ')
+_LINE_BREAK_RE = re.compile(r'[\n\r\v\f\x1c-\x1e\x85\u2028\u2029]')
 # extract_task_ids search pattern — non-anchored; two-part negative lookahead so
 # trailing sentence punctuation (e.g. "mvp1.ui.0005.") is not blocked, while an
 # extended alphanumeric suffix ("poc.auth.0001x") and a continuing dot-segment
@@ -387,7 +394,9 @@ def _strip_stamps_and_marker(line):
 
 def _is_valid_state_flip(old_line, new_line):
     """True iff old_line → new_line is a valid done-flip ([~]→[x]+done) or
-    start-flip ([ ]→[~]+started), with all other content unchanged."""
+    start-flip ([ ]→[~]+started), with all other content unchanged. A start may
+    also mint one valid dotted ID on an ID-less task, matching ``set_state``'s
+    ``assign`` path."""
     old_m = _STATE_MARK_RE.match(old_line)
     new_m = _STATE_MARK_RE.match(new_line)
     if not old_m or not new_m:
@@ -403,7 +412,17 @@ def _is_valid_state_flip(old_line, new_line):
     if old_mark == ' ' and new_mark == '~':
         if _extract_date(new_line, 'started') is None:
             return False
-        return _strip_stamps_and_marker(old_line) == _strip_stamps_and_marker(new_line)
+        old_content = _strip_stamps_and_marker(old_line)
+        new_content = _strip_stamps_and_marker(new_line)
+        if old_content == new_content:
+            return True
+        old_task = parse_board(old_line)[0]
+        new_task = parse_board(new_line)[0]
+        if old_task.id is not None or not validate_id(new_task.id):
+            return False
+        minted_prefix = f"{new_task.id} - "
+        return (new_content.startswith(minted_prefix)
+                and new_content[len(minted_prefix):] == old_content)
     return False
 
 
@@ -415,6 +434,18 @@ def _is_valid_queued_block(lines):
     return all(_INDENTED_BULLET_RE.match(ln) for ln in lines[1:])
 
 
+def _is_valid_new_section_add(lines):
+    """True iff ``lines`` are one new level-two section plus one queued entry.
+
+    This is the exact shape ``add_entry`` emits when its requested section does
+    not yet exist. The queued entry may carry its normal indented metadata, but
+    no free-form content or second entry is accepted.
+    """
+    return (len(lines) >= 2
+            and re.match(r"^##\s+\S.*$", lines[0]) is not None
+            and _is_valid_queued_block(lines[1:]))
+
+
 def classify_board_diff(old_text, new_text):
     """True iff the change from old_text to new_text is a clean task-board transition.
 
@@ -423,10 +454,13 @@ def classify_board_diff(old_text, new_text):
       added, and no other content changes (a prior (started ...) stamp is allowed to
       drop; nothing else may change);
     - start-flip: one task's marker changes [ ] → [~], a (started YYYY-MM-DD) stamp
-      is added, and no other content changes;
+      is added, and no other content changes except an ID-less task may gain the
+      single valid dotted ID minted by the writer's pick-up path;
     - add: exactly one new queued top-level entry `- [ ] desc` (optionally with a
       dotted id, a (from <origin>) back-ref, and/or an indented `- Boundaries:`
-      sub-bullet) is inserted or appended, and no existing line is changed.
+      sub-bullet) is inserted or appended, and no existing line is changed. If
+      its requested section is absent, the writer's one new level-two heading
+      immediately followed by that entry may be appended with it.
 
     Returns False for anything else: reworded description, deleted entry, marker
     change without the required date stamp, multiple simultaneous transitions, an
@@ -459,7 +493,11 @@ def classify_board_diff(old_text, new_text):
             # the lines after the inserted block must equal the old suffix
             if new_lines[k + n_extra:] != old_lines[k:]:
                 return False
-            return _is_valid_queued_block(extra)
+            if _is_valid_queued_block(extra):
+                return True
+            return (k == len(old_lines)
+                    and _is_valid_new_section_add(extra)
+                    and all(line.strip() != extra[0].strip() for line in old_lines))
 
         # new has fewer lines than old — a deletion, never a clean transition
         return False
@@ -589,13 +627,47 @@ def _insert_under_section(text, block, section):
     return f"{base}{section}\n{block}\n"
 
 
+def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
+    """Return a field-specific error for an add input, else ``None``.
+
+    These constraints keep every accepted field on the physical line where the
+    board schema expects it. The section must be one canonical level-two heading;
+    descriptions are nonblank; optional metadata cannot contain line breaks.
+    """
+    if not isinstance(desc, str) or not desc.strip():
+        return "bad description: expected nonblank single-line text"
+    if _LINE_BREAK_RE.search(desc):
+        return "bad description: expected nonblank single-line text"
+    if (not isinstance(section, str)
+            or _LINE_BREAK_RE.search(section)
+            or re.fullmatch(r"## \S(?:.*\S)?", section) is None):
+        return ("bad --section: expected one canonical level-two heading, "
+                "e.g. '## In-flight'")
+    if origin is not None and (not isinstance(origin, str)
+                               or _LINE_BREAK_RE.search(origin)):
+        return "bad --from: expected single-line text"
+    if boundaries is not None:
+        if not isinstance(boundaries, (list, tuple)):
+            return "bad --boundaries: expected comma-separated single-line values"
+        invalid = any(not isinstance(boundary, str)
+                      or not boundary.strip()
+                      or _LINE_BREAK_RE.search(boundary)
+                      for boundary in boundaries)
+        if invalid:
+            return ("bad --boundaries: each comma-separated boundary must be "
+                    "nonblank single-line text")
+    return None
+
+
 def add_entry(text, *, desc, origin=None, group=None, type=None,
               boundaries=None, section="## In-flight"):
     """Append a queued entry. ID-less by default; mints `<group>.<type>.<NNNN>`
     when both group and type are given. Optional `(from <origin>)` back-ref and a
-    `Boundaries` sub-bullet. The desc is collapsed to one physical line so a
-    multi-line candidate can never inject an orphan/malformed second bullet."""
-    desc = (desc or "").replace("\r", " ").replace("\n", " ").strip()
+    `Boundaries` sub-bullet. Invalid fields fail soft by returning ``text``
+    unchanged, so no input can inject an orphan/malformed physical line."""
+    if add_error(desc=desc, origin=origin, boundaries=boundaries, section=section):
+        return text
+    desc = desc.strip()
     tid = f"{group}.{type}.{next_seq(text, group, type):04d}" if (group and type) else None
     body = f"{tid} - {desc}" if tid else desc
     line = f"- [ ] {body}"
@@ -627,18 +699,46 @@ def _find_task_line(lines, target):
     return fallback
 
 
+def transition_error(text, target, state):
+    """Return an actionable error when a found task cannot enter ``state``.
+
+    The sanctioned writer's lifecycle is queued -> in-progress -> done. Missing
+    targets and unknown states are left to ``set_state`` and its caller so their
+    existing graceful-degradation messages stay unchanged. Re-done is also left
+    to ``set_state`` as the established safe no-op.
+    """
+    if state not in ("in_progress", "done"):
+        return None
+    lines = text.splitlines()
+    idx = _find_task_line(lines, target)
+    if idx < 0:
+        return None
+    task = parse_board(lines[idx])[0]
+    if state == "done" and task.state == "queued":
+        return f"cannot mark '{target}' done: task is queued; start it first"
+    if state == "in_progress" and task.state == "done":
+        return f"cannot start '{target}': task is already done"
+    if state == "in_progress" and task.state == "in_progress":
+        return f"no change: '{target}' is already in_progress"
+    return None
+
+
 def set_state(text, target, state, today, *, assign=None):
     """Flip a task's marker and stamp the matching date. `target` is a dotted id
     or the title of an ID-less item (use the id when the desc contains parentheses
     — title matching is best-effort). `in_progress` ALWAYS stamps `(started …)`;
-    `done` stamps `(done …)`. With `assign="group.type"` on an ID-less target,
-    mints the dotted ID at pick-up. A re-`done` is a no-op; a missing target
+    `done` accepts only an in-progress task and stamps `(done …)`. With
+    `assign="group.type"` on an ID-less target,
+    mints the dotted ID at pick-up. A queued-to-done transition is rejected, a
+    re-`done` is a no-op, and a missing target
     returns the text unchanged (no raise). An unknown `state` value degrades
     gracefully: returns `text` unchanged rather than raising KeyError (coding
     standard: never raise on malformed user input — this is a hook-stdin path).
 
-    Valid state values: "queued", "in_progress", "done"."""
-    if state not in _MARK_BY_STATE:
+    Valid target states: "in_progress", "done"."""
+    if (state not in ("in_progress", "done")
+            or (assign is not None and not validate_id(f"{assign}.0000"))
+            or transition_error(text, target, state)):
         return text
     lines = text.splitlines()
     idx = _find_task_line(lines, target)

@@ -1,0 +1,192 @@
+[
+  {
+    "name": "add-dep",
+    "description": "Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs.",
+    "skillPath": "skills/ca-add-dep/SKILL.md"
+  },
+  {
+    "name": "adr",
+    "description": "Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/.",
+    "skillPath": "skills/ca-adr/SKILL.md"
+  },
+  {
+    "name": "adr-status",
+    "description": "Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only.",
+    "skillPath": "skills/ca-adr-status/SKILL.md"
+  },
+  {
+    "name": "arbiter",
+    "description": "Exit maintainer dev mode — restore orchestration, remove the dev marker, log the exit.",
+    "skillPath": "skills/ca-arbiter/SKILL.md"
+  },
+  {
+    "name": "audit",
+    "description": "Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only.",
+    "skillPath": "skills/ca-audit/SKILL.md"
+  },
+  {
+    "name": "btw",
+    "description": "Lightweight Q&A about the project — answer from context and return, no routing, no state change.",
+    "skillPath": "skills/ca-btw/SKILL.md"
+  },
+  {
+    "name": "checkpoint",
+    "description": "Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report.",
+    "skillPath": "skills/ca-checkpoint/SKILL.md"
+  },
+  {
+    "name": "chore",
+    "description": "Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose.",
+    "skillPath": "skills/ca-chore/SKILL.md"
+  },
+  {
+    "name": "commands",
+    "description": "Show the codeArbiter command catalog — the public command list and what each routes to.",
+    "skillPath": "skills/ca-commands/SKILL.md"
+  },
+  {
+    "name": "commit",
+    "description": "Run the full commit gate — the only sanctioned path to a git commit.",
+    "skillPath": "skills/ca-commit/SKILL.md"
+  },
+  {
+    "name": "conflict",
+    "description": "Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation.",
+    "skillPath": "skills/ca-conflict/SKILL.md"
+  },
+  {
+    "name": "context-check",
+    "description": "Optional manual drift audit — report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.",
+    "skillPath": "skills/ca-context-check/SKILL.md"
+  },
+  {
+    "name": "create-context",
+    "description": "Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized.",
+    "skillPath": "skills/ca-create-context/SKILL.md"
+  },
+  {
+    "name": "debug",
+    "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca-fix, /ca-adr, or a no-action close.",
+    "skillPath": "skills/ca-debug/SKILL.md"
+  },
+  {
+    "name": "decompose",
+    "description": "Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized.",
+    "skillPath": "skills/ca-decompose/SKILL.md"
+  },
+  {
+    "name": "dev",
+    "description": "Maintainer override — suspend orchestration to edit codeArbiter itself. Env-gated (CODEARBITER_DEV=1), entry/exit logged to overrides.log.",
+    "skillPath": "skills/ca-dev/SKILL.md"
+  },
+  {
+    "name": "doctor",
+    "description": "Verify the active host install, package, command ownership, enforcement, wrapper self-test, and active-dispatch coverage gap. Read-only.",
+    "skillPath": "skills/ca-doctor/SKILL.md"
+  },
+  {
+    "name": "feature",
+    "description": "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.",
+    "skillPath": "skills/ca-feature/SKILL.md"
+  },
+  {
+    "name": "fix",
+    "description": "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates.",
+    "skillPath": "skills/ca-fix/SKILL.md"
+  },
+  {
+    "name": "init",
+    "description": "Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store.",
+    "skillPath": "skills/ca-init/SKILL.md"
+  },
+  {
+    "name": "metrics",
+    "description": "Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window.",
+    "skillPath": "skills/ca-metrics/SKILL.md"
+  },
+  {
+    "name": "new-skill",
+    "description": "Author a new codeArbiter skill: prove the gap is real, get the spec approved, then write it.",
+    "skillPath": "skills/ca-new-skill/SKILL.md"
+  },
+  {
+    "name": "override",
+    "description": "Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed.",
+    "skillPath": "skills/ca-override/SKILL.md"
+  },
+  {
+    "name": "pr",
+    "description": "Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch.",
+    "skillPath": "skills/ca-pr/SKILL.md"
+  },
+  {
+    "name": "preview",
+    "description": "Zero-onboarding, read-only dry-run of the reviewer fleet against the current uncommitted diff. Predicts reviewers, runs the state-free secret scan, writes nothing.",
+    "skillPath": "skills/ca-preview/SKILL.md"
+  },
+  {
+    "name": "prune",
+    "description": "Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn.",
+    "skillPath": "skills/ca-prune/SKILL.md"
+  },
+  {
+    "name": "reconcile",
+    "description": "SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice.",
+    "skillPath": "skills/ca-reconcile/SKILL.md"
+  },
+  {
+    "name": "refactor",
+    "description": "Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change.",
+    "skillPath": "skills/ca-refactor/SKILL.md"
+  },
+  {
+    "name": "release",
+    "description": "Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. The only path to a version tag.",
+    "skillPath": "skills/ca-release/SKILL.md"
+  },
+  {
+    "name": "review",
+    "description": "Review the current diff with the reviewer fleet, funneled to one triaged verdict.",
+    "skillPath": "skills/ca-review/SKILL.md"
+  },
+  {
+    "name": "spike",
+    "description": "Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or /ca-feature.",
+    "skillPath": "skills/ca-spike/SKILL.md"
+  },
+  {
+    "name": "sprint",
+    "description": "Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops.",
+    "skillPath": "skills/ca-sprint/SKILL.md"
+  },
+  {
+    "name": "standup",
+    "description": "Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes.",
+    "skillPath": "skills/ca-standup/SKILL.md"
+  },
+  {
+    "name": "status",
+    "description": "Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only.",
+    "skillPath": "skills/ca-status/SKILL.md"
+  },
+  {
+    "name": "task",
+    "description": "The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md.",
+    "skillPath": "skills/ca-task/SKILL.md"
+  },
+  {
+    "name": "threat-model",
+    "description": "Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought.",
+    "skillPath": "skills/ca-threat-model/SKILL.md"
+  },
+  {
+    "name": "tribunal",
+    "description": "Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.",
+    "skillPath": "skills/ca-tribunal/SKILL.md"
+  },
+  {
+    "name": "watch",
+    "description": "Watch a PR's CI to completion — diagnose on red, notify and offer the merge on green. Never auto-merges.",
+    "skillPath": "skills/ca-watch/SKILL.md"
+  }
+]

@@ -35,7 +35,8 @@ commit-gate expect and stage the flip, and to add a backstop sweep for any flip 
 ## Atomicity rules (from ADR-0008, for reference)
 
 - **done-flip** `[~]`→`[x]` rides the **completing** commit; reverts on abandonment (self-correcting).
-- **start-flip** `[ ]`→`[~]` rides the **first** work commit; reverts on abandonment.
+- **start-flip** `[ ]`→`[~]` rides the **first** work commit; it may also mint the
+  task's single valid dotted ID at pick-up, and reverts on abandonment.
 - **raise-new** add `[ ]` rides the work commit (harvest pre-commit), **contingent default**; a
   follow-up that must survive abandonment is filed as a **GitHub issue**, not a board-only side commit.
 
@@ -48,11 +49,15 @@ pattern already used by `test_ux_conversion.py`.
    change is one entry flipping `[~]`+started-date → `[x]`+done-date, the `_taskboardlib` transition
    classifier returns *is-transition*.
 2. **Classifier — start-flip and add positive.** It returns *is-transition* for (a) a clean start-flip
-   `[ ]`→`[~]` with a stamped started-date and no other change, and (b) an appended queued
-   `- [ ] <desc>` entry with no other change.
+   `[ ]`→`[~]` with a stamped started-date and no other change except the optional single valid
+   dotted ID minted for an ID-less task at pick-up, and (b) an appended queued `- [ ] <desc>` entry
+   with no other change. When the writer's requested section is absent, (b) may also append exactly
+   that one level-two section heading immediately before the queued entry.
 3. **Classifier — arbitrary-edit negative.** It returns *not-transition* when the diff includes any
-   change beyond a state-cell flip, its stamped date, or a single appended queued entry — e.g. a
-   reworded description, a deleted entry, or an edit to a non-target line.
+   change beyond a state-cell flip, its stamped date, the start-flip's optional minted ID, or a
+   single appended queued entry and its necessary new section heading — e.g. a reworded
+   description, a deleted entry, free-form content beside a new section, or an edit to a non-target
+   line.
 4. **Phase 6 exemption (prose).** commit-gate `SKILL.md` Phase 6 states that an `open-tasks.md` edit the
    classifier marks *is-transition* is retained (not flagged as scope creep), while any other board edit
    still flags — and names the classifier as the test.

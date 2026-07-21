@@ -5,7 +5,7 @@ Per spec `.codearbiter/specs/task-writer-harvest.md`:
 
   AC-01  next_seq allocation
   AC-02  add_entry: ID-less default + mint-on-request, lint-clean, count+1
-  AC-03  set_state: dated start/done transitions, safe re-done
+  AC-03  set_state: queued -> in-progress -> done, dated transitions, safe re-done
   AC-04  start of an ID-less item mints a dotted ID + stamps the date (pick-up path)
   AC-05  set_state on a missing target: unchanged, no raise
   AC-06  dedup by (from <origin>)
@@ -80,11 +80,36 @@ class AddEntryTest(unittest.TestCase):
         self.assertIn("- [ ] first", out)
         self.assertEqual(tb.count_in_flight(out), 1)
 
-    def test_sanitizes_multiline_desc(self):
-        # M3: a multi-line candidate desc must not inject an orphan second line.
-        out = tb.add_entry(BOARD, desc="line one\nline two", origin="o")
-        self.assertIn("- [ ] line one line two  (from o)", out)
-        self.assertEqual(tb.lint_board(out), [])
+    def test_rejects_blank_or_multiline_desc_unchanged(self):
+        for desc in ("", "   ", "line one\nline two", "line one\rline two",
+                     "line one\u2028line two"):
+            with self.subTest(desc=desc):
+                self.assertEqual(tb.add_entry(BOARD, desc=desc, origin="o"), BOARD)
+
+    def test_rejects_malformed_section_unchanged(self):
+        for section in ("Other", "### Other", " ## Other", "## Other ",
+                        "## Other\nmalicious", "## Other\rmalicious"):
+            with self.subTest(section=section):
+                self.assertEqual(
+                    tb.add_entry(BOARD, desc="new thing", section=section), BOARD
+                )
+
+    def test_rejects_multiline_origin_or_boundary_unchanged(self):
+        self.assertEqual(
+            tb.add_entry(BOARD, desc="new thing", origin="source\ninjected"), BOARD
+        )
+        self.assertEqual(
+            tb.add_entry(BOARD, desc="new thing", boundaries=["auth\ninjected"]), BOARD
+        )
+        self.assertEqual(
+            tb.add_entry(BOARD, desc="new thing", origin="source\u2028injected"), BOARD
+        )
+
+    def test_valid_custom_section_creation_classifies(self):
+        old = "# Open tasks\n\n## Done\n- [x] a.b.0001 - old  (done 2026-07-19)\n"
+        out = tb.add_entry(old, desc="new thing", section="## Other")
+        self.assertIn("## Other\n- [ ] new thing", out)
+        self.assertTrue(tb.classify_board_diff(old, out))
 
 
 class SetStateTest(unittest.TestCase):
@@ -97,12 +122,37 @@ class SetStateTest(unittest.TestCase):
         self.assertEqual(tb.undated_in_progress(out), [])
 
     def test_done_flips_and_dates(self):
-        out = tb.set_state(BOARD, "v2.api.0001", "done", _d(2026, 6, 21))
+        started = tb.set_state(BOARD, "v2.api.0001", "in_progress", _d(2026, 6, 20))
+        out = tb.set_state(started, "v2.api.0001", "done", _d(2026, 6, 21))
         self.assertIn("- [x] v2.api.0001 - existing queued task  (done 2026-06-21)", out)
-        self.assertEqual(tb.count_in_flight(out), tb.count_in_flight(BOARD) - 1)
+        self.assertEqual(tb.count_in_flight(out), tb.count_in_flight(started) - 1)
+        self.assertTrue(tb.classify_board_diff(started, out))
+
+    def test_done_rejects_queued_task(self):
+        out = tb.set_state(BOARD, "v2.api.0001", "done", _d(2026, 6, 21))
+        self.assertEqual(out, BOARD)
+
+    def test_start_rejects_done_task(self):
+        started = tb.set_state(BOARD, "v2.api.0001", "in_progress", _d(2026, 6, 20))
+        done = tb.set_state(started, "v2.api.0001", "done", _d(2026, 6, 21))
+        self.assertEqual(
+            tb.set_state(done, "v2.api.0001", "in_progress", _d(2026, 6, 22)), done
+        )
+
+    def test_start_rejects_invalid_assign_namespace(self):
+        for assign in ("", "mvp1.store.0002", ".api", "mvp1.", "bad group.api"):
+            with self.subTest(assign=assign):
+                self.assertEqual(
+                    tb.set_state(
+                        BOARD, "follow up on the cache thing", "in_progress",
+                        _d(2026, 6, 21), assign=assign,
+                    ),
+                    BOARD,
+                )
 
     def test_re_done_is_safe_noop(self):
-        once = tb.set_state(BOARD, "v2.api.0001", "done", _d(2026, 6, 21))
+        started = tb.set_state(BOARD, "v2.api.0001", "in_progress", _d(2026, 6, 20))
+        once = tb.set_state(started, "v2.api.0001", "done", _d(2026, 6, 21))
         twice = tb.set_state(once, "v2.api.0001", "done", _d(2026, 6, 22))
         self.assertEqual(once, twice)   # idempotent
 
@@ -115,6 +165,7 @@ class SetStateTest(unittest.TestCase):
         self.assertEqual(tb.undated_in_progress(out), [])
         # the minted line is a valid, lint-clean task
         self.assertEqual(tb.lint_board(out), [])
+        self.assertTrue(tb.classify_board_diff(BOARD, out))
 
     def test_missing_target_unchanged(self):
         # AC-05: not found -> unchanged, no raise.
@@ -130,7 +181,7 @@ class SetStateTest(unittest.TestCase):
     def test_done_line_does_not_shadow_open(self):
         # H2: an open task is preferred over a done line of the same title.
         board = ("## Done\n- [x] foo  (done 2026-06-01)\n"
-                 "## In-flight\n- [ ] foo\n")
+                 "## In-flight\n- [~] foo  (started 2026-06-20)\n")
         out = tb.set_state(board, "foo", "done", _d(2026, 6, 21))
         self.assertIn("- [x] foo  (done 2026-06-21)", out)   # the OPEN one got marked
         self.assertIn("- [x] foo  (done 2026-06-01)", out)   # the old done one untouched
@@ -283,6 +334,86 @@ class TaskwriteCliTest(unittest.TestCase):
         taskwrite.project_root = lambda: d
         self.assertEqual(taskwrite.main(["start", "a.b.0001", "--date", "nope"]), 1)
 
+    def test_done_rejects_queued_task_before_write_with_start_guidance(self):
+        import contextlib
+        import io
+        import taskwrite
+        d, p = self._board()
+        taskwrite.project_root = lambda: d
+        with open(p, encoding="utf-8") as f:
+            before = f.read()
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            rc = taskwrite.main(["done", "a.b.0001", "--date", "2026-07-20"])
+        self.assertEqual(rc, 1)
+        self.assertIn("start", stderr.getvalue().lower())
+        self.assertIn("queued", stderr.getvalue().lower())
+        with open(p, encoding="utf-8") as f:
+            self.assertEqual(f.read(), before)
+
+    def test_successful_start_and_done_outputs_are_commit_gate_classifiable(self):
+        import taskwrite
+        d, p = self._board()
+        taskwrite.project_root = lambda: d
+        with open(p, encoding="utf-8") as f:
+            queued = f.read()
+        self.assertEqual(
+            taskwrite.main(["start", "a.b.0001", "--date", "2026-07-19"]),
+            0,
+        )
+        with open(p, encoding="utf-8") as f:
+            started = f.read()
+        self.assertTrue(tb.classify_board_diff(queued, started))
+        self.assertEqual(
+            taskwrite.main(["done", "a.b.0001", "--date", "2026-07-20"]),
+            0,
+        )
+        with open(p, encoding="utf-8") as f:
+            done = f.read()
+        self.assertTrue(tb.classify_board_diff(started, done))
+
+    def test_start_rejects_invalid_assign_namespace_before_write(self):
+        import contextlib
+        import io
+        import taskwrite
+        for assign in ("", "mvp1.store.0002", ".api", "mvp1.", "bad group.api"):
+            with self.subTest(assign=assign):
+                d, p = self._board()
+                taskwrite.project_root = lambda: d
+                with open(p, encoding="utf-8") as f:
+                    before = f.read()
+                stderr = io.StringIO()
+                with contextlib.redirect_stderr(stderr):
+                    rc = taskwrite.main([
+                        "start", "a.b.0001", "--as", assign,
+                        "--date", "2026-07-20",
+                    ])
+                self.assertEqual(rc, 1)
+                self.assertIn("--as", stderr.getvalue())
+                self.assertIn("GROUP.TYPE", stderr.getvalue())
+                with open(p, encoding="utf-8") as f:
+                    self.assertEqual(f.read(), before)
+
+    def test_start_accepts_valid_assign_and_classifies(self):
+        import taskwrite
+        d, p = self._board()
+        taskwrite.project_root = lambda: d
+        with open(p, "w", encoding="utf-8") as f:
+            f.write("# Open tasks\n\n## In-flight\n- [ ] seed\n")
+        with open(p, encoding="utf-8") as f:
+            before = f.read()
+        self.assertEqual(
+            taskwrite.main([
+                "start", "seed", "--as", "mvp1.store",
+                "--date", "2026-07-20",
+            ]),
+            0,
+        )
+        with open(p, encoding="utf-8") as f:
+            after = f.read()
+        self.assertIn("mvp1.store.0001 - seed", after)
+        self.assertTrue(tb.classify_board_diff(before, after))
+
     def test_dash_leading_desc_via_separator(self):
         import taskwrite
         d, p = self._board()
@@ -291,6 +422,47 @@ class TaskwriteCliTest(unittest.TestCase):
         self.assertEqual(rc, 0)
         with open(p, encoding="utf-8") as f:
             self.assertIn("-rf important task", f.read())
+
+    def test_add_creates_missing_section_and_classifies(self):
+        import taskwrite
+        d, p = self._board()
+        taskwrite.project_root = lambda: d
+        with open(p, "w", encoding="utf-8") as f:
+            f.write("# Open tasks\n\n## Done\n- [x] a.b.0001 - seed  (done 2026-07-19)\n")
+        with open(p, encoding="utf-8") as f:
+            before = f.read()
+        self.assertEqual(taskwrite.main(["add", "new work"]), 0)
+        with open(p, encoding="utf-8") as f:
+            after = f.read()
+        self.assertIn("## In-flight\n- [ ] new work", after)
+        self.assertTrue(tb.classify_board_diff(before, after))
+
+    def test_add_rejects_malformed_fields_before_write(self):
+        import contextlib
+        import io
+        import taskwrite
+        cases = (
+            (["add", ""], "description"),
+            (["add", "   "], "description"),
+            (["add", "line one\nline two"], "description"),
+            (["add", "new work", "--section", "Other"], "--section"),
+            (["add", "new work", "--section", "## Other\nmalicious"], "--section"),
+            (["add", "new work", "--from", "source\ninjected"], "--from"),
+            (["add", "new work", "--boundaries", "auth\ninjected"], "--boundaries"),
+        )
+        for argv, field in cases:
+            with self.subTest(argv=argv):
+                d, p = self._board()
+                taskwrite.project_root = lambda: d
+                with open(p, encoding="utf-8") as f:
+                    before = f.read()
+                stderr = io.StringIO()
+                with contextlib.redirect_stderr(stderr):
+                    rc = taskwrite.main(argv)
+                self.assertEqual(rc, 1)
+                self.assertIn(field, stderr.getvalue())
+                with open(p, encoding="utf-8") as f:
+                    self.assertEqual(f.read(), before)
 
     def test_malformed_multipart_id_rejected_no_write(self):
         """issue #157: a --id with more than GROUP.TYPE (e.g. a full 3-part id)

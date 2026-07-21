@@ -28,31 +28,45 @@ on:
       - "plugins/ca/**"
       - "plugins/ca-sandbox/**"
       - "plugins/ca-codex/**"
+      - "plugins/ca-pi/**"
       - "core/**"
       - "**/*.json"
       - "README.md"
       - "LICENSE"
       - ".github/workflows/ci.yml"
       - ".github/scripts/**"
+      - "tools/host_descriptors.py"
+      - "tools/build-surface.py"
+      - "tools/sync-core.py"
+      - "tools/build-host-packages.py"
+      - "tools/ci-impact.py"
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   changes:
-    name: Repo | [Meta] - Detect Changed Plugins
+    name: "[CHECK] | [REPO] | Impact selection"
     runs-on: ubuntu-latest
     outputs:
       ca: ${{ steps.filter.outputs.ca }}
       ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
       ca-codex: ${{ steps.filter.outputs.ca-codex }}
+      ca-pi: ${{ steps.filter.outputs.ca-pi }}
+      host-descriptors: ${{ steps.filter.outputs.host-descriptors }}
       hooks: ${{ steps.filter.outputs.hooks }}
+      impact: ${{ steps.filter.outputs.impact }}
       manifests: ${{ steps.filter.outputs.manifests }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
         id: filter
         with:
+          list-files: shell
           # A change to shared CI infra (.github/) flags BOTH plugins so the
           # full mechanical surface re-runs. A plugin-only change flags just
           # that plugin - this is the path-scoping ADR-0007 requires.
@@ -62,6 +76,8 @@ jobs:
           # plugins/ca/hooks/ and plugins/ca-codex/hooks/ - a core/** edit can
           # drift either vendored copy, so it flags ca, ca-codex, AND hooks.
           filters: |
+            all:
+              - '**'
             ca:
               - 'plugins/ca/**'
               - 'core/**'
@@ -77,18 +93,95 @@ jobs:
               - 'plugins/ca-codex/**'
               - 'core/**'
               - '.github/workflows/ci.yml'
+            ca-pi:
+              - 'plugins/ca-pi/**'
+              - 'core/**'
+              - 'package.json'
+              - 'tools/build-host-packages.py'
+              - '.github/scripts/test_pi_package.py'
+              - '.github/scripts/test_pi_parity.py'
+              - '.github/scripts/pi_benchmark.py'
+              - '.github/scripts/test_pi_benchmark.py'
+              - '.github/scripts/test_pi_platform_contract.py'
+              - '.github/scripts/test_pi_security.py'
+              - '.github/workflows/codeql.yml'
+              - '.github/workflows/ci.yml'
+            host-descriptors:
+              - 'core/hosts.json'
+              - 'core/surface/**'
+              - 'plugins/ca-pi/**'
+              - 'tools/host_descriptors.py'
+              - 'tools/build-surface.py'
+              - 'tools/sync-core.py'
+              - 'tools/build-host-packages.py'
+              - '.github/scripts/test_host_descriptors.py'
+              - '.github/workflows/ci.yml'
             hooks:
               - 'plugins/ca/hooks/**'
               - 'plugins/ca-codex/hooks/**'
+              - 'plugins/ca-pi/hooks/**'
               - 'core/**'
               - '.github/scripts/**'
+              - '.github/workflows/ci.yml'
+            impact:
+              - '.github/ci-impact-map.json'
+              - '.github/scripts/test_ci_impact.py'
+              - 'core/hosts.json'
+              - 'tools/ci-impact.py'
+              - 'tools/host_descriptors.py'
               - '.github/workflows/ci.yml'
             manifests:
               - '**/*.json'
               - '.github/workflows/ci.yml'
+      - name: Write impact receipt
+        id: impact
+        env:
+          CHANGED_FILES: ${{ steps.filter.outputs.all_files }}
+        run: |
+          python tools/ci-impact.py \
+            --map .github/ci-impact-map.json \
+            --hosts core/hosts.json \
+            --changed-files "$CHANGED_FILES" \
+            --output impact.json \
+            --summary "$GITHUB_STEP_SUMMARY"
+      - name: Store impact receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ci-impact-receipt
+          path: impact.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
+  host-descriptors:
+    name: "[CHECK] | [CORE] | Host descriptor contract"
+    needs: changes
+    if: needs.changes.outputs.host-descriptors == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Run the complete host descriptor and generated-only suite
+        run: python .github/scripts/test_host_descriptors.py
+
+  ci-impact:
+    name: "[CHECK] | [REPO] | Impact planner contract"
+    needs: changes
+    if: needs.changes.outputs.impact == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Validate impact-map fallback, receipt, and name contracts
+        run: python .github/scripts/test_ci_impact.py
 
   tools:
-    name: CA | [Build] - Farm Dispatcher (Typecheck/Test/Artifact)
+    name: "[CHECK] | [CA  ] | Farm dispatcher contract"
     needs: changes
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
@@ -126,7 +219,7 @@ jobs:
           echo "farm.js is in sync with farm.ts"
 
   ca-sandbox-tools:
-    name: CA-Sandbox | [Build] - Sandbox Driver (Typecheck/Test/Artifact)
+    name: "[CHECK] | [SBX ] | Sandbox driver contract"
     needs: changes
     if: needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
@@ -163,8 +256,144 @@ jobs:
           fi
           echo "sandbox.js is in sync with the TypeScript sources"
 
+  ca-pi-tools:
+    name: "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>"
+    needs: changes
+    if: needs.changes.outputs.ca-pi == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        pi-version: ["0.80.5", "0.80.10"]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: plugins/ca-pi/tools
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.19.0
+          cache: npm
+          cache-dependency-path: plugins/ca-pi/tools/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Install external Pi host (scripts disabled)
+        run: npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts
+      - name: Install reviewed toolchain (scripts disabled)
+        run: npm ci --ignore-scripts
+      - name: Check generated root package metadata
+        working-directory: .
+        run: python tools/build-host-packages.py --check
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test package, module identity, compatibility, and native binding
+        run: npm test -- test/package.test.ts
+      - name: Test activation, commands, and status lifecycle
+        run: npm test -- test/activation.test.ts test/commands.test.ts test/status.test.ts
+      - name: Test canonical bridge and final-execution enforcement
+        run: npm test -- test/bridge.test.ts test/tool-guard.test.ts
+      - name: Test adversarial Pi security promotion contract
+        working-directory: .
+        run: python .github/scripts/test_pi_security.py
+      - name: Test three-host enforcement and descriptor parity
+        working-directory: .
+        run: python .github/scripts/test_pi_parity.py
+      - name: Rebuild externalized bundles
+        run: npm run build
+      - name: Fail if committed bundles are stale
+        working-directory: .
+        shell: bash
+        run: |
+          if ! git diff --quiet -- plugins/ca-pi/extensions plugins/ca-pi/helpers; then
+            echo "::error file=plugins/ca-pi/helpers/windows-supervisor.js::Pi bundles or the Windows supervisor are stale. Run npm --prefix plugins/ca-pi/tools run build."
+            git --no-pager diff -- plugins/ca-pi/extensions plugins/ca-pi/helpers
+            exit 1
+          fi
+      - name: Test release package contract
+        working-directory: .
+        run: python .github/scripts/test_pi_package.py
+      - name: Test real package RPC activation and aliases
+        working-directory: .
+        run: python .github/scripts/test_pi_package.py --rpc-commands
+      - name: Test cross-platform paths, encoding, cancellation, process trees, prune, and generation
+        working-directory: .
+        run: python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}
+      - name: Measure the three-host relative adapter benchmark
+        working-directory: .
+        run: python .github/scripts/pi_benchmark.py --samples 100
+
+  ca-pi-latest:
+    name: "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>"
+    needs: changes
+    if: needs.changes.outputs.ca-pi == 'true'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/ca-pi/tools
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.19.0
+          cache: npm
+          cache-dependency-path: plugins/ca-pi/tools/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Install reviewed toolchain and external latest Pi (scripts disabled)
+        run: |
+          npm ci --ignore-scripts
+          npm install --global @earendil-works/pi-coding-agent@latest --ignore-scripts
+      - name: Report latest version and test installed runtime admission
+        run: |
+          pi --version
+          npm test -- test/package.test.ts -t "installed Pi runtime is admitted by the production boundary"
+          npm test -- test/package.test.ts
+      - name: Run the latest Pi platform contract as a nonblocking canary
+        working-directory: .
+        run: python .github/scripts/test_pi_platform_contract.py --pi-version latest
+
+  ca-pi-codeql:
+    name: "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>"
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-pi == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Initialize scoped Pi CodeQL database
+        uses: github/codeql-action/init@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          config: |
+            name: ca-pi-security
+            queries:
+              - uses: security-extended
+            paths:
+              - plugins/ca-pi/tools/src
+              - plugins/ca-pi/extensions
+            paths-ignore:
+              - plugins/ca-pi/tools/node_modules
+      - name: Analyze Pi without duplicating default code-scanning uploads
+        uses: github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        with:
+          category: "/language:javascript-typescript"
+          output: codeql-results
+          upload: never
+      - name: Fail unresolved high-severity findings
+        run: python .github/scripts/test_pi_security.py --sarif codeql-results
+
   hooks:
-    name: CA | [Test] - Hooks (${{ matrix.os }})
+    name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }}>"
     # MR-10: proves host-specific interpreter fallback on every OS - REAL (no
     # double execution), STUB (preferred interpreter fails), PY2 (`python`
     # exists but is not Python 3; ca must fall back and preserve exit-2 blocks),
@@ -313,7 +542,7 @@ jobs:
         run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 
   version-bump:
-    name: CA | [Gate] - Version Bump on Payload Change
+    name: "[GATE ] | [CA  ] | Payload version"
     # `claude plugin update` is a NO-OP when plugin.json's version string is
     # unchanged - verified live 2026-06-10: a months-stale hooks.json survived
     # a marketplace refresh until uninstall+reinstall. So any change to the
@@ -350,7 +579,7 @@ jobs:
           echo "payload changed on unpublished version $ver (no tag v$ver) - allowed"
 
   version-bump-sandbox:
-    name: CA-Sandbox | [Gate] - Version Bump on Payload Change
+    name: "[GATE ] | [SBX ] | Payload version"
     # Per-plugin twin of the ca version-bump guard (ADR-0007): the two plugins
     # version independently, so a changed ca-sandbox payload on an
     # already-published ca-sandbox version (tag ca-sandbox-v<version>) is the
@@ -403,7 +632,7 @@ jobs:
           echo "payload changed on unpublished version $ver (no tag ca-sandbox-v$ver) - allowed"
 
   version-bump-codex:
-    name: CA-Codex | [Gate] - Version Bump on Payload Change
+    name: "[GATE ] | [CDX ] | Payload version"
     # Per-plugin twin of the ca / ca-sandbox version-bump guards (ADR-0007
     # path-scoping, ADR-0011 Codex host): ca-codex versions independently, so
     # a changed ca-codex payload on an already-published ca-codex version
@@ -456,8 +685,22 @@ jobs:
           fi
           echo "payload changed on unpublished version $ver (no tag ca-codex-v$ver) - allowed"
 
+  version-bump-pi:
+    name: "[GATE ] | [PI  ] | Payload version"
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-pi == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Fail if a tagged Pi payload changes without synchronized release metadata
+        env:
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+        run: python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"
+
   prose:
-    name: CA | [Check] - Reference Graph
+    name: "[CHECK] | [CA  ] | Reference graph"
     needs: changes
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
@@ -470,7 +713,7 @@ jobs:
         run: python3 .github/scripts/check-plugin-refs.py ca
 
   badge-consistency:
-    name: CA | [Check] - README Badges & Catalog
+    name: "[CHECK] | [CA  ] | Documentation consistency"
     # The mechanical backstop the 2.5.0 release proved was missing: the README
     # version badge, the command/skill/agent count badges, their prose echoes,
     # and the full-catalog table must all match the repo. A release that bumps
@@ -487,7 +730,7 @@ jobs:
         run: python3 .github/scripts/check_badge_consistency.py
 
   prose-sandbox:
-    name: CA-Sandbox | [Check] - Reference Graph
+    name: "[CHECK] | [SBX ] | Reference graph"
     needs: changes
     if: needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
@@ -500,7 +743,7 @@ jobs:
         run: python3 .github/scripts/check-plugin-refs.py ca-sandbox
 
   manifests:
-    name: Repo | [Check] - JSON Manifests
+    name: "[CHECK] | [REPO] | Manifest contract"
     # Shared infra - a broken plugin.json / marketplace.json / hooks.json breaks
     # install for every user regardless of which plugin it belongs to, so this
     # is repo-wide and not gated per-plugin.
@@ -532,7 +775,7 @@ jobs:
         run: python3 .github/scripts/test_validate_codex_plugin.py
 
   license-consistency:
-    name: Repo | [Check] - License Consistency
+    name: "[CHECK] | [REPO] | License consistency"
     # Shared infra - the project's own license declarations (both plugin
     # manifests, the LICENSE file, and the README badge + notice) must all agree
     # with the canonical SPDX, so a partial relicense can't ship (the v2.6.0
@@ -549,7 +792,7 @@ jobs:
         run: python3 .github/scripts/check_license_consistency.py .
 
   surface:
-    name: Repo | [Check] - Generated Surface
+    name: "[CHECK] | [CORE] | Generated surface"
     # Shared infra - the whole markdown surface (commands/skills/includes/
     # COMMANDS.md/SPRINT.md/ORCHESTRATOR.md of BOTH plugins) is generated from
     # core/surface/ templates by tools/build-surface.py (ADR-0011 M3). This
@@ -571,7 +814,7 @@ jobs:
         run: python3 tools/build-surface.py --check
 
   prose-codex:
-    name: CA-Codex | [Check] - Reference Graph
+    name: "[CHECK] | [CDX ] | Reference graph"
     needs: changes
     if: needs.changes.outputs.ca-codex == 'true'
     runs-on: ubuntu-latest
@@ -583,17 +826,37 @@ jobs:
       - name: Check cross-reference graph (ca-codex)
         run: python3 .github/scripts/check-plugin-refs.py ca-codex
 
+  documentation-contract:
+    name: "[CHECK] | [REPO] | Documentation contract"
+    # Repository documentation is a cross-cutting public interface: validate
+    # its links, current facts, and generated surface on every pull request.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Check repository documentation contract
+        run: python3 .github/scripts/check_docs_contract.py
+
   ci-passed:
-    name: Repo | [Gate] - CI Passed
+    name: "[GATE ] | [REPO] | Merge readiness"
     if: always()
     needs:
+      - documentation-contract
       - changes
+      - host-descriptors
+      - ci-impact
       - tools
       - ca-sandbox-tools
+      - ca-pi-tools
+      - ca-pi-latest
+      - ca-pi-codeql
       - hooks
       - version-bump
       - version-bump-sandbox
       - version-bump-codex
+      - version-bump-pi
       - prose
       - badge-consistency
       - prose-sandbox
@@ -603,11 +866,13 @@ jobs:
       - prose-codex
     runs-on: ubuntu-latest
     steps:
-      - name: Require every job to have succeeded or been skipped
+      - name: Require every required job to have succeeded or been skipped
         run: |
-          results="${{ join(needs.*.result, ' ') }}"
-          echo "upstream results: $results"
-          for r in $results; do
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }}"
+          canary_result="${{ needs.ca-pi-latest.result }}"
+          echo "upstream required results: $required_results"
+          echo "advisory Pi canary result: $canary_result"
+          for r in $required_results; do
             case "$r" in
               success|skipped) ;;
               *) echo "::error::a required CI job concluded '$r'"; exit 1 ;;

@@ -172,14 +172,22 @@ class GitDirtyTests(unittest.TestCase):
                  "user.email=test@example.invalid", "commit", "-qm", "initial"],
                 check=True)
 
-            with open(tracked, "a", encoding="utf-8") as f:
-                f.write("changed\n")
-            self.assertTrue(_gitlib.git_dirty(root))
+            # This test exercises dirty-state semantics with a real repository.
+            # The production budget is covered separately above and is too tight
+            # to serve as an integration-test deadline on a contended CI runner.
+            with mock.patch.object(
+                    _gitlib, "DIRTY_CHECK_TIMEOUT_SECONDS", 5.0):
+                with open(tracked, "a", encoding="utf-8") as f:
+                    f.write("changed\n")
+                self.assertTrue(_gitlib.git_dirty(root))
 
-            subprocess.run(["git", "-C", root, "restore", "tracked.txt"], check=True)
-            with open(os.path.join(root, "untracked.txt"), "w", encoding="utf-8") as f:
-                f.write("new\n")
-            self.assertTrue(_gitlib.git_dirty(root))
+                subprocess.run(
+                    ["git", "-C", root, "restore", "tracked.txt"], check=True)
+                with open(
+                        os.path.join(root, "untracked.txt"),
+                        "w", encoding="utf-8") as f:
+                    f.write("new\n")
+                self.assertTrue(_gitlib.git_dirty(root))
 
 
 class StatuslineLinkedWorktreeTests(unittest.TestCase):

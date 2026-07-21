@@ -2,9 +2,50 @@
 
 All notable changes to codeArbiter are recorded here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/).
 
-The plugin is the contents of `plugins/ca/`. Project state under a consumer's `.codearbiter/` is consumer-owned and out of scope for this log. Entries below `2.0.0` predate the plugin rewrite and are grouped by date.
+This log tracks the primary `plugins/ca/` release and repository-wide changes.
+The independently versioned `ca-codex`, `ca-pi`, and `ca-sandbox` siblings keep
+their release details in their own changelogs. Project state under a consumer's
+`.codearbiter/` is consumer-owned and out of scope. Entries below `2.0.0`
+predate the plugin rewrite and are grouped by date.
 
 ---
+
+## [Unreleased]
+
+### Added
+
+- Added `ca-pi`, the fourth sibling plugin and third governance host, generated
+  from the same Python and markdown core as Claude Code and Codex CLI.
+- Added a dependency-free, Git-installed Pi package with `/ca-*` aliases,
+  `/skill:ca-*` fallbacks, project-trust-gated activation, final tool wrappers,
+  native compaction, bounded child dispatch, farm preview routing, diagnostics,
+  and cross-platform contract tests for Pi 0.80.5 and Pi 0.80.6.
+- Added the reproducible Pi install/live-test runbook and converted the host
+  parity ledger to source-visible Claude Code/Codex CLI/Pi evidence.
+
+### Security
+
+- Pi child work now crosses a minimal provider-specific environment, strict
+  bounded RPC/JSONL schemas, an enforcement-only child extension, attested
+  startup, and whole-process-tree cleanup on cancel, timeout, and failure.
+- Pi repository-aware activation requires both the existing opt-in marker and
+  affirmative host project trust; unknown or foreign tool replacements fail
+  closed.
+
+### Fixed
+
+- Prune dry-run records, audit logs, CLI, footer, and cold-cache metrics now separate
+  model-visible context savings from file-only sidecar cleanup; sidecar bytes
+  no longer inflate the context-benefit decision or arm the cold-cache nudge.
+- Prune hooks now ignore and repair malformed per-session state instead of
+  allowing invalid legacy values to escape fail-open handling.
+
+## [2.9.1] — 2026-07-20
+
+### Fixed
+- Tribunal runs recover exact per-reviewer token usage from Claude Code
+  subagent transcripts, retaining fresh input, cache creation, cache reads,
+  output, and explicit unavailable reasons.
 
 ## [2.9.0] — 2026-07-12
 
@@ -19,6 +60,9 @@ Statusline customization and correctness hardening across concurrent sessions.
   `model:?`, captured during the existing bounded transcript scan.
 
 ### Fixed
+- Farm API calls now reject credential-bearing base URLs, revalidate at each
+  network boundary, refuse automatic redirects, and keep provider-controlled
+  response bodies out of logs and retry/report diagnostics.
 - Concurrent statusline renders no longer lose ledger updates, session-start
   metadata, or aggregate token/cost totals.
 - Linked Git worktrees report their branch correctly, third-party statusline

@@ -1,13 +1,23 @@
 ---
 title: Hooks Reference
-description: "A complete per-hook reference for codeArbiter: every registered Claude Code hook, the gates it enforces, its fail posture, and the non-event scripts behind the commands."
+description: "A complete per-hook reference for codeArbiter: every registered hook across the three governance hosts, the gates it enforces, its fail posture, and the non-event scripts behind the commands."
 ---
 
-The `ca` and `ca-codex` plugins share the same Python guard core and `.codearbiter/` activation
-state. Claude Code consumes the guard's exit-2 block directly. Codex routes shell and write events
+The `ca`, `ca-codex`, and `ca-pi` plugins share the same Python guard core and `.codearbiter/`
+activation state. Claude Code consumes the guard's exit-2 block directly. Codex routes shell and write events
 through `pre-tool-adapter.py`, which returns Codex's structured deny result with the same gate ID and
 feedback. Codex has no Read hook, statusline, or Claude-format transcript-pruning engine; see the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/).
+
+Pi composes the shared guard through a parent extension rather than Claude hook
+events. Its rich footer is global to interactive parent sessions; the governance
+row requires an enabled and affirmatively trusted repository, and rate-window
+telemetry is omitted. Execute mode asks before governed mutations or external
+side effects. Plan mode is read-only except for the current canonical spec,
+plan, and plan ledger. Background jobs are session-only, never restored from Pi
+session entries, and an unverified cleanup blocks later launches with a
+`/ca-doctor` direction. These UI and job capabilities are parent-interactive
+only and never enter hardened children.
 
 codeArbiter enforces its gates as Claude Code hooks under `plugins/ca/hooks/`. Every hook is stdlib-only Python, registered in `hooks.json`, and runs only in an arbiter-enabled repo (see [Enforcement & Security](/enforcement) for the activation contract and the fail-loud posture). A blocking hook exits 2; an advisory hook prints a reminder and exits 0.
 

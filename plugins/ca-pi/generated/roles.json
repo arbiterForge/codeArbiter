@@ -1,0 +1,343 @@
+[
+  {
+    "name": "architecture-drift-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/architecture-drift-reviewer.md",
+    "skillPaths": [
+      "routines/decision-variance/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "auth-crypto-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/auth-crypto-reviewer.md",
+    "skillPaths": [
+      "routines/secret-handling/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "backend-author",
+    "classification": "author",
+    "charterPath": "agents/backend-author.md",
+    "skillPaths": [
+      "routines/tdd/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "edit",
+      "write"
+    ]
+  },
+  {
+    "name": "checkpoint-aggregator",
+    "classification": "reviewer",
+    "charterPath": "agents/checkpoint-aggregator.md",
+    "skillPaths": [],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "coverage-auditor",
+    "classification": "reviewer",
+    "charterPath": "agents/coverage-auditor.md",
+    "skillPaths": [
+      "routines/tdd/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "decision-challenger",
+    "classification": "reviewer",
+    "charterPath": "agents/decision-challenger.md",
+    "skillPaths": [
+      "routines/decision-variance/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "dependency-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/dependency-reviewer.md",
+    "skillPaths": [],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "design-quality-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/design-quality-reviewer.md",
+    "skillPaths": [],
+    "tools": [
+      "read"
+    ]
+  },
+  {
+    "name": "finding-triage",
+    "classification": "reviewer",
+    "charterPath": "agents/finding-triage.md",
+    "skillPaths": [],
+    "tools": [
+      "read"
+    ]
+  },
+  {
+    "name": "frontend-author",
+    "classification": "author",
+    "charterPath": "agents/frontend-author.md",
+    "skillPaths": [
+      "routines/tdd/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "edit",
+      "write"
+    ]
+  },
+  {
+    "name": "grader",
+    "classification": "reviewer",
+    "charterPath": "agents/grader.md",
+    "skillPaths": [
+      "routines/decision-variance/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "infra-author",
+    "classification": "author",
+    "charterPath": "agents/infra-author.md",
+    "skillPaths": [
+      "routines/tdd/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "edit",
+      "write"
+    ]
+  },
+  {
+    "name": "map-deps",
+    "classification": "reviewer",
+    "charterPath": "agents/map-deps.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "map-structure",
+    "classification": "reviewer",
+    "charterPath": "agents/map-structure.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "migration-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/migration-reviewer.md",
+    "skillPaths": [],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "scout",
+    "classification": "reviewer",
+    "charterPath": "agents/scout.md",
+    "skillPaths": [
+      "routines/decision-variance/SKILL.md",
+      "routines/context-creation/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "security-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/security-reviewer.md",
+    "skillPaths": [],
+    "tools": [
+      "read",
+      "bash"
+    ]
+  },
+  {
+    "name": "tribunal-appsec-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-appsec-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-architecture-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-architecture-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-coverage-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-coverage-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-infra-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-infra-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-migration-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-migration-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-observability-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-observability-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-performance-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-performance-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-reliability-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-reliability-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-secrets-supply-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-secrets-supply-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-test-fidelity-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-test-fidelity-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  },
+  {
+    "name": "tribunal-typesafety-reviewer",
+    "classification": "reviewer",
+    "charterPath": "agents/tribunal-typesafety-reviewer.md",
+    "skillPaths": [
+      "routines/tribunal/SKILL.md"
+    ],
+    "tools": [
+      "read",
+      "bash",
+      "write"
+    ]
+  }
+]

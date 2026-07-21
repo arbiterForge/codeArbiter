@@ -28,6 +28,8 @@ import subprocess
 import sys
 import time
 
+from _gitexec import git_executable
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin root + capability flags
 from _hooklib import (  # noqa: E402
@@ -150,7 +152,7 @@ def _default_git_runner(args, root):
     output, text mode, explicit utf-8 with replacement, a timeout. Raises on any
     failure — git_read() is what turns failure into "" so callers degrade."""
     out = subprocess.run(
-        ["git", "-C", root, *args],
+        [git_executable(), "-C", root, *args],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         timeout=GIT_READ_TIMEOUT,
     )
@@ -197,7 +199,7 @@ def _detached_fetch_spawner(args, root):
         kw["creationflags"] = flags
     else:
         kw["start_new_session"] = True
-    return subprocess.Popen(["git", "-C", root, *args], **kw)
+    return subprocess.Popen([git_executable(), "-C", root, *args], **kw)
 
 
 def spawn_background_fetch(root, spawner=None):
@@ -532,7 +534,7 @@ def clear_dev_marker(root, host_name=None, session_id=None, now=None):
 
     `host_name` (observability-001/ADR-0012) is the resolved host's `.name`
     ("claude"/"codex"/"unknown"), so the synthetic close line is attributable to
-    the host that wrote it now that two hosts share one overrides.log
+    the host that wrote it now that three hosts share one overrides.log
     (ADR-0011). Optional and defaults to resolving it here via `get_host()`
     (#257) — main() already holds a Host instance and passes its `.name`
     through to avoid a second resolution, but any other caller (tests
@@ -750,7 +752,12 @@ def main():
         from _githooks import install as _install_git_hooks
         _install_git_hooks(root)
     except Exception:  # noqa: BLE001
-        pass
+        # Legacy hosts retain the historical best-effort startup contract.
+        # Pi supplies an authenticated absolute executable pair; losing that
+        # boundary must surface to the bridge so activation remains fail closed.
+        if (os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+                or os.environ.get("CODEARBITER_PYTHON_EXECUTABLE")):
+            raise
 
     # --- Arbiter active: inject persona ---
     orch = os.path.join(plugin, "ORCHESTRATOR.md")
@@ -862,7 +869,10 @@ def main():
         # governance_line's arbiter_state() call doesn't re-read the same three
         # files a second time in this same invocation.
         render_full_briefing(root, summary, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
-        write_standup_marker(root, date_iso)
+        try:
+            write_standup_marker(root, date_iso)
+        except Exception:  # noqa: BLE001 — must never brick session startup
+            pass
     elif mode == "offer":
         print(OFFER_LINE_TEMPLATE.format(standup=get_host().cmd_ref("standup")))
 

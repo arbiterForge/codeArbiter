@@ -56,6 +56,28 @@ could stop.
 Re-enabling is the same edit in reverse (`arbiter: disabled` → `arbiter: enabled`), no override
 required — H-18 only blocks disabling the switch, not re-enabling it.
 
+## Pi
+
+`ca-pi` is distributed Git-only, versioned independently as `ca-pi-v<version>` tags — not tied to
+the `ca`/`ca-codex` release cadence. There is no npm release and no auto-update.
+
+**Upgrade or pin a version:** re-run `pi install` with the new pinned tag:
+
+```text
+pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<new-version>
+```
+
+**Uninstall:**
+
+```text
+pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
+```
+
+(`pi uninstall` is the equivalent alias.) Confirm removal with `pi list`.
+
+Uninstalling `ca-pi` does not touch `.codearbiter/` in any repository — that state survives, the
+same as for Claude Code and Codex, and another governance host can pick it up.
+
 ## Full Uninstall
 
 Removing codeArbiter entirely has four independent pieces. Do them in this order.
@@ -72,6 +94,12 @@ Codex:
 
 ```sh
 codex plugin remove ca-codex@codearbiter
+```
+
+Pi (Git-only; see [Pi](#pi) above for pinning and version-specific removal):
+
+```sh
+pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
 This removes the plugin payload (hooks, commands, agents, skills) from Claude Code's plugin cache.

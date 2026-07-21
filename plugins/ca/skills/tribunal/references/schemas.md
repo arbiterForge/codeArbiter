@@ -31,12 +31,12 @@ The finding record (what agents emit) is in `finding-record.md`. This file holds
 ## run/v1 — one state event per line in `run.jsonl`
 
 ```json
-{"schema":"run/v1","event":"run-started|lens-launched|lens-skipped|lens-completed|wave-flushed|wave-triaged|report-written|issues-filed|telemetry-sent|run-aborted","wave":1,"lens":"<lens>","detail":"<optional>","surface_seen":0,"findings":0,"model":"<model>","tokens":0,"at":"<iso8601>"}
+{"schema":"run/v1","event":"run-started|lens-launched|lens-skipped|lens-completed|wave-flushed|wave-triaged|report-written|issues-filed|telemetry-sent|run-aborted","wave":1,"lens":"<lens>","detail":"<optional>","surface_seen":0,"findings":0,"model":"<model>","tokens":0,"agent_id":"<returned agentId>","tokens_status":"observed|unavailable","tokens_reason":"<required when unavailable>","tokens_source":"claude-subagent-transcript","token_usage":{"input_tokens":0,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":0,"total_tokens":0},"at":"<iso8601>"}
 ```
 
 `run-aborted` records a deliberate abandon (optional `detail` = reason) and marks the run terminal.
 
-A `lens-completed` event carries `surface_seen` (int — the lens's Exposure denominator), `findings` (int — count the lens emitted), and `model` (the model the lens ran on, as dispatched); `model` also appears on `lens-launched`. `tokens` (int, optional) records the lens's observed token spend when the orchestrator can see it; null/omitted when unobserved.
+A `lens-completed` event carries `surface_seen` (int — the lens's Exposure denominator), `findings` (int — count the lens emitted), and `model` (the model the lens ran on, as dispatched); `model` also appears on `lens-launched`. `tokens` (int, optional) records the lens's observed token spend when the orchestrator can see it; null/omitted when unobserved. Claude `lens-launched` also records the returned `agent_id`. Every Claude `lens-completed` carries `tokens_status`: `observed` requires integer `tokens`, `tokens_source`, and all component `token_usage` fields; `unavailable` requires `tokens_reason`. Reasons distinguish a missing host result (`host-result-missing`), missing local artifacts (`transcript-unavailable`), an unsupported changed transcript shape (`transcript-format-unsupported`), bounded-parser limits (`transcript-scan-limit-exceeded` or `transcript-over-limit`), invalid usage (`usage-invalid`), and an invalid dispatch identifier (`invalid-agent-id`).
 
 The `run-started` event's `detail` carries the chosen wave partition — the lens list per wave (default or repartitioned-for-cause, per `cost-and-models.md`). This is the single record of the partition; nothing else derives or re-derives it.
 

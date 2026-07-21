@@ -5,12 +5,14 @@ argument-hint: status | dry | run <path> | audit <path> | on | off
 
 # {{CMD:prune}} — session transcript pruner
 
-Long sessions die when the JSONL transcript fills the context window with bulk: `toolUseResult`
-sidecars, oversized tool outputs, thinking blocks, MCP/shell noise, stale file reads. The pruner
-trims that bulk at safe quiescence boundaries while leaving the `uuid`/`parentUuid` chain, every
-line type (including unknown future types), and the K most recent tool-bearing turns verbatim.
-Gains land at **`claude --resume` / restart** and the next compaction — not the current turn, because
-the running CLI sends its in-memory history to the API, not the file.
+Long sessions die when their semantic history fills the context window with bulk: oversized tool
+outputs, thinking blocks, MCP/shell noise, stale file reads, and host-specific sidecars. The shared
+policy trims that bulk at safe quiescence boundaries while each host codec preserves its native
+integrity model and the K most recent tool-bearing turns verbatim. Claude keeps byte-safe JSONL
+serialization; Pi uses semantic entries and returns a native custom-compaction result.
+Gains land at the host's next native resume/restart or compaction boundary, not by mutating the
+running session's active file. **Pi-native compaction** is event-driven and never rewrites an active
+Pi session file.
 
 ## Argument
 
@@ -23,10 +25,16 @@ the running CLI sends its in-memory history to the API, not the file.
   `~/.codearbiter/metrics/prune-dry.jsonl` (override with `CODEARBITER_PRUNE_METRICS`). That log is
   the evidence base for the `dry`→`on` decision: a clean record (every row `verdict: dry-run`,
   `validation_errors: 0`) over a representative set of sessions is the signal that enabling is safe.
-- `dry` — copy the live transcript to a scratch path and run a dry-run analysis; present the
-  per-strategy reduction table. Never writes to the live file.
+  Read `context_bytes_freed` / `context_est_tokens_freed` for model-context benefit and
+  `file_bytes_freed` / `file_pct` for disk and resume-parse benefit. `sidecar-collapse` is explicitly
+  `file-only`; it must not count toward the context-benefit or cold-cache decision.
+  The legacy `freed_bytes`, `pct`, and `est_tokens_before` / `est_tokens_after` fields remain
+  whole-file compatibility aliases; do not use them as model-context evidence.
+- `dry` — create a read-only semantic plan (or analyze a scratch copy where the host exposes a
+  serialized transcript); present the per-strategy reduction table with every strategy labeled
+  `context` or `file-only`. Never writes the active session.
 - `run <path>` — prune the target with `--execute`. Targets a **copy or an old/inactive
-  transcript only** — the tool refuses a recently-modified file by construction.
+  transcript only** — the tool refuses an active or recently-modified target by construction.
 - `audit <path>` — read-only integrity report: line-parse, uuid chain, tool-pair coverage,
   condensation markers.
 - `on` / `off` — guidance on enabling or disabling the after-each-turn service.
@@ -37,7 +45,8 @@ the running CLI sends its in-memory history to the API, not the file.
    ```
    python3 "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <subcommand> [<path>] || python "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <subcommand> [<path>]
    ```
-   For `dry`, copy the live transcript to `<path>.copy.jsonl` first, then analyze the copy.
+   For serialized hosts, `dry` analyzes `<path>.copy.jsonl`; Pi active sessions use the native
+   semantic planner and return a custom compaction result without session-file writes.
 
 2. **run** — confirm the path is a copy or an inactive session, then:
    ```
@@ -61,11 +70,13 @@ the running CLI sends its in-memory history to the API, not the file.
    **Cold-miss nudge** [Feature Forge — `preview`]: when `CODEARBITER_PRUNE` is `on`, an
    optional submit-time speed bump warns once before a cold cache re-cache lands on bloated
    context. Enable with `CODEARBITER_PRUNE_NUDGE=on` (default `off`). When all arming conditions
-   hold (idle ≥ `CODEARBITER_PRUNE_NUDGE_IDLE_SECS`, default 240 s; estimated freed tokens ≥
+   hold (idle ≥ `CODEARBITER_PRUNE_NUDGE_IDLE_SECS`, default 240 s; estimated model-context
+   tokens freed ≥
    `CODEARBITER_PRUNE_NUDGE_MIN_TOKENS`, default 80 000), the hook blocks the submit once with
-   an advisory on stderr and returns exit code 2. The advisory names the approximate token count,
-   saving percentage, and the two actions that move the re-cache to pruned context:
-   `/compact` or exit + `--resume`. Resubmitting immediately proceeds. The block fires at most
+   an advisory on stderr and returns exit code 2. File-only sidecar reduction never arms it. The
+   advisory names the approximate avoidable context-token count and the host-native actions that
+   move the re-cache to pruned context:
+   native compaction or a normal exit + resume/restart. Resubmitting immediately proceeds. The block fires at most
    once per cold window; a subsequent warm submit (idle < floor) resets the window so the next
    genuine cold stretch re-arms. The gate is strictly opt-in, never fires in `dry`/`off` mode,
    and fails open on any error — a pruner fault will never block the session.
@@ -80,6 +91,7 @@ the running CLI sends its in-memory history to the API, not the file.
 
 - MUST NOT run `--execute` against the **live** session's transcript — the tool refuses a
   recently-modified file by construction; manual `run` targets copies or old sessions only.
-- MUST surface the resume-only-gains limitation whenever a user expects a live-context drop.
+- MUST surface the native-boundary-only gains limitation whenever a user expects an immediate
+  active-file context drop.
 - MUST NOT enable the service (`CODEARBITER_PRUNE=on`) on behalf of the user — explain and let
   them decide.

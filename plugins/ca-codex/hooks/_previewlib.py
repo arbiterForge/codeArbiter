@@ -13,8 +13,9 @@
 # the index, or disk.
 
 import os
-import re
 import subprocess
+
+from _gitexec import git_executable
 import sys
 from collections import namedtuple
 
@@ -52,25 +53,15 @@ KIND_UNTRACKED = "untracked"  # new file git is not yet tracking
 # Oversize files are skipped exactly like binary/unreadable ones — no raise.
 MAX_SCAN_BYTES = 1_000_000
 
-# The credential value run inside a SECRET_RE hit, masked before the snippet
-# leaves scan_secrets so the plaintext secret never rides out in preview data.
-# Matches the keyword=open-quote prefix (captured group 1) and the value run up
-# to the closing quote or end of line; the value is replaced by the mask while
-# the keyword, operator, and quoting structure are preserved for context.
-_SECRET_VALUE_RE = re.compile(
-    r"""(\b(?:password|secret|token|api_key|apikey|private_key|passphrase"""
-    r"""|credential)\s*=\s*["'])([^"']{4,})""",
-    re.I,
-)
+# Replace every complete SECRET_RE match before a snippet leaves scan_secrets.
+# Using the detector itself avoids a narrower redaction regex drifting behind
+# new assignment shapes or high-entropy token prefixes.
 _SECRET_MASK = "****"
 
 
 def _redact_secret(line):
-    """Mask the credential value inside a matched line so the returned snippet
-    keeps useful context (keyword + quoting) but never carries the plaintext
-    secret value. Convention mirrors security-pass.py: the raw sensitive value
-    is never echoed back out — here it is replaced in place by _SECRET_MASK."""
-    return _SECRET_VALUE_RE.sub(lambda m: m.group(1) + _SECRET_MASK, line)
+    """Mask every region recognized by the shared commit-time secret gate."""
+    return SECRET_RE.sub(_SECRET_MASK, line)
 
 
 def _git(args, root):
@@ -80,7 +71,7 @@ def _git(args, root):
     posture the non-repo edge requires."""
     try:
         return subprocess.run(
-            ["git"] + args, cwd=root,
+            [git_executable()] + args, cwd=root,
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=15,
         )

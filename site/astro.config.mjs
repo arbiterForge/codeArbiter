@@ -74,7 +74,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "codeArbiter",
-      description: "Shared enforcement and project-context parity across Claude Code and Codex.",
+      description: "Shared enforcement and project-context parity across Claude Code, Codex, and Pi.",
       logo: {
         src: "./src/assets/logo.svg",
         replacesTitle: true,
@@ -119,6 +119,7 @@ export default defineConfig({
             { label: "What Is codeArbiter", slug: "overview" },
             { label: "Install", slug: "getting-started/install" },
             { label: "Claude Code + Codex", slug: "getting-started/claude-code-and-codex" },
+            { label: "Pi", slug: "getting-started/pi" },
             { label: "Quickstart", slug: "getting-started/quickstart" },
             { label: "Compatibility", slug: "getting-started/compatibility" },
             { label: "FAQ", slug: "faq" },
@@ -138,6 +139,7 @@ export default defineConfig({
             { label: "Cut a Release", slug: "guides/releasing-a-version" },
             { label: "Troubleshooting", slug: "guides/troubleshooting" },
             { label: "Uninstall & Disable", slug: "guides/uninstalling" },
+            { label: "ca-sandbox: Explore Untrusted Code", slug: "guides/ca-sandbox" },
           ],
         },
         {

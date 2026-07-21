@@ -9,15 +9,14 @@ legacy/ASSESSMENT.md reference). Checks, per plugin:
   A. Every ${CLAUDE_PLUGIN_ROOT}/<concrete path> reference resolves to a real file
      (placeholder paths containing <...> are skipped).
   B. Every relative markdown link [text](path.md) inside the plugin resolves.
-  C. agents/INDEX.md and skills/INDEX.md list exactly the agents/skills on disk
+  C. agents/INDEX.md and the configured skill catalog list exactly the agents/skills on disk
      (a surface absent from disk is simply not checked — ca-sandbox ships no agents).
   D. The command catalog (COMMANDS.md) and commands/*.md agree — every command
      file is cataloged, every cataloged command has a file. Nothing is hidden.
 
-The check is parameterized over a plugin list (ADR-0007: the repo hosts a second
-sibling plugin, ca-sandbox, validated under its own `/ca-sandbox:` command
-namespace). Pass plugin names as argv to scope the run (e.g. `check-plugin-refs.py
-ca-sandbox`); with no args every known plugin is checked.
+The check is parameterized over the repository's four sibling plugins. Pass
+plugin names as argv to scope the run (for example `check-plugin-refs.py ca-pi`);
+with no args every known plugin is checked.
 
 Exits non-zero listing every broken reference.
 """
@@ -27,6 +26,9 @@ import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(REPO, "tools"))
+
+from host_descriptors import load_host_descriptors  # noqa: E402
 
 # Each plugin declares the command namespace its COMMANDS.md catalog uses. The two
 # sibling plugins are independent (ADR-0007); ca-sandbox commands are
@@ -42,9 +44,24 @@ PLUGINS = {
     # tools/ = the farm execution backend (farm.js, plan.schema.json), which
     # ca-codex does not vendor yet — --farm is a Feature Forge preview and its
     # Codex packaging is an M5 distribution decision (docs/parity.md row).
-    "ca-codex": {"namespace": None, "skill_prefix": "ca-",
+    "ca-codex": {"namespace": None, "skill_prefix": "ca-", "catalog_prefix": "$ca-",
                  "pending_prefixes": ("agents/", "tools/", "tools")},
+    # Pi packages generated ca-* entry skills plus /ca-* aliases. Its command
+    # catalog uses the alias spelling while the directory bijection remains the
+    # same as Codex's namespace-less skill layout.
+    "ca-pi": {"namespace": None, "skill_prefix": "ca-", "catalog_prefix": "/ca-"},
 }
+
+
+def plugin_configs(repo=REPO):
+    """Return plugin checks with descriptor-owned generated catalog paths."""
+    configs = {name: dict(cfg) for name, cfg in PLUGINS.items()}
+    for descriptor in load_host_descriptors(repo):
+        plugin_name = os.path.basename(descriptor.plugin_dir)
+        if plugin_name in configs and descriptor.catalog is not None:
+            configs[plugin_name]["skill_catalog"] = descriptor.catalog
+    return configs
+
 
 errors = []
 
@@ -144,13 +161,15 @@ def check_plugin(name, cfg):
             d for d in os.listdir(skills_dir)
             if os.path.isfile(os.path.join(skills_dir, d, "SKILL.md"))
         }
-        check_index(os.path.join(skills_dir, "INDEX.md"), skill_names, "skill")
+        catalog = cfg.get("skill_catalog", "skills/INDEX.md")
+        check_index(os.path.join(plugin, catalog), skill_names, "skill")
 
     # --- D. command catalog <-> command bodies ----------------------------------
     # A namespace-less plugin (ca-codex) catalogs `$<prefix><name>` entry
     # skills instead of `/<ns>:<name>` command files; same bijection contract.
     prefix = cfg.get("skill_prefix")
-    if namespace is None and prefix:
+    catalog_prefix = cfg.get("catalog_prefix")
+    if namespace is None and prefix and catalog_prefix:
         skills_dir = os.path.join(plugin, "skills")
         entry_stems = set()
         if os.path.isdir(skills_dir):
@@ -161,17 +180,17 @@ def check_plugin(name, cfg):
             }
         commands_md = os.path.join(plugin, "COMMANDS.md")
         catalog = read(commands_md) if os.path.isfile(commands_md) else ""
-        mention_re = re.compile(r"[$]" + re.escape(prefix) + r"([a-z][a-z-]*)")
+        mention_re = re.compile(re.escape(catalog_prefix) + r"([a-z][a-z-]*)")
         catalog_cmds = set(mention_re.findall(catalog))
         for stem in entry_stems:
             if stem not in catalog_cmds:
                 errors.append(
-                    f"plugins/{name}/COMMANDS.md: skill '${prefix}{stem}' "
+                    f"plugins/{name}/COMMANDS.md: skill '{catalog_prefix}{stem}' "
                     f"(skills/{prefix}{stem}/SKILL.md) not in the catalog")
         for cmd in catalog_cmds:
             if cmd not in entry_stems:
                 errors.append(
-                    f"plugins/{name}/COMMANDS.md: '${prefix}{cmd}' in catalog "
+                    f"plugins/{name}/COMMANDS.md: '{catalog_prefix}{cmd}' in catalog "
                     f"has no skills/{prefix}{cmd}/SKILL.md")
         return
 
@@ -200,19 +219,20 @@ def check_plugin(name, cfg):
 
 
 def main():
+    plugins = plugin_configs()
     requested = sys.argv[1:]
     if requested:
-        unknown = [p for p in requested if p not in PLUGINS]
+        unknown = [p for p in requested if p not in plugins]
         if unknown:
             print(f"unknown plugin(s): {', '.join(unknown)}", file=sys.stderr)
-            print(f"known: {', '.join(sorted(PLUGINS))}", file=sys.stderr)
+            print(f"known: {', '.join(sorted(plugins))}", file=sys.stderr)
             sys.exit(2)
         names = requested
     else:
-        names = sorted(PLUGINS)
+        names = sorted(plugins)
 
     for name in names:
-        check_plugin(name, PLUGINS[name])
+        check_plugin(name, plugins[name])
 
     if errors:
         print("Plugin reference check FAILED:\n")

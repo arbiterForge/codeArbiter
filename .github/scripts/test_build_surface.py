@@ -12,11 +12,13 @@ synthesis, excluded-command hard-fails, LF-only IO, collision detection, and
 --check drift in both directions (modified, missing, orphan).
 """
 import importlib.util
+import json
 import os
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / "tools" / "build-surface.py"
@@ -41,6 +43,11 @@ class _RepoCase(unittest.TestCase):
         self._td = tempfile.TemporaryDirectory()
         self.repo = self._td.name
         self.addCleanup(self._td.cleanup)
+        _write(
+            self.repo,
+            "core/hosts.json",
+            (REPO_ROOT / "core" / "hosts.json").read_text(encoding="utf-8"),
+        )
         # A minimal but representative surface.
         _write(self.repo, "core/surface/commands/init.md",
                "---\ndescription: Opt this repo in.\nargument-hint: (none)\n---\n\n"
@@ -205,10 +212,151 @@ class CodexMappingTest(_RepoCase):
         self.assertNotIn("$ca-statusline", text)
         self.assertLess(text.index("$ca-init"), text.index("$ca-status"))
 
+    def test_codex_catalog_location_is_unchanged(self):
+        out = self.render("codex")
+        self.assertIn("skills/INDEX.md", out)
+        self.assertNotIn("SKILLS.md", out)
+
     def test_readme_never_rendered(self):
         for host in ("claude", "codex"):
             for rel in self.render(host):
                 self.assertNotIn("README", rel)
+
+
+class PiMappingTest(_RepoCase):
+    def test_pi_commands_use_pi_aliases_in_bodies_and_catalog(self):
+        out = self.render("pi")
+        self.assertIn("# /ca-init", out["skills/ca-init/SKILL.md"].decode())
+        catalog = out["SKILLS.md"].decode()
+        self.assertIn("`/ca-init`", catalog)
+        self.assertNotIn("`$ca-init`", catalog)
+
+    def test_pi_catalog_relocation_removes_loader_scanned_markdown_orphan(self):
+        old_catalog = _write(
+            self.repo, "plugins/ca-pi/skills/INDEX.md", "stale catalog\n"
+        )
+        B.write_all(self.repo, hosts=("pi",))
+        plugin = Path(self.repo) / "plugins/ca-pi"
+        self.assertTrue((plugin / "SKILLS.md").is_file())
+        self.assertFalse(old_catalog.exists())
+        self.assertEqual(list((plugin / "skills").glob("*.md")), [])
+
+    def test_pi_skill_author_keeps_the_routine_catalog_for_authoring(self):
+        template = (
+            REPO_ROOT / "core/surface/skills/skill-author/SKILL.md"
+        ).read_text(encoding="utf-8")
+        _write(self.repo, "core/surface/skills/skill-author/SKILL.md", template)
+
+        pi_text = self.render("pi")["routines/skill-author/SKILL.md"].decode()
+        codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()
+        self.assertIn("<plugin-root>/routines/INDEX.md", pi_text)
+        self.assertNotIn("<plugin-root>/SKILLS.md", pi_text)
+        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/INDEX.md", codex_text)
+
+    def test_pi_generated_command_catalog_is_an_orphan_cleaned_managed_surface(self):
+        B.write_all(self.repo, hosts=("pi",))
+        rogue = _write(self.repo, "plugins/ca-pi/generated/rogue.json", "{}\n")
+        drift = B.check_all(self.repo, hosts=("pi",))
+        self.assertIn(
+            "plugins/ca-pi/generated/rogue.json: orphan (no template renders it)",
+            drift,
+        )
+        B.write_all(self.repo, hosts=("pi",))
+        self.assertFalse(rogue.exists())
+
+    def test_pi_skill_envelope_terminator_fails_before_outputs_change(self):
+        B.write_all(self.repo, hosts=("pi",))
+        plugin = Path(self.repo) / "plugins" / "ca-pi"
+        before_skill = (plugin / "skills" / "ca-init" / "SKILL.md").read_bytes()
+        before_catalog = (plugin / "generated" / "command-catalog.json").read_bytes()
+        _write(
+            self.repo,
+            "core/surface/commands/init.md",
+            "---\ndescription: Opt this repo in.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:init}}\n\nreserved </skill> termination\n",
+        )
+        with self.assertRaisesRegex(B.SurfaceError, "reserved </skill>"):
+            B.write_all(self.repo, hosts=("pi",))
+        self.assertEqual(
+            (plugin / "skills" / "ca-init" / "SKILL.md").read_bytes(),
+            before_skill,
+        )
+        self.assertEqual(
+            (plugin / "generated" / "command-catalog.json").read_bytes(),
+            before_catalog,
+        )
+
+    def test_real_pi_role_catalog_is_a_28_role_explicit_resource_bijection(self):
+        out = B.render_all(str(REPO_ROOT), "pi")
+        roles = json.loads(out["generated/roles.json"])
+        agents = sorted(
+            path.removeprefix("agents/").removesuffix(".md")
+            for path in out
+            if path.startswith("agents/") and path.endswith(".md")
+            and path != "agents/INDEX.md"
+        )
+        self.assertEqual(len(agents), 28)
+        self.assertEqual(sorted(role["name"] for role in roles), agents)
+        self.assertEqual(len({role["name"] for role in roles}), 28)
+
+        authors = {"backend-author", "frontend-author", "infra-author"}
+        skill_map = {
+            "architecture-drift-reviewer": ["decision-variance"],
+            "auth-crypto-reviewer": ["secret-handling"],
+            "backend-author": ["tdd"],
+            "coverage-auditor": ["tdd"],
+            "decision-challenger": ["decision-variance"],
+            "frontend-author": ["tdd"],
+            "grader": ["decision-variance"],
+            "infra-author": ["tdd"],
+            "map-deps": ["tribunal"],
+            "map-structure": ["tribunal"],
+            "scout": ["decision-variance", "context-creation"],
+            **{
+                name: ["tribunal"] for name in agents
+                if name.startswith("tribunal-")
+            },
+        }
+        for role in roles:
+            name = role["name"]
+            self.assertEqual(
+                role["classification"],
+                "author" if name in authors else "reviewer",
+            )
+            self.assertEqual(
+                role["skillPaths"],
+                [f"routines/{skill}/SKILL.md" for skill in skill_map.get(name, [])],
+            )
+            self.assertIn(role["charterPath"], out)
+            for skill_path in role["skillPaths"]:
+                self.assertIn(skill_path, out)
+
+        claude = B.render_all(str(REPO_ROOT), "claude")
+        for path in (path for path in claude if path.startswith("agents/") and path.endswith(".md")):
+            self.assertNotIn("\nclassification:", claude[path].decode())
+            self.assertNotIn("\npi-skills:", claude[path].decode())
+            self.assertEqual(
+                claude[path],
+                (REPO_ROOT / "plugins" / "ca" / path).read_bytes(),
+            )
+
+    def test_pi_role_frontmatter_rejects_missing_or_unrendered_explicit_skills(self):
+        _write(
+            self.repo,
+            "core/surface/agents/backend-author.md",
+            "---\nname: backend-author\ndescription: author\ntools: Read, Write\n"
+            "classification: author\npi-skills: [missing]\nmodel: inherit\n---\nbody\n",
+        )
+        with self.assertRaisesRegex(B.SurfaceError, "skills are missing"):
+            self.render("pi")
+        _write(
+            self.repo,
+            "core/surface/agents/backend-author.md",
+            "---\nname: backend-author\ndescription: author\ntools: Read, Write\n"
+            "classification: guessed\npi-skills: []\nmodel: inherit\n---\nbody\n",
+        )
+        with self.assertRaisesRegex(B.SurfaceError, "classification"):
+            self.render("pi")
 
 
 class DeterminismTest(_RepoCase):
@@ -228,25 +376,58 @@ class DeterminismTest(_RepoCase):
         with self.assertRaises(B.SurfaceError):
             self.render("claude")
 
+    def test_one_render_loads_the_descriptor_registry_once(self):
+        with mock.patch.object(
+            B, "load_host_descriptors", wraps=B.load_host_descriptors
+        ) as loader:
+            self.render("pi")
+        self.assertEqual(loader.call_count, 1)
+
 
 class CollisionTest(_RepoCase):
     def test_duplicate_output_path_fails(self):
-        # Distinct templates can only collide through the host-specific output
-        # mapping; force one by marking a template CODEX_ONLY at the exact
-        # path the init command's Codex render owns.
+        # Distinct templates can only collide through descriptor output rules.
         _write(self.repo, "core/surface/skills/ca-init/SKILL.md",
                "---\nname: x\ndescription: collide\n---\nbody\n")
-        patched = B.CODEX_ONLY | {"skills/ca-init/SKILL.md"}
-        original = B.CODEX_ONLY
-        B.CODEX_ONLY = patched
-        try:
-            with self.assertRaises(B.SurfaceError):
-                self.render("codex")
-        finally:
-            B.CODEX_ONLY = original
+        hosts_path = Path(self.repo) / "core" / "hosts.json"
+        document = json.loads(hosts_path.read_text(encoding="utf-8"))
+        codex = next(host for host in document["hosts"] if host["name"] == "codex")
+        codex["surface"]["rules"].insert(0, {
+            "source_prefix": "skills/ca-init/SKILL.md",
+            "output_pattern": "skills/ca-init/SKILL.md",
+            "exclude": [],
+        })
+        hosts_path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+        with self.assertRaises(B.SurfaceError):
+            self.render("codex")
 
 
 class WriteAndCheckTest(_RepoCase):
+    def test_custom_catalog_outside_managed_subtrees_is_discovered_and_replaced(self):
+        hosts_path = Path(self.repo) / "core/hosts.json"
+        document = json.loads(hosts_path.read_text(encoding="utf-8"))
+        pi = next(host for host in document["hosts"] if host["name"] == "pi")
+        pi["surface"]["catalog"] = "docs/ENTRY-CATALOG.md"
+        hosts_path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+        stale_catalog = _write(
+            self.repo,
+            "plugins/ca-pi/docs/ENTRY-CATALOG.md",
+            "stale descriptor catalog\n",
+        )
+
+        descriptor = next(
+            host for host in B.load_host_descriptors(self.repo)
+            if host.name == "pi"
+        )
+        self.assertNotIn("docs", descriptor.managed_subtrees)
+        self.assertIn(
+            "docs/ENTRY-CATALOG.md", B._disk_files(self.repo, descriptor)
+        )
+        B.write_all(self.repo, hosts=("pi",))
+        self.assertNotEqual(stale_catalog.read_text(encoding="utf-8"),
+                            "stale descriptor catalog\n")
+        self.assertIn("`/ca-init`", stale_catalog.read_text(encoding="utf-8"))
+
     def test_write_then_check_green_then_idempotent(self):
         wrote = B.write_all(self.repo)
         self.assertGreater(wrote, 0)
@@ -274,6 +455,43 @@ class WriteAndCheckTest(_RepoCase):
         _write(self.repo, "plugins/ca/skills/stale/SKILL.md", "stale\n")
         B.write_all(self.repo)
         self.assertFalse((Path(self.repo) / "plugins/ca/skills/stale/SKILL.md").exists())
+
+    def test_removed_root_rule_is_flagged_and_cleaned_as_an_orphan(self):
+        B.write_all(self.repo)
+        hosts_path = Path(self.repo) / "core" / "hosts.json"
+        document = json.loads(hosts_path.read_text(encoding="utf-8"))
+        claude = next(host for host in document["hosts"] if host["name"] == "claude")
+        claude["surface"]["rules"] = [
+            rule for rule in claude["surface"]["rules"]
+            if rule["source_prefix"] != "COMMANDS.md"
+        ]
+        hosts_path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+
+        drift = B.check_all(self.repo, hosts=("claude",))
+        self.assertIn(
+            "plugins/ca/COMMANDS.md: orphan (no template renders it)", drift
+        )
+        B.write_all(self.repo, hosts=("claude",))
+        self.assertFalse((Path(self.repo) / "plugins/ca/COMMANDS.md").exists())
+
+    def test_removed_root_source_and_all_rules_still_clean_the_managed_file(self):
+        B.write_all(self.repo)
+        os.remove(Path(self.repo) / "core/surface/COMMANDS.md")
+        hosts_path = Path(self.repo) / "core" / "hosts.json"
+        document = json.loads(hosts_path.read_text(encoding="utf-8"))
+        for host in document["hosts"]:
+            host["surface"]["rules"] = [
+                rule for rule in host["surface"]["rules"]
+                if rule["source_prefix"] != "COMMANDS.md"
+            ]
+        hosts_path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+
+        drift = B.check_all(self.repo, hosts=("claude",))
+        self.assertIn(
+            "plugins/ca/COMMANDS.md: orphan (no template renders it)", drift
+        )
+        B.write_all(self.repo, hosts=("claude",))
+        self.assertFalse((Path(self.repo) / "plugins/ca/COMMANDS.md").exists())
 
     def test_main_check_exit_codes(self):
         self.assertEqual(B.main(["--check"], repo=self.repo), 1)  # nothing written yet

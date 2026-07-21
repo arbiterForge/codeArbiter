@@ -22,7 +22,8 @@ This is the standard entry point for new work with a human in the loop at every 
 description of what you want gets classified first: a narrow change touching a couple of files with
 no security, dependency, or schema surface can take a trimmed path that skips the full interview,
 while anything broader goes through a Socratic conversation that turns a one-line idea into a spec
-with testable criteria. From there the request becomes a task-by-task plan, and each task is
+with testable criteria. A genuinely-unresolved unknown surfaced during that conversation becomes a
+numbered [`CONFIRM-NN`](/glossary/#confirm-nn) in the spec rather than being guessed at. From there the request becomes a task-by-task plan, and each task is
 implemented test-first, reviewed, and checked in small groups — you're asked to confirm before the
 next group starts. Nothing gets built without an approved plan behind it, and the pipeline can always
 be resumed later from wherever it left off rather than starting over.

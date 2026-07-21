@@ -2,13 +2,14 @@
 
 <img src="docs/banner.svg" alt="codeArbiter: discipline, mechanically enforced" width="100%">
 
-**Shared enforcement and project-context parity across Claude Code and Codex.**
+**Shared enforcement and project-context parity across Claude Code, Codex CLI, and Pi.**
 
 Every intent routes through a gated skill or reviewer agent. Nothing commits until the gates are green. Decisions go through SMARTS. The audit trail is append-only.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
-<img alt="version 2.9.0" src="https://img.shields.io/badge/version-2.9.0-2b7489">
+<img alt="Pi plugin" src="https://img.shields.io/badge/Pi-plugin-7c5cff">
+<img alt="version 2.9.1" src="https://img.shields.io/badge/version-2.9.1-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-39-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-28-555">
@@ -26,10 +27,12 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 ## What it is
 
-codeArbiter is a governance layer for Claude Code and OpenAI Codex. It ships as two sibling plugins,
-`ca` and `ca-codex`, generated from one shared surface and enforcing one checked-in `.codearbiter/`
-project store. Instead of letting the model freelance, you drive through host-native commands. Each
-one routes to the process that owns the work and clears its gates before anything ships.
+codeArbiter is a governance layer for Claude Code, Codex CLI, and Pi. It lives in a repository of
+four sibling plugins: the three governance hosts (`ca`, `ca-codex`, and `ca-pi`) plus the
+`ca-sandbox` infrastructure plugin. The governance adapters are generated from one shared surface
+and enforce one checked-in `.codearbiter/` project store. Instead of letting the model freelance,
+you drive through host-native commands. Each one routes to the process that owns the work and clears
+its gates before anything ships.
 
 The Codex path was live-verified on **Codex CLI 0.144.1** with trusted SessionStart injection and a
 real `[H-03]` PreToolUse block. See the
@@ -48,6 +51,60 @@ It will not:
 The gates are terse and non-negotiable. The thinking is not: it brainstorms a spec, works through a bug, and weighs a decision with you conversationally. When it enforces, it states the rule and holds the line.
 
 The gates scale to the change: a one-line docs fix takes the small lane or `/ca:chore`, not the full spec-to-PR march. The weight exists because the failure mode of an eager AI assistant is *plausible-but-wrong work that ships*, and the gates make that hard.
+
+## OpenAI Build Week submission
+
+codeArbiter predates OpenAI Build Week. The submission is the work added from July 13 through July
+21, 2026: full Pi host support plus a corrective campaign over the existing governance core. The
+new work is consolidated in [PR #313](https://github.com/arbiterForge/codeArbiter/pull/313). Its
+verified implementation head is `ec64809c1b6c32f69e3d9787ab205f7bbd563d50`.
+
+The Pi adapter adds a rich global footer, trust-aware repository activation, an extensible
+`allow | ask | deny` execution policy, read-only plan mode, session-only background jobs, bounded
+child-agent dispatch, native compaction, diagnostics, and shared-state continuity. Background jobs
+never survive Pi shutdown. Parent-only UI does not leak into JSON, RPC, print, or child modes.
+
+### How Codex and GPT-5.6 contributed
+
+Codex was the primary development and orchestration environment for the submission. GPT-5.6 was
+used to design and implement the Pi adapter, compare its behavior with the established host,
+investigate failures found during live testing, review older implementation paths, and consolidate
+the resulting corrections. The work includes decisions and fixes across permissions, Windows
+process-tree cleanup, provenance handling, audit integrity, generated-source drift, CI contracts,
+and documentation.
+
+The final candidate passed the six supported Pi platform cells for Pi 0.80.5 and 0.80.10 on Windows,
+macOS, and Linux. It also passed Pi security analysis, CodeQL, the shared-core and generated-surface
+contracts, and the repository's 46-gate final verifier. The sanitized evidence is available in
+[`docs/reports/pi-support/promotion.md`](docs/reports/pi-support/promotion.md) and
+[`docs/reports/pi-support/promotion.json`](docs/reports/pi-support/promotion.json).
+
+### Judge quick start
+
+The submission supports Windows, macOS, and Linux. It requires Pi 0.80.10, Node.js 22.19 or newer,
+Python 3, and Git. No account or sample data is required.
+
+Install the immutable candidate rather than a moving branch:
+
+```text
+pi install git:github.com/arbiterForge/codeArbiter@ec64809c1b6c32f69e3d9787ab205f7bbd563d50
+pi list
+pi config
+```
+
+Open a disposable Git repository, inspect it, grant Pi project trust, and start a fresh Pi session.
+Then run:
+
+```text
+/ca-init
+/ca-doctor
+```
+
+The rich footer appears globally. Repository-specific governance appears only in an enabled,
+affirmatively trusted repository. The complete deterministic and trusted-live procedure is in the
+[Pi parity-testing runbook](docs/pi-parity-testing.md). Judges can inspect the exact implementation,
+review discussion, and hosted check results in [PR #313](https://github.com/arbiterForge/codeArbiter/pull/313)
+without rebuilding the project from source.
 
 ## See it catch something
 
@@ -73,8 +130,8 @@ Every step is a gate you watch clear. You stay in the driver's seat; the gates k
 
 ## Install
 
-codeArbiter self-hosts its plugins from this repository. Install the host adapter you use; both read
-the same `.codearbiter/` project state.
+codeArbiter self-hosts its plugins from this repository. Install the host adapter you use; all three
+governance hosts read the same `.codearbiter/` project state.
 
 ### Claude Code
 
@@ -107,8 +164,32 @@ codex plugin marketplace add .
 codex plugin add ca-codex@codearbiter
 ```
 
-**Prerequisites:** Python 3 on `PATH` (every hook is Python, so without it the gates and the startup
-injection silently don't run) and `git config user.email` set (overrides and ADRs are attributed to
+### Pi
+
+Pi distribution is Git-only. Pin the independent `ca-pi` release tag, then inspect the installed
+source and enabled resources:
+
+```text
+pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
+pi list
+pi config
+```
+
+Pi 0.80.5 and Pi 0.80.10 are the supported hosts for this release line. `ca-pi` also requires Node
+22.19+ and Python 3. After inspecting the project, grant Pi project trust, start a fresh session,
+then run `/ca-init` and `/ca-doctor`. Generated aliases use `/ca-*`; `/skill:ca-*` is the native
+fallback. The [Pi parity runbook](./docs/pi-parity-testing.md) covers isolated installation, live
+verification, uninstall, and the scope of the module-identity diagnostic. There is no npm release.
+
+Pi's generated human-readable skill catalog is `plugins/ca-pi/SKILLS.md`, outside the
+loader-scanned `skills/` directory. Before the platform aggregate runs any fixture, it checks the
+resolved tools workspace; a cold checkout exits with `missing_prerequisite` and directs you to
+`npm --prefix plugins/ca-pi/tools ci --ignore-scripts` rather than installing dependencies itself.
+
+**Prerequisites:** Python 3 on `PATH`. Pi installs its final TypeScript wrappers before bridge
+readiness, so a missing interpreter blocks mutating calls and points to `/ca-doctor`; Claude Code
+and Codex host shims surface an interpreter breadcrumb instead of silently disabling governance.
+Also set `git config user.email` (overrides and ADRs are attributed to
 that identity). Full version matrix: [Compatibility](https://arbiterforge.github.io/codeArbiter/getting-started/compatibility/).
 The optional <kbd>/ca:statusline</kbd> command writes the statusline entry into your
 global `~/.claude/settings.json` (it backs up what was there and restores it on removal).
@@ -130,8 +211,9 @@ git clone https://github.com/arbiterForge/codeArbiter
 
 ## Enable codeArbiter in a repo
 
-Installing either plugin does nothing until you opt a repo in. That silence is intentional. Open the
-repo and run <kbd>/ca:init</kbd> in Claude Code or <kbd>$ca-init</kbd> in Codex. It scaffolds
+Installing a governance plugin does nothing until you opt a repo in. That silence is intentional.
+Open the repo and run <kbd>/ca:init</kbd> in Claude Code, <kbd>$ca-init</kbd> in Codex, or
+<kbd>/ca-init</kbd> in Pi. It scaffolds
 `.codearbiter/` with `arbiter: enabled`
 and routes you to the right populator for your situation:
 
@@ -145,24 +227,42 @@ Once `.codearbiter/CONTEXT.md` carries the `<!--INITIALIZED-->` marker, you're i
 ## How it works
 
 The `ca` plugin uses Claude Code's <kbd>/ca:feature</kbd> command namespace. The `ca-codex` sibling
-exposes the same generated surface as <kbd>$ca-feature</kbd>, <kbd>$ca-commit</kbd>,
-<kbd>$ca-commands</kbd>, and so on. Both adapters load the same policy core.
+exposes the generated surface as <kbd>$ca-feature</kbd>, <kbd>$ca-commit</kbd>, and
+<kbd>$ca-commands</kbd>. Pi uses <kbd>/ca-feature</kbd> aliases with
+<kbd>/skill:ca-feature</kbd> as its native fallback. All three adapters load the same policy core.
 
-Activation is **per-repo and explicit**. A `SessionStart` hook checks the repo for `.codearbiter/CONTEXT.md` carrying the frontmatter flag `arbiter: enabled`. Present → it injects the orchestrator persona and live startup state. Absent → it exits silently. Install the plugin globally and it stays out of the way everywhere you haven't opted in.
+Activation is **per-repo and explicit**. Claude Code and Codex use `SessionStart`; Pi uses its
+`session_start` extension event. Each checks `.codearbiter/CONTEXT.md` for `arbiter: enabled` before
+injecting the orchestrator and live startup state. Pi additionally requires an affirmative host
+project-trust decision and a fresh session. Without the marker (or without required Pi trust), the
+global install stays before the repository-aware boundary.
 
 The first session of each local day also opens with a read-only repo-hygiene briefing: branch drift against the remote, merged-but-unpruned branches, stale worktrees, and uncommitted or stashed work, all surfaced, never acted on. The full briefing fires **once per day**; later sessions that day stay quiet, with a single-line offer (`run /ca:standup`) only if something is actionable, and **nothing at all when the repo is clean**. The briefing only *reports*; <kbd>/ca:standup</kbd> is the separate command that performs the cleanups under per-action confirmation (ff-only pull on a clean tree, branch and worktree pruning, never the default branch).
 
 ```mermaid
 flowchart LR
-    A(["SessionStart hook"]) --> B{"CONTEXT.md:<br/>arbiter enabled?"}
-    B -->|yes| C["inject ORCHESTRATOR.md<br/>+ stage · tasks · questions"]
-    B -->|no| D["dormant:<br/>generic statusline only"]
+    A(["Host session startup"]) --> B{"CONTEXT.md:<br/>arbiter enabled?"}
+    B -->|yes| P{"Pi host?"}
+    B -->|no| D["dormant"]
+    P -->|no| C["inject ORCHESTRATOR.md<br/>+ stage · tasks · questions"]
+    P -->|yes| T{"project trusted?"}
+    T -->|yes| C
+    T -->|no| U["inert:<br/>inspect and grant trust"]
     C --> E["host-native commands route to<br/>gated workflows + reviewers"]
     E --> F(["gates clear → it ships"])
 ```
 
 On Claude Code, the same flag also gates the optional statusline. Codex has no statusline surface;
-its SessionStart briefing presents the governance state instead.
+its SessionStart briefing presents the governance state instead. ca-pi installs its rich footer in
+every interactive parent repository. The governance row appears only when the repository is enabled
+and affirmatively trusted; rate-window telemetry is omitted rather than fabricated.
+
+Pi execute mode asks before governed mutations and external side effects. Plan mode is read-only
+except for the current canonical spec, plan, and plan ledger. Background jobs are bounded and
+session-only: they terminate at session switch or shutdown and are never restored from Pi session
+entries. Unverified cleanup marks the manager unhealthy, blocks later launches, and points to
+`/ca-doctor`. Footer, permission, plan, and background surfaces are parent-interactive only and do
+not recurse into hardened children.
 
 Project state lives in **your** repo, not the plugin: a single `.codearbiter/` directory at the repo root, so stage, specs, plans, ADRs, the decision log, tribunal reports, and the overrides audit trail commit alongside your code and survive uninstalling the plugin.
 
@@ -202,9 +302,10 @@ When rules pull apart, they resolve by a fixed hierarchy (security & audit-trail
 
 Every intent flows through a command; direct off-channel instructions get redirected to the catalog.
 Claude's `/ca:*` catalog is in [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md). Codex uses the
-generated `$ca-*` catalog in
-[`plugins/ca-codex/COMMANDS.md`](./plugins/ca-codex/COMMANDS.md); `statusline` and `prune` are absent
-there by design because Codex has neither host surface. Both catalogs derive from the same source.
+generated `$ca-*` catalog in [`plugins/ca-codex/COMMANDS.md`](./plugins/ca-codex/COMMANDS.md), and
+Pi uses the generated alias catalog in [`plugins/ca-pi/COMMANDS.md`](./plugins/ca-pi/COMMANDS.md).
+The generated counts are `ca: 39`, `ca-codex: 37`, and `ca-pi: 38`. Codex omits `statusline` and
+`prune`; Pi omits only `statusline` and implements prune through native compaction.
 
 | Command | Purpose |
 |---|---|
@@ -375,7 +476,7 @@ Some features are built, tested, and shipping in the box, but not yet *blessed*.
 | Pluggable execution farm | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
 | ca-sandbox (local Codespace) | install the `ca-sandbox` plugin | `preview` | explore real repos in it; run `--with-claude` and report |
 
-**Live transcript pruning.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom; `CODEARBITER_PRUNE=dry` computes every prune it would make and logs the evidence without touching your transcript. It's preview because the `dry → on` go/no-go needs that real-session evidence first. Details and tuning knobs: [What's in the Forge](https://arbiterforge.github.io/codeArbiter/feature-forge/whats-in-the-forge/).
+**Live transcript pruning.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom; `CODEARBITER_PRUNE=dry` computes every prune it would make and logs the evidence without touching your transcript. The evidence separates model-visible context savings from file-only sidecar cleanup, and only the context figure informs the `dry → on` benefit decision. It's preview because that go/no-go needs real-session evidence first. Details and tuning knobs: [What's in the Forge](https://arbiterforge.github.io/codeArbiter/feature-forge/whats-in-the-forge/).
 
 #### Pluggable execution farm
 
@@ -397,6 +498,11 @@ Some features are built, tested, and shipping in the box, but not yet *blessed*.
 
 Full config (endpoint, retries, circuit breaker, mutation guard, sovereignty note) is in <kbd>/ca:sprint</kbd> and the farm setup doc. It's preview because it is not yet validated on real runs; the promotion bar is the open question `CONFIRM-05`. **Help promote it:** run a real <kbd>/ca:sprint --farm</kbd> and report back the per-task pass rates and any gate escapes you see.
 
+Pi keeps `--farm` at the same `preview` level and calls the one checked-in `farm.js` backend through
+its trusted parent extension. A Pi-native embedded farm worker is a future spike, not a shipping
+dependency or a second engine. npm packaging for `ca-pi` is also a future spike; today it installs
+from pinned Git tags only.
+
 **ca-sandbox (local Codespace).** A locally-hosted GitHub-Codespace equivalent, shipped as a sibling plugin per ADR-0007: pull a repo you're curious about, including untrusted code, into an ephemeral, isolated Docker container. Your host filesystem is never mounted in (no bind mounts, no docker socket, never `--privileged`), and getting work back out is a host-initiated `cp` only. It ships with a full automated suite green, but the `--with-claude` path (running Claude Code inside the box) is verified only against a dummy token, not yet a real interactive session, so it stays preview until real-world runs earn it a promotion. **Help promote it:** explore real repos in it and report how `--with-claude` behaves in a real session. Install: the `ca-sandbox` plugin from the marketplace, then `/ca-sandbox:sandbox create <repo-url>`. Details: [`plugins/ca-sandbox/README.md`](./plugins/ca-sandbox/README.md).
 
 ## What's inside
@@ -416,6 +522,7 @@ plugins/ca/                         the governance plugin (CLAUDE_PLUGIN_ROOT)
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
 plugins/ca-sandbox/                 the local-Codespace plugin (Feature Forge, preview)
 plugins/ca-codex/                   Codex sibling: generated skills + shared hook core
+plugins/ca-pi/                      Pi sibling: generated policy + TypeScript adapter + built extensions
 ```
 
 **Skills** encode gated processes: `tdd`, `commit-gate`, `decision-variance`/SMARTS, `debug`, `refactor`, and the dynamic brainstorm → plan → execute workflow layer. **Agents** are the dispatched reviewers and authors: security, auth/crypto, dependency, migration, coverage, and architecture-drift reviewers, the design-quality reviewer, plus the backend/frontend/infra authors and the scout/grader/triage plumbing.
@@ -426,8 +533,9 @@ plugins/ca-codex/                   Codex sibling: generated skills + shared hoo
 
 codeArbiter is dormant by default: a repo without `.codearbiter/CONTEXT.md` → `arbiter: enabled`
 never sees the orchestrator persona and never routes through a gate. Remove `ca` with Claude Code's
-plugin manager or run `codex plugin remove ca-codex@codearbiter` for Codex. Either way,
-`.codearbiter/` survives, so the other host can keep using the same specs, ADRs, and audit trail.
+plugin manager, run `codex plugin remove ca-codex@codearbiter` for Codex, or use `pi remove` with
+the pinned Git source for Pi. Either way, `.codearbiter/` survives, so another governance host can
+keep using the same specs, ADRs, and audit trail.
 Full walkthrough: [Uninstalling](https://arbiterforge.github.io/codeArbiter/guides/uninstalling/).
 
 ## Project history
@@ -448,4 +556,4 @@ The AGPLv3 transition applies from v2.6.0 forward. Earlier releases, through the
 
 **Contributions.** Future community contributions require a Contributor License Agreement granting the copyright holder the right to relicense the contribution under both AGPLv3 and proprietary terms, which is what keeps the dual-licensing model intact. See [CLA.md](./CLA.md). That CLA is a template pending legal review and is not yet in force.
 
-<div align="center"><sub>Built for Claude Code and OpenAI Codex.</sub></div>
+<div align="center"><sub>Built for Claude Code, Codex CLI, and Pi.</sub></div>

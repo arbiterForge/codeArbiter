@@ -1,0 +1,135 @@
+{
+  "hosts": [
+    {
+      "name": "claude",
+      "plugin_dir": "plugins/ca",
+      "hooks_dir": "plugins/ca/hooks",
+      "command_form": "/ca:{name}",
+      "tokens": {
+        "PLUGIN_ROOT": "${CLAUDE_PLUGIN_ROOT}",
+        "PROJECT_DIR": "${CLAUDE_PROJECT_DIR}"
+      },
+      "capabilities": {
+        "agents": true,
+        "prune": true,
+        "read_tool": true,
+        "statusline": true
+      },
+      "surface": {
+        "rules": [
+          {"source_prefix": "commands/", "output_pattern": "commands/{relative}", "exclude": []},
+          {"source_prefix": "skills/", "output_pattern": "skills/{relative}", "exclude": []},
+          {"source_prefix": "includes/", "output_pattern": "includes/{relative}", "exclude": ["includes/codex-host-notes.md", "includes/pi-host-notes.md"]},
+          {"source_prefix": "agents/", "output_pattern": "agents/{relative}", "exclude": []},
+          {"source_prefix": "COMMANDS.md", "output_pattern": "COMMANDS.md", "exclude": []},
+          {"source_prefix": "SPRINT.md", "output_pattern": "SPRINT.md", "exclude": []},
+          {"source_prefix": "ORCHESTRATOR.md", "output_pattern": "ORCHESTRATOR.md", "exclude": []},
+          {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
+        ],
+        "managed_subtrees": ["commands", "skills", "includes", "agents", "COMMANDS.md", "SPRINT.md", "ORCHESTRATOR.md"],
+        "catalog": null
+      },
+      "tool_classes": {
+        "Bash": "EXEC",
+        "PowerShell": "EXEC",
+        "Write": "WRITE",
+        "Edit": "EDIT",
+        "MultiEdit": "EDIT",
+        "NotebookEdit": "EDIT",
+        "Read": "READ"
+      },
+      "package": null
+    },
+    {
+      "name": "codex",
+      "plugin_dir": "plugins/ca-codex",
+      "hooks_dir": "plugins/ca-codex/hooks",
+      "command_form": "$ca-{name}",
+      "tokens": {
+        "PLUGIN_ROOT": "${CLAUDE_PLUGIN_ROOT}",
+        "PROJECT_DIR": "<project-root>"
+      },
+      "capabilities": {
+        "agents": false,
+        "prune": false,
+        "read_tool": false,
+        "statusline": false
+      },
+      "surface": {
+        "rules": [
+          {"source_prefix": "commands/", "output_pattern": "skills/ca-{name}/SKILL.md", "exclude": ["commands/prune.md", "commands/statusline.md"], "add_skill_frontmatter": true},
+          {"source_prefix": "skills/", "output_pattern": "routines/{relative}", "exclude": []},
+          {"source_prefix": "includes/", "output_pattern": "includes/{relative}", "exclude": ["includes/pi-host-notes.md"]},
+          {"source_prefix": "COMMANDS.md", "output_pattern": "COMMANDS.md", "exclude": []},
+          {"source_prefix": "SPRINT.md", "output_pattern": "SPRINT.md", "exclude": []},
+          {"source_prefix": "ORCHESTRATOR.md", "output_pattern": "ORCHESTRATOR.md", "exclude": []},
+          {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
+        ],
+        "managed_subtrees": ["skills", "routines", "includes", "COMMANDS.md", "SPRINT.md", "ORCHESTRATOR.md"],
+        "catalog": "skills/INDEX.md"
+      },
+      "tool_classes": {
+        "Bash": "EXEC",
+        "shell_command": "EXEC",
+        "exec_command": "EXEC",
+        "unified_exec": "EXEC",
+        "apply_patch": "WRITE",
+        "Write": "WRITE",
+        "Edit": "WRITE",
+        "Read": "READ"
+      },
+      "package": null
+    },
+    {
+      "name": "pi",
+      "plugin_dir": "plugins/ca-pi",
+      "hooks_dir": "plugins/ca-pi/hooks",
+      "command_form": "/ca-{name}",
+      "tokens": {
+        "PLUGIN_ROOT": "<plugin-root>",
+        "PROJECT_DIR": "<project-root>"
+      },
+      "capabilities": {
+        "agents": true,
+        "prune": true,
+        "read_tool": true,
+        "statusline": false
+      },
+      "surface": {
+        "rules": [
+          {"source_prefix": "commands/", "output_pattern": "skills/ca-{name}/SKILL.md", "exclude": ["commands/plan.md", "commands/statusline.md"], "add_skill_frontmatter": true},
+          {"source_prefix": "skills/", "output_pattern": "routines/{relative}", "exclude": []},
+          {"source_prefix": "includes/", "output_pattern": "includes/{relative}", "exclude": ["includes/codex-host-notes.md"]},
+          {"source_prefix": "agents/", "output_pattern": "agents/{relative}", "exclude": []},
+          {"source_prefix": "COMMANDS.md", "output_pattern": "COMMANDS.md", "exclude": []},
+          {"source_prefix": "SPRINT.md", "output_pattern": "SPRINT.md", "exclude": []},
+          {"source_prefix": "ORCHESTRATOR.md", "output_pattern": "ORCHESTRATOR.md", "exclude": []},
+          {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
+        ],
+        "managed_subtrees": ["skills", "routines", "includes", "agents", "COMMANDS.md", "SPRINT.md", "ORCHESTRATOR.md"],
+        "catalog": "SKILLS.md"
+      },
+      "tool_classes": {
+        "bash": "EXEC",
+        "codearbiter_background_bash": "EXEC",
+        "codearbiter_dispatch": "EXEC",
+        "codearbiter_farm_preview": "EXEC",
+        "write": "WRITE",
+        "edit": "EDIT",
+        "read": "READ"
+      },
+      "permission_policy": {
+        "surfaces": {
+          "ca-plan": "planning-write",
+          "codearbiter_background_bash": "background-launch"
+        }
+      },
+      "package": {
+        "skill_expansion_fingerprints": {
+          "0.80.5": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51",
+          "0.80.10": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51"
+        }
+      }
+    }
+  ]
+}

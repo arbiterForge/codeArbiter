@@ -55,14 +55,17 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `{{CMD:create-context}}` | _(none)_ | Brownfield: back-fill `.codearbiter/` from existing source. |
 | `{{CMD:init}}` | `[--stage N \| --check]` | Scaffold the root-level `.codearbiter/` state store, or `--check` to report detection state without writing. |
 | `{{CMD:status}}` | _(none)_ | Show maturity, open tasks, unresolved `CONFIRM-NN`, overrides since checkpoint. |
-| `{{CMD:task}}` | `add "<desc>" \| start <id\|"title"> \| done <id\|"title">` | The sanctioned task-board writer: add a queued task, start one (flips to in-progress + stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to `open-tasks.md`. |
+| `{{CMD:task}}` | `add "<desc>" \| start <id\|"title"> \| done <id\|"title">` | The sanctioned task-board writer: add a queued task, start one (flips to in-progress + stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to `open-tasks.md`. |
 | `{{CMD:audit}}` | `[range]` | Assemble the governance packet for a window — commits, overrides, ADRs, sprint decisions, open items — into `.codearbiter/audits/`. Read-only. |
 | `{{CMD:metrics}}` | `[--window N]` | Read-only governance trend glance: override rate, small-lane rate, sprint low-confidence ratio, each with a direction arrow vs. the prior 20-commit window. Not a second `{{CMD:audit}}` packet. |
 {{IF:claude}}
 | `{{CMD:statusline}}` | `install \| uninstall \| status` | Install/wire the codeArbiter statusline, remove it, or report its state. |
 | `{{CMD:prune}}` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Trim transcript clutter to extend session lifetime. Dry-run by default; gains land on resume/compaction, not the live turn. |
 {{END}}
-| `{{CMD:doctor}}` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, live-fire hook probe. |
+{{IF:pi}}
+| `{{CMD:prune}}` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Select shared semantic prune policy and use Pi native compaction without rewriting the active session. |
+{{END}}
+| `{{CMD:doctor}}` | _(none)_ | Verify the install is enforcing: interpreter, payload, cache staleness, repo state, {{IF:pi}}wrapper self-test and active-dispatch coverage gap{{ELSE}}live-fire hook probe{{END}}. |
 | `{{CMD:preview}}` | _(none)_ | Zero-onboarding read-only dry-run of the reviewer fleet on the current diff: predicts reviewers by path, runs the state-free secret scan, writes nothing. |
 | `{{CMD:context-check}}` | _(none)_ | Optional manual drift audit: report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop — commit-gate auto-heal owns routine maintenance. |
 | `{{CMD:standup}}` | _(none)_ | Daily hygiene: review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes — each under per-action confirmation. |

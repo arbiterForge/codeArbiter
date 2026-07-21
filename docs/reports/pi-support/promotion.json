@@ -1,0 +1,97 @@
+{
+ "schema": "codearbiter-pi-promotion-v1",
+ "mode": "final",
+ "commit": "f764929e02fbb67b43a3b828686c0007445a0316",
+ "rows": [
+  {
+   "version": "0.80.5",
+   "platform": "windows-local",
+   "architecture": "x64",
+   "resultCode": "PI-LOCAL-SUPPORTED",
+   "passed": true,
+   "timingMs": 104547,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "windows-local",
+   "architecture": "x64",
+   "resultCode": "PI-LOCAL-SUPPORTED",
+   "passed": true,
+   "timingMs": 103745,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.5",
+   "platform": "windows",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 446000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.5",
+   "platform": "linux",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 123000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "windows",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 418000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.5",
+   "platform": "macos",
+   "architecture": "arm64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 198000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "linux",
+   "architecture": "x64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 138000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.10",
+   "platform": "macos",
+   "architecture": "arm64",
+   "resultCode": "PI-HOSTED-SUPPORTED",
+   "passed": true,
+   "timingMs": 185000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "codeql",
+   "platform": "github",
+   "architecture": "x64",
+   "resultCode": "PI-CODEQL-HIGH",
+   "passed": true,
+   "timingMs": 113000,
+   "diagnosticCode": "NONE"
+  },
+  {
+   "version": "0.80.6",
+   "platform": "windows-local",
+   "architecture": "x64",
+   "resultCode": "PI-LATEST-CANARY",
+   "passed": false,
+   "timingMs": 780,
+   "diagnosticCode": "VERSION_UNSUPPORTED"
+  }
+ ]
+}

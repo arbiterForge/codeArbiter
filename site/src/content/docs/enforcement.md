@@ -20,6 +20,17 @@ codeArbiter is dormant until a repository opts in. Every enforcement hook calls 
 - **Persona injection.** On an enabled repo, the `SessionStart` hook injects the orchestrator persona. That single file is the only always-loaded context.
 - **Malformed frontmatter fails loud.** A frontmatter block that opens (`---` on line 1) but never closes is surfaced as a malformed-state error, not silently treated as disabled. A file with no frontmatter at all is simply dormant.
 
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/activation-states.svg"
+    alt="Activation classification flow: a missing CONTEXT.md or missing leading frontmatter is dormant; an unclosed block is malformed and surfaces an error; a closed block containing arbiter enabled activates the persona and gates."
+    loading="lazy"
+    width="900"
+    height="430"
+  />
+  <figcaption>One parser, three visible outcomes. A closed block without `arbiter: enabled` remains dormant.</figcaption>
+</figure>
+
 ## Blocking Commit-Time Gates
 
 These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit guards for the audit trail and ADRs). Each blocks the tool call outright. Ambiguity resolves **closed**: a spelling that cannot be told apart from a destructive one is blocked, and `/ca:override` is the sanctioned escape hatch.
@@ -52,6 +63,37 @@ These are advisory **because they bite at a later boundary, not at commit.** A b
 ## Sandbox Isolation for Untrusted Repositories
 
 codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-root (`--user 1000:1000`), with a `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, and a fail-closed network policy (default `--network none`; an unknown policy is a hard error, not a silent pass-through). No host bind mounts; the docker socket is never mounted. For how this posture evolved release over release, see [Hardening History](/concepts/hardening-history/).
+
+<figure class="ca-diagram">
+  <img
+    src="/codeArbiter/diagrams/sandbox-boundary.svg"
+    alt="ca-sandbox boundary: the untrusted repository lives in a Docker named volume inside a non-root, read-only container with dropped capabilities, no new privileges, resource limits, and network disabled by default. Host bind mounts and the Docker socket are blocked. Files leave only through host-initiated docker cp."
+    loading="lazy"
+    width="960"
+    height="520"
+  />
+  <figcaption>The container can work in its named volume, but it has no path into the host filesystem or Docker daemon.</figcaption>
+</figure>
+
+## Pi: Project Trust and Child Processes
+
+Pi's activation contract is the same `arbiter: enabled` flag as Claude Code and Codex, plus one
+addition: an enabled repository still requires Pi's own affirmative project-trust decision before
+repository-aware startup. The parent registers repository-aware dispatch, farm preview, and native
+compaction only after the current session reports that trust, the repository is enabled, and the
+enforcement lifecycle is ready. A session opened before trust is granted, or before the repo opted
+in, stays inert — nothing repository-aware runs.
+
+`codearbiter_dispatch` and `codearbiter_farm_preview` are **parent-only** EXEC tools. A child
+process spawned to do author or reviewer work cannot escalate itself into repository-aware dispatch
+or farm access. Ordinary child/subagent environments never receive `FARM_API_KEY` or other
+governance secrets; that key is scoped to the trusted parent only.
+
+Run `/ca-doctor` to verify this is actually live: it inspects the active package path, command
+ownership, Python/core/bridge health, child fingerprint, and the H-03 wrapper self-test. Its
+module-identity check proves self-consistency between the operator-launched Pi CLI, imported module,
+package root, and reported version — it does **not** prove publisher authenticity. Verify the
+installed source separately with `pi list` and `pi config`.
 
 ## Fail-Loud, Never Silently Dormant
 

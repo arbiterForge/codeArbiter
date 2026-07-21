@@ -64,11 +64,18 @@ injected context; out-of-scope drift is never carried forward.
 
 ### `FARM_API_KEY`
 
-Your OpenCode Zen API key, or any OpenAI-compatible provider key. Set it in one of:
+Your OpenCode Zen API key, or any OpenAI-compatible provider key. {{IF:pi}}Set it in the Pi parent
+process environment before starting the session. The preview tool deliberately does not inspect
+provider-auth state or load a plugin-local `.env`; it passes only `FARM_*` plus the minimal runtime
+environment to the shared backend.
+
+{{ELSE}}Set it in one of:
 
 - Shell environment: `export FARM_API_KEY=sk-...` (recommended for CI and development)
 - Local `.env` at `plugins/ca/tools/.env` (dev convenience, never committed)
 - `{{PROJECT_DIR}}/.claude/settings.local.json` `env` block (gitignored by default)
+
+{{END}}
 
 Never commit this key. It must not appear in `.codearbiter/` audit files.
 
@@ -153,8 +160,17 @@ The dispatch skill surfaces the underlying model identity so you can make an inf
 
 ## Invocation
 
+{{IF:pi}}Pi uses the trusted `codearbiter_farm_preview` extension tool. Pass only the project-relative
+`plan` path and optional `canary: true`; the adapter resolves the one sibling
+`plugins/ca/tools/farm.js` bundle by an absolute, checkout-contained path and retains this exact plan
+and report contract. A missing or stale shared bundle is an explicit preview degradation, never a
+second Pi farm engine or a silent premium fallback.
+
+{{ELSE}}
 Direct (dev): `cd "{{PLUGIN_ROOT}}/tools" && npm run farm -- <plan.json>`
 Via plugin: `node "{{PLUGIN_ROOT}}/tools/farm.js" <plan.json>`
+
+{{END}}
 Normal use: `{{CMD:sprint}} --farm` — the skill handles model selection and dispatch automatically.
 
 ## Report artifacts
