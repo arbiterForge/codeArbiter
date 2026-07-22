@@ -5,7 +5,7 @@ import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath } from "node:url";
 
-import { buildChildEnv, PI_PROVIDER_ENV } from "./child-env.ts";
+import { PI_PROVIDER_ENV, prepareChildEnvironment } from "./child-env.ts";
 import {
   CHILD_ATTESTATION_TIMEOUT_MS,
   CHILD_ATTESTATION_TITLE,
@@ -80,11 +80,6 @@ export interface ChildResult {
   exitCode?: number;
   stdoutBytes?: number;
   stderrBytes?: number;
-  /** Bounded, UNREDACTED raw stderr bytes captured from the child — the leading MAX_STDERR_BYTES
-   * of stderr, not a rolling tail (named for what it holds, not stream position). Callers (e.g.
-   * dispatch.ts's audit writer) MUST redact this via redaction.ts's safeDiagnostic before it is
-   * ever logged, displayed, or otherwise persisted. */
-  stderrHead?: string;
 }
 
 interface RuntimeIdentityPort {
@@ -579,7 +574,7 @@ export function childFailure(detail?: unknown): ChildResult {
   });
 }
 
-function assistantText(message: unknown): string | undefined {
+function assistantText(message: unknown, containsSensitiveValue: (text: string) => boolean): string | undefined {
   if (!validMessage(message)) return undefined;
   const record = message as { role: string; content: unknown[] };
   if (record.role !== "assistant") return undefined;
@@ -589,11 +584,16 @@ function assistantText(message: unknown): string | undefined {
     return block.type === "text" && typeof block.text === "string" ? [block.text] : [];
   }).join("");
   if (text.trim() === "" || Buffer.byteLength(text, "utf8") > MAX_OUTPUT_BYTES) return undefined;
+  if (containsSensitiveValue(text)) return undefined;
   const safe = safeDiagnostic(text, MAX_OUTPUT_BYTES);
   return safe === "" || Buffer.byteLength(safe, "utf8") > MAX_OUTPUT_BYTES ? undefined : safe;
 }
 
-function successfulFinalAssistant(message: unknown, launch: ChildLaunchInput): string | undefined {
+function successfulFinalAssistant(
+  message: unknown,
+  launch: ChildLaunchInput,
+  containsSensitiveValue: (text: string) => boolean,
+): string | undefined {
   if (!validMessage(message)) return undefined;
   const assistant = message as Record<string, unknown>;
   if (assistant.role !== "assistant"
@@ -601,7 +601,7 @@ function successfulFinalAssistant(message: unknown, launch: ChildLaunchInput): s
     || assistant.model !== launch.model
     || assistant.stopReason !== "stop"
     || Object.prototype.hasOwnProperty.call(assistant, "errorMessage")) return undefined;
-  return assistantText(message);
+  return assistantText(message, containsSensitiveValue);
 }
 
 export async function runPiChild(
@@ -628,19 +628,34 @@ export async function runPiChild(
   if (signal.aborted) return childFailure();
 
   const startedAt = Date.now();
+  let preparedEnvironment;
+  try {
+    preparedEnvironment = await prepareChildEnvironment({
+      platform: request.platform ?? process.platform,
+      parent: request.parentEnv ?? process.env,
+      provider: launch.provider,
+    });
+  } catch {
+    return childFailure();
+  }
+  const withEnvironmentCleanup = async (result: ChildResult): Promise<ChildResult> => {
+    try {
+      await preparedEnvironment.cleanup();
+      return result;
+    } catch {
+      return childFailure();
+    }
+  };
+  if (signal.aborted) return await withEnvironmentCleanup(childFailure());
   let child;
   try {
     child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
       cwd: launch.cwd,
-      env: buildChildEnv({
-        platform: request.platform ?? process.platform,
-        parent: request.parentEnv ?? process.env,
-        provider: launch.provider,
-      }),
+      env: preparedEnvironment.env,
       stdio: ["pipe", "pipe", "pipe", "pipe"],
     });
   } catch (error) {
-    return childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : undefined);
+    return await withEnvironmentCleanup(childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : undefined));
   }
   const cleanup = createProcessTreeCleanup(child);
   let abortedDuringReadiness: boolean = signal.aborted;
@@ -655,19 +670,18 @@ export async function runPiChild(
   if (abortedDuringReadiness || signal.aborted) {
     cancellationCleanup ??= cleanup.terminate("cancelled");
     await cancellationCleanup;
-    return childFailure();
+    return await withEnvironmentCleanup(childFailure());
   }
   if (!containmentReady) {
     await cleanup.terminate("startup_failure");
-    return childFailure();
+    return await withEnvironmentCleanup(childFailure());
   }
 
-  return await new Promise<ChildResult>((resolveResult) => {
+  const result = await new Promise<ChildResult>((resolveResult) => {
     let phase: "await-attestation" | "await-handshake" | "await-task-ack" | "await-agent-start" | "in-task" | "await-settled" | "complete" = "await-attestation";
     let failed = false;
     let stdoutBytes = 0;
     let stderrBytes = 0;
-    let stderrHead = "";
     let lastExitCode: number | undefined;
     let pending = "";
     let output: string | undefined;
@@ -682,7 +696,6 @@ export async function runPiChild(
       durationMs: Date.now() - startedAt,
       stdoutBytes,
       stderrBytes,
-      stderrHead,
       ...(lastExitCode === undefined ? {} : { exitCode: lastExitCode }),
     });
     const stdoutDecoder = new StringDecoder("utf8");
@@ -775,7 +788,7 @@ export async function runPiChild(
         if (record.type === "agent_end") {
           const messages = record.messages as unknown[];
           const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
-          const finalOutput = successfulFinalAssistant(finalAssistant, launch);
+          const finalOutput = successfulFinalAssistant(finalAssistant, launch, preparedEnvironment.containsSensitiveValue);
           if (record.willRetry !== false || finalOutput === undefined) { finishFailure("protocol_error"); return; }
           output = finalOutput;
           phase = "await-settled";
@@ -807,8 +820,6 @@ export async function runPiChild(
     child.stderr.on("data", (chunk: Buffer | string) => {
       const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
       stderrBytes += raw.byteLength;
-      const remaining = Math.max(0, MAX_STDERR_BYTES - Buffer.byteLength(stderrHead, "utf8"));
-      if (remaining > 0) stderrHead += raw.subarray(0, remaining).toString("utf8");
       if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
     });
     child.on("error", () => finishFailure("startup_failure"));
@@ -837,4 +848,5 @@ export async function runPiChild(
     }
     if (!failed) writeInput(handshakeRecord);
   });
+  return await withEnvironmentCleanup(result);
 }

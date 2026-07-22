@@ -52,24 +52,31 @@ running untrusted code is stealable, `--with-claude` is hard-defaulted to
 offline/Anthropic-only egress and its credential volume is never co-mounted with
 an untrusted source volume (`TokenCoMountRejectedError`).
 
-Pi host authentication is a separate opaque external trusted-runtime boundary
-(ADR-0014). Pi may resolve provider credentials from its user-owned auth store,
-provider environment variables, or credential commands. `ca-pi` never reads,
-parses, copies, snapshots, logs, or reimplements that resolution, and it never
-stores Pi credentials in `.codearbiter/`. Parent and child requests name an
-exact provider and model; silent provider/model fallback is prohibited.
+Pi host authentication is an external trusted-runtime boundary with one narrow
+adapter-managed exception (ADR-0016, superseding ADR-0014's fully opaque auth
+rule). For an isolated child only, `ca-pi` may open the canonical operator-owned
+Pi `auth.json` under a strict size bound, parse it, and project only the exact
+selected-provider record into private ephemeral child storage. It never copies
+another provider, stores credentials in `.codearbiter/`, or exposes credential
+material through argv, prompts, results, logs, telemetry, or error text. Parent
+and child requests name an exact provider and model; silent fallback is prohibited.
 
 A `ca-pi` child environment is built from a minimal OS/runtime baseline, not a
 copy of the parent environment. It explicitly excludes `FARM_API_KEY` and
 `CLAUDE_CODE_OAUTH_TOKEN` and admits only necessary runtime variables plus the
-selected provider's declared configuration. Task/prompt content is stdin-only,
-never argv, environment, or a temporary file. Tests use isolated Pi homes and
-dummy credentials and must not inspect or mutate the operator's real auth store.
+selected provider's declared configuration. The child receives private home,
+agent, session, and package roots. Any selected stored credential is written
+exclusively with restrictive permissions, retained by an open handle for
+path-safe scrubbing, and removed with the entire private root on every terminal
+path; the input read is capped independently of a pre-read size check so file
+growth cannot widen it. Unprovable cleanup is a fixed degraded failure. Task/prompt content is
+stdin-only, never argv, environment, or a temporary file. Tests use disposable
+Pi homes and dummy credentials and never inspect or mutate the real auth store.
 
 All other codeArbiter-defined env vars (`FARM_MODEL`, `FARM_BASE_BRANCH`, etc.)
 are non-sensitive configuration and may freely use `process.env`. Provider
 environment variables remain secret-bearing external Pi inputs and are governed
-by ADR-0014's child allowlist and redaction contract, not by that general rule.
+by ADR-0016's child allowlist and redaction contract, not by that general rule.
 
 ---
 
@@ -321,7 +328,8 @@ gate, audit, redaction, and doctor control stays active in the child. An ambient
 or user-supplied marker outside the runner's validated child contract is a
 fail-closed diagnostic. Tasks use bounded stdin; subprocesses use absolute
 executables/bridge paths, argv arrays, `shell: false`, explicit cwd, strict
-JSON/JSONL schemas, bounded/redacted stdout and stderr, and cross-platform
+JSON/JSONL schemas, bounded/redacted stdout, count-only stderr, exact credential-value
+rejection at the result boundary, and cross-platform
 process-tree termination on cancellation or timeout.
 
 Unknown Pi tools are potentially mutating and blocked by default. A tool becomes
@@ -449,6 +457,6 @@ reopens if the threat model expands to untrusted agents.
 | Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo); farm POSTs use `redirect: "error"` | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, and redirect refusal prevents a mock from forwarding the body to a remote cleartext target |
 | Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
 | `curl \| bash` nixpacks install | `build.ts` runs `curl -fsSL https://nixpacks.com/install.sh \| bash` when nixpacks is absent | Build-time host convenience; the URL is a hardcoded constant (not attacker-controllable). Tracked: prefer declaring nixpacks a prerequisite or pinning a checksum (NEEDS-TRIAGE in the ca-sandbox plan) |
-| Pi host-managed provider authentication | Pi resolves its user-owned auth store, provider environment, or credential command outside codeArbiter | Opaque trusted-runtime boundary under ADR-0014; `ca-pi` never reads/copies/logs credentials and child environments are minimal and provider-specific |
+| Pi selected-provider child authentication | Pi owns host authentication; `ca-pi` projects one selected stored-provider record only for an isolated child | ADR-0016 bounds the exception: private ephemeral roots, exact-provider selection, restrictive creation, retained-handle scrubbing, no observable sink, and fail-degraded cleanup |
 | Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
-| Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0014 |
+| Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |

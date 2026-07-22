@@ -49,6 +49,7 @@ import { run, readWorktreeFile, SHELL_BIN, SHELL_FLAG, SHELL_OPTS, GATE_TIMEOUT_
 import type { RunResult } from "./exec.ts";
 import { redactSecrets, isSecretBearingFilename } from "./redactor.ts";
 import { MUT, mutationCheck, antiGamingCheck } from "./mutation.ts";
+import { UnsafeWorktreePathError, isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
 export { run, redactSecrets, numEnv };
 export { extractLiterals, codeLineCount, parseMutationHookOutput } from "./mutation.ts";
 
@@ -794,8 +795,12 @@ async function runWorker(
     if (forbidden.has(rel)) {
       return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
     }
-    await mkdir(path.dirname(absPath), { recursive: true });
-    await writeFile(absPath, body.endsWith("\n") ? body : body + "\n");
+    try {
+      await writeWorktreeFile(cwd, rel, body.endsWith("\n") ? body : body + "\n");
+    } catch (error) {
+      if (isUnsafeWorktreePathError(error)) return { ok: false, filesWritten, error: error.message };
+      throw error;
+    }
     filesWritten.push(rel);
   }
 
@@ -1074,12 +1079,11 @@ function effectiveSampling(samples: number): Sampling {
 // in-scope impl files are written (the test is already present in `wt`); a path
 // that would escape the worktree is refused (defense-in-depth — winner files are
 // in-scope already).
-async function writeFilesInto(wt: string, files: Array<{ path: string; contents: string }>): Promise<void> {
+export async function writeFilesInto(wt: string, files: Array<{ path: string; contents: string }>): Promise<void> {
   for (const f of files) {
     const abs = path.resolve(wt, f.path);
-    if (!isInside(wt, abs)) continue;
-    await mkdir(path.dirname(abs), { recursive: true });
-    await writeFile(abs, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
+    if (!isInside(wt, abs)) throw new UnsafeWorktreePathError();
+    await writeWorktreeFile(wt, f.path, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
   }
 }
 
@@ -1303,7 +1307,14 @@ export async function runTask(
         priorFailure = sel.bestFailure?.note ?? "all samples failed the gate";
         continue;
       }
-      await writeFilesInto(wt, sel.winner.files);
+      try {
+        await writeFilesInto(wt, sel.winner.files);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error)) {
+          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+        }
+        throw error;
+      }
       worker = { ok: true, filesWritten: sel.winner.filesWritten };
       lastFilesWritten = worker.filesWritten;
     }
@@ -1359,7 +1370,15 @@ export async function runTask(
     let risk = gaming.risk;
     let riskNote = gaming.note;
     if (risk !== "high") {
-      const mut = await deps.mutationCheck(wt, t);
+      let mut: Awaited<ReturnType<typeof mutationCheck>>;
+      try {
+        mut = await deps.mutationCheck(wt, t);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error)) {
+          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+        }
+        throw error;
+      }
       if (mut && "score" in mut) {
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {

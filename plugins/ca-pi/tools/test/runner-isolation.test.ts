@@ -1,6 +1,7 @@
 /** runner-isolation.test.ts - Task 6 exact launch, protocol, role, and child enforcement obligations. */
 import { EventEmitter } from "node:events";
 import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
@@ -89,6 +90,13 @@ async function materializedRequest(task = "task-secret-sentinel") {
   temporaryRoots.push(root);
   const packageRoot = resolve(import.meta.dirname, "..", "..");
   const piRoot = resolve(root, "pi-runtime");
+  const parentEnv: NodeJS.ProcessEnv = {
+    ...process.env,
+    OPENAI_API_KEY: "dummy-openai-value",
+    ANTHROPIC_API_KEY: "dummy-anthropic-value",
+    FARM_API_KEY: "dummy-farm-value",
+    CLAUDE_CODE_OAUTH_TOKEN: "dummy-claude-value",
+  };
   const request = {
     nodePath: process.execPath,
     piCliPath: resolve(piRoot, "dist", "cli.js"),
@@ -100,13 +108,7 @@ async function materializedRequest(task = "task-secret-sentinel") {
     skillPaths: [resolve(packageRoot, "routines", "tdd", "SKILL.md")],
     charterPath: resolve(packageRoot, "agents", "backend-author.md"),
     task,
-    parentEnv: {
-      ...process.env,
-      OPENAI_API_KEY: "dummy-openai-value",
-      ANTHROPIC_API_KEY: "dummy-anthropic-value",
-      FARM_API_KEY: "dummy-farm-value",
-      CLAUDE_CODE_OAUTH_TOKEN: "dummy-claude-value",
-    },
+    parentEnv,
     platform: process.platform,
     timeoutMs: 5_000,
   };
@@ -403,16 +405,33 @@ describe("Task 6 exact Pi child launch", () => {
         child.stdout.write(JSON.stringify({ type: "message_end", message: assistantMessage }) + "\n");
         child.stdout.write(JSON.stringify({ type: "agent_end", messages: [assistantMessage], willRetry: false }) + "\n");
         child.stdout.write(JSON.stringify({ type: "agent_settled" }) + "\n");
+        child.stderr.write("diagnostic dummy-openai-value");
         child.close();
       }
     });
     const request = await materializedRequest();
+    const operatorHome = resolve(dirname(request.cwd), "operator-home");
+    const operatorAgent = resolve(operatorHome, ".pi", "agent");
+    const operatorAuth = {
+      openai: { type: "api_key", key: "selected-provider-file-secret" },
+      anthropic: { type: "api_key", key: "foreign-provider-file-secret" },
+    };
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify(operatorAuth), "utf8");
+    request.parentEnv.HOME = operatorHome;
+    request.parentEnv.USERPROFILE = operatorHome;
+    request.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
+    let childAuth: unknown;
     runnerMocks.spawn.mockImplementation((command: string, args: readonly string[], options: Record<string, unknown>) => {
       captures.push({ command, args, options });
+      const env = options.env as NodeJS.ProcessEnv;
+      childAuth = JSON.parse(readFileSync(resolve(env.PI_CODING_AGENT_DIR!, "auth.json"), "utf8")) as unknown;
       return child;
     });
     const result = await runPiChild(request as never, new AbortController().signal);
     expect(result).toMatchObject({ terminal: "completed", pid: 4242, output: "child-complete" });
+    expect(result).not.toHaveProperty("stderrHead");
+    expect(JSON.stringify(result)).not.toContain("dummy-openai-value");
     expect(captures).toHaveLength(1);
     expect(captures[0]).toMatchObject({ command: process.execPath, options: { detached: true, shell: false, cwd: request.cwd, stdio: ["pipe", "pipe", "pipe", "pipe"], windowsHide: true } });
     expect(runnerMocks.processTreeSpawnOptions).toHaveBeenCalledWith(process.platform);
@@ -423,6 +442,12 @@ describe("Task 6 exact Pi child launch", () => {
     expect(env.OPENAI_API_KEY).toBe("dummy-openai-value");
     expect(env.ANTHROPIC_API_KEY).toBeUndefined();
     expect(env.FARM_API_KEY).toBeUndefined();
+    expect(env.HOME).not.toBe(operatorHome);
+    expect(env.USERPROFILE).not.toBe(operatorHome);
+    expect(env.PI_CODING_AGENT_DIR).not.toBe(operatorAgent);
+    expect(childAuth).toEqual({ openai: operatorAuth.openai });
+    expect(existsSync(env.PI_CODING_AGENT_DIR!)).toBe(false);
+    expect(JSON.parse(await readFile(resolve(operatorAgent, "auth.json"), "utf8"))).toEqual(operatorAuth);
     expect(input.trimEnd().split("\n")).toHaveLength(3);
     expect(capability).toBe("0123456789abcdef0123456789abcdef");
   });
@@ -626,8 +651,23 @@ describe("Task 6 exact Pi child launch", () => {
     expect(spawnCalls).toBe(0);
 
     const spawnRequest = await materializedRequest();
-    runnerMocks.spawn.mockImplementation(() => { throw new Error("spawn raw-secret-sentinel"); });
+    const spawnOperatorHome = resolve(dirname(spawnRequest.cwd), "spawn-operator-home");
+    const spawnOperatorAgent = resolve(spawnOperatorHome, ".pi", "agent");
+    await mkdir(spawnOperatorAgent, { recursive: true });
+    await writeFile(resolve(spawnOperatorAgent, "auth.json"), JSON.stringify({ openai: { type: "api_key", key: "spawn-secret" } }), "utf8");
+    spawnRequest.parentEnv.HOME = spawnOperatorHome;
+    spawnRequest.parentEnv.USERPROFILE = spawnOperatorHome;
+    spawnRequest.parentEnv.PI_CODING_AGENT_DIR = spawnOperatorAgent;
+    let rejectedSpawnAgent: string | undefined;
+    runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+      rejectedSpawnAgent = (options.env as NodeJS.ProcessEnv).PI_CODING_AGENT_DIR;
+      throw new Error("spawn raw-secret-sentinel");
+    });
     expect(await runPiChild(spawnRequest as never, new AbortController().signal)).toEqual(expected);
+    expect(rejectedSpawnAgent).toBeDefined();
+    expect(rejectedSpawnAgent).not.toBe(spawnOperatorAgent);
+    expect(existsSync(rejectedSpawnAgent!)).toBe(false);
+    expect(existsSync(resolve(spawnOperatorAgent, "auth.json"))).toBe(true);
 
     const runEventFailure = async (
       trigger: (child: FakeChild, controller: AbortController) => void,
@@ -636,14 +676,30 @@ describe("Task 6 exact Pi child launch", () => {
       const child = new FakeChild(true);
       const controller = new AbortController();
       const baseRequest = await materializedRequest();
+      const operatorHome = resolve(dirname(baseRequest.cwd), "failure-operator-home");
+      const operatorAgent = resolve(operatorHome, ".pi", "agent");
+      await mkdir(operatorAgent, { recursive: true });
+      await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify({
+        openai: { type: "api_key", key: "failure-selected-provider-secret" },
+        anthropic: { type: "api_key", key: "failure-foreign-provider-secret" },
+      }), "utf8");
+      baseRequest.parentEnv.HOME = operatorHome;
+      baseRequest.parentEnv.USERPROFILE = operatorHome;
+      baseRequest.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
       const failureRequest = { ...baseRequest, timeoutMs };
-      runnerMocks.spawn.mockImplementation(() => {
+      let childAgentDir: string | undefined;
+      runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+        childAgentDir = (options.env as NodeJS.ProcessEnv).PI_CODING_AGENT_DIR;
         setImmediate(() => trigger(child, controller));
         return child;
       });
       const result = await runPiChild(failureRequest as never, controller.signal);
       expect(result).toEqual(expected);
       expect(JSON.stringify(result)).not.toContain("raw-secret-sentinel");
+      expect(childAgentDir).toBeDefined();
+      expect(childAgentDir).not.toBe(operatorAgent);
+      expect(existsSync(childAgentDir!)).toBe(false);
+      expect(existsSync(resolve(operatorAgent, "auth.json"))).toBe(true);
     };
     await runEventFailure((child) => child.emit("error", new Error("raw-secret-sentinel")));
     await runEventFailure((_child, controller) => controller.abort());
@@ -726,9 +782,20 @@ describe("Task 6 exact Pi child launch", () => {
     let capability = "";
     child.stdin.on("data", (chunk) => { stdin += chunk.toString("utf8"); });
     child.capability.on("data", (chunk) => { capability += chunk.toString("utf8"); });
-    runnerMocks.spawn.mockReturnValue(child);
+    let readinessAgent: string | undefined;
+    runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+      readinessAgent = (options.env as NodeJS.ProcessEnv).PI_CODING_AGENT_DIR;
+      return child;
+    });
     runnerMocks.cleanupReady.mockResolvedValue(false);
     const request = await materializedRequest();
+    const operatorHome = resolve(dirname(request.cwd), "readiness-operator-home");
+    const operatorAgent = resolve(operatorHome, ".pi", "agent");
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify({ openai: { type: "api_key", key: "readiness-secret" } }), "utf8");
+    request.parentEnv.HOME = operatorHome;
+    request.parentEnv.USERPROFILE = operatorHome;
+    request.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
     expect(await runPiChild(request as never, new AbortController().signal)).toEqual({
       terminal: "degraded",
       diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor.",
@@ -736,6 +803,10 @@ describe("Task 6 exact Pi child launch", () => {
     expect(stdin).toBe("");
     expect(capability).toBe("");
     expect(runnerMocks.cleanupTerminate).toHaveBeenCalledWith("startup_failure");
+    expect(readinessAgent).toBeDefined();
+    expect(readinessAgent).not.toBe(operatorAgent);
+    expect(existsSync(readinessAgent!)).toBe(false);
+    expect(existsSync(resolve(operatorAgent, "auth.json"))).toBe(true);
   });
 
   test.each(["spawn", "readiness"] as const)(
@@ -895,6 +966,50 @@ describe("Task 6 exact Pi child launch", () => {
       expect(result.terminal).toBe("degraded");
       expect(result).not.toHaveProperty("output");
     }
+  });
+
+  test.each([
+    ["provider environment", "dummy-openai-value"],
+    ["projected stored auth", "selected-provider-file-secret"],
+  ] as const)("fails closed when assistant output contains an exact %s credential value", async (_source, secret) => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const child = new FakeChild();
+    const request = await materializedRequest();
+    const operatorHome = resolve(dirname(request.cwd), "output-secret-operator-home");
+    const operatorAgent = resolve(operatorHome, ".pi", "agent");
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify({
+      openai: { type: "api_key", key: "selected-provider-file-secret" },
+    }), "utf8");
+    request.parentEnv.HOME = operatorHome;
+    request.parentEnv.USERPROFILE = operatorHome;
+    request.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
+    const leakingAssistant = {
+      ...assistantMessage,
+      content: [{ type: "text", text: `result ${secret}` }],
+    };
+    let input = "";
+    child.stdin.on("data", (chunk) => {
+      input += chunk.toString("utf8");
+      const records = input.trimEnd().split("\n");
+      if (records.length === 1) writeValidAttestation(child, request);
+      else if (records.length === 2) {
+        child.stdout.write(JSON.stringify({ type: "response", id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee-handshake", command: "prompt", success: true }) + "\n");
+      } else if (records.length === 3) {
+        const task = JSON.parse(records[2]!) as { id: string };
+        child.stdout.write(JSON.stringify({ type: "response", id: task.id, command: "prompt", success: true }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_start" }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_end", messages: [leakingAssistant], willRetry: false }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_settled" }) + "\n");
+        child.close();
+      }
+    });
+    runnerMocks.spawn.mockReturnValue(child);
+
+    const result = await runPiChild(request as never, new AbortController().signal);
+
+    expect(result).toEqual({ terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." });
+    expect(JSON.stringify(result)).not.toContain(secret);
   });
 
   test("binds launch paths to current Node, supported Pi identity, and the generated ca-pi role catalog", async () => {

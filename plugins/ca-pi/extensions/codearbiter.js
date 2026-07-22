@@ -11,7 +11,7 @@ var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", codearbiter_bac
 import { lstat as lstat4, readFile as readFile6, realpath as realpath7 } from "node:fs/promises";
 import { realpathSync as realpathSync6 } from "node:fs";
 import { createRequire as createRequire2 } from "node:module";
-import { delimiter, dirname as dirname6, isAbsolute as isAbsolute9, relative as relative10, resolve as resolve13 } from "node:path";
+import { delimiter, dirname as dirname6, isAbsolute as isAbsolute10, relative as relative10, resolve as resolve13 } from "node:path";
 import { fileURLToPath as fileURLToPath5, pathToFileURL as pathToFileURL2 } from "node:url";
 import { types as utilTypes9 } from "node:util";
 
@@ -6023,11 +6023,14 @@ async function loadRoleCatalog(packageRoot) {
 // src/runner.ts
 import { randomBytes, randomUUID as randomUUID4 } from "node:crypto";
 import { readFile as readFile5, realpath as realpath5, stat } from "node:fs/promises";
-import { dirname as dirname5, isAbsolute as isAbsolute7, relative as relative8, resolve as resolve9 } from "node:path";
+import { dirname as dirname5, isAbsolute as isAbsolute8, relative as relative8, resolve as resolve9 } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath as fileURLToPath4 } from "node:url";
 
 // src/child-env.ts
+import { mkdir, mkdtemp, open as open3, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { isAbsolute as isAbsolute7, join } from "node:path";
 var WINDOWS_BASELINE = [
   "SystemRoot",
   "WINDIR",
@@ -6035,30 +6038,18 @@ var WINDOWS_BASELINE = [
   "PATH",
   "PATHEXT",
   "TEMP",
-  "TMP",
-  "USERPROFILE",
-  "HOME",
-  "APPDATA",
-  "LOCALAPPDATA"
+  "TMP"
 ];
 var POSIX_BASELINE = [
-  "HOME",
   "USER",
   "LOGNAME",
   "SHELL",
   "PATH",
   "TMPDIR",
   "LANG",
-  "LC_ALL",
-  "XDG_CONFIG_HOME",
-  "XDG_CACHE_HOME",
-  "XDG_DATA_HOME"
+  "LC_ALL"
 ];
-var PI_RUNTIME = [
-  "PI_CODING_AGENT_DIR",
-  "PI_CODING_AGENT_SESSION_DIR",
-  "PI_PACKAGE_DIR"
-];
+var MAX_AUTH_FILE_BYTES = 1048576;
 var PI_PROVIDER_ENV = Object.freeze({
   "amazon-bedrock": ["AWS_PROFILE", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_BEARER_TOKEN_BEDROCK", "AWS_REGION"],
   "ant-ling": ["ANT_LING_API_KEY"],
@@ -6109,14 +6100,147 @@ function buildChildEnv(input) {
   if (baseline === void 0) throw new Error("Unsupported child platform for isolated Pi launch.");
   const child = {};
   copyDefined(child, input.parent, baseline);
-  copyDefined(child, input.parent, PI_RUNTIME);
   copyDefined(child, input.parent, providerNames);
+  const home = join(input.isolationRoot, "home");
+  child.HOME = home;
+  child.PI_CODING_AGENT_DIR = join(input.isolationRoot, "agent");
+  child.PI_CODING_AGENT_SESSION_DIR = join(input.isolationRoot, "sessions");
+  child.PI_PACKAGE_DIR = join(input.isolationRoot, "packages");
+  if (input.platform === "win32") {
+    child.USERPROFILE = home;
+    child.APPDATA = join(home, "AppData", "Roaming");
+    child.LOCALAPPDATA = join(home, "AppData", "Local");
+  } else {
+    child.XDG_CONFIG_HOME = join(home, ".config");
+    child.XDG_CACHE_HOME = join(home, ".cache");
+    child.XDG_DATA_HOME = join(home, ".local", "share");
+  }
   child.CODEARBITER_SUBAGENT = "1";
   child.PI_OFFLINE = "1";
   child.PI_TELEMETRY = "0";
   delete child.FARM_API_KEY;
   delete child.CLAUDE_CODE_OAUTH_TOKEN;
   return child;
+}
+var DEFAULT_CLEANUP_IO = Object.freeze({
+  remove: async (target, options) => await rm(target, options)
+});
+var DEFAULT_AUTH_IO = Object.freeze({
+  open: async (path, flags) => await open3(path, flags)
+});
+function credentialStrings(value) {
+  const strings = /* @__PURE__ */ new Set();
+  const pending = [value];
+  while (pending.length > 0) {
+    const item = pending.pop();
+    if (typeof item === "string") {
+      if (item !== "") strings.add(item);
+      if (strings.size > 1024) return void 0;
+    } else if (item !== null && typeof item === "object") {
+      pending.push(...Object.values(item));
+    }
+  }
+  return [...strings];
+}
+async function boundedAuthText(handle) {
+  const buffer = Buffer.allocUnsafe(MAX_AUTH_FILE_BYTES + 1);
+  let offset = 0;
+  while (offset < buffer.byteLength) {
+    const { bytesRead } = await handle.read(buffer, offset, buffer.byteLength - offset, offset);
+    if (!Number.isSafeInteger(bytesRead) || bytesRead < 0 || bytesRead > buffer.byteLength - offset) return void 0;
+    if (bytesRead === 0) break;
+    offset += bytesRead;
+  }
+  return offset > MAX_AUTH_FILE_BYTES ? void 0 : buffer.subarray(0, offset).toString("utf8");
+}
+function operatorAgentDir(input) {
+  const explicit = input.parent.PI_CODING_AGENT_DIR;
+  if (typeof explicit === "string" && isAbsolute7(explicit)) return explicit;
+  const home = input.platform === "win32" ? input.parent.USERPROFILE ?? input.parent.HOME : input.parent.HOME;
+  return typeof home === "string" && isAbsolute7(home) ? join(home, ".pi", "agent") : void 0;
+}
+async function selectedStoredCredential(input, authIo) {
+  const agentDir = operatorAgentDir(input);
+  if (agentDir === void 0) return void 0;
+  let handle;
+  try {
+    handle = await authIo.open(join(agentDir, "auth.json"), "r");
+    const metadata = await handle.stat();
+    if (!metadata.isFile() || metadata.size > MAX_AUTH_FILE_BYTES) return void 0;
+    const text2 = await boundedAuthText(handle);
+    if (text2 === void 0) return void 0;
+    const parsed = JSON.parse(text2);
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return void 0;
+    const record2 = parsed;
+    if (!Object.prototype.hasOwnProperty.call(record2, input.provider)) return void 0;
+    const selected = record2[input.provider];
+    if (selected === null || typeof selected !== "object" || Array.isArray(selected)) return void 0;
+    const sensitiveValues = credentialStrings(selected);
+    return sensitiveValues === void 0 ? void 0 : { value: selected, sensitiveValues };
+  } catch {
+    return void 0;
+  } finally {
+    await handle?.close().catch(() => void 0);
+  }
+}
+async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, authIo = DEFAULT_AUTH_IO) {
+  const isolationRoot = await mkdtemp(join(tmpdir(), "codearbiter-pi-child-"));
+  const env = buildChildEnv({ ...input, isolationRoot });
+  const authPath = join(env.PI_CODING_AGENT_DIR, "auth.json");
+  let credentialHandle;
+  const sensitiveValues = /* @__PURE__ */ new Set();
+  for (const name of PI_PROVIDER_ENV[input.provider] ?? []) {
+    const value = env[name];
+    if (typeof value === "string" && value !== "") sensitiveValues.add(value);
+  }
+  const containsSensitiveValue = (text2) => {
+    for (const value of sensitiveValues) if (text2.includes(value)) return true;
+    return false;
+  };
+  const cleanup = async () => {
+    let credentialRemoved = credentialHandle === void 0;
+    if (credentialHandle !== void 0) {
+      const handle = credentialHandle;
+      credentialHandle = void 0;
+      try {
+        await handle.truncate(0);
+        credentialRemoved = true;
+      } catch {
+      }
+      await handle.close().catch(() => void 0);
+    }
+    await cleanupIo.remove(authPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => void 0);
+    let isolationRemoved = true;
+    try {
+      await cleanupIo.remove(isolationRoot, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+    } catch {
+      isolationRemoved = false;
+    }
+    if (!credentialRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
+  };
+  try {
+    await Promise.all([
+      mkdir(env.HOME, { recursive: true, mode: 448 }),
+      mkdir(env.PI_CODING_AGENT_DIR, { recursive: true, mode: 448 }),
+      mkdir(env.PI_CODING_AGENT_SESSION_DIR, { recursive: true, mode: 448 }),
+      mkdir(env.PI_PACKAGE_DIR, { recursive: true, mode: 448 }),
+      ...input.platform === "win32" ? [mkdir(env.APPDATA, { recursive: true, mode: 448 }), mkdir(env.LOCALAPPDATA, { recursive: true, mode: 448 })] : [mkdir(env.XDG_CONFIG_HOME, { recursive: true, mode: 448 }), mkdir(env.XDG_CACHE_HOME, { recursive: true, mode: 448 }), mkdir(env.XDG_DATA_HOME, { recursive: true, mode: 448 })]
+    ]);
+    const credential = await selectedStoredCredential(input, authIo);
+    if (credential !== void 0) {
+      const projected = /* @__PURE__ */ Object.create(null);
+      projected[input.provider] = credential.value;
+      const serialized = JSON.stringify(projected);
+      if (Buffer.byteLength(serialized, "utf8") > MAX_AUTH_FILE_BYTES) throw new Error("Selected Pi credential exceeds the isolation limit.");
+      for (const value of credential.sensitiveValues) sensitiveValues.add(value);
+      credentialHandle = await open3(authPath, "wx", 384);
+      await credentialHandle.writeFile(serialized + "\n", { encoding: "utf8" });
+    }
+    return Object.freeze({ env, containsSensitiveValue, cleanup });
+  } catch (error) {
+    await cleanup().catch(() => void 0);
+    throw error;
+  }
 }
 
 // src/attestation.ts
@@ -6164,7 +6288,7 @@ function assertLaunchShape(input) {
     ["working directory", input.cwd],
     ...input.skillPaths.map((path2) => [compaction ? "compaction skill" : "role skill", path2])
   ]) {
-    if (typeof path !== "string" || !isAbsolute7(path)) throw new Error(`${label} path must be absolute for isolated child launch.`);
+    if (typeof path !== "string" || !isAbsolute8(path)) throw new Error(`${label} path must be absolute for isolated child launch.`);
   }
   if (!(input.provider in PI_PROVIDER_ENV)) throw new Error("Unsupported Pi provider for isolated child launch.");
   if (typeof input.model !== "string" || input.model.trim() === "" || /[\r\n\0]/u.test(input.model)) throw new Error("Pi child model is invalid.");
@@ -6185,7 +6309,7 @@ async function canonicalFile(path, label) {
 }
 function inside6(path, root) {
   const suffix = relative8(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute7(suffix);
+  return suffix === "" || !suffix.startsWith("..") && !isAbsolute8(suffix);
 }
 async function owningCaPackageRoot() {
   let cursor = dirname5(await realpath5(fileURLToPath4(import.meta.url)));
@@ -6520,7 +6644,7 @@ function childFailure(detail) {
     diagnostic: reason === void 0 ? "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." : `Pi child isolation failed safely (${reason}); no inline promotion is available; run /ca-doctor.`
   });
 }
-function assistantText(message) {
+function assistantText(message, containsSensitiveValue) {
   if (!validMessage(message)) return void 0;
   const record2 = message;
   if (record2.role !== "assistant") return void 0;
@@ -6530,14 +6654,15 @@ function assistantText(message) {
     return block.type === "text" && typeof block.text === "string" ? [block.text] : [];
   }).join("");
   if (text2.trim() === "" || Buffer.byteLength(text2, "utf8") > MAX_OUTPUT_BYTES) return void 0;
+  if (containsSensitiveValue(text2)) return void 0;
   const safe = safeDiagnostic(text2, MAX_OUTPUT_BYTES);
   return safe === "" || Buffer.byteLength(safe, "utf8") > MAX_OUTPUT_BYTES ? void 0 : safe;
 }
-function successfulFinalAssistant(message, launch) {
+function successfulFinalAssistant(message, launch, containsSensitiveValue) {
   if (!validMessage(message)) return void 0;
   const assistant = message;
   if (assistant.role !== "assistant" || assistant.provider !== launch.provider || assistant.model !== launch.model || assistant.stopReason !== "stop" || Object.prototype.hasOwnProperty.call(assistant, "errorMessage")) return void 0;
-  return assistantText(message);
+  return assistantText(message, containsSensitiveValue);
 }
 async function runPiChild(request, signal) {
   if (signal.aborted) return childFailure();
@@ -6562,19 +6687,34 @@ async function runPiChild(request, signal) {
   if (handshakeRecord === void 0 || taskRecord === void 0) return childFailure();
   if (signal.aborted) return childFailure();
   const startedAt = Date.now();
+  let preparedEnvironment;
+  try {
+    preparedEnvironment = await prepareChildEnvironment({
+      platform: request.platform ?? process.platform,
+      parent: request.parentEnv ?? process.env,
+      provider: launch.provider
+    });
+  } catch {
+    return childFailure();
+  }
+  const withEnvironmentCleanup = async (result4) => {
+    try {
+      await preparedEnvironment.cleanup();
+      return result4;
+    } catch {
+      return childFailure();
+    }
+  };
+  if (signal.aborted) return await withEnvironmentCleanup(childFailure());
   let child;
   try {
     child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
       cwd: launch.cwd,
-      env: buildChildEnv({
-        platform: request.platform ?? process.platform,
-        parent: request.parentEnv ?? process.env,
-        provider: launch.provider
-      }),
+      env: preparedEnvironment.env,
       stdio: ["pipe", "pipe", "pipe", "pipe"]
     });
   } catch (error) {
-    return childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : void 0);
+    return await withEnvironmentCleanup(childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : void 0));
   }
   const cleanup = createProcessTreeCleanup(child);
   let abortedDuringReadiness = signal.aborted;
@@ -6589,18 +6729,17 @@ async function runPiChild(request, signal) {
   if (abortedDuringReadiness || signal.aborted) {
     cancellationCleanup ??= cleanup.terminate("cancelled");
     await cancellationCleanup;
-    return childFailure();
+    return await withEnvironmentCleanup(childFailure());
   }
   if (!containmentReady) {
     await cleanup.terminate("startup_failure");
-    return childFailure();
+    return await withEnvironmentCleanup(childFailure());
   }
-  return await new Promise((resolveResult) => {
+  const result3 = await new Promise((resolveResult) => {
     let phase = "await-attestation";
     let failed = false;
     let stdoutBytes = 0;
     let stderrBytes = 0;
-    let stderrHead = "";
     let lastExitCode;
     let pending = "";
     let output;
@@ -6608,7 +6747,6 @@ async function runPiChild(request, signal) {
       durationMs: Date.now() - startedAt,
       stdoutBytes,
       stderrBytes,
-      stderrHead,
       ...lastExitCode === void 0 ? {} : { exitCode: lastExitCode }
     });
     const stdoutDecoder = new StringDecoder("utf8");
@@ -6731,7 +6869,7 @@ async function runPiChild(request, signal) {
         if (record2.type === "agent_end") {
           const messages = record2.messages;
           const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
-          const finalOutput = successfulFinalAssistant(finalAssistant, launch);
+          const finalOutput = successfulFinalAssistant(finalAssistant, launch, preparedEnvironment.containsSensitiveValue);
           if (record2.willRetry !== false || finalOutput === void 0) {
             finishFailure("protocol_error");
             return;
@@ -6772,8 +6910,6 @@ async function runPiChild(request, signal) {
     child.stderr.on("data", (chunk) => {
       const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
       stderrBytes += raw.byteLength;
-      const remaining = Math.max(0, MAX_STDERR_BYTES - Buffer.byteLength(stderrHead, "utf8"));
-      if (remaining > 0) stderrHead += raw.subarray(0, remaining).toString("utf8");
       if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
     });
     child.on("error", () => finishFailure("startup_failure"));
@@ -6801,10 +6937,10 @@ async function runPiChild(request, signal) {
     }
     if (!failed) writeInput(handshakeRecord);
   });
+  return await withEnvironmentCleanup(result3);
 }
 
 // src/dispatch.ts
-var MAX_AUDIT_STDERR_HEAD_CHARS = 4e3;
 async function appendDispatchAudit(record2) {
   const line = [
     `[${(/* @__PURE__ */ new Date()).toISOString()}]`,
@@ -6819,10 +6955,6 @@ async function appendDispatchAudit(record2) {
     `DURATION_MS: ${record2.durationMs ?? 0}`,
     `STDOUT_BYTES: ${record2.stdoutBytes ?? 0}`,
     `STDERR_BYTES: ${record2.stderrBytes ?? 0}`,
-    // safeDiagnostic intentionally preserves newlines for other callers; a raw child stderr head
-    // must never introduce a newline into this append-only, one-record-per-line audit sink, or a
-    // child could forge extra structurally-valid audit lines. Fold after redaction, before embed.
-    `STDERR_HEAD: ${safeDiagnostic(record2.stderrHead ?? "", MAX_AUDIT_STDERR_HEAD_CHARS).replace(/\n/gu, "\\n")}`,
     ...record2.diagnostic === void 0 ? [] : [`DIAGNOSTIC: ${safeDiagnostic(record2.diagnostic, 200)}`]
   ].join(" | ") + "\n";
   try {
@@ -7009,7 +7141,6 @@ function createDispatcher(dependencies) {
           ...result3.exitCode === void 0 ? {} : { exitCode: result3.exitCode },
           ...result3.stdoutBytes === void 0 ? {} : { stdoutBytes: result3.stdoutBytes },
           ...result3.stderrBytes === void 0 ? {} : { stderrBytes: result3.stderrBytes },
-          ...result3.stderrHead === void 0 ? {} : { stderrHead: result3.stderrHead },
           ...result3.diagnostic === void 0 ? {} : { diagnostic: result3.diagnostic }
         });
         if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };
@@ -7222,7 +7353,7 @@ function createDispatchTool(dependencies) {
 
 // src/farm.ts
 import { realpath as realpath6, readdir, stat as stat2 } from "node:fs/promises";
-import { isAbsolute as isAbsolute8, relative as relative9, resolve as resolve11 } from "node:path";
+import { isAbsolute as isAbsolute9, relative as relative9, resolve as resolve11 } from "node:path";
 var FARM_OUTPUT_LIMIT = 65536;
 var FARM_ENVIRONMENT = /^(?:FARM_[A-Z0-9_]+|PATH|PATHEXT|SystemRoot|WINDIR|TEMP|TMP)$/iu;
 var SOURCE_CLOCK_TOLERANCE_MS = 1e3;
@@ -7232,7 +7363,7 @@ var LEGACY_TEST_AUTHORIZATION = Object.freeze({
 });
 function contained(root, candidate) {
   const path = relative9(root, candidate);
-  return path === "" || !path.startsWith("..") && !isAbsolute8(path);
+  return path === "" || !path.startsWith("..") && !isAbsolute9(path);
 }
 function result2(backend, terminal, additions = {}) {
   return Object.freeze({ label: "preview", terminal, backend, ...additions });
@@ -7781,7 +7912,7 @@ async function canonicalExecutable2(candidate) {
   try {
     const canonical2 = await realpath7(candidate);
     const stats = await lstat4(canonical2);
-    return isAbsolute9(canonical2) && stats.isFile() && !stats.isSymbolicLink() ? canonical2 : void 0;
+    return isAbsolute10(canonical2) && stats.isFile() && !stats.isSymbolicLink() ? canonical2 : void 0;
   } catch {
     return void 0;
   }
@@ -7789,7 +7920,7 @@ async function canonicalExecutable2(candidate) {
 async function resolvePiBackgroundShell(configured, environment = process.env, platform = process.platform) {
   if (configured !== void 0) {
     if (typeof configured !== "string" || configured.length === 0 || configured.length > 4096 || configured.includes("\0")) return void 0;
-    return await canonicalExecutable2(isAbsolute9(configured) ? configured : resolve13(configured));
+    return await canonicalExecutable2(isAbsolute10(configured) ? configured : resolve13(configured));
   }
   const candidates = [];
   const pathDirectories = [];
@@ -8104,7 +8235,7 @@ function createCodeArbiterPi(input) {
 var PI_TUI_DIAGNOSIS = "codeArbiter could not load Pi terminal width support; run /ca-doctor.";
 function inside7(path, root) {
   const suffix = relative10(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute9(suffix);
+  return suffix === "" || !suffix.startsWith("..") && !isAbsolute10(suffix);
 }
 function createPiFooterMetricsLoader(runtime) {
   let loaded;

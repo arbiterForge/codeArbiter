@@ -594,3 +594,43 @@ Securable, Reliable, and Testable are Strong because registry order cannot downg
 Treat DECISION-0019 as a premature malformed record and use this entry as its forward-only correction. Reconcile `.codearbiter/security-controls.md`, `.codearbiter/plans/pi-support.md`, and the pre-release hardening plan; reject broken-symlink and extra-record identity bundles; synchronize generated hook copies; then rerun security review and the complete Pi preclosure verifier before commit.
 
 ---
+
+## DECISION-0021 — ADR-0016 — Permit bounded selected-provider credential projection for isolated Pi children
+
+**Date:** 2026-07-22
+**Status:** accepted
+**Supersedes:** DECISION-0016
+**Decided by:** SUaDtL@users.noreply.github.com ("1")
+**Decision category:** security architecture / Pi credential boundary
+**Artifact-section-hash:** 64a761f9944743dd684682053aa875ad733ad1dd9ff28ed2379a73d4bf4f944c
+
+### Variance summary
+- **Artifact position:** Accepted Pi ADR-0014 made all host-managed authentication opaque and prohibited `ca-pi` from reading or copying credential material.
+- **Scaffold position:** A private child home prevents Pi from seeing stored authentication; inheriting the operator home exposes every provider and mutable Pi state.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Supersede the opaque-auth portion of the Pi authentication ADR with a bounded projection boundary.
+`ca-pi` may copy only the exact selected-provider record into private ephemeral child storage, with
+strict bounds, permissions, non-observability, retained-handle scrubbing, and fail-degraded cleanup.
+All unrelated ADR-0014 child-enforcement and fail-closed tool controls remain in force.
+
+### SMARTS rationale
+Available and Reliable are Strong because stored-session parity survives while exact-provider selection
+prevents fallback and whole-store exposure. Testable is Strong because success, failure, replacement,
+cleanup, and foreign-provider exclusion are deterministic contracts. Maintainable and Scalable are
+Adequate because one isolated boundary works across providers but now tracks Pi's auth-store shape.
+Securable is Adequate because raw credential transport is newly owned, constrained by ephemeral
+single-record storage and mandatory security review. Conflict-hierarchy Level 1 governs.
+
+### Implementation implication
+Record ADR-0016 as the superseding Pi credential decision. Reconcile `.codearbiter/security-controls.md`,
+the approved Pi spec and plan, and the child-environment tests. Keep exact-provider projection,
+private child paths, cleanup-degradation behavior, and shipped-bundle parity as release blockers;
+then rerun the secret-handling gate and full Pi promotion verification before commit.
+
+### Resolves same-level conflict between (when applicable)
+Accepted `0014-pi-host-authentication-and-fail-closed-tool-boundary.md` and the verified isolated-child
+credential requirements exposed by tribunal issue #372.
+
+---
