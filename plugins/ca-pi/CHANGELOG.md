@@ -2,6 +2,22 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.2] - 2026-07-24
+
+### Fixed
+
+- Governed mutators now re-read live Pi project trust at final execution. Trust
+  that is withdrawn, absent, or throwing retires the ready lifecycle: bash,
+  write, edit, and custom mutators fail closed, pending approvals become stale,
+  and reads fall back to the untrusted native path until a new affirmatively
+  trusted session starts.
+- Pi bridge failures during a governed tool call now record the same hashed
+  correlation as that call's permission-audit row, so a failure joins the tool
+  call, permission decision, and result event. Lifecycle and doctor requests
+  keep a locally minted correlation. Only a SHA-256 digest is accepted on the
+  wire; the raw Pi tool-call id never reaches the request JSON or the audit log.
+
+
 ## [0.1.1] - 2026-07-18
 
 ### Fixed

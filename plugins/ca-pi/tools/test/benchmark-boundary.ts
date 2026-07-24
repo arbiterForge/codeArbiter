@@ -50,6 +50,7 @@ wrapBuiltins(pi, bridge, {
   factories,
   wrapperSourcePath: import.meta.filename,
   permissionAudit: async () => true,
+  projectTrust: () => true,
 });
 const registrationMs = performance.now() - startup;
 process.stdout.write(JSON.stringify({ phase: "ready", wrapperCount: definitions.size, registrationMs }) + "\n");
