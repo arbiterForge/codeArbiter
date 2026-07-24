@@ -77,6 +77,10 @@ codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-roo
 
 ## Pi: Project Trust and Child Processes
 
+The complete `ca-pi` adapter currently ships as a Feature Forge `preview`.
+Real use and feedback are welcome while broader testing continues before
+stable status or a claim of 100% validation.
+
 Pi's activation contract is the same `arbiter: enabled` flag as Claude Code and Codex, plus one
 addition: an enabled repository still requires Pi's own affirmative project-trust decision before
 repository-aware startup. The parent registers repository-aware dispatch, farm preview, and native

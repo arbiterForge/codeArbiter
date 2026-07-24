@@ -38,6 +38,9 @@ extension wraps the final built-in tool arguments, normalizes them to the shared
 request schema, and calls the same Python through `plugins/ca-pi/hooks/pi-bridge.py`.
 The Pi bridge is bounded and redacted; repository-aware calls require an enabled
 repository and affirmative Pi project trust.
+The complete `ca-pi` adapter currently carries Feature Forge `preview` status.
+Its documented matrix is green and use is welcome, while broader real-world
+testing continues before stable status or a claim of 100% validation.
 
 | Shared operation | Claude Code | Codex CLI | Pi |
 |---|---|---|---|

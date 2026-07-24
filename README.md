@@ -8,7 +8,7 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
-<img alt="Pi plugin" src="https://img.shields.io/badge/Pi-plugin-7c5cff">
+<img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
 <img alt="version 2.9.1" src="https://img.shields.io/badge/version-2.9.1-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-39-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
@@ -165,6 +165,12 @@ codex plugin add ca-codex@codearbiter
 ```
 
 ### Pi
+
+> **Feature Forge preview.** `ca-pi` is available for real use now, and you are
+> welcome to install it, use it in your repositories, and report what you find.
+> It has passed the documented automated and hosted promotion matrix, but it
+> still needs broader real-world testing before codeArbiter claims 100% validation
+> or stable status.
 
 Pi distribution is Git-only. Pin the independent `ca-pi` release tag, then inspect the installed
 source and enabled resources:
@@ -472,9 +478,18 @@ Some features are built, tested, and shipping in the box, but not yet *blessed*.
 
 | Feature | Opt-in | Status | How to help it graduate |
 |---|---|---|---|
+| ca-pi (Pi governance adapter) | install a pinned `ca-pi-v*` Git tag | `preview` | use it in real repositories and report host or workflow mismatches |
 | Live transcript pruning | `CODEARBITER_PRUNE=dry` | `preview` | run `dry`, send the log |
 | Pluggable execution farm | <kbd>/ca:sprint --farm</kbd> | `preview` | run it on a real sprint, report results |
 | ca-sandbox (local Codespace) | install the `ca-sandbox` plugin | `preview` | explore real repos in it; run `--with-claude` and report |
+
+**ca-pi (Pi governance adapter).** The Pi adapter carries the shared governance core, rich footer,
+permission and plan modes, bounded background work, native compaction, and hardened child dispatch.
+Its automated and hosted promotion matrix is green, but the diversity of real repositories,
+providers, terminals, and workflows still needs more coverage. It is usable now and feedback is
+welcome; the Feature Forge label means codeArbiter is not yet claiming 100% validation or stable
+status. Install a pinned Git tag using the [Pi runbook](./docs/pi-parity-testing.md), then report any
+host or workflow mismatch you encounter.
 
 **Live transcript pruning.** Long sessions bloat the transcript until Claude Code compacts early and you lose working headroom; `CODEARBITER_PRUNE=dry` computes every prune it would make and logs the evidence without touching your transcript. The evidence separates model-visible context savings from file-only sidecar cleanup, and only the context figure informs the `dry → on` benefit decision. It's preview because that go/no-go needs real-session evidence first. Details and tuning knobs: [What's in the Forge](https://arbiterforge.github.io/codeArbiter/feature-forge/whats-in-the-forge/).
 
@@ -522,7 +537,7 @@ plugins/ca/                         the governance plugin (CLAUDE_PLUGIN_ROOT)
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)
 plugins/ca-sandbox/                 the local-Codespace plugin (Feature Forge, preview)
 plugins/ca-codex/                   Codex sibling: generated skills + shared hook core
-plugins/ca-pi/                      Pi sibling: generated policy + TypeScript adapter + built extensions
+plugins/ca-pi/                      Pi sibling (Feature Forge preview): generated policy + TypeScript adapter + built extensions
 ```
 
 **Skills** encode gated processes: `tdd`, `commit-gate`, `decision-variance`/SMARTS, `debug`, `refactor`, and the dynamic brainstorm → plan → execute workflow layer. **Agents** are the dispatched reviewers and authors: security, auth/crypto, dependency, migration, coverage, and architecture-drift reviewers, the design-quality reviewer, plus the backend/frontend/infra authors and the scout/grader/triage plumbing.

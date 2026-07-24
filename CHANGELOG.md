@@ -23,6 +23,13 @@ predate the plugin rewrite and are grouped by date.
 - Added the reproducible Pi install/live-test runbook and converted the host
   parity ledger to source-visible Claude Code/Codex CLI/Pi evidence.
 
+### Changed
+
+- Marked the complete `ca-pi` adapter as a Feature Forge `preview`. It is
+  available and welcomed for real use, with automated and hosted promotion
+  evidence complete, while broader real-world testing continues before any
+  claim of 100% validation or stable status.
+
 ### Security
 
 - Pi child work now crosses a minimal provider-specific environment, strict

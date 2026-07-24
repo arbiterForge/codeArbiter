@@ -19,6 +19,10 @@ session entries, and an unverified cleanup blocks later launches with a
 `/ca-doctor` direction. These UI and job capabilities are parent-interactive
 only and never enter hardened children.
 
+The complete `ca-pi` adapter currently carries Feature Forge `preview` status.
+Its documented matrix is green and real use is welcome, while broader testing
+continues before stable status or a claim of 100% validation.
+
 codeArbiter enforces its gates as Claude Code hooks under `plugins/ca/hooks/`. Every hook is stdlib-only Python, registered in `hooks.json`, and runs only in an arbiter-enabled repo (see [Enforcement & Security](/enforcement) for the activation contract and the fail-loud posture). A blocking hook exits 2; an advisory hook prints a reminder and exits 0.
 
 Every hook is registered **twice** in `hooks.json`: once under `python3`, and once under a `python3 -c "" || python` fallback. On a stock Windows box that has only the `python` interpreter, the gates still fire. The two entries each receive their own stdin, so a real block is never swallowed by the fallback.

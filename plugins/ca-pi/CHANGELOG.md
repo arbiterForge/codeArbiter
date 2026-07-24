@@ -15,6 +15,9 @@ All notable changes to `ca-pi` are documented in this file.
 ### Changed
 
 - Promote the verified Pi host window through exact Pi 0.80.10.
+- Mark the complete adapter as a Feature Forge `preview`: available and welcomed
+  for real use, with broader testing still required before stable status or any
+  claim of 100% validation.
 
 
 ## [0.1.0] - 2026-07-14

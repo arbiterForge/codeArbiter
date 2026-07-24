@@ -6,6 +6,12 @@ codeArbiter has three governance hosts generated from one canonical core. The
 gates. `ca-sandbox` is the fourth sibling plugin, but it is infrastructure, not
 a governance host.
 
+The complete `ca-pi` adapter is currently a **Feature Forge `preview`**. It is
+available and welcomed for real use, and the evidence below remains the
+documented supported boundary. The label also records that broader real-world
+testing is still needed before codeArbiter claims 100% validation or stable
+status.
+
 Final Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
 and [machine-readable envelope](./reports/pi-support/promotion.json). Local checks and the hosted
 Windows/macOS/Linux matrix for Pi 0.80.5/0.80.10 are green on implementation candidate
@@ -73,7 +79,7 @@ runtime; it is not publisher authenticity. Confirm the pinned source with
 
 | Topic | Claude Code | Codex CLI | Pi |
 |---|---|---|---|
-| Distribution | Claude marketplace | Codex plugin marketplace | pinned Git package `ca-pi-v*`; no npm release |
+| Distribution | Claude marketplace | Codex plugin marketplace | Feature Forge `preview` via pinned Git package `ca-pi-v*`; no npm release |
 | Versioning | `ca` SemVer | independent `ca-codex` SemVer | independent nested/root synchronized SemVer |
 | `--farm` | Feature Forge `preview`, shared `farm.js` | degraded to the premium path until backend packaging lands | Feature Forge `preview`, parent tool calls the same contained `farm.js` |
 | Farm credentials | farm process only | no backend process | farm process only; ordinary children strip `FARM_API_KEY` |

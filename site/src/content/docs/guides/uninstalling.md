@@ -58,6 +58,9 @@ required — H-18 only blocks disabling the switch, not re-enabling it.
 
 ## Pi
 
+`ca-pi` currently ships as a Feature Forge `preview`. Real use and feedback are
+welcome while broader testing continues before stable status.
+
 `ca-pi` is distributed Git-only, versioned independently as `ca-pi-v<version>` tags — not tied to
 the `ca`/`ca-codex` release cadence. There is no npm release and no auto-update.
 

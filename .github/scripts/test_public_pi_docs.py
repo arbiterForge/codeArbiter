@@ -177,6 +177,45 @@ class PiCatalogAndParityTest(unittest.TestCase):
 
 
 class ReleaseShapeTest(unittest.TestCase):
+    def test_public_pi_docs_keep_feature_forge_posture_explicit(self):
+        posture_paths = (
+            "README.md",
+            "CHANGELOG.md",
+            "CONTRIBUTING.md",
+            "docs/architecture.md",
+            "docs/hooks.md",
+            "docs/pi-parity-testing.md",
+            "docs/parity.md",
+            "plugins/ca-pi/CHANGELOG.md",
+            "site/src/content/docs/getting-started/install.md",
+            "site/src/content/docs/getting-started/pi.md",
+            "site/src/content/docs/getting-started/compatibility.md",
+            "site/src/content/docs/getting-started/claude-code-and-codex.md",
+            "site/src/content/docs/guides/troubleshooting.md",
+            "site/src/content/docs/guides/uninstalling.md",
+            "site/src/content/docs/enforcement.md",
+            "site/src/content/docs/feature-forge/using-preview-features.md",
+            "site/src/content/docs/feature-forge/whats-in-the-forge.mdx",
+            "site/src/content/docs/hooks.md",
+            "site/src/content/docs/index.mdx",
+            "site/src/content/docs/overview.md",
+        )
+        for path in posture_paths:
+            with self.subTest(path=path):
+                text = read(path).lower()
+                self.assertIn("feature forge", text)
+                self.assertIn("preview", text)
+
+        for path in (
+            "README.md",
+            "docs/pi-parity-testing.md",
+            "site/src/content/docs/getting-started/pi.md",
+        ):
+            with self.subTest(path=path):
+                text = read(path).lower()
+                self.assertRegex(text, r"\bwelcome(?:d)?\b")
+                self.assertIn("100% validation", text)
+
     def test_release_docs_keep_preview_and_future_work_explicit(self):
         combined = "\n".join(
             read(path)

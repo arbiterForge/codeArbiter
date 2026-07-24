@@ -73,8 +73,10 @@ Verify an opted-in repository with `$ca-doctor`.
 ### Pi
 
 Pi is a third governance host, `ca-pi`, distributed Git-only (no npm release) with its own version
-line and prerequisites. It is not covered here — see [Install for Pi](/getting-started/pi/) for the
-full flow, including `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>` and the project-trust
+line and prerequisites. The complete adapter is a Feature Forge `preview`: it is available and
+welcomed for real use, with broader testing still required before stable status or a claim of 100%
+validation. It is not covered here; see [Install for Pi](/getting-started/pi/) for the full flow,
+including `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>` and the project-trust
 step Pi requires before it activates.
 
 ## 2. Scaffold and Activate the Repo

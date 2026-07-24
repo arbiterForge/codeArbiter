@@ -57,6 +57,19 @@ export interface ForgeFeature {
 /** The Forge contents, in README order. */
 export const FORGE_FEATURES: ForgeFeature[] = [
   {
+    name: "ca-pi (Pi governance adapter)",
+    kind: "preview-plugin",
+    summary:
+      "Brings the shared codeArbiter governance core to Pi with a rich footer, permission and plan modes, bounded background work, native compaction, and hardened child dispatch. Its promotion matrix is green; the preview label remains while broader real-world host and workflow coverage accumulates.",
+    optIn:
+      "pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>",
+    requires: "Pi 0.80.5 or 0.80.10, Node.js 22.19+, and Python 3",
+    helpGraduate:
+      "use it in real repositories and report any host or workflow mismatch.",
+    href:
+      "https://arbiterforge.github.io/codeArbiter/getting-started/pi/",
+  },
+  {
     name: "Live transcript pruning",
     kind: "preview-command",
     summary:

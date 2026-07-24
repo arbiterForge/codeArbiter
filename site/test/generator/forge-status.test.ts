@@ -73,11 +73,20 @@ describe("getCommandForgeStatus", () => {
 });
 
 describe("FORGE_FEATURES (the catalog source)", () => {
-  it("mirrors the README forge list: pruning, the farm, and ca-sandbox", () => {
+  it("mirrors the README forge list: ca-pi, pruning, the farm, and ca-sandbox", () => {
     const names = FORGE_FEATURES.map((f) => f.name.toLowerCase());
+    expect(names.some((n) => n.includes("ca-pi"))).toBe(true);
     expect(names.some((n) => n.includes("pruning"))).toBe(true);
     expect(names.some((n) => n.includes("farm"))).toBe(true);
     expect(names.some((n) => n.includes("ca-sandbox"))).toBe(true);
+  });
+
+  it("includes ca-pi as a preview-plugin with a pinned Git opt-in", () => {
+    const pi = FORGE_FEATURES.find((f) => f.name.toLowerCase().includes("ca-pi"));
+    expect(pi?.kind).toBe("preview-plugin");
+    expect(pi?.command).toBeUndefined();
+    expect(pi?.optIn).toContain("ca-pi-v<version>");
+    expect(pi?.helpGraduate).toMatch(/real repositories/i);
   });
 
   it("includes ca-sandbox as a preview-plugin with prerequisites and no /ca: command", () => {

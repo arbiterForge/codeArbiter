@@ -5,6 +5,13 @@ to promote a commit. Pi 0.80.5 is the minimum supported host and Pi 0.80.10 is
 the latest verified host in this release line. Node 22.19 or newer and Python 3
 on `PATH` are required.
 
+`ca-pi` currently ships as a **Feature Forge `preview`**. You are welcome to
+install it and use it in real repositories. The green automated and hosted
+promotion matrix proves the documented boundary, but broader combinations of
+repositories, providers, terminals, and workflows still need testing before
+codeArbiter claims 100% validation or stable status. Please report any mismatch
+between this runbook and your live experience.
+
 Task 12 documents the repeatable procedure. A local green run is not the final
 promotion record: the committed Windows, macOS, and Linux cells for both
 supported Pi versions are bound to the commit in the later promotion report.

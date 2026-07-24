@@ -10,6 +10,8 @@ same orchestrator responsibilities, enforce the same policy core, and use one ch
 `.codearbiter/` directory for project context and audit state. See the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
 between those two, and [Pi](/getting-started/pi/) for the third host's install and trust model.
+The complete `ca-pi` adapter is currently a Feature Forge `preview`: real use
+and feedback are welcome while broader testing continues before stable status.
 
 ## codeArbiter Holds the Gates; You Hold the Decisions
 

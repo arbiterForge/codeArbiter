@@ -88,6 +88,9 @@ Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` p
 
 ## Pi
 
+`ca-pi` currently ships as a Feature Forge `preview`. Real use and feedback are
+welcome; reports from live repositories help it graduate.
+
 On Pi, run `/ca-doctor` first — it is the diagnostic entry point, checking the active package path,
 canonical Pi CLI and package origin, command ownership, supported-version fingerprints,
 Python/core/bridge health, child fingerprint, final mutator wrappers, and the H-03 wrapper

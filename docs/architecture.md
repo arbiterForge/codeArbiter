@@ -26,6 +26,9 @@ Pi's parent extension stays dormant until the repository is enabled and Pi
 reports affirmative project trust. It registers aliases, dispatch, farm preview,
 and native compaction only after the shared enforcement lifecycle is ready. The
 enforcement-only child extension cannot register public aliases or recurse.
+The complete `ca-pi` adapter is a Feature Forge `preview`: it is available for
+real use, but broader testing is still required before stable status or a claim
+of 100% validation.
 
 ## How to read it
 

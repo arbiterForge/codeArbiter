@@ -7,6 +7,8 @@ codeArbiter ships `ca-pi` as a third sibling plugin, alongside `ca` (Claude Code
 (Codex). All three activate from the same `.codearbiter/CONTEXT.md` and read and write the same
 checked-in `.codearbiter/` state. `ca-pi` is Git-only: there is no npm release.
 
+<div class="ca-callout ca-callout--preview"><p class="ca-callout__label">Feature Forge preview</p><p><code>ca-pi</code> is available for real use now. You are welcome to install it, use it in your repositories, and report what you find. Its automated and hosted promotion matrix is green, but broader real-world testing is still required before codeArbiter claims 100% validation or stable status.</p></div>
+
 ## Prerequisites
 
 Confirm all before installing:

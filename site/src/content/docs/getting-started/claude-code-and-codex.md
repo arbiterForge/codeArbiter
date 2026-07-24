@@ -9,7 +9,8 @@ description: Verified shared enforcement and project-context parity across Claud
 result while retaining the public-marketplace smoke test as a release gate.
 
 Of codeArbiter's four sibling plugins, this page covers two: `ca` for Claude Code and `ca-codex` for
-OpenAI Codex (see [Pi](/getting-started/pi/) for the third governance host, and
+OpenAI Codex (see [Pi](/getting-started/pi/) for the third governance host, currently a Feature Forge
+`preview` with real use and feedback welcome, and
 [ca-sandbox](/guides/ca-sandbox/) for the non-governance infrastructure plugin). Both activate from
 the same `.codearbiter/CONTEXT.md`, enforce the same project rules, and read and write the same
 checked-in `.codearbiter/` state. One person can alternate between hosts, or two people can use

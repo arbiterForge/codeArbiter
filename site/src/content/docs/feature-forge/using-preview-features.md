@@ -10,8 +10,8 @@ preview, and how it eventually graduates.
 ## 1. Find What's Available
 
 Check [What's in the Forge](/feature-forge/whats-in-the-forge/) for the current preview features.
-Each is also marked with a <span class="ca-badge" data-kind="preview">preview</span> badge on its
-reference page.
+Preview commands and flags are also marked with a
+<span class="ca-badge" data-kind="preview">preview</span> badge on their reference pages.
 
 ## 2. Turn It On
 
@@ -26,8 +26,11 @@ opt in depends on the feature:
 - **A preview command** (for example live transcript pruning) is opted into through an environment
   variable, not just by running the command. Pruning stays dormant until you set `CODEARBITER_PRUNE`
   (start with `dry`); [What's in the Forge](/feature-forge/whats-in-the-forge/) lists the modes.
-- **A preview plugin** (for example `ca-sandbox`) is a separate sibling plugin you install on its own.
-  It ships dormant and carries its own prerequisites (ca-sandbox needs Docker and nixpacks on PATH).
+- **A preview plugin** is a separate sibling plugin you install on its own. `ca-pi` is installed
+  from a pinned Git tag, and `ca-sandbox` is installed from the marketplace. Installing `ca-pi`
+  opts into its global rich footer; repository-aware governance still requires the normal
+  `arbiter: enabled` marker and affirmative Pi project trust. Each plugin carries its own
+  prerequisites.
 
 ## 3. What to Expect While It's in Preview
 
