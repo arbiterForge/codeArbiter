@@ -129,11 +129,23 @@ export interface AuditResult {
   pageCount: number;
 }
 
-/** Run the full dangling-link + base-safety audit against a built dist/ dir. */
+/** Run the full dangling-link + base-safety audit against a built dist/ dir.
+ *
+ * A non-empty page inventory is an explicit invariant: "audited every page and
+ * found no problems" and "found no pages to audit" must not both report green.
+ * A generator or build regression that emits zero HTML pages is recorded as a
+ * failure rather than silently producing an empty, passing result.
+ */
 export function auditDist(distRoot: string, base: string = BASE): AuditResult {
   const pages = htmlFiles(distRoot);
   const failures: AuditFailure[] = [];
   let checked = 0;
+
+  if (pages.length === 0) {
+    failures.push({
+      message: `${distRoot}  ->  audit found zero HTML pages (nothing was audited — build or generator regression?)`,
+    });
+  }
 
   for (const page of pages) {
     // The page's URL directory, base-prefixed, in posix form.
