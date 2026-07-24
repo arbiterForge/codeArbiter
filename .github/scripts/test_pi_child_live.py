@@ -74,8 +74,29 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertFalse(any("dispatch" in json.dumps(item).lower() for item in roles))
 
     def test_task_6_sources_do_not_inspect_auth_stores_or_use_shell_launch(self) -> None:
-        sources = "\n".join((REPO / item).read_text(encoding="utf-8") for item in TASK_FILES[:5])
+        # ADR-0016 supersedes the ADR-0014 clause that made the operator auth store
+        # wholly opaque to ca-pi. Exactly ONE file — child-env.ts — is the sanctioned
+        # narrow secret-transport boundary; every other Task 6 source must still carry
+        # no credential-store reference at all. Widening this exemption to a second
+        # file requires a superseding ADR, not an edit here.
+        transport = "plugins/ca-pi/tools/src/child-env.ts"
+        self.assertIn(transport, TASK_FILES[:5])
+        non_transport = [item for item in TASK_FILES[:5] if item != transport]
+        sources = "\n".join((REPO / item).read_text(encoding="utf-8") for item in non_transport)
         self.assertNotRegex(sources, r"auth\.json|\.aws[/\\]credentials|statSync|lstatSync")
+
+        # The transport file may name auth.json, but never a foreign credential store,
+        # and never a stat-then-open race in place of a retained handle.
+        child_env = (REPO / transport).read_text(encoding="utf-8")
+        self.assertNotRegex(child_env, r"\.aws[/\\]credentials|statSync|lstatSync")
+        # ADR-0016's bounded-projection contract, asserted positively.
+        self.assertIn("MAX_AUTH_FILE_BYTES", child_env)          # strict size bound
+        self.assertIn("mkdtemp", child_env)                      # fresh private child root
+        self.assertIn("input.provider", child_env)               # exact selected record only
+        self.assertIn("sensitiveValues", child_env)              # scrub set for every exit path
+        self.assertIn("truncate(0)", child_env)                  # credential scrubbed on cleanup
+
+        sources = "\n".join((REPO / item).read_text(encoding="utf-8") for item in TASK_FILES[:5])
         runner = (REPO / "plugins/ca-pi/tools/src/runner.ts").read_text(encoding="utf-8")
         process_tree = (REPO / "plugins/ca-pi/tools/src/process-tree.ts").read_text(encoding="utf-8")
         self.assertIn("spawnProcessTree", runner)
