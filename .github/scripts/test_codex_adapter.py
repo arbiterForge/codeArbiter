@@ -94,6 +94,134 @@ class TestPreToolAdapterLifecycle(unittest.TestCase):
                     proc.stderr.close()
 
 
+class TestPreToolAdapterPayloadShape(unittest.TestCase):
+    """#409: Codex delivers ONE JSON object on stdin. Every other top-level
+    JSON type (null / array / string / number / bool), an empty stream, and a
+    syntactically invalid stream must all route through the SAME bounded
+    handling path — the documented `decision: block` response at exit 0 — and
+    must never dispatch a guard with an unvalidated payload.
+
+    Before the fix the adapter called `.get()` on the decoded value while
+    catching only TypeError/ValueError, so a valid-JSON non-object payload
+    raised AttributeError out of the process (exit 1, traceback on stderr, no
+    decision emitted at all), and a non-string `tool_name` raised TypeError
+    from the write-tool set membership test one line later. The empty and
+    invalid-JSON legs did not crash but DID spawn pre-bash.py with input the
+    adapter had never validated, where `_hooklib.read_input()`'s documented
+    fail-open silently allowed the gated call.
+    """
+
+    # Every top-level JSON type the RFC allows, minus the object the adapter
+    # actually contracts for.
+    NON_OBJECT_PAYLOADS = ("null", "[]", '["Write"]', '"str"', "3", "-1.5",
+                           "true", "false")
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        td = self._tmp.name
+        self.adapter = os.path.join(td, "pre-tool-adapter.py")
+        shutil.copyfile(
+            os.path.join(CODEX_HOOKS, "pre-tool-adapter.py"), self.adapter,
+        )
+        self.launch_log = os.path.join(td, "launched.log")
+        for script in ("pre-write.py", "pre-bash.py"):
+            with open(os.path.join(td, script), "w", encoding="utf-8") as f:
+                f.write(
+                    "import io\n"
+                    f"with io.open({self.launch_log!r}, 'a', encoding='utf-8') "
+                    "as fh:\n"
+                    f"    fh.write({script!r} + '\\n')\n"
+                )
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _run(self, raw):
+        return subprocess.run(
+            [sys.executable, self.adapter], input=raw, text=True,
+            capture_output=True, timeout=30,
+        )
+
+    def _launched(self):
+        if not os.path.exists(self.launch_log):
+            return []
+        with open(self.launch_log, encoding="utf-8") as f:
+            return f.read().split()
+
+    def assertBoundedBlock(self, res, raw):
+        tag = f"payload {raw!r}"
+        self.assertNotIn("Traceback", res.stderr, f"{tag}: leaked a traceback")
+        self.assertEqual(res.returncode, 0,
+                         f"{tag}: expected a clean exit 0 decision, got "
+                         f"exit={res.returncode} stderr={res.stderr[:300]!r}")
+        try:
+            decision = json.loads(res.stdout)
+        except ValueError:
+            self.fail(f"{tag}: stdout is not a hook decision: {res.stdout!r}")
+        self.assertEqual(decision.get("decision"), "block",
+                         f"{tag}: an unroutable payload must fail closed")
+        reason = decision.get("reason", "")
+        self.assertTrue(reason.startswith("Blocked by codeArbiter policy"), tag)
+        # Bounded: a short deterministic diagnostic, never the payload text or
+        # an exception rendering.
+        self.assertLessEqual(len(reason), 120, f"{tag}: diagnostic not bounded")
+        self.assertEqual(
+            self._launched(), [],
+            f"{tag}: a guard was dispatched with an unvalidated payload")
+
+    def test_non_object_json_payloads_block_without_a_traceback(self):
+        for raw in self.NON_OBJECT_PAYLOADS:
+            with self.subTest(payload=raw):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_syntactically_invalid_json_blocks_without_dispatching_a_guard(self):
+        for raw in ("{not json", "{", "[1,", "\x00\x01"):
+            with self.subTest(payload=raw):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_empty_and_whitespace_payloads_block_without_dispatching_a_guard(self):
+        for raw in ("", "   ", "\n\t "):
+            with self.subTest(payload=raw):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_non_string_tool_name_blocks_instead_of_raising_typeerror(self):
+        # `tool_name in {"apply_patch", "Write", "Edit"}` raises TypeError for
+        # an unhashable value; a wrong-typed tool_name also makes the
+        # write-vs-exec routing decision unknowable, so it fails closed.
+        for value in ('["Write"]', "{}", "3", "true", "null"):
+            raw = '{"hook_event_name": "PreToolUse", "tool_name": %s}' % value
+            with self.subTest(tool_name=value):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_object_payload_routes_write_tools_to_pre_write(self):
+        for tool in ("apply_patch", "Write", "Edit"):
+            with self.subTest(tool=tool):
+                res = self._run(json.dumps(
+                    {"hook_event_name": "PreToolUse", "tool_name": tool,
+                     "tool_input": {"command": PATCH_ADD}}))
+                self.assertEqual(res.returncode, 0, res.stderr[:300])
+                self.assertEqual(self._launched(), ["pre-write.py"])
+                os.remove(self.launch_log)
+
+    def test_object_payload_routes_other_tools_to_pre_bash(self):
+        for tool in ("Bash", "shell_command", "mcp__github__create_issue"):
+            with self.subTest(tool=tool):
+                res = self._run(json.dumps(
+                    {"hook_event_name": "PreToolUse", "tool_name": tool,
+                     "tool_input": {"command": "ls -la"}}))
+                self.assertEqual(res.returncode, 0, res.stderr[:300])
+                self.assertEqual(self._launched(), ["pre-bash.py"])
+                os.remove(self.launch_log)
+
+    def test_object_payload_without_tool_name_still_routes_to_pre_bash(self):
+        # An ABSENT tool_name keeps its documented default (""), which is not
+        # a write tool — unchanged pre-#409 behavior. Only a present-but-
+        # wrong-typed tool_name is a malformed shape.
+        res = self._run(json.dumps({"hook_event_name": "PreToolUse"}))
+        self.assertEqual(res.returncode, 0, res.stderr[:300])
+        self.assertEqual(self._launched(), ["pre-bash.py"])
+
+
 def _load(path, name):
     spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
