@@ -101,10 +101,15 @@ function selectUniqueCallSite(
   return matches[0];
 }
 
+// H-01/H-09b/H-10b's block() call sites live in _bashguardlib.py, the shared
+// bash-guard module pre-bash.py and git-enforce.py both delegate to (their
+// entry-hook prologues were hoisted to _entrylib.py in the same move). The
+// literal-tag scan already covers _bashguardlib.py as a top-level *.py file
+// in hooksDir — no generator change was needed, only these file attributions.
 const H10B_NO_PASS: StableHookKey = {
   kind: "block",
   tag: "H-10b",
-  file: "pre-bash.py",
+  file: "_bashguardlib.py",
   message:
     "This commit introduces {kind} changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the {skill} gate (it records the pass), then commit. To bypass a security gate, /override requires its heavier security-acknowledgement path.",
 };
@@ -112,7 +117,7 @@ const H10B_NO_PASS: StableHookKey = {
 const H01_PROTECTED_BRANCH: StableHookKey = {
   kind: "block",
   tag: "H-01",
-  file: "pre-bash.py",
+  file: "_bashguardlib.py",
   message:
     "Direct commit to {target} is prohibited (ORCHESTRATOR §3). Create a feature branch.",
 };
@@ -127,13 +132,15 @@ function assertRealStructuralSites(callSites: HookCallSite[]) {
 describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => {
   // Guards against silent under-collection. Counted directly via:
   //   grep -c 'block("H-\|remind("H-' plugins/ca/hooks/*.py
-  // as of this writing: git-enforce.py=8, post-write-edit.py=8, pre-bash.py=20,
-  // pre-edit.py=10, pre-write.py=6 -> 52 literal-tag call sites. On top of
-  // those, 4 variable-tag sites (git-enforce.py:219/224, pre-bash.py:771/783)
-  // resolve through the bounded conditional-assignment pattern
-  // (`tag = "H-09b" if … else "H-10b"`), each attributed to BOTH tags -> +8
-  // entries -> 60. (pre-edit.py:84 is a loop unpack — genuinely unresolvable,
-  // stays in `skipped`.) A future hook addition only grows this number, so the
+  // After the pre-bash.py/git-enforce.py guard-logic hoist into
+  // _bashguardlib.py (and the entry prologue into _entrylib.py), the H-01/
+  // H-09b/H-10b call sites now live in _bashguardlib.py rather than
+  // pre-bash.py; the extractor already scans it (it's a flat *.py file in
+  // hooksDir), so this needed no code change — only the file-attribution
+  // fixtures below. As of this writing the extractor reports 65 total call
+  // sites (57 literal-tag + 8 from resolved conditional-assignment splits)
+  // with 1 genuinely unresolvable site (pre-edit.py's loop unpack) staying in
+  // `skipped`. A future hook addition only grows this number, so the
   // assertion is a floor (>=), not an exact match — it must fail if the
   // extractor starts silently missing sites, not if the source genuinely grows.
   const REAL_CALL_SITE_FLOOR = 60;
@@ -154,21 +161,21 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
     expect(skipped.some((s) => s.file === "pre-edit.py")).toBe(true);
   });
 
-  it("extracts H-01's protected-branch commit message from pre-bash.py verbatim", () => {
+  it("extracts H-01's protected-branch commit message from _bashguardlib.py verbatim", () => {
     expect(selectUniqueCallSite(callSites, H01_PROTECTED_BRANCH).message).toBe(
       H01_PROTECTED_BRANCH.message,
     );
   });
 
-  it("keeps the same real-hook structural assertions after unrelated pre-bash.py line insertions", () => {
+  it("keeps the same real-hook structural assertions after unrelated _bashguardlib.py line insertions", () => {
     const shiftedRoot = mkdtempSync(join(tmpdir(), "real-hook-gates-shifted-"));
     const shiftedHooksDir = join(shiftedRoot, "hooks");
     try {
       cpSync(realHooksDir, shiftedHooksDir, { recursive: true });
-      const shiftedPreBash = join(shiftedHooksDir, "pre-bash.py");
-      const source = readFileSync(shiftedPreBash, "utf8");
+      const shiftedBashguard = join(shiftedHooksDir, "_bashguardlib.py");
+      const source = readFileSync(shiftedBashguard, "utf8");
       writeFileSync(
-        shiftedPreBash,
+        shiftedBashguard,
         `# unrelated line inserted above real gates\n# exact source lines must not be structural keys\n${source}`,
       );
 
@@ -184,8 +191,8 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
     }
   });
 
-  it("extracts an H-09b message from pre-bash.py verbatim", () => {
-    const site = callSites.find((c) => c.tag === "H-09b" && c.file === "pre-bash.py");
+  it("extracts an H-09b message from _bashguardlib.py verbatim", () => {
+    const site = callSites.find((c) => c.tag === "H-09b" && c.file === "_bashguardlib.py");
     expect(site).toBeDefined();
     expect(site!.message).toBe(
       "the diff for the crypto/secret security scan could not be read (git unavailable or timed out) — failing closed (ORCHESTRATOR §2). Retry, or run the crypto-compliance / secret-handling gate, then commit.",

@@ -22,10 +22,10 @@
 #
 #     Each installed host writes its OWN current `_enforcer_path()` into its
 #     own `<plugin>.path` file every SessionStart (install() below) — a live
-#     host self-heals a stale entry on its very next session. The shim iterates
-#     the directory and execs the FIRST enforcer path that resolves (`[ -f "$E" ]`
-#     succeeds); a dead entry from an uninstalled plugin simply fails that test
-#     and the loop moves on to the next one. `uninstall()` removes only ITS OWN
+#     host self-heals a stale entry on its very next session. The shim runs
+#     every resolving enforcer until one blocks; all must allow for Git to
+#     proceed. A dead entry from an uninstalled plugin is skipped.
+#     `uninstall()` removes only ITS OWN
 #     `.path` file — never the shared shim, which a sibling plugin may still
 #     depend on.
 #   * FAIL CLOSED, not fail-open: if the directory is empty, absent, or every
@@ -105,12 +105,15 @@
 #     install is the unusual order), and a cold/first install always resolves
 #     it correctly via the full git-based probe regardless.
 
+import json
 import os
+import re
 import stat
 import subprocess
 import sys
 
 import _hooklib
+from _gitexec import git_executable, trusted_git_executable, trusted_python_executable
 
 SENTINEL = "# codeArbiter-managed git hook (#161) — refreshed each session; edits are overwritten."
 PHASES = ("pre-commit", "pre-push")
@@ -129,7 +132,7 @@ def _warn(msg):
 def _git(args, cwd):
     try:
         return subprocess.run(
-            ["git"] + args, cwd=cwd, capture_output=True, text=True,
+            [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=5,
         )
     except Exception:  # noqa: BLE001
@@ -161,18 +164,32 @@ def _enforcer_path():
 
 def _plugin_name():
     """A stable per-plugin identifier for THIS install's drop-in `.path`
-    filename (ADR-0014) — derived from THIS file's own vendored location,
-    exactly the same directory `_enforcer_path()` already anchors on:
-    `.../plugins/<plugin>/hooks/_githooks.py` -> `<plugin>` (e.g. "ca",
-    "ca-codex"). No plugin ever has to know a SIBLING's name or path — each
-    only ever writes its own `<plugin>.path` entry, using its own directory
-    name as the key. Running the unsynced `core/pysrc/_githooks.py` directly
-    (dev-only; tests always import the vendored copy) walks one level higher
-    than a real install and yields a less meaningful name, but still a stable,
-    non-empty one — never a hard failure."""
+    filename (ADR-0014). Host caches insert a version directory between the
+    plugin name and `hooks/`, so the package-directory basename is not stable.
+    Prefer the shipped host manifest. A damaged versioned cache falls back to
+    its parent plugin directory; a source-tree install falls back to its
+    package-directory basename. Every returned key is filename-safe."""
     hooks_dir_path = os.path.dirname(os.path.abspath(__file__))
-    plugin_dir = os.path.dirname(hooks_dir_path)
-    return os.path.basename(plugin_dir) or "plugin"
+    package_dir = os.path.dirname(hooks_dir_path)
+    manifests = (
+        os.path.join(package_dir, ".claude-plugin", "plugin.json"),
+        os.path.join(package_dir, ".codex-plugin", "plugin.json"),
+        os.path.join(package_dir, "package.json"),
+    )
+    safe_name = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+    for manifest in manifests:
+        try:
+            with open(manifest, encoding="utf-8") as f:
+                name = json.load(f).get("name")
+        except (OSError, UnicodeError, json.JSONDecodeError, AttributeError):
+            continue
+        if isinstance(name, str) and safe_name.fullmatch(name):
+            return name
+
+    package_name = os.path.basename(package_dir)
+    if re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9._-]+)?", package_name):
+        package_name = os.path.basename(os.path.dirname(package_dir))
+    return package_name if safe_name.fullmatch(package_name or "") else "plugin"
 
 
 _DROPIN_DIRNAME = "codearbiter-hooksd"
@@ -234,6 +251,18 @@ def _path_entry_file(dropin_dir, plugin):
     return os.path.join(dropin_dir, f"{plugin}.path")
 
 
+def _shell_path(path):
+    """Render an absolute native path for the POSIX sh git-hook boundary.
+
+    Git for Windows executes these hooks through its POSIX shell. Native
+    backslashes are ordinary characters there, so both globbing the drop-in
+    directory and testing an enforcer entry would fail closed even though the
+    Windows files exist. Forward slashes remain valid to Windows Python and
+    Git while also being unambiguous to the shell.
+    """
+    return path.replace("\\", "/")
+
+
 def _path_entry_current(dropin_dir, plugin, enforcer):
     """True iff this plugin's own drop-in entry already names `enforcer`."""
     existing = _read(_path_entry_file(dropin_dir, plugin))
@@ -246,41 +275,130 @@ def _write_path_entry(dropin_dir, plugin, enforcer):
     host rewrites its own entry every SessionStart regardless of whether the
     shared shim itself needed any change, so a stale entry from a version
     bump never outlives one session on a live install."""
-    if _path_entry_current(dropin_dir, plugin, enforcer):
+    shell_enforcer = _shell_path(enforcer)
+    if _path_entry_current(dropin_dir, plugin, shell_enforcer):
         return True
     try:
         os.makedirs(dropin_dir, exist_ok=True)
         _hooklib.write_text_atomic(
-            _path_entry_file(dropin_dir, plugin), enforcer + "\n", newline="\n")
+            _path_entry_file(dropin_dir, plugin), shell_enforcer + "\n", newline="\n")
         return True
     except Exception as e:  # noqa: BLE001
         _warn(f"could not write drop-in enforcer entry for '{plugin}' at {dropin_dir}: {e}")
         return False
 
 
+_TRUSTED_IDENTITY_FILE = "trusted-executables.identity"
+
+
+def _identity_file(dropin_dir):
+    return os.path.join(dropin_dir, _TRUSTED_IDENTITY_FILE)
+
+
+def _read_trusted_identity(dropin_dir):
+    text = _read(_identity_file(dropin_dir))
+    if text is None:
+        return None
+    lines = text.splitlines()
+    if len(lines) != 3 or not lines[2]:
+        return None
+    python_path, git_path, owner = lines
+    if not os.path.isfile(python_path) or not os.path.isfile(git_path):
+        return None
+    return python_path, git_path, owner
+
+
+def _refresh_trusted_identity(dropin_dir, plugin):
+    """Persist trusted executables without permitting an identity-less host
+    session to downgrade the shared shim back to PATH resolution."""
+    trusted_git = trusted_git_executable()
+    trusted_python = trusted_python_executable()
+    existing = _read_trusted_identity(dropin_dir)
+    if trusted_git is None and trusted_python is None:
+        return True
+    if trusted_git is None or trusted_python is None:
+        if existing is not None:
+            _warn("trusted executable refresh is incomplete; preserving the prior complete identity")
+            return True
+        raise RuntimeError("codeArbiter executable identity channel is incomplete")
+    values = (_shell_path(trusted_python), _shell_path(trusted_git), plugin)
+    if any("\n" in value or "\r" in value for value in values):
+        raise RuntimeError("trusted executable identity contains a newline")
+    payload = "\n".join(values) + "\n"
+    try:
+        os.makedirs(dropin_dir, exist_ok=True)
+        _hooklib.write_text_atomic(_identity_file(dropin_dir), payload, newline="\n")
+        return True
+    except Exception as e:  # noqa: BLE001
+        if existing is not None:
+            _warn(f"could not refresh trusted identity; preserving prior complete identity: {e}")
+            return True
+        raise RuntimeError(
+            f"could not persist trusted executable identity at {dropin_dir}: {e}") from e
+
+
 def _shim(dropin_dir, phase):
     # Single-interpreter selection preserves stdin (pre-push) and the BLOCK
     # exit code. The shim is HOST-NEUTRAL (ADR-0014): it embeds no plugin-
     # specific enforcer path, only the shared drop-in directory. It iterates
-    # every "*.path" entry there and execs the FIRST enforcer that resolves
-    # (`[ -f "$E" ]`); a dead entry from an uninstalled plugin just fails that
-    # test and the loop tries the next one. An unmatched glob (dir absent or
+    # every "*.path" entry there and runs EVERY enforcer that resolves. Any
+    # non-zero verdict blocks, so an older live sibling can never mask a newer
+    # guard. A dead entry from an uninstalled plugin is skipped. An unmatched
+    # glob (dir absent or
     # empty) leaves `c` as the literal, un-expanded "$D/*.path" string in
     # POSIX `sh` — `[ -f "$c" ]` on that literal correctly fails too, so the
     # loop falls straight through to the same fail-closed tail with no special
     # case needed. When NOTHING resolves, this now FAILS CLOSED: a loud
     # stderr diagnostic and a non-zero exit, blocking the git operation,
-    # rather than the old single-plugin era's `exit 0`.
+    # rather than the old single-plugin era's `exit 0`. When the Pi bridge
+    # provides trusted executable identities, install() persists them beside
+    # the registry. Identity-less hosts preserve that set, so a later Claude or
+    # Codex session cannot downgrade Pi's absolute executable boundary.
+    def quote(value):
+        return "'" + value.replace("'", "'\"'\"'") + "'"
+
+    capture = ""
+    invoke = f'"$PY" "$E" {phase}\n'
+    if phase == "pre-push":
+        capture = (
+            "PUSH_INPUT=''\n"
+            "while IFS= read -r L; do\n"
+            "  PUSH_INPUT=\"${PUSH_INPUT}${L}\n\"\n"
+            "done\n"
+        )
+        invoke = f'printf \'%s\' "$PUSH_INPUT" | "$PY" "$E" {phase}\n'
     return (
         "#!/bin/sh\n"
         f"{SENTINEL}\n"
-        f'D="{dropin_dir}"\n'
-        'if python3 -c "" 2>/dev/null; then PY=python3; else PY=python; fi\n'
+        f"D={quote(_shell_path(dropin_dir))}\n"
+        f'if [ -e "$D/{_TRUSTED_IDENTITY_FILE}" ] || [ -L "$D/{_TRUSTED_IDENTITY_FILE}" ]; then\n'
+        f'  [ -f "$D/{_TRUSTED_IDENTITY_FILE}" ] || exit 1\n'
+        f'  exec 3< "$D/{_TRUSTED_IDENTITY_FILE}" || exit 1\n'
+        '  IFS= read -r PY <&3 || exit 1\n'
+        '  IFS= read -r G <&3 || exit 1\n'
+        '  IFS= read -r IDENTITY_OWNER <&3 || exit 1\n'
+        "  IDENTITY_EXTRA=''\n"
+        '  if IFS= read -r IDENTITY_EXTRA <&3 || [ -n "$IDENTITY_EXTRA" ]; then exit 1; fi\n'
+        '  exec 3<&-\n'
+        '  [ -n "$IDENTITY_OWNER" ] && [ -f "$PY" ] && [ -f "$G" ] || exit 1\n'
+        '  export CODEARBITER_GIT_EXECUTABLE="$G"\n'
+        '  export CODEARBITER_PYTHON_EXECUTABLE="$PY"\n'
+        "else\n"
+        '  if python3 -c "" 2>/dev/null; then PY=python3; else PY=python; fi\n'
+        "fi\n"
+        f"{capture}"
+        "SEEN=0\n"
         'for c in "$D"/*.path; do\n'
         '  [ -f "$c" ] || continue\n'
-        '  E=$(cat "$c" 2>/dev/null) || continue\n'
-        f'  [ -f "$E" ] && exec "$PY" "$E" {phase}\n'
+        '  case "${c##*/}" in [0-9]*.[0-9]*.[0-9]*.path) continue ;; esac\n'
+        '  IFS= read -r E < "$c" || continue\n'
+        '  [ -f "$E" ] || continue\n'
+        '  SEEN=1\n'
+        f'  {invoke}'
+        '  RC=$?\n'
+        '  [ "$RC" -eq 0 ] || exit "$RC"\n'
         'done\n'
+        '[ "$SEEN" -eq 0 ] || exit 0\n'
         'echo "codeArbiter: no registered git-enforce.py could be resolved from '
         '\\"$D\\" -- failing CLOSED (#161/#265 git backstop, ADR-0014). Reinstall '
         'codeArbiter, or check .git/codearbiter-hooksd/*.path entries." >&2\n'
@@ -492,6 +610,7 @@ def install(root):
     dropin_dir = _dropin_dir(root)
     if dropin_dir is None:
         return []  # no resolvable git dir at all — nothing to install against
+    _refresh_trusted_identity(dropin_dir, plugin)
     cached_hd = _cached_hooks_dir(root)
     if cached_hd is not None:
         default_hd = os.path.normcase(os.path.abspath(_default_hooks_dir(root)))
@@ -560,14 +679,23 @@ def uninstall(root):
     dropin_dir = _dropin_dir(root)
     if dropin_dir is None:
         return []
+    actions = []
     entry = _path_entry_file(dropin_dir, plugin)
     if os.path.isfile(entry):
         try:
             os.remove(entry)
-            return [f"{plugin}.path: removed"]
+            actions.append(f"{plugin}.path: removed")
         except Exception as e:  # noqa: BLE001
             _warn(f"could not remove {entry}: {e}")
-    return []
+    identity = _read_trusted_identity(dropin_dir)
+    if identity is not None and identity[2] == plugin:
+        path = _identity_file(dropin_dir)
+        try:
+            os.remove(path)
+            actions.append(f"{plugin} trusted identity: removed")
+        except Exception as e:  # noqa: BLE001
+            _warn(f"could not remove {path}: {e}")
+    return actions
 
 
 if __name__ == "__main__":

@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "canonicalParser": "core/pysrc/_hooklib.py::frontmatter_enabled_text",
+  "fixtures": [
+    {
+      "name": "canonical-lowercase",
+      "text": "---\narbiter: enabled\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "mixed-case",
+      "text": "---\nArBiTeR: EnAbLeD\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "python-re-i-latin-capital-i-with-dot",
+      "text": "---\narb\u0130ter: enabled\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "python-re-i-dotless-i",
+      "text": "---\narb\u0131ter: enabled\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "indented-marker",
+      "text": "---\n  arbiter: enabled\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "surrounding-whitespace",
+      "text": "---\n\tarbiter:\t enabled \t\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "python-specific-unicode-whitespace",
+      "text": "\u001c---\u0085\n\u001darbiter:\u0085enabled\u001e\n\u001f---\u0085\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "no-whitespace-after-colon",
+      "text": "---\narbiter:enabled\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "leading-utf8-bom",
+      "text": "\ufeff---\narbiter: enabled\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "duplicate-enabled-markers",
+      "text": "---\narbiter: enabled\n  ARBITER:enabled\n---\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "crlf",
+      "text": "---\r\narbiter: enabled\r\n---\r\n",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "closing-delimiter-at-eof",
+      "text": "---\narbiter: enabled\n---",
+      "enabled": true,
+      "malformed": false
+    },
+    {
+      "name": "disabled-value",
+      "text": "---\narbiter: disabled\n---\n",
+      "enabled": false,
+      "malformed": false
+    },
+    {
+      "name": "wrong-value",
+      "text": "---\narbiter: enable\n---\n",
+      "enabled": false,
+      "malformed": false
+    },
+    {
+      "name": "marker-after-frontmatter",
+      "text": "---\nstage: 2\n---\narbiter: enabled\n",
+      "enabled": false,
+      "malformed": false
+    },
+    {
+      "name": "missing-frontmatter",
+      "text": "# context\narbiter: enabled\n",
+      "enabled": false,
+      "malformed": false
+    },
+    {
+      "name": "unclosed-frontmatter",
+      "text": "---\narbiter: enabled\nbody\n",
+      "enabled": false,
+      "malformed": true
+    },
+    {
+      "name": "bare-opening-delimiter",
+      "text": "---",
+      "enabled": false,
+      "malformed": true
+    }
+  ]
+}

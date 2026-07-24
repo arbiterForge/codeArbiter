@@ -21,6 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 SECRET_CORPUS = os.path.join(HOOKS, "secret-detection-corpus.json")
+ACTIVATION_CONTRACT = os.path.join(REPO, "core", "activation-contract.json")
 sys.path.insert(0, HOOKS)
 
 import _hooklib  # noqa: E402 — needs sys.path mutation above
@@ -531,6 +532,21 @@ class ActivationAndMarkerHelpersTest(unittest.TestCase):
                          (False, True))
         # no frontmatter at all -> dormant, not malformed
         self.assertEqual(_hooklib.frontmatter_enabled_text("# ctx\n"), (False, False))
+
+    def test_frontmatter_enabled_text_matches_shared_activation_contract(self):
+        with open(ACTIVATION_CONTRACT, encoding="utf-8") as stream:
+            contract = json.load(stream)
+        self.assertEqual(contract["version"], 1)
+        self.assertEqual(
+            contract["canonicalParser"],
+            "core/pysrc/_hooklib.py::frontmatter_enabled_text",
+        )
+        for fixture in contract["fixtures"]:
+            with self.subTest(fixture=fixture["name"]):
+                self.assertEqual(
+                    _hooklib.frontmatter_enabled_text(fixture["text"]),
+                    (fixture["enabled"], fixture["malformed"]),
+                )
 
     @unittest.skipUnless(_sym_ok(), "symlink creation not permitted here")
     def test_classify_protected_resolves_symlink(self):

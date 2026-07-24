@@ -70,6 +70,7 @@ Your OpenCode Zen API key, or any OpenAI-compatible provider key. Set it in one 
 - Local `.env` at `plugins/ca/tools/.env` (dev convenience, never committed)
 - `<project-root>/.claude/settings.local.json` `env` block (gitignored by default)
 
+
 Never commit this key. It must not appear in `.codearbiter/` audit files.
 
 ### `FARM_API_BASE_URL`
@@ -155,6 +156,7 @@ The dispatch skill surfaces the underlying model identity so you can make an inf
 
 Direct (dev): `cd "${CLAUDE_PLUGIN_ROOT}/tools" && npm run farm -- <plan.json>`
 Via plugin: `node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" <plan.json>`
+
 Normal use: `$ca-sprint --farm` — the skill handles model selection and dispatch automatically.
 
 ## Report artifacts

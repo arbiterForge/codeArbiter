@@ -56,6 +56,24 @@ or one was promoted to stable and is now on by default for everyone.
 Each feature above is in preview for the same reason: it works, but it has not yet earned the
 evidence to be on by default. Here is what each one actually does, and why it is worth turning on.
 
+### ca-pi (Pi governance adapter)
+
+`ca-pi` brings the same checked-in `.codearbiter/` state and generated governance core used by
+Claude Code and Codex to Pi. It includes the rich parent footer, final tool wrappers, explicit
+execute permissions, read-only plan mode, bounded session-only background work, native compaction,
+diagnostics, and hardened child dispatch.
+
+The automated contracts and hosted Windows, macOS, and Linux promotion matrix are green. The open
+question is breadth: real repositories, providers, terminals, and long-running workflows can expose
+integration edges that a bounded matrix cannot. The adapter is available now and use is welcome.
+Its Feature Forge status records that codeArbiter is still collecting that evidence rather than
+claiming 100% validation or stable status.
+
+The payoff: teams moving to Pi can keep the same governed project state and working discipline
+without maintaining a second policy implementation. Install a pinned Git tag from the
+[Pi guide](/getting-started/pi/) and report any mismatch between the documented contract and live
+behavior.
+
 ### Live transcript pruning
 
 A long Claude Code session dies when its transcript fills the context window. Most of that weight is

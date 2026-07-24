@@ -7,6 +7,15 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 ## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
 
 ### Fixed
+- Tribunal runs recover cumulative usage from each exact Codex agent thread
+  when its local session artifact is readable, and otherwise record an explicit
+  capability or instrumentation reason instead of leaving `tokens_actual`
+  unexplained.
+- Prune metrics now separate model-visible context savings from file-only
+  sidecar cleanup, preventing sidecar bytes from inflating the context-benefit
+  decision or cold-cache nudge.
+- Prune hooks ignore and repair malformed per-session state rather than letting
+  invalid legacy values escape fail-open handling.
 - Shared statusline ledger records use ownership-safe atomic shards, so
   concurrent host activity cannot discard session token/cost state.
 - Linked-worktree branch metadata is parsed from Git pointer files instead of

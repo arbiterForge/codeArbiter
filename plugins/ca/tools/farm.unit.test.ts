@@ -418,10 +418,39 @@ describe("assertSecureBaseUrl — resolved base URL guard", () => {
     expect(() => assertSecureBaseUrl("not a url")).toThrow(/HTTPS/);
   });
 
-  it("accepts an https URL with userinfo (https acceptance is scheme-only)", () => {
-    // https keeps the secret in TLS regardless of userinfo, so scheme alone
-    // governs; userinfo only matters on the cleartext http-loopback path.
-    expect(() => assertSecureBaseUrl("https://localhost@127.0.0.1:9/")).not.toThrow();
+  it("rejects https userinfo without echoing embedded credentials", () => {
+    const url = "https://user:credential-value@example.com/v1";
+    expect(() => assertSecureBaseUrl(url)).toThrow(/HTTPS/);
+    try {
+      assertSecureBaseUrl(url);
+    } catch (e) {
+      expect((e as Error).message).not.toContain("user");
+      expect((e as Error).message).not.toContain("credential-value");
+    }
+  });
+
+  it("rejects userinfo before protocol handling for every scheme", () => {
+    const url = "ftp://user:credential-value@example.com/v1";
+    try {
+      assertSecureBaseUrl(url);
+      throw new Error("expected assertSecureBaseUrl to reject");
+    } catch (e) {
+      expect((e as Error).message).toMatch(/HTTPS/);
+      expect((e as Error).message).not.toContain("credential-value");
+    }
+  });
+
+  it("does not echo malformed URL contents or terminal controls", () => {
+    const url = "not-a-url\r\nforged-log-line: credential-value";
+    try {
+      assertSecureBaseUrl(url);
+      throw new Error("expected assertSecureBaseUrl to reject");
+    } catch (e) {
+      expect((e as Error).message).not.toContain("forged-log-line");
+      expect((e as Error).message).not.toContain("credential-value");
+      expect((e as Error).message).not.toContain("\r");
+      expect((e as Error).message).not.toContain("\n");
+    }
   });
 
   it("never leaks FARM_API_KEY in the thrown error message", () => {
@@ -510,6 +539,55 @@ describe("Worker seam — runTask invokes an injectable Worker (AC-01)", () => {
   it("exposes a default httpWorker implementation behind the interface", () => {
     expect(httpWorker).toBeDefined();
     expect(typeof httpWorker.apply).toBe("function");
+  });
+});
+
+describe("httpWorker secure request boundary", () => {
+  const realFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = realFetch;
+    vi.restoreAllMocks();
+  });
+
+  const context = (apiBaseUrl: string) => ({
+    cwd: process.cwd(),
+    prompt: "test prompt",
+    model: "test-model",
+    apiBaseUrl,
+    apiKey: "DUMMY-KEY",
+    forbidden: new Set<string>(),
+  });
+
+  it("rejects a direct external-http call before fetch", async () => {
+    global.fetch = vi.fn() as unknown as typeof fetch;
+
+    const result = await httpWorker.apply(context("http://evil.example"));
+
+    expect(result.ok).toBe(false);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("refuses automatic redirects on the worker request", async () => {
+    let capturedInit: RequestInit | undefined;
+    global.fetch = vi.fn(async (_url: string | URL, init?: RequestInit) => {
+      capturedInit = init;
+      return new Response(JSON.stringify({ choices: [{ message: { content: "" } }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+
+    await httpWorker.apply(context("https://api.example/v1"));
+
+    expect(capturedInit?.redirect).toBe("error");
+  });
+
+  it("does not write an upstream response body to stderr", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    global.fetch = vi.fn(async () => new Response("opaque-provider-credential", { status: 400 })) as unknown as typeof fetch;
+
+    const result = await httpWorker.apply(context("https://api.example/v1"));
+
+    expect(stderr.mock.calls.flat().join(" ")).not.toContain("opaque-provider-credential");
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).not.toContain("opaque-provider-credential");
   });
 });
 
@@ -938,24 +1016,25 @@ describe("#90 default base URL + non-JSON body", () => {
     }
   });
 
-  it("parseChatCompletion returns an actionable, endpoint-naming error for a non-JSON body", () => {
+  it("parseChatCompletion returns an actionable, sanitized-endpoint error for a non-JSON body", () => {
     // The exact failure mode of the stale endpoint: 200 with body "Not Found".
-    const r = parseChatCompletion("Not Found", "https://api.opencode.ai/v1");
+    const r = parseChatCompletion("Not Found", "https://api.opencode.ai/v1?credential=opaque-value");
     expect(r.ok).toBe(false);
     if (!r.ok) {
       // Names the knob the operator must fix...
       expect(r.error).toMatch(/FARM_API_BASE_URL/);
-      // ...echoes the offending endpoint...
-      expect(r.error).toMatch(/api\.opencode\.ai\/v1/);
+      // ...identifies the endpoint without reflecting its query credentials...
+      expect(r.error).toMatch(/api\.opencode\.ai/);
+      expect(r.error).not.toContain("opaque-value");
       // ...and is NOT the opaque raw-SyntaxError message it used to be.
       expect(r.error).not.toMatch(/^non-JSON response: SyntaxError/);
     }
   });
 
-  it("parseChatCompletion echoes a (bounded) snippet of the offending body", () => {
-    const r = parseChatCompletion("Not Found", "https://opencode.ai/zen/v1");
+  it("parseChatCompletion does not propagate the offending response body", () => {
+    const r = parseChatCompletion("opaque-provider-credential", "https://opencode.ai/zen/v1");
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error).toMatch(/Not Found/);
+    if (!r.ok) expect(r.error).not.toContain("opaque-provider-credential");
   });
 });
 
@@ -1081,12 +1160,20 @@ describe("coverage-003 (#183) makeEntitlementProbe", () => {
     expect(res.status).toBe(200);
     expect(capturedUrl).toBe("https://api.example/v1/chat/completions");
     expect(capturedInit?.method).toBe("POST");
+    expect(capturedInit?.redirect).toBe("error");
     const headers = capturedInit?.headers as Record<string, string>;
     expect(headers.Authorization).toBe("Bearer DUMMY-KEY-do-not-leak");
     const body = JSON.parse(String(capturedInit?.body)) as { model?: string; max_tokens?: number; messages?: unknown[] };
     expect(body.model).toBe("candidate-model");
     expect(body.max_tokens).toBe(1);
     expect(Array.isArray(body.messages)).toBe(true);
+  });
+
+  it("rejects a direct external-http probe before fetch", () => {
+    global.fetch = vi.fn() as unknown as typeof fetch;
+
+    expect(() => makeEntitlementProbe("http://evil.example", "DUMMY-KEY", 5_000)).toThrow(/HTTPS/);
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it("distinguishes a real 401 response from a network throw (both map to a status, not an exception)", async () => {
@@ -1405,7 +1492,7 @@ describe("T-08a parseChatCompletion shape guard (dx-001)", () => {
     const r = parseChatCompletion(JSON.stringify({ error: "bad model" }), "https://opencode.ai/zen/v1");
     expect(r.ok).toBe(false);
     if (!r.ok) {
-      expect(r.error).toMatch(/opencode\.ai\/zen\/v1/);
+      expect(r.error).toMatch(/opencode\.ai/);
       expect(r.error).toMatch(/choices|unexpected shape/i);
     }
   });

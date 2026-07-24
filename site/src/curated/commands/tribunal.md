@@ -42,6 +42,10 @@ On a large repo, two optional read-only mappers ([`map-structure`](/reference/ag
 and [`map-deps`](/reference/agents/map-deps/)) build the codebase inventory ahead of the lenses, so
 that mapping work stays off the orchestrator's own context.
 
+On Codex, every lens runs inline in the current thread rather than through isolated `Task`-tool
+dispatch — see [Claude Code + Codex → Intentional host
+differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
+
 A triage pass independently recalibrates every lens's own severity call rather than trusting it
 as final; every critical or high finding must carry a counter-argument. `report.md` is always a
 projection of the append-only `run.jsonl` and `triage.jsonl` logs, never hand-authored.

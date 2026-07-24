@@ -58,6 +58,12 @@ describe("Feature Forge section (its own top-level group)", () => {
     expect(usingPreview).toContain("--farm");
   });
 
+  it("ca-pi is documented as a preview plugin with explicit install activation", () => {
+    expect(usingPreview).toContain("ca-pi");
+    expect(usingPreview).toContain("pinned Git tag");
+    expect(usingPreview).toContain("global rich footer");
+  });
+
   it("the how-to covers opt-in and dormant behavior", () => {
     expect(usingPreview.toLowerCase()).toContain("opt-in");
     expect(usingPreview.toLowerCase()).toContain("dormant");

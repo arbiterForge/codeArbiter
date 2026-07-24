@@ -24,6 +24,7 @@ class TestStrategies(unittest.TestCase):
         out, report, errs = prune(data, strategies=["sidecar-collapse"], keep_recent=0)
         self.assertEqual(errs, [])
         self.assertGreater(report["sidecar-collapse"]["lines"], 0)
+        self.assertEqual(report["sidecar-collapse"]["metric_scope"], "file-only")
         # The condensed sidecar keeps small scalars and drops bulk.
         objs = P._parts_objs(out)
         u2 = next(o for o in objs if isinstance(o, dict) and o.get("uuid") == "u2")
@@ -34,12 +35,25 @@ class TestStrategies(unittest.TestCase):
         self.assertNotIn("prompt", tur)  # bulky string dropped
         self.assertLess(len(out), len(data))
 
+    def test_sidecar_net_negative_eligibility_is_unchanged_for_unicode(self):
+        data = (
+            '{"type":"user","uuid":"u1","parentUuid":null,'
+            '"toolUseResult":"' + ("😀" * 20) + '",'
+            '"message":{"role":"user","content":"x"}}\n'
+        ).encode("utf-8")
+        out, report, errs = prune(
+            data, strategies=["sidecar-collapse"], keep_recent=0)
+        self.assertEqual(errs, [])
+        self.assertEqual(out, data)
+        self.assertEqual(report["sidecar-collapse"]["lines"], 0)
+
     def test_oversize_result_clamp_truncates_list_text(self):
         data = fixture("synthetic-small.jsonl")
         out, report, errs = prune(data, strategies=["oversize-result-clamp"],
                                   keep_recent=0, max_bytes=40)
         self.assertEqual(errs, [])
         self.assertGreater(report["oversize-result-clamp"]["lines"], 0)
+        self.assertEqual(report["oversize-result-clamp"]["metric_scope"], "context")
         objs = P._parts_objs(out)
         u2 = next(o for o in objs if isinstance(o, dict) and o.get("uuid") == "u2")
         text = u2["message"]["content"][0]["content"][0]["text"]

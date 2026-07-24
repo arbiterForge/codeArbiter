@@ -147,6 +147,48 @@ class TestCmdReport(unittest.TestCase):
                         or "≈" in output)
 
 
+class TestPruneReductionReport(unittest.TestCase):
+    def test_file_and_context_savings_are_labeled_separately(self):
+        result = {
+            "bytes_before": 1000,
+            "bytes_after": 600,
+            "file_bytes_freed": 400,
+            "file_est_tokens_freed": 100,
+            "file_pct": 40.0,
+            "context_bytes_freed": 100,
+            "context_est_tokens_freed": 25,
+            "strategies": {
+                "sidecar-collapse": {
+                    "lines": 1,
+                    "bytes_before": 400,
+                    "bytes_after": 100,
+                    "metric_scope": "file-only",
+                },
+                "aged-result-condense": {
+                    "lines": 1,
+                    "bytes_before": 200,
+                    "bytes_after": 100,
+                    "metric_scope": "context",
+                },
+            },
+            "validation_errors": [],
+            "verdict": "dry-run",
+        }
+        output = io.StringIO()
+        old_stdout = sys.stdout
+        sys.stdout = output
+        try:
+            pt.print_report(result)
+        finally:
+            sys.stdout = old_stdout
+        rendered = output.getvalue()
+        self.assertIn("scope", rendered)
+        self.assertIn("file-only", rendered)
+        self.assertIn("file:", rendered)
+        self.assertIn("context:", rendered)
+        self.assertIn("25 estimated tokens freed", rendered)
+
+
 class TestIsLive(unittest.TestCase):
     """is_live(path): True for recently-modified file, False for old one."""
 

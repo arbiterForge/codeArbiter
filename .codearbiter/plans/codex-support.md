@@ -14,6 +14,31 @@ This is newly feasible: Codex v0.142.x (verified July 2026) has near-parity exte
 
 **Approval caveat (2026-07-08):** approved as **beta only** — the maintainer has no Codex subscription until ~2026-07-09, so live-fire spike items (stdout injection, trust review, exit-2 feedback) are deferred to a live-verification pass; source-level verification against `openai/codex` proceeds immediately. `ca-codex` carries a beta / Feature Forge preview label until live verification completes.
 
+## Campaign status (reconciled 2026-07-20)
+
+The beta gate is complete, but the full M0-M5 campaign is not. Codex 0.144.1 loaded the trusted
+plugin, injected the SessionStart persona, and surfaced the live H-03 block. Stable release
+`ca-codex-v0.2.4` was tagged and published on 2026-07-12. Those receipts remove the beta label;
+they do not silently waive the remaining host-parity milestones.
+
+| Milestone | Current status | Authoritative evidence or remaining obligation |
+|---|---|---|
+| M0 spike + governance | ACCEPTED | ADR-0011 is accepted; live trust, persona injection, and structured block evidence are recorded in PR #254 and `docs/parity.md`. |
+| M1 shared-core extraction | ACCEPTED | `core/pysrc/`, `tools/sync-core.py`, and the byte-identity CI contract shipped in PR #254. |
+| M2 Codex enforcement core | ACCEPTED | The trusted hooks, host adapter, doctor probe, shared-store contract, and live H-03 block shipped in PR #254. |
+| M3 command/skill surface | ACCEPTED | The generated standalone `$ca-*` surface and Codex-only initialization path shipped through PR #295 and PR #254. |
+| M4 agents + review chains | PENDING | `docs/parity.md` still records the 28 agents and review chains as M4 work. Roles run inline; generated `.codex/agents/*.toml`, `ca-init` scaffolding, staleness diagnosis, and review-chain validation remain. |
+| M5 distribution/release/docs | PARTIAL | Stable 0.2.4 release and public install documentation shipped through PRs #301 and #302. The Codex worker-backend package remains absent and degrades to the premium path. |
+
+`codex.feature.0001` remains in progress until M4 is accepted and the remaining M5 distribution
+decision is implemented or explicitly re-scoped through a user-attributed decision. Later 0.3.x
+version work is maintenance on the shipped host and is not evidence that these two obligations closed.
+
+`.codearbiter/CONTEXT.md` still carries the superseded beta wording. A 2026-07-20 attempt to correct
+that sentence was blocked by H-18 because `CONTEXT.md` is the activation switch. Correcting it needs
+the sanctioned protected-file path or an explicit `$ca-override`; this reconciliation does not bypass
+that gate.
+
 ## Architecture
 
 ### Python core — `core/pysrc/`, vendored at build time

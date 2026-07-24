@@ -35,11 +35,14 @@ Send the first real work through a gated [lane](/glossary/#lane):
 
 The `fix` lane routes to the test-first skill. An author agent reads the relevant source, writes a failing test, then writes the minimum implementation to pass it.
 
-As the author writes `payment.ts`, the advisory hook fires immediately after the `Write` call. You should see it in the tool-call output before the write is even done:
+As the author writes `payment.ts`, the [advisory](/glossary/#advisory) hook fires immediately after the `Write` call. You should see it in the tool-call output before the write is even done:
 
 ```text
 REMINDER [H-09]: Crypto/TLS pattern detected. Run the crypto-compliance check + dispatch auth-crypto-reviewer (no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish; do not disable TLS verification). The commit will block until the gate records a pass.
 ```
+
+`[H-09]` is a gate ID — look up any gate ID you see bracketed like this in the
+[hook gates reference](/reference/hooks-gates/).
 
 The author wrote `createHash("md5")` to derive an idempotency key from the payment payload. MD5 is in codeArbiter's banned-primitive list. The advisory does not stop the write — it tells you the commit will. (The scan behind this gate is language-agnostic: a Python `hashlib.md5` call trips the identical H-09/H-09b pair.)
 
@@ -56,6 +59,11 @@ The commit gate runs `pre-bash.py` before the `git commit` shell call fires. It 
 ```text
 BLOCKED [H-09b]: This commit introduces crypto/TLS changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the crypto-compliance gate (it records the pass), then commit.
 ```
+
+`.codearbiter/.markers/security-gate-passed` is a [marker](/glossary/#marker) — a small file that
+records a gate's pass state so a later gate can check it without re-running the review. `[H-09b]` is
+the blocking counterpart to the `[H-09]` advisory above; see the
+[hook gates reference](/reference/hooks-gates/) for both.
 
 The `git commit` did not run. The mistake did not reach version control.
 

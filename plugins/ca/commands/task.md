@@ -1,5 +1,5 @@
 ---
-description: The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark one done. The only blessed write to open-tasks.md.
+description: The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md.
 argument-hint: "add \"<desc>\" | start <id|\"title\"> | done <id|\"title\">"
 ---
 
@@ -18,17 +18,23 @@ parsed as a flag. Interpreter fallback, same shape as the hooks: `python3 … ||
 
 - **add** — append a queued task. ID-less by default; pass `--id <group>.<type>` to mint
   a dotted ID now, `--from <origin>` for a harvest back-ref, `--boundaries a,b` for the
-  security/trust boundaries it touches.
+  security/trust boundaries it touches. The description must be nonblank and
+  single-line; origin and boundary values must also stay on one line.
   - `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add [--id group.type] [--from origin] [--boundaries a,b] -- "<desc>" || python "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add ... -- "<desc>"`
 - **start** — flip a task to in-progress and **stamp the started date** (so it can never
   be a dateless `[~]`). On an ID-less item, pass `--as <group>.<type>` to mint its dotted
   ID at pick-up. `--date YYYY-MM-DD` overrides today.
   - `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" start [--as group.type] [--date YYYY-MM-DD] -- "<id|title>"`
-- **done** — flip a task to done and stamp the done date (`--date` overrides today).
+- **done** — flip an in-progress task to done and stamp the done date (`--date`
+  overrides today). A queued task must be `start`ed first.
   - `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" done [--date YYYY-MM-DD] -- "<id|title>"`
 
-A missing target, an already-matching state, or a malformed `--date` is reported and
-writes nothing (exit 1). **Targeting by title is best-effort:** prefer the dotted ID, and
+A missing target, an already-matching state, an out-of-order transition, a malformed
+add field or `--date`, or an invalid `GROUP.TYPE` namespace is reported and writes
+nothing (exit 1).
+A queued `done` identifies the task as queued and tells the caller to `start` it first.
+**Targeting by title is best-effort:**
+prefer the dotted ID, and
 note that if two ID-less items share a title, `start`/`done` act on the first — give one
 an ID (`/ca:task start --as <group>.<type> -- "<title>"`) to disambiguate.
 
@@ -48,4 +54,5 @@ an ID (`/ca:task start --as <group>.<type> -- "<title>"`) to disambiguate.
 - MUST write the board only through `taskwrite.py` (the pure transforms), never a
   free-hand Edit that can malform the schema.
 - `start` MUST stamp a started date — never leave a dateless `[~]`.
+- `done` MUST target an in-progress task — a queued task must go through `start` first.
 - MUST NOT delete a task to "complete" it — mark it `done` so the record survives.

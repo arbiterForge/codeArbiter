@@ -1,0 +1,17 @@
+{
+  "name": "ca-pi",
+  "version": "0.1.1",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "pi": {
+    "extensions": [
+      "./plugins/ca-pi/extensions/codearbiter.js"
+    ],
+    "skills": [
+      "./plugins/ca-pi/skills"
+    ]
+  }
+}

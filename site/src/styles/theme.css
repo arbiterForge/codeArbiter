@@ -332,6 +332,73 @@
   letter-spacing: 0.04em;
 }
 
+/* The statusline guide annotates the real PNG without modifying or redrawing it. */
+.ca-statusline-map {
+  position: relative;
+  width: 100%;
+}
+
+.ca-statusline-map > img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ca-statusline-map__marker {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: clamp(1rem, 2.2vw, 1.45rem);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: 1px solid #f0f3f6;
+  border-radius: 50%;
+  background: #0b0f14;
+  color: #f0f3f6;
+  box-shadow: 0 0 0 2px rgb(150 92 230 / 72%);
+  font: 700 clamp(0.58rem, 1.25vw, 0.78rem) / 1 ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+.ca-statusline-map__marker--1 { left: 3.1%; top: 8%; }
+.ca-statusline-map__marker--2 { left: 3.1%; top: 31%; }
+.ca-statusline-map__marker--3 { left: 55.5%; top: 31%; }
+.ca-statusline-map__marker--4 { left: 96.5%; top: 31%; }
+.ca-statusline-map__marker--5 { left: 3.1%; top: 52%; }
+.ca-statusline-map__marker--6 { left: 11%; top: 78%; }
+.ca-statusline-map__marker--7 { left: 27%; top: 78%; }
+.ca-statusline-map__marker--8 { left: 37%; top: 78%; }
+.ca-statusline-map__marker--9 { left: 49%; top: 78%; }
+
+.ca-statusline-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem 1rem;
+  width: 100%;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ca-text-muted);
+  font: 0.78rem / 1.4 ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+.ca-statusline-map__legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ca-statusline-map__legend span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 60%, transparent);
+  border-radius: 50%;
+  color: var(--ca-text);
+  font-weight: 700;
+}
+
 /* =========================================================
    GATE-CATCH TERMINAL
    Usage: <div class="ca-terminal" role="region" aria-label="Gate catch demo">

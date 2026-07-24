@@ -27,6 +27,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
+from _gitexec import git_executable  # noqa: E402
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS, arbiter_active,
     content_digest, is_migration_path, line_digest, marker_fresh,
@@ -59,7 +61,7 @@ def repo_root():
     no separate env read is needed here."""
     try:
         out = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
+            [git_executable(), "rev-parse", "--show-toplevel"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=5,
         )
@@ -73,7 +75,7 @@ def repo_root():
 def _git(args, cwd):
     try:
         return subprocess.run(
-            ["git"] + args, cwd=cwd, capture_output=True, text=True,
+            [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=10,
         )
     except Exception:  # noqa: BLE001
@@ -315,9 +317,8 @@ def run(host, argv=None):
     resolves to the SAME instance the caller passed here — no second
     `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
     `fake_host`."""
-    set_host(host)
-    main()
-    return 0
+    return _entrylib.dispatch(host, argv, main, set_host,
+                               pass_argv=False, propagate_result=False)
 
 
 if __name__ == "__main__":

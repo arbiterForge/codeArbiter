@@ -16,6 +16,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, arbiter_active, get_host, is_ci_path, is_deploy_path,
     project_root, read_input, remind, repo_rel, set_host, utf8_stdio,
@@ -195,9 +196,8 @@ def run(host, argv=None):
     to the SAME instance the caller passed here — no second
     `hostapi.load_host()`, and `run(fake_host)` genuinely exercises
     `fake_host`."""
-    set_host(host)
-    main()
-    return 0
+    return _entrylib.dispatch(host, argv, main, set_host,
+                               pass_argv=False, propagate_result=False)
 
 
 if __name__ == "__main__":

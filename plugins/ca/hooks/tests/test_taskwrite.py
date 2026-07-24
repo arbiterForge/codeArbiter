@@ -127,11 +127,12 @@ class TaskwriteContentionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # One instrumented source copy shared by every test in this class:
-        # taskwrite.py, hostapi.py, _taskboardlib.py, _hooklib.py are the
-        # complete, stdlib-only dependency closure (verified — none of them
-        # imports anything else project-local).
+        # taskwrite.py, hostapi.py, _gitexec.py, _taskboardlib.py, and
+        # _hooklib.py are the complete stdlib-only dependency closure.
         cls._copy_dir = tempfile.mkdtemp(prefix="ca-taskwrite-hookscopy-")
-        for name in ("taskwrite.py", "hostapi.py", "_taskboardlib.py", "_hooklib.py"):
+        for name in (
+                "taskwrite.py", "hostapi.py", "_gitexec.py",
+                "_taskboardlib.py", "_hooklib.py"):
             shutil.copy2(os.path.join(_HOOKS_DIR, name),
                         os.path.join(cls._copy_dir, name))
         hooklib_copy = os.path.join(cls._copy_dir, "_hooklib.py")

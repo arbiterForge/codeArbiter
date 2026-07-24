@@ -25,8 +25,9 @@ uses and must never be treated as approved exceptions.
 
 ## Secret store and access method
 
-This project has no secrets vault. The only secret in the system is
-`FARM_API_KEY`, the API key for the cost-arbitrage farm dispatcher.
+This project has no secrets vault. The only secret codeArbiter manages for its
+main governance/farm runtime is `FARM_API_KEY`, the API key for the
+cost-arbitrage farm dispatcher.
 
 **Approved access method:** `process.env.FARM_API_KEY` in Node.js. This key is
 injected by the CI environment (GitHub Actions secret) or by the developer's
@@ -51,8 +52,24 @@ running untrusted code is stealable, `--with-claude` is hard-defaulted to
 offline/Anthropic-only egress and its credential volume is never co-mounted with
 an untrusted source volume (`TokenCoMountRejectedError`).
 
-All other env vars (`FARM_MODEL`, `FARM_BASE_BRANCH`, etc.) are non-sensitive
-configuration and may freely use `process.env`.
+Pi host authentication is a separate opaque external trusted-runtime boundary
+(ADR-0014). Pi may resolve provider credentials from its user-owned auth store,
+provider environment variables, or credential commands. `ca-pi` never reads,
+parses, copies, snapshots, logs, or reimplements that resolution, and it never
+stores Pi credentials in `.codearbiter/`. Parent and child requests name an
+exact provider and model; silent provider/model fallback is prohibited.
+
+A `ca-pi` child environment is built from a minimal OS/runtime baseline, not a
+copy of the parent environment. It explicitly excludes `FARM_API_KEY` and
+`CLAUDE_CODE_OAUTH_TOKEN` and admits only necessary runtime variables plus the
+selected provider's declared configuration. Task/prompt content is stdin-only,
+never argv, environment, or a temporary file. Tests use isolated Pi homes and
+dummy credentials and must not inspect or mutate the operator's real auth store.
+
+All other codeArbiter-defined env vars (`FARM_MODEL`, `FARM_BASE_BRANCH`, etc.)
+are non-sensitive configuration and may freely use `process.env`. Provider
+environment variables remain secret-bearing external Pi inputs and are governed
+by ADR-0014's child allowlist and redaction contract, not by that general rule.
 
 ---
 
@@ -94,11 +111,16 @@ be used for API calls, except loopback (`127.0.0.1`/`localhost`) for test mocks
 — see the boundary-crossings table.
 
 The **resolved** `apiBaseUrl` — after the `FARM_API_BASE_URL` env override,
-`plan.meta.apiBaseUrl`, and the built-in default are applied in that precedence —
-is validated before every outbound call by `assertSecureBaseUrl` (`farm.ts`),
-which requires the `https://` scheme (or the documented loopback `http://`
-exception, no userinfo). Validation uses WHATWG `URL` parsing — the same parser
-`fetch` uses for connection targeting — so there is no parser-differential bypass.
+`plan.meta.apiBaseUrl`, `FARM_DEFAULT_API_BASE_URL`, and the built-in default are
+applied in that precedence — is validated by `assertSecureBaseUrl` (`farm.ts`)
+both during configuration resolution and again at each fetch-producing boundary.
+The guard requires the `https://` scheme (or the documented loopback `http://`
+exception) and rejects userinfo on every scheme. Validation uses WHATWG `URL`
+parsing — the same parser `fetch` uses for connection targeting — so there is no
+parser-differential bypass. Both farm POSTs refuse automatic redirects, preventing
+a validated endpoint from forwarding request bodies to an unvalidated transport.
+Provider-controlled response bodies are consumed but never copied into stderr,
+retry prompts, or reports; endpoint diagnostics emit only the parsed origin.
 This supersedes the prior parse-time check that covered only `plan.meta.apiBaseUrl`.
 
 **Outbound surface — the update-available notifier.** The update-notifier
@@ -139,14 +161,14 @@ npm dependencies; the docs site under `site/` is not part of that payload):
 - BSD-3-Clause
 - BlueOak-1.0.0 — permissive, OSI-approved "better-MIT"; imposes no obligations
 - CC0-1.0 — public-domain dedication; imposes no obligations
-- MPL-2.0 (build-time, `site/` ONLY): weak, file-level copyleft. The obligation
+- MPL-2.0 (development/build-time only): weak, file-level copyleft. The obligation
   attaches only to the MPL-licensed source files themselves and edits made to
-  them; it never reaches files that merely consume the library. Approved solely
-  for build-time docs-site dependencies under `site/` (introduced by
-  `lightningcss` via `vite@8`). The docs site is not part of the shipped plugin
-  payload, and `lightningcss` is a build tool whose output (minified CSS) carries
-  no MPL obligation. NOT approved for the plugin payload (`plugins/**`) or any
-  distributed artifact.
+  them; it never reaches files that merely consume the library. Approved for
+  build-time docs-site dependencies under `site/` and development-only tooling
+  under `plugins/*/tools` (introduced by `lightningcss` via `vite@8`). It is not
+  approved as a runtime plugin dependency or distributed artifact. `node_modules`,
+  native bindings, WASM, Vite, Rolldown, Lightning CSS, and their source files must
+  not enter a shipped plugin payload; built outputs must be checked for their absence.
 - LGPL-3.0-or-later (build-time, `site/` ONLY): weak, library-level copyleft
   discharged by keeping the component replaceable. Approved solely for the 18
   `@img/sharp-libvips-*` prebuilt binaries pulled by `sharp` as a build-time
@@ -154,9 +176,10 @@ npm dependencies; the docs site under `site/` is not part of that payload):
   replaceable build tool, and its output (optimized images) carries no LGPL
   obligation. NOT approved for the plugin payload (`plugins/**`) or any
   distributed artifact.
-- 0BSD (build-time, `site/` ONLY): a public-domain-equivalent BSD variant with no
-  attribution requirement — more permissive than MIT. Approved for the `tslib`
-  runtime helper pulled transitively under `site/`.
+- 0BSD (development/build-time only): a public-domain-equivalent BSD variant with
+  no attribution requirement — more permissive than MIT. Approved for `tslib`
+  pulled transitively under `site/` and development-only `plugins/*/tools` locks.
+  It is not approved as a runtime plugin dependency or distributed artifact.
 
 `BlueOak-1.0.0` and `CC0-1.0` were approved 2026-06-22 (user decision via SMARTS
 arbitration, checkpoint 2026-06-22) to cover transitive `site/` dependencies
@@ -178,6 +201,14 @@ BY SUaDtL@users.noreply.github.com, via SMARTS arbitration; resolves
 `[CONFIRM-08]`), scoped to build-time `site/` dependencies only, to cover the 18
 `@img/sharp-libvips-*` binaries (`sharp` docs-site image optimizer) and `tslib`.
 Neither reaches the shipped plugin payload.
+
+`MPL-2.0` and `0BSD` were extended 2026-07-14 (user decision,
+BY SUaDtL@users.noreply.github.com, conflict resolution option 1) to
+development-only tooling under `plugins/*/tools`. This resolves the `ca-pi`
+Vitest 4.1.9 lock gate and the pre-existing `ca-sandbox` lock-policy mismatch.
+The extension does not authorize runtime dependencies or distribution of
+`node_modules`, native binaries, WASM, or dependency source; release checks must
+prove those artifacts are absent from shipped plugin payloads.
 
 Any new dependency with a license outside this list requires an explicit
 review and an entry in `overrides.log` before merging.
@@ -225,15 +256,15 @@ because the Codex harness runs every hook in the session cwd it also stamps
 into the payload. If an entry ever passes the payload, the documented
 precedence above is the contract it inherits.
 
-**Hooks-install re-probe fast-path is fail-safe (#194).** To cut SessionStart
+**Hooks-install re-probe and shared-enforcer identity are fail-safe (#194, ADR-0015).** To cut SessionStart
 latency, `_githooks.install()` may skip the git-spawn hooks-dir probe when a
 cheap on-disk cache proves the shims are already current. The skip fires ONLY
 when it can positively, spawn-free confirm no hooks redirect: the cached dir is
 exactly `<root>/.git/hooks` AND `_confirmed_no_local_hooks_path` finds no
 `core.hooksPath` (a **grammar-free** case-insensitive substring scan of
 `.git/config`/`.git/config.worktree` for `hookspath` — cannot under-detect any
-git-config spelling) AND no `[include]` directive AND the shims still match the
-current enforcer path. Any read failure, any `hookspath` occurrence, an
+git-config spelling) AND no `[include]` directive AND the host-neutral shims
+still match the shared drop-in contract. Any read failure, any `hookspath` occurrence, an
 `[include]`, a cached custom hooksPath, or a global-config change (a
 `~/.gitconfig` + XDG-config mtime token invalidates the cache) → fall through to
 the full probe. The fail direction is **install-when-unsure, never
@@ -242,6 +273,65 @@ unwired. Accepted residual: a `$GIT_CONFIG_GLOBAL`/`$GIT_CONFIG_SYSTEM`
 env-repointed config or `/etc/gitconfig` `core.hooksPath` set AFTER a
 default-location install (the cold/first install always resolves those via the
 full probe).
+
+Each host refreshes a stable, manifest-named `<plugin>.path` entry under the
+repo-owned `.git/codearbiter-hooksd/`; version-directory-shaped legacy entries
+are not authorities. The shim runs every live registered enforcer in
+deterministic order, returns the first non-zero verdict, and blocks when none
+resolve. Pre-push input is captured once and replayed identically to every
+enforcer. Registry order therefore cannot let an older host plugin mask a
+stricter sibling.
+
+Pi's trusted Python path, Git path, and owning plugin are one atomically
+replaced three-record identity bundle. Identity-less legacy hosts preserve an
+existing complete bundle. An incomplete first registration or failed first
+write aborts Pi activation; a refresh failure preserves a prior complete
+bundle. Once an identity path exists - including a broken symlink - the shim
+requires a regular bundle containing exactly three records, non-empty owner,
+and existing executable files. Any malformed or stale state blocks before
+enforcer dispatch; it never downgrades to ambient `PATH`. Uninstall removes the
+bundle only when the uninstalling plugin owns it.
+
+---
+
+## Pi adapter and child-process security
+
+`ca-pi` is an enforcement adapter inside Pi's cooperative trusted-extension
+runtime, not an OS sandbox. It never grants project trust. A parent extension
+installed globally may be discovered and loaded before Pi's project-trust
+decision; extension loading is discovery, not repository authorization. On each
+`session_start`, the adapter invalidates prior lifecycle and cached executable/
+bridge identities, enters an activation-check fail-closed generation, and reads
+only the canonical `.codearbiter/CONTEXT.md` marker without Python or Git. If the
+marker is enabled, `context.isProjectTrusted?.() === true` is required before
+Python/Git resolution, bridge/shared-core startup, enforcement installation,
+persona loading, hook discovery, repository Git reads, or fetch. Missing, false,
+or failing trust performs none of those operations: mutators remain blocked,
+native reads use fresh untrusted settings, one fixed redacted trust direction is
+shown, and doctor runs without bridge probe or wrapper live fire. Project-local
+installs also retain Pi's load-time trust gate and this adapter-level check.
+
+Child launches disable approval, ambient extension/skill/template/theme/context
+discovery, and session loading, then explicitly load the trusted enforcement-only
+`ca-pi` adapter and generated skill/charter paths. Command or skill collisions
+fail visibly rather than shadowing a governance surface.
+
+`CODEARBITER_SUBAGENT=1` disables recursive author/reviewer dispatch only. Every
+gate, audit, redaction, and doctor control stays active in the child. An ambient
+or user-supplied marker outside the runner's validated child contract is a
+fail-closed diagnostic. Tasks use bounded stdin; subprocesses use absolute
+executables/bridge paths, argv arrays, `shell: false`, explicit cwd, strict
+JSON/JSONL schemas, bounded/redacted stdout and stderr, and cross-platform
+process-tree termination on cancellation or timeout.
+
+Unknown Pi tools are potentially mutating and blocked by default. A tool becomes
+read-only or governed only through an explicit generated host-descriptor entry
+and parity fixtures. The adapter must be the final authority over governed tool
+arguments: a live promotion test must prove that no later trusted extension can
+rewrite approved arguments before execution. If Pi cannot guarantee that order,
+Pi promotion stops and ADR-0013 is revisited. Same-process extensions already
+trusted by the operator otherwise retain arbitrary same-user execution under
+ADR-0010's cooperative-agent residual-risk boundary.
 
 ---
 
@@ -356,6 +446,9 @@ reopens if the threat model expands to untrusted agents.
 | Fail-open on hook input parse | `_hooklib.py:read_input()` | Parse failure must not brick the session |
 | Unsigned dispatcher commits | `NOSIGN` constant in `farm.ts` | CI signing servers reject unattended commits; the integration PR is the signed artifact |
 | Gate command shell execution | `plan.json` `gate.commands` / `test.command` and `FARM_MUTATION_CMD` run via `cmd.exe /c` / `bash -c` in `farm.ts` | Operator-authored, length-capped (≤1024), PR-reviewed; deterministic gate by design — no untrusted source. See ADR for the trust model |
-| Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo) | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, no cleartext-to-remote path |
+| Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo); farm POSTs use `redirect: "error"` | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, and redirect refusal prevents a mock from forwarding the body to a remote cleartext target |
 | Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
 | `curl \| bash` nixpacks install | `build.ts` runs `curl -fsSL https://nixpacks.com/install.sh \| bash` when nixpacks is absent | Build-time host convenience; the URL is a hardcoded constant (not attacker-controllable). Tracked: prefer declaring nixpacks a prerequisite or pinning a checksum (NEEDS-TRIAGE in the ca-sandbox plan) |
+| Pi host-managed provider authentication | Pi resolves its user-owned auth store, provider environment, or credential command outside codeArbiter | Opaque trusted-runtime boundary under ADR-0014; `ca-pi` never reads/copies/logs credentials and child environments are minimal and provider-specific |
+| Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
+| Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0014 |

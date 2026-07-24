@@ -4,7 +4,7 @@
 
 ## Structure
 
-- **Header** — run-id, scope, date, models used (from `run.jsonl`), the token estimate from Phase 0 vs. actuals (summed from `lens-completed` `tokens` in `run.jsonl` when present; best-effort, since the orchestrator cannot always observe subagent spend), and a launched/skipped-lens summary with the skip reason per lens.
+- **Header** — run-id, scope, date, models used (from `run.jsonl`), the token estimate from Phase 0 vs. actuals (summed from `lens-completed` `tokens` in `run.jsonl` when present; best-effort, since the orchestrator cannot always observe subagent spend), including the `complete|partial|unavailable` status and unavailable reasons, and a launched/skipped-lens summary with the skip reason per lens.
 - **Findings** — grouped by **calibrated** `final_severity` (critical to low), then by lens/type within each severity. Each entry on one line: `id` · `path:line(s)` · one-line description · remediation shape · triage `decision` · link to `plans/phase-<n>.md`. Only `keep`/`combine` findings appear here.
 - **Decisions needed** — a separate section for `decision-required` findings, each as its question + options. These need a decision, not a fix; do not fold them into the severity list.
 - **Investigate appendix** — medium/low findings below the confidence gate after calibration (defined in `triage.md`; below-gate critical/high land in Decisions needed instead); `id` + `path:line` + one terse line each. Preserved, not filed.

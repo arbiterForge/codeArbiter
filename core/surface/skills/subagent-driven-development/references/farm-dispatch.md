@@ -21,7 +21,8 @@ choice over web hearsay:
    the *candidate* free model ids (codenames included). This step is candidate **discovery**, not a
    quality judgment.
 3. Run a canary probe to judge quality objectively: set `FARM_CANDIDATE_MODELS=<comma-separated ids>`
-   and invoke `node "{{PLUGIN_ROOT}}/tools/farm.js" --canary "<plan.json>"`. It runs the plan's
+   and {{IF:pi}}call `codearbiter_farm_preview` with the project-relative plan plus
+   `canary: true`{{ELSE}}invoke `node "{{PLUGIN_ROOT}}/tools/farm.js" --canary "<plan.json>"`{{END}}. It runs the plan's
    smallest task against each candidate and writes `.farm/canary-report.json` ranked by measured
    pass-rate / attempts / latency. Pick the top passing model.
 4. Surface the choice with its measured basis: "Selected `<model-id>` — canary passed in `<n>` attempts,
@@ -38,9 +39,22 @@ choice over web hearsay:
 
 Invoke the farm dispatcher:
 
+{{IF:pi}}Call the trusted `codearbiter_farm_preview` tool with:
+
+```json
+{ "plan": ".codearbiter/plans/<slug>.plan.json" }
+```
+
+For the measured canary step, add `"canary": true`. The tool resolves the one shared built backend;
+if it reports `terminal: degraded`, surface that preview degradation and rebuild the sibling bundle.
+Do not shell out to a nonexistent Pi-local `tools/farm.js` and do not fall back silently.
+
+{{ELSE}}
 ```
 node "{{PLUGIN_ROOT}}/tools/farm.js" "{{PROJECT_DIR}}/.codearbiter/plans/<slug>.plan.json"
 ```
+
+{{END}}
 
 Run it with cwd set to `{{PROJECT_DIR}}` (the dispatcher resolves `.farm/` and git worktrees
 against the current directory). It runs tasks concurrently (up to `FARM_CONCURRENCY`, default 4),

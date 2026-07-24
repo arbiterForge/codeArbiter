@@ -34,6 +34,8 @@
 # implemented here.
 
 import subprocess
+
+from _gitexec import git_executable
 from collections import namedtuple
 from datetime import datetime, timezone
 
@@ -209,7 +211,7 @@ def commit_timeline(root):
     """
     try:
         result = subprocess.run(
-            ["git", "log", "--format=%cI", "--reverse"],
+            [git_executable(), "log", "--format=%cI", "--reverse"],
             cwd=root,
             capture_output=True,
             text=True,

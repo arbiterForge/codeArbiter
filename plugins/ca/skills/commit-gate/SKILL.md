@@ -94,7 +94,7 @@ Read the complete staged diff (`git diff --cached`). Flag as blocking:
 - Tests disabled or skipped that were not intentionally disabled.
 - Scope creep — changes outside the agreed feature or fix boundary.
 
-**Board-edit exemption (ADR-0008):** an edit to `open-tasks.md` where `_taskboardlib.classify_board_diff(old, new)` returns a clean transition (done-flip `[~]`→`[x]`, start-flip `[ ]`→`[~]`, or a single queued-add `[ ]`) is **expected and RETAINED** — it is not scope creep and MUST NOT be unstaged. Any other `open-tasks.md` change — a reworded or deleted entry, or an arbitrary content edit — does not classify as a transition and still flags as scope creep.
+**Board-edit exemption (ADR-0008):** an edit to `open-tasks.md` where `_taskboardlib.classify_board_diff(old, new)` returns a clean transition (done-flip `[~]`→`[x]`, start-flip `[ ]`→`[~]` with its optional minted dotted ID, or a single queued-add `[ ]`) is **expected and RETAINED** — it is not scope creep and MUST NOT be unstaged. Any other `open-tasks.md` change — a reworded or deleted entry, or an arbitrary content edit — does not classify as a transition and still flags as scope creep.
 
 **Provenance re-baseline exemption (ADR-0008):** a `.codearbiter/.provenance/<doc>.json` file written by the Phase 5.5 auto-heal re-baseline is likewise **expected and RETAINED** — it is not scope creep and MUST NOT be unstaged. A heal-proposed doc or code-map edit (the claim-changed path from Phase 5.5) appears in the diff for normal review; treat it as any other finding. This exemption waives the scope-creep flag only; the secrets check is not waived — the automated re-scan in Phase 5.5 covers the provenance file.
 

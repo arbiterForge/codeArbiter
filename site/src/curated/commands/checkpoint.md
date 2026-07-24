@@ -17,6 +17,10 @@ re-zeros the `over:N` overrides-since-checkpoint counter the statusline shows, b
 current `overrides.log` line count to `.codearbiter/last-checkpoint`. This is a report, not a
 promotion gate — it surfaces findings and enforces no sign-off.
 
+On Codex, the reviewer fleet runs inline in the current thread rather than through isolated
+`Task`-tool dispatch — see [Claude Code + Codex → Intentional host
+differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
+
 ## Usage
 
 ```

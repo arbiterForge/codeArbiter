@@ -77,6 +77,23 @@ class TestPhase23(unittest.TestCase):
         self.assertEqual(inp.get("n"), 3)          # small scalar kept
         self.assertNotIn("query", inp)             # bulky dropped
 
+    def test_mcp_net_negative_eligibility_is_unchanged_for_unicode(self):
+        objs = [
+            {"type": "user", "uuid": "u0", "parentUuid": None,
+             "message": {"role": "user", "content": "go"}},
+            asst("a0", "u0", [{"type": "tool_use", "id": "t0",
+                                 "name": "mcp__github__search_code",
+                                 "input": {"payload": [chr(0x1F600) * 20]}}]),
+            user_result("u1", "a0", "t0", "ok"),
+            asst("afinal", "u1", [{"type": "text", "text": "done"}]),
+        ]
+        data = to_bytes(objs)
+        out, report, errs = prune(
+            data, strategies=["mcp-payload-condense"], keep_recent=0)
+        self.assertEqual(errs, [])
+        self.assertEqual(out, data)
+        self.assertEqual(report["mcp-payload-condense"]["lines"], 0)
+
     def test_shell_tail_keep_keeps_verdict(self):
         body = "\n".join(f"line {i}" for i in range(200)) + "\nEXIT 0"
         objs = [

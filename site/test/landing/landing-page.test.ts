@@ -215,10 +215,10 @@ describe("install demo terminal (get-it-running below the fold)", () => {
 });
 
 describe("Claude Code and Codex launch contract", () => {
-  it("landing metadata, heading, and tagline name both supported hosts", () => {
+  it("landing metadata, heading, and tagline name the governance hosts", () => {
     expect(indexMdx).toMatch(/Claude Code.*Codex|Codex.*Claude Code/);
     expect(indexMdx).toContain(
-      "Shared enforcement and project-context parity across Claude Code and Codex",
+      "Shared enforcement and project-context parity across Claude Code, Codex, and Pi",
     );
   });
 

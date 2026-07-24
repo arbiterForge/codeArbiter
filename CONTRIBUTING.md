@@ -13,7 +13,9 @@ By participating you agree to abide by our [Code of Conduct](./CODE_OF_CONDUCT.m
   that reproduces it) is worth a great deal.
 - **Run a Feature Forge preview and send data.** This is the fastest way to help a
   preview graduate. See [Feature Forge](./README.md#feature-forge); each preview
-  ships a `dry` mode that records what it *would* have done, changing nothing.
+  names its opt-in and the evidence it still needs. `ca-pi` users are especially
+  welcome to report real-repository host or workflow mismatches while the adapter
+  remains in preview.
 - **Improve docs.** Corrections and clarifications are always welcome.
 - **Propose or build a feature.** Open an issue first so we can align on scope
   before you invest the work.

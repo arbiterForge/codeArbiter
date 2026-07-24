@@ -100,7 +100,7 @@ class TestDurableRecordAC1(_GateEventsFixture):
         self.assertIn("hook=pre-bash.py", text)
 
     def test_record_carries_the_resolved_host_name(self):
-        # ADR-0012/observability-001: two hosts (Claude, Codex) can share one
+        # ADR-0012/observability-001: three hosts (Claude, Codex, Pi) can share one
         # gate-events.log — each line must be attributable to the host that
         # wrote it via get_host().name. project_root() itself is threaded
         # through get_host() too (#260), so the fake host must resolve a real

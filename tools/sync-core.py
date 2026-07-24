@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # codeArbiter — canonical-core sync tool (ADR-0011, codex-support M1).
 #
-# core/pysrc/ holds the CANONICAL copy of every host-neutral hook python file
+# core/pysrc/ holds the CANONICAL copy of every host-neutral hook Python file
 # (all shared _*lib.py modules, hostapi.py, and every entry script). Each
 # plugin vendors byte-identical copies in its own hooks/ directory — plugins
 # must stay self-contained installable payloads, so they cannot import out of
@@ -10,6 +10,8 @@
 # Deliberately NOT synced: each plugin's _host.py (the per-plugin host
 # definition — the one file that is SUPPOSED to differ between plugins) and
 # anything that exists only in the plugin (hooks.json, tests/, __pycache__).
+# Every hooks target comes from core/hosts.json through host_descriptors.py;
+# this file deliberately owns no host list of its own.
 #
 # Modes:
 #   python tools/sync-core.py            # write: core/pysrc/*.py -> each plugin
@@ -26,12 +28,8 @@ import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CORE = os.path.join(REPO, "core", "pysrc")
-
-# Every plugin hooks dir that vendors the core.
-PLUGINS = (
-    os.path.join("plugins", "ca", "hooks"),
-    os.path.join("plugins", "ca-codex", "hooks"),
-)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from host_descriptors import DescriptorError, load_host_descriptors  # noqa: E402
 
 # Per-plugin files that must never be synced from core even if a same-named
 # file appears there by mistake.
@@ -69,10 +67,24 @@ def main(argv=None):
         sys.stderr.write(f"sync-core: no .py files found under {CORE}\n")
         return 2
 
+    try:
+        plugins = tuple(host.hooks_dir for host in load_host_descriptors(REPO))
+    except DescriptorError as error:
+        sys.stderr.write(f"sync-core: {error}\n")
+        return 2
+
     drifted = []   # (plugin-relative path) whose vendored bytes differ / are absent
     written = 0
-    for rel_hooks in PLUGINS:
+    for rel_hooks in plugins:
         hooks_dir = os.path.join(REPO, rel_hooks)
+        if not check:
+            try:
+                os.makedirs(hooks_dir, exist_ok=True)
+            except OSError as error:
+                sys.stderr.write(
+                    f"sync-core: cannot create hooks target {hooks_dir}: {error}\n"
+                )
+                return 1
         for name in names:
             src = os.path.join(CORE, name)
             dst = os.path.join(hooks_dir, name)
@@ -90,10 +102,16 @@ def main(argv=None):
             if check:
                 drifted.append(os.path.join(rel_hooks, name).replace(os.sep, "/"))
                 continue
+            tmp = dst + ".tmp-sync"
             try:
-                with open(dst, "wb") as f:  # binary: byte-exact, LF preserved
+                with open(tmp, "wb") as f:  # binary: byte-exact, LF preserved
                     f.write(src_bytes)
+                os.replace(tmp, dst)  # atomic: never leaves a partially-written dst
             except OSError as e:
+                try:
+                    os.remove(tmp)
+                except OSError:
+                    pass
                 sys.stderr.write(f"sync-core: cannot write vendored copy {dst}: {e}\n")
                 return 1
             written += 1
@@ -106,11 +124,11 @@ def main(argv=None):
             print("run `python tools/sync-core.py` to re-vendor from core.")
             return 1
         print(f"sync-core --check: OK ({len(names)} core file(s) x "
-              f"{len(PLUGINS)} plugin(s), all byte-identical)")
+              f"{len(plugins)} plugin(s), all byte-identical)")
         return 0
 
     print(f"sync-core: {written} file(s) written, "
-          f"{len(names) * len(PLUGINS) - written} already current")
+          f"{len(names) * len(plugins) - written} already current")
     return 0
 
 

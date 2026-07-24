@@ -42,6 +42,7 @@ Invoke the farm dispatcher:
 node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" "${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.plan.json"
 ```
 
+
 Run it with cwd set to `${CLAUDE_PROJECT_DIR}` (the dispatcher resolves `.farm/` and git worktrees
 against the current directory). It runs tasks concurrently (up to `FARM_CONCURRENCY`, default 4),
 enforces gates and a zero-token anti-gaming guard, and writes to `${CLAUDE_PROJECT_DIR}/.farm/`:

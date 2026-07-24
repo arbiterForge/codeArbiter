@@ -22,6 +22,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -63,7 +64,14 @@ class _SyntheticRepoFixture(unittest.TestCase):
         self._patches = [
             mock.patch.object(S, "REPO", self.repo),
             mock.patch.object(S, "CORE", self.core),
-            mock.patch.object(S, "PLUGINS", (self.plugin_a, self.plugin_b)),
+            mock.patch.object(
+                S,
+                "load_host_descriptors",
+                return_value=(
+                    SimpleNamespace(hooks_dir=self.plugin_a),
+                    SimpleNamespace(hooks_dir=self.plugin_b),
+                ),
+            ),
         ]
         for p in self._patches:
             p.start()
@@ -196,7 +204,9 @@ class TestUnwritableDestination(_SyntheticRepoFixture):
         real_open = open
 
         def _boom_open(path, mode="r", *a, **kw):
-            if os.path.abspath(path) == os.path.abspath(bad_dst) and "w" in mode:
+            # sync-core writes atomically via dst + ".tmp-sync" then os.replace;
+            # fail any write destined for bad_dst, including its tmp sibling.
+            if os.path.abspath(str(path)).startswith(os.path.abspath(bad_dst)) and "w" in mode:
                 raise OSError("simulated write failure")
             return real_open(path, mode, *a, **kw)
 

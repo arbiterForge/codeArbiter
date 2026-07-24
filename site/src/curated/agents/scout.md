@@ -7,9 +7,11 @@ related: [skills/decision-variance, skills/context-creation, skills/commit-gate]
 
 Internal evidence-gatherer: scans an assigned code scope and reports file-path-and-line-number
 evidence of architectural decisions, with no excerpts and no variance judgment — that stays with the
-dispatching skill. Dispatched by `decision-variance` and `context-creation` when a single inline scan
-would consume significant context, and by `subagent-driven-development`/`commit-gate` for scoped
-evidence gathering elsewhere. Never dispatched directly by the orchestrator.
+dispatching skill. `Decision-variance` uses it when a single inline scan would consume significant
+context. `Context-creation` always uses six isolated scout assignments because its later synthesis
+must consume reports rather than raw source. It is also used by
+`subagent-driven-development`/`commit-gate` for scoped evidence gathering elsewhere. Never
+dispatched directly by the orchestrator.
 
 ## Why this model tier
 

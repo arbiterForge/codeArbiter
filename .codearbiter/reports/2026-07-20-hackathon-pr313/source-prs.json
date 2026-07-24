@@ -1,0 +1,440 @@
+{
+    "schema":  "codearbiter-hackathon-pr313-sources-v1",
+    "targetPr":  313,
+    "targetHead":  "139694cbd55797b4f9daa399df19d13329b0915d",
+    "included":  [
+                     {
+                         "number":  347,
+                         "title":  "fix(hooks): block Git rollback of audit logs",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/347",
+                         "base":  "main",
+                         "head":  "fix/h05-git-audit-rollback",
+                         "headOid":  "fa53c73672e50157d4c501f8f45ba4e91cc168db",
+                         "commits":  [
+                                         "ccf45c3e200da30a8cff7f28c164293e940b16fc",
+                                         "05e691e03fbfbac742dc61e53697547593066039",
+                                         "fa53c73672e50157d4c501f8f45ba4e91cc168db"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/gate-events.log",
+                                       ".codearbiter/sprint-log.md",
+                                       ".github/scripts/test_hook_guards.py",
+                                       "core/pysrc/pre-bash.py",
+                                       "plugins/ca/hooks/pre-bash.py",
+                                       "plugins/ca-codex/hooks/pre-bash.py"
+                                   ],
+                         "closes":  [
+                                        335
+                                    ]
+                     },
+                     {
+                         "number":  348,
+                         "title":  "docs(site): complete visual guide coverage",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/348",
+                         "base":  "main",
+                         "head":  "docs/333-visuals",
+                         "headOid":  "9a307a86757e1a120c96c1fe9387dbe07fe710af",
+                         "commits":  [
+                                         "9a307a86757e1a120c96c1fe9387dbe07fe710af"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/sprint-log.md",
+                                       "site/public/diagrams/activation-states.svg",
+                                       "site/public/diagrams/sandbox-boundary.svg",
+                                       "site/scripts/generator/generate.ts",
+                                       "site/src/content/docs/codearbiter-directory.md",
+                                       "site/src/content/docs/enforcement.md",
+                                       "site/src/content/docs/guides/the-statusline.md",
+                                       "site/src/content/docs/guides/troubleshooting.md",
+                                       "site/src/styles/theme.css",
+                                       "site/test/generator/diagrams.test.ts",
+                                       "site/test/generator/generate.test.ts"
+                                   ],
+                         "closes":  [
+                                        333
+                                    ]
+                     },
+                     {
+                         "number":  349,
+                         "title":  "fix(provenance): confine paths before hashing",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/349",
+                         "base":  "main",
+                         "head":  "fix/provenance-path-confinement",
+                         "headOid":  "757cb44f425fca98e1e070a29a1a10493c9b7245",
+                         "commits":  [
+                                         "48eeae8eedb507fbc4de511bc2f0aaab64a07dd3",
+                                         "757cb44f425fca98e1e070a29a1a10493c9b7245"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/open-tasks.md",
+                                       ".codearbiter/sprint-log.md",
+                                       ".github/scripts/test_provenancelib.py",
+                                       "core/pysrc/_provenancelib.py",
+                                       "plugins/ca/hooks/_provenancelib.py",
+                                       "plugins/ca-codex/hooks/_provenancelib.py"
+                                   ],
+                         "closes":  [
+
+                                    ]
+                     },
+                     {
+                         "number":  350,
+                         "title":  "fix(context): strip controls from provenance pointers",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/350",
+                         "base":  "main",
+                         "head":  "fix/provenance-pointer-controls",
+                         "headOid":  "8c7cf94f28f64a23a31ed04ac6fb41d55161e9f9",
+                         "commits":  [
+                                         "2243057d1648224d6dee3f9ebd6422d5a376d0d6",
+                                         "8c7cf94f28f64a23a31ed04ac6fb41d55161e9f9"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/open-tasks.md",
+                                       ".codearbiter/sprint-log.md",
+                                       ".github/scripts/test_readinjectlib.py",
+                                       "core/pysrc/_readinjectlib.py",
+                                       "plugins/ca/hooks/_readinjectlib.py",
+                                       "plugins/ca-codex/hooks/_readinjectlib.py"
+                                   ],
+                         "closes":  [
+
+                                    ]
+                     },
+                     {
+                         "number":  351,
+                         "title":  "docs(context): require isolated scout reports",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/351",
+                         "base":  "main",
+                         "head":  "docs/command-scout-parity",
+                         "headOid":  "4db693f366dd23e3e096b1a29c1fe80371f817e8",
+                         "commits":  [
+                                         "5f5d66e5bf97e4e90934d6703d92059bd676b571",
+                                         "4db693f366dd23e3e096b1a29c1fe80371f817e8"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/open-tasks.md",
+                                       ".github/scripts/test_provenance_wiring.py",
+                                       "core/surface/includes/codex-host-notes.md",
+                                       "core/surface/skills/context-creation/SKILL.md",
+                                       "plugins/ca/agents/scout.md",
+                                       "plugins/ca/skills/context-creation/SKILL.md",
+                                       "plugins/ca-codex/includes/codex-host-notes.md",
+                                       "plugins/ca-codex/routines/context-creation/SKILL.md",
+                                       "site/src/curated/agents/scout.md"
+                                   ],
+                         "closes":  [
+
+                                    ]
+                     },
+                     {
+                         "number":  354,
+                         "title":  "fix(farm): enforce secure API request boundaries",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/354",
+                         "base":  "main",
+                         "head":  "review/farm-base-url",
+                         "headOid":  "3f548e03b91283cba03b9141ecb097567eee7d46",
+                         "commits":  [
+                                         "43166cf0df4a926c6160520dcfd679a22fae3f55",
+                                         "3f548e03b91283cba03b9141ecb097567eee7d46"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/open-tasks.md",
+                                       ".codearbiter/reports/2026-07-20-farm-base-url-security-review.md",
+                                       ".codearbiter/security-controls.md",
+                                       "CHANGELOG.md",
+                                       "plugins/ca/tools/farm.js",
+                                       "plugins/ca/tools/farm.ts",
+                                       "plugins/ca/tools/farm.unit.test.ts"
+                                   ],
+                         "closes":  [
+                                        353
+                                    ]
+                     },
+                     {
+                         "number":  356,
+                         "title":  "test: decouple dirty semantics from statusline deadline",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/356",
+                         "base":  "main",
+                         "head":  "debug/git-dirty-ubuntu-flake",
+                         "headOid":  "9c79aa8bd34b6ed2f9f92f85c7724261ff9ef1fd",
+                         "commits":  [
+                                         "9c79aa8bd34b6ed2f9f92f85c7724261ff9ef1fd"
+                                     ],
+                         "paths":  [
+                                       "plugins/ca/hooks/tests/test_gitlib.py"
+                                   ],
+                         "closes":  [
+                                        352
+                                    ]
+                     },
+                     {
+                         "number":  357,
+                         "title":  "test: isolate NO_COLOR palette equality from session age",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/357",
+                         "base":  "main",
+                         "head":  "fix/no-color-age-boundary-flake",
+                         "headOid":  "ca7d9ea9c783c80eea257b86119f18e92ba57629",
+                         "commits":  [
+                                         "ca7d9ea9c783c80eea257b86119f18e92ba57629"
+                                     ],
+                         "paths":  [
+                                       "plugins/ca/hooks/tests/test_colorlib.py"
+                                   ],
+                         "closes":  [
+                                        355
+                                    ]
+                     },
+                     {
+                         "number":  358,
+                         "title":  "fix(tribunal): recover Codex reviewer token usage",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/358",
+                         "base":  "main",
+                         "head":  "fix/tribunal-token-telemetry",
+                         "headOid":  "47f103db5e2f21ec2f1a971487fd4baaf2d5ee83",
+                         "commits":  [
+                                         "47f103db5e2f21ec2f1a971487fd4baaf2d5ee83"
+                                     ],
+                         "paths":  [
+                                       "core/surface/includes/codex-host-notes.md",
+                                       "core/surface/skills/tribunal/references/report.md",
+                                       "core/surface/skills/tribunal/references/schemas.md",
+                                       "core/surface/skills/tribunal/references/telemetry.md",
+                                       "core/surface/skills/tribunal/SKILL.md",
+                                       "plugins/ca/hooks/tests/test_codex_tribunal_usage.py",
+                                       "plugins/ca-codex/CHANGELOG.md",
+                                       "plugins/ca-codex/hooks/tribunal-usage.py",
+                                       "plugins/ca-codex/includes/codex-host-notes.md",
+                                       "plugins/ca-codex/routines/tribunal/references/report.md",
+                                       "plugins/ca-codex/routines/tribunal/references/schemas.md",
+                                       "plugins/ca-codex/routines/tribunal/references/telemetry.md",
+                                       "plugins/ca-codex/routines/tribunal/SKILL.md"
+                                   ],
+                         "closes":  [
+                                        311
+                                    ]
+                     },
+                     {
+                         "number":  359,
+                         "title":  "fix(tribunal): recover Claude reviewer token usage",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/359",
+                         "base":  "fix/tribunal-token-telemetry",
+                         "head":  "fix/claude-tribunal-token-telemetry",
+                         "headOid":  "9f4c9f4869425ca9ed9f5b7be03123597e94685d",
+                         "commits":  [
+                                         "9f4c9f4869425ca9ed9f5b7be03123597e94685d"
+                                     ],
+                         "paths":  [
+                                       "CHANGELOG.md",
+                                       "core/surface/skills/tribunal/references/schemas.md",
+                                       "core/surface/skills/tribunal/references/telemetry.md",
+                                       "core/surface/skills/tribunal/SKILL.md",
+                                       "plugins/ca/.claude-plugin/plugin.json",
+                                       "plugins/ca/hooks/tests/test_claude_tribunal_usage.py",
+                                       "plugins/ca/hooks/tests/test_codex_tribunal_usage.py",
+                                       "plugins/ca/hooks/tribunal-usage.py",
+                                       "plugins/ca/skills/tribunal/references/schemas.md",
+                                       "plugins/ca/skills/tribunal/references/telemetry.md",
+                                       "plugins/ca/skills/tribunal/SKILL.md",
+                                       "README.md"
+                                   ],
+                         "closes":  [
+                                        312
+                                    ]
+                     },
+                     {
+                         "number":  360,
+                         "title":  "fix(prune): separate file and context savings",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/360",
+                         "base":  "feat/pi-support",
+                         "head":  "fix/prune-context-metrics-current",
+                         "headOid":  "eff294caf89f4ee16533d5d1056bffc87e437ca8",
+                         "commits":  [
+                                         "eff294caf89f4ee16533d5d1056bffc87e437ca8"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/open-tasks.md",
+                                       ".codearbiter/reports/2026-07-20-prune-metric-reassessment.md",
+                                       ".github/scripts/test_prune_policy_parity.py",
+                                       "CHANGELOG.md",
+                                       "core/pysrc/_prunelib.py",
+                                       "core/pysrc/_prunepolicy.py",
+                                       "core/pysrc/_segmentslib.py",
+                                       "core/pysrc/prune-transcript.py",
+                                       "core/surface/commands/prune.md",
+                                       "plugins/ca/commands/prune.md",
+                                       "plugins/ca/hooks/_prunelib.py",
+                                       "plugins/ca/hooks/_prunepolicy.py",
+                                       "plugins/ca/hooks/_segmentslib.py",
+                                       "plugins/ca/hooks/prune-transcript.py",
+                                       "plugins/ca/hooks/tests/test_hook.py",
+                                       "plugins/ca/hooks/tests/test_prune_cli.py",
+                                       "plugins/ca/hooks/tests/test_prune_nudge.py",
+                                       "plugins/ca/hooks/tests/test_prune_status_metric.py",
+                                       "plugins/ca/hooks/tests/test_strategies.py",
+                                       "plugins/ca/hooks/tests/test_strategies2.py",
+                                       "plugins/ca/README.md",
+                                       "plugins/ca-codex/CHANGELOG.md",
+                                       "plugins/ca-codex/hooks/_prunelib.py",
+                                       "plugins/ca-codex/hooks/_prunepolicy.py",
+                                       "plugins/ca-codex/hooks/_segmentslib.py",
+                                       "plugins/ca-codex/hooks/prune-transcript.py",
+                                       "plugins/ca-pi/CHANGELOG.md",
+                                       "plugins/ca-pi/hooks/_prunelib.py",
+                                       "plugins/ca-pi/hooks/_prunepolicy.py",
+                                       "plugins/ca-pi/hooks/_segmentslib.py",
+                                       "plugins/ca-pi/hooks/prune-transcript.py",
+                                       "plugins/ca-pi/skills/ca-prune/SKILL.md",
+                                       "README.md"
+                                   ],
+                         "closes":  [
+
+                                    ]
+                     },
+                     {
+                         "number":  362,
+                         "title":  "fix(prune): repair malformed session state",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/362",
+                         "base":  "fix/prune-context-metrics-current",
+                         "head":  "fix/prune-malformed-state",
+                         "headOid":  "997dcbe5132a3d4f869d7a2998c48aca05d2969a",
+                         "commits":  [
+                                         "997dcbe5132a3d4f869d7a2998c48aca05d2969a"
+                                     ],
+                         "paths":  [
+                                       "CHANGELOG.md",
+                                       "core/pysrc/_prunelib.py",
+                                       "plugins/ca/hooks/_prunelib.py",
+                                       "plugins/ca/hooks/tests/test_hook.py",
+                                       "plugins/ca-codex/CHANGELOG.md",
+                                       "plugins/ca-codex/hooks/_prunelib.py",
+                                       "plugins/ca-pi/CHANGELOG.md",
+                                       "plugins/ca-pi/hooks/_prunelib.py"
+                                   ],
+                         "closes":  [
+                                        361
+                                    ]
+                     },
+                     {
+                         "number":  363,
+                         "title":  "docs(statusline): record dirty-check timeout evidence",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/363",
+                         "base":  "fix/prune-malformed-state",
+                         "head":  "chore/statusline-timeout-evidence",
+                         "headOid":  "7743d71ccabb6f0ada03168b86582cbc391334ff",
+                         "commits":  [
+                                         "6bc180b279873b817e23d578cda0426cb66f4aa6",
+                                         "b2b5b067954819e93f79ca8a6c91eeaa012a8d3b",
+                                         "7743d71ccabb6f0ada03168b86582cbc391334ff"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/open-tasks.md",
+                                       ".codearbiter/reports/2026-07-20-statusline-dirty-timeout-benchmark.md"
+                                   ],
+                         "closes":  [
+
+                                    ]
+                     },
+                     {
+                         "number":  365,
+                         "title":  "docs(site): reconcile task and standup board semantics",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/365",
+                         "base":  "chore/statusline-timeout-evidence",
+                         "head":  "chore/docs-command-mirror-reconciliation",
+                         "headOid":  "d4e86cfc29ad0d3a49afb52d760881c8df549191",
+                         "commits":  [
+                                         "04dee7f68564acd5c8a9f8f97166d7a340c59efc",
+                                         "5a95818ab436ca97a2e9ae55695a41366315efba",
+                                         "d4e86cfc29ad0d3a49afb52d760881c8df549191"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/open-tasks.md",
+                                       ".codearbiter/reports/2026-07-20-docs-command-mirror-reconciliation.md",
+                                       "site/src/curated/commands/standup.md",
+                                       "site/src/curated/commands/task.md"
+                                   ],
+                         "closes":  [
+
+                                    ]
+                     },
+                     {
+                         "number":  367,
+                         "title":  "fix: keep task writer transitions committable",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/367",
+                         "base":  "chore/docs-command-mirror-reconciliation",
+                         "head":  "fix/taskwriter-queued-done",
+                         "headOid":  "5a6cb2115d10181ee3e5871750d12b8f9a92032d",
+                         "commits":  [
+                                         "0f3ba852051e78fd80abb3b05228e5e54b662f6e",
+                                         "09d7818ae2de527b7c4d3d320beaa81ccff81e28",
+                                         "b3343eda2f75435b6d980670f45ac302ae507dd9",
+                                         "5a6cb2115d10181ee3e5871750d12b8f9a92032d"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/specs/commit-gate-board-sync.md",
+                                       ".codearbiter/specs/task-board-lifecycle.md",
+                                       ".codearbiter/specs/task-writer-harvest.md",
+                                       ".codearbiter/sprint-log.md",
+                                       ".github/scripts/test_taskboardlib.py",
+                                       ".github/scripts/test_taskwriter.py",
+                                       "core/pysrc/_taskboardlib.py",
+                                       "core/pysrc/taskwrite.py",
+                                       "core/surface/COMMANDS.md",
+                                       "core/surface/commands/task.md",
+                                       "core/surface/includes/routing-table.md",
+                                       "core/surface/skills/commit-gate/SKILL.md",
+                                       "plugins/ca/COMMANDS.md",
+                                       "plugins/ca/commands/task.md",
+                                       "plugins/ca/hooks/_taskboardlib.py",
+                                       "plugins/ca/hooks/taskwrite.py",
+                                       "plugins/ca/includes/routing-table.md",
+                                       "plugins/ca/skills/commit-gate/SKILL.md",
+                                       "plugins/ca-codex/COMMANDS.md",
+                                       "plugins/ca-codex/hooks/_taskboardlib.py",
+                                       "plugins/ca-codex/hooks/taskwrite.py",
+                                       "plugins/ca-codex/includes/routing-table.md",
+                                       "plugins/ca-codex/routines/commit-gate/SKILL.md",
+                                       "plugins/ca-codex/skills/ca-task/SKILL.md",
+                                       "plugins/ca-codex/skills/INDEX.md",
+                                       "plugins/ca-pi/COMMANDS.md",
+                                       "plugins/ca-pi/generated/command-catalog.json",
+                                       "plugins/ca-pi/hooks/_taskboardlib.py",
+                                       "plugins/ca-pi/hooks/taskwrite.py",
+                                       "plugins/ca-pi/includes/routing-table.md",
+                                       "plugins/ca-pi/routines/commit-gate/SKILL.md",
+                                       "plugins/ca-pi/SKILLS.md",
+                                       "plugins/ca-pi/skills/ca-task/SKILL.md",
+                                       "plugins/ca-pi/tools/test/process-tree.test.ts",
+                                       "site/src/curated/commands/task.md"
+                                   ],
+                         "closes":  [
+                                        339,
+                                        364,
+                                        366
+                                    ]
+                     },
+                     {
+                         "number":  368,
+                         "title":  "docs(codex): reconcile campaign milestone status",
+                         "url":  "https://github.com/arbiterForge/codeArbiter/pull/368",
+                         "base":  "main",
+                         "head":  "chore/reconcile-codex-campaign-v2",
+                         "headOid":  "9b208f77ad3c991e88bd259c8128f13b1a2145a3",
+                         "commits":  [
+                                         "9b208f77ad3c991e88bd259c8128f13b1a2145a3"
+                                     ],
+                         "paths":  [
+                                       ".codearbiter/plans/codex-support.md",
+                                       ".codearbiter/sprint-log.md"
+                                   ],
+                         "closes":  [
+
+                                    ]
+                     }
+                 ],
+    "excluded":  [
+                     {
+                         "number":  336,
+                         "reason":  "Automated Dependabot setup-node maintenance is not GPT-authored corrective hackathon work."
+                     }
+                 ]
+}

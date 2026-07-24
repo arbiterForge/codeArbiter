@@ -11,6 +11,12 @@ plugin's own authoring gates (`skill-author` v2 house style), not by this file.
 - **TypeScript farm dispatcher** — `plugins/ca/tools/*.ts`, shipped as built `farm.js`.
 - **ca-sandbox sibling** — `plugins/ca-sandbox/tools/*.ts` (ADR-0007), same TS rules.
 
+## Pi adapter location
+
+Pi host code lives under `plugins/ca-pi/tools/src/*.ts` and builds into
+`plugins/ca-pi/extensions/` and `plugins/ca-pi/helpers/`. Generated policy
+remains under `core/`; host-specific code is an adapter, never a second kernel.
+
 ## Python (hooks)
 
 - `#!/usr/bin/env python3` shebang on every hook.
@@ -49,6 +55,27 @@ plugin's own authoring gates (`skill-author` v2 house style), not by this file.
   release blocker.
 - Security-sensitive paths (URL / base-URL validation, secret handling) keep their
   existing guards and tests — see `security-controls.md`.
+
+## TypeScript (Pi adapter)
+
+- `strict: true` is mandatory in `plugins/ca-pi/tools/tsconfig.json`; use Node
+  22.19+ and the pinned lockfile. Runtime package metadata stays private and
+  dependency-free.
+- Import local modules with explicit `.ts` extensions. Keep host API types in
+  the local declaration boundary; the external Pi runtime is a test/install
+  input, not a checked-in or runtime dependency.
+- All host crossings are bounded, schema-checked, and redacted. Project trust
+  must be affirmative before repository-aware activation. Tool enforcement wraps
+  the final built-in mutator arguments and unknown tools fail closed.
+- Child work uses the hardened runner, minimal provider-specific environments,
+  exact generated roles, and whole-process-tree cleanup. Do not add a second
+  runner for compaction, farm, or dispatch.
+- Run `npm --prefix plugins/ca-pi/tools run build` after source changes. Both
+  extension bundles and `helpers/windows-supervisor.js` are reviewed build
+  outputs; stale output is a release blocker.
+- `plugins/ca-pi/package.json` is the independent version source. Generate the
+  root Git-install manifest with `python tools/build-host-packages.py`; npm
+  packaging is future work, not a current distribution path.
 
 ## File headers and copyright
 

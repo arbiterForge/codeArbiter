@@ -352,11 +352,51 @@ class SetStateGuardTest(unittest.TestCase):
     """dx-004: set_state with an unknown state must degrade gracefully (no KeyError)."""
 
     def test_unknown_state_returns_text_unchanged(self):
-        # dx-004: an unknown state string must NOT raise KeyError; degrade by
-        # returning the text unchanged so the hook-stdin path cannot crash.
-        result = tb.set_state(SAMPLE, "poc.auth.0001", "pending", _date(2026, 6, 21))
-        self.assertEqual(result, SAMPLE,
-                         "set_state with unknown state must return text unchanged")
+        # dx-004: unsupported and malformed states must not raise; degrade by
+        # returning the exact original text so the hook-stdin path cannot crash.
+        cases = (
+            ("unknown string", "pending"),
+            ("empty string", ""),
+            ("none", None),
+            ("unhashable list", []),
+            ("unhashable dict", {}),
+        )
+        for label, state in cases:
+            with self.subTest(label=label, state=state):
+                try:
+                    result = tb.set_state(
+                        SAMPLE, "poc.auth.0001", state, _date(2026, 6, 21)
+                    )
+                except Exception as exc:
+                    self.fail(f"set_state raised for {label}: {exc!r}")
+                self.assertEqual(
+                    result,
+                    SAMPLE,
+                    f"set_state must return original text for {label}",
+                )
+
+    def test_queued_state_cannot_rewind_in_progress_task(self):
+        result = tb.set_state(SAMPLE, "poc.auth.0001", "queued", _date(2026, 6, 21))
+        self.assertEqual(
+            result, SAMPLE,
+            "set_state queued must not rewind an in-progress task",
+        )
+
+    def test_queued_state_cannot_rewind_done_task(self):
+        result = tb.set_state(SAMPLE, "poc.auth.0003", "queued", _date(2026, 6, 21))
+        self.assertEqual(
+            result, SAMPLE,
+            "set_state queued must not rewind a done task",
+        )
+
+    def test_public_contract_advertises_only_forward_target_states(self):
+        contract = tb.set_state.__doc__ or ""
+        self.assertIn(
+            'Valid target states: "in_progress", "done".',
+            contract,
+            "set_state must advertise only its forward lifecycle targets",
+        )
+        self.assertNotIn('Valid state values: "queued"', contract)
 
     def test_known_states_still_work(self):
         # Regression guard: the fix must not break valid state transitions.
@@ -383,7 +423,10 @@ class MalformedIdHardeningTest(unittest.TestCase):
         self.assertTrue(any("invalid task id" in w for w in tb.lint_board(self.BOARD)))
 
     def test_set_state_can_target_for_repair(self):
-        out = tb.set_state(self.BOARD, "mvp1.store.0002.0001", "done", _date(2026, 6, 28))
+        started = tb.set_state(
+            self.BOARD, "mvp1.store.0002.0001", "in_progress", _date(2026, 6, 27)
+        )
+        out = tb.set_state(started, "mvp1.store.0002.0001", "done", _date(2026, 6, 28))
         self.assertIn("- [x] mvp1.store.0002.0001", out)
         self.assertIn("(done 2026-06-28)", out)
 
@@ -473,6 +516,30 @@ class ClassifyBoardDiffTest(unittest.TestCase):
         )
         self.assertTrue(tb.classify_board_diff(old, new))
 
+    def test_start_flip_can_mint_one_valid_id(self):
+        """AC-02a: pick-up may mint the task ID as part of the clean start-flip."""
+        old = self._BASE.replace(
+            "- [ ] a.b.0002 - Rate-limit endpoint",
+            "- [ ] Rate-limit endpoint",
+        )
+        new = old.replace(
+            "- [ ] Rate-limit endpoint",
+            "- [~] a.b.0002 - Rate-limit endpoint  (started 2026-06-26)",
+        )
+        self.assertTrue(tb.classify_board_diff(old, new))
+
+    def test_start_flip_mint_cannot_reword_task(self):
+        """AC-03: an ID mint does not make a simultaneous title edit clean."""
+        old = self._BASE.replace(
+            "- [ ] a.b.0002 - Rate-limit endpoint",
+            "- [ ] Rate-limit endpoint",
+        )
+        new = old.replace(
+            "- [ ] Rate-limit endpoint",
+            "- [~] a.b.0002 - Rate-limit ALL endpoints  (started 2026-06-26)",
+        )
+        self.assertFalse(tb.classify_board_diff(old, new))
+
     # ── positive: add ────────────────────────────────────────────────────────
 
     def test_add_queued_entry_is_clean_transition(self):
@@ -494,6 +561,31 @@ class ClassifyBoardDiffTest(unittest.TestCase):
                + "\n- [ ] a.b.0004 - Implement caching\n"
                + "  - Boundaries: cache, perf\n")
         self.assertTrue(tb.classify_board_diff(old, new))
+
+    def test_add_can_create_missing_section(self):
+        """AC-02b: the writer's missing-section add remains a clean transition."""
+        old = (
+            "# Open tasks\n\n"
+            "## Done\n"
+            "- [x] a.b.0003 - Hash passwords  (done 2026-06-15)\n"
+        )
+        new = tb.add_entry(old, desc="Implement caching", section="## In-flight")
+        self.assertTrue(tb.classify_board_diff(old, new))
+
+    def test_new_section_without_queued_entry_is_not_transition(self):
+        old = self._BASE
+        new = old + "## Follow-up\n"
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    def test_new_section_add_with_extra_content_is_not_transition(self):
+        old = self._BASE
+        new = old + "## Follow-up\n- [ ] Review caching\narbitrary prose\n"
+        self.assertFalse(tb.classify_board_diff(old, new))
+
+    def test_existing_section_header_edit_is_not_transition(self):
+        old = self._BASE
+        new = old.replace("## In-flight", "## In-flight work")
+        self.assertFalse(tb.classify_board_diff(old, new))
 
     # ── negative: reworded description ───────────────────────────────────────
 

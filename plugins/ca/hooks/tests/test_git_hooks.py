@@ -98,6 +98,123 @@ class TestInstall(_GitFixture):
                 self.assertIn(_githooks.SENTINEL, f.read())
             self.assertTrue(os.access(dest, os.X_OK))
 
+    def test_pi_identity_channel_persists_across_later_identityless_host_session(self):
+        trusted_git = os.path.realpath(shutil.which("git"))
+        trusted_python = os.path.realpath(sys.executable)
+        dropin = _githooks._dropin_dir(self.root)
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=trusted_git), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=trusted_python):
+            _githooks.install(self.root)
+        shim_path = os.path.join(self._hooks_dir(), "pre-commit")
+        with open(shim_path, encoding="utf-8") as f:
+            pinned = f.read()
+        self.assertIn(_githooks._TRUSTED_IDENTITY_FILE, pinned)
+        self.assertIn('export CODEARBITER_GIT_EXECUTABLE="$G"', pinned)
+        with open(_githooks._identity_file(dropin), encoding="utf-8") as f:
+            identity = f.read()
+        self.assertEqual(identity.splitlines()[0], trusted_python.replace("\\", "/"))
+
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=None), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=None):
+            self.assertEqual(_githooks.install(self.root), [])
+        with open(shim_path, encoding="utf-8") as f:
+            self.assertEqual(f.read(), pinned)
+        with open(_githooks._identity_file(dropin), encoding="utf-8") as f:
+            self.assertEqual(f.read(), identity)
+
+    def test_incomplete_or_failed_first_identity_registration_blocks(self):
+        dropin = _githooks._dropin_dir(self.root)
+        trusted_git = os.path.realpath(shutil.which("git"))
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=trusted_git), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=None):
+            with self.assertRaisesRegex(RuntimeError, "identity channel is incomplete"):
+                _githooks.install(self.root)
+        self.assertFalse(os.path.exists(_githooks._identity_file(dropin)))
+
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=trusted_git), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=sys.executable), \
+                mock.patch.object(
+                    _githooks._hooklib, "write_text_atomic", side_effect=OSError("denied")):
+            with self.assertRaisesRegex(RuntimeError, "could not persist"):
+                _githooks.install(self.root)
+        self.assertFalse(os.path.exists(_githooks._identity_file(dropin)))
+
+    def test_incomplete_refresh_preserves_existing_complete_identity(self):
+        dropin = _githooks._dropin_dir(self.root)
+        trusted_git = os.path.realpath(shutil.which("git"))
+        trusted_python = os.path.realpath(sys.executable)
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=trusted_git), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=trusted_python):
+            self.assertTrue(_githooks._refresh_trusted_identity(dropin, "ca-pi"))
+        with open(_githooks._identity_file(dropin), encoding="utf-8") as f:
+            before = f.read()
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=trusted_git), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=None):
+            self.assertTrue(_githooks._refresh_trusted_identity(dropin, "ca-pi"))
+        with open(_githooks._identity_file(dropin), encoding="utf-8") as f:
+            self.assertEqual(f.read(), before)
+
+    def test_shim_and_registry_render_windows_paths_for_posix_sh(self):
+        with mock.patch.dict(
+                os.environ,
+                {
+                    "CODEARBITER_GIT_EXECUTABLE": r"C:\Program Files\Git\cmd\git.exe",
+                    "CODEARBITER_PYTHON_EXECUTABLE": r"C:\Python314\python.exe",
+                },
+                clear=False):
+            shim = _githooks._shim(
+                r"C:\repo with space\.git\codearbiter-hooksd", "pre-commit")
+        self.assertIn("D='C:/repo with space/.git/codearbiter-hooksd'", shim)
+        self.assertIn("trusted-executables.identity", shim)
+        self.assertIn('IFS= read -r E < "$c"', shim)
+        self.assertNotIn('$(cat "$c"', shim)
+        self.assertIn('[0-9]*.[0-9]*.[0-9]*.path) continue', shim)
+
+        dropin = os.path.join(self.root, ".git", "codearbiter-hooksd")
+        self.assertTrue(_githooks._write_path_entry(
+            dropin, "ca", r"C:\plugins\ca\hooks\git-enforce.py"))
+        with open(os.path.join(dropin, "ca.path"), encoding="utf-8") as f:
+            self.assertEqual(f.read(), "C:/plugins/ca/hooks/git-enforce.py\n")
+
+    def test_plugin_identity_survives_versioned_host_cache_layouts(self):
+        fixtures = (
+            ("ca", "2.9.0", ".claude-plugin"),
+            ("ca-codex", "0.3.0", ".codex-plugin"),
+        )
+        for plugin, version, manifest_dir in fixtures:
+            with self.subTest(plugin=plugin):
+                package = os.path.join(self.root, "cache", plugin, version)
+                hooks = os.path.join(package, "hooks")
+                os.makedirs(os.path.join(package, manifest_dir), exist_ok=True)
+                self._write(
+                    os.path.join(package, manifest_dir, "plugin.json"),
+                    '{"name": "' + plugin + '"}\n',
+                )
+                with mock.patch.object(
+                        _githooks, "__file__", os.path.join(hooks, "_githooks.py")):
+                    self.assertEqual(_githooks._plugin_name(), plugin)
+
+    def test_versioned_cache_identity_fails_safe_when_manifest_is_damaged(self):
+        package = os.path.join(self.root, "cache", "ca-codex", "0.3.0")
+        hooks = os.path.join(package, "hooks")
+        os.makedirs(os.path.join(package, ".codex-plugin"), exist_ok=True)
+        self._write(os.path.join(package, ".codex-plugin", "plugin.json"), "not json\n")
+        with mock.patch.object(
+                _githooks, "__file__", os.path.join(hooks, "_githooks.py")):
+            self.assertEqual(_githooks._plugin_name(), "ca-codex")
+
     def test_install_is_idempotent(self):
         _githooks.install(self.root)
         second = _githooks.install(self.root)
@@ -436,12 +553,152 @@ class TestDropInMultiPluginFailClosed(_GitFixture):
 
     def _write_entry(self, dropin, name, target):
         os.makedirs(dropin, exist_ok=True)
-        with open(os.path.join(dropin, f"{name}.path"), "w", encoding="utf-8") as f:
+        with open(
+                os.path.join(dropin, f"{name}.path"), "w",
+                encoding="utf-8", newline="\n") as f:
             f.write(target + "\n")
 
     def _stage(self, name, content):
         self._write(os.path.join(self.root, name), content)
         _git(["add", name], self.root)
+
+    def _probe_enforcer(self, name, marker, returncode=0, read_stdin=False):
+        path = os.path.join(self.root, name)
+        source = "import pathlib, sys\n"
+        if read_stdin:
+            source += f"payload = sys.stdin.read(); pathlib.Path({marker!r}).write_text(payload, encoding='utf-8')\n"
+        else:
+            source += f"pathlib.Path({marker!r}).write_text('ran', encoding='utf-8')\n"
+        source += f"raise SystemExit({returncode})\n"
+        self._write(path, source)
+        return _githooks._shell_path(path)
+
+    def test_every_live_version_runs_and_any_block_wins(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        os.remove(os.path.join(dropin, "ca.path"))
+        allow_marker = os.path.join(self.root, "allow.marker")
+        block_marker = os.path.join(self.root, "block.marker")
+        self._write_entry(dropin, "aaa-older", self._probe_enforcer(
+            "older-allow.py", allow_marker, returncode=0))
+        self._write_entry(dropin, "zzz-newer", self._probe_enforcer(
+            "newer-block.py", block_marker, returncode=9))
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        result = _sh(["sh", hook], self.root)
+        self.assertEqual(result.returncode, 9, result.stderr)
+        self.assertTrue(os.path.isfile(allow_marker), "older live enforcer did not run")
+        self.assertTrue(os.path.isfile(block_marker), "newer live enforcer did not run")
+
+    def test_pre_push_input_is_replayed_to_every_live_enforcer(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        first = os.path.join(self.root, "first.input")
+        second = os.path.join(self.root, "second.input")
+        self._write_entry(dropin, "ca", self._probe_enforcer(
+            "first.py", first, read_stdin=True))
+        self._write_entry(dropin, "ca-pi", self._probe_enforcer(
+            "second.py", second, read_stdin=True))
+        payload = "refs/heads/feat/x " + "1" * 40 + " refs/heads/feat/x " + "0" * 40 + "\n"
+        hook = os.path.join(self.root, ".git", "hooks", "pre-push")
+        result = _sh(["sh", hook], self.root, input=payload)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for path in (first, second):
+            with open(path, encoding="utf-8") as f:
+                self.assertEqual(f.read(), payload)
+
+    def test_legacy_semver_registry_entry_is_never_executed(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        stale_marker = os.path.join(self.root, "stale.marker")
+        live_marker = os.path.join(self.root, "live.marker")
+        self._write_entry(dropin, "0.3.0", self._probe_enforcer(
+            "stale.py", stale_marker, returncode=7))
+        self._write_entry(dropin, "ca", self._probe_enforcer(
+            "live.py", live_marker, returncode=0))
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        result = _sh(["sh", hook], self.root)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(os.path.exists(stale_marker), "version-derived stale entry executed")
+        self.assertTrue(os.path.isfile(live_marker))
+
+    def test_identity_bundle_with_extra_record_fails_closed(self):
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=None), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=None):
+            _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        marker = os.path.join(self.root, "extra-record.marker")
+        self._write_entry(dropin, "ca", self._probe_enforcer("allow.py", marker))
+        identity = "\n".join((
+            _githooks._shell_path(sys.executable),
+            _githooks._shell_path(os.path.realpath(shutil.which("git"))),
+            "ca-pi",
+            "unexpected-fourth-record",
+        )) + "\n"
+        with open(
+                _githooks._identity_file(dropin), "w",
+                encoding="utf-8", newline="\n") as f:
+            f.write(identity)
+
+        result = _sh([shutil.which("sh"), os.path.join(
+            self.root, ".git", "hooks", "pre-commit")], self.root)
+
+        self.assertNotEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(os.path.exists(marker), "malformed identity reached an enforcer")
+
+    def test_identity_bundle_with_unterminated_extra_record_fails_closed(self):
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=None), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=None):
+            _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        marker = os.path.join(self.root, "unterminated-extra.marker")
+        self._write_entry(dropin, "ca", self._probe_enforcer("allow.py", marker))
+        identity = "\n".join((
+            _githooks._shell_path(sys.executable),
+            _githooks._shell_path(os.path.realpath(shutil.which("git"))),
+            "ca-pi",
+            "unexpected-fourth-record",
+        ))
+        with open(
+                _githooks._identity_file(dropin), "w",
+                encoding="utf-8", newline="\n") as f:
+            f.write(identity)
+
+        result = _sh([shutil.which("sh"), os.path.join(
+            self.root, ".git", "hooks", "pre-commit")], self.root)
+
+        self.assertNotEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(os.path.exists(marker), "unterminated extra record reached an enforcer")
+
+    def test_broken_identity_symlink_fails_before_path_fallback(self):
+        with mock.patch.object(
+                _githooks, "trusted_git_executable", return_value=None), \
+                mock.patch.object(
+                    _githooks, "trusted_python_executable", return_value=None):
+            _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        identity = _githooks._identity_file(dropin)
+        os.symlink(os.path.join(dropin, "missing-identity"), identity)
+        dummy = os.path.join(self.root, "dummy-enforcer.py")
+        self._write(dummy, "# never parsed by the poisoned interpreter\n")
+        self._write_entry(dropin, "ca", _githooks._shell_path(dummy))
+
+        marker = _githooks._shell_path(os.path.join(self.root, "path-fallback.marker"))
+        fake_bin = os.path.join(self.root, "fake-bin")
+        fake_python = os.path.join(fake_bin, "python3")
+        self._write(fake_python, "#!/bin/sh\nprintf ran > " + marker + "\nexit 0\n")
+        os.chmod(fake_python, 0o755)
+        env = dict(os.environ)
+        env["PATH"] = fake_bin
+
+        result = _sh([shutil.which("sh"), os.path.join(
+            self.root, ".git", "hooks", "pre-commit")], self.root, env=env)
+
+        self.assertNotEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(os.path.exists(marker), "broken identity fell back to PATH")
 
     def test_survivor_plugin_still_enforces_when_the_other_is_uninstalled(self):
         # AC-7a: this plugin's own install() writes a REAL, resolvable entry.

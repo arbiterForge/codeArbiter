@@ -59,12 +59,14 @@ Emit one clear report with these parts:
 ## Distinct from {{CMD:doctor}}
 
 This reports reviewer and gate behavior on the current diff. It makes NO hook-probe claims and says
-nothing about whether the install's hooks fire: that is `{{CMD:doctor}}`. Do not blend the two.
+{{IF:pi}}nothing about wrapper wiring or the active-dispatch coverage gap: that is `{{CMD:doctor}}`.
+{{ELSE}}nothing about whether the install's hooks fire: that is `{{CMD:doctor}}`.{{END}} Do not blend the two.
 
 ## When NOT to use
 
 - An onboarded repo wanting the full gated verdict → `{{CMD:init}}` then `{{CMD:review}}`.
-- Proving the install's hooks actually fire → `{{CMD:doctor}}`.
+{{IF:pi}}- Inspecting wrapper wiring and the active-dispatch coverage gap → `{{CMD:doctor}}`.
+{{ELSE}}- Proving the install's hooks actually fire → `{{CMD:doctor}}`.{{END}}
 - A question about the code → `{{CMD:btw}}`.
 
 ## Hard gate

@@ -20,6 +20,8 @@
 import os
 import subprocess
 
+from _gitexec import git_executable
+
 
 # Statusline rendering is UI-critical and runs in a fresh process per refresh.
 # Keep the full porcelain semantics, but never let the dirty probe stall the UI.
@@ -99,7 +101,7 @@ def head_branch(root):
 def git_dirty(root):
     """Return dirty state, suppressing the marker when Git fails or times out."""
     try:
-        out = subprocess.run(["git", "-C", root, "status", "--porcelain"],
+        out = subprocess.run([git_executable(), "-C", root, "status", "--porcelain"],
                              capture_output=True, text=True,
                              timeout=DIRTY_CHECK_TIMEOUT_SECONDS,
                              encoding="utf-8", errors="replace")
