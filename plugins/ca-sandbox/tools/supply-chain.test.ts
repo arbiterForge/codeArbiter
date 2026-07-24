@@ -73,6 +73,134 @@ function isExternalImageRef(ref: string): boolean {
   return ref.includes("/") || ref.includes(":");
 }
 
+// --------------------------------------------------------------------------
+// the digest scanner (#402 AC-2)
+// --------------------------------------------------------------------------
+//
+// This scanner reads JOINED FILE TEXT, never line-by-line. That is load-bearing:
+// every image constant in this driver is written with the value on its own
+// continuation line —
+//
+//     export const CLONE_IMAGE =
+//       "alpine/git:latest@sha256:...";
+//
+// — so a per-line rule that expects `const NAME = "<ref>"` on ONE line matches
+// none of the shipped declarations and is silently inert. `scannerSelfTest`
+// below locks that in: it runs these same rules against synthetic multi-line
+// sources and asserts they actually fire.
+
+/** 1-based line number of `index` within `src`. */
+function lineOf(src: string, index: number): number {
+  return src.slice(0, index).split(/\r?\n/).length;
+}
+
+/**
+ * A named image constant — `export const CLONE_IMAGE = "<ref>"`, the bundled
+ * `var CLONE_IMAGE = "<ref>"` form, and (critically) the multi-line form where
+ * the literal sits on the next line. `\s*` spans the newline; the value class
+ * does not, so the literal itself is still single-line.
+ */
+const IMAGE_CONST = /\b(?:const|let|var)\s+(\w*IMAGE\w*)\s*=\s*(["'`])([^"'`\n]*)\2/g;
+
+/**
+ * A string literal that IS a namespaced registry reference (`ns/name:tag`) —
+ * name-independent, so `const TRIVY = "aquasec/trivy:0.50.0"` and a bare argv
+ * element `"alpine/git:latest"` are both caught even though neither is named
+ * `*IMAGE*`. Requiring the `/` namespace is what keeps this free of false
+ * positives: node builtin specifiers (`node:path`, `node:fs/promises`) and
+ * docs placeholders (`host:container`, `1000:1000`) never match.
+ *
+ * Residual, accepted: an official-library image with no namespace and a
+ * non-`latest` tag (`"node:22-slim"`) bound to a constant NOT named `*IMAGE*`
+ * would evade this rule — `node:<builtin>` import specifiers are structurally
+ * identical to it. Today's two such images are both `*IMAGE*`-named (caught by
+ * IMAGE_CONST) and additionally asserted by name in the tests below.
+ */
+const NAMESPACED_IMAGE_LITERAL =
+  /(["'`])([a-z0-9]+(?:[._-][a-z0-9]+)*(?:\/[a-z0-9]+(?:[._-][a-z0-9]+)*)+:[A-Za-z0-9][A-Za-z0-9._-]*(?:@sha256:[0-9a-f]{64})?)\1/g;
+
+/** `FROM <ref>` inside emitted Dockerfile text. */
+const FROM_REF = /\bFROM\s+([^\s"'`\\]+)/g;
+
+/** `const <name> = <initializer>` — used to follow a FROM interpolation home. */
+const ANY_BINDING = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*([^;\n]*)/g;
+
+/**
+ * Names that provably carry a digest-pinned image in this file: the pinned image
+ * constants themselves, plus bindings initialized from one (`const base =
+ * opts.baseImage ?? CLAUDE_BASE_IMAGE`). Anything else interpolated into a
+ * `FROM` is unproven and is reported.
+ */
+function pinnedNames(src: string, pinnedConsts: Set<string>): Set<string> {
+  const names = new Set(pinnedConsts);
+  // Iterate to a fixed point so an alias of an alias still resolves.
+  for (let pass = 0; pass < 3; pass++) {
+    const before = names.size;
+    for (const m of src.matchAll(ANY_BINDING)) {
+      const [, name, init] = m;
+      const ids = init.match(/[A-Za-z_$][\w$]*/g) ?? [];
+      if (ids.some((id) => names.has(id))) names.add(name);
+    }
+    if (names.size === before) break;
+  }
+  return names;
+}
+
+/**
+ * Report every external image reference in `src` that is not bound to a reviewed
+ * sha256 digest. `label` prefixes each hit so failures name the file and line.
+ */
+function scanUnpinnedImages(src: string, label: string): string[] {
+  const hits: string[] = [];
+  const pinnedConsts = new Set<string>();
+  // Literal offsets already reported, so the namespaced-literal pass does not
+  // double-report a constant the named-constant pass just flagged.
+  const reported = new Set<number>();
+
+  // (a) named image constants, single- OR multi-line. Only refs that name an
+  //     EXTERNAL registry image are in scope — a bare local tag prefix like
+  //     `ca-sbx` (IMAGE_PREFIX, images this driver builds itself) has no
+  //     registry namespace or tag and nothing upstream to pin.
+  for (const m of src.matchAll(IMAGE_CONST)) {
+    const [, name, , value] = m;
+    if (!isExternalImageRef(value)) continue;
+    if (DIGEST_PINNED.test(value)) {
+      pinnedConsts.add(name);
+      continue;
+    }
+    const quoteAt = m.index + m[0].length - value.length - 2;
+    reported.add(quoteAt);
+    hits.push(`${label}:${lineOf(src, quoteAt)}: unpinned image constant: ${name} = ${value}`);
+  }
+
+  // (b) any namespaced registry ref, whatever it is bound to.
+  for (const m of src.matchAll(NAMESPACED_IMAGE_LITERAL)) {
+    if (DIGEST_PINNED.test(m[2]) || reported.has(m.index)) continue;
+    hits.push(`${label}:${lineOf(src, m.index)}: unpinned image reference: ${m[2]}`);
+  }
+
+  // (c) `FROM <ref>` in emitted Dockerfile text. An interpolation is allowed
+  //     ONLY when it demonstrably reads a digest-pinned constant from this file;
+  //     a blanket `${...}` pass would let an unpinned constant through (a) via
+  //     the Dockerfile it emits.
+  const resolvable = pinnedNames(src, pinnedConsts);
+  for (const m of src.matchAll(FROM_REF)) {
+    const ref = m[1];
+    const at = `${label}:${lineOf(src, m.index)}`;
+    const interpolated = ref.match(/^\$\{(.*)\}$/);
+    if (interpolated) {
+      const ids = interpolated[1].match(/[A-Za-z_$][\w$]*/g) ?? [];
+      if (!ids.some((id) => resolvable.has(id))) {
+        hits.push(`${at}: FROM ${ref} does not resolve to a digest-pinned image constant`);
+      }
+      continue;
+    }
+    if (!DIGEST_PINNED.test(ref)) hits.push(`${at}: unpinned FROM: ${ref}`);
+  }
+
+  return hits;
+}
+
 describe("supply chain: no remote-fetch-and-execute in production code (#401)", () => {
   it("has at least one production file to scan (guards the scanner itself)", () => {
     const files = productionFiles();
@@ -189,31 +317,65 @@ describe("supply chain: container inputs are digest-pinned (#402)", () => {
   it("digest-pins every image constant and literal FROM in production code", () => {
     const hits: string[] = [];
     for (const file of productionFiles()) {
-      const src = readFileSync(file, "utf8");
-      const lines = src.split(/\r?\n/);
-      lines.forEach((line, i) => {
-        // (a) named image constants: `export const CLONE_IMAGE = "..."` (and the
-        //     bundled `var CLONE_IMAGE = "..."` form in sandbox.js). Only refs
-        //     that name an EXTERNAL registry image are in scope — a bare local
-        //     tag prefix like `ca-sbx` (IMAGE_PREFIX, images this driver builds
-        //     itself) has no registry namespace or tag and nothing to pin.
-        const constDecl = line.match(/\b(?:const|let|var)\s+\w*IMAGE\w*\s*=\s*(["'`])([^"'`]+)\1/);
-        if (constDecl && isExternalImageRef(constDecl[2]) && !DIGEST_PINNED.test(constDecl[2])) {
-          hits.push(`${rel(file)}:${i + 1}: unpinned image constant: ${constDecl[2]}`);
-        }
-        // (b) literal `FROM <ref>` inside emitted Dockerfile text. A `${...}`
-        //     interpolation is allowed — the constant it reads is covered by (a)
-        //     and by the generated-Dockerfile assertions above.
-        const from = line.match(/\bFROM\s+([^\s"'`\\]+)/);
-        if (from && !from[1].includes("${") && !DIGEST_PINNED.test(from[1])) {
-          hits.push(`${rel(file)}:${i + 1}: unpinned FROM: ${from[1]}`);
-        }
-      });
+      hits.push(...scanUnpinnedImages(readFileSync(file, "utf8"), rel(file)));
     }
     expect(
       hits,
       "every external container image reference must be bound to a reviewed " +
         "sha256 digest (name:tag@sha256:<digest>)",
     ).toEqual([]);
+  });
+});
+
+/**
+ * The scanner's own regression suite. The rules above are only worth the bytes
+ * they occupy if they FIRE, and a scanner that quietly matches nothing looks
+ * exactly like a clean codebase. The previous per-line version of this scanner
+ * shipped inert against the multi-line declaration style every image constant in
+ * this driver uses; these cases make that failure mode loud.
+ */
+describe("supply chain: the digest scanner itself fires (#402)", () => {
+  it("catches an unpinned image constant declared across two lines", () => {
+    const src = ["export const PROBE_HELPER_IMAGE =", '  "aquasec/trivy:0.50.0";'].join("\n");
+    expect(scanUnpinnedImages(src, "probe.ts")).toEqual([
+      "probe.ts:2: unpinned image constant: PROBE_HELPER_IMAGE = aquasec/trivy:0.50.0",
+    ]);
+  });
+
+  it("catches an unpinned namespaced ref bound to a constant not named *IMAGE*", () => {
+    const src = 'const scanner =\n  "aquasec/trivy:0.50.0";';
+    expect(scanUnpinnedImages(src, "probe.ts")).toEqual([
+      "probe.ts:2: unpinned image reference: aquasec/trivy:0.50.0",
+    ]);
+  });
+
+  it("catches a literal FROM and a FROM interpolating an unproven binding", () => {
+    const src = [
+      "const other = opts.baseImage;",
+      "lines.push(`FROM ${other}`);",
+      "lines.push(`FROM debian:bookworm`);",
+    ].join("\n");
+    expect(scanUnpinnedImages(src, "probe.ts")).toEqual([
+      "probe.ts:2: FROM ${other} does not resolve to a digest-pinned image constant",
+      "probe.ts:3: unpinned FROM: debian:bookworm",
+    ]);
+  });
+
+  it("reports an unpinned constant exactly once, not once per rule", () => {
+    const src = 'export const CLONE_IMAGE =\n  "alpine/git:latest";';
+    expect(scanUnpinnedImages(src, "probe.ts")).toHaveLength(1);
+  });
+
+  it("stays silent on the pinned multi-line form the driver actually ships", () => {
+    const pinned = `alpine/git:latest@sha256:${"0".repeat(64)}`;
+    const src = [
+      "export const CLONE_IMAGE =",
+      `  "${pinned}";`,
+      "const base = opts.baseImage ?? CLONE_IMAGE;",
+      "lines.push(`FROM ${base}`);",
+      'const IMAGE_PREFIX = "ca-sbx";',
+      'import { x } from "node:fs/promises";',
+    ].join("\n");
+    expect(scanUnpinnedImages(src, "probe.ts")).toEqual([]);
   });
 });

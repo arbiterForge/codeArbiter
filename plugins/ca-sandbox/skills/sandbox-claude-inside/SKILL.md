@@ -57,13 +57,21 @@ Build (or reuse) the pinned `--with-claude` image via `buildClaudeImageDockerfil
 - The image installs `@anthropic-ai/claude-code@<pinned>` — a PINNED semver,
   never `@latest` — and bakes `DISABLE_AUTOUPDATER=1` so the box never silently
   pulls an unreviewed CLI into a token-bearing environment.
-- The base is `node:22-slim` (Spike B installed the CLI cleanly there). HOME is
-  baked to the in-container claude home so the named volume has a writable mount
-  point.
+- The base is `node:22-slim` (Spike B installed the CLI cleanly there), bound to a
+  reviewed content DIGEST — `node:22-slim@sha256:…`, the `CLAUDE_BASE_IMAGE`
+  constant. The tag is kept only as human-readable provenance; docker resolves the
+  digest. This is the driver's highest-stakes pin: the base image's code runs in
+  the SAME container as `CLAUDE_CODE_OAUTH_TOKEN`, so a retag or registry
+  compromise would otherwise execute unreviewed code alongside a live credential.
+  Pinning the CLI version alone is not enough. HOME is baked to the in-container
+  claude home so the named volume has a writable mount point.
 
-Gate: the image carries the exact pinned version (`claude --version` reports it)
-and `DISABLE_AUTOUPDATER=1`. A floating or unpinned CLI fails the gate — image
-reproducibility is non-negotiable for a token box.
+Gate: the image carries the exact pinned version (`claude --version` reports it),
+`DISABLE_AUTOUPDATER=1`, and a digest-pinned base. A floating or unpinned CLI —
+or an unpinned base image — fails the gate; image reproducibility is
+non-negotiable for a token box. Changing the digest is a reviewed dependency
+change: re-resolve it with `docker buildx imagetools inspect`, then re-run the
+credential-boundary and isolation suites.
 
 ## Phase 3 — Token · gate: BLOCK
 

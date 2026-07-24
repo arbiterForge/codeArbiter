@@ -13,8 +13,12 @@ Two tribunal supply-chain findings closed. Both concern EXTERNAL bytes the drive
 - **Container inputs pinned by digest (#402).** The throwaway clone image, the generated-Dockerfile fallback base, and the `--with-claude` base image are each bound to a reviewed multi-arch index digest (`name:tag@sha256:<digest>`). A retag or registry compromise can no longer silently change executable code inside a sandbox build — least of all in the Claude box, whose base image co-runs with `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ### Added
-- **`supply-chain.test.ts`** — structural guards that cannot be stubbed past: they reject pipe-to-shell patterns and digest-free external image references across the shipped driver sources AND the committed `sandbox.js` bundle. Test fixtures are exempt (`lifecycle.test.ts` drives docker with a literal tag on purpose).
+- **`supply-chain.test.ts`** — structural guards that cannot be stubbed past: they reject pipe-to-shell patterns and digest-free external image references across the shipped driver sources AND the committed `sandbox.js` bundle. The digest scanner reads JOINED file text, so it matches the multi-line declaration style every image constant in this driver uses (`export const CLONE_IMAGE =` / newline / `"<ref>"`); it also flags any namespaced `ns/name:tag` literal regardless of the constant's name, and only accepts a `FROM ${…}` interpolation that demonstrably resolves to a digest-pinned constant in the same file. Test fixtures are exempt (`lifecycle.test.ts` drives docker with a literal tag on purpose).
+- **A regression suite for the scanner itself** — synthetic multi-line sources assert the rules actually FIRE. A structural scanner that quietly matches nothing is indistinguishable from a clean codebase, and the first cut of this one was inert against exactly the declaration style it was written to guard.
 - **`defaultEnsureNixpacks` is exported with an injectable process seam**, closing a real coverage gap: every other suite stubs `BuildDeps.ensureNixpacks`, so the actual default toolchain-probe path had zero tests. It is now asserted to probe only — never to mutate the host toolchain.
+
+### Documentation
+- **`sandbox-claude-inside` SKILL states the base-image pin.** Phase 2 said only "the base is `node:22-slim`"; it now records that the base is digest-bound, why that pin is the highest-stakes one in the driver (the base image's code runs in the same container as `CLAUDE_CODE_OAUTH_TOKEN`), and that an unpinned base fails the phase gate.
 
 ---
 
