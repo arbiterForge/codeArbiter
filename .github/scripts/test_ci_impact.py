@@ -9,6 +9,7 @@ selects the broad validation lane instead of silently predicting a skip.
 """
 import importlib.util
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -18,6 +19,87 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
+CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
+PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
+
+# `needs.<id>.result` and `needs['<id>'].result` are the two spellings GitHub
+# accepts; the aggregate gate uses both depending on whether the job id has a
+# hyphen in it.
+_NEEDS_RESULT = re.compile(r"needs(?:\.([A-Za-z0-9_-]+)|\['([^']+)'\])\.result")
+_JOB_TIMEOUT = re.compile(r"(?m)^    timeout-minutes: (\d+)$")
+# GitHub-hosted runners hard-stop a job at 6 hours; a repository-defined bound
+# is only meaningful well under that.
+HOSTED_JOB_MAXIMUM_MINUTES = 360
+
+
+def workflow_jobs(text: str) -> dict[str, str]:
+    """Split a workflow's top-level `jobs:` mapping into {job id: raw block}.
+
+    Deliberately textual, like the rest of this repo's workflow contracts - the
+    scripts stay stdlib-only, so there is no YAML parser to lean on.
+    """
+    lines = text.splitlines(keepends=True)
+    try:
+        start = next(index for index, line in enumerate(lines) if line.rstrip() == "jobs:")
+    except StopIteration:
+        return {}
+    jobs: dict[str, str] = {}
+    current: str | None = None
+    body: list[str] = []
+    for line in lines[start + 1:]:
+        header = re.match(r"^  ([A-Za-z0-9_-]+):\s*$", line)
+        if header is not None:
+            if current is not None:
+                jobs[current] = "".join(body)
+            current, body = header.group(1), [line]
+        elif current is not None:
+            body.append(line)
+    if current is not None:
+        jobs[current] = "".join(body)
+    return jobs
+
+
+def aggregate_needs(ci: str) -> list[str]:
+    """Job ids listed in ci-passed's `needs:` block."""
+    aggregate = workflow_jobs(ci).get("ci-passed", "")
+    match = re.search(r"(?ms)^    needs:\s*\n(?P<body>(?:      - [A-Za-z0-9_-]+\n)+)", aggregate)
+    if match is None:
+        return []
+    return [line.strip()[2:].strip() for line in match.group("body").splitlines()]
+
+
+def aggregate_required_results(ci: str) -> list[str]:
+    """Job ids whose result the ci-passed gate actually enforces."""
+    aggregate = workflow_jobs(ci).get("ci-passed", "")
+    match = re.search(r'(?m)^\s+required_results="(?P<body>[^"\n]*)"\s*$', aggregate)
+    if match is None:
+        return []
+    return [first or second for first, second in _NEEDS_RESULT.findall(match.group("body"))]
+
+
+def unassigned_pi_test_files(ci: str, committed: set[str]) -> set[str]:
+    """Committed ca-pi Vitest files no *required* merge-gate job executes.
+
+    A bare `npm test` in a required Pi job covers the whole suite; a filtered
+    `npm test -- test/a.test.ts ...` covers only the files it names.  Anything
+    left over is a file that can regress with every required check green
+    (issue #405).
+    """
+    jobs = workflow_jobs(ci)
+    covered: set[str] = set()
+    for job_id in aggregate_required_results(ci):
+        if not job_id.startswith("ca-pi"):
+            continue
+        for match in re.finditer(r"(?m)^\s+run: npm test(?P<rest>[^\n]*)$", jobs.get(job_id, "")):
+            rest = match.group("rest").strip()
+            if not rest:
+                covered |= set(committed)
+                continue
+            covered |= {
+                token.rsplit("/", 1)[-1] for token in rest.split() if token.endswith(".test.ts")
+            }
+    return set(committed) - covered
 
 _spec = importlib.util.spec_from_file_location("ci_impact", _TOOL)
 module = importlib.util.module_from_spec(_spec)
@@ -208,6 +290,7 @@ class WorkflowContractTest(unittest.TestCase):
             "[CHECK] | [CORE] | Host descriptor contract",
             "[CHECK] | [CA  ] | Farm dispatcher contract",
             "[CHECK] | [SBX ] | Sandbox driver contract",
+            "[CHECK] | [PI  ] | Host-independent adapter contract",
             "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>",
             "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
             "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
@@ -227,6 +310,160 @@ class WorkflowContractTest(unittest.TestCase):
         )
         for name in expected:
             self.assertIn(f'name: "{name}"', ci)
+
+    def test_every_committed_pi_test_file_runs_in_a_required_merge_gate_job(self):
+        # Issue #405: the six-cell matrix named 6 of the 23 committed Vitest
+        # files, so a PR could regress policy/plan-mode/dispatch/background-jobs/
+        # windows-supervisor with every required check green.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        self.assertTrue(committed, "no ca-pi Vitest files found - the glob is wrong")
+        self.assertEqual(
+            sorted(unassigned_pi_test_files(ci, committed)),
+            [],
+            "committed ca-pi test files that no required merge-gate job executes",
+        )
+
+    def test_the_pi_suite_partition_contract_fails_when_the_full_suite_run_is_removed(self):
+        # AC-2 of #405: the contract above must BITE, not merely pass because
+        # one job happens to run everything.  Neutering the unfiltered run has
+        # to leave test files unassigned.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        jobs = workflow_jobs(ci)
+        mutated, neutered_jobs = ci, []
+        for job_id in aggregate_required_results(ci):
+            if not job_id.startswith("ca-pi"):
+                continue
+            block = jobs[job_id]
+            neutered = re.sub(r"(?m)^(\s+)run: npm test$", r"\1run: echo npm test", block)
+            if neutered != block:
+                mutated = mutated.replace(block, neutered, 1)
+                neutered_jobs.append(job_id)
+        self.assertNotEqual(
+            neutered_jobs, [], "no required ca-pi job runs the unfiltered `npm test` suite"
+        )
+        self.assertTrue(
+            unassigned_pi_test_files(mutated, committed),
+            "removing the full-suite run left every Pi test file still assigned",
+        )
+
+    def test_host_independent_pi_job_is_registered_in_both_needs_and_required_results(self):
+        # Issue #390 CRITICAL: `ci-passed` enforces jobs through TWO
+        # independent registrations - the `needs:` list (which makes it wait)
+        # and the `required_results` string (which makes it care).  Adding a
+        # job to one and not the other silently drops the verdict and nothing
+        # else in CI notices.  This asserts both exist AND that they agree for
+        # every job, with exactly one sanctioned exception: the advisory
+        # ca-pi-latest canary is intentionally awaited but not enforced.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("ca-pi-checks", sorted(workflow_jobs(ci)))
+        needs = aggregate_needs(ci)
+        required = aggregate_required_results(ci)
+        self.assertIn("ca-pi-checks", needs, "ci-passed.needs is missing ca-pi-checks")
+        self.assertIn(
+            "ca-pi-checks", required, "ci-passed.required_results is missing ca-pi-checks"
+        )
+        self.assertEqual(
+            sorted(set(needs) - set(required)),
+            ["ca-pi-latest"],
+            "awaited but unenforced jobs (only the advisory Pi canary may appear here)",
+        )
+        self.assertEqual(
+            sorted(set(required) - set(needs)),
+            [],
+            "enforced jobs the aggregate never waits for",
+        )
+
+    def test_host_independent_pi_checks_run_once_outside_the_platform_matrix(self):
+        # Issue #390: every one of these consumes neither matrix.os nor
+        # matrix.pi-version, so six cells produced six identical verdicts.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("ca-pi-checks", sorted(jobs))
+        canonical, matrix = jobs["ca-pi-checks"], jobs["ca-pi-tools"]
+        self.assertNotIn("strategy:", canonical, "the canonical Pi job must not fan out")
+        self.assertIn("runs-on: ubuntu-latest", canonical)
+        for token in (
+            "run: python tools/build-host-packages.py --check",
+            "run: npm run typecheck",
+            "run: npm run build",
+            "run: python .github/scripts/test_pi_security.py",
+            "run: python .github/scripts/test_pi_parity.py",
+            "run: python .github/scripts/pi_benchmark.py --samples 100",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, canonical, f"ca-pi-checks must own `{token}`")
+                self.assertNotIn(token, matrix, f"ca-pi-tools still repeats `{token}` per cell")
+        # Everything whose verdict genuinely depends on the installed Pi
+        # version or the host OS stays in the six-cell matrix.
+        for token in (
+            "os: [ubuntu-latest, windows-latest, macos-latest]",
+            "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }}",
+            "run: npm test -- test/package.test.ts",
+            "run: python .github/scripts/test_pi_package.py --rpc-commands",
+            "--pi-version ${{ matrix.pi-version }}",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, matrix, f"ca-pi-tools must keep `{token}`")
+
+    def test_every_pi_ci_and_promotion_job_declares_a_bounded_timeout(self):
+        # Issue #399: a wedged npm install or leaked process otherwise holds a
+        # hosted runner until GitHub's platform maximum.
+        missing: list[str] = []
+        unbounded: list[str] = []
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        candidates = [
+            (".github/workflows/ci.yml", job_id, block)
+            for job_id, block in workflow_jobs(ci).items()
+            if "[PI  ]" in block
+        ]
+        promotion = PI_PROMOTION_WORKFLOW.read_text(encoding="utf-8")
+        candidates += [
+            (".github/workflows/pi-promotion.yml", job_id, block)
+            for job_id, block in workflow_jobs(promotion).items()
+        ]
+        self.assertGreaterEqual(len(candidates), 8, "the Pi job scan found too few jobs")
+        for workflow, job_id, block in candidates:
+            declared = _JOB_TIMEOUT.search(block)
+            if declared is None:
+                missing.append(f"{workflow}:{job_id}")
+                continue
+            if not 0 < int(declared.group(1)) < HOSTED_JOB_MAXIMUM_MINUTES:
+                unbounded.append(f"{workflow}:{job_id}={declared.group(1)}")
+        self.assertEqual(missing, [], "Pi jobs with no timeout-minutes")
+        self.assertEqual(unbounded, [], "Pi job timeouts at or above the hosted maximum")
+
+    def test_pi_upstream_canary_concludes_advisory_rather_than_failed(self):
+        # Issue #381: the WATCH lane reports upstream incompatibility; that is
+        # its signal, not its failure.  Expected incompatibility is absorbed at
+        # STEP level so the check concludes green, while a break in the canary
+        # HARNESS still turns it red - which is why there is no job-level
+        # continue-on-error to swallow it.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        canary = workflow_jobs(ci)["ca-pi-latest"]
+        self.assertIsNone(
+            re.search(r"(?m)^    continue-on-error: true$", canary),
+            "job-level continue-on-error hides canary harness failures",
+        )
+        for probe in ("id: admission", "id: platform-contract"):
+            self.assertIn(probe, canary, f"the canary must address its probe step: {probe}")
+        self.assertEqual(
+            len(re.findall(r"(?m)^        continue-on-error: true$", canary)),
+            2,
+            "exactly the two upstream-compatibility probes absorb their own failure",
+        )
+        # The harness (toolchain + latest-Pi install) must NOT be absorbed.
+        harness = re.search(
+            r"(?ms)^      - name: Install reviewed toolchain and external latest Pi.*?(?=^      - name: )",
+            canary,
+        )
+        self.assertIsNotNone(harness, "canary harness install step is missing")
+        self.assertNotIn("continue-on-error", harness.group(0))
+        self.assertIn("if: always()", canary, "the advisory receipt must always publish")
+        self.assertIn("GITHUB_STEP_SUMMARY", canary, "the advisory verdict must be visible")
+        # And the aggregate gate stays independent of the advisory result.
+        self.assertNotIn("ca-pi-latest", aggregate_required_results(ci))
 
     def test_documentation_contract_is_always_required_by_merge_readiness(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
