@@ -294,7 +294,6 @@ describe("Pi dispatch contract", () => {
       exitCode: 0,
       stdoutBytes: 42,
       stderrBytes: 7,
-      stderrHead: "OPENAI_API_KEY=synthetic-secret warning text",
     }));
     const result = await dispatcher(runChild)(request({
       runtime: { ...runtime, cwd },
@@ -313,12 +312,12 @@ describe("Pi dispatch contract", () => {
     expect(audit).toContain("DURATION_MS: 1234");
     expect(audit).toContain("STDOUT_BYTES: 42");
     expect(audit).toContain("STDERR_BYTES: 7");
-    expect(audit).toContain("STDERR_HEAD:");
+    expect(audit).not.toContain("STDERR_HEAD:");
     expect(audit).not.toContain("synthetic-secret");
     expect(audit).not.toContain("Review the bounded change.");
   });
 
-  test("folds multi-line stderr into exactly one gate-events line", async () => {
+  test("does not persist multi-line stderr in gate-events", async () => {
     const cwd = await project(true);
     const runChild = vi.fn(async () => ({
       terminal: "completed" as const,
@@ -337,7 +336,7 @@ describe("Pi dispatch contract", () => {
     const audit = await readFile(resolve(cwd, ".codearbiter", "gate-events.log"), "utf8");
     const lines = audit.split("\n").filter((line) => line !== "");
     expect(lines).toHaveLength(1);
-    expect(audit).toContain("first line of stderr\\nsecond line of stderr\\nthird line of stderr");
+    expect(audit).not.toContain("first line of stderr");
     expect(audit).not.toMatch(/\n(?!$)/u);
   });
 
@@ -363,17 +362,13 @@ describe("Pi dispatch contract", () => {
     const bracketLines = lines.filter((line) => line.startsWith("["));
     expect(bracketLines).toHaveLength(1);
     expect(bracketLines[0]).not.toBe(forgedLine);
-    // The forged content is still present (it's untrusted stderr, embedded verbatim inside the
-    // single legitimate STDERR_HEAD field), but it is inert text, not a second parseable record.
     expect(bracketLines[0]).toContain("ROLE: security-reviewer");
+    expect(bracketLines[0]).not.toContain(forgedLine);
   });
 
-  test("a bare high-entropy token with no trigger word still lands on exactly one audit line", async () => {
+  test("never writes raw child stderr to the audit line even when heuristic redaction would miss it", async () => {
     const cwd = await project(true);
-    // No SECRET_LINE trigger word (api_key/token/secret/password/BEGIN.../sk-ant/AKIA.../ghp_...)
-    // present, so redactSecrets' documented per-line, trigger-word contract does not redact this
-    // — asserting redaction here would over-claim what safeDiagnostic actually guarantees. What
-    // MUST hold regardless is the one-line audit invariant: it never fragments the log.
+    // No trigger word is present, so this proves the boundary does not depend on heuristic redaction.
     const highEntropyToken = "Zx9qP2mK7vN4wR8tY1uJ6hL3sD5fA0cE";
     const runChild = vi.fn(async () => ({
       terminal: "completed" as const,
@@ -392,7 +387,8 @@ describe("Pi dispatch contract", () => {
     const audit = await readFile(resolve(cwd, ".codearbiter", "gate-events.log"), "utf8");
     const lines = audit.split("\n").filter((line) => line !== "");
     expect(lines).toHaveLength(1);
-    expect(audit).toContain(highEntropyToken);
+    expect(audit).not.toContain(highEntropyToken);
+    expect(audit).not.toContain("STDERR_HEAD:");
   });
 
   test("appends a degraded audit line carrying the diagnostic when a child fails", async () => {
@@ -403,7 +399,6 @@ describe("Pi dispatch contract", () => {
       durationMs: 12,
       stdoutBytes: 0,
       stderrBytes: 0,
-      stderrHead: "",
     }));
     const result = await dispatcher(runChild)(request({ runtime: { ...runtime, cwd } }), neverAbort.signal);
 
