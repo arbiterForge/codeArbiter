@@ -2,6 +2,19 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.2] - 2026-07-24
+
+### Security
+
+- Isolated Pi children now receive a bounded, selected-provider credential
+  projection into a fresh private ephemeral root instead of inheriting the
+  operator's Pi home. Only the exact provider record a child needs crosses the
+  boundary; no other provider record, configuration, session, or package state
+  does. Credential material never appears in argv, prompts, results, logs,
+  telemetry, or `.codearbiter/`, and is scrubbed on every path including
+  failure. Ratified as ADR-0016, superseding the opaque-auth clause of
+  ADR-0014. Closes #372.
+
 ## [0.1.1] - 2026-07-18
 
 ### Fixed
