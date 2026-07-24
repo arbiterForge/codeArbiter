@@ -7,14 +7,29 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { createRequire } from "node:module";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = join(HERE, "..", "..");
 const CLI = join(SITE_ROOT, "scripts", "link-audit.ts");
-const TSX_CLI = join(SITE_ROOT, "node_modules", "tsx", "dist", "cli.mjs");
+
+/** The production default the CLI falls back to when given no argument. */
+const DEFAULT_DIST = join(SITE_ROOT, "dist");
+
+// Resolve tsx's executable from its own `bin` field rather than hardcoding
+// `node_modules/tsx/dist/cli.mjs`. tsx is ranged `^4.19.2`, so a minor bump
+// that relocates or renames that entrypoint would otherwise break every case
+// in this file.
+const require_ = createRequire(import.meta.url);
+const TSX_PKG_JSON = require_.resolve("tsx/package.json");
+const TSX_BIN = require_("tsx/package.json").bin;
+const TSX_CLI = resolve(
+  dirname(TSX_PKG_JSON),
+  typeof TSX_BIN === "string" ? TSX_BIN : TSX_BIN.tsx,
+);
 
 const dists: string[] = [];
 
@@ -46,11 +61,17 @@ function runCli(distArg: string): { status: number | null; stdout: string; stder
 }
 
 describe("link-audit CLI", () => {
-  it("exits non-zero when the dist directory does not exist", () => {
+  it("exits non-zero and reports the given dist when that directory does not exist", () => {
     const missing = join(tmpdir(), "link-audit-cli-does-not-exist-xyz");
     const { status, stderr } = runCli(missing);
+
     expect(status).toBe(1);
-    expect(stderr).toContain("dist not found");
+    // Asserting only "dist not found" would pass vacuously against a CLI that
+    // ignores argv: it would report its own default site/dist and exit 1 for
+    // its own reason. Pinning the *argument* path — and pinning that the
+    // default is NOT the path reported — is what exercises argv handling.
+    expect(stderr).toContain(`dist not found at ${missing}`);
+    expect(stderr).not.toContain(DEFAULT_DIST);
   }, 60_000);
 
   it("exits non-zero on a zero-page dist even with both required assets present", () => {
