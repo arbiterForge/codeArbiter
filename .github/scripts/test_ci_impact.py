@@ -22,6 +22,7 @@ _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
+PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
 
 # `needs.<id>.result` and `needs['<id>'].result` are the two spellings GitHub
 # accepts; the aggregate gate uses both depending on whether the job id has a
@@ -31,6 +32,30 @@ _JOB_TIMEOUT = re.compile(r"(?m)^    timeout-minutes: (\d+)$")
 # GitHub-hosted runners hard-stop a job at 6 hours; a repository-defined bound
 # is only meaningful well under that.
 HOSTED_JOB_MAXIMUM_MINUTES = 360
+
+# A Pi Vitest file is HOST-DEPENDENT when it compares the *live* process
+# platform against a literal.  Two shapes matter and both make a lane on the
+# wrong OS unable to attest the file:
+#   test.skipIf(process.platform !== "win32")(...)   - the whole test never runs
+#   process.platform === "win32" ? "junction" : "dir" - a different OS primitive
+# Deliberately NOT matched: an *injected* platform (`buildChildEnv({ platform:
+# "win32", ... })`) or one merely forwarded into a pure function
+# (`platform: process.platform`).  Those exercise the same code on every host,
+# which is exactly what makes them safe to run once on the canonical lane.
+_LIVE_PLATFORM_SELECTOR = re.compile(r"(?:process|os)\.platform\s*(?:===|!==)")
+# The three-OS fan-out that makes a job able to attest a host-dependent file.
+_PLATFORM_MATRIX = "os: [ubuntu-latest, windows-latest, macos-latest]"
+# Vitest declaration heads, with their modifier chain (`.skipIf`, `.each`, ...).
+_TEST_DECLARATION = re.compile(
+    r"(?m)^\s*(?P<kind>describe|test|it)(?P<modifier>(?:\.[A-Za-z]+)*)\s*(?=[(`])"
+)
+# Modifiers that disable tests unconditionally - at *static* time, with no host
+# predicate to satisfy.  `.only` belongs here because it silently disables every
+# sibling in the file.  A committed suite carrying any of these is "assigned" to
+# a required job while contributing no verdict (issue #405, one level down).
+# `.fails` is deliberately absent: it still executes the body and asserts it
+# throws, so it is a real verdict.
+_STATICALLY_DISABLED = frozenset({"skip", "todo", "only"})
 
 
 def workflow_jobs(text: str) -> dict[str, str]:
@@ -100,6 +125,81 @@ def unassigned_pi_test_files(ci: str, committed: set[str]) -> set[str]:
                 token.rsplit("/", 1)[-1] for token in rest.split() if token.endswith(".test.ts")
             }
     return set(committed) - covered
+
+
+def platform_sensitive_pi_test_files() -> set[str]:
+    """Committed ca-pi Vitest files whose behaviour is selected by the live OS.
+
+    File-granular assignment (``unassigned_pi_test_files`` above) proves every
+    suite runs *somewhere*.  It cannot prove the suite runs where its own
+    platform gate opens: a ``test.skipIf(process.platform !== "win32")`` case is
+    reported as "assigned" by a Linux-only lane that skips it.  This is the
+    second half of the #405 contract.
+    """
+    return {
+        path.name
+        for path in PI_TEST_DIR.glob("*.test.ts")
+        if _LIVE_PLATFORM_SELECTOR.search(path.read_text(encoding="utf-8"))
+    }
+
+
+def platform_contract_vitest_files() -> set[str]:
+    """Vitest files ``test_pi_platform_contract.py`` re-runs inside a matrix cell.
+
+    Read out of the script rather than duplicated here, so moving a file between
+    its fixture groups cannot silently desynchronise this contract.
+    """
+    source = PI_PLATFORM_CONTRACT.read_text(encoding="utf-8")
+    return {
+        name.rsplit("/", 1)[-1]
+        for name in re.findall(r'"(test/[A-Za-z0-9._-]+\.test\.ts)"', source)
+    }
+
+
+def os_matrix_pi_test_files(ci: str, committed: set[str]) -> set[str]:
+    """Vitest files a required Pi job executes on *every* supported OS.
+
+    Only a job that fans out over ``_PLATFORM_MATRIX`` counts: a job pinned to
+    one runner can never execute the other hosts' gated cases.
+    """
+    jobs = workflow_jobs(ci)
+    covered: set[str] = set()
+    for job_id in aggregate_required_results(ci):
+        block = jobs.get(job_id, "")
+        if not job_id.startswith("ca-pi") or _PLATFORM_MATRIX not in block:
+            continue
+        for match in re.finditer(r"(?m)^\s+run: npm test(?P<rest>[^\n]*)$", block):
+            rest = match.group("rest").strip()
+            if not rest:
+                covered |= set(committed)
+                continue
+            covered |= {
+                token.rsplit("/", 1)[-1] for token in rest.split() if token.endswith(".test.ts")
+            }
+        if "test_pi_platform_contract.py" in block:
+            covered |= platform_contract_vitest_files()
+    return covered
+
+
+def statically_disabled_pi_tests() -> dict[str, list[str]]:
+    """{file: [disabled declarations]} for `.skip` / `.todo` / `.only`.
+
+    These disable a case with no host predicate to satisfy, so the file stays
+    "assigned" to a required job while contributing nothing.  A genuine platform
+    gate must use ``.skipIf`` / ``.runIf``, which the OS-matrix contract above
+    then holds to running somewhere the gate opens.
+    """
+    disabled: dict[str, list[str]] = {}
+    for path in sorted(PI_TEST_DIR.glob("*.test.ts")):
+        found = [
+            f"{match.group('kind')}{match.group('modifier')}"
+            for match in _TEST_DECLARATION.finditer(path.read_text(encoding="utf-8"))
+            if _STATICALLY_DISABLED & set(match.group("modifier").split(".")[1:])
+        ]
+        if found:
+            disabled[path.name] = found
+    return disabled
+
 
 _spec = importlib.util.spec_from_file_location("ci_impact", _TOOL)
 module = importlib.util.module_from_spec(_spec)
@@ -348,6 +448,61 @@ class WorkflowContractTest(unittest.TestCase):
             "removing the full-suite run left every Pi test file still assigned",
         )
 
+    def test_every_platform_gated_pi_test_file_runs_on_every_supported_os(self):
+        # Issue #405, second half / issue #390 AC-2.  File-granular assignment
+        # is blind to a test's own platform gate: a Linux-only lane reports
+        # activation.test.ts as "assigned" while
+        # `test.skipIf(process.platform !== "win32")` at line 388 silently skips
+        # the only case that reads the fixed user-global update cache.  Any file
+        # that branches on the LIVE platform must therefore run in a job that
+        # fans out over all three operating systems, or its Windows/macOS branch
+        # is attested by nothing.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        sensitive = platform_sensitive_pi_test_files()
+        self.assertTrue(sensitive, "no platform-gated Pi test files found - the scan is wrong")
+        self.assertLessEqual(
+            sensitive,
+            committed,
+            "the platform scan drifted off the committed Vitest set",
+        )
+        self.assertEqual(
+            sorted(sensitive - os_matrix_pi_test_files(ci, committed)),
+            [],
+            "Pi test files that branch on the live platform but run on one OS only",
+        )
+
+    def test_the_platform_gate_contract_binds_to_the_three_os_fan_out(self):
+        # The contract above must BITE on each way it can be broken.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        covered = os_matrix_pi_test_files(ci, committed)
+        self.assertTrue(covered, "no required Pi job fans out over the OS matrix")
+        # (a) A host-INDEPENDENT suite is not credited with OS coverage, so a
+        #     future win32-gated test added to one would be caught.
+        self.assertNotIn("policy.test.ts", covered)
+        self.assertNotIn("policy.test.ts", platform_sensitive_pi_test_files())
+        # (b) Collapsing the fan-out to a single runner uncovers everything.
+        collapsed = ci.replace(_PLATFORM_MATRIX, "os: [ubuntu-latest]", 1)
+        self.assertEqual(os_matrix_pi_test_files(collapsed, committed), set())
+        # (c) Dropping one file from the matrix step uncovers exactly that file.
+        without = ci.replace(" test/activation.test.ts", "", 1)
+        self.assertEqual(
+            covered - os_matrix_pi_test_files(without, committed), {"activation.test.ts"}
+        )
+
+    def test_no_committed_pi_test_is_disabled_by_a_static_skip_todo_or_only(self):
+        # Issue #405, the "assigned but inert" hole: `npm test` makes every file
+        # a required gate, but a `test.skip` / `test.todo` inside one - or a
+        # single `test.only`, which mutes every sibling - keeps the board green
+        # with no verdict behind it.  A platform gate must be expressed as
+        # `.skipIf` / `.runIf` so the OS-matrix contract above can hold it.
+        self.assertEqual(
+            statically_disabled_pi_tests(),
+            {},
+            "ca-pi Vitest declarations disabled with no host predicate to satisfy",
+        )
+
     def test_host_independent_pi_job_is_registered_in_both_needs_and_required_results(self):
         # Issue #390 CRITICAL: `ci-passed` enforces jobs through TWO
         # independent registrations - the `needs:` list (which makes it wait)
@@ -499,7 +654,11 @@ class ReceiptCommandTest(unittest.TestCase):
             self.assertFalse(receipt["fallback"])
             self.assertEqual(
                 [check["id"] for check in receipt["selected"]],
-                ["pi-adapter", "pi-latest"],
+                # `pi-checks` is the canonical host-independent job added by
+                # issue #390.  A Pi payload edit now predicts all three Pi
+                # contracts; omitting it made the receipt under-report the
+                # required jobs a reviewer must wait on.
+                ["pi-adapter", "pi-checks", "pi-latest"],
             )
             self.assertEqual(
                 receipt["predicted_not_selected"],
@@ -507,6 +666,10 @@ class ReceiptCommandTest(unittest.TestCase):
             )
             self.assertEqual(
                 receipt["selected"][0]["reproduce"],
+                "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10",
+            )
+            self.assertEqual(
+                receipt["selected"][1]["reproduce"],
                 "npm --prefix plugins/ca-pi/tools test",
             )
             self.assertEqual(

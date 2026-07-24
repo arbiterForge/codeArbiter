@@ -729,6 +729,36 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     ) is None:
         violations.append("ca-pi-tools does not execute the live package RPC test")
 
+    # Issue #390 AC-2: a Vitest file that compares the LIVE process.platform
+    # against a literal cannot be attested by the ubuntu-only canonical job -
+    # `test.skipIf(process.platform !== "win32")` simply skips there, and
+    # `process.platform === "win32" ? "junction" : "dir"` exercises the POSIX
+    # primitive only. Every such file must run on all three operating systems.
+    # This oracle derives the set from the sources, independently of
+    # test_ci_impact.py, so both would have to be wrong to lose the coverage.
+    live_platform = re.compile(r"(?:process|os)\.platform\s*(?:===|!==)")
+    matrix_vitest: set[str] = set()
+    for match in re.finditer(r"(?m)^\s+run: npm test(?P<rest>[^\n]*)$", matrix):
+        matrix_vitest |= {
+            token.rsplit("/", 1)[-1]
+            for token in match.group("rest").split()
+            if token.endswith(".test.ts")
+        }
+    if "test_pi_platform_contract.py" in matrix:
+        contract_source = (REPO / ".github" / "scripts" / "test_pi_platform_contract.py").read_text(
+            encoding="utf-8"
+        )
+        matrix_vitest |= {
+            name.rsplit("/", 1)[-1]
+            for name in re.findall(r'"(test/[A-Za-z0-9._-]+\.test\.ts)"', contract_source)
+        }
+    pi_tests = REPO / "plugins" / "ca-pi" / "tools" / "test"
+    for source in sorted(pi_tests.glob("*.test.ts")):
+        if live_platform.search(source.read_text(encoding="utf-8")) and source.name not in matrix_vitest:
+            violations.append(
+                f"ca-pi-tools does not run platform-gated suite on every OS: {source.name}"
+            )
+
     # Issue #390/#405: the host-independent half of the Pi contract lives in one
     # canonical job, and its Vitest run is deliberately UNFILTERED so every
     # committed test/*.test.ts file is a required merge gate.
@@ -1118,6 +1148,13 @@ class PiPackageTests(unittest.TestCase):
         self.assertTrue(
             pi_ci_contract_violations(host_independent_remultiplied),
             "a host-independent step must not creep back into the six-cell matrix",
+        )
+
+        platform_gated_dropped = ci.replace(" test/activation.test.ts", "", 1)
+        self.assertNotEqual(platform_gated_dropped, ci, "the platform-gated matrix step vanished")
+        self.assertTrue(
+            pi_ci_contract_violations(platform_gated_dropped),
+            "a Vitest file that branches on the live platform must run on all three OSes",
         )
 
         aggregate_result_dropped = ci.replace(

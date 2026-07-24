@@ -351,10 +351,26 @@ jobs:
     name: "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>"
     # Issue #390: the lean compatibility matrix. Only steps whose verdict is a
     # function of matrix.os or matrix.pi-version live here - the installed-Pi
-    # admission boundary, live package RPC activation, and the cross-platform
-    # platform contract. Everything host-independent moved to ca-pi-checks
-    # above; adding a host-independent step back here re-multiplies it by six
-    # and fails test_ci_impact.py.
+    # admission boundary, live package RPC activation, the cross-platform
+    # platform contract, and the Vitest suites that branch on the LIVE host
+    # platform. Everything host-independent moved to ca-pi-checks above; adding
+    # a host-independent step back here re-multiplies it by six and fails
+    # test_ci_impact.py.
+    #
+    # THE PARTITION RULE, stated once. A Pi Vitest file belongs here - not in
+    # the canonical ubuntu job alone - exactly when it compares the live
+    # `process.platform` against a literal, because then a Linux runner cannot
+    # reach the Windows/macOS branch at all:
+    #
+    #   test.skipIf(process.platform !== "win32")(...)      whole test skipped
+    #   process.platform === "win32" ? "junction" : "dir"   different OS primitive
+    #
+    # A platform value that is INJECTED (`buildChildEnv({ platform: "win32" })`)
+    # or merely forwarded into a pure function (`platform: process.platform`)
+    # does NOT qualify - child-env/compaction/status/tool-guard exercise the
+    # same code on every host, which is why they run once on ca-pi-checks.
+    # test_ci_impact.py derives this set from the sources; it is not a list a
+    # human keeps in sync.
     needs: changes
     if: needs.changes.outputs.ca-pi == 'true'
     strategy:
@@ -365,9 +381,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     # Issue #399. Worst observed cell before this split was 452s (windows-latest,
     # run 30123976665); the Windows cold `npm install --global` dominates and is
-    # unchanged by the split. 25 minutes is ~3.3x the recorded worst case, leaves
-    # room for a slow registry day, and still terminates a wedged install or a
-    # leaked process tree far short of the hosted 6-hour ceiling.
+    # unchanged by the split. That 452s cell also carried typecheck, the bundle
+    # build, the 100-sample benchmark and four Python scripts, all of which have
+    # moved to ca-pi-checks - so this job is a net reduction even with the
+    # platform-gated Vitest suites kept here. 25 minutes is ~3.3x the recorded
+    # worst case, leaves room for a slow registry day, and still terminates a
+    # wedged install or a leaked process tree far short of the 6-hour ceiling.
     timeout-minutes: 25
     defaults:
       run:
@@ -388,6 +407,14 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Test package, module identity, compatibility, and native binding
         run: npm test -- test/package.test.ts
+      # The host-dependent Vitest set, per the partition rule above. bridge,
+      # runner-isolation, process-tree and package are platform-gated too, but
+      # test_pi_platform_contract.py below already re-runs them in every cell,
+      # so they are not repeated here. Kept on ONE line on purpose: the workflow
+      # contracts in .github/scripts are textual (stdlib-only, no YAML parser)
+      # and read the covered file set straight off a `run: npm test -- ...` line.
+      - name: Test the platform-gated adapter suites on this operating system
+        run: npm test -- test/activation.test.ts test/background-jobs.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts
       - name: Test real package RPC activation and aliases
         working-directory: .
         run: python .github/scripts/test_pi_package.py --rpc-commands
