@@ -9,8 +9,20 @@ empty stream, invalid JSON, a valid JSON top level that is not an object
 `tool_name` — goes through ONE bounded handling path: emit the documented
 `decision: block` response, exit 0, dispatch no guard.
 
-This fails CLOSED, matching the pre-existing timed-out-stdin leg below. Two
-reasons, both specific to this file:
+That path runs ONLY in an arbiter-enabled repo. codeArbiter is dormant
+wherever `.codearbiter/CONTEXT.md` does not carry `arbiter: enabled`, and the
+contract for a dormant repo is total inaction — no exit 2, no stdout, no
+decision. Every guard enforces that itself as its first statement; this
+adapter short-circuits BEFORE any guard runs, so on the unroutable path it is
+the only process left to apply the check and must apply it (see
+`_arbiter_active` below). Without it, installing the plugin would make a
+tool that is supposed to be inert start declining tool calls in projects that
+never opted in, the first time the Windows shell boundary this shim exists to
+paper over hands over an empty or truncated stream.
+
+Inside an arbiter-enabled repo the unroutable path fails CLOSED, matching the
+pre-existing timed-out-stdin leg below. Two reasons, both specific to this
+file:
 
   * There is no safe guard to dispatch. Routing is a function of `tool_name`;
     without a readable one the adapter would have to guess between the write
@@ -41,7 +53,12 @@ import threading
 STDIN_TIMEOUT_SECONDS = 5
 
 # tool_name values Codex reports for the apply_patch envelope (Write/Edit are
-# matcher-only aliases carrying the same payload) — see hooks/_host.py.
+# matcher-only aliases carrying the same payload). This is a deliberate local
+# copy of CodexHost._PATCH_TOOLS / the "WRITE" entries of CodexHost.TOOL_MAP
+# (hooks/_host.py): routing happens before — and without — the shared library
+# import, so the adapter cannot ask the Host for it. The copy is held to the
+# canonical set by TestPreToolAdapterWriteToolSet in
+# .github/scripts/test_codex_adapter.py, which fails if the two ever diverge.
 WRITE_TOOLS = frozenset({"apply_patch", "Write", "Edit"})
 
 
@@ -87,11 +104,60 @@ def _route(raw):
     return ("pre-write.py" if tool_name in WRITE_TOOLS else "pre-bash.py"), None
 
 
+def _arbiter_active():
+    """Did this repo opt into codeArbiter (`arbiter: enabled` in CONTEXT.md)?
+
+    Answered through the SHARED helpers every guard uses, never a local copy
+    of the frontmatter parser: core/activation-contract.json names
+    `_hooklib.frontmatter_enabled_text` the ONE canonical parser, and a second
+    implementation here could disagree with the guards about what "enabled"
+    means — exactly the drift that contract exists to prevent.
+
+    Takes no payload, and MUST be called before stdin is read — see main().
+
+    An INDETERMINATE answer — the shared library or the plugin's Host will not
+    import, i.e. a broken install — counts as ACTIVE, so the caller fails
+    closed. The guards this adapter dispatches import those very same modules,
+    so an install that cannot answer the activation question cannot enforce
+    anything either; returning False there would convert a broken install into
+    a silent allow, which is the "silent dormancy" failure mode the whole hook
+    layer (and .github/scripts/test_hooks_cold_install.py) exists to prevent.
+    """
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from _hooklib import arbiter_active, project_root  # noqa: PLC0415
+        return arbiter_active(project_root())
+    except Exception:  # noqa: BLE001 — indeterminate == active; see docstring
+        return True
+
+
 def main():
+    # Resolved BEFORE stdin is touched, and deliberately without the payload.
+    # Two constraints force it here:
+    #
+    #   * project_root() spawns `git rev-parse`. Once the bounded read below
+    #     times out, its reader thread is STILL blocked on stdin, and a child
+    #     that inherits that stdin then never returns — measured on Windows:
+    #     `git rev-parse --show-toplevel` hangs until its own timeout fires
+    #     instead of finishing in ~20ms. So the leg that most needs the
+    #     activation answer (an incomplete stream) is the one leg that cannot
+    #     obtain it afterwards.
+    #   * the timeout leg must also leave NO descendant process behind
+    #     (TestPreToolAdapterLifecycle), which spawning git after the fact
+    #     would violate.
+    #
+    # Dropping the payload's `cwd` leg costs nothing here: Codex runs its hooks
+    # IN the session cwd and merely repeats that cwd in the payload
+    # (hooks/_host.py), so CodexHost.project_root's payload leg and its
+    # process-cwd leg climb to the same git toplevel.
+    active = _arbiter_active()
     raw = _read_stdin_bounded()
     script, diagnostic = _route(raw)
     if script is None:
-        return _decline(diagnostic)
+        # A dormant repo — one that never opted in — sees NO action at all: no
+        # decision, no guard, no output. Failing closed is a promise made to
+        # repos that opted in, not a licence to interfere with the rest.
+        return _decline(diagnostic) if active else 0
     result = subprocess.run(
         [sys.executable, os.path.join(os.path.dirname(__file__), script)],
         input=raw,

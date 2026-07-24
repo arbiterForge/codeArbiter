@@ -847,6 +847,23 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
             {"hook_event_name": "PreToolUse", "tool_name": ["Write"]}),
         "object/tool_name-array")
 
+    # ---- 6c. The SAME unroutable payloads in a DORMANT repo: dormancy wins.
+    # The adapter short-circuits before any guard runs, so it is the only
+    # process left to honour the activation contract this module documents —
+    # a repo that never opted in must see no exit 2 and no stdout, not a
+    # `decision: block` produced by a plugin that is supposed to be inert.
+    for label, payload in (("null", None), ("array", []),
+                           ("array-of-str", ["Write"]), ("string", "apply_patch"),
+                           ("number", 3), ("bool", True),
+                           ("object/tool_name-array",
+                            {"hook_event_name": "PreToolUse",
+                             "tool_name": ["Write"]})):
+        e = run("pre-tool-adapter.py", "primary", "REAL", dormant, payload)
+        check(e.rc != 2, e, f"payload {label}: dormant repo must never block")
+        check(e.out == "", e,
+              f"payload {label}: dormant repo must produce no stdout")
+        assert_noop_allow(e)
+
     # ---- 7. post-write-edit, enabled: an ungoverned path is a silent allow
     post_in = patch_in(ORDINARY_PATCH, enabled)
     for scen, kind, stub_ok in allow_pairs():
