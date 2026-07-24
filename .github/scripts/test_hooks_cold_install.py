@@ -743,6 +743,23 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
         check(output.get("decision") == "block" and gate in output.get("reason", ""),
               entry, f"Codex adapter must return decision:block with {gate}")
 
+    def assert_codex_shape_block(entry, label):
+        """#409: an unroutable payload must reach the model as the documented
+        bounded decision, not as an interpreter traceback on the real install."""
+        check("Traceback" not in entry.err, entry,
+              f"payload {label}: adapter must not leak a traceback")
+        check(entry.rc == 0, entry,
+              f"payload {label}: adapter must exit 0 with a decision")
+        try:
+            output = json.loads(entry.out)
+        except (TypeError, ValueError):
+            output = {}
+        reason = output.get("reason", "")
+        check(output.get("decision") == "block", entry,
+              f"payload {label}: an unroutable payload must fail closed")
+        check(reason.startswith("Blocked by codeArbiter policy") and len(reason) <= 120,
+              entry, f"payload {label}: reason must be a bounded diagnostic")
+
     # ---- 1. SessionStart, enabled repo: one OS-selected handler
     for scen in (("REAL", "STUB") if CODEX_STUB_IS_REAL_LIKE else ("REAL",)):
         p = run("session-start.py", "primary", scen, enabled, session_in())
@@ -811,6 +828,41 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
         assert_noop_allow(run("pre-tool-adapter.py", kind, scen, enabled,
                               patch_in(ORDINARY_PATCH, enabled)),
                           stub_ok=stub_ok)
+
+    # ---- 6b. Non-object hook payloads on the REAL install (#409). Codex
+    # contracts one JSON object per PreToolUse event; every other top-level
+    # JSON type must still produce a decision rather than an AttributeError
+    # traceback and an exit-1 adapter. Syntactically invalid JSON cannot be
+    # expressed through this runner (it serializes its input) and is covered
+    # by test_codex_adapter.py instead.
+    for label, payload in (("null", None), ("array", []),
+                           ("array-of-str", ["Write"]), ("string", "apply_patch"),
+                           ("number", 3), ("bool", True)):
+        assert_codex_shape_block(
+            run("pre-tool-adapter.py", "primary", "REAL", enabled, payload), label)
+    # A well-shaped object with a wrong-typed tool_name is the same class of
+    # defect one line further in (unhashable set-membership test).
+    assert_codex_shape_block(
+        run("pre-tool-adapter.py", "primary", "REAL", enabled,
+            {"hook_event_name": "PreToolUse", "tool_name": ["Write"]}),
+        "object/tool_name-array")
+
+    # ---- 6c. The SAME unroutable payloads in a DORMANT repo: dormancy wins.
+    # The adapter short-circuits before any guard runs, so it is the only
+    # process left to honour the activation contract this module documents —
+    # a repo that never opted in must see no exit 2 and no stdout, not a
+    # `decision: block` produced by a plugin that is supposed to be inert.
+    for label, payload in (("null", None), ("array", []),
+                           ("array-of-str", ["Write"]), ("string", "apply_patch"),
+                           ("number", 3), ("bool", True),
+                           ("object/tool_name-array",
+                            {"hook_event_name": "PreToolUse",
+                             "tool_name": ["Write"]})):
+        e = run("pre-tool-adapter.py", "primary", "REAL", dormant, payload)
+        check(e.rc != 2, e, f"payload {label}: dormant repo must never block")
+        check(e.out == "", e,
+              f"payload {label}: dormant repo must produce no stdout")
+        assert_noop_allow(e)
 
     # ---- 7. post-write-edit, enabled: an ungoverned path is a silent allow
     post_in = patch_in(ORDINARY_PATCH, enabled)

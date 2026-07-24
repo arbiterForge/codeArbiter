@@ -7,6 +7,19 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 ## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
 
 ### Fixed
+- The PreToolUse adapter validates the hook payload's shape before routing it.
+  A valid-JSON but non-object payload (`null`, an array, a string, a number, a
+  bool) used to raise `AttributeError` out of the adapter — exit 1, a traceback,
+  and no allow/block decision at all — and an empty or syntactically invalid
+  payload was handed to `pre-bash.py` unvalidated, where the guard layer's
+  documented fail-open silently allowed the gated call. Every unroutable payload
+  now takes one bounded path: the documented `decision: block` response at
+  exit 0, with no guard dispatched — and that path is gated on the repo having
+  opted in. codeArbiter stays dormant wherever `.codearbiter/CONTEXT.md` does
+  not carry `arbiter: enabled`: the adapter short-circuits before any guard
+  runs, so it now applies the same activation check the guards do and takes no
+  action at all in a repo that never opted in. This also closes the same gap on
+  the pre-existing incomplete-stream leg, which declined unconditionally.
 - Tribunal runs recover cumulative usage from each exact Codex agent thread
   when its local session artifact is readable, and otherwise record an explicit
   capability or instrumentation reason instead of leaving `tokens_actual`
