@@ -4,6 +4,20 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ---
 
+## [0.1.4] — 2026-07-24 — Supply-chain hardening: no pipe-to-shell, digest-pinned images
+
+Two tribunal supply-chain findings closed. Both concern EXTERNAL bytes the driver pulled in unpinned.
+
+### Security
+- **No remote-fetch-and-execute (#401).** `build.ts` no longer runs `curl -fsSL <installer> | bash` when nixpacks is missing. That branch executed arbitrary remote bytes on the developer host with the developer's privileges, BEFORE any container boundary exists. nixpacks is a documented prerequisite (README / SKILL / command description), so a missing prerequisite now FAILS CLOSED to the pre-existing generated-Dockerfile fallback with an actionable install note. The `curl | bash` declared exception in `security-controls.md` is closed, not merely narrowed.
+- **Container inputs pinned by digest (#402).** The throwaway clone image, the generated-Dockerfile fallback base, and the `--with-claude` base image are each bound to a reviewed multi-arch index digest (`name:tag@sha256:<digest>`). A retag or registry compromise can no longer silently change executable code inside a sandbox build — least of all in the Claude box, whose base image co-runs with `CLAUDE_CODE_OAUTH_TOKEN`.
+
+### Added
+- **`supply-chain.test.ts`** — structural guards that cannot be stubbed past: they reject pipe-to-shell patterns and digest-free external image references across the shipped driver sources AND the committed `sandbox.js` bundle. Test fixtures are exempt (`lifecycle.test.ts` drives docker with a literal tag on purpose).
+- **`defaultEnsureNixpacks` is exported with an injectable process seam**, closing a real coverage gap: every other suite stubs `BuildDeps.ensureNixpacks`, so the actual default toolchain-probe path had zero tests. It is now asserted to probe only — never to mutate the host toolchain.
+
+---
+
 ## [0.1.3] — 2026-07-02 — Single docker primitive + helper-container hardening
 
 Consolidation and hardening of the sandbox driver's container handling (part of the tribunal remediation).

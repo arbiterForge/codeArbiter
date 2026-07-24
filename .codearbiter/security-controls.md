@@ -448,7 +448,26 @@ reopens if the threat model expands to untrusted agents.
 | Gate command shell execution | `plan.json` `gate.commands` / `test.command` and `FARM_MUTATION_CMD` run via `cmd.exe /c` / `bash -c` in `farm.ts` | Operator-authored, length-capped (≤1024), PR-reviewed; deterministic gate by design — no untrusted source. See ADR for the trust model |
 | Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo); farm POSTs use `redirect: "error"` | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, and redirect refusal prevents a mock from forwarding the body to a remote cleartext target |
 | Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
-| `curl \| bash` nixpacks install | `build.ts` runs `curl -fsSL https://nixpacks.com/install.sh \| bash` when nixpacks is absent | Build-time host convenience; the URL is a hardcoded constant (not attacker-controllable). Tracked: prefer declaring nixpacks a prerequisite or pinning a checksum (NEEDS-TRIAGE in the ca-sandbox plan) |
 | Pi host-managed provider authentication | Pi resolves its user-owned auth store, provider environment, or credential command outside codeArbiter | Opaque trusted-runtime boundary under ADR-0014; `ca-pi` never reads/copies/logs credentials and child environments are minimal and provider-specific |
 | Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0014 |
+
+### Closed exceptions
+
+- **`curl | bash` nixpacks install** — CLOSED 2026-07-24 (issue #401). `build.ts`
+  no longer acquires nixpacks: the pipe-to-shell branch is deleted, nixpacks is a
+  documented prerequisite, and a missing prerequisite fails closed to the
+  generated-Dockerfile fallback. A structural test in
+  `plugins/ca-sandbox/tools/supply-chain.test.ts` keeps remote-fetch-and-execute
+  out of ca-sandbox production code.
+
+### Container image inputs
+
+Every external container image ca-sandbox pulls is bound to a reviewed content
+digest (`name:tag@sha256:<digest>`) — the clone image (`create.ts`), the
+generated-Dockerfile fallback base (`build.ts`), and the `--with-claude` base
+image (`claude-inside.ts`, which co-runs with `CLAUDE_CODE_OAUTH_TOKEN`). A
+floating tag is a mutable registry input: a retag or registry compromise would
+silently change executable code inside a sandbox build. Digest bumps are reviewed
+dependency changes, and `supply-chain.test.ts` rejects `:latest` and digest-free
+external image references in production code (issue #402).
