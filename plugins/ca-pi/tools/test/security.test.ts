@@ -216,6 +216,7 @@ describe("ADR-0014 adversarial promotion contract", () => {
     const child = buildChildEnv({
       platform: "win32",
       provider: "openai",
+      isolationRoot: resolve(tmpdir(), "ca-pi-security-child"),
       parent: {
         SystemRoot: "C:/Windows",
         USERPROFILE: "C:/isolated-home",
