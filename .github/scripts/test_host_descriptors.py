@@ -128,6 +128,16 @@ _TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/background-jobs.test.ts",
 })
 
+# Exact test artifacts approved by issue #370's real-host final-argument
+# authority proof. Path-exact like every set above, so an unlisted file under
+# tools/ still fails closed.
+_ISSUE_370_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/test/final-arguments-live.test.ts",
+    "tools/test/fixtures/live-governed-extension.mjs",
+    "tools/test/fixtures/live-later-extension.mjs",
+    "tools/test/live-pi-host.ts",
+})
+
 
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -355,6 +365,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_TASK_5_NON_POLICY_ARTIFACTS)
         | set(_TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS)
         | set(_TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS)
+        | set(_ISSUE_370_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
@@ -697,7 +708,8 @@ class GenerationContractTest(unittest.TestCase):
         _assert_pi_policy_matches_core(actual, expected)
         for rel in (_TASK_2_NON_POLICY_ARTIFACTS | _TASK_3_NON_POLICY_ARTIFACTS
                     | _TASK_4_NON_POLICY_ARTIFACTS | _TASK_5_NON_POLICY_ARTIFACTS
-                    | _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS | _TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS):
+                    | _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS | _TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS
+                    | _ISSUE_370_NON_POLICY_ARTIFACTS):
             with self.subTest(rel=rel):
                 self.assertIn(rel, exemptions)
         self.assertFalse(any(item.startswith("tools/") and item.endswith("/**") for item in exemptions))
