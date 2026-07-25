@@ -5,7 +5,7 @@ import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath } from "node:url";
 
-import { buildChildEnv, PI_PROVIDER_ENV } from "./child-env.ts";
+import { ChildConfigProjectionError, PI_PROVIDER_ENV, prepareChildEnvironment } from "./child-env.ts";
 import {
   CHILD_ATTESTATION_TIMEOUT_MS,
   CHILD_ATTESTATION_TITLE,
@@ -80,11 +80,6 @@ export interface ChildResult {
   exitCode?: number;
   stdoutBytes?: number;
   stderrBytes?: number;
-  /** Bounded, UNREDACTED raw stderr bytes captured from the child — the leading MAX_STDERR_BYTES
-   * of stderr, not a rolling tail (named for what it holds, not stream position). Callers (e.g.
-   * dispatch.ts's audit writer) MUST redact this via redaction.ts's safeDiagnostic before it is
-   * ever logged, displayed, or otherwise persisted. */
-  stderrHead?: string;
 }
 
 interface RuntimeIdentityPort {
@@ -563,13 +558,29 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
   return record;
 }
 
-/** `detail`, only when it is a recognized WindowsSupervisorRefusalReason, is appended as a
- * stable short identifier to the diagnostic — anything else (arbitrary error text, provider
- * material, etc.) is silently dropped, never interpolated or leaked. This keeps a Windows
- * containment refusal's cause observable without widening this channel unsafely. */
+/** Fixed identifiers for the ADR-0016 credential-isolation and ADR-0017 config-projection
+ * stages. These name a stage the runner itself chose to enter — they are never derived from
+ * child output, error text, a filesystem path, a configuration value, or any credential value,
+ * so they satisfy ADR-0016's "fixed, bounded degraded failure" while keeping an isolation
+ * failure distinguishable from a child that launched and then misbehaved. */
+export const CHILD_ISOLATION_FAILURE_REASONS = Object.freeze([
+  "isolation-setup",
+  "isolation-cleanup",
+  "isolation-config",
+] as const);
+export type ChildIsolationFailureReason = typeof CHILD_ISOLATION_FAILURE_REASONS[number];
+
+/** `detail`, only when it is a recognized WindowsSupervisorRefusalReason or
+ * ChildIsolationFailureReason, is appended as a stable short identifier to the diagnostic —
+ * anything else (arbitrary error text, provider material, etc.) is silently dropped, never
+ * interpolated or leaked. This keeps a containment refusal's or credential-isolation stage's
+ * cause observable without widening this channel unsafely. */
 export function childFailure(detail?: unknown): ChildResult {
-  const reason = typeof detail === "string" && (WINDOWS_SUPERVISOR_REFUSAL_REASONS as readonly string[]).includes(detail)
-    ? detail as WindowsSupervisorRefusalReason
+  const allowlisted = typeof detail === "string"
+    && ((WINDOWS_SUPERVISOR_REFUSAL_REASONS as readonly string[]).includes(detail)
+      || (CHILD_ISOLATION_FAILURE_REASONS as readonly string[]).includes(detail));
+  const reason = allowlisted
+    ? detail as WindowsSupervisorRefusalReason | ChildIsolationFailureReason
     : undefined;
   return Object.freeze({
     terminal: "degraded",
@@ -579,7 +590,7 @@ export function childFailure(detail?: unknown): ChildResult {
   });
 }
 
-function assistantText(message: unknown): string | undefined {
+function assistantText(message: unknown, containsSensitiveValue: (text: string) => boolean): string | undefined {
   if (!validMessage(message)) return undefined;
   const record = message as { role: string; content: unknown[] };
   if (record.role !== "assistant") return undefined;
@@ -589,11 +600,16 @@ function assistantText(message: unknown): string | undefined {
     return block.type === "text" && typeof block.text === "string" ? [block.text] : [];
   }).join("");
   if (text.trim() === "" || Buffer.byteLength(text, "utf8") > MAX_OUTPUT_BYTES) return undefined;
+  if (containsSensitiveValue(text)) return undefined;
   const safe = safeDiagnostic(text, MAX_OUTPUT_BYTES);
   return safe === "" || Buffer.byteLength(safe, "utf8") > MAX_OUTPUT_BYTES ? undefined : safe;
 }
 
-function successfulFinalAssistant(message: unknown, launch: ChildLaunchInput): string | undefined {
+function successfulFinalAssistant(
+  message: unknown,
+  launch: ChildLaunchInput,
+  containsSensitiveValue: (text: string) => boolean,
+): string | undefined {
   if (!validMessage(message)) return undefined;
   const assistant = message as Record<string, unknown>;
   if (assistant.role !== "assistant"
@@ -601,7 +617,7 @@ function successfulFinalAssistant(message: unknown, launch: ChildLaunchInput): s
     || assistant.model !== launch.model
     || assistant.stopReason !== "stop"
     || Object.prototype.hasOwnProperty.call(assistant, "errorMessage")) return undefined;
-  return assistantText(message);
+  return assistantText(message, containsSensitiveValue);
 }
 
 export async function runPiChild(
@@ -628,213 +644,246 @@ export async function runPiChild(
   if (signal.aborted) return childFailure();
 
   const startedAt = Date.now();
-  let child;
+  let preparedEnvironment;
   try {
-    child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
-      cwd: launch.cwd,
-      env: buildChildEnv({
-        platform: request.platform ?? process.platform,
-        parent: request.parentEnv ?? process.env,
-        provider: launch.provider,
-      }),
-      stdio: ["pipe", "pipe", "pipe", "pipe"],
+    preparedEnvironment = await prepareChildEnvironment({
+      platform: request.platform ?? process.platform,
+      parent: request.parentEnv ?? process.env,
+      provider: launch.provider,
     });
   } catch (error) {
-    return childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : undefined);
+    // ADR-0017: a selected-provider record that cannot be projected credential-blind refuses
+    // the launch outright. Falling back to Pi's built-in catalog is the defect itself — it
+    // sends the operator's key to an endpoint they never configured.
+    return childFailure(error instanceof ChildConfigProjectionError ? "isolation-config" : "isolation-setup");
   }
-  const cleanup = createProcessTreeCleanup(child);
-  let abortedDuringReadiness: boolean = signal.aborted;
-  let cancellationCleanup: Promise<unknown> | undefined;
-  const readinessAbort = () => {
-    abortedDuringReadiness = true;
-    cancellationCleanup ??= cleanup.terminate("cancelled");
+  // Cleanup of the private isolation root is idempotent and runs at most once. Every ordinary
+  // exit routes through `withEnvironmentCleanup`, so an unprovable cleanup still degrades the
+  // RESULT; the `finally` below is the structural backstop for the one case a returning path
+  // cannot cover - an unexpected throw between a successful prepare and the final return.
+  let environmentCleanupStarted = false;
+  const cleanupEnvironment = async (): Promise<boolean> => {
+    if (environmentCleanupStarted) return true;
+    environmentCleanupStarted = true;
+    try {
+      await preparedEnvironment.cleanup();
+      return true;
+    } catch {
+      return false;
+    }
   };
-  if (!abortedDuringReadiness) signal.addEventListener("abort", readinessAbort, { once: true });
-  const containmentReady = await cleanup.ready();
-  signal.removeEventListener("abort", readinessAbort);
-  if (abortedDuringReadiness || signal.aborted) {
-    cancellationCleanup ??= cleanup.terminate("cancelled");
-    await cancellationCleanup;
-    return childFailure();
-  }
-  if (!containmentReady) {
-    await cleanup.terminate("startup_failure");
-    return childFailure();
-  }
+  const withEnvironmentCleanup = async (result: ChildResult): Promise<ChildResult> =>
+    (await cleanupEnvironment()) ? result : childFailure("isolation-cleanup");
+  try {
+    if (signal.aborted) return await withEnvironmentCleanup(childFailure());
+    let child;
+    try {
+      child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
+        cwd: launch.cwd,
+        env: preparedEnvironment.env,
+        stdio: ["pipe", "pipe", "pipe", "pipe"],
+      });
+    } catch (error) {
+      return await withEnvironmentCleanup(childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : undefined));
+    }
+    const cleanup = createProcessTreeCleanup(child);
+    let abortedDuringReadiness: boolean = signal.aborted;
+    let cancellationCleanup: Promise<unknown> | undefined;
+    const readinessAbort = () => {
+      abortedDuringReadiness = true;
+      cancellationCleanup ??= cleanup.terminate("cancelled");
+    };
+    if (!abortedDuringReadiness) signal.addEventListener("abort", readinessAbort, { once: true });
+    const containmentReady = await cleanup.ready();
+    signal.removeEventListener("abort", readinessAbort);
+    if (abortedDuringReadiness || signal.aborted) {
+      cancellationCleanup ??= cleanup.terminate("cancelled");
+      await cancellationCleanup;
+      return await withEnvironmentCleanup(childFailure());
+    }
+    if (!containmentReady) {
+      await cleanup.terminate("startup_failure");
+      return await withEnvironmentCleanup(childFailure());
+    }
 
-  return await new Promise<ChildResult>((resolveResult) => {
-    let phase: "await-attestation" | "await-handshake" | "await-task-ack" | "await-agent-start" | "in-task" | "await-settled" | "complete" = "await-attestation";
-    let failed = false;
-    let stdoutBytes = 0;
-    let stderrBytes = 0;
-    let stderrHead = "";
-    let lastExitCode: number | undefined;
-    let pending = "";
-    let output: string | undefined;
-    // Best-effort observability metrics attached only to a successful completion. A degraded
-    // result carries no metrics or stderr head at all — it stays a fixed diagnostic-only shape
-    // (see "returns the same fixed degraded result for every isolated-runner failure branch"),
-    // varying only in its diagnostic string, and only by an allowlisted refusal reason code
-    // (childFailure's WINDOWS_SUPERVISOR_REFUSAL_REASONS check), never by raw error content or
-    // byte counts. The dispatch-layer audit measures its own duration around the runChild call
-    // for degraded outcomes instead.
-    const metrics = () => ({
-      durationMs: Date.now() - startedAt,
-      stdoutBytes,
-      stderrBytes,
-      stderrHead,
-      ...(lastExitCode === undefined ? {} : { exitCode: lastExitCode }),
-    });
-    const stdoutDecoder = new StringDecoder("utf8");
-    let stdoutDecoderEnded = false;
-    const expectedAttestation = childAttestationDigest({
-      nonce,
-      challenge,
-      cwd: launch.cwd,
-      provider: launch.provider,
-      model: launch.model,
-      tools: launch.tools,
-      projectTrusted: false,
-      mode: "rpc",
-    });
-    let settled = false;
-    let timer: NodeJS.Timeout | undefined;
-    const settle = (value: ChildResult) => {
-      if (settled) return;
-      settled = true;
-      if (timer !== undefined) clearTimeout(timer);
-      signal.removeEventListener("abort", abort);
-      resolveResult(value);
-    };
-    const finishFailure = (reason: ProcessTreeCleanupReason = "protocol_error") => {
-      if (failed || settled) return;
-      failed = true;
-      try { child.stdin.end(); } catch { /* process already closed */ }
-      void cleanup.terminate(reason).then(
-        () => settle(childFailure()),
-        () => settle(childFailure()),
-      );
-    };
-    const abort = () => finishFailure("cancelled");
-    signal.addEventListener("abort", abort, { once: true });
-    if (signal.aborted) {
-      finishFailure("cancelled");
-      return;
-    }
-    child.stdin.on("error", () => finishFailure("protocol_error"));
-    const capability = child.stdio[3];
-    if (!isCapabilityPipe(capability)) {
-      finishFailure("startup_failure");
-    } else {
-      capability.on("error", () => finishFailure("startup_failure"));
-      if (capability.destroyed === true || capability.writable === false) finishFailure("startup_failure");
-      else {
-        try { capability.end(nonce, "utf8"); }
-        catch { finishFailure("startup_failure"); }
+    const result = await new Promise<ChildResult>((resolveResult) => {
+      let phase: "await-attestation" | "await-handshake" | "await-task-ack" | "await-agent-start" | "in-task" | "await-settled" | "complete" = "await-attestation";
+      let failed = false;
+      let stdoutBytes = 0;
+      let stderrBytes = 0;
+      let lastExitCode: number | undefined;
+      let pending = "";
+      let output: string | undefined;
+      // Best-effort observability metrics attached only to a successful completion. A degraded
+      // result carries no metrics or stderr head at all — it stays a fixed diagnostic-only shape
+      // (see "returns the same fixed degraded result for every isolated-runner failure branch"),
+      // varying only in its diagnostic string, and only by an allowlisted refusal reason code
+      // (childFailure's WINDOWS_SUPERVISOR_REFUSAL_REASONS check), never by raw error content or
+      // byte counts. The dispatch-layer audit measures its own duration around the runChild call
+      // for degraded outcomes instead.
+      const metrics = () => ({
+        durationMs: Date.now() - startedAt,
+        stdoutBytes,
+        stderrBytes,
+        ...(lastExitCode === undefined ? {} : { exitCode: lastExitCode }),
+      });
+      const stdoutDecoder = new StringDecoder("utf8");
+      let stdoutDecoderEnded = false;
+      const expectedAttestation = childAttestationDigest({
+        nonce,
+        challenge,
+        cwd: launch.cwd,
+        provider: launch.provider,
+        model: launch.model,
+        tools: launch.tools,
+        projectTrusted: false,
+        mode: "rpc",
+      });
+      let settled = false;
+      let timer: NodeJS.Timeout | undefined;
+      const settle = (value: ChildResult) => {
+        if (settled) return;
+        settled = true;
+        if (timer !== undefined) clearTimeout(timer);
+        signal.removeEventListener("abort", abort);
+        resolveResult(value);
+      };
+      const finishFailure = (reason: ProcessTreeCleanupReason = "protocol_error") => {
+        if (failed || settled) return;
+        failed = true;
+        try { child.stdin.end(); } catch { /* process already closed */ }
+        void cleanup.terminate(reason).then(
+          () => settle(childFailure()),
+          () => settle(childFailure()),
+        );
+      };
+      const abort = () => finishFailure("cancelled");
+      signal.addEventListener("abort", abort, { once: true });
+      if (signal.aborted) {
+        finishFailure("cancelled");
+        return;
       }
-    }
-    const writeInput = (record: string) => {
-      if (failed || child.stdin.destroyed || !child.stdin.writable) { finishFailure("protocol_error"); return; }
-      try { child.stdin.write(record + "\n", "utf8", (error) => { if (error !== null && error !== undefined) finishFailure("protocol_error"); }); }
-      catch { finishFailure("protocol_error"); }
-    };
-    const endInput = () => {
-      if (child.stdin.destroyed) return;
-      try { child.stdin.end(); }
-      catch { finishFailure("protocol_error"); }
-    };
-    const processLine = (line: string) => {
-      if (line === "" || failed) return;
-      let record: ProtocolRecord;
-      try { record = parseChildJsonLine(line); }
-      catch { finishFailure("protocol_error"); return; }
-      if (record.type === "extension_ui_request") {
-        if (phase !== "await-attestation"
-          || record.title !== CHILD_ATTESTATION_TITLE
-          || record.message !== expectedAttestation
-          || record.timeout !== CHILD_ATTESTATION_TIMEOUT_MS) { finishFailure("protocol_error"); return; }
-        phase = "await-handshake";
-        writeInput(rpcConfirmation(record.id as string));
-      } else if (record.type === "response" && record.command === "prompt") {
-        if (phase === "await-handshake") {
-          if (record.id !== `${correlationId}-handshake` || record.success !== true) { finishFailure("protocol_error"); return; }
-          phase = "await-task-ack";
-          writeInput(taskRecord);
-        } else if (phase === "await-task-ack") {
-          if (record.id !== correlationId || record.success !== true) { finishFailure("protocol_error"); return; }
-          phase = "await-agent-start";
+      child.stdin.on("error", () => finishFailure("protocol_error"));
+      const capability = child.stdio[3];
+      if (!isCapabilityPipe(capability)) {
+        finishFailure("startup_failure");
+      } else {
+        capability.on("error", () => finishFailure("startup_failure"));
+        if (capability.destroyed === true || capability.writable === false) finishFailure("startup_failure");
+        else {
+          try { capability.end(nonce, "utf8"); }
+          catch { finishFailure("startup_failure"); }
+        }
+      }
+      const writeInput = (record: string) => {
+        if (failed || child.stdin.destroyed || !child.stdin.writable) { finishFailure("protocol_error"); return; }
+        try { child.stdin.write(record + "\n", "utf8", (error) => { if (error !== null && error !== undefined) finishFailure("protocol_error"); }); }
+        catch { finishFailure("protocol_error"); }
+      };
+      const endInput = () => {
+        if (child.stdin.destroyed) return;
+        try { child.stdin.end(); }
+        catch { finishFailure("protocol_error"); }
+      };
+      const processLine = (line: string) => {
+        if (line === "" || failed) return;
+        let record: ProtocolRecord;
+        try { record = parseChildJsonLine(line); }
+        catch { finishFailure("protocol_error"); return; }
+        if (record.type === "extension_ui_request") {
+          if (phase !== "await-attestation"
+            || record.title !== CHILD_ATTESTATION_TITLE
+            || record.message !== expectedAttestation
+            || record.timeout !== CHILD_ATTESTATION_TIMEOUT_MS) { finishFailure("protocol_error"); return; }
+          phase = "await-handshake";
+          writeInput(rpcConfirmation(record.id as string));
+        } else if (record.type === "response" && record.command === "prompt") {
+          if (phase === "await-handshake") {
+            if (record.id !== `${correlationId}-handshake` || record.success !== true) { finishFailure("protocol_error"); return; }
+            phase = "await-task-ack";
+            writeInput(taskRecord);
+          } else if (phase === "await-task-ack") {
+            if (record.id !== correlationId || record.success !== true) { finishFailure("protocol_error"); return; }
+            phase = "await-agent-start";
+          } else {
+            finishFailure("protocol_error");
+          }
+        } else if (record.type === "extension_error") {
+          finishFailure("protocol_error");
+        } else if (phase === "await-agent-start") {
+          if (record.type !== "agent_start") { finishFailure("protocol_error"); return; }
+          phase = "in-task";
+        } else if (phase === "in-task") {
+          if (record.type === "agent_end") {
+            const messages = record.messages as unknown[];
+            const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
+            const finalOutput = successfulFinalAssistant(finalAssistant, launch, preparedEnvironment.containsSensitiveValue);
+            if (record.willRetry !== false || finalOutput === undefined) { finishFailure("protocol_error"); return; }
+            output = finalOutput;
+            phase = "await-settled";
+          } else if (["agent_start", "agent_settled", "response"].includes(record.type)) {
+            finishFailure("protocol_error");
+          }
+        } else if (record.type === "agent_settled") {
+          if (phase !== "await-settled") { finishFailure("protocol_error"); return; }
+          phase = "complete";
+          endInput();
         } else {
           finishFailure("protocol_error");
         }
-      } else if (record.type === "extension_error") {
-        finishFailure("protocol_error");
-      } else if (phase === "await-agent-start") {
-        if (record.type !== "agent_start") { finishFailure("protocol_error"); return; }
-        phase = "in-task";
-      } else if (phase === "in-task") {
-        if (record.type === "agent_end") {
-          const messages = record.messages as unknown[];
-          const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
-          const finalOutput = successfulFinalAssistant(finalAssistant, launch);
-          if (record.willRetry !== false || finalOutput === undefined) { finishFailure("protocol_error"); return; }
-          output = finalOutput;
-          phase = "await-settled";
-        } else if (["agent_start", "agent_settled", "response"].includes(record.type)) {
-          finishFailure("protocol_error");
+      };
+      child.stdout.on("data", (chunk: Buffer | string) => {
+        const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
+        stdoutBytes += raw.byteLength;
+        if (stdoutBytes > MAX_STDOUT_BYTES) { finishFailure("protocol_overflow"); return; }
+        const value = stdoutDecoder.write(raw);
+        pending += value;
+        let newline = pending.indexOf("\n");
+        while (newline >= 0) {
+          processLine(pending.slice(0, newline));
+          pending = pending.slice(newline + 1);
+          newline = pending.indexOf("\n");
         }
-      } else if (record.type === "agent_settled") {
-        if (phase !== "await-settled") { finishFailure("protocol_error"); return; }
-        phase = "complete";
-        endInput();
-      } else {
-        finishFailure("protocol_error");
+        if (Buffer.byteLength(pending, "utf8") > MAX_JSONL_LINE_BYTES) finishFailure("protocol_overflow");
+      });
+      child.stderr.on("data", (chunk: Buffer | string) => {
+        const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
+        stderrBytes += raw.byteLength;
+        if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
+      });
+      child.on("error", () => finishFailure("startup_failure"));
+      timer = setTimeout(() => finishFailure("timeout"), Math.max(1, request.timeoutMs ?? 120_000));
+      const handleClose = (code: number | null) => {
+        if (code !== null) lastExitCode = code;
+        if (!stdoutDecoderEnded) {
+          stdoutDecoderEnded = true;
+          pending += stdoutDecoder.end();
+        }
+        if (pending !== "") processLine(pending);
+        if (settled) return;
+        if (failed || phase !== "complete" || code !== 0) {
+          finishFailure("protocol_error");
+          return;
+        }
+        void cleanup.terminate("parent_shutdown").then((cleanupResult) => {
+          if (!cleanupResult.verified) settle(childFailure());
+          else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...(output === undefined ? {} : { output }) }));
+        }, () => settle(childFailure()));
+      };
+      child.on("close", handleClose);
+      if ((child.exitCode !== undefined && child.exitCode !== null)
+        || (child.signalCode !== undefined && child.signalCode !== null)) {
+        queueMicrotask(() => handleClose(child.exitCode));
       }
-    };
-    child.stdout.on("data", (chunk: Buffer | string) => {
-      const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
-      stdoutBytes += raw.byteLength;
-      if (stdoutBytes > MAX_STDOUT_BYTES) { finishFailure("protocol_overflow"); return; }
-      const value = stdoutDecoder.write(raw);
-      pending += value;
-      let newline = pending.indexOf("\n");
-      while (newline >= 0) {
-        processLine(pending.slice(0, newline));
-        pending = pending.slice(newline + 1);
-        newline = pending.indexOf("\n");
-      }
-      if (Buffer.byteLength(pending, "utf8") > MAX_JSONL_LINE_BYTES) finishFailure("protocol_overflow");
+      if (!failed) writeInput(handshakeRecord);
     });
-    child.stderr.on("data", (chunk: Buffer | string) => {
-      const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
-      stderrBytes += raw.byteLength;
-      const remaining = Math.max(0, MAX_STDERR_BYTES - Buffer.byteLength(stderrHead, "utf8"));
-      if (remaining > 0) stderrHead += raw.subarray(0, remaining).toString("utf8");
-      if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
-    });
-    child.on("error", () => finishFailure("startup_failure"));
-    timer = setTimeout(() => finishFailure("timeout"), Math.max(1, request.timeoutMs ?? 120_000));
-    const handleClose = (code: number | null) => {
-      if (code !== null) lastExitCode = code;
-      if (!stdoutDecoderEnded) {
-        stdoutDecoderEnded = true;
-        pending += stdoutDecoder.end();
-      }
-      if (pending !== "") processLine(pending);
-      if (settled) return;
-      if (failed || phase !== "complete" || code !== 0) {
-        finishFailure("protocol_error");
-        return;
-      }
-      void cleanup.terminate("parent_shutdown").then((cleanupResult) => {
-        if (!cleanupResult.verified) settle(childFailure());
-        else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...(output === undefined ? {} : { output }) }));
-      }, () => settle(childFailure()));
-    };
-    child.on("close", handleClose);
-    if ((child.exitCode !== undefined && child.exitCode !== null)
-      || (child.signalCode !== undefined && child.signalCode !== null)) {
-      queueMicrotask(() => handleClose(child.exitCode));
-    }
-    if (!failed) writeInput(handshakeRecord);
-  });
+    return await withEnvironmentCleanup(result);
+  } finally {
+    // Unreachable by construction rather than by audit of every return path: a throw anywhere
+    // after a successful prepare (inside the Promise executor, the attestation digest, listener
+    // installation, stdin writes) must never leave the private isolation root - which holds the
+    // operator's real credential in cleartext - on disk. `cleanupEnvironment` is idempotent, so
+    // this never double-runs behind an ordinary return.
+    await cleanupEnvironment();
+  }
 }
