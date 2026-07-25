@@ -254,6 +254,24 @@ jobs:
     needs: changes
     if: needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
+    # Issue #406. Docker is a REQUIRED prerequisite for this job, not a nicety.
+    # ca-sandbox is the driver that clones UNTRUSTED repositories into a
+    # container, and every real-container suite used to convert a failed
+    # `docker info` probe into `describe.skip` - here too. A runner Docker
+    # outage, a daemon that failed to start, a permissions regression or a
+    # runtime incompatibility therefore deleted the ONLY isolation, mount,
+    # network, lifecycle and teardown evidence while this job exited 0 off the
+    # pure argv-builder specs. CA_SANDBOX_REQUIRE_DOCKER makes an unavailable
+    # daemon throw from module scope instead; CA_SANDBOX_DOCKER_SENTINEL is the
+    # append-only record of which gated layers actually STARTED, asserted below.
+    # Developer machines set neither and keep the old self-skipping behavior.
+    #
+    # OPERATIONAL CONSEQUENCE, accepted deliberately: a runner-side Docker
+    # outage is now a merge blocker for every ca-sandbox PR. That is the point -
+    # a sandbox contract that cannot be exercised has not been verified.
+    env:
+      CA_SANDBOX_REQUIRE_DOCKER: "1"
+      CA_SANDBOX_DOCKER_SENTINEL: ${{ github.workspace }}/sandbox-docker-layers.sentinel
     defaults:
       run:
         working-directory: plugins/ca-sandbox/tools
@@ -264,6 +282,9 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: plugins/ca-sandbox/tools/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
       - name: Install (locked)
         run: npm ci
       - name: Audit (CVE gate - fail on HIGH)
@@ -274,12 +295,22 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
       - name: Typecheck
         run: npm run typecheck
-      - name: Test
-        # Docker-gated. The bulk of the ca-sandbox suite spins real containers;
-        # those specs probe `docker info` and skip themselves when Docker is
-        # absent. The GitHub ubuntu-latest runner ships Docker, so they run for
-        # real here; the pure-unit specs (mounts, dephash) always run.
+      - name: Docker preflight (REQUIRED prerequisite - fail, never skip)
+        # Fails the job BEFORE the suite rather than letting it degrade into a
+        # green run of argv-builder tests only.
+        run: |
+          if ! docker info --format '{{.OSType}}'; then
+            echo "::error::The ca-sandbox contract job requires a working Docker daemon. Without one the real isolation, mount, network, lifecycle and teardown suites cannot run, and this job would otherwise report green having exercised none of the container behaviour that contains an untrusted repository (issue #406)."
+            exit 1
+          fi
+      - name: Test (Docker required - a missing daemon fails the run)
         run: npm test
+      - name: Assert every real-container layer executed
+        # The preflight only proves the daemon answered once. This proves each
+        # docker-gated layer actually ran, so a suite that silently stops
+        # registering cannot pass on an exit code alone.
+        working-directory: ${{ github.workspace }}
+        run: python3 .github/scripts/check_sandbox_docker_layers.py --sentinel "$CA_SANDBOX_DOCKER_SENTINEL"
       - name: Rebuild sandbox.js
         run: npm run build
       - name: Fail if committed sandbox.js is stale

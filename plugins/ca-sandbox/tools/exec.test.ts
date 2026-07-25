@@ -17,6 +17,7 @@
  *      Namespaced (ca-sbx-t11), labeled, and cleaned up.
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { execInSandbox, buildExecArgs, type ExecResult } from "./exec.ts";
 
@@ -126,12 +127,7 @@ describe("execInSandbox — JSON contract (AC-09)", () => {
 // Starts a real container, execs a real command, asserts the JSON contract.
 // Namespaced with the task id; every object is cleaned up.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("exec");
 
 const NS = "ca-sbx-t11";
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };

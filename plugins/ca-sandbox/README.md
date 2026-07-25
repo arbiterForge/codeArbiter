@@ -87,3 +87,21 @@ npm run typecheck
 npm test          # docker-gated suites run serially (fileParallelism off)
 npm run build     # rebuilds sandbox.js; the shipped artifact must be in sync
 ```
+
+### Docker-required mode
+
+Most of this suite spins real containers. Without a Docker daemon those suites
+skip themselves, which is right on a laptop and wrong on CI: a green run that
+exercised none of the container behaviour proves nothing about a driver whose
+whole job is containing an **untrusted** repository. Two environment variables
+make that explicit (issue #406):
+
+| Variable | Effect |
+| --- | --- |
+| `CA_SANDBOX_REQUIRE_DOCKER=1` | An unavailable daemon **fails** the run instead of skipping. Set by the required CI job. |
+| `CA_SANDBOX_DOCKER_SENTINEL=<path>` | Each real-container layer appends its name to `<path>` when it starts. |
+
+CI sets both, then runs
+`python .github/scripts/check_sandbox_docker_layers.py --sentinel <path>`, which
+fails unless every layer the sources declare actually recorded a run. Locally,
+leave both unset for the usual self-skipping behaviour.

@@ -28,6 +28,21 @@ NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
 PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
+SANDBOX_LAYERS_TOOL = REPO_ROOT / ".github" / "scripts" / "check_sandbox_docker_layers.py"
+
+# Issue #406: a ca-sandbox suite that spins REAL containers used to carry its
+# own private `dockerAvailable()` probe and degrade to `describe.skip` when the
+# probe failed - on the REQUIRED CI job too.  The only sanctioned spelling is
+# now the shared `dockerGate("<layer>")` helper, which fails hard in required
+# mode and records an execution sentinel.  These two shapes are what a
+# re-introduced private self-skip looks like.
+_PRIVATE_DOCKER_PROBE = re.compile(
+    r"(?m)^\s*(?:(?:async\s+)?function\s+dockerAvailable\b"
+    r"|const\s+\w+\s*=\s*(?:HAS_DOCKER|dockerAvailable\(\))\s*\?)"
+)
+# A `docker info` PROBE, as an executed shell command - not the word "docker
+# info" inside a YAML comment, which is all the job used to contain.
+_DOCKER_PREFLIGHT = re.compile(r"(?m)^\s+(?:if\s+!\s+)?docker info\b")
 
 # `needs.<id>.result` and `needs['<id>'].result` are the two spellings GitHub
 # accepts; the aggregate gate uses both depending on whether the job id has a
@@ -523,6 +538,31 @@ sys.modules[_spec.name] = module
 _spec.loader.exec_module(module)
 
 
+def sandbox_layers_module():
+    """The ca-sandbox docker-layer sentinel verifier, loaded by path."""
+    spec = importlib.util.spec_from_file_location(
+        "check_sandbox_docker_layers_ci_impact", SANDBOX_LAYERS_TOOL
+    )
+    loaded = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = loaded
+    spec.loader.exec_module(loaded)
+    return loaded
+
+
+def privately_gated_sandbox_suites() -> dict[str, list[str]]:
+    """ca-sandbox test files that still hand-roll their own docker self-skip."""
+    layers = sandbox_layers_module()
+    offenders: dict[str, list[str]] = {}
+    for path in layers.sandbox_test_files(REPO_ROOT):
+        found = [
+            match.group(0).strip()
+            for match in _PRIVATE_DOCKER_PROBE.finditer(path.read_text(encoding="utf-8"))
+        ]
+        if found:
+            offenders[path.relative_to(REPO_ROOT).as_posix()] = found
+    return offenders
+
+
 def hosts():
     spec = importlib.util.spec_from_file_location("host_descriptors_ci_impact", _DESCRIPTORS_TOOL)
     descriptors = importlib.util.module_from_spec(spec)
@@ -727,6 +767,77 @@ class WorkflowContractTest(unittest.TestCase):
         )
         for name in expected:
             self.assertIn(f'name: "{name}"', ci)
+
+    def test_the_required_sandbox_job_fails_when_docker_is_unavailable(self):
+        # Issue #406 AC-1/AC-2.  ca-sandbox is the driver that clones UNTRUSTED
+        # repositories, and every real-container suite used to convert a failed
+        # `docker info` probe into `describe.skip` - on the required merge-gate
+        # job too.  A runner Docker outage therefore removed the ONLY isolation,
+        # mount, network, lifecycle and teardown evidence while the board went
+        # green off pure argv-builder tests.  The required job must now (a)
+        # preflight the daemon BEFORE the suite and exit non-zero without it,
+        # and (b) run the suite in docker-REQUIRED mode so a daemon that dies
+        # mid-run fails the file instead of skipping it.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("ca-sandbox-tools", aggregate_required_results(ci))
+        job = workflow_jobs(ci)["ca-sandbox-tools"]
+        suite = job.find("run: npm test")
+        self.assertNotEqual(suite, -1, "the sandbox job no longer runs `npm test`")
+        probe = _DOCKER_PREFLIGHT.search(job)
+        self.assertIsNotNone(probe, "the sandbox job runs no `docker info` preflight command")
+        self.assertLess(
+            probe.start(), suite, "the docker preflight must run BEFORE the sandbox suite"
+        )
+        self.assertIn(
+            "exit 1",
+            job[probe.start():suite],
+            "the docker preflight does not fail the job when the daemon is unavailable",
+        )
+        self.assertIn(
+            'CA_SANDBOX_REQUIRE_DOCKER: "1"',
+            job,
+            "the required sandbox suite does not run in docker-REQUIRED mode",
+        )
+
+    def test_the_required_sandbox_job_asserts_a_real_container_execution_sentinel(self):
+        # Issue #406 AC-3.  A preflight only proves the daemon answered once.
+        # The required job must additionally prove that every docker-gated
+        # layer actually EXECUTED, so a suite that silently stops registering
+        # (a bad filter, a renamed file, a gate left inert) cannot pass.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = workflow_jobs(ci)["ca-sandbox-tools"]
+        suite = job.find("run: npm test")
+        self.assertIn(
+            "CA_SANDBOX_DOCKER_SENTINEL",
+            job,
+            "the sandbox suite records no machine-checkable execution sentinel",
+        )
+        verifier = job.find("check_sandbox_docker_layers.py")
+        self.assertNotEqual(verifier, -1, "the sandbox job never asserts the layer sentinel")
+        self.assertGreater(
+            verifier, suite, "the layer sentinel must be asserted AFTER the suite runs"
+        )
+
+    def test_every_real_container_sandbox_suite_routes_through_the_shared_docker_gate(self):
+        # The contract above is only worth as much as the gate's reach: a suite
+        # keeping its own `dockerAvailable()` + `describe.skip` pair opts itself
+        # back out of required mode AND contributes no sentinel line, which is
+        # exactly the #406 hole one file at a time.
+        self.assertEqual(
+            privately_gated_sandbox_suites(),
+            {},
+            "ca-sandbox suites still self-skipping outside the shared docker gate",
+        )
+        layers = sandbox_layers_module().declared_layers(REPO_ROOT)
+        self.assertTrue(layers, "no dockerGate() layers found - the scan is wrong")
+        # The containment guarantees the sandbox actually advertises. Each is a
+        # real-container suite, so each must be a sentinel-bearing layer.
+        for required in ("isolation", "lifecycle", "network", "run"):
+            self.assertIn(
+                required,
+                layers,
+                f"the {required!r} real-container layer is not behind the shared docker gate",
+            )
 
     def test_every_committed_pi_test_file_runs_in_a_required_merge_gate_job(self):
         # Issue #405: the six-cell matrix named 6 of the 23 committed Vitest
