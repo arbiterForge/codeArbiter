@@ -1076,10 +1076,13 @@ var DEFAULT_VERIFY_MS = 2e3;
 var DEFAULT_POLL_MS = 25;
 var MAX_STEP_MS = 3e4;
 var MAX_POLL_MS = 1e3;
-var WINDOWS_JOB_READY_MS = 15e3;
+var WINDOWS_JOB_READY_IDLE_MS = 15e3;
+var WINDOWS_JOB_READY_CEILING_MS = 3e4;
 var WINDOWS_HELPER_CLEANUP_MS = 1e3;
 var WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
+var WINDOWS_JOB_STARTING = "STARTING";
 var WINDOWS_JOB_READY = "ATTACHED";
+var WINDOWS_JOB_READY_TOKENS = Object.freeze([WINDOWS_JOB_STARTING, WINDOWS_JOB_READY]);
 var WINDOWS_SUPERVISOR_START = "START\n";
 var MAX_JOB_PROTOCOL_BYTES = 64;
 var MAX_LAUNCH_PROTOCOL_BYTES = 3145728;
@@ -1087,6 +1090,8 @@ var MAX_LAUNCH_ENV_ENTRIES = 256;
 var MAX_LAUNCH_ENV_BYTES = 262144;
 var WINDOWS_JOB_HELPER_SOURCE = String.raw`$ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+[Console]::Out.WriteLine('STARTING')
+[Console]::Out.Flush()
 $source = @'
 using System;
 using System.Runtime.InteropServices;
@@ -1282,6 +1287,21 @@ function normalizedTiming(options) {
   const pollMs = boundedDuration(options.pollMs, DEFAULT_POLL_MS, "pollMs");
   if (pollMs > MAX_POLL_MS || pollMs > Math.max(graceMs, verifyMs)) throw new Error("pollMs must be bounded by the cleanup windows");
   return { graceMs, verifyMs, pollMs };
+}
+async function awaitProgressTokens(readLine, expected, options) {
+  const idleMs = boundedDuration(options.idleMs, options.idleMs, "progress idleMs");
+  const ceilingMs = boundedDuration(options.ceilingMs, options.ceilingMs, "progress ceilingMs");
+  if (idleMs > ceilingMs) throw new Error("progress idleMs must be bounded by the progress ceiling");
+  const now = options.now ?? Date.now;
+  const deadline = now() + ceilingMs;
+  for (const token of expected) {
+    const remaining = deadline - now();
+    if (remaining <= 0) return Object.freeze({ state: "stalled", phase: token, waitedMs: 0 });
+    const started = now();
+    const line = await readLine(Math.min(idleMs, remaining));
+    if (line !== token) return Object.freeze({ state: "stalled", phase: token, waitedMs: now() - started });
+  }
+  return Object.freeze({ state: "ready" });
 }
 function processTreeSpawnOptions(platform = process.platform) {
   return Object.freeze({ detached: platform !== "win32", shell: false, windowsHide: true });
@@ -1539,13 +1559,15 @@ function startWindowsJobGuard(pid, timing) {
     helper.once("error", finish);
   });
   helper.stdin.on("error", () => void 0);
+  const idleMs = Math.min(WINDOWS_JOB_READY_IDLE_MS, timing.verifyMs);
+  const ceilingMs = Math.min(WINDOWS_JOB_READY_CEILING_MS, idleMs * WINDOWS_JOB_READY_TOKENS.length);
+  let stallDiagnostic;
   const ready = new Promise((resolveReady) => {
     let settled = false;
     let stderrBytes = 0;
     const finish = (accepted) => {
-      if (settled) return;
+      if (settled) return false;
       settled = true;
-      clearTimeout(timer);
       resolveReady(accepted);
       if (!accepted) {
         try {
@@ -1554,8 +1576,8 @@ function startWindowsJobGuard(pid, timing) {
         }
         terminateWindowsHelperTree(helper, closed);
       }
+      return true;
     };
-    const timer = setTimeout(() => finish(false), Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs));
     helper.stderr.on("data", (chunk) => {
       stderrBytes += Buffer.byteLength(chunk);
       if (stderrBytes > MAX_JOB_PROTOCOL_BYTES) finish(false);
@@ -1564,7 +1586,10 @@ function startWindowsJobGuard(pid, timing) {
       if (!intentional) finish(false);
     });
     helper.once("error", () => finish(false));
-    void readOutputLine(Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs)).then((line) => finish(line === WINDOWS_JOB_READY));
+    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs }).then((outcome) => {
+      const refused = finish(outcome.state === "ready");
+      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
+    }, () => finish(false));
     try {
       helper.stdin.write(`${pid} ${process.pid}
 `, "utf8", (error) => {
@@ -1577,10 +1602,13 @@ function startWindowsJobGuard(pid, timing) {
   return Object.freeze({
     ready,
     exitCode,
+    stall() {
+      return stallDiagnostic;
+    },
     async arm(rootPid) {
       if (armed || !positivePid(rootPid) || !await ready || closed) return false;
       armed = true;
-      const watched = readOutputLine(Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs));
+      const watched = readOutputLine(idleMs);
       const written = await new Promise((resolveWrite) => {
         try {
           helper.stdin.write(`${rootPid}
@@ -1797,7 +1825,7 @@ async function spawnProcessTree(command, args, options) {
   if (process.platform !== "win32") {
     return spawn2(canonicalCommand, [...args], { ...processTreeSpawnOptions(process.platform), cwd: canonicalCwd, env: options.env, stdio: [...options.stdio] });
   }
-  const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS });
+  const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_IDLE_MS });
   const supervisorPath = canonicalSupervisorPath();
   const plan = windowsSupervisorLaunchPlan(realpathSync2(process.execPath), supervisorPath);
   const launchRecord = windowsSupervisorLaunchRecord(canonicalCommand, args, canonicalCwd, options.env);
@@ -1819,7 +1847,8 @@ async function spawnProcessTree(command, args, options) {
       supervisor.kill("SIGKILL");
     } catch {
     }
-    throw new Error("Windows Job Object holder refused containment: ready-timeout");
+    const stall = guard2?.stall();
+    throw new Error(`Windows Job Object holder refused containment${stall === void 0 ? "" : ` (${stall})`}: ready-timeout`);
   }
   const supervisorStdio = supervisor.stdio;
   const launchPipe = supervisorStdio[4];
