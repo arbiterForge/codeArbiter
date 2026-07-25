@@ -1,7 +1,7 @@
 /** runner.ts - codeArbiter's bounded fresh-process Pi child runner. */
 import { randomBytes, randomUUID } from "node:crypto";
 import { readFile, realpath, stat } from "node:fs/promises";
-import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { dirname, isAbsolute, resolve } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath } from "node:url";
 
@@ -12,6 +12,7 @@ import {
   childAttestationDigest,
 } from "./attestation.ts";
 import { compatibilityDirection } from "./compatibility.ts";
+import { lexicallyInside } from "./path-boundary.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog } from "./roles.ts";
 import { resolvePiRuntimeIdentity } from "./runtime-resolver.ts";
@@ -137,11 +138,6 @@ async function canonicalFile(path: string, label: string): Promise<string> {
   return canonical;
 }
 
-function inside(path: string, root: string): boolean {
-  const suffix = relative(root, path);
-  return suffix === "" || (!suffix.startsWith("..") && !isAbsolute(suffix));
-}
-
 async function owningCaPackageRoot(): Promise<string> {
   let cursor = dirname(await realpath(fileURLToPath(import.meta.url)));
   while (true) {
@@ -176,7 +172,7 @@ export async function validateChildLaunch(
   const runtimeIdentity = await (dependencies.resolveRuntimeIdentity ?? resolvePiRuntimeIdentity)(piCliPath);
   const runtimeCli = await canonicalFile(runtimeIdentity.cliEntry, "resolved Pi CLI");
   const runtimeRoot = await realpath(runtimeIdentity.packageRoot);
-  if (runtimeCli !== piCliPath || !inside(piCliPath, runtimeRoot)) throw new Error("Pi child CLI does not match the resolved Pi runtime identity.");
+  if (runtimeCli !== piCliPath || !lexicallyInside(piCliPath, runtimeRoot)) throw new Error("Pi child CLI does not match the resolved Pi runtime identity.");
   const incompatibility = compatibilityDirection({ piVersion: runtimeIdentity.version, nodeVersion: process.versions.node, pythonMajor: 3 });
   if (incompatibility !== null) throw new Error(incompatibility);
 
@@ -185,7 +181,7 @@ export async function validateChildLaunch(
   if (packageManifest.name !== "ca-pi") throw new Error("Pi child package identity is invalid.");
   const childExtensionPath = await canonicalFile(input.childExtensionPath, "Pi child extension");
   const expectedChildExtension = await canonicalFile(resolve(packageRoot, "extensions", "codearbiter-child.js"), "packaged Pi child extension");
-  if (childExtensionPath !== expectedChildExtension || !inside(childExtensionPath, packageRoot)) {
+  if (childExtensionPath !== expectedChildExtension || !lexicallyInside(childExtensionPath, packageRoot)) {
     throw new Error("Pi child extension escapes the trusted package resource boundary.");
   }
   const compaction = input.launchKind === "internal-compaction";
@@ -193,7 +189,7 @@ export async function validateChildLaunch(
   const skillPaths = await Promise.all(input.skillPaths.map(async (path) => await canonicalFile(path, "Pi role skill")));
   if (compaction) {
     const expectedCharter = await canonicalFile(resolve(packageRoot, "includes", "compaction-charter.md"), "packaged Pi compaction charter");
-    if (charterPath !== expectedCharter || !inside(charterPath, packageRoot)) {
+    if (charterPath !== expectedCharter || !lexicallyInside(charterPath, packageRoot)) {
       throw new Error("Pi compaction charter resource escapes the trusted package boundary.");
     }
   } else {
@@ -202,7 +198,7 @@ export async function validateChildLaunch(
     for (const role of catalog.values()) {
       const catalogCharter = await canonicalFile(resolve(packageRoot, role.charterPath), "catalog Pi role charter");
       const catalogSkills = await Promise.all(role.skillPaths.map(async (path) => await canonicalFile(resolve(packageRoot, path), "catalog Pi role skill")));
-      if (!inside(catalogCharter, packageRoot) || catalogSkills.some((path) => !inside(path, packageRoot))) {
+      if (!lexicallyInside(catalogCharter, packageRoot) || catalogSkills.some((path) => !lexicallyInside(path, packageRoot))) {
         throw new Error("Pi role catalog resource escapes the trusted package boundary.");
       }
       if (charterPath === catalogCharter && sameStrings(skillPaths, catalogSkills) && sameStrings(input.tools, role.tools)) {
@@ -211,7 +207,7 @@ export async function validateChildLaunch(
     }
     if (!roleMatched) throw new Error("Pi child resources do not match one generated role catalog entry.");
   }
-  if ([nodePath, piCliPath, childExtensionPath, charterPath, ...skillPaths].some((path) => inside(path, cwd))) {
+  if ([nodePath, piCliPath, childExtensionPath, charterPath, ...skillPaths].some((path) => lexicallyInside(path, cwd))) {
     throw new Error("Pi child working directory contains a trusted executable or package resource.");
   }
   const common = {

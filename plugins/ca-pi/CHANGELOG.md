@@ -2,6 +2,26 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.12] - 2026-07-25
+
+### Changed
+
+- Pi path containment now has a single owner. Nine Pi modules each carried a
+  private copy of the same containment predicate and `bridge.ts` carried a tenth
+  platform-parameterised variant, so a containment or platform correction had to
+  be applied consistently to every trust-boundary module and a partial update
+  could make doctor report a path healthy while runtime enforcement rejected it.
+  `path-boundary.ts` now owns the semantics as two explicitly named operations -
+  lexical (text only) and canonical (both operands resolved through the
+  filesystem) - with an injectable win32/posix flavor so both platforms are
+  testable from either host. Every caller keeps the exact semantics it had.
+- The 1,033-line Pi command module is split along its three lifecycle seams.
+  Generated alias expansion with package-ownership validation, the background-job
+  tool and `/ca-jobs` controller, and the `/ca-plan` controller are now separate
+  modules with an acyclic import graph, so a change to one no longer forces
+  review and re-verification of the other two. No behaviour changed: every moved
+  line is byte-identical and every pre-existing suite passes unmodified.
+
 ## [0.1.11] - 2026-07-25
 
 ### Added

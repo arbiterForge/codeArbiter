@@ -8,10 +8,11 @@ import type {
   ToolInfoPort,
 } from "./contracts.ts";
 import { createHash } from "node:crypto";
-import { existsSync, realpathSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { isAbsolute, relative, resolve } from "node:path";
+import { resolve } from "node:path";
 import { assertCommandOwnership, nativeSkillExpansion } from "./commands.ts";
+import { canonicalPath, canonicallyInside } from "./path-boundary.ts";
 import { atLeast as versionAtLeast } from "./compatibility.ts";
 
 export type DiagnosisState = "healthy" | "degraded" | "unhealthy";
@@ -234,19 +235,10 @@ function diagnosis(
   };
 }
 
-function canonical(path: string): string {
-  try { return realpathSync.native(path); } catch { return resolve(path); }
-}
-
 function samePath(left: string, right: string): boolean {
-  const a = canonical(left);
-  const b = canonical(right);
+  const a = canonicalPath(left);
+  const b = canonicalPath(right);
   return process.platform === "win32" ? a.toLowerCase() === b.toLowerCase() : a === b;
-}
-
-function inside(path: string, root: string): boolean {
-  const suffix = relative(canonical(root), canonical(path));
-  return suffix === "" || (!suffix.startsWith("..") && !isAbsolute(suffix));
 }
 
 export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
@@ -254,7 +246,7 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
   const packageHealthy = input.package.declared && input.package.name === "ca-pi"
     && existsSync(input.package.root) && existsSync(input.package.extensionPath)
     && samePath(input.package.extensionPath, expectedExtension)
-    && inside(input.package.extensionPath, input.package.root);
+    && canonicallyInside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
   const versionHealthy = ["0.80.5", "0.80.10"].includes(input.runtime.piVersion)
@@ -263,7 +255,7 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
   const expectedDoctorSkill = resolve(input.package.root, "skills", "ca-doctor", "SKILL.md");
   const ownerPathsHealthy = input.commands.ownerPaths.length > 0
-    && input.commands.ownerPaths.every((path) => inside(path, input.package.root))
+    && input.commands.ownerPaths.every((path) => canonicallyInside(path, input.package.root))
     && input.commands.ownerPaths.some((path) => samePath(path, expectedExtension))
     && input.commands.ownerPaths.some((path) => samePath(path, expectedDoctorSkill));
   const commandsHealthy = input.commands.collisions.length === 0
@@ -273,15 +265,15 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
   const childPathHealthy = samePath(
     input.child.path,
     resolve(input.package.root, "extensions", "codearbiter-child.js"),
-  ) && inside(input.child.path, input.package.root) && existsSync(input.child.path);
+  ) && canonicallyInside(input.child.path, input.package.root) && existsSync(input.child.path);
   const coreHealthy = input.core.present
     && existsSync(input.core.bridgeScript)
     && samePath(input.core.bridgeScript, resolve(input.package.root, "hooks", "pi-bridge.py"))
-    && inside(input.core.bridgeScript, input.package.root);
+    && canonicallyInside(input.core.bridgeScript, input.package.root);
   const runtimeIdentityHealthy = existsSync(input.runtime.cliEntry)
     && existsSync(input.runtime.moduleEntry)
-    && inside(input.runtime.cliEntry, input.runtime.packageRoot)
-    && inside(input.runtime.moduleEntry, input.runtime.packageRoot)
+    && canonicallyInside(input.runtime.cliEntry, input.runtime.packageRoot)
+    && canonicallyInside(input.runtime.moduleEntry, input.runtime.packageRoot)
     && samePath(input.runtime.cliEntry, resolve(input.runtime.packageRoot, "dist", "cli.js"))
     && samePath(input.runtime.moduleEntry, resolve(input.runtime.packageRoot, "dist", "index.js"));
   const mutators = ["bash", "write", "edit"];

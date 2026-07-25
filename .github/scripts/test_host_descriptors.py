@@ -128,6 +128,20 @@ _TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/background-jobs.test.ts",
 })
 
+# Exact artifacts created by the Pi module-structure remediation (#375, #376):
+# the single owner of path containment, the three modules carved out of the
+# former commands.ts god module, and their acceptance suites. None of these is
+# generated from core/surface.
+_MODULE_STRUCTURE_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/src/command-ownership.ts",
+    "tools/src/native-background.ts",
+    "tools/src/native-plan.ts",
+    "tools/src/path-boundary.ts",
+    "tools/src/session-identity.ts",
+    "tools/test/module-structure.test.ts",
+    "tools/test/path-boundary.test.ts",
+})
+
 # Exact test artifacts approved by issue #370's real-host final-argument
 # authority proof. Path-exact like every set above, so an unlisted file under
 # tools/ still fails closed.
@@ -365,6 +379,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_TASK_5_NON_POLICY_ARTIFACTS)
         | set(_TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS)
         | set(_TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS)
+        | set(_MODULE_STRUCTURE_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_370_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())

@@ -40,9 +40,13 @@ beforeAll(async () => {
   resolverHomeRoot = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-runtime-resolver-home-")));
   const srcDir = resolve(resolverHomeRoot, "src");
   await mkdir(srcDir, { recursive: true });
-  const realSourcePath = resolve(import.meta.dirname, "..", "src", "runtime-resolver.ts");
-  const realSource = await readFile(realSourcePath, "utf8");
-  await writeFile(resolve(srcDir, "runtime-resolver.ts"), realSource, "utf8");
+  // The copy carries runtime-resolver.ts's own sibling value imports so the throwaway package
+  // resolves them exactly as the production bundle does; every copied file is byte-for-byte real.
+  for (const name of ["runtime-resolver.ts", "path-boundary.ts"]) {
+    const realSourcePath = resolve(import.meta.dirname, "..", "src", name);
+    const realSource = await readFile(realSourcePath, "utf8");
+    await writeFile(resolve(srcDir, name), realSource, "utf8");
+  }
   await writeFile(resolve(resolverHomeRoot, "package.json"), JSON.stringify({ name: "ca-pi", version: "0.1.0", type: "module" }), "utf8");
   const module = await import(pathToFileURL(resolve(srcDir, "runtime-resolver.ts")).href) as RuntimeResolverModule;
   resolvePiRuntimeIdentity = module.resolvePiRuntimeIdentity;

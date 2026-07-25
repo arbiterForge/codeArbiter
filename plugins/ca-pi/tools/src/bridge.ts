@@ -2,7 +2,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { accessSync, constants, realpathSync, statSync } from "node:fs";
 import { appendFile, realpath } from "node:fs/promises";
-import { dirname, isAbsolute, posix, relative, resolve, win32 } from "node:path";
+import { dirname, isAbsolute, posix, resolve, win32 } from "node:path";
 
 import type {
   BridgePort,
@@ -15,6 +15,7 @@ import type {
   PiUsageSnapshotPortResult,
   ToolCategory,
 } from "./contracts.ts";
+import { flavorForPlatform, lexicallyInside } from "./path-boundary.ts";
 import { redactJson, safeDiagnostic } from "./redaction.ts";
 
 const RESPONSE_KEYS = new Set(["version", "outcome", "ruleId", "message", "context", "resultPatch", "auditCode"]);
@@ -71,11 +72,6 @@ export interface BridgeClientOptions {
   shouldAuditFailure?: (request: BridgeRequest) => boolean;
 }
 
-function inside(path: string, root: string): boolean {
-  const suffix = relative(root, path);
-  return suffix === "" || (!suffix.startsWith("..") && !isAbsolute(suffix));
-}
-
 function minimalEnvironment(
   identities?: { git: string; python: string },
   userHome?: string,
@@ -117,12 +113,6 @@ function canonicalExecutable(candidate: string, platform: NodeJS.Platform): stri
   }
 }
 
-function sameOrInside(path: string, root: string, platform: NodeJS.Platform): boolean {
-  const pathApi = platform === "win32" ? win32 : posix;
-  const suffix = pathApi.relative(root, path);
-  return suffix === "" || (!suffix.startsWith("..") && !pathApi.isAbsolute(suffix));
-}
-
 async function canonicalUserHome(
   projectRoot: string,
   packageRoot: string,
@@ -135,8 +125,8 @@ async function canonicalUserHome(
   try {
     const canonical = await realpath(candidate);
     if (!statSync(canonical).isDirectory()
-      || sameOrInside(canonical, projectRoot, platform)
-      || sameOrInside(canonical, packageRoot, platform)) return undefined;
+      || lexicallyInside(canonical, projectRoot, flavorForPlatform(platform))
+      || lexicallyInside(canonical, packageRoot, flavorForPlatform(platform))) return undefined;
     return canonical;
   } catch {
     return undefined;
@@ -160,7 +150,7 @@ function trustedPathCandidate(
     let directory: string;
     try { directory = realpathSync(entry); } catch { continue; }
     const candidate = canonicalExecutable(pathApi.join(directory, basename), platform);
-    if (candidate !== undefined && !sameOrInside(candidate, canonicalProject, platform)) return candidate;
+    if (candidate !== undefined && !lexicallyInside(candidate, canonicalProject, flavorForPlatform(platform))) return candidate;
   }
   return undefined;
 }
@@ -186,7 +176,7 @@ function windowsTaskkillExecutable(): string | undefined {
   if (candidate === undefined) return undefined;
   let canonicalRoot: string;
   try { canonicalRoot = realpathSync(systemRoot); } catch { return undefined; }
-  return sameOrInside(candidate, canonicalRoot, "win32") ? candidate : undefined;
+  return lexicallyInside(candidate, canonicalRoot, "win32") ? candidate : undefined;
 }
 
 function validResponse(value: unknown): value is BridgeResponse {
@@ -673,7 +663,7 @@ export class BridgeClient implements BridgePort {
     if (canonicalExecutable(git, process.platform) === undefined || canonicalExecutable(python, process.platform) === undefined) {
       throw new Error("bridge executable identity is invalid");
     }
-    if (!inside(script, root)) throw new Error("bridge script is outside the installed package");
+    if (!lexicallyInside(script, root)) throw new Error("bridge script is outside the installed package");
     const taskkill = windowsTaskkillExecutable();
     if (process.platform === "win32" && taskkill === undefined) throw new Error("taskkill is unavailable");
     return { git, python, root, script, ...(taskkill === undefined ? {} : { taskkill }) };
@@ -742,7 +732,7 @@ export class BridgeClient implements BridgePort {
     }
     try {
       const project = await realpath(request.cwd);
-      if (inside(paths.git, project) || inside(paths.python, project)) {
+      if (lexicallyInside(paths.git, project) || lexicallyInside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
       const canonicalHome = await canonicalUserHome(project, paths.root);
@@ -895,7 +885,7 @@ export function resolvePythonCommand(
       result.status === 0
       && lines[0] === "3"
       && canonical !== undefined
-      && (probe !== systemPythonProbe || !sameOrInside(canonical, excludedProjectCwd ?? safeCwd, platform))
+      && (probe !== systemPythonProbe || !lexicallyInside(canonical, excludedProjectCwd ?? safeCwd, flavorForPlatform(platform)))
     ) {
       return { executable: canonical, prefixArgs: [] };
     }

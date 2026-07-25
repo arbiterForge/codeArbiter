@@ -8,6 +8,8 @@ import { dirname, isAbsolute, relative, resolve, win32 } from "node:path";
 import { fileURLToPath } from "node:url";
 import { types as utilTypes } from "node:util";
 
+import { lexicallyInside } from "./path-boundary.ts";
+
 const DEFAULT_GRACE_MS = 500;
 const DEFAULT_VERIFY_MS = 2_000;
 const DEFAULT_POLL_MS = 25;
@@ -383,10 +385,6 @@ export function processTreeTerminationPlan(platform: NodeJS.Platform, pid: numbe
   ]);
 }
 
-function pathInsideWindows(candidate: string, root: string): boolean {
-  const suffix = win32.relative(root, candidate);
-  return suffix === "" || (!suffix.startsWith("..") && !win32.isAbsolute(suffix));
-}
 function canonicalWindowsSystemFile(parts: readonly string[], basename: string): string | undefined {
   if (process.platform !== "win32") return undefined;
   const configuredRoot = process.env.SystemRoot ?? process.env.WINDIR;
@@ -396,8 +394,8 @@ function canonicalWindowsSystemFile(parts: readonly string[], basename: string):
     const system32 = realpathSync(win32.join(root, "System32"));
     const parent = realpathSync(win32.join(system32, ...parts.slice(0, -1)));
     const candidate = realpathSync(win32.join(system32, ...parts));
-    if (!statSync(candidate).isFile() || !pathInsideWindows(system32, root) || !pathInsideWindows(parent, system32)
-      || !pathInsideWindows(candidate, parent) || win32.basename(candidate).toLowerCase() !== basename) return undefined;
+    if (!statSync(candidate).isFile() || !lexicallyInside(system32, root, "win32") || !lexicallyInside(parent, system32, "win32")
+      || !lexicallyInside(candidate, parent, "win32") || win32.basename(candidate).toLowerCase() !== basename) return undefined;
     return candidate;
   } catch { return undefined; }
 }
@@ -414,7 +412,7 @@ function canonicalWindowsFileWithin(candidatePath: string, rootPath: string, bas
     const root = realpathSync(rootPath);
     const parent = realpathSync(dirname(candidatePath));
     const candidate = realpathSync(candidatePath);
-    if (!statSync(candidate).isFile() || !pathInsideWindows(parent, root) || !pathInsideWindows(candidate, parent)
+    if (!statSync(candidate).isFile() || !lexicallyInside(parent, root, "win32") || !lexicallyInside(candidate, parent, "win32")
       || win32.basename(candidate).toLowerCase() !== basename) return undefined;
     return candidate;
   } catch { return undefined; }

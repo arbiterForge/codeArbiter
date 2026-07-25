@@ -1,10 +1,11 @@
 /** Resolve Pi runtime exports exclusively from the canonical CLI package anchor. */
 import { lstat, readFile, realpath } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import type { ToolDefinitionPort } from "./contracts.ts";
+import { lexicallyInside } from "./path-boundary.ts";
 
 export const PI_RUNTIME_DIAGNOSIS =
   "codeArbiter could not validate the active Pi CLI runtime; start from the Pi CLI and run /ca-doctor.";
@@ -46,11 +47,6 @@ interface PiManifest {
 
 const trustedIdentities = new WeakSet<object>();
 
-function inside(path: string, root: string): boolean {
-  const suffix = relative(root, path);
-  return suffix === "" || (!suffix.startsWith("..") && !isAbsolute(suffix));
-}
-
 function fail(cause?: unknown): never {
   throw new Error(PI_RUNTIME_DIAGNOSIS, cause === undefined ? undefined : { cause });
 }
@@ -68,7 +64,7 @@ async function owningPackageRoot(file: string, expectedName: string): Promise<st
       // continuing to search further ancestors.
       if (manifest.name !== expectedName) return fail();
       const canonicalRoot = await realpath(cursor);
-      if (!inside(file, canonicalRoot) || !inside(await realpath(candidate), canonicalRoot)) return fail();
+      if (!lexicallyInside(file, canonicalRoot) || !lexicallyInside(await realpath(candidate), canonicalRoot)) return fail();
       return canonicalRoot;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") return fail(error);
@@ -136,18 +132,18 @@ export async function resolvePiRuntimeIdentity(cliCandidate?: string): Promise<R
     if (manifest.name !== "@earendil-works/pi-coding-agent" || typeof manifest.version !== "string") return fail();
     const packageRoot = await realpath(cursor);
     const canonicalManifest = await realpath(manifestPath);
-    if (!inside(canonicalAnchor, packageRoot) || !inside(canonicalManifest, packageRoot)) return fail();
-    if (inside(packageRoot, extensionPackageRoot)) return fail();
+    if (!lexicallyInside(canonicalAnchor, packageRoot) || !lexicallyInside(canonicalManifest, packageRoot)) return fail();
+    if (lexicallyInside(packageRoot, extensionPackageRoot)) return fail();
 
     const declaredBin = resolve(packageRoot, binTarget(manifest));
-    if (!inside(declaredBin, packageRoot) || await realpath(declaredBin) !== canonicalAnchor) return fail();
+    if (!lexicallyInside(declaredBin, packageRoot) || await realpath(declaredBin) !== canonicalAnchor) return fail();
     if (!(await lstat(canonicalAnchor)).isFile()) return fail();
 
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
     const requireFromPi = createRequire(resolve(packageRoot, "package.json"));
     const moduleEntry = await realpath(requireFromPi.resolve(declaredExport));
-    if (!inside(moduleEntry, packageRoot)) return fail();
+    if (!lexicallyInside(moduleEntry, packageRoot)) return fail();
     if (!(await lstat(moduleEntry)).isFile()) return fail();
 
     const identity = Object.freeze({
