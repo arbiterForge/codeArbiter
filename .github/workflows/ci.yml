@@ -49,6 +49,11 @@ on:
       # a change to either must start a run that can execute it.
       - ".gitleaks.toml"
       - ".github/workflows/docs.yml"
+      # Same defect class again (#378/#380/#385): the hooks job runs
+      # test_release_workflow.py, which is the ONLY guard on the release
+      # workflow's dispatch-exclusivity, merge-readiness, and tag-integrity
+      # gates. A push that weakens only release.yml must still start a run.
+      - ".github/workflows/release.yml"
 
 permissions:
   contents: read
@@ -136,6 +141,9 @@ jobs:
               # this filter - otherwise the fixture skips its own test.
               - 'tools/codex-parity-fixture.py'
               - '.github/workflows/ci.yml'
+              # test_release_workflow.py runs in the hooks job and is the only
+              # guard on the release workflow's publish gates (#378/#380/#385).
+              - '.github/workflows/release.yml'
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
@@ -731,6 +739,13 @@ jobs:
         # consistent, classify_publish_state, the CLI dispatch, and the SKILL.md
         # structural wiring (_releaselib).
         run: python .github/scripts/test_release_lib.py
+      - name: Run hosted release-workflow contract tests
+        # #378/#380/#385: release.yml holds `contents: write` and publishes
+        # public, irreversible tags and Releases. This parses the SHIPPED
+        # workflow, so deleting the exactly-one-target preflight, the
+        # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
+        # existing tag turns CI red even while _releaselib stays green.
+        run: python .github/scripts/test_release_workflow.py
       - name: Run provenance-store helper unit tests
         # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
         # with schema/doc/created/interview_derived/entries[] (_provenancelib).
