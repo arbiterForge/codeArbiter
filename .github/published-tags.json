@@ -1,0 +1,162 @@
+{
+  "$comment": [
+    "Provenance of every published release tag: where it pointed when it was",
+    "published. Issue #386. A git tag is a mutable ref, so the commit a tag was",
+    "ORIGINALLY published at is not recoverable from the API after a move - it has",
+    "to be written down, which is what this file is.",
+    "",
+    "object_sha is the sha the ref points at: the annotated tag object where there",
+    "is one, otherwise the commit. It is the value the audit compares, because an",
+    "annotated tag object is content-addressed over its target, message, and tagger,",
+    "so re-annotating the same commit still changes it. commit_sha is that ref",
+    "dereferenced to the commit whose tree consumers actually install.",
+    "",
+    "This file's integrity comes from git history and branch protection on main:",
+    "editing a recorded sha takes a reviewed pull request, while moving a tag takes",
+    "nothing. Editing an entry to silence a red drift check is therefore a",
+    "review-visible act, and is never the correct fix - see the recovery procedure",
+    "in core/surface/skills/release/SKILL.md.",
+    "",
+    "Verified 2026-07-25 against BOTH the GitHub API and an independent local clone.",
+    "Adding a tag here is a release step; see the release skill."
+  ],
+  "namespaces": [
+    "v*",
+    "ca-sandbox-v*",
+    "ca-codex-v*",
+    "ca-pi-v*"
+  ],
+  "verified_at": "2026-07-25",
+  "tags": {
+    "ca-codex-v0.2.4": {
+      "commit_sha": "1fba34644c85a34c24f4c022f0910744758593e0",
+      "object_sha": "a577d48bcbe1d978e111a92c1ab2e72e07549f01",
+      "object_type": "tag"
+    },
+    "ca-sandbox-v0.1.0": {
+      "commit_sha": "6a1de363371d4f26580e6622b6b9fa3db81e0f86",
+      "object_sha": "96f396d0872da754646f34045978c2167c397467",
+      "object_type": "tag"
+    },
+    "ca-sandbox-v0.1.3": {
+      "commit_sha": "f10385395762b02d66dad23d72aa494603083758",
+      "object_sha": "c1f1197ac4afaf8d07d86d8a776ce2380c4736c5",
+      "object_type": "tag"
+    },
+    "v2.0.0": {
+      "commit_sha": "04d208a169c34b679addd82a7899a1f939798196",
+      "object_sha": "1d209c2cef9d8e69c8e4b2c1a16ae83e42d610b2",
+      "object_type": "tag"
+    },
+    "v2.0.1": {
+      "commit_sha": "624aae8916cec3ec5891712c4f5d338741dc8e7b",
+      "object_sha": "caf316526b8a628220376cf5d5359f1e3985e317",
+      "object_type": "tag"
+    },
+    "v2.1.0": {
+      "commit_sha": "1836e7f6ed4d55f203b9a02e00c64be5ef80485d",
+      "object_sha": "f3077170c3816bc49f5385abeec71882d30a8bc1",
+      "object_type": "tag"
+    },
+    "v2.1.0-beta.2": {
+      "commit_sha": "4371c8af16bb4b7aac4b9ff018123caf3793ab71",
+      "object_sha": "4371c8af16bb4b7aac4b9ff018123caf3793ab71",
+      "object_type": "commit"
+    },
+    "v2.1.0-beta.3": {
+      "commit_sha": "0e6dcdb779e4d67c698d85beced547ec7b25dd92",
+      "object_sha": "c6b82b56b4a55aa4252e807ef9cf768eb522877a",
+      "object_type": "tag"
+    },
+    "v2.1.0-beta.4": {
+      "commit_sha": "c025cd6ee43007c9f14173720f52ba7d1978473d",
+      "object_sha": "7bdafe30c09803cad90ef8bad288317d048961d9",
+      "object_type": "tag"
+    },
+    "v2.1.0-beta.5": {
+      "commit_sha": "6ca7145c8d4c68e08b38c09da84c96511dbb022e",
+      "object_sha": "620478bc6e62173cc9a2087e48028870198bb01a",
+      "object_type": "tag"
+    },
+    "v2.1.0-beta.6": {
+      "commit_sha": "cccc5e8c5cf78672f821fe411180f6b76a646ed6",
+      "object_sha": "76779be6aa38b36fd3d34a15acd3df02cb1cc93a",
+      "object_type": "tag"
+    },
+    "v2.2.0": {
+      "commit_sha": "0fbd1d659a4c94d9e428992a12392f3427fb3760",
+      "object_sha": "924533115e4d556a219bbe37107070741ea4ecaf",
+      "object_type": "tag"
+    },
+    "v2.3.0": {
+      "commit_sha": "261374b40e7917ffeb735ccb3206535773021117",
+      "object_sha": "dea716721cb1fc1fc3bea465b6bb1121d2484a2c",
+      "object_type": "tag"
+    },
+    "v2.3.1": {
+      "commit_sha": "dc7a8b83784336da9a37b2ed701c74f0039e8466",
+      "object_sha": "4b3a9ab6ff4d401b146c61763075fa2aac807e94",
+      "object_type": "tag"
+    },
+    "v2.4.0": {
+      "commit_sha": "6582ab6b19cc69a4bdb67a638eae091557ca5da0",
+      "object_sha": "36023d968cb7c75df4cd3395668dca1909ddb3a3",
+      "object_type": "tag"
+    },
+    "v2.4.1": {
+      "commit_sha": "122bc8c8d85356a358ad37a1efd89cdf83f7d1c2",
+      "object_sha": "b67df174f6ed878ea38566fbe219c2e485f983a7",
+      "object_type": "tag"
+    },
+    "v2.4.2": {
+      "commit_sha": "d9a928202b7e2b9140e55adec854ccc7a488f611",
+      "object_sha": "7f6ba94b912a0c203ef02d1e7ac4599df860b751",
+      "object_type": "tag"
+    },
+    "v2.4.6": {
+      "commit_sha": "be991ab3ed96ace93390bfe1a364d4aca796b8bb",
+      "object_sha": "5798b1e915b14206355f6f8a2190eb3ca1ba2563",
+      "object_type": "tag"
+    },
+    "v2.5.0": {
+      "commit_sha": "2631f8f6199272d4740aa6152c9e3c47825223f5",
+      "object_sha": "b32efddcdba7e22e4e110a00c85d1d9ec3d0b338",
+      "object_type": "tag"
+    },
+    "v2.5.1": {
+      "commit_sha": "d23e3dbdeac139b0cb29a405fdf44ffcf9dff4ed",
+      "object_sha": "4c8ffa441d787f5901a5220633d8526f9ac13008",
+      "object_type": "tag"
+    },
+    "v2.5.2": {
+      "commit_sha": "8d5df03628e7f9ae3b72d7fd0719ad2b3894724f",
+      "object_sha": "a6c5e839f2d3791c83f3f910f2e4a83fa2560437",
+      "object_type": "tag"
+    },
+    "v2.6.0": {
+      "commit_sha": "3eb33aed632dc968a4fc3ac0b8b67a75fa1561f5",
+      "object_sha": "05b23033fb7a2f3aa04557aff8e9866d953f6dfa",
+      "object_type": "tag"
+    },
+    "v2.6.1": {
+      "commit_sha": "4d12e87e89751f50e96656ead2883b1bea5b704a",
+      "object_sha": "46adc135e6912a7953b47bbd3a86d3fe83b0c9d5",
+      "object_type": "tag"
+    },
+    "v2.8.0": {
+      "commit_sha": "e1d650518de7b53442ad8ea6e72aa0c9115b75f4",
+      "object_sha": "086c6561872fdefdea27234b1b00bb214d1b0af6",
+      "object_type": "tag"
+    },
+    "v2.8.11": {
+      "commit_sha": "bea60f6422db24bddfe6f117297b8f828903d2d9",
+      "object_sha": "6f4df57cd30bcd17dcc274ccf42f9227712584aa",
+      "object_type": "tag"
+    },
+    "v2.8.13": {
+      "commit_sha": "1fba34644c85a34c24f4c022f0910744758593e0",
+      "object_sha": "f001f8afa5fef0f37b8ab70a5e23b1fb0a96cb41",
+      "object_type": "tag"
+    }
+  }
+}
