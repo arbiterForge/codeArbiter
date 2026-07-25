@@ -88,7 +88,7 @@ describe("live-order final-argument promotion proof", () => {
       cwd: "C:/repo",
       descriptor,
       factories: factories(executions),
-      wrapperSourcePath: WRAPPER,
+      wrapperSourcePath: WRAPPER, projectTrust: () => true,
       permissionPolicy,
     });
     // Pi 0.80.5/0.80.6 run tool_call handlers in extension order over one input
@@ -114,7 +114,7 @@ describe("live-order final-argument promotion proof", () => {
     let confirmations = 0;
     const audits: unknown[] = [];
     wrapBuiltins(pi as never, { call: async () => ({ version: 1, outcome: "allow" }) }, {
-      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: WRAPPER, permissionPolicy,
+      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: WRAPPER, projectTrust: () => true, permissionPolicy,
       permissionAudit: async (_cwd, row) => { audits.push(row); return true; },
     });
 

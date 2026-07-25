@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Three-host enforcement parity and descriptor mapping fixtures for ca-pi."""
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -304,6 +305,32 @@ class PiParityFixtures(unittest.TestCase):
                 f'{{"version":1,"event":"tool_result","cwd":{cwd},"tool":"write","input":{{}}}}',
             ]
             for raw in invalid:
+                with self.subTest(raw=raw), self.assertRaises(bridge.ProtocolError):
+                    bridge._request(raw.encode("utf-8"))
+
+    def test_tool_call_correlation_is_an_opaque_bounded_digest(self):
+        bridge = load_pi_bridge()
+        digest = hashlib.sha256(b"pi-tool-call").hexdigest()
+        with tempfile.TemporaryDirectory() as td:
+            root = fixture(td)
+            cwd = json.dumps(str(root))
+            accepted = [
+                f'{{"version":1,"event":"tool_call","cwd":{cwd},"tool":"read","input":{{}},"correlation":"{digest}"}}',
+                f'{{"version":1,"event":"tool_result","cwd":{cwd},"tool":"write","input":{{}},"result":{{}},"correlation":"{digest}"}}',
+            ]
+            for raw in accepted:
+                with self.subTest(raw=raw):
+                    request = bridge._request(raw.encode("utf-8"))
+                    self.assertEqual(request["correlation"], digest)
+                    self.assertNotIn("correlation", bridge._payload(request, bridge.PiHost()))
+            rejected = [
+                f'{{"version":1,"event":"tool_call","cwd":{cwd},"tool":"read","input":{{}},"correlation":"pi-raw-tool-call-id"}}',
+                f'{{"version":1,"event":"tool_call","cwd":{cwd},"tool":"read","input":{{}},"correlation":"{digest.upper()}"}}',
+                f'{{"version":1,"event":"tool_call","cwd":{cwd},"tool":"read","input":{{}},"correlation":1}}',
+                f'{{"version":1,"event":"session_start","cwd":{cwd},"correlation":"{digest}"}}',
+                f'{{"version":1,"event":"plan_file","cwd":{cwd},"input":{{}},"correlation":"{digest}"}}',
+            ]
+            for raw in rejected:
                 with self.subTest(raw=raw), self.assertRaises(bridge.ProtocolError):
                     bridge._request(raw.encode("utf-8"))
 

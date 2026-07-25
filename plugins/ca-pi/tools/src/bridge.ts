@@ -605,6 +605,21 @@ function killTree(child: ReturnType<typeof spawn>, taskkillExecutable: string | 
   try { process.kill(-child.pid, "SIGKILL"); } catch { child.kill("SIGKILL"); }
 }
 
+/** One SHA-256 digest in lowercase hex: the only correlation shape allowed on the wire. */
+const BRIDGE_CORRELATION_RE = /^[a-f0-9]{64}$/u;
+
+/**
+ * Drops any correlation that is not a bounded opaque digest, so a raw host
+ * tool-call id can never reach the request JSON, the Python bridge, or the
+ * failure audit even if a caller supplies one.
+ */
+function normalizedRequest(request: BridgeRequest): BridgeRequest {
+  const { correlation, ...rest } = request;
+  return typeof correlation === "string" && BRIDGE_CORRELATION_RE.test(correlation)
+    ? { ...rest, correlation }
+    : rest;
+}
+
 function sanitizedResponse(response: BridgeResponse, request: BridgeRequest): BridgeResponse {
   return {
     ...response,
@@ -686,12 +701,15 @@ export class BridgeClient implements BridgePort {
     } catch {
       // A malformed selector fails toward retaining the ordinary audit.
     }
+    // A governed tool call carries its permission-audit digest, so the failure row
+    // joins that call. Lifecycle and doctor requests have no upstream call identity
+    // and therefore retain a locally minted UUID, which is distinguishable by shape.
     const line = [
       `[${new Date().toISOString()}]`,
       "HOST: pi",
       `RULE: ${response.ruleId ?? "PI-BRIDGE"}`,
       `AUDIT: ${response.auditCode ?? "PI_BRIDGE_FAILURE"}`,
-      `CORRELATION: ${randomUUID()}`,
+      `CORRELATION: ${request.correlation ?? randomUUID()}`,
       `REQUEST_BYTES: ${counts.request}`,
       `STDOUT_BYTES: ${counts.stdout}`,
       `STDERR_BYTES: ${counts.stderr}`,
@@ -713,7 +731,8 @@ export class BridgeClient implements BridgePort {
     return response;
   }
 
-  async call(request: BridgeRequest, signal: AbortSignal): Promise<BridgeResponse> {
+  async call(rawRequest: BridgeRequest, signal: AbortSignal): Promise<BridgeResponse> {
+    const request = normalizedRequest(rawRequest);
     let paths: { git: string; python: string; root: string; script: string; taskkill?: string };
     let userHome: string;
     try {
