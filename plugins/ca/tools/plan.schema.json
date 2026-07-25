@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://codearbiter/farm/plan.schema.json",
   "title": "codeArbiter farm plan",
-  "description": "The handoff artifact writing-plans emits in --farm mode. Each task is a self-contained work packet a cheap Zen worker can complete. meta.model and meta.apiBaseUrl are written by subagent-driven-development at dispatch time (not at plan-authoring time).",
+  "description": "The handoff artifact writing-plans emits in --farm mode. Each task is a self-contained work packet a cheap Zen worker can complete. meta.model and meta.apiBaseUrl are written by subagent-driven-development at dispatch time (not at plan-authoring time). AUTHORING CONTRACT: this schema is what writing-plans validates its output against; it is never consulted at runtime. The EXECUTED contract is farm.ts's PLAN_SHAPE / parsePlan(), which is authoritative and kept identical to this file key-for-key and type-for-type by the parity test in plan-contract.test.ts. The one ratified divergence is task.id: the kebab-case pattern below is an authoring rule, while the runtime path-traversal rule is SAFE_TASK_ID in validate().",
   "type": "object",
   "required": ["meta", "tasks"],
   "additionalProperties": false,
@@ -10,6 +10,7 @@
     "meta": {
       "type": "object",
       "required": ["name"],
+      "additionalProperties": false,
       "properties": {
         "name": { "type": "string" },
         "repo": { "type": "string" },
@@ -24,7 +25,17 @@
         "setup": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Per-worktree setup shell commands run BEFORE the worker in each task worktree (e.g. `npm ci`). Propagates to every task lacking its own task.setup. Setup-produced files must be gitignored or they trip drift detection."
+          "description": "Per-worktree setup shell commands run BEFORE the worker in each task worktree (e.g. `npm ci`). Runs ONCE per worktree — the inter-attempt reset is `git clean -fd`, which preserves ignored paths, so the dependency tree survives. Propagates to every task lacking its own task.setup. Setup-produced files must be gitignored or they trip drift detection."
+        },
+        "setupEachAttempt": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Setup shell commands rerun before EVERY worker attempt (after `setup`), for commands that rebuild ignored output from tracked source and go stale on reset. Propagates to every task lacking its own task.setupEachAttempt."
+        },
+        "setupInputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Relative paths whose content hashes join the once-per-worktree `setup` fingerprint (e.g. `package-lock.json`), so setup reruns when the baseline moves under the worktree. Propagates to every task lacking its own task.setupInputs."
         }
       }
     },
@@ -100,7 +111,17 @@
         "setup": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Optional per-task override of meta.setup — per-worktree setup shell commands run before the worker. When set, replaces meta.setup for this task. Must be declared here because the task object is additionalProperties:false."
+          "description": "Optional per-task override of meta.setup — per-worktree setup shell commands run ONCE per worktree before the worker. When set, replaces meta.setup for this task. Must be declared here because the task object is additionalProperties:false."
+        },
+        "setupEachAttempt": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional per-task override of meta.setupEachAttempt — setup commands rerun before EVERY attempt, for output that goes stale when the inter-attempt reset rolls tracked files back."
+        },
+        "setupInputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional per-task override of meta.setupInputs — relative paths whose content hashes join the `setup` fingerprint, so setup reruns when they change under the worktree."
         }
       }
     }
