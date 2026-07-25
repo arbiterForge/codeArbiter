@@ -771,6 +771,16 @@ jobs:
         # host conditionals, Codex path rewrites + frontmatter synthesis, and
         # --check drift detection in both directions against synthetic trees.
         run: python .github/scripts/test_build_surface.py
+      - name: Run §6 routing + post-merge-cleanup surface contract
+        # Issue #308 / ADR-0022. Both halves of #308 are prose contracts
+        # projected into three host surfaces, so what silently regresses is a
+        # paragraph reverting, or landing on one host and not the others. This
+        # pins the three routing tiers, the destructive set that keeps an
+        # obvious-but-irreversible command at tier 2, the preserved §6
+        # invariant (route the command, never improvise the operation), the
+        # never-steer-to-override rule, and the cleanup owner's own acceptance
+        # gates - on every generated projection.
+        run: python .github/scripts/test_routing_and_cleanup_surface.py
       - name: Run cold-install interpreter matrix
         run: python .github/scripts/test_hooks_cold_install.py
       - name: Run ca-codex host-adapter parity suite

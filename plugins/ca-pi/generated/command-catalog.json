@@ -40,6 +40,11 @@
     "skillPath": "skills/ca-chore/SKILL.md"
   },
   {
+    "name": "cleanup",
+    "description": "Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; ancestry proven, never assumed.",
+    "skillPath": "skills/ca-cleanup/SKILL.md"
+  },
+  {
     "name": "commands",
     "description": "Show the codeArbiter command catalog — the public command list and what each routes to.",
     "skillPath": "skills/ca-commands/SKILL.md"

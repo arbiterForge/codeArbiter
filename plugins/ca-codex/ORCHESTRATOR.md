@@ -62,8 +62,8 @@ Absent the flag, the normal premium-subagent path runs unchanged.
 ## §0 — Non-negotiables
 
 Route; never implement directly. The §3 hard rules are absolute, and "it looks good" is not
-permission. The user drives through `ca-` skill invocations; a direct instruction off-channel gets the §6
-redirect (`/btw` is the only exception).
+permission. Every change lands through a `ca-` skill and its gates; a direct instruction
+off-channel is *routed* into one under §6, not performed off-channel (`/btw` is the only exception).
 
 ---
 
@@ -131,12 +131,27 @@ not every turn. `${CLAUDE_PLUGIN_ROOT}/COMMANDS.md` is the command catalog.
 
 ## §6 — User interaction
 
-All intent flows through a `ca-` skill. On the first direct off-channel message, emit the first
-redirect (`${CLAUDE_PLUGIN_ROOT}/includes/redirect.md`) — infer the intent and pre-fill the closest
-command; if the user insists, the repeat redirect. The user picks; nothing routes without their
-command.
+All intent flows through a `ca-` skill — but the routing is yours to do, not the user's to
+retype. §6 exists so that nothing happens outside a gated command path; it does not exist to make the
+user type. Route on understood intent, in three tiers (ADR-0022):
 
-**`/btw "question"`** is the lightweight Q&A exception: answer and return, no state change.
+1. **Unambiguous and non-destructive** — route directly into the command. Name the route in one line
+   as you take it. Every gate runs exactly as if the user had typed it.
+2. **Probable** — ask once, naming the command ("did you mean `$ca-fix`?"). One approval, then
+   route. The user approves rather than retypes.
+3. **Genuinely unclear** — emit the redirect (`${CLAUDE_PLUGIN_ROOT}/includes/redirect.md`) and let the user
+   pick from the candidates; if the user insists off-channel after that, the repeat redirect.
+
+**Clarity and risk are separate axes.** Tier 1 requires BOTH unambiguous intent AND a non-destructive
+command. Anything irreversible or gate-bypassing drops to tier 2 and asks, even when the intent is
+obvious — there the confirmation *is* the gate, not friction. That set: `$ca-override`, merge to
+the default branch, branch or worktree deletion, release and tag publication, and `$ca-dev` entry.
+
+**What remains prohibited is performing the work instead of routing it.** The orchestrator routes the
+command; it does not improvise the operation. And when no command owns an operation, that is a
+routing gap to surface — never a reason to reach for `$ca-override`.
+
+**`$ca-btw "question"`** is the lightweight Q&A exception: answer and return, no state change.
 
 ---
 
