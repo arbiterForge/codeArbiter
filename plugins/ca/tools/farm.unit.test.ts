@@ -763,12 +763,26 @@ describe("farm worktree write containment", () => {
       "}",
     ].join("\n");
     await fsWriteFile(sentinel, externalOriginal, "utf8");
-    const script = [
-      "const fs=require('node:fs');",
-      "fs.rmSync('src',{recursive:true,force:true});",
-      `fs.symlinkSync(${JSON.stringify(external)},'src',process.platform==='win32'?'junction':'dir');`,
-    ].join("");
-    const swapCommand = `node -e "eval(Buffer.from('${Buffer.from(script).toString("base64")}','base64').toString())"`;
+    // Run the swap from a real script FILE rather than `node -e`. An inline
+    // -e payload has to survive two levels of shell quoting on both platforms,
+    // which is why this was once a base64+eval one-liner - but constructing
+    // code to eval trips CodeQL js/bad-code-sanitization, and a standing
+    // dismissal would re-raise on every bundle rebuild. A file has neither
+    // problem: same behaviour, no quoting gymnastics, no eval. Relative paths
+    // below still resolve against the worktree because the gate command runs
+    // with cwd = the worktree.
+    const scriptDir = await mkdtemp(path.join(tmpdir(), "farm-external-swap-"));
+    const scriptPath = path.join(scriptDir, "swap.cjs");
+    await fsWriteFile(
+      scriptPath,
+      [
+        "const fs=require('node:fs');",
+        "fs.rmSync('src',{recursive:true,force:true});",
+        `fs.symlinkSync(${JSON.stringify(external)},'src',process.platform==='win32'?'junction':'dir');`,
+      ].join("\n"),
+      "utf8",
+    );
+    const swapCommand = `node ${JSON.stringify(scriptPath)}`;
     const gitCalls: string[][] = [];
     try {
       const result = await runTask({
