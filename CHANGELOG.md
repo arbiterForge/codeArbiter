@@ -41,6 +41,16 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- A hook payload that is valid JSON but not an object (`[]`, `3`, `"str"`,
+  `true`, `null`) is normalized to an empty payload at `read_input()` rather
+  than handed to the guards as a non-dict. Downstream, `tool_input()` evaluates
+  `(data or {}).get(...)`, so the falsy shapes were only accidentally safe and
+  the truthy ones raised `AttributeError` out of the guard. The hook envelope is
+  host-produced, not model-produced, so an unreadable shape is the same
+  compatibility event as unreadable syntax and now takes the same documented
+  warn-and-proceed path (ADR-0020). The ca-codex adapter still fails closed on
+  the same payload: it is a router, not a guard, and that asymmetry is now
+  recorded in both the ADR and the adapter.
 - Prune dry-run records, audit logs, CLI, footer, and cold-cache metrics now separate
   model-visible context savings from file-only sidecar cleanup; sidecar bytes
   no longer inflate the context-benefit decision or arm the cold-cache nudge.
