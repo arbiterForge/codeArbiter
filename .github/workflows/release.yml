@@ -8,17 +8,32 @@ name: release
 # be merged to the default branch (that is the /ca:release skill's Phase 1). The
 # job asserts the requested version equals plugins/ca/.claude-plugin/plugin.json,
 # extracts the matching CHANGELOG section as the notes, and is idempotent — a
-# re-run when the tag/Release already exists is a no-op, not a failure.
+# re-run at the SAME commit is a no-op, not a failure.
 
 # ca-codex (the OpenAI Codex CLI sibling, ADR-0011) versions and releases
 # independently — its own tag namespace (ca-codex-v*), its own manifest
 # (plugins/ca-codex/.codex-plugin/plugin.json), its own CHANGELOG
 # (plugins/ca-codex/CHANGELOG.md). Both plugins share this one dispatched
-# workflow; each job is gated on its own confirm input being non-empty, so a
-# single dispatch releases exactly one plugin (never both, never neither) —
-# an empty `confirm` skips the `release` job entirely, an empty
-# `codex_confirm` skips `release-codex` entirely, and providing neither is an
-# explicit no-op the workflow does not need to special-case.
+# workflow.
+
+# AUTHORIZATION MODEL (issues #378, #385). Everything this workflow publishes is
+# public and irreversible, so the decision to publish is made ONCE, by a job that
+# holds no write token, and both publishers depend on it:
+#
+#   preflight (contents: read, checks: read)
+#     1. refuses a dispatch off the default branch;
+#     2. resolves EXACTLY ONE target from the two confirmation inputs — both
+#        blank, or both filled, is a refusal, not a guess (#378: the two jobs
+#        used to test only their own input, so one dispatch supplying both
+#        started two write-token publishers);
+#     3. requires a green `[GATE ] | [REPO] | Merge readiness` check run for
+#        GITHUB_SHA itself (#385: branch protection proves how a commit ENTERED
+#        main, not that post-merge evidence exists for the exact commit being
+#        tagged; the release skill's hard rules say MUST NOT tag on a red suite).
+#
+# Each publisher then runs only for the one resolved target. Their conditions
+# carry no always()/!cancelled() escape, so a failed preflight skips them.
+# .github/scripts/test_release_workflow.py asserts all of that against this file.
 
 on:
   workflow_dispatch:
@@ -40,16 +55,104 @@ on:
         required: false
         default: ""
 
+# Least privilege by default. Only the two publishing jobs widen this to
+# `contents: write`; the preflight that authorizes them never holds a write
+# token, so the job deciding whether to publish cannot itself publish.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
+  preflight:
+    name: "[GATE ] | [RELEASE] | Dispatch preflight"
+    # Read-only authorization for the write-token publishers below. Fails
+    # closed on every path: a refusal here skips both of them.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      checks: read
+    outputs:
+      target: ${{ steps.target.outputs.target }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Refuse a dispatch off the default branch
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::release dispatches are only valid on refs/heads/main (got '$GITHUB_REF')"
+            exit 1
+          fi
+
+      - name: Resolve exactly one release target
+        id: target
+        env:
+          CONFIRM: ${{ github.event.inputs.confirm }}
+          CODEX_CONFIRM: ${{ github.event.inputs.codex_confirm }}
+        run: |
+          set -euo pipefail
+          # The helper prints a label and never raises; the '*' arm below is the
+          # fail-closed default, so an unknown label refuses too — and a helper
+          # that crashed prints nothing and trips `set -e` on the assignment.
+          TARGET=$(python3 .github/scripts/_releaselib.py select-target "$CONFIRM" "$CODEX_CONFIRM")
+          case "$TARGET" in
+            ca|ca-codex)
+              echo "resolved release target: $TARGET"
+              ;;
+            multiple)
+              echo "::error::this dispatch selected more than one plugin — supply exactly one of the two version inputs, never both"
+              exit 1
+              ;;
+            none)
+              echo "::error::this dispatch selected no plugin — supply exactly one of the two version inputs"
+              exit 1
+              ;;
+            *)
+              echo "::error::could not resolve a release target (got '$TARGET')"
+              exit 1
+              ;;
+          esac
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+
+      - name: Require green merge readiness for this exact commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Evidence is resolved for GITHUB_SHA itself, and the classifier
+          # re-checks each run's head_sha — a green gate on a neighbouring
+          # commit is not evidence for this one.
+          # One page, deliberately: `--paginate` with `--jq` concatenates one
+          # array per page, which is not valid JSON. A commit here carries a
+          # few dozen check runs, and an over-full first page would land on
+          # `missing` — a refusal, not a silent pass.
+          gh api \
+            "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
+            --jq '.check_runs' > checks.json
+          STATE=$(python3 .github/scripts/_releaselib.py merge-readiness "$GITHUB_SHA" checks.json)
+          case "$STATE" in
+            green)
+              echo "merge readiness is green for $GITHUB_SHA"
+              ;;
+            *)
+              echo "::error::merge-readiness evidence for $GITHUB_SHA is '$STATE' — refusing to tag (release SKILL.md: MUST NOT tag on a red suite)"
+              exit 1
+              ;;
+          esac
+
   release:
     name: CA | [Release] - Publish
     # Publish only from the default branch, where the merged CHANGELOG section
-    # lives, and only when this dispatch requested a ca release.
-    if: github.ref == 'refs/heads/main' && github.event.inputs.confirm != ''
+    # lives, and only when the read-only preflight resolved `ca` as the single
+    # target of this dispatch. `needs: preflight` IS the authorization: the
+    # condition below carries no status function, so a failed preflight skips
+    # this job rather than letting it run anyway.
+    needs: preflight
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -89,7 +192,7 @@ jobs:
           python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
           echo "---- notes.md ----"; head -1 notes.md
 
-      - name: Create the tag and GitHub Release (idempotent)
+      - name: Create the tag and GitHub Release (resumable, mismatch-aborting)
         env:
           GH_TOKEN: ${{ github.token }}
           SUMMARY: ${{ github.event.inputs.summary }}
@@ -104,41 +207,93 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1; then
-            echo "tag $TAG already on remote — skipping tag creation"
-          else
-            printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
-            git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
-            git push origin "refs/tags/$TAG"
+          # PEEL the remote tag (#380). An annotated tag's own object id is not
+          # the commit it names, so the `^{}` line is the one that can be
+          # compared against GITHUB_SHA. Empty output = no such tag.
+          TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+          if [ -n "$TAG_SHA" ]; then TAG_EXISTS=true; else TAG_EXISTS=false; fi
+          # The tag name is built from the manifest version, so this is the
+          # version the REMOTE tag claims; the load-bearing comparison here is
+          # TAG_SHA against GITHUB_SHA.
+          TAG_VERSION="${TAG##*v}"
+
+          RELEASE_NONDRAFT=false
+          if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
+            if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = "false" ]; then
+              RELEASE_NONDRAFT=true
+            fi
           fi
 
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "release $TAG already exists — nothing to publish"
-          else
-            # This dispatched release is the newest by publish time; mark it latest.
-            gh release create "$TAG" \
-              --title "$TITLE" \
-              --notes-file notes.md \
-              --target "$GITHUB_SHA" \
-              --latest --verify-tag
-          fi
+          # One classifier shared with the /ca:release skill: the hosted and the
+          # local publish path must not disagree about what an existing tag means.
+          STATE=$(python3 .github/scripts/_releaselib.py classify \
+            "$TAG_EXISTS" "$TAG_SHA" "$GITHUB_SHA" "$TAG_VERSION" "$VER" "$RELEASE_NONDRAFT")
+          echo "publish state: $STATE (tag=$TAG tag_sha='$TAG_SHA' head='$GITHUB_SHA')"
 
-          # Verify publication rather than assume it (a create can partially succeed).
+          case "$STATE" in
+            publish_fresh)
+              printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
+              git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
+              git push origin "refs/tags/$TAG"
+              # This dispatched release is the newest by publish time; mark it latest.
+              gh release create "$TAG" \
+                --title "$TITLE" \
+                --notes-file notes.md \
+                --target "$GITHUB_SHA" \
+                --latest --verify-tag
+              ;;
+            resume_publish)
+              echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
+              gh release create "$TAG" \
+                --title "$TITLE" \
+                --notes-file notes.md \
+                --target "$GITHUB_SHA" \
+                --latest --verify-tag
+              ;;
+            already_published)
+              echo "release $TAG is already published at $GITHUB_SHA — nothing to publish"
+              ;;
+            *)
+              echo "::error::refusing to publish $TAG: state '$STATE' — the existing tag resolves to '$TAG_SHA', this dispatch targets '$GITHUB_SHA'"
+              exit 1
+              ;;
+          esac
+
+      - name: Verify the published Release names this tag at this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          set -euo pipefail
+          # Verify publication rather than assume it (a create can partially succeed),
+          # and verify WHAT was published: non-draft alone says nothing about which
+          # commit the tag installs (#380).
           gh release view "$TAG" --json url,isDraft,tagName
           DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
           [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
+          NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
+          [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
+          FINAL_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+          [ "$FINAL_SHA" = "$GITHUB_SHA" ] || { echo "::error::tag $TAG resolves to '$FINAL_SHA', not the dispatched commit '$GITHUB_SHA'"; exit 1; }
 
   release-codex:
     name: CA-Codex | [Release] - Publish
     # Sibling twin of the `release` job (ADR-0007-style per-plugin
     # independence, ADR-0011 for the Codex host). Publish only from the
-    # default branch, and only when this dispatch requested a ca-codex
-    # release. The tag is namespaced (ca-codex-v*) so it never collides with
-    # ca's bare v* series, and this job never passes --latest to
-    # `gh release create` — ca-codex is an independently versioned sibling, not the
-    # repo's primary release, and must not steal the "Latest" badge from ca.
-    if: github.ref == 'refs/heads/main' && github.event.inputs.codex_confirm != ''
+    # default branch, and only when the read-only preflight resolved
+    # `ca-codex` as the single target of this dispatch. The tag is namespaced
+    # (ca-codex-v*) so it never collides with ca's bare v* series, and this job
+    # never passes --latest to `gh release create` — ca-codex is an
+    # independently versioned sibling, not the repo's primary release, and must
+    # not steal the "Latest" badge from ca.
+    needs: preflight
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -178,7 +333,7 @@ jobs:
           python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
           echo "---- notes.md ----"; head -1 notes.md
 
-      - name: Create the tag and GitHub Release (idempotent)
+      - name: Create the tag and GitHub Release (resumable, mismatch-aborting)
         env:
           GH_TOKEN: ${{ github.token }}
           SUMMARY: ${{ github.event.inputs.codex_summary }}
@@ -193,27 +348,74 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1; then
-            echo "tag $TAG already on remote — skipping tag creation"
-          else
-            printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
-            git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
-            git push origin "refs/tags/$TAG"
+          # PEEL the remote tag (#380). An annotated tag's own object id is not
+          # the commit it names, so the `^{}` line is the one that can be
+          # compared against GITHUB_SHA. Empty output = no such tag.
+          TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+          if [ -n "$TAG_SHA" ]; then TAG_EXISTS=true; else TAG_EXISTS=false; fi
+          # The tag name is built from the manifest version, so this is the
+          # version the REMOTE tag claims; the load-bearing comparison here is
+          # TAG_SHA against GITHUB_SHA.
+          TAG_VERSION="${TAG##*v}"
+
+          RELEASE_NONDRAFT=false
+          if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
+            if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = "false" ]; then
+              RELEASE_NONDRAFT=true
+            fi
           fi
 
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "release $TAG already exists — nothing to publish"
-          else
-            # Not --latest: ca-codex is an independently versioned sibling, not the repo's
-            # primary release; it must never displace ca's "Latest" badge.
-            gh release create "$TAG" \
-              --title "$TITLE" \
-              --notes-file notes.md \
-              --target "$GITHUB_SHA" \
-              --verify-tag
-          fi
+          # One classifier shared with the /ca:release skill: the hosted and the
+          # local publish path must not disagree about what an existing tag means.
+          STATE=$(python3 .github/scripts/_releaselib.py classify \
+            "$TAG_EXISTS" "$TAG_SHA" "$GITHUB_SHA" "$TAG_VERSION" "$VER" "$RELEASE_NONDRAFT")
+          echo "publish state: $STATE (tag=$TAG tag_sha='$TAG_SHA' head='$GITHUB_SHA')"
 
-          # Verify publication rather than assume it (a create can partially succeed).
+          case "$STATE" in
+            publish_fresh)
+              printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
+              git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
+              git push origin "refs/tags/$TAG"
+              # Not --latest: ca-codex is an independently versioned sibling, not the
+              # repo's primary release; it must never displace ca's "Latest" badge.
+              gh release create "$TAG" \
+                --title "$TITLE" \
+                --notes-file notes.md \
+                --target "$GITHUB_SHA" \
+                --verify-tag
+              ;;
+            resume_publish)
+              echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
+              gh release create "$TAG" \
+                --title "$TITLE" \
+                --notes-file notes.md \
+                --target "$GITHUB_SHA" \
+                --verify-tag
+              ;;
+            already_published)
+              echo "release $TAG is already published at $GITHUB_SHA — nothing to publish"
+              ;;
+            *)
+              echo "::error::refusing to publish $TAG: state '$STATE' — the existing tag resolves to '$TAG_SHA', this dispatch targets '$GITHUB_SHA'"
+              exit 1
+              ;;
+          esac
+
+      - name: Verify the published Release names this tag at this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          set -euo pipefail
+          # Verify publication rather than assume it (a create can partially succeed),
+          # and verify WHAT was published: non-draft alone says nothing about which
+          # commit the tag installs (#380).
           gh release view "$TAG" --json url,isDraft,tagName
           DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
           [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
+          NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
+          [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
+          FINAL_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+          [ "$FINAL_SHA" = "$GITHUB_SHA" ] || { echo "::error::tag $TAG resolves to '$FINAL_SHA', not the dispatched commit '$GITHUB_SHA'"; exit 1; }

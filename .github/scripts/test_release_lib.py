@@ -161,6 +161,149 @@ class ClassifyPublishTest(unittest.TestCase):
                 tag_version="2.5.0", manifest_version="2.6.0", release_is_nondraft=False),
             "abort_mismatch")
 
+    def test_nondraft_release_on_a_tag_at_another_commit_is_abort(self):
+        # Issue #380: a published Release used to short-circuit to
+        # `already_published` BEFORE the tag was compared to HEAD, so a
+        # resumed publish accepted a Release sitting on the wrong commit.
+        # Mismatch outranks publication state — the tag identifies what
+        # consumers actually install.
+        self.assertEqual(
+            _releaselib.classify_publish_state(
+                tag_exists=True, tag_sha="xyz", head_sha="abc",
+                tag_version="2.6.0", manifest_version="2.6.0", release_is_nondraft=True),
+            "abort_mismatch")
+
+    def test_nondraft_release_with_a_version_mismatch_is_abort(self):
+        self.assertEqual(
+            _releaselib.classify_publish_state(
+                tag_exists=True, tag_sha="abc", head_sha="abc",
+                tag_version="2.5.0", manifest_version="2.6.0", release_is_nondraft=True),
+            "abort_mismatch")
+
+
+class SelectReleaseTargetTest(unittest.TestCase):
+    """Issue #378: one dispatch selects exactly one plugin, or none at all.
+
+    `confirm` and `codex_confirm` are independent optional strings, so the
+    workflow's two publish jobs used to test only their own input — supplying
+    both started two write-token publishers from one dispatch."""
+
+    def test_ca_only(self):
+        self.assertEqual(_releaselib.select_release_target("2.6.1", ""), "ca")
+
+    def test_codex_only(self):
+        self.assertEqual(_releaselib.select_release_target("", "0.2.4"), "ca-codex")
+
+    def test_neither_is_none(self):
+        self.assertEqual(_releaselib.select_release_target("", ""), "none")
+
+    def test_both_is_multiple(self):
+        self.assertEqual(_releaselib.select_release_target("2.6.1", "0.2.4"), "multiple")
+
+    def test_whitespace_is_not_a_selection(self):
+        # A stray space in a dispatch field must not read as a second target.
+        self.assertEqual(_releaselib.select_release_target("   ", "0.2.4"), "ca-codex")
+        self.assertEqual(_releaselib.select_release_target("  ", "\t"), "none")
+
+    def test_never_raises_on_non_string(self):
+        self.assertEqual(_releaselib.select_release_target(None, None), "none")
+        self.assertEqual(_releaselib.select_release_target(42, "0.2.4"), "ca-codex")
+
+
+class MergeReadinessTest(unittest.TestCase):
+    """Issue #385: the exact commit being tagged must carry green evidence."""
+
+    SHA = "a" * 40
+    OTHER = "b" * 40
+
+    def _run(self, status="completed", conclusion="success", head_sha=None, name=None):
+        return {
+            "name": _releaselib.MERGE_READINESS_CHECK if name is None else name,
+            "status": status,
+            "conclusion": conclusion,
+            "head_sha": self.SHA if head_sha is None else head_sha,
+        }
+
+    def test_completed_success_is_green(self):
+        self.assertEqual(
+            _releaselib.classify_merge_readiness([self._run()], self.SHA), "green")
+
+    def test_unrelated_checks_do_not_stand_in_for_the_gate(self):
+        others = [self._run(name="CA | [Tools] - Vitest"), self._run(name="lint")]
+        self.assertEqual(
+            _releaselib.classify_merge_readiness(others, self.SHA), "missing")
+
+    def test_no_checks_at_all_is_missing(self):
+        self.assertEqual(_releaselib.classify_merge_readiness([], self.SHA), "missing")
+
+    def test_queued_and_in_progress_are_pending(self):
+        for status in ("queued", "in_progress", "waiting", "pending", "requested"):
+            with self.subTest(status=status):
+                run = self._run(status=status, conclusion=None)
+                self.assertEqual(
+                    _releaselib.classify_merge_readiness([run], self.SHA), "pending")
+
+    def test_every_non_success_conclusion_is_rejected(self):
+        for conclusion in ("failure", "cancelled", "skipped", "timed_out",
+                           "action_required", "neutral", "stale", None, ""):
+            with self.subTest(conclusion=conclusion):
+                run = self._run(conclusion=conclusion)
+                self.assertEqual(
+                    _releaselib.classify_merge_readiness([run], self.SHA),
+                    "not_successful")
+
+    def test_success_on_another_commit_is_rejected(self):
+        run = self._run(head_sha=self.OTHER)
+        self.assertEqual(
+            _releaselib.classify_merge_readiness([run], self.SHA), "sha_mismatch")
+
+    def test_a_green_rerun_alongside_a_red_one_is_rejected(self):
+        # Fail closed: with two verdicts on the name we cannot tell which is
+        # authoritative, so we do not get to pick the convenient one.
+        runs = [self._run(), self._run(conclusion="failure")]
+        self.assertEqual(
+            _releaselib.classify_merge_readiness(runs, self.SHA), "not_successful")
+
+    def test_never_raises_on_garbage(self):
+        self.assertEqual(_releaselib.classify_merge_readiness(None, self.SHA), "missing")
+        self.assertEqual(
+            _releaselib.classify_merge_readiness(["nonsense", 7], self.SHA), "missing")
+        self.assertEqual(
+            _releaselib.classify_merge_readiness([self._run()], None), "sha_mismatch")
+
+
+class PeelTagTest(unittest.TestCase):
+    """Issue #380: an annotated tag's object id is not the commit it names."""
+
+    TAG_OBJ = "1" * 40
+    COMMIT = "2" * 40
+
+    def test_annotated_tag_resolves_to_the_peeled_commit(self):
+        text = (f"{self.TAG_OBJ}\trefs/tags/v2.6.0\n"
+                f"{self.COMMIT}\trefs/tags/v2.6.0^{{}}\n")
+        self.assertEqual(_releaselib.peel_tag(text, "v2.6.0"), self.COMMIT)
+
+    def test_lightweight_tag_resolves_to_its_direct_target(self):
+        text = f"{self.COMMIT}\trefs/tags/v2.6.0\n"
+        self.assertEqual(_releaselib.peel_tag(text, "v2.6.0"), self.COMMIT)
+
+    def test_namespaced_tag(self):
+        text = (f"{self.TAG_OBJ}\trefs/tags/ca-codex-v0.2.4\n"
+                f"{self.COMMIT}\trefs/tags/ca-codex-v0.2.4^{{}}\n")
+        self.assertEqual(_releaselib.peel_tag(text, "ca-codex-v0.2.4"), self.COMMIT)
+
+    def test_a_prefix_sharing_tag_is_not_mistaken_for_it(self):
+        # `v2.6.0` must not be resolved from `v2.6.0-beta.1`'s ref line.
+        text = f"{self.COMMIT}\trefs/tags/v2.6.0-beta.1\n"
+        self.assertEqual(_releaselib.peel_tag(text, "v2.6.0"), "")
+
+    def test_absent_tag_is_empty(self):
+        self.assertEqual(_releaselib.peel_tag("", "v2.6.0"), "")
+
+    def test_never_raises_on_non_string(self):
+        self.assertEqual(_releaselib.peel_tag(None, "v2.6.0"), "")
+        self.assertEqual(_releaselib.peel_tag("whatever", None), "")
+
 
 class CLITest(unittest.TestCase):
     """The thin CLI dispatch the release skill shells out to."""
@@ -207,6 +350,51 @@ class CLITest(unittest.TestCase):
     def test_bad_invocation_returns_2(self):
         rc, _ = self._run(["nonsense"])
         self.assertEqual(rc, 2)
+
+    def test_select_target_prints_the_label(self):
+        # The workflow cases on the label, so the label — not the exit code —
+        # is the contract; an unknown label lands on its fail-closed `*` arm.
+        for confirm, codex, expected in (("2.6.1", "", "ca"),
+                                         ("", "0.2.4", "ca-codex"),
+                                         ("", "", "none"),
+                                         ("2.6.1", "0.2.4", "multiple")):
+            with self.subTest(confirm=confirm, codex=codex):
+                rc, out = self._run(["select-target", confirm, codex])
+                self.assertEqual(rc, 0)
+                self.assertEqual(out, expected)
+
+    def test_merge_readiness_reads_check_runs_json(self):
+        import json
+        import tempfile
+        sha = "c" * 40
+        payload = [{"name": _releaselib.MERGE_READINESS_CHECK, "status": "completed",
+                    "conclusion": "success", "head_sha": sha}]
+        with tempfile.NamedTemporaryFile(
+                "w", suffix=".json", delete=False, encoding="utf-8") as f:
+            json.dump(payload, f)
+            path = f.name
+        try:
+            rc_ok, out_ok = self._run(["merge-readiness", sha, path])
+            rc_bad, out_bad = self._run(["merge-readiness", "d" * 40, path])
+        finally:
+            os.unlink(path)
+        self.assertEqual((rc_ok, out_ok), (0, "green"))
+        self.assertEqual((rc_bad, out_bad), (0, "sha_mismatch"))
+
+    def test_merge_readiness_on_unreadable_input_is_missing(self):
+        rc, out = self._run(["merge-readiness", "e" * 40, "no/such/file.json"])
+        self.assertEqual((rc, out), (0, "missing"))
+
+    def test_peel_tag_reads_ls_remote_from_stdin(self):
+        commit = "f" * 40
+        stdin = ("9" * 40 + "\trefs/tags/v2.6.0\n"
+                 + commit + "\trefs/tags/v2.6.0^{}\n")
+        rc, out = self._run(["peel-tag", "v2.6.0"], stdin)
+        self.assertEqual((rc, out), (0, commit))
+
+    def test_peel_tag_prints_nothing_for_an_absent_tag(self):
+        rc, out = self._run(["peel-tag", "v9.9.9"], "")
+        self.assertEqual((rc, out), (0, ""))
 
 
 class SkillProseTest(unittest.TestCase):

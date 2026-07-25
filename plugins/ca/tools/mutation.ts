@@ -21,6 +21,8 @@ import {
   SHELL_FLAG,
   SHELL_OPTS,
   GATE_TIMEOUT_MS,
+  EXIT_TIMEOUT,
+  EXIT_TIMEOUT_UNCLEAN,
 } from "./exec.ts";
 import { redactSecrets } from "./redactor.ts";
 import { isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
@@ -202,9 +204,14 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
         cwd: wt,
         env: scrubbedEnv({ FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd }),
         ...SHELL_OPTS,
+        // #395: process-group isolation, matching run(). The operator-authored
+        // mutation hook is a grandchild behind `bash -c` / `cmd.exe /c`, so the
+        // timeout kill must be able to address the group, not just the shell.
+        detached: process.platform !== "win32",
       });
       let out = "";
       let settled = false;
+      let killing = false;
       const finish = (res: { code: number; out: string }) => {
         if (settled) return;
         settled = true;
@@ -215,14 +222,29 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
       // timeout. A hung mutation framework would otherwise wedge the worker; on
       // timeout the child tree is killed and the result is treated as
       // unparseable (score skipped leniently — no false escalation).
+      // #395: the kill is now AWAITED and verified, and an unverified cleanup is
+      // reported in `out` — which observability-002 turns into the "configured
+      // but failed" detail, so a leaked mutation-hook tree is visible on the
+      // task result instead of being swallowed by a lenient score skip.
       const timer = setTimeout(() => {
-        treeKill(c);
-        finish({ code: 124, out: out + "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout — killed" });
+        killing = true;
+        void treeKill(c).then((k) => {
+          const note = k.ok
+            ? "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout — killed"
+            : `\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout — killed, but CLEANUP UNVERIFIED: ${k.detail ?? "no detail"}`;
+          finish({ code: k.ok ? EXIT_TIMEOUT : EXIT_TIMEOUT_UNCLEAN, out: out + note });
+        });
       }, GATE_TIMEOUT_MS);
       c.stdout.on("data", (d) => (out += d));
       c.stderr.on("data", (d) => (out += d));
-      c.on("error", (e) => finish({ code: 1, out: String(e) }));
-      c.on("close", (code) => finish({ code: code ?? 1, out }));
+      c.on("error", (e) => {
+        if (killing) return;
+        finish({ code: 1, out: String(e) });
+      });
+      c.on("close", (code) => {
+        if (killing) return;
+        finish({ code: code ?? 1, out });
+      });
     });
     // dx-002 (T-08b): shape-guarded parse of the hook's trailing score line.
     const parsed = parseMutationHookOutput(r.out);

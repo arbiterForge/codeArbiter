@@ -19,10 +19,23 @@
 #   release_dates_consistent(changelog_section, tag_message) -> bool
 #   classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
 #                          manifest_version, release_is_nondraft) -> str
+#   select_release_target(confirm, codex_confirm) -> str
+#   classify_merge_readiness(check_runs, head_sha, check_name) -> str
+#   peel_tag(ls_remote_text, tag) -> str
+#
+# The last three back `.github/workflows/release.yml`'s read-only preflight and
+# its tag-integrity guard (issues #378, #385, #380). The hosted publish path
+# holds `contents: write` and its writes are public and irreversible, so every
+# one of them degrades to the REFUSING answer on malformed input.
 
 import re
 
 NONE_SENTINEL = "<none>"
+
+# The `ci-passed` aggregate in .github/workflows/ci.yml — the single check run
+# that means "every required job for this commit concluded green". Kept in sync
+# with that job's `name:` by test_release_workflow.py.
+MERGE_READINESS_CHECK = "[GATE ] | [REPO] | Merge readiness"
 
 # A `ca` release tag is exactly `vMAJOR.MINOR.PATCH` - no suffix. The anchored
 # form already excludes pre-releases (`v2.6.0-beta.1`) and the namespaced
@@ -108,20 +121,114 @@ def classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
     publish instead of dead-ending on 'tag exists -> STOP'. Returns one of:
 
       publish_fresh      - no tag yet; the normal Phase 2/3 path.
-      already_published  - a non-draft Release already exists on the tag.
+      already_published  - the tag is at HEAD and a non-draft Release exists.
       resume_publish     - tag is at HEAD and its version matches the manifest,
                            but no non-draft Release exists (tag pushed, Release
                            never created) -> finish Phase 3.
       abort_mismatch     - tag points at a non-HEAD commit, or its version
                            disagrees with the manifest -> STOP, never overwrite.
+
+    Mismatch OUTRANKS publication state (issue #380). An existing Release used
+    to short-circuit to `already_published` before the tag was compared to
+    HEAD, so a resumed publish silently accepted a Release whose tag installs a
+    different snapshot. The tag is what consumers actually fetch; if it does
+    not name this commit, nothing about the Release makes the state safe.
     """
     if not tag_exists:
         return "publish_fresh"
+    if tag_sha != head_sha or tag_version != manifest_version:
+        return "abort_mismatch"
     if release_is_nondraft:
         return "already_published"
-    if tag_sha == head_sha and tag_version == manifest_version:
-        return "resume_publish"
-    return "abort_mismatch"
+    return "resume_publish"
+
+
+def select_release_target(confirm, codex_confirm):
+    """Resolve which single plugin a release dispatch selected. Returns one of:
+
+      ca         - only the `confirm` (ca) version input was supplied.
+      ca-codex   - only the `codex_confirm` input was supplied.
+      none       - neither; there is nothing to publish.
+      multiple   - both; the dispatch is ambiguous and MUST be refused.
+
+    Issue #378: the two publish jobs each tested only their OWN confirmation
+    input, so one dispatch supplying both started two `contents: write`
+    publishers and could create two tags and two public Releases. Selection is
+    one decision, made once, by a job that holds no write token. Blank-ish
+    input (whitespace, non-string) counts as "not selected" so a stray space
+    can never read as a second target."""
+    def _selected(value):
+        return isinstance(value, str) and value.strip() != ""
+
+    ca, codex = _selected(confirm), _selected(codex_confirm)
+    if ca and codex:
+        return "multiple"
+    if ca:
+        return "ca"
+    if codex:
+        return "ca-codex"
+    return "none"
+
+
+def classify_merge_readiness(check_runs, head_sha, check_name=MERGE_READINESS_CHECK):
+    """Classify the merge-readiness evidence for ONE exact commit. `check_runs`
+    is the `check_runs` array from GitHub's
+    `repos/{owner}/{repo}/commits/{sha}/check-runs` response. Returns one of:
+
+      green           - the gate ran for this commit, completed, and succeeded.
+      missing         - no check run by that name is present at all.
+      pending         - present but not `completed` (queued / in_progress / ...).
+      sha_mismatch    - a matching run reports a different `head_sha`.
+      not_successful  - completed with any conclusion other than `success`
+                        (failure, cancelled, skipped, timed_out, neutral, ...).
+
+    Issue #385: the hosted release workflow proved only that it was dispatched
+    from main. Branch protection shows how a commit ENTERED main, not that
+    post-merge evidence exists for the exact commit about to be tagged, and the
+    release skill's hard rules say MUST NOT tag on a red suite.
+
+    Fail-closed throughout: unparseable input is `missing`, and several runs
+    share one name only when a re-run is in flight - we cannot tell which
+    verdict is authoritative, so EVERY matching run must be green."""
+    if not isinstance(check_runs, list):
+        return "missing"
+    matching = [run for run in check_runs
+                if isinstance(run, dict) and run.get("name") == check_name]
+    if not matching:
+        return "missing"
+    if any(run.get("head_sha") != head_sha for run in matching):
+        return "sha_mismatch"
+    if any(run.get("status") != "completed" for run in matching):
+        return "pending"
+    if any(run.get("conclusion") != "success" for run in matching):
+        return "not_successful"
+    return "green"
+
+
+def peel_tag(ls_remote_text, tag):
+    """Resolve the COMMIT a remote tag names, from `git ls-remote --tags`
+    output. Returns "" when the tag is absent.
+
+    An annotated tag's own object id is not the commit it points at; the
+    peeled `refs/tags/<tag>^{}` line is. Issue #380: the workflow treated any
+    remote hit as a resumable publish and skipped tag creation without ever
+    comparing the tag to `GITHUB_SHA`, so a stale tag could be accepted as a
+    successful rerun and a Release published for the wrong commit. Matching is
+    exact on the ref name, so `v2.6.0` is never resolved from `v2.6.0-beta.1`."""
+    if not isinstance(ls_remote_text, str) or not isinstance(tag, str):
+        return ""
+    direct = peeled = ""
+    ref = f"refs/tags/{tag}"
+    for line in ls_remote_text.splitlines():
+        parts = line.split()
+        if len(parts) != 2:
+            continue
+        sha, name = parts
+        if name == ref + "^{}":
+            peeled = sha
+        elif name == ref:
+            direct = sha
+    return peeled or direct
 
 
 # --------------------------------------------------------------------------- #
@@ -145,10 +252,20 @@ def main(argv):
       dates-consistent <changelog> <tagmsg>    exit 0 iff the two dates agree
       classify <tag_exists> <tag_sha> <head_sha> <tag_version> <manifest_version> <release_nondraft>
                                                prints the publish-state label (bools: true/false)
+      select-target <confirm> <codex_confirm>  prints ca | ca-codex | none | multiple
+      merge-readiness <head_sha> <checks_json> prints green | missing | pending |
+                                               sha_mismatch | not_successful
+      peel-tag <tag>                           stdin=`git ls-remote --tags` -> commit sha / ""
+
+    The three release.yml subcommands print a LABEL and exit 0; the workflow
+    cases on the label with a fail-closed `*)` arm, so an unrecognised label -
+    or a crash, which yields no label at all - refuses the dispatch either way.
     Returns a process exit code."""
     import sys
     if not argv:
-        sys.stderr.write("usage: _releaselib.py {last-tag|notes-match|dates-consistent|classify} ...\n")
+        sys.stderr.write(
+            "usage: _releaselib.py {last-tag|notes-match|dates-consistent|classify"
+            "|select-target|merge-readiness|peel-tag} ...\n")
         return 2
     cmd, rest = argv[0], argv[1:]
     if cmd == "last-tag":
@@ -163,6 +280,20 @@ def main(argv):
         print(classify_publish_state(
             tag_exists=b(rest[0]), tag_sha=rest[1], head_sha=rest[2],
             tag_version=rest[3], manifest_version=rest[4], release_is_nondraft=b(rest[5])))
+        return 0
+    if cmd == "select-target" and len(rest) == 2:
+        print(select_release_target(rest[0], rest[1]))
+        return 0
+    if cmd == "merge-readiness" and len(rest) == 2:
+        import json
+        try:
+            runs = json.loads(_read(rest[1]))
+        except ValueError:
+            runs = None  # unreadable/unparseable evidence is no evidence
+        print(classify_merge_readiness(runs, rest[0]))
+        return 0
+    if cmd == "peel-tag" and len(rest) == 1:
+        print(peel_tag(sys.stdin.read(), rest[0]))
         return 0
     sys.stderr.write(f"_releaselib.py: bad invocation: {' '.join(argv)}\n")
     return 2
