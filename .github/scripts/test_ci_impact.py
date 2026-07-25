@@ -12,6 +12,7 @@ import json
 import re
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -20,6 +21,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
+GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
+# The one audit threshold every dependency graph in this repo is gated at.
+NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
 PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
@@ -98,6 +103,317 @@ def workflow_jobs(text: str) -> dict[str, str]:
     if current is not None:
         jobs[current] = "".join(body)
     return jobs
+
+
+def push_trigger_paths(workflow: str) -> list[str]:
+    """Quoted globs under the workflow's `on.push.paths:` block.
+
+    Textual like every other contract here.  The block ends at the first line
+    that is not a `      - "<glob>"` entry, which is what makes this sensitive
+    to a deleted path rather than merely to the block's existence.
+    """
+    match = re.search(
+        r'(?ms)^  push:\n(?:.*?)^    paths:\n(?P<body>(?:      (?:- "[^"\n]+"[^\n]*|#[^\n]*)\n)+)',
+        workflow,
+    )
+    if match is None:
+        return []
+    return _globs(match.group("body"), '"')
+
+
+def paths_filter(ci: str, name: str) -> list[str]:
+    """Single-quoted globs under one `filters:` entry of the changes job."""
+    match = re.search(
+        rf"(?ms)^            {re.escape(name)}:\n"
+        rf"(?P<body>(?:              (?:- '[^'\n]+'[^\n]*|#[^\n]*)\n)+)",
+        ci,
+    )
+    if match is None:
+        return []
+    return _globs(match.group("body"), "'")
+
+
+def _globs(body: str, quote: str) -> list[str]:
+    """Quoted list entries in a YAML block, ignoring interleaved comments.
+
+    The value is read out of the quotes rather than by stripping the line,
+    because an entry may carry a TRAILING comment - `- "plugins/ca/**" # the
+    reference is generated from the plugin` is a real line in docs.yml, and
+    stripping quotes off that returns the comment along with the glob.
+    """
+    found: list[str] = []
+    for line in body.splitlines():
+        entry = re.match(rf"-\s*{re.escape(quote)}([^{re.escape(quote)}]*){re.escape(quote)}",
+                         line.strip())
+        if entry is not None:
+            found.append(entry.group(1))
+    return found
+
+
+def npm_audit_invocations(workflow: str) -> list[str]:
+    """Every `npm audit ...` command line in a workflow, whitespace-normalised."""
+    return [
+        " ".join(match.group("command").split())
+        for match in re.finditer(
+            r"(?m)^\s*(?:-\s+)?(?P<command>(?:run: )?npm audit[^\n]*)$", workflow
+        )
+    ]
+
+
+def event_trigger_paths(workflow: str, event: str) -> list[str]:
+    """Double-quoted globs under `on.<event>.paths` of a workflow."""
+    match = re.search(
+        rf'(?ms)^  {re.escape(event)}:\n(?:.*?)^    paths:\n'
+        rf'(?P<body>(?:      (?:- "[^"\n]+"[^\n]*|#[^\n]*)\n)+)',
+        workflow,
+    )
+    if match is None:
+        return []
+    return _globs(match.group("body"), '"')
+
+
+def npm_install_jobs(workflow: str) -> dict[str, str]:
+    """Every job that runs `npm ci`, mapped to the directory it installs into.
+
+    Derived from the workflow rather than listed by hand: a hardcoded job list
+    is exactly how a newly added graph slips in unaudited, which is the defect
+    #403 was.  The directory comes from the job's `defaults.run.working-
+    directory`, which is how every npm job in this repo scopes itself.
+    """
+    installs: dict[str, str] = {}
+    for job_id, body in workflow_jobs(workflow).items():
+        if not re.search(r"(?m)^\s*(?:-\s+)?(?:run: )?npm ci\b", body):
+            continue
+        directory = re.search(
+            r"(?ms)^    defaults:\n      run:\n        working-directory: (?P<dir>\S+)", body
+        )
+        installs[job_id] = directory.group("dir") if directory else "."
+    return installs
+
+
+def unaudited_npm_graphs(workflow: str) -> list[str]:
+    """Every `npm ci` job whose dependency graph no job in `workflow` audits.
+
+    A job may skip the audit itself - what it may NOT do is install a graph
+    nothing audits.  `ca-pi-tools` and docs.yml's `build` are both in that
+    first category today: they run `npm ci` with no audit step, and are benign
+    only because `ca-pi-checks` and `site-check` audit the very same
+    directory.  Deriving the rule this way keeps that fact CHECKED instead of
+    asserted in a comment, and makes a brand-new graph fail on arrival.
+    """
+    jobs = workflow_jobs(workflow)
+    installs = npm_install_jobs(workflow)
+    audited = {
+        directory
+        for job_id, directory in installs.items()
+        if f"run: {NPM_AUDIT_GATE}" in jobs[job_id]
+    }
+    return [
+        f"{job_id} installs {directory}, which nothing audits"
+        for job_id, directory in sorted(installs.items())
+        if directory not in audited
+    ]
+
+
+def _fold_keys(value: object, collisions: list[str]) -> object:
+    """Lower-case every mapping key, the way gitleaks' own config reader does.
+
+    gitleaks loads this file through viper, whose key lookup is case-
+    INSENSITIVE.  Measured against the pinned image: `Paths = ['''.''']`
+    reports `scanned ~0 bytes` exactly as `paths` does, `RegexTarget` rebinds
+    the waiver exactly as `regexTarget` does, and `DISABLEDRULES` deletes a
+    rule exactly as `disabledRules` does.  Every ban below is therefore
+    written against folded keys, so a capitalisation cannot walk past it.
+
+    A fold COLLISION (`paths` and `Paths` in one table) is reported rather
+    than silently resolved: which spelling the scanner would honour is not
+    something this contract should guess at.
+    """
+    if isinstance(value, dict):
+        folded: dict[str, object] = {}
+        for key, item in value.items():
+            lowered = key.lower()
+            if lowered in folded:
+                collisions.append(lowered)
+            folded[lowered] = _fold_keys(item, collisions)
+        return folded
+    if isinstance(value, list):
+        return [_fold_keys(item, collisions) for item in value]
+    return value
+
+
+def parse_gitleaks_config(config: str) -> tuple[dict, list[str]]:
+    """The gitleaks config as gitleaks itself reads it - PARSED, keys folded.
+
+    Reading this file as text was the defect this function exists to end.  A
+    regex has to guess at TOML's spellings and it guessed wrong eleven times:
+    an indented key, an indented table header, a basic string instead of a
+    literal one, a `]` inside a value, a capitalised key.  Every one of those
+    was measured GUARD-GREEN while the pinned scanner swallowed a planted
+    high-entropy key.  TOML has exactly one meaning per document, so the
+    contract now reads that meaning instead of the characters around it.
+
+    Returns the folded document and any key-fold collisions.  Raises
+    `tomllib.TOMLDecodeError` on input gitleaks itself could not load.
+    """
+    collisions: list[str] = []
+    document = _fold_keys(tomllib.loads(config), collisions)
+    assert isinstance(document, dict)
+    return document, collisions
+
+
+def gitleaks_allowlist_blocks(config: str) -> list[dict]:
+    """Every `[[allowlists]]` table in the gitleaks config, keys case-folded."""
+    document, _ = parse_gitleaks_config(config)
+    blocks = document.get("allowlists") or []
+    return [block for block in blocks if isinstance(block, dict)]
+
+
+def gitleaks_allowlist_regexes(config: str) -> list[str]:
+    """Every value inside an allowlist table's `regexes`.
+
+    These are the PARSED values, so the single-entry, multi-line-array,
+    embedded-newline, and alternate-quoting spellings all reduce to the same
+    list - a waiver cannot hide from the narrowness contract by reformatting.
+    The embedded-newline case is real: the one multi-line secret this repo
+    waives is a PEM block whose detected value spans five source lines.
+    """
+    found: list[str] = []
+    for block in gitleaks_allowlist_blocks(config):
+        entries = block.get("regexes")
+        if isinstance(entries, str):
+            entries = [entries]
+        if isinstance(entries, list):
+            found += [entry for entry in entries if isinstance(entry, str)]
+    return found
+
+
+# The characters that would let an anchored waiver match more than the single
+# fixed value it spells out.  `\` is in the set because an escape sequence is a
+# pattern, and this contract admits no patterns at all.
+_REGEX_METACHARACTERS = frozenset(".*+?()[]{}|^$\\")
+# `\A<body>\z` - Go RE2's spelling of "the WHOLE target is exactly <body>".
+_ANCHORED_WAIVER = re.compile(r"(?s)\A\\A(?P<body>.*)\\z\Z")
+# Keys that un-scan a file or a commit rather than waiving one value.
+_UNSCANNING_KEYS = ("paths", "commits", "stopwords")
+# The only keys a waiver in this file may carry.  DEFAULT-DENY: gitleaks keeps
+# adding allowlist knobs, and the next one to widen the haystack must fail this
+# contract on the day it is typed, not on the day someone remembers to ban it.
+_ALLOWED_ALLOWLIST_KEYS = frozenset({"description", "regexes"})
+# `[extend]` selects which rules run.  This file only ever SUBTRACTS fixture
+# values from the default ruleset, so `useDefault` is the only key it may set:
+# `disabledRules` deletes a rule outright, and `path`/`url` pull in allowlists
+# that are not in this file and therefore not covered by anything below.
+_ALLOWED_EXTEND_KEYS = frozenset({"usedefault"})
+
+
+def gitleaks_waiver_violations(config: str) -> list[str]:
+    """Every way `config`'s allowlist could waive more than one fixed value.
+
+    Empty means the allowlist is narrow.  Kept a pure function of the config
+    text so the contract can be exercised against adversarial configs that are
+    never written to disk.
+
+    Each rejected shape below was MEASURED against the pinned scanner image,
+    scanning this repo's tracked tree with a high-entropy key planted in
+    `plugins/ca/tools/.env.example` (the shipped config reports `leaks found: 1`
+    there; every shape below returns it to `no leaks found`):
+
+    * `paths` / `commits` un-scan a whole file or commit rather than waiving a
+      value, leaving a permanent blind spot.  `stopwords` is the same class.
+    * `regexTarget = "line"` widens the haystack to the entire source line, and
+      `regexTarget = "match"` to the rule's whole match text - so a short common
+      substring like `API_KEY` waives every line or match containing it.
+    * an UNANCHORED literal is the deeper bug, and the reason constraining
+      `regexTarget` alone is NOT sufficient: gitleaks tests allowlist regexes
+      with Go's `FindString`, a SUBSTRING search, so even against the default
+      (secret) target the literal `sk-` waives every secret beginning `sk-`.
+
+    Anchoring is what actually buys narrowness: `\\A<literal>\\z` matches only
+    when the ENTIRE detected secret is that exact fixture value.
+
+    The checks run against the PARSED document, not the config text.  Reading
+    it as text is what let eleven measured shapes through - see
+    test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract for
+    each one and the evidence it swallowed a planted key.
+    """
+    try:
+        document, collisions = parse_gitleaks_config(config)
+    except tomllib.TOMLDecodeError as error:
+        # Not "narrow" - unreadable.  gitleaks exits FTL on the same input, so
+        # reporting no violations here would call a config that cannot scan
+        # anything a config that scans everything.
+        return [f"the config is not parseable TOML ({error}), so gitleaks cannot load it"]
+
+    problems: list[str] = []
+    for key in sorted(set(collisions)):
+        problems.append(
+            f"`{key}` is spelled two ways in one table; gitleaks reads keys "
+            "case-insensitively, so which one applies is unknowable from the file"
+        )
+    extend = document.get("extend")
+    if isinstance(extend, dict):
+        for key in sorted(set(extend) - _ALLOWED_EXTEND_KEYS):
+            problems.append(
+                f"`[extend] {key}` changes which rules run instead of waiving one value; "
+                "`useDefault` is the only key this config may set there"
+            )
+    if document.get("rules"):
+        problems.append(
+            "a `[[rules]]` block re-declares the ruleset - one whose id matches a default "
+            "rule REPLACES it - and this file only ever subtracts fixture values"
+        )
+    for position, block in enumerate(document.get("allowlists") or [], start=1):
+        if not isinstance(block, dict):
+            problems.append(f"allowlist #{position} is not a table")
+            continue
+        description = block.get("description")
+        head = str(description).strip().splitlines()[0] if str(description).strip() else ""
+        head = head or f"#{position}"
+        for key in _UNSCANNING_KEYS:
+            if key in block:
+                problems.append(
+                    f"`{key}` un-scans whole files or commits instead of waiving a value"
+                )
+        if "regextarget" in block:
+            problems.append(
+                f"`regexTarget = {block['regextarget']!r}` binds the waiver to surrounding "
+                "source text rather than to the detected secret"
+            )
+        unmodelled = set(block) - _ALLOWED_ALLOWLIST_KEYS - {"regextarget"} - set(_UNSCANNING_KEYS)
+        for key in sorted(unmodelled):
+            problems.append(
+                f"allowlist block at {head!r} sets `{key}`, which this contract cannot "
+                "reason about; a waiver may carry only `description` and `regexes`"
+            )
+        if not str(description or "").strip():
+            problems.append(f"allowlist block at {head!r} carries no rationale")
+        entries = block.get("regexes")
+        if isinstance(entries, str):
+            entries = [entries]
+        if not isinstance(entries, list) or not entries:
+            problems.append(f"allowlist block at {head!r} names no value, so it is unbounded")
+            continue
+        for literal in entries:
+            if not isinstance(literal, str):
+                problems.append(
+                    f"allowlist block at {head!r} waives {literal!r}, which is not a string"
+                )
+                continue
+            anchored = _ANCHORED_WAIVER.match(literal)
+            if anchored is None:
+                problems.append(
+                    f"{literal!r} is not anchored `\\A...\\z`; gitleaks matches allowlist "
+                    "regexes as substrings, so it waives anything merely containing it"
+                )
+                continue
+            stray = sorted(set(anchored.group("body")) & _REGEX_METACHARACTERS)
+            if stray:
+                problems.append(
+                    f"{literal!r} carries regex metacharacter(s) {''.join(stray)!r}; "
+                    "a waiver must spell out one fixed value"
+                )
+    return problems
 
 
 def aggregate_needs(ci: str) -> list[str]:
@@ -446,6 +762,7 @@ class WorkflowContractTest(unittest.TestCase):
             "[CHECK] | [REPO] | License consistency",
             "[CHECK] | [CORE] | Generated surface",
             "[CHECK] | [CDX ] | Reference graph",
+            "[CHECK] | [REPO] | Secret scan",
             "[GATE ] | [REPO] | Merge readiness",
         )
         for name in expected:
@@ -730,6 +1047,627 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("GITHUB_STEP_SUMMARY", canary, "the advisory verdict must be visible")
         # And the aggregate gate stays independent of the advisory result.
         self.assertNotIn("ca-pi-latest", aggregate_required_results(ci))
+
+    def test_codex_parity_fixture_edits_reach_their_own_test(self):
+        # Issue #384: `.github/scripts/test_codex_parity_fixture.py` runs inside
+        # the path-scoped `hooks` job, but neither the push trigger nor the
+        # `hooks` filter listed the generator it tests.  A PR editing only
+        # tools/codex-parity-fixture.py therefore skipped its own test, and the
+        # merged push started no workflow at all.  Three registrations must
+        # agree: push trigger, `hooks` filter, and the test invocation.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        generator = "tools/codex-parity-fixture.py"
+        push = push_trigger_paths(ci)
+        self.assertIn(
+            "tools/sync-core.py", push, "the push-trigger scan drifted off the real block"
+        )
+        self.assertIn(generator, push, "a push of the fixture generator starts no CI run")
+        hooks = paths_filter(ci, "hooks")
+        self.assertIn(
+            ".github/scripts/**", hooks, "the hooks-filter scan drifted off the real block"
+        )
+        self.assertIn(
+            generator, hooks, "a PR touching only the fixture generator skips the hooks job"
+        )
+        self.assertIn(
+            "run: python .github/scripts/test_codex_parity_fixture.py",
+            workflow_jobs(ci)["hooks"],
+            "the hooks job no longer runs the fixture generator's own test",
+        )
+
+    def test_every_npm_audit_gate_fails_the_build_on_a_high_advisory(self):
+        # Issue #403: site/package-lock.json - the ONLY graph in this repo that
+        # declares production dependencies (astro, starlight, markdown-remark) -
+        # was audited by nothing, and #400's three HIGH advisories all lived
+        # there.  The farm/sandbox gates were separately pinned at `critical`,
+        # but tightening those two is a DURABILITY change, not a live one:
+        # measured, plugins/ca/tools, plugins/ca-sandbox/tools and
+        # plugins/ca-pi/tools each declare ZERO production dependencies, so
+        # `--omit=dev` audits an empty graph there at any threshold.  It decides
+        # what happens the day one of them takes on a runtime dependency.
+        # Issue #434 tracks extending the sweep to the dev trees, which is where
+        # those packages' advisories actually are.
+        #
+        # One threshold, asserted per invocation, across every graph the repo
+        # ships or publishes.
+        expected = NPM_AUDIT_GATE
+        invocations: list[tuple[str, str]] = []
+        for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
+            invocations += [
+                (workflow.name, command)
+                for command in npm_audit_invocations(workflow.read_text(encoding="utf-8"))
+            ]
+        self.assertEqual(
+            len(invocations),
+            4,
+            "expected exactly the farm, sandbox, ca-pi, and site audit gates",
+        )
+        for name, command in invocations:
+            with self.subTest(workflow=name, command=command):
+                self.assertEqual(command, f"run: {expected}")
+        # EVERY GRAPH THIS REPO INSTALLS IS AUDITED SOMEWHERE.  This used to
+        # iterate the hardcoded triple ("tools", "ca-sandbox-tools",
+        # "ca-pi-checks") under a comment claiming "every job that installs a
+        # lockfile must also audit it" - a claim three job names cannot make.
+        # It was already false: `ca-pi-tools` is a required gate that runs
+        # `npm ci` and never audits, and so does docs.yml's `build`.  Both are
+        # benign only because a SIBLING job audits the same lockfile, and
+        # nothing checked that.  So the list is now DERIVED and the rule is the
+        # one that actually matters: a job may skip the audit only when another
+        # job in the same workflow audits the very directory it installs.  A
+        # genuinely new graph has no such sibling and fails here on arrival -
+        # which is precisely what did not happen when site/package-lock.json
+        # went unguarded through #400 and #403.
+        for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
+            with self.subTest(workflow=workflow.name):
+                text = workflow.read_text(encoding="utf-8")
+                self.assertTrue(
+                    npm_install_jobs(text), f"{workflow.name} installs no lockfile at all"
+                )
+                self.assertEqual(
+                    [],
+                    unaudited_npm_graphs(text),
+                    "a job installs a dependency graph nothing in this workflow audits",
+                )
+        # And the rule BITES.  A derived check that merely happens to be
+        # satisfied is indistinguishable from one that checks nothing, so put
+        # the diff it exists to stop in front of it: a new job installing a
+        # graph no sibling audits.  This is the shape #403 shipped as.
+        newcomer = CI_WORKFLOW.read_text(encoding="utf-8") + (
+            "\n  brand-new-graph:\n"
+            "    name: newcomer\n"
+            "    runs-on: ubuntu-latest\n"
+            "    defaults:\n"
+            "      run:\n"
+            "        working-directory: plugins/ca-brand-new/tools\n"
+            "    steps:\n"
+            "      - run: npm ci\n"
+        )
+        self.assertTrue(
+            unaudited_npm_graphs(newcomer),
+            "a job installing an entirely new graph is accepted without an audit",
+        )
+
+    def test_docs_workflow_gates_the_site_dependency_graph_before_publishing(self):
+        # Issue #403: site-check ran npm ci/typecheck/test and build ran
+        # build/link-audit, but nothing ever audited site/package-lock.json - a
+        # known-vulnerable production dependency could build and deploy to
+        # GitHub Pages with the whole workflow green.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(docs)
+        self.assertIn("site-check", sorted(jobs))
+        site_check = jobs["site-check"]
+        self.assertIn("run: npm ci", site_check)
+        self.assertIn("run: npm audit --omit=dev --audit-level=high", site_check)
+        # The audit is only a gate if the publish step waits on the job that
+        # runs it.  `deploy` needs BOTH build and site-check today; assert the
+        # site-check edge specifically so dropping it is caught.
+        deploy = jobs["deploy"]
+        self.assertRegex(
+            deploy,
+            r"(?m)^    needs: \[[^\]]*\bsite-check\b[^\]]*\]",
+            "deploy no longer waits on the audited site-check job",
+        )
+
+    def test_the_docs_workflow_runs_on_changes_to_the_docs_workflow(self):
+        # The SAME defect class this branch exists to fix, one file over.
+        # docs.yml triggered on `site/**` and `plugins/ca/**` only, so it never
+        # ran on itself: the audit step added above did NOT execute in this
+        # PR's own CI - there was no `Site |` check among the 37 that reported.
+        # A PR that deletes the audit step, breaks the deploy edge, or drops a
+        # permission touches docs.yml and nothing else, which is exactly the
+        # diff its own jobs could not see.  #384 and the .gitleaks.toml gap are
+        # the same bug; a workflow that gates something must be reachable by a
+        # change to itself.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        for event in ("push", "pull_request"):
+            with self.subTest(event=event):
+                paths = event_trigger_paths(docs, event)
+                self.assertIn(
+                    "site/**", paths, f"the {event} trigger scan drifted off the real block"
+                )
+                self.assertIn(
+                    ".github/workflows/docs.yml",
+                    paths,
+                    f"a {event} touching only docs.yml never runs docs.yml",
+                )
+
+    def test_ci_runs_a_pinned_read_only_secret_scan_wired_into_the_merge_gate(self):
+        # Issue #404: the repository had NO independent secret scanner - only a
+        # manual staged-diff sweep and the cooperative local H-10b hook, neither
+        # of which a bot, a fork, or a direct push ever runs.  The hosted
+        # backstop must be pinned (no floating tag can be swapped under us),
+        # read-only, and enforced by the aggregate gate.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("secret-scan", sorted(jobs), "ci.yml has no secret-scan job")
+        job = jobs["secret-scan"]
+        self.assertIn('name: "[CHECK] | [REPO] | Secret scan"', job)
+        # Pinned by image digest, not by a mutable tag.
+        self.assertRegex(
+            job,
+            r"ghcr\.io/gitleaks/gitleaks@sha256:[0-9a-f]{64}",
+            "the scanner image is not pinned by digest",
+        )
+        self.assertNotRegex(
+            job,
+            r"ghcr\.io/gitleaks/gitleaks:[^@\s]",
+            "a floating image tag defeats the pin",
+        )
+        # Read-only: the repository is mounted `:ro` and the scanner gets no
+        # network, so a supply-chain compromise of the image cannot rewrite the
+        # tree it is auditing or exfiltrate what it finds.
+        self.assertIn(":/repo:ro", job, "the scanned tree is not mounted read-only")
+        self.assertIn("--network none", job, "the scanner is not network-isolated")
+        self.assertIn("--redact", job, "a finding would print the credential in public logs")
+        self.assertIn("--exit-code 1", job, "a finding would not fail the job")
+        self.assertIn("--config /repo/.gitleaks.toml", job)
+        # ACTIONABLE WITHOUT LEAKING.  `--redact` alone prints only
+        # `leaks found: N` - no file, no line, no rule id - so a red job tells a
+        # maintainer nothing and the only way to triage it is to re-run the
+        # scanner unredacted.  Measured against the pinned image: adding
+        # `--verbose` prints `File:`/`Line:`/`RuleID:`/`Fingerprint:` (and
+        # `Commit:` in git mode) while still printing `Secret: REDACTED`.  Every
+        # scan step must carry BOTH, so neither mode is a dead end.
+        scan_steps = [step for step in job.split("\n      - name: ") if '"$GITLEAKS_IMAGE"' in step]
+        self.assertEqual(
+            len(scan_steps), 2, "expected exactly the tree scan and the commit-range scan"
+        )
+        for step in scan_steps:
+            with self.subTest(step=step.splitlines()[0]):
+                self.assertIn("--redact", step, "this scan would print credentials in public logs")
+                self.assertIn(
+                    "--verbose",
+                    step,
+                    "a failing scan would print only `leaks found: N` - no file, line, or rule",
+                )
+        # Enforced through BOTH aggregate registrations (the #390 contract).
+        self.assertIn("secret-scan", aggregate_needs(ci), "ci-passed.needs omits secret-scan")
+        self.assertIn(
+            "secret-scan",
+            aggregate_required_results(ci),
+            "ci-passed.required_results omits secret-scan",
+        )
+
+    def test_the_secret_scan_allowlist_stays_narrow_and_value_scoped(self):
+        # A broad ignore defeats the whole job, and in gitleaks the broad ignore
+        # is `paths`: a global `paths = [...]` entry does not waive a finding,
+        # it drops the file from the scan entirely.  Measured against the pinned
+        # image - a config whose sole waiver was
+        # `paths = ['''^test_hooklib\\.py$''']` (condition = "AND", plus a regex
+        # matching nothing) reported `scanned ~189 bytes` and missed a freshly
+        # planted `aws_secret_access_key = "kR3m..."` in that file.  So every
+        # waiver here must be a VALUE waiver naming one fixed adversarial
+        # literal, which leaves every file fully scanned.
+        self.assertTrue(GITLEAKS_CONFIG.is_file(), "no .gitleaks.toml in the repo root")
+        config = GITLEAKS_CONFIG.read_text(encoding="utf-8")
+        document, collisions = parse_gitleaks_config(config)
+        self.assertEqual([], collisions, "a key is spelled two ways in one table")
+        # Read from the PARSE, not from the text: `assertIn("useDefault = true")`
+        # is satisfied by that string appearing in a comment and defeated by a
+        # different spacing, and neither has anything to do with what gitleaks
+        # loads.
+        self.assertIs(
+            document.get("extend", {}).get("usedefault"),
+            True,
+            "the config must extend the default ruleset",
+        )
+        blocks = gitleaks_allowlist_blocks(config)
+        self.assertEqual(
+            len(blocks),
+            len(re.findall(r"(?m)^\s*\[\[\s*allowlists\s*\]\]\s*$", config)),
+            # Text and parse must agree on how many waivers exist.  They can
+            # disagree: `allowlists = [{...}]` is a valid TOML array-of-tables
+            # that a header count cannot see - and, measured against the pinned
+            # image, one gitleaks silently IGNORES.  A waiver the scanner does
+            # not honour and the reader believes in is its own kind of hole.
+            "the allowlist block count disagrees with the table headers in the file",
+        )
+        self.assertTrue(blocks, "no allowlist blocks found")
+        regexes = gitleaks_allowlist_regexes(config)
+        self.assertTrue(regexes, "the allowlist waives no concrete value")
+        # NARROWNESS ITSELF.  Being a fixed literal is NOT enough - that was the
+        # hole in the first version of this contract.  gitleaks substring-matches
+        # allowlist regexes, so the fixed literal `sk-` waives every secret that
+        # starts with it, and `regexTarget = "line"` makes any short literal a
+        # substring test against every scanned line.  Each waiver must be
+        # `\A<literal>\z`, true only when the WHOLE detected secret is that exact
+        # fixture value.  The adversarial shapes this rejects - and the measured
+        # evidence that each one really does swallow a planted credential - are
+        # in test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract.
+        self.assertEqual(
+            gitleaks_waiver_violations(config),
+            [],
+            "the allowlist can waive more than the fixture values it names",
+        )
+        # The two credential-shaped-but-benign payload files the audit named are
+        # covered by the literals they carry, and named in the rationale so a
+        # reviewer can check the claim.
+        self.assertIn("plugins/ca/hooks/secret-detection-corpus.json", config)
+        self.assertIn("plugins/ca/tools/.env.example", config)
+        corpus = json.loads(
+            (REPO_ROOT / "plugins/ca/hooks/secret-detection-corpus.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        # Every waiver is `\A<value>\z`; compare on the anchored body so what is
+        # being checked is "this exact value", not "something resembling it".
+        waived = {_ANCHORED_WAIVER.match(literal).group("body") for literal in regexes}
+        self.assertTrue(
+            {literal for literal in waived if any(literal in row for row in corpus["must_match"])},
+            "no corpus literal is waived - the rationale claims otherwise",
+        )
+        self.assertIn(
+            "sk-REPLACE_ME",
+            waived,
+            "the .env.example placeholder is not the waived value, so the file is waived by "
+            "something broader",
+        )
+
+    def test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract(self):
+        # A contract only means something if it FAILS on the diffs it exists to
+        # stop.  Every adversarial config below was measured against the pinned
+        # scanner image over this repo's tracked tree, with a high-entropy key
+        # planted in plugins/ca/tools/.env.example.  The shipped config reports
+        # `leaks found: 1` there; each shape below returns it to `no leaks
+        # found`, i.e. each one really does swallow a live credential.
+        quote = "'" * 3
+        shipped = GITLEAKS_CONFIG.read_text(encoding="utf-8")
+        self.assertEqual(
+            gitleaks_waiver_violations(shipped), [], "the shipped allowlist is not narrow"
+        )
+
+        def waiver(body: str, *, target: str | None = None) -> str:
+            block = ["", "[[allowlists]]", 'description = "adversarial"']
+            if target is not None:
+                block.append(f'regexTarget = "{target}"')
+            block.append(f"regexes = [{quote}{body}{quote}]")
+            return shipped + "\n".join(block) + "\n"
+
+        # 1. `regexTarget = "line"`: the haystack becomes the whole source line,
+        #    so a short literal is a substring test against every scanned line.
+        #    This is the shape that passed the first version of this contract.
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations(waiver("API_KEY", target="line")) if "regexTarget" in p],
+            "a line-targeted waiver is accepted - it matches against the entire source line",
+        )
+        # Anchoring does not rescue a `line` target either: the anchors would
+        # then bind to the whole line rather than to the secret.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(waiver(r"\AAPI_KEY\z", target="line"))
+                if "regexTarget" in p
+            ],
+            "an anchored line-targeted waiver is accepted",
+        )
+        # 2. `regexTarget = "match"` is no better - measured: `API_KEY` is a
+        #    substring of the rule's own match text (`FARM_API_KEY=<secret>`).
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations(waiver("API_KEY", target="match")) if "regexTarget" in p],
+            "a match-targeted waiver is accepted",
+        )
+        # 3. The deeper bug, and the reason constraining `regexTarget` ALONE is
+        #    insufficient: with the target omitted (the detected secret) an
+        #    unanchored literal is still a SUBSTRING search.  Measured: `sk-`
+        #    waives the planted key outright.
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations(waiver("sk-")) if "not anchored" in p],
+            "an unanchored waiver is accepted - it waives every secret containing it",
+        )
+        # 4. A pattern smuggled inside the anchors.
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations(waiver(r"\Ask-.*\z")) if "metacharacter" in p],
+            "a wildcard waiver is accepted",
+        )
+        # 5. The blind-spot directives: these un-scan a whole file or commit.
+        for directive in ("paths", "commits", "stopwords"):
+            with self.subTest(directive=directive):
+                blinded = shipped + f"\n[[allowlists]]\n{directive} = [{quote}x{quote}]\n"
+                self.assertTrue(
+                    [p for p in gitleaks_waiver_violations(blinded) if directive in p],
+                    f"a `{directive}` waiver is accepted - it un-scans whole files",
+                )
+        # 6. A waiver with no rationale, and one with no value at all.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped + f"\n[[allowlists]]\nregexes = [{quote}\\Ax\\z{quote}]\n"
+                )
+                if "no rationale" in p
+            ],
+            "a waiver with no description is accepted",
+        )
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped + '\n[[allowlists]]\ndescription = "x"\n'
+                )
+                if "names no value" in p
+            ],
+            "a waiver naming no value is accepted",
+        )
+
+        # ---- SPELLING BYPASSES OF THE CONTRACT ITSELF -----------------------
+        # Everything above bypasses the RULES.  Every shape below bypassed the
+        # CONTRACT: each was measured GUARD-GREEN against the first version of
+        # this file while the pinned image reported `no leaks found` (exit 0)
+        # over a tree carrying a freshly planted high-entropy key that the
+        # shipped config reports as `leaks found: 1` (exit 1).  They are one
+        # defect with eleven faces - the contract read the config as TEXT, and
+        # TOML (plus viper's case-insensitive key lookup) admits far more
+        # spellings than a regex anticipates.  The contract now PARSES.
+        def block(*lines: str) -> str:
+            return shipped + "\n[[allowlists]]\n" + "\n".join(lines) + "\n"
+
+        # 7. An INDENTED `regexes` key.  `  regexes = [...]` is valid TOML; the
+        #    extractor was anchored at column 0 so it pulled ZERO literals from
+        #    this block, while the `"regexes = [" in block` substring test still
+        #    reported the block as bounded.  Zero literals, zero violations.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    block('description = "adversarial"', f"  regexes = [{quote}sk-{quote}]")
+                )
+                if "not anchored" in p
+            ],
+            "an indented `regexes` key hides its literals from the contract",
+        )
+        # 8. `disabledRules` under `[extend]` turns the highest-value rule off
+        #    outright.  Asserting `useDefault = true` is present says nothing
+        #    about what sits beside it.  Only `useDefault` may live there.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped.replace(
+                        "useDefault = true",
+                        'useDefault = true\ndisabledRules = ["generic-api-key"]',
+                        1,
+                    )
+                )
+                if "disabledrules" in p.lower()
+            ],
+            "`[extend] disabledRules` is accepted - it deletes the rule outright",
+        )
+        # 9. A SINGLE-QUOTED `regexTarget`.  The ban matched double quotes only.
+        #    Measured: `regexTarget = 'match'` plus a whole-match-anchored,
+        #    metacharacter-free literal clears every other check and swallows
+        #    the planted key.
+        #
+        #    The value below is a LOW-ENTROPY stand-in, deliberately.  The
+        #    measurement used a real high-entropy key, but this assertion is a
+        #    pure function of the config TEXT - `regexTarget` is rejected on
+        #    sight, whatever it is paired with - so the entropy buys the test
+        #    nothing and costs it a finding.  Committing the measured key here
+        #    made the secret-scan job red on its own contract, which is the job
+        #    working: a credential-shaped literal in a tracked file is exactly
+        #    what it exists to catch, and the answer to that is to stop
+        #    committing one, never to widen the allowlist around it.
+        planted = "FARM_API_KEY=sk-NOT-A-REAL-KEY"
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    block(
+                        'description = "adversarial"',
+                        "regexTarget = 'match'",
+                        f"regexes = [{quote}\\A{planted}\\z{quote}]",
+                    )
+                )
+                if "regexTarget" in p
+            ],
+            "a single-quoted `regexTarget` evades the ban",
+        )
+        # 10. Any TOML string spelling other than `'''...'''`.  The literal
+        #     extractor matched triple-quoted strings only, so a basic or a
+        #     single-quoted literal string yielded ZERO literals to check.
+        for spelling in ('regexes = ["sk-"]', "regexes = ['sk-']"):
+            with self.subTest(spelling=spelling):
+                self.assertTrue(
+                    [
+                        p
+                        for p in gitleaks_waiver_violations(
+                            block('description = "adversarial"', spelling)
+                        )
+                        if "not anchored" in p
+                    ],
+                    "a waiver spelled with other quotes hides from the contract",
+                )
+        # 11. An INDENTED `[[allowlists]]` header.  The block scan was anchored
+        #     at column 0, so an indented block - and every waiver in it - was
+        #     invisible to every per-block check at once.
+        first_header = re.search(r"(?m)^\[\[allowlists\]\]$", shipped)
+        self.assertIsNotNone(first_header, "the shipped config has no allowlist header")
+        indented = (
+            shipped[: first_header.start()]
+            + f'  [[allowlists]]\n  description = "adversarial"\n  regexes = [{quote}sk-{quote}]\n\n'
+            + shipped[first_header.start() :]
+        )
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations(indented) if "not anchored" in p],
+            "an indented `[[allowlists]]` header hides a whole block",
+        )
+        # 12. CASE-VARIED KEYS.  gitleaks reads its config through viper, whose
+        #     key lookup is case-INSENSITIVE, while every ban here was
+        #     case-sensitive.  Measured: `Paths = ['''.''']` reported
+        #     `scanned ~0 bytes` - the entire repository went unread - with the
+        #     guard green.
+        for line, needle in (
+            (f"Paths = [{quote}.{quote}]", "paths"),
+            ('RegexTarget = "match"', "regexTarget"),
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(
+                    [
+                        p
+                        for p in gitleaks_waiver_violations(
+                            block(
+                                'description = "adversarial"',
+                                line,
+                                f"regexes = [{quote}\\Aunused\\z{quote}]",
+                            )
+                        )
+                        if needle in p
+                    ],
+                    "a case-varied key evades the ban that names it",
+                )
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped.replace(
+                        "useDefault = true",
+                        'useDefault = true\nDISABLEDRULES = ["generic-api-key"]',
+                        1,
+                    )
+                )
+                if "disabledrules" in p.lower()
+            ],
+            "a case-varied `disabledRules` evades the ban",
+        )
+        # 13. A `]` INSIDE a literal.  The array capture was non-greedy to the
+        #     first `]`, so one waiver containing a bracket truncated the scan
+        #     and every later literal in the same array went unchecked.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    block(
+                        'description = "adversarial"',
+                        f"regexes = [{quote}\\Ax]y\\z{quote}, {quote}sk-{quote}]",
+                    )
+                )
+                if "not anchored" in p
+            ],
+            "a `]` in one waiver hides every later waiver in the same array",
+        )
+        # 14. A `[[rules]]` BLOCK.  The contract only ever looked at
+        #     `[[allowlists]]`.  Measured: re-declaring the id `generic-api-key`
+        #     with a never-matching regex REPLACES the default rule, and the
+        #     planted key goes unreported.  This file subtracts fixture values
+        #     from the default ruleset; it declares no rules of its own.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped
+                    + '\n[[rules]]\nid = "generic-api-key"\ndescription = "adversarial"\n'
+                    + f"regex = {quote}zzzzz-never-matches-zzzzz{quote}\n"
+                )
+                if "rules" in p
+            ],
+            "a `[[rules]]` block is accepted - it can replace a default rule",
+        )
+        # 15. A config gitleaks cannot load is not a passing config.  The
+        #     contract must not silently report "narrow" on TOML it failed to
+        #     read; the scanner exits FTL on the same input.
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations("regexes = [") if "TOML" in p],
+            "an unparseable config is reported as narrow",
+        )
+
+    def test_secret_scan_config_edits_reach_the_guard_that_constrains_them(self):
+        # The narrowness contract above lives in THIS file, which runs only in
+        # the path-scoped `ci-impact` job.  `.gitleaks.toml` matched no filter
+        # and no push trigger, so a PR whose ONLY change was to widen the
+        # allowlist skipped the single job that guards it - the same defect
+        # class as #384, which this branch fixes for the parity fixture.
+        # `.github/workflows/docs.yml` had the identical gap: it is guarded by
+        # test_docs_workflow_gates_the_site_dependency_graph_before_publishing
+        # (issue #403 AC-3), and a PR deleting the site audit step touches only
+        # docs.yml - exactly the diff the guard could not see.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        impact = paths_filter(ci, "impact")
+        self.assertIn(
+            "tools/ci-impact.py", impact, "the impact-filter scan drifted off the real block"
+        )
+        push = push_trigger_paths(ci)
+        self.assertIn(
+            "tools/sync-core.py", push, "the push-trigger scan drifted off the real block"
+        )
+        for guarded in (".gitleaks.toml", ".github/workflows/docs.yml"):
+            with self.subTest(path=guarded):
+                self.assertIn(
+                    guarded, impact, "a PR touching only this file skips its own contract test"
+                )
+                self.assertIn(guarded, push, "a push of this file starts no CI run")
+
+    def test_the_allowlist_guard_also_runs_unconditionally_in_the_secret_scan_job(self):
+        # Belt AND braces.  A path filter is a promise that has already been
+        # broken twice in this repo (#384, and the .gitleaks.toml gap above), so
+        # registering the config with the filter is necessary but not durable -
+        # a later edit can drop it again.  The `secret-scan` job carries no
+        # `needs: changes` gate, so hosting the narrowness contract there makes
+        # it unskippable: any PR that reaches CI at all re-proves the allowlist
+        # before the scan is allowed to trust it.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = workflow_jobs(ci)["secret-scan"]
+        # Job-level keys sit at four spaces; a step's own `if:` is deeper, so
+        # this reads the job's own gating and not the range step's event guard.
+        self.assertNotRegex(job, r"(?m)^    needs:", "the secret scan became path-scoped")
+        self.assertNotRegex(job, r"(?m)^    if:", "the secret scan became conditional")
+        for guard in (
+            "test_the_secret_scan_allowlist_stays_narrow_and_value_scoped",
+            "test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract",
+        ):
+            with self.subTest(guard=guard):
+                self.assertIn(
+                    f"test_ci_impact.WorkflowContractTest.{guard}",
+                    job,
+                    "the always-on job does not re-prove its own allowlist",
+                )
+
+    def test_the_secret_scan_covers_the_pull_requests_commit_range(self):
+        # Issue #404 AC-1 asks for a scan over the relevant commit RANGE.  A
+        # `gitleaks dir` scan of the merge-result tree cannot meet it, and the
+        # gap is not theoretical - measured on a scratch repo, a credential
+        # added in one commit and deleted in the next left the tree scan
+        # reporting `no leaks found` (exit 0) while `gitleaks git --log-opts
+        # <base>..HEAD` reported it with its file, line, rule, and commit sha
+        # (exit 1).  This repository allows merge and rebase merges as well as
+        # squash, so those commits reach main's history verbatim.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = workflow_jobs(ci)["secret-scan"]
+        # The `git` subcommand (as opposed to `dir`) is what reads history.
+        self.assertRegex(
+            job, r"(?m)^\s+git \. \\$", "the secret scan never inspects commit history"
+        )
+        self.assertIn("--log-opts", job, "the history scan is not scoped to the PR's range")
+        # History is only there to scan if the checkout actually fetched it.
+        self.assertRegex(
+            job, r"(?m)^          fetch-depth: 0$", "a shallow checkout leaves no range to scan"
+        )
+        # The range scan is a pull_request concern - it is the only event with a
+        # base to diff against, and PR checks are main's enforcement point.
+        self.assertIn(
+            "if: github.event_name == 'pull_request'",
+            job,
+            "the range scan is not scoped to the event that has a base to diff against",
+        )
 
     def test_documentation_contract_is_always_required_by_merge_readiness(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
