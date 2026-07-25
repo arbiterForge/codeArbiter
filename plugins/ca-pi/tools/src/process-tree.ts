@@ -13,13 +13,26 @@ const DEFAULT_VERIFY_MS = 2_000;
 const DEFAULT_POLL_MS = 25;
 const MAX_STEP_MS = 30_000;
 const MAX_POLL_MS = 1_000;
-// Cold hosted Windows runners may need several seconds to start PowerShell and
-// compile the constant Job Object helper. This remains a bounded fail-closed
-// launch budget and is intentionally independent of cleanup verification.
-const WINDOWS_JOB_READY_MS = 15_000;
+// Cold Windows admission pays two INDEPENDENT costs before the Job holder can
+// report containment: starting the PowerShell host, then the one-time Add-Type
+// C# compilation of the constant helper below. Issue #428: covering both with a
+// single flat 15s window made a loaded hosted runner indistinguishable from a
+// hung helper - it refused containment twice in one day on windows-latest.
+//
+// The budget is therefore a NO-PROGRESS budget per observable phase, not a total.
+// Each protocol token the helper emits refreshes it, so a slow-but-advancing
+// helper is admitted while a silent one still fails closed inside the absolute
+// ceiling with the stalled phase named. Measured phase cost on an idle Windows 11
+// dev box over 6 runs: host start 107-127ms, Add-Type compile 101-158ms; 15s per
+// phase is ~100x the slower of the two and 30s bounds the whole handshake, which
+// stays well inside MAX_STEP_MS. This is independent of cleanup verification.
+const WINDOWS_JOB_READY_IDLE_MS = 15_000;
+const WINDOWS_JOB_READY_CEILING_MS = 30_000;
 const WINDOWS_HELPER_CLEANUP_MS = 1_000;
 const WINDOWS_NATIVE_EXIT_PRIORITY_MS = 50;
+const WINDOWS_JOB_STARTING = "STARTING";
 const WINDOWS_JOB_READY = "ATTACHED";
+const WINDOWS_JOB_READY_TOKENS = Object.freeze([WINDOWS_JOB_STARTING, WINDOWS_JOB_READY] as const);
 const WINDOWS_SUPERVISOR_START = "START\n";
 const MAX_JOB_PROTOCOL_BYTES = 64;
 const MAX_LAUNCH_PROTOCOL_BYTES = 3_145_728;
@@ -28,6 +41,8 @@ const MAX_LAUNCH_ENV_BYTES = 262_144;
 
 const WINDOWS_JOB_HELPER_SOURCE = String.raw`$ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+[Console]::Out.WriteLine('STARTING')
+[Console]::Out.Flush()
 $source = @'
 using System;
 using System.Runtime.InteropServices;
@@ -273,6 +288,17 @@ export type ProcessTreeTerminationStep =
   | Readonly<{ kind: "close-job"; timeoutMs: number }>
   | Readonly<{ kind: "wait-until-exited" | "verify-exited"; timeoutMs: number }>;
 
+export type ProgressWaitOutcome =
+  | Readonly<{ state: "ready" }>
+  | Readonly<{ state: "stalled"; phase: string; waitedMs: number }>;
+export interface ProgressWaitOptions {
+  /** No-progress budget for a single token. Refreshed by every token that arrives. */
+  readonly idleMs: number;
+  /** Hard absolute bound on the whole sequence, however much progress arrives. */
+  readonly ceilingMs: number;
+  readonly now?: () => number;
+}
+
 interface NormalizedTiming { graceMs: number; verifyMs: number; pollMs: number }
 type TaskkillOutcome = Readonly<{ state: "completed"; code: number | null }> | Readonly<{ state: "refused" | "timed_out" }>;
 interface WindowsJobGuard {
@@ -280,6 +306,8 @@ interface WindowsJobGuard {
   readonly exitCode: Promise<number | undefined>;
   arm(pid: number): Promise<boolean>;
   close(timeoutMs: number): Promise<boolean>;
+  /** Which admission phase stalled, once `ready` has resolved false because of one. */
+  stall(): string | undefined;
 }
 interface WindowsProcessMetadata {
   readonly rootPid: number;
@@ -300,6 +328,36 @@ function normalizedTiming(options: ProcessTreeCleanupOptions): NormalizedTiming 
   const pollMs = boundedDuration(options.pollMs, DEFAULT_POLL_MS, "pollMs");
   if (pollMs > MAX_POLL_MS || pollMs > Math.max(graceMs, verifyMs)) throw new Error("pollMs must be bounded by the cleanup windows");
   return { graceMs, verifyMs, pollMs };
+}
+
+/**
+ * Awaits an ordered sequence of observable progress tokens under a NO-PROGRESS
+ * (idle) budget per token plus one hard absolute ceiling. Every token that
+ * arrives refreshes the idle budget, so a producer that is merely slow but still
+ * advancing is admitted, while a silent or wrong-token producer still fails
+ * closed inside `ceilingMs` and reports which phase it stalled in.
+ *
+ * Issue #428: this is the difference between "the runner was busy" and "the
+ * helper is hung", which a single flat wall-clock window cannot tell apart.
+ */
+export async function awaitProgressTokens(
+  readLine: (timeoutMs: number) => Promise<string | undefined>,
+  expected: readonly string[],
+  options: ProgressWaitOptions,
+): Promise<ProgressWaitOutcome> {
+  const idleMs = boundedDuration(options.idleMs, options.idleMs, "progress idleMs");
+  const ceilingMs = boundedDuration(options.ceilingMs, options.ceilingMs, "progress ceilingMs");
+  if (idleMs > ceilingMs) throw new Error("progress idleMs must be bounded by the progress ceiling");
+  const now = options.now ?? Date.now;
+  const deadline = now() + ceilingMs;
+  for (const token of expected) {
+    const remaining = deadline - now();
+    if (remaining <= 0) return Object.freeze({ state: "stalled" as const, phase: token, waitedMs: 0 });
+    const started = now();
+    const line = await readLine(Math.min(idleMs, remaining));
+    if (line !== token) return Object.freeze({ state: "stalled" as const, phase: token, waitedMs: now() - started });
+  }
+  return Object.freeze({ state: "ready" as const });
 }
 
 export function processTreeSpawnOptions(platform: NodeJS.Platform = process.platform): Readonly<Pick<SpawnOptions, "detached" | "shell" | "windowsHide">> {
@@ -551,30 +609,35 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
     helper.once("close", finish); helper.once("error", finish);
   });
   helper.stdin.on("error", () => undefined);
+  const idleMs = Math.min(WINDOWS_JOB_READY_IDLE_MS, timing.verifyMs);
+  const ceilingMs = Math.min(WINDOWS_JOB_READY_CEILING_MS, idleMs * WINDOWS_JOB_READY_TOKENS.length);
+  let stallDiagnostic: string | undefined;
   const ready = new Promise<boolean>((resolveReady) => {
     let settled = false;
     let stderrBytes = 0;
     const finish = (accepted: boolean) => {
       if (settled) return;
       settled = true;
-      clearTimeout(timer);
       resolveReady(accepted);
       if (!accepted) { try { helper.stdin.end(); } catch {} terminateWindowsHelperTree(helper, closed); }
     };
-    const timer = setTimeout(() => finish(false), Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs));
     helper.stderr.on("data", (chunk: Buffer | string) => { stderrBytes += Buffer.byteLength(chunk); if (stderrBytes > MAX_JOB_PROTOCOL_BYTES) finish(false); });
     helper.once("close", () => { if (!intentional) finish(false); });
     helper.once("error", () => finish(false));
-    void readOutputLine(Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs)).then((line) => finish(line === WINDOWS_JOB_READY));
+    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs }).then((outcome) => {
+      if (outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
+      finish(outcome.state === "ready");
+    }, () => finish(false));
     try { helper.stdin.write(`${pid} ${process.pid}\n`, "utf8", (error) => { if (error) finish(false); }); } catch { finish(false); }
   });
   return Object.freeze({
     ready,
     exitCode,
+    stall(): string | undefined { return stallDiagnostic; },
     async arm(rootPid: number): Promise<boolean> {
       if (armed || !positivePid(rootPid) || !await ready || closed) return false;
       armed = true;
-      const watched = readOutputLine(Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs));
+      const watched = readOutputLine(idleMs);
       const written = await new Promise<boolean>((resolveWrite) => {
         try { helper.stdin.write(`${rootPid}\n`, "utf8", (error) => resolveWrite(error === null || error === undefined)); }
         catch { resolveWrite(false); }
@@ -759,7 +822,7 @@ export async function spawnProcessTree(command: string, args: readonly string[],
   if (process.platform !== "win32") {
     return spawn(canonicalCommand, [...args], { ...processTreeSpawnOptions(process.platform), cwd: canonicalCwd, env: options.env, stdio: [...options.stdio] }) as ChildProcessWithoutNullStreams;
   }
-  const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS });
+  const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_IDLE_MS });
   const supervisorPath = canonicalSupervisorPath();
   const plan = windowsSupervisorLaunchPlan(realpathSync(process.execPath), supervisorPath);
   const launchRecord = windowsSupervisorLaunchRecord(canonicalCommand, args, canonicalCwd, options.env);
@@ -770,7 +833,13 @@ export async function spawnProcessTree(command: string, args: readonly string[],
   if (!await waitSpawn(supervisor, timing.verifyMs) || !positivePid(supervisor.pid)) { try { supervisor.kill("SIGKILL"); } catch {} throw new Error("Windows inert supervisor failed to start: pid-invalid"); }
   const rootPid = supervisor.pid;
   const guard = startWindowsJobGuard(rootPid, timing);
-  if (guard === undefined || !await guard.ready) { try { supervisor.kill("SIGKILL"); } catch {} throw new Error("Windows Job Object holder refused containment: ready-timeout"); }
+  if (guard === undefined || !await guard.ready) {
+    try { supervisor.kill("SIGKILL"); } catch {}
+    // #428: name the phase that stalled. The trailing ": ready-timeout" token stays
+    // exactly where windowsRefusalReasonFromMessage() reads it.
+    const stall = guard?.stall();
+    throw new Error(`Windows Job Object holder refused containment${stall === undefined ? "" : ` (${stall})`}: ready-timeout`);
+  }
   const supervisorStdio = supervisor.stdio as unknown as Array<NodeJS.ReadableStream | NodeJS.WritableStream | null>;
   const launchPipe = supervisorStdio[4] as NodeJS.WritableStream | null;
   const controlPipe = supervisorStdio[5] as NodeJS.WritableStream | null;

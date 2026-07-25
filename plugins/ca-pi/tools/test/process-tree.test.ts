@@ -8,6 +8,7 @@ import { describe, expect, test, vi } from "vitest";
 import {
   PROCESS_TREE_CLEANUP_REASONS,
   WINDOWS_SUPERVISOR_REFUSAL_REASONS,
+  awaitProgressTokens,
   createProcessTreeCleanup,
   openProcessTree,
   parseWindowsSupervisorStatusLine,
@@ -56,10 +57,31 @@ const PROOF_ATTEMPT_DIAGNOSTIC_MAX_CHARS = 512;
 const WINDOWS_LIVE_PROOF_TEST_TIMEOUT_MS = 60_000;
 
 function isWindowsJobAttachRefusal(error: unknown): error is Error {
-  return error instanceof Error && (
-    error.message === WINDOWS_JOB_ATTACH_REFUSAL
-    || error.message.startsWith(`${WINDOWS_JOB_ATTACH_REFUSAL}:`)
-  );
+  // Issue #428 widened the refusal message with a parenthesised stall phase
+  // ("... refused containment (stalled at ATTACHED after 30000ms): ready-timeout"),
+  // so the prefix - not the prefix-plus-colon - is what identifies the refusal.
+  return error instanceof Error && error.message.startsWith(WINDOWS_JOB_ATTACH_REFUSAL);
+}
+
+/**
+ * A deterministic Job-holder handshake: each entry is how long the helper takes
+ * to emit its next protocol line, driving a fake clock so a "slow" runner costs
+ * the test nothing in real time.
+ */
+function scriptedHandshake(script: readonly Readonly<{ afterMs: number; line?: string }>[]) {
+  const clock = { value: 0 };
+  let index = 0;
+  const readLine = async (timeoutMs: number): Promise<string | undefined> => {
+    const step = script[index];
+    index += 1;
+    if (step === undefined || step.afterMs > timeoutMs) {
+      clock.value += timeoutMs;
+      return undefined;
+    }
+    clock.value += step.afterMs;
+    return step.line;
+  };
+  return { clock, readLine, now: () => clock.value };
 }
 
 function boundedProofAttemptDiagnostic(attempt: number, error: unknown): string {
@@ -172,6 +194,10 @@ describe("process-tree cleanup", () => {
     const source = Buffer.from(argv.args.at(-1)!, "base64").toString("utf16le");
     expect(source).toContain("JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE");
     expect(source).toContain("AssignProcessToJobObject");
+    // #428: the helper announces its host start BEFORE the Add-Type compile, so the
+    // two cold costs are separately observable phases rather than one opaque wait.
+    expect(source).toContain("STARTING");
+    expect(source.indexOf("STARTING")).toBeLessThan(source.indexOf("Add-Type"));
     expect(source).toContain("ATTACHED");
     expect(source).toContain("WATCHING");
     expect(source).toContain("WaitForMultipleObjects");
@@ -185,11 +211,78 @@ describe("process-tree cleanup", () => {
     }
   });
 
-  test("reserves a bounded fifteen-second cold admission budget before any Windows child starts", () => {
+  // Issue #428, AC-1/AC-3. Cold Windows admission pays two independent costs before
+  // the Job holder can report ATTACHED - PowerShell host start, then the one-time
+  // Add-Type C# compile of the constant helper - and the pre-#428 code covered BOTH
+  // with a single flat 15 s window, which blew twice under runner contention on
+  // 2026-07-24. The budget is now a NO-PROGRESS budget per observable phase plus a
+  // hard absolute ceiling, so a slow-but-advancing helper is admitted while a silent
+  // one still fails closed. Measured phase costs on an idle Windows 11 dev box over
+  // 6 runs: host start 107-127 ms, Add-Type compile 101-158 ms. 15 s per phase is
+  // ~100x the slower of the two, and 30 s bounds the whole handshake.
+  test("bounds Windows Job-holder admission by observable progress rather than one flat window", () => {
     const source = readFileSync(new URL("../src/process-tree.ts", import.meta.url), "utf8");
-    expect(source).toContain("const WINDOWS_JOB_READY_MS = 15_000;");
-    expect(source).toContain("normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS })");
-    expect(source).toContain("Math.min(WINDOWS_JOB_READY_MS, timing.verifyMs)");
+    expect(source).toContain("const WINDOWS_JOB_READY_IDLE_MS = 15_000;");
+    expect(source).toContain("const WINDOWS_JOB_READY_CEILING_MS = 30_000;");
+    expect(source).toContain("normalizedTiming({ verifyMs: WINDOWS_JOB_READY_IDLE_MS })");
+    expect(source).toContain("awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS");
+    expect(source).not.toContain("const WINDOWS_JOB_READY_MS");
+  });
+
+  // AC-2 of #428 for the containment path: a deliberately slowed handshake is
+  // admitted, and a genuinely silent one still fails inside a bounded window with
+  // the stalled phase named. Both are driven off a fake clock, so proving a 25 s
+  // "slow runner" costs the suite no real time at all.
+  test("admits a handshake slower than one flat window while every phase keeps advancing", async () => {
+    const handshake = scriptedHandshake([
+      { afterMs: 12_000, line: "STARTING" },
+      { afterMs: 13_000, line: "ATTACHED" },
+    ]);
+    await expect(awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], {
+      idleMs: 15_000, ceilingMs: 30_000, now: handshake.now,
+    })).resolves.toEqual({ state: "ready" });
+    // 25 s total - the pre-#428 single 15 s window would have refused this.
+    expect(handshake.clock.value).toBe(25_000);
+  });
+
+  test.each([
+    ["a helper that never starts", [] as const, "STARTING", 15_000, 15_000],
+    ["a helper that starts and then goes silent", [{ afterMs: 900, line: "STARTING" }] as const, "ATTACHED", 15_000, 15_900],
+    ["a helper that emits the wrong token", [{ afterMs: 20, line: "REFUSED" }] as const, "STARTING", 20, 20],
+  ])("stalls on %s with the phase and wait named", async (_name, script, phase, waitedMs, totalMs) => {
+    const handshake = scriptedHandshake(script);
+    await expect(awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], {
+      idleMs: 15_000, ceilingMs: 30_000, now: handshake.now,
+    })).resolves.toEqual({ state: "stalled", phase, waitedMs });
+    expect(handshake.clock.value).toBe(totalMs);
+  });
+
+  test("never waits past its absolute ceiling even while progress keeps arriving", async () => {
+    const handshake = scriptedHandshake([
+      { afterMs: 15_000, line: "STARTING" },
+      { afterMs: 15_000, line: "ATTACHED" },
+    ]);
+    await expect(awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], {
+      idleMs: 15_000, ceilingMs: 20_000, now: handshake.now,
+    })).resolves.toEqual({ state: "stalled", phase: "ATTACHED", waitedMs: 5_000 });
+    expect(handshake.clock.value).toBe(20_000);
+  });
+
+  test("refuses an unusable progress budget instead of waiting unbounded", async () => {
+    for (const options of [
+      { idleMs: 0, ceilingMs: 30_000 },
+      { idleMs: 15_000, ceilingMs: 0 },
+      { idleMs: 40_000, ceilingMs: 30_000 },
+    ]) {
+      await expect(awaitProgressTokens(async () => undefined, ["STARTING"], options)).rejects.toThrow("bounded");
+    }
+  });
+
+  test("a stalled Job-holder refusal names its phase and keeps a machine-readable reason", () => {
+    const message = `${WINDOWS_JOB_ATTACH_REFUSAL} (stalled at ATTACHED after 30000ms): ready-timeout`;
+    expect(isWindowsJobAttachRefusal(new Error(message))).toBe(true);
+    expect(windowsRefusalReasonFromMessage(message)).toBe("ready-timeout");
+    expect(isWindowsJobAttachRefusal(new Error("Windows contained Pi launch was refused: ready-timeout"))).toBe(false);
   });
 
   test("orders canonical PowerShell 7 before the stock Windows fallback without PATH lookup", () => {
