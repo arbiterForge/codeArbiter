@@ -1,5 +1,5 @@
 /** child-env.ts - codeArbiter's explicit minimal Pi child environment. */
-import { mkdir, mkdtemp, open, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, open, rm } from "node:fs/promises";
 import type { RmOptions } from "node:fs";
 import type { FileHandle } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -48,6 +48,17 @@ const PURE_ENV_REFERENCE = /^\$(?:\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z_][A-Za-z0-9
 const PROJECTED_HEADER_NAME = /^[A-Za-z0-9_-]{1,128}$/u;
 const RESERVED_OBJECT_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
+/** A projected endpoint is accepted POSITIVELY, never by blocklisting the parameter names that
+ * carry credentials (`api-key`, `key`, `token`, `sig`, … is an unbounded list). An endpoint is
+ * an `http`/`https` scheme, a host, an optional port, and a short lowercase route — nothing
+ * else. Query and fragment are refused outright because a provider endpoint needs neither: Pi's
+ * own Azure provider carries `api-version` in `AZURE_OPENAI_API_VERSION`, not in `baseUrl`. */
+const ENDPOINT_PROTOCOLS = new Set(["http:", "https:"]);
+const ENDPOINT_PATH_SEGMENT = /^[a-z0-9]+(?:[._-][a-z0-9]+)*$/u;
+const MAX_ENDPOINT_BYTES = 512;
+const MAX_ENDPOINT_PATH_SEGMENTS = 8;
+const MAX_ENDPOINT_PATH_SEGMENT_BYTES = 32;
+
 /** Pi 0.80.10's models.json provider schema (`dist/core/model-config.js`). Pinned deliberately:
  * a key outside this reviewed set cannot be shown non-secret, so it fails the launch closed
  * rather than riding along. Widening it is a reviewed change, not an edit of convenience. */
@@ -61,6 +72,98 @@ const PROJECTED_MODEL_KEYS: readonly string[] = [
 const PROJECTED_MODEL_OVERRIDE_KEYS: readonly string[] = [
   "name", "reasoning", "thinkingLevelMap", "input", "cost", "contextWindow", "maxTokens", "headers", "compat",
 ];
+
+/** Key NAMES alone are not a pin. Pi types every one of these VALUES too — `oauth` is
+ * `Type.Literal("radius")`, `authHeader` is `Type.Boolean()` — and a record that satisfies the
+ * name allowlist but not the value type used to project successfully and then die mutely inside
+ * Pi's own `validateModelsConfig`. The projection is the fail-closed boundary, so it pins the
+ * value shapes here. Where Pi's `Type.Object` tolerates unknown members (its compat union does),
+ * this table is deliberately STRICTER: an unreviewed member refuses instead of riding along. */
+type ShapeCheck = (value: unknown) => boolean;
+
+const isBoolean: ShapeCheck = (value) => typeof value === "boolean";
+const isFiniteNumber: ShapeCheck = (value) => typeof value === "number" && Number.isFinite(value);
+const isNonEmptyText: ShapeCheck = (value) => typeof value === "string" && value !== "" && structuralOnly(value);
+const isLiteral = (...allowed: readonly string[]): ShapeCheck =>
+  (value) => typeof value === "string" && allowed.includes(value);
+
+function shapedRecord(members: Readonly<Record<string, ShapeCheck>>, maxEntries = MAX_PROJECTED_KEYS): ShapeCheck {
+  return (value) => {
+    if (!plainRecord(value)) return false;
+    const keys = Object.keys(value);
+    return keys.length <= maxEntries && keys.every((key) =>
+      !RESERVED_OBJECT_KEYS.has(key)
+      && Object.prototype.hasOwnProperty.call(members, key)
+      && members[key]!(value[key]));
+  };
+}
+
+function shapedArray(item: ShapeCheck, maxEntries = MAX_PROJECTED_ENTRIES): ShapeCheck {
+  return (value) => Array.isArray(value) && value.length <= maxEntries && value.every(item);
+}
+
+const isThinkingLevel: ShapeCheck = (value) => value === null || isNonEmptyText(value);
+const isThinkingLevelMap = shapedRecord({
+  off: isThinkingLevel, minimal: isThinkingLevel, low: isThinkingLevel, medium: isThinkingLevel,
+  high: isThinkingLevel, xhigh: isThinkingLevel, max: isThinkingLevel,
+});
+const isModelInput = shapedArray(isLiteral("text", "image"), 8);
+const COST_RATES = { input: isFiniteNumber, output: isFiniteNumber, cacheRead: isFiniteNumber, cacheWrite: isFiniteNumber };
+const isCostTier = shapedRecord({ inputTokensAbove: isFiniteNumber, ...COST_RATES });
+const isModelCost = shapedRecord({ ...COST_RATES, tiers: shapedArray(isCostTier, 32) });
+/** Pi's `compat` is a union of three `Type.Object`s that each tolerate unknown members; this is
+ * their exact declared union, and it is deliberately STRICTER than Pi (an unreviewed member
+ * refuses). Three members are composite objects whose interiors Pi itself leaves open-ended
+ * (`Type.Record(Type.String(), …)`, a free-string `sort`, a number-or-string `max_price`), so
+ * the member NAME is pinned and its interior keeps the bounded structural check — depth, node,
+ * key, and byte caps, reserved keys rejected, and every Pi `!command` form refused. */
+const isBoundedStructure: ShapeCheck = (value) => plainRecord(value) && structuralOnly(value);
+const isProviderCompat = shapedRecord({
+  supportsStore: isBoolean,
+  supportsDeveloperRole: isBoolean,
+  supportsReasoningEffort: isBoolean,
+  supportsUsageInStreaming: isBoolean,
+  maxTokensField: isLiteral("max_completion_tokens", "max_tokens"),
+  requiresToolResultName: isBoolean,
+  requiresAssistantAfterToolResult: isBoolean,
+  requiresThinkingAsText: isBoolean,
+  requiresReasoningContentOnAssistantMessages: isBoolean,
+  thinkingFormat: isLiteral(
+    "openai", "openrouter", "together", "deepseek", "zai", "qwen",
+    "chat-template", "qwen-chat-template", "string-thinking", "ant-ling",
+  ),
+  chatTemplateKwargs: isBoundedStructure,
+  cacheControlFormat: isLiteral("anthropic"),
+  openRouterRouting: isBoundedStructure,
+  vercelGatewayRouting: isBoundedStructure,
+  supportsStrictMode: isBoolean,
+  sendSessionAffinityHeaders: isBoolean,
+  deferredToolsMode: isLiteral("kimi"),
+  sessionAffinityFormat: isLiteral("openai", "openai-nosession", "openrouter"),
+  supportsLongCacheRetention: isBoolean,
+  supportsToolSearch: isBoolean,
+  supportsEagerToolInputStreaming: isBoolean,
+  supportsCacheControlOnTools: isBoolean,
+  forceAdaptiveThinking: isBoolean,
+  supportsToolReferences: isBoolean,
+});
+
+/** Value shapes for every key NOT handled by a dedicated projector (`baseUrl`, `apiKey`,
+ * `headers`, `models`, `modelOverrides` each have one). */
+const PROJECTED_PROVIDER_SHAPES: Readonly<Record<string, ShapeCheck>> = {
+  name: isNonEmptyText, api: isNonEmptyText, oauth: isLiteral("radius"),
+  compat: isProviderCompat, authHeader: isBoolean,
+};
+const PROJECTED_MODEL_SHAPES: Readonly<Record<string, ShapeCheck>> = {
+  id: isNonEmptyText, name: isNonEmptyText, api: isNonEmptyText, reasoning: isBoolean,
+  thinkingLevelMap: isThinkingLevelMap, input: isModelInput, cost: isModelCost,
+  contextWindow: isFiniteNumber, maxTokens: isFiniteNumber, compat: isProviderCompat,
+};
+const PROJECTED_MODEL_OVERRIDE_SHAPES: Readonly<Record<string, ShapeCheck>> = {
+  name: isNonEmptyText, reasoning: isBoolean, thinkingLevelMap: isThinkingLevelMap,
+  input: isModelInput, cost: isModelCost, contextWindow: isFiniteNumber, maxTokens: isFiniteNumber,
+  compat: isProviderCompat,
+};
 
 /** A fixed, value-free refusal. It never carries a configuration value, credential material,
  * or a filesystem path, so it cannot reveal operator layout; the runner maps it to one
@@ -104,14 +207,44 @@ function structuralOnly(value: unknown, depth = 0, budget = { nodes: 0 }): boole
       && structuralOnly(value[key], depth + 1, budget));
 }
 
-/** A `baseUrl` is otherwise structural, but a URL may embed userinfo
- * (`https://operator:pw@gateway/v1`) — credential material wearing an endpoint's clothes. The
- * endpoint crosses; an embedded credential never does. A value that is not a parseable absolute
- * URL is refused rather than guessed at, since Pi hands it straight to `fetch`. */
-function endpointOnlyValue(value: unknown): string {
+/** A `baseUrl` is otherwise structural, but every part of a URL can carry credential material,
+ * not just its userinfo: `?api-key=` (Azure), `?key=` (Google), `#sk-…`, and `/keys/sk-…` are
+ * all endpoint-shaped secrets, and the query-parameter names that carry keys are an unbounded
+ * list. Acceptance is therefore POSITIVE — a value crosses only when it is provably nothing but
+ * an endpoint:
+ *   - a parseable absolute URL (a value that is not one is refused, never guessed at, since Pi
+ *     hands it straight to `fetch`);
+ *   - an `http`/`https` scheme;
+ *   - no userinfo (`https://operator:pw@gateway/v1` is credential material wearing an endpoint's
+ *     clothes);
+ *   - no query and no fragment at all — a provider endpoint needs neither, and Pi's own Azure
+ *     provider takes `api-version` from `AZURE_OPENAI_API_VERSION`;
+ *   - a bounded route whose segments are short, lowercase, unencoded identifiers (`/v1`,
+ *     `/openai/deployments/gpt-4o`, `/api/paas/v4`) — deliberately narrower than what Pi accepts,
+ *     so an unusual path fails the launch CLOSED rather than projecting material we cannot show
+ *     to be credential-free.
+ *
+ * Residual, stated rather than assumed away: a route can be short and lowercase and still be
+ * secret-bearing. That is why the accepted value is ALSO registered in the child's sensitive-value
+ * set and retained behind a scrub handle (see `prepareChildEnvironment`) — the two controls that
+ * previously assumed the projection held no secret are no longer blind to it. */
+function endpointOnlyValue(value: unknown, endpoints: Set<string>): string {
   if (typeof value !== "string" || !structuralOnly(value)) refuseProjection();
+  if (Buffer.byteLength(value, "utf8") > MAX_ENDPOINT_BYTES) refuseProjection();
+  // Checked on the RAW value as well as the parsed URL: `https://host/v1?` and `https://host/v1#`
+  // parse to an empty search/hash yet still hand a delimiter to Pi's `fetch`.
+  if (value.includes("?") || value.includes("#")) refuseProjection();
   const endpoint = parsedEndpoint(value);
+  if (!ENDPOINT_PROTOCOLS.has(endpoint.protocol)) refuseProjection();
   if (endpoint.username !== "" || endpoint.password !== "") refuseProjection();
+  if (endpoint.search !== "" || endpoint.hash !== "") refuseProjection();
+  const segments = endpoint.pathname.split("/").filter((segment) => segment !== "");
+  if (segments.length > MAX_ENDPOINT_PATH_SEGMENTS) refuseProjection();
+  for (const segment of segments) {
+    if (Buffer.byteLength(segment, "utf8") > MAX_ENDPOINT_PATH_SEGMENT_BYTES) refuseProjection();
+    if (!ENDPOINT_PATH_SEGMENT.test(segment)) refuseProjection();
+  }
+  endpoints.add(value);
   return value;
 }
 
@@ -131,36 +264,44 @@ function sanitizedHeaderMap(value: unknown): Record<string, string> {
   if (entries.length > MAX_PROJECTED_HEADERS) refuseProjection();
   const headers = Object.create(null) as Record<string, string>;
   for (const [name, raw] of entries) {
-    if (!PROJECTED_HEADER_NAME.test(name)) refuseProjection();
+    // The reserved-key rule applies HERE too. `PROJECTED_HEADER_NAME` admits `__proto__`,
+    // `constructor`, and `prototype`, and this was the module's only place that skipped the
+    // guard every other projected record applies.
+    if (RESERVED_OBJECT_KEYS.has(name) || !PROJECTED_HEADER_NAME.test(name)) refuseProjection();
     headers[name] = templateOnlyValue(raw);
   }
   return headers;
 }
 
-function projectedModelRecord(value: unknown, allowed: readonly string[]): Record<string, unknown> {
+function projectedModelRecord(
+  value: unknown,
+  allowed: readonly string[],
+  shapes: Readonly<Record<string, ShapeCheck>>,
+  endpoints: Set<string>,
+): Record<string, unknown> {
   if (!plainRecord(value)) refuseProjection();
   const record = Object.create(null) as Record<string, unknown>;
   for (const [key, raw] of Object.entries(value)) {
     if (!allowed.includes(key)) refuseProjection();
     if (key === "headers") { record[key] = sanitizedHeaderMap(raw); continue; }
-    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw); continue; }
-    if (!structuralOnly(raw)) refuseProjection();
+    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw, endpoints); continue; }
+    if (!Object.prototype.hasOwnProperty.call(shapes, key) || !shapes[key]!(raw)) refuseProjection();
     record[key] = raw;
   }
   return record;
 }
 
-function projectedProviderRecord(value: unknown): Record<string, unknown> {
+function projectedProviderRecord(value: unknown, endpoints: Set<string>): Record<string, unknown> {
   if (!plainRecord(value)) refuseProjection();
   const record = Object.create(null) as Record<string, unknown>;
   for (const [key, raw] of Object.entries(value)) {
     if (!PROJECTED_PROVIDER_KEYS.includes(key)) refuseProjection();
     if (key === "apiKey") { record[key] = templateOnlyValue(raw); continue; }
     if (key === "headers") { record[key] = sanitizedHeaderMap(raw); continue; }
-    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw); continue; }
+    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw, endpoints); continue; }
     if (key === "models") {
       if (!Array.isArray(raw) || raw.length > MAX_PROJECTED_ENTRIES) refuseProjection();
-      record[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS));
+      record[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS, PROJECTED_MODEL_SHAPES, endpoints));
       continue;
     }
     if (key === "modelOverrides") {
@@ -170,12 +311,12 @@ function projectedProviderRecord(value: unknown): Record<string, unknown> {
       const overrides = Object.create(null) as Record<string, unknown>;
       for (const [id, entry] of entries) {
         if (id === "" || RESERVED_OBJECT_KEYS.has(id) || Buffer.byteLength(id, "utf8") > MAX_PROJECTED_STRING_BYTES) refuseProjection();
-        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS);
+        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS, PROJECTED_MODEL_OVERRIDE_SHAPES, endpoints);
       }
       record[key] = overrides;
       continue;
     }
-    if (!structuralOnly(raw)) refuseProjection();
+    if (!Object.prototype.hasOwnProperty.call(PROJECTED_PROVIDER_SHAPES, key) || !PROJECTED_PROVIDER_SHAPES[key]!(raw)) refuseProjection();
     record[key] = raw;
   }
   return record;
@@ -385,6 +526,14 @@ async function selectedStoredCredential(
   }
 }
 
+interface ProjectedProviderConfig {
+  record: Record<string, unknown>;
+  /** Every endpoint the projection accepted. Bounded and structural, but not PROVABLY
+   * credential-free, so the caller registers them in the child's sensitive-value set rather
+   * than assuming their innocence. */
+  endpoints: readonly string[];
+}
+
 /** Read the operator's canonical models.json and return ONLY the exactly-selected provider's
  * record, credential-blind. `undefined` means there is simply nothing to project — no store,
  * no `providers`, or the selected provider is one of Pi's built-ins — which is the operator's
@@ -393,7 +542,7 @@ async function selectedStoredCredential(
 async function selectedProviderConfig(
   input: Omit<ChildEnvInput, "isolationRoot">,
   modelsIo: ChildEnvironmentAuthIo,
-): Promise<Record<string, unknown> | undefined> {
+): Promise<ProjectedProviderConfig | undefined> {
   const agentDir = operatorAgentDir(input);
   if (agentDir === undefined) return undefined;
   const handle = await modelsIo.open(join(agentDir, "models.json"), "r").catch((error: unknown) => {
@@ -414,7 +563,9 @@ async function selectedProviderConfig(
     if (providers === undefined) return undefined;
     if (!plainRecord(providers)) refuseProjection();
     if (!Object.prototype.hasOwnProperty.call(providers, input.provider)) return undefined;
-    return projectedProviderRecord(providers[input.provider]);
+    const endpoints = new Set<string>();
+    const record = projectedProviderRecord(providers[input.provider], endpoints);
+    return { record, endpoints: [...endpoints] };
   } finally {
     await handle.close().catch(() => undefined);
   }
@@ -429,7 +580,9 @@ export async function prepareChildEnvironment(
   const isolationRoot = await mkdtemp(join(tmpdir(), "codearbiter-pi-child-"));
   const env = buildChildEnv({ ...input, isolationRoot });
   const authPath = join(env.PI_CODING_AGENT_DIR!, "auth.json");
+  const configPath = join(env.PI_CODING_AGENT_DIR!, "models.json");
   let credentialHandle: FileHandle | undefined;
+  let configHandle: FileHandle | undefined;
   const sensitiveValues = new Set<string>();
   for (const name of PI_PROVIDER_ENV[input.provider] ?? []) {
     const value = env[name];
@@ -439,18 +592,31 @@ export async function prepareChildEnvironment(
     for (const value of sensitiveValues) if (text.includes(value)) return true;
     return false;
   };
-  const cleanup = async (): Promise<void> => {
-    let credentialRemoved = credentialHandle === undefined;
-    if (credentialHandle !== undefined) {
-      const handle = credentialHandle;
-      credentialHandle = undefined;
-      try {
-        await handle.truncate(0);
-        credentialRemoved = true;
-      } catch { /* caller receives a fixed degraded result */ }
+  // Path-safe scrub of a file this process created and still holds open: truncating through the
+  // retained handle cannot be redirected by a symlink swap at the path.
+  const scrubRetainedFile = async (handle: FileHandle | undefined): Promise<boolean> => {
+    if (handle === undefined) return true;
+    try {
+      await handle.truncate(0);
+      return true;
+    } catch {
+      return false; /* caller receives a fixed degraded result */
+    } finally {
       await handle.close().catch(() => undefined);
     }
+  };
+  const cleanup = async (): Promise<void> => {
+    const credential = credentialHandle;
+    const config = configHandle;
+    credentialHandle = undefined;
+    configHandle = undefined;
+    // The projected models.json is scrubbed on exactly the same footing as auth.json. It is
+    // credential-BLIND by construction, not provably credential-FREE, so leaving it behind on
+    // the removal-failure path while auth.json is truncated would be an unstated residual.
+    const credentialRemoved = await scrubRetainedFile(credential);
+    const configRemoved = await scrubRetainedFile(config);
     await cleanupIo.remove(authPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => undefined);
+    await cleanupIo.remove(configPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => undefined);
     let isolationRemoved = true;
     try {
       await cleanupIo.remove(isolationRoot, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
@@ -459,7 +625,7 @@ export async function prepareChildEnvironment(
     }
     // Never report cleanup success when an unverified replacement file or any
     // other child-created credential state may still exist under the root.
-    if (!credentialRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
+    if (!credentialRemoved || !configRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
   };
 
   try {
@@ -476,12 +642,16 @@ export async function prepareChildEnvironment(
     const providerConfig = await selectedProviderConfig(input, modelsIo);
     if (providerConfig !== undefined) {
       const providers = Object.create(null) as Record<string, unknown>;
-      providers[input.provider] = providerConfig;
+      providers[input.provider] = providerConfig.record;
       const document = JSON.stringify({ providers });
       if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
-      await writeFile(join(env.PI_CODING_AGENT_DIR!, "models.json"), document + "\n", {
-        encoding: "utf8", mode: 0o600, flag: "wx",
-      });
+      // Endpoints are bounded and structural but not provably credential-free, so they join the
+      // scrub set that suppresses a child echoing them back into its final assistant message.
+      // Without this, `containsSensitiveValue` was blind to every value the config projection
+      // put on the wire.
+      for (const endpoint of providerConfig.endpoints) sensitiveValues.add(endpoint);
+      configHandle = await open(configPath, "wx", 0o600);
+      await configHandle.writeFile(document + "\n", { encoding: "utf8" });
     }
     const credential = await selectedStoredCredential(input, authIo);
     if (credential !== undefined) {

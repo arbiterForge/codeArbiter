@@ -466,6 +466,43 @@ describe("Task 6 exact Pi child launch", () => {
     expect(serialized).not.toContain(operatorAgent);
   });
 
+  // Review finding (MEDIUM): environment cleanup was threaded manually through every return, so
+  // an unexpected throw anywhere between a successful prepare and the final return escaped
+  // runPiChild and stranded the private isolation root — with the operator's real auth.json in
+  // cleartext — on disk permanently. A try/finally makes the class unreachable by construction
+  // instead of by audit of every return path.
+  test("removes the private isolation root when the launch throws after the environment is prepared", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const request = await materializedRequest();
+    const operatorHome = resolve(dirname(request.cwd), "throwing-operator-home");
+    const operatorAgent = resolve(operatorHome, ".pi", "agent");
+    const operatorAuth = { openai: { type: "api_key", key: "stranded-root-file-secret" } };
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify(operatorAuth), "utf8");
+    request.parentEnv.HOME = operatorHome;
+    request.parentEnv.USERPROFILE = operatorHome;
+    request.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
+
+    const child = new FakeChild();
+    let childAgentDir: string | undefined;
+    let isolationRoot: string | undefined;
+    runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+      const env = options.env as NodeJS.ProcessEnv;
+      childAgentDir = env.PI_CODING_AGENT_DIR!;
+      isolationRoot = dirname(env.HOME!);
+      return child;
+    });
+    runnerMocks.cleanupReady.mockRejectedValue(new Error("unexpected containment readiness failure"));
+
+    await expect(runPiChild(request as never, new AbortController().signal))
+      .rejects.toThrow("unexpected containment readiness failure");
+
+    expect(childAgentDir).toBeDefined();
+    expect(existsSync(childAgentDir!)).toBe(false);
+    expect(existsSync(isolationRoot!)).toBe(false);
+    expect(JSON.parse(await readFile(resolve(operatorAgent, "auth.json"), "utf8"))).toEqual(operatorAuth);
+  });
+
   test("spawns exact Node and withholds the task until a correlated handshake success", async () => {
     const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
     const child = new FakeChild();

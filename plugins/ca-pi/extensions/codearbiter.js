@@ -6028,7 +6028,7 @@ import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath as fileURLToPath4 } from "node:url";
 
 // src/child-env.ts
-import { mkdir, mkdtemp, open as open3, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, open as open3, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute as isAbsolute7, join } from "node:path";
 var WINDOWS_BASELINE = [
@@ -6060,6 +6060,11 @@ var MAX_PROJECTED_NODES = 4096;
 var PURE_ENV_REFERENCE = /^\$(?:\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z_][A-Za-z0-9_]*)$/u;
 var PROJECTED_HEADER_NAME = /^[A-Za-z0-9_-]{1,128}$/u;
 var RESERVED_OBJECT_KEYS = /* @__PURE__ */ new Set(["__proto__", "constructor", "prototype"]);
+var ENDPOINT_PROTOCOLS = /* @__PURE__ */ new Set(["http:", "https:"]);
+var ENDPOINT_PATH_SEGMENT = /^[a-z0-9]+(?:[._-][a-z0-9]+)*$/u;
+var MAX_ENDPOINT_BYTES = 512;
+var MAX_ENDPOINT_PATH_SEGMENTS = 8;
+var MAX_ENDPOINT_PATH_SEGMENT_BYTES = 32;
 var PROJECTED_PROVIDER_KEYS = [
   "name",
   "baseUrl",
@@ -6097,6 +6102,101 @@ var PROJECTED_MODEL_OVERRIDE_KEYS = [
   "headers",
   "compat"
 ];
+var isBoolean = (value) => typeof value === "boolean";
+var isFiniteNumber = (value) => typeof value === "number" && Number.isFinite(value);
+var isNonEmptyText = (value) => typeof value === "string" && value !== "" && structuralOnly(value);
+var isLiteral = (...allowed) => (value) => typeof value === "string" && allowed.includes(value);
+function shapedRecord(members, maxEntries = MAX_PROJECTED_KEYS) {
+  return (value) => {
+    if (!plainRecord(value)) return false;
+    const keys = Object.keys(value);
+    return keys.length <= maxEntries && keys.every((key) => !RESERVED_OBJECT_KEYS.has(key) && Object.prototype.hasOwnProperty.call(members, key) && members[key](value[key]));
+  };
+}
+function shapedArray(item, maxEntries = MAX_PROJECTED_ENTRIES) {
+  return (value) => Array.isArray(value) && value.length <= maxEntries && value.every(item);
+}
+var isThinkingLevel = (value) => value === null || isNonEmptyText(value);
+var isThinkingLevelMap = shapedRecord({
+  off: isThinkingLevel,
+  minimal: isThinkingLevel,
+  low: isThinkingLevel,
+  medium: isThinkingLevel,
+  high: isThinkingLevel,
+  xhigh: isThinkingLevel,
+  max: isThinkingLevel
+});
+var isModelInput = shapedArray(isLiteral("text", "image"), 8);
+var COST_RATES = { input: isFiniteNumber, output: isFiniteNumber, cacheRead: isFiniteNumber, cacheWrite: isFiniteNumber };
+var isCostTier = shapedRecord({ inputTokensAbove: isFiniteNumber, ...COST_RATES });
+var isModelCost = shapedRecord({ ...COST_RATES, tiers: shapedArray(isCostTier, 32) });
+var isBoundedStructure = (value) => plainRecord(value) && structuralOnly(value);
+var isProviderCompat = shapedRecord({
+  supportsStore: isBoolean,
+  supportsDeveloperRole: isBoolean,
+  supportsReasoningEffort: isBoolean,
+  supportsUsageInStreaming: isBoolean,
+  maxTokensField: isLiteral("max_completion_tokens", "max_tokens"),
+  requiresToolResultName: isBoolean,
+  requiresAssistantAfterToolResult: isBoolean,
+  requiresThinkingAsText: isBoolean,
+  requiresReasoningContentOnAssistantMessages: isBoolean,
+  thinkingFormat: isLiteral(
+    "openai",
+    "openrouter",
+    "together",
+    "deepseek",
+    "zai",
+    "qwen",
+    "chat-template",
+    "qwen-chat-template",
+    "string-thinking",
+    "ant-ling"
+  ),
+  chatTemplateKwargs: isBoundedStructure,
+  cacheControlFormat: isLiteral("anthropic"),
+  openRouterRouting: isBoundedStructure,
+  vercelGatewayRouting: isBoundedStructure,
+  supportsStrictMode: isBoolean,
+  sendSessionAffinityHeaders: isBoolean,
+  deferredToolsMode: isLiteral("kimi"),
+  sessionAffinityFormat: isLiteral("openai", "openai-nosession", "openrouter"),
+  supportsLongCacheRetention: isBoolean,
+  supportsToolSearch: isBoolean,
+  supportsEagerToolInputStreaming: isBoolean,
+  supportsCacheControlOnTools: isBoolean,
+  forceAdaptiveThinking: isBoolean,
+  supportsToolReferences: isBoolean
+});
+var PROJECTED_PROVIDER_SHAPES = {
+  name: isNonEmptyText,
+  api: isNonEmptyText,
+  oauth: isLiteral("radius"),
+  compat: isProviderCompat,
+  authHeader: isBoolean
+};
+var PROJECTED_MODEL_SHAPES = {
+  id: isNonEmptyText,
+  name: isNonEmptyText,
+  api: isNonEmptyText,
+  reasoning: isBoolean,
+  thinkingLevelMap: isThinkingLevelMap,
+  input: isModelInput,
+  cost: isModelCost,
+  contextWindow: isFiniteNumber,
+  maxTokens: isFiniteNumber,
+  compat: isProviderCompat
+};
+var PROJECTED_MODEL_OVERRIDE_SHAPES = {
+  name: isNonEmptyText,
+  reasoning: isBoolean,
+  thinkingLevelMap: isThinkingLevelMap,
+  input: isModelInput,
+  cost: isModelCost,
+  contextWindow: isFiniteNumber,
+  maxTokens: isFiniteNumber,
+  compat: isProviderCompat
+};
 var ChildConfigProjectionError = class extends Error {
   constructor() {
     super("Pi child configuration projection refused.");
@@ -6126,10 +6226,21 @@ function structuralOnly(value, depth = 0, budget = { nodes: 0 }) {
   const keys = Object.keys(value);
   return keys.length <= MAX_PROJECTED_KEYS && keys.every((key) => !RESERVED_OBJECT_KEYS.has(key) && Buffer.byteLength(key, "utf8") <= MAX_PROJECTED_STRING_BYTES && structuralOnly(value[key], depth + 1, budget));
 }
-function endpointOnlyValue(value) {
+function endpointOnlyValue(value, endpoints) {
   if (typeof value !== "string" || !structuralOnly(value)) refuseProjection();
+  if (Buffer.byteLength(value, "utf8") > MAX_ENDPOINT_BYTES) refuseProjection();
+  if (value.includes("?") || value.includes("#")) refuseProjection();
   const endpoint = parsedEndpoint(value);
+  if (!ENDPOINT_PROTOCOLS.has(endpoint.protocol)) refuseProjection();
   if (endpoint.username !== "" || endpoint.password !== "") refuseProjection();
+  if (endpoint.search !== "" || endpoint.hash !== "") refuseProjection();
+  const segments = endpoint.pathname.split("/").filter((segment) => segment !== "");
+  if (segments.length > MAX_ENDPOINT_PATH_SEGMENTS) refuseProjection();
+  for (const segment of segments) {
+    if (Buffer.byteLength(segment, "utf8") > MAX_ENDPOINT_PATH_SEGMENT_BYTES) refuseProjection();
+    if (!ENDPOINT_PATH_SEGMENT.test(segment)) refuseProjection();
+  }
+  endpoints.add(value);
   return value;
 }
 function parsedEndpoint(value) {
@@ -6149,12 +6260,12 @@ function sanitizedHeaderMap(value) {
   if (entries.length > MAX_PROJECTED_HEADERS) refuseProjection();
   const headers = /* @__PURE__ */ Object.create(null);
   for (const [name, raw] of entries) {
-    if (!PROJECTED_HEADER_NAME.test(name)) refuseProjection();
+    if (RESERVED_OBJECT_KEYS.has(name) || !PROJECTED_HEADER_NAME.test(name)) refuseProjection();
     headers[name] = templateOnlyValue(raw);
   }
   return headers;
 }
-function projectedModelRecord(value, allowed) {
+function projectedModelRecord(value, allowed, shapes, endpoints) {
   if (!plainRecord(value)) refuseProjection();
   const record2 = /* @__PURE__ */ Object.create(null);
   for (const [key, raw] of Object.entries(value)) {
@@ -6164,15 +6275,15 @@ function projectedModelRecord(value, allowed) {
       continue;
     }
     if (key === "baseUrl") {
-      record2[key] = endpointOnlyValue(raw);
+      record2[key] = endpointOnlyValue(raw, endpoints);
       continue;
     }
-    if (!structuralOnly(raw)) refuseProjection();
+    if (!Object.prototype.hasOwnProperty.call(shapes, key) || !shapes[key](raw)) refuseProjection();
     record2[key] = raw;
   }
   return record2;
 }
-function projectedProviderRecord(value) {
+function projectedProviderRecord(value, endpoints) {
   if (!plainRecord(value)) refuseProjection();
   const record2 = /* @__PURE__ */ Object.create(null);
   for (const [key, raw] of Object.entries(value)) {
@@ -6186,12 +6297,12 @@ function projectedProviderRecord(value) {
       continue;
     }
     if (key === "baseUrl") {
-      record2[key] = endpointOnlyValue(raw);
+      record2[key] = endpointOnlyValue(raw, endpoints);
       continue;
     }
     if (key === "models") {
       if (!Array.isArray(raw) || raw.length > MAX_PROJECTED_ENTRIES) refuseProjection();
-      record2[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS));
+      record2[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS, PROJECTED_MODEL_SHAPES, endpoints));
       continue;
     }
     if (key === "modelOverrides") {
@@ -6201,12 +6312,12 @@ function projectedProviderRecord(value) {
       const overrides = /* @__PURE__ */ Object.create(null);
       for (const [id, entry] of entries) {
         if (id === "" || RESERVED_OBJECT_KEYS.has(id) || Buffer.byteLength(id, "utf8") > MAX_PROJECTED_STRING_BYTES) refuseProjection();
-        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS);
+        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS, PROJECTED_MODEL_OVERRIDE_SHAPES, endpoints);
       }
       record2[key] = overrides;
       continue;
     }
-    if (!structuralOnly(raw)) refuseProjection();
+    if (!Object.prototype.hasOwnProperty.call(PROJECTED_PROVIDER_SHAPES, key) || !PROJECTED_PROVIDER_SHAPES[key](raw)) refuseProjection();
     record2[key] = raw;
   }
   return record2;
@@ -6368,7 +6479,9 @@ async function selectedProviderConfig(input, modelsIo) {
     if (providers === void 0) return void 0;
     if (!plainRecord(providers)) refuseProjection();
     if (!Object.prototype.hasOwnProperty.call(providers, input.provider)) return void 0;
-    return projectedProviderRecord(providers[input.provider]);
+    const endpoints = /* @__PURE__ */ new Set();
+    const record2 = projectedProviderRecord(providers[input.provider], endpoints);
+    return { record: record2, endpoints: [...endpoints] };
   } finally {
     await handle.close().catch(() => void 0);
   }
@@ -6377,7 +6490,9 @@ async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, au
   const isolationRoot = await mkdtemp(join(tmpdir(), "codearbiter-pi-child-"));
   const env = buildChildEnv({ ...input, isolationRoot });
   const authPath = join(env.PI_CODING_AGENT_DIR, "auth.json");
+  const configPath = join(env.PI_CODING_AGENT_DIR, "models.json");
   let credentialHandle;
+  let configHandle;
   const sensitiveValues = /* @__PURE__ */ new Set();
   for (const name of PI_PROVIDER_ENV[input.provider] ?? []) {
     const value = env[name];
@@ -6387,26 +6502,33 @@ async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, au
     for (const value of sensitiveValues) if (text2.includes(value)) return true;
     return false;
   };
-  const cleanup = async () => {
-    let credentialRemoved = credentialHandle === void 0;
-    if (credentialHandle !== void 0) {
-      const handle = credentialHandle;
-      credentialHandle = void 0;
-      try {
-        await handle.truncate(0);
-        credentialRemoved = true;
-      } catch {
-      }
+  const scrubRetainedFile = async (handle) => {
+    if (handle === void 0) return true;
+    try {
+      await handle.truncate(0);
+      return true;
+    } catch {
+      return false;
+    } finally {
       await handle.close().catch(() => void 0);
     }
+  };
+  const cleanup = async () => {
+    const credential = credentialHandle;
+    const config = configHandle;
+    credentialHandle = void 0;
+    configHandle = void 0;
+    const credentialRemoved = await scrubRetainedFile(credential);
+    const configRemoved = await scrubRetainedFile(config);
     await cleanupIo.remove(authPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => void 0);
+    await cleanupIo.remove(configPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => void 0);
     let isolationRemoved = true;
     try {
       await cleanupIo.remove(isolationRoot, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     } catch {
       isolationRemoved = false;
     }
-    if (!credentialRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
+    if (!credentialRemoved || !configRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
   };
   try {
     await Promise.all([
@@ -6418,14 +6540,12 @@ async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, au
     const providerConfig = await selectedProviderConfig(input, modelsIo);
     if (providerConfig !== void 0) {
       const providers = /* @__PURE__ */ Object.create(null);
-      providers[input.provider] = providerConfig;
+      providers[input.provider] = providerConfig.record;
       const document = JSON.stringify({ providers });
       if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
-      await writeFile(join(env.PI_CODING_AGENT_DIR, "models.json"), document + "\n", {
-        encoding: "utf8",
-        mode: 384,
-        flag: "wx"
-      });
+      for (const endpoint of providerConfig.endpoints) sensitiveValues.add(endpoint);
+      configHandle = await open3(configPath, "wx", 384);
+      await configHandle.writeFile(document + "\n", { encoding: "utf8" });
     }
     const credential = await selectedStoredCredential(input, authIo);
     if (credential !== void 0) {
@@ -6904,247 +7024,255 @@ async function runPiChild(request, signal) {
   } catch (error) {
     return childFailure(error instanceof ChildConfigProjectionError ? "isolation-config" : "isolation-setup");
   }
-  const withEnvironmentCleanup = async (result4) => {
+  let environmentCleanupStarted = false;
+  const cleanupEnvironment = async () => {
+    if (environmentCleanupStarted) return true;
+    environmentCleanupStarted = true;
     try {
       await preparedEnvironment.cleanup();
-      return result4;
+      return true;
     } catch {
-      return childFailure("isolation-cleanup");
+      return false;
     }
   };
-  if (signal.aborted) return await withEnvironmentCleanup(childFailure());
-  let child;
+  const withEnvironmentCleanup = async (result3) => await cleanupEnvironment() ? result3 : childFailure("isolation-cleanup");
   try {
-    child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
-      cwd: launch.cwd,
-      env: preparedEnvironment.env,
-      stdio: ["pipe", "pipe", "pipe", "pipe"]
-    });
-  } catch (error) {
-    return await withEnvironmentCleanup(childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : void 0));
-  }
-  const cleanup = createProcessTreeCleanup(child);
-  let abortedDuringReadiness = signal.aborted;
-  let cancellationCleanup;
-  const readinessAbort = () => {
-    abortedDuringReadiness = true;
-    cancellationCleanup ??= cleanup.terminate("cancelled");
-  };
-  if (!abortedDuringReadiness) signal.addEventListener("abort", readinessAbort, { once: true });
-  const containmentReady = await cleanup.ready();
-  signal.removeEventListener("abort", readinessAbort);
-  if (abortedDuringReadiness || signal.aborted) {
-    cancellationCleanup ??= cleanup.terminate("cancelled");
-    await cancellationCleanup;
-    return await withEnvironmentCleanup(childFailure());
-  }
-  if (!containmentReady) {
-    await cleanup.terminate("startup_failure");
-    return await withEnvironmentCleanup(childFailure());
-  }
-  const result3 = await new Promise((resolveResult) => {
-    let phase = "await-attestation";
-    let failed = false;
-    let stdoutBytes = 0;
-    let stderrBytes = 0;
-    let lastExitCode;
-    let pending = "";
-    let output;
-    const metrics = () => ({
-      durationMs: Date.now() - startedAt,
-      stdoutBytes,
-      stderrBytes,
-      ...lastExitCode === void 0 ? {} : { exitCode: lastExitCode }
-    });
-    const stdoutDecoder = new StringDecoder("utf8");
-    let stdoutDecoderEnded = false;
-    const expectedAttestation = childAttestationDigest({
-      nonce,
-      challenge,
-      cwd: launch.cwd,
-      provider: launch.provider,
-      model: launch.model,
-      tools: launch.tools,
-      projectTrusted: false,
-      mode: "rpc"
-    });
-    let settled = false;
-    let timer;
-    const settle = (value) => {
-      if (settled) return;
-      settled = true;
-      if (timer !== void 0) clearTimeout(timer);
-      signal.removeEventListener("abort", abort);
-      resolveResult(value);
-    };
-    const finishFailure = (reason = "protocol_error") => {
-      if (failed || settled) return;
-      failed = true;
-      try {
-        child.stdin.end();
-      } catch {
-      }
-      void cleanup.terminate(reason).then(
-        () => settle(childFailure()),
-        () => settle(childFailure())
-      );
-    };
-    const abort = () => finishFailure("cancelled");
-    signal.addEventListener("abort", abort, { once: true });
-    if (signal.aborted) {
-      finishFailure("cancelled");
-      return;
+    if (signal.aborted) return await withEnvironmentCleanup(childFailure());
+    let child;
+    try {
+      child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
+        cwd: launch.cwd,
+        env: preparedEnvironment.env,
+        stdio: ["pipe", "pipe", "pipe", "pipe"]
+      });
+    } catch (error) {
+      return await withEnvironmentCleanup(childFailure(error instanceof Error ? windowsRefusalReasonFromMessage(error.message) : void 0));
     }
-    child.stdin.on("error", () => finishFailure("protocol_error"));
-    const capability = child.stdio[3];
-    if (!isCapabilityPipe(capability)) {
-      finishFailure("startup_failure");
-    } else {
-      capability.on("error", () => finishFailure("startup_failure"));
-      if (capability.destroyed === true || capability.writable === false) finishFailure("startup_failure");
-      else {
+    const cleanup = createProcessTreeCleanup(child);
+    let abortedDuringReadiness = signal.aborted;
+    let cancellationCleanup;
+    const readinessAbort = () => {
+      abortedDuringReadiness = true;
+      cancellationCleanup ??= cleanup.terminate("cancelled");
+    };
+    if (!abortedDuringReadiness) signal.addEventListener("abort", readinessAbort, { once: true });
+    const containmentReady = await cleanup.ready();
+    signal.removeEventListener("abort", readinessAbort);
+    if (abortedDuringReadiness || signal.aborted) {
+      cancellationCleanup ??= cleanup.terminate("cancelled");
+      await cancellationCleanup;
+      return await withEnvironmentCleanup(childFailure());
+    }
+    if (!containmentReady) {
+      await cleanup.terminate("startup_failure");
+      return await withEnvironmentCleanup(childFailure());
+    }
+    const result3 = await new Promise((resolveResult) => {
+      let phase = "await-attestation";
+      let failed = false;
+      let stdoutBytes = 0;
+      let stderrBytes = 0;
+      let lastExitCode;
+      let pending = "";
+      let output;
+      const metrics = () => ({
+        durationMs: Date.now() - startedAt,
+        stdoutBytes,
+        stderrBytes,
+        ...lastExitCode === void 0 ? {} : { exitCode: lastExitCode }
+      });
+      const stdoutDecoder = new StringDecoder("utf8");
+      let stdoutDecoderEnded = false;
+      const expectedAttestation = childAttestationDigest({
+        nonce,
+        challenge,
+        cwd: launch.cwd,
+        provider: launch.provider,
+        model: launch.model,
+        tools: launch.tools,
+        projectTrusted: false,
+        mode: "rpc"
+      });
+      let settled = false;
+      let timer;
+      const settle = (value) => {
+        if (settled) return;
+        settled = true;
+        if (timer !== void 0) clearTimeout(timer);
+        signal.removeEventListener("abort", abort);
+        resolveResult(value);
+      };
+      const finishFailure = (reason = "protocol_error") => {
+        if (failed || settled) return;
+        failed = true;
         try {
-          capability.end(nonce, "utf8");
+          child.stdin.end();
         } catch {
-          finishFailure("startup_failure");
+        }
+        void cleanup.terminate(reason).then(
+          () => settle(childFailure()),
+          () => settle(childFailure())
+        );
+      };
+      const abort = () => finishFailure("cancelled");
+      signal.addEventListener("abort", abort, { once: true });
+      if (signal.aborted) {
+        finishFailure("cancelled");
+        return;
+      }
+      child.stdin.on("error", () => finishFailure("protocol_error"));
+      const capability = child.stdio[3];
+      if (!isCapabilityPipe(capability)) {
+        finishFailure("startup_failure");
+      } else {
+        capability.on("error", () => finishFailure("startup_failure"));
+        if (capability.destroyed === true || capability.writable === false) finishFailure("startup_failure");
+        else {
+          try {
+            capability.end(nonce, "utf8");
+          } catch {
+            finishFailure("startup_failure");
+          }
         }
       }
-    }
-    const writeInput = (record2) => {
-      if (failed || child.stdin.destroyed || !child.stdin.writable) {
-        finishFailure("protocol_error");
-        return;
-      }
-      try {
-        child.stdin.write(record2 + "\n", "utf8", (error) => {
-          if (error !== null && error !== void 0) finishFailure("protocol_error");
-        });
-      } catch {
-        finishFailure("protocol_error");
-      }
-    };
-    const endInput = () => {
-      if (child.stdin.destroyed) return;
-      try {
-        child.stdin.end();
-      } catch {
-        finishFailure("protocol_error");
-      }
-    };
-    const processLine = (line) => {
-      if (line === "" || failed) return;
-      let record2;
-      try {
-        record2 = parseChildJsonLine(line);
-      } catch {
-        finishFailure("protocol_error");
-        return;
-      }
-      if (record2.type === "extension_ui_request") {
-        if (phase !== "await-attestation" || record2.title !== CHILD_ATTESTATION_TITLE || record2.message !== expectedAttestation || record2.timeout !== CHILD_ATTESTATION_TIMEOUT_MS) {
+      const writeInput = (record2) => {
+        if (failed || child.stdin.destroyed || !child.stdin.writable) {
           finishFailure("protocol_error");
           return;
         }
-        phase = "await-handshake";
-        writeInput(rpcConfirmation(record2.id));
-      } else if (record2.type === "response" && record2.command === "prompt") {
-        if (phase === "await-handshake") {
-          if (record2.id !== `${correlationId}-handshake` || record2.success !== true) {
+        try {
+          child.stdin.write(record2 + "\n", "utf8", (error) => {
+            if (error !== null && error !== void 0) finishFailure("protocol_error");
+          });
+        } catch {
+          finishFailure("protocol_error");
+        }
+      };
+      const endInput = () => {
+        if (child.stdin.destroyed) return;
+        try {
+          child.stdin.end();
+        } catch {
+          finishFailure("protocol_error");
+        }
+      };
+      const processLine = (line) => {
+        if (line === "" || failed) return;
+        let record2;
+        try {
+          record2 = parseChildJsonLine(line);
+        } catch {
+          finishFailure("protocol_error");
+          return;
+        }
+        if (record2.type === "extension_ui_request") {
+          if (phase !== "await-attestation" || record2.title !== CHILD_ATTESTATION_TITLE || record2.message !== expectedAttestation || record2.timeout !== CHILD_ATTESTATION_TIMEOUT_MS) {
             finishFailure("protocol_error");
             return;
           }
-          phase = "await-task-ack";
-          writeInput(taskRecord);
-        } else if (phase === "await-task-ack") {
-          if (record2.id !== correlationId || record2.success !== true) {
+          phase = "await-handshake";
+          writeInput(rpcConfirmation(record2.id));
+        } else if (record2.type === "response" && record2.command === "prompt") {
+          if (phase === "await-handshake") {
+            if (record2.id !== `${correlationId}-handshake` || record2.success !== true) {
+              finishFailure("protocol_error");
+              return;
+            }
+            phase = "await-task-ack";
+            writeInput(taskRecord);
+          } else if (phase === "await-task-ack") {
+            if (record2.id !== correlationId || record2.success !== true) {
+              finishFailure("protocol_error");
+              return;
+            }
+            phase = "await-agent-start";
+          } else {
+            finishFailure("protocol_error");
+          }
+        } else if (record2.type === "extension_error") {
+          finishFailure("protocol_error");
+        } else if (phase === "await-agent-start") {
+          if (record2.type !== "agent_start") {
             finishFailure("protocol_error");
             return;
           }
-          phase = "await-agent-start";
+          phase = "in-task";
+        } else if (phase === "in-task") {
+          if (record2.type === "agent_end") {
+            const messages = record2.messages;
+            const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
+            const finalOutput = successfulFinalAssistant(finalAssistant, launch, preparedEnvironment.containsSensitiveValue);
+            if (record2.willRetry !== false || finalOutput === void 0) {
+              finishFailure("protocol_error");
+              return;
+            }
+            output = finalOutput;
+            phase = "await-settled";
+          } else if (["agent_start", "agent_settled", "response"].includes(record2.type)) {
+            finishFailure("protocol_error");
+          }
+        } else if (record2.type === "agent_settled") {
+          if (phase !== "await-settled") {
+            finishFailure("protocol_error");
+            return;
+          }
+          phase = "complete";
+          endInput();
         } else {
           finishFailure("protocol_error");
         }
-      } else if (record2.type === "extension_error") {
-        finishFailure("protocol_error");
-      } else if (phase === "await-agent-start") {
-        if (record2.type !== "agent_start") {
+      };
+      child.stdout.on("data", (chunk) => {
+        const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
+        stdoutBytes += raw.byteLength;
+        if (stdoutBytes > MAX_STDOUT_BYTES) {
+          finishFailure("protocol_overflow");
+          return;
+        }
+        const value = stdoutDecoder.write(raw);
+        pending += value;
+        let newline = pending.indexOf("\n");
+        while (newline >= 0) {
+          processLine(pending.slice(0, newline));
+          pending = pending.slice(newline + 1);
+          newline = pending.indexOf("\n");
+        }
+        if (Buffer.byteLength(pending, "utf8") > MAX_JSONL_LINE_BYTES) finishFailure("protocol_overflow");
+      });
+      child.stderr.on("data", (chunk) => {
+        const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
+        stderrBytes += raw.byteLength;
+        if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
+      });
+      child.on("error", () => finishFailure("startup_failure"));
+      timer = setTimeout(() => finishFailure("timeout"), Math.max(1, request.timeoutMs ?? 12e4));
+      const handleClose = (code) => {
+        if (code !== null) lastExitCode = code;
+        if (!stdoutDecoderEnded) {
+          stdoutDecoderEnded = true;
+          pending += stdoutDecoder.end();
+        }
+        if (pending !== "") processLine(pending);
+        if (settled) return;
+        if (failed || phase !== "complete" || code !== 0) {
           finishFailure("protocol_error");
           return;
         }
-        phase = "in-task";
-      } else if (phase === "in-task") {
-        if (record2.type === "agent_end") {
-          const messages = record2.messages;
-          const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
-          const finalOutput = successfulFinalAssistant(finalAssistant, launch, preparedEnvironment.containsSensitiveValue);
-          if (record2.willRetry !== false || finalOutput === void 0) {
-            finishFailure("protocol_error");
-            return;
-          }
-          output = finalOutput;
-          phase = "await-settled";
-        } else if (["agent_start", "agent_settled", "response"].includes(record2.type)) {
-          finishFailure("protocol_error");
-        }
-      } else if (record2.type === "agent_settled") {
-        if (phase !== "await-settled") {
-          finishFailure("protocol_error");
-          return;
-        }
-        phase = "complete";
-        endInput();
-      } else {
-        finishFailure("protocol_error");
+        void cleanup.terminate("parent_shutdown").then((cleanupResult) => {
+          if (!cleanupResult.verified) settle(childFailure());
+          else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...output === void 0 ? {} : { output } }));
+        }, () => settle(childFailure()));
+      };
+      child.on("close", handleClose);
+      if (child.exitCode !== void 0 && child.exitCode !== null || child.signalCode !== void 0 && child.signalCode !== null) {
+        queueMicrotask(() => handleClose(child.exitCode));
       }
-    };
-    child.stdout.on("data", (chunk) => {
-      const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
-      stdoutBytes += raw.byteLength;
-      if (stdoutBytes > MAX_STDOUT_BYTES) {
-        finishFailure("protocol_overflow");
-        return;
-      }
-      const value = stdoutDecoder.write(raw);
-      pending += value;
-      let newline = pending.indexOf("\n");
-      while (newline >= 0) {
-        processLine(pending.slice(0, newline));
-        pending = pending.slice(newline + 1);
-        newline = pending.indexOf("\n");
-      }
-      if (Buffer.byteLength(pending, "utf8") > MAX_JSONL_LINE_BYTES) finishFailure("protocol_overflow");
+      if (!failed) writeInput(handshakeRecord);
     });
-    child.stderr.on("data", (chunk) => {
-      const raw = typeof chunk === "string" ? Buffer.from(chunk, "utf8") : chunk;
-      stderrBytes += raw.byteLength;
-      if (stderrBytes > MAX_STDERR_BYTES) finishFailure("protocol_overflow");
-    });
-    child.on("error", () => finishFailure("startup_failure"));
-    timer = setTimeout(() => finishFailure("timeout"), Math.max(1, request.timeoutMs ?? 12e4));
-    const handleClose = (code) => {
-      if (code !== null) lastExitCode = code;
-      if (!stdoutDecoderEnded) {
-        stdoutDecoderEnded = true;
-        pending += stdoutDecoder.end();
-      }
-      if (pending !== "") processLine(pending);
-      if (settled) return;
-      if (failed || phase !== "complete" || code !== 0) {
-        finishFailure("protocol_error");
-        return;
-      }
-      void cleanup.terminate("parent_shutdown").then((cleanupResult) => {
-        if (!cleanupResult.verified) settle(childFailure());
-        else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...output === void 0 ? {} : { output } }));
-      }, () => settle(childFailure()));
-    };
-    child.on("close", handleClose);
-    if (child.exitCode !== void 0 && child.exitCode !== null || child.signalCode !== void 0 && child.signalCode !== null) {
-      queueMicrotask(() => handleClose(child.exitCode));
-    }
-    if (!failed) writeInput(handshakeRecord);
-  });
-  return await withEnvironmentCleanup(result3);
+    return await withEnvironmentCleanup(result3);
+  } finally {
+    await cleanupEnvironment();
+  }
 }
 
 // src/dispatch.ts

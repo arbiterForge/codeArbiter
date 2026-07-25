@@ -72,15 +72,34 @@ carrying only credential-blind structural/protocol configuration (`baseUrl`,
 `api`, `name`, `oauth`, `authHeader`, `compat`, `models[]`, `modelOverrides`). An
 `apiKey` or `headers` value crosses only when the entire value is a pure
 `$NAME`/`${NAME}` environment reference: that carries no secret, because it
-resolves inside the child from the already-allowlisted child environment. A
-`baseUrl` crosses as an endpoint only: a URL embedding userinfo
-(`https://operator:pw@gateway/v1`) is credential material wearing an endpoint's
-clothes and is refused, as is any `baseUrl` that is not a parseable absolute URL.
+resolves inside the child from the already-allowlisted child environment. Both
+key NAMES and value SHAPES are pinned to the reviewed Pi provider schema, so a
+record that satisfies the name allowlist but not the declared type (`oauth` as
+anything but `"radius"`, `authHeader` as anything but a boolean) refuses instead
+of projecting and then dying mutely inside Pi's own validator.
+
+A `baseUrl` crosses as an endpoint only, and endpoint acceptance is **positive**
+rather than a blocklist of credential-bearing parameter names (`api-key`, `key`,
+`token`, `sig`, … is an unbounded list). A value crosses only when it is a
+parseable absolute `http`/`https` URL with **no userinfo, no query, and no
+fragment at all**, and a bounded route of short lowercase unencoded segments. A
+provider endpoint needs neither query nor fragment — Pi's own Azure provider
+takes `api-version` from `AZURE_OPENAI_API_VERSION` — so refusing them outright
+closes the common real-world credential-in-endpoint shapes (`?api-key=`,
+`?key=`, `#sk-…`, `/keys/sk-…`) that a userinfo-only check admitted. The rule is
+deliberately narrower than what Pi accepts: an unusual endpoint fails the launch
+closed rather than projecting material that cannot be shown credential-free.
+The stated residual is that a short lowercase route is bounded but not *provably*
+credential-free, so every accepted endpoint is also registered in the child's
+sensitive-value set (suppressing a child that echoes it into its final message)
+and retained behind a scrub handle — the dependent controls are not blind to it.
+
 Four things fail closed — the child is not launched and a fixed, bounded degraded
 failure is returned: a **literal** (non-template) `apiKey` or header value, which
 would be credential transport; a **`!command`** value, which Pi executes as a
-shell command and which ADR-0016 reserves to the user; and any key outside the
-reviewed Pi provider schema, whose secrecy cannot be established; a userinfo or
+shell command and which ADR-0016 reserves to the user; and any key or value shape
+outside the reviewed Pi provider schema, whose secrecy cannot be established; a
+userinfo, query-bearing, fragment-bearing, non-`http(s)`, unbounded-route, or
 unparseable endpoint refuses on the same footing. No other
 provider record is projected, and nothing beyond the provider record is — no
 `settings.json`, no `trust.json`, no sessions, no package state, no other ambient
@@ -101,9 +120,14 @@ exclusively with restrictive permissions, retained by an open handle for
 path-safe scrubbing, and removed with the entire private root on every terminal
 path; the input read is capped independently of a pre-read size check so file
 growth cannot widen it. Unprovable cleanup is a fixed degraded failure. The
-ADR-0017 projected `models.json` is created the same restrictive way and removed
-with the same private root; it needs no scrub handle because it holds no secret by
-construction. Task/prompt content is
+ADR-0017 projected `models.json` is created the same restrictive way and is
+retained by its own scrub handle on exactly the same footing as `auth.json`: it
+is credential-BLIND by construction, not provably credential-FREE, so leaving it
+intact on the removal-failure path while `auth.json` is truncated would be an
+unstated residual. Cleanup of the private isolation root is idempotent and is
+additionally guaranteed by a `try`/`finally` around the whole launch, so an
+unexpected throw after a successful prepare cannot strand a root holding operator
+credential material in cleartext. Task/prompt content is
 stdin-only, never argv, environment, or a temporary file. Tests use disposable
 Pi homes and dummy credentials and never inspect or mutate the real auth store.
 
@@ -491,7 +515,7 @@ reopens if the threat model expands to untrusted agents.
 | Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo); farm POSTs use `redirect: "error"` | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, and redirect refusal prevents a mock from forwarding the body to a remote cleartext target |
 | Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
 | Pi selected-provider child authentication | Pi owns host authentication; `ca-pi` projects one selected stored-provider record only for an isolated child | ADR-0016 bounds the exception: private ephemeral roots, exact-provider selection, restrictive creation, retained-handle scrubbing, no observable sink, and fail-degraded cleanup |
-| Pi selected-provider child configuration | `ca-pi` projects one credential-blind selected-provider `models.json` record into an isolated child | ADR-0017 amends ADR-0016 for **configuration only**, never credentials: exact-provider record, key allowlist pinned to the reviewed Pi provider schema, `apiKey`/`headers` admitted only as whole-value `$NAME`/`${NAME}` references, endpoint-only `baseUrl` (no URL userinfo), and fail-closed rejection of literal values, `!command` forms, and unreviewed keys |
+| Pi selected-provider child configuration | `ca-pi` projects one credential-blind selected-provider `models.json` record into an isolated child | ADR-0017 amends ADR-0016 for **configuration only**, never credentials: exact-provider record, key AND value-shape allowlist pinned to the reviewed Pi provider schema, `apiKey`/`headers` admitted only as whole-value `$NAME`/`${NAME}` references, positively-accepted endpoint-only `baseUrl` (`http(s)`, no userinfo, no query, no fragment, bounded lowercase route) that is also registered in the scrub set and retained behind a scrub handle, and fail-closed rejection of literal values, `!command` forms, and unreviewed keys or shapes |
 | Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |
 
@@ -514,4 +538,3 @@ floating tag is a mutable registry input: a retag or registry compromise would
 silently change executable code inside a sandbox build. Digest bumps are reviewed
 dependency changes, and `supply-chain.test.ts` rejects `:latest` and digest-free
 external image references in production code (issue #402).
-

@@ -1,5 +1,5 @@
 /** child-env.test.ts - Task 6 minimal environment and help-contract obligations. */
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
@@ -266,6 +266,8 @@ describe("Task 6 child environment", () => {
   async function projectedModels(models: unknown, provider = "openai"): Promise<{
     document?: unknown;
     error?: unknown;
+    agentEntries: string[];
+    containsSensitiveValue?: (text: string) => boolean;
     operatorAgent: string;
     cleanup: () => Promise<void>;
   }> {
@@ -292,15 +294,19 @@ describe("Task 6 child environment", () => {
         provider,
       });
       isolationRoot = dirname(prepared.env.HOME!);
-      const childModels = join(prepared.env.PI_CODING_AGENT_DIR!, "models.json");
-      const document = await readFile(childModels, "utf8").then(
+      const childAgent = prepared.env.PI_CODING_AGENT_DIR!;
+      // Captured BEFORE cleanup so "nothing was projected" is asserted against a real, existing
+      // private agent directory rather than against the absence of the whole root.
+      const agentEntries = (await readdir(childAgent)).sort();
+      const document = await readFile(join(childAgent, "models.json"), "utf8").then(
         (text) => JSON.parse(text) as unknown,
         () => undefined,
       );
+      const { containsSensitiveValue } = prepared;
       await prepared.cleanup().catch(() => undefined);
-      return { document, operatorAgent, cleanup };
+      return { document, agentEntries, containsSensitiveValue, operatorAgent, cleanup };
     } catch (error) {
-      return { error, operatorAgent, cleanup };
+      return { error, agentEntries: [], operatorAgent, cleanup };
     }
   }
 
@@ -362,18 +368,223 @@ describe("Task 6 child environment", () => {
   });
 
   test("leaves the child without models.json when the operator configures nothing to project", async () => {
+    // The discriminating probe is the private agent directory's own listing: it must EXIST and
+    // be empty. Asserting only `document === undefined` passes vacuously when nothing projects
+    // at all, so the control case below proves the probe can see a projection when there is one.
+    const control = await projectedModels(OPERATOR_MODELS);
+    try {
+      expect(control.error).toBeUndefined();
+      expect(control.agentEntries).toEqual(["models.json"]);
+    } finally {
+      await control.cleanup();
+    }
+
     for (const models of [
       undefined,
       { providers: {} },
       { providers: { anthropic: { baseUrl: "https://foreign.example/v1", apiKey: "sk-foreign-literal" } } },
     ]) {
-      const { document, error, cleanup } = await projectedModels(models);
+      const { document, error, agentEntries, cleanup } = await projectedModels(models);
       try {
         expect(error).toBeUndefined();
         expect(document).toBeUndefined();
+        expect(agentEntries).toEqual([]);
       } finally {
         await cleanup();
       }
+    }
+  });
+
+  // Review finding (HIGH): rejecting only URL userinfo closed the RARE credential-in-endpoint
+  // shape and left the COMMON one open — Azure uses `?api-key=`, Google uses `?key=`, and a
+  // secret rides a path segment or a fragment just as easily. Blocklisting parameter names is an
+  // unbounded list, so acceptance is now positive and reject-unless-provably-safe: `http`/`https`
+  // scheme, host, optional port, and a short lowercase route. Query and fragment are refused
+  // outright — a provider endpoint needs neither (Pi's own Azure provider carries `api-version`
+  // in AZURE_OPENAI_API_VERSION, not in `baseUrl`).
+  test("refuses a baseUrl carrying credential material in a query, fragment, path, or scheme", async () => {
+    const { ChildConfigProjectionError } = await loadImplementation();
+    const rejected = [
+      ["query credential", "https://gw.example.com/v1?api-key=sk-QUERYSECRET999"],
+      ["query parameter", "https://gw.example.com/v1?api-version=2024-02-01"],
+      ["empty query marker", "https://gw.example.com/v1?"],
+      ["fragment credential", "https://gw.example.com/v1#sk-FRAGSECRET999"],
+      ["empty fragment marker", "https://gw.example.com/v1#"],
+      ["path credential", "https://gw.example.com/keys/sk-PATHSECRET999"],
+      ["percent-encoded path", "https://gw.example.com/v1/%73k-ENCODEDSECRET"],
+      ["non-http scheme", "file:///c:/operator/.pi/auth.json"],
+      ["overlong path segment", `https://gw.example.com/${"a".repeat(33)}`],
+      ["too many path segments", "https://gw.example.com/a/b/c/d/e/f/g/h/i"],
+    ] as const;
+
+    for (const [label, baseUrl] of rejected) {
+      const records = [
+        { label: `${label} (provider baseUrl)`, record: { baseUrl } },
+        { label: `${label} (model baseUrl)`, record: { baseUrl: "https://gw.example.com/v1", models: [{ id: "gpt-test", baseUrl }] } },
+      ];
+      for (const candidate of records) {
+        const { document, error, cleanup } = await projectedModels({ providers: { openai: candidate.record } });
+        try {
+          expect(document, `${candidate.label} must not project a child models.json`).toBeUndefined();
+          expect(error, `${candidate.label} must fail closed`).toBeInstanceOf(ChildConfigProjectionError);
+          const message = `${(error as Error).message}${(error as Error).stack ?? ""}`;
+          expect(message, `${candidate.label} leaked the endpoint`).not.toContain("SECRET");
+          expect(message, `${candidate.label} leaked the endpoint`).not.toContain("gw.example.com");
+        } finally {
+          await cleanup();
+        }
+      }
+    }
+  });
+
+  test("still admits an ordinary operator endpoint under the positive acceptance rule", async () => {
+    for (const baseUrl of [
+      "https://gw.example.com",
+      "https://gw.example.com/",
+      "https://gw.example.com/v1",
+      "https://gw.example.com/v1/",
+      "http://127.0.0.1:8931/v1",
+      "https://my-resource.openai.azure.com/openai/deployments/gpt-4o",
+      "https://generativelanguage.googleapis.com/v1beta",
+      "https://gw.example.com/api/paas/v4",
+    ]) {
+      const { document, error, cleanup } = await projectedModels({ providers: { openai: { baseUrl } } });
+      try {
+        expect(error, `${baseUrl} must project`).toBeUndefined();
+        expect(document).toEqual({ providers: { openai: { baseUrl } } });
+      } finally {
+        await cleanup();
+      }
+    }
+  });
+
+  // Review finding (HIGH, second half): whatever DOES cross must not be invisible to the two
+  // controls that assume the projection holds no secret — the assistant-text scrub set and the
+  // cleanup scrub handle. An endpoint is bounded but not provably credential-free, so it is
+  // registered rather than trusted.
+  test("registers every projected endpoint in the child's sensitive-value scrub set", async () => {
+    const { document, containsSensitiveValue, cleanup } = await projectedModels({
+      providers: {
+        openai: {
+          baseUrl: "https://gw.example.com/v1",
+          models: [{ id: "gpt-test", baseUrl: "https://alt.example.com/v2" }],
+        },
+      },
+    });
+    try {
+      expect(document).toBeDefined();
+      expect(containsSensitiveValue).toBeTypeOf("function");
+      expect(containsSensitiveValue!("the endpoint is https://gw.example.com/v1 for this run")).toBe(true);
+      expect(containsSensitiveValue!("the endpoint is https://alt.example.com/v2 for this run")).toBe(true);
+      expect(containsSensitiveValue!("nothing projected appears in this sentence")).toBe(false);
+    } finally {
+      await cleanup();
+    }
+  });
+
+  test("scrubs the retained projected models.json handle when path removal fails", async () => {
+    const { prepareChildEnvironment } = await loadImplementation();
+    const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-operator-config-"));
+    const operatorAgent = join(operatorHome, ".pi", "agent");
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(join(operatorAgent, "models.json"), JSON.stringify({
+      providers: { openai: { baseUrl: "https://gw.example.com/v1", apiKey: "$OPENAI_API_KEY" } },
+    }), "utf8");
+    let isolationRoot: string | undefined;
+    try {
+      const prepared = await prepareChildEnvironment({
+        platform: process.platform,
+        parent: { ...process.env, HOME: operatorHome, USERPROFILE: operatorHome, PI_CODING_AGENT_DIR: operatorAgent },
+        provider: "openai",
+      }, {
+        remove: async () => { throw new Error("simulated removal refusal"); },
+      });
+      isolationRoot = dirname(prepared.env.HOME!);
+      const childModels = join(prepared.env.PI_CODING_AGENT_DIR!, "models.json");
+      expect(await readFile(childModels, "utf8")).toContain("gw.example.com");
+
+      await expect(prepared.cleanup()).rejects.toThrow("Pi child credential cleanup failed safely");
+
+      expect(await readFile(childModels, "utf8")).toBe("");
+      expect(await readFile(join(operatorAgent, "models.json"), "utf8")).toContain("gw.example.com");
+    } finally {
+      if (isolationRoot !== undefined) await rm(isolationRoot, { recursive: true, force: true });
+      await rm(operatorHome, { recursive: true, force: true });
+    }
+  });
+
+  // Review finding (LOW): the module states that reserved object keys are rejected, and every
+  // other projected record applies that rule. The header map skipped it.
+  test("refuses a reserved object key as a projected header name", async () => {
+    const { ChildConfigProjectionError } = await loadImplementation();
+    for (const name of ["__proto__", "constructor", "prototype"]) {
+      for (const record of [
+        { baseUrl: "https://gw.example.com/v1", headers: { [name]: "$OPENAI_API_KEY" } },
+        { baseUrl: "https://gw.example.com/v1", models: [{ id: "gpt-test", headers: { [name]: "$OPENAI_API_KEY" } }] },
+        { baseUrl: "https://gw.example.com/v1", modelOverrides: { "gpt-test": { headers: { [name]: "$OPENAI_API_KEY" } } } },
+      ]) {
+        const { document, error, cleanup } = await projectedModels({ providers: { openai: record } });
+        try {
+          expect(document, `${name} must not project`).toBeUndefined();
+          expect(error, `${name} must fail closed`).toBeInstanceOf(ChildConfigProjectionError);
+        } finally {
+          await cleanup();
+        }
+      }
+    }
+  });
+
+  // Review finding (LOW): pinning only key NAMES let a malformed record project and then die
+  // mutely inside Pi's own validateModelsConfig. The projection is the fail-closed boundary, so
+  // it pins Pi 0.80.10's VALUE shapes too.
+  test("pins projected value shapes to Pi's provider schema, not only key names", async () => {
+    const { ChildConfigProjectionError } = await loadImplementation();
+    const rejected = [
+      { label: "oauth as a free string", record: { oauth: "sk-OAUTHSECRET333" } },
+      { label: "authHeader as a string", record: { authHeader: "yes" } },
+      { label: "empty provider name", record: { name: "" } },
+      { label: "compat with an unreviewed key", record: { compat: { unreviewedFlag: true } } },
+      { label: "compat with a non-boolean flag", record: { compat: { supportsDeveloperRole: "no" } } },
+      { label: "compat with an unreviewed affinity literal", record: { compat: { sessionAffinityFormat: "unreviewed" } } },
+      { label: "model reasoning as a string", record: { models: [{ id: "gpt-test", reasoning: "yes" }] } },
+      { label: "model contextWindow as a string", record: { models: [{ id: "gpt-test", contextWindow: "128000" }] } },
+      { label: "model id empty", record: { models: [{ id: "" }] } },
+      { label: "model input with an unreviewed modality", record: { models: [{ id: "gpt-test", input: ["text", "audio"] }] } },
+      { label: "model cost rate as a string", record: { models: [{ id: "gpt-test", cost: { input: "0" } }] } },
+      { label: "model thinkingLevelMap with a numeric value", record: { models: [{ id: "gpt-test", thinkingLevelMap: { off: 1 } }] } },
+      { label: "model thinkingLevelMap with an unreviewed level", record: { models: [{ id: "gpt-test", thinkingLevelMap: { turbo: "on" } }] } },
+      { label: "override maxTokens as a string", record: { modelOverrides: { "gpt-test": { maxTokens: "2048" } } } },
+    ] as const;
+
+    for (const candidate of rejected) {
+      const { document, error, cleanup } = await projectedModels({
+        providers: { openai: { baseUrl: "https://gw.example.com/v1", ...candidate.record } },
+      });
+      try {
+        expect(document, `${candidate.label} must not project`).toBeUndefined();
+        expect(error, `${candidate.label} must fail closed`).toBeInstanceOf(ChildConfigProjectionError);
+        expect(`${(error as Error).message}${(error as Error).stack ?? ""}`).not.toContain("OAUTHSECRET");
+      } finally {
+        await cleanup();
+      }
+    }
+
+    // The well-formed equivalents still cross, so the shape pin is not a blanket refusal.
+    const { document, error, cleanup } = await projectedModels({
+      providers: {
+        openai: {
+          baseUrl: "https://gw.example.com/v1", oauth: "radius", authHeader: true,
+          compat: { supportsDeveloperRole: true, sessionAffinityFormat: "openai" },
+          models: [{ id: "gpt-test", reasoning: false, contextWindow: 128_000, input: ["text", "image"], thinkingLevelMap: { off: null, high: "high" }, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } }],
+          modelOverrides: { "gpt-test": { maxTokens: 2_048 } },
+        },
+      },
+    });
+    try {
+      expect(error).toBeUndefined();
+      expect(document).toBeDefined();
+    } finally {
+      await cleanup();
     }
   });
 

@@ -104,7 +104,6 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertIn("PURE_ENV_REFERENCE", child_env)                # $NAME/${NAME} values only
         self.assertIn("ChildConfigProjectionError", child_env)        # fail closed, value-free
 
-        sources = "\n".join((REPO / item).read_text(encoding="utf-8") for item in TASK_FILES[:5])
         runner = (REPO / "plugins/ca-pi/tools/src/runner.ts").read_text(encoding="utf-8")
         process_tree = (REPO / "plugins/ca-pi/tools/src/process-tree.ts").read_text(encoding="utf-8")
         self.assertIn("spawnProcessTree", runner)
