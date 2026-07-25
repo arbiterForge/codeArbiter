@@ -2,6 +2,17 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.17] - 2026-07-25
+
+### Fixed
+
+- A governed-file notice now names the ADR by its filename stem
+  (`ADR-0014-githook-shim-dropin-fail-closed`) instead of its bare number.
+  Two ADRs share the number 0014, so the previous notice named two documents
+  at once and the reader could tell neither apart.
+- The `governs` cache carries a schema key, so a payload upgrade rebuilds it
+  instead of serving the old numeric identifiers until a decision file changes.
+
 ## [0.1.16] - 2026-07-25
 
 ### Changed
