@@ -41,6 +41,15 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- `FARM_RUN_ID` no longer accepts a Windows reserved device name. `NUL`, `CON`,
+  `AUX`, `PRN`, `COM1`-`COM9` and `LPT1`-`LPT9` match the run id's character
+  class perfectly, and Windows resolves them ahead of any extension, so `NUL`,
+  `nul` and `com1.log.1` all name a device rather than a directory. Since the
+  run id became a directory name under `.farm/runs/`, that made `mkdir` throw
+  outside the run's cleanup scope and took the run's receipts - its recovery
+  record - with it. Refused at startup on every platform, because an
+  orchestrator's `FARM_RUN_ID` travels between machines. Matched on the stem
+  only, so `console`, `nulls`, `COM0` and `COM10` remain valid (issue #440).
 - A hook payload that is valid JSON but not an object (`[]`, `3`, `"str"`,
   `true`, `null`) is normalized to an empty payload at `read_input()` rather
   than handed to the guards as a non-dict. Downstream, `tool_input()` evaluates
