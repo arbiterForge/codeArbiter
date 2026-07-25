@@ -1245,6 +1245,18 @@ class TestRenderWriteAmplification(unittest.TestCase):
         self.assertEqual(self._read(self.ledger)["sessions"]["cost"]["host_cost"],
                          3.5)
 
+    def test_retired_tot_key_is_removed_even_when_null(self):
+        # The batch-1 "tot" cache key is retired on read. A JSON null value must
+        # still count as a change, or the in-memory record silently diverges from
+        # the shard on disk with no write to reconcile it.
+        L.ledger_update({}, "legacy")
+        shard = L._session_file(self.ledger, "legacy")
+        payload = self._read(shard)
+        payload["rec"]["tot"] = None
+        self.assertTrue(L._atomic_json(shard, payload))
+        L.ledger_update({}, "legacy")
+        self.assertNotIn("tot", self._read(shard)["rec"])
+
     def test_daily_totals_exact_across_shard_counts(self):
         today = datetime.now().strftime("%Y-%m-%d")
         for count in (1, 10, 100):

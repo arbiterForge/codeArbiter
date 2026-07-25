@@ -490,7 +490,8 @@ def _ledger_update_unlocked(data, sid, path):
     if rec.get("today") != bucket:
         rec["today"] = bucket
         dirty = True
-    if rec.pop("tot", None) is not None:    # retire the batch-1 whole-session cache key
+    if "tot" in rec:                        # retire the batch-1 whole-session cache key
+        del rec["tot"]
         dirty = True
     # Heartbeat: `last_ts` is pure liveness for the TTL sweep, so it rides along
     # with a write we are already making rather than forcing one of its own.
