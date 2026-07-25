@@ -34,8 +34,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 sys.path.insert(0, HOOKS)
+sys.path.insert(0, HERE)
 
 import _readinjectlib as ril  # noqa: E402 - needs the sys.path mutation above
+
+# Guarded so a missing checker module does not abort collection of the hook
+# derivation tests above it - every obligation then fails loudly on its own.
+try:
+    import check_adr_identity as cai
+except ImportError:  # pragma: no cover - only before the module exists
+    cai = None
 
 
 def _load_post_write_edit():
@@ -100,6 +108,150 @@ class HookIdDerivationTest(unittest.TestCase):
         self.assertEqual(len(texts), 2, texts)
         self.assertTrue(any("ADR-" + self.GITHOOK in t for t in texts), texts)
         self.assertTrue(any("ADR-" + self.PIAUTH in t for t in texts), texts)
+
+
+class CheckerPresentMixin:
+    def setUp(self):
+        if cai is None:
+            self.fail(
+                "check_adr_identity is not importable - the ADR identity "
+                "contract has no implementation yet"
+            )
+        super().setUp()
+
+
+class ResolveSupersedesTest(CheckerPresentMixin, unittest.TestCase):
+    """Clause 3 - one `supersedes:` value resolves to exactly one ADR."""
+
+    STEMS = [
+        "0013-add-ca-pi-sibling-governance-plugin",
+        "0014-githook-shim-dropin-fail-closed",
+        "0014-pi-host-authentication-and-fail-closed-tool-boundary",
+        "0015-all-live-git-enforcers-and-persistent-trusted-identity",
+    ]
+
+    def test_a_stem_resolves_to_itself(self):
+        self.assertEqual(
+            cai.resolve_supersedes(
+                "0014-githook-shim-dropin-fail-closed", self.STEMS),
+            "0014-githook-shim-dropin-fail-closed",
+        )
+
+    def test_the_other_stem_resolves_to_the_other_document(self):
+        self.assertEqual(
+            cai.resolve_supersedes(
+                "0014-pi-host-authentication-and-fail-closed-tool-boundary",
+                self.STEMS),
+            "0014-pi-host-authentication-and-fail-closed-tool-boundary",
+        )
+
+    def test_an_unambiguous_bare_number_still_resolves(self):
+        """Backward compatibility: 0009/0017/0018/0019 name a number today."""
+        self.assertEqual(
+            cai.resolve_supersedes("0013", self.STEMS),
+            "0013-add-ca-pi-sibling-governance-plugin",
+        )
+
+    def test_an_ambiguous_bare_number_raises_instead_of_guessing(self):
+        """THE defect: `0014` names two documents. Erroring is the fix."""
+        with self.assertRaises(cai.AmbiguousADRReference) as caught:
+            cai.resolve_supersedes("0014", self.STEMS)
+        message = str(caught.exception)
+        self.assertIn("0014-githook-shim-dropin-fail-closed", message)
+        self.assertIn(
+            "0014-pi-host-authentication-and-fail-closed-tool-boundary", message)
+
+    def test_an_ambiguous_bare_number_never_returns_a_stem(self):
+        """Guard against a 'helpful' fallback that picks the first match."""
+        try:
+            resolved = cai.resolve_supersedes("0014", self.STEMS)
+        except cai.AmbiguousADRReference:
+            return
+        self.fail("ambiguous 0014 resolved to %r instead of erroring" % resolved)
+
+    def test_none_resolves_to_no_predecessor(self):
+        for spelling in ("none", "None", "  none  ", "", None):
+            self.assertIsNone(cai.resolve_supersedes(spelling, self.STEMS),
+                              "spelling %r" % (spelling,))
+
+    def test_an_unknown_reference_raises(self):
+        with self.assertRaises(cai.UnknownADRReference):
+            cai.resolve_supersedes("0099", self.STEMS)
+        with self.assertRaises(cai.UnknownADRReference):
+            cai.resolve_supersedes("0014-no-such-slug", self.STEMS)
+
+
+class UniquenessContractTest(CheckerPresentMixin, unittest.TestCase):
+    """Clause 2 - a NEW file may not take an already-used ADR number."""
+
+    def test_a_third_file_taking_the_grandfathered_number_is_rejected(self):
+        stems = [
+            "0014-githook-shim-dropin-fail-closed",
+            "0014-pi-host-authentication-and-fail-closed-tool-boundary",
+            "0014-a-third-decision-sneaking-in",
+        ]
+        errors = cai.identity_errors(stems, {})
+        self.assertTrue(errors, "a third 0014 must violate the contract")
+        self.assertTrue(any("0014" in e for e in errors), errors)
+
+    def test_a_new_duplicate_of_an_unrelated_number_is_rejected(self):
+        stems = ["0009-relicense-agplv3-dual-licensing",
+                 "0009-a-second-decision-on-the-same-number"]
+        errors = cai.identity_errors(stems, {})
+        self.assertTrue(errors, "a duplicate 0009 must violate the contract")
+
+    def test_the_historical_pair_alone_is_grandfathered(self):
+        stems = ["0014-githook-shim-dropin-fail-closed",
+                 "0014-pi-host-authentication-and-fail-closed-tool-boundary"]
+        self.assertEqual(cai.identity_errors(stems, {}), [])
+
+    def test_duplicate_stems_are_rejected(self):
+        """Clause 1 stated as a contract, not left to the filesystem."""
+        stems = ["0020-a-decision", "0020-a-decision"]
+        errors = cai.identity_errors(stems, {})
+        self.assertTrue(errors, "a duplicate stem must violate the contract")
+
+    def test_an_ambiguous_supersedes_is_reported_not_resolved(self):
+        stems = ["0014-githook-shim-dropin-fail-closed",
+                 "0014-pi-host-authentication-and-fail-closed-tool-boundary",
+                 "0015-later"]
+        errors = cai.identity_errors(stems, {"0015-later": "0014"})
+        self.assertTrue(errors, "an ambiguous supersedes must be an error")
+        self.assertTrue(any("0015-later" in e for e in errors), errors)
+
+    def test_a_disambiguated_supersedes_passes(self):
+        stems = ["0014-githook-shim-dropin-fail-closed",
+                 "0014-pi-host-authentication-and-fail-closed-tool-boundary",
+                 "0015-later"]
+        errors = cai.identity_errors(
+            stems, {"0015-later": "0014-githook-shim-dropin-fail-closed"})
+        self.assertEqual(errors, [])
+
+
+class LiveRepositoryContractTest(CheckerPresentMixin, unittest.TestCase):
+    """The contract applied to this repository's real decision record."""
+
+    def test_this_repository_satisfies_the_adr_identity_contract(self):
+        errors = cai.check(REPO)
+        self.assertEqual(errors, [], "\n".join(errors))
+
+    def test_the_two_0014_files_are_both_still_present_and_distinct(self):
+        """Pin the premise: the fix disambiguates, it does not delete or rename."""
+        stems = cai.adr_stems(
+            os.path.join(REPO, ".codearbiter", "decisions"))
+        self.assertIn("0014-githook-shim-dropin-fail-closed", stems)
+        self.assertIn(
+            "0014-pi-host-authentication-and-fail-closed-tool-boundary", stems)
+
+    def test_every_live_supersedes_names_exactly_one_predecessor(self):
+        ddir = os.path.join(REPO, ".codearbiter", "decisions")
+        stems = cai.adr_stems(ddir)
+        for stem in stems:
+            value = cai.read_supersedes(os.path.join(ddir, stem + ".md"))
+            try:
+                cai.resolve_supersedes(value, stems)
+            except cai.ADRReferenceError as exc:
+                self.fail("%s: supersedes: %r -> %s" % (stem, value, exc))
 
 
 if __name__ == "__main__":
