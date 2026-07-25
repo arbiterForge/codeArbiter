@@ -568,6 +568,144 @@ class TestDevExitAudit(unittest.TestCase):
         self.assertEqual(len(log.splitlines()), 2, "exactly one DEV: exit line appended")
 
 
+class TestDevExitRetryablePendingClose(unittest.TestCase):
+    """#396: a failed overrides.log append must not destroy the only signal that
+    a DEV: exit is still owed. `clear_dev_marker` stages a durable pending-close
+    record BEFORE attempting the append and clears it only once the append (and
+    the marker removal) are confirmed — so a locked/failing log leaves a
+    retryable record instead of an orphaned DEV: enter."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        self.ca = os.path.join(self.root, ".codearbiter")
+        self.markers = os.path.join(self.ca, ".markers")
+        os.makedirs(self.markers)
+        self.log = os.path.join(self.ca, "overrides.log")
+        self.marker = os.path.join(self.markers, "dev-active")
+        # The durable retry state lives beside the marker it settles.
+        self.pending = os.path.join(self.markers, "dev-close-pending.json")
+        self._seed_log("[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: —\n")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _seed_log(self, text):
+        with open(self.log, "w", encoding="utf-8") as f:
+            f.write(text)
+
+    def _read_log(self):
+        with open(self.log, encoding="utf-8") as f:
+            return f.read()
+
+    def _drop_marker(self):
+        with open(self.marker, "w", encoding="utf-8") as f:
+            f.write("active\n")
+
+    def _exit_lines(self):
+        return [ln for ln in self._read_log().splitlines() if "DEV: exit" in ln]
+
+    @contextlib.contextmanager
+    def _append_fails(self):
+        """Make ONLY the append-mode open of overrides.log raise OSError."""
+        real_open = open
+
+        def fake_open(file, mode="r", *a, **kw):
+            if "a" in mode and str(file).endswith("overrides.log"):
+                raise OSError("locked")
+            return real_open(file, mode, *a, **kw)
+
+        with mock.patch("builtins.open", fake_open):
+            yield
+
+    def test_append_failure_leaves_a_durable_retryable_close_record(self):
+        # AC-1: returns successfully, but the owed close survives on disk.
+        self._drop_marker()
+        with self._append_fails():
+            _mod.clear_dev_marker(self.root)
+        self.assertEqual(self._exit_lines(), [], "the append really did fail")
+        self.assertTrue(os.path.isfile(self.pending),
+                        "a failed append must leave a durable pending-close record")
+        with open(self.pending, encoding="utf-8") as f:
+            rec = json.load(f)
+        self.assertTrue(any("DEV: exit" in ln for ln in rec.get("lines", [])),
+                        "the pending record must carry the owed DEV: exit line")
+
+    def test_later_session_appends_the_missing_exit_exactly_once(self):
+        # AC-2: the next SessionStart flushes the owed close and clears the
+        # retry state — even though the marker is already gone by then.
+        self._drop_marker()
+        with self._append_fails():
+            _mod.clear_dev_marker(self.root)
+        self.assertFalse(os.path.isfile(self.marker))
+        _mod.clear_dev_marker(self.root)
+        self.assertEqual(len(self._exit_lines()), 1,
+                         "the owed DEV: exit must land exactly once on retry")
+        self.assertFalse(os.path.isfile(self.pending),
+                         "a confirmed append must clear the pending-close record")
+        # And a third session must not append it again.
+        _mod.clear_dev_marker(self.root)
+        self.assertEqual(len(self._exit_lines()), 1, "no duplicate on a later session")
+
+    def test_crash_after_append_before_cleanup_does_not_duplicate(self):
+        # AC-3: an already-landed close line is recognised on retry (bounded
+        # tail scan), so a crash between the append and the record cleanup
+        # yields ONE close row, not two.
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root)
+        landed = self._exit_lines()
+        self.assertEqual(len(landed), 1)
+        # Simulate the crash: the record was never cleaned up.
+        with open(self.pending, "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"lines": [landed[0] + "\n"], "marker_mtime": None}, f)
+        _mod.clear_dev_marker(self.root)
+        self.assertEqual(len(self._exit_lines()), 1,
+                         "an already-appended close must not be appended twice")
+        self.assertFalse(os.path.isfile(self.pending),
+                         "the settled record must be cleared")
+
+    def test_marker_removal_failure_does_not_duplicate_the_close_row(self):
+        # AC-3/AC-4: the append lands, but the marker cleanup fails. The next
+        # SessionStart still sees a live marker and must NOT mint a second
+        # close row for the same marker.
+        self._drop_marker()
+        real_remove = os.remove
+
+        def fake_remove(path, *a, **kw):
+            if str(path).endswith("dev-active"):
+                raise OSError("locked")
+            return real_remove(path, *a, **kw)
+
+        with mock.patch("os.remove", fake_remove):
+            _mod.clear_dev_marker(self.root)
+        self.assertTrue(os.path.isfile(self.marker), "marker cleanup really did fail")
+        self.assertEqual(len(self._exit_lines()), 1)
+        _mod.clear_dev_marker(self.root)
+        self.assertEqual(len(self._exit_lines()), 1,
+                         "the same marker must not be closed twice in the audit trail")
+        self.assertFalse(os.path.isfile(self.marker), "the retry removes the marker")
+        self.assertFalse(os.path.isfile(self.pending))
+
+    def test_clean_close_leaves_no_pending_record_behind(self):
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root)
+        self.assertEqual(len(self._exit_lines()), 1)
+        self.assertFalse(os.path.isfile(self.marker))
+        self.assertFalse(os.path.isfile(self.pending),
+                         "the happy path must not leave retry state on disk")
+
+    def test_corrupt_pending_record_is_discarded_not_jammed(self):
+        # A record that carries no recoverable line must not wedge the
+        # mechanism shut (nothing to replay, so drop it and carry on).
+        with open(self.pending, "w", encoding="utf-8", newline="\n") as f:
+            f.write("{not json")
+        _mod.clear_dev_marker(self.root)
+        self.assertFalse(os.path.isfile(self.pending))
+        self._drop_marker()
+        _mod.clear_dev_marker(self.root)
+        self.assertEqual(len(self._exit_lines()), 1)
+
+
 class TestStandupBriefingGating(unittest.TestCase):
     """#61 regression: pin the once-per-LOCAL-day briefing contract so the
     documented behavior (and the absence of a marker/timezone misfire) cannot

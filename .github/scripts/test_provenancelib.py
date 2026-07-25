@@ -2597,5 +2597,129 @@ class TimeoutHardeningTest(unittest.TestCase):
         )
 
 
+class ProvenanceRecordShapeTest(unittest.TestCase):
+    """#410: read_provenance documents `dict | None` but used to hand back
+    whatever json.load produced, so a syntactically valid `[]` was admitted to
+    the store as a list. load_provenance_dir then called record.get() inside a
+    single try/except wrapped around the WHOLE glob loop, so the resulting
+    AttributeError aborted the scan and silently dropped every later valid
+    record — SessionStart drift and commit-gate auto-heal then ran against a
+    truncated provenance map with no indication anything was missing."""
+
+    # Every JSON top-level type that is not a provenance record.
+    NON_RECORDS = ("[]", "null", "3", '"a string"', "true", "[{}]")
+
+    def _dir(self):
+        import shutil
+
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp, True)
+        return tmp
+
+    def _write_raw(self, d, name, text):
+        path = os.path.join(d, name)
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+        return path
+
+    def _valid(self, d, name, doc):
+        record = pl.new_record(doc, created="2026-06-26", entries=[
+            {"path": "package.json", "hash": "a" * 40,
+             "drift_trigger": True, "claims": []},
+        ])
+        pl.write_provenance(os.path.join(d, name), record)
+        return record
+
+    def test_read_provenance_rejects_every_non_mapping_top_level_type(self):
+        d = self._dir()
+        for i, raw in enumerate(self.NON_RECORDS):
+            path = self._write_raw(d, f"nonmap{i}.json", raw)
+            self.assertIsNone(
+                pl.read_provenance(path),
+                f"read_provenance must return None for a top-level {raw!r}",
+            )
+
+    def test_read_provenance_rejects_a_mapping_with_the_wrong_schema(self):
+        d = self._dir()
+        bad = {
+            "empty": {},
+            "no_schema": {"doc": "x", "created": "2026-01-01",
+                          "interview_derived": False, "entries": []},
+            "wrong_version": {"schema": 99, "doc": "x", "created": "2026-01-01",
+                              "interview_derived": False, "entries": []},
+            "schema_as_string": {"schema": "1", "doc": "x", "created": "2026-01-01",
+                                 "interview_derived": False, "entries": []},
+            "entries_not_a_list": {"schema": 1, "doc": "x", "created": "2026-01-01",
+                                   "interview_derived": False, "entries": {}},
+            "doc_not_a_string": {"schema": 1, "doc": 7, "created": "2026-01-01",
+                                 "interview_derived": False, "entries": []},
+            "missing_entries": {"schema": 1, "doc": "x", "created": "2026-01-01",
+                                "interview_derived": False},
+        }
+        for name, record in bad.items():
+            path = self._write_raw(d, f"{name}.json", json.dumps(record))
+            self.assertIsNone(
+                pl.read_provenance(path),
+                f"read_provenance must return None for the {name!r} record",
+            )
+
+    def test_read_provenance_still_accepts_a_canonical_record(self):
+        d = self._dir()
+        record = self._valid(d, "tech-stack.json", "tech-stack")
+        self.assertEqual(pl.read_provenance(os.path.join(d, "tech-stack.json")), record)
+
+    def test_invalid_record_does_not_drop_the_valid_records_after_it(self):
+        # Filenames chosen so the invalid file is globbed FIRST.
+        d = self._dir()
+        self._write_raw(d, "a-bad.json", "[]")
+        self._valid(d, "b-good.json", "tech-stack")
+        self._valid(d, "c-good.json", "code-map")
+        loaded = pl.load_provenance_dir(d)
+        self.assertEqual(sorted(loaded), ["code-map", "tech-stack"],
+                         "one invalid record must not abort the directory scan")
+
+    def test_a_valid_record_survives_after_every_invalid_top_level_type(self):
+        for i, raw in enumerate(self.NON_RECORDS):
+            with self.subTest(raw=raw):
+                d = self._dir()
+                self._write_raw(d, "a-bad.json", raw)
+                self._valid(d, "b-good.json", "tech-stack")
+                loaded = pl.load_provenance_dir(d)
+                self.assertIn("tech-stack", loaded,
+                              f"a valid record after {raw!r} must still load")
+                self.assertEqual(len(loaded), 1)
+
+    def test_loader_never_raises_on_an_all_invalid_directory(self):
+        d = self._dir()
+        for i, raw in enumerate(self.NON_RECORDS):
+            self._write_raw(d, f"bad{i}.json", raw)
+        self.assertEqual(pl.load_provenance_dir(d), {})
+
+    def test_loader_reports_bounded_corruption_without_exposing_contents(self):
+        d = self._dir()
+        # Stand-in for the sort of thing a provenance file really holds —
+        # repo paths and claim prose that has no business in a log line.
+        sensitive = "internal/billing/keyvault.ts"
+        self._write_raw(d, "leaky.json", json.dumps([sensitive]))
+        self._valid(d, "good.json", "tech-stack")
+        skipped = []
+        loaded = pl.load_provenance_dir(d, skipped=skipped)
+        self.assertIn("tech-stack", loaded)
+        self.assertEqual(skipped, ["leaky.json"],
+                         "the loader must name the rejected file, and only its name")
+        self.assertNotIn(sensitive, " ".join(skipped),
+                         "a corruption diagnostic must never carry file contents")
+
+    def test_corruption_diagnostic_is_bounded(self):
+        d = self._dir()
+        for i in range(40):
+            self._write_raw(d, f"bad{i:02d}.json", "[]")
+        skipped = []
+        pl.load_provenance_dir(d, skipped=skipped)
+        self.assertTrue(skipped, "rejected records must be reported")
+        self.assertLessEqual(len(skipped), pl.MAX_SKIPPED_REPORTED,
+                             "the diagnostic must be bounded, not one line per file")
+
+
 if __name__ == "__main__":
     unittest.main()
