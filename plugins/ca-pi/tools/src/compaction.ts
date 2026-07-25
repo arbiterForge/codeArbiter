@@ -1,8 +1,8 @@
 /** compaction.ts - semantic, non-mutating Pi native compaction adapter. */
 import { randomUUID } from "node:crypto";
-import { appendFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
+import { appendAuditLine } from "./audit-sink.ts";
 import type { BridgePort, ExtensionContextPort, LifecycleLease } from "./contracts.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { runPiChild, type ChildResult, type PiChildRequest } from "./runner.ts";
@@ -298,20 +298,101 @@ function alreadyCompactedTail(entries: readonly unknown[]): boolean {
   return false;
 }
 
+/* ---------------------------------------------------------------------------
+ * Host-event validation for the two native compaction records.
+ *
+ * Pi's generic event port hands every extension a `Record<string, unknown>`, so the only thing
+ * standing between a drifted or malformed native record and a raw `TypeError` escaping into the
+ * host callback is an exact parse. The validators below are the adapter's schema-checked
+ * boundary: every field the compaction logic later dereferences is proven here, from `unknown`,
+ * with no type assertion anywhere on the path. An invalid record leaves through the same fixed
+ * diagnostic a failed compaction uses, never through a stack trace carrying host payload.
+ * ------------------------------------------------------------------------ */
+const COMPACTION_REASONS = Object.freeze(["manual", "threshold", "overflow"] as const);
+const MAX_BRANCH_ENTRIES = 100_000;
+const MAX_ENTRY_ID_CHARS = 1_024;
+const MAX_HOST_TEXT_CHARS = 1_048_576;
+
+function boundedHostText(value: unknown, maxChars: number): value is string {
+  return typeof value === "string" && value.length <= maxChars;
+}
+
+function isCompactionReason(value: unknown): value is PiCompactionEvent["reason"] {
+  return COMPACTION_REASONS.includes(value as never);
+}
+
+/** An AbortSignal the compaction path may both read and hand to a child run. */
+function isAbortSignalLike(value: unknown): value is AbortSignal {
+  return isRecord(value) && typeof value.aborted === "boolean"
+    && typeof value.addEventListener === "function" && typeof value.removeEventListener === "function";
+}
+
+function validPreparation(value: unknown): value is PiCompactionEvent["preparation"] {
+  return isRecord(value)
+    && boundedHostText(value.firstKeptEntryId, MAX_ENTRY_ID_CHARS)
+    && typeof value.tokensBefore === "number"
+    && Number.isFinite(value.tokensBefore) && value.tokensBefore >= 0
+    && (value.previousSummary === undefined || boundedHostText(value.previousSummary, MAX_HOST_TEXT_CHARS));
+}
+
+/** Parse a raw `session_before_compact` record; `undefined` means "do not narrow this". */
+export function parsePiCompactionEvent(raw: unknown): PiCompactionEvent | undefined {
+  if (!isRecord(raw)) return undefined;
+  if (!Array.isArray(raw.branchEntries) || raw.branchEntries.length > MAX_BRANCH_ENTRIES) return undefined;
+  if (!validPreparation(raw.preparation)) return undefined;
+  const customInstructions = raw.customInstructions;
+  if (customInstructions !== undefined && !boundedHostText(customInstructions, MAX_HOST_TEXT_CHARS)) return undefined;
+  if (!isCompactionReason(raw.reason)) return undefined;
+  if (typeof raw.willRetry !== "boolean") return undefined;
+  if (!isAbortSignalLike(raw.signal)) return undefined;
+  const preparation = raw.preparation;
+  return {
+    branchEntries: raw.branchEntries,
+    preparation: {
+      firstKeptEntryId: preparation.firstKeptEntryId,
+      tokensBefore: preparation.tokensBefore,
+      ...(preparation.previousSummary === undefined ? {} : { previousSummary: preparation.previousSummary }),
+    },
+    ...(customInstructions === undefined ? {} : { customInstructions }),
+    reason: raw.reason,
+    willRetry: raw.willRetry,
+    signal: raw.signal,
+  };
+}
+
+export interface PiCompactedEvent {
+  compactionEntry: unknown;
+  fromExtension: boolean;
+  reason: string;
+  willRetry: boolean;
+}
+
+/** Parse a raw `session_compact` record; `undefined` means "do not audit this". */
+export function parsePiCompactedEvent(raw: unknown): PiCompactedEvent | undefined {
+  if (!isRecord(raw)) return undefined;
+  if (typeof raw.fromExtension !== "boolean" || typeof raw.willRetry !== "boolean") return undefined;
+  if (!isCompactionReason(raw.reason)) return undefined;
+  return {
+    compactionEntry: raw.compactionEntry,
+    fromExtension: raw.fromExtension,
+    reason: raw.reason,
+    willRetry: raw.willRetry,
+  };
+}
+
 export async function handleBeforeCompact(
-  event: PiCompactionEvent,
+  rawEvent: unknown,
   context: PiCompactionContext,
   runner: CompactionRunner,
 ): Promise<PiCompactionResult | undefined> {
+  const event = parsePiCompactionEvent(rawEvent);
+  if (event === undefined) throw new Error(COMPACTION_FAILURE);
   if (event.signal.aborted) throw new Error("Pi native compaction was cancelled.");
   const provider = context.model?.provider;
   const model = context.model?.id;
   if (typeof provider !== "string" || provider.trim() === ""
     || typeof model !== "string" || model.trim() === "") {
     throw new Error("Pi native compaction requires the current exact provider and model.");
-  }
-  if (!Number.isFinite(event.preparation.tokensBefore) || event.preparation.tokensBefore < 0) {
-    throw new Error("Pi compaction token metrics are invalid.");
   }
 
   try {
@@ -362,9 +443,11 @@ export async function handleBeforeCompact(
 }
 
 export async function handleAfterCompact(
-  event: { compactionEntry: unknown; fromExtension: boolean; reason: string; willRetry: boolean },
+  rawEvent: unknown,
   audit: CompactionAuditPort,
 ): Promise<void> {
+  const event = parsePiCompactedEvent(rawEvent);
+  if (event === undefined) return;
   if (!event.fromExtension || !isRecord(event.compactionEntry)) return;
   const detailsRoot = event.compactionEntry.details;
   if (!isRecord(detailsRoot) || !isRecord(detailsRoot.codearbiter)) return;
@@ -407,7 +490,7 @@ export function installPiCompaction(
   pi.on("session_before_compact", async (rawEvent, rawContext) => {
     const lifecycle = currentLifecycle();
     if (lifecycle === undefined || !trustedContext(rawContext)) return undefined;
-    const result = await handleBeforeCompact(rawEvent as unknown as PiCompactionEvent, {
+    const result = await handleBeforeCompact(rawEvent, {
       cwd: rawContext.cwd,
       packageRoot: options.packageRoot,
       model: rawContext.model,
@@ -419,12 +502,7 @@ export function installPiCompaction(
   pi.on("session_compact", async (rawEvent, rawContext) => {
     const lifecycle = currentLifecycle();
     if (lifecycle === undefined || !trustedContext(rawContext)) return;
-    await handleAfterCompact(rawEvent as unknown as {
-      compactionEntry: unknown;
-      fromExtension: boolean;
-      reason: string;
-      willRetry: boolean;
-    }, {
+    await handleAfterCompact(rawEvent, {
       record: async (record) => {
         if (currentLifecycle() !== lifecycle) return;
         await options.audit({ cwd: rawContext.cwd, ...record });
@@ -433,7 +511,15 @@ export function installPiCompaction(
   });
 }
 
+/** A plan may legitimately carry up to 64 metrics; only this many belong on one governance row.
+ * The sink refuses an oversized line outright, so bounding here is what keeps a wide but valid
+ * plan auditable instead of silently unrecorded. */
+const MAX_AUDIT_METRICS = 16;
+
+/** Appends one confirmed-compaction row through the shared hardened sink in audit-sink.ts. A
+ * confirmed compaction remains valid whether or not the append-only sink accepts the row. */
 export async function appendPiCompactionAudit(record: PiCompactionAuditRecord): Promise<void> {
+  const metrics = Object.fromEntries(Object.entries(record.metrics).slice(0, MAX_AUDIT_METRICS));
   const line = [
     `[${new Date().toISOString()}]`,
     "HOST: pi",
@@ -441,11 +527,7 @@ export async function appendPiCompactionAudit(record: PiCompactionAuditRecord): 
     `AUDIT: ${record.auditCodes.join(",") || "CA-PRUNE-CONFIRMED"}`,
     `CORRELATION: ${randomUUID()}`,
     `PLAN: ${record.planFingerprint}`,
-    `METRICS: ${JSON.stringify(record.metrics)}`,
+    `METRICS: ${JSON.stringify(metrics)}`,
   ].join(" | ") + "\n";
-  try {
-    await appendFile(resolve(record.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
-  } catch {
-    // A confirmed compaction remains valid if its append-only audit sink is unavailable.
-  }
+  await appendAuditLine(record.cwd, line);
 }

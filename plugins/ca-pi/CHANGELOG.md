@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.13] - 2026-07-25
+## [0.1.15] - 2026-07-25
 
 ### Changed
 
@@ -17,6 +17,42 @@ All notable changes to `ca-pi` are documented in this file.
   contract and the on-disk format are unchanged.
 - `parse_iso()` now has one owner. `_ledgerlib` carried a byte-identical second
   copy of `_fmtlib`'s implementation and re-exports it instead.
+
+## [0.1.14] - 2026-07-25
+
+### Fixed
+
+- The Pi security contract asserted the exact CodeQL action SHA, so dependabot
+  could never land a codeql-action bump on its own - it cannot edit a test, and
+  every upgrade failed there until a human hand-edited the literal. The
+  assertion now checks the property that matters: both refs are 40-hex commit
+  SHAs, and init and analyze pin the same commit, so a split pair cannot
+  silently analyse with a different CodeQL than it initialised.
+
+## [0.1.13] - 2026-07-25
+
+### Fixed
+
+- Every Pi audit sink is hardened against link and race redirection. The bridge
+  failure audit, the child-dispatch audit, and the confirmed-compaction audit
+  each resolved the project's `.codearbiter` governance log from a
+  caller-supplied cwd and appended to it directly, which follows file symlinks,
+  directory junctions, and hardlinks - so a trusted project could redirect those
+  records onto another same-user file and leave the real log without them. All
+  five producers now share one primitive that canonicalizes the state directory,
+  refuses a linked or escaping one, opens the target no-follow and
+  create-exclusive, and re-verifies the opened handle's identity on both sides
+  of the append. A failed or hostile sink returns false rather than throwing, so
+  no producer's enforcement outcome or fail direction changes.
+- Pi native compaction events are validated before they are narrowed. Both host
+  records were laundered through a type assertion, and the before-compact
+  handler read `event.signal.aborted` and `event.preparation.tokensBefore`
+  before its fail-safe block opened, so a malformed or drifted native record
+  rejected the host callback with a raw `TypeError` instead of the fixed
+  `Pi native compaction failed safely; run /ca-doctor.` diagnostic. Both events
+  are now parsed from `unknown` through exact bounded validators covering the
+  abort signal, preparation, entry array, reason enum, booleans, and optional
+  strings.
 
 ## [0.1.12] - 2026-07-25
 

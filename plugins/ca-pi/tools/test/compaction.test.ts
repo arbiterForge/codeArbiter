@@ -374,3 +374,100 @@ describe("Task 8 Pi compaction lifecycle integration", () => {
     expect(audit).toHaveBeenCalledOnce();
   });
 });
+
+describe("Pi native compaction host-event validation", () => {
+  const SAFE = "Pi native compaction failed safely; run /ca-doctor.";
+  /** A credential-shaped host payload: the diagnostic must never echo it back. */
+  const HOSTILE_PAYLOAD = "OPENAI_API_KEY=synthetic-secret";
+  const context = {
+    cwd: resolve("C:/repo"), packageRoot: resolve("C:/package"),
+    model: { provider: "openai", id: "gpt-test" },
+  };
+
+  function malformedBeforeEvents(): ReadonlyArray<readonly [string, unknown]> {
+    const valid = event();
+    return [
+      ["empty record", {}],
+      ["null", null],
+      ["undefined", undefined],
+      ["array", []],
+      ["scalar number", 42],
+      ["scalar string", HOSTILE_PAYLOAD],
+      ["missing signal", { ...valid, signal: undefined }],
+      ["signal without a boolean aborted", { ...valid, signal: { aborted: "yes", addEventListener() {}, throwIfAborted() {} } }],
+      ["signal without listener support", { ...valid, signal: { aborted: false } }],
+      ["missing preparation", { ...valid, preparation: undefined }],
+      ["scalar preparation", { ...valid, preparation: HOSTILE_PAYLOAD }],
+      ["missing firstKeptEntryId", { ...valid, preparation: { tokensBefore: 1 } }],
+      ["non-string firstKeptEntryId", { ...valid, preparation: { firstKeptEntryId: 7, tokensBefore: 1 } }],
+      ["string tokensBefore", { ...valid, preparation: { firstKeptEntryId: "u1", tokensBefore: "12345" } }],
+      ["NaN tokensBefore", { ...valid, preparation: { firstKeptEntryId: "u1", tokensBefore: Number.NaN } }],
+      ["negative tokensBefore", { ...valid, preparation: { firstKeptEntryId: "u1", tokensBefore: -1 } }],
+      ["non-string previousSummary", { ...valid, preparation: { firstKeptEntryId: "u1", tokensBefore: 1, previousSummary: 9 } }],
+      ["non-string customInstructions", { ...valid, customInstructions: 9 }],
+      ["unknown reason", { ...valid, reason: "compact-now" }],
+      ["non-boolean willRetry", { ...valid, willRetry: "false" }],
+      ["non-array branchEntries", { ...valid, branchEntries: { length: 1 } }],
+      ["oversized branchEntries", { ...valid, branchEntries: new Array(100_001).fill({ type: "message" }) }],
+      ["oversized customInstructions", { ...valid, customInstructions: "x".repeat(1_048_577) }],
+    ] as const;
+  }
+
+  test.each(malformedBeforeEvents())(
+    "session_before_compact rejects %s with the fixed diagnostic",
+    async (_name, raw) => {
+      const child = runner();
+      await expect(handleBeforeCompact(raw as never, context, child)).rejects.toThrow(SAFE);
+      await expect(handleBeforeCompact(raw as never, context, child)).rejects.not.toThrow(/synthetic-secret/u);
+      expect(child.plan).not.toHaveBeenCalled();
+      expect(child.summarize).not.toHaveBeenCalled();
+    },
+  );
+
+  test("the registered session_before_compact handler never leaks a host TypeError", async () => {
+    const handlers = new Map<string, (raw: any, ctx: any) => unknown>();
+    const child = runner();
+    installPiCompaction(
+      { on: (name: string, handler: (raw: any, ctx: any) => unknown) => handlers.set(name, handler) },
+      {
+        packageRoot: resolve("C:/package"), isLifecycleReady: () => true,
+        runner: child, audit: vi.fn(async () => undefined),
+      },
+    );
+    const hostContext = {
+      cwd: resolve("C:/repo"), model: { provider: "openai", id: "gpt-test" }, isProjectTrusted: () => true,
+    };
+
+    await expect(handlers.get("session_before_compact")!({}, hostContext)).rejects.toThrow(SAFE);
+    expect(child.plan).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ["null", null],
+    ["undefined", undefined],
+    ["array", []],
+    ["scalar", 42],
+    ["non-boolean fromExtension", { compactionEntry: {}, fromExtension: "yes", reason: "threshold", willRetry: false }],
+    ["unknown reason", { compactionEntry: {}, fromExtension: true, reason: HOSTILE_PAYLOAD, willRetry: false }],
+    ["non-boolean willRetry", { compactionEntry: {}, fromExtension: true, reason: "threshold", willRetry: 1 }],
+  ] as const)("session_compact ignores %s without throwing or recording", async (_name, raw) => {
+    const audit = { record: vi.fn(async () => undefined) };
+    await expect(handleAfterCompact(raw as never, audit)).resolves.toBeUndefined();
+    expect(audit.record).not.toHaveBeenCalled();
+  });
+
+  test("the registered session_compact handler ignores a malformed host record", async () => {
+    const handlers = new Map<string, (raw: any, ctx: any) => unknown>();
+    const audit = vi.fn(async () => undefined);
+    installPiCompaction(
+      { on: (name: string, handler: (raw: any, ctx: any) => unknown) => handlers.set(name, handler) },
+      { packageRoot: resolve("C:/package"), isLifecycleReady: () => true, runner: runner(), audit },
+    );
+    const hostContext = {
+      cwd: resolve("C:/repo"), model: { provider: "openai", id: "gpt-test" }, isProjectTrusted: () => true,
+    };
+
+    await expect(handlers.get("session_compact")!(null, hostContext)).resolves.toBeUndefined();
+    expect(audit).not.toHaveBeenCalled();
+  });
+});

@@ -382,8 +382,19 @@ describe("ADR-0014 adversarial promotion contract", () => {
 
   test("pins CodeQL and scans both TypeScript sources and shipped JavaScript", async () => {
     const workflow = await readFile(resolve(import.meta.dirname, "../../../../.github/workflows/codeql.yml"), "utf8");
-    expect(workflow).toContain("github/codeql-action/init@7188fc363630916deb702c7fdcf4e481b751f97a");
-    expect(workflow).toContain("github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a");
+    // Assert the PIN, not its current value. Naming one SHA meant dependabot
+    // could never land a codeql-action bump on its own — it cannot edit a test,
+    // so every upgrade failed here until a human hand-edited the literal. That
+    // is not a security control, it is a merge tax that pressures reviewers to
+    // "just update the string". What actually matters is that both refs are
+    // 40-hex SHAs (never a movable tag) and that init and analyze resolve to the
+    // SAME commit — a split pair silently analyses with a different CodeQL than
+    // it initialised.
+    const initPin = workflow.match(/github\/codeql-action\/init@([0-9a-f]{40})\b/u);
+    const analyzePin = workflow.match(/github\/codeql-action\/analyze@([0-9a-f]{40})\b/u);
+    expect(initPin, "codeql-action/init must be pinned to a 40-hex commit SHA").not.toBeNull();
+    expect(analyzePin, "codeql-action/analyze must be pinned to a 40-hex commit SHA").not.toBeNull();
+    expect(analyzePin![1], "codeql-action init and analyze must pin the same commit").toBe(initPin![1]);
     expect(workflow).toContain("languages: javascript-typescript");
     expect(workflow).toContain("plugins/ca-pi/tools/src");
     expect(workflow).toContain("plugins/ca-pi/extensions");
