@@ -214,6 +214,50 @@ describe("farm.ts smoke tests", () => {
     expect(result.out).toContain("No model configured");
   });
 
+  // #412 — the runtime boundary. A malformed plan must stop at parse time with a
+  // named, bounded, field-specific message and BEFORE any side effect: no
+  // worktree, no branch, no report directory, no network call, no shell process.
+  it.each([
+    ["null root", "null", /plan must be a JSON object/],
+    ["missing meta", '{"tasks":[]}', /plan\.meta/],
+    ["null meta", '{"meta":null,"tasks":[]}', /plan\.meta/],
+    ["numeric task id", '{"meta":{"name":"p"},"tasks":[{"id":1,"description":"d","filesInScope":["a"],"test":{"path":"a"},"gate":{"commands":["c"]}}]}', /plan\.tasks\[0\]\.id must be a string/],
+    ["unknown task field", '{"meta":{"name":"p"},"tasks":[{"id":"a","bogus":1,"description":"d","filesInScope":["a"],"test":{"path":"a"},"gate":{"commands":["c"]}}]}', /unknown property "bogus"/],
+  ])("refuses a malformed plan (%s) with no side effects", async (_label, raw, expected) => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, raw);
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_MODEL: "test-model",
+      FARM_API_BASE_URL: "http://127.0.0.1:9",
+    });
+
+    expect(result.code).toBe(1);
+    expect(result.out).toMatch(expected);
+    // A raw TypeError/stack is not an acceptable contract failure.
+    expect(result.out).not.toMatch(/Cannot read properties|TypeError|is not iterable/);
+    // No side effects.
+    expect(existsSync(join(tmpDir, ".farm"))).toBe(false);
+    const branches = execSync("git branch --list", { cwd: tmpDir, stdio: "pipe" }).toString();
+    expect(branches).not.toContain("farm/");
+  });
+
+  it("refuses unparseable plan JSON with a bounded message, not a stack", async () => {
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, "{ not json");
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_MODEL: "test-model",
+    });
+
+    expect(result.code).toBe(1);
+    expect(result.out).toMatch(/plan\.json/);
+    expect(result.out.length).toBeLessThan(500);
+    expect(existsSync(join(tmpDir, ".farm"))).toBe(false);
+  });
+
   it("completes two tasks green when API returns valid file blocks", async () => {
     ({ server: mockServer, port } = await startMockServer((body) => {
       // Return a file block appropriate to the task described in the prompt

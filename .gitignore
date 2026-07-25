@@ -77,3 +77,9 @@ site/src/content/docs/changelog.md
 plugins/ca-sandbox/tools/node_modules/
 plugins/ca-sandbox/tools/**/.nixpacks/
 plugins/ca-sandbox/tools/**/.ca-sandbox.nixpacks.Dockerfile
+
+# ca-sandbox real-container execution sentinel (issue #406) — the append-only
+# record of which docker-gated layers actually ran. Written per-run by
+# docker-gate.ts when CA_SANDBOX_DOCKER_SENTINEL is set (required CI does; a
+# developer may set it locally too). Run output, never project state.
+*.sentinel

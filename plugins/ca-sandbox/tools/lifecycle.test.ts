@@ -20,6 +20,7 @@
  *      hand-leaked labeled volume. Namespaced + fully cleaned up.
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import {
   listSandboxes,
@@ -245,12 +246,7 @@ describe("createSandbox — clones into a named volume + runs (AC-01)", () => {
 // cleaned up. Uses a LOCAL fake repo served by a throwaway git container so the
 // clone needs no external network.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("lifecycle");
 
 const NS = "ca-sbx-t09";
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
