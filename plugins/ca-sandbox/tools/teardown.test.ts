@@ -27,8 +27,15 @@
  * against a listing frozen in time.
  */
 import { describe, it, expect, vi } from "vitest";
-import { destroySandbox, prune } from "./destroy.ts";
-import { runCli, type Handlers } from "./cli.ts";
+import {
+  MAX_DIAGNOSTIC_REFS,
+  MAX_TEARDOWN_FAILURES,
+  destroySandbox,
+  formatTeardownDiagnostic,
+  prune,
+  teardownIncomplete,
+} from "./destroy.ts";
+import { TEARDOWN_FAILURE_EXIT, USAGE_ERROR_EXIT, runCli, type Handlers } from "./cli.ts";
 import type { DockerRun } from "./registry.ts";
 
 // --------------------------------------------------------------------------
@@ -154,8 +161,12 @@ describe("destroySandbox — a failed removal is retained, not dropped (#393)", 
     expect(res.removedVolumes).toEqual([]);
     // Discovery itself failed — reporting "nothing to remove" would be a lie.
     expect(res.failureCount).toBeGreaterThan(0);
+    // #433 narrowed this from "both list-containers AND list-volumes appear".
+    // That assertion pinned the duplication #433 filed as the defect: one
+    // unreachable daemon reported four times. The obligation this test exists
+    // for is that a failed discovery is RECORDED rather than swallowed, and
+    // that the operator is told what is wrong — both still asserted, once.
     expect(res.failures.map((f) => f.op)).toContain("list-containers");
-    expect(res.failures.map((f) => f.op)).toContain("list-volumes");
     expect(res.failures[0].message).toContain("Cannot connect to the Docker daemon");
   });
 
@@ -334,5 +345,159 @@ describe("runCli — teardown failure must not exit 0 (#393)", () => {
     const { run } = fakeDocker({ containers: ["c1"] }, { failList: true });
     const { code } = await runCaptured(["prune"], handlersOver(run));
     expect(code).not.toBe(0);
+  });
+});
+
+// --------------------------------------------------------------------------
+// #433 — the diagnostics themselves, after the adversarial review of #429
+// --------------------------------------------------------------------------
+describe("#433 — teardown diagnostics say what actually happened", () => {
+  it("AC-1: one unreachable daemon is ONE failure, not four", () => {
+    // Reproduced against the shipped artifact:
+    //   DOCKER_HOST=tcp://127.0.0.1:1 node sandbox.js prune -> failureCount: 4
+    // Discovery lists containers and volumes, then verifyScope re-lists the
+    // SAME two scopes against the same dead daemon. Four identical
+    // "error during ..." lines for one fact. An operator counting failures is
+    // being told the damage is four times what it is.
+    const { run } = fakeDocker({ containers: ["c1"] }, { failList: true });
+    const report = prune({ dockerRun: run });
+    expect(report.failureCount).toBe(1);
+    expect(report.failures).toHaveLength(1);
+    expect(report.failures[0]!.message).toMatch(/Cannot connect to the Docker daemon/);
+  });
+
+  it("AC-1: a REAL dead daemon dedups, even though the two errors differ", () => {
+    // The synthetic fake above returns the identical string for both listings,
+    // so it cannot catch this. Against a real dead daemon the two errors carry
+    // DIFFERENT URLs, and a whole-message comparison collapses nothing:
+    //   error during connect: Get "http://127.0.0.1:1/v1.54/containers/json?..."
+    //   error during connect: Get "http://127.0.0.1:1/v1.54/volumes?..."
+    // Verified against the shipped artifact with DOCKER_HOST=tcp://127.0.0.1:1,
+    // which reported failureCount 4 before and 1 after.
+    const message = (path: string) =>
+      `error during connect: Get "http://127.0.0.1:1/v1.54/${path}": `
+      + "dial tcp 127.0.0.1:1: connectex: No connection could be made because "
+      + "the target machine actively refused it.";
+    const run: DockerRun = (args) => {
+      if (args[0] === "ps") return { code: 1, stdout: "", stderr: message("containers/json?all=1") };
+      if (args[0] === "volume" && args[1] === "ls") return { code: 1, stdout: "", stderr: message("volumes?filters=x") };
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    const report = prune({ dockerRun: run });
+    expect(report.failureCount).toBe(1);
+  });
+
+  it("AC-1: two listings failing DIFFERENTLY stay two failures", () => {
+    // The fingerprint must not become a blanket "all listing failures are one".
+    const run: DockerRun = (args) => {
+      if (args[0] === "ps") return { code: 1, stdout: "", stderr: "permission denied while trying to connect" };
+      if (args[0] === "volume" && args[1] === "ls") return { code: 1, stdout: "", stderr: "Cannot connect to the Docker daemon" };
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    const report = prune({ dockerRun: run });
+    expect(report.failureCount).toBe(2);
+  });
+
+  it("AC-1: genuinely different failures are still counted separately", () => {
+    // Dedup must collapse REPEATS of one fact, never distinct facts. Two
+    // containers that each refuse removal for their own reason are two
+    // failures, and collapsing them would understate the damage.
+    const { run } = fakeDocker(
+      { containers: ["c1", "c2"] },
+      { failRemove: (_kind, ref) => (ref === "c1" ? 125 : 126) },
+    );
+    const report = prune({ dockerRun: run });
+    expect(report.failureCount).toBe(2);
+    expect(new Set(report.failures.map((f) => f.ref))).toEqual(new Set(["c1", "c2"]));
+  });
+
+  it("AC-2: a sandbox created AFTER discovery does not fail prune", () => {
+    // prune verified by re-listing the GLOBAL ca.sandbox=1 scope, so a box
+    // another agent created mid-run landed in remainingContainers and produced
+    // "These objects may be running UNTRUSTED code" for something prune never
+    // targeted. It fails safe, but a scary false positive teaches operators to
+    // ignore the signal - which defeats the point of #393.
+    const containers = ["c1"];
+    let listed = 0;
+    const run: DockerRun = (args) => {
+      if (args[0] === "ps") {
+        listed += 1;
+        // The second listing is the post-sweep verification; by then another
+        // process has created its own sandbox.
+        const world = listed === 1 ? containers : ["someone-elses-box"];
+        return { code: 0, stdout: world.map((c) => `${c}\n`).join(""), stderr: "" };
+      }
+      if (args[0] === "volume" && args[1] === "ls") return { code: 0, stdout: "", stderr: "" };
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    const report = prune({ dockerRun: run });
+    expect(report.removedContainers).toEqual(["c1"]);
+    expect(report.remainingContainers).toEqual([]);
+    expect(teardownIncomplete(report)).toBe(false);
+  });
+
+  it("AC-2: an object this invocation DID target and failed to remove is still reported", () => {
+    // The scoping must not become a blindfold. A container prune tried to
+    // remove and could not is exactly what remainingContainers is for.
+    const { run } = fakeDocker({ containers: ["c1"] }, { failRemove: () => 125 });
+    const report = prune({ dockerRun: run });
+    expect(report.remainingContainers).toEqual(["c1"]);
+    expect(teardownIncomplete(report)).toBe(true);
+  });
+
+  it("AC-3: the teardown exit code is pinned, and differs from the usage error", () => {
+    // Every existing assertion is `not.toBe(0)`, so this could regress to 2 -
+    // colliding with the usage-error code that #429's comment explicitly says
+    // it is distinct from - and the whole suite would stay green.
+    expect(TEARDOWN_FAILURE_EXIT).toBe(1);
+    expect(TEARDOWN_FAILURE_EXIT).not.toBe(USAGE_ERROR_EXIT);
+    expect(USAGE_ERROR_EXIT).toBe(2);
+  });
+
+  it("AC-4: the RENDERED diagnostic elides an over-long failure list", () => {
+    // The bounded-failure test asserted only on the result object. The bound
+    // that matters is the one on the string an operator actually reads.
+    const many = Array.from({ length: MAX_TEARDOWN_FAILURES + 7 }, (_, i) => `c${i}`);
+    const { run } = fakeDocker({ containers: many }, { failRemove: () => 125 });
+    const report = prune({ dockerRun: run });
+    const text = formatTeardownDiagnostic("prune", report);
+    expect(report.failureCount).toBe(many.length);
+    expect(text).toMatch(/and 7 more failure\(s\) not shown/);
+  });
+
+  it("AC-4: the RENDERED diagnostic elides an over-long remaining list", () => {
+    const many = Array.from({ length: MAX_DIAGNOSTIC_REFS + 3 }, (_, i) => `c${i}`);
+    const { run } = fakeDocker({ containers: many }, { failRemove: () => 125 });
+    const report = prune({ dockerRun: run });
+    const text = formatTeardownDiagnostic("prune", report);
+    expect(report.remainingContainers).toHaveLength(many.length);
+    expect(text).toMatch(/and 3 more container\(s\)/);
+  });
+
+  it("AC-5: a deliberately kept volume is never reported as remaining", () => {
+    // If the DISCOVERY volume listing fails, keptVolumes is empty - but the
+    // VERIFICATION listing can still succeed, and the volume the operator
+    // explicitly asked to keep then falls through the filter and is named as a
+    // leak. The exit is already non-zero from the listing failure, so there is
+    // no false success; the diagnostic is just confusing at the worst moment.
+    let volumeListings = 0;
+    const run: DockerRun = (args) => {
+      if (args[0] === "ps") return { code: 0, stdout: "", stderr: "" };
+      if (args[0] === "volume" && args[1] === "ls") {
+        volumeListings += 1;
+        // Discovery fails; verification succeeds and sees the kept volume.
+        return volumeListings === 1
+          ? { code: 1, stdout: "", stderr: "Cannot connect to the Docker daemon" }
+          : { code: 0, stdout: "ca-sbx-vol-id1\n", stderr: "" };
+      }
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    const report = destroySandbox("id1", { keepVolume: true, dockerRun: run });
+    expect(report.remainingVolumes).toEqual([]);
+    expect(report.keptVolumes).toEqual(["ca-sbx-vol-id1"]);
+    // The listing failure is still a failure - this hides a confusing line, not
+    // a real problem.
+    expect(report.failureCount).toBeGreaterThan(0);
+    expect(formatTeardownDiagnostic("destroy", report)).not.toContain("ca-sbx-vol-id1");
   });
 });

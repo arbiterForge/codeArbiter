@@ -687,12 +687,22 @@ var MAX_FAILURE_MESSAGE_CHARS = 300;
 var FailureLog = class {
   failures = [];
   count = 0;
+  seen = /* @__PURE__ */ new Set();
   add(op, ref, code, stderr) {
+    const message = oneLine(stderr);
+    const listing = op === "list-containers" || op === "list-volumes";
+    const identity = listing ? listingFingerprint(code, message) : `${op}\0${ref}\0${code}\0${message}`;
+    if (this.seen.has(identity)) return;
+    this.seen.add(identity);
     this.count += 1;
     if (this.failures.length >= MAX_TEARDOWN_FAILURES) return;
-    this.failures.push({ op, ref, code, message: oneLine(stderr) });
+    this.failures.push({ op, ref, code, message });
   }
 };
+function listingFingerprint(code, message) {
+  const shape = message.replace(/"[^"]*"/g, '"<url>"').replace(/https?:\/\/\S+/g, "<url>").replace(/\d+/g, "<n>");
+  return `listing\0${code}\0${shape}`;
+}
 function oneLine(stderr) {
   const s = stderr.replace(/\s+/g, " ").trim();
   if (!s) return "(no stderr from docker)";
@@ -735,16 +745,17 @@ function destroySandbox(id, opts = {}) {
     removedVolumes.push(...removeEach(volumesList.items, "volume", dockerRun, log));
   }
   const still = verifyScope(labels, dockerRun, log);
+  const survivingVolumes = opts.keepVolume ? [] : still.volumes.filter((v) => !keptVolumes.includes(v));
+  const keptFromVerification = opts.keepVolume ? [.../* @__PURE__ */ new Set([...keptVolumes, ...still.volumes])] : keptVolumes;
   return {
     id,
     removedContainers,
     removedVolumes,
-    keptVolumes,
+    keptVolumes: keptFromVerification,
     failures: log.failures,
     failureCount: log.count,
     remainingContainers: still.containers,
-    // A kept volume is a deliberate survivor, not a leak.
-    remainingVolumes: still.volumes.filter((v) => !keptVolumes.includes(v))
+    remainingVolumes: survivingVolumes
   };
 }
 function prune(opts = {}) {
@@ -758,14 +769,16 @@ function prune(opts = {}) {
   if (volumesList.code !== 0)
     log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
   const removedVolumes = removeEach(volumesList.items, "volume", dockerRun, log);
+  const targetedContainers = new Set(containersList.items);
+  const targetedVolumes = new Set(volumesList.items);
   const still = verifyScope(SANDBOX_LABEL2, dockerRun, log);
   return {
     removedContainers,
     removedVolumes,
     failures: log.failures,
     failureCount: log.count,
-    remainingContainers: still.containers,
-    remainingVolumes: still.volumes
+    remainingContainers: still.containers.filter((c) => targetedContainers.has(c)),
+    remainingVolumes: still.volumes.filter((v) => targetedVolumes.has(v))
   };
 }
 function teardownIncomplete(r) {
@@ -1022,6 +1035,7 @@ var defaultHandlers = {
   shell: defaultShell
 };
 var TEARDOWN_FAILURE_EXIT = 1;
+var USAGE_ERROR_EXIT = 2;
 function teardownExit(verb, r) {
   if (!teardownIncomplete(r)) return 0;
   process.stderr.write(`${formatTeardownDiagnostic(verb, r)}
@@ -1036,7 +1050,7 @@ async function runCli(argv, handlers = defaultHandlers) {
     if (e instanceof CliError) {
       process.stderr.write(`${e.message}
 `);
-      return 2;
+      return USAGE_ERROR_EXIT;
     }
     throw e;
   }
@@ -1099,6 +1113,7 @@ export {
   DEFAULT_SHELL,
   NET_POLICIES,
   TEARDOWN_FAILURE_EXIT,
+  USAGE_ERROR_EXIT,
   defaultHandlers,
   parseCli,
   runCli
