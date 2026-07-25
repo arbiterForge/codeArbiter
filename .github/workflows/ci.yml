@@ -699,19 +699,6 @@ jobs:
         # asserted only for append-only gate events, never RMW state or the
         # repo-global dev marker.
         run: python .github/scripts/test_dual_host_store.py
-      - name: Run ADR identity + supersession contract tests
-        # #416: two ADRs share the number 0014, so a bare `supersedes: 0014`
-        # named two documents at once. The identifier is the filename STEM;
-        # this pins both hook-side indexers to that derivation and proves an
-        # ambiguous bare number errors instead of resolving arbitrarily.
-        run: python .github/scripts/test_adr_identity.py
-      - name: Enforce the ADR identity contract on the live decision record
-        # The contract applied to .codearbiter/decisions/ itself: stems unique,
-        # no NEW file on an already-used number (the 0014 pair is grandfathered
-        # by stem, so a third one still fails), and every supersedes: resolving
-        # to exactly one ADR. Ambiguity fails the build rather than being
-        # silently resolved to whichever file sorts first.
-        run: python .github/scripts/check_adr_identity.py
       - name: Run guard-logic matrix
         # The cold-install matrix proves the interpreter plumbing; this proves
         # the guard decisions themselves - every blocked spelling of
@@ -803,6 +790,23 @@ jobs:
         # locally per CONTRIBUTING; wired here so the guards are mechanically
         # enforced. Stdlib-only, cross-platform (discovered on every matrix OS).
         run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
+      - name: Run ADR identity + supersession contract tests
+        # #416: two ADRs share the number 0014, so a bare `supersedes: 0014`
+        # named two documents at once. The identifier is the filename STEM;
+        # this pins both hook-side indexers to that derivation and proves an
+        # ambiguous bare number errors instead of resolving arbitrarily.
+        run: python .github/scripts/test_adr_identity.py
+      - name: Enforce the ADR identity contract on the live decision record
+        # The contract applied to .codearbiter/decisions/ itself: stems unique,
+        # no NEW file on an already-used number (the 0014 pair is grandfathered
+        # by stem, so a third one still fails), and every supersedes: resolving
+        # to exactly one ADR. Ambiguity fails the build rather than being
+        # silently resolved to whichever file sorts first.
+        #
+        # Last in the job deliberately: this pair guards the decision RECORD,
+        # not the payload, so a governance breach must not mask the hook
+        # enforcement results above it by halting the job early.
+        run: python .github/scripts/check_adr_identity.py
 
   version-bump:
     name: "[GATE ] | [CA  ] | Payload version"
