@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import subprocess
 import sys
 from argparse import ArgumentParser
@@ -48,6 +49,30 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/test/package.test.ts",
     "plugins/ca-pi/tools/test/runner-isolation.test.ts",
 })
+# Issue #388. The receipt's whole value is telling an operator - or an agent
+# reading the artifact after the job logs expire - WHICH contract rejected the
+# candidate. These identifiers are the only strings a failing step may put in
+# the receipt: stable, allowlisted, and carrying no command output, environment
+# value, prompt, or credential. `unattributed` covers a failure that never
+# reached a receipt-aware runner (a wedged checkout, install, or the runner
+# itself), so the artifact still says "this cell failed" rather than nothing.
+CONTRACT_IDS = (
+    "help-delta",
+    "promotion-apply",
+    "toolchain-install",
+    "generated-artifacts",
+    "adapter-typecheck",
+    "adapter-suite",
+    "security-contract",
+    "parity-contract",
+    "package-contract",
+    "platform-contract",
+    "docs-contract",
+)
+UNATTRIBUTED_CONTRACT = "unattributed"
+RECEIPT_FIELD_UNSAFE = re.compile(r"[^A-Za-z0-9._-]")
+RECEIPT_FIELD_LIMIT = 64
+RECEIPT_DELTA_LIMIT = 20
 
 
 class PromotionError(ValueError):
@@ -377,23 +402,103 @@ def capture_help(executable: str) -> tuple[str, ...]:
     return normalize_help(completed.stdout)
 
 
+def _receipt_field(value: str) -> str:
+    """Reduce a receipt field to a bounded, single-line, allowlisted token."""
+    cleaned = RECEIPT_FIELD_UNSAFE.sub("", value)[:RECEIPT_FIELD_LIMIT]
+    return cleaned or "unknown"
+
+
+def read_receipt_state(path: Path) -> dict[str, Any]:
+    """Read recorded contract failures; a missing or unreadable state is empty.
+
+    Returned keyword arguments feed `render_receipt` directly, so a cell that
+    failed before any runner ran still renders an attributable receipt.
+    """
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return {"contracts": (), "delta": None}
+    if not isinstance(document, dict):
+        return {"contracts": (), "delta": None}
+    raw_contracts = document.get("contracts")
+    contracts = tuple(sorted(
+        value for value in (raw_contracts if isinstance(raw_contracts, list) else [])
+        if value in CONTRACT_IDS
+    ))
+    removed, added = document.get("removed"), document.get("added")
+    delta = None
+    if isinstance(removed, list) and isinstance(added, list):
+        delta = HelpDelta(
+            removed=tuple(str(entry) for entry in removed),
+            added=tuple(str(entry) for entry in added),
+        )
+    return {"contracts": contracts, "delta": delta}
+
+
+def record_failure(path: Path, contract: str, delta: HelpDelta | None = None) -> None:
+    """Append one allowlisted contract identifier to the receipt state."""
+    if contract not in CONTRACT_IDS:
+        raise PromotionError(f"unknown promotion contract identifier: {contract!r}")
+    state = read_receipt_state(path)
+    document: dict[str, Any] = {
+        "contracts": sorted(set(state["contracts"]) | {contract}),
+    }
+    recorded = delta if delta is not None else state["delta"]
+    if recorded is not None:
+        document["removed"] = list(recorded.removed[:RECEIPT_DELTA_LIMIT])
+        document["added"] = list(recorded.added[:RECEIPT_DELTA_LIMIT])
+    try:
+        path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
+    except OSError as error:
+        raise PromotionError(f"cannot record promotion contract failure: {error}") from error
+
+
 def render_receipt(
     *,
     candidate: str,
     platform: str,
-    contract: str,
+    contracts: tuple[str, ...],
     delta: HelpDelta | None = None,
 ) -> str:
     """Render a compact, secret-free failure receipt for summaries/artifacts."""
+    named = tuple(sorted(set(contracts) & set(CONTRACT_IDS))) or (UNATTRIBUTED_CONTRACT,)
     lines = [
-        f"candidate={candidate}",
-        f"platform={platform}",
-        f"contract={contract}",
+        f"candidate={_receipt_field(candidate)}",
+        f"platform={_receipt_field(platform)}",
+        "contracts=" + ",".join(named),
     ]
     if delta is not None:
-        lines.append("removed=" + ",".join(delta.removed[:20]))
-        lines.append("added=" + ",".join(delta.added[:20]))
+        lines.append("removed=" + ",".join(delta.removed[:RECEIPT_DELTA_LIMIT]))
+        lines.append("added=" + ",".join(delta.added[:RECEIPT_DELTA_LIMIT]))
     return "\n".join(lines) + "\n"
+
+
+def _resolve_command(name: str) -> str:
+    """Resolve argv[0] to a real executable; Windows needs the .cmd/.exe shim."""
+    resolved = shutil.which(name)
+    if resolved is None:
+        raise PromotionError(f"promotion contract command is unavailable: {name}")
+    return resolved
+
+
+def run_contract(contract: str, state: Path, argv: list[str]) -> int:
+    """Run one validation contract, recording its identifier when it fails.
+
+    The child's streams are inherited, so raw command output stays in the job
+    log and never reaches the receipt.
+    """
+    if contract not in CONTRACT_IDS:
+        raise PromotionError(f"unknown promotion contract identifier: {contract!r}")
+    if not argv:
+        raise PromotionError("a promotion contract needs a command to run")
+    try:
+        completed = subprocess.run([_resolve_command(argv[0]), *argv[1:]], check=False)
+    except OSError as error:
+        record_failure(state, contract)
+        raise PromotionError(f"promotion contract could not start: {type(error).__name__}") from error
+    if completed.returncode != 0:
+        record_failure(state, contract)
+    return completed.returncode
 
 
 def _main() -> int:
@@ -405,7 +510,30 @@ def _main() -> int:
     apply.add_argument("--candidate", required=True)
     help_probe = subcommands.add_parser("help")
     help_probe.add_argument("--executable", default="pi")
+    contract = subcommands.add_parser("contract")
+    contract.add_argument("--id", required=True, choices=CONTRACT_IDS)
+    contract.add_argument("--state", type=Path, required=True)
+    contract.add_argument("command_argv", nargs="+", metavar="COMMAND")
+    render = subcommands.add_parser("render")
+    render.add_argument("--candidate", required=True)
+    render.add_argument("--platform", required=True)
+    render.add_argument("--state", type=Path, required=True)
+    render.add_argument("--receipt", type=Path, required=True)
     arguments = parser.parse_args()
+    if arguments.command == "contract":
+        return run_contract(arguments.id, arguments.state, arguments.command_argv)
+    if arguments.command == "render":
+        receipt = render_receipt(
+            candidate=arguments.candidate,
+            platform=arguments.platform,
+            **read_receipt_state(arguments.state),
+        )
+        try:
+            arguments.receipt.write_text(receipt, encoding="utf-8", newline="\n")
+        except OSError as error:
+            raise PromotionError(f"cannot write the promotion receipt: {error}") from error
+        sys.stdout.write(receipt)
+        return 0
     targets = load_targets(arguments.targets)
     root = Path.cwd()
     if arguments.command == "policy":

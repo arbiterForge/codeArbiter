@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -15,6 +16,11 @@ REPO = Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO / ".github" / "scripts" / "pi_promotion.py"
 DOCS_MODULE_PATH = REPO / ".github" / "scripts" / "check_docs_contract.py"
 WORKFLOW_PATH = REPO / ".github" / "workflows" / "pi-promotion.yml"
+
+
+def validation_job(workflow: str) -> str:
+    """The `validate:` job body, so a receipt assertion cannot pass on open-pr."""
+    return workflow.split("\n  validate:\n", 1)[1].split("\n  open-pr:\n", 1)[0]
 
 
 def load_module():
@@ -233,12 +239,161 @@ class PromotionPatchTests(unittest.TestCase):
         receipt = module.render_receipt(
             candidate="0.80.7",
             platform="ubuntu-latest",
-            contract="help-delta",
+            contracts=("help-delta",),
             delta=module.HelpDelta(removed=("--old",), added=("--new",)),
         )
         self.assertIn("candidate=0.80.7", receipt)
         self.assertIn("removed=--old", receipt)
         self.assertNotIn("Usage:", receipt)
+
+
+class PromotionReceiptTests(unittest.TestCase):
+    """Issue #388: every failing validation contract must reach the receipt."""
+
+    def state(self, root: Path) -> Path:
+        return root / "failures.json"
+
+    def test_every_validation_contract_runs_through_the_receipt_runner(self):
+        module = load_module()
+        validate = validation_job(WORKFLOW_PATH.read_text(encoding="utf-8"))
+        for identifier in (
+            "promotion-apply",
+            "toolchain-install",
+            "generated-artifacts",
+            "adapter-typecheck",
+            "adapter-suite",
+            "security-contract",
+            "parity-contract",
+            "package-contract",
+            "platform-contract",
+            "docs-contract",
+        ):
+            with self.subTest(contract=identifier):
+                self.assertIn(f"contract --id {identifier} ", validate)
+                self.assertIn(identifier, module.CONTRACT_IDS)
+
+    def test_failed_candidate_renders_one_receipt_to_the_summary_and_artifact(self):
+        validate = validation_job(WORKFLOW_PATH.read_text(encoding="utf-8"))
+        render = validate.split("pi_promotion.py render", 1)
+        self.assertEqual(len(render), 2, "the validate job never renders a receipt")
+        self.assertIn("if: failure()", render[0].rsplit("- name:", 1)[1])
+        self.assertIn("--receipt pi-promotion-receipt.txt", render[1])
+        self.assertIn('>> "$GITHUB_STEP_SUMMARY"', render[1])
+        self.assertIn("pi-promotion-receipt.txt", validate.split("upload-artifact", 1)[1])
+
+    def test_recorded_contracts_render_deterministically_from_any_order(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            state = self.state(Path(raw))
+            for contract in ("platform-contract", "adapter-suite", "adapter-suite"):
+                module.record_failure(state, contract)
+            first = module.render_receipt(
+                candidate="0.80.11", platform="windows-latest",
+                **module.read_receipt_state(state),
+            )
+        with tempfile.TemporaryDirectory() as raw:
+            state = self.state(Path(raw))
+            for contract in ("adapter-suite", "platform-contract"):
+                module.record_failure(state, contract)
+            second = module.render_receipt(
+                candidate="0.80.11", platform="windows-latest",
+                **module.read_receipt_state(state),
+            )
+        self.assertEqual(first, second)
+        self.assertIn("contracts=adapter-suite,platform-contract", first)
+        self.assertIn("candidate=0.80.11", first)
+        self.assertIn("platform=windows-latest", first)
+
+    def test_help_incompatibility_keeps_its_bounded_normalized_delta(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            state = self.state(Path(raw))
+            module.record_failure(
+                state, "help-delta",
+                module.HelpDelta(removed=("--no-extensions",), added=("--sandbox",)),
+            )
+            receipt = module.render_receipt(
+                candidate="0.80.11", platform="macos-latest",
+                **module.read_receipt_state(state),
+            )
+        self.assertIn("contracts=help-delta", receipt)
+        self.assertIn("removed=--no-extensions", receipt)
+        self.assertIn("added=--sandbox", receipt)
+
+    def test_an_unallowlisted_contract_id_can_never_reach_the_receipt(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            state = self.state(Path(raw))
+            with self.assertRaises(module.PromotionError):
+                module.record_failure(state, "PATH=/home/runner/.npm/_authToken")
+            self.assertFalse(state.exists())
+
+    def test_an_unattributed_failure_still_names_candidate_and_platform(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            receipt = module.render_receipt(
+                candidate="0.80.11", platform="ubuntu-latest",
+                **module.read_receipt_state(self.state(Path(raw))),
+            )
+        self.assertEqual(receipt, "candidate=0.80.11\nplatform=ubuntu-latest\ncontracts=unattributed\n")
+
+    def test_receipt_fields_never_carry_raw_output_or_environment_values(self):
+        module = load_module()
+        receipt = module.render_receipt(
+            candidate="0.80.11\nANTHROPIC_API_KEY=sk-not-a-real-key",
+            platform="ubuntu-latest; cat /etc/passwd",
+            contracts=("docs-contract",),
+        )
+        self.assertEqual(
+            receipt,
+            # Newlines, spaces, and `=` are all stripped: a hostile candidate or
+            # platform string can neither add a line nor forge a second field.
+            "candidate=0.80.11ANTHROPIC_API_KEYsk-not-a-real-key\n"
+            "platform=ubuntu-latestcatetcpasswd\ncontracts=docs-contract\n",
+        )
+        self.assertEqual(len(receipt.splitlines()), 3)
+
+    def test_the_runner_records_only_on_failure_and_preserves_the_exit_status(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            state = self.state(Path(raw))
+            passing = module.run_contract(
+                "docs-contract", state, [sys.executable, "-c", "raise SystemExit(0)"],
+            )
+            self.assertEqual(passing, 0)
+            self.assertFalse(state.exists())
+            failing = module.run_contract(
+                "docs-contract", state, [sys.executable, "-c", "raise SystemExit(7)"],
+            )
+            self.assertEqual(failing, 7)
+            self.assertEqual(module.read_receipt_state(state)["contracts"], ("docs-contract",))
+
+    def test_the_runner_streams_command_output_to_the_job_log_only(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            state = self.state(Path(raw))
+            completed = subprocess.run(
+                [
+                    sys.executable, str(MODULE_PATH),
+                    "--targets", str(REPO / ".github" / "pi-promotion-targets.json"),
+                    "contract", "--id", "package-contract", "--state", str(state),
+                    "--", sys.executable, "-c",
+                    "print('raw contract output'); raise SystemExit(3)",
+                ],
+                cwd=REPO, check=False, capture_output=True, text=True, timeout=120,
+            )
+            self.assertEqual(completed.returncode, 3)
+            self.assertIn("raw contract output", completed.stdout)
+            recorded = state.read_text(encoding="utf-8")
+            receipt = module.render_receipt(
+                candidate="0.80.11", platform="ubuntu-latest",
+                **module.read_receipt_state(state),
+            )
+        self.assertNotIn("raw contract output", recorded)
+        self.assertEqual(
+            receipt,
+            "candidate=0.80.11\nplatform=ubuntu-latest\ncontracts=package-contract\n",
+        )
 
 
 class DocumentationContractTests(unittest.TestCase):
