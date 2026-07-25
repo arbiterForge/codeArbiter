@@ -11,7 +11,10 @@ import { tmpdir } from "node:os";
 import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
-import { scrubbedEnv } from "./exec.ts";
+import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines } from "./farm.ts";
+import { scrubbedEnv, treeKill, taskkillPath } from "./exec.ts";
+import type { RunResult } from "./exec.ts";
+import { spawn } from "node:child_process";
 import { mutationCheck as realMutationCheck } from "./mutation.ts";
 
 // ---------------------------------------------------------------------------
@@ -2265,5 +2268,267 @@ describe("assertSafeRunId — run id is a path segment (#397)", () => {
   it("rejects traversal, separators, dot ids and empty/oversized ids", () => {
     for (const bad of ["..", ".", "../escape", "a/b", "a\\b", "", "x".repeat(65), "a b"])
       expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #395 — farm timeout cleanup must own the ENTIRE child process tree.
+//
+// A gate/setup/mutation command that times out is killed, but the kill has to
+// reach the GRANDCHILDREN too: every gate command is `bash -c <cmd>` /
+// `cmd.exe /c <cmd>`, so the thing the operator actually named is a grandchild.
+// Before this fix `treeKill` SIGKILLed only the direct child off-Windows (the
+// grandchild survived, reparented to init) and on Windows fire-and-forgot an
+// unqualified `spawn("taskkill", ...)` whose exit was never awaited — `run()`
+// resolved exit 124 while the tree was still being torn down, or not at all.
+// ---------------------------------------------------------------------------
+describe("#395 — timeout kills and VERIFIES the whole child process tree", () => {
+  let dir: string;
+  beforeEach(async () => {
+    dir = await mkdtemp(path.join(tmpdir(), "farm-tree-"));
+  });
+  afterEach(async () => {
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  // libuv maps signal 0 to a liveness probe on every platform (on Windows it
+  // reports ESRCH for a terminated-but-not-yet-freed process), so this is a
+  // faithful cross-platform "is this pid still running?".
+  const alive = (pid: number) => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // A direct child that hangs forever AND spawns a hanging GRANDCHILD, writing
+  // the grandchild's pid where the test can read it. `node -e` runs as CJS.
+  const parentSrc = (pidFile: string) => `
+    const { spawn } = require("node:child_process");
+    const fs = require("node:fs");
+    const gc = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000);"], { stdio: "ignore" });
+    fs.writeFileSync(${JSON.stringify(pidFile)}, String(gc.pid));
+    setInterval(() => {}, 1000);
+  `;
+
+  const waitForPid = async (file: string, budgetMs: number): Promise<number> => {
+    const t0 = Date.now();
+    while (Date.now() - t0 < budgetMs) {
+      try {
+        const raw = (await fsReadFile(file, "utf8")).trim();
+        if (raw) return Number(raw);
+      } catch {
+        /* not written yet */
+      }
+      await new Promise((r) => setTimeout(r, 25));
+    }
+    throw new Error("grandchild pid file never appeared");
+  };
+
+  it("leaves NO grandchild behind — the tree is verified gone before run() resolves", async () => {
+    const pidFile = path.join(dir, "gc.pid");
+    const pending = run(process.execPath, ["-e", parentSrc(pidFile)], undefined, {}, 4000);
+    const gcPid = await waitForPid(pidFile, 3000);
+    expect(alive(gcPid)).toBe(true); // the grandchild really exists
+    const r = await pending;
+    expect(r.timedOut).toBe(true);
+    // The containment claim: when run() resolves, the descendant is GONE.
+    expect(alive(gcPid)).toBe(false);
+    // A clean kill stays the ordinary timeout result.
+    expect(r.code).toBe(124);
+    expect(r.cleanupFailed).toBeUndefined();
+  }, 30000);
+
+  it("treeKill resolves a verification result instead of firing and forgetting", async () => {
+    const c = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000);"], {
+      detached: process.platform !== "win32",
+      stdio: "ignore",
+    });
+    const k = await treeKill(c);
+    expect(k.ok).toBe(true);
+    expect(alive(c.pid!)).toBe(false);
+  }, 30000);
+
+  it("resolves taskkill absolutely from SystemRoot (an unqualified name is a PATH hazard)", () => {
+    const saved = process.env.SystemRoot;
+    try {
+      process.env.SystemRoot = path.join(path.sep, "WinDirForTest");
+      const p = taskkillPath();
+      expect(p).not.toBe("taskkill");
+      expect(path.isAbsolute(p)).toBe(true);
+      expect(p).toBe(path.join(path.sep, "WinDirForTest", "System32", "taskkill.exe"));
+    } finally {
+      if (saved === undefined) delete process.env.SystemRoot;
+      else process.env.SystemRoot = saved;
+    }
+  });
+
+  it("reports an UNVERIFIED cleanup distinctly from an ordinary timeout", async () => {
+    const r = await run(
+      process.execPath,
+      ["-e", "setInterval(() => {}, 1000);"],
+      undefined,
+      {},
+      200,
+      // Kill for real (no leak from the test), but report the kill as unverified.
+      async (child) => {
+        await treeKill(child);
+        return { ok: false, detail: "descendant pid 4242 still alive" };
+      },
+    );
+    expect(r.timedOut).toBe(true);
+    expect(r.cleanupFailed).toBe(true);
+    // Distinct from the ordinary 124 timeout: the caller can tell "killed" from
+    // "we could not prove it was killed".
+    expect(r.code).toBe(125);
+    expect(r.out).toMatch(/CLEANUP UNVERIFIED/);
+    expect(r.out).toMatch(/descendant pid 4242 still alive/);
+    expect(r.stderr).toMatch(/CLEANUP UNVERIFIED/);
+  }, 30000);
+});
+
+// ---------------------------------------------------------------------------
+// #398 — worktree teardown must be verified, retried, and REPORTED. Before this
+// fix every teardown site ended in a bare `.catch(() => {})` and the task
+// returned status "green" one line later, so a Windows lock / AV race left a
+// live worktree registration behind under a clean green report.
+// ---------------------------------------------------------------------------
+describe("#398 — verified, retried, reported worktree teardown", () => {
+  const res = (code: number, out = ""): RunResult => ({ code, out, stdout: out, stderr: "" });
+  const wt = path.resolve(".farm/worktrees/tt-398");
+
+  it("retries a transient remove failure and confirms git no longer registers the worktree", async () => {
+    const calls: string[][] = [];
+    let removes = 0;
+    const git = async (args: string[]): Promise<RunResult> => {
+      calls.push(args);
+      if (args[0] === "worktree" && args[1] === "remove") {
+        removes++;
+        return removes < 2 ? res(1, "fatal: failed to delete: Directory not empty") : res(0);
+      }
+      if (args[0] === "worktree" && args[1] === "list") return res(0, removes < 2 ? `worktree ${wt}\n` : "");
+      return res(0);
+    };
+    const r = await removeWorktreeVerified(git, wt, { attempts: 4, delayMs: 1 });
+    expect(r.ok).toBe(true);
+    expect(r.attempts).toBe(2);
+    // Re-verification actually happened — a list AND a prune are on the wire.
+    expect(calls.some((a) => a[0] === "worktree" && a[1] === "list")).toBe(true);
+    expect(calls.some((a) => a[0] === "worktree" && a[1] === "prune")).toBe(true);
+  });
+
+  it("returns ok:false with diagnostics when git still registers the worktree after every attempt", async () => {
+    const git = async (args: string[]): Promise<RunResult> => {
+      if (args[0] === "worktree" && args[1] === "remove") return res(1, "fatal: '.farm/worktrees/tt-398' is locked");
+      if (args[0] === "worktree" && args[1] === "list") return res(0, `worktree ${wt}\n`);
+      return res(0);
+    };
+    const r = await removeWorktreeVerified(git, wt, { attempts: 2, delayMs: 1 });
+    expect(r.ok).toBe(false);
+    expect(r.attempts).toBe(2);
+    expect(r.target).toBe(wt);
+    expect(r.detail).toMatch(/still registered/i);
+    expect(r.detail).toMatch(/is locked/);
+  });
+
+  it("deleteBranchVerified reports a branch git still lists", async () => {
+    const git = async (args: string[]): Promise<RunResult> => {
+      if (args[0] === "branch" && args[1] === "-D") return res(1, "error: Cannot delete branch 'farm/x' checked out at ...");
+      if (args[0] === "branch" && args[1] === "--list") return res(0, "  farm/x\n");
+      return res(0);
+    };
+    const r = await deleteBranchVerified(git, "farm/x", { attempts: 2, delayMs: 1 });
+    expect(r.ok).toBe(false);
+    expect(r.target).toBe("farm/x");
+    expect(r.detail).toMatch(/still present/i);
+  });
+
+  // ---- wiring: the failures reach the task result and the run's exit code ----
+  const task: Task = {
+    id: "tt-398",
+    description: "make the test pass",
+    filesInScope: ["src/x.ts"],
+    test: { path: "src/x.test.ts" },
+    gate: { commands: ["node -p 0"] },
+  };
+
+  const stubDeps = (git: RunTaskDeps["git"]): RunTaskDeps => ({
+    worker: {
+      async apply(ctx) {
+        const k = ctx.cwd.match(/__s(\d+)$/)?.[1] ?? "main";
+        return { ok: true, filesWritten: [`src/s${k}.ts`] } satisfies WorkerResult;
+      },
+    },
+    prepareWorktree: async () => null,
+    resetWorktree: async () => {},
+    fileHash: async () => null,
+    checkDrift: async () => [],
+    runGate: async () => ({ ok: true as const }),
+    antiGamingCheck: async () => ({ risk: "none" as const }),
+    mutationCheck: async () => null,
+    git,
+    withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+  });
+
+  it("a task whose worktree removal cannot be verified carries the failure — green is never unqualified", async () => {
+    const git: RunTaskDeps["git"] = async (args) => {
+      if (args[0] === "worktree" && args[1] === "remove") return res(1, "fatal: is locked");
+      if (args[0] === "worktree" && args[1] === "list") return res(0, `worktree ${wt}\n`);
+      return res(0);
+    };
+    const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", stubDeps(git));
+    expect(r.status).toBe("green");
+    const failed = (r.cleanup ?? []).filter((c) => !c.ok);
+    expect(failed).toHaveLength(1);
+    expect(failed[0].target).toBe(wt);
+    expect(runExitCode({ escalated: 0, blocked: 0, aborted: false, cleanupFailures: failed.length })).toBe(2);
+  });
+
+  it("best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers", async () => {
+    const savedSamples = process.env.FARM_SAMPLES;
+    process.env.FARM_SAMPLES = "3";
+    try {
+      const removed: string[] = [];
+      const git: RunTaskDeps["git"] = async (args) => {
+        if (args[0] === "worktree" && args[1] === "remove") {
+          removed.push(args[3]);
+          return args[3].endsWith("__s0") ? res(1, "fatal: is locked") : res(0);
+        }
+        if (args[0] === "worktree" && args[1] === "list")
+          return res(0, removed.some((p) => p.endsWith("__s0")) ? `worktree ${wt}__s0\n` : "");
+        return res(0);
+      };
+      const r = await runTask({ ...task, maxRetries: 0 }, "m", "https://api.example/v1", "k", stubDeps(git));
+      expect(r.status).toBe("green");
+      // Every sample was attempted — the first failure did not abort the loop.
+      for (const k of [0, 1, 2]) expect(removed).toContain(`${wt}__s${k}`);
+      const failed = (r.cleanup ?? []).filter((c) => !c.ok);
+      expect(failed.some((c) => c.target.endsWith("__s0"))).toBe(true);
+    } finally {
+      if (savedSamples === undefined) delete process.env.FARM_SAMPLES;
+      else process.env.FARM_SAMPLES = savedSamples;
+    }
+  });
+
+  it("run exit code is non-zero when ownership could not be released, zero otherwise", () => {
+    expect(runExitCode({ escalated: 0, blocked: 0, aborted: false, cleanupFailures: 0 })).toBe(0);
+    expect(runExitCode({ escalated: 0, blocked: 0, aborted: false, cleanupFailures: 1 })).toBe(2);
+    expect(runExitCode({ escalated: 1, blocked: 0, aborted: false, cleanupFailures: 0 })).toBe(2);
+  });
+
+  it("integration-worktree teardown failure is carried on the run health and lands in the receipt", () => {
+    const health = newRunArtifactHealth();
+    expect(health.cleanup.failures).toEqual([]);
+    expect(cleanupReportLines(health, [])).toEqual([
+      `## Resource cleanup`,
+      `Every farm worktree and scratch branch was removed and re-verified.`,
+    ]);
+    health.cleanup.failures.push({ target: "/repo/.farm/integration-wt", detail: "still registered after 3 attempt(s)" });
+    const lines = cleanupReportLines(health, []);
+    expect(lines.join("\n")).toMatch(/CLEANUP DEGRADED/);
+    expect(lines.join("\n")).toMatch(/integration-wt/);
+    expect(lines.join("\n")).toMatch(/still registered after 3 attempt\(s\)/);
   });
 });
