@@ -36,6 +36,7 @@
  * fortiori.
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -127,13 +128,7 @@ describe("multistack fixtures — present + deterministic dephash (AC-07)", () =
 // DOCKER-GATED layer — each fixture builds a runnable image; two builds of the
 // same fixture are deterministic (identical tag, second build is a cache reuse).
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("multistack");
 const DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 
 /** Namespace every dephash for this task so tags never collide with other tasks. */
@@ -154,7 +149,11 @@ d("multistack [docker] — each fixture builds a runnable image; deterministic a
 
   for (const stack of STACKS) {
     const present = fixturePresent(stack);
-    const t = present && HAS_DOCKER ? it : it.skip;
+    // Docker is already proven by the enclosing `d(...)` gate (and, in required
+    // mode, would have thrown at collection). Only fixture presence is left —
+    // and a MISSING fixture is failed outright by the pure-unit
+    // "multistack fixtures — present" suite above, so skipping here cannot hide it.
+    const t = present ? it : it.skip;
 
     t(
       `[${stack.dir}] builds a runnable image, and a second build with the same dephash reuses it (no rebuild)`,

@@ -23,6 +23,7 @@
  *      and cleans up every docker object it creates.
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -216,13 +217,7 @@ describe("dephash drives the tag — unchanged vs manifest-changed (AC-04/AC-05)
 // Builds a real image; proves cache-hit = no build; manifest change = rebuild;
 // baked deps resolve from /deps. Namespaced + cleaned up.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("build");
 
 d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () => {
   const created: string[] = []; // image tags to clean up

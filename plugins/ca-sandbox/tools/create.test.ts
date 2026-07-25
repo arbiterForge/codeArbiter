@@ -9,6 +9,7 @@
  * no docker; runs everywhere. The end-to-end clone is exercised by lifecycle.test.ts.
  */
 import { describe, it, expect } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import {
   validateRepoUrl,
@@ -168,12 +169,7 @@ describe("createSandbox failure teardown — containers before volume (reliabili
 // prune() purely because it carries the ca.sandbox=1 label, even though it is
 // not a registered sandbox object.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("create");
 
 d("orphaned helper containers [docker] — prune() reclaims them (reliability-015)", () => {
   it("a labeled, detached clone-shaped orphan is removed by prune()", () => {

@@ -25,6 +25,7 @@
  * task id and the `ca.sandbox.build=1` label, and torn down in afterAll.
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { dockerGate } from "../docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -36,12 +37,7 @@ import { runContainer } from "../run.ts";
 // mangled by MSYS path conversion; MSYS_NO_PATHCONV=1 disables it (Spike A/B).
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("isolation");
 
 const NS = "ca-sbx-t08";
 
