@@ -178,7 +178,18 @@ def adversarial_results() -> list[dict[str, object]]:
         return [result("PI-SEC-ADVERSARIAL", False)]
     suites = (
         ("PI-SEC-ADVERSARIAL", ("test/security.test.ts", "test/final-arguments.test.ts", "test/bridge.test.ts")),
-        ("PI-SEC-ISOLATION", ("test/child-env.test.ts", "test/runner-isolation.test.ts")),
+        # The #455 broker is part of the isolation boundary, not an adjunct to it: it holds the
+        # operator credential the child no longer has, and its listener teardown is the control
+        # that stops that authority outliving the child.
+        (
+            "PI-SEC-ISOLATION",
+            (
+                "test/child-env.test.ts",
+                "test/runner-isolation.test.ts",
+                "test/inference-broker.test.ts",
+                "test/runner-broker-lifecycle.test.ts",
+            ),
+        ),
         ("PI-SEC-OWNERSHIP", ("test/activation.test.ts", "test/commands.test.ts", "test/tool-guard.test.ts")),
         ("PI-SEC-COMPACTION", ("test/compaction.test.ts",)),
         ("PI-SEC-FARM", ("test/farm.test.ts",)),

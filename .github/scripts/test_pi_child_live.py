@@ -147,7 +147,14 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertIn("startInferenceBroker", runner)
         self.assertIn("isolation-broker", runner)
         self.assertIn("broker.revoke()", runner)
-        self.assertIn("await closeBroker();", runner)
+        # Two INDEPENDENT teardown call sites: the refused-launch catch (which returns
+        # before the try/finally is ever entered) and the finally that backstops every
+        # path after a successful prepare. `assertIn` alone cannot tell them apart, so
+        # deleting either left this guard green. The behavioural proof that each one
+        # actually unbinds the loopback port lives in
+        # plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts; this count only
+        # stops a silent drop back to a single call site.
+        self.assertEqual(runner.count("await closeBroker();"), 2)
 
     def test_public_runner_has_no_shipping_test_injection_seam(self) -> None:
         tools = REPO / "plugins/ca-pi/tools"

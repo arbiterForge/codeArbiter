@@ -166,6 +166,10 @@ _ISSUE_374_NON_POLICY_ARTIFACTS = frozenset({
 _ISSUE_455_NON_POLICY_ARTIFACTS = frozenset({
     "tools/src/inference-broker.ts",
     "tools/test/inference-broker.test.ts",
+    # The broker's listener-teardown obligation, pinned behaviourally against the
+    # real loopback port rather than by source text, because the runner closes the
+    # broker at two independent call sites that share identical text.
+    "tools/test/runner-broker-lifecycle.test.ts",
 })
 
 
