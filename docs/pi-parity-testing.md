@@ -81,6 +81,15 @@ python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.5
 python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10
 ```
 
+A supported-version run additionally executes the real-host final-argument
+authority fixture, which loads codeArbiter plus a deliberately later trusted
+extension through the installed Pi's own loader, runner, and tool wrapper. It
+proves the later extension's argument rewrite is re-judged and blocked before
+the governed mutator runs, that the later extension cannot take ownership of
+that mutator, and that inverted load order fails closed. That fixture is the
+automated half of the ADR-0014/ADR-0016 final-argument promotion STOP; step 5 of
+the trusted live pass below remains the manual half.
+
 CI repeats those commands across Windows, macOS, and Linux. A separately
 reported `latest` canary is nonblocking and never changes the supported floor or
 ceiling by itself.

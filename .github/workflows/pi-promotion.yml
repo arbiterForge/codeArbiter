@@ -79,6 +79,15 @@ jobs:
     # bound at 45 - three orders below the hosted 6-hour ceiling, and low enough
     # that a wedged install cannot stall the weekly promotion for hours.
     timeout-minutes: 45
+    # Issue #388. Every validation contract runs through
+    # `pi_promotion.py contract --id <stable-id>`, which records that identifier
+    # here when - and only when - its command fails. The always-on render step
+    # below turns the recorded identifiers into the one bounded receipt the
+    # approved specification promises. The state file lives in RUNNER_TEMP so it
+    # can never be picked up as a workspace artifact.
+    env:
+      CA_PI_RECEIPT_STATE: ${{ runner.temp }}/pi-promotion-failures.json
+      CA_PI_CANDIDATE: ${{ needs.resolve.outputs.candidate }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -89,10 +98,6 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
-      - name: Initialize a redacted failure receipt
-        shell: bash
-        run: |
-          printf 'candidate=%s\nplatform=%s\n' '${{ needs.resolve.outputs.candidate }}' '${{ matrix.os }}' > pi-promotion-receipt.txt
       - name: Capture accepted public help surface
         shell: bash
         run: |
@@ -103,36 +108,45 @@ jobs:
         run: |
           npm install --global @earendil-works/pi-coding-agent@${{ needs.resolve.outputs.candidate }} --ignore-scripts --registry=https://registry.npmjs.org
           python .github/scripts/pi_promotion.py help > "$RUNNER_TEMP/candidate-help.json"
-          PYTHONPATH=.github/scripts python - "$RUNNER_TEMP/baseline-help.json" "$RUNNER_TEMP/candidate-help.json" <<'PY'
+          PYTHONPATH=.github/scripts python - "$RUNNER_TEMP/baseline-help.json" "$RUNNER_TEMP/candidate-help.json" "$CA_PI_RECEIPT_STATE" <<'PY'
           import json, sys
-          from pi_promotion import HelpDelta, compare_help, render_receipt
+          from pathlib import Path
+          from pi_promotion import compare_help, record_failure
           baseline = tuple(json.load(open(sys.argv[1], encoding="utf-8"))["help"])
           candidate = tuple(json.load(open(sys.argv[2], encoding="utf-8"))["help"])
           delta = compare_help(baseline, candidate)
           if delta.incompatible:
-              open("pi-promotion-receipt.txt", "w", encoding="utf-8").write(render_receipt(
-                  candidate="${{ needs.resolve.outputs.candidate }}", platform="${{ matrix.os }}",
-                  contract="help-delta", delta=delta,
-              ))
+              record_failure(Path(sys.argv[3]), "help-delta", delta)
               raise SystemExit("required public Pi help entries disappeared")
           PY
       - name: Apply the declared prospective promotion in this disposable checkout
-        run: python .github/scripts/pi_promotion.py apply --candidate ${{ needs.resolve.outputs.candidate }}
+        run: python .github/scripts/pi_promotion.py contract --id promotion-apply --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/pi_promotion.py apply --candidate "$CA_PI_CANDIDATE"
+        shell: bash
       - name: Install reviewed adapter toolchain
-        run: npm --prefix plugins/ca-pi/tools ci --ignore-scripts
+        run: python .github/scripts/pi_promotion.py contract --id toolchain-install --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools ci --ignore-scripts
+        shell: bash
       - name: Rebuild declared generated artifacts
+        shell: bash
         run: |
-          python tools/build-surface.py
-          npm --prefix plugins/ca-pi/tools run build
+          python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- python tools/build-surface.py
+          python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools run build
       - name: Validate adapter, package, security, and documentation contracts
+        shell: bash
         run: |
-          npm --prefix plugins/ca-pi/tools run typecheck
-          npm --prefix plugins/ca-pi/tools test
-          python .github/scripts/test_pi_security.py
-          python .github/scripts/test_pi_parity.py
-          python .github/scripts/test_pi_package.py
-          python .github/scripts/test_pi_platform_contract.py --pi-version ${{ needs.resolve.outputs.candidate }}
-          python .github/scripts/check_docs_contract.py
+          python .github/scripts/pi_promotion.py contract --id adapter-typecheck --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools run typecheck
+          python .github/scripts/pi_promotion.py contract --id adapter-suite --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools test
+          python .github/scripts/pi_promotion.py contract --id security-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_security.py
+          python .github/scripts/pi_promotion.py contract --id parity-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_parity.py
+          python .github/scripts/pi_promotion.py contract --id package-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_package.py
+          python .github/scripts/pi_promotion.py contract --id platform-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_platform_contract.py --pi-version "$CA_PI_CANDIDATE"
+          python .github/scripts/pi_promotion.py contract --id docs-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/check_docs_contract.py
+      - name: Render the compact promotion receipt
+        if: failure()
+        shell: bash
+        run: |
+          python .github/scripts/pi_promotion.py render \
+            --candidate "$CA_PI_CANDIDATE" --platform '${{ matrix.os }}' \
+            --state "$CA_PI_RECEIPT_STATE" --receipt pi-promotion-receipt.txt >> "$GITHUB_STEP_SUMMARY"
       - name: Upload compact promotion receipt on failure
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
