@@ -25,6 +25,11 @@ DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
 GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
 # The one audit threshold every dependency graph in this repo is gated at.
 NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
+# Issue #434: the tools graphs declare zero production dependencies, so the
+# `--omit=dev` gate above audits an empty graph there. This one covers the build
+# toolchain that actually exists - the dev dependencies that produce farm.js,
+# sandbox.js, and the ca-pi extension bundles. Same threshold, by contract.
+NPM_AUDIT_DEV_GATE = "npm audit --audit-level=high"
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
 PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
@@ -1112,18 +1117,22 @@ class WorkflowContractTest(unittest.TestCase):
         # Issue #403: site/package-lock.json - the ONLY graph in this repo that
         # declares production dependencies (astro, starlight, markdown-remark) -
         # was audited by nothing, and #400's three HIGH advisories all lived
-        # there.  The farm/sandbox gates were separately pinned at `critical`,
-        # but tightening those two is a DURABILITY change, not a live one:
-        # measured, plugins/ca/tools, plugins/ca-sandbox/tools and
-        # plugins/ca-pi/tools each declare ZERO production dependencies, so
-        # `--omit=dev` audits an empty graph there at any threshold.  It decides
-        # what happens the day one of them takes on a runtime dependency.
-        # Issue #434 tracks extending the sweep to the dev trees, which is where
-        # those packages' advisories actually are.
+        # there.
         #
-        # One threshold, asserted per invocation, across every graph the repo
-        # ships or publishes.
-        expected = NPM_AUDIT_GATE
+        # Issue #434 closed the other half.  `--omit=dev` on the three tools
+        # graphs audits an EMPTY graph: each declares zero production
+        # dependencies, so that gate saw nothing at any threshold.  Every
+        # package in those trees is a dev dependency, and they are the ones that
+        # build farm.js, sandbox.js, and the ca-pi extension bundles - committed,
+        # shipped artifacts.  GHSA-r28c-9q8g-f849 (postcss, HIGH) sat in
+        # plugins/ca/tools reported as zero vulnerabilities by the omit-dev gate
+        # against both the vulnerable AND the fixed lockfile; it surfaced only
+        # because dependabot happened to file the bump.
+        #
+        # So each tools graph now carries TWO audits: the durability gate for
+        # the day it takes on a runtime dependency, and the dev-inclusive gate
+        # that covers the toolchain actually present.  ONE THRESHOLD across all
+        # of them - that is the invariant this asserts.
         invocations: list[tuple[str, str]] = []
         for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
             invocations += [
@@ -1131,13 +1140,58 @@ class WorkflowContractTest(unittest.TestCase):
                 for command in npm_audit_invocations(workflow.read_text(encoding="utf-8"))
             ]
         self.assertEqual(
-            len(invocations),
-            4,
-            "expected exactly the farm, sandbox, ca-pi, and site audit gates",
+            sorted(command for _, command in invocations),
+            sorted(
+                # farm, sandbox, ca-pi: production-durability gate ...
+                [f"run: {NPM_AUDIT_GATE}"] * 3
+                # ... plus the dev-inclusive gate that covers the real toolchain
+                + [f"run: {NPM_AUDIT_DEV_GATE}"] * 3
+                # site: the one graph with production dependencies (docs.yml)
+                + [f"run: {NPM_AUDIT_GATE}"]
+            ),
+            "expected a production and a dev-inclusive audit on each tools graph, "
+            "plus the site production audit",
         )
         for name, command in invocations:
             with self.subTest(workflow=name, command=command):
-                self.assertEqual(command, f"run: {expected}")
+                self.assertRegex(
+                    command,
+                    r"--audit-level=high$",
+                    "every audit gate in the repo must use the SAME threshold",
+                )
+
+    def test_each_plugin_tools_graph_is_audited_with_dev_dependencies_included(self):
+        """Issue #434 AC-1: a HIGH advisory in a `plugins/*/tools` DEV dependency
+        must fail CI.
+
+        Asserted per job rather than by counting lines, so a dev gate that is
+        deleted from one graph - or a fourth tools graph added without one -
+        fails here rather than passing on an unchanged total."""
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        installs = npm_install_jobs(ci)
+        tools_graphs = {
+            job_id: directory
+            for job_id, directory in installs.items()
+            if re.fullmatch(r"plugins/[^/]+/tools", directory)
+        }
+        self.assertTrue(tools_graphs, "no plugins/*/tools graph found in ci.yml")
+        # Every tools graph must be dev-audited by SOME job (ca-pi-tools installs
+        # the same directory ca-pi-checks audits, exactly as the omit-dev rule
+        # above already allows).
+        dev_audited = {
+            directory
+            for job_id, directory in installs.items()
+            if f"run: {NPM_AUDIT_DEV_GATE}" in jobs[job_id]
+        }
+        for job_id, directory in sorted(tools_graphs.items()):
+            with self.subTest(job=job_id, directory=directory):
+                self.assertIn(
+                    directory,
+                    dev_audited,
+                    f"{job_id} installs {directory}, whose dev dependencies build a "
+                    f"committed artifact, but nothing audits them",
+                )
         # EVERY GRAPH THIS REPO INSTALLS IS AUDITED SOMEWHERE.  This used to
         # iterate the hardcoded triple ("tools", "ca-sandbox-tools",
         # "ca-pi-checks") under a comment claiming "every job that installs a
