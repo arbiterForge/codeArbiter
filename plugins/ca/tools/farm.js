@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm, rename, open as open2 } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm, stat, rename, open as open2 } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import path3 from "node:path";
@@ -11,6 +11,8 @@ import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+var EXIT_TIMEOUT = 124;
+var EXIT_TIMEOUT_UNCLEAN = 125;
 var [SHELL_BIN, SHELL_FLAG] = process.platform === "win32" ? ["cmd.exe", "/c"] : ["bash", "-c"];
 var SHELL_OPTS = process.platform === "win32" ? { windowsVerbatimArguments: true } : {};
 function numEnv(name, def, opts = {}) {
@@ -32,15 +34,89 @@ function numEnv(name, def, opts = {}) {
   return n;
 }
 var GATE_TIMEOUT_MS = numEnv("FARM_GATE_TIMEOUT_MS", 3e5, { min: 1e3 });
-function treeKill(child) {
+var KILL_VERIFY_DEFAULT_MS = 1e4;
+function taskkillPath() {
+  const root = process.env.SystemRoot ?? process.env.windir ?? "C:\\Windows";
+  return path.join(root, "System32", "taskkill.exe");
+}
+function pidPresent(target) {
   try {
-    if (process.platform === "win32" && child.pid !== void 0) {
-      spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]);
-    } else {
-      child.kill("SIGKILL");
+    process.kill(target, 0);
+    return true;
+  } catch (e) {
+    return e.code === "EPERM";
+  }
+}
+async function waitUntilGone(probe, deadline) {
+  for (; ; ) {
+    if (!probe()) return true;
+    if (Date.now() >= deadline) return false;
+    await new Promise((r) => setTimeout(r, 25));
+  }
+}
+function awaitTaskkill(pid, budgetMs) {
+  return new Promise((resolve) => {
+    let settled = false;
+    let timer;
+    const done = (r) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve(r);
+    };
+    let tk;
+    try {
+      tk = spawn(taskkillPath(), ["/pid", String(pid), "/T", "/F"], { stdio: "ignore", windowsHide: true });
+    } catch (e) {
+      done({ ok: false, detail: `taskkill could not be spawned: ${String(e)}` });
+      return;
     }
+    timer = setTimeout(() => {
+      try {
+        tk.kill();
+      } catch {
+      }
+      done({ ok: false, detail: `taskkill did not exit within ${budgetMs}ms` });
+    }, Math.max(1e3, budgetMs));
+    tk.on("error", (e) => done({ ok: false, detail: `taskkill failed to start: ${e.message}` }));
+    tk.on(
+      "close",
+      (code) => done(code === 0 || code === 128 ? { ok: true } : { ok: false, detail: `taskkill exited ${code}` })
+    );
+  });
+}
+async function treeKill(child, opts = {}) {
+  const pid = child.pid;
+  if (pid === void 0) return { ok: true, detail: "child never started" };
+  const budget = opts.budgetMs ?? numEnv("FARM_KILL_VERIFY_MS", KILL_VERIFY_DEFAULT_MS, { min: 0 });
+  const deadline = Date.now() + budget;
+  if (process.platform === "win32") {
+    const tk = await awaitTaskkill(pid, budget);
+    if (!tk.ok) {
+      try {
+        child.kill("SIGKILL");
+      } catch {
+      }
+    }
+    if (await waitUntilGone(() => pidPresent(pid), deadline)) return { ok: true };
+    return {
+      ok: false,
+      detail: `pid ${pid} and/or its descendants were still present ${budget}ms after taskkill /T /F${tk.detail ? ` (${tk.detail})` : ""}`
+    };
+  }
+  try {
+    process.kill(-pid, "SIGKILL");
   } catch {
   }
+  try {
+    child.kill("SIGKILL");
+  } catch {
+  }
+  if (await waitUntilGone(() => pidPresent(pid) || pidPresent(-pid), deadline)) return { ok: true };
+  return {
+    ok: false,
+    detail: `process group ${pid} still had a live member ${budget}ms after SIGKILL \u2014 descendants may still be running`
+  };
 }
 function scrubbedEnv(extra) {
   const env = { ...process.env, ...extra ?? {} };
@@ -48,12 +124,22 @@ function scrubbedEnv(extra) {
   delete env.CLAUDE_CODE_OAUTH_TOKEN;
   return env;
 }
-function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
+function run(cmd, args, cwd, opts = {}, timeoutMs = 0, kill = treeKill) {
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { cwd, env: scrubbedEnv(), ...opts });
+    const c = spawn(cmd, args, {
+      cwd,
+      env: scrubbedEnv(),
+      ...opts,
+      // #395: off Windows the child leads its OWN process group, so a timeout
+      // kill can address the whole tree (`kill(-pid)`) instead of just the
+      // shell that fronts the operator's command. NOT on Windows, where
+      // `detached` means "new console" and breaks the `cmd.exe /c` contract.
+      detached: process.platform !== "win32"
+    });
     let stdout = "";
     let stderr = "";
     let settled = false;
+    let killing = false;
     let timer;
     const done = (r) => {
       if (settled) return;
@@ -63,16 +149,34 @@ function run(cmd, args, cwd, opts = {}, timeoutMs = 0) {
     };
     if (timeoutMs > 0) {
       timer = setTimeout(() => {
-        treeKill(c);
-        const note = `
+        killing = true;
+        void (async () => {
+          const k = await kill(c);
+          const base = `
 [FARM] command exceeded ${timeoutMs}ms wall-clock timeout \u2014 killed (FARM_GATE_TIMEOUT_MS)`;
-        done({ code: 124, out: stdout + stderr + note, stdout, stderr: stderr + note, timedOut: true });
+          const note = k.ok ? base : `${base}
+[FARM] CLEANUP UNVERIFIED \u2014 the child process tree could not be confirmed gone: ${k.detail ?? "no detail"}. Descendants may still be running against this worktree.`;
+          done({
+            code: k.ok ? EXIT_TIMEOUT : EXIT_TIMEOUT_UNCLEAN,
+            out: stdout + stderr + note,
+            stdout,
+            stderr: stderr + note,
+            timedOut: true,
+            ...k.ok ? {} : { cleanupFailed: true }
+          });
+        })();
       }, timeoutMs);
     }
     c.stdout.on("data", (d) => stdout += d);
     c.stderr.on("data", (d) => stderr += d);
-    c.on("error", (e) => done({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
-    c.on("close", (code) => done({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
+    c.on("error", (e) => {
+      if (killing) return;
+      done({ code: 1, out: String(e), stdout: "", stderr: String(e) });
+    });
+    c.on("close", (code) => {
+      if (killing) return;
+      done({ code: code ?? 1, out: stdout + stderr, stdout, stderr });
+    });
   });
 }
 async function readWorktreeFile(wt, relPath) {
@@ -357,10 +461,15 @@ async function mutationCheck(wt, task) {
       const c = spawn2(SHELL_BIN, [SHELL_FLAG, MUT.cmd], {
         cwd: wt,
         env: scrubbedEnv({ FARM_MUTATION_FILES: impl.join(","), FARM_MUTATION_TEST_PATH: task.test.path, FARM_MUTATION_TEST_CMD: testCmd }),
-        ...SHELL_OPTS
+        ...SHELL_OPTS,
+        // #395: process-group isolation, matching run(). The operator-authored
+        // mutation hook is a grandchild behind `bash -c` / `cmd.exe /c`, so the
+        // timeout kill must be able to address the group, not just the shell.
+        detached: process.platform !== "win32"
       });
       let out = "";
       let settled = false;
+      let killing = false;
       const finish = (res) => {
         if (settled) return;
         settled = true;
@@ -368,13 +477,23 @@ async function mutationCheck(wt, task) {
         resolve(res);
       };
       const timer = setTimeout(() => {
-        treeKill(c);
-        finish({ code: 124, out: out + "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed" });
+        killing = true;
+        void treeKill(c).then((k) => {
+          const note = k.ok ? "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed" : `
+[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed, but CLEANUP UNVERIFIED: ${k.detail ?? "no detail"}`;
+          finish({ code: k.ok ? EXIT_TIMEOUT : EXIT_TIMEOUT_UNCLEAN, out: out + note });
+        });
       }, GATE_TIMEOUT_MS);
       c.stdout.on("data", (d) => out += d);
       c.stderr.on("data", (d) => out += d);
-      c.on("error", (e) => finish({ code: 1, out: String(e) }));
-      c.on("close", (code) => finish({ code: code ?? 1, out }));
+      c.on("error", (e) => {
+        if (killing) return;
+        finish({ code: 1, out: String(e) });
+      });
+      c.on("close", (code) => {
+        if (killing) return;
+        finish({ code: code ?? 1, out });
+      });
     });
     const parsed = parseMutationHookOutput(r.out);
     if (parsed !== null) return parsed;
@@ -969,7 +1088,8 @@ function newRunArtifactHealth() {
   return {
     stream: { errors: [] },
     diffs: { unavailable: [], unavailableTotal: 0, latestMirrorErrors: [] },
-    report: { latestMirrorErrors: [] }
+    report: { latestMirrorErrors: [] },
+    cleanup: { failures: [] }
   };
 }
 var MAX_RECORDED_ARTIFACT_ERRORS = 10;
@@ -1009,6 +1129,100 @@ async function prepareWorktree(branch, wt, from) {
   const add = await git(["worktree", "add", "-b", branch, wt, from]);
   if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
   return null;
+}
+var CLEANUP_ATTEMPTS = 3;
+var CLEANUP_DELAY_MS = 150;
+function samePath(a, b) {
+  const norm = (p) => {
+    const r = path3.resolve(p);
+    return process.platform === "win32" ? r.toLowerCase() : r;
+  };
+  return norm(a) === norm(b);
+}
+async function stillRegistered(gitFn, wt) {
+  const listed = await gitFn(["worktree", "list", "--porcelain"]);
+  if (listed.code !== 0) return true;
+  return listed.stdout.split("\n").filter((l) => l.startsWith("worktree ")).some((l) => samePath(l.slice("worktree ".length).trim(), wt));
+}
+async function pathExists(p) {
+  try {
+    await stat(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+async function removeWorktreeVerified(gitFn, wt, opts = {}) {
+  const attempts = opts.attempts ?? CLEANUP_ATTEMPTS;
+  const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
+  let lastErr = "";
+  for (let i = 1; i <= attempts; i++) {
+    const rmR = await gitFn(["worktree", "remove", "--force", wt]);
+    if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
+    await gitFn(["worktree", "prune"]);
+    const registered = await stillRegistered(gitFn, wt);
+    const present = await pathExists(wt);
+    if (!registered && !present) return { ok: true, target: wt, attempts: i };
+    if (i < attempts) await sleep(delayMs * i);
+    else
+      return {
+        ok: false,
+        target: wt,
+        attempts: i,
+        detail: redactSecrets(
+          [
+            registered ? `still registered as a git worktree after ${i} attempt(s)` : null,
+            present ? `directory still present on disk after ${i} attempt(s)` : null,
+            lastErr ? `last git error: ${lastErr}` : null
+          ].filter(Boolean).join("; ")
+        ).slice(0, 500)
+      };
+  }
+  return { ok: false, target: wt, attempts, detail: "cleanup loop did not settle" };
+}
+async function deleteBranchVerified(gitFn, branch, opts = {}) {
+  const attempts = opts.attempts ?? CLEANUP_ATTEMPTS;
+  const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
+  let lastErr = "";
+  for (let i = 1; i <= attempts; i++) {
+    const del = await gitFn(["branch", "-D", branch]);
+    if (del.code !== 0) lastErr = del.out.trim().split("\n").slice(-1)[0] ?? "";
+    const listed = await gitFn(["branch", "--list", branch]);
+    const present = listed.code !== 0 || listed.stdout.trim() !== "";
+    if (!present) return { ok: true, target: branch, attempts: i };
+    if (i < attempts) await sleep(delayMs * i);
+    else
+      return {
+        ok: false,
+        target: branch,
+        attempts: i,
+        detail: redactSecrets(
+          `branch still present after ${i} attempt(s)${lastErr ? `; last git error: ${lastErr}` : ""}`
+        ).slice(0, 500)
+      };
+  }
+  return { ok: false, target: branch, attempts, detail: "cleanup loop did not settle" };
+}
+function runExitCode(o) {
+  return o.escalated || o.blocked || o.aborted || o.cleanupFailures ? 2 : 0;
+}
+function cleanupFailures(health, results) {
+  return [
+    ...results.flatMap(
+      (r) => (r.cleanup ?? []).filter((c) => !c.ok).map((c) => ({ owner: r.id, target: c.target, detail: c.detail ?? "unverified" }))
+    ),
+    ...health.cleanup.failures.map((f) => ({ owner: "run", target: f.target, detail: f.detail }))
+  ];
+}
+function cleanupReportLines(health, results) {
+  const failures = cleanupFailures(health, results);
+  if (failures.length === 0)
+    return [`## Resource cleanup`, `Every farm worktree and scratch branch was removed and re-verified.`];
+  return [
+    `## Resource cleanup`,
+    `> **CLEANUP DEGRADED** \u2014 ${failures.length} resource(s) could not be released and re-verified. They may still be registered with git or present on disk, and the next run will collide with or destructively pre-clean them. Exit code is non-zero for this reason alone.`,
+    ...failures.map((f) => `- \`${f.target}\` (${f.owner}) \u2014 ${f.detail}`)
+  ];
 }
 var defaultRunTaskDeps = () => ({
   worker: httpWorker,
@@ -1089,13 +1303,12 @@ ${gate.tail}`), promptTokens: pt, completionTokens: ct };
   const completionTokens = outcomes.reduce((s, o) => s + o.completionTokens, 0);
   const winner = outcomes.find((o) => o.green) ?? null;
   const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
+  const cleanup = [];
   for (const o of outcomes) {
-    await deps.git(["worktree", "remove", "--force", o.wt]).catch(() => {
-    });
-    await deps.git(["branch", "-D", o.branch]).catch(() => {
-    });
+    cleanup.push(await removeWorktreeVerified(deps.git, o.wt));
+    cleanup.push(await deleteBranchVerified(deps.git, o.branch));
   }
-  return { winner, bestFailure, promptTokens, completionTokens };
+  return { winner, bestFailure, promptTokens, completionTokens, cleanup };
 }
 async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()) {
   const branch = `farm/${t.id}`;
@@ -1106,9 +1319,14 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const forbidden = /* @__PURE__ */ new Set([t.test.path]);
   const samples = Math.max(1, Math.floor(numEnv("FARM_SAMPLES", 1, { min: 1 })));
   const sampling = effectiveSampling(samples);
+  const cleanupIssues = [];
+  const noteCleanup = (...outcomes) => {
+    for (const c of outcomes) if (!c.ok) cleanupIssues.push(c);
+  };
+  const finish = (r) => cleanupIssues.length ? { ...r, cleanup: [...cleanupIssues] } : r;
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
-    return { id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr };
+    return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
   const testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
   let priorFailure;
   let driftedOnce = false;
@@ -1128,7 +1346,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
     }
     const setupNote = await runSetupPhases(wt, t, deps, setupState);
     if (setupNote)
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens });
     const injected = await buildEnrichment(wt, t, priorInScope);
     const forbiddenExtra = driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0;
     const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
@@ -1148,6 +1366,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
       }
     } else {
       const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps);
+      noteCleanup(...sel.cleanup);
       promptTokens += sel.promptTokens;
       completionTokens += sel.completionTokens;
       acceptedPromptTokens = sel.winner?.promptTokens ?? 0;
@@ -1162,7 +1381,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
         await writeFilesInto(wt, sel.winner.files);
       } catch (error) {
         if (isUnsafeWorktreePathError(error)) {
-          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
         }
         throw error;
       }
@@ -1171,11 +1390,11 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
     }
     const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
     if (sweepErr) {
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
     const testHashAfter = await deps.fileHash(path3.resolve(wt, t.test.path));
     if (testHashBefore !== null && testHashAfter !== testHashBefore) {
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
     const driftFiles = await deps.checkDrift(wt, allowed);
     if (driftFiles.length > 0) {
@@ -1184,7 +1403,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
         priorFailure = `drift: you wrote outside the allowed files: ${driftFiles.join(", ")}`;
         continue;
       }
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
     const gate = await deps.runGate(wt, t.gate.commands);
     if (!gate.ok) {
@@ -1201,7 +1420,7 @@ ${gate.tail}`);
         mut = await deps.mutationCheck(wt, t);
       } catch (error) {
         if (isUnsafeWorktreePathError(error)) {
-          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
         }
         throw error;
       }
@@ -1228,13 +1447,13 @@ ${gate.tail}`);
     if (risk === "high") {
       priorFailure = `${riskNote}. Implement real logic; do not hard-code or special-case the asserted value.`;
       if (attempt <= limit) continue;
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
     }
     if (risk === "warn") lastWarning = riskNote;
     await deps.git(["add", "--", ...worker.filesWritten], wt);
     const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
     if (commit.code !== 0)
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     const diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
     const merged = await deps.withMergeLock(async () => {
       const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
@@ -1255,13 +1474,12 @@ ${gate.tail}`);
 ${String(merged).slice(0, 160)}`);
         continue;
       }
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
-    await deps.git(["worktree", "remove", "--force", wt]).catch(() => {
-    });
-    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens };
+    noteCleanup(await removeWorktreeVerified(deps.git, wt));
+    return finish({ id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens });
   }
-  return { id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore };
+  return finish({ id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore });
 }
 var SAFE_TASK_ID = /^[A-Za-z0-9._-]{1,64}$/;
 var LOOPBACK_HOSTS = /* @__PURE__ */ new Set(["127.0.0.1", "localhost"]);
@@ -1696,23 +1914,25 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
   } finally {
+    if (integrationWorktree) {
+      const c = await removeWorktreeVerified(git, integrationWorktree);
+      if (!c.ok) health.cleanup.failures.push({ target: c.target, detail: c.detail ?? "unverified" });
+    }
     try {
       await writeReport(plan, [...done.values()], blocked, aborted, runId, health);
     } catch (e) {
       publishError = e;
       console.error("report publication failed:", e);
     }
-    if (integrationWorktree)
-      await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
-      });
   }
   const results = [...done.values()];
   const esc = results.filter((r) => r.status === "escalate").length;
   const green = results.filter((r) => r.status === "green").length;
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
-  const runExitCode = esc || blocked.length || aborted ? 2 : 0;
-  const exitCode = publishError ? 3 : runExitCode;
+  const leaks = cleanupFailures(health, results);
+  const runOutcome = runExitCode({ escalated: esc, blocked: blocked.length, aborted, cleanupFailures: leaks.length });
+  const exitCode = publishError ? 3 : runOutcome;
   const latestReportErrors = health.report.latestMirrorErrors;
   const summary = [
     aborted ? `
@@ -1722,6 +1942,14 @@ Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
     `Run: ${runId}  (artifacts: ${runDir})`,
+    // #398: never let a leak be something the operator has to go looking for.
+    leaks.length ? [
+      `
+CLEANUP DEGRADED \u2014 ${leaks.length} resource(s) could not be released and re-verified:`,
+      ...leaks.map((l) => `  - ${l.target} (${l.owner}): ${l.detail}`),
+      `Git may still register these worktrees, or the directories may still be on disk. The next run's`,
+      `pre-cleanup is destructive and best-effort, so clear them before re-running. Exit is non-zero for this alone.`
+    ].join("\n") : ``,
     // The success breadcrumb is SUPPRESSED when the authoritative publication
     // failed — pointing an operator at a farm-report.md that is not there is
     // the defect. Every claim below has to be true of what is actually on disk:
@@ -1731,10 +1959,10 @@ Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
     publishError ? [
       `
 RECEIPT PUBLICATION FAILED \u2014 run ${runId} could not publish its complete authoritative report under ${runDir}: ${msgOf(publishError)}`,
-      `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but this run's durable receipt is missing or incomplete,`,
+      `The tasks themselves finished ${runOutcome === 0 ? "green" : "with escalations/blocks/unreleased worktrees"}, but this run's durable receipt is missing or incomplete,`,
       `so it cannot be reliably reconciled or audited. Inspect ${runDir} for whatever did land.`,
       `${path3.join(ENV.reportDir, "farm-report.json")} / .md were NOT refreshed and do not describe run ${runId}.`,
-      `Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`
+      `Exiting 3 (receipt failure) rather than ${runOutcome} (task outcome).`
     ].join("\n") : latestReportErrors.length ? (
       // Non-fatal, and stated as such. The authoritative receipt is
       // unaffected; what the operator must not assume is that the shared
@@ -1789,6 +2017,7 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
   }
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
+  const leaks = cleanupFailures(health, results);
   const streamComplete = health.stream.errors.length === 0;
   const artifacts = {
     run_dir: runDir,
@@ -1806,7 +2035,11 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
       unavailable,
       unavailable_total: health.diffs.unavailableTotal,
       latest_mirror_errors: health.diffs.latestMirrorErrors
-    }
+    },
+    // #398: the run's resource-ownership statement. `released` is an explicit
+    // positive claim, so a consumer can distinguish "nothing leaked" from "this
+    // report predates the check" without inferring it from an absent key.
+    cleanup: { released: leaks.length === 0, failures: leaks }
   };
   const json = JSON.stringify(
     { run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, artifacts, ts: (/* @__PURE__ */ new Date()).toISOString() },
@@ -1820,6 +2053,8 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
 ` : ``,
     streamComplete ? `` : `> **Streaming rail incomplete** \u2014 ${health.stream.errors.length} write failure(s) on \`farm-results.jsonl\`; this report is authoritative for settled tasks.
 `,
+    leaks.length ? `> **CLEANUP DEGRADED** \u2014 ${leaks.length} worktree/branch could not be released; see Resource cleanup below.
+` : ``,
     `Run: \`${runId}\` \u2014 artifacts under \`${runDir}\``,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     ``,
@@ -1836,6 +2071,8 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
       `${health.diffs.unavailableTotal} task(s) have no diff evidence${unavailable.length < health.diffs.unavailableTotal ? ` (first ${MAX_RECORDED_ARTIFACT_ERRORS} listed)` : ``}:`,
       ...unavailable.map((u) => `- **${u.id}** \u2014 diff evidence unavailable: ${u.reason}`)
     ] : [`Every settled task with a non-empty diff has a patch under \`${diffsDir}\`.`],
+    ``,
+    ...cleanupReportLines(health, results),
     ``,
     `## Warnings \u2014 review during spec-compliance`,
     ...results.filter((r) => r.warning).map((r) => {
@@ -1876,8 +2113,11 @@ export {
   buildPrompt,
   captureInScope,
   checkDrift,
+  cleanupFailures,
+  cleanupReportLines,
   codeLineCount,
   createLimiter,
+  deleteBranchVerified,
   extractFileBlocks,
   extractLiterals,
   httpWorker,
@@ -1890,8 +2130,10 @@ export {
   parsePlan,
   readSampling,
   redactSecrets,
+  removeWorktreeVerified,
   run,
   runArtifactDir,
+  runExitCode,
   runGate,
   runTask,
   screenEntitlements,
