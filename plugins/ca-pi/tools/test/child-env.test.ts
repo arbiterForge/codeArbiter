@@ -386,11 +386,19 @@ describe("Task 6 child environment", () => {
     for (const provider of ["amazon-bedrock", "azure-openai-responses", "cloudflare-ai-gateway", "fireworks", "google-vertex", "opencode"]) {
       expect(PI_BUILTIN_UPSTREAM[provider]).toBeUndefined();
     }
+    // The gate must be the DISCRIMINATING control, not a bystander. Asserted with only a
+    // `baseUrl`, these providers refused for a different reason entirely — the fixture's parent
+    // env carries no credential any of them resolves, so `resolvedUpstreamCredential` refused
+    // first and deleting the ineligibility check kept the whole assertion green. Each launch
+    // below is therefore given an endpoint AND a credential the parent genuinely resolves, so
+    // ineligibility is the only thing left standing between it and a projection.
+    const INELIGIBLE_CREDENTIAL = "planted-ineligible-credential-5150";
     for (const provider of ["amazon-bedrock", "google-vertex", "github-copilot", "openai-codex"]) {
       expect(BROKER_INELIGIBLE_PROVIDERS.has(provider)).toBe(true);
       const { document, error, cleanup } = await projectedModels(
-        { providers: { [provider]: { baseUrl: "https://gw.example.com/v1" } } },
+        { providers: { [provider]: { baseUrl: "https://gw.example.com/v1", apiKey: "$CA_PI_INELIGIBLE_KEY" } } },
         provider,
+        { CA_PI_INELIGIBLE_KEY: INELIGIBLE_CREDENTIAL },
       );
       try {
         expect(document, `${provider} must not project`).toBeUndefined();
@@ -398,6 +406,21 @@ describe("Task 6 child environment", () => {
       } finally {
         await cleanup();
       }
+    }
+    // The positive control that proves the refusals above are caused by ineligibility and not by
+    // the fixture: the SAME shape on an eligible provider projects and resolves its upstream.
+    const eligible = await projectedModels(
+      { providers: { openrouter: { baseUrl: "https://gw.example.com/v1", apiKey: "$CA_PI_INELIGIBLE_KEY" } } },
+      "openrouter",
+      { CA_PI_INELIGIBLE_KEY: INELIGIBLE_CREDENTIAL },
+    );
+    try {
+      expect(eligible.error).toBeUndefined();
+      expect(eligible.upstream).toEqual({
+        baseUrl: "https://gw.example.com/v1", credential: INELIGIBLE_CREDENTIAL, headers: {},
+      });
+    } finally {
+      await eligible.cleanup();
     }
   });
 
