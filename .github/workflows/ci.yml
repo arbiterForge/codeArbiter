@@ -1309,6 +1309,41 @@ jobs:
       - name: Check repository documentation contract
         run: python3 .github/scripts/check_docs_contract.py
 
+  tag-immutability:
+    name: "[CHECK] | [REPO] | Published tag immutability"
+    # Issue #386 AC-3. This repo publishes four installable tag series and the
+    # README tells Pi consumers to PIN `ca-pi-v<version>`. A git tag is a
+    # mutable ref: anything with contents:write can retarget one, and a moved
+    # tag makes a pinned install fetch code that the review behind that version
+    # never covered. Repo-wide and always-on, like license-consistency and
+    # surface - the regression this detects has no diff to path-scope against,
+    # because it happens in refs, not in files.
+    #
+    # UNLIKE the branch-protection audit beside it, this one runs LIVE in
+    # ordinary CI: listing `/git/refs/tags` needs only contents:read, which the
+    # default GITHUB_TOKEN grants. It still skips loudly rather than failing on
+    # a transport failure or rate limit, because a merge gate must report a
+    # history regression, never a network problem. Read-only: paginated GETs,
+    # no mutations, and a partial listing is discarded rather than audited.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - name: Verify every published tag still resolves to its published commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
+      - name: Test the audit's own logic
+        # The audit can skip; its unit tests cannot. They are offline and
+        # tokenless, and they pin the drift and deletion verdicts against a
+        # recorded copy of the live tag provenance.
+        run: python .github/scripts/test_tag_immutability.py
+
   branch-protection:
     name: "[CHECK] | [REPO] | Branch protection"
     # Issue #383 AC-3. Everything else in this workflow guards the CODE; this
@@ -1361,6 +1396,7 @@ jobs:
     needs:
       - documentation-contract
       - branch-protection
+      - tag-immutability
       - changes
       - host-descriptors
       - ci-impact
@@ -1387,7 +1423,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"

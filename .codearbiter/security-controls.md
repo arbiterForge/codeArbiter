@@ -551,6 +551,75 @@ vague "if the threat model expands to untrusted agents". Any ONE reopens it:
 
 ---
 
+## Published tag immutability
+
+Four installable tag series are published from this repository: `v*` (ca),
+`ca-sandbox-v*`, `ca-codex-v*`, and `ca-pi-v*`. The README instructs consumers
+to pin an exact tag, so a tag is the identity of a payload that review, CI, and
+a published changelog have all vouched for.
+
+**Control: a published tag is immutable. There is no break-glass.** Moving,
+retargeting, or deleting a published tag is prohibited outright, in every
+namespace, for every actor including a repository administrator. Correction of a
+bad release is publication of a NEW version, which is the documented and already
+practised path (`core/surface/skills/release/SKILL.md`, "Recovering from a bad
+release"). This is the maintainer ruling of 2026-07-25 on issue #386: a standing
+bypass credential buys almost nothing, because the recovery it would enable is
+one nobody needs, while being exactly the credential an attacker would target.
+
+**Threat.** A git tag is a mutable ref. Anything holding `contents:write` (a
+compromised maintainer credential, a leaked token, an over-scoped workflow, or a
+mistaken administrative operation) can retarget `v2.8.13` or `ca-pi-v0.1.1` to
+arbitrary code. Pinned installs would then execute a payload that the version's
+review and verification never covered, while the release notes and prior
+verification continue to imply immutability. Deletion is the same weapon aimed at
+availability: every pinned install breaks at once.
+
+**Enforcement is two independent layers, because neither covers the other:**
+
+1. *Prevention*: repository rulesets targeting tags, with `deletion` and
+   `non_fast_forward` rules over the four namespaces and no bypass actors. This
+   is a repository SETTING, which means it can be switched off with no diff, no
+   review, and no red check anywhere.
+2. *Detection*: `.github/scripts/check_tag_immutability.py`, wired into the merge
+   gate as `[CHECK] | [REPO] | Published tag immutability`. It compares every
+   live tag ref against `.github/published-tags.json`, a committed manifest
+   recording where each tag pointed when it was published, and fails the build on
+   any disagreement. Layer 2 is what notices if layer 1 is removed or was never
+   applied, and it is the only layer covering the 26 tags published before either
+   existed: a ruleset does not act retroactively, and GitHub's immutable-releases
+   feature protects only releases published after it is enabled.
+
+**Provenance manifest integrity.** The originally-published commit is not
+recoverable from the API after a move: a moved tag is indistinguishable from a
+tag that was always there, and a Release's `target_commitish` is mutable. So it
+is written down. `.github/published-tags.json` records, per tag, the ref's object
+sha and the commit it dereferences to; both were verified on 2026-07-25 against
+the GitHub API *and* an independent local clone. Its integrity rests on git
+history plus branch protection on main: amending a recorded sha requires a
+reviewed pull request, whereas moving a tag requires nothing. Editing an entry to
+silence a red drift run is a review-visible act and is never the correct fix.
+
+**Accepted residual risk.** The detection layer is read-only and after-the-fact:
+it reports a moved tag, it cannot prevent one. Between the move and the next CI
+run, a consumer can install the substituted payload. Closing that window is what
+layer 1 is for, which is why the ruleset is a maintainer action tracked on #386
+and not satisfied by the check alone. The audit also skips loudly rather than
+failing when it cannot read the refs (transport failure or rate limit); it needs
+only `contents:read`, which `GITHUB_TOKEN` grants, so it runs live in ordinary CI
+and a skip is an exception rather than the normal case.
+
+**GitHub immutable Releases (AC-2).** Measured 2026-07-25: every Release on this
+repository reports `immutable: false`, and the owning organisation is on the
+**free** plan. Where the plan and repository support the setting it should be
+enabled, but it is not a substitute for the above and cannot be one: it binds
+release assets from the point it is switched on and does nothing for the 26
+already-published tags. The manifest-plus-drift-audit control documented here is
+the "equivalent audited control" AC-2 permits, and it stands whether or not
+immutable Releases are available.
+
+---
+
 ## Boundary crossings (declared exceptions)
 
 | Boundary | Exception | Rationale |

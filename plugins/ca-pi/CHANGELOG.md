@@ -26,6 +26,16 @@ All notable changes to `ca-pi` are documented in this file.
   command and never improvises the operation, and a missing owner is a routing
   gap to surface rather than a reason to reach for `$ca-override` (ADR-0022).
 
+## [0.1.21] - 2026-07-25
+
+### Changed
+
+- The bundled `release` routine now documents published-tag immutability: a bad
+  release is corrected by publishing a new version, never by moving, retargeting,
+  or deleting an existing tag, and every newly published tag records where it
+  pointed so repository CI can prove it never moved (issue #386). Payload-only
+  change to the generated surface; no adapter behavior changes.
+
 ## [0.1.20] - 2026-07-25
 
 ### Fixed
