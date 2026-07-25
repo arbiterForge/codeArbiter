@@ -37,7 +37,7 @@ import re
 import stat
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # _acquire_lock/_release_lock/LOCK_WAIT were hoisted to _hooklib (#271 C-2) so
@@ -50,11 +50,23 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import acquire_lock as _acquire_lock  # noqa: E402
 from _hooklib import release_lock as _release_lock  # noqa: E402
 from _hooklib import LOCK_WAIT  # noqa: E402
+# parse_iso lives in _fmtlib, which already documents it as part of its public
+# API; this module carried a byte-identical second copy (#334 item 3). Same
+# re-export pattern as the lock helpers above: one owner, and `L.parse_iso`
+# stays importable for this module's call sites and the test suite. No cycle
+# risk — _fmtlib imports only _colorlib, never _ledgerlib.
+from _fmtlib import parse_iso  # noqa: E402,F401
 
 # Tunables (module constants; mirrored from the original inline statusline block).
 SESSION_TTL = 36 * 3600  # prune sessions older than ~1.5 days
 BURN_RING = 40           # recent per-call token-burn samples kept for the sparkline
 TX_MAX_NEW_LINES = 20000 # hot-path bound: transcript lines parsed per render
+# `last_ts` exists only to keep a live record inside SESSION_TTL. Stamping it on
+# EVERY render made every render a writing render (#392) — the statusline runs in
+# a fresh process per refresh, so that was two atomic replacements per refresh
+# forever. Refresh it on a write we are making anyway, or at most once per
+# heartbeat; 5 minutes is ~432x inside the 36-hour TTL.
+LEDGER_HEARTBEAT = 300
 
 # Pi's bridge sends only already-extracted usage facts. The bridge chunks long
 # sessions so one call and one lock hold stay predictably small. `session_key` is
@@ -122,19 +134,6 @@ def get(d, *path, default=None):
             return default
         cur = cur[k]
     return cur
-
-
-def parse_iso(s):
-    """Parse an ISO-8601 timestamp (tolerating a trailing Z) to epoch seconds."""
-    if not s or not isinstance(s, str):
-        return None
-    try:
-        dt = datetime.fromisoformat(s.strip().replace("Z", "+00:00"))
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)   # naive timestamps are UTC, not local
-        return dt.timestamp()
-    except Exception:  # noqa: BLE001
-        return None
 
 
 # --------------------------------------------------------------------------- pricing
@@ -212,11 +211,23 @@ def _start_file(path, sid):
     return os.path.join(_session_dir(path), f"{_session_key(sid)}.start.json")
 
 
-def _load_sessions(path):
-    """Merge the legacy snapshot with authoritative independently-written shards."""
+def _merge_sessions(path):
+    """Merge the legacy snapshot with authoritative independently-written shards.
+
+    Returns (sessions, legacy) where `legacy` is the compatibility snapshot's own
+    mapping exactly as it was read from disk (None when the file is absent or
+    malformed). Callers compare the merged result against `legacy` to tell whether
+    the snapshot on disk is already in sync, so the whole-snapshot rewrite happens
+    only when it would actually change bytes (#392). Session records are copied out
+    of `legacy` so later in-place edits (the .start.json overlay below, and the
+    caller's own record) cannot mutate the comparison baseline.
+    """
     led = _read_json(path, {})
     legacy = led.get("sessions") if isinstance(led, dict) else None
-    sessions = dict(legacy) if isinstance(legacy, dict) else {}
+    if not isinstance(legacy, dict):
+        legacy = None
+    sessions = {} if legacy is None else {
+        sid: dict(rec) for sid, rec in legacy.items() if isinstance(rec, dict)}
     directory = _session_dir(path)
     try:
         names = os.listdir(directory)
@@ -275,7 +286,12 @@ def _load_sessions(path):
     sessions = {sid: rec for sid, rec in sessions.items()
                 if isinstance(rec, dict)
                 and now - num(rec.get("last_ts")) <= SESSION_TTL}
-    return sessions
+    return sessions, legacy
+
+
+def _load_sessions(path):
+    """The merged live-session map only (see _merge_sessions for the baseline)."""
+    return _merge_sessions(path)[0]
 
 
 def _write_snapshot(path, sessions):
@@ -432,21 +448,34 @@ def _ledger_update_unlocked(data, sid, path):
     """Read-modify-write the per-session ledger. Accumulate the session's TRUE token
     COUNTS by tailing its transcript (deduped per requestId), take the COST from the
     host's cost.total_cost_usd, and return (session record, this-session totals,
-    today's totals across sessions). Best-effort; safe blanks on any failure."""
+    today's totals across sessions). Best-effort; safe blanks on any failure.
+
+    The statusline re-renders in a fresh process on every refresh, so this is the
+    product's hottest filesystem path: each write below is skipped unless it would
+    actually change bytes on disk (#392). The on-disk FORMAT is unchanged — the
+    per-session shard and the whole-ledger compatibility snapshot are both still
+    written exactly as before, just no longer unconditionally."""
     blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
     now = time.time()
     today = datetime.now().strftime("%Y-%m-%d")
 
-    sessions = _load_sessions(path)
+    sessions, legacy = _merge_sessions(path)
 
     rec = sessions.get(sid)
     dirty = not isinstance(rec, dict)
     if dirty:
         rec = {}
-    rec.setdefault("first_ts", now)
-    rec["last_ts"] = now
-    rec["last_day"] = today
-    rec["host_cost"] = num(get(data, "cost", "total_cost_usd"))
+    stored_ts = num(rec.get("last_ts"))
+    if "first_ts" not in rec:
+        rec["first_ts"] = now
+        dirty = True
+    if rec.get("last_day") != today:
+        rec["last_day"] = today
+        dirty = True
+    host_cost = num(get(data, "cost", "total_cost_usd"))
+    if rec.get("host_cost") != host_cost:
+        rec["host_cost"] = host_cost
+        dirty = True
 
     tx = data.get("transcript_path") if isinstance(data, dict) else None
     if safe(_tx_accumulate, rec, tx):
@@ -457,20 +486,34 @@ def _ledger_update_unlocked(data, sid, path):
     # it is far more accurate than recomputing tokens*price. api_cost is fallback only.
     if rec["host_cost"] > 0:
         sess["cost"] = rec["host_cost"]
-    rec["today"] = dict(_totals(_agg_reqs(rec.get("reqs"), only=today)), date=today)
-    rec.pop("tot", None)                    # retire the batch-1 whole-session cache key
+    bucket = dict(_totals(_agg_reqs(rec.get("reqs"), only=today)), date=today)
+    if rec.get("today") != bucket:
+        rec["today"] = bucket
+        dirty = True
+    if rec.pop("tot", None) is not None:    # retire the batch-1 whole-session cache key
+        dirty = True
+    # Heartbeat: `last_ts` is pure liveness for the TTL sweep, so it rides along
+    # with a write we are already making rather than forcing one of its own.
+    if dirty or now - stored_ts >= LEDGER_HEARTBEAT:
+        rec["last_ts"] = now
+        dirty = True
     sessions[sid] = rec
 
     for k in list(sessions.keys()):
         v = sessions[k]
         if not isinstance(v, dict) or now - num(v.get("last_ts")) > SESSION_TTL:
             del sessions[k]
-            dirty = True
     # Each session owns one independently replaced shard. A writer for another
-    # session therefore cannot replace this record with an older snapshot.
-    _atomic_json(_session_file(path, sid), {"sid": sid, "rec": rec})
-    sessions = _load_sessions(path)
-    _write_snapshot(path, sessions)  # compatibility/readability cache; shards are truth
+    # session therefore cannot replace this record with an older snapshot. The
+    # merged map above already reflects every shard read under this same lock, so
+    # there is nothing a re-read could learn — no concurrent writer can have run.
+    if dirty:
+        _atomic_json(_session_file(path, sid), {"sid": sid, "rec": rec})
+    if sessions != legacy:
+        # Compatibility/readability cache; shards are truth. Rewritten only when
+        # it has drifted from the merged truth — which still covers TTL pruning,
+        # a new session, and a legacy-only record that a shard has superseded.
+        _write_snapshot(path, sessions)
 
     # Today = each session's TODAY bucket (tokens whose transcript timestamp falls
     # on the current local day), summed across sessions — not whole-session totals.
@@ -506,7 +549,7 @@ def persist_sess_start(sid, value):
 
 
 def _persist_sess_start_unlocked(sid, value, path):
-    sessions = _load_sessions(path)
+    sessions, legacy = _merge_sessions(path)
     rec = sessions.get(sid)
     if not isinstance(rec, dict):
         return False
@@ -517,8 +560,11 @@ def _persist_sess_start_unlocked(sid, value, path):
     if not _atomic_json(_start_file(path, sid),
                         {"sid": sid, "sess_start": float(value)}):
         return False
-    sessions = _load_sessions(path)
-    _write_snapshot(path, sessions)
+    # Applying the value we just persisted is exactly what a re-merge would
+    # produce — the start-file overlay in _merge_sessions — without the reread.
+    rec["sess_start"] = float(value)
+    if sessions != legacy:
+        _write_snapshot(path, sessions)
     return True
 
 

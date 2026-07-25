@@ -1102,6 +1102,208 @@ class TestPiUsageLedger(unittest.TestCase):
         self.assertNotIn("environment", shard)
 
 
+# =========================================================================== render write amplification
+class TestRenderWriteAmplification(unittest.TestCase):
+    """#392 — the statusline renders in a fresh process on every refresh, so a
+    render that changed nothing must not rewrite the session shard AND the whole
+    compatibility snapshot, and a render that DID change something must read the
+    snapshot plus the live shards exactly once."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self._home = redirect_home(self.tmp)
+        self._orig = os.environ.get("CODEARBITER_LEDGER")
+        self.ledger = os.path.join(self.tmp, ".codearbiter", "ledger.json")
+        os.environ["CODEARBITER_LEDGER"] = self.ledger
+
+    def tearDown(self):
+        restore_home(self._home)
+        if self._orig is None:
+            os.environ.pop("CODEARBITER_LEDGER", None)
+        else:
+            os.environ["CODEARBITER_LEDGER"] = self._orig
+
+    # ------------------------------------------------------------------ helpers
+    def _assistant(self, req, inp=200, out=100):
+        # A local-offset "now" timestamp so _msg_date buckets these tokens into
+        # the CURRENT calendar day (the today-totals path under test).
+        return {"type": "assistant", "requestId": req,
+                "timestamp": datetime.now().astimezone().isoformat(),
+                "message": {"model": "claude-sonnet-4-6",
+                            "usage": {"input_tokens": inp, "output_tokens": out}}}
+
+    def _write_tx(self, entries):
+        tx = os.path.join(self.tmp, "transcript.jsonl")
+        with open(tx, "w", encoding="utf-8") as f:
+            for o in entries:
+                f.write(json.dumps(o) + "\n")
+        return tx
+
+    def _read(self, path):
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+
+    def _record_writes(self):
+        """Wrap _atomic_json so every replaced pathname is recorded in order."""
+        writes = []
+        real = L._atomic_json
+
+        def spy(path, value):
+            writes.append(path)
+            return real(path, value)
+
+        return writes, mock.patch.object(L, "_atomic_json", side_effect=spy)
+
+    def _record_reads(self):
+        reads = []
+        real = L._read_json
+
+        def spy(path, default=None):
+            reads.append(path)
+            return real(path, default)
+
+        return reads, mock.patch.object(L, "_read_json", side_effect=spy)
+
+    def _seed_shard(self, sid, today, tokens_in, cost):
+        rec = {"first_ts": time.time(), "last_ts": time.time(), "last_day": today,
+               "host_cost": cost, "reqs": {}, "burn": [], "tx_off": 0,
+               "today": {"in": float(tokens_in), "out": 0.0, "cost": cost,
+                         "date": today}}
+        self.assertTrue(L._atomic_json(L._session_file(self.ledger, sid),
+                                       {"sid": sid, "rec": rec}))
+
+    # ------------------------------------------------------------------ tests
+    def test_unchanged_render_replaces_no_file(self):
+        tx = self._write_tx([self._assistant("r1")])
+        data = {"transcript_path": tx, "cost": {"total_cost_usd": 1.25}}
+        L.ledger_update(data, "quiet")                 # seed
+        writes, patcher = self._record_writes()
+        with patcher:
+            L.ledger_update(data, "quiet")             # identical render
+        self.assertEqual(writes, [])
+
+    def test_unchanged_render_preserves_shard_and_snapshot_bytes(self):
+        tx = self._write_tx([self._assistant("r1")])
+        data = {"transcript_path": tx, "cost": {"total_cost_usd": 1.25}}
+        L.ledger_update(data, "quiet")
+        shard = L._session_file(self.ledger, "quiet")
+        before_shard = self._read(shard)
+        before_snap = self._read(self.ledger)
+        L.ledger_update(data, "quiet")
+        self.assertEqual(self._read(shard), before_shard)
+        self.assertEqual(self._read(self.ledger), before_snap)
+
+    def test_changed_render_reads_snapshot_and_shards_once(self):
+        tx = self._write_tx([self._assistant("r1")])
+        data = {"transcript_path": tx, "cost": {"total_cost_usd": 1.0}}
+        L.ledger_update(data, "hot")
+        for other in ("a", "b", "c"):
+            self._seed_shard(other, datetime.now().strftime("%Y-%m-%d"), 10, 0.5)
+        tx = self._write_tx([self._assistant("r1"), self._assistant("r2")])
+        data = {"transcript_path": tx, "cost": {"total_cost_usd": 2.0}}
+        reads, patcher = self._record_reads()
+        with patcher:
+            L.ledger_update(data, "hot")
+        self.assertEqual(reads.count(self.ledger), 1)
+        for path in set(reads):
+            self.assertEqual(reads.count(path), 1, f"{path} was parsed twice")
+
+    def test_last_ts_heartbeat_is_throttled_then_refreshed(self):
+        L.ledger_update({}, "beat")
+        shard = L._session_file(self.ledger, "beat")
+        stamped = self._read(shard)["rec"]["last_ts"]
+        L.ledger_update({}, "beat")
+        self.assertEqual(self._read(shard)["rec"]["last_ts"], stamped)
+        payload = self._read(shard)
+        payload["rec"]["last_ts"] = time.time() - L.LEDGER_HEARTBEAT - 5
+        self.assertTrue(L._atomic_json(shard, payload))
+        L.ledger_update({}, "beat")
+        refreshed = self._read(shard)["rec"]["last_ts"]
+        self.assertGreater(refreshed, time.time() - L.LEDGER_HEARTBEAT)
+
+    def test_heartbeat_throttle_stays_far_inside_the_ttl(self):
+        # The throttle only exists to stop per-render writes; it must never let a
+        # live session drift out of the 36-hour TTL contract.
+        self.assertLess(L.LEDGER_HEARTBEAT, L.SESSION_TTL / 10)
+
+    def test_quiet_render_still_prunes_expired_snapshot_entry(self):
+        tx = self._write_tx([self._assistant("r1")])
+        data = {"transcript_path": tx}
+        L.ledger_update(data, "live")
+        snapshot = self._read(self.ledger)
+        snapshot["sessions"]["ghost"] = {"last_ts": time.time() - L.SESSION_TTL - 1}
+        self.assertTrue(L._atomic_json(self.ledger, snapshot))
+        L.ledger_update(data, "live")                  # nothing changed for "live"
+        self.assertNotIn("ghost", self._read(self.ledger)["sessions"])
+        self.assertIn("live", self._read(self.ledger)["sessions"])
+
+    def test_cost_change_alone_is_persisted(self):
+        L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "cost")
+        shard = L._session_file(self.ledger, "cost")
+        L.ledger_update({"cost": {"total_cost_usd": 3.5}}, "cost")
+        self.assertEqual(self._read(shard)["rec"]["host_cost"], 3.5)
+        self.assertEqual(self._read(self.ledger)["sessions"]["cost"]["host_cost"],
+                         3.5)
+
+    def test_daily_totals_exact_across_shard_counts(self):
+        today = datetime.now().strftime("%Y-%m-%d")
+        for count in (1, 10, 100):
+            with self.subTest(shards=count):
+                directory = L._session_dir(self.ledger)
+                for name in (os.listdir(directory)
+                             if os.path.isdir(directory) else []):
+                    os.remove(os.path.join(directory, name))
+                for index in range(count):
+                    self._seed_shard(f"peer-{index}", today, 7, 0.25)
+                _rec, _sess, day = L.ledger_update({}, "current")
+                self.assertEqual(day["in"], 7.0 * count)
+                self.assertAlmostEqual(day["cost"], 0.25 * count)
+                self.assertEqual(
+                    len(self._read(self.ledger)["sessions"]), count + 1)
+
+    def test_expired_shards_still_pruned_with_many_live_shards(self):
+        today = datetime.now().strftime("%Y-%m-%d")
+        for index in range(10):
+            self._seed_shard(f"peer-{index}", today, 1, 0.0)
+        expired = L._session_file(self.ledger, "gone")
+        self.assertTrue(L._atomic_json(
+            expired, {"sid": "gone",
+                      "rec": {"last_ts": time.time() - L.SESSION_TTL - 1}}))
+        L.ledger_update({}, "current")
+        self.assertFalse(os.path.exists(expired))
+        self.assertNotIn("gone", self._read(self.ledger)["sessions"])
+
+    def test_concurrent_sessions_keep_their_own_totals(self):
+        first = self._write_tx([self._assistant("a1", inp=100, out=10)])
+        second = os.path.join(self.tmp, "second.jsonl")
+        with open(second, "w", encoding="utf-8") as f:
+            f.write(json.dumps(self._assistant("b1", inp=300, out=20)) + "\n")
+        _r, sess_a, _d = L.ledger_update({"transcript_path": first}, "sid-a")
+        _r, sess_b, day = L.ledger_update({"transcript_path": second}, "sid-b")
+        self.assertEqual(sess_a["in"], 100.0)
+        self.assertEqual(sess_b["in"], 300.0)
+        snapshot = self._read(self.ledger)["sessions"]
+        self.assertEqual(snapshot["sid-a"]["today"]["in"], 100.0)
+        self.assertEqual(snapshot["sid-b"]["today"]["in"], 300.0)
+        # A quiet re-render of sid-a must not drop sid-b from the snapshot.
+        L.ledger_update({"transcript_path": first}, "sid-a")
+        self.assertIn("sid-b", self._read(self.ledger)["sessions"])
+
+
+# =========================================================================== clone hoists
+class TestParseIsoHasOneOwner(unittest.TestCase):
+    """#334 item 3 — _fmtlib.parse_iso and _ledgerlib.parse_iso were byte-identical
+    bodies; _fmtlib is the documented owner and _ledgerlib must re-export it."""
+
+    def test_ledgerlib_reexports_the_fmtlib_implementation(self):
+        import _fmtlib
+        self.assertIs(L.parse_iso, _fmtlib.parse_iso)
+
+    def test_ledgerlib_defines_no_second_parse_iso_body(self):
+        source = inspect.getsource(L)
+        self.assertNotIn("def parse_iso(", source)
+
+
 # =========================================================================== import-purity
 class TestNoImportSideEffects(unittest.TestCase):
     """The lib must do zero file/network I/O at import time (the _*lib invariant)."""
