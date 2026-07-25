@@ -62,6 +62,40 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- The test suites no longer write outside their own temp directories. Running
+  the hook suite rewrote the developer's real `~/.claude/settings.json` — both
+  the statusline command and its owner key repointed at whatever plugin root the
+  test process resolved — and littered `~/.codearbiter/` with a ledger, its
+  lock, five session shards and an update cache. Four modules did it, none using
+  the `redirect_home` helper that already sat beside them, and CI never noticed
+  because a fresh runner has no settings to clobber. All four now take a
+  module-level isolation fixture, which covers every test class added later
+  rather than relying on one more remembered `setUp` (issue #442).
+- The hook suite no longer leaks file handles or child processes. Unclosed
+  `settings.json` / `CONTEXT.md` reads, five never-reaped subprocesses, and an
+  implicitly reclaimed `HTTPError` produced `ResourceWarning`s — and on Windows
+  an open handle blocks `TemporaryDirectory` cleanup while a live child holds a
+  temp path, so teardown *raised* instead of the assertion failing. That is why
+  the same unchanged tree went `FAILED (errors=2)` on one run and `OK` on the
+  next three. Handles are closed, subprocesses are reaped through `addCleanup`
+  regardless of assertion outcome, and the two detached background spawns
+  `session-start.py` fires are stubbed in the harness rather than launched for
+  real (issue #462).
+- A new CI gate keeps both closed: each suite runs under a pristine redirected
+  home seeded with a stale-but-real `settings.json`, and must leave it
+  byte-identical while emitting no `ResourceWarning`. The guard proves its own
+  detector can fail, so a green result means something.
+- The per-plugin payload-version gates no longer fire on a dev-only change under
+  `plugins/*/tools/`. That directory is a build tree — TypeScript sources, a
+  vitest config, a lockfile — and none of it runs on an installed machine, so a
+  dependabot lockfile bump used to demand a manifest advance and a CHANGELOG
+  heading describing a change no user can observe. The cost was not the noise:
+  a version bump is supposed to mean "installed users need this", and a gate
+  that fires on nothing trains contributors to bump a version to silence it. The
+  committed esbuild artifacts inside that directory (`farm.js`, `sandbox.js`) do
+  ship and still trigger the gate, as does everything outside it — including
+  ca-pi's `extensions/` bundles, which were never in the excluded scope
+  (issue #435).
 - A session started inside a linked worktree no longer repoints the **main**
   repository's git-level enforcement at a path that dies with that worktree.
   The shared `<plugin>.path` enforcer entry lives in the git *common* dir, so

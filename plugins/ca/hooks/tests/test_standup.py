@@ -8,12 +8,37 @@ import time
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from _helpers import isolate_user_state, release_user_state  # noqa: E402
 
 import _standuplib as sl
 
 # Load the hyphenated session-start.py without executing main() — same idiom as
 # test_session_start.py.
 import importlib.util as _ilu
+
+
+# Issue #442: this module writes user-GLOBAL state - the statusline pin in
+# `~/.claude/settings.json`, and/or the `~/.codearbiter/` ledger and update
+# cache. Running the suite used to do that to the DEVELOPER'S REAL HOME: the
+# statusline pin was repointed at whatever plugin root the test process
+# resolved (it broke the maintainer's statusline three times in one day), and
+# `~/.codearbiter/` gained a ledger, its lock, five session shards and an
+# update cache. CI never noticed, because a fresh runner has no pre-existing
+# settings to clobber.
+#
+# The fixture is module-level rather than per-class ON PURPOSE. The leak is
+# module-wide, this file has many test classes, and a per-class `setUp` is one
+# forgotten override away from regressing - while `setUpModule` covers every
+# class added later for free. `.github/scripts/test_suite_hermeticity.py` is the
+# backstop that fails if any suite writes outside its temp dirs.
+def setUpModule():
+    global _USER_STATE
+    _USER_STATE = isolate_user_state()
+
+
+def tearDownModule():
+    release_user_state(_USER_STATE)
+
 
 _spec = _ilu.spec_from_file_location(
     "session_start",
@@ -871,8 +896,23 @@ class _MainHarness(unittest.TestCase):
             "project_root": _mod.project_root,
             "_default_git_runner": _mod._default_git_runner,
             "_detached_fetch_spawner": _mod._detached_fetch_spawner,
+            "_detached_update_refresh_spawner": _mod._detached_update_refresh_spawner,
         }
         _mod.project_root = lambda: self.root
+        # #462: main() ends by firing TWO fully detached, never-awaited children
+        # (a git fetch and update-refresh.py). That is correct in production and
+        # wrong in a test: the Popen handles are garbage-collected with live
+        # children behind them, which is the `subprocess N is still running`
+        # ResourceWarning the intermittent suite emitted - and on Windows a live
+        # child holding a fixture path turns the next teardown into an ERROR
+        # rather than a FAILURE. Both seams exist precisely so a caller can
+        # supply its own; the harness supplies recording no-ops, so the spawn is
+        # still observable but nothing is launched.
+        self.spawned = []
+        _mod._detached_fetch_spawner = lambda args, root: self.spawned.append(
+            ("fetch", tuple(args), root))
+        _mod._detached_update_refresh_spawner = lambda plugin: self.spawned.append(
+            ("refresh", plugin))
 
     def tearDown(self):
         for name, fn in self._saved.items():

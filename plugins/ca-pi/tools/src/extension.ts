@@ -372,7 +372,12 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
   }, async (entry, _args, context) => {
     if (entry.name !== "doctor" || dependencies.doctorReport === undefined) return undefined;
     const report = await dependencies.doctorReport(context, doctorHealth(context));
-    return renderPiDoctorReportBlock(report);
+    // #449: the two roots this process knows for certain. Naming them keeps a
+    // trigger-word-shaped directory name from redacting the report's own
+    // structural fields.
+    const benignPaths = [dependencies.packageRoot, typeof context.cwd === "string" ? context.cwd : ""]
+      .filter((path) => path.length > 0);
+    return renderPiDoctorReportBlock(report, benignPaths);
   });
 
   pi.on("session_start", async (_event, context) => {
@@ -532,8 +537,15 @@ function wrapPiDoctorPayload(payload: string): string {
   return `<codearbiter-doctor-report>\n${payload}\n</codearbiter-doctor-report>`;
 }
 
-export function renderPiDoctorReportBlock(report: string): string {
-  const normalizedReport = safeDiagnostic(report, Number.MAX_SAFE_INTEGER);
+// #449: `benignPaths` are the roots this process ALREADY KNOWS — the project
+// cwd and the ca-pi package root. Nearly every line of a doctor report embeds
+// one, and the outbound redactor matches trigger words by shape, so a repository
+// or worktree named `…-secret-…` had its own `package`, `core` and `child` lines
+// replaced by a redaction notice. /ca-doctor is the diagnostic of last resort;
+// it must not fail hardest exactly where it is needed. The exemption is
+// exact-literal, so a real credential on the same line still redacts it whole.
+export function renderPiDoctorReportBlock(report: string, benignPaths: readonly string[] = []): string {
+  const normalizedReport = safeDiagnostic(report, Number.MAX_SAFE_INTEGER, benignPaths);
   const complete = wrapPiDoctorPayload(encodePiDoctorReport(normalizedReport));
   if (Buffer.byteLength(complete, "utf8") <= PI_DOCTOR_REPORT_MAX_BYTES) return complete;
 
