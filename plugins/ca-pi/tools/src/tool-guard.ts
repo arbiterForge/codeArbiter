@@ -9,7 +9,6 @@ import type {
 } from "./contracts.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { realpathSync } from "node:fs";
-import { relative, resolve } from "node:path";
 import { types as utilTypes } from "node:util";
 import { NODE_AUDIT_SINK_IO, appendAuditLine, appendAuditLineWithIo } from "./audit-sink.ts";
 import type { AuditSinkIoPort } from "./audit-sink.ts";

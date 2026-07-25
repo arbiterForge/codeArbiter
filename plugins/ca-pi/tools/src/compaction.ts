@@ -298,16 +298,16 @@ function alreadyCompactedTail(entries: readonly unknown[]): boolean {
   return false;
 }
 
-/**
+/* ---------------------------------------------------------------------------
  * Host-event validation for the two native compaction records.
  *
  * Pi's generic event port hands every extension a `Record<string, unknown>`, so the only thing
  * standing between a drifted or malformed native record and a raw `TypeError` escaping into the
- * host callback is an exact parse. These validators are the adapter's schema-checked boundary:
- * every field the compaction logic later dereferences is proven here, from `unknown`, with no
- * type assertion anywhere on the path. An invalid record leaves through the same fixed
+ * host callback is an exact parse. The validators below are the adapter's schema-checked
+ * boundary: every field the compaction logic later dereferences is proven here, from `unknown`,
+ * with no type assertion anywhere on the path. An invalid record leaves through the same fixed
  * diagnostic a failed compaction uses, never through a stack trace carrying host payload.
- */
+ * ------------------------------------------------------------------------ */
 const COMPACTION_REASONS = Object.freeze(["manual", "threshold", "overflow"] as const);
 const MAX_BRANCH_ENTRIES = 100_000;
 const MAX_ENTRY_ID_CHARS = 1_024;
@@ -511,13 +511,13 @@ export function installPiCompaction(
   });
 }
 
-/** Appends one confirmed-compaction row through the shared hardened sink in audit-sink.ts. The
- * rendered metrics are bounded here because the sink refuses an oversized line outright: a
- * plan may legitimately carry up to 64 metrics, and only the first `MAX_AUDIT_METRICS` of them
- * belong on one governance row. A confirmed compaction remains valid whether or not the
- * append-only sink accepts the row. */
+/** A plan may legitimately carry up to 64 metrics; only this many belong on one governance row.
+ * The sink refuses an oversized line outright, so bounding here is what keeps a wide but valid
+ * plan auditable instead of silently unrecorded. */
 const MAX_AUDIT_METRICS = 16;
 
+/** Appends one confirmed-compaction row through the shared hardened sink in audit-sink.ts. A
+ * confirmed compaction remains valid whether or not the append-only sink accepts the row. */
 export async function appendPiCompactionAudit(record: PiCompactionAuditRecord): Promise<void> {
   const metrics = Object.fromEntries(Object.entries(record.metrics).slice(0, MAX_AUDIT_METRICS));
   const line = [
