@@ -50,11 +50,17 @@ function forceFixtureCleanup(pid: number | undefined): void {
 
 const WINDOWS_JOB_ATTACH_REFUSAL = "Windows Job Object holder refused containment";
 const PROOF_ATTEMPT_DIAGNOSTIC_MAX_CHARS = 512;
-// The live proof may consume two bounded 15-second admission windows, then its
-// 10-second child-output wait and 5.25-second cleanup window. Keep Vitest's
-// ceiling outside those product bounds so it observes the proof result instead
-// of racing a valid retry on a loaded Windows runner.
-const WINDOWS_LIVE_PROOF_TEST_TIMEOUT_MS = 60_000;
+// This ceiling is derived from the product's own fail-closed bounds, not chosen:
+// it must stay OUTSIDE them, or the harness starts masking the product's precise
+// refusal with a bare "Test timed out". runWindowsLaunchAdmissionProof makes at
+// most two attempts, each bounded by WINDOWS_JOB_READY_CEILING_MS (#428: 30 s,
+// now a per-phase no-progress budget instead of one flat 15 s window), and the
+// proof then adds its condition-based 10-second child-output wait and its
+// 5.25-second cleanup window: 2*30 + 10 + 5.25 = 75.25 s. 90 s is the next round
+// value above that. Measured cost when nothing stalls: 846-936 ms on an idle
+// Windows 11 dev box over 6 runs, i.e. ~1% of this ceiling - it bounds a hang,
+// it is not a budget anything is expected to approach.
+const WINDOWS_LIVE_PROOF_TEST_TIMEOUT_MS = 90_000;
 
 function isWindowsJobAttachRefusal(error: unknown): error is Error {
   // Issue #428 widened the refusal message with a parenthesised stall phase

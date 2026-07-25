@@ -87,16 +87,19 @@ function withoutUnboundedReflection<T>(operation: () => T): T {
 // finishes in ~0.4 s - under two ceilings that exist only to bound a genuine
 // hang, and that are derived rather than picked:
 //
-//   * SETTLE_CEILING is the in-test ceiling. It fires FIRST and reports the
-//     observed job state, so a hang produces a diagnosis instead of Vitest's
-//     bare "Test timed out in Nms".
+//   * SETTLE_CEILING is the in-test ceiling. It reports the observed job state,
+//     so a hang the product does not bound sooner produces a diagnosis instead
+//     of Vitest's bare "Test timed out in Nms".
 //   * TEST_TIMEOUT is Vitest's ceiling, kept strictly above SETTLE_CEILING so
 //     it can only ever be the backstop.
 //
-// 45 s is ~9x the observed 4.842 s hosted p100 and still below the product's
-// own fail-closed budget for the same path (spawnProcessTree spends up to
-// WINDOWS_JOB_READY_CEILING_MS on Job-holder admission plus bounded protocol
-// windows), so the product refuses before this ceiling can mask a real hang.
+// 45 s is ~9x the observed 4.842 s hosted p100, and deliberately ABOVE the
+// product's own 30 s WINDOWS_JOB_READY_CEILING_MS: the hang #428 actually
+// observed - Job Object holder admission - therefore still surfaces as the
+// product's precise "(stalled at <phase> after <n>ms): ready-timeout" refusal
+// rather than being masked by this ceiling. 45 s only catches a hang in a later
+// protocol window, where the product's own aggregate bound would otherwise let
+// the test sit for well over a minute.
 const WINDOWS_LIVE_SETTLE_CEILING_MS = 45_000;
 const WINDOWS_LIVE_TEST_TIMEOUT_MS = 60_000;
 // AC-2, first half: an injected delay strictly larger than the 5000 ms default
