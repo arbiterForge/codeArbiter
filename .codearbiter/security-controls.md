@@ -153,6 +153,15 @@ broker, so neither a stranded root nor a surviving listener can outlive the
 child. Task/prompt content is
 stdin-only, never argv, environment, or a temporary file. Tests use disposable
 Pi homes and dummy credentials and never inspect or mutate the real auth store.
+That clause is enforced by construction rather than per test file: the ca-pi
+vitest suite loads `test/setup-disposable-home.ts` before any test, which
+repoints every home variable Node consults (`HOME`, `USERPROFILE`, and the
+Windows `HOMEDRIVE`/`HOMEPATH` pair) plus `PI_CODING_AGENT_DIR` at a `mkdtemp`
+root seeded with an obviously fake record. The request fixtures spread
+`process.env`, so before that redirection roughly 25 tests resolved the
+operator's real `~/.pi/agent/auth.json` (issue #464). `security.test.ts` asserts
+the effect - where `os.homedir()` actually resolves - not that a setup file is
+listed somewhere.
 
 All other codeArbiter-defined env vars (`FARM_MODEL`, `FARM_BASE_BRANCH`, etc.)
 are non-sensitive configuration and may freely use `process.env`. Provider

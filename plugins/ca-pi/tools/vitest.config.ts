@@ -21,5 +21,16 @@ export default defineConfig({
   test: {
     environment: "node",
     fileParallelism: false,
+    // Issue #464: security-controls.md states that tests use disposable Pi
+    // homes and dummy credentials and never inspect the real auth store. This
+    // makes that true by construction rather than per test file - the request
+    // fixture spreads process.env, so a home redirected here is inherited by
+    // every case that does not set its own.
+    // Absolute, derived from this config's own URL. A relative entry resolves
+    // against vitest's `root`, which is the REPO root when the security
+    // contract invokes `vitest run plugins/ca-pi/tools/test/...` from there -
+    // and a setup file that silently does not load is worse than none, since
+    // the suite then runs against the operator's real home while looking fine.
+    setupFiles: [fileURLToPath(new URL("./test/setup-disposable-home.ts", import.meta.url))],
   },
 });

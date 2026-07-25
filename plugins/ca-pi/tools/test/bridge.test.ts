@@ -1,5 +1,5 @@
 import { access, chmod, copyFile, mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
-import { realpathSync } from "node:fs";
+import { mkdtempSync, realpathSync } from "node:fs";
 import { EventEmitter } from "node:events";
 import { tmpdir } from "node:os";
 import { delimiter, isAbsolute, resolve } from "node:path";
@@ -188,8 +188,18 @@ async function clientFor(source: string, options: { timeoutMs?: number; maxStrea
   return (await clientFixture(source, options)).bridge;
 }
 
+// Issue #464: this used to pass `tmpdir()` ITSELF as the project cwd. That is
+// not a project root, it is the shared system temp directory - so once the
+// suite began running against a disposable operator home (also created under
+// tmpdir, as every fixture here is), `canonicalUserHome` correctly refused a
+// home nested inside the project root and every call came back "path validation
+// failed". The bridge was right; the fixture was borrowing a directory that
+// belongs to everybody. A dedicated per-file project root fixes it and is what
+// the other fixtures in this file already do.
+const projectCwd = mkdtempSync(resolve(tmpdir(), "ca-pi-bridge-cwd-"));
+
 function request(tool: string, input: Record<string, unknown>) {
-  return { version: 1 as const, event: "tool_call", cwd: tmpdir(), tool, input };
+  return { version: 1 as const, event: "tool_call", cwd: projectCwd, tool, input };
 }
 
 async function executeWrappedRead(bridge: BridgePort, cwd: string): Promise<Record<string, unknown>> {
