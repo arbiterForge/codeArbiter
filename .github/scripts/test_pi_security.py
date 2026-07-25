@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -16,7 +17,15 @@ from verify_pi_support import strict_promotion
 REPO = Path(__file__).resolve().parents[2]
 WORKFLOW = REPO / ".github" / "workflows" / "codeql.yml"
 CI_WORKFLOW = REPO / ".github" / "workflows" / "ci.yml"
-CODEQL_SHA = "7188fc363630916deb702c7fdcf4e481b751f97a"
+# Match the PIN, not its current value. A literal SHA here means dependabot can
+# never land a codeql-action bump on its own -- it cannot edit a test, so every
+# upgrade fails until a human hand-edits the constant, which trains reviewers to
+# "just update the string" on a security-critical pin. What matters is that both
+# refs are 40-hex commit SHAs (never a movable tag) and that init and analyze
+# resolve to the SAME commit: a split pair silently analyses with a different
+# CodeQL than it initialised. Dependabot files those two bumps as SEPARATE PRs,
+# so this is a live hazard, not a theoretical one.
+CODEQL_PIN = re.compile(r"github/codeql-action/(init|analyze)@([0-9a-f]{40})\b")
 SCHEMA = "codearbiter-pi-security-v1"
 PREVIEW_ENTRYPOINTS = (
     REPO / "core" / "pysrc" / "preview.py",
@@ -46,9 +55,10 @@ def workflow_results() -> list[dict[str, object]]:
             result("PI-SEC-CODEQL-SCOPE", False),
             result("PI-SEC-CODEQL-PR-JOB", False),
         ]
+    found = {role: sha for role, sha in CODEQL_PIN.findall(text)}
     pins = (
-        f"github/codeql-action/init@{CODEQL_SHA}" in text
-        and f"github/codeql-action/analyze@{CODEQL_SHA}" in text
+        set(found) == {"init", "analyze"}
+        and len(set(found.values())) == 1
         and "@v4" not in text
     )
     scope = all(
@@ -69,8 +79,7 @@ def workflow_results() -> list[dict[str, object]]:
             'name: "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>"',
             "github.event_name == 'pull_request'",
             "needs.changes.outputs.ca-pi == 'true'",
-            f"github/codeql-action/init@{CODEQL_SHA}",
-            f"github/codeql-action/analyze@{CODEQL_SHA}",
+            *(f"github/codeql-action/{role}@{sha}" for role, sha in sorted(found.items())),
             "upload: never",
             "test_pi_security.py --sarif codeql-results",
         )
