@@ -524,6 +524,191 @@ def _write_dev_session_owner(root, session_id, ts):
         pass
 
 
+# --- #396: a durable, retryable DEV: exit -----------------------------------
+# The synthetic close line is the ONLY thing that keeps the append-only audit
+# trail's DEV: enter/exit pairs matched after an abandoned maintainer session.
+# It used to be written best-effort ("except OSError: pass") and the marker was
+# then removed regardless — so a locked file, a full disk, or a permission blip
+# permanently erased the obligation and left an orphaned DEV: enter that no
+# later session could know about.
+#
+# The fix is a small write-ahead record: the owed line is staged on disk BEFORE
+# the append is attempted, and the record is deleted only once BOTH the append
+# is confirmed AND the marker it settles is gone. That single record therefore
+# carries two facts at once:
+#
+#   "lines"        — close lines still owed to overrides.log. Emptied one at a
+#                    time as each append is confirmed.
+#   "marker_mtime" — the identity of the dev-active marker this close belongs
+#                    to. While the record still names a LIVE marker, the
+#                    force-close path knows that marker has already been
+#                    closed in the audit trail and refuses to mint a second
+#                    row for it — which is what makes a failed `os.remove`
+#                    idempotent rather than duplicating the close.
+#
+# Every boundary is covered:
+#   crash before the append      -> record present, line owed  -> replayed
+#   crash after the append       -> record present, line owed  -> the bounded
+#                                   tail scan sees the line already landed and
+#                                   drops it instead of appending a duplicate
+#   marker removal fails         -> record present, no line owed -> the next
+#                                   session only retries the removal
+# Everything here is best-effort by the module's standing convention: session
+# startup must never be bricked by audit bookkeeping, so nothing raises.
+_DEV_PENDING_CLOSE_MAX = 8        # bounded: never accumulate owed lines forever
+_DEV_PENDING_SCAN_BYTES = 64 * 1024   # bounded tail scan for the dedupe check
+
+
+def _dev_pending_close_path(root):
+    return os.path.join(root, ".codearbiter", ".markers", "dev-close-pending.json")
+
+
+def _overrides_log_path(root):
+    return os.path.join(root, ".codearbiter", "overrides.log")
+
+
+def _read_dev_pending_close(root):
+    """The pending-close record as {"lines": [...], "marker_mtime": float|None},
+    or None when there is nothing usable on disk. A record that exists but
+    carries no replayable line and no marker identity is reported as None so
+    the caller discards it — a corrupt record must never wedge the mechanism
+    shut. Never raises."""
+    try:
+        with open(_dev_pending_close_path(root), encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            return None
+        lines = [ln for ln in (data.get("lines") or [])
+                 if isinstance(ln, str) and ln.strip()][:_DEV_PENDING_CLOSE_MAX]
+        mtime = data.get("marker_mtime")
+        mtime = float(mtime) if isinstance(mtime, (int, float)) else None
+        if not lines and mtime is None:
+            return None
+        return {"lines": lines, "marker_mtime": mtime}
+    except Exception:  # noqa: BLE001 — absent/corrupt record -> no signal
+        return None
+
+
+def _write_dev_pending_close(root, rec):
+    """Atomically persist the pending-close record. Never raises — a write
+    failure only costs the retry signal this call was trying to create, which
+    is exactly the pre-#396 behavior and still must not brick startup."""
+    try:
+        path = _dev_pending_close_path(root)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        write_text_atomic(path, json.dumps(rec), newline="\n")
+    except Exception:  # noqa: BLE001 — must never brick session startup
+        pass
+
+
+def _discard_dev_pending_close(root):
+    try:
+        os.remove(_dev_pending_close_path(root))
+    except OSError:
+        pass
+
+
+def _overrides_has_line(root, line):
+    """True iff `line` already appears in the tail of overrides.log. Bounded to
+    the last _DEV_PENDING_SCAN_BYTES — a replay always happens on the very next
+    SessionStart, so the line it is looking for is at (or near) the end. An
+    unreadable log answers False: re-appending a close row is a far smaller
+    harm than silently dropping one.
+
+    Read in BINARY and decoded here on purpose: a byte offset is only
+    meaningful to seek() on a binary stream, and the comparison is made on the
+    stripped line so the platform EOL the append produced never matters."""
+    needle = line.strip()
+    if not needle:
+        return False
+    try:
+        path = _overrides_log_path(root)
+        size = os.path.getsize(path)
+        with open(path, "rb") as f:
+            if size > _DEV_PENDING_SCAN_BYTES:
+                f.seek(size - _DEV_PENDING_SCAN_BYTES)
+            tail = f.read().decode("utf-8", "replace")
+        return needle in tail
+    except Exception:  # noqa: BLE001 — cannot confirm -> assume not present
+        return False
+
+
+def _append_override_line(root, line):
+    """Append one audit line to overrides.log. True on a confirmed write."""
+    try:
+        with open(_overrides_log_path(root), "a", encoding="utf-8") as f:
+            f.write(line)
+        return True
+    except OSError:
+        return False
+
+
+def _settle_dev_close(root, marker=None, new_line=None):
+    """Drive the pending-close record to settlement; the single place the owed
+    DEV: exit is appended and the retry state is cleared.
+
+    `marker` is the dev-active path when one is live (its mtime becomes the
+    close identity), None when there is no marker to settle. `new_line` is a
+    freshly minted close line to take on, or None when this is a pure replay of
+    whatever is already owed. Returns the number of close lines appended by
+    THIS call. Never raises."""
+    if (marker is None and new_line is None
+            and not os.path.isfile(_dev_pending_close_path(root))):
+        return 0    # nothing owed, nothing to settle — the overwhelming case
+    rec = _read_dev_pending_close(root)
+    owed = list(rec["lines"]) if rec else []
+    prev_mtime = rec["marker_mtime"] if rec else None
+
+    marker_mtime = None
+    if marker:
+        try:
+            marker_mtime = os.path.getmtime(marker)
+        except OSError:
+            marker_mtime = None
+
+    if new_line is not None:
+        # Already closed THIS marker (the append landed, only the removal
+        # failed) -> do not mint a second row for it; just retry the cleanup.
+        already_closed = (rec is not None and prev_mtime is not None
+                          and marker_mtime is not None
+                          and prev_mtime == marker_mtime)
+        if not already_closed:
+            owed.append(new_line)
+    owed = owed[-_DEV_PENDING_CLOSE_MAX:]
+
+    if owed or marker_mtime is not None:
+        # Write-ahead: the obligation is durable BEFORE the append is tried.
+        _write_dev_pending_close(root, {"lines": owed, "marker_mtime": marker_mtime})
+
+    appended = 0
+    remaining = list(owed)
+    for line in owed:
+        if _overrides_has_line(root, line):
+            remaining.remove(line)   # crash-after-append: already in the trail
+            continue
+        if not _append_override_line(root, line):
+            break                    # still owed — replay on the next session
+        remaining.remove(line)
+        appended += 1
+
+    marker_gone = True
+    if marker:
+        try:
+            os.remove(marker)
+        except OSError:
+            marker_gone = not os.path.isfile(marker)
+
+    # Keep the record ONLY while it still carries information: a line still
+    # owed, or the identity of a marker that survived its own removal (the
+    # tombstone that stops the next session minting a second close for it).
+    if remaining or (not marker_gone and marker_mtime is not None):
+        _write_dev_pending_close(root, {"lines": remaining,
+                                        "marker_mtime": marker_mtime})
+    else:
+        _discard_dev_pending_close(root)
+    return appended
+
+
 def clear_dev_marker(root, host_name=None, session_id=None, now=None):
     """Clear the per-session /dev statusline marker on startup. If the marker is
     LIVE (a prior session entered /ca:dev and ended without /ca:arbiter), append a
@@ -531,6 +716,13 @@ def clear_dev_marker(root, host_name=None, session_id=None, now=None):
     (observability-001) — otherwise the audit trail keeps an orphaned DEV: enter
     with no matching close. Append-only (it never rewrites); best-effort — a write
     or remove failure must never brick session startup.
+
+    #396: "best-effort" is no longer "best-effort ONCE". The close is routed
+    through _settle_dev_close, which stages the owed line durably before
+    attempting the append and clears that retry state only after the append is
+    confirmed — so a locked/failing overrides.log leaves a replayable record
+    instead of an orphaned DEV: enter. Startup itself still fails OPEN: this
+    function returns normally on every path, exactly as before.
 
     `host_name` (observability-001/ADR-0012) is the resolved host's `.name`
     ("claude"/"codex"/"unknown"), so the synthetic close line is attributable to
@@ -559,7 +751,10 @@ def clear_dev_marker(root, host_name=None, session_id=None, now=None):
     if not marker_live:
         # No live marker: this record is purely "who could next enter /dev" —
         # any session refreshing it is harmless and correct. Nothing else to
-        # do — there is no marker to clear and no close to log.
+        # do — there is no marker to clear, but a close owed by an EARLIER
+        # session whose append failed is still replayed here (#396); that is
+        # precisely the case the old code could never recover from.
+        _settle_dev_close(root)
         if session_id:
             _write_dev_session_owner(root, session_id, now)
         return
@@ -569,6 +764,14 @@ def clear_dev_marker(root, host_name=None, session_id=None, now=None):
             # The owner itself, resuming/compacting mid-dev — refresh ITS OWN
             # heartbeat (this is the only case where a write is safe while the
             # marker is live) and leave the marker untouched.
+            #
+            # #396: deliberately NO _settle_dev_close here or in the sibling
+            # branch below. Both return with the marker still LIVE, and a
+            # pending record naming a live marker doubles as the "this marker
+            # has already been closed in the trail" tombstone — settling it
+            # against a marker we are not allowed to touch would discard that
+            # tombstone and let a later force-close mint a duplicate row. Any
+            # owed line simply waits for a session that is entitled to act.
             _write_dev_session_owner(root, session_id, now)
             return
         if (now - prev_ts) < DEV_SESSION_LIVENESS_WINDOW:
@@ -603,16 +806,10 @@ def clear_dev_marker(root, host_name=None, session_id=None, now=None):
     ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     line = (f"[{ts}] | BY: session-cleanup | HOST: {host_name} | DEV: exit | NOTE: cleared by "
             f"SessionStart (prior session ended mid-dev without {arbiter_ref})\n")
-    try:
-        with open(os.path.join(root, ".codearbiter", "overrides.log"),
-                  "a", encoding="utf-8") as f:
-            f.write(line)
-    except OSError:
-        pass
-    try:
-        os.remove(marker)
-    except OSError:
-        pass
+    # #396: stage-then-append-then-clear, all inside one settlement step. The
+    # append is no longer a fire-and-forget `except OSError: pass` followed by
+    # an unconditional marker delete — the owed line outlives a failed write.
+    _settle_dev_close(root, marker=marker, new_line=line)
 
 
 def provenance_drift_line(root, runner=None):
