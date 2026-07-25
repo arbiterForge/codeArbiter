@@ -338,6 +338,17 @@ export const defaultHandlers: Handlers = {
 export const TEARDOWN_FAILURE_EXIT = 1;
 
 /**
+ * A usage error: unknown subcommand, missing required arg, unknown flag.
+ *
+ * #433: this was a bare `return 2`, while the comment on TEARDOWN_FAILURE_EXIT
+ * claimed the two were "distinct". Nothing pinned either value, so the teardown
+ * code could have drifted onto 2 and made a leaked untrusted container
+ * indistinguishable from a typo - with the suite green, because every exit
+ * assertion was `not.toBe(0)`.
+ */
+export const USAGE_ERROR_EXIT = 2;
+
+/**
  * Print the teardown diagnostic (if any) and map the verdict to an exit code.
  *
  * `destroy`/`prune` used to `return 0` unconditionally, so a daemon outage or an
@@ -376,7 +387,7 @@ export async function runCli(argv: string[], handlers: Handlers = defaultHandler
   } catch (e) {
     if (e instanceof CliError) {
       process.stderr.write(`${e.message}\n`);
-      return 2;
+      return USAGE_ERROR_EXIT;
     }
     throw e;
   }
