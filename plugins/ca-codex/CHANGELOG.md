@@ -6,6 +6,19 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
 
+### Added
+- `$ca-cleanup` (`post-merge-cleanup`): the already-merged branch transition —
+  prove ancestry of the fetched default branch, classify leftover artifacts as
+  unique / redundant / superseded, resolve each under its own confirmation,
+  `--ff-only` onto the default branch, then `branch -d` the merged local branch.
+  The remote branch is never touched (issue #308).
+
+### Changed
+- ORCHESTRATOR §6 routes on understood intent rather than asking the user to
+  retype a command it has already named, in three tiers, with everything
+  irreversible or gate-bypassing held at the ask-once tier regardless of how
+  clear the intent is (ADR-0022).
+
 ### Fixed
 - The PreToolUse adapter validates the hook payload's shape before routing it.
   A valid-JSON but non-object payload (`null`, an array, a string, a number, a

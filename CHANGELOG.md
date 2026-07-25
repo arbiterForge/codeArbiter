@@ -14,6 +14,16 @@ predate the plugin rewrite and are grouped by date.
 
 ### Added
 
+- Added `/ca:cleanup` and its `post-merge-cleanup` skill: the already-merged
+  branch transition, which no command owned. It fetches, proves `HEAD` is an
+  ancestor of the *fetched* default branch, classifies every dirty and untracked
+  artifact as unique, redundant, or superseded, resolves each under its own
+  confirmation, fast-forwards with `--ff-only`, and deletes the merged local
+  branch with `branch -d`. Anything not provably redundant or superseded counts
+  as unique and is never discarded unbidden; stashes are report-and-route only;
+  the remote branch is never touched. Branch deletion keys off proven ancestry
+  rather than `: gone]` upstream state, so a squash-merged branch whose remote
+  still exists is recognised as landed (issue #308).
 - Added `ca-pi`, the fourth sibling plugin and third governance host, generated
   from the same Python and markdown core as Claude Code and Codex CLI.
 - Added a dependency-free, Git-installed Pi package with `/ca-*` aliases,
@@ -25,6 +35,17 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- ORCHESTRATOR §6 now routes on understood intent instead of naming a command
+  and then asking the user to retype it. Unambiguous, non-destructive intent
+  routes directly into the command with every gate intact; probable intent asks
+  once, naming the command; genuinely unclear intent gets the chooser. Clarity
+  and risk are separate axes, so anything irreversible or gate-bypassing —
+  `/ca:override`, merge to the default branch, branch or worktree deletion,
+  release and tag publication, `/ca:dev` entry — still asks even when the intent
+  is obvious. The invariant §6 protects is preserved by construction: the
+  orchestrator routes the command and never improvises the operation, and a
+  missing owner is a routing gap to surface, never a reason to reach for
+  `/ca:override` (ADR-0022, issue #308).
 - Marked the complete `ca-pi` adapter as a Feature Forge `preview`. It is
   available and welcomed for real use, with automated and hosted promotion
   evidence complete, while broader real-world testing continues before any

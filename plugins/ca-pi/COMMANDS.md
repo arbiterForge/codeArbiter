@@ -62,6 +62,7 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `/ca-preview` | _(none)_ | Zero-onboarding read-only dry-run of the reviewer fleet on the current diff: predicts reviewers by path, runs the state-free secret scan, writes nothing. |
 | `/ca-context-check` | _(none)_ | Optional manual drift audit: report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop — commit-gate auto-heal owns routine maintenance. |
 | `/ca-standup` | _(none)_ | Daily hygiene: review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes — each under per-action confirmation. |
+| `/ca-cleanup` | _(none)_ | Finish an already-merged branch: prove ancestry of the fetched default, classify leftover artifacts as unique/redundant/superseded, `--ff-only` to the default branch, delete the merged local branch. Every discard confirmed per item. |
 | `/ca-new-skill` | `"gap"` | Author a new skill after the gap is proven uncovered. |
 | `/ca-btw` | `"question"` | Lightweight Q&A; no state change. |
 | `/ca-override` | `"reason"` | Sanctioned, logged single-identity gate bypass. |

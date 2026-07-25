@@ -2,6 +2,30 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.21] - 2026-07-25
+
+### Added
+
+- `$ca-cleanup` (`post-merge-cleanup`): the already-merged branch transition,
+  which no command owned. It fetches, proves `HEAD` is an ancestor of the
+  *fetched* default branch, classifies every dirty and untracked artifact as
+  unique, redundant, or superseded, resolves each under its own confirmation,
+  fast-forwards with `--ff-only`, and deletes the merged local branch with
+  `branch -d`. Anything not provably redundant or superseded counts as unique
+  and is never discarded unbidden; the remote branch is never touched
+  (issue #308).
+
+### Changed
+
+- ORCHESTRATOR §6 routes on understood intent instead of asking the user to
+  retype a command it has already named. Unambiguous and non-destructive intent
+  routes directly; probable intent asks once, naming the command; genuinely
+  unclear intent gets the chooser. Clarity and risk are separate axes, so an
+  irreversible or gate-bypassing command still asks even when the intent is
+  obvious. The invariant §6 protects is unchanged: the orchestrator routes the
+  command and never improvises the operation, and a missing owner is a routing
+  gap to surface rather than a reason to reach for `$ca-override` (ADR-0022).
+
 ## [0.1.18] - 2026-07-25
 
 ### Added
