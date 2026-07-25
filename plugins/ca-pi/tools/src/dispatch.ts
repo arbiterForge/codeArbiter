@@ -17,10 +17,6 @@ import type { PiRole } from "./roles.ts";
 import { runPiChild } from "./runner.ts";
 import type { ChildResult, PiChildRequest } from "./runner.ts";
 
-// Mirrors runner.ts's own bounded stderr capture: never re-widen the head beyond what runner.ts
-// already collected.
-const MAX_AUDIT_STDERR_HEAD_CHARS = 4_000;
-
 interface DispatchAuditRecord {
   cwd: string;
   role: string;
@@ -31,15 +27,14 @@ interface DispatchAuditRecord {
   durationMs?: number;
   stdoutBytes?: number;
   stderrBytes?: number;
-  stderrHead?: string;
   diagnostic?: string;
 }
 
 /** Appends one gate-events.log line per Pi child dispatch completion (success or failure),
  * mirroring bridge.ts's auditFailure and compaction.ts's appendPiCompactionAudit: same target
  * resolution, same append-only best-effort fail-open contract. An unwritable audit sink NEVER
- * changes dispatch behavior or its result. Task/prompt content is never included; stderr is
- * always routed through safeDiagnostic before it is written. */
+ * changes dispatch behavior or its result. Task/prompt content and raw child stderr are never
+ * included. */
 export async function appendDispatchAudit(record: DispatchAuditRecord): Promise<void> {
   const line = [
     `[${new Date().toISOString()}]`,
@@ -54,10 +49,6 @@ export async function appendDispatchAudit(record: DispatchAuditRecord): Promise<
     `DURATION_MS: ${record.durationMs ?? 0}`,
     `STDOUT_BYTES: ${record.stdoutBytes ?? 0}`,
     `STDERR_BYTES: ${record.stderrBytes ?? 0}`,
-    // safeDiagnostic intentionally preserves newlines for other callers; a raw child stderr head
-    // must never introduce a newline into this append-only, one-record-per-line audit sink, or a
-    // child could forge extra structurally-valid audit lines. Fold after redaction, before embed.
-    `STDERR_HEAD: ${safeDiagnostic(record.stderrHead ?? "", MAX_AUDIT_STDERR_HEAD_CHARS).replace(/\n/gu, "\\n")}`,
     ...(record.diagnostic === undefined ? [] : [`DIAGNOSTIC: ${safeDiagnostic(record.diagnostic, 200)}`]),
   ].join(" | ") + "\n";
   try {
@@ -339,7 +330,6 @@ export function createDispatcher(dependencies: DispatchDependencies) {
           ...(result.exitCode === undefined ? {} : { exitCode: result.exitCode }),
           ...(result.stdoutBytes === undefined ? {} : { stdoutBytes: result.stdoutBytes }),
           ...(result.stderrBytes === undefined ? {} : { stderrBytes: result.stderrBytes }),
-          ...(result.stderrHead === undefined ? {} : { stderrHead: result.stderrHead }),
           ...(result.diagnostic === undefined ? {} : { diagnostic: result.diagnostic }),
         });
         if (signal.aborted) return { role: role.name, state: "cancelled", outputBytes: 0 };

@@ -32,6 +32,7 @@ from _gitexec import git_executable
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin root + capability flags
+from _durabilitylib import is_ephemeral_path  # noqa: E402
 from _hooklib import (  # noqa: E402
     frontmatter_enabled, get_host, project_root, set_host, utf8_stdio,
     write_text_atomic,
@@ -411,13 +412,36 @@ def heal_statusline_wiring(plugin, settings_path=None, interp=None, loader=None)
     Narrow that window by reloading the file fresh immediately before writing:
     if it differs from what we loaded, some other writer touched it in the
     interim, so we SKIP this heal entirely (never overwrite that write with
-    our now-stale snapshot) — a later session's heal simply retries."""
+    our now-stale snapshot) — a later session's heal simply retries.
+
+    NON-DURABLE ROOTS ARE INERT (found in-session 2026-07-25, after it broke the
+    maintainer's statusline three times in one day). This hook runs on EVERY
+    SessionStart and pins an ABSOLUTE path into the user's GLOBAL settings.json.
+    A session started inside a git worktree (subagents run in
+    `<repo>/.claude/worktrees/<id>/`) resolves `plugin` to that worktree, and the
+    heal pinned the global config at a directory whose entire purpose is to be
+    pruned. When the root is not durable we leave the existing pin exactly as it
+    is — not healed, not cleared, no error.
+
+    wire-statusline.refresh_if_stale enforces the same rule (it is the producer,
+    and also reachable by a human running `--plugin-root <worktree>`), so this
+    check is deliberately REDUNDANT — but not decoratively so. `_load_wire_
+    statusline` loads that producer OUT OF `plugin` itself: a worktree cut from a
+    pre-fix branch supplies a pre-fix, unguarded producer, while THIS file may
+    have been loaded from somewhere else entirely (main() honours
+    $CLAUDE_PLUGIN_ROOT independently of where session-start.py came from). The
+    highest-consequence write on the machine gets to refuse on its own account
+    rather than on the good behaviour of whatever version it happened to load.
+    Both call sites share the one predicate, so there is no second policy to
+    drift."""
     try:
+        script_abs = os.path.join(plugin, "hooks", "statusline.py")
+        if is_ephemeral_path(script_abs):
+            return False
         ws = (loader or _load_wire_statusline)(plugin)
         if ws is None:
             return False
         spath = settings_path or ws.settings_path(None)
-        script_abs = os.path.join(plugin, "hooks", "statusline.py")
         interp = interp or ws.default_interp(None)
         settings, exists = ws.load_settings(spath)
         if not exists:

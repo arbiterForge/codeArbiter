@@ -594,3 +594,145 @@ Securable, Reliable, and Testable are Strong because registry order cannot downg
 Treat DECISION-0019 as a premature malformed record and use this entry as its forward-only correction. Reconcile `.codearbiter/security-controls.md`, `.codearbiter/plans/pi-support.md`, and the pre-release hardening plan; reject broken-symlink and extra-record identity bundles; synchronize generated hook copies; then rerun security review and the complete Pi preclosure verifier before commit.
 
 ---
+
+## DECISION-0021 — ADR-0016 — Permit bounded selected-provider credential projection for isolated Pi children
+
+**Date:** 2026-07-22
+**Status:** accepted
+**Supersedes:** DECISION-0016
+**Decided by:** SUaDtL@users.noreply.github.com ("1")
+**Decision category:** security architecture / Pi credential boundary
+**Artifact-section-hash:** 64a761f9944743dd684682053aa875ad733ad1dd9ff28ed2379a73d4bf4f944c
+
+### Variance summary
+- **Artifact position:** Accepted Pi ADR-0014 made all host-managed authentication opaque and prohibited `ca-pi` from reading or copying credential material.
+- **Scaffold position:** A private child home prevents Pi from seeing stored authentication; inheriting the operator home exposes every provider and mutable Pi state.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Supersede the opaque-auth portion of the Pi authentication ADR with a bounded projection boundary.
+`ca-pi` may copy only the exact selected-provider record into private ephemeral child storage, with
+strict bounds, permissions, non-observability, retained-handle scrubbing, and fail-degraded cleanup.
+All unrelated ADR-0014 child-enforcement and fail-closed tool controls remain in force.
+
+### SMARTS rationale
+Available and Reliable are Strong because stored-session parity survives while exact-provider selection
+prevents fallback and whole-store exposure. Testable is Strong because success, failure, replacement,
+cleanup, and foreign-provider exclusion are deterministic contracts. Maintainable and Scalable are
+Adequate because one isolated boundary works across providers but now tracks Pi's auth-store shape.
+Securable is Adequate because raw credential transport is newly owned, constrained by ephemeral
+single-record storage and mandatory security review. Conflict-hierarchy Level 1 governs.
+
+### Implementation implication
+Record ADR-0016 as the superseding Pi credential decision. Reconcile `.codearbiter/security-controls.md`,
+the approved Pi spec and plan, and the child-environment tests. Keep exact-provider projection,
+private child paths, cleanup-degradation behavior, and shipped-bundle parity as release blockers;
+then rerun the secret-handling gate and full Pi promotion verification before commit.
+
+### Resolves same-level conflict between (when applicable)
+Accepted `0014-pi-host-authentication-and-fail-closed-tool-boundary.md` and the verified isolated-child
+credential requirements exposed by tribunal issue #372.
+
+---
+
+## DECISION-0022 — ADR-0017 — Permit credential-blind selected-provider configuration projection for isolated Pi children
+
+**Date:** 2026-07-24
+**Status:** accepted
+**Supersedes:** DECISION-0021 (partial — only the "no Pi configuration" clause of ADR-0016's Decision)
+**Decided by:** SUaDtL@users.noreply.github.com ("credential-blind selected-provider config projection")
+**Decision category:** security architecture / Pi configuration boundary
+**Artifact-section-hash:** cc8514b0a6eacedad8c0cca919828ecb5398230524d3ed2793fe110003bf8670
+
+### Variance summary
+- **Artifact position:** Accepted ADR-0016 forbids any Pi configuration from entering the child boundary — "No other provider record, Pi configuration, session, package state, or ambient home data may enter the child boundary."
+- **Scaffold position:** Pi 0.80.10 binds `models.json` to `getAgentDir()` with no separate env override, so the ADR-0016 private agent dir strips every operator provider/model definition and the child silently resolves the provider from Pi's built-in catalog, sending the operator's key to an endpoint they never configured.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Amend exactly one clause of ADR-0016 — the words "Pi configuration" in its no-crossing sentence — to
+permit projecting a `models.json` that holds only the exactly-selected provider's record and only
+credential-blind structural/protocol configuration. The amendment permits **configuration**
+projection and still forbids **credential** projection, which remains bounded solely by ADR-0016's
+`auth.json` clause. `apiKey` and `headers` cross only as whole-value `$NAME`/`${NAME}` environment
+references, which carry no secret, and a `baseUrl` crosses as an endpoint only — a URL embedding
+userinfo is refused. Literal `apiKey`/header values, `!command` forms, userinfo or unparseable
+endpoints, unreviewed provider-schema keys, any non-selected provider record, and anything beyond the
+provider record fail closed with a fixed, bounded, non-leaking degraded diagnostic.
+
+### SMARTS rationale
+Securable is Strong and, decisively, *unchanged*: the projected document is credential-blind by
+construction, so the secret-bearing surface stays exactly what ADR-0016 already sanctioned while the
+real leak — an operator credential silently redirected to Pi's built-in endpoint — is closed.
+Available and Reliable are Strong because endpoint, gateway, proxy, Azure-deployment-map, and
+self-hosted-model parity return to isolated children. Testable is Strong because every rejection
+(literal key, `!command`, literal header, foreign provider record) is a deterministic behavioral
+contract and the whole path is proven by the live Pi 0.80.10 contract. Maintainable is Adequate: the
+key allowlist is pinned to the reviewed Pi provider schema and must be re-reviewed when Pi's schema
+moves. Conflict-hierarchy Level 1 governs.
+
+### Implementation implication
+Record ADR-0017 as the amending Pi configuration decision (forward-only; ADR-0016's file is not
+edited). Reconcile `.codearbiter/security-controls.md` — Pi authentication section and the
+boundary-crossings table. Implement the sanitizer in `plugins/ca-pi/tools/src/child-env.ts` as the
+single sanctioned config-transport seam, extend the runner's closed degraded-reason allowlist by one
+fixed identifier, and keep the four fail-closed rejections plus the live `test_pi_child_live.py`
+contract as release blockers. Rebuild both committed esbuild bundles and advance the `ca-pi` payload
+manifest and changelog.
+
+### Resolves same-level conflict between (when applicable)
+Accepted `0016-bounded-pi-child-credential-projection.md` and the verified Pi 0.80.10 `models.json`
+agent-dir binding exposed by the live isolated-child contract on PR #426.
+
+---
+
+## DECISION-0023 — ADR-0018 — Accept endpoints by bounded structure rather than case, and pin projected value shapes
+
+**Date:** 2026-07-25
+**Status:** accepted
+**Supersedes:** DECISION-0022 (partial — only ADR-0017's `baseUrl` clause, its fail-closed list, and its Consequences paragraph)
+**Decided by:** SUaDtL@users.noreply.github.com ("allow mixed-case segments"; ADR amendment approved 2026-07-25)
+**Decision category:** security architecture / Pi configuration boundary
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Accepted ADR-0017 refuses a `baseUrl` only for URL userinfo or unparseability, and pins the projected record by KEY NAME against the reviewed Pi provider schema.
+- **Scaffold position:** Adversarial probing of the shipped implementation proved a credential in a query string, path, or fragment projected verbatim (the dominant Azure `?api-key=` / Google `?key=` shape), that the projected endpoint was absent from the child's sensitive-value scrub set, and that a name-only pin lets a wrong-typed value project and then die mutely inside Pi's own validator.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Accept a projected `baseUrl` by bounded structure rather than character case, and pin value shapes as
+well as key names. A value crosses only as a parseable absolute `http`/`https` URL with no userinfo,
+no query, no fragment, no percent-encoding, and a route of at most 8 segments of at most 32 bytes
+each. Route segments are deliberately case-insensitive: a lowercase-only rule admitted
+`sk-querysecret999` while refusing `GPT4-Prod`, so it cost operators their isolated children for no
+security gain. Everything accepted is also registered in the child's sensitive-value scrub set and
+retained behind a scrub handle. A record satisfying the name allowlist but not Pi's declared value
+type now fails closed instead of projecting.
+
+### SMARTS rationale
+Securable drove it in both directions. The query/fragment/percent-encoding refusals close a *proven*
+leak — the first implementation shipped a credential-in-endpoint path that an adversarial probe
+demonstrated — and scrub-set registration removes the blind spot in the two controls that assume the
+projection holds no secret. The case relaxation was measured, not assumed: the byte bound is what
+refuses realistic key material, so dropping the case rule sacrifices nothing Securable while
+restoring Available for every operator with a mixed-case Azure or Cloudflare deployment name.
+Testable is Strong: both directions were mutation-tested — reverting to lowercase-only reddens the
+Azure/Cloudflare fixtures, and loosening the byte bound reddens the realistic-key fixture.
+Maintainable improves because the value-shape pin converts a mute child death into a legible
+fail-closed refusal. Conflict-hierarchy Level 1 governs.
+
+### Implementation implication
+Record ADR-0018 as the amending decision (forward-only; ADR-0017's file is not edited). The code
+already shipped on `fix/pi-credential-projection` ahead of this record and is strictly NARROWER than
+ADR-0017 described, so nothing ADR-0017 asserts was falsified in the interim — this entry closes the
+gap between the record and the shipped rule. Keep `.codearbiter/security-controls.md` in agreement,
+including the stated residual that scrub-set registration covers endpoints and not the other
+projected free-string leaves.
+
+### Resolves same-level conflict between (when applicable)
+Accepted `0017-credential-blind-selected-provider-config-projection.md` and the adversarial boundary
+probe of its implementation on PR #426, which proved the endpoint clause both incomplete (leaked) and,
+once corrected, over-strict (refused ordinary Azure deployment names).
+
+---

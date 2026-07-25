@@ -30,6 +30,17 @@ local_date_iso = _mod.local_date_iso
 write_standup_marker = _mod.write_standup_marker
 provenance_drift_line = _mod.provenance_drift_line
 
+from _helpers import durable_plugin_copy  # noqa: E402
+
+# The real plugin payload root (parent of the hooks/ dir holding session-start.py).
+_REAL_PLUGIN = os.path.dirname(os.path.dirname(os.path.abspath(_mod.__file__)))
+
+# A ca-owned pin left behind by an OLD plugin-cache version — the genuine
+# stale-pin condition the heal exists to repair.
+STALE_CACHE_PIN = (
+    '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1'
+    '\\hooks\\statusline.py"')
+
 
 class TestHasSource(unittest.TestCase):
     def setUp(self):
@@ -163,9 +174,10 @@ class TestHealStatuslineWiring(unittest.TestCase):
 
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
-        # Real plugin root = parent of the hooks/ dir holding session-start.py.
-        self.plugin = os.path.dirname(
-            os.path.dirname(os.path.abspath(_mod.__file__)))
+        # A DURABLE copy of the real plugin payload — see durable_plugin_copy().
+        # (Was the real plugin root; that made the outcome depend on whether the
+        # suite was run from a git worktree, once the heal started refusing one.)
+        self.plugin = durable_plugin_copy(self._tmp.name)
         self.real_script = os.path.join(self.plugin, "hooks", "statusline.py")
         d = os.path.join(self._tmp.name, ".claude")
         os.makedirs(d)
@@ -227,6 +239,157 @@ class TestHealStatuslineWiring(unittest.TestCase):
                 loader=lambda _p: None))
 
 
+class TestHealRefusesNonDurableRoot(unittest.TestCase):
+    """Found in-session on 2026-07-25, after it broke the maintainer's
+    statusline three times in one day.
+
+    `heal_statusline_wiring()` runs on EVERY SessionStart and rewrites the
+    GLOBAL `~/.claude/settings.json` to the CURRENT plugin root. When the
+    session starts inside a git worktree (subagents routinely run in
+    `<repo>/.claude/worktrees/<id>/`) that root is the worktree's own
+    `plugins/ca`, so the heal pinned the user's global statusline at a directory
+    whose entire purpose is to be pruned:
+
+        "...\\.claude\\worktrees\\wf_58ee3fa6-de1-8\\plugins\\ca\\hooks\\statusline.py"
+
+    Contract: a session rooted in a non-durable checkout is INERT with respect
+    to the user's global config — the existing pin is left exactly as it is
+    (not healed, not cleared, no error). A genuinely stale pin from a real
+    plugin-cache update must still heal, so BOTH directions are proven here."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        # One real wire-statusline module, loaded once from the real payload and
+        # injected through the `loader=` seam, so `plugin` is free to be any
+        # shape at all — including one that does not exist on disk.
+        self.ws = _mod._load_wire_statusline(_REAL_PLUGIN)
+        self.assertIsNotNone(self.ws, "wire-statusline.py must load")
+        d = os.path.join(self._tmp.name, ".claude")
+        os.makedirs(d)
+        self.settings = os.path.join(d, "settings.json")
+        self._write({"statusLine": {"type": "command", "command": STALE_CACHE_PIN}})
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _write(self, obj):
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump(obj, f, indent=2)
+        self.before = self._bytes()
+
+    def _bytes(self):
+        with open(self.settings, "rb") as f:
+            return f.read()
+
+    def _heal(self, plugin, loader=None):
+        return _mod.heal_statusline_wiring(
+            plugin, settings_path=self.settings, interp="python",
+            loader=loader or (lambda _p: self.ws))
+
+    def _worktree_root(self):
+        """The confirmed shape: a Claude Code subagent worktree checkout."""
+        return os.path.join(self._tmp.name, "repo", ".claude", "worktrees",
+                            "wf_58ee3fa6-de1-8", "plugins", "ca")
+
+    def _durable_root(self):
+        """The ordinary shape: an updated plugin-cache install."""
+        return os.path.join(self._tmp.name, "home", ".claude", "plugins",
+                            "cache", "codearbiter", "ca", "9.9.9")
+
+    # --- proof 1: a worktree-rooted heal changes nothing -------------------
+
+    def test_worktree_root_leaves_settings_byte_identical(self):
+        self.assertFalse(self._heal(self._worktree_root()))
+        self.assertEqual(self._bytes(), self.before)
+
+    def test_worktree_root_pin_never_appears_in_settings(self):
+        self._heal(self._worktree_root())
+        with open(self.settings, encoding="utf-8") as f:
+            raw = f.read()
+        self.assertNotIn("worktrees", raw)
+        self.assertEqual(json.loads(raw)["statusLine"]["command"], STALE_CACHE_PIN)
+
+    def test_worktree_root_does_not_repair_an_already_worktree_pin(self):
+        # The maintainer's observed corrupted state, re-entered from ANOTHER
+        # worktree: leave it alone rather than swap one doomed pin for another.
+        # A later session from a durable root is what repairs it.
+        pinned = ('"python" "C:\\Users\\me\\repo\\.claude\\worktrees'
+                  '\\wf_b7160646-041-2\\plugins\\ca\\hooks\\statusline.py"')
+        self._write({"statusLine": {"type": "command", "command": pinned},
+                     self.ws.OWNER_KEY: pinned})
+        self.assertFalse(self._heal(self._worktree_root()))
+        self.assertEqual(self._bytes(), self.before)
+
+    def test_caller_refuses_even_an_unguarded_producer(self):
+        # WHY THE CALLER GUARDS TOO. `heal_statusline_wiring` loads
+        # wire-statusline.py FROM `plugin` — i.e. out of the very worktree it is
+        # about to pin. A worktree cut from a pre-fix branch therefore supplies a
+        # pre-fix, UNGUARDED producer, while session-start.py itself may have
+        # been loaded from elsewhere (main() honours $CLAUDE_PLUGIN_ROOT
+        # independently of where this file came from). The heal must refuse on
+        # its own account, not on the loaded module's good behaviour.
+        unguarded = _Unguarded(self.ws)
+        self.assertFalse(self._heal(self._worktree_root(),
+                                    loader=lambda _p: unguarded))
+        self.assertEqual(self._bytes(), self.before)
+        self.assertFalse(unguarded.refresh_called,
+                         "the heal must bail BEFORE reaching the producer")
+
+    # --- proof 2: a stale-but-durable pin still heals ----------------------
+
+    def test_durable_stale_pin_still_heals(self):
+        # The feature is NOT disabled: a real plugin-cache update still
+        # re-points the pin at the new version's renderer.
+        self.assertTrue(self._heal(self._durable_root()))
+        cmd = json.loads(self._bytes().decode("utf-8"))["statusLine"]["command"]
+        self.assertIn(os.path.join(self._durable_root(), "hooks", "statusline.py"), cmd)
+        self.assertNotIn("2.0.1", cmd)
+
+    def test_durable_root_repairs_a_worktree_pin_left_by_the_bug(self):
+        # Forward fix: the corruption already on the maintainer's disk self-heals
+        # the next time a session starts from a durable root.
+        pinned = ('"python" "C:\\Users\\me\\repo\\.claude\\worktrees'
+                  '\\wf_b7160646-041-2\\plugins\\ca\\hooks\\statusline.py"')
+        self._write({"statusLine": {"type": "command", "command": pinned},
+                     self.ws.OWNER_KEY: pinned})
+        self.assertTrue(self._heal(self._durable_root()))
+        cmd = json.loads(self._bytes().decode("utf-8"))["statusLine"]["command"]
+        self.assertNotIn("worktrees", cmd)
+
+    # --- proof 3: a third-party line is still never touched ----------------
+
+    def test_worktree_root_still_never_touches_a_third_party_line(self):
+        self._write({"statusLine": {"type": "command", "command": "theirs --x"}})
+        self.assertFalse(self._heal(self._worktree_root()))
+        self.assertEqual(self._bytes(), self.before)
+
+    def test_durable_root_still_never_touches_a_third_party_line(self):
+        # The pre-existing contract, re-proven on the path that DOES write.
+        self._write({"statusLine": {"type": "command", "command": "theirs --x"}})
+        self.assertFalse(self._heal(self._durable_root()))
+        self.assertEqual(self._bytes(), self.before)
+
+
+class _Unguarded:
+    """A stand-in for a PRE-FIX vendored wire-statusline.py: every real function
+    except `refresh_if_stale`, which unconditionally rewrites the pin exactly as
+    the module did before 2026-07-25."""
+
+    def __init__(self, real):
+        self._real = real
+        self.refresh_called = False
+
+    def __getattr__(self, name):
+        return getattr(self._real, name)
+
+    def refresh_if_stale(self, settings, script_abs, interp):
+        self.refresh_called = True
+        desired = self._real.build_command(interp, script_abs)
+        settings["statusLine"] = self._real.owned_statusline(desired)
+        settings[self._real.OWNER_KEY] = desired
+        return True
+
+
 class TestMainHealsBeforeDormantGate(unittest.TestCase):
     """Regression (#fix): the heal must run from main() BEFORE the dormant early
     return, so a plugin update re-points the pin in EVERY session — even a
@@ -245,8 +408,9 @@ class TestMainHealsBeforeDormantGate(unittest.TestCase):
         self.settings = os.path.join(self.home, ".claude", "settings.json")
         with open(self.settings, "w", encoding="utf-8") as f:
             json.dump({"statusLine": {"type": "command",
-                       "command": '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"'}}, f)
-        self.plugin = os.path.dirname(os.path.dirname(os.path.abspath(_mod.__file__)))
+                       "command": STALE_CACHE_PIN}}, f)
+        # A DURABLE copy of the real payload — see durable_plugin_copy().
+        self.plugin = durable_plugin_copy(self._tmp.name)
         self.real_script = os.path.join(self.plugin, "hooks", "statusline.py")
 
     def tearDown(self):
@@ -292,11 +456,13 @@ class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
         self.home = os.path.join(self._tmp.name, "home")
         os.makedirs(os.path.join(self.home, ".claude"))
         self.settings = os.path.join(self.home, ".claude", "settings.json")
-        self.stale_command = '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py"'
+        self.stale_command = STALE_CACHE_PIN
         with open(self.settings, "w", encoding="utf-8") as f:
             json.dump({"statusLine": {"type": "command",
                        "command": self.stale_command}}, f)
-        self.plugin = os.path.dirname(os.path.dirname(os.path.abspath(_mod.__file__)))
+        # A DURABLE copy of the real payload, so this test proves the
+        # has_statusline gate specifically — not the durability guard.
+        self.plugin = durable_plugin_copy(self._tmp.name)
 
     def tearDown(self):
         self._tmp.cleanup()

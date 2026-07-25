@@ -5,7 +5,7 @@
 **Status:** APPROVED - 2026-07-13 by `SUaDtL@users.noreply.github.com`
 **Date:** 2026-07-13
 **Branch:** `feat/pi-support`
-**Decisions:** ADR-0013, ADR-0014
+**Decisions:** ADR-0013, ADR-0014, ADR-0016, ADR-0017
 **Governs:** `core/**`, `tools/sync-core.py`, `tools/build-surface.py`, `plugins/ca-pi/**`, root Pi package metadata, `docs/parity.md`, `.github/workflows/**`
 
 ## Problem
@@ -115,8 +115,8 @@ transport without changing governance behavior.
 - Read, post-event, status, and advisory bridge failures continue with a visible warning and an
   attributed audit event.
 - A valid canonical payload receives the same core verdict and rule identifiers on every host.
-- Child stdout is protocol-only. Bounded stderr is redacted before display or audit. Raw task text,
-  prompts, auth material, and provider payloads are never logged.
+- Child stdout is protocol-only. Stderr is bounded and counted but its raw bytes never enter a child
+  result, display, or audit. Raw task text, prompts, auth material, and provider payloads are never logged.
 - The adapter uses absolute executable/bridge paths, argv arrays with `shell: false`, bounded
   input/output, explicit cwd, a minimal provider-specific environment built without unrelated
   codeArbiter secrets, and cross-platform process-tree termination.
@@ -153,11 +153,19 @@ closed with a doctor direction.
 
 Task content is delivered over stdin rather than exposed in argv, environment, or temporary files.
 The child environment starts from a minimal OS/runtime baseline, excludes `FARM_API_KEY` and
-`CLAUDE_CODE_OAUTH_TOKEN`, and admits only declared runtime and selected-provider configuration. Pi's
-auth store, provider environment resolution, and credential commands remain opaque host behavior:
-`ca-pi` never reads, copies, snapshots, logs, or reimplements them. The runner parses schema-validated
-bounded JSONL, returns the shared structured result, caps model-visible output while retaining bounded
-redacted diagnostics, propagates cancellation, and terminates the full process tree after timeout.
+`CLAUDE_CODE_OAUTH_TOKEN`, admits only declared runtime and selected-provider configuration, and
+rebinds every home/Pi storage path beneath a fresh private root. Under ADR-0016, `ca-pi` may project
+only the exact selected-provider record from a bounded canonical operator `auth.json` into that
+private root. Under ADR-0017 it may additionally project a credential-blind `models.json` holding
+only that same exactly-selected provider record — structural/protocol configuration only, with
+`apiKey` and `headers` admitted solely as whole-value `$NAME`/`${NAME}` environment references; a
+literal value, a `!command` form, a `baseUrl` embedding URL userinfo, or an unreviewed
+provider-schema key fails the launch closed.
+No foreign provider or other operator state enters the child; the credential is never
+observable and every terminal path scrubs it and removes the root or returns a fixed degraded failure.
+The runner parses schema-validated bounded JSONL, returns the shared structured result, rejects final
+assistant output containing any exact selected-provider environment or projected credential value,
+keeps stderr count-only, propagates cancellation, and terminates the full process tree after timeout.
 Single, chained, and parallel modes obey shared concurrency/depth policy. Inline author/reviewer
 execution is a degraded fallback and cannot satisfy promotion.
 
@@ -211,8 +219,10 @@ execution, canonical payload spoofing, protected-path writes, subprocess argv/en
 process-tree cleanup, secret-bearing provider environments, stderr/JSONL injection, task output caps,
 and Git package provenance.
 
-ADR-0014 resolves Pi authentication as opaque external trusted runtime state, requires enforcement-
-only child loading and minimal provider-specific environments, and makes unknown tools fail closed.
+ADR-0016 supersedes ADR-0014's fully opaque authentication rule with exact-provider ephemeral child
+projection while retaining enforcement-only loading, minimal provider-specific environments, and
+fail-closed unknown tools. ADR-0017 amends only ADR-0016's "no Pi configuration" clause: it permits
+credential-blind selected-provider configuration projection and still forbids credential projection.
 For parent activation, a global extension's presence is not evidence of repository authorization:
 every enabled `session_start` requires an affirmative current Pi project-trust result before any
 repository-aware startup. An enabled-but-untrusted doctor is side-effect-free: it performs no bridge
@@ -305,9 +315,11 @@ permission to lower full-parity acceptance.
     subagent fixtures report the exact remediation; enabled-untrusted diagnosis is side-effect-free
     and truthfully marks withheld bridge/wrapper checks; a harmless live-fire probe observes a real
     block after trust.
-29. **Secret safety:** Isolated-home environment, argv, stdin, stderr, JSONL, task output, and audit
-    fixtures prove `ca-pi` never inspects real auth state, unrelated secrets are absent, provider
-    inputs are minimized, and every observable channel uses the shared redaction corpus.
+29. **Secret safety:** Disposable operator-auth fixtures prove only the selected provider reaches a
+    private child root; foreign providers and unrelated secrets are absent; the operator fixture is
+    unchanged; success, cancellation, timeout, spawn/readiness failure, path replacement, and cleanup
+    refusal either remove credential state or return a fixed degraded result. Argv, stdin, stderr,
+    JSONL, task output, logs, telemetry, and audit fixtures expose no credential material.
 30. **Static analysis:** The new TypeScript adapter/runner is included in CodeQL/static analysis with
     no unresolved high-severity result.
 31. **Relative performance:** On each supported platform, Pi adapter p95 satisfies the relative
@@ -321,9 +333,10 @@ permission to lower full-parity acceptance.
 35. **Live promotion evidence:** Trusted Windows interactive and Linux non-interactive runs prove
     activation, aliases, mutation blocking, isolated agents, status, and compaction on the supported
     version bounds before promotion; macOS live testing becomes mandatory if matrix behavior differs.
-36. **Threat-model gate:** ADR-0014 is reflected in the implementation plan; final-argument ordering,
-    unknown-tool fail-closed behavior, opaque auth handling, minimal child environments, and
-    enforcement-only discovery have no unresolved blocking finding before mutating adapter code.
+36. **Threat-model gate:** ADR-0016 is reflected in the implementation plan; final-argument ordering,
+    unknown-tool fail-closed behavior, exact-provider credential projection, minimal private child
+    environments, cleanup degradation, and enforcement-only discovery have no unresolved blocking
+    finding before mutating adapter code.
 37. **Repository regression gate:** Every existing required repository test and every new Pi test
     passes with clean/idempotent core and surface generation.
 38. **Single-branch/full-parity gate:** No partial milestone ships; the branch advances to PR only

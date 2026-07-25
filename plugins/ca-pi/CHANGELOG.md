@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.4] - 2026-07-24
+## [0.1.7] - 2026-07-25
 
 ### Fixed
 
@@ -19,6 +19,118 @@ All notable changes to `ca-pi` are documented in this file.
 - Provenance records are validated before admission and each file is loaded
   inside its own error boundary, so one schema-invalid record no longer aborts
   the directory scan and silently drops every later valid record.
+
+## [0.1.6] - 2026-07-25
+
+### Fixed
+
+- The SessionStart statusline self-heal no longer pins a NON-DURABLE plugin
+  root into the user's global `~/.claude/settings.json`. A session started
+  inside a git worktree resolved the plugin root to that worktree and rewrote
+  the global pin there; once the worktree was pruned the statusline rendered
+  nothing. A non-durable root is now inert - the existing pin is left exactly
+  as it is - while a genuinely stale pin from a real plugin-cache update still
+  heals. Explicit `wire-statusline.py install` from such a root refuses loudly
+  instead of writing a doomed path.
+
+## [0.1.5] - 2026-07-25
+
+### Security
+
+- Isolated Pi children now receive a bounded, selected-provider credential
+  projection into a fresh private ephemeral root instead of inheriting the
+  operator's Pi home. Only the exact provider record a child needs crosses the
+  boundary; no other provider record, session, or package state does.
+  Credential material never appears in argv, prompts, results, logs,
+  telemetry, or `.codearbiter/`, and is scrubbed on every path including
+  failure. Ratified as ADR-0016, superseding the opaque-auth clause of
+  ADR-0014. Addresses #372.
+- Isolated Pi children also receive a **credential-blind** projection of the
+  selected provider's `models.json` record, so a private agent directory no
+  longer strips the operator's endpoint, protocol, and model configuration and
+  silently sends their key to Pi's built-in endpoint. Only the exactly-selected
+  provider record crosses, and within it only structural/protocol configuration;
+  `apiKey` and `headers` cross only as whole-value `$NAME`/`${NAME}` environment
+  references, which hold no secret and resolve from the already-allowlisted
+  child environment, and a `baseUrl` crosses as an endpoint only. A literal
+  `apiKey` or header value, a `!command` value, a credential-bearing `baseUrl`,
+  and any key or value shape outside the reviewed Pi provider schema all fail
+  the launch closed.
+  Ratified as ADR-0017, which amends only ADR-0016's "no Pi configuration"
+  clause — it permits **configuration** projection and still forbids
+  **credential** projection.
+- A projected `baseUrl` is now accepted **positively** instead of being screened
+  only for URL userinfo. Screening userinfo alone closed the rare
+  credential-in-endpoint shape and left the common one open: a secret in a query
+  string (`?api-key=` on Azure, `?key=` on Google), a fragment, or a path
+  segment crossed into the child verbatim. Blocklisting parameter names is an
+  unbounded list, so a `baseUrl` now crosses only when it is a parseable
+  absolute `http`/`https` URL with no userinfo, **no query and no fragment at
+  all**, and a bounded route of short unencoded segments. A provider
+  endpoint needs neither query nor fragment — Pi's own Azure provider takes
+  `api-version` from `AZURE_OPENAI_API_VERSION` — and an endpoint that does not
+  meet the rule fails the launch closed rather than projecting material that
+  cannot be shown credential-free. Route segments are case-insensitive: an
+  operator's Azure deployment or Cloudflare gateway name routinely carries
+  capitals, and refusing them bought nothing — a lowercase-only rule admitted
+  `sk-querysecret999` while refusing `GPT4-Prod`. The bound that actually
+  refuses key material is the per-segment byte limit.
+- Every endpoint the projection accepts is now also registered in the child's
+  sensitive-value set and the projected `models.json` is retained behind a scrub
+  handle. A bounded route is not *provably* credential-free, and the two controls
+  that assumed otherwise were blind to it: an endpoint echoed back by the child
+  was not suppressed in the final assistant message, and on the removal-failure
+  cleanup path `auth.json` was truncated while the projected `models.json` was
+  left intact on disk. Both now behave identically for both files.
+- Projected value SHAPES, not only key names, are pinned to Pi 0.80.10's
+  provider schema (`oauth` only `"radius"`, `authHeader` only a boolean, and so
+  on). A record that passed the name allowlist but not the declared type used to
+  project and then die mutely inside Pi's own validator instead of producing the
+  intended fail-closed refusal.
+- A reserved object key (`__proto__`, `constructor`, `prototype`) is now rejected
+  as a projected header name, the one place in the projection that skipped the
+  module's own reserved-key rule.
+- The isolated child's private root — which holds the operator's real credential
+  in cleartext — is now removed from a `try`/`finally` around the whole launch
+  rather than threaded manually through every return. An unexpected throw after a
+  successful environment prepare previously escaped the runner and stranded that
+  root on disk permanently. No such throw was reachable against Pi 0.80.10; the
+  change makes the class unreachable by construction rather than by audit of
+  every return path.
+
+### Fixed
+
+- The isolated child no longer rebinds `PI_PACKAGE_DIR` beneath its private
+  root. That variable names Pi's own read-only shipped-asset directory, not
+  operator state, so pointing it at an empty private root made Pi's startup
+  theme load fail before its RPC loop existed and killed every isolated child
+  at exit 1 with zero provider turns.
+
+### Changed
+
+- A credential-isolation or config-projection failure now names its stage
+  (`isolation-setup`, `isolation-cleanup`, or `isolation-config`) in the
+  degraded diagnostic. All three are fixed identifiers chosen by the runner and
+  are never derived from child output, error text, paths, configuration values,
+  or credential values.
+- **Operator-visible audit-record format change.** `ChildResult` no longer
+  carries `stderrHead`, and the dispatch audit line written to
+  `.codearbiter/gate-events.log` no longer carries a `STDERR_HEAD:` field.
+  Child stderr is now counted, never sampled, so no child-controlled text
+  reaches the audit record; `STDERR_BYTES:` remains. Anything parsing
+  `STDERR_HEAD:` out of the audit line must be updated.
+
+## [0.1.4] - 2026-07-24
+
+### Changed
+
+- Refreshed the bundled farm surface (`includes/farm.md`, the
+  `subagent-driven-development` farm-dispatch reference) for run-scoped farm
+  receipts: the run's artifact directory is the authoritative receipt, the
+  top-level `.farm/` paths are a non-authoritative latest pointer, exit 3 is
+  reserved for a failure of the run-scoped report, and the concurrency caveat
+  (`FARM_INTEGRATION_BRANCH`, `FARM_WORKTREE_ROOT`, non-overlapping task ids)
+  is now stated where operators read it. Prose-only; no Pi adapter code changed.
 
 ## [0.1.3] - 2026-07-24
 
@@ -46,7 +158,6 @@ All notable changes to `ca-pi` are documented in this file.
   repository root, so they exercise `operatePlanFile` on Linux and macOS instead
   of silently asserting the rejected path. Test-only; `plan-mode.ts` is
   unchanged.
-
 
 ## [0.1.1] - 2026-07-18
 

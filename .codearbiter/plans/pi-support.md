@@ -6,7 +6,7 @@
 
 **Status:** APPROVED — 2026-07-13 by SUaDtL@users.noreply.github.com
 **Spec:** `.codearbiter/specs/pi-support.md` — APPROVED 2026-07-13
-**Decisions:** ADR-0013, ADR-0014
+**Decisions:** ADR-0013, ADR-0014, ADR-0016, ADR-0017
 **Goal:** Ship `ca-pi` as a full-parity Pi governance package generated from the same arbiter core as
 `ca` and `ca-codex`, with a thin Pi adapter, independently versioned Git distribution, and no partial
 promotion.
@@ -37,9 +37,18 @@ and Linux.
   workspaces retain their current engines and lockfiles.
 - Python remains stdlib-only. Every bridge process uses an absolute interpreter and installed script,
   argv arrays, `shell: false`, bounded stdin/stdout/stderr, explicit cwd, and tree termination.
-- Pi authentication is opaque host state under ADR-0014. No code reads or copies `auth.json`, resolves
-  credentials, clones the parent environment, or places credentials/task/prompt text in argv,
-  environment, temp files, logs, snapshots, audits, fixtures, or failure text.
+- Pi authentication remains host-owned except for ADR-0016's isolated-child projection. `ca-pi` may
+  read a bounded canonical `auth.json` and copy only the exact selected-provider record into private
+  ephemeral child storage; no foreign provider or other operator state crosses. ADR-0017 additionally
+  permits a credential-blind `models.json` projection of that same exactly-selected provider record —
+  configuration only, never credentials: `apiKey`/`headers` cross solely as whole-value
+  `$NAME`/`${NAME}` environment references, `baseUrl` crosses as an endpoint only, and a literal
+  value, a `!command` form, a URL-userinfo endpoint, or an unreviewed
+  provider-schema key fails the launch closed with the fixed `isolation-config` degraded identifier.
+  Credentials/task/
+  prompt text never enter argv, logs, snapshots, audits, fixtures, telemetry, or failure text. The
+  read cap is enforced on consumed bytes even if the file grows after metadata inspection; raw child
+  stderr remains count-only and exact credential values are rejected at the result boundary.
 - Child environments exclude `FARM_API_KEY` and `CLAUDE_CODE_OAUTH_TOKEN`, select one exact
   provider/model without fallback, disable ambient discovery, and load only the child enforcement
   adapter plus explicit generated skills/charters.
@@ -87,9 +96,9 @@ and Linux.
 
 ## TDD Phase 1 obligation ledger
 
-Every approved acceptance criterion is one obligation and has exactly one owning task. No additional
-contract/security obligation is needed: ADR-0014's constraints were incorporated into AC-11, AC-13,
-AC-17, AC-29, and AC-36 before approval.
+Every approved acceptance criterion is one obligation and has exactly one owning task. ADR-0014's
+carried-forward controls and ADR-0016's superseding credential-projection contract are incorporated
+into AC-11, AC-13, AC-17, AC-29, and AC-36.
 
 | Obligation | Spec source | Owning task | Initial status |
 |---|---|---:|---|
@@ -826,7 +835,7 @@ python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 
 ---
 
-### Task 6: Hardened child launch, opaque auth, and isolation contract
+### Task 6: Hardened child launch, bounded auth projection, and isolation contract
 
 **Status:** ACCEPTED
 **Owns:** PI-AC-17, PI-AC-20, PI-AC-29
@@ -890,17 +899,21 @@ Expected: FAIL because no minimal environment, exact argv, runner, or child exte
 - [x] **Step 3: Implement explicit OS and provider allowlists**
 
 OS baselines are explicit per platform. Provider secret/config names are parsed into a reviewed map
-from the pinned help fixture and checked for drift against 0.80.5/0.80.6 help output. After every
-merge, delete `FARM_API_KEY` and `CLAUDE_CODE_OAUTH_TOKEN` again so a caller cannot reintroduce them.
-Keep `HOME`/`USERPROFILE` and Pi config-location variables so Pi itself can resolve its opaque auth;
-never open or stat the auth file from `ca-pi`.
+from the pinned help fixture and checked for drift against supported help output. After every merge,
+delete `FARM_API_KEY` and `CLAUDE_CODE_OAUTH_TOKEN` again so a caller cannot reintroduce them. Rebind
+`HOME`/`USERPROFILE`, app-data/XDG, Pi agent, session, and package paths beneath a fresh private root.
+Read the canonical operator auth file only through a bounded handle, project only the exact selected-
+provider record into an exclusively created private file, and retain its handle for path-safe scrub.
+Read at most the fixed cap plus one byte and reject overflow even when the file grows after `stat`.
+Every success/failure path removes the root; inability to prove cleanup returns a fixed degraded result.
 
 - [x] **Step 4: Implement exact node+CLI launch and stdin-only RPC**
 
 Launch `[process.execPath, absolute dist/cli.js, ...argv]`, never a shell/shim. Validate both paths as
 absolute real files, send bounded RPC `prompt` content over stdin, and allow only strict JSONL record
 types/keys. Use a random correlation ID unrelated to task content. Never echo malformed input,
-provider errors, or raw JSONL in diagnostics.
+provider errors, raw JSONL, or raw stderr in diagnostics or audit records. Reject final assistant
+output containing any exact selected-provider environment or projected credential value.
 
 - [x] **Step 5: Build the enforcement-only child adapter and role catalog**
 
@@ -1170,7 +1183,7 @@ python .github/scripts/test_dual_host_store.py
 - Produces machine-readable security result codes consumed by Task 13 promotion evidence; no raw
   prompt, environment value, provider body, tool result, or stderr is retained.
 
-- [x] **Step 1: Write adversarial tests for every ADR-0014 constraint**
+- [x] **Step 1: Write adversarial tests for ADR-0014's carried controls and ADR-0016 projection**
 
 ```typescript
 it("blocks a later extension's mutation at final execution", async () => {
@@ -1212,12 +1225,14 @@ python .github/scripts/test_pi_security.py
 Expected: at least final-executor ordering, trust, and static-analysis coverage fail before the gates
 are wired.
 
-- [x] **Step 3: Close only implementation gaps; do not relax ADR-0014**
+- [x] **Step 3: Close implementation gaps without relaxing ADR-0014/ADR-0016**
 
 Fix the adapter/runner/descriptors until every adversarial fixture is non-executing or safely
-redacted. If a later handler can still alter final executed arguments, if Pi auth must be interpreted
-by `ca-pi`, or if a mutating external tool must be allowed without a wrapper, stop the feature and
-reopen ADR-0013. No override can promote that result as parity.
+redacted. Stored-auth interpretation is limited to ADR-0016's exact selected-provider projection and
+must fail degraded when isolation or cleanup cannot be proven. If a later handler can still alter
+final executed arguments, credential scope widens beyond that record, or a mutating external tool
+must be allowed without a wrapper, stop the feature and reopen ADR-0013. No override can promote
+that result as parity.
 
 - [x] **Step 4: Add TypeScript CodeQL coverage and preserve existing workflow pin policy**
 
@@ -1427,9 +1442,9 @@ real loop and prove their expanded skill bodies execute rather than reaching the
 Use a disposable enabled repo and the exact Git checkout. Verify package discovery/origin, trust UX,
 persona, every alias catalog entry, H-03/H-05/H-20 final mutation blocks, read/write notices, keyed
 status, single/chained/parallel children, cancel/timeout cleanup, prune status/dry/native compaction,
-shared-state attribution, and farm preview. The harness must perform no filesystem operation against
-the operator's real auth path; Pi may resolve or refresh its own host state, and no path/value/hash
-from that state enters the evidence.
+shared-state attribution, and farm preview. Automated evidence uses disposable operator-auth fixtures;
+an explicitly opted-in credentialed pass may exercise the real selected provider but records no auth
+path, value, hash, provider payload, raw diagnostic, or other user-home material.
 
 - [x] **Step 2: Run Linux non-interactive evidence on both supported versions**
 
