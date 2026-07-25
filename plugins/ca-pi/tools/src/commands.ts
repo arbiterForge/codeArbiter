@@ -32,6 +32,7 @@ import {
   restorePlanSessionState,
 } from "./plan-mode.ts";
 import type { PlanSessionState } from "./plan-mode.ts";
+import { lexicallyInside } from "./path-boundary.ts";
 import type { PolicyMode } from "./policy.ts";
 
 const COMMAND_DIAGNOSIS = "codeArbiter could not validate the Pi command surface; run /ca-doctor.";
@@ -42,11 +43,6 @@ const PLAN_COMMAND_DIAGNOSIS = "codeArbiter could not validate the Pi plan comma
 const PLAN_SYNTAX = "Usage: /ca-plan enter <slug> | status | approve | cancel.";
 const PLAN_SLUG = /^[a-z0-9](?:[a-z0-9-]{0,126}[a-z0-9])?$/u;
 const PLAN_ENTRY_LIMIT = 4_096;
-
-function inside(path: string, root: string): boolean {
-  const suffix = relative(root, path);
-  return suffix === "" || (!suffix.startsWith("..") && !isAbsolute(suffix));
-}
 
 function pluginRootFromModule(): string {
   let cursor = dirname(fileURLToPath(import.meta.url));
@@ -81,7 +77,7 @@ function strictUtf8(path: string): string {
 function hasSymlinkComponent(root: string, path: string): boolean {
   const lexicalRoot = resolve(root);
   const lexicalPath = resolve(path);
-  if (!inside(lexicalPath, lexicalRoot) || lstatSync(lexicalRoot).isSymbolicLink()) return true;
+  if (!lexicallyInside(lexicalPath, lexicalRoot) || lstatSync(lexicalRoot).isSymbolicLink()) return true;
   const suffix = relative(lexicalRoot, lexicalPath);
   let cursor = lexicalRoot;
   for (const part of suffix.split(/[\\/]/u).filter(Boolean)) {
@@ -119,7 +115,7 @@ function declaredPackageOwner(command: SlashCommand, expectedPath: string): bool
     const canonicalPath = realpathSync(command.sourceInfo.path);
     const canonicalExpected = realpathSync(expectedPath);
     const canonicalBase = realpathSync(command.sourceInfo.baseDir);
-    if (canonicalPath !== canonicalExpected || !inside(canonicalPath, canonicalBase)) return false;
+    if (canonicalPath !== canonicalExpected || !lexicallyInside(canonicalPath, canonicalBase)) return false;
     const manifest = JSON.parse(strictUtf8(resolve(canonicalBase, "package.json"))) as {
       name?: unknown;
       pi?: { extensions?: unknown; skills?: unknown };
@@ -131,7 +127,7 @@ function declaredPackageOwner(command: SlashCommand, expectedPath: string): bool
       const target = resolve(canonicalBase, item as string);
       return command.source === "extension"
         ? realpathSync(target) === canonicalPath
-        : inside(canonicalPath, realpathSync(target));
+        : lexicallyInside(canonicalPath, realpathSync(target));
     });
   } catch {
     return false;
@@ -179,7 +175,7 @@ export function registerAliases(
           }
           const path = realpathSync(fallback.sourceInfo.path);
           if (path !== realpathSync(expectedPath) ||
-              !inside(path, canonicalRoot) ||
+              !lexicallyInside(path, canonicalRoot) ||
               ENVELOPE_UNSAFE.test(path)) throw new Error(COMMAND_DIAGNOSIS);
           if (!lstatSync(path).isFile()) throw new Error(COMMAND_DIAGNOSIS);
           const body = stripStartingFrontmatter(strictUtf8(path));

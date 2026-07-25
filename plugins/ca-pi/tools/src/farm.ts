@@ -1,12 +1,13 @@
 /** farm.ts - Pi preview routing to the one shared, built farm backend. */
 import { realpath, readdir, stat } from "node:fs/promises";
-import { isAbsolute, relative, resolve } from "node:path";
+import { resolve } from "node:path";
 
 import type {
   LifecycleAuthorization,
   ToolDefinitionPort,
   ToolExecutionContextPort,
 } from "./contracts.ts";
+import { lexicallyInside } from "./path-boundary.ts";
 import {
   createProcessTreeCleanup,
   processTreeSpawnOptions,
@@ -62,11 +63,6 @@ const LEGACY_TEST_AUTHORIZATION: LifecycleAuthorization = Object.freeze({
   isCurrent: () => true,
 });
 
-function contained(root: string, candidate: string): boolean {
-  const path = relative(root, candidate);
-  return path === "" || (!path.startsWith("..") && !isAbsolute(path));
-}
-
 function result(backend: string, terminal: FarmTerminal, additions: Partial<FarmResult> = {}): FarmResult {
   return Object.freeze({ label: "preview", terminal, backend, ...additions });
 }
@@ -94,7 +90,7 @@ async function resolveBackend(packageRoot: string): Promise<{
   if (canonicalPackage !== expectedPackage) throw new Error("package");
   const backendRoot = await realpath(resolve(checkoutRoot, "plugins", "ca", "tools"));
   const backend = await realpath(resolve(backendRoot, "farm.js"));
-  if (!contained(checkoutRoot, backend) || !contained(backendRoot, backend)) throw new Error("containment");
+  if (!lexicallyInside(backend, checkoutRoot) || !lexicallyInside(backend, backendRoot)) throw new Error("containment");
   const backendInfo = await stat(backend);
   if (!backendInfo.isFile()) throw new Error("file");
 
@@ -112,7 +108,7 @@ async function resolveBackend(packageRoot: string): Promise<{
 async function resolvePlan(projectRoot: string, planPath: string): Promise<{ projectRoot: string; planPath: string }> {
   const canonicalProject = await realpath(projectRoot);
   const canonicalPlan = await realpath(planPath);
-  if (!contained(canonicalProject, canonicalPlan) || !(await stat(canonicalPlan)).isFile()) throw new Error("plan");
+  if (!lexicallyInside(canonicalPlan, canonicalProject) || !(await stat(canonicalPlan)).isFile()) throw new Error("plan");
   return { projectRoot: canonicalProject, planPath: canonicalPlan };
 }
 

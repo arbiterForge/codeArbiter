@@ -2,7 +2,7 @@
 import { lstat, readFile, realpath } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { createRequire } from "node:module";
-import { delimiter, dirname, isAbsolute, relative, resolve } from "node:path";
+import { delimiter, dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { types as utilTypes } from "node:util";
 
@@ -49,6 +49,7 @@ import {
 } from "./tool-guard.ts";
 import type { EnforcementReadinessPort } from "./tool-guard.ts";
 import { collectPiDoctorInput, diagnosePi, formatPiDoctorReport, runPiWrapperSelfTest } from "./doctor.ts";
+import { lexicallyInside } from "./path-boundary.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { createDispatchTool } from "./dispatch.ts";
 import type { DispatchRequest, DispatchResult } from "./dispatch.ts";
@@ -576,11 +577,6 @@ export function createCodeArbiterPi(input: HostCompatibility) {
 
 const PI_TUI_DIAGNOSIS = "codeArbiter could not load Pi terminal width support; run /ca-doctor.";
 
-function inside(path: string, root: string): boolean {
-  const suffix = relative(root, path);
-  return suffix === "" || (!suffix.startsWith("..") && !isAbsolute(suffix));
-}
-
 export function createPiFooterMetricsLoader(
   runtime: Pick<ResolvedPiRuntime, "moduleEntry" | "packageRoot">,
 ): () => Promise<FooterTextMetrics> {
@@ -592,7 +588,7 @@ export function createPiFooterMetricsLoader(
       try {
         const runtimeRoot = await realpath(runtime.packageRoot);
         const moduleEntry = await realpath(runtime.moduleEntry);
-        if (!inside(moduleEntry, runtimeRoot)) throw new Error("runtime entry outside package");
+        if (!lexicallyInside(moduleEntry, runtimeRoot)) throw new Error("runtime entry outside package");
         const runtimeRequire = createRequire(moduleEntry);
         const resolvedEntry = runtimeRequire.resolve("@earendil-works/pi-tui");
         const unresolvedRoot = resolve(runtimeRoot, "node_modules", "@earendil-works", "pi-tui");
@@ -601,7 +597,7 @@ export function createPiFooterMetricsLoader(
           throw new Error("TUI package root is linked or non-directory");
         }
         const expectedRoot = await realpath(unresolvedRoot);
-        if (!inside(expectedRoot, runtimeRoot)) throw new Error("TUI package root outside runtime");
+        if (!lexicallyInside(expectedRoot, runtimeRoot)) throw new Error("TUI package root outside runtime");
         const [entryInfo, manifestInfo] = await Promise.all([
           lstat(resolvedEntry),
           lstat(resolve(expectedRoot, "package.json")),
@@ -611,7 +607,7 @@ export function createPiFooterMetricsLoader(
           throw new Error("runtime-owned TUI files are invalid");
         }
         const canonicalEntry = await realpath(resolvedEntry);
-        if (!inside(canonicalEntry, expectedRoot)) throw new Error("TUI entry outside owner package");
+        if (!lexicallyInside(canonicalEntry, expectedRoot)) throw new Error("TUI entry outside owner package");
         const manifest = JSON.parse(await readFile(resolve(expectedRoot, "package.json"), "utf8")) as { name?: unknown };
         if (manifest.name !== "@earendil-works/pi-tui") throw new Error("TUI package owner mismatch");
         const tuiModule = await import(pathToFileURL(canonicalEntry).href) as {

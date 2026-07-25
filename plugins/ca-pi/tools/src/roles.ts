@@ -1,6 +1,8 @@
 /** roles.ts - codeArbiter's validated generated Pi child role catalog. */
 import { readFile, realpath } from "node:fs/promises";
-import { isAbsolute, relative, resolve } from "node:path";
+import { isAbsolute, resolve } from "node:path";
+
+import { lexicallyInside } from "./path-boundary.ts";
 
 export type RoleClassification = "author" | "reviewer";
 
@@ -18,11 +20,6 @@ export function validRoleName(value: unknown): value is string {
   return typeof value === "string" && ROLE_NAME.test(value);
 }
 const ALLOWED_TOOLS = new Set(["read", "bash", "edit", "write"]);
-
-function inside(path: string, root: string): boolean {
-  const suffix = relative(root, path);
-  return suffix === "" || (!suffix.startsWith("..") && !isAbsolute(suffix));
-}
 
 function validRelativeResource(value: unknown, prefix: string): value is string {
   return typeof value === "string"
@@ -59,7 +56,7 @@ function parseRole(value: unknown): PiRole {
 export async function loadRoleCatalog(packageRoot: string): Promise<ReadonlyMap<string, PiRole>> {
   const canonicalRoot = await realpath(packageRoot);
   const catalogPath = await realpath(resolve(canonicalRoot, "generated", "roles.json"));
-  if (!inside(catalogPath, canonicalRoot)) throw new Error("Generated Pi role catalog escapes the package; run /ca-doctor.");
+  if (!lexicallyInside(catalogPath, canonicalRoot)) throw new Error("Generated Pi role catalog escapes the package; run /ca-doctor.");
   const parsed = JSON.parse(await readFile(catalogPath, "utf8")) as unknown;
   if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Generated Pi role catalog is invalid; run /ca-doctor.");
   const catalog = new Map<string, PiRole>();
