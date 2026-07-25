@@ -126,6 +126,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MUTATION_WARN_BELOW` | `0.5` | Score below this attaches a warning into Phase 3. |
 | `FARM_MUTATION_ESCALATE_BELOW` | `0.1` | Score at/below this (≥5 mutants) hard-escalates. |
 | `FARM_MUTATION_CMD` | _(unset)_ | Pluggable external mutation framework hook. |
+| `FARM_RUN_ID` | _(random)_ | Pin this run's id — also the name of its artifact directory (`.farm/runs/<run-id>/`). Must be 1–64 chars of `[A-Za-z0-9._-]`; anything else is refused at startup. |
 
 ## Per-worktree setup (dependency hook)
 
@@ -175,13 +176,29 @@ Normal use: `{{CMD:sprint}} --farm` — the skill handles model selection and di
 
 ## Report artifacts
 
-After a run, the farm writes to `{{PROJECT_DIR}}/.farm/`:
+Every run owns an artifact directory keyed by its run id — `{{PROJECT_DIR}}/.farm/runs/<run-id>/` — and
+that directory is the **durable receipt**. Two farm processes against one repository therefore cannot
+overwrite each other's evidence:
 - `farm-report.json` — structured results: per-task status, attempts, files written, worker token spend,
-  warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons.
+  warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons, and an
+  `artifacts` block stating whether the streaming rail was complete and which tasks' diff evidence is
+  unavailable.
 - `farm-report.md` — human-readable summary table.
+- `farm-results.jsonl` — this run's incremental settlement stream.
 - `diffs/<task-id>.patch` — the actual change each task produced, for audit.
+
+The historical top-level paths remain as a **latest** convenience pointer, republished from the run's
+own artifacts: `.farm/farm-report.json`, `.farm/farm-report.md`, `.farm/farm-results.jsonl`,
+`.farm/diffs/<task-id>.patch`. Under concurrency the pointer is last-writer-wins — always a complete
+artifact, never a truncated one, but attributable only via its `run_id`. Reconcile against the run
+directory when it matters. Also in `.farm/`:
 - `canary-report.json` — model-probe ranking (when `--canary` was run).
 - `model-cache.json` — last selected model + timestamp + canary pass-rate.
+
+Every report write is atomic (same-directory temp file, fsync, rename), so a crash mid-publication
+leaves the previous complete artifact rather than a truncated one. If the authoritative report cannot
+be published at all, the run **exits 3** and suppresses the success `Report:` breadcrumb — a receipt
+failure is reported distinctly from a task failure (exit 2), never as success.
 
 Escalated tasks leave their worktrees at `.farm/worktrees/<task-id>/` for inspection.
 

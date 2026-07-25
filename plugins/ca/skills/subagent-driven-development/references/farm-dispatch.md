@@ -51,7 +51,22 @@ enforces gates and a zero-token anti-gaming guard, and writes to `${CLAUDE_PROJE
   each task settles (drives completion-order consumption — see Step 2.6)
 - `diffs/<task-id>.patch` — the actual change per task, for audit
 
-Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run was aborted.
+Each of those is published twice: once under the run's own artifact directory
+`${CLAUDE_PROJECT_DIR}/.farm/runs/<run-id>/` (the durable, attributable receipt — concurrent runs never
+overwrite each other) and once at the top-level `.farm/` path above as a **latest** convenience pointer.
+The final summary line prints both. When two runs may share a repository, reconcile against the run
+directory; the pointer is last-writer-wins (always complete, never truncated).
+
+Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run was aborted;
+**exit code 3 = the run's authoritative report could not be published.** Exit 3 is a RECEIPT failure,
+not a task failure — the tasks may all have been green — and it means there is no durable record to
+reconcile against. Treat the run as unverified and re-dispatch; do not accept tasks off a run that
+exited 3.
+
+`farm-report.json` also carries an `artifacts` block: `artifacts.stream.complete` is `false` when a
+streaming-rail write failed (so a short `.jsonl` is not mistaken for a short run), and
+`artifacts.diffs.unavailable[]` names every task whose patch could not be written, with the reason.
+Never assume a `diffs/<task-id>.patch` exists for a task listed there.
 
 ## Step 2.5 — Circuit-breaker abort
 

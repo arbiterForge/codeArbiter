@@ -34,7 +34,7 @@
  * model in FARM_CANDIDATE_MODELS and reports a measured pass-rate ranking, so
  * model selection is objective rather than web hearsay. No merge, no mutation.
  */
-import { readFile, writeFile, appendFile, mkdir, rm, stat } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, rm, stat, rename, open } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
@@ -110,6 +110,10 @@ const ENV = {
   integration: process.env.FARM_INTEGRATION_BRANCH ?? "farm/integration",
   worktreeRoot: process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees",
   reportDir: process.env.FARM_REPORT_DIR ?? ".farm",
+  // #397: an orchestrator may PIN this run's id, which is also the name of the
+  // run-scoped artifact directory (`${reportDir}/runs/<runId>/`). Absent → a
+  // fresh random id per invocation (mintRunId).
+  runId: process.env.FARM_RUN_ID ?? null,
   // Per-request hard timeout so a hung endpoint can't deadlock a worker slot.
   requestTimeoutMs: numEnv("FARM_REQUEST_TIMEOUT_MS", 120_000, { min: 1 }),
   // Per-candidate wall-clock cap for the #93 entitlement pre-screen, so one
@@ -992,6 +996,105 @@ export function mintRunId(): string {
   return randomBytes(3).toString("hex");
 }
 
+const msgOf = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
+// #397: a caller-supplied FARM_RUN_ID becomes a DIRECTORY NAME under
+// `${reportDir}/runs/`, so it has to be exactly one safe path segment — no
+// separator, no traversal, no dot-only id. Fail closed and loudly at startup
+// rather than silently substituting a random id (which would hide a
+// misconfigured orchestrator) or letting `../` place artifacts outside the
+// report dir.
+export const SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,64}$/;
+export function assertSafeRunId(id: string): string {
+  if (!SAFE_RUN_ID.test(id) || id === "." || id === "..")
+    throw new Error(
+      `FARM_RUN_ID must be 1-64 characters of [A-Za-z0-9._-] and not "." or ".." (got ${JSON.stringify(id)})`,
+    );
+  return id;
+}
+
+// #397: every run owns a directory. The run dir holds this run's DURABLE
+// receipts — stream, per-task diffs, JSON + Markdown report — written by this
+// process alone, so two farm invocations against one repository can no longer
+// erase each other's evidence. The historical top-level `.farm/farm-report.*`
+// and `.farm/farm-results.jsonl` paths are retained as a "latest" convenience
+// pointer for the documented consumer contract; under concurrency the pointer
+// is last-writer-wins (but always a COMPLETE artifact — see atomicWriteFile),
+// while the run dirs stay authoritative and attributable.
+export function runArtifactDir(runId: string): string {
+  return path.join(ENV.reportDir, "runs", runId);
+}
+
+// Windows can transiently refuse a replace-rename with EPERM/EACCES/EBUSY while
+// another process (or a virus scanner) still holds the destination open — the
+// exact situation two concurrent farm runs publishing a shared "latest" pointer
+// create. A short bounded retry keeps that from spuriously failing a run.
+async function renameWithRetry(from: string, to: string, attempts = 4): Promise<void> {
+  for (let i = 0; ; i++) {
+    try {
+      await rename(from, to);
+      return;
+    } catch (e) {
+      const code = (e as NodeJS.ErrnoException).code ?? "";
+      if (i >= attempts - 1 || !["EPERM", "EACCES", "EBUSY"].includes(code)) throw e;
+      await new Promise((r) => setTimeout(r, 15 * (i + 1)));
+    }
+  }
+}
+
+// #397: publish-or-preserve. A plain writeFile() TRUNCATES the destination
+// before it writes, so a crash — or a second farm process — can leave a
+// half-written farm-report.json where a complete one used to be, destroying the
+// restart evidence exactly when it is needed. Write the whole payload to a
+// same-directory temp file, fsync it (durability is claimed for these receipts:
+// they are the recovery record), then rename over the destination. A rename
+// within a directory is atomic, so a reader sees either the previous complete
+// artifact or the new complete artifact — never a truncated one. On failure the
+// temp file is removed and the destination is left exactly as it was.
+export async function atomicWriteFile(dest: string, data: string): Promise<void> {
+  const tmp = path.join(
+    path.dirname(dest),
+    `.${path.basename(dest)}.${process.pid}-${randomBytes(4).toString("hex")}.tmp`,
+  );
+  const fh = await open(tmp, "w");
+  try {
+    await fh.writeFile(data, "utf8");
+    await fh.sync();
+  } finally {
+    await fh.close();
+  }
+  try {
+    await renameWithRetry(tmp, dest);
+  } catch (e) {
+    await rm(tmp, { force: true }).catch(() => {});
+    throw e;
+  }
+}
+
+// #387: the artifacts a run publishes are of two kinds. The JSON/Markdown
+// report is AUTHORITATIVE — failing to publish it fails the run. The streaming
+// rail and the per-task diffs are best-effort EVIDENCE — a failure there must
+// not sink an otherwise good run, but it can no longer be swallowed silently
+// either: it is recorded here and surfaced in the published report so a
+// consumer never infers completeness from a silently short file or follows a
+// patch link that was never written.
+export type RunArtifactHealth = {
+  stream: { errors: string[] };
+  diffs: { unavailable: { id: string; reason: string }[]; latestMirrorErrors: string[] };
+};
+
+export function newRunArtifactHealth(): RunArtifactHealth {
+  return { stream: { errors: [] }, diffs: { unavailable: [], latestMirrorErrors: [] } };
+}
+
+// Bound the recorded error list — a dead stream path fails once per settled
+// task, and the report should carry a diagnosis, not N copies of it.
+const MAX_RECORDED_ARTIFACT_ERRORS = 10;
+function noteArtifactError(bucket: string[], message: string) {
+  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(message);
+  else if (bucket.length === MAX_RECORDED_ARTIFACT_ERRORS) bucket.push("(further errors suppressed)");
+}
+
 // Integration merges happen inside a dedicated worktree — never the main
 // checkout. mergeChain serializes access to that worktree.
 let mergeChain: Promise<unknown> = Promise.resolve();
@@ -1789,29 +1892,65 @@ async function main() {
 
   // observability-003 (T-07c): one run-id for this whole invocation, threaded
   // into every farm-results.jsonl line and the farm-report.json header.
-  const runId = mintRunId();
+  // #397: the run-id is now also an OWNERSHIP BOUNDARY — every artifact this
+  // run publishes lives under `${reportDir}/runs/<runId>/`, which is what makes
+  // two farm processes on one repository non-destructive to each other.
+  let runId: string;
+  try {
+    runId = ENV.runId === null ? mintRunId() : assertSafeRunId(ENV.runId);
+  } catch (e) {
+    console.error(`Error: ${msgOf(e)}`);
+    return process.exit(1);
+  }
+  const runDir = runArtifactDir(runId);
 
   await mkdir(ENV.worktreeRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
+  await mkdir(runDir, { recursive: true });
+
+  const health = newRunArtifactHealth();
 
   // Streaming rail (AC-08 / D7): the incremental, append-only record of settled
-  // tasks, consumed in completion order. Truncate/initialize it at run start so
-  // a re-run does not accumulate stale lines (the "safe to run twice" invariant).
-  // The authoritative final summary remains farm-report.json (written in the
-  // finally, even on abort); on abort the consumer reconciles against it.
-  const resultsStream = path.join(ENV.reportDir, "farm-results.jsonl");
-  await writeFile(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
+  // tasks, consumed in completion order. The authoritative final summary remains
+  // farm-report.json (written in the finally, even on abort); on abort the
+  // consumer reconciles against it.
+  //
+  // #397: the rail this run appends to is run-scoped and therefore exclusively
+  // owned — no other farm process truncates it or interleaves its lines. The
+  // documented `${reportDir}/farm-results.jsonl` path is kept as the "latest"
+  // convenience pointer and is REPUBLISHED ATOMICALLY (full content, temp +
+  // rename) after every settlement, so a consumer of that path always reads a
+  // complete, parseable file. It is initialized empty at run start, preserving
+  // the "safe to run twice" invariant (a re-run never shows stale lines).
+  const resultsStream = path.join(runDir, "farm-results.jsonl");
+  const latestStream = path.join(ENV.reportDir, "farm-results.jsonl");
+  const streamLines: string[] = [];
+  const noteStreamFailure = (what: string, e: unknown) => {
+    const m = `${what}: ${msgOf(e)}`;
+    console.error(`results stream ${m}`);
+    noteArtifactError(health.stream.errors, m);
+  };
+  await writeFile(resultsStream, "").catch((e) => noteStreamFailure("run-scoped init failed", e));
+  await atomicWriteFile(latestStream, "").catch((e) => noteStreamFailure("latest pointer init failed", e));
 
   const done = new Map<string, Result>();
   const blocked: { id: string; reason: string }[] = [];
   let aborted = false;
+  // #387: publication of the authoritative receipt is part of the run's
+  // outcome, not a console breadcrumb. Captured here, consumed by the exit-code
+  // derivation below.
+  let publishError: unknown = null;
 
   try {
     const branchResult = await git(["branch", "-f", ENV.integration, ENV.base]);
     if (branchResult.code !== 0)
       throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
 
-    integrationWorktree = path.resolve(ENV.reportDir, "integration-wt");
+    // #397: the integration worktree is per-run scratch that lived at a shared,
+    // run-agnostic path — a second farm process force-removed it out from under
+    // the first mid-merge. Scope it to the run directory alongside the run's
+    // receipts.
+    integrationWorktree = path.resolve(runDir, "integration-wt");
     await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
     await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {});
     const wtResult = await git(["worktree", "add", integrationWorktree, ENV.integration]);
@@ -1924,9 +2063,17 @@ async function main() {
       done.set(id, r);
       // Streaming rail (AC-08 / D7): append this settled task as one JSONL line
       // the moment it settles, so a pipelined consumer can act in completion
-      // order. Resilient by design — mirror the report-write .catch so a stream
-      // failure logs but never crashes the run (the report stays authoritative).
-      await appendFile(resultsStream, JSON.stringify(r) + "\n").catch((e) => console.error("results stream append failed:", e));
+      // order. Resilient by design — a stream failure never crashes the run (the
+      // report stays authoritative) — but #387: it is no longer MUTE either. Each
+      // failure is recorded and republished in farm-report.json, so a consumer
+      // can tell "the rail is short because the run is short" from "the rail is
+      // short because writes failed".
+      const line = JSON.stringify(r) + "\n";
+      streamLines.push(line);
+      await appendFile(resultsStream, line).catch((e) => noteStreamFailure("run-scoped append failed", e));
+      await atomicWriteFile(latestStream, streamLines.join("")).catch((e) =>
+        noteStreamFailure("latest pointer publish failed", e),
+      );
       if (r.status === "escalate") escalated.add(id);
     }
 
@@ -1937,7 +2084,17 @@ async function main() {
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
   } finally {
-    await writeReport(plan, [...done.values()], blocked, aborted, runId).catch((e) => console.error("report write failed:", e));
+    // #387: the report is still written from the `finally` (so an abort or a
+    // mid-run throw still produces a receipt), but its failure is no longer
+    // absorbed by a console.error. It is captured and turned into a distinct
+    // non-zero exit below. The catch is kept here only so a publication failure
+    // cannot MASK an in-flight exception propagating out of the try.
+    try {
+      await writeReport(plan, [...done.values()], blocked, aborted, runId, health);
+    } catch (e) {
+      publishError = e;
+      console.error("report publication failed:", e);
+    }
     // reliability-004 (T-07a): only remove the integration worktree if it was
     // actually assigned. An early throw (e.g. the integration branch could not
     // be created) leaves `integrationWorktree` undefined; passing undefined as an
@@ -1953,40 +2110,125 @@ async function main() {
   const green = results.filter((r) => r.status === "green").length;
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
-  const exitCode = esc || blocked.length || aborted ? 2 : 0;
+  // #387: two independent outcomes, two distinguishable exit codes.
+  //   0 — every task settled green AND the receipt was published.
+  //   2 — the RUN did not come out clean (escalation, blocked, breaker abort);
+  //       the receipt IS on disk and can be reconciled.
+  //   3 — the RECEIPT could not be published. Whatever the tasks did, this run
+  //       left no durable, authoritative record, so it cannot be reconciled or
+  //       audited — that is its own failure mode and must not be reported as a
+  //       success (nor conflated with "tasks failed").
+  const runExitCode = esc || blocked.length || aborted ? 2 : 0;
+  const exitCode = publishError ? 3 : runExitCode;
   const summary = [
     aborted ? `\nABORTED by circuit breaker — escalation rate exceeded ${ENV.abortEscalationRate}. The model may not be capable of this plan; consider the premium path or a different FARM_MODEL.` : ``,
     `\nDone. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
-    `Report: ${path.join(ENV.reportDir, "farm-report.md")}`,
+    `Run: ${runId}  (artifacts: ${runDir})`,
+    // The success breadcrumb is SUPPRESSED when publication failed — pointing an
+    // operator at a farm-report.md that is not there is the defect.
+    publishError
+      ? [
+          `\nRECEIPT PUBLICATION FAILED — run ${runId} could not publish its authoritative report: ${msgOf(publishError)}`,
+          `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but there is no durable receipt for this run,`,
+          `so it cannot be reconciled or audited. Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`,
+        ].join("\n")
+      : `Report: ${path.join(runDir, "farm-report.md")}  (latest: ${path.join(ENV.reportDir, "farm-report.md")})`,
     "",
   ].join("\n");
   await new Promise<void>((resolve) => process.stdout.write(summary, () => resolve()));
   process.exit(exitCode);
 }
 
-async function writeReport(plan: Plan, results: Result[], blocked: { id: string; reason: string }[], aborted: boolean, runId?: string) {
-  // per-task diff artifacts for audit
-  await mkdir(path.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {});
+async function writeReport(
+  plan: Plan,
+  results: Result[],
+  blocked: { id: string; reason: string }[],
+  aborted: boolean,
+  runId: string,
+  health: RunArtifactHealth,
+) {
+  const runDir = runArtifactDir(runId);
+  const diffsDir = path.join(runDir, "diffs");
+  const latestDiffsDir = path.join(ENV.reportDir, "diffs");
+  const unavailable = health.diffs.unavailable;
+  // Only tasks whose patch actually landed get a link below (#387: the report
+  // previously linked patch paths that the swallowed writes never created).
+  const patchPath = new Map<string, string>();
+
+  // Per-task diff artifacts for audit. Best-effort evidence: a failure here
+  // does not sink the run, but it is recorded per task instead of being
+  // discarded by a bare `.catch(() => {})`.
+  let diffsDirError: string | null = null;
+  await mkdir(diffsDir, { recursive: true }).catch((e) => {
+    diffsDirError = msgOf(e);
+  });
+  await mkdir(latestDiffsDir, { recursive: true }).catch((e) =>
+    noteArtifactError(health.diffs.latestMirrorErrors, `mkdir: ${msgOf(e)}`),
+  );
+
   for (const r of results) {
+    if (diffsDirError !== null) {
+      unavailable.push({ id: r.id, reason: `diffs directory unavailable: ${diffsDirError}` });
+      continue;
+    }
     const d = await git(["diff", `${ENV.base}...${r.branch}`]);
-    if (d.code === 0 && d.out.trim())
-      await writeFile(path.join(ENV.reportDir, "diffs", `${r.id}.patch`), d.out).catch(() => {});
+    if (d.code !== 0) {
+      unavailable.push({ id: r.id, reason: `git diff failed: ${d.out.trim().split("\n")[0] ?? ""}`.slice(0, 300) });
+      continue;
+    }
+    // An empty diff is a legitimate outcome (nothing was written), not missing
+    // evidence — it produces no patch and no "unavailable" marker.
+    if (!d.out.trim()) continue;
+    const dest = path.join(diffsDir, `${r.id}.patch`);
+    try {
+      await atomicWriteFile(dest, d.out);
+      patchPath.set(r.id, dest);
+    } catch (e) {
+      unavailable.push({ id: r.id, reason: `patch write failed: ${msgOf(e)}` });
+      continue;
+    }
+    await atomicWriteFile(path.join(latestDiffsDir, `${r.id}.patch`), d.out).catch((e) =>
+      noteArtifactError(health.diffs.latestMirrorErrors, `${r.id}: ${msgOf(e)}`),
+    );
   }
 
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
 
-  await writeFile(
-    path.join(ENV.reportDir, "farm-report.json"),
-    JSON.stringify({ run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: new Date().toISOString() }, null, 2),
+  // #387: the report carries its own integrity statement, so a consumer never
+  // has to guess whether a short stream or a missing patch is real or a
+  // swallowed write failure.
+  const streamComplete = health.stream.errors.length === 0;
+  const artifacts = {
+    run_dir: runDir,
+    stream: {
+      path: path.join(runDir, "farm-results.jsonl"),
+      latest: path.join(ENV.reportDir, "farm-results.jsonl"),
+      complete: streamComplete,
+      errors: health.stream.errors,
+    },
+    diffs: {
+      dir: diffsDir,
+      latest_dir: latestDiffsDir,
+      unavailable,
+      latest_mirror_errors: health.diffs.latestMirrorErrors,
+    },
+  };
+
+  const json = JSON.stringify(
+    { run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, artifacts, ts: new Date().toISOString() },
+    null,
+    2,
   );
 
   const md = [
     `# Farm report — ${plan.meta.name}`,
     ``,
     aborted ? `> **ABORTED by circuit breaker** — escalation rate exceeded threshold.\n` : ``,
+    streamComplete ? `` : `> **Streaming rail incomplete** — ${health.stream.errors.length} write failure(s) on \`farm-results.jsonl\`; this report is authoritative for settled tasks.\n`,
+    `Run: \`${runId}\` — artifacts under \`${runDir}\``,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     ``,
     `| task | status | attempts | files | mut | branch | note |`,
@@ -1999,10 +2241,26 @@ async function writeReport(plan: Plan, results: Result[], blocked: { id: string;
       .filter((r) => r.status === "escalate")
       .map((r) => `- **${r.id}** — worktree \`${r.worktree}\`, branch \`${r.branch}\`. ${r.note ?? ""}`),
     ``,
+    `## Diff evidence`,
+    ...(unavailable.length
+      ? unavailable.map((u) => `- **${u.id}** — diff evidence unavailable: ${u.reason}`)
+      : [`Every settled task with a non-empty diff has a patch under \`${diffsDir}\`.`]),
+    ``,
     `## Warnings — review during spec-compliance`,
-    ...results.filter((r) => r.warning).map((r) => `- **${r.id}** — ${r.warning} (diff: \`${path.join(ENV.reportDir, "diffs", r.id + ".patch")}\`)`),
+    ...results.filter((r) => r.warning).map((r) => {
+      const p = patchPath.get(r.id);
+      return `- **${r.id}** — ${r.warning} (${p ? `diff: \`${p}\`` : "diff evidence unavailable"})`;
+    }),
   ].join("\n");
-  await writeFile(path.join(ENV.reportDir, "farm-report.md"), md);
+
+  // #387/#397: the AUTHORITATIVE publication. Run-scoped first (the durable,
+  // attributable receipt), then the shared "latest" convenience pointers. Every
+  // write is atomic (temp + fsync + rename), and any failure THROWS — main()
+  // turns it into exit 3 instead of a console line behind a green summary.
+  await atomicWriteFile(path.join(runDir, "farm-report.json"), json);
+  await atomicWriteFile(path.join(runDir, "farm-report.md"), md);
+  await atomicWriteFile(path.join(ENV.reportDir, "farm-report.json"), json);
+  await atomicWriteFile(path.join(ENV.reportDir, "farm-report.md"), md);
 }
 
 // Only execute when this file is the direct entry point (not when imported by

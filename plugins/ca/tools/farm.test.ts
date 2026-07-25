@@ -1332,3 +1332,263 @@ describe("farm.ts smoke tests", () => {
     expect(result.out).toContain("FARM_API_KEY is not set");
   });
 });
+
+// ---------------------------------------------------------------------------
+// #397 — run-scoped artifact isolation + atomic publication.
+// #387 — a failure to publish the authoritative receipt fails the run.
+//
+// These exercise the full dispatcher through a subprocess because the defects
+// live in main()'s artifact lifecycle (stream init/append, diff writes, final
+// report publication, exit-code derivation), not in a pure helper.
+// ---------------------------------------------------------------------------
+describe("farm artifact publication (#397 / #387)", () => {
+  let tmpDir: string;
+  let mockServer: Server;
+  let port: number;
+
+  // Every task in these plans owns exactly one `src/<id>.ts`; the worker echoes
+  // back whichever in-scope file the prompt names.
+  function greenHandler(): MockHandler {
+    return (body) => {
+      const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
+      const m = /\bsrc\/([A-Za-z0-9_-]+)\.ts\b/.exec(content);
+      const file = m ? `src/${m[1]}.ts` : "src/fallback.ts";
+      return ["```typescript", `// path: ${file}`, "export const x = 1;", "```"].join("\n");
+    };
+  }
+
+  function planFor(name: string, ids: string[], p: number) {
+    return {
+      meta: { name, model: "test-model", apiBaseUrl: `http://127.0.0.1:${p}` },
+      tasks: ids.map((id) => ({
+        id,
+        description: `Write src/${id}.ts`,
+        deps: [] as string[],
+        filesInScope: [`src/${id}.ts`],
+        test: { path: `src/${id}.spec.ts` },
+        gate: { commands: ["node -p 0"] },
+      })),
+    };
+  }
+
+  function writePlan(file: string, plan: unknown) {
+    const p = join(tmpDir, file);
+    writeFileSync(p, JSON.stringify(plan));
+    return p;
+  }
+
+  function jsonl(file: string) {
+    return readFileSync(file, "utf8")
+      .split("\n")
+      .filter((l) => l.trim().length > 0)
+      .map((l) => JSON.parse(l) as { id: string; runId?: string });
+  }
+
+  beforeEach(async () => {
+    tmpDir = join(tmpdir(), `farm-artifacts-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    createTempRepo(tmpDir);
+  });
+
+  afterEach(() => {
+    mockServer?.close();
+    rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  // -------------------------------------------------------------------------
+  // #397
+  // -------------------------------------------------------------------------
+  it("#397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("scoped", ["task-a", "task-b"], port));
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_RUN_ID: "runone",
+    });
+    expect(result.code).toBe(0);
+
+    const runDir = join(tmpDir, ".farm/runs/runone");
+    const report = JSON.parse(readFileSync(join(runDir, "farm-report.json"), "utf8"));
+    expect(report.run_id).toBe("runone");
+    expect(report.results.map((r: { id: string }) => r.id).sort()).toEqual(["task-a", "task-b"]);
+    expect(existsSync(join(runDir, "farm-report.md"))).toBe(true);
+    expect(jsonl(join(runDir, "farm-results.jsonl"))).toHaveLength(2);
+    expect(existsSync(join(runDir, "diffs/task-a.patch"))).toBe(true);
+    expect(existsSync(join(runDir, "diffs/task-b.patch"))).toBe(true);
+
+    // The documented "latest" convenience paths still resolve to this run.
+    const latest = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(latest.run_id).toBe("runone");
+    expect(existsSync(join(tmpDir, ".farm/farm-report.md"))).toBe(true);
+    expect(jsonl(join(tmpDir, ".farm/farm-results.jsonl"))).toHaveLength(2);
+  });
+
+  it("#397: two concurrent farm processes on one repo both keep complete, independently parseable receipts", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planA = writePlan("plan-a.json", planFor("run-a", ["alpha1", "alpha2"], port));
+    const planB = writePlan("plan-b.json", planFor("run-b", ["bravo1", "bravo2"], port));
+
+    // Same repo, same shared `.farm` report dir, launched together. The git-side
+    // scratch (integration branch, worktree root) is separated per process so
+    // this test isolates the ARTIFACT contract rather than git ref contention.
+    const common = { FARM_API_KEY: "test-key", FARM_CONCURRENCY: "2" };
+    const [a, b] = await Promise.all([
+      runFarm(tmpDir, planA, {
+        ...common,
+        FARM_RUN_ID: "runalpha",
+        FARM_WORKTREE_ROOT: ".farm/wt-alpha",
+        FARM_INTEGRATION_BRANCH: "farm/integration-alpha",
+      }),
+      runFarm(tmpDir, planB, {
+        ...common,
+        FARM_RUN_ID: "runbravo",
+        FARM_WORKTREE_ROOT: ".farm/wt-bravo",
+        FARM_INTEGRATION_BRANCH: "farm/integration-bravo",
+      }),
+    ]);
+
+    expect([a.code, b.code], `${a.out}\n---\n${b.out}`).toEqual([0, 0]);
+
+    for (const [runId, ids] of [
+      ["runalpha", ["alpha1", "alpha2"]],
+      ["runbravo", ["bravo1", "bravo2"]],
+    ] as const) {
+      const runDir = join(tmpDir, ".farm/runs", runId);
+      const report = JSON.parse(readFileSync(join(runDir, "farm-report.json"), "utf8"));
+      expect(report.run_id).toBe(runId);
+      expect(report.results.map((r: { id: string }) => r.id).sort()).toEqual([...ids]);
+      expect(report.results.every((r: { status: string }) => r.status === "green")).toBe(true);
+
+      // The streaming rail is this run's alone — no cross-run lines, no
+      // truncation by the sibling process.
+      const lines = jsonl(join(runDir, "farm-results.jsonl"));
+      expect(lines.map((l) => l.id).sort()).toEqual([...ids]);
+      expect(lines.every((l) => l.runId === runId)).toBe(true);
+
+      // Markdown + per-task diff evidence survive for both runs.
+      expect(readFileSync(join(runDir, "farm-report.md"), "utf8")).toContain(ids[0]);
+      for (const id of ids) expect(existsSync(join(runDir, "diffs", `${id}.patch`))).toBe(true);
+    }
+  });
+
+  it("#397: a failed report publication leaves the previous run's complete report intact — never a truncated one", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("prior", ["task-a", "task-b"], port));
+
+    const first = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "goodrun" });
+    expect(first.code).toBe(0);
+    const before = readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8");
+    expect(JSON.parse(before).run_id).toBe("goodrun");
+
+    // Make the second run's authoritative JSON unwritable (a directory sits at
+    // the destination path) so publication fails mid-run.
+    mkdirSync(join(tmpDir, ".farm/runs/badrun/farm-report.json"), { recursive: true });
+    const second = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "badrun" });
+    expect(second.code).not.toBe(0);
+
+    const after = readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8");
+    expect(() => JSON.parse(after)).not.toThrow();
+    expect(JSON.parse(after).run_id).toBe("goodrun");
+    expect(after).toBe(before);
+  });
+
+  it("#397: rejects a caller-supplied run id that is not a safe single path segment", async () => {
+    const planPath = writePlan("plan.json", planFor("bad-id", ["task-a"], 9));
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_RUN_ID: "../escape",
+    });
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("FARM_RUN_ID");
+  });
+
+  // -------------------------------------------------------------------------
+  // #387
+  // -------------------------------------------------------------------------
+  it("#387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("json-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/jsonbad/farm-report.json"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "jsonbad" });
+
+    // Every task went green — the RUN succeeded, the RECEIPT did not. Those are
+    // distinguished in both the exit code and the message.
+    expect(result.out).toContain("green=2");
+    expect(result.code).toBe(3);
+    expect(result.out).toMatch(/receipt/i);
+    expect(result.out).not.toMatch(/^Report: /m);
+  });
+
+  it("#387: a failure to publish farm-report.md also fails the run", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("md-fail", ["task-a"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/mdbad/farm-report.md"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdbad" });
+    expect(result.code).toBe(3);
+    expect(result.out).toMatch(/receipt/i);
+  });
+
+  it("#387: a broken streaming rail is recorded as incomplete in the published report", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("stream-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/streambad/farm-results.jsonl"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "streambad" });
+    // The rail is best-effort — the run still settles on task outcome...
+    expect(result.code).toBe(0);
+    // ...but the authoritative report says so, instead of leaving a consumer to
+    // infer completeness from a silently short file.
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/streambad/farm-report.json"), "utf8"));
+    expect(report.artifacts.stream.complete).toBe(false);
+    expect(report.artifacts.stream.errors.length).toBeGreaterThan(0);
+    expect(readFileSync(join(tmpDir, ".farm/runs/streambad/farm-report.md"), "utf8")).toMatch(
+      /streaming rail incomplete/i,
+    );
+  });
+
+  it("#387: a broken latest streaming pointer is also recorded as incomplete", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("latest-stream-fail", ["task-a"], port));
+    mkdirSync(join(tmpDir, ".farm/farm-results.jsonl"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "lstream" });
+    expect(result.code).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/lstream/farm-report.json"), "utf8"));
+    expect(report.artifacts.stream.complete).toBe(false);
+    // The run-scoped rail itself is fine — only the shared pointer failed.
+    expect(jsonl(join(tmpDir, ".farm/runs/lstream/farm-results.jsonl"))).toHaveLength(1);
+  });
+
+  it("#387: an unusable diffs directory marks every task's diff evidence unavailable", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("diffdir-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/diffdirbad"), { recursive: true });
+    // A regular FILE where the diffs directory belongs.
+    writeFileSync(join(tmpDir, ".farm/runs/diffdirbad/diffs"), "not a directory");
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "diffdirbad" });
+    expect(result.code).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/diffdirbad/farm-report.json"), "utf8"));
+    expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id).sort()).toEqual([
+      "task-a",
+      "task-b",
+    ]);
+    expect(readFileSync(join(tmpDir, ".farm/runs/diffdirbad/farm-report.md"), "utf8")).toMatch(
+      /diff evidence unavailable/i,
+    );
+  });
+
+  it("#387: a single failed patch write marks only that task's diff evidence unavailable", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("patch-fail", ["task-a", "task-b"], port));
+    mkdirSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-a.patch"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "patchbad" });
+    expect(result.code).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/patchbad/farm-report.json"), "utf8"));
+    expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id)).toEqual(["task-a"]);
+    expect(existsSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-b.patch"))).toBe(true);
+  });
+});

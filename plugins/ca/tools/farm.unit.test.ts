@@ -6,9 +6,9 @@ import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink } from "node:fs/promises";
+import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { scrubbedEnv } from "./exec.ts";
@@ -2202,5 +2202,59 @@ describe("assertContainedWorktree — no path escapes the root (#163)", () => {
       /strictly inside/,
     );
     expect(() => assertContainedWorktree("/etc")).toThrow(/strictly inside/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #397 — atomicWriteFile is the publication primitive: a reader of the
+// destination path only ever sees a COMPLETE artifact, and a failed
+// publication leaves the prior artifact untouched with no temp residue.
+// ---------------------------------------------------------------------------
+describe("atomicWriteFile — publish-or-preserve (#397)", () => {
+  it("writes the full payload to the destination", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-atomic-"));
+    const dest = path.join(dir, "report.json");
+    await atomicWriteFile(dest, '{"a":1}');
+    expect(await fsReadFile(dest, "utf8")).toBe('{"a":1}');
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  it("leaves no temporary residue behind on success", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-atomic-"));
+    await atomicWriteFile(path.join(dir, "report.json"), "x".repeat(4096));
+    expect(await fsReaddir(dir)).toEqual(["report.json"]);
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  it("preserves the prior complete artifact and cleans up when publication fails", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-atomic-"));
+    const dest = path.join(dir, "report.json");
+    await fsWriteFile(dest, '{"prior":true}');
+    // A directory at the destination makes the rename fail — the stand-in for
+    // any mid-publication failure.
+    const blocked = path.join(dir, "blocked");
+    await fsMkdir(blocked, { recursive: true });
+    await expect(atomicWriteFile(blocked, "new")).rejects.toThrow();
+    // The unrelated prior artifact is untouched and still parseable...
+    expect(JSON.parse(await fsReadFile(dest, "utf8"))).toEqual({ prior: true });
+    // ...and the aborted write left no partial temp file lying around.
+    expect((await fsReaddir(dir)).sort()).toEqual(["blocked", "report.json"]);
+    await fsRm(dir, { recursive: true, force: true });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #397 — a caller-supplied run id becomes a directory name, so it must be a
+// single safe path segment.
+// ---------------------------------------------------------------------------
+describe("assertSafeRunId — run id is a path segment (#397)", () => {
+  it("accepts a minted-shaped id and ordinary slugs", () => {
+    expect(assertSafeRunId("a1b2c3")).toBe("a1b2c3");
+    expect(assertSafeRunId("nightly_2026-07-24.1")).toBe("nightly_2026-07-24.1");
+  });
+
+  it("rejects traversal, separators, dot ids and empty/oversized ids", () => {
+    for (const bad of ["..", ".", "../escape", "a/b", "a\\b", "", "x".repeat(65), "a b"])
+      expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
   });
 });

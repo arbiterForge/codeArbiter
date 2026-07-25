@@ -46,6 +46,19 @@ predate the plugin rewrite and are grouped by date.
   no longer inflate the context-benefit decision or arm the cold-cache nudge.
 - Prune hooks now ignore and repair malformed per-session state instead of
   allowing invalid legacy values to escape fail-open handling.
+- Farm runs now own their receipts. Every run publishes its stream, per-task
+  diffs, and JSON/Markdown report under `.farm/runs/<run-id>/`, so two farm
+  processes against one repository can no longer erase each other's evidence;
+  the familiar top-level `.farm/` paths remain as a latest pointer. Every report
+  write is atomic (same-directory temp file, fsync, rename), so a crash
+  mid-publication leaves the previous complete artifact instead of truncated
+  JSON. `FARM_RUN_ID` pins a run's id and artifact directory.
+- A farm run that cannot publish its authoritative report now fails with a
+  dedicated exit code 3 and suppresses the success `Report:` breadcrumb,
+  instead of exiting 0 and pointing operators at a file that was never
+  written. Streaming-rail and per-task diff write failures are no longer
+  swallowed: the published report records the rail as incomplete and names
+  every task whose diff evidence is unavailable.
 
 ## [2.9.1] — 2026-07-20
 

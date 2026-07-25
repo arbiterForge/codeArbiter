@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm, rename, open as open2 } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import path3 from "node:path";
@@ -441,6 +441,10 @@ var ENV = {
   integration: process.env.FARM_INTEGRATION_BRANCH ?? "farm/integration",
   worktreeRoot: process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees",
   reportDir: process.env.FARM_REPORT_DIR ?? ".farm",
+  // #397: an orchestrator may PIN this run's id, which is also the name of the
+  // run-scoped artifact directory (`${reportDir}/runs/<runId>/`). Absent → a
+  // fresh random id per invocation (mintRunId).
+  runId: process.env.FARM_RUN_ID ?? null,
   // Per-request hard timeout so a hung endpoint can't deadlock a worker slot.
   requestTimeoutMs: numEnv("FARM_REQUEST_TIMEOUT_MS", 12e4, { min: 1 }),
   // Per-candidate wall-clock cap for the #93 entitlement pre-screen, so one
@@ -685,12 +689,12 @@ function extractFileBlocks(content) {
   const blocks = [];
   let i = 0;
   while (i < lines.length) {
-    const open2 = lines[i].match(/^\s*```(.*)$/);
-    if (!open2) {
+    const open3 = lines[i].match(/^\s*```(.*)$/);
+    if (!open3) {
       i++;
       continue;
     }
-    const info = open2[1].trim();
+    const info = open3[1].trim();
     const body = [];
     i++;
     while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) {
@@ -893,6 +897,58 @@ async function resetWorktree(wt) {
 }
 function mintRunId() {
   return randomBytes(3).toString("hex");
+}
+var msgOf = (e) => e instanceof Error ? e.message : String(e);
+var SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,64}$/;
+function assertSafeRunId(id) {
+  if (!SAFE_RUN_ID.test(id) || id === "." || id === "..")
+    throw new Error(
+      `FARM_RUN_ID must be 1-64 characters of [A-Za-z0-9._-] and not "." or ".." (got ${JSON.stringify(id)})`
+    );
+  return id;
+}
+function runArtifactDir(runId) {
+  return path3.join(ENV.reportDir, "runs", runId);
+}
+async function renameWithRetry(from, to, attempts = 4) {
+  for (let i = 0; ; i++) {
+    try {
+      await rename(from, to);
+      return;
+    } catch (e) {
+      const code = e.code ?? "";
+      if (i >= attempts - 1 || !["EPERM", "EACCES", "EBUSY"].includes(code)) throw e;
+      await new Promise((r) => setTimeout(r, 15 * (i + 1)));
+    }
+  }
+}
+async function atomicWriteFile(dest, data) {
+  const tmp = path3.join(
+    path3.dirname(dest),
+    `.${path3.basename(dest)}.${process.pid}-${randomBytes(4).toString("hex")}.tmp`
+  );
+  const fh = await open2(tmp, "w");
+  try {
+    await fh.writeFile(data, "utf8");
+    await fh.sync();
+  } finally {
+    await fh.close();
+  }
+  try {
+    await renameWithRetry(tmp, dest);
+  } catch (e) {
+    await rm(tmp, { force: true }).catch(() => {
+    });
+    throw e;
+  }
+}
+function newRunArtifactHealth() {
+  return { stream: { errors: [] }, diffs: { unavailable: [], latestMirrorErrors: [] } };
+}
+var MAX_RECORDED_ARTIFACT_ERRORS = 10;
+function noteArtifactError(bucket, message) {
+  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(message);
+  else if (bucket.length === MAX_RECORDED_ARTIFACT_ERRORS) bucket.push("(further errors suppressed)");
 }
 var mergeChain = Promise.resolve();
 var integrationWorktree;
@@ -1376,19 +1432,37 @@ async function main() {
   }
   if (canary) return runCanary(plan);
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
-  const runId = mintRunId();
+  let runId;
+  try {
+    runId = ENV.runId === null ? mintRunId() : assertSafeRunId(ENV.runId);
+  } catch (e) {
+    console.error(`Error: ${msgOf(e)}`);
+    return process.exit(1);
+  }
+  const runDir = runArtifactDir(runId);
   await mkdir2(ENV.worktreeRoot, { recursive: true });
   await mkdir2(ENV.reportDir, { recursive: true });
-  const resultsStream = path3.join(ENV.reportDir, "farm-results.jsonl");
-  await writeFile(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
+  await mkdir2(runDir, { recursive: true });
+  const health = newRunArtifactHealth();
+  const resultsStream = path3.join(runDir, "farm-results.jsonl");
+  const latestStream = path3.join(ENV.reportDir, "farm-results.jsonl");
+  const streamLines = [];
+  const noteStreamFailure = (what, e) => {
+    const m = `${what}: ${msgOf(e)}`;
+    console.error(`results stream ${m}`);
+    noteArtifactError(health.stream.errors, m);
+  };
+  await writeFile(resultsStream, "").catch((e) => noteStreamFailure("run-scoped init failed", e));
+  await atomicWriteFile(latestStream, "").catch((e) => noteStreamFailure("latest pointer init failed", e));
   const done = /* @__PURE__ */ new Map();
   const blocked = [];
   let aborted = false;
+  let publishError = null;
   try {
     const branchResult = await git(["branch", "-f", ENV.integration, ENV.base]);
     if (branchResult.code !== 0)
       throw new Error(`could not create integration branch '${ENV.integration}' from '${ENV.base}': ${branchResult.out}`);
-    integrationWorktree = path3.resolve(ENV.reportDir, "integration-wt");
+    integrationWorktree = path3.resolve(runDir, "integration-wt");
     await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
     });
     await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {
@@ -1463,7 +1537,12 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
         r.note = r.note ? `${r.note} (run aborted by circuit breaker while in flight)` : "escalate: run aborted (in flight)";
       }
       done.set(id, r);
-      await appendFile(resultsStream, JSON.stringify(r) + "\n").catch((e) => console.error("results stream append failed:", e));
+      const line = JSON.stringify(r) + "\n";
+      streamLines.push(line);
+      await appendFile(resultsStream, line).catch((e) => noteStreamFailure("run-scoped append failed", e));
+      await atomicWriteFile(latestStream, streamLines.join("")).catch(
+        (e) => noteStreamFailure("latest pointer publish failed", e)
+      );
       if (r.status === "escalate") escalated.add(id);
     }
     for (const id of pending) {
@@ -1472,7 +1551,12 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
   } finally {
-    await writeReport(plan, [...done.values()], blocked, aborted, runId).catch((e) => console.error("report write failed:", e));
+    try {
+      await writeReport(plan, [...done.values()], blocked, aborted, runId, health);
+    } catch (e) {
+      publishError = e;
+      console.error("report publication failed:", e);
+    }
     if (integrationWorktree)
       await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
       });
@@ -1482,7 +1566,8 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
   const green = results.filter((r) => r.status === "green").length;
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
-  const exitCode = esc || blocked.length || aborted ? 2 : 0;
+  const runExitCode = esc || blocked.length || aborted ? 2 : 0;
+  const exitCode = publishError ? 3 : runExitCode;
   const summary = [
     aborted ? `
 ABORTED by circuit breaker \u2014 escalation rate exceeded ${ENV.abortEscalationRate}. The model may not be capable of this plan; consider the premium path or a different FARM_MODEL.` : ``,
@@ -1490,32 +1575,87 @@ ABORTED by circuit breaker \u2014 escalation rate exceeded ${ENV.abortEscalation
 Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
-    `Report: ${path3.join(ENV.reportDir, "farm-report.md")}`,
+    `Run: ${runId}  (artifacts: ${runDir})`,
+    // The success breadcrumb is SUPPRESSED when publication failed — pointing an
+    // operator at a farm-report.md that is not there is the defect.
+    publishError ? [
+      `
+RECEIPT PUBLICATION FAILED \u2014 run ${runId} could not publish its authoritative report: ${msgOf(publishError)}`,
+      `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but there is no durable receipt for this run,`,
+      `so it cannot be reconciled or audited. Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`
+    ].join("\n") : `Report: ${path3.join(runDir, "farm-report.md")}  (latest: ${path3.join(ENV.reportDir, "farm-report.md")})`,
     ""
   ].join("\n");
   await new Promise((resolve) => process.stdout.write(summary, () => resolve()));
   process.exit(exitCode);
 }
-async function writeReport(plan, results, blocked, aborted, runId) {
-  await mkdir2(path3.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {
+async function writeReport(plan, results, blocked, aborted, runId, health) {
+  const runDir = runArtifactDir(runId);
+  const diffsDir = path3.join(runDir, "diffs");
+  const latestDiffsDir = path3.join(ENV.reportDir, "diffs");
+  const unavailable = health.diffs.unavailable;
+  const patchPath = /* @__PURE__ */ new Map();
+  let diffsDirError = null;
+  await mkdir2(diffsDir, { recursive: true }).catch((e) => {
+    diffsDirError = msgOf(e);
   });
+  await mkdir2(latestDiffsDir, { recursive: true }).catch(
+    (e) => noteArtifactError(health.diffs.latestMirrorErrors, `mkdir: ${msgOf(e)}`)
+  );
   for (const r of results) {
+    if (diffsDirError !== null) {
+      unavailable.push({ id: r.id, reason: `diffs directory unavailable: ${diffsDirError}` });
+      continue;
+    }
     const d = await git(["diff", `${ENV.base}...${r.branch}`]);
-    if (d.code === 0 && d.out.trim())
-      await writeFile(path3.join(ENV.reportDir, "diffs", `${r.id}.patch`), d.out).catch(() => {
-      });
+    if (d.code !== 0) {
+      unavailable.push({ id: r.id, reason: `git diff failed: ${d.out.trim().split("\n")[0] ?? ""}`.slice(0, 300) });
+      continue;
+    }
+    if (!d.out.trim()) continue;
+    const dest = path3.join(diffsDir, `${r.id}.patch`);
+    try {
+      await atomicWriteFile(dest, d.out);
+      patchPath.set(r.id, dest);
+    } catch (e) {
+      unavailable.push({ id: r.id, reason: `patch write failed: ${msgOf(e)}` });
+      continue;
+    }
+    await atomicWriteFile(path3.join(latestDiffsDir, `${r.id}.patch`), d.out).catch(
+      (e) => noteArtifactError(health.diffs.latestMirrorErrors, `${r.id}: ${msgOf(e)}`)
+    );
   }
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
-  await writeFile(
-    path3.join(ENV.reportDir, "farm-report.json"),
-    JSON.stringify({ run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2)
+  const streamComplete = health.stream.errors.length === 0;
+  const artifacts = {
+    run_dir: runDir,
+    stream: {
+      path: path3.join(runDir, "farm-results.jsonl"),
+      latest: path3.join(ENV.reportDir, "farm-results.jsonl"),
+      complete: streamComplete,
+      errors: health.stream.errors
+    },
+    diffs: {
+      dir: diffsDir,
+      latest_dir: latestDiffsDir,
+      unavailable,
+      latest_mirror_errors: health.diffs.latestMirrorErrors
+    }
+  };
+  const json = JSON.stringify(
+    { run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, artifacts, ts: (/* @__PURE__ */ new Date()).toISOString() },
+    null,
+    2
   );
   const md = [
     `# Farm report \u2014 ${plan.meta.name}`,
     ``,
     aborted ? `> **ABORTED by circuit breaker** \u2014 escalation rate exceeded threshold.
 ` : ``,
+    streamComplete ? `` : `> **Streaming rail incomplete** \u2014 ${health.stream.errors.length} write failure(s) on \`farm-results.jsonl\`; this report is authoritative for settled tasks.
+`,
+    `Run: \`${runId}\` \u2014 artifacts under \`${runDir}\``,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     ``,
     `| task | status | attempts | files | mut | branch | note |`,
@@ -1526,10 +1666,19 @@ async function writeReport(plan, results, blocked, aborted, runId) {
     `## Escalations \u2014 handle only these`,
     ...results.filter((r) => r.status === "escalate").map((r) => `- **${r.id}** \u2014 worktree \`${r.worktree}\`, branch \`${r.branch}\`. ${r.note ?? ""}`),
     ``,
+    `## Diff evidence`,
+    ...unavailable.length ? unavailable.map((u) => `- **${u.id}** \u2014 diff evidence unavailable: ${u.reason}`) : [`Every settled task with a non-empty diff has a patch under \`${diffsDir}\`.`],
+    ``,
     `## Warnings \u2014 review during spec-compliance`,
-    ...results.filter((r) => r.warning).map((r) => `- **${r.id}** \u2014 ${r.warning} (diff: \`${path3.join(ENV.reportDir, "diffs", r.id + ".patch")}\`)`)
+    ...results.filter((r) => r.warning).map((r) => {
+      const p = patchPath.get(r.id);
+      return `- **${r.id}** \u2014 ${r.warning} (${p ? `diff: \`${p}\`` : "diff evidence unavailable"})`;
+    })
   ].join("\n");
-  await writeFile(path3.join(ENV.reportDir, "farm-report.md"), md);
+  await atomicWriteFile(path3.join(runDir, "farm-report.json"), json);
+  await atomicWriteFile(path3.join(runDir, "farm-report.md"), md);
+  await atomicWriteFile(path3.join(ENV.reportDir, "farm-report.json"), json);
+  await atomicWriteFile(path3.join(ENV.reportDir, "farm-report.md"), md);
 }
 var _thisFile = fileURLToPath(import.meta.url);
 var _entryFile = path3.resolve(process.argv[1] ?? "");
@@ -1541,11 +1690,14 @@ if (_thisFile === _entryFile) {
 }
 export {
   DEFAULT_API_BASE_URL,
+  SAFE_RUN_ID,
   SAFE_TASK_ID,
   _resetAllowedWorktreeRoot,
   allowedWorktreeRoot,
   assertContainedWorktree,
+  assertSafeRunId,
   assertSecureBaseUrl,
+  atomicWriteFile,
   buildChatBody,
   buildPrompt,
   captureInScope,
@@ -1557,12 +1709,14 @@ export {
   httpWorker,
   makeEntitlementProbe,
   mintRunId,
+  newRunArtifactHealth,
   numEnv,
   parseChatCompletion,
   parseMutationHookOutput,
   readSampling,
   redactSecrets,
   run,
+  runArtifactDir,
   runGate,
   runTask,
   screenEntitlements,
