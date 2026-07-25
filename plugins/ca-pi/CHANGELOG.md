@@ -2,6 +2,35 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.24] - 2026-07-25
+
+### Fixed
+
+- `/ca-doctor` no longer redacts its own diagnostics because of where the
+  repository happens to live. The outbound redactor matches secret-shaped
+  content by trigger word, and nearly every doctor line embeds a filesystem
+  path - so a repository or worktree named `...-secret-...` had its `package`,
+  `core` and `child` lines each replaced by a redaction notice. A path the
+  process already knows is a structural field to compare against, not a value to
+  guess at, so the project cwd and the ca-pi package root are now exempt from
+  value-shaped matching in this one report. The exemption is exact-literal and
+  nonce-keyed: a real credential on the same line still redacts that line whole,
+  and a hostile report cannot forge the internal placeholder (issue #449).
+
+## [0.1.23] - 2026-07-25
+
+### Fixed
+
+- A session started inside a linked worktree no longer repoints the MAIN
+  repository's git-level enforcement at a path that dies with that worktree.
+  The shared enforcer entry lives in the git common dir, so every worktree
+  writes the main repo's copy; the SessionStart self-heal happily pinned it to
+  the worktree's own plugin root, and pruning the worktree - which is what
+  worktrees are for - left the repo silently ungated. An ephemeral enforcer is
+  now refused in both the producer and the caller, leaving the previously
+  registered install in place. A stale but durable path is still refreshed, so
+  the guard is not a kill-switch (issue #441).
+
 ## [0.1.22] - 2026-07-25
 
 ### Added

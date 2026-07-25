@@ -85,6 +85,31 @@ predate the plugin rewrite and are grouped by date.
   home seeded with a stale-but-real `settings.json`, and must leave it
   byte-identical while emitting no `ResourceWarning`. The guard proves its own
   detector can fail, so a green result means something.
+- The per-plugin payload-version gates no longer fire on a dev-only change under
+  `plugins/*/tools/`. That directory is a build tree — TypeScript sources, a
+  vitest config, a lockfile — and none of it runs on an installed machine, so a
+  dependabot lockfile bump used to demand a manifest advance and a CHANGELOG
+  heading describing a change no user can observe. The cost was not the noise:
+  a version bump is supposed to mean "installed users need this", and a gate
+  that fires on nothing trains contributors to bump a version to silence it. The
+  committed esbuild artifacts inside that directory (`farm.js`, `sandbox.js`) do
+  ship and still trigger the gate, as does everything outside it — including
+  ca-pi's `extensions/` bundles, which were never in the excluded scope
+  (issue #435).
+- A session started inside a linked worktree no longer repoints the **main**
+  repository's git-level enforcement at a path that dies with that worktree.
+  The shared `<plugin>.path` enforcer entry lives in the git *common* dir, so
+  every linked worktree writes the main repo's copy — and the SessionStart
+  self-heal pinned it to whatever plugin root the session happened to load,
+  which inside a worktree is the worktree's own. Pruning the worktree then left
+  H-01, H-03, H-05, H-09b, H-10b, H-11 and H-19 pointing at nothing, with no
+  announcement: the repo keeps looking governed. An ephemeral enforcer is now
+  refused in both the producer (`_githooks._write_path_entry`) and the caller
+  (`session-start.py`), leaving the previously registered install in place — a
+  stale-but-durable enforcer still enforces, an absent one does not. A stale but
+  durable path is still refreshed, so the guard cannot become a kill-switch
+  (issue #441; same bug class as #438's statusline pin, sharing its
+  `_durabilitylib.is_ephemeral_path` predicate).
 - `FARM_RUN_ID` no longer accepts a Windows reserved device name. `NUL`, `CON`,
   `AUX`, `PRN`, `COM1`-`COM9` and `LPT1`-`LPT9` match the run id's character
   class perfectly, and Windows resolves them ahead of any extension, so `NUL`,

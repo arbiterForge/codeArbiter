@@ -124,7 +124,18 @@ def _git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
 def pi_release_guard(base_ref: str) -> int:
     plugin_manifest = REPO / "plugins" / "ca-pi" / "package.json"
     changelog_path = REPO / "plugins" / "ca-pi" / "CHANGELOG.md"
-    if _git("diff", "--quiet", f"{base_ref}...HEAD", "--", "plugins/ca-pi", "package.json", check=False).returncode == 0:
+    # Issue #435: `plugins/ca-pi/tools/` is a BUILD directory - TypeScript
+    # sources, a vitest config, a lockfile - and none of it runs on an installed
+    # machine. Scoping the guard to it wholesale made a dev-only dependabot
+    # lockfile bump demand a version advance and a changelog heading describing a
+    # change no user can observe, which trains contributors to bump a version to
+    # silence a gate. That is the exact habit the gate exists to prevent.
+    #
+    # ca-pi's committed bundles live in `extensions/`, OUTSIDE the excluded
+    # directory, so they stay in scope with no re-inclusion needed - which is why
+    # payload_scope.SHIPPED_TOOLS_ARTIFACTS declares none for this plugin.
+    scope = ("plugins/ca-pi", ":(exclude)plugins/ca-pi/tools", "package.json")
+    if _git("diff", "--quiet", f"{base_ref}...HEAD", "--", *scope, check=False).returncode == 0:
         print("no Pi payload change - version bump not required")
         return 0
     if _git("rev-parse", "--verify", "--quiet", f"{base_ref}^{{commit}}", check=False).returncode != 0:
