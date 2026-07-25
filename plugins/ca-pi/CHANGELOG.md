@@ -2,6 +2,20 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.23] - 2026-07-25
+
+### Fixed
+
+- A session started inside a linked worktree no longer repoints the MAIN
+  repository's git-level enforcement at a path that dies with that worktree.
+  The shared enforcer entry lives in the git common dir, so every worktree
+  writes the main repo's copy; the SessionStart self-heal happily pinned it to
+  the worktree's own plugin root, and pruning the worktree - which is what
+  worktrees are for - left the repo silently ungated. An ephemeral enforcer is
+  now refused in both the producer and the caller, leaving the previously
+  registered install in place. A stale but durable path is still refreshed, so
+  the guard is not a kill-switch (issue #441).
+
 ## [0.1.22] - 2026-07-25
 
 ### Added
