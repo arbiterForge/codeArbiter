@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.4] - 2026-07-25
+## [0.1.5] - 2026-07-25
 
 ### Fixed
 
@@ -14,6 +14,18 @@ All notable changes to `ca-pi` are documented in this file.
   as it is - while a genuinely stale pin from a real plugin-cache update still
   heals. Explicit `wire-statusline.py install` from such a root refuses loudly
   instead of writing a doomed path.
+
+## [0.1.4] - 2026-07-24
+
+### Changed
+
+- Refreshed the bundled farm surface (`includes/farm.md`, the
+  `subagent-driven-development` farm-dispatch reference) for run-scoped farm
+  receipts: the run's artifact directory is the authoritative receipt, the
+  top-level `.farm/` paths are a non-authoritative latest pointer, exit 3 is
+  reserved for a failure of the run-scoped report, and the concurrency caveat
+  (`FARM_INTEGRATION_BRANCH`, `FARM_WORKTREE_ROOT`, non-overlapping task ids)
+  is now stated where operators read it. Prose-only; no Pi adapter code changed.
 
 ## [0.1.3] - 2026-07-24
 
