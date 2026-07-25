@@ -2269,6 +2269,55 @@ describe("assertSafeRunId — run id is a path segment (#397)", () => {
     for (const bad of ["..", ".", "../escape", "a/b", "a\\b", "", "x".repeat(65), "a b"])
       expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
   });
+
+  // #440. The character class above is necessary but not sufficient on Windows:
+  // NUL, CON, AUX, PRN, COM1-9 and LPT1-9 are DEVICE names, not filenames, and
+  // they match [A-Za-z0-9._-] perfectly. Since #397 the run id is both an
+  // ownership boundary and a directory name under `.farm/runs/<runId>/`, and
+  // `mkdir(runDir)` sits OUTSIDE the try/finally -- so a reserved name throws
+  // before the cleanup scope is even established, and the run's receipts, which
+  // are its recovery record, are lost.
+  //
+  // Refused on every platform, not only Windows: `FARM_RUN_ID` is set by an
+  // orchestrator whose config is routinely shared across machines, and a
+  // "works on my Linux box" id that detonates on a colleague's Windows one is
+  // the failure this prevents.
+  it("rejects Windows reserved device names (#440)", () => {
+    for (const bad of ["NUL", "CON", "AUX", "PRN", "COM1", "COM9", "LPT1", "LPT9"])
+      expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
+  });
+
+  it("rejects reserved names case-insensitively and with an extension (#440)", () => {
+    // Windows resolves the device before the extension, so `NUL.txt`,
+    // `nul.log.1` and `Com1.json` are all still the device.
+    for (const bad of ["nul", "Con", "cOm1", "NUL.txt", "nul.log.1", "Com1.json", "LPT9.tar.gz"])
+      expect(() => assertSafeRunId(bad)).toThrow(/FARM_RUN_ID/);
+  });
+
+  it("still accepts ordinary ids that merely resemble a reserved name (#440)", () => {
+    // The rule is exact-stem-only. Over-broad matching here would reject
+    // perfectly good ids -- and `.` is a legal id character, so the stem is the
+    // text before the FIRST dot, which is what Windows itself resolves.
+    for (const ok of [
+      "console",      // starts with CON
+      "nulls",        // starts with NUL
+      "COM0",         // COM0 is not reserved; only COM1-COM9 are
+      "COM10",        // two digits, not reserved
+      "LPT0",
+      "my-nul",
+      "nul-run",
+      "prn2",         // PRN takes no digit
+      "aux1",         // AUX takes no digit
+    ])
+      expect(assertSafeRunId(ok)).toBe(ok);
+  });
+
+  it("keeps minted ids acceptable under the reserved-name rule (#440)", () => {
+    // A minted id is 16 hex chars, so it can never collide with a reserved
+    // stem -- but pin it, because the day mintRunId's shape changes this is
+    // the assertion that notices.
+    for (let i = 0; i < 64; i++) expect(() => assertSafeRunId(mintRunId())).not.toThrow();
+  });
 });
 
 // ---------------------------------------------------------------------------

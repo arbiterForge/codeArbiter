@@ -1042,10 +1042,15 @@ function mintRunId() {
 }
 var msgOf = (e) => e instanceof Error ? e.message : String(e);
 var SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,64}$/;
+var RESERVED_RUN_ID_STEM = /^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i;
 function assertSafeRunId(id) {
   if (!SAFE_RUN_ID.test(id) || id === "." || id === "..")
     throw new Error(
       `FARM_RUN_ID must be 1-64 characters of [A-Za-z0-9._-] and not "." or ".." (got ${JSON.stringify(id)})`
+    );
+  if (RESERVED_RUN_ID_STEM.test(id.split(".")[0]))
+    throw new Error(
+      `FARM_RUN_ID must not be a Windows reserved device name (CON, PRN, AUX, NUL, COM1-9, LPT1-9), with or without an extension \u2014 the run directory could not be created (got ${JSON.stringify(id)})`
     );
   return id;
 }
