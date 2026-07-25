@@ -91,7 +91,15 @@ def subagent_dir(data, root, sid):
 def read_subagents(sdir):
     """Return (active, recent, shown[{label,inp,out,age,active}], (tot_in, tot_out)).
     `active` = files touched within ACTIVE_WINDOW (a liveness proxy); `recent` =
-    all files within SHOW_WINDOW (active + recently finished)."""
+    all files within SHOW_WINDOW (active + recently finished).
+
+    ONE result shape on EVERY path (#413). The element types are stable — int,
+    int, list, (int|float, int|float) — so a caller may unpack four names
+    unconditionally. statusline.py does exactly that, OUTSIDE its safe()
+    wrapper, so an error branch returning a shorter tuple was a hard ValueError
+    that erased the entire subagent section on a routine directory race. An
+    unreadable/absent directory is an EMPTY result, not a different result."""
+    empty = (0, 0, [], (0, 0))
     now = time.time()
     files = []
     try:
@@ -106,7 +114,7 @@ def read_subagents(sdir):
             if now - st.st_mtime <= SHOW_WINDOW:
                 files.append((st.st_mtime, st.st_size, fp, nm))
     except OSError:
-        return 0, [], (0, 0)
+        return empty
     files.sort(reverse=True)   # most-recently-touched first
 
     active = sum(1 for mtime, _, _, _ in files if now - mtime <= ACTIVE_WINDOW)
@@ -129,6 +137,13 @@ def read_subagents(sdir):
                         d = json.loads(ln)
                     except ValueError:
                         continue
+                    if not isinstance(d, dict):
+                        # A transcript line may be ANY valid JSON value; only an
+                        # object carries an event. `[]`/`null`/`3`/`"s"` used to
+                        # reach .get() below inside a try that caught OSError
+                        # only, so one such line raised AttributeError out of
+                        # read_subagents and blanked every subagent row (#413).
+                        continue
                     msg = d.get("message")
                     if not isinstance(msg, dict):
                         continue
@@ -147,7 +162,13 @@ def read_subagents(sdir):
                         reqs[d.get("requestId") or msg.get("id") or i] = (
                             num(u.get("input_tokens")) + num(u.get("cache_creation_input_tokens")),
                             num(u.get("output_tokens")))
-        except OSError:
+        except Exception:  # noqa: BLE001 — #413: the error boundary is PER FILE
+            # One unreadable or structurally surprising transcript must cost
+            # only its own row, never the rest of the directory. Widened from
+            # OSError so a shape the reader has not anticipated degrades the
+            # same way malformed JSON already does (the module's standing
+            # "never raise on malformed input" contract) instead of escaping
+            # into the statusline and blanking every subagent row.
             continue
         inp = sum(v[0] for v in reqs.values())
         out = sum(v[1] for v in reqs.values())

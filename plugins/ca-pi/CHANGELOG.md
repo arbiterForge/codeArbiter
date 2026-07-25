@@ -2,6 +2,24 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.7] - 2026-07-25
+
+### Fixed
+
+- An abandoned maintainer session's synthetic `DEV: exit` is now durable: the
+  owed audit line is staged on disk before the append is attempted and cleared
+  only once both the append and the marker removal are confirmed, so a locked
+  or failing `overrides.log` no longer erases the close and leaves an unmatched
+  `DEV: enter`. The retry record is bounded, and an overflow that has to discard
+  an owed close is itself written to the trail rather than dropped silently.
+- The subagent transcript reader honours one result shape on every path, so a
+  subagent-directory race no longer raises out of the statusline, and a
+  syntactically valid non-object JSONL record is skipped instead of blanking
+  every subagent row.
+- Provenance records are validated before admission and each file is loaded
+  inside its own error boundary, so one schema-invalid record no longer aborts
+  the directory scan and silently drops every later valid record.
+
 ## [0.1.6] - 2026-07-25
 
 ### Fixed
