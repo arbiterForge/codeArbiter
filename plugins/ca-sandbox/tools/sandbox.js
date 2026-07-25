@@ -175,7 +175,7 @@ var IMAGE_PREFIX = "ca-sbx";
 var DEPS_DIR = "/deps";
 var APP_DIR2 = "/work/repo";
 var NIXPACKS_APP_DIR = "/app";
-var NIXPACKS_INSTALL_URL = "https://nixpacks.com/install.sh";
+var FALLBACK_BASE_IMAGE = "node:20-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0";
 var BUILD_ENV = { ...DOCKER_ENV, DOCKER_BUILDKIT: "1" };
 function run(cmd, args, opts = {}) {
   return new Promise((resolve) => {
@@ -206,8 +206,8 @@ async function defaultNixpacksVersion() {
   const m = r.stdout.match(/(\d+\.\d+\.\d+)/);
   return m ? m[1] : r.stdout.trim();
 }
-async function detectWslNixpacks() {
-  const probe = await run("wsl.exe", [
+async function detectWslNixpacks(exec = run) {
+  const probe = await exec("wsl.exe", [
     "bash",
     "-lc",
     'command -v nixpacks || echo "$HOME/.local/bin/nixpacks"'
@@ -215,19 +215,19 @@ async function detectWslNixpacks() {
   if (probe.code !== 0) return null;
   const bin = probe.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).pop();
   if (!bin) return null;
-  const ver = await run("wsl.exe", ["--", bin, "--version"]);
+  const ver = await exec("wsl.exe", ["--", bin, "--version"]);
   if (ver.code !== 0) return null;
   const m = ver.stdout.match(/(\d+\.\d+\.\d+)/);
   return { bin, version: m ? m[1] : ver.stdout.trim() };
 }
-async function defaultEnsureNixpacks() {
-  const probe = await run("nixpacks", ["--version"]);
+async function defaultEnsureNixpacks(exec = run) {
+  const probe = await exec("nixpacks", ["--version"]);
   if (probe.code === 0) {
     const m = probe.stdout.match(/(\d+\.\d+\.\d+)/);
     return { available: true, via: { via: "host" }, version: m ? m[1] : probe.stdout.trim() };
   }
   if (process.platform === "win32") {
-    const wsl = await detectWslNixpacks();
+    const wsl = await detectWslNixpacks(exec);
     if (wsl) {
       return {
         available: true,
@@ -237,22 +237,14 @@ async function defaultEnsureNixpacks() {
       };
     }
   }
-  const install = await run("bash", ["-c", `curl -fsSL ${NIXPACKS_INSTALL_URL} | bash`]);
-  if (install.code === 0) {
-    const after = await run("nixpacks", ["--version"]);
-    if (after.code === 0) {
-      const m = after.stdout.match(/(\d+\.\d+\.\d+)/);
-      return { available: true, via: { via: "host" }, version: m ? m[1] : after.stdout.trim() };
-    }
-  }
   return {
     available: false,
-    note: `nixpacks is not installed (no host binary, no WSL bridge, install script blocked: ${NIXPACKS_INSTALL_URL}); fell back to a generated Dockerfile that mimics nixpacks. Install nixpacks for the intended build path (NEEDS-TRIAGE: nixpacks-as-runtime-dependency).`
+    note: "nixpacks is not installed (no host binary, no WSL bridge); fell back to a generated Dockerfile that mimics nixpacks (node/python only). Install nixpacks for the intended build path \u2014 see https://nixpacks.com for the install options; ca-sandbox deliberately does not install it for you."
   };
 }
 function generateDockerfile(stack) {
   const lines = [];
-  lines.push("FROM node:20-slim");
+  lines.push(`FROM ${FALLBACK_BASE_IMAGE}`);
   lines.push(`ENV NODE_PATH=${DEPS_DIR}/node_modules`);
   lines.push(`ENV PYTHONPATH=${DEPS_DIR}/site-packages`);
   lines.push(`RUN mkdir -p ${DEPS_DIR} ${APP_DIR2}`);
@@ -468,7 +460,7 @@ function resolveContainerId(id, dockerRun = defaultDockerRun) {
 }
 
 // create.ts
-var CLONE_IMAGE = "alpine/git:latest";
+var CLONE_IMAGE = "alpine/git:latest@sha256:77418e6e7c7f434c4a98eaff04ef16840cf03649c881c03948e3e213923e3136";
 var APP_DIR3 = "/work/repo";
 var VOLUME_PREFIX = "ca-sbx-vol";
 var CLONE_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CLONE_TIMEOUT_MS ?? 5 * 6e4);
