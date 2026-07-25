@@ -345,6 +345,7 @@ var BridgeClient = class {
     this.ready = this.validatePaths();
     this.ready.catch(() => void 0);
   }
+  options;
   ready;
   timeoutMs;
   maxRequestBytes;

@@ -706,6 +706,7 @@ var BridgeClient = class {
     this.ready = this.validatePaths();
     this.ready.catch(() => void 0);
   }
+  options;
   ready;
   timeoutMs;
   maxRequestBytes;
@@ -3050,7 +3051,7 @@ function createNativeBackgroundController(pi, options) {
   };
   const reserve = (value) => {
     if (value.reservations.size >= MAX_ACTIVE_JOBS) return void 0;
-    const token = Symbol("background-job-capacity");
+    const token = /* @__PURE__ */ Symbol("background-job-capacity");
     let resolveDone;
     const done = new Promise((resolveReservation) => {
       resolveDone = resolveReservation;
@@ -4441,6 +4442,8 @@ var Box = class {
     this.metrics = metrics;
     this.inner = width - 4;
   }
+  width;
+  metrics;
   lines = [];
   inner;
   top(title) {
@@ -4595,6 +4598,10 @@ var PiFooterLifecycle = class {
     this.loadMetrics = loadMetrics;
     this.currentActivity = currentActivity2;
   }
+  pi;
+  bridge;
+  loadMetrics;
+  currentActivity;
   generation = 0;
   context;
   footerData;
@@ -8986,7 +8993,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "c1f1b9045b026cf712c01b198f054e4962de05eec3bc219d687a0694d2a78972"
+        childFingerprint: "f31ba24b1bd6f85f71893df71713d4fce5426da7072236537be7499382d1dece"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,
