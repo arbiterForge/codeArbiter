@@ -5,6 +5,18 @@ import sys
 import tempfile
 import unittest
 
+
+# #462: an unclosed file handle is not cosmetic on Windows -- it blocks the
+# enclosing TemporaryDirectory's cleanup, so teardown RAISES instead of the
+# assertion failing. That is the shape the intermittent suite showed: errors,
+# not failures, with no code change between runs. A suite that is red once in
+# four trains everyone to re-run first and diagnose never, which is how a real
+# regression gets waved through.
+def _read_text(path):
+    with open(path, encoding="utf-8") as handle:
+        return handle.read()
+
+
 # Load init-codearbiter.py as a module (filename has a hyphen).
 _HOOKS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _SCRIPT = os.path.join(_HOOKS_DIR, "init-codearbiter.py")
@@ -120,12 +132,12 @@ class TestIdempotencyGuard(unittest.TestCase):
 
     def test_existing_files_unchanged_after_failed_rerun(self):
         cad = os.path.join(self.root, ".codearbiter")
-        ctx_before = open(os.path.join(cad, "CONTEXT.md"), encoding="utf-8").read()
+        ctx_before = _read_text(os.path.join(cad, "CONTEXT.md"))
         try:
             ic.main(["--root", self.root])
         except SystemExit:
             pass
-        ctx_after = open(os.path.join(cad, "CONTEXT.md"), encoding="utf-8").read()
+        ctx_after = _read_text(os.path.join(cad, "CONTEXT.md"))
         self.assertEqual(ctx_before, ctx_after)
 
 

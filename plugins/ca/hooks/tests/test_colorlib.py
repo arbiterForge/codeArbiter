@@ -16,6 +16,31 @@ if _HOOKS_DIR not in sys.path:
 
 import _colorlib
 import _boxlib
+from _helpers import isolate_user_state, release_user_state
+
+
+# Issue #442: this module writes user-GLOBAL state - the statusline pin in
+# `~/.claude/settings.json`, and/or the `~/.codearbiter/` ledger and update
+# cache. Running the suite used to do that to the DEVELOPER'S REAL HOME: the
+# statusline pin was repointed at whatever plugin root the test process
+# resolved (it broke the maintainer's statusline three times in one day), and
+# `~/.codearbiter/` gained a ledger, its lock, five session shards and an
+# update cache. CI never noticed, because a fresh runner has no pre-existing
+# settings to clobber.
+#
+# The fixture is module-level rather than per-class ON PURPOSE. The leak is
+# module-wide, this file has many test classes, and a per-class `setUp` is one
+# forgotten override away from regressing - while `setUpModule` covers every
+# class added later for free. `.github/scripts/test_suite_hermeticity.py` is the
+# backstop that fails if any suite writes outside its temp dirs.
+def setUpModule():
+    global _USER_STATE
+    _USER_STATE = isolate_user_state()
+
+
+def tearDownModule():
+    release_user_state(_USER_STATE)
+
 
 
 class TestPaletteResolution(unittest.TestCase):

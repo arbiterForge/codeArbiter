@@ -903,6 +903,20 @@ jobs:
         # locally per CONTRIBUTING; wired here so the guards are mechanically
         # enforced. Stdlib-only, cross-platform (discovered on every matrix OS).
         run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
+      - name: Enforce suite hermeticity (issues #442, #462)
+        # The suite used to mutate the DEVELOPER'S REAL HOME - rewriting
+        # ~/.claude/settings.json and littering ~/.codearbiter/ - and to leak
+        # file handles and child processes, which on Windows turns a later
+        # teardown into an intermittent ERROR rather than a FAILURE. CI never
+        # noticed either: a fresh runner has no settings to clobber, and a
+        # ResourceWarning is not a test result.
+        #
+        # This runs each suite under a PRISTINE redirected home seeded with a
+        # stale-but-real settings.json, and asserts that home comes back
+        # byte-identical and the run emits no ResourceWarning. It re-runs the
+        # hook suite twice over, so it is deliberately placed after the suite
+        # itself rather than in place of it.
+        run: python .github/scripts/test_suite_hermeticity.py
       - name: Run ADR identity + supersession contract tests
         # #416: two ADRs share the number 0014, so a bare `supersedes: 0014`
         # named two documents at once. The identifier is the filename STEM;

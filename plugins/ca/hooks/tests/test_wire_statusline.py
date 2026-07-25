@@ -7,6 +7,18 @@ import sys
 import tempfile
 import unittest
 
+
+# #462: an unclosed file handle is not cosmetic on Windows -- it blocks the
+# enclosing TemporaryDirectory's cleanup, so teardown RAISES instead of the
+# assertion failing. That is the shape the intermittent suite showed: errors,
+# not failures, with no code change between runs. A suite that is red once in
+# four trains everyone to re-run first and diagnose never, which is how a real
+# regression gets waved through.
+def _read_text(path):
+    with open(path, encoding="utf-8") as handle:
+        return handle.read()
+
+
 # Load wire-statusline.py as a module (filename has a hyphen).
 _HOOKS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _SCRIPT = os.path.join(_HOOKS_DIR, "wire-statusline.py")
@@ -354,7 +366,7 @@ class TestIdempotentRefresh(unittest.TestCase):
                  "--plugin-root", self.root, "--interp", "python"])
         data = _read(self.settings)
         # BACKUP_KEY should still only appear once (JSON keys are unique by spec)
-        raw = open(self.settings, encoding="utf-8").read()
+        raw = _read_text(self.settings)
         self.assertEqual(raw.count(ws.BACKUP_KEY), 1)
 
     def test_second_install_statusline_still_ours(self):
@@ -601,7 +613,7 @@ class TestSpinnerVerbsIdempotent(unittest.TestCase):
     def test_second_install_spinner_backup_key_appears_once(self):
         ws.main(["install", "--settings", self.settings,
                  "--plugin-root", self.root, "--interp", "python"])
-        raw = open(self.settings, encoding="utf-8").read()
+        raw = _read_text(self.settings)
         self.assertEqual(raw.count(ws.SPINNER_BACKUP_KEY), 1)
 
     def test_second_install_verbs_still_set(self):

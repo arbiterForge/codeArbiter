@@ -2,6 +2,7 @@
 # here (into tempdirs by the callers) rather than checked in.
 import json
 import os
+import tempfile
 
 FIXTURES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
 
@@ -29,6 +30,52 @@ def restore_home(saved):
             os.environ.pop(k, None)
         else:
             os.environ[k] = v
+
+
+# Every user-GLOBAL state path the payload writes, and the env seam each one
+# already honours. `redirect_home` alone is not enough: a test that redirects ~
+# still lands its ledger and update cache in the redirected home, which is the
+# right answer for a per-test temp home but the wrong one for a module that
+# never meant to write user-global state at all.
+_STATE_SEAMS = ("CODEARBITER_LEDGER", "CODEARBITER_UPDATE_STATE")
+
+
+def isolate_user_state():
+    """Point ~ AND every user-global state path at one fresh temp directory.
+
+    Issue #442: running the hook suite rewrote the developer's real
+    `~/.claude/settings.json` and littered `~/.codearbiter/` with a ledger, its
+    lock, five session shards, and an update cache. Four modules did it, none of
+    them using `redirect_home`, which already sat right here.
+
+    Call from `setUpModule`, not `setUp`. The leak is module-wide -- the
+    offending modules have 16 and 23 test classes between them -- so a
+    per-class fix is one forgotten `setUp` away from regressing, while a module
+    fixture covers every class added later for free.
+
+    Returns a token for `release_user_state()` in `tearDownModule`."""
+    directory = tempfile.TemporaryDirectory(prefix="ca-test-home-")
+    saved_home = redirect_home(directory.name)
+    saved_seams = {key: os.environ.get(key) for key in _STATE_SEAMS}
+    os.environ["CODEARBITER_LEDGER"] = os.path.join(directory.name, "ledger.json")
+    os.environ["CODEARBITER_UPDATE_STATE"] = os.path.join(directory.name, "update-state.json")
+    return directory, saved_home, saved_seams
+
+
+def release_user_state(token):
+    directory, saved_home, saved_seams = token
+    restore_home(saved_home)
+    for key, value in saved_seams.items():
+        if value is None:
+            os.environ.pop(key, None)
+        else:
+            os.environ[key] = value
+    # Windows keeps a handle alive briefly after a subprocess exits; a leaked
+    # temp home must never be the thing that fails a suite.
+    try:
+        directory.cleanup()
+    except OSError:
+        pass
 
 
 def fixture(name):
