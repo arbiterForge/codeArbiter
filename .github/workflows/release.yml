@@ -122,7 +122,11 @@ jobs:
           # Evidence is resolved for GITHUB_SHA itself, and the classifier
           # re-checks each run's head_sha — a green gate on a neighbouring
           # commit is not evidence for this one.
-          gh api --paginate \
+          # One page, deliberately: `--paginate` with `--jq` concatenates one
+          # array per page, which is not valid JSON. A commit here carries a
+          # few dozen check runs, and an over-full first page would land on
+          # `missing` — a refusal, not a silent pass.
+          gh api \
             "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
             --jq '.check_runs' > checks.json
           STATE=$(python3 .github/scripts/_releaselib.py merge-readiness "$GITHUB_SHA" checks.json)
