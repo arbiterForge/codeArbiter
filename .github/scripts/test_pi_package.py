@@ -1527,8 +1527,9 @@ class PiPackageTests(unittest.TestCase):
     def test_real_rpc_native_read_context_is_model_visible_once(self):
         import base64
 
+        # #416: the pointer names the ADR's filename stem, not its bare number.
         expected_context = (
-            "ADR-0015 (Model-visible read contract) governs this file"
+            "ADR-0015-pi-read (Model-visible read contract) governs this file"
             " — do not contradict it; route changes via /ca:reconcile or /ca:adr."
         )
         governed_native = "governed native body\n"

@@ -47,6 +47,31 @@ TITLE_RE = re.compile(r"^title:\s*(.+)$", re.I)
 STATUS_RE = re.compile(r"^status:\s*(.+)$", re.I)
 
 
+def adr_identifier(filename):
+    """The ADR identifier for `filename` — its filename STEM, not its number.
+
+    `0014-githook-shim-dropin-fail-closed.md` → `0014-githook-shim-dropin-fail-closed`.
+
+    #416: two ADRs in this repo share the number 0014, so the old
+    `filename.split("-")[0]` derivation collapsed two distinct decisions onto one
+    id and nudged "governed by ADR-0014" without saying which. The stem is unique
+    by construction, so keying on it makes the collision unrepresentable.
+
+    Deliberately mirrored in _readinjectlib.py — the two indexers are separate
+    payload files that cannot import each other's private helpers; the shared
+    contract test (.github/scripts/test_adr_identity.py) pins them to the same
+    answer so the derivation cannot drift apart again.
+    """
+    return os.path.splitext(str(filename))[0]
+
+
+# Bumped whenever the SHAPE or the derivation of a cached index entry changes.
+# The mtime stamp alone only invalidates on an ADR edit, so without this a
+# payload upgrade would keep serving pre-#416 numeric ids out of an already-
+# written cache until someone happened to touch a decisions/ file.
+GOVERNS_CACHE_SCHEMA = 2
+
+
 def governs_index(root):
     """path-glob → ADR map from decisions/ frontmatter, cached against the
     directory's latest mtime so the scan doesn't repeat on every write."""
@@ -61,7 +86,8 @@ def governs_index(root):
     try:
         with open(cache_path, encoding="utf-8") as f:
             cache = json.load(f)
-        if cache.get("stamp") == stamp:
+        if (cache.get("stamp") == stamp
+                and cache.get("schema") == GOVERNS_CACHE_SCHEMA):
             return cache.get("index", [])
     except Exception:  # noqa: BLE001 — absent/corrupt cache just rebuilds
         pass
@@ -83,12 +109,13 @@ def governs_index(root):
         except Exception:  # noqa: BLE001
             continue
         if globs and status not in ("superseded", "rejected"):
-            adr = fn.split("-")[0]
+            adr = adr_identifier(fn)
             index.append({"adr": adr, "title": title, "globs": globs})
     try:
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w", encoding="utf-8") as f:
-            json.dump({"stamp": stamp, "index": index}, f)
+            json.dump({"stamp": stamp, "schema": GOVERNS_CACHE_SCHEMA,
+                       "index": index}, f)
     except Exception:  # noqa: BLE001 — cache is an optimization, never required
         pass
     return index

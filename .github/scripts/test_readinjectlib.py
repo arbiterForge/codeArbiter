@@ -521,12 +521,13 @@ class AdrIndexTest(unittest.TestCase):
             )
             index = ril.accepted_adr_index(tmpdir)
             self.assertEqual(len(index), 1, "accepted ADR must be indexed")
-            self.assertEqual(index[0]["adr"], "0003")
+            # #416: the identifier is the filename stem, not the bare number.
+            self.assertEqual(index[0]["adr"], "0003-x")
             self.assertEqual(index[0]["title"], "HTTPS and secret handling")
             pointers = ril.adr_pointers("plugins/ca/tools/farm.ts", index)
             self.assertEqual(len(pointers), 1)
             p = pointers[0]
-            self.assertIn("ADR-0003", p["text"])
+            self.assertIn("ADR-0003-x", p["text"])
             self.assertIn("HTTPS and secret handling", p["text"])
             self.assertEqual(p["tier"], "decisions")
 
@@ -683,7 +684,7 @@ class AdrIndexTest(unittest.TestCase):
                 len(index), 1,
                 "Valid ADR must still be indexed when malformed file is present",
             )
-            self.assertEqual(index[0]["adr"], "0002")
+            self.assertEqual(index[0]["adr"], "0002-valid")
 
     def test_adr_without_governs_line_not_indexed(self):
         """ADR with status:accepted but no governs: line is not indexed."""
@@ -2433,7 +2434,7 @@ class BuildIndexTest(unittest.TestCase):
             result = ril.build_index(tmpdir)
             adr_list = result.get("adr", [])
             self.assertEqual(len(adr_list), 1, "exactly one ADR entry expected")
-            self.assertEqual(adr_list[0].get("adr"), "0003")
+            self.assertEqual(adr_list[0].get("adr"), "0003-x")
 
     def test_build_index_value_types(self):
         """adr and spec sub-values are lists; provenance is a dict."""

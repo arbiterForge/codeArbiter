@@ -1710,6 +1710,83 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("      - documentation-contract\n", aggregate)
         self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)
 
+    def test_ci_reports_under_the_merge_group_event_that_tests_the_real_base(self):
+        # Issue #383.  main's ONLY required context is this workflow's
+        # `[GATE ] | [REPO] | Merge readiness` aggregate, and the live
+        # protection response carries `required_status_checks.strict=false`.
+        # A green aggregate computed against an OLDER base is therefore enough
+        # to merge, so two individually green pull requests can interact after
+        # one of them lands while the second keeps a valid required check from
+        # its stale merge base.  The ruling was a merge queue, which
+        # synthesises and tests the exact prospective merge commit - strictly
+        # stronger than mere up-to-dateness, because it catches interactions
+        # that currency alone does not.
+        #
+        # SEQUENCING, and the reason this contract exists in the repository
+        # rather than in the settings UI: a queue whose required context never
+        # reports under `merge_group` stalls EVERY queued merge, with nothing
+        # able to satisfy the gate.  The trigger has to be live on main first.
+        # This test is what keeps it there once it is.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        triggers = ci.split("\njobs:\n", 1)[0]
+        self.assertRegex(
+            triggers,
+            r"(?m)^  merge_group:\n    types: \[checks_requested\]$",
+            "ci.yml never runs on merge_group, so an enabled merge queue would "
+            "have nothing to satisfy the required merge-readiness context",
+        )
+
+    def test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group(self):
+        # Issue #383, the half of it a trigger alone does NOT fix.  `ci-passed`
+        # accepts `skipped` as success - that is exactly what ADR-0007 path
+        # scoping needs - so an enforced job gated to `github.event_name ==
+        # 'pull_request'` does not turn a merge group red.  It silently drops
+        # its verdict and the aggregate still reports green on the merge commit,
+        # which is a WEAKER gate than the stale-base one this issue set out to
+        # replace.  The four payload-version guards are the sharpest case:
+        # whether a bump is required is a question about the BASE, so they are
+        # precisely the jobs a merge queue exists to re-run.
+        #
+        # The second scan catches the subtler shape.  A job that RUNS but reads
+        # its base out of a pull_request-only context is worse than one that
+        # skips: `github.base_ref` and `github.event.pull_request.*` are both
+        # EMPTY under merge_group, so the guard would compare against nothing
+        # and conclude green having verified nothing.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        enforced = aggregate_required_results(ci)
+        self.assertIn("version-bump", enforced, "the aggregate scan found no payload guard")
+        unreachable: list[str] = []
+        misbased: list[str] = []
+        for job_id in enforced:
+            block = jobs.get(job_id, "")
+            # Job-level AND step-level conditions: a step gated to
+            # pull_request drops its evidence just as quietly as a job does,
+            # and the secret scan's commit-range step is one of those.
+            for condition in re.findall(r"(?m)^\s+if: (?P<test>[^\n]+)$", block):
+                if "github.event_name" not in condition:
+                    continue
+                if "merge_group" not in condition:
+                    unreachable.append(f"{job_id}: if: {condition}")
+            for expression in re.findall(r"\$\{\{(?P<body>[^}]*)\}\}", block):
+                if (
+                    "github.base_ref" not in expression
+                    and "github.event.pull_request." not in expression
+                ):
+                    continue
+                if "github.event.merge_group." not in expression:
+                    misbased.append(f"{job_id}: ${{{{{expression}}}}}")
+        self.assertEqual(
+            unreachable,
+            [],
+            "enforced jobs a merge queue would silently skip while ci-passed reports green",
+        )
+        self.assertEqual(
+            misbased,
+            [],
+            "enforced jobs whose base context is empty under merge_group",
+        )
+
 
 class ReceiptCommandTest(unittest.TestCase):
     def test_cli_writes_deterministic_json_and_a_markdown_summary(self):
