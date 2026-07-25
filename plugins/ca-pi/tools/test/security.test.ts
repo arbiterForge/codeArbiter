@@ -212,11 +212,15 @@ describe("ADR-0014 adversarial promotion contract", () => {
     },
   );
 
-  test("admits only the selected provider environment and excludes farm/auth bleed", () => {
+  // #455: the child environment admits NO provider credential at all — not the selected one,
+  // not a foreign one. The only key-shaped value it carries is the ephemeral broker token.
+  test("admits no provider credential at all and excludes farm/auth bleed", () => {
+    const grant = "0123456789abcdef".repeat(4);
     const child = buildChildEnv({
       platform: "win32",
       provider: "openai",
       isolationRoot: resolve(tmpdir(), "ca-pi-security-child"),
+      brokerToken: grant,
       parent: {
         SystemRoot: "C:/Windows",
         USERPROFILE: "C:/isolated-home",
@@ -231,16 +235,18 @@ describe("ADR-0014 adversarial promotion contract", () => {
 
     expect(child).toMatchObject({
       CODEARBITER_SUBAGENT: "1",
-      OPENAI_API_KEY: "selected-provider-fixture",
+      CODEARBITER_PI_BROKER_TOKEN: grant,
       PI_OFFLINE: "1",
       PI_TELEMETRY: "0",
     });
     for (const forbidden of [
+      "OPENAI_API_KEY",
       "ANTHROPIC_API_KEY",
       "FARM_API_KEY",
       "CLAUDE_CODE_OAUTH_TOKEN",
       "CODEARBITER_PRIVATE_STATE",
     ]) expect(child[forbidden]).toBeUndefined();
+    expect(JSON.stringify(child)).not.toContain("selected-provider-fixture");
   });
 
   test("an obsolete session_start cannot mint readiness after shutdown and reactivation", async () => {

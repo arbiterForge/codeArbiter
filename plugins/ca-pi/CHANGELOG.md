@@ -2,6 +2,57 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.16] - 2026-07-25
+
+### Changed
+
+- **Breaking (isolation contract):** the isolated Pi child no longer receives
+  the operator's provider credential in any form. The parent binds a per-child
+  loopback broker on `127.0.0.1:0` and projects a provider configuration whose
+  `baseUrl` names that listener and whose `apiKey` references a per-child
+  ephemeral token. The child's Pi makes ordinary provider calls to loopback;
+  the parent authenticates the token, attaches the real credential, forwards
+  upstream, and streams the response back incrementally. `cat`-ing the child's
+  projected configuration now yields a token that dies with the child and is
+  worthless off-host, which retires the whole encoding-transform exfiltration
+  class rather than one instance of it.
+- The `auth.json` projection is deleted outright, not merely unused, and the
+  provider credential environment variables are no longer copied into the
+  child. The parent still reads the operator store, for its own upstream call.
+- Providers a bearer-substituting broker cannot serve fail the launch closed
+  with the new `isolation-broker` stage identifier: `amazon-bedrock` and
+  `google-vertex` (SDK request signing), `github-copilot` and `openai-codex`
+  (OAuth refresh inside the child), any `oauth` provider record, and any
+  provider with neither an operator `baseUrl` nor a pinned built-in endpoint.
+- **Breaking (broker interface):** the broker's upstream authority now requires
+  the parent's sensitive-value predicate. Without it the broker cannot tell
+  whether a response is handing the operator's own material back to the child,
+  so it refuses the authority rather than guessing.
+- Headers the child sends are now an allow list of what a provider call actually
+  needs, not a deny list of hop-by-hop names. Previously every unrecognised
+  child header rode verbatim onto a request carrying the operator's real
+  credential, and the credential could be substituted under any header name the
+  child chose. The destination origin is fixed, but the operator's `baseUrl` is
+  frequently a routing gateway, and gateways route on request headers.
+- The upstream response is filtered with the same predicate that already
+  suppressed a child echoing operator material through its final message. A
+  reflected credential in a response header fails closed; a reflected value in
+  the body resets the stream. Clean bytes still stream frame by frame, a
+  bounded overlap window catches a value split across two writes, and a
+  compressed body is refused rather than relayed unread.
+
+### Fixed
+
+- A model-level `baseUrl` in the operator's provider record skipped endpoint
+  acceptance entirely whenever a provider-level endpoint had already been
+  captured, so a credential-bearing model endpoint could cross unvalidated.
+- Operator-configured provider headers could be duplicated, rather than
+  overwritten, by a child sending the same header under a different case.
+- A request target carrying an encoded path separator (`/v1/..%2fadmin`) passed
+  the route-prefix test and reached the upstream with its encoding intact:
+  WHATWG URL normalises encoded dots but not encoded slashes. Encoded
+  separators are now refused outright.
+
 ## [0.1.15] - 2026-07-25
 
 ### Changed

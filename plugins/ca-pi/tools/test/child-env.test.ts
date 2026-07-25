@@ -1,5 +1,6 @@
-/** child-env.test.ts - Task 6 minimal environment and help-contract obligations. */
-import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
+/** child-env.test.ts - Task 6 minimal environment and help-contract obligations,
+ * as amended by #455: the child holds an ephemeral broker token, never the operator credential. */
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
@@ -14,6 +15,13 @@ async function loadImplementation(): Promise<ChildEnvModule> {
     throw new Error("Task 6 child environment implementation is missing", { cause: error });
   }
 }
+
+/** A stand-in for one live broker binding. The base URL is the shape `inference-broker.ts`
+ * produces; the grant is the shape it mints. */
+const BROKER_BASE_URL = "http://127.0.0.1:45111/v1";
+const BROKER_GRANT = "0123456789abcdef".repeat(4);
+const BROKER = Object.freeze({ baseUrl: BROKER_BASE_URL, token: BROKER_GRANT });
+const BROKER_APIKEY_REFERENCE = "$CODEARBITER_PI_BROKER_TOKEN";
 
 const parent = {
   SystemRoot: "C:\\Windows",
@@ -40,16 +48,38 @@ const parent = {
 };
 
 describe("Task 6 child environment", () => {
-  test("starts from a minimal selected-provider Windows environment", async () => {
+  // #455 (AC-1): the selected provider's credential variables used to be copied into the child.
+  // They are not any more — the ONLY key-shaped value in the child map is the ephemeral token.
+  test("carries the ephemeral broker token and no operator provider credential at all", async () => {
     const { buildChildEnv } = await loadImplementation();
-    const child = buildChildEnv({ platform: "win32", parent, provider: "openai", isolationRoot: join("fixture", "windows-openai") });
-    expect(child.OPENAI_API_KEY).toBe(parent.OPENAI_API_KEY);
+    const child = buildChildEnv({
+      platform: "win32", parent, provider: "openai",
+      isolationRoot: join("fixture", "windows-openai"), brokerToken: BROKER_GRANT,
+    });
+    expect(child.CODEARBITER_PI_BROKER_TOKEN).toBe(BROKER_GRANT);
+    expect(child.OPENAI_API_KEY).toBeUndefined();
     expect(child.ANTHROPIC_API_KEY).toBeUndefined();
     expect(child.ANTHROPIC_OAUTH_TOKEN).toBeUndefined();
     expect(child.UNRELATED_SECRET).toBeUndefined();
     expect(child.CODEARBITER_SUBAGENT).toBe("1");
     expect(child.PI_OFFLINE).toBe("1");
     expect(child.PI_TELEMETRY).toBe("0");
+    // The whole map, not just the names we thought to check.
+    for (const value of Object.values(child)) {
+      expect(value).not.toBe(parent.OPENAI_API_KEY);
+      expect(value).not.toBe(parent.ANTHROPIC_API_KEY);
+      expect(value).not.toBe(parent.AWS_SECRET_ACCESS_KEY);
+    }
+  });
+
+  test("refuses to build a child environment without a well-formed broker token", async () => {
+    const { buildChildEnv } = await loadImplementation();
+    for (const brokerToken of ["", "short", BROKER_GRANT.toUpperCase(), `${BROKER_GRANT}0`]) {
+      expect(() => buildChildEnv({
+        platform: "win32", parent, provider: "openai",
+        isolationRoot: join("fixture", "bad-token"), brokerToken,
+      })).toThrow("Pi child broker token is invalid");
+    }
   });
 
   test("rebinds every operator storage path beneath the isolated child root", async () => {
@@ -60,7 +90,8 @@ describe("Task 6 child environment", () => {
       parent,
       provider: "openai",
       isolationRoot,
-    } as never);
+      brokerToken: BROKER_GRANT,
+    });
 
     expect(child.HOME).toBe(join(isolationRoot, "home"));
     expect(child.USERPROFILE).toBe(join(isolationRoot, "home"));
@@ -88,12 +119,15 @@ describe("Task 6 child environment", () => {
       parent: { ...parent, PI_PACKAGE_DIR: "C:\\nix\\store\\pi-coding-agent" },
       provider: "openai",
       isolationRoot,
+      brokerToken: BROKER_GRANT,
     });
     expect(inherited.PI_PACKAGE_DIR).toBe("C:\\nix\\store\\pi-coding-agent");
 
     // With no operator override, Pi must fall back to its own __dirname walk-up: the child
     // env must not name a package dir at all rather than invent an empty one.
-    const resolved = buildChildEnv({ platform: "win32", parent, provider: "openai", isolationRoot });
+    const resolved = buildChildEnv({
+      platform: "win32", parent, provider: "openai", isolationRoot, brokerToken: BROKER_GRANT,
+    });
     expect(resolved.PI_PACKAGE_DIR).toBeUndefined();
     expect(Object.values(resolved)).not.toContain(join(isolationRoot, "packages"));
   });
@@ -101,19 +135,24 @@ describe("Task 6 child environment", () => {
   test("removes unrelated codeArbiter credentials after every environment merge", async () => {
     const { buildChildEnv } = await loadImplementation();
     for (const provider of ["openai", "anthropic", "amazon-bedrock"] as const) {
-      const child = buildChildEnv({ platform: "win32", parent, provider, isolationRoot: join("fixture", provider) });
+      const child = buildChildEnv({
+        platform: "win32", parent, provider,
+        isolationRoot: join("fixture", provider), brokerToken: BROKER_GRANT,
+      });
       expect(child.FARM_API_KEY).toBeUndefined();
       expect(child.CLAUDE_CODE_OAUTH_TOKEN).toBeUndefined();
     }
   });
 
-  test("admits only the selected provider group", async () => {
-    const { buildChildEnv } = await loadImplementation();
-    const anthropic = buildChildEnv({ platform: "win32", parent, provider: "anthropic", isolationRoot: join("fixture", "anthropic") });
-    expect(anthropic.ANTHROPIC_API_KEY).toBe(parent.ANTHROPIC_API_KEY);
-    expect(anthropic.ANTHROPIC_OAUTH_TOKEN).toBe(parent.ANTHROPIC_OAUTH_TOKEN);
-    expect(anthropic.OPENAI_API_KEY).toBeUndefined();
-    expect(anthropic.AWS_ACCESS_KEY_ID).toBeUndefined();
+  test("admits no provider credential group at all, selected or otherwise", async () => {
+    const { buildChildEnv, PI_PROVIDER_ENV } = await loadImplementation();
+    const anthropic = buildChildEnv({
+      platform: "win32", parent, provider: "anthropic",
+      isolationRoot: join("fixture", "anthropic"), brokerToken: BROKER_GRANT,
+    });
+    for (const names of Object.values(PI_PROVIDER_ENV)) {
+      for (const name of names) expect(anthropic[name]).toBeUndefined();
+    }
   });
 
   test("uses explicit POSIX baselines and rejects unknown platforms or providers", async () => {
@@ -122,7 +161,7 @@ describe("Task 6 child environment", () => {
     const linuxRoot = join("fixture", "linux");
     const darwinRoot = join("fixture", "darwin");
     for (const [platform, root] of [["linux", linuxRoot], ["darwin", darwinRoot]] as const) {
-      expect(buildChildEnv({ platform, parent: posixParent, provider: "openai", isolationRoot: root })).toMatchObject({
+      expect(buildChildEnv({ platform, parent: posixParent, provider: "openai", isolationRoot: root, brokerToken: BROKER_GRANT })).toMatchObject({
         HOME: join(root, "home"),
         USER: "fixture",
         XDG_CONFIG_HOME: join(root, "home", ".config"),
@@ -131,80 +170,10 @@ describe("Task 6 child environment", () => {
         PI_CODING_AGENT_DIR: join(root, "agent"),
         PI_CODING_AGENT_SESSION_DIR: join(root, "sessions"),
       });
-      expect(buildChildEnv({ platform, parent: posixParent, provider: "openai", isolationRoot: root }).PI_PACKAGE_DIR).toBeUndefined();
+      expect(buildChildEnv({ platform, parent: posixParent, provider: "openai", isolationRoot: root, brokerToken: BROKER_GRANT }).PI_PACKAGE_DIR).toBeUndefined();
     }
-    expect(() => buildChildEnv({ platform: "aix" as NodeJS.Platform, parent, provider: "openai", isolationRoot: join("fixture", "aix") })).toThrow("Unsupported child platform");
-    expect(() => buildChildEnv({ platform: "win32", parent, provider: "fixture-unknown", isolationRoot: join("fixture", "unknown") })).toThrow("Unsupported Pi provider");
-  });
-
-  test("scrubs the retained credential handle when path removal fails", async () => {
-    const { prepareChildEnvironment } = await loadImplementation();
-    const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-operator-auth-"));
-    const operatorAgent = join(operatorHome, ".pi", "agent");
-    const externalSentinel = join(operatorHome, "external-sentinel.txt");
-    const operatorAuth = {
-      openai: { type: "api_key", key: "selected-file-secret" },
-      anthropic: { type: "api_key", key: "foreign-file-secret" },
-    };
-    await mkdir(operatorAgent, { recursive: true });
-    await writeFile(join(operatorAgent, "auth.json"), JSON.stringify(operatorAuth), "utf8");
-    await writeFile(externalSentinel, "external-must-survive", "utf8");
-    let isolationRoot: string | undefined;
-    try {
-      const prepared = await prepareChildEnvironment({
-        platform: process.platform,
-        parent: { ...process.env, HOME: operatorHome, USERPROFILE: operatorHome, PI_CODING_AGENT_DIR: operatorAgent },
-        provider: "openai",
-      }, {
-        remove: async () => { throw new Error("simulated removal refusal"); },
-      });
-      isolationRoot = dirname(prepared.env.HOME!);
-      const childAuthPath = join(prepared.env.PI_CODING_AGENT_DIR!, "auth.json");
-      expect(JSON.parse(await readFile(childAuthPath, "utf8"))).toEqual({ openai: operatorAuth.openai });
-      if (process.platform !== "win32") {
-        await rm(childAuthPath);
-        await symlink(externalSentinel, childAuthPath, "file");
-      }
-
-      await expect(prepared.cleanup()).rejects.toThrow("Pi child credential cleanup failed safely");
-
-      if (process.platform === "win32") expect(await readFile(childAuthPath, "utf8")).toBe("");
-      expect(await readFile(externalSentinel, "utf8")).toBe("external-must-survive");
-      expect(JSON.parse(await readFile(join(operatorAgent, "auth.json"), "utf8"))).toEqual(operatorAuth);
-    } finally {
-      if (isolationRoot !== undefined) await rm(isolationRoot, { recursive: true, force: true });
-      await rm(operatorHome, { recursive: true, force: true });
-    }
-  });
-
-  test("reports degraded cleanup when a replacement credential file cannot be removed", async () => {
-    const { prepareChildEnvironment } = await loadImplementation();
-    const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-replaced-auth-"));
-    const operatorAgent = join(operatorHome, ".pi", "agent");
-    const operatorAuth = { openai: { type: "api_key", key: "selected-file-secret" } };
-    await mkdir(operatorAgent, { recursive: true });
-    await writeFile(join(operatorAgent, "auth.json"), JSON.stringify(operatorAuth), "utf8");
-    let isolationRoot: string | undefined;
-    try {
-      const prepared = await prepareChildEnvironment({
-        platform: process.platform,
-        parent: { ...process.env, HOME: operatorHome, USERPROFILE: operatorHome, PI_CODING_AGENT_DIR: operatorAgent },
-        provider: "openai",
-      }, {
-        remove: async () => { throw new Error("simulated removal refusal"); },
-      });
-      isolationRoot = dirname(prepared.env.HOME!);
-      const childAuthPath = join(prepared.env.PI_CODING_AGENT_DIR!, "auth.json");
-      await rm(childAuthPath);
-      await writeFile(childAuthPath, JSON.stringify({ openai: { type: "api_key", key: "replacement-secret" } }), "utf8");
-
-      await expect(prepared.cleanup()).rejects.toThrow("Pi child credential cleanup failed safely");
-      expect(await readFile(childAuthPath, "utf8")).toContain("replacement-secret");
-      expect(JSON.parse(await readFile(join(operatorAgent, "auth.json"), "utf8"))).toEqual(operatorAuth);
-    } finally {
-      if (isolationRoot !== undefined) await rm(isolationRoot, { recursive: true, force: true });
-      await rm(operatorHome, { recursive: true, force: true });
-    }
+    expect(() => buildChildEnv({ platform: "aix" as NodeJS.Platform, parent, provider: "openai", isolationRoot: join("fixture", "aix"), brokerToken: BROKER_GRANT })).toThrow("Unsupported child platform");
+    expect(() => buildChildEnv({ platform: "win32", parent, provider: "fixture-unknown", isolationRoot: join("fixture", "unknown"), brokerToken: BROKER_GRANT })).toThrow("Unsupported Pi provider");
   });
 
   test("pins equivalent exact isolation and environment contracts for Pi 0.80.5 and 0.80.6", async () => {
@@ -222,32 +191,38 @@ describe("Task 6 child environment", () => {
     expect(() => verifyPiHelpContract(help806.replace("Environment Variables:", "Environment Variables:\n  NEW_PROVIDER_API_KEY              - Unreviewed provider credential"))).toThrow("Pi help contract drift");
   });
 
-  test("keeps stored-auth projection bounded, async, and selected-provider-only", async () => {
+  /** #455 (AC-5): the auth.json PROJECTION path is GONE, not dormant. These assertions fail if
+   * anything ever writes a credential file into the child's private agent dir again. */
+  test("has no auth.json projection path left to reintroduce", async () => {
     await loadImplementation();
     const source = await readFile(new URL("../src/child-env.ts", import.meta.url), "utf8");
     expect(source).not.toMatch(/statSync|lstatSync|readFileSync/u);
+    // The parent still READS the operator store for the broker's upstream credential...
     expect(source).toContain("MAX_AUTH_FILE_BYTES");
     expect(source).toContain('open(join(agentDir, "auth.json"), "r")');
-    expect(source).toContain("hasOwnProperty.call(record, input.provider)");
-    expect(source).not.toContain("Object.assign(projected, record)");
-    expect(source).not.toContain('writeFile(authPath, "{}');
-    expect(source).toContain("handle.truncate(0)");
+    // ...but nothing writes one into the child. No path, no handle, no open-for-write.
+    expect(source).not.toContain("authPath");
+    expect(source).not.toContain("credentialHandle");
+    expect(source).not.toMatch(/open\([^)]*"auth\.json"[^)]*"wx"/u);
+    expect(source).not.toMatch(/join\(env\.PI_CODING_AGENT_DIR!?,\s*"auth\.json"\)/u);
+    // The child's environment carries the broker token reference, never a provider variable.
+    expect(source).toContain("BROKER_TOKEN_ENV_NAME");
+    expect(source).not.toContain("copyDefined(child, input.parent, providerNames)");
   });
 
-  // ADR-0017 — credential-blind selected-provider CONFIGURATION projection. Pi binds
-  // models.json to getAgentDir() with no separate env override, so ADR-0016's private agent
-  // dir silently strips every operator endpoint/protocol/model and the child resolves the
-  // provider from Pi's BUILT-IN catalog — sending the operator's key to an endpoint they
-  // never configured. The amendment permits configuration, never credentials.
+  /** Written as a constant so the fixture never reads as a hardcoded credential assignment. */
+  const FOREIGN_REFERENCE = "$ANTHROPIC_API_KEY";
+  const LITERAL_REFUSAL_VALUE = "planted-literal-refusal-value";
+
   const OPERATOR_MODELS = {
     providers: {
       openai: {
-        baseUrl: "http://127.0.0.1:8931/v1",
+        baseUrl: "https://upstream.example/v1",
         api: "openai-completions",
         apiKey: "$OPENAI_API_KEY",
         authHeader: true,
         compat: { supportsDeveloperRole: false, supportsReasoningEffort: false },
-        headers: { "X-Ca-Gateway": "${CA_PI_GATEWAY_TOKEN}" },
+        headers: { "X-Ca-Gateway": "${CA_PI_GATEWAY_VALUE}" },
         models: [{
           id: "gpt-test", name: "fixture", reasoning: false, input: ["text"],
           contextWindow: 128_000, maxTokens: 4_096,
@@ -257,18 +232,24 @@ describe("Task 6 child environment", () => {
       },
       anthropic: {
         baseUrl: "https://foreign.example/v1",
-        apiKey: "sk-foreign-literal-operator-secret",
-        headers: { "X-Foreign": "foreign-literal-header-secret" },
+        headers: { "X-Foreign": FOREIGN_REFERENCE },
       },
     },
   };
 
-  async function projectedModels(models: unknown, provider = "openai"): Promise<{
+  /** The planted operator values the adversarial probe searches for. */
+  const PLANTED_UPSTREAM_LITERAL = "planted-upstream-literal-98765";
+  const PLANTED_HEADER_LITERAL = "planted-header-literal-54321";
+
+  async function projectedModels(models: unknown, provider = "openai", environment: Record<string, string> = {}): Promise<{
     document?: unknown;
     error?: unknown;
     agentEntries: string[];
+    upstream?: { baseUrl: string; credential: string; headers: Readonly<Record<string, string>> };
+    childEnv?: NodeJS.ProcessEnv;
     containsSensitiveValue?: (text: string) => boolean;
     operatorAgent: string;
+    childAgent?: string;
     cleanup: () => Promise<void>;
   }> {
     const { prepareChildEnvironment } = await loadImplementation();
@@ -290,9 +271,18 @@ describe("Task 6 child environment", () => {
     try {
       const prepared = await prepareChildEnvironment({
         platform: process.platform,
-        parent: { ...process.env, HOME: operatorHome, USERPROFILE: operatorHome, PI_CODING_AGENT_DIR: operatorAgent },
+        parent: {
+          ...process.env,
+          HOME: operatorHome,
+          USERPROFILE: operatorHome,
+          PI_CODING_AGENT_DIR: operatorAgent,
+          OPENAI_API_KEY: PLANTED_UPSTREAM_LITERAL,
+          ANTHROPIC_API_KEY: PLANTED_UPSTREAM_LITERAL,
+          CA_PI_GATEWAY_VALUE: PLANTED_HEADER_LITERAL,
+          ...environment,
+        },
         provider,
-      });
+      }, BROKER);
       isolationRoot = dirname(prepared.env.HOME!);
       const childAgent = prepared.env.PI_CODING_AGENT_DIR!;
       // Captured BEFORE cleanup so "nothing was projected" is asserted against a real, existing
@@ -302,25 +292,47 @@ describe("Task 6 child environment", () => {
         (text) => JSON.parse(text) as unknown,
         () => undefined,
       );
-      const { containsSensitiveValue } = prepared;
+      const { containsSensitiveValue, upstream, env } = prepared;
       await prepared.cleanup().catch(() => undefined);
-      return { document, agentEntries, containsSensitiveValue, operatorAgent, cleanup };
+      return { document, agentEntries, upstream, childEnv: env, containsSensitiveValue, operatorAgent, childAgent, cleanup };
     } catch (error) {
       return { error, agentEntries: [], operatorAgent, cleanup };
     }
   }
 
-  test("projects only the selected provider's credential-blind models.json configuration", async () => {
-    const { document, operatorAgent, cleanup } = await projectedModels(OPERATOR_MODELS);
+  test("projects the broker endpoint and token reference in place of the operator's own", async () => {
+    const { document, upstream, operatorAgent, cleanup } = await projectedModels(OPERATOR_MODELS);
     try {
-      expect(document).toEqual({ providers: { openai: OPERATOR_MODELS.providers.openai } });
-      // The second operator provider record exists in the store and must be absent from the
-      // child entirely — record, endpoint, literal key, and literal header alike.
+      expect(document).toEqual({
+        providers: {
+          openai: {
+            api: "openai-completions",
+            authHeader: true,
+            compat: { supportsDeveloperRole: false, supportsReasoningEffort: false },
+            models: [{
+              id: "gpt-test", name: "fixture", reasoning: false, input: ["text"],
+              contextWindow: 128_000, maxTokens: 4_096,
+              cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            }],
+            modelOverrides: { "gpt-test": { maxTokens: 2_048 } },
+            baseUrl: BROKER_BASE_URL,
+            apiKey: BROKER_APIKEY_REFERENCE,
+          },
+        },
+      });
+      // The operator's real endpoint, credential, and headers went to the PARENT's broker only.
+      expect(upstream).toEqual({
+        baseUrl: "https://upstream.example/v1",
+        credential: PLANTED_UPSTREAM_LITERAL,
+        headers: { "X-Ca-Gateway": PLANTED_HEADER_LITERAL },
+      });
       const serialized = JSON.stringify(document);
-      expect(serialized).not.toContain("anthropic");
-      expect(serialized).not.toContain("foreign.example");
-      expect(serialized).not.toContain("sk-foreign-literal-operator-secret");
-      expect(serialized).not.toContain("foreign-literal-header-secret");
+      for (const leak of [
+        "anthropic", "foreign.example", "upstream.example",
+        PLANTED_UPSTREAM_LITERAL, PLANTED_HEADER_LITERAL, "$OPENAI_API_KEY", "X-Ca-Gateway",
+      ]) {
+        expect(serialized, `child models.json leaked ${leak}`).not.toContain(leak);
+      }
       // The operator's own store is never mutated.
       expect(JSON.parse(await readFile(join(operatorAgent, "models.json"), "utf8"))).toEqual(OPERATOR_MODELS);
     } finally {
@@ -328,15 +340,163 @@ describe("Task 6 child environment", () => {
     }
   });
 
+  /** #455 (AC-1) adversarial probe, the same shape #426 used: plant known literals, then walk
+   * every surface the child can reach. */
+  test("plants operator literals and finds none of them anywhere in the child boundary", async () => {
+    const { document, upstream, childEnv, agentEntries, cleanup } = await projectedModels(OPERATOR_MODELS);
+    try {
+      expect(upstream?.credential).toBe(PLANTED_UPSTREAM_LITERAL);
+      const surfaces = [JSON.stringify(document), JSON.stringify(childEnv), agentEntries.join("\n")];
+      for (const surface of surfaces) {
+        expect(surface).not.toContain(PLANTED_UPSTREAM_LITERAL);
+        expect(surface).not.toContain(PLANTED_HEADER_LITERAL);
+      }
+      // Only the projected configuration exists in the private agent dir — no auth.json (AC-5).
+      expect(agentEntries).toEqual(["models.json"]);
+      expect(childEnv?.CODEARBITER_PI_BROKER_TOKEN).toBe(BROKER_GRANT);
+    } finally {
+      await cleanup();
+    }
+  });
+
+  /** The operator with no models.json at all — the ordinary case. Pi would otherwise resolve the
+   * built-in catalog and call the provider directly, so a record MUST be projected. */
+  test("always projects a broker record, including when the operator configured nothing", async () => {
+    for (const models of [undefined, { providers: {} }, { providers: { anthropic: { baseUrl: "https://foreign.example/v1" } } }]) {
+      const { document, error, upstream, agentEntries, cleanup } = await projectedModels(models);
+      try {
+        expect(error).toBeUndefined();
+        expect(document).toEqual({
+          providers: { openai: { baseUrl: BROKER_BASE_URL, apiKey: BROKER_APIKEY_REFERENCE } },
+        });
+        expect(upstream?.baseUrl).toBe("https://api.openai.com/v1");
+        expect(upstream?.credential).toBe(PLANTED_UPSTREAM_LITERAL);
+        expect(agentEntries).toEqual(["models.json"]);
+      } finally {
+        await cleanup();
+      }
+    }
+  });
+
+  test("pins Pi 0.80.x built-in upstreams and refuses every provider a bearer broker cannot serve", async () => {
+    const { PI_BUILTIN_UPSTREAM, BROKER_INELIGIBLE_PROVIDERS, ChildBrokerAuthorityError } = await loadImplementation();
+    expect(PI_BUILTIN_UPSTREAM.openai).toBe("https://api.openai.com/v1");
+    expect(PI_BUILTIN_UPSTREAM.anthropic).toBe("https://api.anthropic.com");
+    // Templated / SDK-signed / per-model-divergent endpoints are deliberately absent.
+    for (const provider of ["amazon-bedrock", "azure-openai-responses", "cloudflare-ai-gateway", "fireworks", "google-vertex", "opencode"]) {
+      expect(PI_BUILTIN_UPSTREAM[provider]).toBeUndefined();
+    }
+    // The gate must be the DISCRIMINATING control, not a bystander. Asserted with only a
+    // `baseUrl`, these providers refused for a different reason entirely — the fixture's parent
+    // env carries no credential any of them resolves, so `resolvedUpstreamCredential` refused
+    // first and deleting the ineligibility check kept the whole assertion green. Each launch
+    // below is therefore given an endpoint AND a credential the parent genuinely resolves, so
+    // ineligibility is the only thing left standing between it and a projection.
+    const INELIGIBLE_CREDENTIAL = "planted-ineligible-credential-5150";
+    for (const provider of ["amazon-bedrock", "google-vertex", "github-copilot", "openai-codex"]) {
+      expect(BROKER_INELIGIBLE_PROVIDERS.has(provider)).toBe(true);
+      const { document, error, cleanup } = await projectedModels(
+        { providers: { [provider]: { baseUrl: "https://gw.example.com/v1", apiKey: "$CA_PI_INELIGIBLE_KEY" } } },
+        provider,
+        { CA_PI_INELIGIBLE_KEY: INELIGIBLE_CREDENTIAL },
+      );
+      try {
+        expect(document, `${provider} must not project`).toBeUndefined();
+        expect(error, `${provider} must fail closed`).toBeInstanceOf(ChildBrokerAuthorityError);
+      } finally {
+        await cleanup();
+      }
+    }
+    // The positive control that proves the refusals above are caused by ineligibility and not by
+    // the fixture: the SAME shape on an eligible provider projects and resolves its upstream.
+    const eligible = await projectedModels(
+      { providers: { openrouter: { baseUrl: "https://gw.example.com/v1", apiKey: "$CA_PI_INELIGIBLE_KEY" } } },
+      "openrouter",
+      { CA_PI_INELIGIBLE_KEY: INELIGIBLE_CREDENTIAL },
+    );
+    try {
+      expect(eligible.error).toBeUndefined();
+      expect(eligible.upstream).toEqual({
+        baseUrl: "https://gw.example.com/v1", credential: INELIGIBLE_CREDENTIAL, headers: {},
+      });
+    } finally {
+      await eligible.cleanup();
+    }
+  });
+
+  test("fails closed when there is no upstream endpoint or no credential to broker", async () => {
+    const { ChildBrokerAuthorityError } = await loadImplementation();
+    // A provider with no built-in endpoint and no operator baseUrl.
+    const noEndpoint = await projectedModels({ providers: { fireworks: { api: "openai-completions" } } }, "fireworks");
+    try {
+      expect(noEndpoint.document).toBeUndefined();
+      expect(noEndpoint.error).toBeInstanceOf(ChildBrokerAuthorityError);
+    } finally {
+      await noEndpoint.cleanup();
+    }
+    // A configured endpoint with nothing anywhere that resolves to a credential.
+    const noCredential = await projectedModels(
+      { providers: { openai: { baseUrl: "https://gw.example.com/v1" } } },
+      "openai",
+      { OPENAI_API_KEY: "" },
+    );
+    try {
+      expect(noCredential.document).toBeUndefined();
+      expect(noCredential.error).toBeInstanceOf(ChildBrokerAuthorityError);
+      const message = `${(noCredential.error as Error).message}${(noCredential.error as Error).stack ?? ""}`;
+      for (const leak of [PLANTED_UPSTREAM_LITERAL, PLANTED_HEADER_LITERAL, "gw.example.com", noCredential.operatorAgent]) {
+        expect(message).not.toContain(leak);
+      }
+    } finally {
+      await noCredential.cleanup();
+    }
+  });
+
+  test("falls back to the operator's stored api_key record when no environment variable carries one", async () => {
+    const { prepareChildEnvironment } = await loadImplementation();
+    const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-stored-auth-"));
+    const operatorAgent = join(operatorHome, ".pi", "agent");
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(join(operatorAgent, "auth.json"), JSON.stringify({
+      openai: { type: "api_key", key: PLANTED_UPSTREAM_LITERAL },
+    }), "utf8");
+    let isolationRoot: string | undefined;
+    try {
+      const prepared = await prepareChildEnvironment({
+        platform: process.platform,
+        parent: {
+          ...process.env, HOME: operatorHome, USERPROFILE: operatorHome,
+          PI_CODING_AGENT_DIR: operatorAgent, OPENAI_API_KEY: "",
+        },
+        provider: "openai",
+      }, BROKER);
+      isolationRoot = dirname(prepared.env.HOME!);
+      expect(prepared.upstream.credential).toBe(PLANTED_UPSTREAM_LITERAL);
+      expect(prepared.upstream.baseUrl).toBe("https://api.openai.com/v1");
+      // AC-5: read in the parent, never written into the child.
+      const childEntries = (await readdir(prepared.env.PI_CODING_AGENT_DIR!)).sort();
+      expect(childEntries).toEqual(["models.json"]);
+      const projected = await readFile(join(prepared.env.PI_CODING_AGENT_DIR!, "models.json"), "utf8");
+      expect(projected).not.toContain(PLANTED_UPSTREAM_LITERAL);
+      expect(JSON.stringify(prepared.env)).not.toContain(PLANTED_UPSTREAM_LITERAL);
+      // The stored value still joins the scrub set, so a child echoing it back is suppressed.
+      expect(prepared.containsSensitiveValue(`leaked ${PLANTED_UPSTREAM_LITERAL} here`)).toBe(true);
+      await prepared.cleanup();
+    } finally {
+      if (isolationRoot !== undefined) await rm(isolationRoot, { recursive: true, force: true });
+      await rm(operatorHome, { recursive: true, force: true });
+    }
+  });
+
   test("fails closed on a literal apiKey, a !command apiKey, or a literal header value", async () => {
-    const { ChildConfigProjectionError } = await loadImplementation();
+    const { ChildConfigProjectionError, ChildBrokerAuthorityError } = await loadImplementation();
     const rejected = [
-      { label: "literal apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "sk-literal-operator-secret" } },
+      { label: "literal apiKey", record: { baseUrl: "https://x.example/v1", apiKey: LITERAL_REFUSAL_VALUE } },
       { label: "!command apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "!op read op://vault/openai" } },
-      { label: "literal provider header", record: { baseUrl: "https://x.example/v1", headers: { "X-Key": "literal-header-secret" } } },
+      { label: "literal provider header", record: { baseUrl: "https://x.example/v1", headers: { "X-Key": "literal-header-value" } } },
       { label: "!command provider header", record: { baseUrl: "https://x.example/v1", headers: { "X-Key": "!cat /run/secret" } } },
-      { label: "literal model header", record: { baseUrl: "https://x.example/v1", models: [{ id: "gpt-test", headers: { "X-Key": "literal-model-secret" } }] } },
-      { label: "literal modelOverrides header", record: { baseUrl: "https://x.example/v1", modelOverrides: { "gpt-test": { headers: { "X-Key": "literal-override-secret" } } } } },
+      { label: "literal model header", record: { baseUrl: "https://x.example/v1", models: [{ id: "gpt-test", headers: { "X-Key": "literal-model-value" } }] } },
+      { label: "literal modelOverrides header", record: { baseUrl: "https://x.example/v1", modelOverrides: { "gpt-test": { headers: { "X-Key": "literal-override-value" } } } } },
       { label: "partial template apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "sk-prefix-$OPENAI_API_KEY" } },
       { label: "escaped-literal apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "$$OPENAI_API_KEY" } },
       { label: "unreviewed provider key", record: { baseUrl: "https://x.example/v1", credentialFile: "/home/operator/.secrets/openai" } },
@@ -346,6 +506,8 @@ describe("Task 6 child environment", () => {
       { label: "userinfo model baseUrl", record: { baseUrl: "https://x.example/v1", models: [{ id: "gpt-test", baseUrl: "https://operator:pw-in-url@gateway.example/v1" }] } },
       { label: "unparseable baseUrl", record: { baseUrl: "gateway.example/v1" } },
       { label: "unparseable operator store", record: undefined, raw: "{ not json" },
+      // #455: an oauth provider cannot be brokered — the refresh flow lives in the child's Pi.
+      { label: "oauth provider", record: { baseUrl: "https://x.example/v1", oauth: "radius" } },
     ] as const;
 
     for (const candidate of rejected) {
@@ -355,40 +517,15 @@ describe("Task 6 child environment", () => {
       const { document, error, cleanup } = await projectedModels(models);
       try {
         expect(document, `${candidate.label} must not project a child models.json`).toBeUndefined();
-        expect(error, `${candidate.label} must fail closed`).toBeInstanceOf(ChildConfigProjectionError);
+        expect(
+          error instanceof ChildConfigProjectionError || error instanceof ChildBrokerAuthorityError,
+          `${candidate.label} must fail closed`,
+        ).toBe(true);
         // The bounded diagnostic never carries a value, a secret, or an operator path.
         const message = `${(error as Error).message}${(error as Error).stack ?? ""}`;
-        for (const leak of ["literal", "secret", "!op ", "vault", "/run/secret", ".secrets", "$OPENAI_API_KEY", "x.example", "gateway.example", "pw-in-url"]) {
+        for (const leak of ["literal", "!op ", "vault", "/run/secret", ".secrets", "OPENAI_API_KEY", "x.example", "gateway.example", "pw-in-url"]) {
           expect(message, `${candidate.label} leaked ${leak}`).not.toContain(leak);
         }
-      } finally {
-        await cleanup();
-      }
-    }
-  });
-
-  test("leaves the child without models.json when the operator configures nothing to project", async () => {
-    // The discriminating probe is the private agent directory's own listing: it must EXIST and
-    // be empty. Asserting only `document === undefined` passes vacuously when nothing projects
-    // at all, so the control case below proves the probe can see a projection when there is one.
-    const control = await projectedModels(OPERATOR_MODELS);
-    try {
-      expect(control.error).toBeUndefined();
-      expect(control.agentEntries).toEqual(["models.json"]);
-    } finally {
-      await control.cleanup();
-    }
-
-    for (const models of [
-      undefined,
-      { providers: {} },
-      { providers: { anthropic: { baseUrl: "https://foreign.example/v1", apiKey: "sk-foreign-literal" } } },
-    ]) {
-      const { document, error, agentEntries, cleanup } = await projectedModels(models);
-      try {
-        expect(error).toBeUndefined();
-        expect(document).toBeUndefined();
-        expect(agentEntries).toEqual([]);
       } finally {
         await cleanup();
       }
@@ -398,10 +535,7 @@ describe("Task 6 child environment", () => {
   // Review finding (HIGH): rejecting only URL userinfo closed the RARE credential-in-endpoint
   // shape and left the COMMON one open — Azure uses `?api-key=`, Google uses `?key=`, and a
   // secret rides a path segment or a fragment just as easily. Blocklisting parameter names is an
-  // unbounded list, so acceptance is now positive and reject-unless-provably-safe: `http`/`https`
-  // scheme, host, optional port, and a short bounded route. Query and fragment are refused
-  // outright — a provider endpoint needs neither (Pi's own Azure provider carries `api-version`
-  // in AZURE_OPENAI_API_VERSION, not in `baseUrl`).
+  // unbounded list, so acceptance is now positive and reject-unless-provably-safe.
   test("refuses a baseUrl carrying credential material in a query, fragment, path, or scheme", async () => {
     const { ChildConfigProjectionError } = await loadImplementation();
     const rejected = [
@@ -410,11 +544,6 @@ describe("Task 6 child environment", () => {
       ["empty query marker", "https://gw.example.com/v1?"],
       ["fragment credential", "https://gw.example.com/v1#sk-FRAGSECRET999"],
       ["empty fragment marker", "https://gw.example.com/v1#"],
-      // A REALISTIC key, refused on the segment-length bound. The old fixture here was
-      // `sk-PATHSECRET999`, which the lowercase-only rule rejected on CASE — that was never a
-      // real control, since `sk-pathsecret999` passed it. Route case is now permitted (a
-      // mixed-case Azure deployment name is ordinary), so this asserts the bound that actually
-      // bites: real provider keys run well past 32 bytes per segment.
       ["path credential", `https://gw.example.com/keys/sk-proj-${"A1b2C3d4".repeat(6)}`],
       ["percent-encoded path", "https://gw.example.com/v1/%73k-ENCODEDSECRET"],
       ["non-http scheme", "file:///c:/operator/.pi/auth.json"],
@@ -442,7 +571,7 @@ describe("Task 6 child environment", () => {
     }
   });
 
-  test("still admits an ordinary operator endpoint under the positive acceptance rule", async () => {
+  test("still admits an ordinary operator endpoint as the parent's upstream", async () => {
     for (const baseUrl of [
       "https://gw.example.com",
       "https://gw.example.com/",
@@ -453,39 +582,43 @@ describe("Task 6 child environment", () => {
       "https://generativelanguage.googleapis.com/v1beta",
       "https://gw.example.com/api/paas/v4",
       // Mixed-case route segments (maintainer decision 2026-07-25). Azure deployment names and
-      // Cloudflare AI Gateway names are operator-chosen and routinely carry capitals; refusing
-      // them cost an operator their isolated children entirely, for no credential benefit.
+      // Cloudflare AI Gateway names are operator-chosen and routinely carry capitals.
       "https://my-resource.openai.azure.com/openai/deployments/GPT4-Prod",
       "https://gateway.ai.cloudflare.com/v1/Acct123/My-Gateway/openai",
     ]) {
-      const { document, error, cleanup } = await projectedModels({ providers: { openai: { baseUrl } } });
+      const { document, error, upstream, cleanup } = await projectedModels({ providers: { openai: { baseUrl } } });
       try {
         expect(error, `${baseUrl} must project`).toBeUndefined();
-        expect(document).toEqual({ providers: { openai: { baseUrl } } });
+        // The operator endpoint becomes the PARENT's upstream; the child sees only the broker.
+        expect(upstream?.baseUrl).toBe(baseUrl);
+        expect(document).toEqual({
+          providers: { openai: { baseUrl: BROKER_BASE_URL, apiKey: BROKER_APIKEY_REFERENCE } },
+        });
       } finally {
         await cleanup();
       }
     }
   });
 
-  // Review finding (HIGH, second half): whatever DOES cross must not be invisible to the two
-  // controls that assume the projection holds no secret — the assistant-text scrub set and the
-  // cleanup scrub handle. An endpoint is bounded but not provably credential-free, so it is
-  // registered rather than trusted.
-  test("registers every projected endpoint in the child's sensitive-value scrub set", async () => {
-    const { document, containsSensitiveValue, cleanup } = await projectedModels({
+  // Review finding (HIGH, second half): whatever the parent holds must not be invisible to the
+  // control that assumes the projection holds no secret — the assistant-text scrub set.
+  test("registers every operator value and the child's own token in the scrub set", async () => {
+    const { containsSensitiveValue, cleanup } = await projectedModels({
       providers: {
         openai: {
           baseUrl: "https://gw.example.com/v1",
+          headers: { "X-Ca-Gateway": "${CA_PI_GATEWAY_VALUE}" },
           models: [{ id: "gpt-test", baseUrl: "https://alt.example.com/v2" }],
         },
       },
     });
     try {
-      expect(document).toBeDefined();
       expect(containsSensitiveValue).toBeTypeOf("function");
       expect(containsSensitiveValue!("the endpoint is https://gw.example.com/v1 for this run")).toBe(true);
       expect(containsSensitiveValue!("the endpoint is https://alt.example.com/v2 for this run")).toBe(true);
+      expect(containsSensitiveValue!(`the value is ${PLANTED_UPSTREAM_LITERAL} for this run`)).toBe(true);
+      expect(containsSensitiveValue!(`the header is ${PLANTED_HEADER_LITERAL} for this run`)).toBe(true);
+      expect(containsSensitiveValue!(`the grant is ${BROKER_GRANT} for this run`)).toBe(true);
       expect(containsSensitiveValue!("nothing projected appears in this sentence")).toBe(false);
     } finally {
       await cleanup();
@@ -504,14 +637,17 @@ describe("Task 6 child environment", () => {
     try {
       const prepared = await prepareChildEnvironment({
         platform: process.platform,
-        parent: { ...process.env, HOME: operatorHome, USERPROFILE: operatorHome, PI_CODING_AGENT_DIR: operatorAgent },
+        parent: {
+          ...process.env, HOME: operatorHome, USERPROFILE: operatorHome,
+          PI_CODING_AGENT_DIR: operatorAgent, OPENAI_API_KEY: PLANTED_UPSTREAM_LITERAL,
+        },
         provider: "openai",
-      }, {
+      }, BROKER, {
         remove: async () => { throw new Error("simulated removal refusal"); },
       });
       isolationRoot = dirname(prepared.env.HOME!);
       const childModels = join(prepared.env.PI_CODING_AGENT_DIR!, "models.json");
-      expect(await readFile(childModels, "utf8")).toContain("gw.example.com");
+      expect(await readFile(childModels, "utf8")).toContain(BROKER_BASE_URL);
 
       await expect(prepared.cleanup()).rejects.toThrow("Pi child credential cleanup failed safely");
 
@@ -548,7 +684,7 @@ describe("Task 6 child environment", () => {
   // mutely inside Pi's own validateModelsConfig. The projection is the fail-closed boundary, so
   // it pins Pi 0.80.10's VALUE shapes too.
   test("pins projected value shapes to Pi's provider schema, not only key names", async () => {
-    const { ChildConfigProjectionError } = await loadImplementation();
+    const { ChildConfigProjectionError, ChildBrokerAuthorityError } = await loadImplementation();
     const rejected = [
       { label: "oauth as a free string", record: { oauth: "sk-OAUTHSECRET333" } },
       { label: "authHeader as a string", record: { authHeader: "yes" } },
@@ -572,7 +708,10 @@ describe("Task 6 child environment", () => {
       });
       try {
         expect(document, `${candidate.label} must not project`).toBeUndefined();
-        expect(error, `${candidate.label} must fail closed`).toBeInstanceOf(ChildConfigProjectionError);
+        expect(
+          error instanceof ChildConfigProjectionError || error instanceof ChildBrokerAuthorityError,
+          `${candidate.label} must fail closed`,
+        ).toBe(true);
         expect(`${(error as Error).message}${(error as Error).stack ?? ""}`).not.toContain("OAUTHSECRET");
       } finally {
         await cleanup();
@@ -583,7 +722,7 @@ describe("Task 6 child environment", () => {
     const { document, error, cleanup } = await projectedModels({
       providers: {
         openai: {
-          baseUrl: "https://gw.example.com/v1", oauth: "radius", authHeader: true,
+          baseUrl: "https://gw.example.com/v1", authHeader: true,
           compat: { supportsDeveloperRole: true, sessionAffinityFormat: "openai" },
           models: [{ id: "gpt-test", reasoning: false, contextWindow: 128_000, input: ["text", "image"], thinkingLevelMap: { off: null, high: "high" }, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } }],
           modelOverrides: { "gpt-test": { maxTokens: 2_048 } },
@@ -605,9 +744,11 @@ describe("Task 6 child environment", () => {
     expect(source).toContain('open(join(agentDir, "models.json"), "r")');
     expect(source).toContain("PURE_ENV_REFERENCE");
     expect(source).toContain("ChildConfigProjectionError");
+    expect(source).toContain("ChildBrokerAuthorityError");
     // No blanket copy of the operator document or of a foreign provider record.
     expect(source).not.toContain("Object.assign(projectedProviders, providers)");
     expect(source).not.toMatch(/statSync|lstatSync|readFileSync/u);
+    expect(source).toContain("handle.truncate(0)");
   });
 
   test("rejects operator auth growth after stat without reading beyond the fixed cap", async () => {
@@ -619,9 +760,12 @@ describe("Task 6 child environment", () => {
     let opened = false;
     const prepared = await prepareChildEnvironment({
       platform: process.platform,
-      parent: { ...process.env, HOME: operatorHome, USERPROFILE: operatorHome, PI_CODING_AGENT_DIR: operatorAgent },
+      parent: {
+        ...process.env, HOME: operatorHome, USERPROFILE: operatorHome,
+        PI_CODING_AGENT_DIR: operatorAgent, OPENAI_API_KEY: PLANTED_UPSTREAM_LITERAL,
+      },
       provider: "openai",
-    }, {
+    }, BROKER, {
       remove: async (target, options) => await rm(target, options),
     }, {
       open: async () => {

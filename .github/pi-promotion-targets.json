@@ -164,6 +164,21 @@
       "after": "version: \"{candidate}\""
     },
     {
+      "id": "broker-lifecycle-package-fixture",
+      "path": "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
+      "class": "ci",
+      "before": "\"version\":\"{last_verified}\",\"bin\"",
+      "after": "\"version\":\"{candidate}\",\"bin\""
+    },
+    {
+      "id": "broker-lifecycle-mock-identity",
+      "path": "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
+      "class": "ci",
+      "occurrences": "all",
+      "before": "version: \"{last_verified}\"",
+      "after": "version: \"{candidate}\""
+    },
+    {
       "id": "compaction-package-fixture",
       "path": "plugins/ca-pi/tools/test/compaction.test.ts",
       "class": "ci",

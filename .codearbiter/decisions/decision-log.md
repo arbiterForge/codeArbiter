@@ -736,3 +736,51 @@ probe of its implementation on PR #426, which proved the endpoint clause both in
 once corrected, over-strict (refused ordinary Azure deployment names).
 
 ---
+
+## DECISION-0024 — ADR-0019 — Broker Pi child inference instead of projecting a credential into the child
+
+**Date:** 2026-07-25
+**Status:** accepted
+**Supersedes:** DECISION-0021 (partial — only ADR-0016's credential-projection clause)
+**Decided by:** SUaDtL@users.noreply.github.com ("B — build the broker now"; architecture "Loopback proxy + ephemeral token"; authoring explicitly approved)
+**Decision category:** security architecture / Pi credential boundary
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Accepted ADR-0016 permits projecting the operator's selected-provider `auth.json` record into an isolated child's private agent directory, guarded by scrubbing and exact-value result matching.
+- **Scaffold position:** The child holds `bash`/`read` tools and `cat` is on the inspection allowlist, so a prompt-injected child can read that credential and defeat exact-value matching with any encoding transform. The class of transforms is unbounded, so no blacklist closes it.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Remove the credential from the child entirely rather than trying to detect it on the way out. The
+parent binds a per-child loopback broker on `127.0.0.1:0`, projects a configuration whose `baseUrl`
+names that listener and whose `apiKey` is a per-child ephemeral token, and substitutes the real
+credential upstream. The `auth.json` projection is deleted, not disabled. Providers a
+bearer-substituting broker cannot serve fail the launch closed rather than falling back to a
+credential in the child.
+
+### SMARTS rationale
+Securable drove it decisively. The maintainer rejected the cheaper "document the residual" option on
+the grounds that its safety rested on a single compensating control — a governed child has no
+network egress — which is a property of the current tool set and would be silently removed the
+moment a network-capable tool (WebFetch) reaches a child. Accepting a residual whose compensating
+control a roadmapped feature erases is how a documented risk becomes a breach. Available is
+preserved: stored-auth parity survives, which is what ADR-0016 was created to protect. Maintainable
+is Adequate — the broker is a new permanent surface, accepted because it kills a class rather than
+an instance. Testable is Strong: containment was proven by adversarial probe, not asserted.
+Conflict-hierarchy Level 1 governs.
+
+### Implementation implication
+Record ADR-0019 as the superseding credential decision (forward-only; ADR-0016's file is not
+edited). Reconcile `.codearbiter/security-controls.md` — the Pi authentication section, the child
+environment paragraph, and the boundary-crossings row. Implement in
+`plugins/ca-pi/tools/src/inference-broker.ts` with `child-env.ts` as the projection seam, extend the
+runner's closed degraded-reason allowlist by `isolation-broker`, and keep the live
+`test_pi_child_live.py` contract plus the credential-containment probe as release blockers. Close
+#414 and #415, which this decision resolves rather than implements.
+
+### Resolves same-level conflict between (when applicable)
+Accepted `0016-bounded-pi-child-credential-projection.md` and the adversarial finding on #414 that a
+child can read its own projected credential and defeat exact-value result matching by encoding it.
+
+---
