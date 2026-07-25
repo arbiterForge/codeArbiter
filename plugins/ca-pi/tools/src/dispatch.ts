@@ -1,6 +1,5 @@
 /** dispatch.ts - bounded single, chained, and FIFO-parallel Pi orchestration. */
 import { randomUUID } from "node:crypto";
-import { appendFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { types as utilTypes } from "node:util";
 
@@ -11,6 +10,7 @@ import type {
 } from "./contracts.ts";
 import { publishActivity } from "./activity.ts";
 import type { ActivityPublisher } from "./activity.ts";
+import { appendAuditLine, auditField } from "./audit-sink.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog, validRoleName } from "./roles.ts";
 import type { PiRole } from "./roles.ts";
@@ -30,11 +30,12 @@ interface DispatchAuditRecord {
   diagnostic?: string;
 }
 
-/** Appends one gate-events.log line per Pi child dispatch completion (success or failure),
- * mirroring bridge.ts's auditFailure and compaction.ts's appendPiCompactionAudit: same target
- * resolution, same append-only best-effort fail-open contract. An unwritable audit sink NEVER
- * changes dispatch behavior or its result. Task/prompt content and raw child stderr are never
- * included. */
+/** Appends one governance row per Pi child dispatch completion (success or failure) through the
+ * shared hardened sink in audit-sink.ts, which is also what bridge.ts's auditFailure and
+ * compaction.ts's appendPiCompactionAudit use: one target resolution, one link- and
+ * race-resistant append, one append-only best-effort fail-open contract. An unavailable or
+ * redirected audit sink NEVER changes dispatch behavior or its result. Task/prompt content and
+ * raw child stderr are never included. */
 export async function appendDispatchAudit(record: DispatchAuditRecord): Promise<void> {
   const line = [
     `[${new Date().toISOString()}]`,
@@ -42,20 +43,16 @@ export async function appendDispatchAudit(record: DispatchAuditRecord): Promise<
     "RULE: PI-DISPATCH",
     `AUDIT: ${record.terminal === "completed" ? "PI_DISPATCH_COMPLETED" : "PI_DISPATCH_DEGRADED"}`,
     `CORRELATION: ${randomUUID()}`,
-    `ROLE: ${safeDiagnostic(record.role, 100)}`,
-    `PROVIDER: ${safeDiagnostic(record.provider, 100)}`,
-    `MODEL: ${safeDiagnostic(record.model, 100)}`,
+    `ROLE: ${auditField(safeDiagnostic(record.role, 100))}`,
+    `PROVIDER: ${auditField(safeDiagnostic(record.provider, 100))}`,
+    `MODEL: ${auditField(safeDiagnostic(record.model, 100))}`,
     `EXIT: ${record.terminal}${record.exitCode === undefined ? "" : `(${record.exitCode})`}`,
     `DURATION_MS: ${record.durationMs ?? 0}`,
     `STDOUT_BYTES: ${record.stdoutBytes ?? 0}`,
     `STDERR_BYTES: ${record.stderrBytes ?? 0}`,
-    ...(record.diagnostic === undefined ? [] : [`DIAGNOSTIC: ${safeDiagnostic(record.diagnostic, 200)}`]),
+    ...(record.diagnostic === undefined ? [] : [`DIAGNOSTIC: ${auditField(safeDiagnostic(record.diagnostic, 200))}`]),
   ].join(" | ") + "\n";
-  try {
-    await appendFile(resolve(record.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
-  } catch {
-    // A dispatch outcome remains valid if its append-only audit sink is unavailable.
-  }
+  await appendAuditLine(record.cwd, line);
 }
 
 export const DISPATCH_MODES = Object.freeze(["single", "chain", "parallel"] as const);

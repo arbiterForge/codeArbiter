@@ -1,7 +1,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { accessSync, constants, realpathSync, statSync } from "node:fs";
-import { appendFile, realpath } from "node:fs/promises";
+import { realpath } from "node:fs/promises";
 import { dirname, isAbsolute, posix, resolve, win32 } from "node:path";
 
 import type {
@@ -15,6 +15,7 @@ import type {
   PiUsageSnapshotPortResult,
   ToolCategory,
 } from "./contracts.ts";
+import { appendAuditLine } from "./audit-sink.ts";
 import { flavorForPlatform, lexicallyInside } from "./path-boundary.ts";
 import { redactJson, safeDiagnostic } from "./redaction.ts";
 
@@ -704,11 +705,10 @@ export class BridgeClient implements BridgePort {
       `STDOUT_BYTES: ${counts.stdout}`,
       `STDERR_BYTES: ${counts.stderr}`,
     ].join(" | ") + "\n";
-    try {
-      await appendFile(resolve(request.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
-    } catch {
-      // A bridge failure must retain its fail direction even if the audit sink is unavailable.
-    }
+    // appendAuditLine returns false rather than throwing when the project's sink is missing,
+    // linked, or raced, so a bridge failure keeps its fail direction and its own bounded
+    // diagnostic either way; the sink is never followed to reach an outside file.
+    await appendAuditLine(request.cwd, line);
   }
 
   private async failed(

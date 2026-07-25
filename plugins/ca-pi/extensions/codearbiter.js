@@ -46,8 +46,13 @@ function compatibilityDirection(input) {
 import { spawn, spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { accessSync, constants, realpathSync as realpathSync2, statSync } from "node:fs";
-import { appendFile, realpath } from "node:fs/promises";
-import { isAbsolute, posix as posix2, resolve as resolve2, win32 as win322 } from "node:path";
+import { realpath as realpath2 } from "node:fs/promises";
+import { isAbsolute, posix as posix2, win32 as win322 } from "node:path";
+
+// src/audit-sink.ts
+import { constants as fsConstants } from "node:fs";
+import { lstat, open, realpath } from "node:fs/promises";
+import { relative, resolve as resolve2 } from "node:path";
 
 // src/path-boundary.ts
 import { realpathSync } from "node:fs";
@@ -72,6 +77,102 @@ function canonicalPath(path) {
 }
 function canonicallyInside(path, root) {
   return lexicallyInside(canonicalPath(path), canonicalPath(root));
+}
+
+// src/audit-sink.ts
+var AUDIT_LOG_NAME = "gate-events.log";
+var AUDIT_STATE_DIRECTORY = ".codearbiter";
+var MAX_AUDIT_LINE_BYTES = 2048;
+var NODE_AUDIT_SINK_IO = Object.freeze({ realpath, lstat, open });
+function sameAuditFile(left, right) {
+  return left.isFile() && right.isFile() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.nlink === 1 && right.nlink === 1 && left.dev === right.dev && left.ino === right.ino;
+}
+function sameAuditDirectory(left, right) {
+  return left.isDirectory() && right.isDirectory() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.dev === right.dev && left.ino === right.ino;
+}
+async function openedAuditTarget(target, io) {
+  const noFollow = typeof fsConstants.O_NOFOLLOW === "number" ? fsConstants.O_NOFOLLOW : 0;
+  const existingFlags = fsConstants.O_WRONLY | fsConstants.O_APPEND | noFollow;
+  const createFlags = existingFlags | fsConstants.O_CREAT | fsConstants.O_EXCL;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    let expected;
+    try {
+      expected = await io.lstat(target);
+      if (!expected.isFile() || expected.isSymbolicLink() || expected.nlink !== 1) return void 0;
+    } catch (error) {
+      if (error.code !== "ENOENT") return void 0;
+    }
+    let handle;
+    try {
+      handle = await io.open(target, expected === void 0 ? createFlags : existingFlags, 384);
+    } catch (error) {
+      if (expected === void 0 && error.code === "EEXIST" && attempt === 0) continue;
+      return void 0;
+    }
+    try {
+      const opened = await handle.stat();
+      const pathname = await io.lstat(target);
+      if (!sameAuditFile(opened, pathname) || expected !== void 0 && !sameAuditFile(opened, expected)) {
+        await handle.close();
+        return void 0;
+      }
+      return Object.freeze({ handle, identity: opened });
+    } catch {
+      try {
+        await handle.close();
+      } catch {
+      }
+      return void 0;
+    }
+  }
+  return void 0;
+}
+async function appendAuditLineWithIo(cwd, line, io) {
+  try {
+    if (Buffer.byteLength(line, "utf8") > MAX_AUDIT_LINE_BYTES || !line.endsWith("\n") || line.slice(0, -1).includes("\n")) return false;
+    const root = await io.realpath(cwd);
+    const statePath = resolve2(root, AUDIT_STATE_DIRECTORY);
+    const stateInfo = await io.lstat(statePath);
+    if (!stateInfo.isDirectory() || stateInfo.isSymbolicLink()) return false;
+    const state = await io.realpath(statePath);
+    const stateRelative = relative(root, state);
+    if (stateRelative === "" || !lexicallyInside(state, root) || resolve2(root, stateRelative) !== state) return false;
+    const stateIdentity = await io.lstat(state);
+    if (!sameAuditDirectory(stateInfo, stateIdentity)) return false;
+    const stateIsCurrent = async () => {
+      try {
+        return await io.realpath(statePath) === state && sameAuditDirectory(stateIdentity, await io.lstat(statePath));
+      } catch {
+        return false;
+      }
+    };
+    if (!await stateIsCurrent()) return false;
+    const target = resolve2(state, AUDIT_LOG_NAME);
+    const opened = await openedAuditTarget(target, io);
+    if (opened === void 0) return false;
+    const { handle, identity: identity2 } = opened;
+    try {
+      const before = await handle.stat();
+      const beforePath = await io.lstat(target);
+      if (!sameAuditFile(identity2, before) || !sameAuditFile(before, beforePath) || !await stateIsCurrent()) return false;
+      await handle.appendFile(line, { encoding: "utf8" });
+      await handle.sync();
+      const after = await handle.stat();
+      const afterPath = await io.lstat(target);
+      if (!sameAuditFile(before, after) || !sameAuditFile(after, afterPath) || after.size < before.size + Buffer.byteLength(line, "utf8") || !await stateIsCurrent()) return false;
+    } finally {
+      await handle.close();
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+async function appendAuditLine(cwd, line) {
+  return await appendAuditLineWithIo(cwd, line, NODE_AUDIT_SINK_IO);
+}
+function auditField(value) {
+  return value.replaceAll("\n", " ");
 }
 
 // ../../ca/tools/redactor.ts
@@ -185,7 +286,7 @@ async function canonicalUserHome(projectRoot, packageRoot, platform = process.pl
   const candidate = platform === "win32" ? process.env.USERPROFILE : process.env.HOME;
   if (typeof candidate !== "string" || candidate.length < 1 || candidate.length > PI_MAX_HOME_CHARS || candidate !== candidate.trim() || CONTROL_RE.test(candidate) || !pathApi.isAbsolute(candidate)) return void 0;
   try {
-    const canonical = await realpath(candidate);
+    const canonical = await realpath2(candidate);
     if (!statSync(canonical).isDirectory() || lexicallyInside(canonical, projectRoot, flavorForPlatform(platform)) || lexicallyInside(canonical, packageRoot, flavorForPlatform(platform))) return void 0;
     return canonical;
   } catch {
@@ -618,10 +719,10 @@ var BridgeClient = class {
       throw new Error("bridge paths must be absolute");
     }
     const [git, python, script, root] = await Promise.all([
-      realpath(this.options.gitExecutable),
-      realpath(this.options.pythonExecutable),
-      realpath(this.options.bridgeScript),
-      realpath(this.options.packageRoot)
+      realpath2(this.options.gitExecutable),
+      realpath2(this.options.pythonExecutable),
+      realpath2(this.options.bridgeScript),
+      realpath2(this.options.packageRoot)
     ]);
     if (canonicalExecutable(git, process.platform) === void 0 || canonicalExecutable(python, process.platform) === void 0) {
       throw new Error("bridge executable identity is invalid");
@@ -657,10 +758,7 @@ var BridgeClient = class {
       `STDOUT_BYTES: ${counts.stdout}`,
       `STDERR_BYTES: ${counts.stderr}`
     ].join(" | ") + "\n";
-    try {
-      await appendFile(resolve2(request.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
-    } catch {
-    }
+    await appendAuditLine(request.cwd, line);
   }
   async failed(request, detail, counts = { request: 0, stdout: 0, stderr: 0 }) {
     const response = this.failure(request, detail);
@@ -677,7 +775,7 @@ var BridgeClient = class {
       return await this.failed(request, "path validation failed");
     }
     try {
-      const project = await realpath(request.cwd);
+      const project = await realpath2(request.cwd);
       if (lexicallyInside(paths.git, project) || lexicallyInside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
@@ -808,15 +906,15 @@ function resolvePythonCommand(platform = process.platform, probe = systemPythonP
 }
 
 // src/activation.ts
-import { lstat, open, readFile } from "node:fs/promises";
+import { lstat as lstat2, open as open2, readFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { resolve as resolve3 } from "node:path";
+import { resolve as resolve4 } from "node:path";
 var PYTHON_WHITESPACE = String.raw`[\t-\r\x1c-\x20\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]`;
 var DELIMITER = new RegExp(`^${PYTHON_WHITESPACE}*---${PYTHON_WHITESPACE}*$`, "u");
 var ENABLED_MARKER = new RegExp(`^${PYTHON_WHITESPACE}*arb[i\u0130\u0131]ter:${PYTHON_WHITESPACE}*enabled${PYTHON_WHITESPACE}*$`, "iu");
 async function isEnabled(cwd) {
   try {
-    const raw = await readFile(resolve3(cwd, ".codearbiter", "CONTEXT.md"), "utf8");
+    const raw = await readFile(resolve4(cwd, ".codearbiter", "CONTEXT.md"), "utf8");
     const lines = raw.split("\n");
     const first = (lines[0] ?? "").replace(/^\uFEFF+/u, "");
     if (!DELIMITER.test(first)) return false;
@@ -835,11 +933,11 @@ var VERSION_RE = /^[vV]?(\d+(?:\.\d+)*)(?:[-+][0-9A-Za-z.-]+)?$/u;
 async function readSmallRegularJson(path) {
   let handle;
   try {
-    const before = await lstat(path);
+    const before = await lstat2(path);
     if (!before.isFile() || before.isSymbolicLink() || before.size > UPDATE_DOCUMENT_MAX_BYTES) return void 0;
-    handle = await open(path, "r");
+    handle = await open2(path, "r");
     const opened = await handle.stat();
-    const afterOpen = await lstat(path);
+    const afterOpen = await lstat2(path);
     if (!opened.isFile() || opened.size > UPDATE_DOCUMENT_MAX_BYTES || !afterOpen.isFile() || afterOpen.isSymbolicLink() || opened.dev !== before.dev || opened.ino !== before.ino || afterOpen.dev !== opened.dev || afterOpen.ino !== opened.ino) return void 0;
     const buffer = Buffer.alloc(UPDATE_DOCUMENT_MAX_BYTES + 1);
     const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0);
@@ -874,19 +972,19 @@ function isNewerVersion(candidate, installed) {
 }
 async function readCachedUpdateVersion(packageRoot) {
   const [manifest, cache] = await Promise.all([
-    readSmallRegularJson(resolve3(packageRoot, "package.json")),
-    readSmallRegularJson(resolve3(homedir(), ".codearbiter", "update-state.json"))
+    readSmallRegularJson(resolve4(packageRoot, "package.json")),
+    readSmallRegularJson(resolve4(homedir(), ".codearbiter", "update-state.json"))
   ]);
   return isNewerVersion(cache?.latest, manifest?.version) ? cache.latest : void 0;
 }
 
 // src/commands.ts
 import { lstatSync as lstatSync2, realpathSync as realpathSync5 } from "node:fs";
-import { dirname as dirname4, resolve as resolve6 } from "node:path";
+import { dirname as dirname4, resolve as resolve7 } from "node:path";
 
 // src/command-ownership.ts
 import { lstatSync, readFileSync, realpathSync as realpathSync3 } from "node:fs";
-import { dirname as dirname2, isAbsolute as isAbsolute2, relative, resolve as resolve4 } from "node:path";
+import { dirname as dirname2, isAbsolute as isAbsolute2, relative as relative2, resolve as resolve5 } from "node:path";
 import { fileURLToPath } from "node:url";
 var COMMAND_DIAGNOSIS = "codeArbiter could not validate the Pi command surface; run /ca-doctor.";
 var NAME = /^[a-z][a-z0-9-]*$/u;
@@ -895,7 +993,7 @@ function pluginRootFromModule() {
   let cursor = dirname2(fileURLToPath(import.meta.url));
   while (true) {
     try {
-      const manifest = JSON.parse(readFileSync(resolve4(cursor, "package.json"), "utf8"));
+      const manifest = JSON.parse(readFileSync(resolve5(cursor, "package.json"), "utf8"));
       if (manifest.name === "ca-pi") return realpathSync3(cursor);
     } catch {
     }
@@ -918,13 +1016,13 @@ function strictUtf8(path) {
   return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
 }
 function hasSymlinkComponent(root, path) {
-  const lexicalRoot = resolve4(root);
-  const lexicalPath = resolve4(path);
+  const lexicalRoot = resolve5(root);
+  const lexicalPath = resolve5(path);
   if (!lexicallyInside(lexicalPath, lexicalRoot) || lstatSync(lexicalRoot).isSymbolicLink()) return true;
-  const suffix = relative(lexicalRoot, lexicalPath);
+  const suffix = relative2(lexicalRoot, lexicalPath);
   let cursor = lexicalRoot;
   for (const part of suffix.split(/[\\/]/u).filter(Boolean)) {
-    cursor = resolve4(cursor, part);
+    cursor = resolve5(cursor, part);
     if (lstatSync(cursor).isSymbolicLink()) return true;
   }
   return false;
@@ -937,12 +1035,12 @@ function declaredPackageOwner(command, expectedPath) {
     const canonicalExpected = realpathSync3(expectedPath);
     const canonicalBase = realpathSync3(command.sourceInfo.baseDir);
     if (canonicalPath2 !== canonicalExpected || !lexicallyInside(canonicalPath2, canonicalBase)) return false;
-    const manifest = JSON.parse(strictUtf8(resolve4(canonicalBase, "package.json")));
+    const manifest = JSON.parse(strictUtf8(resolve5(canonicalBase, "package.json")));
     if (manifest.name !== "ca-pi" || manifest.pi === void 0) return false;
     const declared = command.source === "extension" ? manifest.pi.extensions : manifest.pi.skills;
     if (!Array.isArray(declared) || !declared.every((item) => typeof item === "string")) return false;
     return declared.some((item) => {
-      const target = resolve4(canonicalBase, item);
+      const target = resolve5(canonicalBase, item);
       return command.source === "extension" ? realpathSync3(target) === canonicalPath2 : lexicallyInside(canonicalPath2, realpathSync3(target));
     });
   } catch {
@@ -956,7 +1054,7 @@ function assertCommandOwnership(pi, packageRoot, catalog) {
   for (const entry of catalog) {
     validatedEntry(entry);
     const alias = `ca-${entry.name}`;
-    const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
+    const expectedExtension = resolve5(canonicalRoot, "extensions", "codearbiter.js");
     const exact = commands.filter((command) => command.name === alias);
     const suffixed = commands.filter((command) => command.name.startsWith(`${alias}:`));
     const validExact = exact.filter((command) => command.source === "extension" && declaredPackageOwner(command, expectedExtension));
@@ -972,7 +1070,7 @@ function assertCommandOwnership(pi, packageRoot, catalog) {
     }
     const fallbackName = `skill:ca-${entry.name}`;
     const fallbacks = commands.filter((command) => command.name === fallbackName);
-    const expectedSkill = resolve4(canonicalRoot, ...entry.skillPath.split("/"));
+    const expectedSkill = resolve5(canonicalRoot, ...entry.skillPath.split("/"));
     const validFallbacks = fallbacks.filter((command) => command.source === "skill" && declaredPackageOwner(command, expectedSkill));
     if (validFallbacks.length === 0) collisions.push({ command: fallbackName, reason: "missing-fallback" });
     if (fallbacks.length > 1) collisions.push({ command: fallbackName, reason: "duplicate-alias" });
@@ -993,7 +1091,7 @@ function assertCommandOwnership(pi, packageRoot, catalog) {
 }
 function assertNativePlanCommandOwnership(pi, packageRoot) {
   const canonicalRoot = realpathSync3(packageRoot);
-  const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
+  const expectedExtension = resolve5(canonicalRoot, "extensions", "codearbiter.js");
   const commands = pi.getCommands();
   const exact = commands.filter((command) => command.name === "ca-plan");
   const suffixed = commands.filter((command) => command.name.startsWith("ca-plan:"));
@@ -1013,7 +1111,7 @@ function assertNativePlanCommandOwnership(pi, packageRoot) {
 }
 function assertNativeJobsCommandOwnership(pi, packageRoot) {
   const canonicalRoot = realpathSync3(packageRoot);
-  const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
+  const expectedExtension = resolve5(canonicalRoot, "extensions", "codearbiter.js");
   const commands = pi.getCommands();
   const exact = commands.filter((command) => command.name === "ca-jobs");
   const related = commands.filter((command) => command.name.startsWith("ca-jobs:") || command.name === "skill:ca-jobs");
@@ -1232,7 +1330,7 @@ function publishActivity(publisher, event) {
 import { EventEmitter } from "node:events";
 import { spawn as spawn2, spawnSync as spawnSync2 } from "node:child_process";
 import { readFileSync as readFileSync2, realpathSync as realpathSync4, statSync as statSync2 } from "node:fs";
-import { dirname as dirname3, isAbsolute as isAbsolute3, relative as relative2, resolve as resolve5, win32 as win323 } from "node:path";
+import { dirname as dirname3, isAbsolute as isAbsolute3, relative as relative3, resolve as resolve6, win32 as win323 } from "node:path";
 import { fileURLToPath as fileURLToPath2 } from "node:url";
 import { types as utilTypes2 } from "node:util";
 var DEFAULT_GRACE_MS = 500;
@@ -1876,11 +1974,11 @@ function canonicalSupervisorPath() {
   let cursor = dirname3(realpathSync4(fileURLToPath2(import.meta.url)));
   while (true) {
     try {
-      const manifest = JSON.parse(readFileSync2(resolve5(cursor, "package.json"), "utf8"));
+      const manifest = JSON.parse(readFileSync2(resolve6(cursor, "package.json"), "utf8"));
       if (manifest.name === "ca-pi") {
         const packageRoot = realpathSync4(cursor);
-        const candidate = realpathSync4(resolve5(cursor, "helpers", "windows-supervisor.js"));
-        const suffix = relative2(packageRoot, candidate);
+        const candidate = realpathSync4(resolve6(cursor, "helpers", "windows-supervisor.js"));
+        const suffix = relative3(packageRoot, candidate);
         if (!statSync2(candidate).isFile() || suffix.startsWith("..") || isAbsolute3(suffix) || win323.basename(candidate).toLowerCase() !== "windows-supervisor.js") throw new Error("invalid supervisor artifact");
         return candidate;
       }
@@ -3823,7 +3921,7 @@ ${body}
 ${args}` : block;
 }
 function fallbackCommand(pi, packageRoot, entry) {
-  const expected = resolve6(packageRoot, ...entry.skillPath.split("/"));
+  const expected = resolve7(packageRoot, ...entry.skillPath.split("/"));
   const matches = pi.getCommands().filter((command) => command.name === `skill:ca-${entry.name}`);
   if (matches.length !== 1 || matches[0].source !== "skill") return void 0;
   return declaredPackageOwner(matches[0], expected) ? matches[0] : void 0;
@@ -3841,7 +3939,7 @@ function registerAliases(pi, catalog, packageRoot = pluginRootFromModule(), onDe
           }
           const fallback = fallbackCommand(pi, canonicalRoot, entry);
           if (fallback === void 0) throw new Error(COMMAND_DIAGNOSIS);
-          const expectedPath = resolve6(canonicalRoot, ...entry.skillPath.split("/"));
+          const expectedPath = resolve7(canonicalRoot, ...entry.skillPath.split("/"));
           if (fallback.sourceInfo.baseDir === void 0 || hasSymlinkComponent(fallback.sourceInfo.baseDir, fallback.sourceInfo.path)) {
             throw new Error(COMMAND_DIAGNOSIS);
           }
@@ -3869,9 +3967,9 @@ ${generated}`;
 }
 
 // src/runtime-resolver.ts
-import { lstat as lstat2, readFile as readFile2, realpath as realpath2 } from "node:fs/promises";
+import { lstat as lstat3, readFile as readFile2, realpath as realpath3 } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname as dirname5, isAbsolute as isAbsolute4, resolve as resolve7 } from "node:path";
+import { dirname as dirname5, isAbsolute as isAbsolute4, resolve as resolve8 } from "node:path";
 import { fileURLToPath as fileURLToPath3, pathToFileURL } from "node:url";
 var PI_RUNTIME_DIAGNOSIS = "codeArbiter could not validate the active Pi CLI runtime; start from the Pi CLI and run /ca-doctor.";
 var trustedIdentities = /* @__PURE__ */ new WeakSet();
@@ -3881,12 +3979,12 @@ function fail(cause) {
 async function owningPackageRoot(file, expectedName) {
   let cursor = dirname5(file);
   while (true) {
-    const candidate = resolve7(cursor, "package.json");
+    const candidate = resolve8(cursor, "package.json");
     try {
       const manifest = JSON.parse(await readFile2(candidate, "utf8"));
       if (manifest.name !== expectedName) return fail();
-      const canonicalRoot = await realpath2(cursor);
-      if (!lexicallyInside(file, canonicalRoot) || !lexicallyInside(await realpath2(candidate), canonicalRoot)) return fail();
+      const canonicalRoot = await realpath3(cursor);
+      if (!lexicallyInside(file, canonicalRoot) || !lexicallyInside(await realpath3(candidate), canonicalRoot)) return fail();
       return canonicalRoot;
     } catch (error) {
       if (error.code !== "ENOENT") return fail(error);
@@ -3921,17 +4019,17 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
   try {
     const activeAnchor = process.argv[1];
     if (typeof activeAnchor !== "string" || activeAnchor.length === 0 || !isAbsolute4(activeAnchor)) return fail();
-    const canonicalAnchor = await realpath2(activeAnchor);
+    const canonicalAnchor = await realpath3(activeAnchor);
     if (cliCandidate !== void 0) {
-      if (!isAbsolute4(cliCandidate) || await realpath2(cliCandidate) !== canonicalAnchor) return fail();
+      if (!isAbsolute4(cliCandidate) || await realpath3(cliCandidate) !== canonicalAnchor) return fail();
     }
-    const shippedModule = await realpath2(fileURLToPath3(import.meta.url));
+    const shippedModule = await realpath3(fileURLToPath3(import.meta.url));
     const extensionPackageRoot = await owningPackageRoot(shippedModule, "ca-pi");
     let cursor = dirname5(canonicalAnchor);
     let manifest;
     let manifestPath = "";
     while (true) {
-      const candidate = resolve7(cursor, "package.json");
+      const candidate = resolve8(cursor, "package.json");
       try {
         manifest = JSON.parse(await readFile2(candidate, "utf8"));
         manifestPath = candidate;
@@ -3944,19 +4042,19 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
       cursor = parent;
     }
     if (manifest.name !== "@earendil-works/pi-coding-agent" || typeof manifest.version !== "string") return fail();
-    const packageRoot = await realpath2(cursor);
-    const canonicalManifest = await realpath2(manifestPath);
+    const packageRoot = await realpath3(cursor);
+    const canonicalManifest = await realpath3(manifestPath);
     if (!lexicallyInside(canonicalAnchor, packageRoot) || !lexicallyInside(canonicalManifest, packageRoot)) return fail();
     if (lexicallyInside(packageRoot, extensionPackageRoot)) return fail();
-    const declaredBin = resolve7(packageRoot, binTarget(manifest));
-    if (!lexicallyInside(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
-    if (!(await lstat2(canonicalAnchor)).isFile()) return fail();
+    const declaredBin = resolve8(packageRoot, binTarget(manifest));
+    if (!lexicallyInside(declaredBin, packageRoot) || await realpath3(declaredBin) !== canonicalAnchor) return fail();
+    if (!(await lstat3(canonicalAnchor)).isFile()) return fail();
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
-    const requireFromPi = createRequire(resolve7(packageRoot, "package.json"));
-    const moduleEntry = await realpath2(requireFromPi.resolve(declaredExport));
+    const requireFromPi = createRequire(resolve8(packageRoot, "package.json"));
+    const moduleEntry = await realpath3(requireFromPi.resolve(declaredExport));
     if (!lexicallyInside(moduleEntry, packageRoot)) return fail();
-    if (!(await lstat2(moduleEntry)).isFile()) return fail();
+    if (!(await lstat3(moduleEntry)).isFile()) return fail();
     const identity2 = Object.freeze({
       cliEntry: canonicalAnchor,
       manifestPath: canonicalManifest,
@@ -4694,9 +4792,7 @@ var PiFooterLifecycle = class {
 
 // src/tool-guard.ts
 import { createHash as createHash5, randomUUID as randomUUID3 } from "node:crypto";
-import { constants as fsConstants, realpathSync as realpathSync6 } from "node:fs";
-import { lstat as lstat3, open as open2, realpath as realpath3 } from "node:fs/promises";
-import { relative as relative3, resolve as resolve8 } from "node:path";
+import { realpathSync as realpathSync6 } from "node:fs";
 import { types as utilTypes7 } from "node:util";
 
 // src/notices.ts
@@ -4987,7 +5083,6 @@ function evaluatePolicy(descriptor, rawRequest) {
 
 // src/tool-guard.ts
 var STANDALONE_GENERATION = Object.freeze({});
-var NODE_PERMISSION_AUDIT_IO = Object.freeze({ realpath: realpath3, lstat: lstat3, open: open2 });
 var CONFIRMATION_TITLE = "Allow governed operation?";
 var CONFIRMATION_TIMEOUT_MS = 6e4;
 var COMMAND_LIMIT = 8192;
@@ -5090,90 +5185,6 @@ function permissionAuditCodeRow(toolCallId, toolClass, auditCode) {
     auditCode
   });
 }
-function sameAuditFile(left, right) {
-  return left.isFile() && right.isFile() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.nlink === 1 && right.nlink === 1 && left.dev === right.dev && left.ino === right.ino;
-}
-function sameAuditDirectory(left, right) {
-  return left.isDirectory() && right.isDirectory() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.dev === right.dev && left.ino === right.ino;
-}
-async function openedAuditTarget(target, io) {
-  const noFollow = typeof fsConstants.O_NOFOLLOW === "number" ? fsConstants.O_NOFOLLOW : 0;
-  const existingFlags = fsConstants.O_WRONLY | fsConstants.O_APPEND | noFollow;
-  const createFlags = existingFlags | fsConstants.O_CREAT | fsConstants.O_EXCL;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    let expected;
-    try {
-      expected = await io.lstat(target);
-      if (!expected.isFile() || expected.isSymbolicLink() || expected.nlink !== 1) return void 0;
-    } catch (error) {
-      if (error.code !== "ENOENT") return void 0;
-    }
-    let handle;
-    try {
-      handle = await io.open(target, expected === void 0 ? createFlags : existingFlags, 384);
-    } catch (error) {
-      if (expected === void 0 && error.code === "EEXIST" && attempt === 0) continue;
-      return void 0;
-    }
-    try {
-      const opened = await handle.stat();
-      const pathname = await io.lstat(target);
-      if (!sameAuditFile(opened, pathname) || expected !== void 0 && !sameAuditFile(opened, expected)) {
-        await handle.close();
-        return void 0;
-      }
-      return Object.freeze({ handle, identity: opened });
-    } catch {
-      try {
-        await handle.close();
-      } catch {
-      }
-      return void 0;
-    }
-  }
-  return void 0;
-}
-async function appendAuditLineWithIo(cwd, line, io) {
-  try {
-    if (Buffer.byteLength(line, "utf8") > 2048 || !line.endsWith("\n") || line.slice(0, -1).includes("\n")) return false;
-    const root = await io.realpath(cwd);
-    const statePath = resolve8(root, ".codearbiter");
-    const stateInfo = await io.lstat(statePath);
-    if (!stateInfo.isDirectory() || stateInfo.isSymbolicLink()) return false;
-    const state = await io.realpath(statePath);
-    const stateRelative = relative3(root, state);
-    if (stateRelative === "" || stateRelative.startsWith("..") || resolve8(root, stateRelative) !== state) return false;
-    const stateIdentity = await io.lstat(state);
-    if (!sameAuditDirectory(stateInfo, stateIdentity)) return false;
-    const stateIsCurrent = async () => {
-      try {
-        return await io.realpath(statePath) === state && sameAuditDirectory(stateIdentity, await io.lstat(statePath));
-      } catch {
-        return false;
-      }
-    };
-    if (!await stateIsCurrent()) return false;
-    const target = resolve8(state, "gate-events.log");
-    const opened = await openedAuditTarget(target, io);
-    if (opened === void 0) return false;
-    const { handle, identity: identity2 } = opened;
-    try {
-      const before = await handle.stat();
-      const beforePath = await io.lstat(target);
-      if (!sameAuditFile(identity2, before) || !sameAuditFile(before, beforePath) || !await stateIsCurrent()) return false;
-      await handle.appendFile(line, { encoding: "utf8" });
-      await handle.sync();
-      const after = await handle.stat();
-      const afterPath = await io.lstat(target);
-      if (!sameAuditFile(before, after) || !sameAuditFile(after, afterPath) || after.size < before.size + Buffer.byteLength(line, "utf8") || !await stateIsCurrent()) return false;
-    } finally {
-      await handle.close();
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
 async function appendPermissionAuditWithIo(cwd, row, io) {
   try {
     const timestamp = row.timestamp;
@@ -5201,7 +5212,7 @@ async function appendBackgroundJobAudit(cwd, row) {
     const keys = Object.keys(row).sort().join(",");
     const expectedKeys = row.event === "launch" ? "correlation,event,id,lifecycleId,state,timeoutMs,timestamp" : row.event === "terminal" ? "correlation,durationMs,event,exitClass,id,lifecycleId,outputBytes,state,timestamp" : row.event === "cancel" ? "accepted,correlation,event,id,lifecycleId,timestamp" : "";
     if (keys !== expectedKeys || row.timestamp.length !== 24 || new Date(row.timestamp).toISOString() !== row.timestamp || !/^[a-f0-9]{64}$/u.test(row.lifecycleId) || !/^[a-f0-9]{64}$/u.test(row.correlation) || !Number.isSafeInteger(row.id) || row.id < 1 || row.event === "launch" && (!["queued", "active", "completed", "failed", "cancelled", "timed-out"].includes(row.state) || row.timeoutMs !== null && (!Number.isSafeInteger(row.timeoutMs) || row.timeoutMs < 1e3 || row.timeoutMs > 6048e5)) || row.event === "terminal" && (!["completed", "failed", "cancelled", "timed-out"].includes(row.state) || !["success", "failure", "cancelled", "timeout"].includes(row.exitClass) || row.exitClass !== (row.state === "completed" ? "success" : row.state === "failed" ? "failure" : row.state === "cancelled" ? "cancelled" : "timeout") || !Number.isSafeInteger(row.durationMs) || row.durationMs < 0 || !Number.isSafeInteger(row.outputBytes) || row.outputBytes < 0 || row.outputBytes > 65536) || row.event === "cancel" && typeof row.accepted !== "boolean") return false;
-    return await appendAuditLineWithIo(cwd, [
+    return await appendAuditLine(cwd, [
       `[${row.timestamp}]`,
       "HOST: pi",
       "RULE: PI-BACKGROUND-JOB",
@@ -5215,13 +5226,13 @@ async function appendBackgroundJobAudit(cwd, row) {
       ...row.durationMs === void 0 ? [] : [`DURATION_MS: ${row.durationMs}`],
       ...row.exitClass === void 0 ? [] : [`EXIT_CLASS: ${row.exitClass}`],
       ...row.accepted === void 0 ? [] : [`ACCEPTED: ${row.accepted}`]
-    ].join(" | ") + "\n", NODE_PERMISSION_AUDIT_IO);
+    ].join(" | ") + "\n");
   } catch {
     return false;
   }
 }
 async function appendPermissionAudit(cwd, row) {
-  return await appendPermissionAuditWithIo(cwd, row, NODE_PERMISSION_AUDIT_IO);
+  return await appendPermissionAuditWithIo(cwd, row, NODE_AUDIT_SINK_IO);
 }
 function failTool(message) {
   throw new Error(safeDiagnostic(message));
@@ -6061,7 +6072,6 @@ function formatPiDoctorReport(diagnoses) {
 
 // src/dispatch.ts
 import { randomUUID as randomUUID5 } from "node:crypto";
-import { appendFile as appendFile2 } from "node:fs/promises";
 import { resolve as resolve12 } from "node:path";
 import { types as utilTypes8 } from "node:util";
 
@@ -7366,19 +7376,16 @@ async function appendDispatchAudit(record2) {
     "RULE: PI-DISPATCH",
     `AUDIT: ${record2.terminal === "completed" ? "PI_DISPATCH_COMPLETED" : "PI_DISPATCH_DEGRADED"}`,
     `CORRELATION: ${randomUUID5()}`,
-    `ROLE: ${safeDiagnostic(record2.role, 100)}`,
-    `PROVIDER: ${safeDiagnostic(record2.provider, 100)}`,
-    `MODEL: ${safeDiagnostic(record2.model, 100)}`,
+    `ROLE: ${auditField(safeDiagnostic(record2.role, 100))}`,
+    `PROVIDER: ${auditField(safeDiagnostic(record2.provider, 100))}`,
+    `MODEL: ${auditField(safeDiagnostic(record2.model, 100))}`,
     `EXIT: ${record2.terminal}${record2.exitCode === void 0 ? "" : `(${record2.exitCode})`}`,
     `DURATION_MS: ${record2.durationMs ?? 0}`,
     `STDOUT_BYTES: ${record2.stdoutBytes ?? 0}`,
     `STDERR_BYTES: ${record2.stderrBytes ?? 0}`,
-    ...record2.diagnostic === void 0 ? [] : [`DIAGNOSTIC: ${safeDiagnostic(record2.diagnostic, 200)}`]
+    ...record2.diagnostic === void 0 ? [] : [`DIAGNOSTIC: ${auditField(safeDiagnostic(record2.diagnostic, 200))}`]
   ].join(" | ") + "\n";
-  try {
-    await appendFile2(resolve12(record2.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
-  } catch {
-  }
+  await appendAuditLine(record2.cwd, line);
 }
 var DISPATCH_MODES = Object.freeze(["single", "chain", "parallel"]);
 var DISPATCH_TERMINALS = Object.freeze([
@@ -7962,7 +7969,6 @@ function createFarmPreviewTool(dependencies) {
 
 // src/compaction.ts
 import { randomUUID as randomUUID6 } from "node:crypto";
-import { appendFile as appendFile3 } from "node:fs/promises";
 import { resolve as resolve14 } from "node:path";
 var MAX_CONVERSATION_BYTES = 48e3;
 var MAX_SUMMARY_BYTES = 16e3;
@@ -8122,15 +8128,64 @@ function alreadyCompactedTail(entries) {
   }
   return false;
 }
-async function handleBeforeCompact(event, context, runner) {
+var COMPACTION_REASONS = Object.freeze(["manual", "threshold", "overflow"]);
+var MAX_BRANCH_ENTRIES = 1e5;
+var MAX_ENTRY_ID_CHARS = 1024;
+var MAX_HOST_TEXT_CHARS = 1048576;
+function boundedHostText(value, maxChars) {
+  return typeof value === "string" && value.length <= maxChars;
+}
+function isCompactionReason(value) {
+  return COMPACTION_REASONS.includes(value);
+}
+function isAbortSignalLike(value) {
+  return isRecord2(value) && typeof value.aborted === "boolean" && typeof value.addEventListener === "function" && typeof value.removeEventListener === "function";
+}
+function validPreparation(value) {
+  return isRecord2(value) && boundedHostText(value.firstKeptEntryId, MAX_ENTRY_ID_CHARS) && typeof value.tokensBefore === "number" && Number.isFinite(value.tokensBefore) && value.tokensBefore >= 0 && (value.previousSummary === void 0 || boundedHostText(value.previousSummary, MAX_HOST_TEXT_CHARS));
+}
+function parsePiCompactionEvent(raw) {
+  if (!isRecord2(raw)) return void 0;
+  if (!Array.isArray(raw.branchEntries) || raw.branchEntries.length > MAX_BRANCH_ENTRIES) return void 0;
+  if (!validPreparation(raw.preparation)) return void 0;
+  const customInstructions = raw.customInstructions;
+  if (customInstructions !== void 0 && !boundedHostText(customInstructions, MAX_HOST_TEXT_CHARS)) return void 0;
+  if (!isCompactionReason(raw.reason)) return void 0;
+  if (typeof raw.willRetry !== "boolean") return void 0;
+  if (!isAbortSignalLike(raw.signal)) return void 0;
+  const preparation = raw.preparation;
+  return {
+    branchEntries: raw.branchEntries,
+    preparation: {
+      firstKeptEntryId: preparation.firstKeptEntryId,
+      tokensBefore: preparation.tokensBefore,
+      ...preparation.previousSummary === void 0 ? {} : { previousSummary: preparation.previousSummary }
+    },
+    ...customInstructions === void 0 ? {} : { customInstructions },
+    reason: raw.reason,
+    willRetry: raw.willRetry,
+    signal: raw.signal
+  };
+}
+function parsePiCompactedEvent(raw) {
+  if (!isRecord2(raw)) return void 0;
+  if (typeof raw.fromExtension !== "boolean" || typeof raw.willRetry !== "boolean") return void 0;
+  if (!isCompactionReason(raw.reason)) return void 0;
+  return {
+    compactionEntry: raw.compactionEntry,
+    fromExtension: raw.fromExtension,
+    reason: raw.reason,
+    willRetry: raw.willRetry
+  };
+}
+async function handleBeforeCompact(rawEvent, context, runner) {
+  const event = parsePiCompactionEvent(rawEvent);
+  if (event === void 0) throw new Error(COMPACTION_FAILURE);
   if (event.signal.aborted) throw new Error("Pi native compaction was cancelled.");
   const provider = context.model?.provider;
   const model = context.model?.id;
   if (typeof provider !== "string" || provider.trim() === "" || typeof model !== "string" || model.trim() === "") {
     throw new Error("Pi native compaction requires the current exact provider and model.");
-  }
-  if (!Number.isFinite(event.preparation.tokensBefore) || event.preparation.tokensBefore < 0) {
-    throw new Error("Pi compaction token metrics are invalid.");
   }
   try {
     const semantic = piSemanticEntries(event.branchEntries);
@@ -8178,7 +8233,9 @@ async function handleBeforeCompact(event, context, runner) {
     throw new Error(COMPACTION_FAILURE);
   }
 }
-async function handleAfterCompact(event, audit) {
+async function handleAfterCompact(rawEvent, audit) {
+  const event = parsePiCompactedEvent(rawEvent);
+  if (event === void 0) return;
   if (!event.fromExtension || !isRecord2(event.compactionEntry)) return;
   const detailsRoot = event.compactionEntry.details;
   if (!isRecord2(detailsRoot) || !isRecord2(detailsRoot.codearbiter)) return;
@@ -8222,7 +8279,9 @@ function installPiCompaction(pi, options) {
     });
   });
 }
+var MAX_AUDIT_METRICS = 16;
 async function appendPiCompactionAudit(record2) {
+  const metrics = Object.fromEntries(Object.entries(record2.metrics).slice(0, MAX_AUDIT_METRICS));
   const line = [
     `[${(/* @__PURE__ */ new Date()).toISOString()}]`,
     "HOST: pi",
@@ -8230,12 +8289,9 @@ async function appendPiCompactionAudit(record2) {
     `AUDIT: ${record2.auditCodes.join(",") || "CA-PRUNE-CONFIRMED"}`,
     `CORRELATION: ${randomUUID6()}`,
     `PLAN: ${record2.planFingerprint}`,
-    `METRICS: ${JSON.stringify(record2.metrics)}`
+    `METRICS: ${JSON.stringify(metrics)}`
   ].join(" | ") + "\n";
-  try {
-    await appendFile3(resolve14(record2.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
-  } catch {
-  }
+  await appendAuditLine(record2.cwd, line);
 }
 
 // src/extension.ts
@@ -8937,7 +8993,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "1e994b3ffb1ea78affa4ec7320a55050f89ece1ceb8f23b63e2e23183cb13462"
+        childFingerprint: "f31ba24b1bd6f85f71893df71713d4fce5426da7072236537be7499382d1dece"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

@@ -498,7 +498,7 @@ jobs:
       # contracts in .github/scripts are textual (stdlib-only, no YAML parser)
       # and read the covered file set straight off a `run: npm test -- ...` line.
       - name: Test the platform-gated adapter suites on this operating system
-        run: npm test -- test/activation.test.ts test/background-jobs.test.ts test/child-env.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts
+        run: npm test -- test/activation.test.ts test/audit-sink.test.ts test/background-jobs.test.ts test/child-env.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts
       - name: Test real package RPC activation and aliases
         working-directory: .
         run: python .github/scripts/test_pi_package.py --rpc-commands
