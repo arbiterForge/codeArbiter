@@ -6,6 +6,7 @@
 import { once } from "node:events";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { AddressInfo, connect, type Socket } from "node:net";
+import { gzipSync } from "node:zlib";
 import { afterEach, describe, expect, test } from "vitest";
 
 type BrokerModule = typeof import("../src/inference-broker.ts");
@@ -113,7 +114,7 @@ function startRawUpstream(
  * it actually got. */
 async function clientOutcome(
   broker: { baseUrl: string; token: string },
-): Promise<{ failed: boolean; received: string }> {
+): Promise<{ failed: boolean; received: string; status?: number }> {
   let response: Response;
   try {
     response = await fetch(`${broker.baseUrl}/chat/completions`, {
@@ -130,9 +131,9 @@ async function clientOutcome(
       received += new TextDecoder().decode(chunk);
     }
   } catch {
-    return { failed: true, received };
+    return { failed: true, received, status: response.status };
   }
-  return { failed: false, received };
+  return { failed: false, received, status: response.status };
 }
 
 const openBrokers: { close(): Promise<void> }[] = [];
@@ -496,7 +497,11 @@ describe("#455 loopback inference broker", () => {
     expect(body).toContain("codeArbiter inference broker");
   });
 
-  test("delivers no body at all when the upstream reflects operator material", async () => {
+  // The common shape: a verbose provider error that echoes the credential arrives whole in the
+  // first chunk, before any byte is committed to the child. Because headers are held until the
+  // first byte clears the filter, that refuses with the ordinary fixed body and a real status —
+  // never a torn connection, and never a clean empty 200 the child could mistake for an answer.
+  test("refuses with the fixed diagnostic when the upstream reflects operator material", async () => {
     const upstream = await startRawUpstream((_request, response) => {
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(`{"error":{"message":"invalid key ${PLANTED_UPSTREAM_LITERAL}"}}`);
@@ -504,11 +509,29 @@ describe("#455 loopback inference broker", () => {
     openUpstreams.push(upstream.server);
     const broker = await brokerFor(NONCE_A, upstream.baseUrl);
     const outcome = await clientOutcome(broker);
-    // The whole reflected body arrived in one upstream chunk, so not one byte of it is forwarded.
-    expect(outcome.received).toBe("");
-    // ...and the child sees a failed exchange, never a clean empty 200 it could mistake for an
-    // answer: the broker resets the connection rather than closing it gracefully.
-    expect(outcome.failed).toBe(true);
+    expect(outcome.failed).toBe(false);
+    expect(outcome.status).toBe(502);
+    expect(outcome.received).not.toContain(PLANTED_UPSTREAM_LITERAL);
+    // Byte-identical to every other refusal, so the child learns only that the broker refused.
+    expect(outcome.received).toContain("codeArbiter inference broker");
+    expect(outcome.received.length).toBeLessThanOrEqual(256);
+  });
+
+  // The request negotiates `identity`, so an encoded body means an upstream that ignored it —
+  // and an encoded body is one the filter cannot read. Relaying it blind would hand the child a
+  // channel the whole response control is deaf to.
+  test("refuses a compressed upstream body rather than relaying one it cannot scan", async () => {
+    const compressed = gzipSync(Buffer.from(`{"error":"invalid key ${PLANTED_UPSTREAM_LITERAL}"}`, "utf8"));
+    const upstream = await startRawUpstream((_request, response) => {
+      response.writeHead(200, { "Content-Type": "application/json", "Content-Encoding": "gzip" });
+      response.end(compressed);
+    });
+    openUpstreams.push(upstream.server);
+    const broker = await brokerFor(NONCE_A, upstream.baseUrl);
+    const outcome = await clientOutcome(broker);
+    expect(outcome.status).toBe(502);
+    expect(outcome.received).toContain("codeArbiter inference broker");
+    expect(outcome.received).not.toContain(PLANTED_UPSTREAM_LITERAL);
   });
 
   // A value split across two TCP writes is the shape a naive per-chunk scan misses. The filter

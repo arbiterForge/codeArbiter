@@ -140,9 +140,11 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertIn("codeArbiter inference broker failed closed.", broker)
         self.assertIn("timingSafeEqual", broker)
         # Streamed both ways and never buffered to completion. The response now streams
-        # THROUGH the sensitive-value filter rather than straight at the child, so the
-        # pinned shape is the filtered pipe, not a bare one.
-        self.assertIn("upstreamResponse.pipe(filter).pipe(response)", broker)
+        # THROUGH the sensitive-value filter rather than straight at the child, and each
+        # cleared chunk is written as it arrives, so the pinned shape is the filtered
+        # pipe plus the per-chunk write - not a bare pipe and not a collected body.
+        self.assertIn("upstreamResponse.pipe(filter)", broker)
+        self.assertIn("response.write(chunk)", broker)
         self.assertIn("request.pipe(forward)", broker)
         self.assertNotRegex(broker, r"await\s+\w*[Rr]esponse\.(text|json|arrayBuffer)\(")
         # The request path is an ALLOW list, so an unrecognised child header can never ride

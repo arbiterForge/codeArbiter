@@ -396,29 +396,51 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
       // socket close are the same event, exactly as the provider sent them.
       responseHeaders.connection = "close";
       if (responseHeaders["content-length"] === undefined) response.useChunkedEncodingByDefault = false;
-      response.writeHead(upstreamResponse.statusCode ?? 502, responseHeaders);
-      // Header flush + pipe, never buffer-to-completion: a long streamed generation must reach
-      // the child frame by frame or it breaks outright.
-      response.flushHeaders();
-      // Filtered, not merely relayed. The filter forwards every clean byte immediately and
-      // destroys the exchange the moment operator material appears, so the child receives a
-      // truncated stream rather than the value.
+      // Filtered, not merely relayed. The filter forwards every clean byte the moment it arrives
+      // and fails the exchange the moment operator material appears.
       const filter = new SensitiveResponseFilter(bound.containsSensitiveValue);
+      // Headers are held until the FIRST byte clears the filter, and no longer. That is what lets
+      // the common reflection case — a verbose provider error that echoes the credential, which
+      // arrives whole in the first chunk — refuse with the ordinary fixed 502 body instead of a
+      // torn connection. It costs nothing in streaming terms: the headers go out with the first
+      // frame rather than before it.
+      let headersSent = false;
+      const sendHeaders = (): void => {
+        if (headersSent || response.headersSent || response.writableEnded || response.destroyed) return;
+        headersSent = true;
+        response.writeHead(upstreamResponse.statusCode ?? 502, responseHeaders);
+        // Never buffer to completion: a long streamed generation must reach the child frame by
+        // frame or it breaks outright.
+        response.flushHeaders();
+      };
       const abort = (): void => {
         upstreamResponse.destroy();
         filter.destroy();
-        // RESET, not a graceful close. The broker mirrors the upstream's framing, so a response
-        // the provider close-delimited has no declared length — and a FIN there is byte-for-byte
-        // indistinguishable from a complete empty body. The child would read a suppressed answer
-        // as a valid one. An RST surfaces in the child's client as a failed request, which is
-        // what a refusal must look like.
+        // Nothing has been committed yet, so the child gets a clean, fixed, value-free refusal.
+        if (!headersSent) {
+          failClosed(response, 502);
+          return;
+        }
+        // Past that point the status line is already spent, so the exchange is RESET rather than
+        // closed. The broker mirrors the upstream's framing, and on a close-delimited response a
+        // FIN is byte-for-byte indistinguishable from a complete body — the child would read a
+        // suppressed answer as a whole one.
         const socket = response.socket;
         if (socket !== null && !socket.destroyed) socket.resetAndDestroy();
         response.destroy();
       };
       upstreamResponse.on("error", abort);
       filter.on("error", abort);
-      upstreamResponse.pipe(filter).pipe(response);
+      filter.on("data", (chunk: Buffer) => {
+        sendHeaders();
+        if (!response.write(chunk)) filter.pause();
+      });
+      response.on("drain", () => filter.resume());
+      filter.on("end", () => {
+        sendHeaders();
+        response.end();
+      });
+      upstreamResponse.pipe(filter);
     });
     forward.setNoDelay(true);
     forward.on("error", () => failClosed(response, 502));

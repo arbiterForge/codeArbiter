@@ -6352,19 +6352,37 @@ async function startInferenceBroker(options) {
       }
       responseHeaders.connection = "close";
       if (responseHeaders["content-length"] === void 0) response.useChunkedEncodingByDefault = false;
-      response.writeHead(upstreamResponse.statusCode ?? 502, responseHeaders);
-      response.flushHeaders();
       const filter = new SensitiveResponseFilter(bound.containsSensitiveValue);
+      let headersSent = false;
+      const sendHeaders = () => {
+        if (headersSent || response.headersSent || response.writableEnded || response.destroyed) return;
+        headersSent = true;
+        response.writeHead(upstreamResponse.statusCode ?? 502, responseHeaders);
+        response.flushHeaders();
+      };
       const abort = () => {
         upstreamResponse.destroy();
         filter.destroy();
+        if (!headersSent) {
+          failClosed(response, 502);
+          return;
+        }
         const socket = response.socket;
         if (socket !== null && !socket.destroyed) socket.resetAndDestroy();
         response.destroy();
       };
       upstreamResponse.on("error", abort);
       filter.on("error", abort);
-      upstreamResponse.pipe(filter).pipe(response);
+      filter.on("data", (chunk) => {
+        sendHeaders();
+        if (!response.write(chunk)) filter.pause();
+      });
+      response.on("drain", () => filter.resume());
+      filter.on("end", () => {
+        sendHeaders();
+        response.end();
+      });
+      upstreamResponse.pipe(filter);
     });
     forward.setNoDelay(true);
     forward.on("error", () => failClosed(response, 502));
