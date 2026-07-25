@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.19] - 2026-07-25
+## [0.1.21] - 2026-07-25
 
 ### Changed
 
@@ -12,13 +12,17 @@ All notable changes to `ca-pi` are documented in this file.
   pointed so repository CI can prove it never moved (issue #386). Payload-only
   change to the generated surface; no adapter behavior changes.
 
-### Added
+## [0.1.20] - 2026-07-25
 
-- `/ca-doctor` now reports whether MCP servers are configured for the active
-  host, and that file writes performed through an MCP tool
-  (`mcp__<server>__<tool>`) are outside codeArbiter's write gate. The Pi host
-  claims no MCP configuration sources, so the line degrades to silence on Pi
-  rather than reporting another host's configuration as this install's.
+### Fixed
+
+- A hook payload that is valid JSON but not an object (`[]`, `3`, `"str"`,
+  `true`, `null`) is normalized to an empty payload at `read_input()` instead of
+  being handed to the guards as a non-dict, where the truthy ones raised
+  `AttributeError` out of the guard and the falsy ones were only accidentally
+  safe. The envelope is host-produced, not model-produced, so an unreadable
+  shape is the same compatibility event as unreadable syntax and takes the same
+  documented warn-and-proceed path (ADR-0020).
 
 ## [0.1.18] - 2026-07-25
 

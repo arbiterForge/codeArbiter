@@ -30,12 +30,21 @@ file:
     unreadable payload — so an unreadable `apply_patch` skipped the write
     gate entirely.
   * Dispatching anyway launders the failure into a silent allow.
-    `_hooklib.read_input()` fails OPEN on an unparseable payload by explicit,
-    documented design (warn + proceed without enforcement). That exception is
-    correct at the GUARD layer, which has already been handed a payload the
-    host produced. Feeding it input the adapter itself could not validate
-    would convert "codeArbiter could not read this" into "codeArbiter allowed
-    this", which is exactly the outcome the guards exist to prevent.
+    `_hooklib.read_input()` fails OPEN on an unreadable payload by explicit,
+    documented design (warn + proceed without enforcement), for a malformed
+    SHAPE as well as malformed syntax. That exception is correct at the GUARD
+    layer, which has already been handed a payload the host produced. Feeding
+    it input the adapter itself could not validate would convert "codeArbiter
+    could not read this" into "codeArbiter allowed this", which is exactly the
+    outcome the guards exist to prevent.
+
+    The two directions are a deliberate asymmetry, not drift, and ADR-0020
+    ("Hook input fails open on malformed shape as well as malformed syntax")
+    is where it is written down: this file is a ROUTER, so a payload it cannot
+    route is one it cannot prove safe; a guard that cannot parse its own input
+    is a different case. The refusal here is additionally dormancy-aware — in a
+    repository that never opted into codeArbiter it passes through untouched —
+    so failing closed cannot break unrelated projects.
 
 The emitted reason is a short deterministic diagnostic. It never carries the
 payload text or an exception rendering: it is user-facing in Codex's UI, and
