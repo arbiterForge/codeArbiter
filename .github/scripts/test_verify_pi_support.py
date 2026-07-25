@@ -94,6 +94,13 @@ class VerifyPiSupportTest(unittest.TestCase):
             for os_name in ("ubuntu-latest", "windows-latest", "macos-latest")
             for version in ("0.80.5", "0.80.10")
         } | {
+            # Issue #390 split the host-independent half of the adapter
+            # contract - the complete Vitest suite, the parity/security scripts,
+            # the bundle staleness gate, the benchmark - into its own required
+            # job.  The attestation names it directly: reaching it only through
+            # "Merge readiness" would let a future `required_results` edit drop
+            # the verdict without any Pi-support evidence noticing.
+            "[CHECK] | [PI  ] | Host-independent adapter contract",
             "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
             "[GATE ] | [REPO] | Merge readiness",
         }

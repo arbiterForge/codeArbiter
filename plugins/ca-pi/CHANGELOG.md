@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.2] - 2026-07-24
+## [0.1.3] - 2026-07-24
 
 ### Security
 
@@ -44,6 +44,15 @@ All notable changes to `ca-pi` are documented in this file.
   degraded diagnostic. All three are fixed identifiers chosen by the runner and
   are never derived from child output, error text, paths, configuration values,
   or credential values.
+
+## [0.1.2] - 2026-07-24
+
+### Fixed
+
+- The canonical plan-file bridge tests no longer hardcode a Windows-absolute
+  repository root, so they exercise `operatePlanFile` on Linux and macOS instead
+  of silently asserting the rejected path. Test-only; `plan-mode.ts` is
+  unchanged.
 
 ## [0.1.1] - 2026-07-18
 

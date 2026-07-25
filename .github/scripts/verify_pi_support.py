@@ -55,6 +55,13 @@ REQUIRED_HOSTED_CHECKS = frozenset(
         for version in SUPPORTED
     }
     | {
+        # Issue #390 moved the host-independent half of the adapter contract -
+        # the complete Vitest suite, the parity/security scripts, the committed
+        # bundle staleness gate, the benchmark - out of the six matrix cells and
+        # into one canonical required job. It is named here directly rather than
+        # reached only through "Merge readiness", so a future edit to that gate's
+        # required_results cannot quietly drop it from the attestation.
+        "[CHECK] | [PI  ] | Host-independent adapter contract",
         "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
         "[GATE ] | [REPO] | Merge readiness",
     }

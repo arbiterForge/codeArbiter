@@ -724,19 +724,77 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     if re.search(r"(?m)^\s{8}run: npm test -- test/package\.test\.ts\s*$", matrix) is None:
         violations.append("ca-pi-tools does not execute the native package test")
     if re.search(
-        r"(?m)^\s{8}run: npm test -- test/activation\.test\.ts test/commands\.test\.ts test/status\.test\.ts\s*$",
-        matrix,
-    ) is None:
-        violations.append("ca-pi-tools does not execute the focused lifecycle tests")
-    if re.search(
         r"(?m)^\s{8}run: python \.github/scripts/test_pi_package\.py --rpc-commands\s*$",
         matrix,
     ) is None:
         violations.append("ca-pi-tools does not execute the live package RPC test")
 
+    # Issue #390 AC-2: a Vitest file that compares the LIVE process.platform
+    # against a literal cannot be attested by the ubuntu-only canonical job -
+    # `test.skipIf(process.platform !== "win32")` simply skips there, and
+    # `process.platform === "win32" ? "junction" : "dir"` exercises the POSIX
+    # primitive only. Every such file must run on all three operating systems.
+    # This oracle derives the set from the sources, independently of
+    # test_ci_impact.py, so both would have to be wrong to lose the coverage.
+    live_platform = re.compile(r"(?:process|os)\.platform\s*(?:===|!==)")
+    matrix_vitest: set[str] = set()
+    for match in re.finditer(r"(?m)^\s+run: npm test(?P<rest>[^\n]*)$", matrix):
+        matrix_vitest |= {
+            token.rsplit("/", 1)[-1]
+            for token in match.group("rest").split()
+            if token.endswith(".test.ts")
+        }
+    if "test_pi_platform_contract.py" in matrix:
+        contract_source = (REPO / ".github" / "scripts" / "test_pi_platform_contract.py").read_text(
+            encoding="utf-8"
+        )
+        matrix_vitest |= {
+            name.rsplit("/", 1)[-1]
+            for name in re.findall(r'"(test/[A-Za-z0-9._-]+\.test\.ts)"', contract_source)
+        }
+    pi_tests = REPO / "plugins" / "ca-pi" / "tools" / "test"
+    for source in sorted(pi_tests.glob("*.test.ts")):
+        if live_platform.search(source.read_text(encoding="utf-8")) and source.name not in matrix_vitest:
+            violations.append(
+                f"ca-pi-tools does not run platform-gated suite on every OS: {source.name}"
+            )
+
+    # Issue #390/#405: the host-independent half of the Pi contract lives in one
+    # canonical job, and its Vitest run is deliberately UNFILTERED so every
+    # committed test/*.test.ts file is a required merge gate.
+    canonical = job("ca-pi-checks")
+    if re.search(r"(?m)^\s{8}run: npm test\s*$", canonical) is None:
+        violations.append("ca-pi-checks does not execute the complete unfiltered Pi Vitest suite")
+    if "strategy:" in canonical:
+        violations.append("ca-pi-checks must not fan out across a matrix")
+    for token in (
+        "run: python tools/build-host-packages.py --check",
+        "run: npm run typecheck",
+        "run: npm run build",
+        "run: python .github/scripts/test_pi_security.py",
+        "run: python .github/scripts/test_pi_parity.py",
+        "run: python .github/scripts/pi_benchmark.py --samples 100",
+    ):
+        if token not in canonical:
+            violations.append(f"ca-pi-checks missing {token}")
+        if token in matrix:
+            violations.append(f"ca-pi-tools repeats host-independent step per cell: {token}")
+
     latest = job("ca-pi-latest")
-    if re.search(r"(?m)^    continue-on-error: true\s*$", latest) is None:
-        violations.append("ca-pi-latest must remain explicitly nonblocking at job level")
+    # Issue #381: a job-level continue-on-error still reports the check run as
+    # FAILURE, which is the false alarm this contract now forbids. The canary is
+    # made advisory by absorbing its two upstream probes at STEP level and
+    # publishing a receipt, so a harness break can still turn the check red.
+    if re.search(r"(?m)^    continue-on-error: true\s*$", latest) is not None:
+        violations.append("ca-pi-latest must not carry a job-level continue-on-error")
+    if len(re.findall(r"(?m)^\s{8}continue-on-error: true\s*$", latest)) != 2:
+        violations.append(
+            "ca-pi-latest must absorb exactly its two upstream-compatibility probes at step level",
+        )
+    if re.search(r"(?m)^\s{8}if: always\(\)\s*$", latest) is None:
+        violations.append("ca-pi-latest must always publish its advisory receipt")
+    if "GITHUB_STEP_SUMMARY" not in latest:
+        violations.append("ca-pi-latest must publish the advisory verdict to the job summary")
     canary_sequence = re.search(
         r'(?ms)^\s{10}npm install --global @earendil-works/pi-coding-agent@latest --ignore-scripts\s*$'
         r'.*?^\s{10}pi --version\s*$'
@@ -759,7 +817,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
             for line in needs_match.group("body").splitlines()
             if line.strip().startswith("- ")
         }
-    for dependency in ("ca-pi-tools", "ca-pi-latest", "version-bump-pi"):
+    for dependency in ("ca-pi-checks", "ca-pi-tools", "ca-pi-latest", "version-bump-pi"):
         if dependency not in needs:
             violations.append(f"ci-passed.needs missing {dependency}")
     required_results = re.search(
@@ -770,6 +828,10 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
         violations.append("ci-passed must enumerate required results separately from the advisory canary")
     elif "needs.ca-pi-latest.result" in required_results.group("body"):
         violations.append("ci-passed must not promote the advisory ca-pi-latest result into required results")
+    elif "needs['ca-pi-checks'].result" not in required_results.group("body"):
+        # Registering a job in `needs:` alone makes the gate wait for it without
+        # ever enforcing its verdict - the silent coverage drop issue #390 calls out.
+        violations.append("ci-passed.required_results missing ca-pi-checks")
     if 'canary_result="${{ needs.ca-pi-latest.result }}"' not in aggregate:
         violations.append("ci-passed must report the advisory ca-pi-latest result separately")
     return violations
@@ -1009,6 +1071,7 @@ class PiPackageTests(unittest.TestCase):
         required = (
             "ca-pi: ${{ steps.filter.outputs.ca-pi }}",
             "- 'plugins/ca-pi/**'",
+            "ca-pi-checks:",
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
@@ -1016,10 +1079,11 @@ class PiPackageTests(unittest.TestCase):
             "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
-            "Test activation, commands, and status lifecycle",
+            "Test the complete Pi adapter suite",
             "Test real package RPC activation and aliases",
             'python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"',
             "ca-pi-latest:",
+            "- ca-pi-checks",
             "- ca-pi-tools",
             "- ca-pi-latest",
             "- version-bump-pi",
@@ -1065,14 +1129,42 @@ class PiPackageTests(unittest.TestCase):
             "the matrix must execute the native-binding test command, not merely contain its text",
         )
 
-        focused_nooped = ci.replace(
-            "        run: npm test -- test/activation.test.ts test/commands.test.ts test/status.test.ts\n",
-            "        run: echo npm test -- test/activation.test.ts test/commands.test.ts test/status.test.ts\n",
+        full_suite_nooped = ci.replace(
+            "      - name: Test the complete Pi adapter suite\n        run: npm test\n",
+            "      - name: Test the complete Pi adapter suite\n        run: echo npm test\n",
             1,
         )
         self.assertTrue(
-            pi_ci_contract_violations(focused_nooped),
-            "every matrix cell must execute the focused lifecycle tests",
+            pi_ci_contract_violations(full_suite_nooped),
+            "the canonical Pi job must execute the complete unfiltered Vitest suite",
+        )
+
+        host_independent_remultiplied = ci.replace(
+            "      - name: Test package, module identity, compatibility, and native binding\n",
+            "      - name: Typecheck\n        run: npm run typecheck\n"
+            "      - name: Test package, module identity, compatibility, and native binding\n",
+            1,
+        )
+        self.assertTrue(
+            pi_ci_contract_violations(host_independent_remultiplied),
+            "a host-independent step must not creep back into the six-cell matrix",
+        )
+
+        platform_gated_dropped = ci.replace(" test/activation.test.ts", "", 1)
+        self.assertNotEqual(platform_gated_dropped, ci, "the platform-gated matrix step vanished")
+        self.assertTrue(
+            pi_ci_contract_violations(platform_gated_dropped),
+            "a Vitest file that branches on the live platform must run on all three OSes",
+        )
+
+        aggregate_result_dropped = ci.replace(
+            "${{ needs['ca-pi-checks'].result }} ",
+            "",
+            1,
+        )
+        self.assertTrue(
+            pi_ci_contract_violations(aggregate_result_dropped),
+            "ci-passed must enforce ca-pi-checks, not merely wait for it",
         )
 
         rpc_nooped = ci.replace(
@@ -1115,14 +1207,38 @@ class PiPackageTests(unittest.TestCase):
             "the latest canary must execute the npm-latest install, not merely contain its text",
         )
 
-        latest_continue_commented = ci.replace(
-            "    continue-on-error: true\n",
-            "    # continue-on-error: true\n",
+        # Issue #381 inverted the old contract: a job-level continue-on-error
+        # still renders the check run FAILURE, so re-introducing one - or
+        # dropping either step-level absorption, or the always-published
+        # receipt - is now the violation.
+        latest_job_level_continue = ci.replace(
+            "  ca-pi-latest:\n    name:",
+            "  ca-pi-latest:\n    continue-on-error: true\n    name:",
             1,
         )
         self.assertTrue(
-            pi_ci_contract_violations(latest_continue_commented),
-            "the latest canary must retain an active job-level nonblocking declaration",
+            pi_ci_contract_violations(latest_job_level_continue),
+            "a job-level continue-on-error must not mask canary harness failures",
+        )
+
+        latest_probe_unabsorbed = ci.replace(
+            "        id: platform-contract\n        continue-on-error: true\n",
+            "        id: platform-contract\n",
+            1,
+        )
+        self.assertTrue(
+            pi_ci_contract_violations(latest_probe_unabsorbed),
+            "every upstream-compatibility probe must absorb its own failure at step level",
+        )
+
+        latest_receipt_dropped = ci.replace(
+            "        if: always()\n",
+            "        if: success()\n",
+            1,
+        )
+        self.assertTrue(
+            pi_ci_contract_violations(latest_receipt_dropped),
+            "the advisory receipt must publish even when a probe fails",
         )
 
         latest_order_drifted = ci.replace(

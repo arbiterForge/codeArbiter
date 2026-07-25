@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // farm.ts
-import { readFile as readFile2, writeFile as writeFile2, appendFile, mkdir, rm } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import path3 from "node:path";
@@ -130,8 +130,117 @@ function redactSecrets(contents) {
 
 // mutation.ts
 import { spawn as spawn2 } from "node:child_process";
-import { writeFile } from "node:fs/promises";
+
+// worktree-fs.ts
+import { constants } from "node:fs";
+import { lstat, mkdir, open, realpath } from "node:fs/promises";
 import path2 from "node:path";
+var UNSAFE_MESSAGE = "unsafe worktree path rejected";
+var UnsafeWorktreePathError = class extends Error {
+  constructor() {
+    super(UNSAFE_MESSAGE);
+    this.name = "UnsafeWorktreePathError";
+  }
+};
+function isUnsafeWorktreePathError(error) {
+  return error instanceof UnsafeWorktreePathError;
+}
+function unsafe() {
+  throw new UnsafeWorktreePathError();
+}
+function isMissing(error) {
+  return error?.code === "ENOENT";
+}
+function contained(root, candidate) {
+  const relative = path2.relative(root, candidate);
+  return relative === "" || !relative.startsWith(`..${path2.sep}`) && relative !== ".." && !path2.isAbsolute(relative);
+}
+function sameFile(left, right) {
+  return left.dev === right.dev && left.ino === right.ino;
+}
+function safeRegularFile(metadata) {
+  return metadata.isFile() && !metadata.isSymbolicLink() && metadata.nlink === 1;
+}
+async function writeWorktreeFile(worktree, relPath, contents, testHooks = {}) {
+  let handle;
+  try {
+    const rootMetadata = await lstat(worktree);
+    if (!rootMetadata.isDirectory() || rootMetadata.isSymbolicLink()) unsafe();
+    const canonicalRoot = await realpath(worktree);
+    const verifiedDirectories = [
+      { path: canonicalRoot, metadata: await lstat(canonicalRoot) }
+    ];
+    const verifyDirectories = async () => {
+      for (const verified of verifiedDirectories) {
+        const current = await lstat(verified.path);
+        if (!current.isDirectory() || current.isSymbolicLink() || !sameFile(current, verified.metadata)) unsafe();
+        if (!contained(canonicalRoot, await realpath(verified.path))) unsafe();
+      }
+    };
+    const target = path2.resolve(canonicalRoot, relPath);
+    const relative = path2.relative(canonicalRoot, target);
+    if (relative === "" || relative === ".." || relative.startsWith(`..${path2.sep}`) || path2.isAbsolute(relative)) unsafe();
+    const segments = relative.split(path2.sep);
+    let parent = canonicalRoot;
+    for (const segment of segments.slice(0, -1)) {
+      if (segment === "" || segment === "." || segment === "..") unsafe();
+      const candidate = path2.join(parent, segment);
+      let metadata;
+      try {
+        metadata = await lstat(candidate);
+      } catch (error) {
+        if (!isMissing(error)) throw error;
+        try {
+          await mkdir(candidate, { mode: 448 });
+        } catch (mkdirError) {
+          if (mkdirError?.code !== "EEXIST") throw mkdirError;
+        }
+        metadata = await lstat(candidate);
+      }
+      if (!metadata.isDirectory() || metadata.isSymbolicLink()) unsafe();
+      const canonicalCandidate = await realpath(candidate);
+      if (!contained(canonicalRoot, canonicalCandidate)) unsafe();
+      verifiedDirectories.push({ path: candidate, metadata });
+      parent = candidate;
+    }
+    await verifyDirectories();
+    const canonicalParent = await realpath(parent);
+    if (!contained(canonicalRoot, canonicalParent)) unsafe();
+    let before;
+    try {
+      before = await lstat(target);
+    } catch (error) {
+      if (!isMissing(error)) throw error;
+    }
+    if (before !== void 0 && !safeRegularFile(before)) unsafe();
+    if (before !== void 0 && !contained(canonicalRoot, await realpath(target))) unsafe();
+    const noFollow = typeof constants.O_NOFOLLOW === "number" ? constants.O_NOFOLLOW : 0;
+    const flags = before === void 0 ? constants.O_RDWR | constants.O_CREAT | constants.O_EXCL | noFollow : constants.O_RDWR | noFollow;
+    handle = await open(target, flags, 384);
+    const opened = await handle.stat();
+    const atPath = await lstat(target);
+    if (!safeRegularFile(opened) || !safeRegularFile(atPath) || !sameFile(opened, atPath)) unsafe();
+    await verifyDirectories();
+    if (!contained(canonicalRoot, await realpath(parent))) unsafe();
+    if (!contained(canonicalRoot, await realpath(target))) unsafe();
+    await testHooks.beforeFinalAuthorization?.();
+    await verifyDirectories();
+    if (!contained(canonicalRoot, await realpath(parent))) unsafe();
+    if (!contained(canonicalRoot, await realpath(target))) unsafe();
+    const finalAtPath = await lstat(target);
+    const finalOpened = await handle.stat();
+    if (!safeRegularFile(finalOpened) || !safeRegularFile(finalAtPath) || !sameFile(finalOpened, finalAtPath)) unsafe();
+    await handle.truncate(0);
+    await handle.writeFile(contents, { encoding: "utf8" });
+  } catch (error) {
+    if (isUnsafeWorktreePathError(error)) throw error;
+    throw new UnsafeWorktreePathError();
+  } finally {
+    await handle?.close().catch(() => void 0);
+  }
+}
+
+// mutation.ts
 var MUT = {
   enabled: (process.env.FARM_MUTATION ?? "on").toLowerCase() !== "off",
   // reliability-014: routed through the shared numEnv reader (exec.ts) so a
@@ -290,17 +399,22 @@ async function mutationCheck(wt, task) {
   try {
     for (const c of candidates) {
       if (Date.now() - start > MUT.budgetMs) break;
-      await writeFile(path2.resolve(wt, c.file), c.mutated);
+      await writeWorktreeFile(wt, c.file, c.mutated);
       const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
       const orig = originals.get(c.file);
-      if (orig !== void 0) await writeFile(path2.resolve(wt, c.file), orig);
+      if (orig !== void 0) await writeWorktreeFile(wt, c.file, orig);
       evaluated++;
       if (r.code !== 0) killed++;
       else survivors.push(c.tag);
     }
   } finally {
-    for (const [f, src] of originals) await writeFile(path2.resolve(wt, f), src).catch(() => {
-    });
+    for (const [f, src] of originals) {
+      try {
+        await writeWorktreeFile(wt, f, src);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error)) throw error;
+      }
+    }
   }
   if (evaluated < 3) return null;
   return { score: killed / evaluated, evaluated, survivors };
@@ -571,12 +685,12 @@ function extractFileBlocks(content) {
   const blocks = [];
   let i = 0;
   while (i < lines.length) {
-    const open = lines[i].match(/^\s*```(.*)$/);
-    if (!open) {
+    const open2 = lines[i].match(/^\s*```(.*)$/);
+    if (!open2) {
       i++;
       continue;
     }
-    const info = open[1].trim();
+    const info = open2[1].trim();
     const body = [];
     i++;
     while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) {
@@ -712,8 +826,12 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, samp
     if (forbidden.has(rel)) {
       return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
     }
-    await mkdir(path3.dirname(absPath), { recursive: true });
-    await writeFile2(absPath, body.endsWith("\n") ? body : body + "\n");
+    try {
+      await writeWorktreeFile(cwd, rel, body.endsWith("\n") ? body : body + "\n");
+    } catch (error) {
+      if (isUnsafeWorktreePathError(error)) return { ok: false, filesWritten, error: error.message };
+      throw error;
+    }
     filesWritten.push(rel);
   }
   if (filesWritten.length === 0) {
@@ -827,9 +945,8 @@ function effectiveSampling(samples) {
 async function writeFilesInto(wt, files) {
   for (const f of files) {
     const abs = path3.resolve(wt, f.path);
-    if (!isInside(wt, abs)) continue;
-    await mkdir(path3.dirname(abs), { recursive: true });
-    await writeFile2(abs, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
+    if (!isInside(wt, abs)) throw new UnsafeWorktreePathError();
+    await writeWorktreeFile(wt, f.path, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
   }
 }
 async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps) {
@@ -954,7 +1071,14 @@ ${setupResult.tail}`), promptTokens, completionTokens };
         priorFailure = sel.bestFailure?.note ?? "all samples failed the gate";
         continue;
       }
-      await writeFilesInto(wt, sel.winner.files);
+      try {
+        await writeFilesInto(wt, sel.winner.files);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error)) {
+          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+        }
+        throw error;
+      }
       worker = { ok: true, filesWritten: sel.winner.filesWritten };
       lastFilesWritten = worker.filesWritten;
     }
@@ -985,7 +1109,15 @@ ${gate.tail}`);
     let risk = gaming.risk;
     let riskNote = gaming.note;
     if (risk !== "high") {
-      const mut = await deps.mutationCheck(wt, t);
+      let mut;
+      try {
+        mut = await deps.mutationCheck(wt, t);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error)) {
+          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+        }
+        throw error;
+      }
       if (mut && "score" in mut) {
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
@@ -1190,8 +1322,8 @@ async function runCanary(plan) {
     console.error("Error: FARM_API_KEY is not set.");
     process.exit(1);
   }
-  await mkdir(ENV.worktreeRoot, { recursive: true });
-  await mkdir(ENV.reportDir, { recursive: true });
+  await mkdir2(ENV.worktreeRoot, { recursive: true });
+  await mkdir2(ENV.reportDir, { recursive: true });
   await git(["branch", "-f", ENV.integration, ENV.base]);
   integrationWorktree = path3.resolve(ENV.reportDir, "integration-wt");
   await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
@@ -1221,7 +1353,7 @@ async function runCanary(plan) {
   await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
   });
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
-  await writeFile2(path3.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
+  await writeFile(path3.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
   const summary = [
     "\nCanary results (best first):",
     ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`),
@@ -1245,10 +1377,10 @@ async function main() {
   if (canary) return runCanary(plan);
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
   const runId = mintRunId();
-  await mkdir(ENV.worktreeRoot, { recursive: true });
-  await mkdir(ENV.reportDir, { recursive: true });
+  await mkdir2(ENV.worktreeRoot, { recursive: true });
+  await mkdir2(ENV.reportDir, { recursive: true });
   const resultsStream = path3.join(ENV.reportDir, "farm-results.jsonl");
-  await writeFile2(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
+  await writeFile(resultsStream, "").catch((e) => console.error("results stream init failed:", e));
   const done = /* @__PURE__ */ new Map();
   const blocked = [];
   let aborted = false;
@@ -1365,17 +1497,17 @@ Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
   process.exit(exitCode);
 }
 async function writeReport(plan, results, blocked, aborted, runId) {
-  await mkdir(path3.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {
+  await mkdir2(path3.join(ENV.reportDir, "diffs"), { recursive: true }).catch(() => {
   });
   for (const r of results) {
     const d = await git(["diff", `${ENV.base}...${r.branch}`]);
     if (d.code === 0 && d.out.trim())
-      await writeFile2(path3.join(ENV.reportDir, "diffs", `${r.id}.patch`), d.out).catch(() => {
+      await writeFile(path3.join(ENV.reportDir, "diffs", `${r.id}.patch`), d.out).catch(() => {
       });
   }
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
-  await writeFile2(
+  await writeFile(
     path3.join(ENV.reportDir, "farm-report.json"),
     JSON.stringify({ run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2)
   );
@@ -1397,7 +1529,7 @@ async function writeReport(plan, results, blocked, aborted, runId) {
     `## Warnings \u2014 review during spec-compliance`,
     ...results.filter((r) => r.warning).map((r) => `- **${r.id}** \u2014 ${r.warning} (diff: \`${path3.join(ENV.reportDir, "diffs", r.id + ".patch")}\`)`)
   ].join("\n");
-  await writeFile2(path3.join(ENV.reportDir, "farm-report.md"), md);
+  await writeFile(path3.join(ENV.reportDir, "farm-report.md"), md);
 }
 var _thisFile = fileURLToPath(import.meta.url);
 var _entryFile = path3.resolve(process.argv[1] ?? "");
@@ -1435,5 +1567,6 @@ export {
   runTask,
   screenEntitlements,
   validate,
-  validateWorktreeRoot
+  validateWorktreeRoot,
+  writeFilesInto
 };

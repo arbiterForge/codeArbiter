@@ -12,11 +12,12 @@
  *   3. CACHE MISS — build the image and tag it `<tag>`:
  *        a. nixpacks is the intended builder. If `nixpacks --version` works we wrap
  *           it (`nixpacks build <repoDir> --name <tag>`).
- *        b. If nixpacks is absent we try to install it via its official install
- *           script (https://nixpacks.com/install.sh). If the install is BLOCKED
- *           (offline / sandboxed / non-zero exit) we FALL BACK to a generated
+ *        b. If nixpacks is absent we FAIL CLOSED — ca-sandbox never acquires it
+ *           (issue #401: acquiring a builder means executing remote bytes on the
+ *           developer host, before any container boundary exists; nixpacks is a
+ *           documented prerequisite instead). We FALL BACK to a generated
  *           Dockerfile that mimics what nixpacks bakes, and we NOTE the missing
- *           dependency in the result (the plan's [NEEDS-TRIAGE] environment-UX item).
+ *           dependency in the result so the user can install the real builder.
  *      Either way, the build RELOCATES installed deps OUT OF TREE to `/deps` and
  *      exports `NODE_PATH=/deps/node_modules` / `PYTHONPATH=/deps/site-packages`
  *      via image ENV (Spike A: mounting the source volume over the app dir at
@@ -55,13 +56,32 @@ export const APP_DIR = "/work/repo";
  *  relocation overlay moves deps from HERE to /deps — NOT from APP_DIR (Spike A
  *  recorded this; the never-run native path had it pointing at APP_DIR). */
 export const NIXPACKS_APP_DIR = "/app";
-/** Official nixpacks install script (used only when nixpacks is absent). */
-export const NIXPACKS_INSTALL_URL = "https://nixpacks.com/install.sh";
+/**
+ * Base image for the generated-Dockerfile fallback, PINNED to a reviewed
+ * multi-arch index digest (issue #402). A floating tag would let a retag or
+ * registry compromise change the code baked into every fallback sandbox build,
+ * and would also defeat the dephash cache's reproducibility evidence.
+ *
+ * Resolved 2026-07-24 with `docker buildx imagetools inspect node:20-slim`.
+ * Bump this ONLY through a reviewed dependency change (re-resolve the digest and
+ * re-run the multistack/layering docker-gated suites).
+ */
+export const FALLBACK_BASE_IMAGE =
+  "node:20-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0";
 
 // --------------------------------------------------------------------------
 // process helper (mirrors farm.ts run()/RunResult)
 // --------------------------------------------------------------------------
 export type RunResult = { code: number; out: string; stdout: string; stderr: string };
+
+/**
+ * The child-process seam used by the toolchain probes (`defaultEnsureNixpacks`
+ * and its WSL-bridge helper). It defaults to the real `run()`; tests inject a
+ * recorder so the ACTUAL default probe path — not a stubbed `ensureNixpacks` —
+ * can be asserted on, including the invariant that a missing prerequisite spawns
+ * NOTHING that mutates the host toolchain (secrets-supply-002 / issue #401).
+ */
+export type ProbeRun = (cmd: string, args: string[]) => Promise<RunResult>;
 
 // docker build of the nixpacks-generated Dockerfile needs BuildKit (it emits
 // `RUN --mount=type=cache`). Docker Desktop defaults to BuildKit, but set it
@@ -200,10 +220,10 @@ async function defaultNixpacksVersion(): Promise<string> {
  * it. Returns the absolute nixpacks path inside the default distro + version, or
  * null if WSL/nixpacks is absent.
  */
-async function detectWslNixpacks(): Promise<{ bin: string; version: string } | null> {
+async function detectWslNixpacks(exec: ProbeRun = run): Promise<{ bin: string; version: string } | null> {
   // Resolve the nixpacks path inside the default distro. `command -v` covers a
   // PATH install; the `||` fallback covers the user-dir install ($HOME/.local/bin).
-  const probe = await run("wsl.exe", [
+  const probe = await exec("wsl.exe", [
     "bash",
     "-lc",
     'command -v nixpacks || echo "$HOME/.local/bin/nixpacks"',
@@ -212,23 +232,27 @@ async function detectWslNixpacks(): Promise<{ bin: string; version: string } | n
   const bin = probe.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).pop();
   if (!bin) return null;
   // Verify it actually runs in WSL (the fallback path may not exist).
-  const ver = await run("wsl.exe", ["--", bin, "--version"]);
+  const ver = await exec("wsl.exe", ["--", bin, "--version"]);
   if (ver.code !== 0) return null;
   const m = ver.stdout.match(/(\d+\.\d+\.\d+)/);
   return { bin, version: m ? m[1] : ver.stdout.trim() };
 }
 
 /**
- * Ensure nixpacks is available, by precedence:
+ * Detect a usable nixpacks, by precedence:
  *   1. host `nixpacks` on PATH (Linux/macOS, or a Windows host that has it);
  *   2. the WSL bridge (Windows) — nixpacks in a WSL distro generates the
  *      Dockerfile, host Docker builds it;
- *   3. the official install script on the host;
  * else report unavailable so the caller uses the generated-Dockerfile fallback
- * and surfaces the dependency.
+ * and surfaces the dependency. Both steps are READ-ONLY probes of an
+ * already-installed tool: this function NEVER acquires nixpacks (issue #401).
+ *
+ * Exported (with an injectable `exec`) so the real default path is testable —
+ * every other suite stubs `BuildDeps.ensureNixpacks`, which left this the one
+ * uncovered effect in the module.
  */
-async function defaultEnsureNixpacks(): Promise<EnsureNixpacksResult> {
-  const probe = await run("nixpacks", ["--version"]);
+export async function defaultEnsureNixpacks(exec: ProbeRun = run): Promise<EnsureNixpacksResult> {
+  const probe = await exec("nixpacks", ["--version"]);
   if (probe.code === 0) {
     const m = probe.stdout.match(/(\d+\.\d+\.\d+)/);
     return { available: true, via: { via: "host" }, version: m ? m[1] : probe.stdout.trim() };
@@ -237,7 +261,7 @@ async function defaultEnsureNixpacks(): Promise<EnsureNixpacksResult> {
   // WSL bridge: only meaningful on Windows, but the probe is harmless elsewhere
   // (no `wsl.exe` => null). nixpacks-in-WSL generates the Dockerfile; host Docker builds it.
   if (process.platform === "win32") {
-    const wsl = await detectWslNixpacks();
+    const wsl = await detectWslNixpacks(exec);
     if (wsl) {
       return {
         available: true,
@@ -250,22 +274,20 @@ async function defaultEnsureNixpacks(): Promise<EnsureNixpacksResult> {
     }
   }
 
-  // Try the official install script: `curl -fsSL <url> | bash`.
-  const install = await run("bash", ["-c", `curl -fsSL ${NIXPACKS_INSTALL_URL} | bash`]);
-  if (install.code === 0) {
-    const after = await run("nixpacks", ["--version"]);
-    if (after.code === 0) {
-      const m = after.stdout.match(/(\d+\.\d+\.\d+)/);
-      return { available: true, via: { via: "host" }, version: m ? m[1] : after.stdout.trim() };
-    }
-  }
+  // FAIL CLOSED. ca-sandbox NEVER acquires nixpacks itself: this code runs on the
+  // developer host, BEFORE any container boundary exists, so fetching and
+  // executing an installer here would grant remote bytes the developer's
+  // privileges (secrets-supply-002 / issue #401). nixpacks is a documented
+  // prerequisite (README / sandbox-lifecycle SKILL / the command description all
+  // say so); when it is absent we take the generated-Dockerfile fallback and tell
+  // the user how to get the intended build path.
   return {
     available: false,
     note:
-      "nixpacks is not installed (no host binary, no WSL bridge, install script " +
-      `blocked: ${NIXPACKS_INSTALL_URL}); fell back to a generated Dockerfile that ` +
-      "mimics nixpacks. Install nixpacks for the intended build path (NEEDS-TRIAGE: " +
-      "nixpacks-as-runtime-dependency).",
+      "nixpacks is not installed (no host binary, no WSL bridge); fell back to a " +
+      "generated Dockerfile that mimics nixpacks (node/python only). Install " +
+      "nixpacks for the intended build path — see https://nixpacks.com for the " +
+      "install options; ca-sandbox deliberately does not install it for you.",
   };
 }
 
@@ -286,7 +308,7 @@ export function generateDockerfile(stack: { node: boolean; python: boolean }): s
   const lines: string[] = [];
   // node:20-slim has both node and (via apt) python tooling for the common cases;
   // it matches the Node 20 driver stack and Spike B's clean install base family.
-  lines.push("FROM node:20-slim");
+  lines.push(`FROM ${FALLBACK_BASE_IMAGE}`);
   lines.push(`ENV NODE_PATH=${DEPS_DIR}/node_modules`);
   lines.push(`ENV PYTHONPATH=${DEPS_DIR}/site-packages`);
   lines.push(`RUN mkdir -p ${DEPS_DIR} ${APP_DIR}`);

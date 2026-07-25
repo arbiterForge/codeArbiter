@@ -51,8 +51,19 @@ import { defaultDockerRun, type RunResult } from "./docker.ts";
 export const CLAUDE_CODE_VERSION = "2.1.183";
 /** The npm package the image installs at the pinned version. */
 export const CLAUDE_CODE_PACKAGE = "@anthropic-ai/claude-code";
-/** Base image — node:22-slim installs the CLI cleanly (Spike B). */
-export const CLAUDE_BASE_IMAGE = "node:22-slim";
+/**
+ * Base image — node:22-slim installs the CLI cleanly (Spike B) — PINNED to a
+ * reviewed multi-arch index digest (issue #402). This is the highest-stakes pin
+ * in the driver: the base image's code later runs in the SAME container as
+ * CLAUDE_CODE_OAUTH_TOKEN, so an unreviewed upstream change would execute
+ * alongside a live credential. Pinning the CLI version alone is not enough.
+ *
+ * Resolved 2026-07-24 with `docker buildx imagetools inspect node:22-slim`.
+ * Bump this ONLY through a reviewed dependency change (re-resolve the digest and
+ * re-run the credential-boundary + isolation suites).
+ */
+export const CLAUDE_BASE_IMAGE =
+  "node:22-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3";
 /**
  * In-container HOME for the claude run. The named volume mounts here, so the
  * credential store `$HOME/.claude/.credentials.json` (and the rest of the .claude

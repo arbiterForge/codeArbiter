@@ -11,8 +11,6 @@
  * identical to the prior in-farm.ts definitions.
  */
 import { spawn } from "node:child_process";
-import { writeFile } from "node:fs/promises";
-import path from "node:path";
 import {
   run,
   treeKill,
@@ -25,6 +23,7 @@ import {
   GATE_TIMEOUT_MS,
 } from "./exec.ts";
 import { redactSecrets } from "./redactor.ts";
+import { isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
 import type { Task } from "./farm.ts";
 
 // Mutation guard — a zero-token quality signal. After the gate goes green we
@@ -257,7 +256,7 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
   try {
     for (const c of candidates) {
       if (Date.now() - start > MUT.budgetMs) break;
-      await writeFile(path.resolve(wt, c.file), c.mutated);
+      await writeWorktreeFile(wt, c.file, c.mutated);
       // T-06: bound the mutant re-run by the wall-clock timeout. A hung test
       // here (a mutant that turns the test into an infinite loop, say) would
       // otherwise wedge the worker; the killed result counts as a "killed"
@@ -268,14 +267,20 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
       // (every candidate's file is a key in `originals`) holds for the built-in
       // generator today; this guard preserves the file if that ever changes.
       const orig = originals.get(c.file);
-      if (orig !== undefined) await writeFile(path.resolve(wt, c.file), orig); // restore
+      if (orig !== undefined) await writeWorktreeFile(wt, c.file, orig); // restore
       evaluated++;
       if (r.code !== 0) killed++;
       else survivors.push(c.tag);
     }
   } finally {
     // defensive: guarantee every impl file is back to the worker's output
-    for (const [f, src] of originals) await writeFile(path.resolve(wt, f), src).catch(() => {});
+    for (const [f, src] of originals) {
+      try {
+        await writeWorktreeFile(wt, f, src);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error)) throw error;
+      }
+    }
   }
   if (evaluated < 3) return null; // too few mutants to judge fairly
   return { score: killed / evaluated, evaluated, survivors };

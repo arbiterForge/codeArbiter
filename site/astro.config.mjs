@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import { unified } from "@astrojs/markdown-remark";
 import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
 
@@ -39,11 +40,15 @@ export default defineConfig({
   //   - Starlight does NOT rewrite root-absolute markdown links through the
   //     base on its own. Writing [Overview](/overview) in MDX/Markdown would
   //     render a literal `/overview` href and 404 once served from a subpath.
-  //   - Instead, `markdown.rehypePlugins` below runs our local
+  //   - Instead, the `markdown.processor` below runs our local
   //     `rehypeBaseLinks(BASE)` plugin (scripts/rehype-base-links.ts) over
   //     every rendered page. It walks the HAST tree and prefixes any
   //     root-absolute href/src ("/overview") with BASE ("/codeArbiter/overview"),
   //     idempotently, so plain root-relative markdown links stay base-safe.
+  //   - The plugin is passed to `unified({ ... })` from `@astrojs/markdown-remark`,
+  //     NOT to the top-level `markdown.rehypePlugins` key. Astro 7.1 deprecated
+  //     `markdown.remarkPlugins` / `rehypePlugins` / `remarkRehype` ("will be
+  //     removed in a future major") — see the note on `markdown:` below.
   //   - In Astro component href props (not markdown), still use
   //     import.meta.env.BASE_URL: href={`${import.meta.env.BASE_URL}overview/`}
   //   - Never hardcode "/codeArbiter/" in href strings. That value desyncs
@@ -68,8 +73,19 @@ export default defineConfig({
     "/reference/skills/release-2": `${BASE}/reference/skills/release`,
     "/reference/skills/tribunal-2": `${BASE}/reference/skills/tribunal`,
   },
+  // Astro 7.1 made Sätteri the default Markdown processor and deprecated the
+  // top-level `markdown.remarkPlugins` / `rehypePlugins` / `remarkRehype` keys.
+  // Setting `processor` explicitly is the supported replacement: it selects the
+  // remark/rehype (`unified`) pipeline and takes the plugin list directly.
+  //
+  // This is behaviour-neutral versus the deprecated form — Astro's own
+  // compatibility shim did exactly this (`md.processor = unified()`, then push
+  // the legacy plugin arrays onto it) before emitting its deprecation warning.
+  // Doing it here removes the warning and takes the site off an API with a
+  // scheduled removal. `@astrojs/markdown-remark` is a direct dependency
+  // because of this import — see site/package.json.
   markdown: {
-    rehypePlugins: [rehypeBaseLinks(BASE)],
+    processor: unified({ rehypePlugins: [rehypeBaseLinks(BASE)] }),
   },
   integrations: [
     starlight({
