@@ -8,10 +8,11 @@ import type {
   ToolResultPiPort,
 } from "./contracts.ts";
 import { createHash, randomUUID } from "node:crypto";
-import { constants as fsConstants, realpathSync } from "node:fs";
-import { lstat, open, realpath } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { types as utilTypes } from "node:util";
+import { NODE_AUDIT_SINK_IO, appendAuditLine, appendAuditLineWithIo } from "./audit-sink.ts";
+import type { AuditSinkIoPort } from "./audit-sink.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { applyToolResultNotice } from "./notices.ts";
 import {
@@ -99,30 +100,8 @@ export interface BackgroundJobAuditRow {
   readonly exitClass?: "success" | "failure" | "cancelled" | "timeout";
 }
 
-interface PermissionAuditStatsPort {
-  readonly dev: number;
-  readonly ino: number;
-  readonly nlink: number;
-  readonly size: number;
-  isDirectory(): boolean;
-  isFile(): boolean;
-  isSymbolicLink(): boolean;
-}
-
-interface PermissionAuditHandlePort {
-  stat(): Promise<PermissionAuditStatsPort>;
-  appendFile(data: string, options: { encoding: "utf8" }): Promise<unknown>;
-  sync(): Promise<void>;
-  close(): Promise<void>;
-}
-
-export interface PermissionAuditIoPort {
-  realpath(path: string): Promise<string>;
-  lstat(path: string): Promise<PermissionAuditStatsPort>;
-  open(path: string, flags: number, mode?: number): Promise<PermissionAuditHandlePort>;
-}
-
-const NODE_PERMISSION_AUDIT_IO: PermissionAuditIoPort = Object.freeze({ realpath, lstat, open });
+/** The permission audit's view of the shared hardened sink seam; see `audit-sink.ts`. */
+export type PermissionAuditIoPort = AuditSinkIoPort;
 
 const CONFIRMATION_TITLE = "Allow governed operation?";
 const CONFIRMATION_TIMEOUT_MS = 60_000;
@@ -270,101 +249,6 @@ function permissionAuditCodeRow(
 }
 
 /** Appends one closed, command-free permission row. Approved mutation audit is fail-closed. */
-function sameAuditFile(left: PermissionAuditStatsPort, right: PermissionAuditStatsPort): boolean {
-  return left.isFile() && right.isFile()
-    && !left.isSymbolicLink() && !right.isSymbolicLink()
-    && left.nlink === 1 && right.nlink === 1
-    && left.dev === right.dev && left.ino === right.ino;
-}
-
-function sameAuditDirectory(left: PermissionAuditStatsPort, right: PermissionAuditStatsPort): boolean {
-  return left.isDirectory() && right.isDirectory()
-    && !left.isSymbolicLink() && !right.isSymbolicLink()
-    && left.dev === right.dev && left.ino === right.ino;
-}
-
-async function openedAuditTarget(
-  target: string,
-  io: PermissionAuditIoPort,
-): Promise<Readonly<{ handle: PermissionAuditHandlePort; identity: PermissionAuditStatsPort }> | undefined> {
-  const noFollow = typeof fsConstants.O_NOFOLLOW === "number" ? fsConstants.O_NOFOLLOW : 0;
-  const existingFlags = fsConstants.O_WRONLY | fsConstants.O_APPEND | noFollow;
-  const createFlags = existingFlags | fsConstants.O_CREAT | fsConstants.O_EXCL;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    let expected: PermissionAuditStatsPort | undefined;
-    try {
-      expected = await io.lstat(target);
-      if (!expected.isFile() || expected.isSymbolicLink() || expected.nlink !== 1) return undefined;
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") return undefined;
-    }
-    let handle: PermissionAuditHandlePort;
-    try {
-      handle = await io.open(target, expected === undefined ? createFlags : existingFlags, 0o600);
-    } catch (error) {
-      if (expected === undefined && (error as NodeJS.ErrnoException).code === "EEXIST" && attempt === 0) continue;
-      return undefined;
-    }
-    try {
-      const opened = await handle.stat();
-      const pathname = await io.lstat(target);
-      if (!sameAuditFile(opened, pathname) || expected !== undefined && !sameAuditFile(opened, expected)) {
-        await handle.close();
-        return undefined;
-      }
-      return Object.freeze({ handle, identity: opened });
-    } catch {
-      try { await handle.close(); } catch { /* fail closed below */ }
-      return undefined;
-    }
-  }
-  return undefined;
-}
-
-async function appendAuditLineWithIo(cwd: string, line: string, io: PermissionAuditIoPort): Promise<boolean> {
-  try {
-    if (Buffer.byteLength(line, "utf8") > 2_048 || !line.endsWith("\n") || line.slice(0, -1).includes("\n")) return false;
-    const root = await io.realpath(cwd);
-    const statePath = resolve(root, ".codearbiter");
-    const stateInfo = await io.lstat(statePath);
-    if (!stateInfo.isDirectory() || stateInfo.isSymbolicLink()) return false;
-    const state = await io.realpath(statePath);
-    const stateRelative = relative(root, state);
-    if (stateRelative === "" || stateRelative.startsWith("..") || resolve(root, stateRelative) !== state) return false;
-    const stateIdentity = await io.lstat(state);
-    if (!sameAuditDirectory(stateInfo, stateIdentity)) return false;
-    const stateIsCurrent = async (): Promise<boolean> => {
-      try {
-        return await io.realpath(statePath) === state
-          && sameAuditDirectory(stateIdentity, await io.lstat(statePath));
-      } catch {
-        return false;
-      }
-    };
-    if (!await stateIsCurrent()) return false;
-    const target = resolve(state, "gate-events.log");
-    const opened = await openedAuditTarget(target, io);
-    if (opened === undefined) return false;
-    const { handle, identity } = opened;
-    try {
-      const before = await handle.stat();
-      const beforePath = await io.lstat(target);
-      if (!sameAuditFile(identity, before) || !sameAuditFile(before, beforePath) || !await stateIsCurrent()) return false;
-      await handle.appendFile(line, { encoding: "utf8" });
-      await handle.sync();
-      const after = await handle.stat();
-      const afterPath = await io.lstat(target);
-      if (!sameAuditFile(before, after) || !sameAuditFile(after, afterPath)
-        || after.size < before.size + Buffer.byteLength(line, "utf8") || !await stateIsCurrent()) return false;
-    } finally {
-      await handle.close();
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export async function appendPermissionAuditWithIo(
   cwd: string,
   row: PermissionAuditRow,
@@ -415,7 +299,7 @@ export async function appendBackgroundJobAudit(cwd: string, row: BackgroundJobAu
         || !Number.isSafeInteger(row.durationMs) || row.durationMs! < 0
         || !Number.isSafeInteger(row.outputBytes) || row.outputBytes! < 0 || row.outputBytes! > 65_536))
       || (row.event === "cancel" && typeof row.accepted !== "boolean")) return false;
-    return await appendAuditLineWithIo(cwd, [
+    return await appendAuditLine(cwd, [
       `[${row.timestamp}]`, "HOST: pi", "RULE: PI-BACKGROUND-JOB", `CORRELATION: ${row.correlation}`,
       `LIFECYCLE: ${row.lifecycleId}`, `EVENT: ${row.event}`, `JOB_ID: ${row.id}`,
       ...(row.state === undefined ? [] : [`STATE: ${row.state}`]),
@@ -424,12 +308,12 @@ export async function appendBackgroundJobAudit(cwd: string, row: BackgroundJobAu
       ...(row.durationMs === undefined ? [] : [`DURATION_MS: ${row.durationMs}`]),
       ...(row.exitClass === undefined ? [] : [`EXIT_CLASS: ${row.exitClass}`]),
       ...(row.accepted === undefined ? [] : [`ACCEPTED: ${row.accepted}`]),
-    ].join(" | ") + "\n", NODE_PERMISSION_AUDIT_IO);
+    ].join(" | ") + "\n");
   } catch { return false; }
 }
 
 export async function appendPermissionAudit(cwd: string, row: PermissionAuditRow): Promise<boolean> {
-  return await appendPermissionAuditWithIo(cwd, row, NODE_PERMISSION_AUDIT_IO);
+  return await appendPermissionAuditWithIo(cwd, row, NODE_AUDIT_SINK_IO);
 }
 
 export interface EnforcementReadinessPort {
