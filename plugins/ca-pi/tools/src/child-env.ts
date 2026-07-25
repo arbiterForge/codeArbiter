@@ -50,11 +50,18 @@ const RESERVED_OBJECT_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /** A projected endpoint is accepted POSITIVELY, never by blocklisting the parameter names that
  * carry credentials (`api-key`, `key`, `token`, `sig`, … is an unbounded list). An endpoint is
- * an `http`/`https` scheme, a host, an optional port, and a short lowercase route — nothing
+ * an `http`/`https` scheme, a host, an optional port, and a short bounded route — nothing
  * else. Query and fragment are refused outright because a provider endpoint needs neither: Pi's
  * own Azure provider carries `api-version` in `AZURE_OPENAI_API_VERSION`, not in `baseUrl`. */
 const ENDPOINT_PROTOCOLS = new Set(["http:", "https:"]);
-const ENDPOINT_PATH_SEGMENT = /^[a-z0-9]+(?:[._-][a-z0-9]+)*$/u;
+// Case-INSENSITIVE by maintainer decision (2026-07-25). A lowercase-only route looked like a
+// credential control but was not one: `sk-querysecret999` passes it while `GPT4-Prod` — an
+// ordinary Azure deployment name — does not. A short path segment simply cannot be told apart
+// from a legitimate route, so the real controls here are the ones that do not depend on
+// guessing intent: no userinfo, no query, no fragment, no percent-encoding, a bounded segment
+// length (which refuses realistic key material — provider keys run well past 32 bytes), and a
+// bounded segment count.
+const ENDPOINT_PATH_SEGMENT = /^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$/u;
 const MAX_ENDPOINT_BYTES = 512;
 const MAX_ENDPOINT_PATH_SEGMENTS = 8;
 const MAX_ENDPOINT_PATH_SEGMENT_BYTES = 32;

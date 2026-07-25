@@ -399,7 +399,7 @@ describe("Task 6 child environment", () => {
   // shape and left the COMMON one open — Azure uses `?api-key=`, Google uses `?key=`, and a
   // secret rides a path segment or a fragment just as easily. Blocklisting parameter names is an
   // unbounded list, so acceptance is now positive and reject-unless-provably-safe: `http`/`https`
-  // scheme, host, optional port, and a short lowercase route. Query and fragment are refused
+  // scheme, host, optional port, and a short bounded route. Query and fragment are refused
   // outright — a provider endpoint needs neither (Pi's own Azure provider carries `api-version`
   // in AZURE_OPENAI_API_VERSION, not in `baseUrl`).
   test("refuses a baseUrl carrying credential material in a query, fragment, path, or scheme", async () => {
@@ -410,7 +410,12 @@ describe("Task 6 child environment", () => {
       ["empty query marker", "https://gw.example.com/v1?"],
       ["fragment credential", "https://gw.example.com/v1#sk-FRAGSECRET999"],
       ["empty fragment marker", "https://gw.example.com/v1#"],
-      ["path credential", "https://gw.example.com/keys/sk-PATHSECRET999"],
+      // A REALISTIC key, refused on the segment-length bound. The old fixture here was
+      // `sk-PATHSECRET999`, which the lowercase-only rule rejected on CASE — that was never a
+      // real control, since `sk-pathsecret999` passed it. Route case is now permitted (a
+      // mixed-case Azure deployment name is ordinary), so this asserts the bound that actually
+      // bites: real provider keys run well past 32 bytes per segment.
+      ["path credential", `https://gw.example.com/keys/sk-proj-${"A1b2C3d4".repeat(6)}`],
       ["percent-encoded path", "https://gw.example.com/v1/%73k-ENCODEDSECRET"],
       ["non-http scheme", "file:///c:/operator/.pi/auth.json"],
       ["overlong path segment", `https://gw.example.com/${"a".repeat(33)}`],
@@ -447,6 +452,11 @@ describe("Task 6 child environment", () => {
       "https://my-resource.openai.azure.com/openai/deployments/gpt-4o",
       "https://generativelanguage.googleapis.com/v1beta",
       "https://gw.example.com/api/paas/v4",
+      // Mixed-case route segments (maintainer decision 2026-07-25). Azure deployment names and
+      // Cloudflare AI Gateway names are operator-chosen and routinely carry capitals; refusing
+      // them cost an operator their isolated children entirely, for no credential benefit.
+      "https://my-resource.openai.azure.com/openai/deployments/GPT4-Prod",
+      "https://gateway.ai.cloudflare.com/v1/Acct123/My-Gateway/openai",
     ]) {
       const { document, error, cleanup } = await projectedModels({ providers: { openai: { baseUrl } } });
       try {

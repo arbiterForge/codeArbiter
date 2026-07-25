@@ -35,11 +35,15 @@ All notable changes to `ca-pi` are documented in this file.
   segment crossed into the child verbatim. Blocklisting parameter names is an
   unbounded list, so a `baseUrl` now crosses only when it is a parseable
   absolute `http`/`https` URL with no userinfo, **no query and no fragment at
-  all**, and a bounded route of short lowercase unencoded segments. A provider
+  all**, and a bounded route of short unencoded segments. A provider
   endpoint needs neither query nor fragment — Pi's own Azure provider takes
   `api-version` from `AZURE_OPENAI_API_VERSION` — and an endpoint that does not
   meet the rule fails the launch closed rather than projecting material that
-  cannot be shown credential-free.
+  cannot be shown credential-free. Route segments are case-insensitive: an
+  operator's Azure deployment or Cloudflare gateway name routinely carries
+  capitals, and refusing them bought nothing — a lowercase-only rule admitted
+  `sk-querysecret999` while refusing `GPT4-Prod`. The bound that actually
+  refuses key material is the per-segment byte limit.
 - Every endpoint the projection accepts is now also registered in the child's
   sensitive-value set and the projected `models.json` is retained behind a scrub
   handle. A bounded route is not *provably* credential-free, and the two controls
