@@ -20,6 +20,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -2719,6 +2720,34 @@ class ProvenanceRecordShapeTest(unittest.TestCase):
         self.assertTrue(skipped, "rejected records must be reported")
         self.assertLessEqual(len(skipped), pl.MAX_SKIPPED_REPORTED,
                              "the diagnostic must be bounded, not one line per file")
+
+    def test_a_read_that_raises_costs_only_its_own_file(self):
+        """The per-file boundary must hold for failures read_provenance does
+        NOT convert to None. read_provenance only absorbs OSError/ValueError;
+        anything else — a RecursionError from a pathologically nested file, a
+        TypeError from a future refactor — propagates into the glob loop. With
+        one try/except around the WHOLE loop that aborted the scan and dropped
+        every later valid record. This pins the boundary directly rather than
+        through the validation hunk, which can no longer produce a raise."""
+        d = self._dir()
+        self._write_raw(d, "a-boom.json", "{}")
+        self._valid(d, "b-good.json", "tech-stack")
+        self._valid(d, "c-good.json", "code-map")
+        real_read = pl.read_provenance
+
+        def exploding_read(path):
+            if os.path.basename(path) == "a-boom.json":
+                raise TypeError("a failure mode the loader never anticipated")
+            return real_read(path)
+
+        skipped = []
+        with mock.patch.object(pl, "read_provenance", exploding_read):
+            loaded = pl.load_provenance_dir(d, skipped=skipped)
+
+        self.assertEqual(sorted(loaded), ["code-map", "tech-stack"],
+                         "a raising read must not abort the directory scan")
+        self.assertEqual(skipped, ["a-boom.json"],
+                         "the file that raised must be the one — and the only one — skipped")
 
 
 if __name__ == "__main__":

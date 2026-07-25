@@ -682,6 +682,16 @@ def load_provenance_dir(provenance_dir, skipped=None):
     warning can name the corrupt record. Names only — never file contents, which
     may hold paths or claims that do not belong in a log line.
 
+    NO PRODUCTION CALLER PASSES `skipped` TODAY, and that is deliberate rather
+    than an oversight. The two real call sites cannot carry the diagnostic:
+    startup_drift_line is bound by AC-08 ("degrade to silence" — an all-corrupt
+    provenance dir MUST return '', pinned by test_degrade_corrupt_json), and
+    build_index runs on every PreToolUse:Read, where a per-call warning would be
+    noise on the hottest path in the hook layer. Surfacing corruption to a user
+    therefore belongs to /ca:context-check or /ca:doctor, which are surface
+    prose and out of this module's reach. The channel exists, is bounded, and is
+    tested; anything reading it is a follow-up.
+
     Never raises — filesystem errors and malformed records are skipped (this
     runs on the SessionStart linchpin path).
     """

@@ -970,6 +970,39 @@ class TestSubagentResultContract(unittest.TestCase):
         self.assertEqual((tin, tout), (7, 2))
         self.assertIn("Second agent", [row["label"] for row in shown])
 
+    def test_a_non_oserror_from_one_transcript_costs_only_its_own_row(self):
+        # The per-file boundary must be a boundary for EVERY failure, not just
+        # OSError. A transcript whose `requestId` is a JSON array is real,
+        # syntactically valid corruption: the reader uses that value as a dict
+        # key, so the per-file body raises `TypeError: unhashable type: 'list'`
+        # — neither OSError nor ValueError. Under an OSError-only boundary it
+        # escapes read_subagents entirely and blanks every subagent row.
+        with tempfile.TemporaryDirectory() as td:
+            poison = self._write(td, "agent-aaaaaa.jsonl", [
+                json.dumps({"requestId": ["not", "hashable"],
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 999,
+                                                  "output_tokens": 999}}}),
+            ])
+            self._write(td, "agent-bbbbbb.jsonl", [
+                json.dumps({"requestId": "ok1",
+                            "message": {"role": "user", "content": "Healthy agent"}}),
+                json.dumps({"requestId": "ok1",
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 6,
+                                                  "output_tokens": 3}}}),
+            ])
+            # Make the poisoned transcript the most recent, so it is processed
+            # first and cannot be reached only after the healthy one.
+            now = time.time()
+            os.utime(poison, (now, now))
+            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+        self.assertEqual(recent, 2)
+        self.assertEqual((tin, tout), (6, 3),
+                         "the poisoned transcript must contribute nothing, and "
+                         "must not take the healthy one down with it")
+        self.assertEqual([row["label"] for row in shown], ["Healthy agent"])
+
 
 if __name__ == "__main__":
     unittest.main()

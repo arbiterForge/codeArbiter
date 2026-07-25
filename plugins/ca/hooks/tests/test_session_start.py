@@ -705,6 +705,98 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
         _mod.clear_dev_marker(self.root)
         self.assertEqual(len(self._exit_lines()), 1)
 
+    def test_a_removed_marker_leaves_no_tombstone_in_the_pending_record(self):
+        # The marker_mtime field is a TOMBSTONE — "this marker has already been
+        # closed in the trail". It is only meaningful while that marker still
+        # EXISTS. When the append fails but the removal succeeds, the record
+        # must keep the owed line and forget the marker: naming a marker that
+        # is gone lets its mtime collide with an unrelated future marker.
+        self._drop_marker()
+        with self._append_fails():
+            _mod.clear_dev_marker(self.root)
+        self.assertFalse(os.path.isfile(self.marker), "the marker really was removed")
+        with open(self.pending, encoding="utf-8") as f:
+            rec = json.load(f)
+        self.assertTrue(rec.get("lines"), "the owed close must still be staged")
+        self.assertIsNone(rec.get("marker_mtime"),
+                          "a record whose marker is gone must not keep its identity")
+
+    def test_a_stale_tombstone_cannot_suppress_a_later_sessions_close(self):
+        # The consequence of leaking the tombstone: a LATER dev session whose
+        # marker happens to land on the same mtime (2s-granularity FAT32/exFAT/
+        # SMB/WSL mounts do this routinely) is mistaken for the already-closed
+        # one, and its close row is silently dropped — the exact unmatched
+        # `DEV: enter` #396 exists to prevent.
+        self._drop_marker()
+        first_mtime = os.path.getmtime(self.marker)
+        with self._append_fails():
+            _mod.clear_dev_marker(self.root)
+        self.assertFalse(os.path.isfile(self.marker))
+
+        # A second, unrelated /ca:dev entry whose marker collides on mtime.
+        self._drop_marker()
+        os.utime(self.marker, (first_mtime, first_mtime))
+        _mod.clear_dev_marker(self.root)
+
+        self.assertEqual(len(self._exit_lines()), 2,
+                         "two dev sessions owe two close rows, not one")
+        self.assertFalse(os.path.isfile(self.pending))
+
+    def test_a_freshly_minted_close_is_never_deduped_against_the_trail(self):
+        # The dedupe tail scan compares WHOLE LINES, and a close row is
+        # timestamped only to the second — so two genuinely distinct closes
+        # minted in the same second are byte-identical. The scan exists to stop
+        # a crash-after-append REPLAY from landing twice; it must never be
+        # applied to the freshly minted line, which by construction cannot
+        # already be on the trail. Otherwise the second session's close is
+        # swallowed by the first session's owed copy of it.
+        same_second = ("[2026-01-01T00:00:07Z] | BY: session-cleanup | HOST: claude "
+                       "| DEV: exit | NOTE: cleared by SessionStart\n")
+        self._drop_marker()
+        with self._append_fails():
+            _mod._settle_dev_close(self.root, marker=self.marker, new_line=same_second)
+        self.assertEqual(self._exit_lines(), [], "the first append really did fail")
+
+        self._drop_marker()
+        _mod._settle_dev_close(self.root, marker=self.marker, new_line=same_second)
+        self.assertEqual(len(self._exit_lines()), 2,
+                         "two owed closes must both land even when the second "
+                         "granularity makes their lines identical")
+        self.assertFalse(os.path.isfile(self.pending))
+
+    def test_the_pending_close_cap_never_discards_a_close_silently(self):
+        # The record is bounded to _DEV_PENDING_CLOSE_MAX, so a long-lived
+        # write failure DOES lose the oldest owed rows. That loss must not be
+        # silent: it is counted while the log is unwritable and written to the
+        # trail as one attributable note the moment the log accepts writes.
+        cap = _mod._DEV_PENDING_CLOSE_MAX
+        owed = [
+            f"[2026-01-01T00:00:{i:02d}Z] | BY: session-cleanup | HOST: claude "
+            f"| DEV: exit | NOTE: owed close {i}\n"
+            for i in range(cap + 4)
+        ]
+        with self._append_fails():
+            for line in owed:
+                _mod._settle_dev_close(self.root, new_line=line)
+
+        with open(self.pending, encoding="utf-8") as f:
+            rec = json.load(f)
+        self.assertEqual(len(rec.get("lines") or []), cap, "the record stays bounded")
+        self.assertEqual(rec.get("dropped"), 4,
+                         "every discarded close row must be counted, not forgotten")
+
+        # overrides.log becomes writable again: the owed rows AND the note land.
+        _mod._settle_dev_close(self.root)
+        self.assertEqual(len(self._exit_lines()), cap,
+                         "every retained owed close must land exactly once")
+        notes = [ln for ln in self._read_log().splitlines()
+                 if "DEV: close-dropped" in ln]
+        self.assertEqual(len(notes), 1,
+                         "the discarded closes must be reported once on the trail")
+        self.assertIn("4", notes[0], "the note must carry how many were discarded")
+        self.assertFalse(os.path.isfile(self.pending),
+                         "a fully settled record is cleared")
+
 
 class TestStandupBriefingGating(unittest.TestCase):
     """#61 regression: pin the once-per-LOCAL-day briefing contract so the
