@@ -10,17 +10,25 @@ name: Deploy docs
 # scoped to push: it needs pages:write/id-token:write, which a PR (especially
 # from a fork) can't safely hold.
 
+# This workflow triggers on ITSELF. It gates the site dependency graph (the
+# audit step in site-check) and the deploy edge that makes that audit binding,
+# and a change to any of that touches docs.yml and nothing else - which under
+# the old `site/** + plugins/ca/**` filters started no run at all. Measured:
+# the PR that ADDED the audit step never executed it, with 37 other checks
+# green and no `Site |` check among them. Same defect class as #384.
 on:
   push:
     branches: [main]
     paths:
       - "site/**"
       - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
+      - ".github/workflows/docs.yml" # this workflow gates the site graph; it must see its own edits
   pull_request:
     branches: [main]
     paths:
       - "site/**"
       - "plugins/ca/**"
+      - ".github/workflows/docs.yml"
   workflow_dispatch:
 
 # Least-privilege: only the deploy job needs pages/id-token:write, granted at

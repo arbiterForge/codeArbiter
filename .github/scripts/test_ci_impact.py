@@ -23,6 +23,8 @@ _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
 GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
+# The one audit threshold every dependency graph in this repo is gated at.
+NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
 PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
@@ -96,7 +98,7 @@ def push_trigger_paths(workflow: str) -> list[str]:
     to a deleted path rather than merely to the block's existence.
     """
     match = re.search(
-        r'(?ms)^  push:\n(?:.*?)^    paths:\n(?P<body>(?:      (?:- "[^"\n]+"|#[^\n]*)\n)+)',
+        r'(?ms)^  push:\n(?:.*?)^    paths:\n(?P<body>(?:      (?:- "[^"\n]+"[^\n]*|#[^\n]*)\n)+)',
         workflow,
     )
     if match is None:
@@ -108,7 +110,7 @@ def paths_filter(ci: str, name: str) -> list[str]:
     """Single-quoted globs under one `filters:` entry of the changes job."""
     match = re.search(
         rf"(?ms)^            {re.escape(name)}:\n"
-        rf"(?P<body>(?:              (?:- '[^'\n]+'|#[^\n]*)\n)+)",
+        rf"(?P<body>(?:              (?:- '[^'\n]+'[^\n]*|#[^\n]*)\n)+)",
         ci,
     )
     if match is None:
@@ -117,19 +119,84 @@ def paths_filter(ci: str, name: str) -> list[str]:
 
 
 def _globs(body: str, quote: str) -> list[str]:
-    """Quoted list entries in a YAML block, ignoring interleaved comments."""
-    return [
-        line.strip()[2:].strip().strip(quote)
-        for line in body.splitlines()
-        if line.strip().startswith("- ")
-    ]
+    """Quoted list entries in a YAML block, ignoring interleaved comments.
+
+    The value is read out of the quotes rather than by stripping the line,
+    because an entry may carry a TRAILING comment - `- "plugins/ca/**" # the
+    reference is generated from the plugin` is a real line in docs.yml, and
+    stripping quotes off that returns the comment along with the glob.
+    """
+    found: list[str] = []
+    for line in body.splitlines():
+        entry = re.match(rf"-\s*{re.escape(quote)}([^{re.escape(quote)}]*){re.escape(quote)}",
+                         line.strip())
+        if entry is not None:
+            found.append(entry.group(1))
+    return found
 
 
 def npm_audit_invocations(workflow: str) -> list[str]:
     """Every `npm audit ...` command line in a workflow, whitespace-normalised."""
     return [
-        " ".join(match.group(0).split())
-        for match in re.finditer(r"(?m)^\s*(?:run: )?npm audit[^\n]*$", workflow)
+        " ".join(match.group("command").split())
+        for match in re.finditer(
+            r"(?m)^\s*(?:-\s+)?(?P<command>(?:run: )?npm audit[^\n]*)$", workflow
+        )
+    ]
+
+
+def event_trigger_paths(workflow: str, event: str) -> list[str]:
+    """Double-quoted globs under `on.<event>.paths` of a workflow."""
+    match = re.search(
+        rf'(?ms)^  {re.escape(event)}:\n(?:.*?)^    paths:\n'
+        rf'(?P<body>(?:      (?:- "[^"\n]+"[^\n]*|#[^\n]*)\n)+)',
+        workflow,
+    )
+    if match is None:
+        return []
+    return _globs(match.group("body"), '"')
+
+
+def npm_install_jobs(workflow: str) -> dict[str, str]:
+    """Every job that runs `npm ci`, mapped to the directory it installs into.
+
+    Derived from the workflow rather than listed by hand: a hardcoded job list
+    is exactly how a newly added graph slips in unaudited, which is the defect
+    #403 was.  The directory comes from the job's `defaults.run.working-
+    directory`, which is how every npm job in this repo scopes itself.
+    """
+    installs: dict[str, str] = {}
+    for job_id, body in workflow_jobs(workflow).items():
+        if not re.search(r"(?m)^\s*(?:-\s+)?(?:run: )?npm ci\b", body):
+            continue
+        directory = re.search(
+            r"(?ms)^    defaults:\n      run:\n        working-directory: (?P<dir>\S+)", body
+        )
+        installs[job_id] = directory.group("dir") if directory else "."
+    return installs
+
+
+def unaudited_npm_graphs(workflow: str) -> list[str]:
+    """Every `npm ci` job whose dependency graph no job in `workflow` audits.
+
+    A job may skip the audit itself - what it may NOT do is install a graph
+    nothing audits.  `ca-pi-tools` and docs.yml's `build` are both in that
+    first category today: they run `npm ci` with no audit step, and are benign
+    only because `ca-pi-checks` and `site-check` audit the very same
+    directory.  Deriving the rule this way keeps that fact CHECKED instead of
+    asserted in a comment, and makes a brand-new graph fail on arrival.
+    """
+    jobs = workflow_jobs(workflow)
+    installs = npm_install_jobs(workflow)
+    audited = {
+        directory
+        for job_id, directory in installs.items()
+        if f"run: {NPM_AUDIT_GATE}" in jobs[job_id]
+    }
+    return [
+        f"{job_id} installs {directory}, which nothing audits"
+        for job_id, directory in sorted(installs.items())
+        if directory not in audited
     ]
 
 
@@ -912,7 +979,7 @@ class WorkflowContractTest(unittest.TestCase):
         #
         # One threshold, asserted per invocation, across every graph the repo
         # ships or publishes.
-        expected = "npm audit --omit=dev --audit-level=high"
+        expected = NPM_AUDIT_GATE
         invocations: list[tuple[str, str]] = []
         for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
             invocations += [
@@ -927,17 +994,48 @@ class WorkflowContractTest(unittest.TestCase):
         for name, command in invocations:
             with self.subTest(workflow=name, command=command):
                 self.assertEqual(command, f"run: {expected}")
-        # Every job that installs a lockfile must also audit it.  An unaudited
-        # `npm ci` is exactly how site/package-lock.json went unguarded, and
-        # plugins/ca-pi/tools is a PUBLISHED host package with the same shape.
-        # The Pi canary is deliberately excluded - it floats the host version on
-        # purpose and is advisory-only, so it is not a gate.
-        ci = CI_WORKFLOW.read_text(encoding="utf-8")
-        for job_id in ("tools", "ca-sandbox-tools", "ca-pi-checks"):
-            with self.subTest(job=job_id):
-                job = workflow_jobs(ci)[job_id]
-                self.assertIn("npm ci", job)
-                self.assertIn(f"run: {expected}", job, "this job installs a graph it never audits")
+        # EVERY GRAPH THIS REPO INSTALLS IS AUDITED SOMEWHERE.  This used to
+        # iterate the hardcoded triple ("tools", "ca-sandbox-tools",
+        # "ca-pi-checks") under a comment claiming "every job that installs a
+        # lockfile must also audit it" - a claim three job names cannot make.
+        # It was already false: `ca-pi-tools` is a required gate that runs
+        # `npm ci` and never audits, and so does docs.yml's `build`.  Both are
+        # benign only because a SIBLING job audits the same lockfile, and
+        # nothing checked that.  So the list is now DERIVED and the rule is the
+        # one that actually matters: a job may skip the audit only when another
+        # job in the same workflow audits the very directory it installs.  A
+        # genuinely new graph has no such sibling and fails here on arrival -
+        # which is precisely what did not happen when site/package-lock.json
+        # went unguarded through #400 and #403.
+        for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
+            with self.subTest(workflow=workflow.name):
+                text = workflow.read_text(encoding="utf-8")
+                self.assertTrue(
+                    npm_install_jobs(text), f"{workflow.name} installs no lockfile at all"
+                )
+                self.assertEqual(
+                    [],
+                    unaudited_npm_graphs(text),
+                    "a job installs a dependency graph nothing in this workflow audits",
+                )
+        # And the rule BITES.  A derived check that merely happens to be
+        # satisfied is indistinguishable from one that checks nothing, so put
+        # the diff it exists to stop in front of it: a new job installing a
+        # graph no sibling audits.  This is the shape #403 shipped as.
+        newcomer = CI_WORKFLOW.read_text(encoding="utf-8") + (
+            "\n  brand-new-graph:\n"
+            "    name: newcomer\n"
+            "    runs-on: ubuntu-latest\n"
+            "    defaults:\n"
+            "      run:\n"
+            "        working-directory: plugins/ca-brand-new/tools\n"
+            "    steps:\n"
+            "      - run: npm ci\n"
+        )
+        self.assertTrue(
+            unaudited_npm_graphs(newcomer),
+            "a job installing an entirely new graph is accepted without an audit",
+        )
 
     def test_docs_workflow_gates_the_site_dependency_graph_before_publishing(self):
         # Issue #403: site-check ran npm ci/typecheck/test and build ran
@@ -959,6 +1057,29 @@ class WorkflowContractTest(unittest.TestCase):
             r"(?m)^    needs: \[[^\]]*\bsite-check\b[^\]]*\]",
             "deploy no longer waits on the audited site-check job",
         )
+
+    def test_the_docs_workflow_runs_on_changes_to_the_docs_workflow(self):
+        # The SAME defect class this branch exists to fix, one file over.
+        # docs.yml triggered on `site/**` and `plugins/ca/**` only, so it never
+        # ran on itself: the audit step added above did NOT execute in this
+        # PR's own CI - there was no `Site |` check among the 37 that reported.
+        # A PR that deletes the audit step, breaks the deploy edge, or drops a
+        # permission touches docs.yml and nothing else, which is exactly the
+        # diff its own jobs could not see.  #384 and the .gitleaks.toml gap are
+        # the same bug; a workflow that gates something must be reachable by a
+        # change to itself.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        for event in ("push", "pull_request"):
+            with self.subTest(event=event):
+                paths = event_trigger_paths(docs, event)
+                self.assertIn(
+                    "site/**", paths, f"the {event} trigger scan drifted off the real block"
+                )
+                self.assertIn(
+                    ".github/workflows/docs.yml",
+                    paths,
+                    f"a {event} touching only docs.yml never runs docs.yml",
+                )
 
     def test_ci_runs_a_pinned_read_only_secret_scan_wired_into_the_merge_gate(self):
         # Issue #404: the repository had NO independent secret scanner - only a
