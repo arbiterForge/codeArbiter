@@ -175,6 +175,9 @@ function auditField(value) {
   return value.replaceAll("\n", " ");
 }
 
+// src/redaction.ts
+import { randomBytes } from "node:crypto";
+
 // ../../ca/tools/redactor.ts
 var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
 var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
@@ -200,8 +203,28 @@ function redactSecrets(contents) {
 function redactSecrets2(value) {
   return redactSecrets(value);
 }
-function safeDiagnostic(value, maxChars = 2e3) {
-  const normalized2 = redactSecrets2(value).replace(/\r\n?/gu, "\n").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/gu, "\uFFFD").trim();
+var MIN_BENIGN_LITERAL_LENGTH = 8;
+function maskBenign(value, benign) {
+  const literals = [...new Set(benign)].filter((literal) => literal.length >= MIN_BENIGN_LITERAL_LENGTH).sort((a, b) => b.length - a.length);
+  const identity2 = { masked: value, restore: (text2) => text2 };
+  if (literals.length === 0) return identity2;
+  const nonce = randomBytes(8).toString("hex");
+  const captured = [];
+  let masked = value;
+  for (const literal of literals) {
+    const pattern = new RegExp(literal.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "gu");
+    masked = masked.replace(pattern, (match) => `${nonce}-${captured.push(match) - 1}`);
+  }
+  if (captured.length === 0) return identity2;
+  const placeholder = new RegExp(`${nonce}-(\\d+)`, "gu");
+  return {
+    masked,
+    restore: (text2) => text2.replace(placeholder, (whole, index) => captured[Number(index)] ?? whole)
+  };
+}
+function safeDiagnostic(value, maxChars = 2e3, benignPaths = []) {
+  const { masked, restore } = maskBenign(value, benignPaths);
+  const normalized2 = restore(redactSecrets2(masked)).replace(/\r\n?/gu, "\n").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/gu, "\uFFFD").trim();
   return normalized2.length <= maxChars ? normalized2 : `${normalized2.slice(0, maxChars)}\u2026`;
 }
 function redactJson(value, depth = 0) {
@@ -6118,7 +6141,7 @@ async function loadRoleCatalog(packageRoot) {
 }
 
 // src/runner.ts
-import { randomBytes as randomBytes2, randomUUID as randomUUID4 } from "node:crypto";
+import { randomBytes as randomBytes3, randomUUID as randomUUID4 } from "node:crypto";
 import { readFile as readFile5, realpath as realpath5, stat } from "node:fs/promises";
 import { dirname as dirname6, isAbsolute as isAbsolute7, resolve as resolve11 } from "node:path";
 import { StringDecoder } from "node:string_decoder";
@@ -6130,7 +6153,7 @@ import { tmpdir } from "node:os";
 import { isAbsolute as isAbsolute6, join } from "node:path";
 
 // src/inference-broker.ts
-import { randomBytes, timingSafeEqual } from "node:crypto";
+import { randomBytes as randomBytes2, timingSafeEqual } from "node:crypto";
 import {
   createServer,
   request as httpRequest
@@ -6303,7 +6326,7 @@ function failClosed(response, status) {
 async function startInferenceBroker(options) {
   if (typeof options?.nonce !== "string" || !/^[0-9a-f]{32}$/u.test(options.nonce)) refuseBroker();
   const ownerNonce = options.nonce;
-  const token = randomBytes(32).toString("hex");
+  const token = randomBytes2(32).toString("hex");
   let upstream;
   let revoked = false;
   let closed;
@@ -7492,8 +7515,8 @@ async function runPiChild(request, signal) {
   }
   if (signal.aborted) return childFailure();
   const correlationId = randomUUID4();
-  const nonce = randomBytes2(16).toString("hex");
-  const challenge = randomBytes2(16).toString("hex");
+  const nonce = randomBytes3(16).toString("hex");
+  const challenge = randomBytes3(16).toString("hex");
   let records;
   try {
     records = encodeChildInput(request.task, correlationId, nonce, challenge);
@@ -8936,7 +8959,8 @@ function installParent(pi, dependencies) {
   }, async (entry, _args, context) => {
     if (entry.name !== "doctor" || dependencies.doctorReport === void 0) return void 0;
     const report = await dependencies.doctorReport(context, doctorHealth(context));
-    return renderPiDoctorReportBlock(report);
+    const benignPaths = [dependencies.packageRoot, typeof context.cwd === "string" ? context.cwd : ""].filter((path) => path.length > 0);
+    return renderPiDoctorReportBlock(report, benignPaths);
   });
   pi.on("session_start", async (_event, context) => {
     activeLifecycle = void 0;
@@ -9088,8 +9112,8 @@ function wrapPiDoctorPayload(payload) {
 ${payload}
 </codearbiter-doctor-report>`;
 }
-function renderPiDoctorReportBlock(report) {
-  const normalizedReport = safeDiagnostic(report, Number.MAX_SAFE_INTEGER);
+function renderPiDoctorReportBlock(report, benignPaths = []) {
+  const normalizedReport = safeDiagnostic(report, Number.MAX_SAFE_INTEGER, benignPaths);
   const complete = wrapPiDoctorPayload(encodePiDoctorReport(normalizedReport));
   if (Buffer.byteLength(complete, "utf8") <= PI_DOCTOR_REPORT_MAX_BYTES) return complete;
   let low = 0;
@@ -9418,7 +9442,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "f31ba24b1bd6f85f71893df71713d4fce5426da7072236537be7499382d1dece"
+        childFingerprint: "a1fc509fea3f27013bd5ccc93a0275196dfcf312e7c4600d4c535968b53a25d4"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

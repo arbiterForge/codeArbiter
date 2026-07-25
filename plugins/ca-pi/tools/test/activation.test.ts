@@ -351,6 +351,88 @@ describe("Pi activation", () => {
     expect(block.split("\n")).toHaveLength(3);
   });
 
+  // #449. The redactor matches VALUE shapes, but a doctor line's filesystem
+  // path is a STRUCTURAL field: it is a value the process already knows, not one
+  // it has to guess at. Matching it by shape means a repository or worktree
+  // whose directory name happens to contain `secret`, `token`, `key` or
+  // `credential` has its own diagnostics replaced by a redaction notice — and
+  // /ca-doctor is the diagnostic of LAST RESORT, so it fails hardest exactly
+  // when it is needed. Reproduced in a worktree named
+  // `pr432-secret-scan-narrowness`; the same commit passes from a benignly
+  // named one, so it is the path, not the content.
+  //
+  // Anyone working on security features is disproportionately likely to hit it:
+  // those branches and worktrees carry exactly those words by nature.
+  describe("#449 — a known project path is not mistaken for a credential", () => {
+    const TRIGGERS = ["secret", "token", "key", "credential", "password", "api_key"];
+
+    test.each(TRIGGERS)("keeps doctor lines that embed a %s-named project root", (trigger) => {
+      const projectRoot = `/home/dev/codeArbiter-worktrees/pr432-${trigger}-scan-narrowness`;
+      const packageRoot = `${projectRoot}/plugins/ca-pi`;
+      const report = [
+        `package: ${packageRoot}`,
+        `core: ${projectRoot}/.codearbiter`,
+        `child: ${packageRoot}/extensions/codearbiter-child.js`,
+      ].join("\n");
+
+      const block = renderPiDoctorReportBlock(report, [projectRoot, packageRoot]);
+      const decoded = JSON.parse(block.split("\n")[1]!) as { report: string };
+      expect(decoded.report).not.toContain("[REDACTED");
+      expect(decoded.report).toContain(`package: ${packageRoot}`);
+      expect(decoded.report).toContain(`core: ${projectRoot}/.codearbiter`);
+      expect(decoded.report).toContain("codearbiter-child.js");
+    });
+
+    test("a benignly named project root is unaffected (control)", () => {
+      const projectRoot = "/home/dev/codeArbiter-worktrees/pr432-narrowness";
+      const report = `package: ${projectRoot}/plugins/ca-pi`;
+      const block = renderPiDoctorReportBlock(report, [projectRoot]);
+      const decoded = JSON.parse(block.split("\n")[1]!) as { report: string };
+      expect(decoded.report).toBe(report);
+    });
+
+    test("a real credential on a line is STILL redacted, exempt path or not", () => {
+      const projectRoot = "/home/dev/secret-probe";
+      const report = [
+        `package: ${projectRoot}/plugins/ca-pi`,
+        `OPENAI_API_KEY=synthetic-shared-corpus-secret`,
+        `wrote ${projectRoot}/.env with token=ghp_${"a".repeat(36)}`,
+      ].join("\n");
+      const block = renderPiDoctorReportBlock(report, [projectRoot]);
+      const decoded = JSON.parse(block.split("\n")[1]!) as { report: string };
+      expect(decoded.report).toContain(`package: ${projectRoot}/plugins/ca-pi`);
+      expect(decoded.report).not.toContain("synthetic-shared-corpus-secret");
+      expect(decoded.report).not.toContain("OPENAI_API_KEY");
+      expect(decoded.report).not.toContain("ghp_");
+      expect(decoded.report.match(/\[REDACTED/gu)).toHaveLength(2);
+    });
+
+    test("exempting nothing preserves the pre-#449 behaviour exactly", () => {
+      // The exemption is opt-in per call site. A caller that names no benign
+      // path gets the old, aggressive redaction — so this cannot widen any
+      // other boundary by accident.
+      const report = "package: /home/dev/secret-probe/plugins/ca-pi";
+      const decoded = JSON.parse(renderPiDoctorReportBlock(report).split("\n")[1]!) as { report: string };
+      expect(decoded.report).toContain("[REDACTED");
+    });
+
+    test("a hostile report cannot forge the internal placeholder", () => {
+      // The mask is an implementation detail the content must not be able to
+      // reach. Even if a report contains placeholder-shaped text, restoring it
+      // must never invent a path the caller did not name.
+      const projectRoot = "/home/dev/secret-probe";
+      const report = [
+        "codearbiter-benign-0",
+        "codearbiter-benign-99",
+        `package: ${projectRoot}`,
+      ].join("\n");
+      const block = renderPiDoctorReportBlock(report, [projectRoot]);
+      const decoded = JSON.parse(block.split("\n")[1]!) as { report: string };
+      // The genuine path survives exactly once — on the line that really had it.
+      expect(decoded.report.match(new RegExp(projectRoot, "gu"))).toHaveLength(1);
+    });
+  });
+
   test.each([
     ["markup", "<".repeat(40_000)],
     ["quotes", "\"".repeat(40_000)],

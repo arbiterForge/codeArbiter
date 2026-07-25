@@ -145,6 +145,9 @@ async function appendAuditLine(cwd, line) {
   return await appendAuditLineWithIo(cwd, line, NODE_AUDIT_SINK_IO);
 }
 
+// src/redaction.ts
+import { randomBytes } from "node:crypto";
+
 // ../../ca/tools/redactor.ts
 var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
 var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
@@ -170,8 +173,28 @@ function redactSecrets(contents) {
 function redactSecrets2(value) {
   return redactSecrets(value);
 }
-function safeDiagnostic(value, maxChars = 2e3) {
-  const normalized2 = redactSecrets2(value).replace(/\r\n?/gu, "\n").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/gu, "\uFFFD").trim();
+var MIN_BENIGN_LITERAL_LENGTH = 8;
+function maskBenign(value, benign) {
+  const literals = [...new Set(benign)].filter((literal) => literal.length >= MIN_BENIGN_LITERAL_LENGTH).sort((a, b) => b.length - a.length);
+  const identity2 = { masked: value, restore: (text) => text };
+  if (literals.length === 0) return identity2;
+  const nonce = randomBytes(8).toString("hex");
+  const captured = [];
+  let masked = value;
+  for (const literal of literals) {
+    const pattern = new RegExp(literal.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "gu");
+    masked = masked.replace(pattern, (match) => `${nonce}-${captured.push(match) - 1}`);
+  }
+  if (captured.length === 0) return identity2;
+  const placeholder = new RegExp(`${nonce}-(\\d+)`, "gu");
+  return {
+    masked,
+    restore: (text) => text.replace(placeholder, (whole, index) => captured[Number(index)] ?? whole)
+  };
+}
+function safeDiagnostic(value, maxChars = 2e3, benignPaths = []) {
+  const { masked, restore } = maskBenign(value, benignPaths);
+  const normalized2 = restore(redactSecrets2(masked)).replace(/\r\n?/gu, "\n").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/gu, "\uFFFD").trim();
   return normalized2.length <= maxChars ? normalized2 : `${normalized2.slice(0, maxChars)}\u2026`;
 }
 function redactJson(value, depth = 0) {
