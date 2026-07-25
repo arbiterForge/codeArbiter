@@ -52,14 +52,23 @@ running untrusted code is stealable, `--with-claude` is hard-defaulted to
 offline/Anthropic-only egress and its credential volume is never co-mounted with
 an untrusted source volume (`TokenCoMountRejectedError`).
 
-Pi host authentication is an external trusted-runtime boundary with one narrow
-adapter-managed exception (ADR-0016, superseding ADR-0014's fully opaque auth
-rule). For an isolated child only, `ca-pi` may open the canonical operator-owned
-Pi `auth.json` under a strict size bound, parse it, and project only the exact
-selected-provider record into private ephemeral child storage. It never copies
-another provider, stores credentials in `.codearbiter/`, or exposes credential
-material through argv, prompts, results, logs, telemetry, or error text. Parent
-and child requests name an exact provider and model; silent fallback is prohibited.
+Pi host authentication is an external trusted-runtime boundary. **No provider
+credential enters an isolated child in any form** (ADR-0019, superseding the
+credential-projection clause of ADR-0016). ADR-0016 permitted projecting the
+operator's selected-provider `auth.json` record into the child's private agent
+directory; that placed a reusable, exfiltratable credential inside a process
+running model-authored code, guarded only by transform-blocking controls over an
+unbounded class of encodings.
+
+Instead the parent binds a per-child loopback broker on `127.0.0.1:0`, projects a
+provider configuration whose `baseUrl` names that listener and whose `apiKey`
+references a per-child ephemeral token, and exchanges that token for the real
+credential on the way upstream. The `auth.json` projection is deleted, not
+disabled. Providers a bearer-substituting broker cannot serve — `amazon-bedrock`,
+`google-vertex`, `github-copilot`, `openai-codex`, any `oauth` record, and any
+provider with no resolvable endpoint — fail the launch closed rather than falling
+back to a credential in the child. Parent and child requests name an exact
+provider and model; silent fallback is prohibited.
 
 ADR-0017 amends one further clause of that boundary for the same isolated child,
 and only for **configuration** — credential projection is not widened by it. Pi
@@ -132,19 +141,16 @@ agent, and session roots. `PI_PACKAGE_DIR` is deliberately NOT rebound: it names
 Pi's own read-only shipped-asset directory — the same installation the parent
 already executes — so it carries no operator credential, session, or home data,
 and rebinding it to an empty private root breaks Pi's startup before its RPC
-loop exists. Any selected stored credential is written
-exclusively with restrictive permissions, retained by an open handle for
-path-safe scrubbing, and removed with the entire private root on every terminal
-path; the input read is capped independently of a pre-read size check so file
-growth cannot widen it. Unprovable cleanup is a fixed degraded failure. The
-ADR-0017 projected `models.json` is created the same restrictive way and is
-retained by its own scrub handle on exactly the same footing as `auth.json`: it
+loop exists. Under ADR-0019 no stored credential is written into the child at
+all; the child's `apiKey` is a per-child ephemeral broker token. The
+ADR-0017 projected `models.json` is created restrictively and is
+retained by its own scrub handle: it
 is credential-BLIND by construction, not provably credential-FREE, so leaving it
-intact on the removal-failure path while `auth.json` is truncated would be an
-unstated residual. Cleanup of the private isolation root is idempotent and is
-additionally guaranteed by a `try`/`finally` around the whole launch, so an
-unexpected throw after a successful prepare cannot strand a root holding operator
-credential material in cleartext. Task/prompt content is
+intact on the removal-failure path would be an unstated residual. Cleanup of the
+private isolation root is idempotent and is additionally guaranteed by a
+`try`/`finally` around the whole launch; the same `finally` closes the per-child
+broker, so neither a stranded root nor a surviving listener can outlive the
+child. Task/prompt content is
 stdin-only, never argv, environment, or a temporary file. Tests use disposable
 Pi homes and dummy credentials and never inspect or mutate the real auth store.
 
@@ -532,7 +538,7 @@ reopens if the threat model expands to untrusted agents.
 | Loopback `http://` for API base | `assertSecureBaseUrl` in `farm.ts` allows `http://127.0.0.1`/`localhost` (no userinfo); farm POSTs use `redirect: "error"` | Test mocks bind without TLS; same WHATWG parser as `fetch` → connection target is loopback, and redirect refusal prevents a mock from forwarding the body to a remote cleartext target |
 | Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
 | Pi selected-provider child authentication | Pi owns host authentication; `ca-pi` projects one selected stored-provider record only for an isolated child | ADR-0016 bounds the exception: private ephemeral roots, exact-provider selection, restrictive creation, retained-handle scrubbing, no observable sink, and fail-degraded cleanup |
-| Pi selected-provider child configuration | `ca-pi` projects one credential-blind selected-provider `models.json` record into an isolated child | ADR-0017 amends ADR-0016 for **configuration only**, never credentials: exact-provider record, key AND value-shape allowlist pinned to the reviewed Pi provider schema, `apiKey`/`headers` admitted only as whole-value `$NAME`/`${NAME}` references, positively-accepted endpoint-only `baseUrl` (`http(s)`, no userinfo, no query, no fragment, bounded case-insensitive route) that is also registered in the scrub set and retained behind a scrub handle, and fail-closed rejection of literal values, `!command` forms, and unreviewed keys or shapes |
+| Pi child inference brokering | `ca-pi` binds a per-child loopback broker and projects a credential-blind `models.json` whose `apiKey` is a per-child ephemeral token; no provider credential enters the child (ADR-0019) | ADR-0017 amends ADR-0016 for **configuration only**, never credentials: exact-provider record, key AND value-shape allowlist pinned to the reviewed Pi provider schema, `apiKey`/`headers` admitted only as whole-value `$NAME`/`${NAME}` references, positively-accepted endpoint-only `baseUrl` (`http(s)`, no userinfo, no query, no fragment, bounded case-insensitive route) that is also registered in the scrub set and retained behind a scrub handle, and fail-closed rejection of literal values, `!command` forms, and unreviewed keys or shapes |
 | Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |
 
