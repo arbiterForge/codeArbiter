@@ -2,6 +2,15 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.8] - 2026-07-25
+
+### Changed
+
+- The farm plan handoff docs shipped with this host now describe the runtime
+  plan contract (`parsePlan`, authoritative over `plan.schema.json`) and the
+  split setup phases: `setup` runs once per worktree, `setupEachAttempt` reruns
+  per attempt, and `setupInputs` invalidates the once-per-worktree cache.
+
 ## [0.1.7] - 2026-07-25
 
 ### Fixed
