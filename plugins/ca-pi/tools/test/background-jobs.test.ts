@@ -651,11 +651,17 @@ describe("session-local background job state", () => {
       () => `state=${runtime.getJob(job!.id)?.state ?? "unknown"} tail=${JSON.stringify(runtime.tail(job!.id))}`,
       250,
     )).rejects.toThrow(/live Git Bash job 1 did not settle within 250ms \(waited \d+ms\); observed state=active tail="{2}/u);
+    // Bounds, not budgets - deliberately loose on both sides, because a flake fix
+    // must not ship a new timing flake. The lower bound only proves the ceiling
+    // was waited on at all (Node timers may fire a hair early); the upper bound
+    // gives a pure event-loop timer 8x its 250 ms ceiling, and the explicit test
+    // timeout below is 4x that again so a starved runner still gets an assertion
+    // it can read rather than a bare "Test timed out".
     const elapsed = Date.now() - started;
-    expect(elapsed).toBeGreaterThanOrEqual(250);
+    expect(elapsed).toBeGreaterThanOrEqual(200);
     expect(elapsed).toBeLessThan(2_000);
     expect(await runtime.dispose()).toBe(true);
-  });
+  }, 8_000);
 
   test.each([
     ["cancel", "cancelled", "cancelled"], ["session-switch", "session_switch", "cancelled"],
