@@ -1113,6 +1113,33 @@ class WorkflowContractTest(unittest.TestCase):
             "the hooks job no longer runs the fixture generator's own test",
         )
 
+    def test_the_version_gates_ask_payload_scope_not_the_whole_plugin_directory(self):
+        """Issue #435 AC-3, workflow half.
+
+        `test_payload_scope.py` pins the RULE; this pins that the gates actually
+        USE it. A version gate that quietly reverts to `git diff -- plugins/ca`
+        would pass every test in that file while reinstating the tax."""
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        for job_id, plugin in (("version-bump", "plugins/ca"),
+                               ("version-bump-sandbox", "plugins/ca-sandbox")):
+            with self.subTest(job=job_id):
+                body = jobs[job_id]
+                self.assertIn(
+                    f"payload_scope.py --plugin {plugin}",
+                    body,
+                    f"{job_id} no longer asks payload_scope.py what shipped",
+                )
+                self.assertNotIn(
+                    f'git diff --quiet "origin/$BASE"...HEAD -- {plugin};',
+                    body,
+                    f"{job_id} reverted to the wholesale pre-#435 scope",
+                )
+        # ca-pi's gate lives in build-host-packages.py rather than inline shell,
+        # so the same exclusion is asserted at its source.
+        guard = (REPO_ROOT / "tools" / "build-host-packages.py").read_text(encoding="utf-8")
+        self.assertIn('":(exclude)plugins/ca-pi/tools"', guard)
+
     def test_every_npm_audit_gate_fails_the_build_on_a_high_advisory(self):
         # Issue #403: site/package-lock.json - the ONLY graph in this repo that
         # declares production dependencies (astro, starlight, markdown-remark) -

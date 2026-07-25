@@ -62,6 +62,17 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- The per-plugin payload-version gates no longer fire on a dev-only change under
+  `plugins/*/tools/`. That directory is a build tree — TypeScript sources, a
+  vitest config, a lockfile — and none of it runs on an installed machine, so a
+  dependabot lockfile bump used to demand a manifest advance and a CHANGELOG
+  heading describing a change no user can observe. The cost was not the noise:
+  a version bump is supposed to mean "installed users need this", and a gate
+  that fires on nothing trains contributors to bump a version to silence it. The
+  committed esbuild artifacts inside that directory (`farm.js`, `sandbox.js`) do
+  ship and still trigger the gate, as does everything outside it — including
+  ca-pi's `extensions/` bundles, which were never in the excluded scope
+  (issue #435).
 - A session started inside a linked worktree no longer repoints the **main**
   repository's git-level enforcement at a path that dies with that worktree.
   The shared `<plugin>.path` enforcer entry lives in the git *common* dir, so
