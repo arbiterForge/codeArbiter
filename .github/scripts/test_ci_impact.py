@@ -1346,7 +1346,17 @@ class WorkflowContractTest(unittest.TestCase):
         #    Measured: `regexTarget = 'match'` plus a whole-match-anchored,
         #    metacharacter-free literal clears every other check and swallows
         #    the planted key.
-        planted = "FARM_API_KEY=sk-kR3mVq7XpZ2wNbT9sLdG4hJfA6cE1yUo"
+        #
+        #    The value below is a LOW-ENTROPY stand-in, deliberately.  The
+        #    measurement used a real high-entropy key, but this assertion is a
+        #    pure function of the config TEXT - `regexTarget` is rejected on
+        #    sight, whatever it is paired with - so the entropy buys the test
+        #    nothing and costs it a finding.  Committing the measured key here
+        #    made the secret-scan job red on its own contract, which is the job
+        #    working: a credential-shaped literal in a tracked file is exactly
+        #    what it exists to catch, and the answer to that is to stop
+        #    committing one, never to widen the allowlist around it.
+        planted = "FARM_API_KEY=sk-NOT-A-REAL-KEY"
         self.assertTrue(
             [
                 p
