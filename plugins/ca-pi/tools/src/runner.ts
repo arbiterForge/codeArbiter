@@ -5,7 +5,13 @@ import { dirname, isAbsolute, resolve } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath } from "node:url";
 
-import { ChildConfigProjectionError, PI_PROVIDER_ENV, prepareChildEnvironment } from "./child-env.ts";
+import {
+  ChildBrokerAuthorityError,
+  ChildConfigProjectionError,
+  PI_PROVIDER_ENV,
+  prepareChildEnvironment,
+} from "./child-env.ts";
+import { InferenceBrokerError, startInferenceBroker } from "./inference-broker.ts";
 import {
   CHILD_ATTESTATION_TIMEOUT_MS,
   CHILD_ATTESTATION_TITLE,
@@ -563,6 +569,9 @@ export const CHILD_ISOLATION_FAILURE_REASONS = Object.freeze([
   "isolation-setup",
   "isolation-cleanup",
   "isolation-config",
+  // #455: the loopback inference broker could not be bound, or the parent could not establish a
+  // real upstream endpoint + credential to broker to. Fixed identifier, no operator material.
+  "isolation-broker",
 ] as const);
 export type ChildIsolationFailureReason = typeof CHILD_ISOLATION_FAILURE_REASONS[number];
 
@@ -640,18 +649,45 @@ export async function runPiChild(
   if (signal.aborted) return childFailure();
 
   const startedAt = Date.now();
+  // #455: the loopback broker binds BEFORE the environment is prepared, because the child's
+  // projected models.json names its endpoint and carries its token. It refuses every request
+  // until `authorize` attaches the real upstream, so the window between bind and authorize is
+  // fail-closed rather than open.
+  let broker;
+  try {
+    broker = await startInferenceBroker({ nonce });
+  } catch {
+    return childFailure("isolation-broker");
+  }
+  let brokerClosed = false;
+  const closeBroker = async (): Promise<void> => {
+    if (brokerClosed) return;
+    brokerClosed = true;
+    await broker.close().catch(() => undefined);
+  };
   let preparedEnvironment;
   try {
     preparedEnvironment = await prepareChildEnvironment({
       platform: request.platform ?? process.platform,
       parent: request.parentEnv ?? process.env,
       provider: launch.provider,
+    }, { baseUrl: broker.baseUrl, token: broker.token });
+    broker.authorize({
+      nonce,
+      baseUrl: preparedEnvironment.upstream.baseUrl,
+      credential: preparedEnvironment.upstream.credential,
+      headers: preparedEnvironment.upstream.headers,
     });
   } catch (error) {
     // ADR-0017: a selected-provider record that cannot be projected credential-blind refuses
     // the launch outright. Falling back to Pi's built-in catalog is the defect itself — it
-    // sends the operator's key to an endpoint they never configured.
-    return childFailure(error instanceof ChildConfigProjectionError ? "isolation-config" : "isolation-setup");
+    // sends the operator's key to an endpoint they never configured. #455 adds the broker
+    // authority stage: no real upstream, no launch — never a credential back in the child.
+    if (preparedEnvironment !== undefined) await preparedEnvironment.cleanup().catch(() => undefined);
+    await closeBroker();
+    if (error instanceof ChildConfigProjectionError) return childFailure("isolation-config");
+    if (error instanceof ChildBrokerAuthorityError || error instanceof InferenceBrokerError) return childFailure("isolation-broker");
+    return childFailure("isolation-setup");
   }
   // Cleanup of the private isolation root is idempotent and runs at most once. Every ordinary
   // exit routes through `withEnvironmentCleanup`, so an unprovable cleanup still degrades the
@@ -866,6 +902,10 @@ export async function runPiChild(
           else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...(output === undefined ? {} : { output }) }));
         }, () => settle(childFailure()));
       };
+      // The token dies with the child, not merely with the parent's `finally`: the instant the
+      // process is gone the broker refuses it, so a token captured from this child is useless
+      // even in the window before the listener is torn down.
+      child.on("close", () => broker.revoke());
       child.on("close", handleClose);
       if ((child.exitCode !== undefined && child.exitCode !== null)
         || (child.signalCode !== undefined && child.signalCode !== null)) {
@@ -878,8 +918,10 @@ export async function runPiChild(
     // Unreachable by construction rather than by audit of every return path: a throw anywhere
     // after a successful prepare (inside the Promise executor, the attestation digest, listener
     // installation, stdin writes) must never leave the private isolation root - which holds the
-    // operator's real credential in cleartext - on disk. `cleanupEnvironment` is idempotent, so
-    // this never double-runs behind an ordinary return.
+    // child's live broker token - on disk, and must never leave the loopback listener bound
+    // after its child is gone. Both cleanups are idempotent, so neither double-runs behind an
+    // ordinary return.
     await cleanupEnvironment();
+    await closeBroker();
   }
 }

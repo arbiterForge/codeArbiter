@@ -22,12 +22,17 @@ const runnerMocks = vi.hoisted(() => {
   return {
     spawn,
     randomUUID: vi.fn(() => "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"),
-    randomBytes: vi.fn(() => Buffer.from(
-      randomBytesCall++ % 2 === 0
-        ? "0123456789abcdef0123456789abcdef"
-        : "fedcba9876543210fedcba9876543210",
-      "hex",
-    )),
+    // The runner draws two 16-byte values (nonce, challenge) that the attestation digest pins,
+    // so those stay deterministic. The #455 broker draws a 32-byte token; it must stay a REAL
+    // draw of the requested width or every launch refuses on token shape.
+    randomBytes: vi.fn((size: number) => size === 16
+      ? Buffer.from(
+        randomBytesCall++ % 2 === 0
+          ? "0123456789abcdef0123456789abcdef"
+          : "fedcba9876543210fedcba9876543210",
+        "hex",
+      )
+      : Buffer.from(Array.from({ length: size }, (_value, index) => (index * 7 + 13) % 256))),
     cleanupTerminate,
     cleanupReady,
     createProcessTreeCleanup: vi.fn(() => ({ ready: cleanupReady, terminate: cleanupTerminate })),
@@ -542,11 +547,14 @@ describe("Task 6 exact Pi child launch", () => {
     request.parentEnv.HOME = operatorHome;
     request.parentEnv.USERPROFILE = operatorHome;
     request.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
-    let childAuth: unknown;
+    let childAuthExists = true;
+    let childModels = "";
     runnerMocks.spawn.mockImplementation((command: string, args: readonly string[], options: Record<string, unknown>) => {
       captures.push({ command, args, options });
       const env = options.env as NodeJS.ProcessEnv;
-      childAuth = JSON.parse(readFileSync(resolve(env.PI_CODING_AGENT_DIR!, "auth.json"), "utf8")) as unknown;
+      // #455 (AC-5): observed at the exact instant the child would start, not after cleanup.
+      childAuthExists = existsSync(resolve(env.PI_CODING_AGENT_DIR!, "auth.json"));
+      childModels = readFileSync(resolve(env.PI_CODING_AGENT_DIR!, "models.json"), "utf8");
       return child;
     });
     const result = await runPiChild(request as never, new AbortController().signal);
@@ -560,13 +568,24 @@ describe("Task 6 exact Pi child launch", () => {
     expect(captures[0]!.args[0]).toBe(request.piCliPath);
     expect(JSON.stringify(captures)).not.toContain("task-secret-sentinel");
     const env = captures[0]!.options.env as NodeJS.ProcessEnv;
-    expect(env.OPENAI_API_KEY).toBe("dummy-openai-value");
+    // #455 (AC-1): no operator credential in the child's environment under ANY name, and no
+    // credential file in its private agent dir — only the projected loopback configuration.
+    expect(env.OPENAI_API_KEY).toBeUndefined();
     expect(env.ANTHROPIC_API_KEY).toBeUndefined();
     expect(env.FARM_API_KEY).toBeUndefined();
+    expect(env.CODEARBITER_PI_BROKER_TOKEN).toMatch(/^[0-9a-f]{64}$/u);
+    expect(JSON.stringify(env)).not.toContain("dummy-openai-value");
+    expect(JSON.stringify(env)).not.toContain("selected-provider-file-secret");
+    expect(childAuthExists).toBe(false);
+    expect(childModels).toContain("http://127.0.0.1:");
+    expect(childModels).toContain("$CODEARBITER_PI_BROKER_TOKEN");
+    expect(childModels).not.toContain("dummy-openai-value");
+    expect(childModels).not.toContain("selected-provider-file-secret");
+    expect(JSON.stringify(captures[0]!.args)).not.toContain("dummy-openai-value");
+    expect(JSON.stringify(captures[0]!.args)).not.toContain("selected-provider-file-secret");
     expect(env.HOME).not.toBe(operatorHome);
     expect(env.USERPROFILE).not.toBe(operatorHome);
     expect(env.PI_CODING_AGENT_DIR).not.toBe(operatorAgent);
-    expect(childAuth).toEqual({ openai: operatorAuth.openai });
     expect(existsSync(env.PI_CODING_AGENT_DIR!)).toBe(false);
     expect(JSON.parse(await readFile(resolve(operatorAgent, "auth.json"), "utf8"))).toEqual(operatorAuth);
     expect(input.trimEnd().split("\n")).toHaveLength(3);

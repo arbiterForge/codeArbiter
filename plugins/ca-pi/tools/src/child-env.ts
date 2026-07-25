@@ -5,11 +5,16 @@ import type { FileHandle } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 
+import { BROKER_TOKEN_ENV_NAME } from "./inference-broker.ts";
+
 export interface ChildEnvInput {
   platform: NodeJS.Platform;
   parent: Readonly<NodeJS.ProcessEnv>;
   provider: string;
   isolationRoot: string;
+  /** The per-child ephemeral broker token. This is the ONLY key-shaped value that ever enters
+   * the child boundary, and it is worthless off-host and after the child exits (#455). */
+  brokerToken: string;
 }
 
 const WINDOWS_BASELINE = [
@@ -28,6 +33,20 @@ const MAX_PROJECTED_KEYS = 64;
 const MAX_PROJECTED_STRING_BYTES = 8_192;
 const MAX_PROJECTED_DEPTH = 8;
 const MAX_PROJECTED_NODES = 4_096;
+
+/** #455 — the operator credential does not enter the child boundary AT ALL.
+ *
+ * ADR-0016's `auth.json` projection clause is SUPERSEDED, not narrowed: this module no longer
+ * writes a credential file into the child's private agent dir, and it no longer copies the
+ * provider's credential environment variables into the child's environment. What the child
+ * receives instead is a `models.json` whose `baseUrl` names the parent's per-child loopback
+ * broker and whose `apiKey` is a `$`-reference to that child's ephemeral broker token.
+ *
+ * The operator's real endpoint, credential, and any credential-bearing provider headers are
+ * resolved HERE, in the parent, and handed to the broker — never serialized anywhere the child
+ * can read. `cat`-ing the projected `models.json` in a compromised child yields a token that
+ * dies with the child, which retires the whole encoding-transform exfiltration class rather
+ * than one instance of it. */
 
 /** ADR-0017 — credential-blind selected-provider CONFIGURATION projection.
  *
@@ -186,6 +205,71 @@ function refuseProjection(): never {
   throw new ChildConfigProjectionError();
 }
 
+/** A fixed, value-free refusal for the #455 broker-authority stage: the parent could not
+ * establish a real upstream endpoint and credential for the selected provider, so there is
+ * nothing to broker and the launch stops rather than falling back to a credential in the
+ * child. Carries no endpoint, credential, or path. */
+export class ChildBrokerAuthorityError extends Error {
+  constructor() {
+    super("Pi child inference broker authority refused.");
+    this.name = "ChildBrokerAuthorityError";
+  }
+}
+
+function refuseAuthority(): never {
+  throw new ChildBrokerAuthorityError();
+}
+
+/** Pi 0.80.10's built-in provider endpoints (`@earendil-works/pi-ai/providers/all`,
+ * `provider.baseUrl`), pinned for exactly the providers whose built-in catalog resolves to ONE
+ * literal endpoint shared by every model. It is what the broker forwards to when the operator
+ * has no `models.json` record — the ordinary case for an operator who authenticated with a bare
+ * `OPENAI_API_KEY` and never wrote a config.
+ *
+ * Deliberately incomplete. A provider is omitted when its built-in endpoint is templated
+ * (`{CLOUDFLARE_ACCOUNT_ID}`, `{location}`), when its models disagree on a base path
+ * (`fireworks`), or when it has none at all (`amazon-bedrock`, `azure-openai-responses`,
+ * `google-vertex`, `opencode*`). Those providers need an explicit operator `baseUrl`; without
+ * one the launch fails CLOSED rather than guessing an endpoint the operator never configured —
+ * which is exactly the defect ADR-0017 was written to close. */
+export const PI_BUILTIN_UPSTREAM: Readonly<Record<string, string>> = Object.freeze({
+  "ant-ling": "https://api.ant-ling.com/v1",
+  anthropic: "https://api.anthropic.com",
+  cerebras: "https://api.cerebras.ai/v1",
+  deepseek: "https://api.deepseek.com",
+  google: "https://generativelanguage.googleapis.com/v1beta",
+  groq: "https://api.groq.com/openai/v1",
+  huggingface: "https://router.huggingface.co/v1",
+  "kimi-coding": "https://api.kimi.com/coding",
+  minimax: "https://api.minimax.io/anthropic",
+  "minimax-cn": "https://api.minimaxi.com/anthropic",
+  mistral: "https://api.mistral.ai",
+  moonshotai: "https://api.moonshot.ai/v1",
+  "moonshotai-cn": "https://api.moonshot.cn/v1",
+  nvidia: "https://integrate.api.nvidia.com/v1",
+  openai: "https://api.openai.com/v1",
+  openrouter: "https://openrouter.ai/api/v1",
+  together: "https://api.together.ai/v1",
+  "vercel-ai-gateway": "https://ai-gateway.vercel.sh",
+  xai: "https://api.x.ai/v1",
+  xiaomi: "https://api.xiaomimimo.com/v1",
+  "xiaomi-token-plan-ams": "https://token-plan-ams.xiaomimimo.com/v1",
+  "xiaomi-token-plan-cn": "https://token-plan-cn.xiaomimimo.com/v1",
+  "xiaomi-token-plan-sgp": "https://token-plan-sgp.xiaomimimo.com/v1",
+  zai: "https://api.z.ai/api/coding/paas/v4",
+  "zai-coding-cn": "https://open.bigmodel.cn/api/coding/paas/v4",
+});
+
+/** Providers a bearer-style broker CANNOT serve, whatever the operator configured. Bedrock and
+ * Vertex authenticate per-request with an SDK signer (SigV4 / google-auth-library) rather than
+ * a header the broker could substitute; Copilot and Codex authenticate with a refreshable OAuth
+ * credential whose refresh flow lives in the child's Pi. Under #455 the child holds no such
+ * credential and cannot acquire one, so these launches fail CLOSED and say so, rather than
+ * silently degrading into an unauthenticated call. */
+export const BROKER_INELIGIBLE_PROVIDERS: ReadonlySet<string> = Object.freeze(new Set([
+  "amazon-bedrock", "google-vertex", "github-copilot", "openai-codex",
+]));
+
 function plainRecord(value: unknown): value is Record<string, unknown> {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
   const prototype = Object.getPrototypeOf(value) as unknown;
@@ -265,50 +349,77 @@ function templateOnlyValue(value: unknown): string {
   return value;
 }
 
-function sanitizedHeaderMap(value: unknown): Record<string, string> {
+/** Everything the operator's record declares that must NOT cross into the child: the endpoint
+ * (the broker forwards there instead), the credential template, and any provider headers (which
+ * can themselves carry key material). Captured here for the PARENT's broker only. */
+interface AuthorityCapture {
+  endpoints: Set<string>;
+  apiKeyTemplate?: string;
+  headerTemplates: Record<string, string>;
+  baseUrl?: string;
+}
+
+function capturedHeaderTemplates(value: unknown, capture: AuthorityCapture): void {
   if (!plainRecord(value)) refuseProjection();
   const entries = Object.entries(value);
   if (entries.length > MAX_PROJECTED_HEADERS) refuseProjection();
-  const headers = Object.create(null) as Record<string, string>;
   for (const [name, raw] of entries) {
     // The reserved-key rule applies HERE too. `PROJECTED_HEADER_NAME` admits `__proto__`,
     // `constructor`, and `prototype`, and this was the module's only place that skipped the
     // guard every other projected record applies.
     if (RESERVED_OBJECT_KEYS.has(name) || !PROJECTED_HEADER_NAME.test(name)) refuseProjection();
-    headers[name] = templateOnlyValue(raw);
+    capture.headerTemplates[name] = templateOnlyValue(raw);
   }
-  return headers;
 }
 
 function projectedModelRecord(
   value: unknown,
   allowed: readonly string[],
   shapes: Readonly<Record<string, ShapeCheck>>,
-  endpoints: Set<string>,
+  capture: AuthorityCapture,
 ): Record<string, unknown> {
   if (!plainRecord(value)) refuseProjection();
   const record = Object.create(null) as Record<string, unknown>;
   for (const [key, raw] of Object.entries(value)) {
     if (!allowed.includes(key)) refuseProjection();
-    if (key === "headers") { record[key] = sanitizedHeaderMap(raw); continue; }
-    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw, endpoints); continue; }
+    // Model-level headers are dead weight in Pi (`modelFromJson` sets `headers: undefined`) and
+    // a credential channel here, so they are validated and dropped, never projected.
+    if (key === "headers") { capturedHeaderTemplates(raw, capture); continue; }
+    // A model-level endpoint is a candidate upstream for the parent, never a child-visible
+    // value: every model in the projected record is served by the one loopback broker.
+    if (key === "baseUrl") {
+      // Validated ALWAYS, then kept only as a fallback. A `??=` here would short-circuit the
+      // acceptance check entirely once a provider-level endpoint had been captured, letting a
+      // model-level `?api-key=…` ride through unvalidated.
+      const endpoint = endpointOnlyValue(raw, capture.endpoints);
+      capture.baseUrl ??= endpoint;
+      continue;
+    }
     if (!Object.prototype.hasOwnProperty.call(shapes, key) || !shapes[key]!(raw)) refuseProjection();
     record[key] = raw;
   }
   return record;
 }
 
-function projectedProviderRecord(value: unknown, endpoints: Set<string>): Record<string, unknown> {
+function projectedProviderRecord(value: unknown, capture: AuthorityCapture): Record<string, unknown> {
   if (!plainRecord(value)) refuseProjection();
   const record = Object.create(null) as Record<string, unknown>;
   for (const [key, raw] of Object.entries(value)) {
     if (!PROJECTED_PROVIDER_KEYS.includes(key)) refuseProjection();
-    if (key === "apiKey") { record[key] = templateOnlyValue(raw); continue; }
-    if (key === "headers") { record[key] = sanitizedHeaderMap(raw); continue; }
-    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw, endpoints); continue; }
+    // #455: `apiKey`, `headers`, and `baseUrl` are the operator's, and they stop at the parent.
+    if (key === "apiKey") { capture.apiKeyTemplate = templateOnlyValue(raw); continue; }
+    if (key === "headers") { capturedHeaderTemplates(raw, capture); continue; }
+    if (key === "baseUrl") {
+      capture.baseUrl = endpointOnlyValue(raw, capture.endpoints);
+      continue;
+    }
+    // An `oauth` provider authenticates by refreshing a stored credential inside the child's
+    // own Pi. The child no longer holds one and cannot acquire one, so this refuses rather
+    // than projecting a configuration that can only fail unauthenticated at the provider.
+    if (key === "oauth") refuseAuthority();
     if (key === "models") {
       if (!Array.isArray(raw) || raw.length > MAX_PROJECTED_ENTRIES) refuseProjection();
-      record[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS, PROJECTED_MODEL_SHAPES, endpoints));
+      record[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS, PROJECTED_MODEL_SHAPES, capture));
       continue;
     }
     if (key === "modelOverrides") {
@@ -318,7 +429,7 @@ function projectedProviderRecord(value: unknown, endpoints: Set<string>): Record
       const overrides = Object.create(null) as Record<string, unknown>;
       for (const [id, entry] of entries) {
         if (id === "" || RESERVED_OBJECT_KEYS.has(id) || Buffer.byteLength(id, "utf8") > MAX_PROJECTED_STRING_BYTES) refuseProjection();
-        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS, PROJECTED_MODEL_OVERRIDE_SHAPES, endpoints);
+        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS, PROJECTED_MODEL_OVERRIDE_SHAPES, capture);
       }
       record[key] = overrides;
       continue;
@@ -399,9 +510,15 @@ export function buildChildEnv(input: ChildEnvInput): NodeJS.ProcessEnv {
       : undefined;
   if (baseline === undefined) throw new Error("Unsupported child platform for isolated Pi launch.");
 
+  if (typeof input.brokerToken !== "string" || !/^[0-9a-f]{64}$/u.test(input.brokerToken)) {
+    throw new Error("Pi child broker token is invalid.");
+  }
   const child: NodeJS.ProcessEnv = {};
   copyDefined(child, input.parent, baseline);
-  copyDefined(child, input.parent, providerNames);
+  // #455: the provider's credential variables are NOT copied. `providerNames` is still resolved
+  // above so an unsupported provider refuses the launch, and it still drives the parent-side
+  // upstream credential lookup — but the child's environment carries only the ephemeral token.
+  child[BROKER_TOKEN_ENV_NAME] = input.brokerToken;
   const home = join(input.isolationRoot, "home");
   child.HOME = home;
   child.PI_CODING_AGENT_DIR = join(input.isolationRoot, "agent");
@@ -428,6 +545,9 @@ export function buildChildEnv(input: ChildEnvInput): NodeJS.ProcessEnv {
   child.PI_TELEMETRY = "0";
   delete child.FARM_API_KEY;
   delete child.CLAUDE_CODE_OAUTH_TOKEN;
+  // Belt and braces against a future baseline widening: no provider credential variable may
+  // survive in the child map under ANY name Pi recognizes.
+  for (const names of Object.values(PI_PROVIDER_ENV)) for (const name of names) delete child[name];
   return child;
 }
 
@@ -435,6 +555,8 @@ export interface PreparedChildEnvironment {
   env: NodeJS.ProcessEnv;
   containsSensitiveValue(text: string): boolean;
   cleanup(): Promise<void>;
+  /** The operator's REAL endpoint and credential, for the parent's broker ONLY (#455). */
+  upstream: ChildUpstreamAuthority;
 }
 
 export interface ChildEnvironmentCleanupIo {
@@ -464,11 +586,9 @@ const DEFAULT_AUTH_IO: ChildEnvironmentAuthIo = Object.freeze({
   open: async (path: string, flags: "r") => await open(path, flags),
 });
 
-interface StoredCredential {
-  value: unknown;
-  sensitiveValues: readonly string[];
-}
-
+/** Every string reachable in the operator's stored credential record. The BROKER only ever
+ * forwards one of them upstream, but all of them join the child's sensitive-value scrub set so
+ * a child echoing any fragment back is suppressed. */
 function credentialStrings(value: unknown): readonly string[] | undefined {
   const strings = new Set<string>();
   const pending: unknown[] = [value];
@@ -496,7 +616,7 @@ async function boundedFileText(handle: AuthReadHandle, cap: number): Promise<str
   return offset > cap ? undefined : buffer.subarray(0, offset).toString("utf8");
 }
 
-function operatorAgentDir(input: Omit<ChildEnvInput, "isolationRoot">): string | undefined {
+function operatorAgentDir(input: Omit<ChildEnvInput, "isolationRoot" | "brokerToken">): string | undefined {
   const explicit = input.parent.PI_CODING_AGENT_DIR;
   if (typeof explicit === "string" && isAbsolute(explicit)) return explicit;
   const home = input.platform === "win32"
@@ -505,8 +625,18 @@ function operatorAgentDir(input: Omit<ChildEnvInput, "isolationRoot">): string |
   return typeof home === "string" && isAbsolute(home) ? join(home, ".pi", "agent") : undefined;
 }
 
+interface StoredCredential {
+  /** The single API-key string the broker will present upstream. */
+  apiKey?: string;
+  /** Every string in the record, for the child's sensitive-value scrub set. */
+  sensitiveValues: readonly string[];
+}
+
+/** Read the operator's stored Pi credential for the selected provider — in the PARENT, for the
+ * PARENT's broker. #455 supersedes ADR-0016's projection clause: nothing read here is ever
+ * written into the child's private agent dir, its environment, or its argv. */
 async function selectedStoredCredential(
-  input: Omit<ChildEnvInput, "isolationRoot">,
+  input: Omit<ChildEnvInput, "isolationRoot" | "brokerToken">,
   authIo: ChildEnvironmentAuthIo,
 ): Promise<StoredCredential | undefined> {
   const agentDir = operatorAgentDir(input);
@@ -525,7 +655,15 @@ async function selectedStoredCredential(
     const selected = record[input.provider];
     if (selected === null || typeof selected !== "object" || Array.isArray(selected)) return undefined;
     const sensitiveValues = credentialStrings(selected);
-    return sensitiveValues === undefined ? undefined : { value: selected, sensitiveValues };
+    if (sensitiveValues === undefined) return undefined;
+    // Pi's api_key credential shape (`dist/core/auth-storage.js`): `{ type: "api_key", key }`.
+    // An `oauth` credential is deliberately NOT read — refreshing it lives inside the child's
+    // own Pi, which no longer has one, and those providers are refused outright.
+    const shape = selected as { type?: unknown; key?: unknown };
+    const apiKey = shape.type === "api_key" && typeof shape.key === "string" && shape.key !== ""
+      ? shape.key
+      : undefined;
+    return { apiKey, sensitiveValues };
   } catch {
     return undefined;
   } finally {
@@ -534,20 +672,26 @@ async function selectedStoredCredential(
 }
 
 interface ProjectedProviderConfig {
+  /** The child-visible remainder of the operator's record: no endpoint, no credential template,
+   * no headers, no oauth. */
   record: Record<string, unknown>;
   /** Every endpoint the projection accepted. Bounded and structural, but not PROVABLY
    * credential-free, so the caller registers them in the child's sensitive-value set rather
    * than assuming their innocence. */
   endpoints: readonly string[];
+  apiKeyTemplate?: string;
+  headerTemplates: Readonly<Record<string, string>>;
+  /** The operator's REAL endpoint. Parent-only — the child's copy names the broker. */
+  baseUrl?: string;
 }
 
-/** Read the operator's canonical models.json and return ONLY the exactly-selected provider's
- * record, credential-blind. `undefined` means there is simply nothing to project — no store,
- * no `providers`, or the selected provider is one of Pi's built-ins — which is the operator's
- * own parent behaviour and never a failure. Anything else refuses, so a record we cannot prove
- * credential-blind stops the launch instead of falling back to Pi's built-in endpoint. */
+/** Read the operator's canonical models.json and split the exactly-selected provider's record
+ * into what the child may see and what only the parent's broker may hold. `undefined` means
+ * there is simply nothing configured — no store, no `providers`, or the selected provider is
+ * one of Pi's built-ins — which is the operator's own parent behaviour and never a failure;
+ * the broker then forwards to `PI_BUILTIN_UPSTREAM`. Anything else refuses. */
 async function selectedProviderConfig(
-  input: Omit<ChildEnvInput, "isolationRoot">,
+  input: Omit<ChildEnvInput, "isolationRoot" | "brokerToken">,
   modelsIo: ChildEnvironmentAuthIo,
 ): Promise<ProjectedProviderConfig | undefined> {
   const agentDir = operatorAgentDir(input);
@@ -570,31 +714,91 @@ async function selectedProviderConfig(
     if (providers === undefined) return undefined;
     if (!plainRecord(providers)) refuseProjection();
     if (!Object.prototype.hasOwnProperty.call(providers, input.provider)) return undefined;
-    const endpoints = new Set<string>();
-    const record = projectedProviderRecord(providers[input.provider], endpoints);
-    return { record, endpoints: [...endpoints] };
+    const capture: AuthorityCapture = { endpoints: new Set<string>(), headerTemplates: Object.create(null) as Record<string, string> };
+    const record = projectedProviderRecord(providers[input.provider], capture);
+    return {
+      record,
+      endpoints: [...capture.endpoints],
+      apiKeyTemplate: capture.apiKeyTemplate,
+      headerTemplates: capture.headerTemplates,
+      baseUrl: capture.baseUrl,
+    };
   } finally {
     await handle.close().catch(() => undefined);
   }
 }
 
+function environmentNameOf(template: string): string {
+  return template.startsWith("${") ? template.slice(2, -1) : template.slice(1);
+}
+
+/** The exact credential Pi in the child WOULD have used, resolved in the parent. Order mirrors
+ * Pi's own composition: the operator's configured `apiKey` template first, then the provider's
+ * credential environment variables, then the stored `auth.json` api-key record. */
+function resolvedUpstreamCredential(
+  input: Omit<ChildEnvInput, "isolationRoot" | "brokerToken">,
+  apiKeyTemplate: string | undefined,
+  stored: StoredCredential | undefined,
+): string {
+  if (apiKeyTemplate !== undefined) {
+    const value = input.parent[environmentNameOf(apiKeyTemplate)];
+    if (typeof value === "string" && value !== "") return value;
+  }
+  for (const name of PI_PROVIDER_ENV[input.provider] ?? []) {
+    const value = input.parent[name];
+    if (typeof value === "string" && value !== "") return value;
+  }
+  if (stored?.apiKey !== undefined) return stored.apiKey;
+  // Nothing to broker. Refusing here is the whole point: the alternative is a child that calls
+  // the provider unauthenticated, or a credential put back into the child to "fix" it.
+  refuseAuthority();
+}
+
+function resolvedUpstreamHeaders(
+  input: Omit<ChildEnvInput, "isolationRoot" | "brokerToken">,
+  templates: Readonly<Record<string, string>>,
+): Record<string, string> {
+  const headers = Object.create(null) as Record<string, string>;
+  for (const [name, template] of Object.entries(templates)) {
+    const value = input.parent[environmentNameOf(template)];
+    // An operator header naming a variable the parent does not carry cannot be honoured, and
+    // silently dropping it would send a provider request the operator never configured.
+    if (typeof value !== "string" || value === "") refuseAuthority();
+    headers[name] = value;
+  }
+  return headers;
+}
+
+/** The parent-only upstream the broker attaches. Never serialized into the child boundary. */
+export interface ChildUpstreamAuthority {
+  baseUrl: string;
+  credential: string;
+  headers: Readonly<Record<string, string>>;
+}
+
+export interface ChildBrokerBinding {
+  /** The broker's loopback endpoint, projected as the child's `baseUrl`. */
+  baseUrl: string;
+  /** The per-child ephemeral token, projected as the child's `apiKey` env reference. */
+  token: string;
+}
+
 export async function prepareChildEnvironment(
-  input: Omit<ChildEnvInput, "isolationRoot">,
+  input: Omit<ChildEnvInput, "isolationRoot" | "brokerToken">,
+  broker: ChildBrokerBinding,
   cleanupIo: ChildEnvironmentCleanupIo = DEFAULT_CLEANUP_IO,
   authIo: ChildEnvironmentAuthIo = DEFAULT_AUTH_IO,
   modelsIo: ChildEnvironmentAuthIo = DEFAULT_AUTH_IO,
 ): Promise<PreparedChildEnvironment> {
+  if (typeof broker?.baseUrl !== "string" || typeof broker?.token !== "string") refuseAuthority();
   const isolationRoot = await mkdtemp(join(tmpdir(), "codearbiter-pi-child-"));
-  const env = buildChildEnv({ ...input, isolationRoot });
-  const authPath = join(env.PI_CODING_AGENT_DIR!, "auth.json");
+  const env = buildChildEnv({ ...input, isolationRoot, brokerToken: broker.token });
   const configPath = join(env.PI_CODING_AGENT_DIR!, "models.json");
-  let credentialHandle: FileHandle | undefined;
   let configHandle: FileHandle | undefined;
   const sensitiveValues = new Set<string>();
-  for (const name of PI_PROVIDER_ENV[input.provider] ?? []) {
-    const value = env[name];
-    if (typeof value === "string" && value !== "") sensitiveValues.add(value);
-  }
+  // The token is the child's own value, but a child echoing it into its final assistant message
+  // is still a leak of parent-issued material, so it joins the scrub set on the same footing.
+  sensitiveValues.add(broker.token);
   const containsSensitiveValue = (text: string): boolean => {
     for (const value of sensitiveValues) if (text.includes(value)) return true;
     return false;
@@ -613,16 +817,12 @@ export async function prepareChildEnvironment(
     }
   };
   const cleanup = async (): Promise<void> => {
-    const credential = credentialHandle;
     const config = configHandle;
-    credentialHandle = undefined;
     configHandle = undefined;
-    // The projected models.json is scrubbed on exactly the same footing as auth.json. It is
-    // credential-BLIND by construction, not provably credential-FREE, so leaving it behind on
-    // the removal-failure path while auth.json is truncated would be an unstated residual.
-    const credentialRemoved = await scrubRetainedFile(credential);
+    // #455 leaves exactly ONE projected file. It carries no credential at all now, only the
+    // loopback endpoint and a token reference, but it is still scrubbed through the retained
+    // handle so a failed removal cannot strand a live token on disk.
     const configRemoved = await scrubRetainedFile(config);
-    await cleanupIo.remove(authPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => undefined);
     await cleanupIo.remove(configPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => undefined);
     let isolationRemoved = true;
     try {
@@ -631,8 +831,8 @@ export async function prepareChildEnvironment(
       isolationRemoved = false;
     }
     // Never report cleanup success when an unverified replacement file or any
-    // other child-created credential state may still exist under the root.
-    if (!credentialRemoved || !configRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
+    // other child-created state may still exist under the root.
+    if (!configRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
   };
 
   try {
@@ -644,33 +844,39 @@ export async function prepareChildEnvironment(
         ? [mkdir(env.APPDATA!, { recursive: true, mode: 0o700 }), mkdir(env.LOCALAPPDATA!, { recursive: true, mode: 0o700 })]
         : [mkdir(env.XDG_CONFIG_HOME!, { recursive: true, mode: 0o700 }), mkdir(env.XDG_CACHE_HOME!, { recursive: true, mode: 0o700 }), mkdir(env.XDG_DATA_HOME!, { recursive: true, mode: 0o700 })]),
     ]);
-    // Configuration first: a record that cannot be projected credential-blind must refuse the
-    // whole launch before any credential file is created.
+    if (BROKER_INELIGIBLE_PROVIDERS.has(input.provider)) refuseAuthority();
     const providerConfig = await selectedProviderConfig(input, modelsIo);
-    if (providerConfig !== undefined) {
-      const providers = Object.create(null) as Record<string, unknown>;
-      providers[input.provider] = providerConfig.record;
-      const document = JSON.stringify({ providers });
-      if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
-      // Endpoints are bounded and structural but not provably credential-free, so they join the
-      // scrub set that suppresses a child echoing them back into its final assistant message.
-      // Without this, `containsSensitiveValue` was blind to every value the config projection
-      // put on the wire.
-      for (const endpoint of providerConfig.endpoints) sensitiveValues.add(endpoint);
-      configHandle = await open(configPath, "wx", 0o600);
-      await configHandle.writeFile(document + "\n", { encoding: "utf8" });
-    }
-    const credential = await selectedStoredCredential(input, authIo);
-    if (credential !== undefined) {
-      const projected = Object.create(null) as Record<string, unknown>;
-      projected[input.provider] = credential.value;
-      const serialized = JSON.stringify(projected);
-      if (Buffer.byteLength(serialized, "utf8") > MAX_AUTH_FILE_BYTES) throw new Error("Selected Pi credential exceeds the isolation limit.");
-      for (const value of credential.sensitiveValues) sensitiveValues.add(value);
-      credentialHandle = await open(authPath, "wx", 0o600);
-      await credentialHandle.writeFile(serialized + "\n", { encoding: "utf8" });
-    }
-    return Object.freeze({ env, containsSensitiveValue, cleanup });
+    const stored = await selectedStoredCredential(input, authIo);
+    const upstreamBaseUrl = providerConfig?.baseUrl ?? PI_BUILTIN_UPSTREAM[input.provider];
+    if (upstreamBaseUrl === undefined) refuseAuthority();
+    const credential = resolvedUpstreamCredential(input, providerConfig?.apiKeyTemplate, stored);
+    const headers = resolvedUpstreamHeaders(input, providerConfig?.headerTemplates ?? {});
+
+    // The projected record is the operator's remainder with the broker's endpoint and the
+    // child's token reference forced on top. Pi overlays this onto its built-in provider, so a
+    // bare `{ baseUrl, apiKey }` is a complete and valid configuration for a built-in provider.
+    const projected = Object.create(null) as Record<string, unknown>;
+    for (const [key, value] of Object.entries(providerConfig?.record ?? {})) projected[key] = value;
+    projected.baseUrl = broker.baseUrl;
+    projected.apiKey = `$${BROKER_TOKEN_ENV_NAME}`;
+    const providers = Object.create(null) as Record<string, unknown>;
+    providers[input.provider] = projected;
+    const document = JSON.stringify({ providers });
+    if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
+    // Every operator value the parent now holds joins the scrub set, so a child that somehow
+    // learned one cannot echo it back through the final assistant message.
+    for (const endpoint of providerConfig?.endpoints ?? []) sensitiveValues.add(endpoint);
+    for (const value of stored?.sensitiveValues ?? []) sensitiveValues.add(value);
+    for (const value of Object.values(headers)) sensitiveValues.add(value);
+    sensitiveValues.add(credential);
+    configHandle = await open(configPath, "wx", 0o600);
+    await configHandle.writeFile(document + "\n", { encoding: "utf8" });
+    return Object.freeze({
+      env,
+      containsSensitiveValue,
+      cleanup,
+      upstream: Object.freeze({ baseUrl: upstreamBaseUrl, credential, headers: Object.freeze(headers) }),
+    });
   } catch (error) {
     await cleanup().catch(() => undefined);
     throw error;
