@@ -173,6 +173,17 @@ _ISSUE_455_NON_POLICY_ARTIFACTS = frozenset({
 })
 
 
+# Issue #464: the vitest setup file that repoints every home variable and
+# PI_CODING_AGENT_DIR at a disposable root before any test runs, so
+# security-controls.md's "tests use disposable Pi homes and dummy credentials"
+# clause is true by construction rather than per test file. Build-time only --
+# it is loaded by vitest, never by the shipped extension. Path-exact like every
+# set above, so an unlisted file under tools/ still fails closed.
+_ISSUE_464_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/test/setup-disposable-home.ts",
+})
+
+
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
@@ -403,6 +414,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_ISSUE_370_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_374_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_455_NON_POLICY_ARTIFACTS)
+        | set(_ISSUE_464_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
