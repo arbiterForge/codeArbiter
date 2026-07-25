@@ -23,6 +23,7 @@
  *      read-only root, non-root user. Namespaced + cleaned up.
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { buildRunArgs, runContainer } from "./run.ts";
 
@@ -120,12 +121,7 @@ function networkValues(argv: string[]): string[] {
 // Starts a real container and inspects it for the structural guarantees.
 // Namespaced with the task id; every object is cleaned up.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("run");
 
 const NS = "ca-sbx-t06";
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };

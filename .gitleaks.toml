@@ -1,0 +1,155 @@
+# Hosted secret-scan configuration (issue #404).
+#
+# codeArbiter's own secret gates are COOPERATIVE: H-10b blocks a commit whose
+# diff touches a secret line, and /ca:preview sweeps the working diff. Both run
+# locally, inside the contributor's Claude/Codex/Pi session. A bot, a fork, a
+# web edit, or a plain `git push` runs neither. The `secret-scan` job in
+# .github/workflows/ci.yml is the independent hosted backstop, and this file is
+# the only thing standing between it and a false positive.
+#
+# WHY THERE IS NO `paths` ALLOWLIST HERE
+# A global `paths = [...]` entry does not waive a finding - it removes the file
+# from the scan altogether. Verified against the pinned image: a config whose
+# only waiver was `paths = ['''^test_hooklib\.py$''']` (with condition = "AND"
+# and a regex that matches nothing) reported `scanned ~189 bytes`, i.e. the
+# 89 KB Python file was never read, and a freshly planted
+# `aws_secret_access_key = "kR3m..."` in it went unreported. Path waivers are
+# therefore permanent blind spots, not narrow exceptions, and this config uses
+# VALUE waivers instead.
+#
+# WHY EVERY WAIVER IS ANCHORED `\A...\z`
+# Being a fixed literal is NOT enough, and assuming otherwise was a real defect
+# in the first version of this file. gitleaks tests an allowlist regex with Go's
+# `FindString`, which is a SUBSTRING search, not a full match. An unanchored
+# literal is therefore exactly as broad as whatever haystack it is tested
+# against, and `regexTarget` only chooses that haystack: omitted = the detected
+# secret, "match" = the rule's whole match text, "line" = the entire source
+# line. Measured against the pinned image over this repo's tracked tree, with a
+# high-entropy key planted in plugins/ca/tools/.env.example (which the shipped
+# config below reports as `leaks found: 1`, exit 1):
+#
+#   regexTarget = "line",   regexes = API_KEY            ->  no leaks found
+#   regexTarget = "match",  regexes = API_KEY            ->  no leaks found
+#   regexTarget omitted,    regexes = sk-                ->  no leaks found
+#   regexTarget omitted,    regexes = \Ask-REPLACE_ME\z  ->  leaks found: 1
+#
+# All three of the first shapes swallow a live credential, so constraining
+# `regexTarget` alone buys NO narrowness - the unanchored-substring case sails
+# through it. Anchoring is what works: `\A<literal>\z` matches only when the
+# ENTIRE detected secret is that exact fixture value. Every waiver below is
+# therefore anchored, and `regexTarget` is omitted everywhere so the anchors
+# bind to the detected secret rather than to surrounding source text.
+#
+# The anchored values are the secrets gitleaks actually reports, not the source
+# text around them - measured with `--report-format json` against the default
+# ruleset, which finds exactly 13 leaks in this tree across 5 distinct values.
+#
+# ADDING AN ENTRY - the rules .github/scripts/test_ci_impact.py enforces:
+#   1. A waiver carries ONLY `description` and `regexes`. Every other key is
+#      rejected, `paths` / `commits` / `stopwords` (which un-scan a file or a
+#      commit) and `regexTarget` (which rebinds the waiver to surrounding source
+#      text) loudest of all. The check is DEFAULT-DENY: a knob gitleaks adds
+#      later fails this contract the day it is typed here, not the day someone
+#      remembers to ban it.
+#   2. `[extend]` sets `useDefault` and nothing else. `disabledRules` deletes a
+#      rule outright - measured, `disabledRules = ["generic-api-key"]` returns a
+#      planted high-entropy key to `no leaks found` - and `path` / `url` pull in
+#      allowlists that are not in this file, so nothing here constrains them.
+#   3. No `[[rules]]` block. This file only ever SUBTRACTS fixture values from
+#      the default ruleset, and a rule whose id matches a default one REPLACES
+#      it - measured, that is the same hole as disabling it.
+#   4. Every `[[allowlists]]` block carries a `description` naming the file the
+#      literal legitimately lives in and why it is benign.
+#   5. Every block waives by `regexes`, every regex is anchored `\A...\z`, and
+#      the anchored body carries no regex metacharacter - no `.*`, no character
+#      class, no escape, nothing that could match an unseen value.
+#
+# REFORMATTING WILL NOT HELP. The contract PARSES this file as TOML and folds
+# keys to lower case, because gitleaks reads its config through viper, whose key
+# lookup is case-INSENSITIVE (measured: `Paths` un-scans the tree exactly as
+# `paths` does). Indenting a key or a table header, spelling a waiver `"x"` or
+# `'x'` instead of `'''x'''`, or capitalising a key changes nothing about what
+# the rules above see. Reading this file as TEXT is what let eleven measured
+# shapes through, each one guard-green while the scanner swallowed a live key.
+
+title = "codeArbiter hosted secret scan"
+
+[extend]
+# Start from gitleaks' full first-party ruleset. This file only ever SUBTRACTS
+# known-fake fixture literals from it; it never adds a rule of its own.
+useDefault = true
+
+[[allowlists]]
+description = """
+Canonical secret-detection corpus literals (architecture-001), which live in
+plugins/ca/hooks/secret-detection-corpus.json and are inlined as test input by
+.github/scripts/test_hooklib.py, plugins/ca/tools/farm.unit.test.ts, and the
+archived .codearbiter/reports/2026-07-14-pi-support-handoff/ review packages.
+Each is a deliberately fake credential SHAPE that both first-party classifiers
+(_hooklib.SECRET_RE and the farm redactor) are required to flag; deleting them
+would delete the adversarial coverage the corpus exists to provide.
+Two of these are live findings under the default ruleset today
+(sk-test-abcd1234 and wJalrXUtnFEMI1234, six occurrences between them); the
+rest sit below its entropy floor and produce no finding, and are waived
+defensively so a future ruleset bump cannot turn the corpus red. Each waiver is
+exact, so a defensive entry cannot waive anything but the value it names.
+"""
+regexes = [
+  '''\Ask-CVlQvxKsecretvalue123\z''',
+  '''\Acorrect-horse-battery\z''',
+  '''\Aabc12345def\z''',
+  '''\AwJalrXUtnFEMIabcd1234\z''',
+  '''\AwJalrXUtnFEMI1234\z''',
+  '''\Ask-test-abcd1234\z''',
+  '''\AAKIAIOSFODNN7EXAMPLE\z''',
+  '''\Aghp_abcdefghijklmnopqrstuvwxyz0123456789\z''',
+  '''\Ask-ant-api03-AbCdEf1234567890abcdef\z''',
+]
+
+[[allowlists]]
+description = """
+The fixed fake value the H-01/H-10b guard-matrix cases assign so the hook is
+proven to block them - .github/scripts/test_hook_guards.py (three occurrences)
+and .github/scripts/test_hooklib.py (two).
+"""
+regexes = ['''\Aabcd1234efgh\z''']
+
+[[allowlists]]
+description = """
+Placeholder in the shipped env template plugins/ca/tools/.env.example:
+FARM_API_KEY carries the literal `sk-REPLACE_ME`, never a value. It sits below
+the generic-api-key entropy floor, so it produces no finding today; it is waived
+by that exact anchored literal anyway, so the waiver can never cover the
+populated-.env.example regression this job exists to catch. Measured: replacing
+it with a high-entropy key gives `leaks found: 1` and exit 1.
+"""
+regexes = ['''\Ask-REPLACE_ME\z''']
+
+[[allowlists]]
+description = """
+The non-real PEM plugins/ca/tools/farm.test.ts plants into a scratch repo. The
+BEGIN/END markers wrap the test-local constants KEY_BODY_1/2/3, whose values are
+the literal strings FAKEKEYBODYLINE{ONE,TWO,THREE} - chosen precisely because
+they carry no trigger word, which is the property that test asserts about the
+per-line redactor. The secret gitleaks reports here is the whole five-line block
+of constant NAMES (the values live on earlier lines), so that block anchored is
+the waiver: any other PEM is a different secret and is not waived. Measured on
+this tree - an inline PEM added anywhere else is reported by `private-key`, and
+pasting real key material into KEY_BODY_1's value is reported by
+`generic-api-key` on the assignment line. Reformatting that array changes the
+secret and turns this job red until the waiver is re-derived, which is the
+correct direction to fail.
+"""
+regexes = ['''\A-----BEGIN RSA PRIVATE KEY-----",
+        KEY_BODY_1,
+        KEY_BODY_2,
+        KEY_BODY_3,
+        "-----END RSA PRIVATE KEY-----\z''']
+
+[[allowlists]]
+description = """
+`highEntropyToken` in plugins/ca-pi/tools/test/dispatch.test.ts: a hand-typed
+high-entropy string with no trigger word, used to assert safeDiagnostic never
+fragments the audit log. Not a credential for any system.
+"""
+regexes = ['''\AZx9qP2mK7vN4wR8tY1uJ6hL3sD5fA0cE\z''']

@@ -34,6 +34,7 @@
  * ca.sandbox.build=1 and torn down in afterAll.
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -70,12 +71,7 @@ describe("layering precondition — /deps is outside the /work/repo mount (AC-06
 // --------------------------------------------------------------------------
 // DOCKER-GATED layer — the real end-to-end proof (AC-06).
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("layering");
 
 const NS = "ca-sbx-t07";
 const BUILD_LABEL = "ca.sandbox.build=1";

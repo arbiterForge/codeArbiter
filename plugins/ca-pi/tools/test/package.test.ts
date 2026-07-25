@@ -1,17 +1,17 @@
 /** package.test.ts - codeArbiter's Pi package and host-module identity contract. */
 import { execFileSync, spawn } from "node:child_process";
-import { constants } from "node:fs";
 import { access, chmod, copyFile, cp, mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import { createServer as createHttpServer } from "node:http";
 import { connect, createServer } from "node:net";
 import { tmpdir } from "node:os";
-import { delimiter, dirname, parse, resolve } from "node:path";
+import { delimiter, dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { describe, expect, test } from "vitest";
 
 import { compatibilityDirection } from "../src/compatibility.ts";
 import { createCodeArbiterPi, createPiFooterMetricsLoader } from "../src/extension.ts";
+import { exists, findPiPackageRoot } from "./live-pi-host.ts";
 
 const toolsRoot = resolve(import.meta.dirname, "..");
 const pluginRoot = resolve(toolsRoot, "..");
@@ -26,50 +26,15 @@ const windowsSupervisor = resolve(pluginRoot, "helpers", "windows-supervisor.js"
 // aggregate fixture bound below the platform runner's 180-second command cap.
 const LIVE_DUPLICATE_HOST_TIMEOUT_MS = 120_000;
 
-async function exists(path: string): Promise<boolean> {
-  try {
-    await access(path);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function findPiPackageRoot(): Promise<string> {
-  const pathEntries = (process.env.PATH ?? "").split(delimiter).filter(Boolean);
-  const executableNames = process.platform === "win32" ? ["pi.cmd", "pi.exe", "pi.ps1", "pi"] : ["pi"];
-  for (const entry of pathEntries) {
-    let executable: string | undefined;
-    for (const name of executableNames) {
-      const candidate = resolve(entry, name);
-      try {
-        await access(candidate, constants.X_OK);
-        executable = candidate;
-        break;
-      } catch {
-        // Continue to the next platform-native executable spelling.
-      }
-    }
-    if (executable === undefined) continue;
-    let cursor = dirname(await realpath(executable));
-    for (let depth = 0; depth < 8; depth += 1) {
-      const candidate = resolve(cursor, "package.json");
-      if (await exists(candidate)) {
-        const manifest = JSON.parse(await readFile(candidate, "utf8")) as { name?: string };
-        if (manifest.name === "@earendil-works/pi-coding-agent") return cursor;
-      }
-      const parent = dirname(cursor);
-      if (parent === cursor || cursor === parse(cursor).root) break;
-      cursor = parent;
-    }
-    const adjacent = resolve(entry, "node_modules", "@earendil-works", "pi-coding-agent");
-    const manifestPath = resolve(adjacent, "package.json");
-    if (!await exists(resolve(adjacent, "dist", "index.js")) || !await exists(manifestPath)) continue;
-    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as { name?: string };
-    if (manifest.name === "@earendil-works/pi-coding-agent") return await realpath(adjacent);
-  }
-  throw new Error("live Pi package root was not discoverable from PATH without npm/user config");
-}
+// Same reasoning as above, for the shorter live-Pi spawns. These execFileSync a
+// real Node process that imports the installed Pi host, so they pay cold hosted
+// Windows process-creation and module-resolution cost that no product operation
+// controls. Measured on windows-latest: the dormant-load case took 5497 ms
+// against Vitest's bare 5000 ms default and failed - the same "a real spawn
+// measured against a flat wall-clock budget" defect as #428, in a file #443 did
+// not touch. Bounded well under the platform runner's 180-second command cap, so
+// a genuine hang still fails closed rather than running to the job deadline.
+const LIVE_PI_SPAWN_TIMEOUT_MS = 60_000;
 
 function minimalEnvironment(
   isolationRoot: string,
@@ -438,7 +403,7 @@ describe("ca-pi package", () => {
       await rm(projectCwd, { recursive: true, force: true });
       await rm(agentDir, { recursive: true, force: true });
     }
-  });
+  }, LIVE_PI_SPAWN_TIMEOUT_MS);
 
   test("minimal environment replaces poisoned operator homes and configs", async () => {
     const root = await mkdtemp(resolve(tmpdir(), "ca-pi-isolation-red-"));
@@ -1114,7 +1079,7 @@ describe("ca-pi package", () => {
       else process.env.PATH = previousPath;
       await rm(root, { recursive: true, force: true });
     }
-  });
+  }, LIVE_PI_SPAWN_TIMEOUT_MS);
 
   test("installed Pi runtime is admitted by the production boundary", async () => {
     const piRoot = await findPiPackageRoot();
@@ -1128,6 +1093,6 @@ describe("ca-pi package", () => {
       pythonMajor: 3,
     })(api as never);
     expect(apiAccesses).toBe(0);
-  });
+  }, LIVE_PI_SPAWN_TIMEOUT_MS);
 
 });

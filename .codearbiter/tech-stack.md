@@ -153,23 +153,74 @@ node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" <file>.
 
 ## CVE gate (supply chain)
 
-The configured CVE gate is `npm audit --omit=dev --audit-level=critical`, run in
-CI (the `tools` job, after `npm ci`) against the shipped dependency set. A
-CRITICAL advisory fails the build; lower severities are intentionally not
-gating, so routine dev-tool advisories don't block unrelated PRs. This enforces
-the supply-chain posture described in `security-controls.md`.
+The configured CVE gate is `npm audit --omit=dev --audit-level=high`, run after
+`npm ci` against every dependency graph the repo ships or publishes:
+
+| graph | workflow / job | production deps today |
+| --- | --- | --- |
+| `plugins/ca/tools` | `ci.yml` — `tools` | none |
+| `plugins/ca-sandbox/tools` | `ci.yml` — `ca-sandbox-tools` | none |
+| `plugins/ca-pi/tools` | `ci.yml` — `ca-pi-checks` | none |
+| `site` (docs site) | `docs.yml` — `site-check`, which `deploy` needs | astro, starlight, markdown-remark |
+
+A HIGH-or-worse advisory fails the build; `--omit=dev` scopes the gate to
+shipped dependencies so routine dev-tool advisories don't block unrelated PRs.
+This enforces the supply-chain posture described in `security-controls.md`.
+
+**What the threshold actually buys, honestly.** Three of the four graphs above
+declare no production dependencies at all, so `--omit=dev` audits an empty graph
+in those jobs and the threshold there is inert at any value — it is a
+*durability* setting that decides what happens the day one of them takes on a
+runtime dependency. The one live graph is `site`, and until issue #403 nothing
+audited it: #400's three HIGH advisories all lived in `site/package-lock.json`,
+which is why the site gate is the part of this change with immediate effect. The
+threshold was lowered from `critical` to `high` across all four so a single rule
+covers the repo — not because the farm or sandbox audits would have caught #400.
+They would not have seen it.
+
+The dev trees, where these packages' advisories actually are, are **not** covered
+by this gate. Measured in `plugins/ca/tools` at the time of writing, `npm audit
+--json` reports `{prod: 1, dev: 104}` — the single prod entry being the root
+package itself — and one **HIGH** advisory (`postcss`) that the shipped
+`--omit=dev` gate never sees. All four graphs pass `npm audit --omit=dev
+--audit-level=high` today. Issue #434 tracks extending the sweep to the dev
+trees, and notes the blast radius: those dev dependencies build `farm.js` and
+`sandbox.js`, which are committed, shipped artifacts.
 
 ## Secrets scan
 
-No dedicated secrets scanner is configured. The gate is two-layered:
+The gate is three-layered — one hosted backstop plus two cooperative local
+layers:
 
-1. Manual sweep of the staged diff for credential patterns
+1. `ci.yml`'s `secret-scan` job (issue #404): gitleaks' full default ruleset,
+   run as a required check for the `ci-passed` merge gate. The scanner is pinned
+   by image digest and runs in a network-isolated, read-only container over a
+   read-only mount. This is the only layer a bot, a fork, a web edit, or a plain
+   `git push` cannot skip — the two below run only inside a contributor's local
+   session. It scans in **two modes**, because each is blind to what the other
+   catches: `gitleaks dir` over the merge-result tree (what would land on main),
+   and, on a pull request, `gitleaks git --log-opts <merge-base>..HEAD` over the
+   PR's own commits. Without the second, a credential added in one commit and
+   deleted in the next passes green and still reaches main's history under a
+   merge or rebase merge, both of which this repo allows. Findings print with
+   `--redact --verbose`, so a red job names the file, line, rule, and commit
+   while the secret itself stays `REDACTED`.
+
+   Its allowlist (`.gitleaks.toml`) waives individual fake fixture literals by
+   value, never a file path — a `paths` waiver drops the whole file from the
+   scan — and every waiver is anchored `\A<literal>\z`. The anchoring is the
+   load-bearing part: gitleaks substring-matches allowlist regexes, so an
+   unanchored literal waives every secret that merely contains it, and no choice
+   of `regexTarget` fixes that. `.github/scripts/test_ci_impact.py` enforces both
+   rules, and the `secret-scan` job re-runs that contract itself, so a path-filter
+   edit can never leave the allowlist unguarded.
+2. Manual sweep of the staged diff for credential patterns
    (`api[_-]?key|token|secret|password|private[_-]?key|passphrase|credential|BEGIN.*PRIVATE|AKIA|ghp_|sk-ant`),
    case-insensitive. This is the convenience layer; the authoritative classifier
    is `_hooklib.SECRET_RE`, pinned against the farm redactor by the shared
    `hooks/secret-detection-corpus.json`, which also matches a secret keyword as
    the trailing segment of a compound name (e.g. `FARM_API_KEY = "..."`).
-2. The plugin's own enforcement hooks: H-09b (crypto/TLS) and H-10b (secrets)
+3. The plugin's own enforcement hooks: H-09b (crypto/TLS) and H-10b (secrets)
    block any commit whose diff touches a crypto or secret line until a diff-bound
    security-gate pass marker covers those exact lines (`hooks/security-pass.py`).
 

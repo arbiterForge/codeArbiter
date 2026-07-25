@@ -57,6 +57,14 @@ def fixture_commands(fixtures_only):
     ]
     if not fixtures_only:
         commands.extend([
+            # Issue #370. ADR-0014/ADR-0016 make live proof of final governed-
+            # argument authority a promotion STOP, so this fixture only counts
+            # when a real Pi candidate is installed: it loads codeArbiter plus a
+            # deliberately later extension through the INSTALLED host's own
+            # loader, runner, and tool wrapper. It therefore belongs to the
+            # supported-version set, never to the host-free fixture set.
+            [npm, "--prefix", "plugins/ca-pi/tools", "test", "--", "--run",
+             "test/final-arguments-live.test.ts"],
             [python, ".github/scripts/test_pi_process_tree.py"],
             [python, ".github/scripts/test_pi_child_live.py"],
             [python, ".github/scripts/pi_benchmark.py", "--samples", "100"],
@@ -157,6 +165,33 @@ class PlatformContractFixtures(unittest.TestCase):
             "test_pi_benchmark.py",
         ):
             self.assertIn(required, rendered)
+
+    def test_supported_version_cells_prove_final_argument_authority_on_the_real_host(self):
+        # Issue #370. ADR-0014/ADR-0016 name live proof that codeArbiter sees and
+        # governs FINAL tool arguments a promotion STOP. A structural assertion
+        # against an in-memory host double cannot discharge it, so the authority
+        # fixture must run against the installed Pi candidate in every blocking
+        # supported-version platform cell - i.e. outside the fixtures-only set.
+        live = fixture_commands(fixtures_only=False)
+        rendered = "\n".join(" ".join(command) for command in live)
+        self.assertIn("test/final-arguments-live.test.ts", rendered)
+        fixtures = "\n".join(" ".join(command) for command in fixture_commands(fixtures_only=True))
+        self.assertNotIn("test/final-arguments-live.test.ts", fixtures)
+
+    def test_the_real_host_authority_fixture_owns_both_promotion_stop_proofs(self):
+        # The fixture must prove BOTH halves of the STOP: a later extension's
+        # argument rewrite is re-judged before the governed mutator executes, and
+        # a later extension cannot take ownership of that mutator.
+        fixture = (
+            ROOT / "plugins" / "ca-pi" / "tools" / "test" / "final-arguments-live.test.ts"
+        ).read_text(encoding="utf-8")
+        for required in (
+            "discoverAndLoadExtensions",
+            "ExtensionRunner",
+            "wrapRegisteredTool",
+            "emitToolCall",
+        ):
+            self.assertIn(required, fixture)
 
     def test_process_heavy_package_fixture_uses_a_fresh_vitest_process(self):
         commands = fixture_commands(fixtures_only=True)

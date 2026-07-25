@@ -17,6 +17,8 @@ import {
   createBackgroundJobManager,
   piShellLaunch,
 } from "../src/background-jobs.ts";
+import type { BackgroundJobRuntimeDependencies } from "../src/background-jobs.ts";
+import { openProcessTree } from "../src/process-tree.ts";
 import type { ManagedProcessTree, ProcessTreeCleanupReason } from "../src/process-tree.ts";
 
 const UNSAFE_OUTPUT_POINT = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u061c\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u206f\ufeff]/u;
@@ -60,6 +62,75 @@ function withoutUnboundedReflection<T>(operation: () => T): T {
     Object.keys = keys;
     Object.getOwnPropertyNames = names;
     Object.getOwnPropertyDescriptors = descriptors;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Issue #428 - live Windows spawn budgets.
+//
+// The live tests below drive a REAL Windows process tree: an inert Node
+// supervisor, a PowerShell Job Object holder that must Add-Type-compile the
+// constant C# helper, and only then Git Bash. Measured cost of that whole path
+// for "launches and disposes a real Git Bash background job":
+//
+//   dev box (Windows 11 Pro, idle, 6 runs): 367 / 401 / 409 / 418 / 428 / 429 ms
+//   windows-latest, GREEN run 30146789392:  4618 ms (Pi 0.80.5), 4842 ms (Pi 0.80.10)
+//   windows-latest, RED   (issue #428):     5007 / 5015 / 5015 ms
+//
+// The hosted runner therefore sat at 92-97% of Vitest's bare 5000 ms default on
+// the runs that PASSED: the pass and the flake were the same measurement either
+// side of an arbitrary round number, which is exactly the "reflex-rerun a red
+// Windows cell" failure mode #428 was filed about.
+//
+// The fix is not a bigger round number. Every wait below is condition-based -
+// it returns the instant the observable job state settles, so the dev box still
+// finishes in ~0.4 s - under two ceilings that exist only to bound a genuine
+// hang, and that are derived rather than picked:
+//
+//   * SETTLE_CEILING is the in-test ceiling. It reports the observed job state,
+//     so a hang the product does not bound sooner produces a diagnosis instead
+//     of Vitest's bare "Test timed out in Nms".
+//   * TEST_TIMEOUT is Vitest's ceiling, kept strictly above SETTLE_CEILING so
+//     it can only ever be the backstop.
+//
+// 45 s is ~9x the observed 4.842 s hosted p100, and deliberately ABOVE the
+// product's own 30 s WINDOWS_JOB_READY_CEILING_MS: the hang #428 actually
+// observed - Job Object holder admission - therefore still surfaces as the
+// product's precise "(stalled at <phase> after <n>ms): ready-timeout" refusal
+// rather than being masked by this ceiling. 45 s only catches a hang in a later
+// protocol window, where the product's own aggregate bound would otherwise let
+// the test sit for well over a minute.
+const WINDOWS_LIVE_SETTLE_CEILING_MS = 45_000;
+const WINDOWS_LIVE_TEST_TIMEOUT_MS = 60_000;
+// AC-2, first half: an injected delay strictly larger than the 5000 ms default
+// this suite's live test used to inherit, so the slowed-spawn proof fails on the
+// pre-#428 budget and passes on the derived one.
+const WINDOWS_LIVE_INJECTED_SLOWDOWN_MS = 5_200;
+
+/**
+ * Condition-based wait. Resolves the moment `condition` settles - a fast runner
+ * stays fast - and on a genuine hang rejects inside `ceilingMs` naming the
+ * observable state, so the failure is diagnosable instead of a bare timeout.
+ */
+async function awaitLiveCondition<T>(
+  condition: Promise<T>,
+  what: string,
+  diagnose: () => string,
+  ceilingMs: number = WINDOWS_LIVE_SETTLE_CEILING_MS,
+): Promise<T> {
+  const started = Date.now();
+  let timer: NodeJS.Timeout | undefined;
+  try {
+    return await Promise.race([
+      condition,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(
+          `${what} did not settle within ${ceilingMs}ms (waited ${Date.now() - started}ms); observed ${diagnose()}`,
+        )), ceilingMs);
+      }),
+    ]);
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
   }
 }
 
@@ -510,25 +581,87 @@ describe("session-local background job state", () => {
     expect(openTree).toHaveBeenCalledTimes(1);
   });
 
-  test.runIf(process.platform === "win32")("launches and disposes a real Git Bash background job", async () => {
+  async function runLiveGitBashJob(
+    openTree?: BackgroundJobRuntimeDependencies["openTree"],
+  ): Promise<void> {
     const shellPath = await realpath(resolve(process.env.ProgramFiles ?? "C:\\Program Files", "Git", "bin", "bash.exe"));
-    const runtime = createBackgroundJobRuntime({})!;
+    const runtime = createBackgroundJobRuntime(openTree === undefined ? {} : { openTree })!;
     const lease = Object.freeze({});
-    const job = await runtime.launch({
-      authorization: { lease, isCurrent: (candidate: unknown) => candidate === lease },
-      command: "printf live-runtime",
-      cwd: process.cwd(),
-      env: Object.entries(process.env),
-      label: "live runtime",
-      shellPath,
-    });
+    const job = await awaitLiveCondition(
+      runtime.launch({
+        authorization: { lease, isCurrent: (candidate: unknown) => candidate === lease },
+        command: "printf live-runtime",
+        cwd: process.cwd(),
+        env: Object.entries(process.env),
+        label: "live runtime",
+        shellPath,
+      }),
+      "the live Git Bash launch",
+      () => "no job handle - the contained launch never returned",
+    );
 
     expect(job).toBeDefined();
-    await runtime.settled(job!.id);
+    await awaitLiveCondition(
+      runtime.settled(job!.id),
+      `live Git Bash job ${job!.id}`,
+      () => `state=${runtime.getJob(job!.id)?.state ?? "unknown"} tail=${JSON.stringify(runtime.tail(job!.id))}`,
+    );
     expect(runtime.getJob(job!.id)).toMatchObject({ state: "completed" });
     expect(runtime.tail(job!.id)).toBe("live-runtime");
+    expect(await awaitLiveCondition(runtime.dispose(), "live runtime disposal", () => `activeJobIds=${JSON.stringify(runtime.activeJobIds())}`)).toBe(true);
+  }
+
+  test.runIf(process.platform === "win32")("launches and disposes a real Git Bash background job", async () => {
+    await runLiveGitBashJob();
+  }, WINDOWS_LIVE_TEST_TIMEOUT_MS);
+
+  // AC-2 of #428, first half: a deliberately slowed real spawn is still admitted.
+  // The injected delay alone exceeds the 5000 ms Vitest default this suite used to
+  // inherit, so this proof is red on the pre-#428 budget and green on the derived one.
+  test.runIf(process.platform === "win32")("admits a real Git Bash launch deliberately slowed past the historical bare budget", async () => {
+    const started = Date.now();
+    await runLiveGitBashJob(async (command, args, options) => {
+      await new Promise<void>((wake) => setTimeout(wake, WINDOWS_LIVE_INJECTED_SLOWDOWN_MS));
+      return await openProcessTree(command, args, options);
+    });
+    expect(Date.now() - started).toBeGreaterThan(WINDOWS_LIVE_INJECTED_SLOWDOWN_MS);
+  }, WINDOWS_LIVE_TEST_TIMEOUT_MS);
+
+  // AC-2 of #428, second half: a genuinely hung wait still fails inside a bounded
+  // window and names the observable state, instead of a bare "Test timed out".
+  test("a hung live wait fails inside its ceiling naming the observable job state", async () => {
+    const child = Object.assign(new EventEmitter(), {
+      pid: 5353, stdin: new PassThrough(), stdout: new PassThrough(), stderr: new PassThrough(),
+    });
+    const runtime = createBackgroundJobRuntime({ openTree: async () => ({ child: child as never, cleanup: {
+      ready: async () => true,
+      terminate: async (reason: ProcessTreeCleanupReason) => ({ reason, state: "terminated" as const, escalated: false, verified: true }),
+    } }) })!;
+    const lease = Object.freeze({});
+    const job = await runtime.launch({
+      authorization: { lease, isCurrent: () => true }, command: "never closes", cwd: process.cwd(),
+      env: [], label: "hung", shellPath: process.execPath,
+    });
+    expect(job?.state).toBe("active");
+
+    const started = Date.now();
+    await expect(awaitLiveCondition(
+      runtime.settled(job!.id),
+      `live Git Bash job ${job!.id}`,
+      () => `state=${runtime.getJob(job!.id)?.state ?? "unknown"} tail=${JSON.stringify(runtime.tail(job!.id))}`,
+      250,
+    )).rejects.toThrow(/live Git Bash job 1 did not settle within 250ms \(waited \d+ms\); observed state=active tail="{2}/u);
+    // Bounds, not budgets - deliberately loose on both sides, because a flake fix
+    // must not ship a new timing flake. The lower bound only proves the ceiling
+    // was waited on at all (Node timers may fire a hair early); the upper bound
+    // gives a pure event-loop timer 8x its 250 ms ceiling, and the explicit test
+    // timeout below is 4x that again so a starved runner still gets an assertion
+    // it can read rather than a bare "Test timed out".
+    const elapsed = Date.now() - started;
+    expect(elapsed).toBeGreaterThanOrEqual(200);
+    expect(elapsed).toBeLessThan(2_000);
     expect(await runtime.dispose()).toBe(true);
-  });
+  }, 8_000);
 
   test.each([
     ["cancel", "cancelled", "cancelled"], ["session-switch", "session_switch", "cancelled"],

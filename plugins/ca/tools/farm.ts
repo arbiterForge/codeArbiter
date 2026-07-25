@@ -66,21 +66,49 @@ export type Task = {
   context?: string;
   maxRetries?: number;
   // Optional per-worktree setup commands (#92). Shell commands run IN the task
-  // worktree before the worker, on every attempt (so they survive the
-  // inter-attempt reset that wipes untracked deps). The common case is repo-wide
-  // dependency install (`npm ci`, `pip install -r requirements.txt`); set
-  // plan.meta.setup and it propagates here at dispatch. A per-task value
-  // overrides the meta default. Setup artifacts MUST be gitignored or they trip
-  // drift detection. A failing setup command escalates the task immediately.
+  // worktree before the worker. The common case is repo-wide dependency install
+  // (`npm ci`, `pip install -r requirements.txt`); set plan.meta.setup and it
+  // propagates here at dispatch. A per-task value overrides the meta default.
+  // Setup artifacts MUST be gitignored or they trip drift detection. A failing
+  // setup command escalates the task immediately.
+  //
+  // #391: this phase runs ONCE per worktree, not once per attempt. The
+  // inter-attempt reset is `git reset --hard` + `git clean -fd` (no `-x`), which
+  // deliberately PRESERVES ignored paths — so the very dependency tree the
+  // setup contract requires to be gitignored survives the reset, and
+  // reinstalling it was pure waste (up to 3x the install on the default retry
+  // budget). Commands that genuinely must rerun after a reset go in
+  // `setupEachAttempt`.
   setup?: string[];
+  // Optional per-attempt preparation (#391). Runs in the worktree before EVERY
+  // worker attempt, after `setup`. This is the escape hatch for commands that
+  // rebuild ignored outputs from tracked source (codegen, a build step) and can
+  // therefore go stale once a reset rolls the tracked files back. A failing
+  // command escalates the task exactly like `setup`.
+  setupEachAttempt?: string[];
+  // Optional declared inputs of `setup` (#391) — relative paths (e.g.
+  // "package-lock.json"). Their content hashes join the setup fingerprint, so
+  // the once-per-worktree cache INVALIDATES when the baseline moves under the
+  // worktree. That is a real case, not a hypothetical: regenerate-on-conflict
+  // resets the task worktree onto a NEW integration HEAD, which can carry a
+  // different lockfile.
+  setupInputs?: string[];
   // Optional per-task model override (AC-02). The effective model for a task is
   // `task.model ?? <run-level resolved model>`, layered where runTask invokes
   // the worker; absent → identical current behavior. Model id only — no second
   // provider or per-task apiBaseUrl.
   model?: string;
 };
-type Plan = {
-  meta: { name: string; repo?: string; model?: string; apiBaseUrl?: string; setup?: string[] };
+export type Plan = {
+  meta: {
+    name: string;
+    repo?: string;
+    model?: string;
+    apiBaseUrl?: string;
+    setup?: string[];
+    setupEachAttempt?: string[];
+    setupInputs?: string[];
+  };
   tasks: Task[];
 };
 
@@ -946,9 +974,63 @@ async function fileHash(p: string): Promise<string | null> {
   }
 }
 
+// NOTE (#391): `clean -fd` — deliberately NOT `-fdx`. Ignored paths are
+// PRESERVED, which is what makes a gitignored dependency tree survive the
+// inter-attempt reset (and is why `setup` is once-per-worktree, not
+// once-per-attempt). Tracked changes and non-ignored untracked worker output are
+// still wiped, so nothing stale carries into the next attempt.
 async function resetWorktree(wt: string) {
   await git(["reset", "--hard", "HEAD"], wt);
   await git(["clean", "-fd"], wt);
+}
+
+// --------------------------------------------------------------------------
+// setup phases (#92 / #391)
+// --------------------------------------------------------------------------
+// Two distinct phases, because one `setup` list could not tell a one-time
+// dependency install from a per-attempt rebuild:
+//
+//   setup            — once per worktree. Its output is required to be
+//                      gitignored, and `git clean -fd` preserves ignored paths,
+//                      so it survives every reset. Re-running it was paying the
+//                      full install up to 3x (default budget) for nothing.
+//   setupEachAttempt — before every attempt, for commands that rebuild ignored
+//                      output from tracked source and DO go stale on reset.
+//
+// The `setup` cache is a fingerprint, scoped to exactly one worktree by living
+// in a caller-owned SetupState (no module-level map, so nothing can leak across
+// tasks or runs). It covers the setup commands plus the content hashes of the
+// task's declared `setupInputs`, so a baseline that moves under the worktree —
+// regenerate-on-conflict resets onto a NEW integration HEAD — reinstalls.
+export type SetupState = { key: string | null };
+
+async function setupFingerprint(wt: string, t: Task, deps: RunTaskDeps): Promise<string> {
+  const parts = [JSON.stringify(t.setup ?? [])];
+  for (const rel of t.setupInputs ?? [])
+    parts.push(`${rel}=${(await deps.fileHash(path.resolve(wt, rel))) ?? "absent"}`);
+  return createHash("sha256").update(parts.join(" ")).digest("hex");
+}
+
+/** Runs both setup phases for one attempt. Returns a redacted note on failure, null on success. */
+async function runSetupPhases(
+  wt: string,
+  t: Task,
+  deps: RunTaskDeps,
+  state: SetupState,
+): Promise<string | null> {
+  if (t.setup && t.setup.length > 0) {
+    const key = await setupFingerprint(wt, t, deps);
+    if (key !== state.key) {
+      const r = await deps.runGate(wt, t.setup);
+      if (!r.ok) return redactSecrets(`setup failed: ${r.failed}\n${r.tail}`);
+      state.key = key;
+    }
+  }
+  if (t.setupEachAttempt && t.setupEachAttempt.length > 0) {
+    const r = await deps.runGate(wt, t.setupEachAttempt);
+    if (!r.ok) return redactSecrets(`setup failed (setupEachAttempt): ${r.failed}\n${r.tail}`);
+  }
+  return null;
 }
 
 // --------------------------------------------------------------------------
@@ -1298,10 +1380,10 @@ async function bestOfN(
       try {
         const prep = await deps.prepareWorktree(branch, wt, taskBranch);
         if (prep) return { ...base, note: prep };
-        if (t.setup && t.setup.length > 0) {
-          const sr = await deps.runGate(wt, t.setup);
-          if (!sr.ok) return { ...base, note: redactSecrets(`setup failed: ${sr.failed}\n${sr.tail}`) };
-        }
+        // Each sample gets a FRESH worktree, so its setup cache starts empty and
+        // dies with the sample — a sample never reuses another worktree's install.
+        const setupNote = await runSetupPhases(wt, t, deps, { key: null });
+        if (setupNote) return { ...base, note: setupNote };
         const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
         const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
         const pt = w.promptTokens ?? 0;
@@ -1394,6 +1476,10 @@ export async function runTask(
   let completionTokens = 0;
   let lastWarning: string | undefined;
   let mutationScore: number | null = null;
+  // #391: the setup cache for THIS worktree only — created here, dropped when
+  // the task ends, so a fresh worktree can never inherit a stale "already
+  // installed" verdict from another task.
+  const setupState: SetupState = { key: null };
 
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) {
@@ -1410,17 +1496,16 @@ export async function runTask(
       await deps.resetWorktree(wt); // never accumulate stale files
     }
 
-    // Per-worktree setup (#92): run dependency-setup commands in the worktree
-    // before the worker. Runs every attempt because the reset above wipes
-    // untracked deps (node_modules etc.); on the happy path (attempt 1 passes)
-    // it runs once. Executed through the same gate machinery (shell + exit
-    // code, redacted tail). A setup failure is environmental, not the worker's
-    // fault, so it escalates immediately rather than burning a worker retry.
-    if (t.setup && t.setup.length > 0) {
-      const setupResult = await deps.runGate(wt, t.setup);
-      if (!setupResult.ok)
-        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: redactSecrets(`setup failed: ${setupResult.failed}\n${setupResult.tail}`), promptTokens, completionTokens };
-    }
+    // Setup (#92/#391): `setup` runs ONCE per worktree — the reset above is
+    // `clean -fd`, which preserves the ignored dependency tree setup is
+    // contractually required to produce — and re-runs only if its fingerprint
+    // (commands + declared setupInputs) changed. `setupEachAttempt` runs every
+    // attempt. Both go through the same gate machinery (shell + exit code,
+    // redacted tail). A setup failure is environmental, not the worker's fault,
+    // so it escalates immediately rather than burning a worker retry.
+    const setupNote = await runSetupPhases(wt, t, deps, setupState);
+    if (setupNote)
+      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens };
 
     // Enrichment (AC-03/AC-04): read the per-attempt worktree state — AFTER any
     // reset above — so the test source and existing in-scope file contents
@@ -1674,6 +1759,145 @@ export function assertSecureBaseUrl(url: string) {
   throw new Error("apiBaseUrl must use HTTPS (HTTP is allowed only for bare loopback hosts)");
 }
 
+// --------------------------------------------------------------------------
+// runtime plan contract (#412) — the EXECUTED schema
+// --------------------------------------------------------------------------
+// `main()` reads plan.json off disk, so the plan is untrusted input: it may be
+// hand-edited, half-written, or emitted by a drifted generator. It used to be
+// cast (`JSON.parse(...) as Plan`) and handed straight to validate(), which
+// dereferences `plan.meta` and iterates `plan.tasks` — so `null` and `{}` came
+// out as raw TypeErrors, and a numeric `id`/`description` sailed past checks
+// that assume strings.
+//
+// AUTHORITY. PLAN_SHAPE below (enforced by parsePlan) is the AUTHORITATIVE,
+// executed contract: nothing reaches validate(), resolveConfig(), a worktree, a
+// branch, a report, or the network until a plan satisfies it exactly.
+// `plan.schema.json` is the AUTHORING contract — what writing-plans validates
+// its output against before handing off — and is never consulted at runtime.
+// The two are kept key-for-key and type-for-type identical by the parity test in
+// plan-contract.test.ts; adding a field to one side without the other fails CI.
+// One divergence is deliberate and ratified there: the schema's kebab-case `id`
+// pattern is an authoring rule, while the runtime path-traversal rule is
+// SAFE_TASK_ID in validate() (see the note above it).
+//
+// Messages are bounded and field-specific: they name the JSON path (by task
+// INDEX — the id is not yet trustworthy) and the offending value's TYPE, and
+// never echo plan content back, which could be long or secret-bearing.
+export type PlanFieldType = "string" | "integer" | "string[]" | "task[]" | "meta" | "test" | "gate";
+type PlanObjectSpec = { required: readonly string[]; props: Readonly<Record<string, PlanFieldType>> };
+
+export const PLAN_SHAPE = {
+  plan: {
+    required: ["meta", "tasks"],
+    props: { meta: "meta", tasks: "task[]" },
+  },
+  meta: {
+    required: ["name"],
+    props: {
+      name: "string",
+      repo: "string",
+      model: "string",
+      apiBaseUrl: "string",
+      setup: "string[]",
+      setupEachAttempt: "string[]",
+      setupInputs: "string[]",
+    },
+  },
+  task: {
+    required: ["id", "description", "filesInScope", "test", "gate"],
+    props: {
+      id: "string",
+      description: "string",
+      deps: "string[]",
+      filesInScope: "string[]",
+      test: "test",
+      gate: "gate",
+      context: "string",
+      model: "string",
+      maxRetries: "integer",
+      setup: "string[]",
+      setupEachAttempt: "string[]",
+      setupInputs: "string[]",
+    },
+  },
+  test: { required: ["path"], props: { path: "string" } },
+  gate: { required: ["commands"], props: { commands: "string[]" } },
+} as const satisfies Record<string, PlanObjectSpec>;
+
+type PlanSpecName = keyof typeof PLAN_SHAPE;
+
+// Arrays the schema declares `minItems: 1`, keyed "<spec>.<prop>".
+const PLAN_NON_EMPTY: ReadonlySet<string> = new Set(["plan.tasks", "task.filesInScope", "gate.commands"]);
+// Integer fields and their schema `minimum`.
+const PLAN_INT_MIN: Readonly<Record<string, number>> = { "task.maxRetries": 0 };
+
+const PLAN_LABEL_MAX = 40;
+const clipLabel = (s: string) => (s.length <= PLAN_LABEL_MAX ? s : `${s.slice(0, PLAN_LABEL_MAX)}…`);
+const jsonTypeName = (v: unknown) => (v === null ? "null" : Array.isArray(v) ? "array" : typeof v);
+const isJsonObject = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null && !Array.isArray(v);
+
+function checkPlanField(v: unknown, type: PlanFieldType, at: string, key: string): void {
+  switch (type) {
+    case "string":
+      if (typeof v !== "string") throw new Error(`${at} must be a string (got ${jsonTypeName(v)})`);
+      return;
+    case "integer": {
+      const min = PLAN_INT_MIN[key] ?? 0;
+      if (typeof v !== "number" || !Number.isInteger(v))
+        throw new Error(`${at} must be an integer >= ${min} (got ${jsonTypeName(v)})`);
+      if (v < min) throw new Error(`${at} must be an integer >= ${min}`);
+      return;
+    }
+    case "string[]": {
+      if (!Array.isArray(v)) throw new Error(`${at} must be an array of strings (got ${jsonTypeName(v)})`);
+      if (PLAN_NON_EMPTY.has(key) && v.length === 0)
+        throw new Error(`${at} must list at least one entry`);
+      for (const [i, entry] of v.entries())
+        if (typeof entry !== "string")
+          throw new Error(`${at}[${i}] must be a string (got ${jsonTypeName(entry)})`);
+      return;
+    }
+    case "task[]": {
+      if (!Array.isArray(v)) throw new Error(`${at} must be an array of task objects (got ${jsonTypeName(v)})`);
+      if (PLAN_NON_EMPTY.has(key) && v.length === 0)
+        throw new Error(`${at} must list at least one task`);
+      for (const [i, entry] of v.entries()) checkPlanObject(entry, "task", `${at}[${i}]`);
+      return;
+    }
+    default:
+      // nested closed object — "meta" | "test" | "gate"
+      checkPlanObject(v, type, at);
+  }
+}
+
+function checkPlanObject(value: unknown, spec: PlanSpecName, at: string): void {
+  if (!isJsonObject(value)) throw new Error(`${at} must be a JSON object (got ${jsonTypeName(value)})`);
+  const { required, props } = PLAN_SHAPE[spec];
+  const declared = props as Readonly<Record<string, PlanFieldType>>;
+  // Closed object: an unknown property is a contract breach, not a courtesy —
+  // it is how a drifted generator or a typo'd hand edit silently loses a field.
+  for (const key of Object.keys(value))
+    if (!Object.hasOwn(declared, key)) throw new Error(`${at}: unknown property "${clipLabel(key)}"`);
+  for (const key of required)
+    if (value[key] === undefined) throw new Error(`${at}.${key} is required`);
+  for (const [key, type] of Object.entries(declared)) {
+    const v = value[key];
+    if (v === undefined) continue;
+    checkPlanField(v, type, `${at}.${key}`, `${spec}.${key}`);
+  }
+}
+
+/**
+ * The runtime boundary (#412). Validates parsed-but-untrusted JSON against
+ * PLAN_SHAPE and returns it typed. Throws a bounded, field-specific Error on the
+ * FIRST violation. Call this before touching any field of a plan.
+ */
+export function parsePlan(raw: unknown): Plan {
+  checkPlanObject(raw, "plan", "plan");
+  return raw as Plan;
+}
+
 export function validate(plan: Plan) {
   // meta-level schema checks — require HTTPS except for loopback (test mocks)
   if (plan.meta.apiBaseUrl) assertSecureBaseUrl(plan.meta.apiBaseUrl);
@@ -1687,7 +1911,20 @@ export function validate(plan: Plan) {
       if (cmd.length > 1024) throw new Error(`${label}: setup command exceeds 1024 chars`);
     }
   };
+  // #391: `setupInputs` are relative paths resolved against the worktree and
+  // read (hashed) by the setup fingerprint, so they get the same relative-path
+  // rule as test.path / filesInScope.
+  const checkSetupInputs = (label: string, inputs: string[]) => {
+    for (const rel of inputs) {
+      if (!rel || typeof rel !== "string")
+        throw new Error(`${label}: setupInputs entries must be non-empty strings`);
+      if (rel.includes("..") || path.isAbsolute(rel))
+        throw new Error(`${label}: setupInputs entry "${rel}" must be a relative path with no ".." segments`);
+    }
+  };
   if (plan.meta.setup) checkSetup("plan.meta.setup", plan.meta.setup);
+  if (plan.meta.setupEachAttempt) checkSetup("plan.meta.setupEachAttempt", plan.meta.setupEachAttempt);
+  if (plan.meta.setupInputs) checkSetupInputs("plan.meta", plan.meta.setupInputs);
 
   const ids = new Set<string>();
   for (const t of plan.tasks) {
@@ -1733,6 +1970,8 @@ export function validate(plan: Plan) {
         throw new Error(`task ${t.id}: gate command exceeds 1024 chars`);
     }
     if (t.setup) checkSetup(`task ${t.id} setup`, t.setup);
+    if (t.setupEachAttempt) checkSetup(`task ${t.id} setupEachAttempt`, t.setupEachAttempt);
+    if (t.setupInputs) checkSetupInputs(`task ${t.id}`, t.setupInputs);
   }
   for (const t of plan.tasks)
     for (const d of t.deps ?? [])
@@ -1931,14 +2170,31 @@ async function main() {
   const args = process.argv.slice(2);
   const canary = args.includes("--canary");
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
-  const plan = JSON.parse(await readFile(planPath, "utf8")) as Plan;
-  validate(plan);
+  // #412: plan.json is untrusted input. parsePlan enforces the runtime contract
+  // (PLAN_SHAPE) on the parsed JSON BEFORE any field is dereferenced, and
+  // everything below — validate, resolveConfig, worktrees, branches, reports,
+  // the network — is downstream of it. A malformed plan exits here, with a
+  // bounded field-specific message instead of a raw TypeError and a stack, and
+  // with no side effect of any kind performed.
+  let plan: Plan;
+  try {
+    plan = parsePlan(JSON.parse(await readFile(planPath, "utf8")));
+    validate(plan);
+  } catch (e) {
+    console.error(`Error: invalid plan ${planPath}: ${msgOf(e).slice(0, 300)}`);
+    return process.exit(1);
+  }
 
-  // #92: propagate the repo-wide meta.setup to every task that did not declare
-  // its own (task.setup wins; meta.setup fills the gap). Done once at dispatch,
-  // before main and canary, so runTask only ever reads the effective t.setup.
-  if (plan.meta.setup)
-    for (const t of plan.tasks) if (t.setup === undefined) t.setup = plan.meta.setup;
+  // #92: propagate the repo-wide meta setup fields to every task that did not
+  // declare its own (the task value wins; meta fills the gap). Done once at
+  // dispatch, before main and canary, so runTask only ever reads the effective
+  // task-level values.
+  for (const t of plan.tasks) {
+    if (plan.meta.setup && t.setup === undefined) t.setup = plan.meta.setup;
+    if (plan.meta.setupEachAttempt && t.setupEachAttempt === undefined)
+      t.setupEachAttempt = plan.meta.setupEachAttempt;
+    if (plan.meta.setupInputs && t.setupInputs === undefined) t.setupInputs = plan.meta.setupInputs;
+  }
 
   if (canary) return runCanary(plan);
 

@@ -38,5 +38,13 @@ conforming to `<plugin-root>/tools/plan.schema.json`:
 Validate the JSON against the schema before writing (load the schema from
 `<plugin-root>/tools/plan.schema.json` and check). A schema-invalid plan BLOCKS.
 
+`plan.schema.json` is the **authoring** contract. The dispatcher enforces its own **runtime** contract
+(`PLAN_SHAPE` / `parsePlan()` in `farm.ts`) on the parsed JSON before it touches a single field, and
+that one is authoritative: a plan that fails it exits before any worktree, branch, report, or network
+call. The two are kept identical key-for-key and type-for-type by a parity test, so a plan that
+satisfies the schema is accepted at runtime — with one deliberate exception, the kebab-case `id`
+pattern, which is stricter here than the runtime path-safety rule. Both objects are closed: an
+undeclared property is an error, not an ignored extra.
+
 Gate: all failing tests written and confirmed failing; `plan.json` written and schema-valid. Both
 artifacts exist before handing off to `subagent-driven-development`.

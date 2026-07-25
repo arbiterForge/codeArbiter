@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.9] - 2026-07-25
+## [0.1.12] - 2026-07-25
 
 ### Changed
 
@@ -21,6 +21,55 @@ All notable changes to `ca-pi` are documented in this file.
   modules with an acyclic import graph, so a change to one no longer forces
   review and re-verification of the other two. No behaviour changed: every moved
   line is byte-identical and every pre-existing suite passes unmodified.
+
+## [0.1.11] - 2026-07-25
+
+### Added
+
+- The final-argument authority promotion STOP named by ADR-0014/ADR-0016 is
+  now proven against the INSTALLED Pi candidate rather than an in-memory host
+  double. A new live fixture loads codeArbiter plus a deliberately later
+  trusted extension through Pi's own loader, runner, and tool wrapper, and
+  proves the later extension's argument rewrite is re-judged and blocked
+  before the governed mutator runs, that it cannot take ownership of that
+  mutator, and that real ownership drift fails closed. It runs in every
+  blocking supported-version platform cell.
+
+## [0.1.10] - 2026-07-25
+
+### Changed
+
+- The farm plan handoff docs shipped with this host now describe the runtime
+  plan contract (`parsePlan`, authoritative over `plan.schema.json`) and the
+  split setup phases: `setup` runs once per worktree, `setupEachAttempt` reruns
+  per attempt, and `setupInputs` invalidates the once-per-worktree cache.
+
+## [0.1.9] - 2026-07-25
+
+### Fixed
+
+- The three live-Pi spawns in the package contract test now carry an explicit
+  budget. Each `execFileSync`s a real Node process that imports the installed Pi
+  host, and each inherited Vitest's bare 5000 ms default against cold hosted
+  Windows process creation - the same flat-wall-clock defect as the Job Object
+  admission window, in a file that fix did not reach. Measured 5497 ms and
+  failing on `windows-latest`. Test-only.
+
+## [0.1.8] - 2026-07-25
+
+### Fixed
+
+- Windows Job Object admission is no longer bounded by one flat 15-second
+  wall-clock window. Cold admission pays two independent costs - starting the
+  PowerShell host, then the one-time Add-Type compilation of the constant C#
+  helper - and covering both with a single window made a loaded hosted runner
+  indistinguishable from a hung helper, refusing containment twice in one day
+  on `windows-latest`. The budget is now a no-progress budget per observable
+  phase (the helper announces its host start before the compile) plus a hard
+  30-second ceiling, so a slow-but-advancing helper is admitted while a silent
+  one still fails closed. The refusal now names the phase it stalled in and
+  how long it waited, while keeping its machine-readable `ready-timeout`
+  reason token intact.
 
 ## [0.1.7] - 2026-07-25
 

@@ -137,7 +137,7 @@ up-tree module resolution often papers over this for JS because the worktree liv
 root; languages without up-tree resolution get nothing.)
 
 Set **`meta.setup`** in `plan.json` — a list of shell commands the dispatcher runs **in each worktree
-before the worker**, on every attempt:
+before the worker**, **once per worktree**:
 
 ```json
 { "meta": { "name": "my-sprint", "setup": ["npm ci"] }, "tasks": [ … ] }
@@ -148,9 +148,35 @@ before the worker**, on every attempt:
   escalates the task immediately** (it is environmental, not a worker failure) — the worker is not invoked.
 - **Setup-produced files must be gitignored.** Anything setup writes that is *not* ignored and *not* in
   the task's `filesInScope` is correctly flagged as drift and escalates.
-- Cost: setup re-runs each retry (the inter-attempt reset wipes untracked deps), but most tasks pass on
-  attempt 1, so it runs once. For JS, leaving `setup` unset and relying on root `node_modules` up-tree
-  resolution is the cheaper path when it works; `setup` is the portable, explicit alternative.
+- Cost: **`setup` runs once per worktree, not once per retry.** The inter-attempt reset is
+  `git reset --hard` + `git clean -fd` (no `-x`), which *preserves* ignored paths — so the gitignored
+  dependency tree the contract above requires survives the reset and does not need reinstalling. For
+  JS, leaving `setup` unset and relying on root `node_modules` up-tree resolution is the cheaper path
+  when it works; `setup` is the portable, explicit alternative.
+
+### When setup output *does* go stale — `setupEachAttempt`
+
+`setup` is for one-time dependency restore. Commands that regenerate ignored output **from tracked
+source** (codegen, a build step) genuinely do go stale when the reset rolls the tracked files back.
+Declare those separately — they rerun before every attempt, after `setup`:
+
+```json
+{ "meta": { "name": "my-sprint", "setup": ["npm ci"], "setupEachAttempt": ["npm run codegen"] } }
+```
+
+`task.setupEachAttempt` overrides `meta.setupEachAttempt` the same way. A non-zero command escalates
+the task identically.
+
+### Invalidating the once-per-worktree cache — `setupInputs`
+
+The cache is a fingerprint of the `setup` commands plus the content hashes of any paths listed in
+**`setupInputs`** (relative, no `..`), scoped to exactly one worktree. List your lockfile there when
+a moved baseline must force a reinstall — regenerate-on-conflict resets a task worktree onto a *new*
+integration HEAD, which can carry a different lockfile:
+
+```json
+{ "meta": { "name": "my-sprint", "setup": ["npm ci"], "setupInputs": ["package-lock.json"] } }
+```
 
 ## Sovereignty note
 
