@@ -10,8 +10,8 @@ Every intent routes through a gated skill or reviewer agent. Nothing commits unt
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
 <img alt="version 2.9.1" src="https://img.shields.io/badge/version-2.9.1-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-39-555">
-<img alt="skills" src="https://img.shields.io/badge/skills-22-555">
+<img alt="commands" src="https://img.shields.io/badge/commands-40-555">
+<img alt="skills" src="https://img.shields.io/badge/skills-23-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-28-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
@@ -326,7 +326,7 @@ The generated counts are `ca: 39`, `ca-codex: 37`, and `ca-pi: 38`. Codex omits 
 | <kbd>/ca:metrics</kbd> | Read-only trend glance: override rate, small-lane rate, and sprint low-confidence ratio, each with a direction arrow vs. the prior 20-commit window. |
 
 <details>
-<summary><b>The full catalog</b>: 39 commands</summary>
+<summary><b>The full catalog</b>: 40 commands</summary>
 
 <br>
 
@@ -379,6 +379,7 @@ The generated counts are `ca: 39`, `ca-codex: 37`, and `ca-pi: 38`. Codex omits 
 | `/ca:preview` | Zero-onboarding read-only dry-run of the reviewer fleet on the current diff: predicts reviewers, runs the state-free secret scan, writes nothing |
 | `/ca:context-check` | Optional manual drift audit: report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer; not the daily loop, `commit-gate` auto-heal owns routine maintenance |
 | `/ca:standup` | Daily hygiene: review repo state, then ff-only pull / prune merged branches / remove stale worktrees / surface stashes, each under per-action confirmation |
+| `/ca:cleanup` | Finish an already-merged branch: prove ancestry of the fetched default, classify leftover artifacts, `--ff-only` to the default branch, delete the merged local branch, every discard confirmed per item |
 | `/ca:new-skill "gap"` | Author a new skill after the gap is proven uncovered |
 | `/ca:btw "question"` | Lightweight Q&amp;A; no state change |
 | `/ca:override "reason"` | Sanctioned, logged single-identity gate bypass |
@@ -531,7 +532,7 @@ plugins/ca/                         the governance plugin (CLAUDE_PLUGIN_ROOT)
 ├── ORCHESTRATOR.md                 always-on persona, injected by the SessionStart hook
 ├── COMMANDS.md                     command catalog (+ user-facing glossary)
 ├── SPRINT.md                       /ca:sprint mode body — the autonomous-sprint procedure
-├── commands/   (39)   skills/   (22)   agents/   (28)
+├── commands/   (40)   skills/   (23)   agents/   (28)
 ├── includes/                       routing-table · reference-map · redirect · farm setup (loaded on demand)
 ├── hooks/                          session-start (activation linchpin) · pre/post gates · statusline → docs/hooks.md
 └── tools/                          farm dispatcher (farm.js + TypeScript source and tests)

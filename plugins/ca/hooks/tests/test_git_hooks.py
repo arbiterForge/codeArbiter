@@ -31,6 +31,7 @@ ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 
 sys.path.insert(0, HOOKS)
 import _githooks  # noqa: E402
+import _hooklib  # noqa: E402
 
 
 def _load_git_enforce():
@@ -950,6 +951,102 @@ class TestPrePushEnforce(_GitFixture):
         res = self.enforce("pre-push", stdin=line)
         self.assertEqual(res.returncode, 1, res.stderr)
         self.assertIn("H-02", res.stderr)
+
+
+class TestDropInEntryIsNeverPinnedToAnEphemeralRoot(_GitFixture):
+    """Issue #441 — the same bug class as #438's statusline pin, one layer down
+    and considerably worse.
+
+    A linked worktree SHARES `$GIT_COMMON_DIR/codearbiter-hooksd/` with the main
+    repository (TestDropInSharedDir proves that, and it is the whole point of
+    ADR-0014's shared drop-in). So a session started inside a worktree writes
+    the MAIN repository's `<plugin>.path` entry — and if the plugin was loaded
+    out of that worktree, the entry names a directory that disappears the moment
+    the worktree is pruned. Worktrees exist to be pruned.
+
+    The statusline breaking is visible and cosmetic. This is silent gate loss:
+    H-01 (no direct commit to main), H-03 (no wildcard staging), H-05
+    (append-only audit logs), H-09b/H-10b (crypto and secrets), H-11 (ADR
+    authoring) and H-19 (marker forging) all run through the enforcer named by
+    that entry. A repo that loses it does not announce anything; it just stops
+    being governed while continuing to look governed.
+
+    The rule, matching #438: refuse to PIN an ephemeral path, and leave whatever
+    durable entry is already there alone. A stale-but-durable enforcer still
+    enforces; an absent one does not."""
+
+    def _entry(self, plugin="ca"):
+        dropin = _githooks._dropin_dir(self.root)
+        return _githooks._read(_githooks._path_entry_file(dropin, plugin))
+
+    def test_an_ephemeral_enforcer_path_is_refused(self):
+        dropin = _githooks._dropin_dir(self.root)
+        worktree_enforcer = os.path.join(
+            self.root, ".claude", "worktrees", "wf_58ee3fa6", "plugins", "ca",
+            "hooks", "git-enforce.py")
+        self.assertFalse(
+            _githooks._write_path_entry(dropin, "ca", worktree_enforcer),
+            "a worktree-rooted enforcer must not be pinned into the shared drop-in")
+        self.assertIsNone(self._entry(), "no entry should have been created")
+
+    def test_an_existing_durable_entry_survives_an_ephemeral_session(self):
+        # The decisive case. The main repo is already correctly wired; a
+        # subagent then starts a session from a worktree. The good entry must
+        # still be there afterwards.
+        dropin = _githooks._dropin_dir(self.root)
+        durable = os.path.join(self._tmp.name, "plugin-cache", "ca", "2.9.1",
+                               "hooks", "git-enforce.py")
+        self.assertTrue(_githooks._write_path_entry(dropin, "ca", durable))
+        before = self._entry()
+
+        worktree_enforcer = os.path.join(
+            os.path.dirname(self.root), "codeArbiter-worktrees", "feat-x",
+            "plugins", "ca", "hooks", "git-enforce.py")
+        self.assertFalse(_githooks._write_path_entry(dropin, "ca", worktree_enforcer))
+        self.assertEqual(self._entry(), before,
+                         "an ephemeral session overwrote the main repo's durable entry")
+
+    def test_a_stale_but_durable_entry_is_still_refreshed(self):
+        # The guard must not become a kill-switch. This mirrors #438's
+        # test_durable_root_repairs_a_worktree_pin_left_by_the_bug: an ordinary
+        # version bump moves the enforcer, and that refresh must still happen.
+        dropin = _githooks._dropin_dir(self.root)
+        old = os.path.join(self._tmp.name, "cache", "ca", "2.8.13", "hooks", "git-enforce.py")
+        new = os.path.join(self._tmp.name, "cache", "ca", "2.9.1", "hooks", "git-enforce.py")
+        self.assertTrue(_githooks._write_path_entry(dropin, "ca", old))
+        self.assertTrue(_githooks._write_path_entry(dropin, "ca", new))
+        self.assertEqual(self._entry(), _githooks._shell_path(new) + "\n")
+
+    def test_a_worktree_pin_left_by_the_bug_is_repaired_from_a_durable_session(self):
+        # Machines already carry the damage. A later durable session must
+        # overwrite the doomed path rather than treat it as sacred.
+        dropin = _githooks._dropin_dir(self.root)
+        doomed = os.path.join(self.root, ".claude", "worktrees", "gone",
+                              "plugins", "ca", "hooks", "git-enforce.py")
+        os.makedirs(dropin, exist_ok=True)
+        _hooklib.write_text_atomic(
+            _githooks._path_entry_file(dropin, "ca"),
+            _githooks._shell_path(doomed) + "\n", newline="\n")
+
+        durable = os.path.join(self._tmp.name, "cache", "ca", "2.9.1", "hooks", "git-enforce.py")
+        self.assertTrue(_githooks._write_path_entry(dropin, "ca", durable))
+        self.assertEqual(self._entry(), _githooks._shell_path(durable) + "\n")
+
+    def test_install_from_a_worktree_leaves_the_shared_entry_untouched(self):
+        # End to end, through install() rather than the private writer: the
+        # path that actually runs on every SessionStart.
+        dropin = _githooks._dropin_dir(self.root)
+        durable = os.path.join(self._tmp.name, "cache", "ca", "2.9.1", "hooks", "git-enforce.py")
+        self.assertTrue(_githooks._write_path_entry(dropin, "ca", durable))
+        before = self._entry()
+
+        wt_dir = os.path.join(os.path.dirname(self.root), "wt")
+        _git(["worktree", "add", "-q", "-b", "feat/wt", wt_dir], self.root)
+        ephemeral = os.path.join(wt_dir, "plugins", "ca", "hooks", "git-enforce.py")
+        with mock.patch.object(_githooks, "_enforcer_path", return_value=ephemeral):
+            _githooks.install(wt_dir)  # must not raise
+        self.assertEqual(self._entry(), before,
+                         "install() from a worktree repointed the main repo's enforcer")
 
 
 if __name__ == "__main__":

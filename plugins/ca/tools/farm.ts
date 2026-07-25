@@ -1099,10 +1099,33 @@ const msgOf = (e: unknown) => (e instanceof Error ? e.message : String(e));
 // misconfigured orchestrator) or letting `../` place artifacts outside the
 // report dir.
 export const SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,64}$/;
+
+// #440: the character class above is necessary but NOT sufficient. Windows
+// reserves a set of DEVICE names that match `[A-Za-z0-9._-]` perfectly, and
+// resolves them before any extension — so `NUL`, `nul`, `NUL.txt` and
+// `com1.log.1` all name the device, not a file. `mkdir` against one behaves
+// unpredictably, and `mkdir(runDir)` sits OUTSIDE the run's try/finally, so the
+// failure is an unhandled throw BEFORE the cleanup scope exists — and the run's
+// receipts, which are its recovery record, are lost with it.
+//
+// Refused on EVERY platform, not only Windows. `FARM_RUN_ID` is set by an
+// orchestrator whose configuration travels between machines, and an id that
+// works on one developer's Linux box while detonating on a colleague's Windows
+// one is exactly the class of failure a startup gate exists to prevent.
+//
+// Matched on the STEM ONLY — the text before the first `.`, which is what
+// Windows itself resolves — and anchored, so ordinary ids that merely resemble
+// a device name (`console`, `nulls`, `COM0`, `COM10`, `my-nul`) stay valid.
+const RESERVED_RUN_ID_STEM = /^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i;
 export function assertSafeRunId(id: string): string {
   if (!SAFE_RUN_ID.test(id) || id === "." || id === "..")
     throw new Error(
       `FARM_RUN_ID must be 1-64 characters of [A-Za-z0-9._-] and not "." or ".." (got ${JSON.stringify(id)})`,
+    );
+  if (RESERVED_RUN_ID_STEM.test(id.split(".")[0]))
+    throw new Error(
+      `FARM_RUN_ID must not be a Windows reserved device name (CON, PRN, AUX, NUL, COM1-9, LPT1-9), ` +
+        `with or without an extension — the run directory could not be created (got ${JSON.stringify(id)})`,
     );
   return id;
 }

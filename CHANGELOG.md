@@ -14,6 +14,16 @@ predate the plugin rewrite and are grouped by date.
 
 ### Added
 
+- Added `/ca:cleanup` and its `post-merge-cleanup` skill: the already-merged
+  branch transition, which no command owned. It fetches, proves `HEAD` is an
+  ancestor of the *fetched* default branch, classifies every dirty and untracked
+  artifact as unique, redundant, or superseded, resolves each under its own
+  confirmation, fast-forwards with `--ff-only`, and deletes the merged local
+  branch with `branch -d`. Anything not provably redundant or superseded counts
+  as unique and is never discarded unbidden; stashes are report-and-route only;
+  the remote branch is never touched. Branch deletion keys off proven ancestry
+  rather than `: gone]` upstream state, so a squash-merged branch whose remote
+  still exists is recognised as landed (issue #308).
 - Added `ca-pi`, the fourth sibling plugin and third governance host, generated
   from the same Python and markdown core as Claude Code and Codex CLI.
 - Added a dependency-free, Git-installed Pi package with `/ca-*` aliases,
@@ -25,6 +35,17 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- ORCHESTRATOR §6 now routes on understood intent instead of naming a command
+  and then asking the user to retype it. Unambiguous, non-destructive intent
+  routes directly into the command with every gate intact; probable intent asks
+  once, naming the command; genuinely unclear intent gets the chooser. Clarity
+  and risk are separate axes, so anything irreversible or gate-bypassing —
+  `/ca:override`, merge to the default branch, branch or worktree deletion,
+  release and tag publication, `/ca:dev` entry — still asks even when the intent
+  is obvious. The invariant §6 protects is preserved by construction: the
+  orchestrator routes the command and never improvises the operation, and a
+  missing owner is a routing gap to surface, never a reason to reach for
+  `/ca:override` (ADR-0022, issue #308).
 - Marked the complete `ca-pi` adapter as a Feature Forge `preview`. It is
   available and welcomed for real use, with automated and hosted promotion
   evidence complete, while broader real-world testing continues before any
@@ -41,6 +62,29 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- A session started inside a linked worktree no longer repoints the **main**
+  repository's git-level enforcement at a path that dies with that worktree.
+  The shared `<plugin>.path` enforcer entry lives in the git *common* dir, so
+  every linked worktree writes the main repo's copy — and the SessionStart
+  self-heal pinned it to whatever plugin root the session happened to load,
+  which inside a worktree is the worktree's own. Pruning the worktree then left
+  H-01, H-03, H-05, H-09b, H-10b, H-11 and H-19 pointing at nothing, with no
+  announcement: the repo keeps looking governed. An ephemeral enforcer is now
+  refused in both the producer (`_githooks._write_path_entry`) and the caller
+  (`session-start.py`), leaving the previously registered install in place — a
+  stale-but-durable enforcer still enforces, an absent one does not. A stale but
+  durable path is still refreshed, so the guard cannot become a kill-switch
+  (issue #441; same bug class as #438's statusline pin, sharing its
+  `_durabilitylib.is_ephemeral_path` predicate).
+- `FARM_RUN_ID` no longer accepts a Windows reserved device name. `NUL`, `CON`,
+  `AUX`, `PRN`, `COM1`-`COM9` and `LPT1`-`LPT9` match the run id's character
+  class perfectly, and Windows resolves them ahead of any extension, so `NUL`,
+  `nul` and `com1.log.1` all name a device rather than a directory. Since the
+  run id became a directory name under `.farm/runs/`, that made `mkdir` throw
+  outside the run's cleanup scope and took the run's receipts - its recovery
+  record - with it. Refused at startup on every platform, because an
+  orchestrator's `FARM_RUN_ID` travels between machines. Matched on the stem
+  only, so `console`, `nulls`, `COM0` and `COM10` remain valid (issue #440).
 - A hook payload that is valid JSON but not an object (`[]`, `3`, `"str"`,
   `true`, `null`) is normalized to an empty payload at `read_input()` rather
   than handed to the guards as a non-dict. Downstream, `tool_input()` evaluates

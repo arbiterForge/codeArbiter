@@ -1050,10 +1050,25 @@ def main():
     # (pre-commit/pre-push) is installed and points at the CURRENT plugin path.
     # Idempotent and best-effort: a foreign existing hook is preserved, and any
     # failure here must never break session startup.
+    #
+    # #441: the enforcer entry install() refreshes lives in the git COMMON dir,
+    # shared with every linked worktree — so a session started inside a worktree
+    # writes the MAIN repository's entry. _githooks._write_path_entry refuses an
+    # ephemeral enforcer on its own account (it is the producer), and this check
+    # is deliberately redundant for the same reason heal_statusline_wiring's is:
+    # _githooks is imported OUT OF this plugin root, so a worktree cut from a
+    # pre-fix branch supplies a pre-fix, unguarded producer. Losing git-level
+    # enforcement is silent, so the caller refuses on its own account too. Both
+    # sites share the one predicate, so there is no second policy to drift.
     try:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         from _githooks import install as _install_git_hooks
-        _install_git_hooks(root)
+        if is_ephemeral_path(os.path.join(plugin, "hooks", "git-enforce.py")):
+            print("codeArbiter: this session's plugin root will not outlive the session "
+                  "(linked worktree); leaving the repository's git-level enforcement "
+                  "wiring as it is.", file=sys.stderr)
+        else:
+            _install_git_hooks(root)
     except Exception:  # noqa: BLE001
         # Legacy hosts retain the historical best-effort startup contract.
         # Pi supplies an authenticated absolute executable pair; losing that
