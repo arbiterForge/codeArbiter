@@ -188,13 +188,27 @@ function fakeHandlers(): Handlers {
       containerId: "cid1",
       notes: [],
     })),
+    // A CLEAN teardown: nothing failed, nothing left behind. The failure surface
+    // is exercised end-to-end (real destroy/prune over a fake docker) in
+    // teardown.test.ts; these fakes only need to be a valid success shape (#393).
     destroy: vi.fn(() => ({
       id: "id1",
       removedContainers: ["cid1"],
       removedVolumes: ["vol1"],
       keptVolumes: [],
+      failures: [],
+      failureCount: 0,
+      remainingContainers: [],
+      remainingVolumes: [],
     })),
-    prune: vi.fn(() => ({ removedContainers: [], removedVolumes: [] })),
+    prune: vi.fn(() => ({
+      removedContainers: [],
+      removedVolumes: [],
+      failures: [],
+      failureCount: 0,
+      remainingContainers: [],
+      remainingVolumes: [],
+    })),
     exec: vi.fn(() => ({
       id: "id1",
       exitCode: 7,
