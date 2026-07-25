@@ -44,6 +44,11 @@ on:
       # (.github/scripts/test_codex_parity_fixture.py), so a push that edits
       # only the generator must still start a run.
       - "tools/codex-parity-fixture.py"
+      # Same defect class, same fix: test_ci_impact.py is the ONLY guard on the
+      # secret-scan allowlist (#404) and on docs.yml's site CVE gate (#403), so
+      # a change to either must start a run that can execute it.
+      - ".gitleaks.toml"
+      - ".github/workflows/docs.yml"
 
 permissions:
   contents: read
@@ -137,6 +142,14 @@ jobs:
               - 'core/hosts.json'
               - 'tools/ci-impact.py'
               - 'tools/host_descriptors.py'
+              # test_ci_impact.py is the only guard on the secret-scan allowlist
+              # (#404) and on docs.yml's site CVE gate (#403). Until these two
+              # were listed, a PR that ONLY weakened .gitleaks.toml - or ONLY
+              # deleted the site audit step - skipped the job that checks them.
+              # The allowlist contract additionally runs unconditionally in the
+              # secret-scan job, so it survives a future edit to this filter.
+              - '.gitleaks.toml'
+              - '.github/workflows/docs.yml'
               - '.github/workflows/ci.yml'
             manifests:
               - '**/*.json'
@@ -210,11 +223,16 @@ jobs:
         # in a production dependency fails the build. --omit=dev scopes to
         # shipped deps so routine dev-tool advisories don't block unrelated PRs.
         #
-        # The threshold was `critical` until issue #403: every advisory cleared
-        # by #400 was rated HIGH, so the gate would have passed all of them and
-        # the repo would have shipped them silently. One threshold now applies
-        # to all three audited dependency graphs (farm, sandbox, docs site);
-        # test_ci_impact.py asserts that.
+        # HONEST SCOPE: plugins/ca/tools declares ZERO production dependencies,
+        # so `--omit=dev` audits an empty graph here and this step is inert
+        # today at ANY threshold. It is a DURABILITY setting - it decides what
+        # happens the day the farm takes on a runtime dependency. #400's three
+        # HIGH advisories were all in site/package-lock.json, the only graph in
+        # this repo with production deps and one nothing audited until #403;
+        # that gate lives in docs.yml, not here. Issue #434 tracks extending the
+        # sweep to the dev trees, where this package's advisories actually are.
+        # One threshold applies to every audited graph (farm, sandbox, ca-pi,
+        # docs site); test_ci_impact.py asserts that.
         run: npm audit --omit=dev --audit-level=high
       - name: Typecheck
         run: npm run typecheck
@@ -249,7 +267,10 @@ jobs:
       - name: Install (locked)
         run: npm ci
       - name: Audit (CVE gate - fail on HIGH)
-        # Same threshold as the farm and docs-site audits (issue #403).
+        # Same threshold as every other audited graph (issue #403), and the same
+        # caveat as the farm: ca-sandbox/tools declares no production
+        # dependencies either, so this audits an empty graph today and is a
+        # durability setting rather than a live gate.
         run: npm audit --omit=dev --audit-level=high
       - name: Typecheck
         run: npm run typecheck
@@ -330,6 +351,16 @@ jobs:
         run: npm install --global @earendil-works/pi-coding-agent@${{ steps.pinned.outputs.version }} --ignore-scripts
       - name: Install reviewed toolchain (scripts disabled)
         run: npm ci --ignore-scripts
+      - name: Audit (CVE gate - fail on HIGH)
+        # plugins/ca-pi/tools is a PUBLISHED host package, so its graph belongs
+        # under the same gate as the farm, sandbox, and docs site - without this
+        # step tech-stack.md's claim to cover "every dependency graph the repo
+        # ships or publishes" was false. Like the first two it declares no
+        # production dependencies today, so this audits an empty graph; it
+        # exists so the gate is already in place when that changes. Hosted here
+        # rather than in the six-cell ca-pi-tools matrix - the verdict does not
+        # depend on OS or Pi version.
+        run: npm audit --omit=dev --audit-level=high
       - name: Check generated root package metadata
         working-directory: .
         run: python tools/build-host-packages.py --check
@@ -1021,14 +1052,55 @@ jobs:
     # READ-ONLY: the tree is mounted `:ro` into a network-isolated, capability-
     # stripped, read-only-rootfs container running as a non-root uid. The
     # scanner cannot rewrite what it audits and cannot phone home with what it
-    # finds. `--redact` keeps any finding out of the public job log; the
-    # file/line is enough for a maintainer to act on.
+    # finds.
+    #
+    # ACTIONABLE WITHOUT LEAKING: `--redact` replaces every secret with
+    # REDACTED, and `--verbose` is what actually prints the finding. With
+    # `--redact` alone the log contains only `leaks found: N` - no file, no
+    # line, no rule id - which is unactionable and would force a maintainer to
+    # re-run the scanner unredacted to triage it. Measured against the pinned
+    # image: the pair prints `File:`/`Line:`/`RuleID:`/`Fingerprint:` (plus
+    # `Commit:` in git mode) alongside `Secret: REDACTED`.
+    #
+    # TWO SCANS, TWO BLIND SPOTS: the tree scan sees the merge result, so it
+    # catches anything that would LAND on main. It cannot see a credential added
+    # in one PR commit and deleted in the next - measured on a scratch repo,
+    # that tree scan reports `no leaks found` (exit 0) while the history still
+    # carries the key and the range scan reports it with its commit sha
+    # (exit 1). This repo allows merge and rebase merges as well as squash, so
+    # those commits reach main verbatim; #404 AC-1 asks for the commit RANGE and
+    # the second scan step below is what covers it.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
+    env:
+      # gitleaks v8.30.1
+      GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # The range scan below walks the PR's own commits; a shallow checkout
+          # leaves nothing to walk.
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      - name: Prove the allowlist is still narrow before trusting it
+        # This scan is only as strong as .gitleaks.toml, and a waiver that
+        # un-scans a file or matches a substring makes a green result
+        # meaningless. That contract lives in test_ci_impact.py, which runs in
+        # the path-scoped `ci-impact` job - and a PR touching only the allowlist
+        # used to skip it entirely. The path filter is now fixed, but a filter
+        # is a promise that has already been broken twice here (#384, and this).
+        # Running the contract HERE - in a job with no `needs: changes` gate -
+        # makes it unskippable: every PR that reaches CI re-proves the allowlist
+        # whatever the filters say.
+        working-directory: .github/scripts
+        run: |
+          python -m unittest -v \
+            test_ci_impact.WorkflowContractTest.test_the_secret_scan_allowlist_stays_narrow_and_value_scoped \
+            test_ci_impact.WorkflowContractTest.test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract
       - name: Materialize the tracked tree
         # Scan exactly the committed content: no .git internals, no runner-
         # generated files, no node_modules. On a pull_request HEAD is the merge
@@ -1037,9 +1109,6 @@ jobs:
           mkdir -p "$RUNNER_TEMP/secret-scan"
           git archive --format=tar HEAD | tar -x -C "$RUNNER_TEMP/secret-scan"
       - name: Scan the tracked tree for credentials
-        env:
-          # gitleaks v8.30.1
-          GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
         run: |
           docker run --rm \
             --network none \
@@ -1054,6 +1123,47 @@ jobs:
               --config /repo/.gitleaks.toml \
               --no-banner \
               --redact \
+              --verbose \
+              --exit-code 1
+      - name: Scan the pull request's commit range for credentials
+        # Issue #404 AC-1. Only meaningful on a pull_request - the only event
+        # with a base to diff against, and the enforcement point main's branch
+        # protection actually requires. On push the tree scan carries the job.
+        #
+        # The repository is mounted read-only WITH its .git, so gitleaks runs
+        # `git log -p` over the range and never writes. `safe.directory` is
+        # passed through GIT_CONFIG_* rather than written to a config file
+        # (nothing here is writable), pre-empting git's dubious-ownership
+        # refusal; /tmp is a small noexec tmpfs so git has scratch space without
+        # the rootfs becoming writable. Verified locally under this exact flag
+        # set, including --user, against a repo whose HEAD had already deleted
+        # the planted credential.
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          base="$(git merge-base "$BASE_SHA" HEAD)"
+          echo "scanning commit range ${base}..HEAD"
+          docker run --rm \
+            --network none \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" \
+            --env HOME=/tmp \
+            --env GIT_CONFIG_COUNT=1 \
+            --env GIT_CONFIG_KEY_0=safe.directory \
+            --env GIT_CONFIG_VALUE_0=/repo \
+            --workdir /repo \
+            --volume "$GITHUB_WORKSPACE:/repo:ro" \
+            "$GITLEAKS_IMAGE" \
+            git . \
+              --config /repo/.gitleaks.toml \
+              --log-opts "${base}..HEAD" \
+              --no-banner \
+              --redact \
+              --verbose \
               --exit-code 1
 
   documentation-contract:
