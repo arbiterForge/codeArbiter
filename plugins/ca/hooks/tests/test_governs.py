@@ -63,7 +63,8 @@ class TestGovernsIndex(unittest.TestCase):
                    governs="src/api/**/*.py", title="API Design")
         index = governs_index(self.root)
         self.assertEqual(len(index), 1)
-        self.assertEqual(index[0]["adr"], "0001")
+        # #416: the identifier is the filename stem, not the bare number.
+        self.assertEqual(index[0]["adr"], "0001-api-design")
         self.assertIn("src/api/**/*.py", index[0]["globs"])
         # Cache must now exist on disk.
         self.assertTrue(os.path.isfile(self._cache_path()))
@@ -121,7 +122,7 @@ class TestGovernsIndex(unittest.TestCase):
                    governs="src/old/**", status="superseded")
         index = governs_index(self.root)
         self.assertEqual(len(index), 1)
-        self.assertEqual(index[0]["adr"], "0001")
+        self.assertEqual(index[0]["adr"], "0001-good")
 
     # ------------------------------------------------------------------
     # D-16: H-12 governs check fires on matching path, not on non-matching
