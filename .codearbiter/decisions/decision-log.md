@@ -784,3 +784,119 @@ Accepted `0016-bounded-pi-child-credential-projection.md` and the adversarial fi
 child can read its own projected credential and defeat exact-value result matching by encoding it.
 
 ---
+
+## DECISION-0025 — ADR-0020 — Hook input fails open on malformed shape as well as malformed syntax
+
+**Date:** 2026-07-25
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("A — extend fail-open")
+**Decision category:** hook contract / fail direction
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `_hooklib.read_input()` documents a deliberate fail-OPEN exception for malformed stdin, on the grounds that a bad payload must not brick the session.
+- **Scaffold position:** That exception covers malformed syntax only. Valid-but-non-object JSON parses cleanly and returns a non-dict, and truthy non-dicts then raise AttributeError out of every guard, while falsy ones survive only by accident of `(data or {})`.
+- **Status type:** open-decision-closure
+
+### Decision
+Treat malformed shape exactly as malformed syntax: normalize any non-dict payload to `{}` at the
+single `read_input()` chokepoint. Unreadable input is unreadable regardless of whether the failure is
+syntactic or structural.
+
+### SMARTS rationale
+Securable is the lens that decides it, and it decides for fail-open: the hook envelope is
+HOST-produced, not model-produced. A model can place hostile content inside `tool_input` fields but
+cannot make the top-level object a list, so failing closed protects against a threat that cannot
+reach this surface. Reliable and Available are Strong for fail-open and Weak for fail-closed — a host
+payload change would otherwise brick every tool call until codeArbiter shipped a fix, which is the
+exact failure the documented exception exists to prevent. Maintainable favours one rule at one
+chokepoint over a per-position rule. Conflict hierarchy resolves at Level 2 (correctness), because
+Level 1 has no genuine stake.
+
+### Implementation implication
+Normalize in `core/pysrc/_hooklib.py` and widen its docstring; re-vendor via `tools/sync-core.py`.
+Record that the ca-codex ADAPTER's fail-CLOSED behaviour on non-object payloads is a deliberate
+asymmetry and stays: a router that cannot route cannot prove the call safe, unlike a guard that
+cannot parse. That refusal is dormancy-aware, so it cannot affect repositories that never opted in.
+
+---
+
+## DECISION-0026 — ADR-0021 — Per-call Python bridge spawn is the cross-host cost model
+
+**Date:** 2026-07-25
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("A — accept per-call spawn as the cost model")
+**Decision category:** performance / enforcement architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Tribunal finding performance-001 proposes a persistent bridge worker to remove the per-gated-call Python spawn.
+- **Scaffold position:** Claude Code pays the same per-call hook-spawn cost, so Pi is not anomalous; the finding downgraded itself on that basis.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept the per-call spawn as the cross-host standard. Do not build a persistent worker. The per-call
+process is stateless by construction — no lifetime, nothing carried between gate decisions.
+
+### SMARTS rationale
+Securable and Reliable both favour accepting. A persistent worker is a long-lived process holding
+enforcement authority in front of every gated call, requiring its own auth, health check, restart and
+staleness handling; a wedged worker degrades every subsequent call rather than one. The 2026-07-25
+sweep produced three independent defects from long-lived or ambient state (a statusline pinned into a
+pruned worktree, a broker listener that could outlive its child, a token bound to a broker rather
+than a process), which is direct evidence about where this codebase actually breaks. Available is
+the only lens favouring the daemon, and the cost it removes is one every other host already pays.
+
+### Implementation implication
+Record the acceptance; no code change. Keep `.github/scripts/pi_benchmark.py` as the observable
+guard. If measured p95 later becomes a real impediment, the remedy is to make the bridge cheaper to
+start, not to keep one alive — adopting a daemon would require superseding ADR-0021 deliberately.
+
+---
+
+## DECISION-0027 — ADR-0022 — Auto-route unambiguous, non-destructive intent into its command
+
+**Date:** 2026-07-25
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com ("auto route obvious … it SHOULD actually route the command though. not free ball it"; destructive commands always confirm)
+**Decision category:** orchestration / user interaction contract
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ORCHESTRATOR §6 states that all intent flows through a slash command and "nothing routes without their command", so the orchestrator names the command and asks the user to type it.
+- **Scaffold position:** Naming the command proves the routing was already understood, so requiring it to be retyped adds friction without adding a decision — and in issue #308's observed flow that friction produced two incorrect routes, to `/ca:chore` and then to `/ca:override`, for routine post-merge hygiene.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Route on understood intent in three tiers: auto-route when intent is unambiguous AND the command is
+non-destructive; ask once naming the command when intent is probable; present candidates when it is
+genuinely unclear. The orchestrator routes the command and never performs the operation itself.
+Irreversible or gate-bypassing commands always confirm, however clear the intent.
+
+### SMARTS rationale
+The maintainer's framing corrected the analysis: §6's invariant is that nothing happens outside a
+gated command path, NOT that the user does typing — so auto-routing INTO the command preserves
+Securable entirely, and what §6 actually prohibits is the orchestrator improvising the work. Given
+that, Available and Reliable both favour routing, and the evidence is that the friction produced an
+unjustified override rather than preventing one. Maintainable is the cost: "unambiguous" is a
+judgement, and the destructive set is enumerated rather than declared per command. Conflict hierarchy
+Level 3 (maintainability/reviewability) governs, since Level 1 is untouched.
+
+### Implementation implication
+Amend §6 in `plugins/ca/ORCHESTRATOR.md` and its sibling host copies via `core/surface`, and rework
+`includes/redirect.md` into the three tiers. Enumerate the always-confirm set (`/ca:override`, merge
+to default, branch and worktree deletion, release and tag publication, `/ca:dev` entry). Ship #308's
+other half — a sanctioned owner for the merged-branch transition with ancestry proof against the
+fetched default, artifact classification, and per-item confirmation before discarding anything unique
+or ambiguous. Prefer moving the destructive declaration into the routing table if the enumerated set
+proves hard to keep current.
+
+### Resolves same-level conflict between (when applicable)
+ORCHESTRATOR §6's command-enforcement directive and issue #308's observed post-merge cleanup dead
+end, in which no command owned the operation and the redirect loop produced an unjustified
+`/ca:override`.
+
+---
