@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.4] - 2026-07-25
+## [0.1.5] - 2026-07-25
 
 ### Security
 
@@ -88,6 +88,18 @@ All notable changes to `ca-pi` are documented in this file.
   Child stderr is now counted, never sampled, so no child-controlled text
   reaches the audit record; `STDERR_BYTES:` remains. Anything parsing
   `STDERR_HEAD:` out of the audit line must be updated.
+
+## [0.1.4] - 2026-07-24
+
+### Changed
+
+- Refreshed the bundled farm surface (`includes/farm.md`, the
+  `subagent-driven-development` farm-dispatch reference) for run-scoped farm
+  receipts: the run's artifact directory is the authoritative receipt, the
+  top-level `.farm/` paths are a non-authoritative latest pointer, exit 3 is
+  reserved for a failure of the run-scoped report, and the concurrency caveat
+  (`FARM_INTEGRATION_BRANCH`, `FARM_WORKTREE_ROOT`, non-overlapping task ids)
+  is now stated where operators read it. Prose-only; no Pi adapter code changed.
 
 ## [0.1.3] - 2026-07-24
 

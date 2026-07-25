@@ -119,6 +119,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MUTATION_WARN_BELOW` | `0.5` | Score below this attaches a warning into Phase 3. |
 | `FARM_MUTATION_ESCALATE_BELOW` | `0.1` | Score at/below this (≥5 mutants) hard-escalates. |
 | `FARM_MUTATION_CMD` | _(unset)_ | Pluggable external mutation framework hook. |
+| `FARM_RUN_ID` | _(random)_ | Pin this run's id — also the name of its artifact directory (`.farm/runs/<run-id>/`). Must be 1–64 chars of `[A-Za-z0-9._-]`; anything else is refused at startup. Reusing an id publishes over that directory's receipts, so pin a fresh one per run. |
 
 ## Per-worktree setup (dependency hook)
 
@@ -163,13 +164,47 @@ Normal use: `/ca-sprint --farm` — the skill handles model selection and dispat
 
 ## Report artifacts
 
-After a run, the farm writes to `<project-root>/.farm/`:
+Every run owns an artifact directory keyed by its run id — `<project-root>/.farm/runs/<run-id>/` — and
+that directory is the **durable receipt**, written by that run alone. Two farm processes against one
+repository therefore cannot overwrite each other's *evidence* (see the concurrency caveat below — the
+receipts are isolated, the git state is not):
 - `farm-report.json` — structured results: per-task status, attempts, files written, worker token spend,
-  warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons.
+  warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons, and an
+  `artifacts` block stating whether the streaming rail was complete and which tasks' diff evidence is
+  unavailable.
 - `farm-report.md` — human-readable summary table.
+- `farm-results.jsonl` — this run's incremental settlement stream.
 - `diffs/<task-id>.patch` — the actual change each task produced, for audit.
+
+The historical top-level paths remain as a **latest** convenience pointer, republished from the run's
+own artifacts: `.farm/farm-report.json`, `.farm/farm-report.md`, `.farm/farm-results.jsonl`,
+`.farm/diffs/<task-id>.patch`. Under concurrency the pointer is last-writer-wins — always a complete
+artifact, never a truncated one, but attributable only via its `run_id`. Reconcile against the run
+directory when it matters. Also in `.farm/`:
 - `canary-report.json` — model-probe ranking (when `--canary` was run).
 - `model-cache.json` — last selected model + timestamp + canary pass-rate.
+
+Every report write is atomic (same-directory temp file, then rename), so a reader of a report path sees
+either the previous complete artifact or the new one — never a truncated one, and never a half-written
+file left by a crash mid-publication. (Atomicity, not crash durability: the rename itself is not
+fsynced, so a host power-loss immediately after publication can still lose it.) If the run's
+**authoritative, run-scoped** report cannot be published in full, the run **exits 3** and suppresses the
+success `Report:` breadcrumb — a receipt failure is reported distinctly from a task failure (exit 2),
+never as success. Failing to refresh the *latest* pointer is **not** exit 3: it is non-authoritative, so
+it prints a warning naming what was not refreshed and the run still settles on its task outcome.
+
+### Concurrency: what is and is not safe
+
+Run-scoped receipts make concurrent runs non-destructive to each other's **artifacts**. They do not make
+the **git state** concurrent. At default settings a second simultaneous run fails at startup with
+`cannot lock ref 'refs/heads/farm/integration'`, because every run claims the same integration branch.
+To run two farms against one repository at the same time, give each process:
+- a distinct `FARM_INTEGRATION_BRANCH` (default `farm/integration` is shared and single-claim);
+- a distinct `FARM_WORKTREE_ROOT` (default `.farm/worktrees`), unless the plans' task ids are disjoint —
+  per-task worktrees are `<FARM_WORKTREE_ROOT>/<task-id>`;
+- plans whose **task ids do not overlap**: each task's branch is `farm/<task-id>` regardless of run id,
+  so two runs carrying the same task id fight over one branch. There is no env var for this — rename
+  the tasks.
 
 Escalated tasks leave their worktrees at `.farm/worktrees/<task-id>/` for inspection.
 
