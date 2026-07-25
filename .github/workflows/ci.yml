@@ -271,6 +271,26 @@ jobs:
         # One threshold applies to every audited graph (farm, sandbox, ca-pi,
         # docs site); test_ci_impact.py asserts that.
         run: npm audit --omit=dev --audit-level=high
+      - name: Audit build toolchain (CVE gate - fail on HIGH, dev deps included)
+        # Issue #434. The step above is `--omit=dev`, and all three tools graphs
+        # declare no production dependencies - so on its own it audits an empty
+        # graph and sees nothing. Every dependency here is a dev dependency, and
+        # they are the ones that BUILD the committed, shipped artifacts
+        # (farm.js, sandbox.js, the ca-pi extension bundles). A build-time
+        # compromise lands in a reviewed-and-committed artifact, so "dev
+        # dependency" understates the blast radius when the dev dependency's
+        # output is the product.
+        #
+        # This is what actually caught GHSA-r28c-9q8g-f849 (postcss, HIGH) in
+        # plugins/ca/tools: `--omit=dev --audit-level=critical` reported zero
+        # against the vulnerable lockfile AND against the fixed one, and the
+        # advisory only ever surfaced because dependabot happened to file the
+        # bump. That is luck, not a control.
+        #
+        # Same HIGH threshold as every other audited graph, so one policy covers
+        # the repo; test_ci_impact.py asserts that no audit step in this
+        # workflow uses a different one.
+        run: npm audit --audit-level=high
       - name: Typecheck
         run: npm run typecheck
       - name: Test
@@ -330,6 +350,26 @@ jobs:
         # dependencies either, so this audits an empty graph today and is a
         # durability setting rather than a live gate.
         run: npm audit --omit=dev --audit-level=high
+      - name: Audit build toolchain (CVE gate - fail on HIGH, dev deps included)
+        # Issue #434. The step above is `--omit=dev`, and all three tools graphs
+        # declare no production dependencies - so on its own it audits an empty
+        # graph and sees nothing. Every dependency here is a dev dependency, and
+        # they are the ones that BUILD the committed, shipped artifacts
+        # (farm.js, sandbox.js, the ca-pi extension bundles). A build-time
+        # compromise lands in a reviewed-and-committed artifact, so "dev
+        # dependency" understates the blast radius when the dev dependency's
+        # output is the product.
+        #
+        # This is what actually caught GHSA-r28c-9q8g-f849 (postcss, HIGH) in
+        # plugins/ca/tools: `--omit=dev --audit-level=critical` reported zero
+        # against the vulnerable lockfile AND against the fixed one, and the
+        # advisory only ever surfaced because dependabot happened to file the
+        # bump. That is luck, not a control.
+        #
+        # Same HIGH threshold as every other audited graph, so one policy covers
+        # the repo; test_ci_impact.py asserts that no audit step in this
+        # workflow uses a different one.
+        run: npm audit --audit-level=high
       - name: Typecheck
         run: npm run typecheck
       - name: Docker preflight (REQUIRED prerequisite - fail, never skip)
@@ -429,6 +469,26 @@ jobs:
         # rather than in the six-cell ca-pi-tools matrix - the verdict does not
         # depend on OS or Pi version.
         run: npm audit --omit=dev --audit-level=high
+      - name: Audit build toolchain (CVE gate - fail on HIGH, dev deps included)
+        # Issue #434. The step above is `--omit=dev`, and all three tools graphs
+        # declare no production dependencies - so on its own it audits an empty
+        # graph and sees nothing. Every dependency here is a dev dependency, and
+        # they are the ones that BUILD the committed, shipped artifacts
+        # (farm.js, sandbox.js, the ca-pi extension bundles). A build-time
+        # compromise lands in a reviewed-and-committed artifact, so "dev
+        # dependency" understates the blast radius when the dev dependency's
+        # output is the product.
+        #
+        # This is what actually caught GHSA-r28c-9q8g-f849 (postcss, HIGH) in
+        # plugins/ca/tools: `--omit=dev --audit-level=critical` reported zero
+        # against the vulnerable lockfile AND against the fixed one, and the
+        # advisory only ever surfaced because dependabot happened to file the
+        # bump. That is luck, not a control.
+        #
+        # Same HIGH threshold as every other audited graph, so one policy covers
+        # the repo; test_ci_impact.py asserts that no audit step in this
+        # workflow uses a different one.
+        run: npm audit --audit-level=high
       - name: Check generated root package metadata
         working-directory: .
         run: python tools/build-host-packages.py --check
@@ -711,6 +771,16 @@ jobs:
         # host conditionals, Codex path rewrites + frontmatter synthesis, and
         # --check drift detection in both directions against synthetic trees.
         run: python .github/scripts/test_build_surface.py
+      - name: Run §6 routing + post-merge-cleanup surface contract
+        # Issue #308 / ADR-0022. Both halves of #308 are prose contracts
+        # projected into three host surfaces, so what silently regresses is a
+        # paragraph reverting, or landing on one host and not the others. This
+        # pins the three routing tiers, the destructive set that keeps an
+        # obvious-but-irreversible command at tier 2, the preserved §6
+        # invariant (route the command, never improvise the operation), the
+        # never-steer-to-override rule, and the cleanup owner's own acceptance
+        # gates - on every generated projection.
+        run: python .github/scripts/test_routing_and_cleanup_surface.py
       - name: Run cold-install interpreter matrix
         run: python .github/scripts/test_hooks_cold_install.py
       - name: Run ca-codex host-adapter parity suite

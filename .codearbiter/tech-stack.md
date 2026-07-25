@@ -153,18 +153,33 @@ node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" <file>.
 
 ## CVE gate (supply chain)
 
-The configured CVE gate is `npm audit --omit=dev --audit-level=high`, run after
-`npm ci` against every dependency graph the repo ships or publishes:
+**One threshold, `high`, everywhere.** A HIGH-or-worse advisory fails the build
+in every audit gate this repo runs. Two scopes share it, and which one applies
+depends on whether the graph's *output* is the product:
 
-| graph | workflow / job | production deps today |
-| --- | --- | --- |
-| `plugins/ca/tools` | `ci.yml` — `tools` | none |
-| `plugins/ca-sandbox/tools` | `ci.yml` — `ca-sandbox-tools` | none |
-| `plugins/ca-pi/tools` | `ci.yml` — `ca-pi-checks` | none |
-| `site` (docs site) | `docs.yml` — `site-check`, which `deploy` needs | astro, starlight, markdown-remark |
+| graph | workflow / job | production deps today | scope audited |
+| --- | --- | --- | --- |
+| `plugins/ca/tools` | `ci.yml` — `tools` | none | production **and dev** |
+| `plugins/ca-sandbox/tools` | `ci.yml` — `ca-sandbox-tools` | none | production **and dev** |
+| `plugins/ca-pi/tools` | `ci.yml` — `ca-pi-checks` | none | production **and dev** |
+| `site` (docs site) | `docs.yml` — `site-check`, which `deploy` needs | astro, starlight, markdown-remark | production |
 
-A HIGH-or-worse advisory fails the build; `--omit=dev` scopes the gate to
-shipped dependencies so routine dev-tool advisories don't block unrelated PRs.
+- `npm audit --omit=dev --audit-level=high` — the production gate, run on all
+  four graphs. On `site` it is the live gate: that is the only graph declaring
+  production dependencies. On the three tools graphs it audits an empty graph
+  and is purely a *durability* setting, deciding what happens the day one of
+  them takes on a runtime dependency.
+- `npm audit --audit-level=high` — the dev-inclusive gate (issue #434), run on
+  the three `plugins/*/tools` graphs. Every package in those trees is a dev
+  dependency, and they are the ones that build `farm.js`, `sandbox.js`, and the
+  ca-pi extension bundles — committed, shipped artifacts. A build-time
+  compromise there lands in a reviewed artifact, so "dev dependency"
+  understates the blast radius when the dev dependency's output is the product.
+
+`site`'s dev tree is deliberately not on the dev-inclusive gate: its build
+output is a static site republished from source on every deploy, not a committed
+binary artifact carried into consumers' repositories.
+
 This enforces the supply-chain posture described in `security-controls.md`.
 
 **What the threshold actually buys, honestly.** Three of the four graphs above
@@ -178,14 +193,19 @@ threshold was lowered from `critical` to `high` across all four so a single rule
 covers the repo — not because the farm or sandbox audits would have caught #400.
 They would not have seen it.
 
-The dev trees, where these packages' advisories actually are, are **not** covered
-by this gate. Measured in `plugins/ca/tools` at the time of writing, `npm audit
---json` reports `{prod: 1, dev: 104}` — the single prod entry being the root
-package itself — and one **HIGH** advisory (`postcss`) that the shipped
-`--omit=dev` gate never sees. All four graphs pass `npm audit --omit=dev
---audit-level=high` today. Issue #434 tracks extending the sweep to the dev
-trees, and notes the blast radius: those dev dependencies build `farm.js` and
-`sandbox.js`, which are committed, shipped artifacts.
+**What issue #434 found, and how the dev gate was proven.** Measured in
+`plugins/ca/tools`, `npm audit --json` reported `{prod: 1, dev: 104}` — the
+single prod entry being the root package itself — and one **HIGH** advisory,
+GHSA-r28c-9q8g-f849 (`postcss` ≤ 8.5.17, arbitrary `.map` file disclosure via
+source-map auto-loading). The `--omit=dev` gate reported **zero vulnerabilities
+against the vulnerable lockfile and against the fixed one alike**, at any
+threshold. The advisory surfaced only because dependabot happened to file the
+bump on a sibling graph — luck, not a control.
+
+The dev-inclusive gate was proven against that exact known-vulnerable state
+rather than only against a clean one: run on the pre-fix `plugins/ca/tools`
+lockfile (postcss 8.5.15) it exits 1 and names the advisory, where the
+production gate exits 0. All four graphs pass both applicable gates today.
 
 ## Secrets scan
 
