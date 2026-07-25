@@ -2,6 +2,16 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.17] - 2026-07-25
+
+### Added
+
+- `/ca-doctor` now reports whether MCP servers are configured for the active
+  host, and that file writes performed through an MCP tool
+  (`mcp__<server>__<tool>`) are outside codeArbiter's write gate. The Pi host
+  claims no MCP configuration sources, so the line degrades to silence on Pi
+  rather than reporting another host's configuration as this install's.
+
 ## [0.1.16] - 2026-07-25
 
 ### Changed

@@ -246,6 +246,21 @@ class CodexHost(hostapi.Host):
         _updatelib.py must resolve THIS path under Codex (#263)."""
         return os.path.join(".codex-plugin", "plugin.json")
 
+    def mcp_config_sources(self, project_root):
+        """Codex declares MCP servers as `[mcp_servers.<name>]` tables in
+        `$CODEX_HOME/config.toml` (CODEX_HOME defaults to `~/.codex`) — never
+        in Claude's `.mcp.json` / `~/.claude.json`, so the base implementation
+        would report the WRONG host's configuration here (#270).
+
+        `project_root` is unused: Codex has no project-scoped MCP config file.
+        Reading nothing is the right answer for a scope this host does not
+        have — doctor sums the sources it is given and stays quiet about the
+        rest."""
+        home = os.environ.get("CODEX_HOME")
+        if not home:
+            home = os.path.join(os.path.expanduser("~"), ".codex")
+        return [(os.path.join(home, "config.toml"), "mcp_servers")]
+
     def normalize_tool_input(self, tool_name, tool_input):
         """Codex's exec payload ({command}) already IS the canonical EXEC
         shape, and the apply_patch envelope cannot be represented as ONE
