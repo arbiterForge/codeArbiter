@@ -685,3 +685,54 @@ Accepted `0016-bounded-pi-child-credential-projection.md` and the verified Pi 0.
 agent-dir binding exposed by the live isolated-child contract on PR #426.
 
 ---
+
+## DECISION-0023 — ADR-0018 — Accept endpoints by bounded structure rather than case, and pin projected value shapes
+
+**Date:** 2026-07-25
+**Status:** accepted
+**Supersedes:** DECISION-0022 (partial — only ADR-0017's `baseUrl` clause, its fail-closed list, and its Consequences paragraph)
+**Decided by:** SUaDtL@users.noreply.github.com ("allow mixed-case segments"; ADR amendment approved 2026-07-25)
+**Decision category:** security architecture / Pi configuration boundary
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Accepted ADR-0017 refuses a `baseUrl` only for URL userinfo or unparseability, and pins the projected record by KEY NAME against the reviewed Pi provider schema.
+- **Scaffold position:** Adversarial probing of the shipped implementation proved a credential in a query string, path, or fragment projected verbatim (the dominant Azure `?api-key=` / Google `?key=` shape), that the projected endpoint was absent from the child's sensitive-value scrub set, and that a name-only pin lets a wrong-typed value project and then die mutely inside Pi's own validator.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Accept a projected `baseUrl` by bounded structure rather than character case, and pin value shapes as
+well as key names. A value crosses only as a parseable absolute `http`/`https` URL with no userinfo,
+no query, no fragment, no percent-encoding, and a route of at most 8 segments of at most 32 bytes
+each. Route segments are deliberately case-insensitive: a lowercase-only rule admitted
+`sk-querysecret999` while refusing `GPT4-Prod`, so it cost operators their isolated children for no
+security gain. Everything accepted is also registered in the child's sensitive-value scrub set and
+retained behind a scrub handle. A record satisfying the name allowlist but not Pi's declared value
+type now fails closed instead of projecting.
+
+### SMARTS rationale
+Securable drove it in both directions. The query/fragment/percent-encoding refusals close a *proven*
+leak — the first implementation shipped a credential-in-endpoint path that an adversarial probe
+demonstrated — and scrub-set registration removes the blind spot in the two controls that assume the
+projection holds no secret. The case relaxation was measured, not assumed: the byte bound is what
+refuses realistic key material, so dropping the case rule sacrifices nothing Securable while
+restoring Available for every operator with a mixed-case Azure or Cloudflare deployment name.
+Testable is Strong: both directions were mutation-tested — reverting to lowercase-only reddens the
+Azure/Cloudflare fixtures, and loosening the byte bound reddens the realistic-key fixture.
+Maintainable improves because the value-shape pin converts a mute child death into a legible
+fail-closed refusal. Conflict-hierarchy Level 1 governs.
+
+### Implementation implication
+Record ADR-0018 as the amending decision (forward-only; ADR-0017's file is not edited). The code
+already shipped on `fix/pi-credential-projection` ahead of this record and is strictly NARROWER than
+ADR-0017 described, so nothing ADR-0017 asserts was falsified in the interim — this entry closes the
+gap between the record and the shipped rule. Keep `.codearbiter/security-controls.md` in agreement,
+including the stated residual that scrub-set registration covers endpoints and not the other
+projected free-string leaves.
+
+### Resolves same-level conflict between (when applicable)
+Accepted `0017-credential-blind-selected-provider-config-projection.md` and the adversarial boundary
+probe of its implementation on PR #426, which proved the endpoint clause both incomplete (leaked) and,
+once corrected, over-strict (refused ordinary Azure deployment names).
+
+---
