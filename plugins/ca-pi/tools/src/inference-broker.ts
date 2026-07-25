@@ -7,10 +7,23 @@
  * response back incrementally.
  *
  * Residual, stated rather than assumed away: a listening loopback socket is reachable by ANY
- * process running as the same OS user. The token is what contains that residual — it is minted
- * per child from 256 bits of CSPRNG material, bound to exactly one child's handshake nonce,
- * accepted only by the one broker that minted it, and refused the moment its child exits. A
- * captured token is therefore worthless to a second process and worthless off-host.
+ * process running as the same OS user, and the token is the only thing standing in front of it.
+ * The token is minted per child from 256 bits of CSPRNG material, bound to exactly one child's
+ * handshake nonce, accepted only by the one broker that minted it, and refused the moment its
+ * child exits. A captured token is worthless OFF-HOST — the listener binds 127.0.0.1 only.
+ *
+ * It is NOT worthless to a second process, and this module does not claim that it is. The token
+ * binds to the minting BROKER, not to a process: `handle` compares the token and nothing else,
+ * and no peer, pid, or connection binding is available over a loopback socket. Any same-user
+ * process that OBTAINS the token can therefore USE the operator's credential — use, not read —
+ * for as long as the owning child lives, replaying it freely within that window, since the token
+ * is deliberately not single-use.
+ *
+ * That residual is accepted rather than overlooked. A process running as the operator can
+ * already read the operator's credential store directly, so brokering adds no exposure such an
+ * attacker did not already have, and it is strictly narrower than the projected credential file
+ * it replaces — which handed that same process the raw, exfiltratable key. What the design buys
+ * is use instead of disclosure, bounded by the child's lifetime and by the host.
  *
  * The token is deliberately NOT derived from the child's nonce. The child holds its own nonce
  * (the runner hands it over the capability pipe), so a nonce-derived token would make the
@@ -27,6 +40,7 @@ import {
 } from "node:http";
 import { request as httpsRequest } from "node:https";
 import type { AddressInfo, Socket } from "node:net";
+import { Transform, type TransformCallback } from "node:stream";
 
 /** The child's projected provider configuration names this variable, never a literal token, so
  * the projected configuration file itself carries no secret material at all. */
@@ -40,13 +54,45 @@ const MAX_REQUEST_TARGET_BYTES = 2_048;
 const MAX_UPSTREAM_BASE_BYTES = 512;
 const UPSTREAM_PROTOCOLS = new Set(["http:", "https:"]);
 
-/** Hop-by-hop headers are connection-scoped by RFC 9110 and must not be forwarded; `host` is
- * rewritten to the upstream authority rather than forwarded, because the child's value names
- * this loopback listener. */
+/** Hop-by-hop headers are connection-scoped by RFC 9110 and must not be relayed in either
+ * direction; `host` belongs to the connection the same way, and on the request path is rewritten
+ * to the upstream authority because the child's value names this loopback listener. */
 const HOP_BY_HOP_HEADERS = new Set([
   "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
   "te", "trailer", "transfer-encoding", "upgrade", "host",
 ]);
+
+/** Exactly what a provider call needs from the CHILD, and nothing else.
+ *
+ * This is an allow list on purpose. A deny list — hop-by-hop plus `host` — forwarded every other
+ * child-supplied header verbatim onto a request the broker had just attached the operator's REAL
+ * credential to. The destination origin is fixed, so that is not direct exfiltration, but the
+ * operator's `baseUrl` is frequently a routing gateway (`openrouter`, `vercel-ai-gateway`,
+ * `cloudflare-ai-gateway` are all pinned built-ins) and gateways route on request headers. A
+ * compromised child must not get to steer a credentialed request.
+ *
+ * Deliberately absent, because a provider call succeeds without them: client telemetry
+ * (`x-stainless-*`), attribution (`x-title`, `http-referer`), forwarding and gateway-control
+ * headers, and anything unrecognised. Operator-configured headers are NOT filtered here — they
+ * are parent material and are applied after this map. */
+const FORWARDED_REQUEST_HEADERS = new Set([
+  "accept", "content-length", "content-type", "user-agent",
+  // The auth carriers Pi 0.80.x builds around a provider `apiKey`. Because only these cross, the
+  // credential can only ever be substituted under one of these names — never one the child picks.
+  "api-key", "authorization", "x-api-key", "x-goog-api-key",
+  // Protocol/version negotiation, which decides the response SHAPE the child has to parse.
+  "anthropic-beta", "anthropic-dangerous-direct-browser-access", "anthropic-version",
+  "openai-beta", "openai-organization", "openai-project",
+  // opencode's opaque client/session identity. Those providers require an explicit operator
+  // `baseUrl` anyway, and neither value is a routing directive.
+  "x-opencode-client", "x-opencode-session",
+]);
+
+/** How many trailing bytes of the upstream body stay in the scan window. A sensitive value split
+ * across two TCP writes is whole in the next window and is caught there; only a value longer than
+ * this could straddle undetected, and no provider credential, operator header value, endpoint, or
+ * broker token comes close. */
+const RESPONSE_SCAN_OVERLAP_BYTES = 4_096;
 
 /** A fixed, bounded, value-free refusal body. It never carries a credential, a token, an
  * upstream endpoint, or a filesystem path, so a compromised child learns exactly one bit —
@@ -80,6 +126,16 @@ export interface BrokerUpstreamAuthority {
    * can themselves carry credential material, which is exactly why they are attached here and
    * not projected into the child's configuration. */
   headers?: Readonly<Record<string, string>>;
+  /** The parent's own scrub predicate (`prepareChildEnvironment`), which recognises every value
+   * the child must never see: the upstream credential, the operator's stored credential, every
+   * resolved operator header value, the operator's real endpoint, and this child's token.
+   *
+   * Required, not optional. The broker forwards a response the child then reads, so without this
+   * an upstream that reflects the request credential — a debug/echo mode on an operator-run
+   * gateway, a verbose 401 — turns the broker into the one channel that hands the credential
+   * back. The PREDICATE is passed rather than the values, so the broker never enumerates the
+   * parent's scrub set. */
+  containsSensitiveValue: (text: string) => boolean;
 }
 
 interface BoundUpstream {
@@ -88,6 +144,54 @@ interface BoundUpstream {
   secure: boolean;
   credential: string;
   headers: Readonly<Record<string, string>>;
+  containsSensitiveValue: (text: string) => boolean;
+}
+
+/** Streams the upstream body through untouched until it carries operator material, then fails
+ * the stream rather than delivering it. Never buffers to completion: a long generation must reach
+ * the child frame by frame, so bytes are forwarded as they arrive and only a bounded overlap
+ * window is retained for scanning.
+ *
+ * Residual, stated: because bytes are forwarded eagerly, a value straddling a chunk boundary has
+ * its leading fragment already delivered when the following chunk completes the match and the
+ * stream is destroyed. The complete value is never delivered. That is the deliberate trade — the
+ * alternative is holding back a window of bytes, which deadlocks incremental streaming. */
+class SensitiveResponseFilter extends Transform {
+  private tail: Buffer = Buffer.alloc(0);
+
+  constructor(private readonly containsSensitiveValue: (text: string) => boolean) {
+    super();
+  }
+
+  override _transform(chunk: Buffer, _encoding: BufferEncoding, callback: TransformCallback): void {
+    const window = this.tail.byteLength === 0 ? chunk : Buffer.concat([this.tail, chunk]);
+    // Scanned as utf8 AND latin1: the predicate compares JS strings, and a value's bytes decode
+    // back to it under one or the other depending on how the value itself is encoded.
+    if (this.containsSensitiveValue(window.toString("utf8")) || this.containsSensitiveValue(window.toString("latin1"))) {
+      callback(new InferenceBrokerError());
+      return;
+    }
+    // Copied, never a view: a `subarray` would pin the whole preceding chunk in memory.
+    this.tail = window.byteLength <= RESPONSE_SCAN_OVERLAP_BYTES
+      ? Buffer.from(window)
+      : Buffer.from(window.subarray(window.byteLength - RESPONSE_SCAN_OVERLAP_BYTES));
+    callback(null, chunk);
+  }
+}
+
+/** True when any response header name or value carries operator material. Headers arrive whole,
+ * so unlike the body this check is exact. */
+function responseHeadersLeak(
+  headers: Readonly<Record<string, string | string[]>>,
+  containsSensitiveValue: (text: string) => boolean,
+): boolean {
+  for (const [name, value] of Object.entries(headers)) {
+    if (containsSensitiveValue(name)) return true;
+    for (const item of Array.isArray(value) ? value : [value]) {
+      if (containsSensitiveValue(item)) return true;
+    }
+  }
+  return false;
 }
 
 export interface InferenceBroker {
@@ -159,24 +263,32 @@ function forwardedHeaders(
   let authenticated = false;
   const headers: Record<string, string | string[]> = Object.create(null) as Record<string, string | string[]>;
   for (const [name, value] of Object.entries(raw)) {
-    if (value === undefined || HOP_BY_HOP_HEADERS.has(name.toLowerCase())) continue;
+    const lower = name.toLowerCase();
+    if (value === undefined || !FORWARDED_REQUEST_HEADERS.has(lower)) continue;
     if (typeof value === "string") {
       const substituted = substituteToken(value, token, upstream.credential);
-      if (substituted === undefined) headers[name] = value;
+      if (substituted === undefined) headers[lower] = value;
       else {
-        headers[name] = substituted;
+        headers[lower] = substituted;
         authenticated = true;
       }
       continue;
     }
     // A repeated header can never carry the token: Pi sends auth exactly once, and accepting a
     // token from an array position would widen the authentication surface for no gain.
-    headers[name] = value;
+    headers[lower] = value;
   }
   if (!authenticated) return undefined;
   headers.host = new URL(upstream.origin).host;
-  // Operator headers are applied LAST so a child cannot displace them by sending its own copy.
-  for (const [name, value] of Object.entries(upstream.headers)) headers[name] = value;
+  // A compressed body would carry an echoed operator secret straight past the response filter, so
+  // the broker negotiates plaintext regardless of what the child asked for.
+  headers["accept-encoding"] = "identity";
+  // Operator headers are applied LAST, and case-insensitively, so a child cannot displace one by
+  // sending its own copy — nor smuggle a second value alongside it under a different spelling.
+  for (const [name, value] of Object.entries(upstream.headers)) {
+    delete headers[name.toLowerCase()];
+    headers[name] = value;
+  }
   return headers;
 }
 
@@ -185,8 +297,13 @@ function upstreamTarget(requestUrl: string | undefined, upstream: BoundUpstream)
   let parsed: URL;
   try { parsed = new URL(requestUrl, "http://127.0.0.1"); }
   catch { return undefined; }
-  // `new URL` has already resolved `..` segments, so a traversal attempt simply fails the
-  // prefix test rather than escaping the upstream base path.
+  // `new URL` resolves `..` segments and normalises percent-encoded DOTS, so `..`, `%2e%2e`,
+  // `%2E%2E` and `.%2e` all collapse before the prefix test and simply fail it. It does NOT
+  // decode an encoded SEPARATOR: `%2f`/`%5c` survives normalisation, passes the prefix test, and
+  // reaches the upstream with its encoding intact, leaving the escape to the upstream's own
+  // decode-then-route order. No provider route needs an encoded separator, so refusing them
+  // outright is what makes the prefix test's guarantee true as stated rather than nearly true.
+  if (/%2f|%5c/iu.test(parsed.pathname)) return undefined;
   if (parsed.pathname !== BROKER_ROUTE_PREFIX && !parsed.pathname.startsWith(`${BROKER_ROUTE_PREFIX}/`)) return undefined;
   const suffix = parsed.pathname.slice(BROKER_ROUTE_PREFIX.length);
   try { return new URL(`${upstream.origin}${upstream.basePath}${suffix}${parsed.search}`); }
@@ -251,6 +368,22 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
         if (value === undefined || HOP_BY_HOP_HEADERS.has(name.toLowerCase())) continue;
         responseHeaders[name] = value;
       }
+      // The response path is the one remaining route by which the operator's credential could
+      // reach the child, so the parent's own scrub predicate is applied to it. An upstream that
+      // reflects the request credential in a header hands it over outright; fail closed.
+      if (responseHeadersLeak(responseHeaders, bound.containsSensitiveValue)) {
+        upstreamResponse.destroy();
+        failClosed(response, 502);
+        return;
+      }
+      // The request negotiated `identity`, so an encoded body means an upstream that ignored it —
+      // and an encoded body is one the filter below cannot read. Refuse rather than relay blind.
+      const contentEncoding = responseHeaders["content-encoding"];
+      if (contentEncoding !== undefined && String(contentEncoding).toLowerCase() !== "identity") {
+        upstreamResponse.destroy();
+        failClosed(response, 502);
+        return;
+      }
       // One request, one connection, and the UPSTREAM's own body framing.
       //
       // Both halves of that matter. A kept-alive socket to a per-child broker is a live handle
@@ -267,8 +400,25 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
       // Header flush + pipe, never buffer-to-completion: a long streamed generation must reach
       // the child frame by frame or it breaks outright.
       response.flushHeaders();
-      upstreamResponse.on("error", () => response.destroy());
-      upstreamResponse.pipe(response);
+      // Filtered, not merely relayed. The filter forwards every clean byte immediately and
+      // destroys the exchange the moment operator material appears, so the child receives a
+      // truncated stream rather than the value.
+      const filter = new SensitiveResponseFilter(bound.containsSensitiveValue);
+      const abort = (): void => {
+        upstreamResponse.destroy();
+        filter.destroy();
+        // RESET, not a graceful close. The broker mirrors the upstream's framing, so a response
+        // the provider close-delimited has no declared length — and a FIN there is byte-for-byte
+        // indistinguishable from a complete empty body. The child would read a suppressed answer
+        // as a valid one. An RST surfaces in the child's client as a failed request, which is
+        // what a refusal must look like.
+        const socket = response.socket;
+        if (socket !== null && !socket.destroyed) socket.resetAndDestroy();
+        response.destroy();
+      };
+      upstreamResponse.on("error", abort);
+      filter.on("error", abort);
+      upstreamResponse.pipe(filter).pipe(response);
     });
     forward.setNoDelay(true);
     forward.on("error", () => failClosed(response, 502));
@@ -306,11 +456,15 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
       if (revoked) refuseBroker();
       if (typeof authority?.nonce !== "string" || !sameToken(authority.nonce, ownerNonce)) refuseBroker();
       if (typeof authority?.credential !== "string" || authority.credential === "") refuseBroker();
+      // No predicate, no forwarding: without it the broker cannot tell whether a response is
+      // handing the operator's own material back to the child, and must not guess.
+      if (typeof authority?.containsSensitiveValue !== "function") refuseBroker();
       const endpoint = boundedUpstream(authority.baseUrl);
       upstream = Object.freeze({
         ...endpoint,
         credential: authority.credential,
         headers: Object.freeze({ ...authority.headers }),
+        containsSensitiveValue: authority.containsSensitiveValue,
       });
     },
     revoke(): void {

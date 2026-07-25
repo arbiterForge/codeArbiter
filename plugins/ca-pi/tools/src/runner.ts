@@ -677,6 +677,10 @@ export async function runPiChild(
       baseUrl: preparedEnvironment.upstream.baseUrl,
       credential: preparedEnvironment.upstream.credential,
       headers: preparedEnvironment.upstream.headers,
+      // The same predicate that suppresses a child echoing operator material through its final
+      // assistant message now also guards the broker's response path, so the two halves of the
+      // child boundary cannot drift apart.
+      containsSensitiveValue: preparedEnvironment.containsSensitiveValue,
     });
   } catch (error) {
     // ADR-0017: a selected-provider record that cannot be projected credential-blind refuses

@@ -139,13 +139,32 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertNotIn("0.0.0.0", broker)
         self.assertIn("codeArbiter inference broker failed closed.", broker)
         self.assertIn("timingSafeEqual", broker)
-        self.assertIn("upstreamResponse.pipe(response)", broker)
+        # Streamed both ways and never buffered to completion. The response now streams
+        # THROUGH the sensitive-value filter rather than straight at the child, so the
+        # pinned shape is the filtered pipe, not a bare one.
+        self.assertIn("upstreamResponse.pipe(filter).pipe(response)", broker)
         self.assertIn("request.pipe(forward)", broker)
         self.assertNotRegex(broker, r"await\s+\w*[Rr]esponse\.(text|json|arrayBuffer)\(")
+        # The request path is an ALLOW list, so an unrecognised child header can never ride
+        # onto a request carrying the operator's real credential.
+        self.assertIn("FORWARDED_REQUEST_HEADERS", broker)
+        self.assertNotRegex(broker, r"HOP_BY_HOP_HEADERS\.has\(lower\)")
+        # The response path is filtered with the PARENT's own scrub predicate, over plaintext
+        # (compression is refused, not relayed blind), and a refusal resets rather than closes
+        # gracefully so a suppressed answer cannot read as a complete empty one.
+        self.assertIn("containsSensitiveValue", broker)
+        self.assertIn("SensitiveResponseFilter", broker)
+        self.assertIn('headers["accept-encoding"] = "identity"', broker)
+        self.assertIn("resetAndDestroy()", broker)
+        # An encoded path separator survives WHATWG normalisation, so the prefix test alone
+        # does not bound the forwarded route.
+        self.assertIn("%2f|%5c", broker)
         # The runner owns the listener's lifetime and the token's revocation.
         runner = (REPO / "plugins/ca-pi/tools/src/runner.ts").read_text(encoding="utf-8")
         self.assertIn("startInferenceBroker", runner)
         self.assertIn("isolation-broker", runner)
+        # ...and hands it the parent's scrub predicate, or the response filter is inert.
+        self.assertIn("containsSensitiveValue: preparedEnvironment.containsSensitiveValue", runner)
         self.assertIn("broker.revoke()", runner)
         # Two INDEPENDENT teardown call sites: the refused-launch catch (which returns
         # before the try/finally is ever entered) and the finally that backstops every
