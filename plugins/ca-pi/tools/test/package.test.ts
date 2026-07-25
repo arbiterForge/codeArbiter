@@ -26,6 +26,16 @@ const windowsSupervisor = resolve(pluginRoot, "helpers", "windows-supervisor.js"
 // aggregate fixture bound below the platform runner's 180-second command cap.
 const LIVE_DUPLICATE_HOST_TIMEOUT_MS = 120_000;
 
+// Same reasoning as above, for the shorter live-Pi spawns. These execFileSync a
+// real Node process that imports the installed Pi host, so they pay cold hosted
+// Windows process-creation and module-resolution cost that no product operation
+// controls. Measured on windows-latest: the dormant-load case took 5497 ms
+// against Vitest's bare 5000 ms default and failed - the same "a real spawn
+// measured against a flat wall-clock budget" defect as #428, in a file #443 did
+// not touch. Bounded well under the platform runner's 180-second command cap, so
+// a genuine hang still fails closed rather than running to the job deadline.
+const LIVE_PI_SPAWN_TIMEOUT_MS = 60_000;
+
 async function exists(path: string): Promise<boolean> {
   try {
     await access(path);
@@ -438,7 +448,7 @@ describe("ca-pi package", () => {
       await rm(projectCwd, { recursive: true, force: true });
       await rm(agentDir, { recursive: true, force: true });
     }
-  });
+  }, LIVE_PI_SPAWN_TIMEOUT_MS);
 
   test("minimal environment replaces poisoned operator homes and configs", async () => {
     const root = await mkdtemp(resolve(tmpdir(), "ca-pi-isolation-red-"));
@@ -1114,7 +1124,7 @@ describe("ca-pi package", () => {
       else process.env.PATH = previousPath;
       await rm(root, { recursive: true, force: true });
     }
-  });
+  }, LIVE_PI_SPAWN_TIMEOUT_MS);
 
   test("installed Pi runtime is admitted by the production boundary", async () => {
     const piRoot = await findPiPackageRoot();
@@ -1128,6 +1138,6 @@ describe("ca-pi package", () => {
       pythonMajor: 3,
     })(api as never);
     expect(apiAccesses).toBe(0);
-  });
+  }, LIVE_PI_SPAWN_TIMEOUT_MS);
 
 });

@@ -2,6 +2,17 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.9] - 2026-07-25
+
+### Fixed
+
+- The three live-Pi spawns in the package contract test now carry an explicit
+  budget. Each `execFileSync`s a real Node process that imports the installed Pi
+  host, and each inherited Vitest's bare 5000 ms default against cold hosted
+  Windows process creation - the same flat-wall-clock defect as the Job Object
+  admission window, in a file that fix did not reach. Measured 5497 ms and
+  failing on `windows-latest`. Test-only.
+
 ## [0.1.8] - 2026-07-25
 
 ### Fixed
