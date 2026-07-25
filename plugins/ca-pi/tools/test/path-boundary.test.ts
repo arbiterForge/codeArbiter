@@ -75,7 +75,7 @@ describe("Pi path boundary", () => {
   });
 
   test("the default flavor follows the host platform", () => {
-    const host: PathFlavor = process.platform === "win32" ? "win32" : "posix";
+    const host: PathFlavor = flavorForPlatform(process.platform);
     const cases: readonly (readonly [string, string])[] = Object.freeze([
       [resolve("/a/b/c"), resolve("/a/b")],
       [resolve("/a/bc"), resolve("/a/b")],
