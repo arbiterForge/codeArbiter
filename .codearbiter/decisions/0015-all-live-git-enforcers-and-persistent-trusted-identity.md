@@ -3,7 +3,7 @@ status: accepted
 date: 2026-07-16
 title: Require every live git enforcer and persist trusted executable identity
 decided-by: SUaDtL@users.noreply.github.com
-supersedes: 0014
+supersedes: 0014-githook-shim-dropin-fail-closed
 governs: core/pysrc/_githooks.py, core/pysrc/session-start.py, plugins/*/hooks/_githooks.py, plugins/*/hooks/session-start.py
 ---
 
