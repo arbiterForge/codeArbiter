@@ -36,7 +36,14 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 import { createSandbox, type CreateResult } from "./create.ts";
-import { destroySandbox, prune, type DestroyResult, type PruneResult } from "./destroy.ts";
+import {
+  destroySandbox,
+  prune,
+  teardownIncomplete,
+  formatTeardownDiagnostic,
+  type DestroyResult,
+  type PruneResult,
+} from "./destroy.ts";
 import { execInSandbox, type ExecResult } from "./exec.ts";
 import { cpOut, type RunResult } from "./cp.ts";
 import { resolveContainerId } from "./registry.ts";
@@ -321,6 +328,31 @@ export const defaultHandlers: Handlers = {
 };
 
 // --------------------------------------------------------------------------
+// teardown verdict -> exit code (#393)
+// --------------------------------------------------------------------------
+/**
+ * The exit code `destroy`/`prune` return when teardown did not fully succeed.
+ * Distinct from 2 (usage error) so a caller can tell a leaked sandbox from a
+ * mistyped command.
+ */
+export const TEARDOWN_FAILURE_EXIT = 1;
+
+/**
+ * Print the teardown diagnostic (if any) and map the verdict to an exit code.
+ *
+ * `destroy`/`prune` used to `return 0` unconditionally, so a daemon outage or an
+ * in-use object left untrusted containers and source volumes running while
+ * automation saw success (#393). The structured result is still written to stdout
+ * for scripting; the human/CI-facing diagnostic — naming every object left
+ * behind — goes to stderr.
+ */
+function teardownExit(verb: "destroy" | "prune", r: DestroyResult | PruneResult): number {
+  if (!teardownIncomplete(r)) return 0;
+  process.stderr.write(`${formatTeardownDiagnostic(verb, r)}\n`);
+  return TEARDOWN_FAILURE_EXIT;
+}
+
+// --------------------------------------------------------------------------
 // runCli — parse + dispatch; returns an exit code, never throws on usage error
 // --------------------------------------------------------------------------
 /**
@@ -329,7 +361,10 @@ export const defaultHandlers: Handlers = {
  *   - usage error (`CliError`): the message goes to stderr, exit code 2.
  *   - `exec`: the in-container exit code propagates as the CLI's code (AC-09).
  *   - `cp`: docker's exit code propagates.
- *   - `create`/`destroy`/`prune`/`shell`: 0 on success (shell returns its code).
+ *   - `destroy`/`prune`: 0 only when teardown is verified complete; otherwise
+ *     `TEARDOWN_FAILURE_EXIT` with a stderr diagnostic naming what was left
+ *     behind (#393).
+ *   - `create`/`shell`: 0 on success (shell returns its code).
  *
  * Side-effecting work prints a one-line JSON/summary to stdout so the surface is
  * scriptable; the structured result objects come straight from the modules.
@@ -368,12 +403,12 @@ export async function runCli(argv: string[], handlers: Handlers = defaultHandler
     case "destroy": {
       const r = handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
       process.stdout.write(`${JSON.stringify(r)}\n`);
-      return 0;
+      return teardownExit("destroy", r);
     }
     case "prune": {
       const r = handlers.prune();
       process.stdout.write(`${JSON.stringify(r)}\n`);
-      return 0;
+      return teardownExit("prune", r);
     }
   }
 }

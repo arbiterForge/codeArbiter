@@ -21,7 +21,10 @@ reclaims any leaked labeled object — the safety net for a box whose driver die
    container, then its named volume (unless `--keep-volume`).
 3. **Prune leaks** — `prune` in `${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts` finds and removes any
    remaining labeled container/volume via the `ca.sandbox=1` label alone.
-4. **Confirm** — report what was removed and what was retained (cached images, a kept volume).
+4. **Confirm** — report what was removed and what was retained (cached images, a kept volume). If any
+   removal failed, or a final label-scoped re-list still finds a targeted object, say so and NAME the
+   leftovers: the CLI exits non-zero and the JSON result carries `failures` / `remainingContainers` /
+   `remainingVolumes`.
 
 ## Routes to
 
@@ -43,3 +46,6 @@ via `destroySandbox` and `prune` in `${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts`.
 - MUST retain cached `ca-sbx:<repo>-<dephash>` images — teardown removes containers and volumes, not the
   build cache.
 - MUST NOT touch any object not labeled `ca.sandbox=1`; destroy operates only on this plugin's objects.
+- MUST NOT report success when a removal, a discovery listing, or the post-teardown verification failed.
+  A failed teardown exits non-zero and names every object left behind — silently succeeding while an
+  untrusted container is still running is the one outcome this command may never produce.

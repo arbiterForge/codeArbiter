@@ -60,6 +60,47 @@ function labelFilterArgs(labels: string | string[]): string[] {
 }
 
 /**
+ * A label listing that RETAINS docker's exit status.
+ *
+ * `listContainers`/`listVolumes` return only the parsed ids, which means a failed
+ * listing (dead daemon, permission error) is indistinguishable from "the scope is
+ * empty". That is harmless for a read-only view but dangerous for teardown, where
+ * "found nothing" would be reported as "nothing is left" — so destroy.ts consumes
+ * this shape instead and treats a non-zero `code` as a teardown failure (#393).
+ */
+export type ListResult = {
+  /** docker's exit code (0 = the listing is trustworthy). */
+  code: number;
+  /** The parsed ids/names; empty when the listing failed. */
+  items: string[];
+  /** docker's stderr, for the failure diagnostic. */
+  stderr: string;
+  /** The label scope that was queried, for the failure diagnostic. */
+  scope: string;
+};
+
+const scopeOf = (labels: string | string[]): string =>
+  (Array.isArray(labels) ? labels : [labels]).map((l) => `label=${l}`).join(" ");
+
+/** `listContainers` with docker's exit status retained — see `ListResult`. */
+export function listContainersResult(
+  labels: string | string[] = SANDBOX_LABEL,
+  dockerRun: DockerRun = defaultDockerRun,
+): ListResult {
+  const r = dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
+  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+}
+
+/** `listVolumes` with docker's exit status retained — see `ListResult`. */
+export function listVolumesResult(
+  labels: string | string[] = SANDBOX_LABEL,
+  dockerRun: DockerRun = defaultDockerRun,
+): ListResult {
+  const r = dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
+  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+}
+
+/**
  * Container ids matching one or more label expressions (ANDed). `docker ps -a -q
  * --no-trunc --filter label=<expr> [...]` prints one full id per line; blank
  * output => none. Pass an array to require ALL labels (e.g. membership + id).
@@ -68,8 +109,7 @@ export function listContainers(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
 ): string[] {
-  const r = dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
-  return splitLines(r.stdout);
+  return listContainersResult(labels, dockerRun).items;
 }
 
 /**
@@ -80,8 +120,7 @@ export function listVolumes(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
 ): string[] {
-  const r = dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
-  return splitLines(r.stdout);
+  return listVolumesResult(labels, dockerRun).items;
 }
 
 function splitLines(out: string): string[] {
