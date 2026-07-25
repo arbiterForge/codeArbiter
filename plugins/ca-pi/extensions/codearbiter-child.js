@@ -4,7 +4,7 @@ var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", write: "WRITE",
 // src/child-extension.ts
 import { createReadStream } from "node:fs";
 import { readFile as readFile2, realpath as realpath4 } from "node:fs/promises";
-import { dirname as dirname3, resolve as resolve4 } from "node:path";
+import { dirname as dirname3, resolve as resolve5 } from "node:path";
 import { fileURLToPath as fileURLToPath2 } from "node:url";
 
 // src/attestation.ts
@@ -30,8 +30,13 @@ function childAttestationDigest(input) {
 import { spawn, spawnSync } from "node:child_process";
 import { createHash as createHash2, randomUUID } from "node:crypto";
 import { accessSync, constants, realpathSync, statSync } from "node:fs";
-import { appendFile, realpath } from "node:fs/promises";
-import { isAbsolute, posix as posix2, resolve as resolve2, win32 as win322 } from "node:path";
+import { realpath as realpath2 } from "node:fs/promises";
+import { isAbsolute, posix as posix2, win32 as win322 } from "node:path";
+
+// src/audit-sink.ts
+import { constants as fsConstants } from "node:fs";
+import { lstat, open, realpath } from "node:fs/promises";
+import { relative, resolve as resolve2 } from "node:path";
 
 // src/path-boundary.ts
 import { posix, resolve, win32 } from "node:path";
@@ -45,6 +50,99 @@ function lexicallyInside(path, root, flavor = flavorForPlatform(process.platform
   const pathApi = pathApiFor(flavor);
   const suffix = pathApi.relative(root, path);
   return suffix === "" || !suffix.startsWith("..") && !pathApi.isAbsolute(suffix);
+}
+
+// src/audit-sink.ts
+var AUDIT_LOG_NAME = "gate-events.log";
+var AUDIT_STATE_DIRECTORY = ".codearbiter";
+var MAX_AUDIT_LINE_BYTES = 2048;
+var NODE_AUDIT_SINK_IO = Object.freeze({ realpath, lstat, open });
+function sameAuditFile(left, right) {
+  return left.isFile() && right.isFile() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.nlink === 1 && right.nlink === 1 && left.dev === right.dev && left.ino === right.ino;
+}
+function sameAuditDirectory(left, right) {
+  return left.isDirectory() && right.isDirectory() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.dev === right.dev && left.ino === right.ino;
+}
+async function openedAuditTarget(target, io) {
+  const noFollow = typeof fsConstants.O_NOFOLLOW === "number" ? fsConstants.O_NOFOLLOW : 0;
+  const existingFlags = fsConstants.O_WRONLY | fsConstants.O_APPEND | noFollow;
+  const createFlags = existingFlags | fsConstants.O_CREAT | fsConstants.O_EXCL;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    let expected;
+    try {
+      expected = await io.lstat(target);
+      if (!expected.isFile() || expected.isSymbolicLink() || expected.nlink !== 1) return void 0;
+    } catch (error) {
+      if (error.code !== "ENOENT") return void 0;
+    }
+    let handle;
+    try {
+      handle = await io.open(target, expected === void 0 ? createFlags : existingFlags, 384);
+    } catch (error) {
+      if (expected === void 0 && error.code === "EEXIST" && attempt === 0) continue;
+      return void 0;
+    }
+    try {
+      const opened = await handle.stat();
+      const pathname = await io.lstat(target);
+      if (!sameAuditFile(opened, pathname) || expected !== void 0 && !sameAuditFile(opened, expected)) {
+        await handle.close();
+        return void 0;
+      }
+      return Object.freeze({ handle, identity: opened });
+    } catch {
+      try {
+        await handle.close();
+      } catch {
+      }
+      return void 0;
+    }
+  }
+  return void 0;
+}
+async function appendAuditLineWithIo(cwd, line, io) {
+  try {
+    if (Buffer.byteLength(line, "utf8") > MAX_AUDIT_LINE_BYTES || !line.endsWith("\n") || line.slice(0, -1).includes("\n")) return false;
+    const root = await io.realpath(cwd);
+    const statePath = resolve2(root, AUDIT_STATE_DIRECTORY);
+    const stateInfo = await io.lstat(statePath);
+    if (!stateInfo.isDirectory() || stateInfo.isSymbolicLink()) return false;
+    const state = await io.realpath(statePath);
+    const stateRelative = relative(root, state);
+    if (stateRelative === "" || !lexicallyInside(state, root) || resolve2(root, stateRelative) !== state) return false;
+    const stateIdentity = await io.lstat(state);
+    if (!sameAuditDirectory(stateInfo, stateIdentity)) return false;
+    const stateIsCurrent = async () => {
+      try {
+        return await io.realpath(statePath) === state && sameAuditDirectory(stateIdentity, await io.lstat(statePath));
+      } catch {
+        return false;
+      }
+    };
+    if (!await stateIsCurrent()) return false;
+    const target = resolve2(state, AUDIT_LOG_NAME);
+    const opened = await openedAuditTarget(target, io);
+    if (opened === void 0) return false;
+    const { handle, identity: identity2 } = opened;
+    try {
+      const before = await handle.stat();
+      const beforePath = await io.lstat(target);
+      if (!sameAuditFile(identity2, before) || !sameAuditFile(before, beforePath) || !await stateIsCurrent()) return false;
+      await handle.appendFile(line, { encoding: "utf8" });
+      await handle.sync();
+      const after = await handle.stat();
+      const afterPath = await io.lstat(target);
+      if (!sameAuditFile(before, after) || !sameAuditFile(after, afterPath) || after.size < before.size + Buffer.byteLength(line, "utf8") || !await stateIsCurrent()) return false;
+    } finally {
+      await handle.close();
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+async function appendAuditLine(cwd, line) {
+  return await appendAuditLineWithIo(cwd, line, NODE_AUDIT_SINK_IO);
 }
 
 // ../../ca/tools/redactor.ts
@@ -132,7 +230,7 @@ async function canonicalUserHome(projectRoot, packageRoot, platform = process.pl
   const candidate = platform === "win32" ? process.env.USERPROFILE : process.env.HOME;
   if (typeof candidate !== "string" || candidate.length < 1 || candidate.length > PI_MAX_HOME_CHARS || candidate !== candidate.trim() || CONTROL_RE.test(candidate) || !pathApi.isAbsolute(candidate)) return void 0;
   try {
-    const canonical = await realpath(candidate);
+    const canonical = await realpath2(candidate);
     if (!statSync(canonical).isDirectory() || lexicallyInside(canonical, projectRoot, flavorForPlatform(platform)) || lexicallyInside(canonical, packageRoot, flavorForPlatform(platform))) return void 0;
     return canonical;
   } catch {
@@ -247,7 +345,6 @@ var BridgeClient = class {
     this.ready = this.validatePaths();
     this.ready.catch(() => void 0);
   }
-  options;
   ready;
   timeoutMs;
   maxRequestBytes;
@@ -260,10 +357,10 @@ var BridgeClient = class {
       throw new Error("bridge paths must be absolute");
     }
     const [git, python, script, root] = await Promise.all([
-      realpath(this.options.gitExecutable),
-      realpath(this.options.pythonExecutable),
-      realpath(this.options.bridgeScript),
-      realpath(this.options.packageRoot)
+      realpath2(this.options.gitExecutable),
+      realpath2(this.options.pythonExecutable),
+      realpath2(this.options.bridgeScript),
+      realpath2(this.options.packageRoot)
     ]);
     if (canonicalExecutable(git, process.platform) === void 0 || canonicalExecutable(python, process.platform) === void 0) {
       throw new Error("bridge executable identity is invalid");
@@ -299,10 +396,7 @@ var BridgeClient = class {
       `STDOUT_BYTES: ${counts.stdout}`,
       `STDERR_BYTES: ${counts.stderr}`
     ].join(" | ") + "\n";
-    try {
-      await appendFile(resolve2(request.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
-    } catch {
-    }
+    await appendAuditLine(request.cwd, line);
   }
   async failed(request, detail, counts = { request: 0, stdout: 0, stderr: 0 }) {
     const response = this.failure(request, detail);
@@ -319,7 +413,7 @@ var BridgeClient = class {
       return await this.failed(request, "path validation failed");
     }
     try {
-      const project = await realpath(request.cwd);
+      const project = await realpath2(request.cwd);
       if (lexicallyInside(paths.git, project) || lexicallyInside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
@@ -477,9 +571,9 @@ function compatibilityDirection(input) {
 }
 
 // src/runtime-resolver.ts
-import { lstat, readFile, realpath as realpath2 } from "node:fs/promises";
+import { lstat as lstat2, readFile, realpath as realpath3 } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname as dirname2, isAbsolute as isAbsolute2, resolve as resolve3 } from "node:path";
+import { dirname as dirname2, isAbsolute as isAbsolute2, resolve as resolve4 } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 var PI_RUNTIME_DIAGNOSIS = "codeArbiter could not validate the active Pi CLI runtime; start from the Pi CLI and run /ca-doctor.";
 var trustedIdentities = /* @__PURE__ */ new WeakSet();
@@ -489,12 +583,12 @@ function fail(cause) {
 async function owningPackageRoot(file, expectedName) {
   let cursor = dirname2(file);
   while (true) {
-    const candidate = resolve3(cursor, "package.json");
+    const candidate = resolve4(cursor, "package.json");
     try {
       const manifest = JSON.parse(await readFile(candidate, "utf8"));
       if (manifest.name !== expectedName) return fail();
-      const canonicalRoot = await realpath2(cursor);
-      if (!lexicallyInside(file, canonicalRoot) || !lexicallyInside(await realpath2(candidate), canonicalRoot)) return fail();
+      const canonicalRoot = await realpath3(cursor);
+      if (!lexicallyInside(file, canonicalRoot) || !lexicallyInside(await realpath3(candidate), canonicalRoot)) return fail();
       return canonicalRoot;
     } catch (error) {
       if (error.code !== "ENOENT") return fail(error);
@@ -529,17 +623,17 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
   try {
     const activeAnchor = process.argv[1];
     if (typeof activeAnchor !== "string" || activeAnchor.length === 0 || !isAbsolute2(activeAnchor)) return fail();
-    const canonicalAnchor = await realpath2(activeAnchor);
+    const canonicalAnchor = await realpath3(activeAnchor);
     if (cliCandidate !== void 0) {
-      if (!isAbsolute2(cliCandidate) || await realpath2(cliCandidate) !== canonicalAnchor) return fail();
+      if (!isAbsolute2(cliCandidate) || await realpath3(cliCandidate) !== canonicalAnchor) return fail();
     }
-    const shippedModule = await realpath2(fileURLToPath(import.meta.url));
+    const shippedModule = await realpath3(fileURLToPath(import.meta.url));
     const extensionPackageRoot = await owningPackageRoot(shippedModule, "ca-pi");
     let cursor = dirname2(canonicalAnchor);
     let manifest;
     let manifestPath = "";
     while (true) {
-      const candidate = resolve3(cursor, "package.json");
+      const candidate = resolve4(cursor, "package.json");
       try {
         manifest = JSON.parse(await readFile(candidate, "utf8"));
         manifestPath = candidate;
@@ -552,19 +646,19 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
       cursor = parent;
     }
     if (manifest.name !== "@earendil-works/pi-coding-agent" || typeof manifest.version !== "string") return fail();
-    const packageRoot = await realpath2(cursor);
-    const canonicalManifest = await realpath2(manifestPath);
+    const packageRoot = await realpath3(cursor);
+    const canonicalManifest = await realpath3(manifestPath);
     if (!lexicallyInside(canonicalAnchor, packageRoot) || !lexicallyInside(canonicalManifest, packageRoot)) return fail();
     if (lexicallyInside(packageRoot, extensionPackageRoot)) return fail();
-    const declaredBin = resolve3(packageRoot, binTarget(manifest));
-    if (!lexicallyInside(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
-    if (!(await lstat(canonicalAnchor)).isFile()) return fail();
+    const declaredBin = resolve4(packageRoot, binTarget(manifest));
+    if (!lexicallyInside(declaredBin, packageRoot) || await realpath3(declaredBin) !== canonicalAnchor) return fail();
+    if (!(await lstat2(canonicalAnchor)).isFile()) return fail();
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
-    const requireFromPi = createRequire(resolve3(packageRoot, "package.json"));
-    const moduleEntry = await realpath2(requireFromPi.resolve(declaredExport));
+    const requireFromPi = createRequire(resolve4(packageRoot, "package.json"));
+    const moduleEntry = await realpath3(requireFromPi.resolve(declaredExport));
     if (!lexicallyInside(moduleEntry, packageRoot)) return fail();
-    if (!(await lstat(moduleEntry)).isFile()) return fail();
+    if (!(await lstat2(moduleEntry)).isFile()) return fail();
     const identity2 = Object.freeze({
       cliEntry: canonicalAnchor,
       manifestPath: canonicalManifest,
@@ -616,8 +710,7 @@ async function loadPiRuntime(identity2) {
 
 // src/tool-guard.ts
 import { createHash as createHash4, randomUUID as randomUUID2 } from "node:crypto";
-import { constants as fsConstants, realpathSync as realpathSync2 } from "node:fs";
-import { lstat as lstat2, open, realpath as realpath3 } from "node:fs/promises";
+import { realpathSync as realpathSync2 } from "node:fs";
 import { types as utilTypes2 } from "node:util";
 
 // src/notices.ts
@@ -908,7 +1001,6 @@ function evaluatePolicy(descriptor, rawRequest) {
 
 // src/tool-guard.ts
 var STANDALONE_GENERATION = Object.freeze({});
-var NODE_PERMISSION_AUDIT_IO = Object.freeze({ realpath: realpath3, lstat: lstat2, open });
 var CONFIRMATION_TITLE = "Allow governed operation?";
 var CONFIRMATION_TIMEOUT_MS = 6e4;
 var COMMAND_LIMIT = 8192;
@@ -1658,7 +1750,7 @@ async function codeArbiterPiChild(pi) {
   let packageRoot = dirname3(modulePath);
   while (true) {
     try {
-      const manifest = JSON.parse(await readFile2(resolve4(packageRoot, "package.json"), "utf8"));
+      const manifest = JSON.parse(await readFile2(resolve5(packageRoot, "package.json"), "utf8"));
       if (manifest.name === "ca-pi") break;
     } catch {
     }
@@ -1671,7 +1763,7 @@ async function codeArbiterPiChild(pi) {
   const gitExecutable = resolveGitExecutable(cwd);
   const descriptor = loadToolClasses(define_CODEARBITER_PI_TOOL_CLASSES_default);
   const bridge = new BridgeClient({
-    bridgeScript: resolve4(packageRoot, "hooks", "pi-bridge.py"),
+    bridgeScript: resolve5(packageRoot, "hooks", "pi-bridge.py"),
     packageRoot,
     pythonExecutable: python.executable,
     pythonPrefixArgs: python.prefixArgs,
