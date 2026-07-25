@@ -6136,6 +6136,7 @@ import {
   request as httpRequest
 } from "node:http";
 import { request as httpsRequest } from "node:https";
+import { Transform } from "node:stream";
 var BROKER_TOKEN_ENV_NAME = "CODEARBITER_PI_BROKER_TOKEN";
 var BROKER_ROUTE_PREFIX = "/v1";
 var MAX_REQUEST_TARGET_BYTES = 2048;
@@ -6152,6 +6153,30 @@ var HOP_BY_HOP_HEADERS = /* @__PURE__ */ new Set([
   "upgrade",
   "host"
 ]);
+var FORWARDED_REQUEST_HEADERS = /* @__PURE__ */ new Set([
+  "accept",
+  "content-length",
+  "content-type",
+  "user-agent",
+  // The auth carriers Pi 0.80.x builds around a provider `apiKey`. Because only these cross, the
+  // credential can only ever be substituted under one of these names — never one the child picks.
+  "api-key",
+  "authorization",
+  "x-api-key",
+  "x-goog-api-key",
+  // Protocol/version negotiation, which decides the response SHAPE the child has to parse.
+  "anthropic-beta",
+  "anthropic-dangerous-direct-browser-access",
+  "anthropic-version",
+  "openai-beta",
+  "openai-organization",
+  "openai-project",
+  // opencode's opaque client/session identity. Those providers require an explicit operator
+  // `baseUrl` anyway, and neither value is a routing directive.
+  "x-opencode-client",
+  "x-opencode-session"
+]);
+var RESPONSE_SCAN_OVERLAP_BYTES = 4096;
 var FAIL_CLOSED_BODY = '{"error":{"type":"codearbiter_broker_refused","message":"codeArbiter inference broker failed closed."}}';
 var InferenceBrokerError = class extends Error {
   constructor() {
@@ -6161,6 +6186,32 @@ var InferenceBrokerError = class extends Error {
 };
 function refuseBroker() {
   throw new InferenceBrokerError();
+}
+var SensitiveResponseFilter = class extends Transform {
+  constructor(containsSensitiveValue) {
+    super();
+    this.containsSensitiveValue = containsSensitiveValue;
+  }
+  containsSensitiveValue;
+  tail = Buffer.alloc(0);
+  _transform(chunk, _encoding, callback) {
+    const window = this.tail.byteLength === 0 ? chunk : Buffer.concat([this.tail, chunk]);
+    if (this.containsSensitiveValue(window.toString("utf8")) || this.containsSensitiveValue(window.toString("latin1"))) {
+      callback(new InferenceBrokerError());
+      return;
+    }
+    this.tail = window.byteLength <= RESPONSE_SCAN_OVERLAP_BYTES ? Buffer.from(window) : Buffer.from(window.subarray(window.byteLength - RESPONSE_SCAN_OVERLAP_BYTES));
+    callback(null, chunk);
+  }
+};
+function responseHeadersLeak(headers, containsSensitiveValue) {
+  for (const [name, value] of Object.entries(headers)) {
+    if (containsSensitiveValue(name)) return true;
+    for (const item of Array.isArray(value) ? value : [value]) {
+      if (containsSensitiveValue(item)) return true;
+    }
+  }
+  return false;
 }
 function boundedUpstream(baseUrl) {
   if (typeof baseUrl !== "string" || Buffer.byteLength(baseUrl, "utf8") > MAX_UPSTREAM_BASE_BYTES) refuseBroker();
@@ -6198,21 +6249,26 @@ function forwardedHeaders(raw, upstream, token) {
   let authenticated = false;
   const headers = /* @__PURE__ */ Object.create(null);
   for (const [name, value] of Object.entries(raw)) {
-    if (value === void 0 || HOP_BY_HOP_HEADERS.has(name.toLowerCase())) continue;
+    const lower = name.toLowerCase();
+    if (value === void 0 || !FORWARDED_REQUEST_HEADERS.has(lower)) continue;
     if (typeof value === "string") {
       const substituted = substituteToken(value, token, upstream.credential);
-      if (substituted === void 0) headers[name] = value;
+      if (substituted === void 0) headers[lower] = value;
       else {
-        headers[name] = substituted;
+        headers[lower] = substituted;
         authenticated = true;
       }
       continue;
     }
-    headers[name] = value;
+    headers[lower] = value;
   }
   if (!authenticated) return void 0;
   headers.host = new URL(upstream.origin).host;
-  for (const [name, value] of Object.entries(upstream.headers)) headers[name] = value;
+  headers["accept-encoding"] = "identity";
+  for (const [name, value] of Object.entries(upstream.headers)) {
+    delete headers[name.toLowerCase()];
+    headers[name] = value;
+  }
   return headers;
 }
 function upstreamTarget(requestUrl, upstream) {
@@ -6223,6 +6279,7 @@ function upstreamTarget(requestUrl, upstream) {
   } catch {
     return void 0;
   }
+  if (/%2f|%5c/iu.test(parsed.pathname)) return void 0;
   if (parsed.pathname !== BROKER_ROUTE_PREFIX && !parsed.pathname.startsWith(`${BROKER_ROUTE_PREFIX}/`)) return void 0;
   const suffix = parsed.pathname.slice(BROKER_ROUTE_PREFIX.length);
   try {
@@ -6282,12 +6339,32 @@ async function startInferenceBroker(options) {
         if (value === void 0 || HOP_BY_HOP_HEADERS.has(name.toLowerCase())) continue;
         responseHeaders[name] = value;
       }
+      if (responseHeadersLeak(responseHeaders, bound.containsSensitiveValue)) {
+        upstreamResponse.destroy();
+        failClosed(response, 502);
+        return;
+      }
+      const contentEncoding = responseHeaders["content-encoding"];
+      if (contentEncoding !== void 0 && String(contentEncoding).toLowerCase() !== "identity") {
+        upstreamResponse.destroy();
+        failClosed(response, 502);
+        return;
+      }
       responseHeaders.connection = "close";
       if (responseHeaders["content-length"] === void 0) response.useChunkedEncodingByDefault = false;
       response.writeHead(upstreamResponse.statusCode ?? 502, responseHeaders);
       response.flushHeaders();
-      upstreamResponse.on("error", () => response.destroy());
-      upstreamResponse.pipe(response);
+      const filter = new SensitiveResponseFilter(bound.containsSensitiveValue);
+      const abort = () => {
+        upstreamResponse.destroy();
+        filter.destroy();
+        const socket = response.socket;
+        if (socket !== null && !socket.destroyed) socket.resetAndDestroy();
+        response.destroy();
+      };
+      upstreamResponse.on("error", abort);
+      filter.on("error", abort);
+      upstreamResponse.pipe(filter).pipe(response);
     });
     forward.setNoDelay(true);
     forward.on("error", () => failClosed(response, 502));
@@ -6323,11 +6400,13 @@ async function startInferenceBroker(options) {
       if (revoked) refuseBroker();
       if (typeof authority?.nonce !== "string" || !sameToken(authority.nonce, ownerNonce)) refuseBroker();
       if (typeof authority?.credential !== "string" || authority.credential === "") refuseBroker();
+      if (typeof authority?.containsSensitiveValue !== "function") refuseBroker();
       const endpoint = boundedUpstream(authority.baseUrl);
       upstream = Object.freeze({
         ...endpoint,
         credential: authority.credential,
-        headers: Object.freeze({ ...authority.headers })
+        headers: Object.freeze({ ...authority.headers }),
+        containsSensitiveValue: authority.containsSensitiveValue
       });
     },
     revoke() {
@@ -7430,7 +7509,11 @@ async function runPiChild(request, signal) {
       nonce,
       baseUrl: preparedEnvironment.upstream.baseUrl,
       credential: preparedEnvironment.upstream.credential,
-      headers: preparedEnvironment.upstream.headers
+      headers: preparedEnvironment.upstream.headers,
+      // The same predicate that suppresses a child echoing operator material through its final
+      // assistant message now also guards the broker's response path, so the two halves of the
+      // child boundary cannot drift apart.
+      containsSensitiveValue: preparedEnvironment.containsSensitiveValue
     });
   } catch (error) {
     if (preparedEnvironment !== void 0) await preparedEnvironment.cleanup().catch(() => void 0);

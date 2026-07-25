@@ -724,6 +724,39 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_every_third_party_action_is_pinned_to_a_commit_sha(self):
+        """A `uses:` on a movable tag re-points under us.
+
+        `@v4` and `@main` are branch/tag refs the upstream owner can move at any
+        time, so a compromised or merely careless upstream silently changes what
+        runs against this repo's checkout with write-capable tokens in scope.
+        The repo pins every action by SHA, but nothing asserted it — the
+        convention was held up by dependabot plus human review, and a
+        hand-edited `@v7` would have passed CI. Local `./...` composites are
+        exempt: they are this repo's own tracked files.
+        """
+        floating = []
+        for workflow in sorted((REPO_ROOT / ".github/workflows").glob("*.yml")):
+            for number, line in enumerate(workflow.read_text(encoding="utf-8").splitlines(), 1):
+                match = re.search(r"^\s*(?:-\s*)?uses:\s*(\S+)", line)
+                if match is None:
+                    continue
+                ref = match.group(1)
+                if ref.startswith("./"):
+                    continue
+                # `- uses: security-extended` inside a `config: |` literal is a
+                # CodeQL query-suite entry, not an Actions reference. An Actions
+                # `uses:` always names owner/repo; a bare word never does.
+                if "/" not in ref:
+                    continue
+                if re.search(r"@[0-9a-f]{40}$", ref):
+                    continue
+                floating.append(f"{workflow.name}:{number}: {ref}")
+        self.assertEqual(
+            floating, [],
+            "every third-party `uses:` must pin a 40-hex commit SHA, never a movable tag",
+        )
+
     def test_ci_runs_impact_planner_without_replacing_existing_job_conditions(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn(

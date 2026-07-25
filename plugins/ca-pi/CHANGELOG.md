@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.14] - 2026-07-25
+## [0.1.16] - 2026-07-25
 
 ### Changed
 
@@ -24,12 +24,61 @@ All notable changes to `ca-pi` are documented in this file.
   `google-vertex` (SDK request signing), `github-copilot` and `openai-codex`
   (OAuth refresh inside the child), any `oauth` provider record, and any
   provider with neither an operator `baseUrl` nor a pinned built-in endpoint.
+- **Breaking (broker interface):** the broker's upstream authority now requires
+  the parent's sensitive-value predicate. Without it the broker cannot tell
+  whether a response is handing the operator's own material back to the child,
+  so it refuses the authority rather than guessing.
+- Headers the child sends are now an allow list of what a provider call actually
+  needs, not a deny list of hop-by-hop names. Previously every unrecognised
+  child header rode verbatim onto a request carrying the operator's real
+  credential, and the credential could be substituted under any header name the
+  child chose. The destination origin is fixed, but the operator's `baseUrl` is
+  frequently a routing gateway, and gateways route on request headers.
+- The upstream response is filtered with the same predicate that already
+  suppressed a child echoing operator material through its final message. A
+  reflected credential in a response header fails closed; a reflected value in
+  the body resets the stream. Clean bytes still stream frame by frame, a
+  bounded overlap window catches a value split across two writes, and a
+  compressed body is refused rather than relayed unread.
 
 ### Fixed
 
 - A model-level `baseUrl` in the operator's provider record skipped endpoint
   acceptance entirely whenever a provider-level endpoint had already been
   captured, so a credential-bearing model endpoint could cross unvalidated.
+- Operator-configured provider headers could be duplicated, rather than
+  overwritten, by a child sending the same header under a different case.
+- A request target carrying an encoded path separator (`/v1/..%2fadmin`) passed
+  the route-prefix test and reached the upstream with its encoding intact:
+  WHATWG URL normalises encoded dots but not encoded slashes. Encoded
+  separators are now refused outright.
+
+## [0.1.15] - 2026-07-25
+
+### Changed
+
+- The shared statusline/footer ledger no longer rewrites itself on every render.
+  `ledger_update()` used to load the compatibility snapshot plus every live
+  session shard, write the session shard, load the snapshot and every shard a
+  second time, then atomically rewrite the whole snapshot - on every refresh,
+  whether or not anything had changed. Each write is now gated on the record (or
+  the snapshot) actually differing from what is on disk, the duplicate load is
+  gone, and the pure-liveness `last_ts` stamp is throttled to one refresh per
+  five minutes so a quiet render forces no write at all. The 36-hour session TTL
+  contract and the on-disk format are unchanged.
+- `parse_iso()` now has one owner. `_ledgerlib` carried a byte-identical second
+  copy of `_fmtlib`'s implementation and re-exports it instead.
+
+## [0.1.14] - 2026-07-25
+
+### Fixed
+
+- The Pi security contract asserted the exact CodeQL action SHA, so dependabot
+  could never land a codeql-action bump on its own - it cannot edit a test, and
+  every upgrade failed there until a human hand-edited the literal. The
+  assertion now checks the property that matters: both refs are 40-hex commit
+  SHAs, and init and analyze pin the same commit, so a split pair cannot
+  silently analyse with a different CodeQL than it initialised.
 
 ## [0.1.13] - 2026-07-25
 
