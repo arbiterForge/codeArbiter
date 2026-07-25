@@ -1,7 +1,7 @@
 /** runner-isolation.test.ts - Task 6 exact launch, protocol, role, and child enforcement obligations. */
 import { EventEmitter } from "node:events";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
@@ -549,12 +549,23 @@ describe("Task 6 exact Pi child launch", () => {
     request.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
     let childAuthExists = true;
     let childModels = "";
+    /** Every regular file under the child's private root, path and bytes, captured at the exact
+     * instant the child would start — not after cleanup, when absence proves nothing. */
+    const privateRootContents: string[] = [];
+    const walkPrivateRoot = (directory: string): void => {
+      for (const entry of readdirSync(directory, { withFileTypes: true })) {
+        const path = resolve(directory, entry.name);
+        if (entry.isDirectory()) walkPrivateRoot(path);
+        else if (entry.isFile()) privateRootContents.push(`${path}\n${readFileSync(path, "utf8")}`);
+      }
+    };
     runnerMocks.spawn.mockImplementation((command: string, args: readonly string[], options: Record<string, unknown>) => {
       captures.push({ command, args, options });
       const env = options.env as NodeJS.ProcessEnv;
       // #455 (AC-5): observed at the exact instant the child would start, not after cleanup.
       childAuthExists = existsSync(resolve(env.PI_CODING_AGENT_DIR!, "auth.json"));
       childModels = readFileSync(resolve(env.PI_CODING_AGENT_DIR!, "models.json"), "utf8");
+      walkPrivateRoot(dirname(env.PI_CODING_AGENT_DIR!));
       return child;
     });
     const result = await runPiChild(request as never, new AbortController().signal);
@@ -577,6 +588,16 @@ describe("Task 6 exact Pi child launch", () => {
     expect(JSON.stringify(env)).not.toContain("dummy-openai-value");
     expect(JSON.stringify(env)).not.toContain("selected-provider-file-secret");
     expect(childAuthExists).toBe(false);
+    // The #426-shape adversarial walk: every file the child could read, every env value, and
+    // every argv token, searched for the planted operator literals.
+    // The walk is only evidence if it can SEE the child's files: it must find the one file that
+    // is projected, otherwise "no literal found" would pass vacuously.
+    expect(privateRootContents.join("\n")).toContain("$CODEARBITER_PI_BROKER_TOKEN");
+    for (const planted of ["dummy-openai-value", "dummy-anthropic-value", "selected-provider-file-secret", "foreign-provider-file-secret"]) {
+      for (const file of privateRootContents) expect(file, `private root leaked ${planted}`).not.toContain(planted);
+      expect(JSON.stringify(env), `child env leaked ${planted}`).not.toContain(planted);
+      expect(JSON.stringify(captures[0]!.args), `argv leaked ${planted}`).not.toContain(planted);
+    }
     expect(childModels).toContain("http://127.0.0.1:");
     expect(childModels).toContain("$CODEARBITER_PI_BROKER_TOKEN");
     expect(childModels).not.toContain("dummy-openai-value");
