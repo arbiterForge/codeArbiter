@@ -26,6 +26,10 @@ jobs:
   resolve:
     name: "[WATCH] | [PI  ] | Resolve exact candidate"
     runs-on: ubuntu-latest
+    # Issue #399. One `npm view` against the public registry plus two Python
+    # calls - seconds in practice. 15 minutes bounds a hung registry lookup
+    # without ever truncating a healthy resolve.
+    timeout-minutes: 15
     outputs:
       candidate: ${{ steps.candidate.outputs.candidate }}
       baseline: ${{ steps.candidate.outputs.baseline }}
@@ -68,6 +72,13 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    # Issue #399. This is the heaviest Pi lane: TWO external Pi installs
+    # (baseline + candidate), a bundle rebuild, the complete adapter suite, and
+    # the full platform contract. The comparable ci.yml Windows cell peaked at
+    # 452s while doing roughly half of this, so budget ~15 minutes expected and
+    # bound at 45 - three orders below the hosted 6-hour ceiling, and low enough
+    # that a wedged install cannot stall the weekly promotion for hours.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
@@ -138,6 +149,9 @@ jobs:
     needs: [resolve, validate]
     if: github.event_name == 'workflow_dispatch' && inputs.create_pr == true
     runs-on: ubuntu-latest
+    # Issue #399. A checkout, one `npm ci`, one bundle rebuild, and a `gh pr
+    # create`. 20 minutes bounds a hung push or API call with wide headroom.
+    timeout-minutes: 20
     permissions:
       contents: write
       pull-requests: write

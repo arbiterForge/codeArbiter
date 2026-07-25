@@ -9,6 +9,7 @@ selects the broad validation lane instead of silently predicting a skip.
 """
 import importlib.util
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -18,6 +19,187 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
+CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
+PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
+PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
+
+# `needs.<id>.result` and `needs['<id>'].result` are the two spellings GitHub
+# accepts; the aggregate gate uses both depending on whether the job id has a
+# hyphen in it.
+_NEEDS_RESULT = re.compile(r"needs(?:\.([A-Za-z0-9_-]+)|\['([^']+)'\])\.result")
+_JOB_TIMEOUT = re.compile(r"(?m)^    timeout-minutes: (\d+)$")
+# GitHub-hosted runners hard-stop a job at 6 hours; a repository-defined bound
+# is only meaningful well under that.
+HOSTED_JOB_MAXIMUM_MINUTES = 360
+
+# A Pi Vitest file is HOST-DEPENDENT when it compares the *live* process
+# platform against a literal.  Two shapes matter and both make a lane on the
+# wrong OS unable to attest the file:
+#   test.skipIf(process.platform !== "win32")(...)   - the whole test never runs
+#   process.platform === "win32" ? "junction" : "dir" - a different OS primitive
+# Deliberately NOT matched: an *injected* platform (`buildChildEnv({ platform:
+# "win32", ... })`) or one merely forwarded into a pure function
+# (`platform: process.platform`).  Those exercise the same code on every host,
+# which is exactly what makes them safe to run once on the canonical lane.
+_LIVE_PLATFORM_SELECTOR = re.compile(r"(?:process|os)\.platform\s*(?:===|!==)")
+# The three-OS fan-out that makes a job able to attest a host-dependent file.
+_PLATFORM_MATRIX = "os: [ubuntu-latest, windows-latest, macos-latest]"
+# Vitest declaration heads, with their modifier chain (`.skipIf`, `.each`, ...).
+_TEST_DECLARATION = re.compile(
+    r"(?m)^\s*(?P<kind>describe|test|it)(?P<modifier>(?:\.[A-Za-z]+)*)\s*(?=[(`])"
+)
+# Modifiers that disable tests unconditionally - at *static* time, with no host
+# predicate to satisfy.  `.only` belongs here because it silently disables every
+# sibling in the file.  A committed suite carrying any of these is "assigned" to
+# a required job while contributing no verdict (issue #405, one level down).
+# `.fails` is deliberately absent: it still executes the body and asserts it
+# throws, so it is a real verdict.
+_STATICALLY_DISABLED = frozenset({"skip", "todo", "only"})
+
+
+def workflow_jobs(text: str) -> dict[str, str]:
+    """Split a workflow's top-level `jobs:` mapping into {job id: raw block}.
+
+    Deliberately textual, like the rest of this repo's workflow contracts - the
+    scripts stay stdlib-only, so there is no YAML parser to lean on.
+    """
+    lines = text.splitlines(keepends=True)
+    try:
+        start = next(index for index, line in enumerate(lines) if line.rstrip() == "jobs:")
+    except StopIteration:
+        return {}
+    jobs: dict[str, str] = {}
+    current: str | None = None
+    body: list[str] = []
+    for line in lines[start + 1:]:
+        header = re.match(r"^  ([A-Za-z0-9_-]+):\s*$", line)
+        if header is not None:
+            if current is not None:
+                jobs[current] = "".join(body)
+            current, body = header.group(1), [line]
+        elif current is not None:
+            body.append(line)
+    if current is not None:
+        jobs[current] = "".join(body)
+    return jobs
+
+
+def aggregate_needs(ci: str) -> list[str]:
+    """Job ids listed in ci-passed's `needs:` block."""
+    aggregate = workflow_jobs(ci).get("ci-passed", "")
+    match = re.search(r"(?ms)^    needs:\s*\n(?P<body>(?:      - [A-Za-z0-9_-]+\n)+)", aggregate)
+    if match is None:
+        return []
+    return [line.strip()[2:].strip() for line in match.group("body").splitlines()]
+
+
+def aggregate_required_results(ci: str) -> list[str]:
+    """Job ids whose result the ci-passed gate actually enforces."""
+    aggregate = workflow_jobs(ci).get("ci-passed", "")
+    match = re.search(r'(?m)^\s+required_results="(?P<body>[^"\n]*)"\s*$', aggregate)
+    if match is None:
+        return []
+    return [first or second for first, second in _NEEDS_RESULT.findall(match.group("body"))]
+
+
+def unassigned_pi_test_files(ci: str, committed: set[str]) -> set[str]:
+    """Committed ca-pi Vitest files no *required* merge-gate job executes.
+
+    A bare `npm test` in a required Pi job covers the whole suite; a filtered
+    `npm test -- test/a.test.ts ...` covers only the files it names.  Anything
+    left over is a file that can regress with every required check green
+    (issue #405).
+    """
+    jobs = workflow_jobs(ci)
+    covered: set[str] = set()
+    for job_id in aggregate_required_results(ci):
+        if not job_id.startswith("ca-pi"):
+            continue
+        for match in re.finditer(r"(?m)^\s+run: npm test(?P<rest>[^\n]*)$", jobs.get(job_id, "")):
+            rest = match.group("rest").strip()
+            if not rest:
+                covered |= set(committed)
+                continue
+            covered |= {
+                token.rsplit("/", 1)[-1] for token in rest.split() if token.endswith(".test.ts")
+            }
+    return set(committed) - covered
+
+
+def platform_sensitive_pi_test_files() -> set[str]:
+    """Committed ca-pi Vitest files whose behaviour is selected by the live OS.
+
+    File-granular assignment (``unassigned_pi_test_files`` above) proves every
+    suite runs *somewhere*.  It cannot prove the suite runs where its own
+    platform gate opens: a ``test.skipIf(process.platform !== "win32")`` case is
+    reported as "assigned" by a Linux-only lane that skips it.  This is the
+    second half of the #405 contract.
+    """
+    return {
+        path.name
+        for path in PI_TEST_DIR.glob("*.test.ts")
+        if _LIVE_PLATFORM_SELECTOR.search(path.read_text(encoding="utf-8"))
+    }
+
+
+def platform_contract_vitest_files() -> set[str]:
+    """Vitest files ``test_pi_platform_contract.py`` re-runs inside a matrix cell.
+
+    Read out of the script rather than duplicated here, so moving a file between
+    its fixture groups cannot silently desynchronise this contract.
+    """
+    source = PI_PLATFORM_CONTRACT.read_text(encoding="utf-8")
+    return {
+        name.rsplit("/", 1)[-1]
+        for name in re.findall(r'"(test/[A-Za-z0-9._-]+\.test\.ts)"', source)
+    }
+
+
+def os_matrix_pi_test_files(ci: str, committed: set[str]) -> set[str]:
+    """Vitest files a required Pi job executes on *every* supported OS.
+
+    Only a job that fans out over ``_PLATFORM_MATRIX`` counts: a job pinned to
+    one runner can never execute the other hosts' gated cases.
+    """
+    jobs = workflow_jobs(ci)
+    covered: set[str] = set()
+    for job_id in aggregate_required_results(ci):
+        block = jobs.get(job_id, "")
+        if not job_id.startswith("ca-pi") or _PLATFORM_MATRIX not in block:
+            continue
+        for match in re.finditer(r"(?m)^\s+run: npm test(?P<rest>[^\n]*)$", block):
+            rest = match.group("rest").strip()
+            if not rest:
+                covered |= set(committed)
+                continue
+            covered |= {
+                token.rsplit("/", 1)[-1] for token in rest.split() if token.endswith(".test.ts")
+            }
+        if "test_pi_platform_contract.py" in block:
+            covered |= platform_contract_vitest_files()
+    return covered
+
+
+def statically_disabled_pi_tests() -> dict[str, list[str]]:
+    """{file: [disabled declarations]} for `.skip` / `.todo` / `.only`.
+
+    These disable a case with no host predicate to satisfy, so the file stays
+    "assigned" to a required job while contributing nothing.  A genuine platform
+    gate must use ``.skipIf`` / ``.runIf``, which the OS-matrix contract above
+    then holds to running somewhere the gate opens.
+    """
+    disabled: dict[str, list[str]] = {}
+    for path in sorted(PI_TEST_DIR.glob("*.test.ts")):
+        found = [
+            f"{match.group('kind')}{match.group('modifier')}"
+            for match in _TEST_DECLARATION.finditer(path.read_text(encoding="utf-8"))
+            if _STATICALLY_DISABLED & set(match.group("modifier").split(".")[1:])
+        ]
+        if found:
+            disabled[path.name] = found
+    return disabled
+
 
 _spec = importlib.util.spec_from_file_location("ci_impact", _TOOL)
 module = importlib.util.module_from_spec(_spec)
@@ -208,6 +390,7 @@ class WorkflowContractTest(unittest.TestCase):
             "[CHECK] | [CORE] | Host descriptor contract",
             "[CHECK] | [CA  ] | Farm dispatcher contract",
             "[CHECK] | [SBX ] | Sandbox driver contract",
+            "[CHECK] | [PI  ] | Host-independent adapter contract",
             "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>",
             "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
             "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
@@ -227,6 +410,215 @@ class WorkflowContractTest(unittest.TestCase):
         )
         for name in expected:
             self.assertIn(f'name: "{name}"', ci)
+
+    def test_every_committed_pi_test_file_runs_in_a_required_merge_gate_job(self):
+        # Issue #405: the six-cell matrix named 6 of the 23 committed Vitest
+        # files, so a PR could regress policy/plan-mode/dispatch/background-jobs/
+        # windows-supervisor with every required check green.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        self.assertTrue(committed, "no ca-pi Vitest files found - the glob is wrong")
+        self.assertEqual(
+            sorted(unassigned_pi_test_files(ci, committed)),
+            [],
+            "committed ca-pi test files that no required merge-gate job executes",
+        )
+
+    def test_the_pi_suite_partition_contract_fails_when_the_full_suite_run_is_removed(self):
+        # AC-2 of #405: the contract above must BITE, not merely pass because
+        # one job happens to run everything.  Neutering the unfiltered run has
+        # to leave test files unassigned.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        jobs = workflow_jobs(ci)
+        mutated, neutered_jobs = ci, []
+        for job_id in aggregate_required_results(ci):
+            if not job_id.startswith("ca-pi"):
+                continue
+            block = jobs[job_id]
+            neutered = re.sub(r"(?m)^(\s+)run: npm test$", r"\1run: echo npm test", block)
+            if neutered != block:
+                mutated = mutated.replace(block, neutered, 1)
+                neutered_jobs.append(job_id)
+        self.assertNotEqual(
+            neutered_jobs, [], "no required ca-pi job runs the unfiltered `npm test` suite"
+        )
+        self.assertTrue(
+            unassigned_pi_test_files(mutated, committed),
+            "removing the full-suite run left every Pi test file still assigned",
+        )
+
+    def test_every_platform_gated_pi_test_file_runs_on_every_supported_os(self):
+        # Issue #405, second half / issue #390 AC-2.  File-granular assignment
+        # is blind to a test's own platform gate: a Linux-only lane reports
+        # activation.test.ts as "assigned" while
+        # `test.skipIf(process.platform !== "win32")` at line 388 silently skips
+        # the only case that reads the fixed user-global update cache.  Any file
+        # that branches on the LIVE platform must therefore run in a job that
+        # fans out over all three operating systems, or its Windows/macOS branch
+        # is attested by nothing.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        sensitive = platform_sensitive_pi_test_files()
+        self.assertTrue(sensitive, "no platform-gated Pi test files found - the scan is wrong")
+        self.assertLessEqual(
+            sensitive,
+            committed,
+            "the platform scan drifted off the committed Vitest set",
+        )
+        self.assertEqual(
+            sorted(sensitive - os_matrix_pi_test_files(ci, committed)),
+            [],
+            "Pi test files that branch on the live platform but run on one OS only",
+        )
+
+    def test_the_platform_gate_contract_binds_to_the_three_os_fan_out(self):
+        # The contract above must BITE on each way it can be broken.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        committed = {path.name for path in PI_TEST_DIR.glob("*.test.ts")}
+        covered = os_matrix_pi_test_files(ci, committed)
+        self.assertTrue(covered, "no required Pi job fans out over the OS matrix")
+        # (a) A host-INDEPENDENT suite is not credited with OS coverage, so a
+        #     future win32-gated test added to one would be caught.
+        self.assertNotIn("policy.test.ts", covered)
+        self.assertNotIn("policy.test.ts", platform_sensitive_pi_test_files())
+        # (b) Collapsing the fan-out to a single runner uncovers everything.
+        collapsed = ci.replace(_PLATFORM_MATRIX, "os: [ubuntu-latest]", 1)
+        self.assertEqual(os_matrix_pi_test_files(collapsed, committed), set())
+        # (c) Dropping one file from the matrix step uncovers exactly that file.
+        without = ci.replace(" test/activation.test.ts", "", 1)
+        self.assertEqual(
+            covered - os_matrix_pi_test_files(without, committed), {"activation.test.ts"}
+        )
+
+    def test_no_committed_pi_test_is_disabled_by_a_static_skip_todo_or_only(self):
+        # Issue #405, the "assigned but inert" hole: `npm test` makes every file
+        # a required gate, but a `test.skip` / `test.todo` inside one - or a
+        # single `test.only`, which mutes every sibling - keeps the board green
+        # with no verdict behind it.  A platform gate must be expressed as
+        # `.skipIf` / `.runIf` so the OS-matrix contract above can hold it.
+        self.assertEqual(
+            statically_disabled_pi_tests(),
+            {},
+            "ca-pi Vitest declarations disabled with no host predicate to satisfy",
+        )
+
+    def test_host_independent_pi_job_is_registered_in_both_needs_and_required_results(self):
+        # Issue #390 CRITICAL: `ci-passed` enforces jobs through TWO
+        # independent registrations - the `needs:` list (which makes it wait)
+        # and the `required_results` string (which makes it care).  Adding a
+        # job to one and not the other silently drops the verdict and nothing
+        # else in CI notices.  This asserts both exist AND that they agree for
+        # every job, with exactly one sanctioned exception: the advisory
+        # ca-pi-latest canary is intentionally awaited but not enforced.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("ca-pi-checks", sorted(workflow_jobs(ci)))
+        needs = aggregate_needs(ci)
+        required = aggregate_required_results(ci)
+        self.assertIn("ca-pi-checks", needs, "ci-passed.needs is missing ca-pi-checks")
+        self.assertIn(
+            "ca-pi-checks", required, "ci-passed.required_results is missing ca-pi-checks"
+        )
+        self.assertEqual(
+            sorted(set(needs) - set(required)),
+            ["ca-pi-latest"],
+            "awaited but unenforced jobs (only the advisory Pi canary may appear here)",
+        )
+        self.assertEqual(
+            sorted(set(required) - set(needs)),
+            [],
+            "enforced jobs the aggregate never waits for",
+        )
+
+    def test_host_independent_pi_checks_run_once_outside_the_platform_matrix(self):
+        # Issue #390: every one of these consumes neither matrix.os nor
+        # matrix.pi-version, so six cells produced six identical verdicts.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("ca-pi-checks", sorted(jobs))
+        canonical, matrix = jobs["ca-pi-checks"], jobs["ca-pi-tools"]
+        self.assertNotIn("strategy:", canonical, "the canonical Pi job must not fan out")
+        self.assertIn("runs-on: ubuntu-latest", canonical)
+        for token in (
+            "run: python tools/build-host-packages.py --check",
+            "run: npm run typecheck",
+            "run: npm run build",
+            "run: python .github/scripts/test_pi_security.py",
+            "run: python .github/scripts/test_pi_parity.py",
+            "run: python .github/scripts/pi_benchmark.py --samples 100",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, canonical, f"ca-pi-checks must own `{token}`")
+                self.assertNotIn(token, matrix, f"ca-pi-tools still repeats `{token}` per cell")
+        # Everything whose verdict genuinely depends on the installed Pi
+        # version or the host OS stays in the six-cell matrix.
+        for token in (
+            "os: [ubuntu-latest, windows-latest, macos-latest]",
+            "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }}",
+            "run: npm test -- test/package.test.ts",
+            "run: python .github/scripts/test_pi_package.py --rpc-commands",
+            "--pi-version ${{ matrix.pi-version }}",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, matrix, f"ca-pi-tools must keep `{token}`")
+
+    def test_every_pi_ci_and_promotion_job_declares_a_bounded_timeout(self):
+        # Issue #399: a wedged npm install or leaked process otherwise holds a
+        # hosted runner until GitHub's platform maximum.
+        missing: list[str] = []
+        unbounded: list[str] = []
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        candidates = [
+            (".github/workflows/ci.yml", job_id, block)
+            for job_id, block in workflow_jobs(ci).items()
+            if "[PI  ]" in block
+        ]
+        promotion = PI_PROMOTION_WORKFLOW.read_text(encoding="utf-8")
+        candidates += [
+            (".github/workflows/pi-promotion.yml", job_id, block)
+            for job_id, block in workflow_jobs(promotion).items()
+        ]
+        self.assertGreaterEqual(len(candidates), 8, "the Pi job scan found too few jobs")
+        for workflow, job_id, block in candidates:
+            declared = _JOB_TIMEOUT.search(block)
+            if declared is None:
+                missing.append(f"{workflow}:{job_id}")
+                continue
+            if not 0 < int(declared.group(1)) < HOSTED_JOB_MAXIMUM_MINUTES:
+                unbounded.append(f"{workflow}:{job_id}={declared.group(1)}")
+        self.assertEqual(missing, [], "Pi jobs with no timeout-minutes")
+        self.assertEqual(unbounded, [], "Pi job timeouts at or above the hosted maximum")
+
+    def test_pi_upstream_canary_concludes_advisory_rather_than_failed(self):
+        # Issue #381: the WATCH lane reports upstream incompatibility; that is
+        # its signal, not its failure.  Expected incompatibility is absorbed at
+        # STEP level so the check concludes green, while a break in the canary
+        # HARNESS still turns it red - which is why there is no job-level
+        # continue-on-error to swallow it.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        canary = workflow_jobs(ci)["ca-pi-latest"]
+        self.assertIsNone(
+            re.search(r"(?m)^    continue-on-error: true$", canary),
+            "job-level continue-on-error hides canary harness failures",
+        )
+        for probe in ("id: admission", "id: platform-contract"):
+            self.assertIn(probe, canary, f"the canary must address its probe step: {probe}")
+        self.assertEqual(
+            len(re.findall(r"(?m)^        continue-on-error: true$", canary)),
+            2,
+            "exactly the two upstream-compatibility probes absorb their own failure",
+        )
+        # The harness (toolchain + latest-Pi install) must NOT be absorbed.
+        harness = re.search(
+            r"(?ms)^      - name: Install reviewed toolchain and external latest Pi.*?(?=^      - name: )",
+            canary,
+        )
+        self.assertIsNotNone(harness, "canary harness install step is missing")
+        self.assertNotIn("continue-on-error", harness.group(0))
+        self.assertIn("if: always()", canary, "the advisory receipt must always publish")
+        self.assertIn("GITHUB_STEP_SUMMARY", canary, "the advisory verdict must be visible")
+        # And the aggregate gate stays independent of the advisory result.
+        self.assertNotIn("ca-pi-latest", aggregate_required_results(ci))
 
     def test_documentation_contract_is_always_required_by_merge_readiness(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
@@ -262,7 +654,11 @@ class ReceiptCommandTest(unittest.TestCase):
             self.assertFalse(receipt["fallback"])
             self.assertEqual(
                 [check["id"] for check in receipt["selected"]],
-                ["pi-adapter", "pi-latest"],
+                # `pi-checks` is the canonical host-independent job added by
+                # issue #390.  A Pi payload edit now predicts all three Pi
+                # contracts; omitting it made the receipt under-report the
+                # required jobs a reviewer must wait on.
+                ["pi-adapter", "pi-checks", "pi-latest"],
             )
             self.assertEqual(
                 receipt["predicted_not_selected"],
@@ -270,6 +666,10 @@ class ReceiptCommandTest(unittest.TestCase):
             )
             self.assertEqual(
                 receipt["selected"][0]["reproduce"],
+                "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10",
+            )
+            self.assertEqual(
+                receipt["selected"][1]["reproduce"],
                 "npm --prefix plugins/ca-pi/tools test",
             )
             self.assertEqual(

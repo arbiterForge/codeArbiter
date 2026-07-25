@@ -16,6 +16,15 @@ import {
   type PlanSessionState,
 } from "../src/plan-mode.ts";
 
+/**
+ * operatePlanFile() rejects a repositoryRoot that is not `isAbsolute()`, and
+ * absoluteness is platform-dependent: "C:/repo" is absolute on Windows and
+ * relative everywhere else. Hardcoding the Windows spelling made these cases
+ * silently return OPERATION_FAILED on Linux and macOS. This file ran nowhere in
+ * required CI until issue #405, so that never surfaced.
+ */
+const REPOSITORY_ROOT = process.platform === "win32" ? "C:/repo" : "/repo";
+
 const ledger = (rows: readonly string[]) => [
   "# Example plan",
   "",
@@ -232,7 +241,7 @@ describe("canonical plan-file bridge operations", () => {
     ]);
     const state = enterPlan("example-plan", baseLedger)!;
     const result = await operatePlanFile(
-      state, "C:/repo", state.activePlan.specPath, { kind: "replace", content: wanted }, bridge,
+      state, REPOSITORY_ROOT, state.activePlan.specPath, { kind: "replace", content: wanted }, bridge,
     );
     expect(result).toEqual({ ok: true, content: wanted, state });
     expect(bridge.calls.map((call) => call.input)).toEqual([
@@ -251,7 +260,7 @@ describe("canonical plan-file bridge operations", () => {
     ]);
     const state = enterPlan("example-plan", baseLedger)!;
     const result = await operatePlanFile(
-      state, "C:/repo", state.activePlan.planPath,
+      state, REPOSITORY_ROOT, state.activePlan.planPath,
       { kind: "transition", taskId: "T-01", status: "IN_PROGRESS" }, bridge,
     );
     expect(result.ok).toBe(true);
@@ -269,7 +278,7 @@ describe("canonical plan-file bridge operations", () => {
     ]);
     const state = enterPlan("example-plan", baseLedger)!;
     await expect(operatePlanFile(
-      state, "C:/repo", state.activePlan.specPath, { kind: "replace", content: wanted }, bridge,
+      state, REPOSITORY_ROOT, state.activePlan.specPath, { kind: "replace", content: wanted }, bridge,
     )).resolves.toMatchObject({ ok: true, content: wanted });
     expect(bridge.calls[1]?.input).toMatchObject({ expectedHash: null });
   });
@@ -284,7 +293,7 @@ describe("canonical plan-file bridge operations", () => {
     ]);
     const state = enterPlan("example-plan", baseLedger)!;
     const result = await operatePlanFile(
-      state, "C:/repo", state.activePlan.planPath,
+      state, REPOSITORY_ROOT, state.activePlan.planPath,
       { kind: "transition", taskId: "T-01", status: "IN_PROGRESS" }, bridge,
     );
     expect(result).toMatchObject({ ok: false, committed: true, content: observed });
@@ -298,7 +307,7 @@ describe("canonical plan-file bridge operations", () => {
     const state = enterPlan("example-plan", baseLedger)!;
     const missing = new FakeBridge([bridgeResponse({ status: "unchanged", exists: false, hash: null, content: "" })]);
     await expect(operatePlanFile(
-      state, "C:/repo", state.activePlan.specPath, { kind: "read" }, missing,
+      state, REPOSITORY_ROOT, state.activePlan.specPath, { kind: "read" }, missing,
     )).resolves.toEqual({ ok: false });
 
     const conflict = new FakeBridge([
@@ -306,19 +315,19 @@ describe("canonical plan-file bridge operations", () => {
       bridgeResponse({ status: "conflict" }),
     ]);
     await expect(operatePlanFile(
-      state, "C:/repo", state.activePlan.specPath, { kind: "replace", content: "# new\n" }, conflict,
+      state, REPOSITORY_ROOT, state.activePlan.specPath, { kind: "replace", content: "# new\n" }, conflict,
     )).resolves.toEqual({ ok: false });
 
     const malformed = new FakeBridge([
       bridgeResponse({ status: "unchanged", exists: true, hash: "0".repeat(64), content: "# mismatch\n" }),
     ]);
     await expect(operatePlanFile(
-      state, "C:/repo", state.activePlan.specPath, { kind: "read" }, malformed,
+      state, REPOSITORY_ROOT, state.activePlan.specPath, { kind: "read" }, malformed,
     )).resolves.toEqual({ ok: false });
 
     const untouched = new FakeBridge([]);
     await expect(operatePlanFile(
-      state, "C:/repo", ".codearbiter/open-tasks.md", { kind: "read" }, untouched,
+      state, REPOSITORY_ROOT, ".codearbiter/open-tasks.md", { kind: "read" }, untouched,
     )).resolves.toEqual({ ok: false });
     expect(untouched.calls).toEqual([]);
   });
@@ -328,11 +337,11 @@ describe("canonical plan-file bridge operations", () => {
     const execute = cancelPlan(plan)!;
     const bridge = new FakeBridge([]);
     await expect(operatePlanFile(
-      execute, "C:/repo", plan.activePlan.planPath, { kind: "read" }, bridge,
+      execute, REPOSITORY_ROOT, plan.activePlan.planPath, { kind: "read" }, bridge,
     )).resolves.toEqual({ ok: false });
     await expect(operatePlanFile(
       { ...plan, mode: "unknown" } as unknown as PlanSessionState,
-      "C:/repo", plan.activePlan.planPath, { kind: "read" }, bridge,
+      REPOSITORY_ROOT, plan.activePlan.planPath, { kind: "read" }, bridge,
     )).resolves.toEqual({ ok: false });
     expect(bridge.calls).toEqual([]);
   });

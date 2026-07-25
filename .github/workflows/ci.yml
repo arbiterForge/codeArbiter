@@ -256,16 +256,35 @@ jobs:
           fi
           echo "sandbox.js is in sync with the TypeScript sources"
 
-  ca-pi-tools:
-    name: "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>"
+  ca-pi-checks:
+    name: "[CHECK] | [PI  ] | Host-independent adapter contract"
+    # Issue #390: everything in this job consumes NEITHER matrix.os NOR
+    # matrix.pi-version, so the six-cell ca-pi-tools matrix below was producing
+    # six identical verdicts for it (1,423 runner-seconds on run 29870271440).
+    # It now runs exactly once per workflow run: package metadata, typecheck,
+    # the COMPLETE Vitest suite, the static security/parity scripts, the bundle
+    # rebuild + staleness gate, the release package contract, and the relative
+    # benchmark. ca-pi-tools keeps only the checks whose verdict genuinely
+    # depends on the installed Pi version or the host OS.
+    #
+    # Issue #405: the unfiltered `npm test` below is what makes every committed
+    # plugins/ca-pi/tools/test/*.test.ts file a required merge gate. Before
+    # this, required CI named 6 of 23 files and the rest (policy, plan-mode,
+    # dispatch, background-jobs, windows-supervisor, ...) could regress with
+    # the whole board green. Do NOT re-introduce a file filter here -
+    # test_ci_impact.py's partition contract fails if you do.
+    #
+    # REGISTRATION CONTRACT: this job must be listed in BOTH ci-passed's
+    # `needs:` block AND its `required_results` string. One without the other
+    # silently drops the verdict; test_ci_impact.py asserts the two agree.
     needs: changes
     if: needs.changes.outputs.ca-pi == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        pi-version: ["0.80.5", "0.80.10"]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    # Issue #399. Observed p95 for the equivalent ubuntu matrix cell is ~135s
+    # (runs 29870271440 and 30123976665: 120/125/130/132s); the complete Vitest
+    # suite and the 100-sample benchmark add the rest, so ~5 minutes expected.
+    # 20 minutes is ~4x that and far below the hosted 6-hour job ceiling.
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: plugins/ca-pi/tools
@@ -279,8 +298,22 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
+      - name: Resolve the pinned upstream Pi version from repository policy
+        # package.test.ts discovers the live Pi package root from PATH, so this
+        # job needs a real Pi installed. The version is READ from the repo's own
+        # support policy rather than hardcoded, so a Pi promotion (which rewrites
+        # the policy and the matrix, see .github/pi-promotion-targets.json) can
+        # never leave this job pinned to a stale runtime.
+        id: pinned
+        working-directory: .
+        shell: bash
+        run: |
+          policy="$(python .github/scripts/pi_promotion.py policy)"
+          version="$(python -c 'import json,sys; print(json.loads(sys.argv[1])["last_verified"])' "$policy")"
+          echo "resolved pinned Pi version: $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Install external Pi host (scripts disabled)
-        run: npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts
+        run: npm install --global @earendil-works/pi-coding-agent@${{ steps.pinned.outputs.version }} --ignore-scripts
       - name: Install reviewed toolchain (scripts disabled)
         run: npm ci --ignore-scripts
       - name: Check generated root package metadata
@@ -288,12 +321,8 @@ jobs:
         run: python tools/build-host-packages.py --check
       - name: Typecheck
         run: npm run typecheck
-      - name: Test package, module identity, compatibility, and native binding
-        run: npm test -- test/package.test.ts
-      - name: Test activation, commands, and status lifecycle
-        run: npm test -- test/activation.test.ts test/commands.test.ts test/status.test.ts
-      - name: Test canonical bridge and final-execution enforcement
-        run: npm test -- test/bridge.test.ts test/tool-guard.test.ts
+      - name: Test the complete Pi adapter suite
+        run: npm test
       - name: Test adversarial Pi security promotion contract
         working-directory: .
         run: python .github/scripts/test_pi_security.py
@@ -314,22 +343,51 @@ jobs:
       - name: Test release package contract
         working-directory: .
         run: python .github/scripts/test_pi_package.py
-      - name: Test real package RPC activation and aliases
-        working-directory: .
-        run: python .github/scripts/test_pi_package.py --rpc-commands
-      - name: Test cross-platform paths, encoding, cancellation, process trees, prune, and generation
-        working-directory: .
-        run: python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}
       - name: Measure the three-host relative adapter benchmark
         working-directory: .
         run: python .github/scripts/pi_benchmark.py --samples 100
 
-  ca-pi-latest:
-    name: "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>"
+  ca-pi-tools:
+    name: "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>"
+    # Issue #390: the lean compatibility matrix. Only steps whose verdict is a
+    # function of matrix.os or matrix.pi-version live here - the installed-Pi
+    # admission boundary, live package RPC activation, the cross-platform
+    # platform contract, and the Vitest suites that branch on the LIVE host
+    # platform. Everything host-independent moved to ca-pi-checks above; adding
+    # a host-independent step back here re-multiplies it by six and fails
+    # test_ci_impact.py.
+    #
+    # THE PARTITION RULE, stated once. A Pi Vitest file belongs here - not in
+    # the canonical ubuntu job alone - exactly when it compares the live
+    # `process.platform` against a literal, because then a Linux runner cannot
+    # reach the Windows/macOS branch at all:
+    #
+    #   test.skipIf(process.platform !== "win32")(...)      whole test skipped
+    #   process.platform === "win32" ? "junction" : "dir"   different OS primitive
+    #
+    # A platform value that is INJECTED (`buildChildEnv({ platform: "win32" })`)
+    # or merely forwarded into a pure function (`platform: process.platform`)
+    # does NOT qualify - child-env/compaction/status/tool-guard exercise the
+    # same code on every host, which is why they run once on ca-pi-checks.
+    # test_ci_impact.py derives this set from the sources; it is not a list a
+    # human keeps in sync.
     needs: changes
     if: needs.changes.outputs.ca-pi == 'true'
-    continue-on-error: true
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        pi-version: ["0.80.5", "0.80.10"]
+    runs-on: ${{ matrix.os }}
+    # Issue #399. Worst observed cell before this split was 452s (windows-latest,
+    # run 30123976665); the Windows cold `npm install --global` dominates and is
+    # unchanged by the split. That 452s cell also carried typecheck, the bundle
+    # build, the 100-sample benchmark and four Python scripts, all of which have
+    # moved to ca-pi-checks - so this job is a net reduction even with the
+    # platform-gated Vitest suites kept here. 25 minutes is ~3.3x the recorded
+    # worst case, leaves room for a slow registry day, and still terminates a
+    # wedged install or a leaked process tree far short of the 6-hour ceiling.
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: plugins/ca-pi/tools
@@ -343,18 +401,114 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.x"
+      - name: Install external Pi host (scripts disabled)
+        run: npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts
+      - name: Install reviewed toolchain (scripts disabled)
+        run: npm ci --ignore-scripts
+      - name: Test package, module identity, compatibility, and native binding
+        run: npm test -- test/package.test.ts
+      # The host-dependent Vitest set, per the partition rule above. bridge,
+      # runner-isolation, process-tree and package are platform-gated too, but
+      # test_pi_platform_contract.py below already re-runs them in every cell,
+      # so they are not repeated here. Kept on ONE line on purpose: the workflow
+      # contracts in .github/scripts are textual (stdlib-only, no YAML parser)
+      # and read the covered file set straight off a `run: npm test -- ...` line.
+      - name: Test the platform-gated adapter suites on this operating system
+        run: npm test -- test/activation.test.ts test/background-jobs.test.ts test/commands.test.ts test/plan-mode.test.ts test/runtime-resolver.test.ts test/security.test.ts test/windows-supervisor.test.ts
+      - name: Test real package RPC activation and aliases
+        working-directory: .
+        run: python .github/scripts/test_pi_package.py --rpc-commands
+      - name: Test cross-platform paths, encoding, cancellation, process trees, prune, and generation
+        working-directory: .
+        run: python .github/scripts/test_pi_platform_contract.py --pi-version ${{ matrix.pi-version }}
+
+  ca-pi-latest:
+    name: "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>"
+    # Issue #381: this is a WATCH lane, not a gate. Upstream publishing a Pi
+    # outside the validated support window is the SIGNAL this job exists to
+    # report - it belongs in the job summary, never as a red check on an
+    # otherwise merge-ready PR. So the two upstream-compatibility probes below
+    # absorb their own failure at STEP level and the job publishes an advisory
+    # receipt and concludes green.
+    #
+    # There is deliberately NO job-level `continue-on-error` here. GitHub still
+    # reports a job-level continue-on-error job's check run with conclusion
+    # `failure` (observed on PR #313 and again on PR #420), which is the exact
+    # false alarm this fixes. Keeping the job honest means a failure in the
+    # canary HARNESS - checkout, toolchain install, receipt publication - is a
+    # real defect in the watch itself and still turns this check red.
+    needs: changes
+    if: needs.changes.outputs.ca-pi == 'true'
+    runs-on: ubuntu-latest
+    # Issue #399. Observed 17-18s when the probe fails fast; a compatible latest
+    # runs the package suite plus the full platform contract, so budget like the
+    # ubuntu adapter cell. 20 minutes bounds a wedged npm install without ever
+    # truncating a healthy run.
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: plugins/ca-pi/tools
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.19.0
+          cache: npm
+          cache-dependency-path: plugins/ca-pi/tools/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.x"
+      # HARNESS - not absorbed. If the toolchain or the latest-Pi install fails,
+      # the canary itself is broken and this check must go red.
       - name: Install reviewed toolchain and external latest Pi (scripts disabled)
         run: |
           npm ci --ignore-scripts
           npm install --global @earendil-works/pi-coding-agent@latest --ignore-scripts
+      # PROBES - absorbed. Their outcome is the observation, not the verdict.
       - name: Report latest version and test installed runtime admission
+        id: admission
+        continue-on-error: true
         run: |
           pi --version
           npm test -- test/package.test.ts -t "installed Pi runtime is admitted by the production boundary"
           npm test -- test/package.test.ts
       - name: Run the latest Pi platform contract as a nonblocking canary
+        id: platform-contract
+        continue-on-error: true
         working-directory: .
         run: python .github/scripts/test_pi_platform_contract.py --pi-version latest
+      # RECEIPT - not absorbed, and always published. A failure to publish the
+      # advisory verdict is a harness failure and must be visible.
+      - name: Publish the advisory upstream-compatibility receipt
+        if: always()
+        working-directory: .
+        shell: bash
+        env:
+          ADMISSION: ${{ steps.admission.outcome }}
+          PLATFORM_CONTRACT: ${{ steps.platform-contract.outcome }}
+        run: |
+          # `shell: bash` runs with -eo pipefail, so the probe is wrapped: an
+          # absent or broken `pi` must degrade to "unresolved", never fail the
+          # receipt step and turn this advisory check red.
+          latest="$({ pi --version 2>/dev/null || true; } | tr -d '\r' | tail -n 1)"
+          [ -n "$latest" ] || latest="unresolved"
+          {
+            echo "## Pi upstream compatibility (advisory)"
+            echo
+            echo "This is a WATCH lane. It reports whether npm-latest Pi is inside"
+            echo "the validated support window; it never blocks merge."
+            echo
+            echo "| probe | outcome |"
+            echo "| --- | --- |"
+            echo "| npm latest Pi | \`$latest\` |"
+            echo "| installed-runtime admission | \`$ADMISSION\` |"
+            echo "| latest platform contract | \`$PLATFORM_CONTRACT\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$ADMISSION" = success ] && [ "$PLATFORM_CONTRACT" = success ]; then
+            echo "latest Pi ($latest) is inside the validated support window"
+          else
+            echo "::warning title=Pi upstream compatibility::latest Pi ($latest) is outside the validated support window (admission=$ADMISSION, platform-contract=$PLATFORM_CONTRACT). Advisory only - run the Pi promotion workflow to validate and promote it."
+          fi
 
   ca-pi-codeql:
     name: "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>"
@@ -690,6 +844,9 @@ jobs:
     needs: changes
     if: github.event_name == 'pull_request' && needs.changes.outputs.ca-pi == 'true'
     runs-on: ubuntu-latest
+    # Issue #399. Observed 4-7s (a full-history fetch plus one Python check);
+    # 10 minutes bounds a wedged `git fetch` with three orders of headroom.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -841,6 +998,14 @@ jobs:
 
   ci-passed:
     name: "[GATE ] | [REPO] | Merge readiness"
+    # REGISTRATION CONTRACT (issue #390): this gate enforces a job through TWO
+    # independent registrations - the `needs:` list below (which makes the gate
+    # WAIT for it) and the `required_results` string in the step (which makes
+    # the gate CARE about its verdict). Adding a job to one and not the other
+    # silently drops coverage with nothing else in CI to catch it. The only
+    # sanctioned divergence is ca-pi-latest, the advisory WATCH canary
+    # (issue #381), which is awaited so the run settles but never enforced.
+    # test_ci_impact.py asserts exactly that: needs - required == {ca-pi-latest}.
     if: always()
     needs:
       - documentation-contract
@@ -849,6 +1014,7 @@ jobs:
       - ci-impact
       - tools
       - ca-sandbox-tools
+      - ca-pi-checks
       - ca-pi-tools
       - ca-pi-latest
       - ca-pi-codeql
@@ -868,7 +1034,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"
