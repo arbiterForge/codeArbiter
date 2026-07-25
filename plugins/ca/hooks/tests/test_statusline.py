@@ -891,5 +891,118 @@ class TestSegUpdate(unittest.TestCase):
         self.assertIn("2.10.0", sl.ANSI.sub("", out))
 
 
+class TestSubagentResultContract(unittest.TestCase):
+    """#413: read_subagents() must honor ONE result shape on every path, and a
+    syntactically valid but non-object JSONL record must not escape as an
+    AttributeError. Both defects erase the whole subagent section of the rich
+    statusline (a ValueError on unpack, or an exception swallowed by safe())."""
+
+    def _write(self, td, name, lines):
+        path = os.path.join(td, name)
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            for ln in lines:
+                f.write(ln + "\n")
+        return path
+
+    def test_missing_directory_returns_the_documented_four_item_result(self):
+        with tempfile.TemporaryDirectory() as td:
+            gone = os.path.join(td, "does-not-exist")
+            res = subs.read_subagents(gone)
+        self.assertEqual(len(res), 4,
+                         "every return path must produce the documented 4-item result")
+        active, recent, shown, totals = res
+        self.assertEqual(active, 0)
+        self.assertEqual(recent, 0)
+        self.assertEqual(shown, [])
+        self.assertEqual(totals, (0, 0))
+
+    def test_missing_directory_unpacks_the_same_way_as_a_real_read(self):
+        # The statusline unpacks 4 names OUTSIDE safe() — a 3-item error branch
+        # is a hard ValueError there, not a degraded segment.
+        with tempfile.TemporaryDirectory() as td:
+            gone = os.path.join(td, "raced-away")
+            active, recent, shown, (tin, tout) = subs.read_subagents(gone)
+        self.assertEqual((active, recent, shown, tin, tout), (0, 0, [], 0, 0))
+
+    def test_statusline_renders_through_a_subagent_directory_race(self):
+        with tempfile.TemporaryDirectory() as td:
+            gone = os.path.join(td, "raced-away")
+            with mock.patch.object(sl, "subagent_dir", return_value=gone):
+                out = sl.render(json.dumps({"session_id": "sid"}))
+        self.assertTrue(out, "a directory race must not break the statusline")
+
+    def test_non_object_jsonl_records_are_skipped_not_raised(self):
+        # A valid JSON line that is not an object used to reach d.get() inside
+        # a try that only caught OSError -> AttributeError out of the reader.
+        with tempfile.TemporaryDirectory() as td:
+            self._write(td, "agent-aaaaaa.jsonl", [
+                "[]",
+                "null",
+                "3",
+                '"a bare string"',
+                "{not json at all",
+                json.dumps({"requestId": "r1",
+                            "message": {"role": "user", "content": "Do the thing"}}),
+                json.dumps({"requestId": "r1",
+                            "message": {"role": "assistant",
+                                        "model": "claude-sonnet-4-6-20250514",
+                                        "usage": {"input_tokens": 10,
+                                                  "output_tokens": 4}}}),
+            ])
+            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+        self.assertEqual(recent, 1)
+        self.assertEqual(len(shown), 1, "the valid records after the bad ones must survive")
+        self.assertEqual(shown[0]["label"], "Do the thing")
+        self.assertEqual((tin, tout), (10, 4))
+
+    def test_a_corrupt_file_does_not_suppress_a_later_valid_file(self):
+        with tempfile.TemporaryDirectory() as td:
+            self._write(td, "agent-000001.jsonl", ["[]", "null"])
+            self._write(td, "agent-000002.jsonl", [
+                json.dumps({"requestId": "r9",
+                            "message": {"role": "user", "content": "Second agent"}}),
+                json.dumps({"requestId": "r9",
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 7, "output_tokens": 2}}}),
+            ])
+            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+        self.assertEqual(recent, 2)
+        self.assertEqual((tin, tout), (7, 2))
+        self.assertIn("Second agent", [row["label"] for row in shown])
+
+    def test_a_non_oserror_from_one_transcript_costs_only_its_own_row(self):
+        # The per-file boundary must be a boundary for EVERY failure, not just
+        # OSError. A transcript whose `requestId` is a JSON array is real,
+        # syntactically valid corruption: the reader uses that value as a dict
+        # key, so the per-file body raises `TypeError: unhashable type: 'list'`
+        # — neither OSError nor ValueError. Under an OSError-only boundary it
+        # escapes read_subagents entirely and blanks every subagent row.
+        with tempfile.TemporaryDirectory() as td:
+            poison = self._write(td, "agent-aaaaaa.jsonl", [
+                json.dumps({"requestId": ["not", "hashable"],
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 999,
+                                                  "output_tokens": 999}}}),
+            ])
+            self._write(td, "agent-bbbbbb.jsonl", [
+                json.dumps({"requestId": "ok1",
+                            "message": {"role": "user", "content": "Healthy agent"}}),
+                json.dumps({"requestId": "ok1",
+                            "message": {"role": "assistant",
+                                        "usage": {"input_tokens": 6,
+                                                  "output_tokens": 3}}}),
+            ])
+            # Make the poisoned transcript the most recent, so it is processed
+            # first and cannot be reached only after the healthy one.
+            now = time.time()
+            os.utime(poison, (now, now))
+            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+        self.assertEqual(recent, 2)
+        self.assertEqual((tin, tout), (6, 3),
+                         "the poisoned transcript must contribute nothing, and "
+                         "must not take the healthy one down with it")
+        self.assertEqual([row["label"] for row in shown], ["Healthy agent"])
+
+
 if __name__ == "__main__":
     unittest.main()

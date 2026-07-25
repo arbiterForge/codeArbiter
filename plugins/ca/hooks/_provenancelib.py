@@ -49,7 +49,11 @@
 #   new_record(doc, *, interview_derived=False, entries=None, created=None)
 #                                        -> dict   canonical record with schema=1
 #   write_provenance(path, record)       -> None   pretty JSON; creates parent dirs
+#   valid_provenance_record(record)      -> bool   True iff a well-formed v1
+#                                                  record (top-level shape)
 #   read_provenance(path)                -> dict | None  None on missing/corrupt
+#                                                  — including valid JSON whose
+#                                                  shape is not a v1 record
 #   batch_hash(paths, runner)            -> dict[str, str]  one git hash-object --stdin-paths
 #                                                            call; input-order-preserving; {}
 #                                                            on empty paths or runner failure
@@ -63,7 +67,12 @@
 #                                                  (source renamed/deleted — AC-05/T-06).
 #                                                  Both kinds filtered to drift_trigger:true only
 #                                                  (AC-09/T-05). Docs with no drift omitted (→ {}).
-#   load_provenance_dir(provenance_dir)  -> dict   {doc: record}; {} on missing/corrupt dir
+#   load_provenance_dir(provenance_dir, skipped=None)
+#                                        -> dict   {doc: record}; {} on missing/corrupt dir.
+#                                                  Per-FILE error boundary: one bad record
+#                                                  never suppresses a later valid one.
+#                                                  `skipped` (optional list) collects up to
+#                                                  MAX_SKIPPED_REPORTED rejected basenames.
 #   startup_drift_line(root, runner=None)
 #                                        -> str    "" when clean (AC-06);
 #                                                  "context drift: N stale source(s) across M doc(s) -- run /ca:context-check"
@@ -227,18 +236,65 @@ def write_provenance(path, record):
     _hooklib.write_text_atomic(path, text, newline="\n")
 
 
+# Top-level provenance-record contract (v1). Each required key maps to the
+# type(s) a canonical record — the one new_record() builds — always carries.
+# `bool` is excluded from the `schema` check explicitly because in Python
+# `True == 1`, and a record whose schema is literally `true` is corrupt, not v1.
+_RECORD_FIELD_TYPES = (
+    ("doc", str),
+    ("created", str),
+    ("interview_derived", bool),
+    ("entries", list),
+)
+
+
+def valid_provenance_record(record):
+    """True iff `record` is a well-formed v1 provenance record (#410).
+
+    Checks the TOP-LEVEL shape only: the store's own frame. Entry-level
+    tolerance stays where it already lives — compute_drift and the read-inject
+    pointer both skip a malformed entry without dropping its record — so one
+    odd claim never costs a doc its entire provenance.
+
+    A schema other than SCHEMA_VERSION is rejected rather than best-effort
+    parsed: every field expectation below is v1-specific, so admitting an
+    unknown version would mean reading it with the wrong rules. Bumping
+    SCHEMA_VERSION therefore requires revisiting this function deliberately.
+    Never raises.
+    """
+    if not isinstance(record, dict):
+        return False
+    schema = record.get("schema")
+    if isinstance(schema, bool) or not isinstance(schema, int):
+        return False
+    if schema != SCHEMA_VERSION:
+        return False
+    for key, want in _RECORD_FIELD_TYPES:
+        if key not in record or not isinstance(record[key], want):
+            return False
+    return True
+
+
 def read_provenance(path):
     """Read provenance JSON from `path`; return the dict, or None if missing/corrupt.
 
     Never raises — mirrors read_board() in _taskboardlib.py. A missing file,
     a permission error, or malformed JSON all return None; the caller degrades
     gracefully.
+
+    #410: "corrupt" now includes SYNTACTICALLY VALID JSON of the wrong shape.
+    The documented return type is `dict | None`, but the raw json.load result
+    was handed straight back — so a file containing `[]` was admitted to the
+    store as a list and the first `.get()` downstream raised AttributeError.
+    Honouring the documented type here is what lets every caller treat a
+    non-None result as a usable record.
     """
     try:
         with open(path, encoding="utf-8") as f:
-            return json.load(f)
+            record = json.load(f)
     except (OSError, ValueError):
         return None
+    return record if valid_provenance_record(record) else None
 
 
 # ---------------------------------------------------------------------------
@@ -602,31 +658,70 @@ def heal_worklist(staged_paths, provenance, current_hashes):
 # ---------------------------------------------------------------------------
 
 
-def load_provenance_dir(provenance_dir):
+MAX_SKIPPED_REPORTED = 5   # bounded corruption diagnostic (#410)
+
+
+def load_provenance_dir(provenance_dir, skipped=None):
     """Load all provenance records from provenance_dir into {doc: record}.
 
     Globs <provenance_dir>/*.json, calls read_provenance on each file, and
-    skips any that return None (missing, unreadable, or corrupt JSON). Each
-    surviving record is keyed by its 'doc' field; if 'doc' is absent or
-    empty, falls back to the filename stem so the dict never loses an entry.
-    A missing or non-directory provenance_dir returns {}.
+    skips any that return None (missing, unreadable, or corrupt JSON — which
+    since #410 includes valid JSON of the wrong shape). Each surviving record
+    is keyed by its 'doc' field; if 'doc' is absent or empty, falls back to the
+    filename stem so the dict never loses an entry. A missing or non-directory
+    provenance_dir returns {}.
 
-    Never raises — filesystem errors and malformed records are silently skipped
-    (this runs on the SessionStart linchpin path).
+    #410: the per-file work sits inside its OWN error boundary. The whole glob
+    loop used to share one try/except, so the first record that raised aborted
+    the scan and every LATER valid record vanished with no diagnostic —
+    SessionStart drift reporting and commit-gate auto-heal then ran against a
+    silently truncated map. One bad file now costs exactly itself.
+
+    `skipped`, when a list is passed, collects the BASENAMES of rejected files
+    (at most MAX_SKIPPED_REPORTED) so a caller that has somewhere to put a
+    warning can name the corrupt record. Names only — never file contents, which
+    may hold paths or claims that do not belong in a log line.
+
+    NO PRODUCTION CALLER PASSES `skipped` TODAY, and that is deliberate rather
+    than an oversight. The two real call sites cannot carry the diagnostic:
+    startup_drift_line is bound by AC-08 ("degrade to silence" — an all-corrupt
+    provenance dir MUST return '', pinned by test_degrade_corrupt_json), and
+    build_index runs on every PreToolUse:Read, where a per-call warning would be
+    noise on the hottest path in the hook layer. Surfacing corruption to a user
+    therefore belongs to /ca:context-check or /ca:doctor, which are surface
+    prose and out of this module's reach. The channel exists, is bounded, and is
+    tested; anything reading it is a follow-up.
+
+    Never raises — filesystem errors and malformed records are skipped (this
+    runs on the SessionStart linchpin path).
     """
     result = {}
+
+    def note(fpath):
+        if skipped is None or len(skipped) >= MAX_SKIPPED_REPORTED:
+            return
+        try:
+            skipped.append(os.path.basename(fpath))
+        except Exception:  # noqa: BLE001 — a diagnostic must never break the load
+            pass
+
     try:
         if not os.path.isdir(provenance_dir):
             return {}
-        pattern = os.path.join(provenance_dir, "*.json")
-        for fpath in glob.glob(pattern):
+        paths = glob.glob(os.path.join(provenance_dir, "*.json"))
+    except Exception:  # noqa: BLE001 — an unreadable dir is an empty map
+        return {}
+
+    for fpath in paths:
+        try:
             record = read_provenance(fpath)
             if record is None:
+                note(fpath)
                 continue
             doc = record.get("doc") or os.path.splitext(os.path.basename(fpath))[0]
             result[str(doc)] = record
-    except Exception:
-        pass
+        except Exception:  # noqa: BLE001 — per-file boundary: skip THIS file only
+            note(fpath)
     return result
 
 
