@@ -12,6 +12,7 @@ import json
 import re
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -132,24 +133,76 @@ def npm_audit_invocations(workflow: str) -> list[str]:
     ]
 
 
-def gitleaks_allowlist_blocks(config: str) -> list[str]:
-    """Every `[[allowlists]]` block body in the gitleaks config."""
-    return re.findall(r"(?ms)^\[\[allowlists\]\]\n(.*?)(?=^\[\[|\Z)", config)
+def _fold_keys(value: object, collisions: list[str]) -> object:
+    """Lower-case every mapping key, the way gitleaks' own config reader does.
+
+    gitleaks loads this file through viper, whose key lookup is case-
+    INSENSITIVE.  Measured against the pinned image: `Paths = ['''.''']`
+    reports `scanned ~0 bytes` exactly as `paths` does, `RegexTarget` rebinds
+    the waiver exactly as `regexTarget` does, and `DISABLEDRULES` deletes a
+    rule exactly as `disabledRules` does.  Every ban below is therefore
+    written against folded keys, so a capitalisation cannot walk past it.
+
+    A fold COLLISION (`paths` and `Paths` in one table) is reported rather
+    than silently resolved: which spelling the scanner would honour is not
+    something this contract should guess at.
+    """
+    if isinstance(value, dict):
+        folded: dict[str, object] = {}
+        for key, item in value.items():
+            lowered = key.lower()
+            if lowered in folded:
+                collisions.append(lowered)
+            folded[lowered] = _fold_keys(item, collisions)
+        return folded
+    if isinstance(value, list):
+        return [_fold_keys(item, collisions) for item in value]
+    return value
+
+
+def parse_gitleaks_config(config: str) -> tuple[dict, list[str]]:
+    """The gitleaks config as gitleaks itself reads it - PARSED, keys folded.
+
+    Reading this file as text was the defect this function exists to end.  A
+    regex has to guess at TOML's spellings and it guessed wrong eleven times:
+    an indented key, an indented table header, a basic string instead of a
+    literal one, a `]` inside a value, a capitalised key.  Every one of those
+    was measured GUARD-GREEN while the pinned scanner swallowed a planted
+    high-entropy key.  TOML has exactly one meaning per document, so the
+    contract now reads that meaning instead of the characters around it.
+
+    Returns the folded document and any key-fold collisions.  Raises
+    `tomllib.TOMLDecodeError` on input gitleaks itself could not load.
+    """
+    collisions: list[str] = []
+    document = _fold_keys(tomllib.loads(config), collisions)
+    assert isinstance(document, dict)
+    return document, collisions
+
+
+def gitleaks_allowlist_blocks(config: str) -> list[dict]:
+    """Every `[[allowlists]]` table in the gitleaks config, keys case-folded."""
+    document, _ = parse_gitleaks_config(config)
+    blocks = document.get("allowlists") or []
+    return [block for block in blocks if isinstance(block, dict)]
 
 
 def gitleaks_allowlist_regexes(config: str) -> list[str]:
-    """Every literal inside an allowlist block's `regexes = [...]`.
+    """Every value inside an allowlist table's `regexes`.
 
-    Handles the single-entry (`regexes = ['''x''']`), multi-line array, and
-    embedded-newline spellings, so a waiver cannot hide from the narrowness
-    contract by changing its formatting.  The embedded-newline case is real: the
-    one multi-line secret this repo waives is a PEM block whose detected value
-    spans five source lines.
+    These are the PARSED values, so the single-entry, multi-line-array,
+    embedded-newline, and alternate-quoting spellings all reduce to the same
+    list - a waiver cannot hide from the narrowness contract by reformatting.
+    The embedded-newline case is real: the one multi-line secret this repo
+    waives is a PEM block whose detected value spans five source lines.
     """
     found: list[str] = []
     for block in gitleaks_allowlist_blocks(config):
-        for array in re.findall(r"(?ms)^regexes\s*=\s*\[(.*?)\]", block):
-            found += re.findall(r"(?s)'''(.*?)'''", array)
+        entries = block.get("regexes")
+        if isinstance(entries, str):
+            entries = [entries]
+        if isinstance(entries, list):
+            found += [entry for entry in entries if isinstance(entry, str)]
     return found
 
 
@@ -159,6 +212,17 @@ def gitleaks_allowlist_regexes(config: str) -> list[str]:
 _REGEX_METACHARACTERS = frozenset(".*+?()[]{}|^$\\")
 # `\A<body>\z` - Go RE2's spelling of "the WHOLE target is exactly <body>".
 _ANCHORED_WAIVER = re.compile(r"(?s)\A\\A(?P<body>.*)\\z\Z")
+# Keys that un-scan a file or a commit rather than waiving one value.
+_UNSCANNING_KEYS = ("paths", "commits", "stopwords")
+# The only keys a waiver in this file may carry.  DEFAULT-DENY: gitleaks keeps
+# adding allowlist knobs, and the next one to widen the haystack must fail this
+# contract on the day it is typed, not on the day someone remembers to ban it.
+_ALLOWED_ALLOWLIST_KEYS = frozenset({"description", "regexes"})
+# `[extend]` selects which rules run.  This file only ever SUBTRACTS fixture
+# values from the default ruleset, so `useDefault` is the only key it may set:
+# `disabledRules` deletes a rule outright, and `path`/`url` pull in allowlists
+# that are not in this file and therefore not covered by anything below.
+_ALLOWED_EXTEND_KEYS = frozenset({"usedefault"})
 
 
 def gitleaks_waiver_violations(config: str) -> list[str]:
@@ -185,37 +249,88 @@ def gitleaks_waiver_violations(config: str) -> list[str]:
 
     Anchoring is what actually buys narrowness: `\\A<literal>\\z` matches only
     when the ENTIRE detected secret is that exact fixture value.
+
+    The checks run against the PARSED document, not the config text.  Reading
+    it as text is what let eleven measured shapes through - see
+    test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract for
+    each one and the evidence it swallowed a planted key.
     """
+    try:
+        document, collisions = parse_gitleaks_config(config)
+    except tomllib.TOMLDecodeError as error:
+        # Not "narrow" - unreadable.  gitleaks exits FTL on the same input, so
+        # reporting no violations here would call a config that cannot scan
+        # anything a config that scans everything.
+        return [f"the config is not parseable TOML ({error}), so gitleaks cannot load it"]
+
     problems: list[str] = []
-    for directive in re.findall(r"(?m)^\s*(paths|commits|stopwords)\s*=", config):
+    for key in sorted(set(collisions)):
         problems.append(
-            f"`{directive}` un-scans whole files or commits instead of waiving a value"
+            f"`{key}` is spelled two ways in one table; gitleaks reads keys "
+            "case-insensitively, so which one applies is unknowable from the file"
         )
-    for target in re.findall(r'(?m)^\s*regexTarget\s*=\s*"([^"]*)"', config):
-        problems.append(
-            f'`regexTarget = "{target}"` binds the waiver to surrounding source text '
-            "rather than to the detected secret"
-        )
-    for block in gitleaks_allowlist_blocks(config):
-        head = (block.splitlines() or ["<empty>"])[0]
-        if "description =" not in block:
-            problems.append(f"allowlist block at {head!r} carries no rationale")
-        if "regexes = [" not in block:
-            problems.append(f"allowlist block at {head!r} names no value, so it is unbounded")
-    for literal in gitleaks_allowlist_regexes(config):
-        anchored = _ANCHORED_WAIVER.match(literal)
-        if anchored is None:
+    extend = document.get("extend")
+    if isinstance(extend, dict):
+        for key in sorted(set(extend) - _ALLOWED_EXTEND_KEYS):
             problems.append(
-                f"{literal!r} is not anchored `\\A...\\z`; gitleaks matches allowlist "
-                "regexes as substrings, so it waives anything merely containing it"
+                f"`[extend] {key}` changes which rules run instead of waiving one value; "
+                "`useDefault` is the only key this config may set there"
             )
+    if document.get("rules"):
+        problems.append(
+            "a `[[rules]]` block re-declares the ruleset - one whose id matches a default "
+            "rule REPLACES it - and this file only ever subtracts fixture values"
+        )
+    for position, block in enumerate(document.get("allowlists") or [], start=1):
+        if not isinstance(block, dict):
+            problems.append(f"allowlist #{position} is not a table")
             continue
-        stray = sorted(set(anchored.group("body")) & _REGEX_METACHARACTERS)
-        if stray:
+        description = block.get("description")
+        head = str(description).strip().splitlines()[0] if str(description).strip() else ""
+        head = head or f"#{position}"
+        for key in _UNSCANNING_KEYS:
+            if key in block:
+                problems.append(
+                    f"`{key}` un-scans whole files or commits instead of waiving a value"
+                )
+        if "regextarget" in block:
             problems.append(
-                f"{literal!r} carries regex metacharacter(s) {''.join(stray)!r}; "
-                "a waiver must spell out one fixed value"
+                f"`regexTarget = {block['regextarget']!r}` binds the waiver to surrounding "
+                "source text rather than to the detected secret"
             )
+        unmodelled = set(block) - _ALLOWED_ALLOWLIST_KEYS - {"regextarget"} - set(_UNSCANNING_KEYS)
+        for key in sorted(unmodelled):
+            problems.append(
+                f"allowlist block at {head!r} sets `{key}`, which this contract cannot "
+                "reason about; a waiver may carry only `description` and `regexes`"
+            )
+        if not str(description or "").strip():
+            problems.append(f"allowlist block at {head!r} carries no rationale")
+        entries = block.get("regexes")
+        if isinstance(entries, str):
+            entries = [entries]
+        if not isinstance(entries, list) or not entries:
+            problems.append(f"allowlist block at {head!r} names no value, so it is unbounded")
+            continue
+        for literal in entries:
+            if not isinstance(literal, str):
+                problems.append(
+                    f"allowlist block at {head!r} waives {literal!r}, which is not a string"
+                )
+                continue
+            anchored = _ANCHORED_WAIVER.match(literal)
+            if anchored is None:
+                problems.append(
+                    f"{literal!r} is not anchored `\\A...\\z`; gitleaks matches allowlist "
+                    "regexes as substrings, so it waives anything merely containing it"
+                )
+                continue
+            stray = sorted(set(anchored.group("body")) & _REGEX_METACHARACTERS)
+            if stray:
+                problems.append(
+                    f"{literal!r} carries regex metacharacter(s) {''.join(stray)!r}; "
+                    "a waiver must spell out one fixed value"
+                )
     return problems
 
 
@@ -914,12 +1029,27 @@ class WorkflowContractTest(unittest.TestCase):
         # literal, which leaves every file fully scanned.
         self.assertTrue(GITLEAKS_CONFIG.is_file(), "no .gitleaks.toml in the repo root")
         config = GITLEAKS_CONFIG.read_text(encoding="utf-8")
-        self.assertIn("useDefault = true", config, "the config must extend the default ruleset")
+        document, collisions = parse_gitleaks_config(config)
+        self.assertEqual([], collisions, "a key is spelled two ways in one table")
+        # Read from the PARSE, not from the text: `assertIn("useDefault = true")`
+        # is satisfied by that string appearing in a comment and defeated by a
+        # different spacing, and neither has anything to do with what gitleaks
+        # loads.
+        self.assertIs(
+            document.get("extend", {}).get("usedefault"),
+            True,
+            "the config must extend the default ruleset",
+        )
         blocks = gitleaks_allowlist_blocks(config)
         self.assertEqual(
             len(blocks),
-            len(re.findall(r"(?m)^\[\[allowlists\]\]$", config)),
-            "the allowlist block scan drifted off the config",
+            len(re.findall(r"(?m)^\s*\[\[\s*allowlists\s*\]\]\s*$", config)),
+            # Text and parse must agree on how many waivers exist.  They can
+            # disagree: `allowlists = [{...}]` is a valid TOML array-of-tables
+            # that a header count cannot see - and, measured against the pinned
+            # image, one gitleaks silently IGNORES.  A waiver the scanner does
+            # not honour and the reader believes in is its own kind of hole.
+            "the allowlist block count disagrees with the table headers in the file",
         )
         self.assertTrue(blocks, "no allowlist blocks found")
         regexes = gitleaks_allowlist_regexes(config)
@@ -1046,6 +1176,176 @@ class WorkflowContractTest(unittest.TestCase):
                 if "names no value" in p
             ],
             "a waiver naming no value is accepted",
+        )
+
+        # ---- SPELLING BYPASSES OF THE CONTRACT ITSELF -----------------------
+        # Everything above bypasses the RULES.  Every shape below bypassed the
+        # CONTRACT: each was measured GUARD-GREEN against the first version of
+        # this file while the pinned image reported `no leaks found` (exit 0)
+        # over a tree carrying a freshly planted high-entropy key that the
+        # shipped config reports as `leaks found: 1` (exit 1).  They are one
+        # defect with eleven faces - the contract read the config as TEXT, and
+        # TOML (plus viper's case-insensitive key lookup) admits far more
+        # spellings than a regex anticipates.  The contract now PARSES.
+        def block(*lines: str) -> str:
+            return shipped + "\n[[allowlists]]\n" + "\n".join(lines) + "\n"
+
+        # 7. An INDENTED `regexes` key.  `  regexes = [...]` is valid TOML; the
+        #    extractor was anchored at column 0 so it pulled ZERO literals from
+        #    this block, while the `"regexes = [" in block` substring test still
+        #    reported the block as bounded.  Zero literals, zero violations.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    block('description = "adversarial"', f"  regexes = [{quote}sk-{quote}]")
+                )
+                if "not anchored" in p
+            ],
+            "an indented `regexes` key hides its literals from the contract",
+        )
+        # 8. `disabledRules` under `[extend]` turns the highest-value rule off
+        #    outright.  Asserting `useDefault = true` is present says nothing
+        #    about what sits beside it.  Only `useDefault` may live there.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped.replace(
+                        "useDefault = true",
+                        'useDefault = true\ndisabledRules = ["generic-api-key"]',
+                        1,
+                    )
+                )
+                if "disabledrules" in p.lower()
+            ],
+            "`[extend] disabledRules` is accepted - it deletes the rule outright",
+        )
+        # 9. A SINGLE-QUOTED `regexTarget`.  The ban matched double quotes only.
+        #    Measured: `regexTarget = 'match'` plus a whole-match-anchored,
+        #    metacharacter-free literal clears every other check and swallows
+        #    the planted key.
+        planted = "FARM_API_KEY=sk-kR3mVq7XpZ2wNbT9sLdG4hJfA6cE1yUo"
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    block(
+                        'description = "adversarial"',
+                        "regexTarget = 'match'",
+                        f"regexes = [{quote}\\A{planted}\\z{quote}]",
+                    )
+                )
+                if "regexTarget" in p
+            ],
+            "a single-quoted `regexTarget` evades the ban",
+        )
+        # 10. Any TOML string spelling other than `'''...'''`.  The literal
+        #     extractor matched triple-quoted strings only, so a basic or a
+        #     single-quoted literal string yielded ZERO literals to check.
+        for spelling in ('regexes = ["sk-"]', "regexes = ['sk-']"):
+            with self.subTest(spelling=spelling):
+                self.assertTrue(
+                    [
+                        p
+                        for p in gitleaks_waiver_violations(
+                            block('description = "adversarial"', spelling)
+                        )
+                        if "not anchored" in p
+                    ],
+                    "a waiver spelled with other quotes hides from the contract",
+                )
+        # 11. An INDENTED `[[allowlists]]` header.  The block scan was anchored
+        #     at column 0, so an indented block - and every waiver in it - was
+        #     invisible to every per-block check at once.
+        first_header = re.search(r"(?m)^\[\[allowlists\]\]$", shipped)
+        self.assertIsNotNone(first_header, "the shipped config has no allowlist header")
+        indented = (
+            shipped[: first_header.start()]
+            + f'  [[allowlists]]\n  description = "adversarial"\n  regexes = [{quote}sk-{quote}]\n\n'
+            + shipped[first_header.start() :]
+        )
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations(indented) if "not anchored" in p],
+            "an indented `[[allowlists]]` header hides a whole block",
+        )
+        # 12. CASE-VARIED KEYS.  gitleaks reads its config through viper, whose
+        #     key lookup is case-INSENSITIVE, while every ban here was
+        #     case-sensitive.  Measured: `Paths = ['''.''']` reported
+        #     `scanned ~0 bytes` - the entire repository went unread - with the
+        #     guard green.
+        for line, needle in (
+            (f"Paths = [{quote}.{quote}]", "paths"),
+            ('RegexTarget = "match"', "regexTarget"),
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(
+                    [
+                        p
+                        for p in gitleaks_waiver_violations(
+                            block(
+                                'description = "adversarial"',
+                                line,
+                                f"regexes = [{quote}\\Aunused\\z{quote}]",
+                            )
+                        )
+                        if needle in p
+                    ],
+                    "a case-varied key evades the ban that names it",
+                )
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped.replace(
+                        "useDefault = true",
+                        'useDefault = true\nDISABLEDRULES = ["generic-api-key"]',
+                        1,
+                    )
+                )
+                if "disabledrules" in p.lower()
+            ],
+            "a case-varied `disabledRules` evades the ban",
+        )
+        # 13. A `]` INSIDE a literal.  The array capture was non-greedy to the
+        #     first `]`, so one waiver containing a bracket truncated the scan
+        #     and every later literal in the same array went unchecked.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    block(
+                        'description = "adversarial"',
+                        f"regexes = [{quote}\\Ax]y\\z{quote}, {quote}sk-{quote}]",
+                    )
+                )
+                if "not anchored" in p
+            ],
+            "a `]` in one waiver hides every later waiver in the same array",
+        )
+        # 14. A `[[rules]]` BLOCK.  The contract only ever looked at
+        #     `[[allowlists]]`.  Measured: re-declaring the id `generic-api-key`
+        #     with a never-matching regex REPLACES the default rule, and the
+        #     planted key goes unreported.  This file subtracts fixture values
+        #     from the default ruleset; it declares no rules of its own.
+        self.assertTrue(
+            [
+                p
+                for p in gitleaks_waiver_violations(
+                    shipped
+                    + '\n[[rules]]\nid = "generic-api-key"\ndescription = "adversarial"\n'
+                    + f"regex = {quote}zzzzz-never-matches-zzzzz{quote}\n"
+                )
+                if "rules" in p
+            ],
+            "a `[[rules]]` block is accepted - it can replace a default rule",
+        )
+        # 15. A config gitleaks cannot load is not a passing config.  The
+        #     contract must not silently report "narrow" on TOML it failed to
+        #     read; the scanner exits FTL on the same input.
+        self.assertTrue(
+            [p for p in gitleaks_waiver_violations("regexes = [") if "TOML" in p],
+            "an unparseable config is reported as narrow",
         )
 
     def test_secret_scan_config_edits_reach_the_guard_that_constrains_them(self):

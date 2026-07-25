@@ -45,13 +45,32 @@
 # ruleset, which finds exactly 13 leaks in this tree across 5 distinct values.
 #
 # ADDING AN ENTRY - the rules .github/scripts/test_ci_impact.py enforces:
-#   1. No `paths` / `commits` / `stopwords` key anywhere in this file.
-#   2. No `regexTarget` key: a waiver binds to the secret, not to the line.
-#   3. Every `[[allowlists]]` block carries a `description` naming the file the
+#   1. A waiver carries ONLY `description` and `regexes`. Every other key is
+#      rejected, `paths` / `commits` / `stopwords` (which un-scan a file or a
+#      commit) and `regexTarget` (which rebinds the waiver to surrounding source
+#      text) loudest of all. The check is DEFAULT-DENY: a knob gitleaks adds
+#      later fails this contract the day it is typed here, not the day someone
+#      remembers to ban it.
+#   2. `[extend]` sets `useDefault` and nothing else. `disabledRules` deletes a
+#      rule outright - measured, `disabledRules = ["generic-api-key"]` returns a
+#      planted high-entropy key to `no leaks found` - and `path` / `url` pull in
+#      allowlists that are not in this file, so nothing here constrains them.
+#   3. No `[[rules]]` block. This file only ever SUBTRACTS fixture values from
+#      the default ruleset, and a rule whose id matches a default one REPLACES
+#      it - measured, that is the same hole as disabling it.
+#   4. Every `[[allowlists]]` block carries a `description` naming the file the
 #      literal legitimately lives in and why it is benign.
-#   4. Every block waives by `regexes`, every regex is anchored `\A...\z`, and
+#   5. Every block waives by `regexes`, every regex is anchored `\A...\z`, and
 #      the anchored body carries no regex metacharacter - no `.*`, no character
 #      class, no escape, nothing that could match an unseen value.
+#
+# REFORMATTING WILL NOT HELP. The contract PARSES this file as TOML and folds
+# keys to lower case, because gitleaks reads its config through viper, whose key
+# lookup is case-INSENSITIVE (measured: `Paths` un-scans the tree exactly as
+# `paths` does). Indenting a key or a table header, spelling a waiver `"x"` or
+# `'x'` instead of `'''x'''`, or capitalising a key changes nothing about what
+# the rules above see. Reading this file as TEXT is what let eleven measured
+# shapes through, each one guard-green while the scanner swallowed a live key.
 
 title = "codeArbiter hosted secret scan"
 
