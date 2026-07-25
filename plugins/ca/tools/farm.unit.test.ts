@@ -6,12 +6,13 @@ import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, rm as fsRm } from "node:fs/promises";
+import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { scrubbedEnv } from "./exec.ts";
+import { mutationCheck as realMutationCheck } from "./mutation.ts";
 
 // ---------------------------------------------------------------------------
 // redactSecrets — outbound-boundary redactor must stay aligned with the hook
@@ -588,6 +589,231 @@ describe("httpWorker secure request boundary", () => {
     expect(stderr.mock.calls.flat().join(" ")).not.toContain("opaque-provider-credential");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).not.toContain("opaque-provider-credential");
+  });
+});
+
+describe("farm worktree write containment", () => {
+  const savedSamples = process.env.FARM_SAMPLES;
+  const savedTemperature = process.env.FARM_TEMPERATURE;
+  const realFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = realFetch;
+    if (savedSamples === undefined) delete process.env.FARM_SAMPLES;
+    else process.env.FARM_SAMPLES = savedSamples;
+    if (savedTemperature === undefined) delete process.env.FARM_TEMPERATURE;
+    else process.env.FARM_TEMPERATURE = savedTemperature;
+    vi.restoreAllMocks();
+  });
+
+  const taskFor = (id: string): Task => ({
+    id,
+    description: "write through a hostile worktree link",
+    filesInScope: ["linked/sentinel.txt"],
+    test: { path: "tests/read-only.test.ts" },
+    gate: { commands: ["node -p 0"] },
+    maxRetries: 0,
+  });
+
+  const worktreeFor = (id: string) => path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+
+  it("escalates single-worker directory-link writes with a bounded error and stages nothing", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const id = "unsafe-single-write";
+    const wt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-single-"));
+    const sentinel = path.join(external, "sentinel.txt");
+    await fsWriteFile(sentinel, "outside-must-survive", "utf8");
+    const gitCalls: string[][] = [];
+    global.fetch = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: "```text:linked/sentinel.txt\noverwritten\n```" } }],
+    }), { status: 200, headers: { "content-type": "application/json" } })) as unknown as typeof fetch;
+    try {
+      const result = await runTask(taskFor(id), "stub-model", "https://api.example/v1", "stub-key", {
+        worker: httpWorker,
+        prepareWorktree: async () => {
+          await fsMkdir(wt, { recursive: true });
+          await fsSymlink(external, path.join(wt, "linked"), process.platform === "win32" ? "junction" : "dir");
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: async () => null,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toMatch(/unsafe worktree path rejected/u);
+      expect(result.note!.length).toBeLessThan(80);
+      expect(await fsReadFile(sentinel, "utf8")).toBe("outside-must-survive");
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      await fsRm(wt, { recursive: true, force: true });
+      await fsRm(external, { recursive: true, force: true });
+    }
+  });
+
+  it("escalates best-of-N winner materialization through a directory link and stages nothing", async () => {
+    process.env.FARM_SAMPLES = "2";
+    process.env.FARM_TEMPERATURE = "0";
+    const id = "unsafe-winner-write";
+    const mainWt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-winner-"));
+    const sentinel = path.join(external, "sentinel.txt");
+    await fsWriteFile(sentinel, "outside-must-survive", "utf8");
+    const gitCalls: string[][] = [];
+    try {
+      const result = await runTask(taskFor(id), "stub-model", "https://api.example/v1", "stub-key", {
+        worker: {
+          async apply(ctx) {
+            await fsMkdir(path.join(ctx.cwd, "linked"), { recursive: true });
+            await fsWriteFile(path.join(ctx.cwd, "linked", "sentinel.txt"), "winner-output", "utf8");
+            return { ok: true, filesWritten: ["linked/sentinel.txt"] } satisfies WorkerResult;
+          },
+        },
+        prepareWorktree: async (_branch, candidateWt) => {
+          await fsMkdir(candidateWt, { recursive: true });
+          if (candidateWt === mainWt) {
+            await fsSymlink(external, path.join(candidateWt, "linked"), process.platform === "win32" ? "junction" : "dir");
+          }
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: async () => null,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toBe("unsafe worktree path rejected");
+      expect(await fsReadFile(sentinel, "utf8")).toBe("outside-must-survive");
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      for (const suffix of ["", "__s0", "__s1"]) {
+        await fsRm(worktreeFor(id + suffix), { recursive: true, force: true });
+      }
+      await fsRm(external, { recursive: true, force: true });
+    }
+  });
+
+  it("escalates unsafe mutation write/finally-restore paths without touching or staging the external file", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const id = "unsafe-mutation-write";
+    const wt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-mutation-"));
+    const sentinel = path.join(external, "impl.ts");
+    const original = [
+      "export function classify(value: number) {",
+      "  const enabled = true;",
+      "  return value > 1 && enabled;",
+      "}",
+    ].join("\n");
+    await fsWriteFile(sentinel, original, "utf8");
+    const gitCalls: string[][] = [];
+    try {
+      const result = await runTask({
+        ...taskFor(id),
+        filesInScope: ["linked/impl.ts"],
+      }, "stub-model", "https://api.example/v1", "stub-key", {
+        worker: { async apply() { return { ok: true, filesWritten: ["linked/impl.ts"] }; } },
+        prepareWorktree: async () => {
+          await fsMkdir(wt, { recursive: true });
+          await fsSymlink(external, path.join(wt, "linked"), process.platform === "win32" ? "junction" : "dir");
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: realMutationCheck,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toBe("unsafe worktree path rejected");
+      expect(await fsReadFile(sentinel, "utf8")).toBe(original);
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      await fsRm(wt, { recursive: true, force: true });
+      await fsRm(external, { recursive: true, force: true });
+    }
+  });
+
+  it("escalates when the mutation command swaps an ancestor before immediate and final restore", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const id = "unsafe-mutation-restore";
+    const wt = worktreeFor(id);
+    const external = await mkdtemp(path.join(tmpdir(), "farm-external-restore-"));
+    const sentinel = path.join(external, "impl.ts");
+    const externalOriginal = "external-must-survive";
+    const internalOriginal = [
+      "export function classify(value: number) {",
+      "  const enabled = true;",
+      "  return value > 1 && enabled;",
+      "}",
+    ].join("\n");
+    await fsWriteFile(sentinel, externalOriginal, "utf8");
+    // Run the swap from a real script FILE rather than `node -e`. An inline
+    // -e payload has to survive two levels of shell quoting on both platforms,
+    // which is why this was once a base64+eval one-liner - but constructing
+    // code to eval trips CodeQL js/bad-code-sanitization, and a standing
+    // dismissal would re-raise on every bundle rebuild. A file has neither
+    // problem: same behaviour, no quoting gymnastics, no eval. Relative paths
+    // below still resolve against the worktree because the gate command runs
+    // with cwd = the worktree.
+    const scriptDir = await mkdtemp(path.join(tmpdir(), "farm-external-swap-"));
+    const scriptPath = path.join(scriptDir, "swap.cjs");
+    await fsWriteFile(
+      scriptPath,
+      [
+        "const fs=require('node:fs');",
+        "fs.rmSync('src',{recursive:true,force:true});",
+        `fs.symlinkSync(${JSON.stringify(external)},'src',process.platform==='win32'?'junction':'dir');`,
+      ].join("\n"),
+      "utf8",
+    );
+    const swapCommand = `node ${JSON.stringify(scriptPath)}`;
+    const gitCalls: string[][] = [];
+    try {
+      const result = await runTask({
+        ...taskFor(id),
+        filesInScope: ["src/impl.ts"],
+        gate: { commands: [swapCommand] },
+      }, "stub-model", "https://api.example/v1", "stub-key", {
+        worker: { async apply() { return { ok: true, filesWritten: ["src/impl.ts"] }; } },
+        prepareWorktree: async () => {
+          await fsMkdir(path.join(wt, "src"), { recursive: true });
+          await fsWriteFile(path.join(wt, "src", "impl.ts"), internalOriginal, "utf8");
+          return null;
+        },
+        resetWorktree: async () => {},
+        fileHash: async () => null,
+        checkDrift: async () => [],
+        runGate: async () => ({ ok: true as const }),
+        antiGamingCheck: async () => ({ risk: "none" as const }),
+        mutationCheck: realMutationCheck,
+        git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+        withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      });
+
+      expect(result.status).toBe("escalate");
+      expect(result.note).toBe("unsafe worktree path rejected");
+      expect(await fsReadFile(sentinel, "utf8")).toBe(externalOriginal);
+      expect(gitCalls.some((args) => args[0] === "add")).toBe(false);
+    } finally {
+      await fsRm(wt, { recursive: true, force: true });
+      await fsRm(external, { recursive: true, force: true });
+    }
   });
 });
 
