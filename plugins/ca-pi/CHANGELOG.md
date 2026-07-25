@@ -2,6 +2,22 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.13] - 2026-07-25
+
+### Changed
+
+- The shared statusline/footer ledger no longer rewrites itself on every render.
+  `ledger_update()` used to load the compatibility snapshot plus every live
+  session shard, write the session shard, load the snapshot and every shard a
+  second time, then atomically rewrite the whole snapshot - on every refresh,
+  whether or not anything had changed. Each write is now gated on the record (or
+  the snapshot) actually differing from what is on disk, the duplicate load is
+  gone, and the pure-liveness `last_ts` stamp is throttled to one refresh per
+  five minutes so a quiet render forces no write at all. The 36-hour session TTL
+  contract and the on-disk format are unchanged.
+- `parse_iso()` now has one owner. `_ledgerlib` carried a byte-identical second
+  copy of `_fmtlib`'s implementation and re-exports it instead.
+
 ## [0.1.12] - 2026-07-25
 
 ### Changed
