@@ -109,6 +109,28 @@ if _CA_TEST_HOLD_MS > 0:
 '''
 
 
+def _reap(process):
+    """Terminate and fully drain a test subprocess. Idempotent and never raises:
+    a cleanup helper must not be the thing that fails a suite (#462)."""
+    try:
+        if process.poll() is None:
+            process.terminate()
+        process.communicate(timeout=10)
+    except Exception:  # noqa: BLE001
+        try:
+            process.kill()
+            process.communicate(timeout=10)
+        except Exception:  # noqa: BLE001
+            pass
+    finally:
+        for stream in (process.stdout, process.stderr, process.stdin):
+            try:
+                if stream is not None:
+                    stream.close()
+            except Exception:  # noqa: BLE001
+                pass
+
+
 def _wait_for_file(path, timeout=CONCURRENCY_TEST_WAIT):
     """Bounded poll for a marker file's existence. Returns True/False; never
     raises, never blocks past `timeout`."""
@@ -177,10 +199,17 @@ class TaskwriteContentionTest(unittest.TestCase):
             env["CA_TEST_ACQUIRED_MARKER"] = marker
         else:
             env.pop("CA_TEST_ACQUIRED_MARKER", None)
-        return subprocess.Popen(
+        process = subprocess.Popen(
             [sys.executable, self._taskwrite_script] + argv,
             cwd=self.root, env=env, text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # #462: registered on the TestCase, not left to _finish(). An assertion
+        # that fires BEFORE _finish() would otherwise leave a live child holding
+        # the fixture's temp dir, and on Windows that turns the NEXT test's
+        # teardown into an ERROR rather than this test's FAILURE - exactly the
+        # intermittent shape the suite showed.
+        self.addCleanup(_reap, process)
+        return process
 
     def _finish(self, proc):
         out, err = proc.communicate(timeout=CONCURRENCY_TEST_WAIT)

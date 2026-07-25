@@ -62,6 +62,29 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- The test suites no longer write outside their own temp directories. Running
+  the hook suite rewrote the developer's real `~/.claude/settings.json` — both
+  the statusline command and its owner key repointed at whatever plugin root the
+  test process resolved — and littered `~/.codearbiter/` with a ledger, its
+  lock, five session shards and an update cache. Four modules did it, none using
+  the `redirect_home` helper that already sat beside them, and CI never noticed
+  because a fresh runner has no settings to clobber. All four now take a
+  module-level isolation fixture, which covers every test class added later
+  rather than relying on one more remembered `setUp` (issue #442).
+- The hook suite no longer leaks file handles or child processes. Unclosed
+  `settings.json` / `CONTEXT.md` reads, five never-reaped subprocesses, and an
+  implicitly reclaimed `HTTPError` produced `ResourceWarning`s — and on Windows
+  an open handle blocks `TemporaryDirectory` cleanup while a live child holds a
+  temp path, so teardown *raised* instead of the assertion failing. That is why
+  the same unchanged tree went `FAILED (errors=2)` on one run and `OK` on the
+  next three. Handles are closed, subprocesses are reaped through `addCleanup`
+  regardless of assertion outcome, and the two detached background spawns
+  `session-start.py` fires are stubbed in the harness rather than launched for
+  real (issue #462).
+- A new CI gate keeps both closed: each suite runs under a pristine redirected
+  home seeded with a stale-but-real `settings.json`, and must leave it
+  byte-identical while emitting no `ResourceWarning`. The guard proves its own
+  detector can fail, so a green result means something.
 - `FARM_RUN_ID` no longer accepts a Windows reserved device name. `NUL`, `CON`,
   `AUX`, `PRN`, `COM1`-`COM9` and `LPT1`-`LPT9` match the run id's character
   class perfectly, and Windows resolves them ahead of any extension, so `NUL`,

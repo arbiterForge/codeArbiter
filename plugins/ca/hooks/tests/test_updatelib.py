@@ -298,6 +298,13 @@ class TestFetchLatestTag(unittest.TestCase):
         import urllib.error
         refused = urllib.error.HTTPError(
             U.UPDATE_API_URL, 302, "Found", {"Location": "http://evil.example/steal"}, None)
+        # #462: HTTPError is itself a file-like response object. Constructed with
+        # fp=None it still allocates a spooled temp file, and letting the garbage
+        # collector reclaim it emits `ResourceWarning: Implicitly cleaning up
+        # <HTTPError 302>` at an unrelated point in the run. Closing it here is
+        # what keeps the suite's warning output empty, so a NEW leak is visible
+        # instead of lost in the noise.
+        self.addCleanup(refused.close)
         opener = _FakeOpener(exc=refused)
         self.assertIsNone(U.fetch_latest_tag(opener=opener))
         # Exactly one call was attempted (the initial request); no follow-up
