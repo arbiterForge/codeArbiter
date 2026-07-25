@@ -2,6 +2,26 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.25] - 2026-07-25
+
+### Fixed
+
+- The ca-pi test suite no longer reads the operator's real
+  `~/.pi/agent/auth.json`. `security-controls.md` states that tests use
+  disposable Pi homes and dummy credentials and never inspect the real auth
+  store; the request fixtures spread `process.env`, so roughly 25 tests that did
+  not set their own overrides resolved the actual store. The suite now loads a
+  setup file that repoints every home variable Node consults - including the
+  Windows `HOMEDRIVE`/`HOMEPATH` pair - plus `PI_CODING_AGENT_DIR` at a
+  disposable root seeded with an obvious dummy, so the control is true by
+  construction rather than per test file (issue #464).
+- The Pi security contract now runs the ca-pi suites FROM the package rather
+  than from the repository root. `npm --prefix` moves npm, not vitest, so those
+  runs never loaded `plugins/ca-pi/tools/vitest.config.ts` - they executed
+  without the package's build-time globals and, latterly, without its setup
+  file, which is how a green security row could be reported for a suite running
+  against the real home.
+
 ## [0.1.23] - 2026-07-25
 
 ### Fixed

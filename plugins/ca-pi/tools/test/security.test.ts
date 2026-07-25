@@ -1,5 +1,6 @@
 import { link, lstat, mkdir, mkdtemp, open, readFile, realpath, rm, utimes, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { readFileSync, realpathSync } from "node:fs";
+import { homedir, tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { describe, expect, test } from "vitest";
@@ -462,5 +463,51 @@ describe("ADR-0014 adversarial promotion contract", () => {
     } finally {
       await rm(root, { recursive: true, force: true });
     }
+  });
+});
+
+// Issue #464 AC-2. `security-controls.md` states that tests use disposable Pi
+// homes and dummy credentials and NEVER inspect or mutate the real auth store.
+// That clause was false: `runner-isolation.test.ts` spreads `process.env` into
+// its request fixture, so every case that did not explicitly override HOME or
+// PI_CODING_AGENT_DIR resolved the operator's actual ~/.pi/agent/auth.json.
+//
+// A control document describing behaviour the suite does not follow is worse
+// than no document - reviewers cite it, and it is wrong. So this asserts the
+// clause rather than restating it, and it asserts the EFFECT (where the process
+// actually resolves ~) rather than that a setup file was listed somewhere.
+describe("#464 - the suite runs against a disposable operator home", () => {
+  const disposable = process.env.CODEARBITER_TEST_DISPOSABLE_HOME;
+
+  test("the setup file ran and repointed every home variable", () => {
+    expect(disposable, "test/setup-disposable-home.ts did not run").toBeTruthy();
+    expect(process.env.HOME).toBe(disposable);
+    expect(process.env.USERPROFILE).toBe(disposable);
+    // Windows resolves USERPROFILE first, then HOMEDRIVE + HOMEPATH, and
+    // ignores HOME entirely - so a half-redirected home still reaches the real
+    // profile there. This is the assertion that catches that.
+    expect(process.env.HOMEDRIVE).toBeUndefined();
+    expect(process.env.HOMEPATH).toBeUndefined();
+  });
+
+  test("os.homedir() resolves inside the disposable root, not the real profile", () => {
+    expect(realpathSync(homedir())).toBe(realpathSync(disposable!));
+  });
+
+  test("the seeded auth store is an obvious dummy, and is the one a child would read", () => {
+    const store = resolve(process.env.PI_CODING_AGENT_DIR!, "auth.json");
+    expect(realpathSync(store).startsWith(realpathSync(disposable!))).toBe(true);
+    const record = JSON.parse(readFileSync(store, "utf8")) as Record<string, { key?: string }>;
+    expect(record.openai?.key).toMatch(/dummy/i);
+    // The point of the whole exercise: no plausible credential shape survives
+    // in the store an ordinary test run reads.
+    expect(JSON.stringify(record)).not.toMatch(/sk-[A-Za-z0-9]{16}|ghp_|AKIA[0-9A-Z]{16}/u);
+  });
+
+  test("a spread of process.env therefore carries the disposable home", () => {
+    // The exact shape that leaked: `{ ...process.env }` into a request fixture.
+    const parentEnv = { ...process.env };
+    expect(parentEnv.HOME).toBe(disposable);
+    expect(parentEnv.PI_CODING_AGENT_DIR!.startsWith(disposable!)).toBe(true);
   });
 });

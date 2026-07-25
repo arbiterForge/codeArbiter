@@ -206,11 +206,19 @@ def adversarial_results() -> list[dict[str, object]]:
     )
     rows: list[dict[str, object]] = []
     for code, tests in suites:
-        command = [npm, "--prefix", "plugins/ca-pi/tools", "exec", "vitest", "run", *tests]
+        # Issue #464: run FROM the package, not from the repo root with
+        # repo-relative paths. `npm --prefix` moves npm, not vitest: invoked from
+        # REPO, vitest took the repo root as its own root and never loaded
+        # plugins/ca-pi/tools/vitest.config.ts - so these suites ran without the
+        # package's `define` globals AND without its setup file, which is how a
+        # green PI-SEC row was reported for a suite running against the
+        # operator's real home. The paths in `suites` are already
+        # package-relative, so only the cwd needed to move.
+        command = [npm, "exec", "vitest", "run", *tests]
         try:
             completed = subprocess.run(
                 command,
-                cwd=REPO,
+                cwd=REPO / "plugins" / "ca-pi" / "tools",
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
