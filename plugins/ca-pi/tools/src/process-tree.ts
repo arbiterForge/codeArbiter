@@ -615,18 +615,22 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
   const ready = new Promise<boolean>((resolveReady) => {
     let settled = false;
     let stderrBytes = 0;
-    const finish = (accepted: boolean) => {
-      if (settled) return;
+    const finish = (accepted: boolean): boolean => {
+      if (settled) return false;
       settled = true;
       resolveReady(accepted);
       if (!accepted) { try { helper.stdin.end(); } catch {} terminateWindowsHelperTree(helper, closed); }
+      return true;
     };
     helper.stderr.on("data", (chunk: Buffer | string) => { stderrBytes += Buffer.byteLength(chunk); if (stderrBytes > MAX_JOB_PROTOCOL_BYTES) finish(false); });
     helper.once("close", () => { if (!intentional) finish(false); });
     helper.once("error", () => finish(false));
     void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs }).then((outcome) => {
-      if (outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
-      finish(outcome.state === "ready");
+      // Attribute the stall ONLY when the progress wait is what refused. A helper
+      // that crashed or flooded stderr has already settled `ready`, and reporting
+      // "stalled at ..." for it would be a lie.
+      const refused = finish(outcome.state === "ready");
+      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
     }, () => finish(false));
     try { helper.stdin.write(`${pid} ${process.pid}\n`, "utf8", (error) => { if (error) finish(false); }); } catch { finish(false); }
   });

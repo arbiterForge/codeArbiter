@@ -1566,7 +1566,7 @@ function startWindowsJobGuard(pid, timing) {
     let settled = false;
     let stderrBytes = 0;
     const finish = (accepted) => {
-      if (settled) return;
+      if (settled) return false;
       settled = true;
       resolveReady(accepted);
       if (!accepted) {
@@ -1576,6 +1576,7 @@ function startWindowsJobGuard(pid, timing) {
         }
         terminateWindowsHelperTree(helper, closed);
       }
+      return true;
     };
     helper.stderr.on("data", (chunk) => {
       stderrBytes += Buffer.byteLength(chunk);
@@ -1586,8 +1587,8 @@ function startWindowsJobGuard(pid, timing) {
     });
     helper.once("error", () => finish(false));
     void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs }).then((outcome) => {
-      if (outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
-      finish(outcome.state === "ready");
+      const refused = finish(outcome.state === "ready");
+      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
     }, () => finish(false));
     try {
       helper.stdin.write(`${pid} ${process.pid}
