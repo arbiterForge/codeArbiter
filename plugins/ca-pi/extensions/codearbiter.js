@@ -562,6 +562,11 @@ function killTree(child, taskkillExecutable) {
     child.kill("SIGKILL");
   }
 }
+var BRIDGE_CORRELATION_RE = /^[a-f0-9]{64}$/u;
+function normalizedRequest(request) {
+  const { correlation, ...rest } = request;
+  return typeof correlation === "string" && BRIDGE_CORRELATION_RE.test(correlation) ? { ...rest, correlation } : rest;
+}
 function sanitizedResponse(response, request) {
   return {
     ...response,
@@ -631,7 +636,7 @@ var BridgeClient = class {
       "HOST: pi",
       `RULE: ${response.ruleId ?? "PI-BRIDGE"}`,
       `AUDIT: ${response.auditCode ?? "PI_BRIDGE_FAILURE"}`,
-      `CORRELATION: ${randomUUID()}`,
+      `CORRELATION: ${request.correlation ?? randomUUID()}`,
       `REQUEST_BYTES: ${counts.request}`,
       `STDOUT_BYTES: ${counts.stdout}`,
       `STDERR_BYTES: ${counts.stderr}`
@@ -646,7 +651,8 @@ var BridgeClient = class {
     await this.auditFailure(request, response, counts);
     return response;
   }
-  async call(request, signal) {
+  async call(rawRequest, signal) {
+    const request = normalizedRequest(rawRequest);
     let paths;
     let userHome;
     try {
@@ -5003,6 +5009,22 @@ function classifyPermissionActions(descriptor, tool, params) {
 function auditCorrelation(toolCallId) {
   return createHash4("sha256").update(toolCallId, "utf8").digest("hex");
 }
+var TRUST_WITHDRAWN_MESSAGE = "codeArbiter project trust is not affirmative; mutation blocked; run /trust in Pi, approve this project, then start a new session.";
+var LIFECYCLE_STALE_MESSAGE = "codeArbiter lifecycle changed while approval was pending; mutation blocked; run /ca-doctor.";
+function liveProjectTrust(context, source) {
+  if (source === "not-required") return true;
+  try {
+    const probe = context?.isProjectTrusted;
+    if (typeof probe === "function") return probe.call(context) === true;
+  } catch {
+    return false;
+  }
+  try {
+    return source() === true;
+  } catch {
+    return false;
+  }
+}
 function permissionAuditRow(toolCallId, toolClass, actionClasses, decision) {
   return Object.freeze({
     timestamp: (/* @__PURE__ */ new Date()).toISOString(),
@@ -5287,7 +5309,7 @@ function fixedFallbackSessionId() {
 function executionCwd(context, fallback) {
   return context !== null && typeof context === "object" && typeof context.cwd === "string" ? context.cwd : fallback;
 }
-function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, bridge, boundGeneration, activeGeneration, isReady, sessionIdFor, permissionPolicy, getMode, permissionAudit, wrapperSourcePath, allowNativeFallback = true, bridgeToolName = toolName) {
+function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, bridge, boundGeneration, activeGeneration, isReady, sessionIdFor, permissionPolicy, getMode, permissionAudit, wrapperSourcePath, projectTrust, onTrustWithdrawn, allowNativeFallback = true, bridgeToolName = toolName) {
   const original = factory(cwd);
   if (original.name !== toolName || typeof original.execute !== "function") {
     throw new Error(`Pi built-in ${toolName} factory identity is invalid; run /ca-doctor.`);
@@ -5301,10 +5323,16 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
   return {
     ...original,
     execute: async (toolCallId, params, signal, onUpdate, context) => {
+      const trustHeld = () => {
+        if (liveProjectTrust(context, projectTrust)) return true;
+        onTrustWithdrawn();
+        return false;
+      };
+      const trusted = trustHeld();
       const generation = activeGeneration();
-      if (generation === void 0 || generation !== boundGeneration || !isReady()) {
+      if (generation === void 0 || generation !== boundGeneration || !isReady() || !trusted) {
         if (!allowNativeFallback || generation !== void 0 && category !== "READ") {
-          return failTool("codeArbiter enforcement is not ready; mutation blocked; run /ca-doctor.");
+          return failTool(trusted ? "codeArbiter enforcement is not ready; mutation blocked; run /ca-doctor." : TRUST_WITHDRAWN_MESSAGE);
         }
         return await executeNativeFromContext(toolCallId, params, signal, onUpdate, context);
       }
@@ -5322,18 +5350,21 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
           cwd,
           ...category === "READ" ? { sessionId: sessionIdFor(context) } : {},
           tool: bridgeToolName,
-          input: approved
+          input: approved,
+          correlation: auditCorrelation(toolCallId)
         }, signal ?? new AbortController().signal);
       } catch (error) {
-        if (activeGeneration() === generation) throw error;
+        const stillTrusted = trustHeld();
+        if (stillTrusted && activeGeneration() === generation) throw error;
         if (category !== "READ") {
-          return failTool("codeArbiter lifecycle changed while approval was pending; mutation blocked; run /ca-doctor.");
+          return failTool(stillTrusted ? LIFECYCLE_STALE_MESSAGE : TRUST_WITHDRAWN_MESSAGE);
         }
         return await executeNativeFromContext(toolCallId, approved, signal, onUpdate, context);
       }
-      if (activeGeneration() !== generation) {
+      const trustedAfterBridge = trustHeld();
+      if (!trustedAfterBridge || activeGeneration() !== generation) {
         if (category !== "READ") {
-          return failTool("codeArbiter lifecycle changed while approval was pending; mutation blocked; run /ca-doctor.");
+          return failTool(trustedAfterBridge ? LIFECYCLE_STALE_MESSAGE : TRUST_WITHDRAWN_MESSAGE);
         }
         return await executeNativeFromContext(toolCallId, approved, signal, onUpdate, context);
       }
@@ -5373,6 +5404,7 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
       const revalidate = () => {
         const requestStable = currentMode(getMode) === mode && registryOwns(pi, toolName, wrapperSourcePath) && original.execute === originalExecute && matchesSnapshot(params, approved) && signal?.aborted !== true;
         if (!requestStable) return "request-stale";
+        if (!trustHeld()) return "lifecycle-stale";
         return activeGeneration() === generation && generation === boundGeneration && isReady() ? "current" : "lifecycle-stale";
       };
       if (policy.decision === "ask") {
@@ -5433,7 +5465,7 @@ function wrappedDefinition(pi, toolName, factory, nativeFactory, category, cwd, 
     }
   };
 }
-function wrapMissingBuiltins(pi, bridge, options, wrapped, definitions, definitionGenerations, activeGeneration = () => STANDALONE_GENERATION, isReady = () => true, sessionIdFor = fixedFallbackSessionId()) {
+function wrapMissingBuiltins(pi, bridge, options, wrapped, definitions, definitionGenerations, activeGeneration = () => STANDALONE_GENERATION, isReady = () => true, sessionIdFor = fixedFallbackSessionId(), onTrustWithdrawn = () => void 0) {
   const boundGeneration = activeGeneration() ?? STANDALONE_GENERATION;
   const permissionPolicy = options.permissionPolicy ?? compileBuiltinPermissionPolicy(options.descriptor, {});
   if (permissionPolicy === void 0) throw new Error("Pi permission policy descriptor is invalid; run /ca-doctor.");
@@ -5457,7 +5489,9 @@ function wrapMissingBuiltins(pi, bridge, options, wrapped, definitions, definiti
       permissionPolicy,
       getMode,
       options.permissionAudit,
-      options.wrapperSourcePath
+      options.wrapperSourcePath,
+      options.projectTrust,
+      onTrustWithdrawn
     );
     pi.registerTool(definition);
     definitions?.set(name, definition);
@@ -5476,6 +5510,7 @@ var EnforcementInstaller = class {
   definitionGenerations = /* @__PURE__ */ new Map();
   fallbackSessionId;
   lifecycleGeneration;
+  trustRevoked = false;
   sessionIdFor(context) {
     const native = nativeSessionId(context);
     if (native !== void 0) return native;
@@ -5498,7 +5533,20 @@ var EnforcementInstaller = class {
   beginBlockedGeneration() {
     this.bootstrapActive = true;
     this.ready = false;
+    this.trustRevoked = false;
     this.fallbackSessionId = randomUUID3();
+    this.lifecycleGeneration = Object.freeze({});
+  }
+  /**
+   * Retires the ready lifecycle the instant live project trust stops being
+   * affirmative. Every wrapper stays bound to the previous generation, so its
+   * mutators fail closed and its reads fall back to the untrusted native path.
+   * Enforcement only returns through a new affirmatively trusted session.
+   */
+  revokeForTrustWithdrawal() {
+    if (this.trustRevoked || this.lifecycleGeneration === void 0) return;
+    this.trustRevoked = true;
+    this.ready = false;
     this.lifecycleGeneration = Object.freeze({});
   }
   beginActivation() {
@@ -5508,11 +5556,12 @@ var EnforcementInstaller = class {
     this.beginBlockedGeneration();
   }
   markReady() {
-    if (this.bootstrapActive) this.ready = true;
+    if (this.bootstrapActive && !this.trustRevoked) this.ready = true;
   }
   deactivate() {
     this.bootstrapActive = false;
     this.ready = false;
+    this.trustRevoked = false;
     this.fallbackSessionId = void 0;
     this.lifecycleGeneration = void 0;
   }
@@ -5536,7 +5585,8 @@ var EnforcementInstaller = class {
       this.definitionGenerations,
       () => this.lifecycleGeneration,
       () => this.ready,
-      (context) => this.sessionIdFor(context)
+      (context) => this.sessionIdFor(context),
+      () => this.revokeForTrustWithdrawal()
     );
   }
   ensureCustomTool(pi, bridge, options) {
@@ -5568,6 +5618,8 @@ var EnforcementInstaller = class {
       options.getMode ?? (() => "execute"),
       options.permissionAudit,
       options.wrapperSourcePath,
+      options.projectTrust,
+      () => this.revokeForTrustWithdrawal(),
       false,
       bridgeToolName
     );
@@ -5619,6 +5671,7 @@ function bridgeToolResults(pi, bridge, descriptor, activeGeneration = () => STAN
     const name = typeof event.toolName === "string" ? event.toolName : "";
     const category = descriptor[name] ?? "OTHER";
     if (category !== "WRITE" && category !== "EDIT") return void 0;
+    const toolCallId = typeof event.toolCallId === "string" && event.toolCallId !== "" ? event.toolCallId : void 0;
     let response;
     try {
       response = await bridge.call({
@@ -5627,7 +5680,8 @@ function bridgeToolResults(pi, bridge, descriptor, activeGeneration = () => STAN
         cwd: context.cwd,
         tool: name,
         input: event.input,
-        result: { content: event.content, isError: event.isError === true }
+        result: { content: event.content, isError: event.isError === true },
+        ...toolCallId === void 0 ? {} : { correlation: auditCorrelation(toolCallId) }
       }, context.signal ?? new AbortController().signal);
     } catch (error) {
       if (activeGeneration() !== generation) return void 0;
@@ -8862,7 +8916,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "a4f28245fc06ed9beacaa200996f1bb62dff884b148a731fb16b4bca54c5176c"
+        childFingerprint: "2f5ae106d763a6ef32d7fc187ecbb7f75f43a6daab66214eb238f15bc65c9341"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,
@@ -8893,6 +8947,7 @@ async function codeArbiterPi(pi) {
       });
       const factories = factoriesFor(true);
       const nativeFactories = factoriesFor(false);
+      const projectTrust = () => hasAffirmativeProjectTrust(context);
       enforcement.ensureResults(pi, bridge, toolClasses);
       enforcement.ensureBuiltins(guardPi, bridge, {
         cwd,
@@ -8902,7 +8957,8 @@ async function codeArbiterPi(pi) {
         wrapperSourcePath: modulePath,
         permissionPolicy,
         getMode,
-        permissionAudit: appendPermissionAudit
+        permissionAudit: appendPermissionAudit,
+        projectTrust
       });
       if (backgroundToolFactory !== void 0) {
         enforcement.ensureCustomTool(guardPi, bridge, {
@@ -8914,7 +8970,8 @@ async function codeArbiterPi(pi) {
           wrapperSourcePath: modulePath,
           permissionPolicy,
           getMode,
-          permissionAudit: appendPermissionAudit
+          permissionAudit: appendPermissionAudit,
+          projectTrust
         });
       }
     }

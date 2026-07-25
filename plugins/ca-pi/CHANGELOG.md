@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.3] - 2026-07-24
+## [0.1.4] - 2026-07-25
 
 ### Security
 
@@ -84,6 +84,24 @@ All notable changes to `ca-pi` are documented in this file.
   Child stderr is now counted, never sampled, so no child-controlled text
   reaches the audit record; `STDERR_BYTES:` remains. Anything parsing
   `STDERR_HEAD:` out of the audit line must be updated.
+
+## [0.1.3] - 2026-07-24
+
+### Security
+
+- Governed mutators now re-read live Pi project trust at final execution. Trust
+  that is withdrawn, absent, or throwing retires the ready lifecycle: bash,
+  write, edit, and custom mutators fail closed, pending approvals become stale,
+  and reads fall back to the untrusted native path until a new affirmatively
+  trusted session starts.
+
+### Fixed
+
+- Pi bridge failures during a governed tool call now record the same hashed
+  correlation as that call's permission-audit row, so a failure joins the tool
+  call, permission decision, and result event. Lifecycle and doctor requests
+  keep a locally minted correlation. Only a SHA-256 digest is accepted on the
+  wire; the raw Pi tool-call id never reaches the request JSON or the audit log.
 
 ## [0.1.2] - 2026-07-24
 

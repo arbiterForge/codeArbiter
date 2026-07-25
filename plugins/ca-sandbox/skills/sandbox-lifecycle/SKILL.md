@@ -69,8 +69,9 @@ A sandbox is ephemeral by contract. On exit (`/ca-sandbox:sandbox-destroy`, or t
 - `destroySandbox` (`${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts`) removes the container and its named volume. `--keep-volume` leaves the volume (for a deliberate re-run); nothing else survives.
 - `prune` (`${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts`) reclaims any leaked `ca.sandbox=1`-labeled object — the safety net for a box whose driver died mid-run.
 - Cached images (`ca-sbx:<repo>-<dephash>`) are intentionally retained for the next cache hit; they are excepted from teardown.
+- Both verbs are **best-effort but never silent**: a failed removal does not abort the sweep (everything else is still reclaimed), every failure is retained in a bounded `failures` list with docker's own exit code, and a final label-scoped re-list reports whatever is still present. The CLI exits non-zero and names the leftovers.
 
-Gate: after a `create → interact → destroy` cycle, zero `ca.sandbox=1`-labeled containers or volumes remain (cached images excepted). A run that leaves a labeled object behind without `--keep-volume` is a leak — `prune` must be able to find and reclaim it via the label alone.
+Gate: after a `create → interact → destroy` cycle, zero `ca.sandbox=1`-labeled containers or volumes remain (cached images excepted). A run that leaves a labeled object behind without `--keep-volume` is a leak — `prune` must be able to find and reclaim it via the label alone. Teardown is verified, not assumed: a docker failure during discovery, removal, or verification means the phase FAILS loudly, because a leaked box is still running untrusted code.
 
 ## Hard rules
 
@@ -81,5 +82,6 @@ Gate: after a `create → interact → destroy` cycle, zero `ca.sandbox=1`-label
 - MUST default the network policy to `offline`. The IP egress allowlist is EXPERIMENTAL — name it experimental every time it is selected; offline and clone-then-cut are the solid defaults.
 - MUST treat all egress out of the box as host-initiated (`docker cp` out) only. A host→container bind is impossible and MUST NOT be introduced as a "convenience."
 - MUST label every container and volume `ca.sandbox=1`, and MUST tear them down on exit (cached images excepted). `prune` reclaims a leaked labeled object via the label alone.
+- MUST NOT report a teardown as successful when docker refused a removal or the post-teardown verification could not confirm the scope is empty. `destroy`/`prune` exit non-zero and name every object left behind — automation must never read exit 0 over a still-running untrusted container.
 - MUST NOT enable `--with-claude` on the default path — it routes to `sandbox-claude-inside`, and MUST NEVER co-mount the token volume with an untrusted-code run.
 - MUST STOP rather than guess when Docker or nixpacks is absent — report the missing dependency, never a stack trace.

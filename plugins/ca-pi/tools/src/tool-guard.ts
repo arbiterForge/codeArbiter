@@ -28,6 +28,20 @@ import type {
 type LifecycleGeneration = object;
 const STANDALONE_GENERATION: LifecycleGeneration = Object.freeze({});
 
+/**
+ * Live project-trust source for the final pre-execution gate.
+ *
+ * A function is the session-scoped probe: it is consulted whenever an execution
+ * carries no Pi tool context of its own (the doctor wrapper self-test), while a
+ * context that does carry `isProjectTrusted` always wins.
+ *
+ * `"not-required"` is an explicit waiver for the isolated child adapter, whose
+ * authority is the consumed handshake nonce and its operator attestation, and
+ * which deliberately runs with Pi project trust false. It is required rather
+ * than optional so no call site can drop the gate by omission.
+ */
+export type ProjectTrustSource = (() => boolean) | "not-required";
+
 export interface WrapBuiltinsOptions {
   cwd: string;
   descriptor: Readonly<Record<string, ToolCategory>>;
@@ -37,6 +51,8 @@ export interface WrapBuiltinsOptions {
   permissionPolicy?: CompiledPermissionPolicyDescriptor;
   getMode?: () => PolicyMode;
   permissionAudit?: PermissionAuditPort;
+  /** Live project-trust source for the final pre-execution gate; see ProjectTrustSource. */
+  projectTrust: ProjectTrustSource;
 }
 
 export interface WrapCustomToolOptions {
@@ -49,6 +65,8 @@ export interface WrapCustomToolOptions {
   permissionPolicy?: CompiledPermissionPolicyDescriptor;
   getMode?: () => PolicyMode;
   permissionAudit?: PermissionAuditPort;
+  /** Live project-trust source for the final pre-execution gate; see ProjectTrustSource. */
+  projectTrust: ProjectTrustSource;
 }
 
 export type PermissionAuditDecision = "allow" | "approved" | "cancelled" | "denied";
@@ -188,8 +206,39 @@ export function classifyPermissionActions(
   }
 }
 
+/** One-way digest of the host tool-call id: the shared join key for audit and bridge rows. */
 function auditCorrelation(toolCallId: string): string {
   return createHash("sha256").update(toolCallId, "utf8").digest("hex");
+}
+
+const TRUST_WITHDRAWN_MESSAGE =
+  "codeArbiter project trust is not affirmative; mutation blocked; run /trust in Pi, approve this project, then start a new session.";
+const LIFECYCLE_STALE_MESSAGE =
+  "codeArbiter lifecycle changed while approval was pending; mutation blocked; run /ca-doctor.";
+
+/**
+ * Live project trust for one governed execution. `isProjectTrusted` is optional on
+ * the host context, so absent, false, and throwing are all read as untrusted; only
+ * a live affirmative `true` keeps mutator authority. The session-scoped probe is
+ * consulted only when the execution context supplies no probe of its own (Pi omits
+ * the context for the doctor wrapper self-test).
+ */
+function liveProjectTrust(
+  context: ToolExecutionContextPort | undefined,
+  source: ProjectTrustSource,
+): boolean {
+  if (source === "not-required") return true;
+  try {
+    const probe = context?.isProjectTrusted;
+    if (typeof probe === "function") return probe.call(context) === true;
+  } catch {
+    return false;
+  }
+  try {
+    return source() === true;
+  } catch {
+    return false;
+  }
 }
 
 function permissionAuditRow(
@@ -564,6 +613,8 @@ function wrappedDefinition(
   getMode: () => PolicyMode,
   permissionAudit: PermissionAuditPort | undefined,
   wrapperSourcePath: string,
+  projectTrust: ProjectTrustSource,
+  onTrustWithdrawn: () => void,
   allowNativeFallback = true,
   bridgeToolName = toolName,
 ): ToolDefinitionPort {
@@ -586,10 +637,20 @@ function wrappedDefinition(
   return {
     ...original,
     execute: async (toolCallId, params, signal, onUpdate, context) => {
+      // Live trust is read before every other gate: a withdrawal retires the active
+      // lifecycle, so an approval granted under the earlier decision cannot survive it.
+      const trustHeld = (): boolean => {
+        if (liveProjectTrust(context, projectTrust)) return true;
+        onTrustWithdrawn();
+        return false;
+      };
+      const trusted = trustHeld();
       const generation = activeGeneration();
-      if (generation === undefined || generation !== boundGeneration || !isReady()) {
+      if (generation === undefined || generation !== boundGeneration || !isReady() || !trusted) {
         if (!allowNativeFallback || (generation !== undefined && category !== "READ")) {
-          return failTool("codeArbiter enforcement is not ready; mutation blocked; run /ca-doctor.");
+          return failTool(trusted
+            ? "codeArbiter enforcement is not ready; mutation blocked; run /ca-doctor."
+            : TRUST_WITHDRAWN_MESSAGE);
         }
         return await executeNativeFromContext(toolCallId, params, signal, onUpdate, context);
       }
@@ -608,17 +669,20 @@ function wrappedDefinition(
           ...(category === "READ" ? { sessionId: sessionIdFor(context) } : {}),
           tool: bridgeToolName,
           input: approved,
+          correlation: auditCorrelation(toolCallId),
         }, signal ?? new AbortController().signal);
       } catch (error) {
-        if (activeGeneration() === generation) throw error;
+        const stillTrusted = trustHeld();
+        if (stillTrusted && activeGeneration() === generation) throw error;
         if (category !== "READ") {
-          return failTool("codeArbiter lifecycle changed while approval was pending; mutation blocked; run /ca-doctor.");
+          return failTool(stillTrusted ? LIFECYCLE_STALE_MESSAGE : TRUST_WITHDRAWN_MESSAGE);
         }
         return await executeNativeFromContext(toolCallId, approved, signal, onUpdate, context);
       }
-      if (activeGeneration() !== generation) {
+      const trustedAfterBridge = trustHeld();
+      if (!trustedAfterBridge || activeGeneration() !== generation) {
         if (category !== "READ") {
-          return failTool("codeArbiter lifecycle changed while approval was pending; mutation blocked; run /ca-doctor.");
+          return failTool(trustedAfterBridge ? LIFECYCLE_STALE_MESSAGE : TRUST_WITHDRAWN_MESSAGE);
         }
         return await executeNativeFromContext(toolCallId, approved, signal, onUpdate, context);
       }
@@ -664,6 +728,9 @@ function wrappedDefinition(
           && matchesSnapshot(params, approved)
           && signal?.aborted !== true;
         if (!requestStable) return "request-stale";
+        // Trust withdrawal is a lifecycle event: mutators block and reads fall back
+        // to the untrusted native path, exactly as a retired generation would.
+        if (!trustHeld()) return "lifecycle-stale";
         return activeGeneration() === generation && generation === boundGeneration && isReady()
           ? "current"
           : "lifecycle-stale";
@@ -739,6 +806,7 @@ export function wrapBuiltins(pi: ToolGuardPiPort, bridge: BridgePort, options: W
     () => STANDALONE_GENERATION,
     () => true,
     fixedFallbackSessionId(),
+    () => undefined,
   );
 }
 
@@ -752,6 +820,7 @@ function wrapMissingBuiltins(
   activeGeneration: () => LifecycleGeneration | undefined = () => STANDALONE_GENERATION,
   isReady: () => boolean = () => true,
   sessionIdFor: (context: ToolExecutionContextPort | undefined) => string = fixedFallbackSessionId(),
+  onTrustWithdrawn: () => void = () => undefined,
 ): void {
   const boundGeneration = activeGeneration() ?? STANDALONE_GENERATION;
   const permissionPolicy = options.permissionPolicy ?? compileBuiltinPermissionPolicy(options.descriptor, {});
@@ -777,6 +846,8 @@ function wrapMissingBuiltins(
       getMode,
       options.permissionAudit,
       options.wrapperSourcePath,
+      options.projectTrust,
+      onTrustWithdrawn,
     );
     pi.registerTool(definition);
     definitions?.set(name, definition);
@@ -796,6 +867,7 @@ export class EnforcementInstaller {
   private readonly definitionGenerations = new Map<string, LifecycleGeneration>();
   private fallbackSessionId: string | undefined;
   private lifecycleGeneration: LifecycleGeneration | undefined;
+  private trustRevoked = false;
 
   private sessionIdFor(context: ToolExecutionContextPort | undefined): string {
     const native = nativeSessionId(context);
@@ -821,7 +893,21 @@ export class EnforcementInstaller {
   private beginBlockedGeneration(): void {
     this.bootstrapActive = true;
     this.ready = false;
+    this.trustRevoked = false;
     this.fallbackSessionId = randomUUID();
+    this.lifecycleGeneration = Object.freeze({});
+  }
+
+  /**
+   * Retires the ready lifecycle the instant live project trust stops being
+   * affirmative. Every wrapper stays bound to the previous generation, so its
+   * mutators fail closed and its reads fall back to the untrusted native path.
+   * Enforcement only returns through a new affirmatively trusted session.
+   */
+  private revokeForTrustWithdrawal(): void {
+    if (this.trustRevoked || this.lifecycleGeneration === undefined) return;
+    this.trustRevoked = true;
+    this.ready = false;
     this.lifecycleGeneration = Object.freeze({});
   }
 
@@ -834,12 +920,13 @@ export class EnforcementInstaller {
   }
 
   markReady(): void {
-    if (this.bootstrapActive) this.ready = true;
+    if (this.bootstrapActive && !this.trustRevoked) this.ready = true;
   }
 
   deactivate(): void {
     this.bootstrapActive = false;
     this.ready = false;
+    this.trustRevoked = false;
     this.fallbackSessionId = undefined;
     this.lifecycleGeneration = undefined;
   }
@@ -867,6 +954,7 @@ export class EnforcementInstaller {
       () => this.lifecycleGeneration,
       () => this.ready,
       (context) => this.sessionIdFor(context),
+      () => this.revokeForTrustWithdrawal(),
     );
   }
 
@@ -900,6 +988,8 @@ export class EnforcementInstaller {
       options.getMode ?? (() => "execute" as const),
       options.permissionAudit,
       options.wrapperSourcePath,
+      options.projectTrust,
+      () => this.revokeForTrustWithdrawal(),
       false,
       bridgeToolName,
     );
@@ -961,6 +1051,11 @@ export function bridgeToolResults(
     const name = typeof event.toolName === "string" ? event.toolName : "";
     const category = descriptor[name] ?? "OTHER";
     if (category !== "WRITE" && category !== "EDIT") return undefined;
+    // Joins the result leg to its originating call when Pi supplies the id; a
+    // missing id leaves the bridge to mint a local correlation instead.
+    const toolCallId = typeof event.toolCallId === "string" && event.toolCallId !== ""
+      ? event.toolCallId
+      : undefined;
     let response: Awaited<ReturnType<BridgePort["call"]>>;
     try {
       response = await bridge.call({
@@ -970,6 +1065,7 @@ export function bridgeToolResults(
         tool: name,
         input: event.input,
         result: { content: event.content, isError: event.isError === true },
+        ...(toolCallId === undefined ? {} : { correlation: auditCorrelation(toolCallId) }),
       }, context.signal ?? new AbortController().signal);
     } catch (error) {
       if (activeGeneration() !== generation) return undefined;

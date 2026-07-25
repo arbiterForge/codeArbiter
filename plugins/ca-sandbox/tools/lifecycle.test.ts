@@ -36,18 +36,42 @@ import { createSandbox } from "./create.ts";
 // PURE layer — injected fake docker runner. No real docker.
 // --------------------------------------------------------------------------
 
-/** A fake docker that records calls and returns scripted stdout per arg-match. */
+/**
+ * A fake docker that records calls and returns scripted stdout per arg-match.
+ *
+ * Removal is MODELLED, not just recorded: a successful `rm`/`volume rm` drops the
+ * ref from every later label listing, exactly as real docker would. Teardown now
+ * re-lists the scope after removing to report what is still present (#393), so a
+ * fake whose listings were frozen in time would report every removed object as a
+ * leak and make these tests assert a physically impossible docker.
+ */
 function fakeDocker(routes: Array<{ match: (a: string[]) => boolean; stdout?: string; code?: number }>): {
   run: DockerRun;
   calls: string[][];
 } {
   const calls: string[][] = [];
+  const removed = new Set<string>();
+  const isListing = (a: string[]) => a[0] === "ps" || (a[0] === "volume" && a[1] === "ls");
+  const isRemoval = (a: string[]) => a[0] === "rm" || (a[0] === "volume" && a[1] === "rm");
+
   const run: DockerRun = (args) => {
     calls.push(args);
+    let res: DockerResult = { code: 0, stdout: "", stderr: "" };
     for (const r of routes) {
-      if (r.match(args)) return { code: r.code ?? 0, stdout: r.stdout ?? "", stderr: "" };
+      if (r.match(args)) {
+        res = { code: r.code ?? 0, stdout: r.stdout ?? "", stderr: "" };
+        break;
+      }
     }
-    return { code: 0, stdout: "", stderr: "" } as DockerResult;
+    if (isRemoval(args) && res.code === 0) removed.add(args[args.length - 1]);
+    if (isListing(args)) {
+      const live = res.stdout
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((l) => l && !removed.has(l));
+      res = { ...res, stdout: live.length ? `${live.join("\n")}\n` : "" };
+    }
+    return res;
   };
   return { run, calls };
 }
@@ -110,6 +134,10 @@ describe("destroySandbox — teardown by label (AC-11)", () => {
     expect(res.keptVolumes).toEqual([]);
     expect(calls).toContainEqual(["rm", "-f", "c1"]);
     expect(calls).toContainEqual(["volume", "rm", "-f", "ca-sbx-vol-id1"]);
+    // A clean teardown is verified clean, not merely un-errored (#393).
+    expect(res.failureCount).toBe(0);
+    expect(res.remainingContainers).toEqual([]);
+    expect(res.remainingVolumes).toEqual([]);
   });
 
   it("--keep-volume removes the container but SPARES the volume", () => {
@@ -135,6 +163,9 @@ describe("prune — reclaims ALL ca.sandbox=1 objects incl. leaked (AC-11)", () 
     const res = prune({ dockerRun: run });
     expect(res.removedContainers).toEqual(["c1", "c2"]);
     expect(res.removedVolumes).toEqual(["vol-leaked"]);
+    expect(res.failureCount).toBe(0);
+    expect(res.remainingContainers).toEqual([]);
+    expect(res.remainingVolumes).toEqual([]);
     // The discovery filter is the bare membership label (no id) — so leaked
     // objects without an id label are caught.
     const psCall = calls.find((a) => a[0] === "ps")!;
@@ -390,6 +421,11 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
       const dres = destroySandbox(id);
       expect(dres.removedContainers).toContain(res.containerId);
       expect(dres.removedVolumes).toContain(res.volumeName);
+      // Against REAL docker the teardown reports itself verified-clean (#393).
+      expect(dres.failures).toEqual([]);
+      expect(dres.failureCount).toBe(0);
+      expect(dres.remainingContainers).toEqual([]);
+      expect(dres.remainingVolumes).toEqual([]);
       expect(findSandbox(id)).toBeNull();
     });
   }, 300_000);

@@ -425,22 +425,23 @@ function labelFilterArgs(labels) {
   const list = Array.isArray(labels) ? labels : [labels];
   return list.flatMap((l) => ["--filter", `label=${l}`]);
 }
-function listContainers(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
+var scopeOf = (labels) => (Array.isArray(labels) ? labels : [labels]).map((l) => `label=${l}`).join(" ");
+function listContainersResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
   const r = dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
-  return splitLines(r.stdout);
+  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+}
+function listVolumesResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
+  const r = dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
+  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+}
+function listContainers(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
+  return listContainersResult(labels, dockerRun).items;
 }
 function listVolumes(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
-  const r = dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
-  return splitLines(r.stdout);
+  return listVolumesResult(labels, dockerRun).items;
 }
 function splitLines(out) {
   return out.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-}
-function listAllContainers(dockerRun = defaultDockerRun) {
-  return listContainers(SANDBOX_LABEL2, dockerRun);
-}
-function listAllVolumes(dockerRun = defaultDockerRun) {
-  return listVolumes(SANDBOX_LABEL2, dockerRun);
 }
 function findSandbox(id, dockerRun = defaultDockerRun) {
   const labels = [SANDBOX_LABEL2, idLabel(id)];
@@ -680,42 +681,115 @@ ${cloneStderr.trim()}` : "";
 }
 
 // destroy.ts
+var MAX_TEARDOWN_FAILURES = 25;
+var MAX_DIAGNOSTIC_REFS = 25;
+var MAX_FAILURE_MESSAGE_CHARS = 300;
+var FailureLog = class {
+  failures = [];
+  count = 0;
+  add(op, ref, code, stderr) {
+    this.count += 1;
+    if (this.failures.length >= MAX_TEARDOWN_FAILURES) return;
+    this.failures.push({ op, ref, code, message: oneLine(stderr) });
+  }
+};
+function oneLine(stderr) {
+  const s = stderr.replace(/\s+/g, " ").trim();
+  if (!s) return "(no stderr from docker)";
+  return s.length > MAX_FAILURE_MESSAGE_CHARS ? `${s.slice(0, MAX_FAILURE_MESSAGE_CHARS)}...` : s;
+}
+function removeEach(refs, kind, dockerRun, log) {
+  const removed = [];
+  for (const ref of refs) {
+    const args = kind === "container" ? ["rm", "-f", ref] : ["volume", "rm", "-f", ref];
+    const r = dockerRun(args);
+    if (r.code === 0) removed.push(ref);
+    else log.add(kind === "container" ? "remove-container" : "remove-volume", ref, r.code, r.stderr);
+  }
+  return removed;
+}
+function verifyScope(labels, dockerRun, log) {
+  const c = listContainersResult(labels, dockerRun);
+  if (c.code !== 0) log.add("list-containers", c.scope, c.code, c.stderr);
+  const v = listVolumesResult(labels, dockerRun);
+  if (v.code !== 0) log.add("list-volumes", v.scope, v.code, v.stderr);
+  return { containers: c.items, volumes: v.items };
+}
 function destroySandbox(id, opts = {}) {
   if (!id) throw new Error("ca-sandbox: destroySandbox requires a sandbox id");
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const labels = [SANDBOX_LABEL2, idLabel(id)];
-  const containers = listContainers(labels, dockerRun);
-  const volumes = listVolumes(labels, dockerRun);
-  const removedContainers = [];
-  for (const c of containers) {
-    const r = dockerRun(["rm", "-f", c]);
-    if (r.code === 0) removedContainers.push(c);
-  }
+  const log = new FailureLog();
+  const containersList = listContainersResult(labels, dockerRun);
+  if (containersList.code !== 0)
+    log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
+  const volumesList = listVolumesResult(labels, dockerRun);
+  if (volumesList.code !== 0)
+    log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
+  const removedContainers = removeEach(containersList.items, "container", dockerRun, log);
   const removedVolumes = [];
   const keptVolumes = [];
   if (opts.keepVolume) {
-    keptVolumes.push(...volumes);
+    keptVolumes.push(...volumesList.items);
   } else {
-    for (const v of volumes) {
-      const r = dockerRun(["volume", "rm", "-f", v]);
-      if (r.code === 0) removedVolumes.push(v);
-    }
+    removedVolumes.push(...removeEach(volumesList.items, "volume", dockerRun, log));
   }
-  return { id, removedContainers, removedVolumes, keptVolumes };
+  const still = verifyScope(labels, dockerRun, log);
+  return {
+    id,
+    removedContainers,
+    removedVolumes,
+    keptVolumes,
+    failures: log.failures,
+    failureCount: log.count,
+    remainingContainers: still.containers,
+    // A kept volume is a deliberate survivor, not a leak.
+    remainingVolumes: still.volumes.filter((v) => !keptVolumes.includes(v))
+  };
 }
 function prune(opts = {}) {
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
-  const removedContainers = [];
-  for (const c of listAllContainers(dockerRun)) {
-    const r = dockerRun(["rm", "-f", c]);
-    if (r.code === 0) removedContainers.push(c);
-  }
-  const removedVolumes = [];
-  for (const v of listAllVolumes(dockerRun)) {
-    const r = dockerRun(["volume", "rm", "-f", v]);
-    if (r.code === 0) removedVolumes.push(v);
-  }
-  return { removedContainers, removedVolumes };
+  const log = new FailureLog();
+  const containersList = listContainersResult(SANDBOX_LABEL2, dockerRun);
+  if (containersList.code !== 0)
+    log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
+  const removedContainers = removeEach(containersList.items, "container", dockerRun, log);
+  const volumesList = listVolumesResult(SANDBOX_LABEL2, dockerRun);
+  if (volumesList.code !== 0)
+    log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
+  const removedVolumes = removeEach(volumesList.items, "volume", dockerRun, log);
+  const still = verifyScope(SANDBOX_LABEL2, dockerRun, log);
+  return {
+    removedContainers,
+    removedVolumes,
+    failures: log.failures,
+    failureCount: log.count,
+    remainingContainers: still.containers,
+    remainingVolumes: still.volumes
+  };
+}
+function teardownIncomplete(r) {
+  return r.failureCount > 0 || r.remainingContainers.length > 0 || r.remainingVolumes.length > 0;
+}
+function boundedRefs(label, refs) {
+  if (refs.length === 0) return [];
+  const shown = refs.slice(0, MAX_DIAGNOSTIC_REFS);
+  const lines = shown.map((r) => `  still present: ${label} ${r}`);
+  if (refs.length > shown.length) lines.push(`  ... and ${refs.length - shown.length} more ${label}(s)`);
+  return lines;
+}
+function formatTeardownDiagnostic(verb, r) {
+  if (!teardownIncomplete(r)) return "";
+  const lines = [
+    `sandbox ${verb}: teardown INCOMPLETE \u2014 ${r.failureCount} docker operation(s) failed; ${r.remainingContainers.length} container(s) and ${r.remainingVolumes.length} volume(s) still present.`
+  ];
+  for (const f of r.failures) lines.push(`  ${f.op} ${f.ref}: docker exit ${f.code}: ${f.message}`);
+  if (r.failureCount > r.failures.length)
+    lines.push(`  ... and ${r.failureCount - r.failures.length} more failure(s) not shown`);
+  lines.push(...boundedRefs("container", r.remainingContainers));
+  lines.push(...boundedRefs("volume", r.remainingVolumes));
+  lines.push("  These objects may be running UNTRUSTED code \u2014 remove them by hand (`docker rm -f` / `docker volume rm`).");
+  return lines.join("\n");
 }
 
 // exec.ts
@@ -947,6 +1021,13 @@ var defaultHandlers = {
   cp: (id, containerPath, hostDest) => cpOut(resolveContainerId(id), containerPath, hostDest),
   shell: defaultShell
 };
+var TEARDOWN_FAILURE_EXIT = 1;
+function teardownExit(verb, r) {
+  if (!teardownIncomplete(r)) return 0;
+  process.stderr.write(`${formatTeardownDiagnostic(verb, r)}
+`);
+  return TEARDOWN_FAILURE_EXIT;
+}
 async function runCli(argv, handlers = defaultHandlers) {
   let cmd;
   try {
@@ -984,13 +1065,13 @@ async function runCli(argv, handlers = defaultHandlers) {
       const r = handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
       process.stdout.write(`${JSON.stringify(r)}
 `);
-      return 0;
+      return teardownExit("destroy", r);
     }
     case "prune": {
       const r = handlers.prune();
       process.stdout.write(`${JSON.stringify(r)}
 `);
-      return 0;
+      return teardownExit("prune", r);
     }
   }
 }
@@ -1017,6 +1098,7 @@ export {
   CliError,
   DEFAULT_SHELL,
   NET_POLICIES,
+  TEARDOWN_FAILURE_EXIT,
   defaultHandlers,
   parseCli,
   runCli

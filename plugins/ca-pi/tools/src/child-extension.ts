@@ -69,6 +69,10 @@ export function installChild(pi: ChildPiPort, dependencies: ChildDependencies): 
       factories: dependencies.factories,
       nativeFactories: dependencies.nativeFactories ?? dependencies.factories,
       wrapperSourcePath: dependencies.wrapperSourcePath,
+      // The child runs deliberately with Pi project trust false: its handshake
+      // rejects any context whose isProjectTrusted is not false, and its authority
+      // is the consumed nonce plus the operator attestation, not project trust.
+      projectTrust: "not-required",
     });
     wrappersInstalled = true;
     return true;

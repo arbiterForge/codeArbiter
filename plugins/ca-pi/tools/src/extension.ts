@@ -906,6 +906,10 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
       // installer can run. Do not re-read a mutable host signal mid-bootstrap.
       const factories = factoriesFor(true);
       const nativeFactories = factoriesFor(false);
+      // The final pre-execution gate re-reads trust live. Executions that carry a
+      // Pi tool context use that context's probe; the doctor wrapper self-test and
+      // any other context-free execution fall back to this session's probe.
+      const projectTrust = () => hasAffirmativeProjectTrust(context);
       enforcement.ensureResults(pi, bridge, toolClasses);
       enforcement.ensureBuiltins(guardPi, bridge, {
         cwd,
@@ -916,6 +920,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
         permissionPolicy,
         getMode,
         permissionAudit: appendPermissionAudit,
+        projectTrust,
       });
       if (backgroundToolFactory !== undefined) {
         enforcement.ensureCustomTool(guardPi, bridge, {
@@ -928,6 +933,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
           permissionPolicy,
           getMode,
           permissionAudit: appendPermissionAudit,
+          projectTrust,
         });
       }
     },
