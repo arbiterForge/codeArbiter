@@ -1,5 +1,5 @@
 /** child-env.ts - codeArbiter's explicit minimal Pi child environment. */
-import { mkdir, mkdtemp, open, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, open, rm, writeFile } from "node:fs/promises";
 import type { RmOptions } from "node:fs";
 import type { FileHandle } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -21,6 +21,165 @@ const POSIX_BASELINE = [
 ] as const;
 
 const MAX_AUTH_FILE_BYTES = 1_048_576;
+const MAX_MODELS_FILE_BYTES = 1_048_576;
+const MAX_PROJECTED_ENTRIES = 256;
+const MAX_PROJECTED_HEADERS = 32;
+const MAX_PROJECTED_KEYS = 64;
+const MAX_PROJECTED_STRING_BYTES = 8_192;
+const MAX_PROJECTED_DEPTH = 8;
+const MAX_PROJECTED_NODES = 4_096;
+
+/** ADR-0017 — credential-blind selected-provider CONFIGURATION projection.
+ *
+ * Pi binds `models.json` to `getAgentDir()` with no separate environment override
+ * (`dist/config.js:425`, `dist/core/model-runtime.js:58`), so ADR-0016's private agent dir
+ * leaves the child with no operator endpoint, protocol, or model definitions at all and Pi
+ * silently resolves the provider from its BUILT-IN catalog — sending the operator's key to an
+ * endpoint they never configured. ADR-0017 amends exactly one clause of ADR-0016 to permit
+ * projecting configuration; it does NOT widen credential projection, which stays bounded by
+ * ADR-0016's auth.json contract alone. */
+
+/** Pi resolves a config value as a `!command` shell execution, a `$VAR` template, or a bare
+ * literal (`dist/core/resolve-config-value.js`). Only a WHOLE-value pure environment reference
+ * crosses: it names a variable the child's own allowlisted environment already carries, so it
+ * transports no operator credential. A partial template (`sk-x$VAR`), Pi's escaped-literal
+ * form (`$$VAR`), a bare literal, and every `!command` are refused. */
+const PURE_ENV_REFERENCE = /^\$(?:\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z_][A-Za-z0-9_]*)$/u;
+const PROJECTED_HEADER_NAME = /^[A-Za-z0-9_-]{1,128}$/u;
+const RESERVED_OBJECT_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
+/** Pi 0.80.10's models.json provider schema (`dist/core/model-config.js`). Pinned deliberately:
+ * a key outside this reviewed set cannot be shown non-secret, so it fails the launch closed
+ * rather than riding along. Widening it is a reviewed change, not an edit of convenience. */
+const PROJECTED_PROVIDER_KEYS: readonly string[] = [
+  "name", "baseUrl", "apiKey", "api", "oauth", "headers", "compat", "authHeader", "models", "modelOverrides",
+];
+const PROJECTED_MODEL_KEYS: readonly string[] = [
+  "id", "name", "api", "baseUrl", "reasoning", "thinkingLevelMap", "input", "cost",
+  "contextWindow", "maxTokens", "headers", "compat",
+];
+const PROJECTED_MODEL_OVERRIDE_KEYS: readonly string[] = [
+  "name", "reasoning", "thinkingLevelMap", "input", "cost", "contextWindow", "maxTokens", "headers", "compat",
+];
+
+/** A fixed, value-free refusal. It never carries a configuration value, credential material,
+ * or a filesystem path, so it cannot reveal operator layout; the runner maps it to one
+ * allowlisted degraded identifier. */
+export class ChildConfigProjectionError extends Error {
+  constructor() {
+    super("Pi child configuration projection refused.");
+    this.name = "ChildConfigProjectionError";
+  }
+}
+
+function refuseProjection(): never {
+  throw new ChildConfigProjectionError();
+}
+
+function plainRecord(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value) as unknown;
+  return prototype === Object.prototype || prototype === null;
+}
+
+/** Bounded, non-executable, non-credential-bearing config. Any `!` prefix is Pi's shell-command
+ * form, which ADR-0016 reserves to the user, so it is refused in EVERY position rather than
+ * only under apiKey/headers. */
+function structuralOnly(value: unknown, depth = 0, budget = { nodes: 0 }): boolean {
+  budget.nodes += 1;
+  if (budget.nodes > MAX_PROJECTED_NODES || depth > MAX_PROJECTED_DEPTH) return false;
+  if (value === null || typeof value === "boolean") return true;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value === "string") {
+    return !value.startsWith("!") && Buffer.byteLength(value, "utf8") <= MAX_PROJECTED_STRING_BYTES;
+  }
+  if (Array.isArray(value)) {
+    return value.length <= MAX_PROJECTED_ENTRIES && value.every((item) => structuralOnly(item, depth + 1, budget));
+  }
+  if (!plainRecord(value)) return false;
+  const keys = Object.keys(value);
+  return keys.length <= MAX_PROJECTED_KEYS
+    && keys.every((key) => !RESERVED_OBJECT_KEYS.has(key)
+      && Buffer.byteLength(key, "utf8") <= MAX_PROJECTED_STRING_BYTES
+      && structuralOnly(value[key], depth + 1, budget));
+}
+
+/** A `baseUrl` is otherwise structural, but a URL may embed userinfo
+ * (`https://operator:pw@gateway/v1`) — credential material wearing an endpoint's clothes. The
+ * endpoint crosses; an embedded credential never does. A value that is not a parseable absolute
+ * URL is refused rather than guessed at, since Pi hands it straight to `fetch`. */
+function endpointOnlyValue(value: unknown): string {
+  if (typeof value !== "string" || !structuralOnly(value)) refuseProjection();
+  const endpoint = parsedEndpoint(value);
+  if (endpoint.username !== "" || endpoint.password !== "") refuseProjection();
+  return value;
+}
+
+function parsedEndpoint(value: string): URL {
+  try { return new URL(value); }
+  catch { refuseProjection(); }
+}
+
+function templateOnlyValue(value: unknown): string {
+  if (typeof value !== "string" || !PURE_ENV_REFERENCE.test(value)) refuseProjection();
+  return value;
+}
+
+function sanitizedHeaderMap(value: unknown): Record<string, string> {
+  if (!plainRecord(value)) refuseProjection();
+  const entries = Object.entries(value);
+  if (entries.length > MAX_PROJECTED_HEADERS) refuseProjection();
+  const headers = Object.create(null) as Record<string, string>;
+  for (const [name, raw] of entries) {
+    if (!PROJECTED_HEADER_NAME.test(name)) refuseProjection();
+    headers[name] = templateOnlyValue(raw);
+  }
+  return headers;
+}
+
+function projectedModelRecord(value: unknown, allowed: readonly string[]): Record<string, unknown> {
+  if (!plainRecord(value)) refuseProjection();
+  const record = Object.create(null) as Record<string, unknown>;
+  for (const [key, raw] of Object.entries(value)) {
+    if (!allowed.includes(key)) refuseProjection();
+    if (key === "headers") { record[key] = sanitizedHeaderMap(raw); continue; }
+    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw); continue; }
+    if (!structuralOnly(raw)) refuseProjection();
+    record[key] = raw;
+  }
+  return record;
+}
+
+function projectedProviderRecord(value: unknown): Record<string, unknown> {
+  if (!plainRecord(value)) refuseProjection();
+  const record = Object.create(null) as Record<string, unknown>;
+  for (const [key, raw] of Object.entries(value)) {
+    if (!PROJECTED_PROVIDER_KEYS.includes(key)) refuseProjection();
+    if (key === "apiKey") { record[key] = templateOnlyValue(raw); continue; }
+    if (key === "headers") { record[key] = sanitizedHeaderMap(raw); continue; }
+    if (key === "baseUrl") { record[key] = endpointOnlyValue(raw); continue; }
+    if (key === "models") {
+      if (!Array.isArray(raw) || raw.length > MAX_PROJECTED_ENTRIES) refuseProjection();
+      record[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS));
+      continue;
+    }
+    if (key === "modelOverrides") {
+      if (!plainRecord(raw)) refuseProjection();
+      const entries = Object.entries(raw);
+      if (entries.length > MAX_PROJECTED_ENTRIES) refuseProjection();
+      const overrides = Object.create(null) as Record<string, unknown>;
+      for (const [id, entry] of entries) {
+        if (id === "" || RESERVED_OBJECT_KEYS.has(id) || Buffer.byteLength(id, "utf8") > MAX_PROJECTED_STRING_BYTES) refuseProjection();
+        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS);
+      }
+      record[key] = overrides;
+      continue;
+    }
+    if (!structuralOnly(raw)) refuseProjection();
+    record[key] = raw;
+  }
+  return record;
+}
 
 export const PI_PROVIDER_ENV: Readonly<Record<string, readonly string[]>> = Object.freeze({
   "amazon-bedrock": ["AWS_PROFILE", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_BEARER_TOKEN_BEDROCK", "AWS_REGION"],
@@ -177,8 +336,8 @@ function credentialStrings(value: unknown): readonly string[] | undefined {
   return [...strings];
 }
 
-async function boundedAuthText(handle: AuthReadHandle): Promise<string | undefined> {
-  const buffer = Buffer.allocUnsafe(MAX_AUTH_FILE_BYTES + 1);
+async function boundedFileText(handle: AuthReadHandle, cap: number): Promise<string | undefined> {
+  const buffer = Buffer.allocUnsafe(cap + 1);
   let offset = 0;
   while (offset < buffer.byteLength) {
     const { bytesRead } = await handle.read(buffer, offset, buffer.byteLength - offset, offset);
@@ -186,7 +345,7 @@ async function boundedAuthText(handle: AuthReadHandle): Promise<string | undefin
     if (bytesRead === 0) break;
     offset += bytesRead;
   }
-  return offset > MAX_AUTH_FILE_BYTES ? undefined : buffer.subarray(0, offset).toString("utf8");
+  return offset > cap ? undefined : buffer.subarray(0, offset).toString("utf8");
 }
 
 function operatorAgentDir(input: Omit<ChildEnvInput, "isolationRoot">): string | undefined {
@@ -209,7 +368,7 @@ async function selectedStoredCredential(
     handle = await authIo.open(join(agentDir, "auth.json"), "r");
     const metadata = await handle.stat();
     if (!metadata.isFile() || metadata.size > MAX_AUTH_FILE_BYTES) return undefined;
-    const text = await boundedAuthText(handle);
+    const text = await boundedFileText(handle, MAX_AUTH_FILE_BYTES);
     if (text === undefined) return undefined;
     const parsed: unknown = JSON.parse(text);
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return undefined;
@@ -226,10 +385,46 @@ async function selectedStoredCredential(
   }
 }
 
+/** Read the operator's canonical models.json and return ONLY the exactly-selected provider's
+ * record, credential-blind. `undefined` means there is simply nothing to project — no store,
+ * no `providers`, or the selected provider is one of Pi's built-ins — which is the operator's
+ * own parent behaviour and never a failure. Anything else refuses, so a record we cannot prove
+ * credential-blind stops the launch instead of falling back to Pi's built-in endpoint. */
+async function selectedProviderConfig(
+  input: Omit<ChildEnvInput, "isolationRoot">,
+  modelsIo: ChildEnvironmentAuthIo,
+): Promise<Record<string, unknown> | undefined> {
+  const agentDir = operatorAgentDir(input);
+  if (agentDir === undefined) return undefined;
+  const handle = await modelsIo.open(join(agentDir, "models.json"), "r").catch((error: unknown) => {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return undefined;
+    refuseProjection();
+  });
+  if (handle === undefined) return undefined;
+  try {
+    const metadata = await handle.stat();
+    if (!metadata.isFile() || metadata.size > MAX_MODELS_FILE_BYTES) refuseProjection();
+    const text = await boundedFileText(handle, MAX_MODELS_FILE_BYTES);
+    if (text === undefined) refuseProjection();
+    let parsed: unknown;
+    try { parsed = JSON.parse(text); }
+    catch { refuseProjection(); }
+    if (!plainRecord(parsed)) refuseProjection();
+    const providers = parsed.providers;
+    if (providers === undefined) return undefined;
+    if (!plainRecord(providers)) refuseProjection();
+    if (!Object.prototype.hasOwnProperty.call(providers, input.provider)) return undefined;
+    return projectedProviderRecord(providers[input.provider]);
+  } finally {
+    await handle.close().catch(() => undefined);
+  }
+}
+
 export async function prepareChildEnvironment(
   input: Omit<ChildEnvInput, "isolationRoot">,
   cleanupIo: ChildEnvironmentCleanupIo = DEFAULT_CLEANUP_IO,
   authIo: ChildEnvironmentAuthIo = DEFAULT_AUTH_IO,
+  modelsIo: ChildEnvironmentAuthIo = DEFAULT_AUTH_IO,
 ): Promise<PreparedChildEnvironment> {
   const isolationRoot = await mkdtemp(join(tmpdir(), "codearbiter-pi-child-"));
   const env = buildChildEnv({ ...input, isolationRoot });
@@ -276,6 +471,18 @@ export async function prepareChildEnvironment(
         ? [mkdir(env.APPDATA!, { recursive: true, mode: 0o700 }), mkdir(env.LOCALAPPDATA!, { recursive: true, mode: 0o700 })]
         : [mkdir(env.XDG_CONFIG_HOME!, { recursive: true, mode: 0o700 }), mkdir(env.XDG_CACHE_HOME!, { recursive: true, mode: 0o700 }), mkdir(env.XDG_DATA_HOME!, { recursive: true, mode: 0o700 })]),
     ]);
+    // Configuration first: a record that cannot be projected credential-blind must refuse the
+    // whole launch before any credential file is created.
+    const providerConfig = await selectedProviderConfig(input, modelsIo);
+    if (providerConfig !== undefined) {
+      const providers = Object.create(null) as Record<string, unknown>;
+      providers[input.provider] = providerConfig;
+      const document = JSON.stringify({ providers });
+      if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
+      await writeFile(join(env.PI_CODING_AGENT_DIR!, "models.json"), document + "\n", {
+        encoding: "utf8", mode: 0o600, flag: "wx",
+      });
+    }
     const credential = await selectedStoredCredential(input, authIo);
     if (credential !== undefined) {
       const projected = Object.create(null) as Record<string, unknown>;

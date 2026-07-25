@@ -9,11 +9,25 @@ All notable changes to `ca-pi` are documented in this file.
 - Isolated Pi children now receive a bounded, selected-provider credential
   projection into a fresh private ephemeral root instead of inheriting the
   operator's Pi home. Only the exact provider record a child needs crosses the
-  boundary; no other provider record, configuration, session, or package state
-  does. Credential material never appears in argv, prompts, results, logs,
+  boundary; no other provider record, session, or package state does.
+  Credential material never appears in argv, prompts, results, logs,
   telemetry, or `.codearbiter/`, and is scrubbed on every path including
   failure. Ratified as ADR-0016, superseding the opaque-auth clause of
   ADR-0014. Addresses #372.
+- Isolated Pi children also receive a **credential-blind** projection of the
+  selected provider's `models.json` record, so a private agent directory no
+  longer strips the operator's endpoint, protocol, and model configuration and
+  silently sends their key to Pi's built-in endpoint. Only the exactly-selected
+  provider record crosses, and within it only structural/protocol configuration;
+  `apiKey` and `headers` cross only as whole-value `$NAME`/`${NAME}` environment
+  references, which hold no secret and resolve from the already-allowlisted
+  child environment, and a `baseUrl` crosses as an endpoint only. A literal
+  `apiKey` or header value, a `!command` value, a `baseUrl` embedding URL
+  userinfo, and any key outside the reviewed Pi provider schema all fail the
+  launch closed.
+  Ratified as ADR-0017, which amends only ADR-0016's "no Pi configuration"
+  clause — it permits **configuration** projection and still forbids
+  **credential** projection.
 
 ### Fixed
 
@@ -25,10 +39,11 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Changed
 
-- A credential-isolation failure now names its stage (`isolation-setup` or
-  `isolation-cleanup`) in the degraded diagnostic. Both are fixed identifiers
-  chosen by the runner and are never derived from child output, error text,
-  paths, or credential values.
+- A credential-isolation or config-projection failure now names its stage
+  (`isolation-setup`, `isolation-cleanup`, or `isolation-config`) in the
+  degraded diagnostic. All three are fixed identifiers chosen by the runner and
+  are never derived from child output, error text, paths, configuration values,
+  or credential values.
 
 ## [0.1.1] - 2026-07-18
 

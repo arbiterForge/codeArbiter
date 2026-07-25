@@ -5,7 +5,7 @@
 **Status:** APPROVED - 2026-07-13 by `SUaDtL@users.noreply.github.com`
 **Date:** 2026-07-13
 **Branch:** `feat/pi-support`
-**Decisions:** ADR-0013, ADR-0014, ADR-0016
+**Decisions:** ADR-0013, ADR-0014, ADR-0016, ADR-0017
 **Governs:** `core/**`, `tools/sync-core.py`, `tools/build-surface.py`, `plugins/ca-pi/**`, root Pi package metadata, `docs/parity.md`, `.github/workflows/**`
 
 ## Problem
@@ -156,7 +156,12 @@ The child environment starts from a minimal OS/runtime baseline, excludes `FARM_
 `CLAUDE_CODE_OAUTH_TOKEN`, admits only declared runtime and selected-provider configuration, and
 rebinds every home/Pi storage path beneath a fresh private root. Under ADR-0016, `ca-pi` may project
 only the exact selected-provider record from a bounded canonical operator `auth.json` into that
-private root. No foreign provider or other operator state enters the child; the credential is never
+private root. Under ADR-0017 it may additionally project a credential-blind `models.json` holding
+only that same exactly-selected provider record — structural/protocol configuration only, with
+`apiKey` and `headers` admitted solely as whole-value `$NAME`/`${NAME}` environment references; a
+literal value, a `!command` form, a `baseUrl` embedding URL userinfo, or an unreviewed
+provider-schema key fails the launch closed.
+No foreign provider or other operator state enters the child; the credential is never
 observable and every terminal path scrubs it and removes the root or returns a fixed degraded failure.
 The runner parses schema-validated bounded JSONL, returns the shared structured result, rejects final
 assistant output containing any exact selected-provider environment or projected credential value,
@@ -216,7 +221,8 @@ and Git package provenance.
 
 ADR-0016 supersedes ADR-0014's fully opaque authentication rule with exact-provider ephemeral child
 projection while retaining enforcement-only loading, minimal provider-specific environments, and
-fail-closed unknown tools.
+fail-closed unknown tools. ADR-0017 amends only ADR-0016's "no Pi configuration" clause: it permits
+credential-blind selected-provider configuration projection and still forbids credential projection.
 For parent activation, a global extension's presence is not evidence of repository authorization:
 every enabled `session_start` requires an affirmative current Pi project-trust result before any
 repository-aware startup. An enabled-but-untrusted doctor is side-effect-free: it performs no bridge

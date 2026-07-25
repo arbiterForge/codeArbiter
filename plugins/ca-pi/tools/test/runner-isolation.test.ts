@@ -397,6 +397,10 @@ describe("Task 6 exact Pi child launch", () => {
     expect(childFailure("isolation-cleanup").diagnostic).toBe(
       "Pi child isolation failed safely (isolation-cleanup); no inline promotion is available; run /ca-doctor.",
     );
+    // ADR-0017's config-projection rejection is the third and last fixed identifier.
+    expect(childFailure("isolation-config").diagnostic).toBe(
+      "Pi child isolation failed safely (isolation-config); no inline promotion is available; run /ca-doctor.",
+    );
     // The allowlist stays closed: an unrecognized detail is still dropped entirely.
     expect(childFailure("isolation-setup ENOENT C:\\Users\\operator\\.pi\\agent").diagnostic).toBe(
       "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor.",
@@ -425,6 +429,41 @@ describe("Task 6 exact Pi child launch", () => {
         else process.env[name] = value;
       }
     }
+  });
+
+  // ADR-0017: a models.json record the sanitizer refuses must stop the launch, not fall back
+  // to Pi's built-in catalog — the fallback is exactly the defect (the operator's key goes to
+  // an endpoint they never configured). Nothing spawns, and the diagnostic names only the
+  // fixed stage identifier.
+  test("refuses to launch when the operator's selected-provider config cannot be projected credential-blind", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const request = await materializedRequest();
+    const operatorAgent = resolve(dirname(request.cwd), "operator-agent");
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(
+      resolve(operatorAgent, "models.json"),
+      JSON.stringify({
+        providers: {
+          openai: { baseUrl: "https://gateway.operator.example/v1", apiKey: "sk-literal-operator-secret" },
+        },
+      }),
+      "utf8",
+    );
+    let spawnCalls = 0;
+    runnerMocks.spawn.mockImplementation(() => { spawnCalls += 1; throw new Error("unreachable"); });
+    const scoped = { ...request, parentEnv: { ...request.parentEnv, PI_CODING_AGENT_DIR: operatorAgent } };
+    testValidation.set(scoped, testValidation.get(request)!);
+
+    const result = await runPiChild(scoped as never, new AbortController().signal);
+    expect(result).toEqual({
+      terminal: "degraded",
+      diagnostic: "Pi child isolation failed safely (isolation-config); no inline promotion is available; run /ca-doctor.",
+    });
+    expect(spawnCalls).toBe(0);
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toContain("sk-literal-operator-secret");
+    expect(serialized).not.toContain("gateway.operator.example");
+    expect(serialized).not.toContain(operatorAgent);
   });
 
   test("spawns exact Node and withholds the task until a correlated handshake success", async () => {

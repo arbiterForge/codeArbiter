@@ -83,7 +83,7 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertIn(transport, TASK_FILES[:5])
         non_transport = [item for item in TASK_FILES[:5] if item != transport]
         sources = "\n".join((REPO / item).read_text(encoding="utf-8") for item in non_transport)
-        self.assertNotRegex(sources, r"auth\.json|\.aws[/\\]credentials|statSync|lstatSync")
+        self.assertNotRegex(sources, r"auth\.json|models\.json|\.aws[/\\]credentials|statSync|lstatSync")
 
         # The transport file may name auth.json, but never a foreign credential store,
         # and never a stat-then-open race in place of a retained handle.
@@ -95,6 +95,14 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertIn("input.provider", child_env)               # exact selected record only
         self.assertIn("sensitiveValues", child_env)              # scrub set for every exit path
         self.assertIn("truncate(0)", child_env)                  # credential scrubbed on cleanup
+
+        # ADR-0017's credential-blind CONFIGURATION projection, asserted positively. It amends
+        # only ADR-0016's "no Pi configuration" clause; credential projection is unchanged.
+        self.assertIn("MAX_MODELS_FILE_BYTES", child_env)             # same strict size bound
+        self.assertIn('open(join(agentDir, "models.json"), "r")', child_env)
+        self.assertIn("PROJECTED_PROVIDER_KEYS", child_env)           # schema-pinned key allowlist
+        self.assertIn("PURE_ENV_REFERENCE", child_env)                # $NAME/${NAME} values only
+        self.assertIn("ChildConfigProjectionError", child_env)        # fail closed, value-free
 
         sources = "\n".join((REPO / item).read_text(encoding="utf-8") for item in TASK_FILES[:5])
         runner = (REPO / "plugins/ca-pi/tools/src/runner.ts").read_text(encoding="utf-8")

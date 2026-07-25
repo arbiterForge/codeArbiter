@@ -6,7 +6,7 @@
 
 **Status:** APPROVED — 2026-07-13 by SUaDtL@users.noreply.github.com
 **Spec:** `.codearbiter/specs/pi-support.md` — APPROVED 2026-07-13
-**Decisions:** ADR-0013, ADR-0014, ADR-0016
+**Decisions:** ADR-0013, ADR-0014, ADR-0016, ADR-0017
 **Goal:** Ship `ca-pi` as a full-parity Pi governance package generated from the same arbiter core as
 `ca` and `ca-codex`, with a thin Pi adapter, independently versioned Git distribution, and no partial
 promotion.
@@ -39,7 +39,13 @@ and Linux.
   argv arrays, `shell: false`, bounded stdin/stdout/stderr, explicit cwd, and tree termination.
 - Pi authentication remains host-owned except for ADR-0016's isolated-child projection. `ca-pi` may
   read a bounded canonical `auth.json` and copy only the exact selected-provider record into private
-  ephemeral child storage; no foreign provider or other operator state crosses. Credentials/task/
+  ephemeral child storage; no foreign provider or other operator state crosses. ADR-0017 additionally
+  permits a credential-blind `models.json` projection of that same exactly-selected provider record —
+  configuration only, never credentials: `apiKey`/`headers` cross solely as whole-value
+  `$NAME`/`${NAME}` environment references, `baseUrl` crosses as an endpoint only, and a literal
+  value, a `!command` form, a URL-userinfo endpoint, or an unreviewed
+  provider-schema key fails the launch closed with the fixed `isolation-config` degraded identifier.
+  Credentials/task/
   prompt text never enter argv, logs, snapshots, audits, fixtures, telemetry, or failure text. The
   read cap is enforced on consumed bytes even if the file grows after metadata inspection; raw child
   stderr remains count-only and exact credential values are rejected at the result boundary.

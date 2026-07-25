@@ -634,3 +634,54 @@ Accepted `0014-pi-host-authentication-and-fail-closed-tool-boundary.md` and the 
 credential requirements exposed by tribunal issue #372.
 
 ---
+
+## DECISION-0022 — ADR-0017 — Permit credential-blind selected-provider configuration projection for isolated Pi children
+
+**Date:** 2026-07-24
+**Status:** accepted
+**Supersedes:** DECISION-0021 (partial — only the "no Pi configuration" clause of ADR-0016's Decision)
+**Decided by:** SUaDtL@users.noreply.github.com ("credential-blind selected-provider config projection")
+**Decision category:** security architecture / Pi configuration boundary
+**Artifact-section-hash:** cc8514b0a6eacedad8c0cca919828ecb5398230524d3ed2793fe110003bf8670
+
+### Variance summary
+- **Artifact position:** Accepted ADR-0016 forbids any Pi configuration from entering the child boundary — "No other provider record, Pi configuration, session, package state, or ambient home data may enter the child boundary."
+- **Scaffold position:** Pi 0.80.10 binds `models.json` to `getAgentDir()` with no separate env override, so the ADR-0016 private agent dir strips every operator provider/model definition and the child silently resolves the provider from Pi's built-in catalog, sending the operator's key to an endpoint they never configured.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+Amend exactly one clause of ADR-0016 — the words "Pi configuration" in its no-crossing sentence — to
+permit projecting a `models.json` that holds only the exactly-selected provider's record and only
+credential-blind structural/protocol configuration. The amendment permits **configuration**
+projection and still forbids **credential** projection, which remains bounded solely by ADR-0016's
+`auth.json` clause. `apiKey` and `headers` cross only as whole-value `$NAME`/`${NAME}` environment
+references, which carry no secret, and a `baseUrl` crosses as an endpoint only — a URL embedding
+userinfo is refused. Literal `apiKey`/header values, `!command` forms, userinfo or unparseable
+endpoints, unreviewed provider-schema keys, any non-selected provider record, and anything beyond the
+provider record fail closed with a fixed, bounded, non-leaking degraded diagnostic.
+
+### SMARTS rationale
+Securable is Strong and, decisively, *unchanged*: the projected document is credential-blind by
+construction, so the secret-bearing surface stays exactly what ADR-0016 already sanctioned while the
+real leak — an operator credential silently redirected to Pi's built-in endpoint — is closed.
+Available and Reliable are Strong because endpoint, gateway, proxy, Azure-deployment-map, and
+self-hosted-model parity return to isolated children. Testable is Strong because every rejection
+(literal key, `!command`, literal header, foreign provider record) is a deterministic behavioral
+contract and the whole path is proven by the live Pi 0.80.10 contract. Maintainable is Adequate: the
+key allowlist is pinned to the reviewed Pi provider schema and must be re-reviewed when Pi's schema
+moves. Conflict-hierarchy Level 1 governs.
+
+### Implementation implication
+Record ADR-0017 as the amending Pi configuration decision (forward-only; ADR-0016's file is not
+edited). Reconcile `.codearbiter/security-controls.md` — Pi authentication section and the
+boundary-crossings table. Implement the sanitizer in `plugins/ca-pi/tools/src/child-env.ts` as the
+single sanctioned config-transport seam, extend the runner's closed degraded-reason allowlist by one
+fixed identifier, and keep the four fail-closed rejections plus the live `test_pi_child_live.py`
+contract as release blockers. Rebuild both committed esbuild bundles and advance the `ca-pi` payload
+manifest and changelog.
+
+### Resolves same-level conflict between (when applicable)
+Accepted `0016-bounded-pi-child-credential-projection.md` and the verified Pi 0.80.10 `models.json`
+agent-dir binding exposed by the live isolated-child contract on PR #426.
+
+---

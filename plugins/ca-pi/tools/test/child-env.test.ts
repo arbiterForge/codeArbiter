@@ -234,6 +234,161 @@ describe("Task 6 child environment", () => {
     expect(source).toContain("handle.truncate(0)");
   });
 
+  // ADR-0017 — credential-blind selected-provider CONFIGURATION projection. Pi binds
+  // models.json to getAgentDir() with no separate env override, so ADR-0016's private agent
+  // dir silently strips every operator endpoint/protocol/model and the child resolves the
+  // provider from Pi's BUILT-IN catalog — sending the operator's key to an endpoint they
+  // never configured. The amendment permits configuration, never credentials.
+  const OPERATOR_MODELS = {
+    providers: {
+      openai: {
+        baseUrl: "http://127.0.0.1:8931/v1",
+        api: "openai-completions",
+        apiKey: "$OPENAI_API_KEY",
+        authHeader: true,
+        compat: { supportsDeveloperRole: false, supportsReasoningEffort: false },
+        headers: { "X-Ca-Gateway": "${CA_PI_GATEWAY_TOKEN}" },
+        models: [{
+          id: "gpt-test", name: "fixture", reasoning: false, input: ["text"],
+          contextWindow: 128_000, maxTokens: 4_096,
+          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+        }],
+        modelOverrides: { "gpt-test": { maxTokens: 2_048 } },
+      },
+      anthropic: {
+        baseUrl: "https://foreign.example/v1",
+        apiKey: "sk-foreign-literal-operator-secret",
+        headers: { "X-Foreign": "foreign-literal-header-secret" },
+      },
+    },
+  };
+
+  async function projectedModels(models: unknown, provider = "openai"): Promise<{
+    document?: unknown;
+    error?: unknown;
+    operatorAgent: string;
+    cleanup: () => Promise<void>;
+  }> {
+    const { prepareChildEnvironment } = await loadImplementation();
+    const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-operator-models-"));
+    const operatorAgent = join(operatorHome, ".pi", "agent");
+    await mkdir(operatorAgent, { recursive: true });
+    if (models !== undefined) {
+      await writeFile(
+        join(operatorAgent, "models.json"),
+        typeof models === "string" ? models : JSON.stringify(models),
+        "utf8",
+      );
+    }
+    let isolationRoot: string | undefined;
+    const cleanup = async (): Promise<void> => {
+      if (isolationRoot !== undefined) await rm(isolationRoot, { recursive: true, force: true });
+      await rm(operatorHome, { recursive: true, force: true });
+    };
+    try {
+      const prepared = await prepareChildEnvironment({
+        platform: process.platform,
+        parent: { ...process.env, HOME: operatorHome, USERPROFILE: operatorHome, PI_CODING_AGENT_DIR: operatorAgent },
+        provider,
+      });
+      isolationRoot = dirname(prepared.env.HOME!);
+      const childModels = join(prepared.env.PI_CODING_AGENT_DIR!, "models.json");
+      const document = await readFile(childModels, "utf8").then(
+        (text) => JSON.parse(text) as unknown,
+        () => undefined,
+      );
+      await prepared.cleanup().catch(() => undefined);
+      return { document, operatorAgent, cleanup };
+    } catch (error) {
+      return { error, operatorAgent, cleanup };
+    }
+  }
+
+  test("projects only the selected provider's credential-blind models.json configuration", async () => {
+    const { document, operatorAgent, cleanup } = await projectedModels(OPERATOR_MODELS);
+    try {
+      expect(document).toEqual({ providers: { openai: OPERATOR_MODELS.providers.openai } });
+      // The second operator provider record exists in the store and must be absent from the
+      // child entirely — record, endpoint, literal key, and literal header alike.
+      const serialized = JSON.stringify(document);
+      expect(serialized).not.toContain("anthropic");
+      expect(serialized).not.toContain("foreign.example");
+      expect(serialized).not.toContain("sk-foreign-literal-operator-secret");
+      expect(serialized).not.toContain("foreign-literal-header-secret");
+      // The operator's own store is never mutated.
+      expect(JSON.parse(await readFile(join(operatorAgent, "models.json"), "utf8"))).toEqual(OPERATOR_MODELS);
+    } finally {
+      await cleanup();
+    }
+  });
+
+  test("fails closed on a literal apiKey, a !command apiKey, or a literal header value", async () => {
+    const { ChildConfigProjectionError } = await loadImplementation();
+    const rejected = [
+      { label: "literal apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "sk-literal-operator-secret" } },
+      { label: "!command apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "!op read op://vault/openai" } },
+      { label: "literal provider header", record: { baseUrl: "https://x.example/v1", headers: { "X-Key": "literal-header-secret" } } },
+      { label: "!command provider header", record: { baseUrl: "https://x.example/v1", headers: { "X-Key": "!cat /run/secret" } } },
+      { label: "literal model header", record: { baseUrl: "https://x.example/v1", models: [{ id: "gpt-test", headers: { "X-Key": "literal-model-secret" } }] } },
+      { label: "literal modelOverrides header", record: { baseUrl: "https://x.example/v1", modelOverrides: { "gpt-test": { headers: { "X-Key": "literal-override-secret" } } } } },
+      { label: "partial template apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "sk-prefix-$OPENAI_API_KEY" } },
+      { label: "escaped-literal apiKey", record: { baseUrl: "https://x.example/v1", apiKey: "$$OPENAI_API_KEY" } },
+      { label: "unreviewed provider key", record: { baseUrl: "https://x.example/v1", credentialFile: "/home/operator/.secrets/openai" } },
+      // An endpoint may carry credentials in its userinfo — that is credential material wearing
+      // an endpoint's clothes, so it is not "structural" and must not cross.
+      { label: "userinfo baseUrl", record: { baseUrl: "https://operator:pw-in-url@gateway.example/v1" } },
+      { label: "userinfo model baseUrl", record: { baseUrl: "https://x.example/v1", models: [{ id: "gpt-test", baseUrl: "https://operator:pw-in-url@gateway.example/v1" }] } },
+      { label: "unparseable baseUrl", record: { baseUrl: "gateway.example/v1" } },
+      { label: "unparseable operator store", record: undefined, raw: "{ not json" },
+    ] as const;
+
+    for (const candidate of rejected) {
+      const models = "raw" in candidate && candidate.raw !== undefined
+        ? candidate.raw
+        : { providers: { openai: candidate.record } };
+      const { document, error, cleanup } = await projectedModels(models);
+      try {
+        expect(document, `${candidate.label} must not project a child models.json`).toBeUndefined();
+        expect(error, `${candidate.label} must fail closed`).toBeInstanceOf(ChildConfigProjectionError);
+        // The bounded diagnostic never carries a value, a secret, or an operator path.
+        const message = `${(error as Error).message}${(error as Error).stack ?? ""}`;
+        for (const leak of ["literal", "secret", "!op ", "vault", "/run/secret", ".secrets", "$OPENAI_API_KEY", "x.example", "gateway.example", "pw-in-url"]) {
+          expect(message, `${candidate.label} leaked ${leak}`).not.toContain(leak);
+        }
+      } finally {
+        await cleanup();
+      }
+    }
+  });
+
+  test("leaves the child without models.json when the operator configures nothing to project", async () => {
+    for (const models of [
+      undefined,
+      { providers: {} },
+      { providers: { anthropic: { baseUrl: "https://foreign.example/v1", apiKey: "sk-foreign-literal" } } },
+    ]) {
+      const { document, error, cleanup } = await projectedModels(models);
+      try {
+        expect(error).toBeUndefined();
+        expect(document).toBeUndefined();
+      } finally {
+        await cleanup();
+      }
+    }
+  });
+
+  test("keeps the models.json projection bounded and credential-blind by construction", async () => {
+    await loadImplementation();
+    const source = await readFile(new URL("../src/child-env.ts", import.meta.url), "utf8");
+    expect(source).toContain("MAX_MODELS_FILE_BYTES");
+    expect(source).toContain('open(join(agentDir, "models.json"), "r")');
+    expect(source).toContain("PURE_ENV_REFERENCE");
+    expect(source).toContain("ChildConfigProjectionError");
+    // No blanket copy of the operator document or of a foreign provider record.
+    expect(source).not.toContain("Object.assign(projectedProviders, providers)");
+    expect(source).not.toMatch(/statSync|lstatSync|readFileSync/u);
+  });
+
   test("rejects operator auth growth after stat without reading beyond the fixed cap", async () => {
     const { prepareChildEnvironment } = await loadImplementation();
     const operatorHome = await mkdtemp(join(tmpdir(), "ca-pi-growing-auth-"));

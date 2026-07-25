@@ -5,7 +5,7 @@ import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath } from "node:url";
 
-import { PI_PROVIDER_ENV, prepareChildEnvironment } from "./child-env.ts";
+import { ChildConfigProjectionError, PI_PROVIDER_ENV, prepareChildEnvironment } from "./child-env.ts";
 import {
   CHILD_ATTESTATION_TIMEOUT_MS,
   CHILD_ATTESTATION_TITLE,
@@ -558,14 +558,15 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
   return record;
 }
 
-/** Fixed identifiers for the ADR-0016 credential-isolation stages. These name a stage the
- * runner itself chose to enter — they are never derived from child output, error text, a
- * filesystem path, or any credential value, so they satisfy ADR-0016's "fixed, bounded
- * degraded failure" while keeping an isolation failure distinguishable from a child that
- * launched and then misbehaved. */
+/** Fixed identifiers for the ADR-0016 credential-isolation and ADR-0017 config-projection
+ * stages. These name a stage the runner itself chose to enter — they are never derived from
+ * child output, error text, a filesystem path, a configuration value, or any credential value,
+ * so they satisfy ADR-0016's "fixed, bounded degraded failure" while keeping an isolation
+ * failure distinguishable from a child that launched and then misbehaved. */
 export const CHILD_ISOLATION_FAILURE_REASONS = Object.freeze([
   "isolation-setup",
   "isolation-cleanup",
+  "isolation-config",
 ] as const);
 export type ChildIsolationFailureReason = typeof CHILD_ISOLATION_FAILURE_REASONS[number];
 
@@ -650,8 +651,11 @@ export async function runPiChild(
       parent: request.parentEnv ?? process.env,
       provider: launch.provider,
     });
-  } catch {
-    return childFailure("isolation-setup");
+  } catch (error) {
+    // ADR-0017: a selected-provider record that cannot be projected credential-blind refuses
+    // the launch outright. Falling back to Pi's built-in catalog is the defect itself — it
+    // sends the operator's key to an endpoint they never configured.
+    return childFailure(error instanceof ChildConfigProjectionError ? "isolation-config" : "isolation-setup");
   }
   const withEnvironmentCleanup = async (result: ChildResult): Promise<ChildResult> => {
     try {

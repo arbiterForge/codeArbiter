@@ -61,6 +61,33 @@ another provider, stores credentials in `.codearbiter/`, or exposes credential
 material through argv, prompts, results, logs, telemetry, or error text. Parent
 and child requests name an exact provider and model; silent fallback is prohibited.
 
+ADR-0017 amends one further clause of that boundary for the same isolated child,
+and only for **configuration** — credential projection is not widened by it. Pi
+binds `models.json` to the agent directory, so a private agent directory would
+otherwise strip every operator-defined endpoint, protocol, and model and silently
+send the operator's key to Pi's built-in endpoint instead. `ca-pi` may therefore
+open the operator-owned Pi `models.json` under the same strict size bound and
+project a `models.json` holding only the exactly-selected provider's record,
+carrying only credential-blind structural/protocol configuration (`baseUrl`,
+`api`, `name`, `oauth`, `authHeader`, `compat`, `models[]`, `modelOverrides`). An
+`apiKey` or `headers` value crosses only when the entire value is a pure
+`$NAME`/`${NAME}` environment reference: that carries no secret, because it
+resolves inside the child from the already-allowlisted child environment. A
+`baseUrl` crosses as an endpoint only: a URL embedding userinfo
+(`https://operator:pw@gateway/v1`) is credential material wearing an endpoint's
+clothes and is refused, as is any `baseUrl` that is not a parseable absolute URL.
+Four things fail closed — the child is not launched and a fixed, bounded degraded
+failure is returned: a **literal** (non-template) `apiKey` or header value, which
+would be credential transport; a **`!command`** value, which Pi executes as a
+shell command and which ADR-0016 reserves to the user; and any key outside the
+reviewed Pi provider schema, whose secrecy cannot be established; a userinfo or
+unparseable endpoint refuses on the same footing. No other
+provider record is projected, and nothing beyond the provider record is — no
+`settings.json`, no `trust.json`, no sessions, no package state, no other ambient
+home data. An absent `models.json`, or one that does not configure the selected
+provider, is not a failure: the child proceeds on Pi's built-in catalog exactly as
+the operator's own parent would.
+
 A `ca-pi` child environment is built from a minimal OS/runtime baseline, not a
 copy of the parent environment. It explicitly excludes `FARM_API_KEY` and
 `CLAUDE_CODE_OAUTH_TOKEN` and admits only necessary runtime variables plus the
@@ -73,7 +100,10 @@ loop exists. Any selected stored credential is written
 exclusively with restrictive permissions, retained by an open handle for
 path-safe scrubbing, and removed with the entire private root on every terminal
 path; the input read is capped independently of a pre-read size check so file
-growth cannot widen it. Unprovable cleanup is a fixed degraded failure. Task/prompt content is
+growth cannot widen it. Unprovable cleanup is a fixed degraded failure. The
+ADR-0017 projected `models.json` is created the same restrictive way and removed
+with the same private root; it needs no scrub handle because it holds no secret by
+construction. Task/prompt content is
 stdin-only, never argv, environment, or a temporary file. Tests use disposable
 Pi homes and dummy credentials and never inspect or mutate the real auth store.
 
@@ -462,5 +492,6 @@ reopens if the threat model expands to untrusted agents.
 | Untrusted git clone | `ca-sandbox` clones an attacker-controlled url in a throwaway, `--rm`, networked `alpine/git` container | Input is allowlisted by `validateRepoUrl` + `--` end-of-options; blast radius is the disposable clone container only (no host bind, never co-run with the sandbox) — see ADR-0007 |
 | `curl \| bash` nixpacks install | `build.ts` runs `curl -fsSL https://nixpacks.com/install.sh \| bash` when nixpacks is absent | Build-time host convenience; the URL is a hardcoded constant (not attacker-controllable). Tracked: prefer declaring nixpacks a prerequisite or pinning a checksum (NEEDS-TRIAGE in the ca-sandbox plan) |
 | Pi selected-provider child authentication | Pi owns host authentication; `ca-pi` projects one selected stored-provider record only for an isolated child | ADR-0016 bounds the exception: private ephemeral roots, exact-provider selection, restrictive creation, retained-handle scrubbing, no observable sink, and fail-degraded cleanup |
+| Pi selected-provider child configuration | `ca-pi` projects one credential-blind selected-provider `models.json` record into an isolated child | ADR-0017 amends ADR-0016 for **configuration only**, never credentials: exact-provider record, key allowlist pinned to the reviewed Pi provider schema, `apiKey`/`headers` admitted only as whole-value `$NAME`/`${NAME}` references, endpoint-only `baseUrl` (no URL userinfo), and fail-closed rejection of literal values, `!command` forms, and unreviewed keys |
 | Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |
