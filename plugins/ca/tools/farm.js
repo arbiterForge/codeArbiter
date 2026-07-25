@@ -1159,9 +1159,12 @@ async function removeWorktreeVerified(gitFn, wt, opts = {}) {
   for (let i = 1; i <= attempts; i++) {
     const rmR = await gitFn(["worktree", "remove", "--force", wt]);
     if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
-    await gitFn(["worktree", "prune"]);
-    const registered = await stillRegistered(gitFn, wt);
+    let registered = await stillRegistered(gitFn, wt);
     const present = await pathExists(wt);
+    if (registered && !present) {
+      await gitFn(["worktree", "prune"]);
+      registered = await stillRegistered(gitFn, wt);
+    }
     if (!registered && !present) return { ok: true, target: wt, attempts: i };
     if (i < attempts) await sleep(delayMs * i);
     else
@@ -1915,8 +1918,12 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
     }
   } finally {
     if (integrationWorktree) {
-      const c = await removeWorktreeVerified(git, integrationWorktree);
-      if (!c.ok) health.cleanup.failures.push({ target: c.target, detail: c.detail ?? "unverified" });
+      try {
+        const c = await removeWorktreeVerified(git, integrationWorktree);
+        if (!c.ok) health.cleanup.failures.push({ target: c.target, detail: c.detail ?? "unverified" });
+      } catch (e) {
+        health.cleanup.failures.push({ target: integrationWorktree, detail: `teardown threw: ${msgOf(e)}` });
+      }
     }
     try {
       await writeReport(plan, [...done.values()], blocked, aborted, runId, health);

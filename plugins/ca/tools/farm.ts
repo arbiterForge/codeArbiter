@@ -1351,11 +1351,18 @@ export async function removeWorktreeVerified(
   for (let i = 1; i <= attempts; i++) {
     const rmR = await gitFn(["worktree", "remove", "--force", wt]);
     if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
+    let registered = await stillRegistered(gitFn, wt);
+    const present = await pathExists(wt);
     // Prune clears a stale registration whose directory is already gone — the
     // exact state a partially-failed removal or an external delete leaves.
-    await gitFn(["worktree", "prune"]);
-    const registered = await stillRegistered(gitFn, wt);
-    const present = await pathExists(wt);
+    // Run it ONLY in that state: `git worktree prune` is repo-wide, and a
+    // blanket call would also deregister an unrelated worktree whose path is
+    // merely unreachable right now (an unmounted volume, a temporarily denied
+    // directory). Narrow it to the condition it is actually needed for.
+    if (registered && !present) {
+      await gitFn(["worktree", "prune"]);
+      registered = await stillRegistered(gitFn, wt);
+    }
     if (!registered && !present) return { ok: true, target: wt, attempts: i };
     if (i < attempts) await sleep(delayMs * i);
     else
@@ -2632,8 +2639,16 @@ async function main() {
     // writeReport reads the integration worktree (its `git diff` runs against
     // the main checkout), so the reordering is safe.
     if (integrationWorktree) {
-      const c = await removeWorktreeVerified(git, integrationWorktree);
-      if (!c.ok) health.cleanup.failures.push({ target: c.target, detail: c.detail ?? "unverified" });
+      try {
+        const c = await removeWorktreeVerified(git, integrationWorktree);
+        if (!c.ok) health.cleanup.failures.push({ target: c.target, detail: c.detail ?? "unverified" });
+      } catch (e) {
+        // Belt and braces: nothing in removeWorktreeVerified is expected to
+        // throw (git() resolves rather than rejects, stat is guarded), but a
+        // throw HERE would propagate out of the finally and mask an in-flight
+        // exception — the exact failure mode reliability-004 fixed above.
+        health.cleanup.failures.push({ target: integrationWorktree, detail: `teardown threw: ${msgOf(e)}` });
+      }
     }
     // #387: the report is still written from the `finally` (so an abort or a
     // mid-run throw still produces a receipt), but its failure is no longer
