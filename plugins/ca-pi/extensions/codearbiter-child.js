@@ -4,7 +4,7 @@ var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", write: "WRITE",
 // src/child-extension.ts
 import { createReadStream } from "node:fs";
 import { readFile as readFile2, realpath as realpath4 } from "node:fs/promises";
-import { dirname as dirname3, resolve as resolve3 } from "node:path";
+import { dirname as dirname3, resolve as resolve4 } from "node:path";
 import { fileURLToPath as fileURLToPath2 } from "node:url";
 
 // src/attestation.ts
@@ -31,7 +31,21 @@ import { spawn, spawnSync } from "node:child_process";
 import { createHash as createHash2, randomUUID } from "node:crypto";
 import { accessSync, constants, realpathSync, statSync } from "node:fs";
 import { appendFile, realpath } from "node:fs/promises";
-import { isAbsolute, posix, relative, resolve, win32 } from "node:path";
+import { isAbsolute, posix as posix2, resolve as resolve2, win32 as win322 } from "node:path";
+
+// src/path-boundary.ts
+import { posix, resolve, win32 } from "node:path";
+function flavorForPlatform(platform) {
+  return platform === "win32" ? "win32" : "posix";
+}
+function pathApiFor(flavor) {
+  return flavor === "win32" ? win32 : posix;
+}
+function lexicallyInside(path, root, flavor = flavorForPlatform(process.platform)) {
+  const pathApi = pathApiFor(flavor);
+  const suffix = pathApi.relative(root, path);
+  return suffix === "" || !suffix.startsWith("..") && !pathApi.isAbsolute(suffix);
+}
 
 // ../../ca/tools/redactor.ts
 var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
@@ -77,23 +91,19 @@ var RESPONSE_KEYS = /* @__PURE__ */ new Set(["version", "outcome", "ruleId", "me
 var OUTCOMES = /* @__PURE__ */ new Set(["allow", "block", "warn", "notice"]);
 var PI_MAX_HOME_CHARS = 32768;
 var CONTROL_RE = /[\u0000-\u001f\u007f-\u009f]/u;
-function inside(path, root) {
-  const suffix = relative(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute(suffix);
-}
 function minimalEnvironment(identities, userHome) {
   const allowed = ["SystemRoot", "WINDIR", "TEMP", "TMP"];
   const env = { PYTHONIOENCODING: "utf-8", PYTHONUTF8: "1" };
   for (const key of allowed) if (process.env[key] !== void 0) env[key] = process.env[key];
   if (identities !== void 0) {
-    const pathApi = process.platform === "win32" ? win32 : posix;
+    const pathApi = process.platform === "win32" ? win322 : posix2;
     const searchDirectories = /* @__PURE__ */ new Set([
       pathApi.dirname(identities.git),
       pathApi.dirname(identities.python)
     ]);
     const systemRoot = process.env.SystemRoot ?? process.env.WINDIR;
-    if (process.platform === "win32" && systemRoot !== void 0 && win32.isAbsolute(systemRoot)) {
-      searchDirectories.add(win32.join(systemRoot, "System32"));
+    if (process.platform === "win32" && systemRoot !== void 0 && win322.isAbsolute(systemRoot)) {
+      searchDirectories.add(win322.join(systemRoot, "System32"));
     }
     env.PATH = [...searchDirectories].join(process.platform === "win32" ? ";" : ":");
     env.CODEARBITER_GIT_EXECUTABLE = identities.git;
@@ -106,7 +116,7 @@ function minimalEnvironment(identities, userHome) {
   return env;
 }
 function canonicalExecutable(candidate, platform) {
-  const pathApi = platform === "win32" ? win32 : posix;
+  const pathApi = platform === "win32" ? win322 : posix2;
   if (!pathApi.isAbsolute(candidate)) return void 0;
   try {
     const canonical = realpathSync(candidate);
@@ -117,25 +127,20 @@ function canonicalExecutable(candidate, platform) {
     return void 0;
   }
 }
-function sameOrInside(path, root, platform) {
-  const pathApi = platform === "win32" ? win32 : posix;
-  const suffix = pathApi.relative(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !pathApi.isAbsolute(suffix);
-}
 async function canonicalUserHome(projectRoot, packageRoot, platform = process.platform) {
-  const pathApi = platform === "win32" ? win32 : posix;
+  const pathApi = platform === "win32" ? win322 : posix2;
   const candidate = platform === "win32" ? process.env.USERPROFILE : process.env.HOME;
   if (typeof candidate !== "string" || candidate.length < 1 || candidate.length > PI_MAX_HOME_CHARS || candidate !== candidate.trim() || CONTROL_RE.test(candidate) || !pathApi.isAbsolute(candidate)) return void 0;
   try {
     const canonical = await realpath(candidate);
-    if (!statSync(canonical).isDirectory() || sameOrInside(canonical, projectRoot, platform) || sameOrInside(canonical, packageRoot, platform)) return void 0;
+    if (!statSync(canonical).isDirectory() || lexicallyInside(canonical, projectRoot, flavorForPlatform(platform)) || lexicallyInside(canonical, packageRoot, flavorForPlatform(platform))) return void 0;
     return canonical;
   } catch {
     return void 0;
   }
 }
 function trustedPathCandidate(basename, projectCwd, platform, pathValue) {
-  const pathApi = platform === "win32" ? win32 : posix;
+  const pathApi = platform === "win32" ? win322 : posix2;
   const separator = platform === "win32" ? ";" : ":";
   const canonicalProject = canonicalExecutable(projectCwd, platform) ?? (() => {
     try {
@@ -154,7 +159,7 @@ function trustedPathCandidate(basename, projectCwd, platform, pathValue) {
       continue;
     }
     const candidate = canonicalExecutable(pathApi.join(directory, basename), platform);
-    if (candidate !== void 0 && !sameOrInside(candidate, canonicalProject, platform)) return candidate;
+    if (candidate !== void 0 && !lexicallyInside(candidate, canonicalProject, flavorForPlatform(platform))) return candidate;
   }
   return void 0;
 }
@@ -169,8 +174,8 @@ function resolveGitExecutable(projectCwd, platform = process.platform, pathValue
 function windowsTaskkillExecutable() {
   if (process.platform !== "win32") return void 0;
   const systemRoot = process.env.SystemRoot ?? process.env.WINDIR;
-  if (systemRoot === void 0 || !win32.isAbsolute(systemRoot)) return void 0;
-  const candidate = canonicalExecutable(win32.join(systemRoot, "System32", "taskkill.exe"), "win32");
+  if (systemRoot === void 0 || !win322.isAbsolute(systemRoot)) return void 0;
+  const candidate = canonicalExecutable(win322.join(systemRoot, "System32", "taskkill.exe"), "win32");
   if (candidate === void 0) return void 0;
   let canonicalRoot;
   try {
@@ -178,7 +183,7 @@ function windowsTaskkillExecutable() {
   } catch {
     return void 0;
   }
-  return sameOrInside(candidate, canonicalRoot, "win32") ? candidate : void 0;
+  return lexicallyInside(candidate, canonicalRoot, "win32") ? candidate : void 0;
 }
 function validResponse(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
@@ -263,7 +268,7 @@ var BridgeClient = class {
     if (canonicalExecutable(git, process.platform) === void 0 || canonicalExecutable(python, process.platform) === void 0) {
       throw new Error("bridge executable identity is invalid");
     }
-    if (!inside(script, root)) throw new Error("bridge script is outside the installed package");
+    if (!lexicallyInside(script, root)) throw new Error("bridge script is outside the installed package");
     const taskkill = windowsTaskkillExecutable();
     if (process.platform === "win32" && taskkill === void 0) throw new Error("taskkill is unavailable");
     return { git, python, root, script, ...taskkill === void 0 ? {} : { taskkill } };
@@ -295,7 +300,7 @@ var BridgeClient = class {
       `STDERR_BYTES: ${counts.stderr}`
     ].join(" | ") + "\n";
     try {
-      await appendFile(resolve(request.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
+      await appendFile(resolve2(request.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
     } catch {
     }
   }
@@ -315,7 +320,7 @@ var BridgeClient = class {
     }
     try {
       const project = await realpath(request.cwd);
-      if (inside(paths.git, project) || inside(paths.python, project)) {
+      if (lexicallyInside(paths.git, project) || lexicallyInside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
       const canonicalHome = await canonicalUserHome(project, paths.root);
@@ -423,8 +428,8 @@ function systemPythonProbe(executable, prefixArgs, cwd) {
   return { status: probe.status, stdout: probe.stdout ?? "", stderr: probe.stderr ?? "" };
 }
 function resolvePythonCommand(platform = process.platform, probe = systemPythonProbe, searchCwd, excludedProjectCwd, pathValue = process.env.PATH ?? "") {
-  const pathApi = platform === "win32" ? win32 : posix;
-  const safeCwd = searchCwd ?? (platform === "win32" ? win32.parse(process.execPath).root : "/");
+  const pathApi = platform === "win32" ? win322 : posix2;
+  const safeCwd = searchCwd ?? (platform === "win32" ? win322.parse(process.execPath).root : "/");
   if (!pathApi.isAbsolute(safeCwd)) {
     throw new Error("codeArbiter Python search cwd must be absolute; run /ca-doctor.");
   }
@@ -435,9 +440,9 @@ function resolvePythonCommand(platform = process.platform, probe = systemPythonP
     const result = probe(probedCandidate, prefixArgs, safeCwd);
     const lines = result.stdout.trim().split(/\r?\n/u);
     const executable = lines[1] ?? "";
-    const absolute = platform === "win32" ? win32.isAbsolute(executable) : posix.isAbsolute(executable);
+    const absolute = platform === "win32" ? win322.isAbsolute(executable) : posix2.isAbsolute(executable);
     const canonical = absolute ? probe === systemPythonProbe ? canonicalExecutable(executable, platform) : executable : void 0;
-    if (result.status === 0 && lines[0] === "3" && canonical !== void 0 && (probe !== systemPythonProbe || !sameOrInside(canonical, excludedProjectCwd ?? safeCwd, platform))) {
+    if (result.status === 0 && lines[0] === "3" && canonical !== void 0 && (probe !== systemPythonProbe || !lexicallyInside(canonical, excludedProjectCwd ?? safeCwd, flavorForPlatform(platform)))) {
       return { executable: canonical, prefixArgs: [] };
     }
   }
@@ -474,26 +479,22 @@ function compatibilityDirection(input) {
 // src/runtime-resolver.ts
 import { lstat, readFile, realpath as realpath2 } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname as dirname2, isAbsolute as isAbsolute2, relative as relative2, resolve as resolve2 } from "node:path";
+import { dirname as dirname2, isAbsolute as isAbsolute2, resolve as resolve3 } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 var PI_RUNTIME_DIAGNOSIS = "codeArbiter could not validate the active Pi CLI runtime; start from the Pi CLI and run /ca-doctor.";
 var trustedIdentities = /* @__PURE__ */ new WeakSet();
-function inside2(path, root) {
-  const suffix = relative2(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute2(suffix);
-}
 function fail(cause) {
   throw new Error(PI_RUNTIME_DIAGNOSIS, cause === void 0 ? void 0 : { cause });
 }
 async function owningPackageRoot(file, expectedName) {
   let cursor = dirname2(file);
   while (true) {
-    const candidate = resolve2(cursor, "package.json");
+    const candidate = resolve3(cursor, "package.json");
     try {
       const manifest = JSON.parse(await readFile(candidate, "utf8"));
       if (manifest.name !== expectedName) return fail();
       const canonicalRoot = await realpath2(cursor);
-      if (!inside2(file, canonicalRoot) || !inside2(await realpath2(candidate), canonicalRoot)) return fail();
+      if (!lexicallyInside(file, canonicalRoot) || !lexicallyInside(await realpath2(candidate), canonicalRoot)) return fail();
       return canonicalRoot;
     } catch (error) {
       if (error.code !== "ENOENT") return fail(error);
@@ -538,7 +539,7 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
     let manifest;
     let manifestPath = "";
     while (true) {
-      const candidate = resolve2(cursor, "package.json");
+      const candidate = resolve3(cursor, "package.json");
       try {
         manifest = JSON.parse(await readFile(candidate, "utf8"));
         manifestPath = candidate;
@@ -553,16 +554,16 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
     if (manifest.name !== "@earendil-works/pi-coding-agent" || typeof manifest.version !== "string") return fail();
     const packageRoot = await realpath2(cursor);
     const canonicalManifest = await realpath2(manifestPath);
-    if (!inside2(canonicalAnchor, packageRoot) || !inside2(canonicalManifest, packageRoot)) return fail();
-    if (inside2(packageRoot, extensionPackageRoot)) return fail();
-    const declaredBin = resolve2(packageRoot, binTarget(manifest));
-    if (!inside2(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
+    if (!lexicallyInside(canonicalAnchor, packageRoot) || !lexicallyInside(canonicalManifest, packageRoot)) return fail();
+    if (lexicallyInside(packageRoot, extensionPackageRoot)) return fail();
+    const declaredBin = resolve3(packageRoot, binTarget(manifest));
+    if (!lexicallyInside(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
     if (!(await lstat(canonicalAnchor)).isFile()) return fail();
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
-    const requireFromPi = createRequire(resolve2(packageRoot, "package.json"));
+    const requireFromPi = createRequire(resolve3(packageRoot, "package.json"));
     const moduleEntry = await realpath2(requireFromPi.resolve(declaredExport));
-    if (!inside2(moduleEntry, packageRoot)) return fail();
+    if (!lexicallyInside(moduleEntry, packageRoot)) return fail();
     if (!(await lstat(moduleEntry)).isFile()) return fail();
     const identity2 = Object.freeze({
       cliEntry: canonicalAnchor,
@@ -1657,7 +1658,7 @@ async function codeArbiterPiChild(pi) {
   let packageRoot = dirname3(modulePath);
   while (true) {
     try {
-      const manifest = JSON.parse(await readFile2(resolve3(packageRoot, "package.json"), "utf8"));
+      const manifest = JSON.parse(await readFile2(resolve4(packageRoot, "package.json"), "utf8"));
       if (manifest.name === "ca-pi") break;
     } catch {
     }
@@ -1670,7 +1671,7 @@ async function codeArbiterPiChild(pi) {
   const gitExecutable = resolveGitExecutable(cwd);
   const descriptor = loadToolClasses(define_CODEARBITER_PI_TOOL_CLASSES_default);
   const bridge = new BridgeClient({
-    bridgeScript: resolve3(packageRoot, "hooks", "pi-bridge.py"),
+    bridgeScript: resolve4(packageRoot, "hooks", "pi-bridge.py"),
     packageRoot,
     pythonExecutable: python.executable,
     pythonPrefixArgs: python.prefixArgs,

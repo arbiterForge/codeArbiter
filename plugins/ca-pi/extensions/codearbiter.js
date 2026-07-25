@@ -9,9 +9,9 @@ var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", codearbiter_bac
 
 // src/extension.ts
 import { lstat as lstat4, readFile as readFile6, realpath as realpath7 } from "node:fs/promises";
-import { realpathSync as realpathSync6 } from "node:fs";
+import { realpathSync as realpathSync7 } from "node:fs";
 import { createRequire as createRequire2 } from "node:module";
-import { delimiter, dirname as dirname6, isAbsolute as isAbsolute10, relative as relative10, resolve as resolve13 } from "node:path";
+import { delimiter, dirname as dirname7, isAbsolute as isAbsolute8, resolve as resolve15 } from "node:path";
 import { fileURLToPath as fileURLToPath5, pathToFileURL as pathToFileURL2 } from "node:url";
 import { types as utilTypes9 } from "node:util";
 
@@ -45,9 +45,34 @@ function compatibilityDirection(input) {
 // src/bridge.ts
 import { spawn, spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
-import { accessSync, constants, realpathSync, statSync } from "node:fs";
+import { accessSync, constants, realpathSync as realpathSync2, statSync } from "node:fs";
 import { appendFile, realpath } from "node:fs/promises";
-import { isAbsolute, posix, relative, resolve, win32 } from "node:path";
+import { isAbsolute, posix as posix2, resolve as resolve2, win32 as win322 } from "node:path";
+
+// src/path-boundary.ts
+import { realpathSync } from "node:fs";
+import { posix, resolve, win32 } from "node:path";
+function flavorForPlatform(platform) {
+  return platform === "win32" ? "win32" : "posix";
+}
+function pathApiFor(flavor) {
+  return flavor === "win32" ? win32 : posix;
+}
+function lexicallyInside(path, root, flavor = flavorForPlatform(process.platform)) {
+  const pathApi = pathApiFor(flavor);
+  const suffix = pathApi.relative(root, path);
+  return suffix === "" || !suffix.startsWith("..") && !pathApi.isAbsolute(suffix);
+}
+function canonicalPath(path) {
+  try {
+    return realpathSync.native(path);
+  } catch {
+    return resolve(path);
+  }
+}
+function canonicallyInside(path, root) {
+  return lexicallyInside(canonicalPath(path), canonicalPath(root));
+}
 
 // ../../ca/tools/redactor.ts
 var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
@@ -119,23 +144,19 @@ var PI_STATUS_RESULT_KEYS = /* @__PURE__ */ new Set([
   "dev",
   "prune"
 ]);
-function inside(path, root) {
-  const suffix = relative(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute(suffix);
-}
 function minimalEnvironment(identities, userHome) {
   const allowed = ["SystemRoot", "WINDIR", "TEMP", "TMP"];
   const env = { PYTHONIOENCODING: "utf-8", PYTHONUTF8: "1" };
   for (const key of allowed) if (process.env[key] !== void 0) env[key] = process.env[key];
   if (identities !== void 0) {
-    const pathApi = process.platform === "win32" ? win32 : posix;
+    const pathApi = process.platform === "win32" ? win322 : posix2;
     const searchDirectories = /* @__PURE__ */ new Set([
       pathApi.dirname(identities.git),
       pathApi.dirname(identities.python)
     ]);
     const systemRoot = process.env.SystemRoot ?? process.env.WINDIR;
-    if (process.platform === "win32" && systemRoot !== void 0 && win32.isAbsolute(systemRoot)) {
-      searchDirectories.add(win32.join(systemRoot, "System32"));
+    if (process.platform === "win32" && systemRoot !== void 0 && win322.isAbsolute(systemRoot)) {
+      searchDirectories.add(win322.join(systemRoot, "System32"));
     }
     env.PATH = [...searchDirectories].join(process.platform === "win32" ? ";" : ":");
     env.CODEARBITER_GIT_EXECUTABLE = identities.git;
@@ -148,40 +169,35 @@ function minimalEnvironment(identities, userHome) {
   return env;
 }
 function canonicalExecutable(candidate, platform) {
-  const pathApi = platform === "win32" ? win32 : posix;
+  const pathApi = platform === "win32" ? win322 : posix2;
   if (!pathApi.isAbsolute(candidate)) return void 0;
   try {
-    const canonical2 = realpathSync(candidate);
-    if (!statSync(canonical2).isFile()) return void 0;
-    if (platform !== "win32") accessSync(canonical2, constants.X_OK);
-    return canonical2;
+    const canonical = realpathSync2(candidate);
+    if (!statSync(canonical).isFile()) return void 0;
+    if (platform !== "win32") accessSync(canonical, constants.X_OK);
+    return canonical;
   } catch {
     return void 0;
   }
 }
-function sameOrInside(path, root, platform) {
-  const pathApi = platform === "win32" ? win32 : posix;
-  const suffix = pathApi.relative(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !pathApi.isAbsolute(suffix);
-}
 async function canonicalUserHome(projectRoot, packageRoot, platform = process.platform) {
-  const pathApi = platform === "win32" ? win32 : posix;
+  const pathApi = platform === "win32" ? win322 : posix2;
   const candidate = platform === "win32" ? process.env.USERPROFILE : process.env.HOME;
   if (typeof candidate !== "string" || candidate.length < 1 || candidate.length > PI_MAX_HOME_CHARS || candidate !== candidate.trim() || CONTROL_RE.test(candidate) || !pathApi.isAbsolute(candidate)) return void 0;
   try {
-    const canonical2 = await realpath(candidate);
-    if (!statSync(canonical2).isDirectory() || sameOrInside(canonical2, projectRoot, platform) || sameOrInside(canonical2, packageRoot, platform)) return void 0;
-    return canonical2;
+    const canonical = await realpath(candidate);
+    if (!statSync(canonical).isDirectory() || lexicallyInside(canonical, projectRoot, flavorForPlatform(platform)) || lexicallyInside(canonical, packageRoot, flavorForPlatform(platform))) return void 0;
+    return canonical;
   } catch {
     return void 0;
   }
 }
 function trustedPathCandidate(basename, projectCwd, platform, pathValue) {
-  const pathApi = platform === "win32" ? win32 : posix;
+  const pathApi = platform === "win32" ? win322 : posix2;
   const separator = platform === "win32" ? ";" : ":";
   const canonicalProject = canonicalExecutable(projectCwd, platform) ?? (() => {
     try {
-      return realpathSync(projectCwd);
+      return realpathSync2(projectCwd);
     } catch {
       return pathApi.resolve(projectCwd);
     }
@@ -191,12 +207,12 @@ function trustedPathCandidate(basename, projectCwd, platform, pathValue) {
     if (entry === "" || !pathApi.isAbsolute(entry)) continue;
     let directory;
     try {
-      directory = realpathSync(entry);
+      directory = realpathSync2(entry);
     } catch {
       continue;
     }
     const candidate = canonicalExecutable(pathApi.join(directory, basename), platform);
-    if (candidate !== void 0 && !sameOrInside(candidate, canonicalProject, platform)) return candidate;
+    if (candidate !== void 0 && !lexicallyInside(candidate, canonicalProject, flavorForPlatform(platform))) return candidate;
   }
   return void 0;
 }
@@ -211,16 +227,16 @@ function resolveGitExecutable(projectCwd, platform = process.platform, pathValue
 function windowsTaskkillExecutable() {
   if (process.platform !== "win32") return void 0;
   const systemRoot = process.env.SystemRoot ?? process.env.WINDIR;
-  if (systemRoot === void 0 || !win32.isAbsolute(systemRoot)) return void 0;
-  const candidate = canonicalExecutable(win32.join(systemRoot, "System32", "taskkill.exe"), "win32");
+  if (systemRoot === void 0 || !win322.isAbsolute(systemRoot)) return void 0;
+  const candidate = canonicalExecutable(win322.join(systemRoot, "System32", "taskkill.exe"), "win32");
   if (candidate === void 0) return void 0;
   let canonicalRoot;
   try {
-    canonicalRoot = realpathSync(systemRoot);
+    canonicalRoot = realpathSync2(systemRoot);
   } catch {
     return void 0;
   }
-  return sameOrInside(candidate, canonicalRoot, "win32") ? candidate : void 0;
+  return lexicallyInside(candidate, canonicalRoot, "win32") ? candidate : void 0;
 }
 function validResponse(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
@@ -610,7 +626,7 @@ var BridgeClient = class {
     if (canonicalExecutable(git, process.platform) === void 0 || canonicalExecutable(python, process.platform) === void 0) {
       throw new Error("bridge executable identity is invalid");
     }
-    if (!inside(script, root)) throw new Error("bridge script is outside the installed package");
+    if (!lexicallyInside(script, root)) throw new Error("bridge script is outside the installed package");
     const taskkill = windowsTaskkillExecutable();
     if (process.platform === "win32" && taskkill === void 0) throw new Error("taskkill is unavailable");
     return { git, python, root, script, ...taskkill === void 0 ? {} : { taskkill } };
@@ -642,7 +658,7 @@ var BridgeClient = class {
       `STDERR_BYTES: ${counts.stderr}`
     ].join(" | ") + "\n";
     try {
-      await appendFile(resolve(request.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
+      await appendFile(resolve2(request.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
     } catch {
     }
   }
@@ -662,7 +678,7 @@ var BridgeClient = class {
     }
     try {
       const project = await realpath(request.cwd);
-      if (inside(paths.git, project) || inside(paths.python, project)) {
+      if (lexicallyInside(paths.git, project) || lexicallyInside(paths.python, project)) {
         return await this.failed(request, "path validation failed");
       }
       const canonicalHome = await canonicalUserHome(project, paths.root);
@@ -770,8 +786,8 @@ function systemPythonProbe(executable, prefixArgs, cwd) {
   return { status: probe.status, stdout: probe.stdout ?? "", stderr: probe.stderr ?? "" };
 }
 function resolvePythonCommand(platform = process.platform, probe = systemPythonProbe, searchCwd, excludedProjectCwd, pathValue = process.env.PATH ?? "") {
-  const pathApi = platform === "win32" ? win32 : posix;
-  const safeCwd = searchCwd ?? (platform === "win32" ? win32.parse(process.execPath).root : "/");
+  const pathApi = platform === "win32" ? win322 : posix2;
+  const safeCwd = searchCwd ?? (platform === "win32" ? win322.parse(process.execPath).root : "/");
   if (!pathApi.isAbsolute(safeCwd)) {
     throw new Error("codeArbiter Python search cwd must be absolute; run /ca-doctor.");
   }
@@ -782,10 +798,10 @@ function resolvePythonCommand(platform = process.platform, probe = systemPythonP
     const result3 = probe(probedCandidate, prefixArgs, safeCwd);
     const lines = result3.stdout.trim().split(/\r?\n/u);
     const executable = lines[1] ?? "";
-    const absolute = platform === "win32" ? win32.isAbsolute(executable) : posix.isAbsolute(executable);
-    const canonical2 = absolute ? probe === systemPythonProbe ? canonicalExecutable(executable, platform) : executable : void 0;
-    if (result3.status === 0 && lines[0] === "3" && canonical2 !== void 0 && (probe !== systemPythonProbe || !sameOrInside(canonical2, excludedProjectCwd ?? safeCwd, platform))) {
-      return { executable: canonical2, prefixArgs: [] };
+    const absolute = platform === "win32" ? win322.isAbsolute(executable) : posix2.isAbsolute(executable);
+    const canonical = absolute ? probe === systemPythonProbe ? canonicalExecutable(executable, platform) : executable : void 0;
+    if (result3.status === 0 && lines[0] === "3" && canonical !== void 0 && (probe !== systemPythonProbe || !lexicallyInside(canonical, excludedProjectCwd ?? safeCwd, flavorForPlatform(platform)))) {
+      return { executable: canonical, prefixArgs: [] };
     }
   }
   throw new Error("codeArbiter could not resolve an absolute Python interpreter; run /ca-doctor.");
@@ -794,13 +810,13 @@ function resolvePythonCommand(platform = process.platform, probe = systemPythonP
 // src/activation.ts
 import { lstat, open, readFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { resolve as resolve2 } from "node:path";
+import { resolve as resolve3 } from "node:path";
 var PYTHON_WHITESPACE = String.raw`[\t-\r\x1c-\x20\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]`;
 var DELIMITER = new RegExp(`^${PYTHON_WHITESPACE}*---${PYTHON_WHITESPACE}*$`, "u");
 var ENABLED_MARKER = new RegExp(`^${PYTHON_WHITESPACE}*arb[i\u0130\u0131]ter:${PYTHON_WHITESPACE}*enabled${PYTHON_WHITESPACE}*$`, "iu");
 async function isEnabled(cwd) {
   try {
-    const raw = await readFile(resolve2(cwd, ".codearbiter", "CONTEXT.md"), "utf8");
+    const raw = await readFile(resolve3(cwd, ".codearbiter", "CONTEXT.md"), "utf8");
     const lines = raw.split("\n");
     const first = (lines[0] ?? "").replace(/^\uFEFF+/u, "");
     if (!DELIMITER.test(first)) return false;
@@ -858,22 +874,170 @@ function isNewerVersion(candidate, installed) {
 }
 async function readCachedUpdateVersion(packageRoot) {
   const [manifest, cache] = await Promise.all([
-    readSmallRegularJson(resolve2(packageRoot, "package.json")),
-    readSmallRegularJson(resolve2(homedir(), ".codearbiter", "update-state.json"))
+    readSmallRegularJson(resolve3(packageRoot, "package.json")),
+    readSmallRegularJson(resolve3(homedir(), ".codearbiter", "update-state.json"))
   ]);
   return isNewerVersion(cache?.latest, manifest?.version) ? cache.latest : void 0;
 }
 
 // src/commands.ts
+import { lstatSync as lstatSync2, realpathSync as realpathSync5 } from "node:fs";
+import { dirname as dirname4, resolve as resolve6 } from "node:path";
+
+// src/command-ownership.ts
+import { lstatSync, readFileSync, realpathSync as realpathSync3 } from "node:fs";
+import { dirname as dirname2, isAbsolute as isAbsolute2, relative, resolve as resolve4 } from "node:path";
+import { fileURLToPath } from "node:url";
+var COMMAND_DIAGNOSIS = "codeArbiter could not validate the Pi command surface; run /ca-doctor.";
+var NAME = /^[a-z][a-z0-9-]*$/u;
+var ENVELOPE_UNSAFE = /[\n\r"<>]/u;
+function pluginRootFromModule() {
+  let cursor = dirname2(fileURLToPath(import.meta.url));
+  while (true) {
+    try {
+      const manifest = JSON.parse(readFileSync(resolve4(cursor, "package.json"), "utf8"));
+      if (manifest.name === "ca-pi") return realpathSync3(cursor);
+    } catch {
+    }
+    const parent = dirname2(cursor);
+    if (parent === cursor) throw new Error(COMMAND_DIAGNOSIS);
+    cursor = parent;
+  }
+}
+function validatedEntry(entry) {
+  if (!NAME.test(entry.name) || ENVELOPE_UNSAFE.test(entry.name)) throw new Error(COMMAND_DIAGNOSIS);
+  if (entry.skillPath !== `skills/ca-${entry.name}/SKILL.md` || isAbsolute2(entry.skillPath)) {
+    throw new Error(COMMAND_DIAGNOSIS);
+  }
+  if (entry.skillPath.split("/").some((part) => part === "" || part === "." || part === "..")) {
+    throw new Error(COMMAND_DIAGNOSIS);
+  }
+}
+function strictUtf8(path) {
+  const bytes = readFileSync(path);
+  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+}
+function hasSymlinkComponent(root, path) {
+  const lexicalRoot = resolve4(root);
+  const lexicalPath = resolve4(path);
+  if (!lexicallyInside(lexicalPath, lexicalRoot) || lstatSync(lexicalRoot).isSymbolicLink()) return true;
+  const suffix = relative(lexicalRoot, lexicalPath);
+  let cursor = lexicalRoot;
+  for (const part of suffix.split(/[\\/]/u).filter(Boolean)) {
+    cursor = resolve4(cursor, part);
+    if (lstatSync(cursor).isSymbolicLink()) return true;
+  }
+  return false;
+}
+function declaredPackageOwner(command, expectedPath) {
+  try {
+    if (command.sourceInfo.origin !== "package" || command.sourceInfo.baseDir === void 0) return false;
+    if (hasSymlinkComponent(command.sourceInfo.baseDir, command.sourceInfo.path)) return false;
+    const canonicalPath2 = realpathSync3(command.sourceInfo.path);
+    const canonicalExpected = realpathSync3(expectedPath);
+    const canonicalBase = realpathSync3(command.sourceInfo.baseDir);
+    if (canonicalPath2 !== canonicalExpected || !lexicallyInside(canonicalPath2, canonicalBase)) return false;
+    const manifest = JSON.parse(strictUtf8(resolve4(canonicalBase, "package.json")));
+    if (manifest.name !== "ca-pi" || manifest.pi === void 0) return false;
+    const declared = command.source === "extension" ? manifest.pi.extensions : manifest.pi.skills;
+    if (!Array.isArray(declared) || !declared.every((item) => typeof item === "string")) return false;
+    return declared.some((item) => {
+      const target = resolve4(canonicalBase, item);
+      return command.source === "extension" ? realpathSync3(target) === canonicalPath2 : lexicallyInside(canonicalPath2, realpathSync3(target));
+    });
+  } catch {
+    return false;
+  }
+}
+function assertCommandOwnership(pi, packageRoot, catalog) {
+  const collisions = [];
+  const canonicalRoot = realpathSync3(packageRoot);
+  const commands = pi.getCommands();
+  for (const entry of catalog) {
+    validatedEntry(entry);
+    const alias = `ca-${entry.name}`;
+    const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
+    const exact = commands.filter((command) => command.name === alias);
+    const suffixed = commands.filter((command) => command.name.startsWith(`${alias}:`));
+    const validExact = exact.filter((command) => command.source === "extension" && declaredPackageOwner(command, expectedExtension));
+    if (validExact.length === 0) collisions.push({ command: alias, reason: "missing-alias" });
+    if (exact.length > 1 || validExact.length > 1) collisions.push({ command: alias, reason: "duplicate-alias" });
+    for (const command of [...exact, ...suffixed]) {
+      if (command.source !== "extension" || !declaredPackageOwner(command, expectedExtension)) {
+        collisions.push({ command: command.name, reason: "foreign-owner", owner: command.sourceInfo.path });
+      }
+    }
+    for (const command of suffixed) {
+      collisions.push({ command: command.name, reason: "suffixed-alias", owner: command.sourceInfo.path });
+    }
+    const fallbackName = `skill:ca-${entry.name}`;
+    const fallbacks = commands.filter((command) => command.name === fallbackName);
+    const expectedSkill = resolve4(canonicalRoot, ...entry.skillPath.split("/"));
+    const validFallbacks = fallbacks.filter((command) => command.source === "skill" && declaredPackageOwner(command, expectedSkill));
+    if (validFallbacks.length === 0) collisions.push({ command: fallbackName, reason: "missing-fallback" });
+    if (fallbacks.length > 1) collisions.push({ command: fallbackName, reason: "duplicate-alias" });
+    for (const command of fallbacks) {
+      if (command.source !== "skill" || !declaredPackageOwner(command, expectedSkill)) {
+        collisions.push({ command: fallbackName, reason: "foreign-owner", owner: command.sourceInfo.path });
+      }
+    }
+    if (validExact.length === 1 && validFallbacks.length === 1 && validExact[0].sourceInfo.source !== validFallbacks[0].sourceInfo.source) {
+      collisions.push({
+        command: fallbackName,
+        reason: "foreign-owner",
+        owner: validFallbacks[0].sourceInfo.path
+      });
+    }
+  }
+  return collisions;
+}
+function assertNativePlanCommandOwnership(pi, packageRoot) {
+  const canonicalRoot = realpathSync3(packageRoot);
+  const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
+  const commands = pi.getCommands();
+  const exact = commands.filter((command) => command.name === "ca-plan");
+  const suffixed = commands.filter((command) => command.name.startsWith("ca-plan:"));
+  const fallbacks = commands.filter((command) => command.name === "skill:ca-plan");
+  const valid = exact.filter((command) => command.source === "extension" && declaredPackageOwner(command, expectedExtension));
+  const collisions = [];
+  if (valid.length === 0) collisions.push({ command: "ca-plan", reason: "missing-alias" });
+  if (exact.length > 1 || valid.length > 1) collisions.push({ command: "ca-plan", reason: "duplicate-alias" });
+  for (const command of [...exact, ...suffixed, ...fallbacks]) {
+    const owned2 = command.name === "ca-plan" && command.source === "extension" && declaredPackageOwner(command, expectedExtension);
+    if (!owned2) collisions.push({ command: command.name, reason: "foreign-owner", owner: command.sourceInfo.path });
+  }
+  for (const command of suffixed) {
+    collisions.push({ command: command.name, reason: "suffixed-alias", owner: command.sourceInfo.path });
+  }
+  return collisions;
+}
+function assertNativeJobsCommandOwnership(pi, packageRoot) {
+  const canonicalRoot = realpathSync3(packageRoot);
+  const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
+  const commands = pi.getCommands();
+  const exact = commands.filter((command) => command.name === "ca-jobs");
+  const related = commands.filter((command) => command.name.startsWith("ca-jobs:") || command.name === "skill:ca-jobs");
+  const valid = exact.filter((command) => command.source === "extension" && declaredPackageOwner(command, expectedExtension));
+  const collisions = [];
+  if (valid.length === 0) collisions.push({ command: "ca-jobs", reason: "missing-alias" });
+  if (exact.length > 1 || valid.length > 1) collisions.push({ command: "ca-jobs", reason: "duplicate-alias" });
+  for (const command of [...exact, ...related]) {
+    if (command.name !== "ca-jobs" || command.source !== "extension" || !declaredPackageOwner(command, expectedExtension)) {
+      collisions.push({ command: command.name, reason: "foreign-owner", owner: command.sourceInfo.path });
+    }
+  }
+  for (const command of related.filter((command2) => command2.name.startsWith("ca-jobs:"))) {
+    collisions.push({ command: command.name, reason: "suffixed-alias", owner: command.sourceInfo.path });
+  }
+  return collisions;
+}
+
+// src/native-background.ts
 import { createHash as createHash2, randomUUID as randomUUID2 } from "node:crypto";
-import { lstatSync, readFileSync as readFileSync2, realpathSync as realpathSync3 } from "node:fs";
-import { dirname as dirname3, isAbsolute as isAbsolute3, relative as relative3, resolve as resolve4 } from "node:path";
-import { fileURLToPath as fileURLToPath2 } from "node:url";
-import { types as utilTypes5 } from "node:util";
 
 // src/background-jobs.ts
 import { types as utilTypes3 } from "node:util";
-import { posix as posix2, win32 as win323 } from "node:path";
+import { posix as posix3, win32 as win324 } from "node:path";
 
 // src/activity.ts
 import { types as utilTypes } from "node:util";
@@ -1067,9 +1231,9 @@ function publishActivity(publisher, event) {
 // src/process-tree.ts
 import { EventEmitter } from "node:events";
 import { spawn as spawn2, spawnSync as spawnSync2 } from "node:child_process";
-import { readFileSync, realpathSync as realpathSync2, statSync as statSync2 } from "node:fs";
-import { dirname as dirname2, isAbsolute as isAbsolute2, relative as relative2, resolve as resolve3, win32 as win322 } from "node:path";
-import { fileURLToPath } from "node:url";
+import { readFileSync as readFileSync2, realpathSync as realpathSync4, statSync as statSync2 } from "node:fs";
+import { dirname as dirname3, isAbsolute as isAbsolute3, relative as relative2, resolve as resolve5, win32 as win323 } from "node:path";
+import { fileURLToPath as fileURLToPath2 } from "node:url";
 import { types as utilTypes2 } from "node:util";
 var DEFAULT_GRACE_MS = 500;
 var DEFAULT_VERIFY_MS = 2e3;
@@ -1296,7 +1460,7 @@ function processTreeTerminationPlan(platform, pid, options = {}) {
     Object.freeze({ kind: "verify-exited", timeoutMs: timing.verifyMs })
   ]);
   const taskkill = options.taskkillExecutable;
-  if (taskkill === void 0 || !win322.isAbsolute(taskkill)) throw new Error("Windows process-tree cleanup requires an absolute taskkill executable");
+  if (taskkill === void 0 || !win323.isAbsolute(taskkill)) throw new Error("Windows process-tree cleanup requires an absolute taskkill executable");
   return Object.freeze([
     Object.freeze({ kind: "taskkill", command: taskkill, args: Object.freeze(["/PID", String(pid), "/T"]), options: Object.freeze({ shell: false, windowsHide: true }), timeoutMs: timing.graceMs }),
     Object.freeze({ kind: "wait-until-exited", timeoutMs: timing.graceMs }),
@@ -1304,20 +1468,16 @@ function processTreeTerminationPlan(platform, pid, options = {}) {
     Object.freeze({ kind: "verify-exited", timeoutMs: timing.verifyMs })
   ]);
 }
-function pathInsideWindows(candidate, root) {
-  const suffix = win322.relative(root, candidate);
-  return suffix === "" || !suffix.startsWith("..") && !win322.isAbsolute(suffix);
-}
 function canonicalWindowsSystemFile(parts, basename) {
   if (process.platform !== "win32") return void 0;
   const configuredRoot = process.env.SystemRoot ?? process.env.WINDIR;
-  if (configuredRoot === void 0 || !win322.isAbsolute(configuredRoot)) return void 0;
+  if (configuredRoot === void 0 || !win323.isAbsolute(configuredRoot)) return void 0;
   try {
-    const root = realpathSync2(configuredRoot);
-    const system32 = realpathSync2(win322.join(root, "System32"));
-    const parent = realpathSync2(win322.join(system32, ...parts.slice(0, -1)));
-    const candidate = realpathSync2(win322.join(system32, ...parts));
-    if (!statSync2(candidate).isFile() || !pathInsideWindows(system32, root) || !pathInsideWindows(parent, system32) || !pathInsideWindows(candidate, parent) || win322.basename(candidate).toLowerCase() !== basename) return void 0;
+    const root = realpathSync4(configuredRoot);
+    const system32 = realpathSync4(win323.join(root, "System32"));
+    const parent = realpathSync4(win323.join(system32, ...parts.slice(0, -1)));
+    const candidate = realpathSync4(win323.join(system32, ...parts));
+    if (!statSync2(candidate).isFile() || !lexicallyInside(system32, root, "win32") || !lexicallyInside(parent, system32, "win32") || !lexicallyInside(candidate, parent, "win32") || win323.basename(candidate).toLowerCase() !== basename) return void 0;
     return candidate;
   } catch {
     return void 0;
@@ -1327,18 +1487,18 @@ function resolveWindowsTaskkillExecutable() {
   return canonicalWindowsSystemFile(["taskkill.exe"], "taskkill.exe");
 }
 function windowsPowerShellCandidatePaths(systemRoot) {
-  if (!win322.isAbsolute(systemRoot)) throw new Error("Windows PowerShell candidates require an absolute system root");
+  if (!win323.isAbsolute(systemRoot)) throw new Error("Windows PowerShell candidates require an absolute system root");
   return Object.freeze([
-    win322.join(win322.parse(systemRoot).root, "Program Files", "PowerShell", "7", "pwsh.exe"),
-    win322.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
+    win323.join(win323.parse(systemRoot).root, "Program Files", "PowerShell", "7", "pwsh.exe"),
+    win323.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
   ]);
 }
 function canonicalWindowsFileWithin(candidatePath, rootPath, basename) {
   try {
-    const root = realpathSync2(rootPath);
-    const parent = realpathSync2(dirname2(candidatePath));
-    const candidate = realpathSync2(candidatePath);
-    if (!statSync2(candidate).isFile() || !pathInsideWindows(parent, root) || !pathInsideWindows(candidate, parent) || win322.basename(candidate).toLowerCase() !== basename) return void 0;
+    const root = realpathSync4(rootPath);
+    const parent = realpathSync4(dirname3(candidatePath));
+    const candidate = realpathSync4(candidatePath);
+    if (!statSync2(candidate).isFile() || !lexicallyInside(parent, root, "win32") || !lexicallyInside(candidate, parent, "win32") || win323.basename(candidate).toLowerCase() !== basename) return void 0;
     return candidate;
   } catch {
     return void 0;
@@ -1347,11 +1507,11 @@ function canonicalWindowsFileWithin(candidatePath, rootPath, basename) {
 function resolveWindowsPowerShellExecutable() {
   if (process.platform !== "win32") return void 0;
   const configuredRoot = process.env.SystemRoot ?? process.env.WINDIR;
-  if (configuredRoot === void 0 || !win322.isAbsolute(configuredRoot)) return void 0;
+  if (configuredRoot === void 0 || !win323.isAbsolute(configuredRoot)) return void 0;
   try {
-    const root = realpathSync2(configuredRoot);
+    const root = realpathSync4(configuredRoot);
     const [modern] = windowsPowerShellCandidatePaths(root);
-    const programFiles = win322.join(win322.parse(root).root, "Program Files");
+    const programFiles = win323.join(win323.parse(root).root, "Program Files");
     const resolvedModern = canonicalWindowsFileWithin(modern, programFiles, "pwsh.exe");
     if (resolvedModern !== void 0) return resolvedModern;
   } catch {
@@ -1359,7 +1519,7 @@ function resolveWindowsPowerShellExecutable() {
   return canonicalWindowsSystemFile(["WindowsPowerShell", "v1.0", "powershell.exe"], "powershell.exe");
 }
 function windowsJobHelperArgv(powershellExecutable) {
-  if (!win322.isAbsolute(powershellExecutable)) throw new Error("Windows Job Object helper requires an absolute PowerShell executable");
+  if (!win323.isAbsolute(powershellExecutable)) throw new Error("Windows Job Object helper requires an absolute PowerShell executable");
   return Object.freeze({
     command: powershellExecutable,
     args: Object.freeze(["-NoLogo", "-NoProfile", "-NonInteractive", "-EncodedCommand", WINDOWS_JOB_HELPER_ENCODED]),
@@ -1367,7 +1527,7 @@ function windowsJobHelperArgv(powershellExecutable) {
   });
 }
 function windowsSupervisorLaunchPlan(nodePath, supervisorPath) {
-  if (!win322.isAbsolute(nodePath) || !win322.isAbsolute(supervisorPath) || win322.basename(supervisorPath).toLowerCase() !== "windows-supervisor.js") {
+  if (!win323.isAbsolute(nodePath) || !win323.isAbsolute(supervisorPath) || win323.basename(supervisorPath).toLowerCase() !== "windows-supervisor.js") {
     throw new Error("Windows supervisor launch requires canonical absolute artifacts");
   }
   return Object.freeze({
@@ -1375,7 +1535,7 @@ function windowsSupervisorLaunchPlan(nodePath, supervisorPath) {
     args: Object.freeze([supervisorPath]),
     control: WINDOWS_SUPERVISOR_START,
     options: Object.freeze({
-      cwd: win322.dirname(supervisorPath),
+      cwd: win323.dirname(supervisorPath),
       env: Object.freeze(helperEnvironment(nodePath)),
       detached: false,
       shell: false,
@@ -1426,7 +1586,7 @@ function windowsSupervisorLaunchRecord(command, args, cwd, environment) {
   return serialized;
 }
 function helperEnvironment(command) {
-  const environment = { PATH: dirname2(command) };
+  const environment = { PATH: dirname3(command) };
   for (const key of ["SystemRoot", "WINDIR", "TEMP", "TMP"]) if (process.env[key] !== void 0) environment[key] = process.env[key];
   return environment;
 }
@@ -1438,7 +1598,7 @@ function terminateWindowsHelperTree(helper, alreadyClosed) {
   const taskkill = resolveWindowsTaskkillExecutable();
   if (taskkill !== void 0) {
     const result3 = spawnSync2(taskkill, ["/PID", String(helper.pid), "/T", "/F"], {
-      cwd: dirname2(taskkill),
+      cwd: dirname3(taskkill),
       env: helperEnvironment(taskkill),
       shell: false,
       stdio: "ignore",
@@ -1458,7 +1618,7 @@ function startWindowsJobGuard(pid, timing) {
   const launch = windowsJobHelperArgv(powershell);
   let helper;
   try {
-    helper = spawn2(launch.command, [...launch.args], { cwd: dirname2(launch.command), env: helperEnvironment(launch.command), shell: false, stdio: ["pipe", "pipe", "pipe"], windowsHide: true });
+    helper = spawn2(launch.command, [...launch.args], { cwd: dirname3(launch.command), env: helperEnvironment(launch.command), shell: false, stdio: ["pipe", "pipe", "pipe"], windowsHide: true });
   } catch {
     return void 0;
   }
@@ -1685,21 +1845,21 @@ function readStarted(stream, timeoutMs) {
   });
 }
 function canonicalSupervisorPath() {
-  let cursor = dirname2(realpathSync2(fileURLToPath(import.meta.url)));
+  let cursor = dirname3(realpathSync4(fileURLToPath2(import.meta.url)));
   while (true) {
     try {
-      const manifest = JSON.parse(readFileSync(resolve3(cursor, "package.json"), "utf8"));
+      const manifest = JSON.parse(readFileSync2(resolve5(cursor, "package.json"), "utf8"));
       if (manifest.name === "ca-pi") {
-        const packageRoot = realpathSync2(cursor);
-        const candidate = realpathSync2(resolve3(cursor, "helpers", "windows-supervisor.js"));
+        const packageRoot = realpathSync4(cursor);
+        const candidate = realpathSync4(resolve5(cursor, "helpers", "windows-supervisor.js"));
         const suffix = relative2(packageRoot, candidate);
-        if (!statSync2(candidate).isFile() || suffix.startsWith("..") || isAbsolute2(suffix) || win322.basename(candidate).toLowerCase() !== "windows-supervisor.js") throw new Error("invalid supervisor artifact");
+        if (!statSync2(candidate).isFile() || suffix.startsWith("..") || isAbsolute3(suffix) || win323.basename(candidate).toLowerCase() !== "windows-supervisor.js") throw new Error("invalid supervisor artifact");
         return candidate;
       }
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
-    const parent = dirname2(cursor);
+    const parent = dirname3(cursor);
     if (parent === cursor) throw new Error("canonical Windows supervisor artifact unavailable");
     cursor = parent;
   }
@@ -1789,8 +1949,8 @@ var WindowsContainedProcess = class extends EventEmitter {
   }
 };
 async function spawnProcessTree(command, args, options) {
-  const canonicalCommand = realpathSync2(command);
-  const canonicalCwd = realpathSync2(options.cwd);
+  const canonicalCommand = realpathSync4(command);
+  const canonicalCwd = realpathSync4(options.cwd);
   if (!statSync2(canonicalCommand).isFile() || !statSync2(canonicalCwd).isDirectory()) {
     throw new Error("process-tree launch identities are invalid");
   }
@@ -1799,7 +1959,7 @@ async function spawnProcessTree(command, args, options) {
   }
   const timing = normalizedTiming({ verifyMs: WINDOWS_JOB_READY_MS });
   const supervisorPath = canonicalSupervisorPath();
-  const plan = windowsSupervisorLaunchPlan(realpathSync2(process.execPath), supervisorPath);
+  const plan = windowsSupervisorLaunchPlan(realpathSync4(process.execPath), supervisorPath);
   const launchRecord = windowsSupervisorLaunchRecord(canonicalCommand, args, canonicalCwd, options.env);
   const supervisor = spawn2(plan.command, [...plan.args], {
     ...plan.options,
@@ -1901,7 +2061,7 @@ function runTaskkill(step) {
       }
     };
     try {
-      helper = spawn2(step.command, [...step.args], { cwd: dirname2(step.command), env: helperEnvironment(step.command), shell: false, stdio: "ignore", windowsHide: true });
+      helper = spawn2(step.command, [...step.args], { cwd: dirname3(step.command), env: helperEnvironment(step.command), shell: false, stdio: "ignore", windowsHide: true });
     } catch {
       resolveRun(Object.freeze({ state: "refused" }));
       return;
@@ -2374,7 +2534,7 @@ function createBackgroundJobManager(options) {
   }
 }
 function absoluteShellPath(value) {
-  return posix2.isAbsolute(value) || win323.isAbsolute(value);
+  return posix3.isAbsolute(value) || win324.isAbsolute(value);
 }
 function boundedString(value, codeUnitLimit, byteLimit, allowEmpty = false) {
   return typeof value === "string" && (allowEmpty || value.length > 0) && value.length <= codeUnitLimit && !value.includes("\0") && Buffer.byteLength(value, "utf8") <= byteLimit;
@@ -2661,500 +2821,25 @@ function createBackgroundJobRuntime(dependencies = {}) {
   return manager === void 0 ? void 0 : new SessionBackgroundJobRuntime(manager, dependencies);
 }
 
-// src/plan-mode.ts
-import { types as utilTypes4 } from "node:util";
-var PLAN_SESSION_ENTRY_TYPE = "codearbiter.plan-mode.v1";
-var PLAN_TASK_STATUSES = Object.freeze(["PENDING", "IN_PROGRESS", "ACCEPTED"]);
-var CONTROL = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u061c\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]/u;
-var SLUG = /^[a-z0-9](?:[a-z0-9-]{0,126}[a-z0-9])?$/u;
-var TASK_ID = /^[A-Za-z0-9](?:[A-Za-z0-9]|[-.](?=[A-Za-z0-9])){0,63}$/u;
-var MAX_PLAN_CONTENT_BYTES = 92160;
-var MAX_LEDGER_LINES = 1e4;
-var MAX_TASKS = 256;
-var MAX_ENTRIES = 4096;
-var MAX_ENTRY_BYTES = 16384;
-var MAX_REVISION = Number.MAX_SAFE_INTEGER;
-var TASK_HEADERS = /* @__PURE__ */ new Set(["#", "id", "task", "task id"]);
-var OPERATION_FAILED = Object.freeze({ ok: false });
-function plainDataRecord(value) {
-  if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes4.isProxy(value)) return void 0;
-  if (Object.getPrototypeOf(value) !== Object.prototype) return void 0;
-  const keys = Reflect.ownKeys(value);
-  if (keys.some((key) => typeof key !== "string" || key === "__proto__" || key === "prototype" || key === "constructor")) return void 0;
-  const descriptors = Object.getOwnPropertyDescriptors(value);
-  for (const key of keys) {
-    const descriptor = descriptors[key];
-    if (descriptor === void 0 || !("value" in descriptor) || descriptor.enumerable !== true) return void 0;
-  }
-  return Object.freeze({ descriptors, keys: Object.freeze(keys) });
-}
-function exactKeys2(record2, keys) {
-  return record2.keys.length === keys.length && keys.every((key) => record2.keys.includes(key));
-}
-function safeArray(value, limit) {
-  if (!Array.isArray(value) || utilTypes4.isProxy(value)) return void 0;
-  const descriptors = Object.getOwnPropertyDescriptors(value);
-  const lengthDescriptor = descriptors.length;
-  if (lengthDescriptor === void 0 || !("value" in lengthDescriptor) || typeof lengthDescriptor.value !== "number" || !Number.isInteger(lengthDescriptor.value) || lengthDescriptor.value < 0 || lengthDescriptor.value > limit) return void 0;
-  const length = lengthDescriptor.value;
-  if (Reflect.ownKeys(value).length !== length + 1) return void 0;
-  const output = [];
-  for (let index = 0; index < length; index += 1) {
-    const descriptor = descriptors[String(index)];
-    if (descriptor === void 0 || !("value" in descriptor) || descriptor.enumerable !== true) return void 0;
-    output.push(descriptor.value);
-  }
-  return Object.freeze(output);
-}
-function frozenTask(id, status) {
-  return Object.freeze({ id, status });
-}
-function freezeActivePlan(input) {
-  return Object.freeze({ ...input, tasks: Object.freeze([...input.tasks]) });
-}
-function freezeState(input) {
-  return Object.freeze({ ...input, activePlan: freezeActivePlan(input.activePlan) });
-}
-function pathsFor(slug) {
-  const planPath = `.codearbiter/plans/${slug}.md`;
-  return Object.freeze({
-    specPath: `.codearbiter/specs/${slug}.md`,
-    planPath,
-    ledgerPath: planPath
-  });
-}
-function tableRow(line) {
-  const trimmed = line.trim();
-  if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return void 0;
-  const outerStart = line.indexOf(trimmed);
-  const bodyStart = outerStart + 1;
-  const bodyEnd = outerStart + trimmed.length - 1;
-  const cells = [];
-  let start = bodyStart;
-  for (let index = bodyStart; index < bodyEnd; index += 1) {
-    if (line[index] !== "|") continue;
-    let slashes = 0;
-    for (let cursor = index - 1; cursor >= bodyStart && line[cursor] === "\\"; cursor -= 1) slashes += 1;
-    if (slashes % 2 === 1) continue;
-    const raw2 = line.slice(start, index);
-    const leading2 = raw2.match(/^\s*/u)?.[0].length ?? 0;
-    const trailing2 = raw2.match(/\s*$/u)?.[0].length ?? 0;
-    cells.push(Object.freeze({ value: raw2.trim(), start: start + leading2, end: index - trailing2 }));
-    start = index + 1;
-  }
-  const raw = line.slice(start, bodyEnd);
-  const leading = raw.match(/^\s*/u)?.[0].length ?? 0;
-  const trailing = raw.match(/\s*$/u)?.[0].length ?? 0;
-  cells.push(Object.freeze({ value: raw.trim(), start: start + leading, end: bodyEnd - trailing }));
-  return Object.freeze(cells);
-}
-function splitTableRow(line) {
-  return tableRow(line)?.map((cell) => cell.value);
-}
-function isSeparator(cells, width) {
-  return cells.length === width && cells.every((cell) => /^:?-{3,}:?$/u.test(cell));
-}
-function taskStatus(cell) {
-  const normalized2 = cell.trim();
-  if (/^(?:PENDING|QUEUED)$/u.test(normalized2)) return "PENDING";
-  if (/^IN[-_]PROGRESS$/u.test(normalized2)) return "IN_PROGRESS";
-  if (/^ACCEPTED(?:\s+(?:—|-)\s+[^\r\n]+)?$/u.test(normalized2)) return "ACCEPTED";
-  return void 0;
-}
-function parsePlanLedger(markdown) {
+// src/session-identity.ts
+var CONTROL_CHARACTERS = /[\u0000-\u001f\u007f-\u009f\u061c\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]/u;
+function interactiveParent(context) {
   try {
-    if (typeof markdown !== "string" || CONTROL.test(markdown) || /\r(?!\n)/u.test(markdown) || Buffer.byteLength(markdown, "utf8") > MAX_PLAN_CONTENT_BYTES) return void 0;
-    const lines = markdown.replace(/\r\n/gu, "\n").split("\n");
-    if (lines.length > MAX_LEDGER_LINES) return void 0;
-    let found;
-    for (let lineIndex = 0; lineIndex < lines.length - 1; lineIndex += 1) {
-      const header = splitTableRow(lines[lineIndex]);
-      const separator = splitTableRow(lines[lineIndex + 1]);
-      if (header === void 0 || separator === void 0 || !isSeparator(separator, header.length)) continue;
-      const normalizedHeaders = header.map((cell) => cell.toLowerCase().replace(/\s+/gu, " "));
-      const taskColumns = normalizedHeaders.flatMap((cell, index) => TASK_HEADERS.has(cell) ? [index] : []);
-      const statusColumns = normalizedHeaders.flatMap((cell, index) => cell === "status" ? [index] : []);
-      if (taskColumns.length !== 1 || statusColumns.length !== 1) {
-        if (statusColumns.length > 0) return void 0;
-        continue;
-      }
-      if (found !== void 0) return void 0;
-      const tasks = [];
-      const ids = /* @__PURE__ */ new Set();
-      for (let rowIndex = lineIndex + 2; rowIndex < lines.length; rowIndex += 1) {
-        const cells = splitTableRow(lines[rowIndex]);
-        if (cells === void 0) break;
-        if (cells.length !== header.length) return void 0;
-        const id = cells[taskColumns[0]];
-        const status = taskStatus(cells[statusColumns[0]]);
-        if (!TASK_ID.test(id) || CONTROL.test(id) || status === void 0 || ids.has(id)) return void 0;
-        ids.add(id);
-        tasks.push(frozenTask(id, status));
-        if (tasks.length > MAX_TASKS) return void 0;
-      }
-      if (tasks.length === 0) return void 0;
-      found = Object.freeze(tasks);
-    }
-    return found;
-  } catch {
-    return void 0;
-  }
-}
-function normalizeTasks(value) {
-  const items = safeArray(value, MAX_TASKS);
-  if (items === void 0 || items.length === 0) return void 0;
-  const tasks = [];
-  const ids = /* @__PURE__ */ new Set();
-  for (const item of items) {
-    const record2 = plainDataRecord(item);
-    if (record2 === void 0 || !exactKeys2(record2, ["id", "status"])) return void 0;
-    const id = record2.descriptors.id.value;
-    const status = record2.descriptors.status.value;
-    if (typeof id !== "string" || !TASK_ID.test(id) || CONTROL.test(id) || ids.has(id) || typeof status !== "string" || !PLAN_TASK_STATUSES.includes(status)) return void 0;
-    ids.add(id);
-    tasks.push(frozenTask(id, status));
-  }
-  return Object.freeze(tasks);
-}
-function normalizeActivePlan(value) {
-  const record2 = plainDataRecord(value);
-  if (record2 === void 0 || !exactKeys2(record2, [
-    "slug",
-    "specPath",
-    "planPath",
-    "ledgerPath",
-    "disposition",
-    "tasks"
-  ])) return void 0;
-  const slug = record2.descriptors.slug.value;
-  const disposition = record2.descriptors.disposition.value;
-  if (typeof slug !== "string" || !SLUG.test(slug) || CONTROL.test(slug) || disposition !== "draft" && disposition !== "approved") return void 0;
-  const canonical2 = pathsFor(slug);
-  if (record2.descriptors.specPath.value !== canonical2.specPath || record2.descriptors.planPath.value !== canonical2.planPath || record2.descriptors.ledgerPath.value !== canonical2.ledgerPath) return void 0;
-  const tasks = normalizeTasks(record2.descriptors.tasks.value);
-  if (tasks === void 0) return void 0;
-  return freezeActivePlan({ slug, ...canonical2, disposition, tasks });
-}
-function normalizeState(value) {
-  const record2 = plainDataRecord(value);
-  if (record2 === void 0 || !exactKeys2(record2, ["version", "revision", "mode", "activePlan"])) return void 0;
-  const version = record2.descriptors.version.value;
-  const revision = record2.descriptors.revision.value;
-  const mode = record2.descriptors.mode.value;
-  if (version !== 1 || typeof revision !== "number" || !Number.isSafeInteger(revision) || revision < 1 || revision > MAX_REVISION || mode !== "plan" && mode !== "execute") return void 0;
-  const activePlan = normalizeActivePlan(record2.descriptors.activePlan.value);
-  if (activePlan === void 0 || mode === "plan" && activePlan.disposition !== "draft") return void 0;
-  const state = freezeState({ version: 1, revision, mode, activePlan });
-  return serializedStateFits(state) ? state : void 0;
-}
-function serializedStateFits(state) {
-  try {
-    return Buffer.byteLength(JSON.stringify(state), "utf8") <= MAX_ENTRY_BYTES;
+    return context.mode === "tui" && context.hasUI === true && context.isProjectTrusted?.() === true;
   } catch {
     return false;
   }
 }
-function enterPlan(slug, markdown) {
-  if (typeof slug !== "string" || !SLUG.test(slug) || CONTROL.test(slug)) return void 0;
-  const tasks = parsePlanLedger(markdown);
-  if (tasks === void 0) return void 0;
-  const state = freezeState({
-    version: 1,
-    revision: 1,
-    mode: "plan",
-    activePlan: freezeActivePlan({ slug, ...pathsFor(slug), disposition: "draft", tasks })
-  });
-  return serializedStateFits(state) ? state : void 0;
-}
-var FORWARD = Object.freeze({
-  PENDING: Object.freeze(["PENDING", "IN_PROGRESS", "ACCEPTED"]),
-  IN_PROGRESS: Object.freeze(["IN_PROGRESS", "ACCEPTED"]),
-  ACCEPTED: Object.freeze(["ACCEPTED"])
-});
-function leavePlan(rawState, disposition) {
-  const state = normalizeState(rawState);
-  if (state === void 0 || state.mode !== "plan" || state.revision >= MAX_REVISION) return void 0;
-  const next = freezeState({
-    ...state,
-    revision: state.revision + 1,
-    mode: "execute",
-    activePlan: freezeActivePlan({ ...state.activePlan, disposition })
-  });
-  return serializedStateFits(next) ? next : void 0;
-}
-function approvePlan(state) {
-  return leavePlan(state, "approved");
-}
-function cancelPlan(state) {
-  return leavePlan(state, "draft");
-}
-function reconcilePlanState(rawState, markdown) {
-  const state = normalizeState(rawState);
-  const diskTasks = parsePlanLedger(markdown);
-  if (state === void 0 || diskTasks === void 0 || diskTasks.length !== state.activePlan.tasks.length) return void 0;
-  if (!diskTasks.every((task, index) => task.id === state.activePlan.tasks[index].id)) return void 0;
-  const reconciled = freezeState({ ...state, activePlan: freezeActivePlan({ ...state.activePlan, tasks: diskTasks }) });
-  return serializedStateFits(reconciled) ? reconciled : void 0;
-}
-function encodePlanSessionState(rawState) {
-  const state = normalizeState(rawState);
-  if (state === void 0) return void 0;
+function sessionId(context) {
   try {
-    return serializedStateFits(state) ? state : void 0;
+    const value = context.sessionManager?.getSessionId?.();
+    return typeof value === "string" && value.length > 0 && value.length <= 256 && !CONTROL_CHARACTERS.test(value) ? value : void 0;
   } catch {
     return void 0;
   }
 }
-function entryData(value) {
-  const record2 = plainDataRecord(value);
-  if (record2 === void 0 || record2.keys.length > 32) return void 0;
-  const type = record2.descriptors.type;
-  if (type === void 0 || !("value" in type) || typeof type.value !== "string") return Object.freeze({ matched: false });
-  if (type.value !== "custom") return Object.freeze({ matched: false });
-  const customType = record2.descriptors.customType;
-  if (customType === void 0 || !("value" in customType) || typeof customType.value !== "string") return void 0;
-  if (customType.value !== PLAN_SESSION_ENTRY_TYPE) return Object.freeze({ matched: false });
-  if (!exactKeys2(record2, ["type", "id", "parentId", "timestamp", "customType", "data"])) return void 0;
-  const data = record2.descriptors.data;
-  if (data === void 0 || !("value" in data)) return void 0;
-  return Object.freeze({ matched: true, data: data.value });
-}
-function restorePlanSessionState(entries, markdown) {
-  const list = safeArray(entries, MAX_ENTRIES);
-  if (list === void 0) return void 0;
-  for (let index = list.length - 1; index >= 0; index -= 1) {
-    const candidate = entryData(list[index]);
-    if (candidate === void 0) return void 0;
-    if (!candidate.matched) continue;
-    const state = normalizeState(candidate.data);
-    if (state === void 0) return void 0;
-    try {
-      if (Buffer.byteLength(JSON.stringify(state), "utf8") > MAX_ENTRY_BYTES) return void 0;
-    } catch {
-      return void 0;
-    }
-    return reconcilePlanState(state, markdown);
-  }
-  return void 0;
-}
 
-// src/commands.ts
-var COMMAND_DIAGNOSIS = "codeArbiter could not validate the Pi command surface; run /ca-doctor.";
-var NAME = /^[a-z][a-z0-9-]*$/u;
-var ENVELOPE_UNSAFE = /[\n\r"<>]/u;
-var CONTROL2 = /[\u0000-\u001f\u007f-\u009f\u061c\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]/u;
-var PLAN_COMMAND_DIAGNOSIS = "codeArbiter could not validate the Pi plan command; run /ca-doctor.";
-var PLAN_SYNTAX = "Usage: /ca-plan enter <slug> | status | approve | cancel.";
-var PLAN_SLUG = /^[a-z0-9](?:[a-z0-9-]{0,126}[a-z0-9])?$/u;
-var PLAN_ENTRY_LIMIT = 4096;
-function inside2(path, root) {
-  const suffix = relative3(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute3(suffix);
-}
-function pluginRootFromModule() {
-  let cursor = dirname3(fileURLToPath2(import.meta.url));
-  while (true) {
-    try {
-      const manifest = JSON.parse(readFileSync2(resolve4(cursor, "package.json"), "utf8"));
-      if (manifest.name === "ca-pi") return realpathSync3(cursor);
-    } catch {
-    }
-    const parent = dirname3(cursor);
-    if (parent === cursor) throw new Error(COMMAND_DIAGNOSIS);
-    cursor = parent;
-  }
-}
-function validatedEntry(entry) {
-  if (!NAME.test(entry.name) || ENVELOPE_UNSAFE.test(entry.name)) throw new Error(COMMAND_DIAGNOSIS);
-  if (entry.skillPath !== `skills/ca-${entry.name}/SKILL.md` || isAbsolute3(entry.skillPath)) {
-    throw new Error(COMMAND_DIAGNOSIS);
-  }
-  if (entry.skillPath.split("/").some((part) => part === "" || part === "." || part === "..")) {
-    throw new Error(COMMAND_DIAGNOSIS);
-  }
-}
-function strictUtf8(path) {
-  const bytes = readFileSync2(path);
-  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-}
-function hasSymlinkComponent(root, path) {
-  const lexicalRoot = resolve4(root);
-  const lexicalPath = resolve4(path);
-  if (!inside2(lexicalPath, lexicalRoot) || lstatSync(lexicalRoot).isSymbolicLink()) return true;
-  const suffix = relative3(lexicalRoot, lexicalPath);
-  let cursor = lexicalRoot;
-  for (const part of suffix.split(/[\\/]/u).filter(Boolean)) {
-    cursor = resolve4(cursor, part);
-    if (lstatSync(cursor).isSymbolicLink()) return true;
-  }
-  return false;
-}
-function stripStartingFrontmatter(content) {
-  const normalized2 = content.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-  if (!normalized2.startsWith("---\n")) return normalized2.trim();
-  let end = normalized2.indexOf("\n---\n", 4);
-  if (end < 0 && normalized2.endsWith("\n---")) end = normalized2.length - 4;
-  if (end < 0) return normalized2.trim();
-  return normalized2.slice(end + 4).trim();
-}
-function nativeSkillExpansion(name, path, body, args) {
-  const baseDir = dirname3(path);
-  const block = `<skill name="ca-${name}" location="${path}">
-References are relative to ${baseDir}.
-
-${body}
-</skill>`;
-  return args.length > 0 ? `${block}
-
-${args}` : block;
-}
-function declaredPackageOwner(command, expectedPath) {
-  try {
-    if (command.sourceInfo.origin !== "package" || command.sourceInfo.baseDir === void 0) return false;
-    if (hasSymlinkComponent(command.sourceInfo.baseDir, command.sourceInfo.path)) return false;
-    const canonicalPath = realpathSync3(command.sourceInfo.path);
-    const canonicalExpected = realpathSync3(expectedPath);
-    const canonicalBase = realpathSync3(command.sourceInfo.baseDir);
-    if (canonicalPath !== canonicalExpected || !inside2(canonicalPath, canonicalBase)) return false;
-    const manifest = JSON.parse(strictUtf8(resolve4(canonicalBase, "package.json")));
-    if (manifest.name !== "ca-pi" || manifest.pi === void 0) return false;
-    const declared = command.source === "extension" ? manifest.pi.extensions : manifest.pi.skills;
-    if (!Array.isArray(declared) || !declared.every((item) => typeof item === "string")) return false;
-    return declared.some((item) => {
-      const target = resolve4(canonicalBase, item);
-      return command.source === "extension" ? realpathSync3(target) === canonicalPath : inside2(canonicalPath, realpathSync3(target));
-    });
-  } catch {
-    return false;
-  }
-}
-function fallbackCommand(pi, packageRoot, entry) {
-  const expected = resolve4(packageRoot, ...entry.skillPath.split("/"));
-  const matches = pi.getCommands().filter((command) => command.name === `skill:ca-${entry.name}`);
-  if (matches.length !== 1 || matches[0].source !== "skill") return void 0;
-  return declaredPackageOwner(matches[0], expected) ? matches[0] : void 0;
-}
-function registerAliases(pi, catalog, packageRoot = pluginRootFromModule(), onDegraded, appendGeneratedContent) {
-  const canonicalRoot = realpathSync3(packageRoot);
-  for (const entry of catalog) {
-    validatedEntry(entry);
-    pi.registerCommand(`ca-${entry.name}`, {
-      description: entry.description,
-      handler: async (args, context) => {
-        try {
-          if (assertCommandOwnership(pi, canonicalRoot, [entry]).length > 0) {
-            throw new Error(COMMAND_DIAGNOSIS);
-          }
-          const fallback = fallbackCommand(pi, canonicalRoot, entry);
-          if (fallback === void 0) throw new Error(COMMAND_DIAGNOSIS);
-          const expectedPath = resolve4(canonicalRoot, ...entry.skillPath.split("/"));
-          if (fallback.sourceInfo.baseDir === void 0 || hasSymlinkComponent(fallback.sourceInfo.baseDir, fallback.sourceInfo.path)) {
-            throw new Error(COMMAND_DIAGNOSIS);
-          }
-          const path = realpathSync3(fallback.sourceInfo.path);
-          if (path !== realpathSync3(expectedPath) || !inside2(path, canonicalRoot) || ENVELOPE_UNSAFE.test(path)) throw new Error(COMMAND_DIAGNOSIS);
-          if (!lstatSync(path).isFile()) throw new Error(COMMAND_DIAGNOSIS);
-          const body = stripStartingFrontmatter(strictUtf8(path));
-          if (body.includes("</skill>")) throw new Error(COMMAND_DIAGNOSIS);
-          if (ENVELOPE_UNSAFE.test(dirname3(path))) throw new Error(COMMAND_DIAGNOSIS);
-          const expanded = nativeSkillExpansion(entry.name, path, body, args);
-          const generated = await appendGeneratedContent?.(entry, args, context);
-          const content = generated === void 0 ? expanded : `${expanded}
-
-${generated}`;
-          pi.sendUserMessage(content, { deliverAs: "followUp" });
-        } catch {
-          const status = "codeArbiter host: pi degraded - command surface; run /ca-doctor";
-          onDegraded?.(status);
-          context.ui.setStatus("codearbiter", status);
-          context.ui.notify(COMMAND_DIAGNOSIS, "error");
-        }
-      }
-    });
-  }
-}
-function assertCommandOwnership(pi, packageRoot, catalog) {
-  const collisions = [];
-  const canonicalRoot = realpathSync3(packageRoot);
-  const commands = pi.getCommands();
-  for (const entry of catalog) {
-    validatedEntry(entry);
-    const alias = `ca-${entry.name}`;
-    const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
-    const exact = commands.filter((command) => command.name === alias);
-    const suffixed = commands.filter((command) => command.name.startsWith(`${alias}:`));
-    const validExact = exact.filter((command) => command.source === "extension" && declaredPackageOwner(command, expectedExtension));
-    if (validExact.length === 0) collisions.push({ command: alias, reason: "missing-alias" });
-    if (exact.length > 1 || validExact.length > 1) collisions.push({ command: alias, reason: "duplicate-alias" });
-    for (const command of [...exact, ...suffixed]) {
-      if (command.source !== "extension" || !declaredPackageOwner(command, expectedExtension)) {
-        collisions.push({ command: command.name, reason: "foreign-owner", owner: command.sourceInfo.path });
-      }
-    }
-    for (const command of suffixed) {
-      collisions.push({ command: command.name, reason: "suffixed-alias", owner: command.sourceInfo.path });
-    }
-    const fallbackName = `skill:ca-${entry.name}`;
-    const fallbacks = commands.filter((command) => command.name === fallbackName);
-    const expectedSkill = resolve4(canonicalRoot, ...entry.skillPath.split("/"));
-    const validFallbacks = fallbacks.filter((command) => command.source === "skill" && declaredPackageOwner(command, expectedSkill));
-    if (validFallbacks.length === 0) collisions.push({ command: fallbackName, reason: "missing-fallback" });
-    if (fallbacks.length > 1) collisions.push({ command: fallbackName, reason: "duplicate-alias" });
-    for (const command of fallbacks) {
-      if (command.source !== "skill" || !declaredPackageOwner(command, expectedSkill)) {
-        collisions.push({ command: fallbackName, reason: "foreign-owner", owner: command.sourceInfo.path });
-      }
-    }
-    if (validExact.length === 1 && validFallbacks.length === 1 && validExact[0].sourceInfo.source !== validFallbacks[0].sourceInfo.source) {
-      collisions.push({
-        command: fallbackName,
-        reason: "foreign-owner",
-        owner: validFallbacks[0].sourceInfo.path
-      });
-    }
-  }
-  return collisions;
-}
-function assertNativePlanCommandOwnership(pi, packageRoot) {
-  const canonicalRoot = realpathSync3(packageRoot);
-  const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
-  const commands = pi.getCommands();
-  const exact = commands.filter((command) => command.name === "ca-plan");
-  const suffixed = commands.filter((command) => command.name.startsWith("ca-plan:"));
-  const fallbacks = commands.filter((command) => command.name === "skill:ca-plan");
-  const valid = exact.filter((command) => command.source === "extension" && declaredPackageOwner(command, expectedExtension));
-  const collisions = [];
-  if (valid.length === 0) collisions.push({ command: "ca-plan", reason: "missing-alias" });
-  if (exact.length > 1 || valid.length > 1) collisions.push({ command: "ca-plan", reason: "duplicate-alias" });
-  for (const command of [...exact, ...suffixed, ...fallbacks]) {
-    const owned2 = command.name === "ca-plan" && command.source === "extension" && declaredPackageOwner(command, expectedExtension);
-    if (!owned2) collisions.push({ command: command.name, reason: "foreign-owner", owner: command.sourceInfo.path });
-  }
-  for (const command of suffixed) {
-    collisions.push({ command: command.name, reason: "suffixed-alias", owner: command.sourceInfo.path });
-  }
-  return collisions;
-}
-function assertNativeJobsCommandOwnership(pi, packageRoot) {
-  const canonicalRoot = realpathSync3(packageRoot);
-  const expectedExtension = resolve4(canonicalRoot, "extensions", "codearbiter.js");
-  const commands = pi.getCommands();
-  const exact = commands.filter((command) => command.name === "ca-jobs");
-  const related = commands.filter((command) => command.name.startsWith("ca-jobs:") || command.name === "skill:ca-jobs");
-  const valid = exact.filter((command) => command.source === "extension" && declaredPackageOwner(command, expectedExtension));
-  const collisions = [];
-  if (valid.length === 0) collisions.push({ command: "ca-jobs", reason: "missing-alias" });
-  if (exact.length > 1 || valid.length > 1) collisions.push({ command: "ca-jobs", reason: "duplicate-alias" });
-  for (const command of [...exact, ...related]) {
-    if (command.name !== "ca-jobs" || command.source !== "extension" || !declaredPackageOwner(command, expectedExtension)) {
-      collisions.push({ command: command.name, reason: "foreign-owner", owner: command.sourceInfo.path });
-    }
-  }
-  for (const command of related.filter((command2) => command2.name.startsWith("ca-jobs:"))) {
-    collisions.push({ command: command.name, reason: "suffixed-alias", owner: command.sourceInfo.path });
-  }
-  return collisions;
-}
+// src/native-background.ts
 var JOBS_SYNTAX = "Usage: /ca-jobs list | tail <id> | cancel <id>.";
 var JOB_TOOL_FAILURE = "Background job launch was blocked; run /ca-doctor.";
 var JOB_ID = /^[1-9][0-9]{0,15}$/u;
@@ -3302,7 +2987,7 @@ function createNativeBackgroundController(pi, options) {
     return true;
   };
   const handle = async (rawArgs, context) => {
-    if (!ownershipValid() || typeof rawArgs !== "string" || rawArgs.length > 128 || CONTROL2.test(rawArgs)) {
+    if (!ownershipValid() || typeof rawArgs !== "string" || rawArgs.length > 128 || CONTROL_CHARACTERS.test(rawArgs)) {
       context.ui.notify(ownershipValid() ? JOBS_SYNTAX : "Pi jobs command ownership changed; operation blocked.", "error");
       return;
     }
@@ -3516,21 +3201,293 @@ function createNativeBackgroundController(pi, options) {
     healthy: () => healthy && (owned2 === void 0 || owned2.auditHealthy.value && runtimeHealthy(owned2))
   });
 }
-function interactiveParent(context) {
-  try {
-    return context.mode === "tui" && context.hasUI === true && context.isProjectTrusted?.() === true;
-  } catch {
-    return false;
+
+// src/native-plan.ts
+import { createHash as createHash3 } from "node:crypto";
+import { types as utilTypes5 } from "node:util";
+
+// src/plan-mode.ts
+import { types as utilTypes4 } from "node:util";
+var PLAN_SESSION_ENTRY_TYPE = "codearbiter.plan-mode.v1";
+var PLAN_TASK_STATUSES = Object.freeze(["PENDING", "IN_PROGRESS", "ACCEPTED"]);
+var CONTROL = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u061c\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]/u;
+var SLUG = /^[a-z0-9](?:[a-z0-9-]{0,126}[a-z0-9])?$/u;
+var TASK_ID = /^[A-Za-z0-9](?:[A-Za-z0-9]|[-.](?=[A-Za-z0-9])){0,63}$/u;
+var MAX_PLAN_CONTENT_BYTES = 92160;
+var MAX_LEDGER_LINES = 1e4;
+var MAX_TASKS = 256;
+var MAX_ENTRIES = 4096;
+var MAX_ENTRY_BYTES = 16384;
+var MAX_REVISION = Number.MAX_SAFE_INTEGER;
+var TASK_HEADERS = /* @__PURE__ */ new Set(["#", "id", "task", "task id"]);
+var OPERATION_FAILED = Object.freeze({ ok: false });
+function plainDataRecord(value) {
+  if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes4.isProxy(value)) return void 0;
+  if (Object.getPrototypeOf(value) !== Object.prototype) return void 0;
+  const keys = Reflect.ownKeys(value);
+  if (keys.some((key) => typeof key !== "string" || key === "__proto__" || key === "prototype" || key === "constructor")) return void 0;
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  for (const key of keys) {
+    const descriptor = descriptors[key];
+    if (descriptor === void 0 || !("value" in descriptor) || descriptor.enumerable !== true) return void 0;
   }
+  return Object.freeze({ descriptors, keys: Object.freeze(keys) });
 }
-function sessionId(context) {
+function exactKeys2(record2, keys) {
+  return record2.keys.length === keys.length && keys.every((key) => record2.keys.includes(key));
+}
+function safeArray(value, limit) {
+  if (!Array.isArray(value) || utilTypes4.isProxy(value)) return void 0;
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  const lengthDescriptor = descriptors.length;
+  if (lengthDescriptor === void 0 || !("value" in lengthDescriptor) || typeof lengthDescriptor.value !== "number" || !Number.isInteger(lengthDescriptor.value) || lengthDescriptor.value < 0 || lengthDescriptor.value > limit) return void 0;
+  const length = lengthDescriptor.value;
+  if (Reflect.ownKeys(value).length !== length + 1) return void 0;
+  const output = [];
+  for (let index = 0; index < length; index += 1) {
+    const descriptor = descriptors[String(index)];
+    if (descriptor === void 0 || !("value" in descriptor) || descriptor.enumerable !== true) return void 0;
+    output.push(descriptor.value);
+  }
+  return Object.freeze(output);
+}
+function frozenTask(id, status) {
+  return Object.freeze({ id, status });
+}
+function freezeActivePlan(input) {
+  return Object.freeze({ ...input, tasks: Object.freeze([...input.tasks]) });
+}
+function freezeState(input) {
+  return Object.freeze({ ...input, activePlan: freezeActivePlan(input.activePlan) });
+}
+function pathsFor(slug) {
+  const planPath = `.codearbiter/plans/${slug}.md`;
+  return Object.freeze({
+    specPath: `.codearbiter/specs/${slug}.md`,
+    planPath,
+    ledgerPath: planPath
+  });
+}
+function tableRow(line) {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return void 0;
+  const outerStart = line.indexOf(trimmed);
+  const bodyStart = outerStart + 1;
+  const bodyEnd = outerStart + trimmed.length - 1;
+  const cells = [];
+  let start = bodyStart;
+  for (let index = bodyStart; index < bodyEnd; index += 1) {
+    if (line[index] !== "|") continue;
+    let slashes = 0;
+    for (let cursor = index - 1; cursor >= bodyStart && line[cursor] === "\\"; cursor -= 1) slashes += 1;
+    if (slashes % 2 === 1) continue;
+    const raw2 = line.slice(start, index);
+    const leading2 = raw2.match(/^\s*/u)?.[0].length ?? 0;
+    const trailing2 = raw2.match(/\s*$/u)?.[0].length ?? 0;
+    cells.push(Object.freeze({ value: raw2.trim(), start: start + leading2, end: index - trailing2 }));
+    start = index + 1;
+  }
+  const raw = line.slice(start, bodyEnd);
+  const leading = raw.match(/^\s*/u)?.[0].length ?? 0;
+  const trailing = raw.match(/\s*$/u)?.[0].length ?? 0;
+  cells.push(Object.freeze({ value: raw.trim(), start: start + leading, end: bodyEnd - trailing }));
+  return Object.freeze(cells);
+}
+function splitTableRow(line) {
+  return tableRow(line)?.map((cell) => cell.value);
+}
+function isSeparator(cells, width) {
+  return cells.length === width && cells.every((cell) => /^:?-{3,}:?$/u.test(cell));
+}
+function taskStatus(cell) {
+  const normalized2 = cell.trim();
+  if (/^(?:PENDING|QUEUED)$/u.test(normalized2)) return "PENDING";
+  if (/^IN[-_]PROGRESS$/u.test(normalized2)) return "IN_PROGRESS";
+  if (/^ACCEPTED(?:\s+(?:—|-)\s+[^\r\n]+)?$/u.test(normalized2)) return "ACCEPTED";
+  return void 0;
+}
+function parsePlanLedger(markdown) {
   try {
-    const value = context.sessionManager?.getSessionId?.();
-    return typeof value === "string" && value.length > 0 && value.length <= 256 && !CONTROL2.test(value) ? value : void 0;
+    if (typeof markdown !== "string" || CONTROL.test(markdown) || /\r(?!\n)/u.test(markdown) || Buffer.byteLength(markdown, "utf8") > MAX_PLAN_CONTENT_BYTES) return void 0;
+    const lines = markdown.replace(/\r\n/gu, "\n").split("\n");
+    if (lines.length > MAX_LEDGER_LINES) return void 0;
+    let found;
+    for (let lineIndex = 0; lineIndex < lines.length - 1; lineIndex += 1) {
+      const header = splitTableRow(lines[lineIndex]);
+      const separator = splitTableRow(lines[lineIndex + 1]);
+      if (header === void 0 || separator === void 0 || !isSeparator(separator, header.length)) continue;
+      const normalizedHeaders = header.map((cell) => cell.toLowerCase().replace(/\s+/gu, " "));
+      const taskColumns = normalizedHeaders.flatMap((cell, index) => TASK_HEADERS.has(cell) ? [index] : []);
+      const statusColumns = normalizedHeaders.flatMap((cell, index) => cell === "status" ? [index] : []);
+      if (taskColumns.length !== 1 || statusColumns.length !== 1) {
+        if (statusColumns.length > 0) return void 0;
+        continue;
+      }
+      if (found !== void 0) return void 0;
+      const tasks = [];
+      const ids = /* @__PURE__ */ new Set();
+      for (let rowIndex = lineIndex + 2; rowIndex < lines.length; rowIndex += 1) {
+        const cells = splitTableRow(lines[rowIndex]);
+        if (cells === void 0) break;
+        if (cells.length !== header.length) return void 0;
+        const id = cells[taskColumns[0]];
+        const status = taskStatus(cells[statusColumns[0]]);
+        if (!TASK_ID.test(id) || CONTROL.test(id) || status === void 0 || ids.has(id)) return void 0;
+        ids.add(id);
+        tasks.push(frozenTask(id, status));
+        if (tasks.length > MAX_TASKS) return void 0;
+      }
+      if (tasks.length === 0) return void 0;
+      found = Object.freeze(tasks);
+    }
+    return found;
   } catch {
     return void 0;
   }
 }
+function normalizeTasks(value) {
+  const items = safeArray(value, MAX_TASKS);
+  if (items === void 0 || items.length === 0) return void 0;
+  const tasks = [];
+  const ids = /* @__PURE__ */ new Set();
+  for (const item of items) {
+    const record2 = plainDataRecord(item);
+    if (record2 === void 0 || !exactKeys2(record2, ["id", "status"])) return void 0;
+    const id = record2.descriptors.id.value;
+    const status = record2.descriptors.status.value;
+    if (typeof id !== "string" || !TASK_ID.test(id) || CONTROL.test(id) || ids.has(id) || typeof status !== "string" || !PLAN_TASK_STATUSES.includes(status)) return void 0;
+    ids.add(id);
+    tasks.push(frozenTask(id, status));
+  }
+  return Object.freeze(tasks);
+}
+function normalizeActivePlan(value) {
+  const record2 = plainDataRecord(value);
+  if (record2 === void 0 || !exactKeys2(record2, [
+    "slug",
+    "specPath",
+    "planPath",
+    "ledgerPath",
+    "disposition",
+    "tasks"
+  ])) return void 0;
+  const slug = record2.descriptors.slug.value;
+  const disposition = record2.descriptors.disposition.value;
+  if (typeof slug !== "string" || !SLUG.test(slug) || CONTROL.test(slug) || disposition !== "draft" && disposition !== "approved") return void 0;
+  const canonical = pathsFor(slug);
+  if (record2.descriptors.specPath.value !== canonical.specPath || record2.descriptors.planPath.value !== canonical.planPath || record2.descriptors.ledgerPath.value !== canonical.ledgerPath) return void 0;
+  const tasks = normalizeTasks(record2.descriptors.tasks.value);
+  if (tasks === void 0) return void 0;
+  return freezeActivePlan({ slug, ...canonical, disposition, tasks });
+}
+function normalizeState(value) {
+  const record2 = plainDataRecord(value);
+  if (record2 === void 0 || !exactKeys2(record2, ["version", "revision", "mode", "activePlan"])) return void 0;
+  const version = record2.descriptors.version.value;
+  const revision = record2.descriptors.revision.value;
+  const mode = record2.descriptors.mode.value;
+  if (version !== 1 || typeof revision !== "number" || !Number.isSafeInteger(revision) || revision < 1 || revision > MAX_REVISION || mode !== "plan" && mode !== "execute") return void 0;
+  const activePlan = normalizeActivePlan(record2.descriptors.activePlan.value);
+  if (activePlan === void 0 || mode === "plan" && activePlan.disposition !== "draft") return void 0;
+  const state = freezeState({ version: 1, revision, mode, activePlan });
+  return serializedStateFits(state) ? state : void 0;
+}
+function serializedStateFits(state) {
+  try {
+    return Buffer.byteLength(JSON.stringify(state), "utf8") <= MAX_ENTRY_BYTES;
+  } catch {
+    return false;
+  }
+}
+function enterPlan(slug, markdown) {
+  if (typeof slug !== "string" || !SLUG.test(slug) || CONTROL.test(slug)) return void 0;
+  const tasks = parsePlanLedger(markdown);
+  if (tasks === void 0) return void 0;
+  const state = freezeState({
+    version: 1,
+    revision: 1,
+    mode: "plan",
+    activePlan: freezeActivePlan({ slug, ...pathsFor(slug), disposition: "draft", tasks })
+  });
+  return serializedStateFits(state) ? state : void 0;
+}
+var FORWARD = Object.freeze({
+  PENDING: Object.freeze(["PENDING", "IN_PROGRESS", "ACCEPTED"]),
+  IN_PROGRESS: Object.freeze(["IN_PROGRESS", "ACCEPTED"]),
+  ACCEPTED: Object.freeze(["ACCEPTED"])
+});
+function leavePlan(rawState, disposition) {
+  const state = normalizeState(rawState);
+  if (state === void 0 || state.mode !== "plan" || state.revision >= MAX_REVISION) return void 0;
+  const next = freezeState({
+    ...state,
+    revision: state.revision + 1,
+    mode: "execute",
+    activePlan: freezeActivePlan({ ...state.activePlan, disposition })
+  });
+  return serializedStateFits(next) ? next : void 0;
+}
+function approvePlan(state) {
+  return leavePlan(state, "approved");
+}
+function cancelPlan(state) {
+  return leavePlan(state, "draft");
+}
+function reconcilePlanState(rawState, markdown) {
+  const state = normalizeState(rawState);
+  const diskTasks = parsePlanLedger(markdown);
+  if (state === void 0 || diskTasks === void 0 || diskTasks.length !== state.activePlan.tasks.length) return void 0;
+  if (!diskTasks.every((task, index) => task.id === state.activePlan.tasks[index].id)) return void 0;
+  const reconciled = freezeState({ ...state, activePlan: freezeActivePlan({ ...state.activePlan, tasks: diskTasks }) });
+  return serializedStateFits(reconciled) ? reconciled : void 0;
+}
+function encodePlanSessionState(rawState) {
+  const state = normalizeState(rawState);
+  if (state === void 0) return void 0;
+  try {
+    return serializedStateFits(state) ? state : void 0;
+  } catch {
+    return void 0;
+  }
+}
+function entryData(value) {
+  const record2 = plainDataRecord(value);
+  if (record2 === void 0 || record2.keys.length > 32) return void 0;
+  const type = record2.descriptors.type;
+  if (type === void 0 || !("value" in type) || typeof type.value !== "string") return Object.freeze({ matched: false });
+  if (type.value !== "custom") return Object.freeze({ matched: false });
+  const customType = record2.descriptors.customType;
+  if (customType === void 0 || !("value" in customType) || typeof customType.value !== "string") return void 0;
+  if (customType.value !== PLAN_SESSION_ENTRY_TYPE) return Object.freeze({ matched: false });
+  if (!exactKeys2(record2, ["type", "id", "parentId", "timestamp", "customType", "data"])) return void 0;
+  const data = record2.descriptors.data;
+  if (data === void 0 || !("value" in data)) return void 0;
+  return Object.freeze({ matched: true, data: data.value });
+}
+function restorePlanSessionState(entries, markdown) {
+  const list = safeArray(entries, MAX_ENTRIES);
+  if (list === void 0) return void 0;
+  for (let index = list.length - 1; index >= 0; index -= 1) {
+    const candidate = entryData(list[index]);
+    if (candidate === void 0) return void 0;
+    if (!candidate.matched) continue;
+    const state = normalizeState(candidate.data);
+    if (state === void 0) return void 0;
+    try {
+      if (Buffer.byteLength(JSON.stringify(state), "utf8") > MAX_ENTRY_BYTES) return void 0;
+    } catch {
+      return void 0;
+    }
+    return reconcilePlanState(state, markdown);
+  }
+  return void 0;
+}
+
+// src/native-plan.ts
+var PLAN_COMMAND_DIAGNOSIS = "codeArbiter could not validate the Pi plan command; run /ca-doctor.";
+var PLAN_SYNTAX = "Usage: /ca-plan enter <slug> | status | approve | cancel.";
+var PLAN_SLUG = /^[a-z0-9](?:[a-z0-9-]{0,126}[a-z0-9])?$/u;
+var PLAN_ENTRY_LIMIT = 4096;
 function entryRecord(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value) || utilTypes5.isProxy(value) || Object.getPrototypeOf(value) !== Object.prototype) return void 0;
   const keys = Reflect.ownKeys(value);
@@ -3557,7 +3514,7 @@ async function readReconciledPlan(state, cwd, bridge, signal) {
     kind: "plan",
     action: "read"
   }, signal ?? new AbortController().signal);
-  if (response === void 0 || response.status !== "unchanged" || !response.exists || response.hash === null || createHash2("sha256").update(response.content, "utf8").digest("hex") !== response.hash) return void 0;
+  if (response === void 0 || response.status !== "unchanged" || !response.exists || response.hash === null || createHash3("sha256").update(response.content, "utf8").digest("hex") !== response.hash) return void 0;
   const reconciled = reconcilePlanState(state, response.content);
   return reconciled === void 0 ? void 0 : Object.freeze({
     content: response.content,
@@ -3658,7 +3615,7 @@ function createNativePlanController(pi, options) {
       context.ui.notify("Pi plan command ownership changed; operation blocked.", "error");
       return;
     }
-    if (typeof rawArgs !== "string" || rawArgs.length > 512 || CONTROL2.test(rawArgs)) {
+    if (typeof rawArgs !== "string" || rawArgs.length > 512 || CONTROL_CHARACTERS.test(rawArgs)) {
       context.ui.notify(PLAN_SYNTAX, "warning");
       return;
     }
@@ -3679,7 +3636,7 @@ function createNativePlanController(pi, options) {
         kind: "plan",
         action: "read"
       }, context.signal ?? new AbortController().signal);
-      if (!ownershipValid() || !stable(base, context) || response === void 0 || response.status !== "unchanged" || !response.exists || response.hash === null || createHash2("sha256").update(response.content, "utf8").digest("hex") !== response.hash) {
+      if (!ownershipValid() || !stable(base, context) || response === void 0 || response.status !== "unchanged" || !response.exists || response.hash === null || createHash3("sha256").update(response.content, "utf8").digest("hex") !== response.hash) {
         context.ui.notify(ownershipValid() ? PLAN_COMMAND_DIAGNOSIS : "Pi plan command ownership changed; operation blocked.", "error");
         return;
       }
@@ -3816,34 +3773,96 @@ function createNativePlanController(pi, options) {
   });
 }
 
+// src/commands.ts
+function stripStartingFrontmatter(content) {
+  const normalized2 = content.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+  if (!normalized2.startsWith("---\n")) return normalized2.trim();
+  let end = normalized2.indexOf("\n---\n", 4);
+  if (end < 0 && normalized2.endsWith("\n---")) end = normalized2.length - 4;
+  if (end < 0) return normalized2.trim();
+  return normalized2.slice(end + 4).trim();
+}
+function nativeSkillExpansion(name, path, body, args) {
+  const baseDir = dirname4(path);
+  const block = `<skill name="ca-${name}" location="${path}">
+References are relative to ${baseDir}.
+
+${body}
+</skill>`;
+  return args.length > 0 ? `${block}
+
+${args}` : block;
+}
+function fallbackCommand(pi, packageRoot, entry) {
+  const expected = resolve6(packageRoot, ...entry.skillPath.split("/"));
+  const matches = pi.getCommands().filter((command) => command.name === `skill:ca-${entry.name}`);
+  if (matches.length !== 1 || matches[0].source !== "skill") return void 0;
+  return declaredPackageOwner(matches[0], expected) ? matches[0] : void 0;
+}
+function registerAliases(pi, catalog, packageRoot = pluginRootFromModule(), onDegraded, appendGeneratedContent) {
+  const canonicalRoot = realpathSync5(packageRoot);
+  for (const entry of catalog) {
+    validatedEntry(entry);
+    pi.registerCommand(`ca-${entry.name}`, {
+      description: entry.description,
+      handler: async (args, context) => {
+        try {
+          if (assertCommandOwnership(pi, canonicalRoot, [entry]).length > 0) {
+            throw new Error(COMMAND_DIAGNOSIS);
+          }
+          const fallback = fallbackCommand(pi, canonicalRoot, entry);
+          if (fallback === void 0) throw new Error(COMMAND_DIAGNOSIS);
+          const expectedPath = resolve6(canonicalRoot, ...entry.skillPath.split("/"));
+          if (fallback.sourceInfo.baseDir === void 0 || hasSymlinkComponent(fallback.sourceInfo.baseDir, fallback.sourceInfo.path)) {
+            throw new Error(COMMAND_DIAGNOSIS);
+          }
+          const path = realpathSync5(fallback.sourceInfo.path);
+          if (path !== realpathSync5(expectedPath) || !lexicallyInside(path, canonicalRoot) || ENVELOPE_UNSAFE.test(path)) throw new Error(COMMAND_DIAGNOSIS);
+          if (!lstatSync2(path).isFile()) throw new Error(COMMAND_DIAGNOSIS);
+          const body = stripStartingFrontmatter(strictUtf8(path));
+          if (body.includes("</skill>")) throw new Error(COMMAND_DIAGNOSIS);
+          if (ENVELOPE_UNSAFE.test(dirname4(path))) throw new Error(COMMAND_DIAGNOSIS);
+          const expanded = nativeSkillExpansion(entry.name, path, body, args);
+          const generated = await appendGeneratedContent?.(entry, args, context);
+          const content = generated === void 0 ? expanded : `${expanded}
+
+${generated}`;
+          pi.sendUserMessage(content, { deliverAs: "followUp" });
+        } catch {
+          const status = "codeArbiter host: pi degraded - command surface; run /ca-doctor";
+          onDegraded?.(status);
+          context.ui.setStatus("codearbiter", status);
+          context.ui.notify(COMMAND_DIAGNOSIS, "error");
+        }
+      }
+    });
+  }
+}
+
 // src/runtime-resolver.ts
 import { lstat as lstat2, readFile as readFile2, realpath as realpath2 } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname as dirname4, isAbsolute as isAbsolute4, relative as relative4, resolve as resolve5 } from "node:path";
+import { dirname as dirname5, isAbsolute as isAbsolute4, resolve as resolve7 } from "node:path";
 import { fileURLToPath as fileURLToPath3, pathToFileURL } from "node:url";
 var PI_RUNTIME_DIAGNOSIS = "codeArbiter could not validate the active Pi CLI runtime; start from the Pi CLI and run /ca-doctor.";
 var trustedIdentities = /* @__PURE__ */ new WeakSet();
-function inside3(path, root) {
-  const suffix = relative4(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute4(suffix);
-}
 function fail(cause) {
   throw new Error(PI_RUNTIME_DIAGNOSIS, cause === void 0 ? void 0 : { cause });
 }
 async function owningPackageRoot(file, expectedName) {
-  let cursor = dirname4(file);
+  let cursor = dirname5(file);
   while (true) {
-    const candidate = resolve5(cursor, "package.json");
+    const candidate = resolve7(cursor, "package.json");
     try {
       const manifest = JSON.parse(await readFile2(candidate, "utf8"));
       if (manifest.name !== expectedName) return fail();
       const canonicalRoot = await realpath2(cursor);
-      if (!inside3(file, canonicalRoot) || !inside3(await realpath2(candidate), canonicalRoot)) return fail();
+      if (!lexicallyInside(file, canonicalRoot) || !lexicallyInside(await realpath2(candidate), canonicalRoot)) return fail();
       return canonicalRoot;
     } catch (error) {
       if (error.code !== "ENOENT") return fail(error);
     }
-    const parent = dirname4(cursor);
+    const parent = dirname5(cursor);
     if (parent === cursor) return fail();
     cursor = parent;
   }
@@ -3879,11 +3898,11 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
     }
     const shippedModule = await realpath2(fileURLToPath3(import.meta.url));
     const extensionPackageRoot = await owningPackageRoot(shippedModule, "ca-pi");
-    let cursor = dirname4(canonicalAnchor);
+    let cursor = dirname5(canonicalAnchor);
     let manifest;
     let manifestPath = "";
     while (true) {
-      const candidate = resolve5(cursor, "package.json");
+      const candidate = resolve7(cursor, "package.json");
       try {
         manifest = JSON.parse(await readFile2(candidate, "utf8"));
         manifestPath = candidate;
@@ -3891,23 +3910,23 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
       } catch (error) {
         if (error.code !== "ENOENT") return fail(error);
       }
-      const parent = dirname4(cursor);
+      const parent = dirname5(cursor);
       if (parent === cursor) return fail();
       cursor = parent;
     }
     if (manifest.name !== "@earendil-works/pi-coding-agent" || typeof manifest.version !== "string") return fail();
     const packageRoot = await realpath2(cursor);
     const canonicalManifest = await realpath2(manifestPath);
-    if (!inside3(canonicalAnchor, packageRoot) || !inside3(canonicalManifest, packageRoot)) return fail();
-    if (inside3(packageRoot, extensionPackageRoot)) return fail();
-    const declaredBin = resolve5(packageRoot, binTarget(manifest));
-    if (!inside3(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
+    if (!lexicallyInside(canonicalAnchor, packageRoot) || !lexicallyInside(canonicalManifest, packageRoot)) return fail();
+    if (lexicallyInside(packageRoot, extensionPackageRoot)) return fail();
+    const declaredBin = resolve7(packageRoot, binTarget(manifest));
+    if (!lexicallyInside(declaredBin, packageRoot) || await realpath2(declaredBin) !== canonicalAnchor) return fail();
     if (!(await lstat2(canonicalAnchor)).isFile()) return fail();
     const declaredExport = importTarget(manifest);
     if (!declaredExport.startsWith("./")) return fail();
-    const requireFromPi = createRequire(resolve5(packageRoot, "package.json"));
+    const requireFromPi = createRequire(resolve7(packageRoot, "package.json"));
     const moduleEntry = await realpath2(requireFromPi.resolve(declaredExport));
-    if (!inside3(moduleEntry, packageRoot)) return fail();
+    if (!lexicallyInside(moduleEntry, packageRoot)) return fail();
     if (!(await lstat2(moduleEntry)).isFile()) return fail();
     const identity2 = Object.freeze({
       cliEntry: canonicalAnchor,
@@ -4645,14 +4664,14 @@ var PiFooterLifecycle = class {
 };
 
 // src/tool-guard.ts
-import { createHash as createHash4, randomUUID as randomUUID3 } from "node:crypto";
-import { constants as fsConstants, realpathSync as realpathSync4 } from "node:fs";
+import { createHash as createHash5, randomUUID as randomUUID3 } from "node:crypto";
+import { constants as fsConstants, realpathSync as realpathSync6 } from "node:fs";
 import { lstat as lstat3, open as open2, realpath as realpath3 } from "node:fs/promises";
-import { relative as relative5, resolve as resolve6 } from "node:path";
+import { relative as relative3, resolve as resolve8 } from "node:path";
 import { types as utilTypes7 } from "node:util";
 
 // src/notices.ts
-import { createHash as createHash3 } from "node:crypto";
+import { createHash as createHash4 } from "node:crypto";
 var MAX_NOTICE_BYTES = 16e3;
 var TRUNCATED = "\n[codeArbiter notice truncated]";
 function normalized(value) {
@@ -4660,7 +4679,7 @@ function normalized(value) {
 }
 function identity(ruleId, value) {
   const normalizedRule = normalized(ruleId ?? "context");
-  return createHash3("sha256").update(`${normalizedRule}\0${value}`, "utf8").digest("hex");
+  return createHash4("sha256").update(`${normalizedRule}\0${value}`, "utf8").digest("hex");
 }
 function owned(block, id) {
   if (block === null || typeof block !== "object" || Array.isArray(block)) return false;
@@ -4773,7 +4792,7 @@ var MODES = new Set(POLICY_MODES);
 var ACTIONS = new Set(POLICY_ACTION_CLASSES);
 var CATEGORIES = /* @__PURE__ */ new Set(["EXEC", "WRITE", "EDIT", "READ", "OTHER"]);
 var SURFACE_NAME = /^[a-z][a-z0-9_-]{0,127}$/u;
-var CONTROL3 = /[\u0000-\u001f\u007f-\u009f\u061c\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]/gu;
+var CONTROL2 = /[\u0000-\u001f\u007f-\u009f\u061c\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]/gu;
 var DESCRIPTOR_ENTRY_LIMIT = 128;
 var REQUEST_ACTION_LIMIT = 32;
 var CWD_CODE_POINT_LIMIT = 256;
@@ -4853,7 +4872,7 @@ function hasOwn(value, key) {
   return Object.prototype.hasOwnProperty.call(value, key);
 }
 function boundedCwd(value) {
-  const normalized2 = value.replace(CONTROL3, " ").replace(/\s+/gu, " ").trim();
+  const normalized2 = value.replace(CONTROL2, " ").replace(/\s+/gu, " ").trim();
   const source = normalized2 === "" ? "(unknown working directory)" : normalized2;
   const points = Array.from(source);
   if (points.length <= CWD_CODE_POINT_LIMIT && Buffer.byteLength(source, "utf8") <= CWD_BYTE_LIMIT) return source;
@@ -5007,7 +5026,7 @@ function classifyPermissionActions(descriptor, tool, params) {
   }
 }
 function auditCorrelation(toolCallId) {
-  return createHash4("sha256").update(toolCallId, "utf8").digest("hex");
+  return createHash5("sha256").update(toolCallId, "utf8").digest("hex");
 }
 var TRUST_WITHDRAWN_MESSAGE = "codeArbiter project trust is not affirmative; mutation blocked; run /trust in Pi, approve this project, then start a new session.";
 var LIFECYCLE_STALE_MESSAGE = "codeArbiter lifecycle changed while approval was pending; mutation blocked; run /ca-doctor.";
@@ -5089,12 +5108,12 @@ async function appendAuditLineWithIo(cwd, line, io) {
   try {
     if (Buffer.byteLength(line, "utf8") > 2048 || !line.endsWith("\n") || line.slice(0, -1).includes("\n")) return false;
     const root = await io.realpath(cwd);
-    const statePath = resolve6(root, ".codearbiter");
+    const statePath = resolve8(root, ".codearbiter");
     const stateInfo = await io.lstat(statePath);
     if (!stateInfo.isDirectory() || stateInfo.isSymbolicLink()) return false;
     const state = await io.realpath(statePath);
-    const stateRelative = relative5(root, state);
-    if (stateRelative === "" || stateRelative.startsWith("..") || resolve6(root, stateRelative) !== state) return false;
+    const stateRelative = relative3(root, state);
+    if (stateRelative === "" || stateRelative.startsWith("..") || resolve8(root, stateRelative) !== state) return false;
     const stateIdentity = await io.lstat(state);
     if (!sameAuditDirectory(stateInfo, stateIdentity)) return false;
     const stateIsCurrent = async () => {
@@ -5105,7 +5124,7 @@ async function appendAuditLineWithIo(cwd, line, io) {
       }
     };
     if (!await stateIsCurrent()) return false;
-    const target = resolve6(state, "gate-events.log");
+    const target = resolve8(state, "gate-events.log");
     const opened = await openedAuditTarget(target, io);
     if (opened === void 0) return false;
     const { handle, identity: identity2 } = opened;
@@ -5642,7 +5661,7 @@ function samePath(left, right) {
   const equal = (a, b) => process.platform === "win32" ? a.toLowerCase() === b.toLowerCase() : a === b;
   if (equal(left, right)) return true;
   try {
-    return equal(realpathSync4(left), realpathSync4(right));
+    return equal(realpathSync6(left), realpathSync6(right));
   } catch {
     return false;
   }
@@ -5696,17 +5715,17 @@ function bridgeToolResults(pi, bridge, descriptor, activeGeneration = () => STAN
 }
 
 // src/doctor.ts
-import { createHash as createHash5 } from "node:crypto";
-import { existsSync, realpathSync as realpathSync5 } from "node:fs";
+import { createHash as createHash6 } from "node:crypto";
+import { existsSync } from "node:fs";
 import { readFile as readFile3 } from "node:fs/promises";
-import { isAbsolute as isAbsolute5, relative as relative6, resolve as resolve7 } from "node:path";
+import { resolve as resolve9 } from "node:path";
 var EXPANSION_CANARY_PATH = "ca-doctor/SKILL.md";
 var EXPANSION_CANARY_BODY = "doctor expansion canary";
 function verifyNativeSkillExpansion(version, expectedFingerprints, expandSkill = nativeSkillExpansion) {
   const expected = expectedFingerprints[version];
   if (!/^[a-f0-9]{64}$/u.test(expected ?? "")) return false;
   const expanded = expandSkill("doctor", EXPANSION_CANARY_PATH, EXPANSION_CANARY_BODY, "");
-  const actual = createHash5("sha256").update(expanded, "utf8").digest("hex");
+  const actual = createHash6("sha256").update(expanded, "utf8").digest("hex");
   return actual === expected;
 }
 async function inspectChildArtifact(path, expectedFingerprint) {
@@ -5717,13 +5736,13 @@ async function inspectChildArtifact(path, expectedFingerprint) {
   } catch {
     return "unknown";
   }
-  const actual = createHash5("sha256").update(bytes).digest("hex");
+  const actual = createHash6("sha256").update(bytes).digest("hex");
   return actual === expectedFingerprint ? "enforced" : "unknown";
 }
 async function collectPiDoctorInput(dependencies) {
   let manifest = {};
   try {
-    manifest = JSON.parse(await readFile3(resolve7(dependencies.packageRoot, "package.json"), "utf8"));
+    manifest = JSON.parse(await readFile3(resolve9(dependencies.packageRoot, "package.json"), "utf8"));
   } catch {
   }
   const ownershipPort = { getCommands: () => [...dependencies.commands] };
@@ -5770,8 +5789,8 @@ async function collectPiDoctorInput(dependencies) {
     },
     runtime: dependencies.runtime,
     core: {
-      present: existsSync(resolve7(dependencies.packageRoot, "hooks", "pi-bridge.py")),
-      bridgeScript: resolve7(dependencies.packageRoot, "hooks", "pi-bridge.py")
+      present: existsSync(resolve9(dependencies.packageRoot, "hooks", "pi-bridge.py")),
+      bridgeScript: resolve9(dependencies.packageRoot, "hooks", "pi-bridge.py")
     },
     commands: { collisions, ownerPaths, expansionVerifiedVersions: verifiedVersions, expansionMatches },
     bridge: { healthy: bridgeHealthy },
@@ -5826,39 +5845,28 @@ function diagnosis(id, healthy, healthyMessage, unhealthyMessage) {
     remediation: REMEDIATION[id]
   };
 }
-function canonical(path) {
-  try {
-    return realpathSync5.native(path);
-  } catch {
-    return resolve7(path);
-  }
-}
 function samePath2(left, right) {
-  const a = canonical(left);
-  const b = canonical(right);
+  const a = canonicalPath(left);
+  const b = canonicalPath(right);
   return process.platform === "win32" ? a.toLowerCase() === b.toLowerCase() : a === b;
 }
-function inside4(path, root) {
-  const suffix = relative6(canonical(root), canonical(path));
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute5(suffix);
-}
 function diagnosePi(input) {
-  const expectedExtension = resolve7(input.package.root, "extensions", "codearbiter.js");
-  const packageHealthy = input.package.declared && input.package.name === "ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && inside4(input.package.extensionPath, input.package.root);
+  const expectedExtension = resolve9(input.package.root, "extensions", "codearbiter.js");
+  const packageHealthy = input.package.declared && input.package.name === "ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && canonicallyInside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
   const versionHealthy = ["0.80.5", "0.80.10"].includes(input.runtime.piVersion) && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
   const piBelowMinimum = !atLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
-  const expectedDoctorSkill = resolve7(input.package.root, "skills", "ca-doctor", "SKILL.md");
-  const ownerPathsHealthy = input.commands.ownerPaths.length > 0 && input.commands.ownerPaths.every((path) => inside4(path, input.package.root)) && input.commands.ownerPaths.some((path) => samePath2(path, expectedExtension)) && input.commands.ownerPaths.some((path) => samePath2(path, expectedDoctorSkill));
+  const expectedDoctorSkill = resolve9(input.package.root, "skills", "ca-doctor", "SKILL.md");
+  const ownerPathsHealthy = input.commands.ownerPaths.length > 0 && input.commands.ownerPaths.every((path) => canonicallyInside(path, input.package.root)) && input.commands.ownerPaths.some((path) => samePath2(path, expectedExtension)) && input.commands.ownerPaths.some((path) => samePath2(path, expectedDoctorSkill));
   const commandsHealthy = input.commands.collisions.length === 0 && ownerPathsHealthy && input.commands.expansionMatches && (piBelowMinimum || supportedExpansion);
   const childPathHealthy = samePath2(
     input.child.path,
-    resolve7(input.package.root, "extensions", "codearbiter-child.js")
-  ) && inside4(input.child.path, input.package.root) && existsSync(input.child.path);
-  const coreHealthy = input.core.present && existsSync(input.core.bridgeScript) && samePath2(input.core.bridgeScript, resolve7(input.package.root, "hooks", "pi-bridge.py")) && inside4(input.core.bridgeScript, input.package.root);
-  const runtimeIdentityHealthy = existsSync(input.runtime.cliEntry) && existsSync(input.runtime.moduleEntry) && inside4(input.runtime.cliEntry, input.runtime.packageRoot) && inside4(input.runtime.moduleEntry, input.runtime.packageRoot) && samePath2(input.runtime.cliEntry, resolve7(input.runtime.packageRoot, "dist", "cli.js")) && samePath2(input.runtime.moduleEntry, resolve7(input.runtime.packageRoot, "dist", "index.js"));
+    resolve9(input.package.root, "extensions", "codearbiter-child.js")
+  ) && canonicallyInside(input.child.path, input.package.root) && existsSync(input.child.path);
+  const coreHealthy = input.core.present && existsSync(input.core.bridgeScript) && samePath2(input.core.bridgeScript, resolve9(input.package.root, "hooks", "pi-bridge.py")) && canonicallyInside(input.core.bridgeScript, input.package.root);
+  const runtimeIdentityHealthy = existsSync(input.runtime.cliEntry) && existsSync(input.runtime.moduleEntry) && canonicallyInside(input.runtime.cliEntry, input.runtime.packageRoot) && canonicallyInside(input.runtime.moduleEntry, input.runtime.packageRoot) && samePath2(input.runtime.cliEntry, resolve9(input.runtime.packageRoot, "dist", "cli.js")) && samePath2(input.runtime.moduleEntry, resolve9(input.runtime.packageRoot, "dist", "index.js"));
   const mutators = ["bash", "write", "edit"];
   const wrapperHealthy = input.finalArguments.wrapperSourcePath !== void 0 && existsSync(input.finalArguments.wrapperSourcePath) && samePath2(input.finalArguments.wrapperSourcePath, expectedExtension) && mutators.every((name) => input.finalArguments.activeTools?.includes(name) === true) && mutators.every((name) => {
     const path = input.finalArguments.toolSources?.[name];
@@ -6025,23 +6033,19 @@ function formatPiDoctorReport(diagnoses) {
 // src/dispatch.ts
 import { randomUUID as randomUUID5 } from "node:crypto";
 import { appendFile as appendFile2 } from "node:fs/promises";
-import { resolve as resolve10 } from "node:path";
+import { resolve as resolve12 } from "node:path";
 import { types as utilTypes8 } from "node:util";
 
 // src/roles.ts
 import { readFile as readFile4, realpath as realpath4 } from "node:fs/promises";
-import { isAbsolute as isAbsolute6, relative as relative7, resolve as resolve8 } from "node:path";
+import { isAbsolute as isAbsolute5, resolve as resolve10 } from "node:path";
 var ROLE_NAME = /^[a-z][a-z0-9-]{0,63}$/u;
 function validRoleName(value) {
   return typeof value === "string" && ROLE_NAME.test(value);
 }
 var ALLOWED_TOOLS = /* @__PURE__ */ new Set(["read", "bash", "edit", "write"]);
-function inside5(path, root) {
-  const suffix = relative7(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute6(suffix);
-}
 function validRelativeResource(value, prefix) {
-  return typeof value === "string" && value.startsWith(prefix) && !isAbsolute6(value) && !value.split(/[\\/]/u).includes("..");
+  return typeof value === "string" && value.startsWith(prefix) && !isAbsolute5(value) && !value.split(/[\\/]/u).includes("..");
 }
 function parseRole(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) throw new Error("Generated Pi role catalog is invalid; run /ca-doctor.");
@@ -6061,8 +6065,8 @@ function parseRole(value) {
 }
 async function loadRoleCatalog(packageRoot) {
   const canonicalRoot = await realpath4(packageRoot);
-  const catalogPath = await realpath4(resolve8(canonicalRoot, "generated", "roles.json"));
-  if (!inside5(catalogPath, canonicalRoot)) throw new Error("Generated Pi role catalog escapes the package; run /ca-doctor.");
+  const catalogPath = await realpath4(resolve10(canonicalRoot, "generated", "roles.json"));
+  if (!lexicallyInside(catalogPath, canonicalRoot)) throw new Error("Generated Pi role catalog escapes the package; run /ca-doctor.");
   const parsed = JSON.parse(await readFile4(catalogPath, "utf8"));
   if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Generated Pi role catalog is invalid; run /ca-doctor.");
   const catalog = /* @__PURE__ */ new Map();
@@ -6077,14 +6081,14 @@ async function loadRoleCatalog(packageRoot) {
 // src/runner.ts
 import { randomBytes, randomUUID as randomUUID4 } from "node:crypto";
 import { readFile as readFile5, realpath as realpath5, stat } from "node:fs/promises";
-import { dirname as dirname5, isAbsolute as isAbsolute8, relative as relative8, resolve as resolve9 } from "node:path";
+import { dirname as dirname6, isAbsolute as isAbsolute7, resolve as resolve11 } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath as fileURLToPath4 } from "node:url";
 
 // src/child-env.ts
 import { mkdir, mkdtemp, open as open3, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { isAbsolute as isAbsolute7, join } from "node:path";
+import { isAbsolute as isAbsolute6, join } from "node:path";
 var WINDOWS_BASELINE = [
   "SystemRoot",
   "WINDIR",
@@ -6481,9 +6485,9 @@ async function boundedFileText(handle, cap) {
 }
 function operatorAgentDir(input) {
   const explicit = input.parent.PI_CODING_AGENT_DIR;
-  if (typeof explicit === "string" && isAbsolute7(explicit)) return explicit;
+  if (typeof explicit === "string" && isAbsolute6(explicit)) return explicit;
   const home = input.platform === "win32" ? input.parent.USERPROFILE ?? input.parent.HOME : input.parent.HOME;
-  return typeof home === "string" && isAbsolute7(home) ? join(home, ".pi", "agent") : void 0;
+  return typeof home === "string" && isAbsolute6(home) ? join(home, ".pi", "agent") : void 0;
 }
 async function selectedStoredCredential(input, authIo) {
   const agentDir = operatorAgentDir(input);
@@ -6619,12 +6623,12 @@ async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, au
 }
 
 // src/attestation.ts
-import { createHash as createHash6 } from "node:crypto";
+import { createHash as createHash7 } from "node:crypto";
 var CHILD_ATTESTATION_DOMAIN = "ca-pi-child-attestation-v1";
 var CHILD_ATTESTATION_TITLE = "codeArbiter isolated child readiness";
 var CHILD_ATTESTATION_TIMEOUT_MS = 5e3;
 function childAttestationDigest(input) {
-  return createHash6("sha256").update(JSON.stringify([
+  return createHash7("sha256").update(JSON.stringify([
     CHILD_ATTESTATION_DOMAIN,
     input.nonce,
     input.challenge,
@@ -6663,7 +6667,7 @@ function assertLaunchShape(input) {
     ["working directory", input.cwd],
     ...input.skillPaths.map((path2) => [compaction ? "compaction skill" : "role skill", path2])
   ]) {
-    if (typeof path !== "string" || !isAbsolute8(path)) throw new Error(`${label} path must be absolute for isolated child launch.`);
+    if (typeof path !== "string" || !isAbsolute7(path)) throw new Error(`${label} path must be absolute for isolated child launch.`);
   }
   if (!(input.provider in PI_PROVIDER_ENV)) throw new Error("Unsupported Pi provider for isolated child launch.");
   if (typeof input.model !== "string" || input.model.trim() === "" || /[\r\n\0]/u.test(input.model)) throw new Error("Pi child model is invalid.");
@@ -6678,24 +6682,20 @@ function assertLaunchShape(input) {
   }
 }
 async function canonicalFile(path, label) {
-  const canonical2 = await realpath5(path);
-  if (!(await stat(canonical2)).isFile()) throw new Error(`${label} must be a real file.`);
-  return canonical2;
-}
-function inside6(path, root) {
-  const suffix = relative8(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute8(suffix);
+  const canonical = await realpath5(path);
+  if (!(await stat(canonical)).isFile()) throw new Error(`${label} must be a real file.`);
+  return canonical;
 }
 async function owningCaPackageRoot() {
-  let cursor = dirname5(await realpath5(fileURLToPath4(import.meta.url)));
+  let cursor = dirname6(await realpath5(fileURLToPath4(import.meta.url)));
   while (true) {
     try {
-      const manifest = JSON.parse(await readFile5(resolve9(cursor, "package.json"), "utf8"));
+      const manifest = JSON.parse(await readFile5(resolve11(cursor, "package.json"), "utf8"));
       if (manifest.name === "ca-pi") return await realpath5(cursor);
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
-    const parent = dirname5(cursor);
+    const parent = dirname6(cursor);
     if (parent === cursor) throw new Error("Pi child package identity is unavailable.");
     cursor = parent;
   }
@@ -6714,32 +6714,32 @@ async function validateChildLaunch(input, dependencies = {}) {
   const runtimeIdentity = await (dependencies.resolveRuntimeIdentity ?? resolvePiRuntimeIdentity)(piCliPath);
   const runtimeCli = await canonicalFile(runtimeIdentity.cliEntry, "resolved Pi CLI");
   const runtimeRoot = await realpath5(runtimeIdentity.packageRoot);
-  if (runtimeCli !== piCliPath || !inside6(piCliPath, runtimeRoot)) throw new Error("Pi child CLI does not match the resolved Pi runtime identity.");
+  if (runtimeCli !== piCliPath || !lexicallyInside(piCliPath, runtimeRoot)) throw new Error("Pi child CLI does not match the resolved Pi runtime identity.");
   const incompatibility = compatibilityDirection({ piVersion: runtimeIdentity.version, nodeVersion: process.versions.node, pythonMajor: 3 });
   if (incompatibility !== null) throw new Error(incompatibility);
   const packageRoot = await realpath5(dependencies.packageRoot ?? await owningCaPackageRoot());
-  const packageManifest = JSON.parse(await readFile5(resolve9(packageRoot, "package.json"), "utf8"));
+  const packageManifest = JSON.parse(await readFile5(resolve11(packageRoot, "package.json"), "utf8"));
   if (packageManifest.name !== "ca-pi") throw new Error("Pi child package identity is invalid.");
   const childExtensionPath = await canonicalFile(input.childExtensionPath, "Pi child extension");
-  const expectedChildExtension = await canonicalFile(resolve9(packageRoot, "extensions", "codearbiter-child.js"), "packaged Pi child extension");
-  if (childExtensionPath !== expectedChildExtension || !inside6(childExtensionPath, packageRoot)) {
+  const expectedChildExtension = await canonicalFile(resolve11(packageRoot, "extensions", "codearbiter-child.js"), "packaged Pi child extension");
+  if (childExtensionPath !== expectedChildExtension || !lexicallyInside(childExtensionPath, packageRoot)) {
     throw new Error("Pi child extension escapes the trusted package resource boundary.");
   }
   const compaction = input.launchKind === "internal-compaction";
   const charterPath = await canonicalFile(input.charterPath, compaction ? "Pi compaction charter" : "Pi role charter");
   const skillPaths = await Promise.all(input.skillPaths.map(async (path) => await canonicalFile(path, "Pi role skill")));
   if (compaction) {
-    const expectedCharter = await canonicalFile(resolve9(packageRoot, "includes", "compaction-charter.md"), "packaged Pi compaction charter");
-    if (charterPath !== expectedCharter || !inside6(charterPath, packageRoot)) {
+    const expectedCharter = await canonicalFile(resolve11(packageRoot, "includes", "compaction-charter.md"), "packaged Pi compaction charter");
+    if (charterPath !== expectedCharter || !lexicallyInside(charterPath, packageRoot)) {
       throw new Error("Pi compaction charter resource escapes the trusted package boundary.");
     }
   } else {
     const catalog = await loadRoleCatalog(packageRoot);
     let roleMatched = false;
     for (const role of catalog.values()) {
-      const catalogCharter = await canonicalFile(resolve9(packageRoot, role.charterPath), "catalog Pi role charter");
-      const catalogSkills = await Promise.all(role.skillPaths.map(async (path) => await canonicalFile(resolve9(packageRoot, path), "catalog Pi role skill")));
-      if (!inside6(catalogCharter, packageRoot) || catalogSkills.some((path) => !inside6(path, packageRoot))) {
+      const catalogCharter = await canonicalFile(resolve11(packageRoot, role.charterPath), "catalog Pi role charter");
+      const catalogSkills = await Promise.all(role.skillPaths.map(async (path) => await canonicalFile(resolve11(packageRoot, path), "catalog Pi role skill")));
+      if (!lexicallyInside(catalogCharter, packageRoot) || catalogSkills.some((path) => !lexicallyInside(path, packageRoot))) {
         throw new Error("Pi role catalog resource escapes the trusted package boundary.");
       }
       if (charterPath === catalogCharter && sameStrings(skillPaths, catalogSkills) && sameStrings(input.tools, role.tools)) {
@@ -6748,7 +6748,7 @@ async function validateChildLaunch(input, dependencies = {}) {
     }
     if (!roleMatched) throw new Error("Pi child resources do not match one generated role catalog entry.");
   }
-  if ([nodePath, piCliPath, childExtensionPath, charterPath, ...skillPaths].some((path) => inside6(path, cwd))) {
+  if ([nodePath, piCliPath, childExtensionPath, charterPath, ...skillPaths].some((path) => lexicallyInside(path, cwd))) {
     throw new Error("Pi child working directory contains a trusted executable or package resource.");
   }
   const common = {
@@ -7347,7 +7347,7 @@ async function appendDispatchAudit(record2) {
     ...record2.diagnostic === void 0 ? [] : [`DIAGNOSTIC: ${safeDiagnostic(record2.diagnostic, 200)}`]
   ].join(" | ") + "\n";
   try {
-    await appendFile2(resolve10(record2.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
+    await appendFile2(resolve12(record2.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
   } catch {
   }
 }
@@ -7405,8 +7405,8 @@ function roleLaunch(runtime, role, task, timeoutMs) {
     tools: role.tools,
     cwd: runtime.cwd,
     childExtensionPath: runtime.childExtensionPath,
-    skillPaths: role.skillPaths.map((path) => resolve10(runtime.packageRoot, path)),
-    charterPath: resolve10(runtime.packageRoot, role.charterPath),
+    skillPaths: role.skillPaths.map((path) => resolve12(runtime.packageRoot, path)),
+    charterPath: resolve12(runtime.packageRoot, role.charterPath),
     task,
     timeoutMs,
     ...runtime.parentEnv === void 0 ? {} : { parentEnv: runtime.parentEnv },
@@ -7742,7 +7742,7 @@ function createDispatchTool(dependencies) {
 
 // src/farm.ts
 import { realpath as realpath6, readdir, stat as stat2 } from "node:fs/promises";
-import { isAbsolute as isAbsolute9, relative as relative9, resolve as resolve11 } from "node:path";
+import { resolve as resolve13 } from "node:path";
 var FARM_OUTPUT_LIMIT = 65536;
 var FARM_ENVIRONMENT = /^(?:FARM_[A-Z0-9_]+|PATH|PATHEXT|SystemRoot|WINDIR|TEMP|TMP)$/iu;
 var SOURCE_CLOCK_TOLERANCE_MS = 1e3;
@@ -7750,10 +7750,6 @@ var LEGACY_TEST_AUTHORIZATION = Object.freeze({
   lease: Object.freeze({}),
   isCurrent: () => true
 });
-function contained(root, candidate) {
-  const path = relative9(root, candidate);
-  return path === "" || !path.startsWith("..") && !isAbsolute9(path);
-}
 function result2(backend, terminal, additions = {}) {
   return Object.freeze({ label: "preview", terminal, backend, ...additions });
 }
@@ -7770,17 +7766,17 @@ function farmEnvironment(source) {
 }
 async function resolveBackend(packageRoot) {
   const canonicalPackage = await realpath6(packageRoot);
-  const checkoutRoot = await realpath6(resolve11(canonicalPackage, "..", ".."));
-  const expectedPackage = await realpath6(resolve11(checkoutRoot, "plugins", "ca-pi"));
+  const checkoutRoot = await realpath6(resolve13(canonicalPackage, "..", ".."));
+  const expectedPackage = await realpath6(resolve13(checkoutRoot, "plugins", "ca-pi"));
   if (canonicalPackage !== expectedPackage) throw new Error("package");
-  const backendRoot = await realpath6(resolve11(checkoutRoot, "plugins", "ca", "tools"));
-  const backend = await realpath6(resolve11(backendRoot, "farm.js"));
-  if (!contained(checkoutRoot, backend) || !contained(backendRoot, backend)) throw new Error("containment");
+  const backendRoot = await realpath6(resolve13(checkoutRoot, "plugins", "ca", "tools"));
+  const backend = await realpath6(resolve13(backendRoot, "farm.js"));
+  if (!lexicallyInside(backend, checkoutRoot) || !lexicallyInside(backend, backendRoot)) throw new Error("containment");
   const backendInfo = await stat2(backend);
   if (!backendInfo.isFile()) throw new Error("file");
   const sourceNames = (await readdir(backendRoot, { withFileTypes: true })).filter((entry) => entry.isFile() && entry.name.endsWith(".ts")).map((entry) => entry.name);
   if (!sourceNames.includes("farm.ts")) throw new Error("source");
-  const sourceStats = await Promise.all(sourceNames.map(async (name) => await stat2(resolve11(backendRoot, name))));
+  const sourceStats = await Promise.all(sourceNames.map(async (name) => await stat2(resolve13(backendRoot, name))));
   if (sourceStats.some((source) => source.mtimeMs > backendInfo.mtimeMs + SOURCE_CLOCK_TOLERANCE_MS)) {
     throw new Error("stale");
   }
@@ -7789,7 +7785,7 @@ async function resolveBackend(packageRoot) {
 async function resolvePlan(projectRoot, planPath) {
   const canonicalProject = await realpath6(projectRoot);
   const canonicalPlan = await realpath6(planPath);
-  if (!contained(canonicalProject, canonicalPlan) || !(await stat2(canonicalPlan)).isFile()) throw new Error("plan");
+  if (!lexicallyInside(canonicalPlan, canonicalProject) || !(await stat2(canonicalPlan)).isFile()) throw new Error("plan");
   return { projectRoot: canonicalProject, planPath: canonicalPlan };
 }
 function waitForFarm(child, signal, createCleanup) {
@@ -7825,7 +7821,7 @@ function waitForFarm(child, signal, createCleanup) {
   });
 }
 async function runFarmPreview(input, signal, dependencies = {}) {
-  const expectedBackend = resolve11(input.packageRoot, "..", "ca", "tools", "farm.js");
+  const expectedBackend = resolve13(input.packageRoot, "..", "ca", "tools", "farm.js");
   let backend;
   try {
     ({ backend } = await resolveBackend(input.packageRoot));
@@ -7887,7 +7883,7 @@ async function runFarmPreview(input, signal, dependencies = {}) {
 function createFarmPreviewTool(dependencies) {
   const run = dependencies.run ?? runFarmPreview;
   const degraded = (message) => result2(
-    resolve11(dependencies.packageRoot, "..", "ca", "tools", "farm.js"),
+    resolve13(dependencies.packageRoot, "..", "ca", "tools", "farm.js"),
     "degraded",
     { message }
   );
@@ -7917,7 +7913,7 @@ function createFarmPreviewTool(dependencies) {
           output = await run({
             packageRoot: dependencies.packageRoot,
             projectRoot: context.cwd,
-            planPath: resolve11(context.cwd, params.plan),
+            planPath: resolve13(context.cwd, params.plan),
             nodePath: dependencies.nodePath,
             environment: dependencies.environment,
             authorization,
@@ -7938,7 +7934,7 @@ function createFarmPreviewTool(dependencies) {
 // src/compaction.ts
 import { randomUUID as randomUUID6 } from "node:crypto";
 import { appendFile as appendFile3 } from "node:fs/promises";
-import { resolve as resolve12 } from "node:path";
+import { resolve as resolve14 } from "node:path";
 var MAX_CONVERSATION_BYTES = 48e3;
 var MAX_SUMMARY_BYTES = 16e3;
 var MAX_PREVIOUS_SUMMARY_BYTES = 8e3;
@@ -8121,7 +8117,7 @@ async function handleBeforeCompact(event, context, runner) {
       model,
       tools: Object.freeze([]),
       cwd: context.cwd,
-      charterPath: resolve12(context.packageRoot, COMPACTION_CHARTER),
+      charterPath: resolve14(context.packageRoot, COMPACTION_CHARTER),
       conversation,
       ...event.preparation.previousSummary === void 0 ? {} : {
         previousSummary: redactedBounded(event.preparation.previousSummary, MAX_PREVIOUS_SUMMARY_BYTES)
@@ -8208,7 +8204,7 @@ async function appendPiCompactionAudit(record2) {
     `METRICS: ${JSON.stringify(record2.metrics)}`
   ].join(" | ") + "\n";
   try {
-    await appendFile3(resolve12(record2.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
+    await appendFile3(resolve14(record2.cwd, ".codearbiter", "gate-events.log"), line, { encoding: "utf8" });
   } catch {
   }
 }
@@ -8247,7 +8243,7 @@ function installPiDispatch(pi, options) {
         model: context.model.id,
         cwd: context.cwd,
         packageRoot: options.packageRoot,
-        childExtensionPath: resolve13(options.packageRoot, "extensions", "codearbiter-child.js"),
+        childExtensionPath: resolve15(options.packageRoot, "extensions", "codearbiter-child.js"),
         parentEnv: process.env,
         platform: process.platform
       };
@@ -8299,9 +8295,9 @@ function boundedPiEnvironment(environment) {
 }
 async function canonicalExecutable2(candidate) {
   try {
-    const canonical2 = await realpath7(candidate);
-    const stats = await lstat4(canonical2);
-    return isAbsolute10(canonical2) && stats.isFile() && !stats.isSymbolicLink() ? canonical2 : void 0;
+    const canonical = await realpath7(candidate);
+    const stats = await lstat4(canonical);
+    return isAbsolute8(canonical) && stats.isFile() && !stats.isSymbolicLink() ? canonical : void 0;
   } catch {
     return void 0;
   }
@@ -8309,14 +8305,14 @@ async function canonicalExecutable2(candidate) {
 async function resolvePiBackgroundShell(configured, environment = process.env, platform = process.platform) {
   if (configured !== void 0) {
     if (typeof configured !== "string" || configured.length === 0 || configured.length > 4096 || configured.includes("\0")) return void 0;
-    return await canonicalExecutable2(isAbsolute10(configured) ? configured : resolve13(configured));
+    return await canonicalExecutable2(isAbsolute8(configured) ? configured : resolve15(configured));
   }
   const candidates = [];
   const pathDirectories = [];
   if (platform === "win32") {
     for (const key of ["ProgramFiles", "ProgramFiles(x86)"]) {
       const root = environment[key];
-      if (typeof root === "string" && root.length <= 4096) candidates.push(resolve13(root, "Git", "bin", "bash.exe"));
+      if (typeof root === "string" && root.length <= 4096) candidates.push(resolve15(root, "Git", "bin", "bash.exe"));
     }
   } else {
     candidates.push("/bin/bash");
@@ -8327,18 +8323,18 @@ async function resolvePiBackgroundShell(configured, environment = process.env, p
     for (const directory of pathValue.split(delimiter).slice(0, 512)) {
       if (directory.length > 0 && directory.length <= 4096) {
         pathDirectories.push(directory);
-        candidates.push(resolve13(directory, executable));
+        candidates.push(resolve15(directory, executable));
       }
     }
   }
   for (const candidate of candidates) {
-    const canonical2 = await canonicalExecutable2(candidate);
-    if (canonical2 !== void 0) return canonical2;
+    const canonical = await canonicalExecutable2(candidate);
+    if (canonical !== void 0) return canonical;
   }
   if (platform !== "win32") {
     for (const directory of pathDirectories) {
-      const canonical2 = await canonicalExecutable2(resolve13(directory, "sh"));
-      if (canonical2 !== void 0) return canonical2;
+      const canonical = await canonicalExecutable2(resolve15(directory, "sh"));
+      if (canonical !== void 0) return canonical;
     }
     return await canonicalExecutable2("/bin/sh");
   }
@@ -8622,10 +8618,6 @@ function createCodeArbiterPi(input) {
   };
 }
 var PI_TUI_DIAGNOSIS = "codeArbiter could not load Pi terminal width support; run /ca-doctor.";
-function inside7(path, root) {
-  const suffix = relative10(root, path);
-  return suffix === "" || !suffix.startsWith("..") && !isAbsolute10(suffix);
-}
 function createPiFooterMetricsLoader(runtime) {
   let loaded;
   let pending;
@@ -8635,26 +8627,26 @@ function createPiFooterMetricsLoader(runtime) {
       try {
         const runtimeRoot = await realpath7(runtime.packageRoot);
         const moduleEntry = await realpath7(runtime.moduleEntry);
-        if (!inside7(moduleEntry, runtimeRoot)) throw new Error("runtime entry outside package");
+        if (!lexicallyInside(moduleEntry, runtimeRoot)) throw new Error("runtime entry outside package");
         const runtimeRequire = createRequire2(moduleEntry);
         const resolvedEntry = runtimeRequire.resolve("@earendil-works/pi-tui");
-        const unresolvedRoot = resolve13(runtimeRoot, "node_modules", "@earendil-works", "pi-tui");
+        const unresolvedRoot = resolve15(runtimeRoot, "node_modules", "@earendil-works", "pi-tui");
         const rootInfo = await lstat4(unresolvedRoot);
         if (!rootInfo.isDirectory() || rootInfo.isSymbolicLink()) {
           throw new Error("TUI package root is linked or non-directory");
         }
         const expectedRoot = await realpath7(unresolvedRoot);
-        if (!inside7(expectedRoot, runtimeRoot)) throw new Error("TUI package root outside runtime");
+        if (!lexicallyInside(expectedRoot, runtimeRoot)) throw new Error("TUI package root outside runtime");
         const [entryInfo, manifestInfo] = await Promise.all([
           lstat4(resolvedEntry),
-          lstat4(resolve13(expectedRoot, "package.json"))
+          lstat4(resolve15(expectedRoot, "package.json"))
         ]);
         if (!entryInfo.isFile() || entryInfo.isSymbolicLink() || !manifestInfo.isFile() || manifestInfo.isSymbolicLink() || manifestInfo.size > 4096) {
           throw new Error("runtime-owned TUI files are invalid");
         }
         const canonicalEntry = await realpath7(resolvedEntry);
-        if (!inside7(canonicalEntry, expectedRoot)) throw new Error("TUI entry outside owner package");
-        const manifest = JSON.parse(await readFile6(resolve13(expectedRoot, "package.json"), "utf8"));
+        if (!lexicallyInside(canonicalEntry, expectedRoot)) throw new Error("TUI entry outside owner package");
+        const manifest = JSON.parse(await readFile6(resolve15(expectedRoot, "package.json"), "utf8"));
         if (manifest.name !== "@earendil-works/pi-tui") throw new Error("TUI package owner mismatch");
         const tuiModule = await import(pathToFileURL2(canonicalEntry).href);
         if (typeof tuiModule.visibleWidth !== "function" || typeof tuiModule.truncateToWidth !== "function") {
@@ -8663,7 +8655,7 @@ function createPiFooterMetricsLoader(runtime) {
         const [rootAfter, entryAfter, manifestAfter, canonicalRootAfter, canonicalEntryAfter] = await Promise.all([
           lstat4(unresolvedRoot),
           lstat4(resolvedEntry),
-          lstat4(resolve13(expectedRoot, "package.json")),
+          lstat4(resolve15(expectedRoot, "package.json")),
           realpath7(unresolvedRoot),
           realpath7(resolvedEntry)
         ]);
@@ -8699,18 +8691,18 @@ async function codeArbiterPi(pi) {
   const runtime = await loadPiRuntime(runtimeIdentity);
   const loadFooterMetrics = createPiFooterMetricsLoader(runtime);
   const modulePath = await realpath7(fileURLToPath5(import.meta.url));
-  let packageRoot = dirname6(modulePath);
+  let packageRoot = dirname7(modulePath);
   while (true) {
     try {
-      const manifest = JSON.parse(await readFile6(resolve13(packageRoot, "package.json"), "utf8"));
+      const manifest = JSON.parse(await readFile6(resolve15(packageRoot, "package.json"), "utf8"));
       if (manifest.name === "ca-pi") break;
     } catch {
     }
-    const parent = dirname6(packageRoot);
+    const parent = dirname7(packageRoot);
     if (parent === packageRoot) throw new Error("codeArbiter could not locate the ca-pi package; run /ca-doctor.");
     packageRoot = parent;
   }
-  const catalog = JSON.parse(await readFile6(resolve13(packageRoot, "generated", "command-catalog.json"), "utf8"));
+  const catalog = JSON.parse(await readFile6(resolve15(packageRoot, "generated", "command-catalog.json"), "utf8"));
   const toolClasses = loadPiToolClasses(define_CODEARBITER_PI_TOOL_CLASSES_default);
   const rawPermissionSurfaces = define_CODEARBITER_PI_PERMISSION_POLICY_SURFACES_default;
   if (rawPermissionSurfaces === null || typeof rawPermissionSurfaces !== "object" || Array.isArray(rawPermissionSurfaces)) {
@@ -8737,7 +8729,7 @@ async function codeArbiterPi(pi) {
       const selectedGit = gitExecutable;
       if (selectedPython === void 0 || selectedGit === void 0) {
         unavailableBridge ??= new BridgeClient({
-          bridgeScript: resolve13(packageRoot, "hooks", "pi-bridge.py"),
+          bridgeScript: resolve15(packageRoot, "hooks", "pi-bridge.py"),
           packageRoot,
           pythonExecutable: void 0,
           gitExecutable: void 0,
@@ -8747,7 +8739,7 @@ async function codeArbiterPi(pi) {
         return await unavailableBridge.call(request, signal);
       }
       concreteBridge ??= new BridgeClient({
-        bridgeScript: resolve13(packageRoot, "hooks", "pi-bridge.py"),
+        bridgeScript: resolve15(packageRoot, "hooks", "pi-bridge.py"),
         packageRoot,
         pythonExecutable: selectedPython?.executable,
         pythonPrefixArgs: selectedPython?.prefixArgs,
@@ -8788,7 +8780,7 @@ async function codeArbiterPi(pi) {
       pi.appendEntry(customType, data);
     },
     enforcementReadiness: enforcement,
-    loadPersona: async () => await readFile6(resolve13(packageRoot, "ORCHESTRATOR.md"), "utf8"),
+    loadPersona: async () => await readFile6(resolve15(packageRoot, "ORCHESTRATOR.md"), "utf8"),
     resetBridge,
     prepareFooterBridge: (cwd) => {
       prepareBridgeIdentity(cwd);
@@ -8810,7 +8802,7 @@ async function codeArbiterPi(pi) {
           nodePath: process.execPath,
           piCliPath: runtime.cliEntry,
           packageRoot,
-          childExtensionPath: resolve13(packageRoot, "extensions", "codearbiter-child.js"),
+          childExtensionPath: resolve15(packageRoot, "extensions", "codearbiter-child.js"),
           parentEnv: process.env,
           platform: process.platform
         }
@@ -8831,7 +8823,7 @@ async function codeArbiterPi(pi) {
           if (!pi.getActiveTools().includes("codearbiter_background_bash")) return false;
           const matches = pi.getAllTools().filter((tool) => tool.name === "codearbiter_background_bash");
           if (matches.length !== 1) return false;
-          const source = realpathSync6(matches[0].sourceInfo.path);
+          const source = realpathSync7(matches[0].sourceInfo.path);
           return process.platform === "win32" ? source.toLowerCase() === modulePath.toLowerCase() : source === modulePath;
         } catch {
           return false;
@@ -8911,12 +8903,12 @@ async function codeArbiterPi(pi) {
         backgroundInitialized: health.background.initialized,
         backgroundHealthy: health.background.healthy,
         projectTrustRequired: enabledForDoctor,
-        childPath: resolve13(packageRoot, "extensions", "codearbiter-child.js"),
+        childPath: resolve15(packageRoot, "extensions", "codearbiter-child.js"),
         wrapperSourcePath: modulePath,
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "2f5ae106d763a6ef32d7fc187ecbb7f75f43a6daab66214eb238f15bc65c9341"
+        childFingerprint: "1e994b3ffb1ea78affa4ec7320a55050f89ece1ceb8f23b63e2e23183cb13462"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,
