@@ -4,6 +4,19 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ---
 
+## [0.1.5] — 2026-07-24 — Teardown failures are surfaced and fail
+
+### Fixed
+- **A failed teardown can no longer report success (#393).** `destroySandbox` and `prune` wrote `if (r.code === 0) removed.push(x)` and discarded every non-zero docker result; the result types carried no failure field at all, and the CLI returned 0 for both verbs unconditionally. A daemon outage, a permission error, or an in-use object therefore left **untrusted sandbox containers and source volumes running while automation read exit 0** — the advertised teardown guarantee was false on exactly the path where cleanup matters. Both verbs now retain every failed docker operation in a bounded `failures` list (with `failureCount` staying exact past the bound), and `sandbox destroy` / `sandbox prune` exit non-zero whenever anything failed or anything remains.
+
+### Changed
+- **Teardown is best-effort but never silent.** A failure no longer influences what else is attempted: every discovered container and volume is still targeted, so a partial teardown reclaims everything it can instead of stopping at the first refusal.
+- **Teardown is verified, not assumed.** After the removals, both verbs re-list the same label scope and report what is STILL PRESENT (`remainingContainers` / `remainingVolumes`). A `--keep-volume` volume is a deliberate survivor and is excluded from that set, so keeping a volume is still a clean exit.
+- **A failed listing is itself a teardown failure.** Discovery and verification now go through `listContainersResult` / `listVolumesResult` in `registry.ts`, which retain docker's exit code — "listed nothing while the daemon was down" must never read as "nothing is left". `listContainers` / `listVolumes` are unchanged thin wrappers over them.
+- **The diagnostic names what was left behind.** On failure the CLI writes a bounded stderr report — each failed operation with docker's own exit code and message, then the ids/names of every object still present and the manual `docker rm -f` / `docker volume rm` needed to clear them. The stdout JSON keeps the full structured result for scripting.
+
+---
+
 ## [0.1.4] — 2026-07-24 — Supply-chain hardening: no pipe-to-shell, digest-pinned images
 
 Two tribunal supply-chain findings closed. Both concern EXTERNAL bytes the driver pulled in unpinned.

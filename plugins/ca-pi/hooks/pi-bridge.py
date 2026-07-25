@@ -27,12 +27,15 @@ import _taskboardlib  # noqa: E402
 MAX_REQUEST_BYTES = 262_144
 MAX_PLAN_CONTENT_BYTES = 92_160
 MAX_CAPTURE_CHARS = 1_048_576
-ALLOWED_KEYS = frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "result"})
+ALLOWED_KEYS = frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "result", "correlation"})
+# Opaque join key for one originating tool call: a SHA-256 digest in lowercase hex,
+# never the raw host tool-call id and never derived from parameters or prompt text.
+CORRELATION_RE = re.compile(r"\A[0-9a-f]{64}\Z")
 EVENT_KEYS = {
     "session_start": (frozenset({"version", "event", "cwd"}), frozenset({"version", "event", "cwd", "sessionId"})),
     "before_agent_start": (frozenset({"version", "event", "cwd"}), frozenset({"version", "event", "cwd", "sessionId"})),
-    "tool_call": (frozenset({"version", "event", "cwd", "tool", "input"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input"})),
-    "tool_result": (frozenset({"version", "event", "cwd", "tool", "input", "result"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "result"})),
+    "tool_call": (frozenset({"version", "event", "cwd", "tool", "input"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "correlation"})),
+    "tool_result": (frozenset({"version", "event", "cwd", "tool", "input", "result"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "result", "correlation"})),
     "prune_plan": (frozenset({"version", "event", "cwd", "input"}), frozenset({"version", "event", "cwd", "input"})),
     "footer_usage_update": (frozenset({"version", "event", "cwd", "input"}), frozenset({"version", "event", "cwd", "input"})),
     "footer_status_snapshot": (frozenset({"version", "event", "cwd"}), frozenset({"version", "event", "cwd", "sessionId"})),
@@ -156,6 +159,10 @@ def _request(raw):
     for key in ("sessionId", "tool"):
         if key in value and (not isinstance(value[key], str) or len(value[key]) > 1_024):
             raise ProtocolError(f"request {key} is invalid")
+    if "correlation" in value and (
+        not isinstance(value["correlation"], str) or not CORRELATION_RE.match(value["correlation"])
+    ):
+        raise ProtocolError("request correlation is invalid")
     for key in ("input", "result"):
         if key in value:
             if not isinstance(value[key], dict):

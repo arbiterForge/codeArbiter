@@ -5,6 +5,13 @@ export interface BridgeRequest {
   sessionId?: string;
   tool?: string;
   input?: unknown;
+  /**
+   * Opaque join key for one originating tool call: the SHA-256 digest of the
+   * host tool-call id, exactly as the permission audit records it. Never the
+   * raw host identifier, and never derived from parameters or prompt text.
+   * Absent for lifecycle and doctor requests, which mint a local id instead.
+   */
+  correlation?: string;
   result?: unknown;
 }
 

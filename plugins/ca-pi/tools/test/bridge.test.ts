@@ -218,13 +218,14 @@ async function executeWrappedRead(bridge: BridgePort, cwd: string): Promise<Reco
     descriptor: { bash: "EXEC", edit: "EDIT", read: "READ", write: "WRITE" },
     factories,
     wrapperSourcePath: resolve(cwd, "codearbiter.js"),
+    projectTrust: () => true,
   });
   return await definitions.get("read")!.execute(
     "read-diagnostic",
     { path: "README.md" },
     undefined,
     undefined,
-    { sessionManager: { getSessionId: () => "bridge-diagnostic-session" } },
+    { isProjectTrusted: () => true, sessionManager: { getSessionId: () => "bridge-diagnostic-session" } },
   );
 }
 
@@ -367,6 +368,58 @@ describe("BridgeClient", () => {
     expect(audit).toContain("AUDIT: PI_BRIDGE_WARN");
     expect(audit).toContain("CORRELATION:");
     expect(audit).not.toContain("synthetic-secret");
+  });
+
+  test("bridge failures join the originating tool call and mint a local id only without one", async () => {
+    const { bridge, packageRoot } = await clientFixture("import sys\nsys.exit(1)\n");
+    await mkdir(resolve(packageRoot, ".codearbiter"));
+    await writeFile(resolve(packageRoot, ".codearbiter", "gate-events.log"), "", "utf8");
+    const rawToolCallId = "pi-call-OPENAI_API_KEY=synthetic-secret";
+    const correlation = createHash("sha256").update(rawToolCallId, "utf8").digest("hex");
+    const second = createHash("sha256").update("pi-call-second", "utf8").digest("hex");
+
+    await bridge.call(
+      { ...request("bash", { command: "git status" }), cwd: packageRoot, correlation },
+      new AbortController().signal,
+    );
+    await bridge.call(
+      { ...request("bash", { command: "git status" }), cwd: packageRoot, correlation: second },
+      new AbortController().signal,
+    );
+    await bridge.call(
+      { version: 1, event: "session_start", cwd: packageRoot },
+      new AbortController().signal,
+    );
+
+    const lines = (await readFile(resolve(packageRoot, ".codearbiter", "gate-events.log"), "utf8"))
+      .split("\n").filter((line) => line.length > 0);
+    const recorded = lines.map((line) => /CORRELATION: ([^ |]+)/u.exec(line)?.[1]);
+    expect(recorded).toHaveLength(3);
+    expect(recorded[0]).toBe(correlation);
+    expect(recorded[1]).toBe(second);
+    expect(recorded[2]).not.toBe(correlation);
+    expect(recorded[2]).toMatch(/^[0-9a-f-]{36}$/u);
+    expect(lines.join("\n")).not.toContain(rawToolCallId);
+  });
+
+  test("only a digest-shaped correlation reaches the bridge wire", async () => {
+    const { bridge, packageRoot } = await clientFixture(
+      "import json,sys\nsys.stdout.write(json.dumps({'version':1,'outcome':'allow','context':sys.stdin.read()}))\n",
+    );
+    const correlation = createHash("sha256").update("pi-call-wire", "utf8").digest("hex");
+
+    const accepted = await bridge.call(
+      { ...request("read", { path: "README.md" }), cwd: packageRoot, correlation },
+      new AbortController().signal,
+    );
+    expect(accepted.context).toContain(correlation);
+
+    const rejected = await bridge.call(
+      { ...request("read", { path: "README.md" }), cwd: packageRoot, correlation: "pi-call-raw-host-identity" },
+      new AbortController().signal,
+    );
+    expect(rejected.context).not.toContain("pi-call-raw-host-identity");
+    expect(rejected.context).not.toContain("correlation");
   });
 
   test("patched READ results classify invalid interpreter, script, and package paths without exposing them", async () => {
