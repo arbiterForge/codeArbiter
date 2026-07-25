@@ -158,6 +158,39 @@ class Host:
         silently never firing the update-available notice."""
         return os.path.join(".claude-plugin", "plugin.json")
 
+    def mcp_config_sources(self, project_root):
+        """Where THIS host declares its MCP servers — `[(path, key), ...]`,
+        each entry a configuration file and the mapping key under which that
+        file declares servers (#270, tribunal appsec-002).
+
+        MCP server tools (`mcp__<server>__<tool>`) sit OUTSIDE the write gate
+        on every host: they miss Claude's `Write`/`Edit` matchers, and they
+        carry no TOOL_MAP entry on Codex so they normalize to "OTHER" and
+        match neither the write hooks nor the exec hook. That is ACCEPTED
+        residual risk under ADR-0010 (see .codearbiter/security-controls.md),
+        conditioned on the gap being *visible* to the consumer carrying it —
+        this repo builds codeArbiter, so the risk never lands here. This seam
+        is how `doctor.check_mcp` asks the ACTIVE host where to look, instead
+        of hard-coding one host's layout; doctor counts what it finds and
+        never reads, echoes, or names a server, command, or argument.
+
+        Claude Code declares servers in two places, and BOTH have to be seen
+        or the commonest real configuration reports as "none":
+          * `<project>/.mcp.json` — the project scope, checked into the repo.
+          * `~/.claude.json` — user scope (top-level `mcpServers`) and local
+            scope (`projects.<path>.mcpServers`, same key, nested).
+
+        Return `[]` to mean "this host's MCP configuration surface is not
+        known" — doctor then reports NOTHING rather than guessing another
+        host's paths. Overrides must not raise; doctor treats a raising seam
+        as unknown, but a quiet seam is the contract.
+        """
+        home = os.path.expanduser("~")
+        return [
+            (os.path.join(project_root, ".mcp.json"), "mcpServers"),
+            (os.path.join(home, ".claude.json"), "mcpServers"),
+        ]
+
     def normalize_tool(self, tool_name):
         """Canonical category for a native tool name:
         "EXEC" | "WRITE" | "EDIT" | "READ" | "OTHER"."""
@@ -298,6 +331,13 @@ class FailClosedHost(Host):
                  "added_text": "", "added_lines": [],
                  "old_string": "", "replace_all": False,
                  "batched": False, "notebook": False}]
+
+    def mcp_config_sources(self, project_root):
+        # Same reason as iter_file_ops: the host is unknown, so no config
+        # path can be claimed. Reading ~/.claude.json here would report a
+        # DIFFERENT host's MCP configuration as this install's. Diagnostics
+        # fail quiet (#270) — the write-path guards are what fail closed.
+        return []
 
 
 def load_host(hooks_dir=None):
