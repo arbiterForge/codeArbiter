@@ -28,6 +28,15 @@ HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
                 "pre-edit.py", "post-write-edit.py", "prune-transcript.py")
 PI_BRIDGE_SCRIPTS = ("pi-bridge.py", "git-enforce.py", "_githooks.py")
 
+# MCP config files are read whole to be counted. `~/.claude.json` also carries
+# session history, so it can be large; past this ceiling the source counts as
+# unreadable and the check goes quiet rather than stalling /ca:doctor.
+MCP_CONFIG_MAX_BYTES = 16 * 1024 * 1024
+# Depth ceiling for the `mcpServers` walk below. Claude's deepest real nesting
+# is projects -> <path> -> mcpServers (depth 2); the ceiling just stops a
+# pathological document from costing a full traversal.
+MCP_SCAN_MAX_DEPTH = 6
+
 results = []  # (level, line)
 
 
@@ -212,6 +221,98 @@ def check_host(host):
         ok(f"resolved host: {name}")
 
 
+def _mcp_json_count(doc, key, depth=0):
+    """How many servers a parsed JSON document declares under `key`.
+
+    Walks nested mappings because Claude Code uses the SAME key at two
+    depths: `mcpServers` at the top level of `~/.claude.json` (user scope)
+    and under `projects.<path>.mcpServers` (local scope). Only the number of
+    entries is taken — no name, command, or argument value is ever read out
+    (#449: doctor output is redaction-sensitive)."""
+    if not isinstance(doc, dict) or depth > MCP_SCAN_MAX_DEPTH:
+        return 0
+    total = 0
+    for k, v in doc.items():
+        if k == key and isinstance(v, dict):
+            total += len(v)
+        elif isinstance(v, dict):
+            total += _mcp_json_count(v, key, depth + 1)
+    return total
+
+
+def _mcp_source_count(path, key):
+    """Servers declared in one config file: an int, or None when the file
+    exists but cannot be read as configuration (unparseable, oversize,
+    unreadable, or a format this build cannot parse). An ABSENT file is a
+    legitimate "none configured", so it counts 0 — only a file we cannot
+    interpret is unknown."""
+    if not os.path.isfile(path):
+        return 0
+    try:
+        if os.path.getsize(path) > MCP_CONFIG_MAX_BYTES:
+            return None
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+        if path.lower().endswith(".toml"):
+            import tomllib  # 3.11+; older interpreters degrade to unknown
+            table = tomllib.loads(text).get(key)
+            return len(table) if isinstance(table, dict) else 0
+        return _mcp_json_count(json.loads(text), key)
+    except Exception:  # noqa: BLE001 — a diagnostic must never be the failure
+        return None
+
+
+def check_mcp(host):
+    """#270 (tribunal appsec-002): report that MCP tools are configured, and
+    that writes performed through them are outside the write gate.
+
+    The gap is real on every host — `mcp__<server>__<tool>` misses Claude's
+    `Write`/`Edit` matchers and normalizes to "OTHER" on Codex — and it is
+    ACCEPTED residual risk under ADR-0010, NOT something this check denies.
+    What it does is make the acceptance visible where the risk actually
+    lives: codeArbiter is BUILT in this repo but RUN in consumers' repos, so
+    a build-time check here would never fire and security-controls.md alone
+    reaches nobody who is carrying the risk. `/ca:doctor` does.
+
+    Host-agnostic by construction: the config locations come from
+    `host.mcp_config_sources()`, never from a hard-coded path. Every failure
+    mode degrades to SILENCE — a host too old for the seam, a host that
+    declares no sources, a raising seam, an unreadable or oversize file.
+    /ca:doctor is the tool of last resort when enforcement misbehaves, so a
+    diagnostic that errors is worse than one that is quiet.
+
+    Reports a COUNT only. Server names, commands, arguments, and environment
+    are never read out (#449)."""
+    try:
+        sources = host.mcp_config_sources(host.project_root())
+    except Exception:  # noqa: BLE001 — no seam, or a seam that raised
+        return
+    if not sources:
+        return  # this host's MCP surface is unknown — say nothing
+    total, unknown = 0, False
+    for source in sources or ():
+        try:
+            path, key = source
+            count = _mcp_source_count(path, key)
+        except Exception:  # noqa: BLE001 — malformed source descriptor
+            count = None
+        if count is None:
+            unknown = True
+        else:
+            total += count
+    if total > 0:
+        warn(f"{total} MCP server{'s' if total != 1 else ''} configured for "
+             f"this host — file writes made through an MCP tool "
+             f"(mcp__<server>__<tool>) bypass the codeArbiter write gate: no "
+             f"pre-write/pre-edit guard evaluates them and no gate event is "
+             f"recorded. Accepted residual risk under ADR-0010 — keep "
+             f"protected writes on this host's native write tools, or remove "
+             f"MCP servers that can write files.")
+    elif not unknown:
+        ok("no MCP servers configured for this host — nothing bypasses the "
+           "write gate through an MCP tool")
+
+
 def check_statusline(root):
     settings = os.path.join(os.path.expanduser("~"), ".claude", "settings.json")
     try:
@@ -236,6 +337,7 @@ def main():
     check_interpreters()
     check_payload(root, host)
     check_repo()
+    check_mcp(host)
     if getattr(host, "has_statusline", True):
         # A host with no statusline surface (Codex) must not read
         # ~/.claude/settings.json or advertise a statusline install path.

@@ -331,10 +331,29 @@ _ADR_STATUS_RE = re.compile(r"^status:\s*(.+)$", re.I)
 _ADR_SCAN_LIMIT = 26  # i > 25 breaks → lines 0-25 inclusive
 
 
+def adr_identifier(filename):
+    """The ADR identifier for `filename` — its filename STEM, not its number.
+
+    `0014-githook-shim-dropin-fail-closed.md` → `0014-githook-shim-dropin-fail-closed`.
+
+    #416: two ADRs in this repo share the number 0014, so the old
+    `filename.split("-")[0]` derivation collapsed two distinct decisions onto one
+    id and emitted byte-identical "ADR-0014 governs this file" pointers for both.
+    The stem is unique by construction (the filesystem enforces it), so keying on
+    it makes the collision unrepresentable rather than merely unlikely.
+
+    Deliberately mirrored in post-write-edit.py — the two indexers are separate
+    payload files that cannot import each other's private helpers; the shared
+    contract test (.github/scripts/test_adr_identity.py) pins them to the same
+    answer so the derivation cannot drift apart again.
+    """
+    return os.path.splitext(str(filename))[0]
+
+
 def accepted_adr_index(root):
     """Tier-2 filesystem reader.  Scan <root>/.codearbiter/decisions/ for ADR files.
 
-    Returns a list of {"adr": "<numeric id>", "title": "<title>", "globs": [<glob>, …]}
+    Returns a list of {"adr": "<filename stem>", "title": "<title>", "globs": [<glob>, …]}
     for every ADR that satisfies BOTH conditions:
       - governs: is present and non-empty (one or more comma-separated globs).
       - status: is exactly "accepted" (case-insensitive).
@@ -388,7 +407,7 @@ def accepted_adr_index(root):
                 continue
             # ACCEPTED ONLY — stricter than post-write-edit.py governs_index.
             if globs and status == "accepted":
-                adr = fn.split("-")[0]
+                adr = adr_identifier(fn)
                 index.append({"adr": adr, "title": title, "globs": globs})
         return index
     except Exception:  # noqa: BLE001

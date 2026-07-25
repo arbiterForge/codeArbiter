@@ -45,6 +45,15 @@ class PiHost(hostapi.Host):
     def manifest_relpath(self):
         return "package.json"
 
+    def mcp_config_sources(self, project_root):
+        # #270: Pi's MCP configuration surface is not source-verified against
+        # a supported Pi release in this repo, so this host claims NO sources
+        # and doctor's MCP line degrades to silence. Inheriting the base
+        # (Claude) implementation would report ~/.claude.json — a DIFFERENT
+        # host's configuration — as this install's. Fill this in only with a
+        # version-pinned source reference, the way TOOL_MAP is pinned.
+        return []
+
     def normalize_tool_input(self, tool_name, tool_input):
         value = tool_input if isinstance(tool_input, dict) else {}
         if tool_name == "read":

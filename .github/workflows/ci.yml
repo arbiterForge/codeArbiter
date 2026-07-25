@@ -22,6 +22,30 @@ on:
     # campaign merges with zero CI. Drop this once the campaign branch is
     # closed out and merged to main.
     branches: [main, feat/codex-support-m0]
+  # Issue #383. main's ONLY required context is the `[GATE ] | [REPO] | Merge
+  # readiness` aggregate below, and it merges on `strict: false` - so a green
+  # aggregate computed against an OLDER base is enough, and two individually
+  # green PRs can interact after one lands while the second keeps a valid check
+  # from its stale merge base. The ruling was a merge queue: it synthesises the
+  # exact prospective merge commit and runs the gate on THAT, which is stricter
+  # than up-to-dateness because it catches interactions currency does not.
+  #
+  # SEQUENCING - this trigger MUST be live on main BEFORE the queue is enabled.
+  # A queue whose required context never reports under `merge_group` stalls
+  # every queued merge, with nothing able to satisfy the gate. Enabling the
+  # queue is a maintainer settings action that FOLLOWS this workflow landing,
+  # never precedes it. `checks_requested` is the only merge_group activity type
+  # there is; it is named rather than defaulted so a future type cannot silently
+  # join the gate.
+  #
+  # No `paths:` filter here, deliberately. On push a filter only decides whether
+  # to spend runner time on main; in a merge group it would decide whether the
+  # required context reports AT ALL, and a filtered-out merge group waits
+  # forever. The per-job path scoping ADR-0007 asks for still applies - it runs
+  # inside the workflow, via the `changes` job, where a skipped job is a skipped
+  # job and not an absent check run.
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
     paths:
@@ -144,6 +168,11 @@ jobs:
               # test_release_workflow.py runs in the hooks job and is the only
               # guard on the release workflow's publish gates (#378/#380/#385).
               - '.github/workflows/release.yml'
+              # Issue #416: check_adr_identity.py runs in the hooks job and is
+              # the only guard on ADR identity. A PR that ONLY adds a decision
+              # file - the exact shape of a duplicate-number collision - would
+              # skip this job and land the ambiguity unchecked.
+              - '.codearbiter/decisions/**'
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
@@ -597,7 +626,12 @@ jobs:
   ca-pi-codeql:
     name: "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>"
     needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-pi == 'true'
+    # Issue #383: `merge_group` joins `pull_request` here rather than replacing
+    # the event gate. Analysing the prospective merge commit is the whole point
+    # of a queue - the code that actually lands is the merge result, not either
+    # parent - while `push` on main stays excluded, where the analysis would be
+    # a post-mortem of code already merged.
+    if: (github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-pi == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -785,6 +819,23 @@ jobs:
         # locally per CONTRIBUTING; wired here so the guards are mechanically
         # enforced. Stdlib-only, cross-platform (discovered on every matrix OS).
         run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
+      - name: Run ADR identity + supersession contract tests
+        # #416: two ADRs share the number 0014, so a bare `supersedes: 0014`
+        # named two documents at once. The identifier is the filename STEM;
+        # this pins both hook-side indexers to that derivation and proves an
+        # ambiguous bare number errors instead of resolving arbitrarily.
+        run: python .github/scripts/test_adr_identity.py
+      - name: Enforce the ADR identity contract on the live decision record
+        # The contract applied to .codearbiter/decisions/ itself: stems unique,
+        # no NEW file on an already-used number (the 0014 pair is grandfathered
+        # by stem, so a third one still fails), and every supersedes: resolving
+        # to exactly one ADR. Ambiguity fails the build rather than being
+        # silently resolved to whichever file sorts first.
+        #
+        # Last in the job deliberately: this pair guards the decision RECORD,
+        # not the payload, so a governance breach must not mask the hook
+        # enforcement results above it by halting the job early.
+        run: python .github/scripts/check_adr_identity.py
 
   version-bump:
     name: "[GATE ] | [CA  ] | Payload version"
@@ -796,7 +847,12 @@ jobs:
     # Pre-publication PRs pass: the rule only bites when tag v<version>
     # already exists. Gated to ca-touching diffs (ADR-0007 path-scoping).
     needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.ca == 'true'
+    # Issue #383: this guard asks a question ABOUT THE BASE - whether the
+    # payload version on the tip of main is already published - so it is
+    # precisely the check a merge queue exists to re-run against the real base.
+    # Two PRs can each bump ca to the same version and pass individually; only
+    # the second one's merge-group run can see that the first already took it.
+    if: (github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -804,8 +860,13 @@ jobs:
           fetch-depth: 0
       - name: Fail if a published version ships a changed payload
         env:
-          BASE: ${{ github.base_ref }}
+          # `github.base_ref` is a pull_request-only context and is EMPTY under
+          # merge_group, which would silently compare against nothing. The merge
+          # group carries its target as a full ref, normalized to a branch name
+          # below so the rest of this script is unchanged.
+          BASE: ${{ github.base_ref || github.event.merge_group.base_ref }}
         run: |
+          BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
           if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca; then
             echo "no payload change - version bump not required"
@@ -831,7 +892,7 @@ jobs:
     # same silent-staleness trap and is failed here. The sandbox plugin's tags
     # are namespaced (ca-sandbox-v*) so they never collide with ca's v* tags.
     needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-sandbox == 'true'
+    if: (github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -839,8 +900,10 @@ jobs:
           fetch-depth: 0
       - name: Fail if a published version ships a changed payload
         env:
-          BASE: ${{ github.base_ref }}
+          # See the ca guard above: `github.base_ref` is empty under merge_group.
+          BASE: ${{ github.base_ref || github.event.merge_group.base_ref }}
         run: |
+          BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
           if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca-sandbox; then
             echo "no payload change - version bump not required"
@@ -885,7 +948,7 @@ jobs:
     # failed here. Namespaced tags (ca-codex-v*) never collide with ca's bare
     # v* series or ca-sandbox's ca-sandbox-v* series.
     needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-codex == 'true'
+    if: (github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-codex == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -893,8 +956,10 @@ jobs:
           fetch-depth: 0
       - name: Fail if a published version ships a changed payload
         env:
-          BASE: ${{ github.base_ref }}
+          # See the ca guard above: `github.base_ref` is empty under merge_group.
+          BASE: ${{ github.base_ref || github.event.merge_group.base_ref }}
         run: |
+          BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
           if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca-codex; then
             echo "no payload change - version bump not required"
@@ -933,7 +998,7 @@ jobs:
   version-bump-pi:
     name: "[GATE ] | [PI  ] | Payload version"
     needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.ca-pi == 'true'
+    if: (github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-pi == 'true'
     runs-on: ubuntu-latest
     # Issue #399. Observed 4-7s (a full-history fetch plus one Python check);
     # 10 minutes bounds a wedged `git fetch` with three orders of headroom.
@@ -944,7 +1009,11 @@ jobs:
           fetch-depth: 0
       - name: Fail if a tagged Pi payload changes without synchronized release metadata
         env:
-          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+          # Issue #383: both spellings are a base COMMIT, so the guard needs no
+          # other change - but the pull_request one is empty in a merge group,
+          # and this is the exact gate whose stale-base pass was observed on
+          # PR #446 after main advanced underneath it.
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
         run: python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"
 
   prose:
@@ -1184,9 +1253,14 @@ jobs:
         # the rootfs becoming writable. Verified locally under this exact flag
         # set, including --user, against a repo whose HEAD had already deleted
         # the planted credential.
-        if: github.event_name == 'pull_request'
+        #
+        # Issue #383: a merge group has a base too - `merge_group.base_sha` is
+        # the tip of main the group was built on - so the range scan runs there
+        # as well. Only `push` is left out, where the commits have already
+        # landed and the tree scan carries the job.
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
         run: |
           base="$(git merge-base "$BASE_SHA" HEAD)"
           echo "scanning commit range ${base}..HEAD"
@@ -1260,6 +1334,44 @@ jobs:
         # recorded copy of the live tag provenance.
         run: python .github/scripts/test_tag_immutability.py
 
+  branch-protection:
+    name: "[CHECK] | [REPO] | Branch protection"
+    # Issue #383 AC-3. Everything else in this workflow guards the CODE; this
+    # guards the setting that makes the workflow binding. Merge-readiness
+    # enforcement lives in repository settings, so it can be switched off with
+    # no diff, no review, and no red check anywhere - which is exactly how the
+    # `strict: false` this issue reports went unnoticed. Repo-wide and
+    # always-on, like license-consistency and surface: there is no diff to
+    # path-scope against, because the regression this detects has no diff.
+    #
+    # IT SKIPS WITHOUT A TOKEN, BY DESIGN AND OUT LOUD. Reading a branch's
+    # protection document requires Administration:read, and GITHUB_TOKEN has no
+    # permission key that grants it - so in ordinary CI this cannot see the
+    # document and says so rather than failing. A merge gate must never depend
+    # on a permission that cannot be granted. Set the optional
+    # BRANCH_PROTECTION_AUDIT_TOKEN repository secret to an admin-scoped token
+    # to turn the audit live; the script's skip note explains the same thing to
+    # whoever reads the log. Read-only either way: two queries, no mutations.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - name: Audit main's merge-readiness enforcement (read-only; skips without admin rights)
+        env:
+          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_AUDIT_TOKEN }}
+        run: python .github/scripts/check_branch_protection.py --repo "$GITHUB_REPOSITORY" --branch main
+      - name: Test the audit's own logic
+        # The audit itself skips when it cannot see the setting, so its unit
+        # tests are what stay unconditional - they are offline, tokenless, and
+        # pin both the pass and the fail verdict against a recorded copy of the
+        # live protection document.
+        run: python .github/scripts/test_branch_protection.py
+
   ci-passed:
     name: "[GATE ] | [REPO] | Merge readiness"
     # REGISTRATION CONTRACT (issue #390): this gate enforces a job through TWO
@@ -1273,6 +1385,7 @@ jobs:
     if: always()
     needs:
       - documentation-contract
+      - branch-protection
       - tag-immutability
       - changes
       - host-descriptors
@@ -1300,7 +1413,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"

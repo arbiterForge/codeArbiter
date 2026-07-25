@@ -521,9 +521,33 @@ an MCP filesystem/write server can therefore write `.codearbiter/CONTEXT.md`, a
 `--no-verify`, shell-indirection, and self-minted-marker gaps above (ADR-0010) — a
 cooperating orchestrator does not route protected writes through an out-of-band MCP
 tool, and a non-cooperating Bash-capable agent already has stronger bypasses.
-Bringing MCP writes under the write gate on both hosts is tracked as **near-term
-hardening (issue #270 / tribunal appsec-002)**, not a codex-branch blocker; it
-reopens if the threat model expands to untrusted agents.
+**Ratified 2026-07-25 (#270 / tribunal appsec-002).** The acceptance stands: no
+default-deny on `mcp__*` ships, and the write matchers are NOT extended. It is
+conditioned instead on the gap being VISIBLE to whoever carries it. codeArbiter is
+BUILT in this repo but RUN in consumers' repos, so the risk never manifests here
+and this file reaches nobody holding it. `/ca:doctor` does: `doctor.check_mcp`
+resolves the ACTIVE host's MCP configuration through `Host.mcp_config_sources()`
+and WARNs, in the consumer's own repo, that MCP-tool writes are outside the write
+gate. It reports a COUNT only — never a server name, command, argument, or
+environment value (#449) — and degrades to SILENCE when the configuration cannot
+be read, because a diagnostic that errors is worse than one that is quiet.
+
+*Reopen conditions.* Concrete and consumer-side, replacing this clause's former
+vague "if the threat model expands to untrusted agents". Any ONE reopens it:
+
+1. A supported host gains a hook matcher (or tool-name normalization) that can
+   route `mcp__<server>__<tool>` calls to `pre-write.py`. Closing the gap stops
+   requiring a fork, so accepting it stops being the cheaper option.
+2. A consumer reports an MCP server writing under `.codearbiter/` — CONTEXT.md, a
+   `.markers/` token, `gate-events.log`, or `overrides.log` — in a repo whose
+   orchestrator is cooperative. That falsifies the "a cooperating orchestrator
+   does not route protected writes out of band" premise this rests on.
+3. codeArbiter ships, bundles, or recommends an MCP server in a consumer install
+   path. The model above assumes MCP servers are the operator's own choice;
+   shipping one makes the bypass ours to own.
+4. `doctor.check_mcp` stops reporting the gap on a supported host — the seam
+   returns no sources, or the host's configuration location moves. The acceptance
+   is conditioned on visibility, so losing visibility voids it.
 
 ---
 
