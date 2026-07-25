@@ -42,23 +42,64 @@ CODEX_HOOKS = os.path.join(REPO, "plugins", "ca-codex", "hooks")
 CODEX_PLUGIN = os.path.join(REPO, "plugins", "ca-codex")
 
 
+def stage_codex_hooks(td, guard_body):
+    """A real ca-codex hooks tree with the two guard entries stubbed out.
+
+    A fixture holding pre-tool-adapter.py ALONE is not a faithful install:
+    the adapter resolves the repo's activation state through the same shared
+    helpers the guards use (_hooklib.arbiter_active / project_root over the
+    plugin's own _host.py), so those siblings have to be present exactly as
+    they ship. Returns the staged adapter's path.
+    """
+    hooks = os.path.join(td, "hooks")
+    shutil.copytree(CODEX_HOOKS, hooks,
+                    ignore=shutil.ignore_patterns("__pycache__"))
+    for script in ("pre-write.py", "pre-bash.py"):
+        with open(os.path.join(hooks, script), "w", encoding="utf-8",
+                  newline="\n") as f:
+            f.write(guard_body(script))
+    return os.path.join(hooks, "pre-tool-adapter.py")
+
+
+def stage_repo(td, name, enabled):
+    """A throwaway git repo; `enabled` controls the arbiter opt-in marker.
+    Mirrors test_hooks_cold_install.make_fixture — a DORMANT repo is simply
+    one with no .codearbiter/ at all."""
+    root = os.path.join(td, name)
+    os.makedirs(root)
+    subprocess.run(["git", "init", "-q", root], capture_output=True,
+                   text=True, timeout=60)
+    if enabled:
+        ca = os.path.join(root, ".codearbiter")
+        os.makedirs(ca)
+        with open(os.path.join(ca, "CONTEXT.md"), "w", encoding="utf-8",
+                  newline="\n") as f:
+            f.write("---\narbiter: enabled\nstage: 2\n---\n"
+                    "<!--INITIALIZED-->\nadapter fixture.\n")
+    return root
+
+
+def adapter_env():
+    """Codex sets NO project-dir env var, and CodexHost deliberately ignores a
+    CLAUDE_PROJECT_DIR leaked in from an adjacent Claude session (_host.py).
+    Dropping it leaves the fixture's cwd as the only root signal, so these
+    tests cannot accidentally resolve to the developer's own repo."""
+    env = dict(os.environ)
+    env.pop("CLAUDE_PROJECT_DIR", None)
+    return env
+
+
 class TestPreToolAdapterLifecycle(unittest.TestCase):
     def test_adapter_exits_when_stdin_remains_open_and_leaves_no_descendants(self):
         with tempfile.TemporaryDirectory() as td:
-            adapter = os.path.join(td, "pre-tool-adapter.py")
-            shutil.copyfile(
-                os.path.join(CODEX_HOOKS, "pre-tool-adapter.py"), adapter,
-            )
             sentinel = os.path.join(td, "guard-launched")
-            guard = (
+            adapter = stage_codex_hooks(td, lambda script: (
                 "from pathlib import Path\n"
                 "import time\n"
                 f"Path({sentinel!r}).write_text('launched', encoding='utf-8')\n"
                 "time.sleep(60)\n"
-            )
-            for script in ("pre-write.py", "pre-bash.py"):
-                with open(os.path.join(td, script), "w", encoding="utf-8") as f:
-                    f.write(guard)
+            ))
+            repo = stage_repo(td, "repo-enabled", enabled=True)
 
             proc = subprocess.Popen(
                 [sys.executable, adapter],
@@ -66,6 +107,8 @@ class TestPreToolAdapterLifecycle(unittest.TestCase):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
+                cwd=repo,
+                env=adapter_env(),
             )
             try:
                 started = time.monotonic()
@@ -92,6 +135,239 @@ class TestPreToolAdapterLifecycle(unittest.TestCase):
                     proc.stdout.close()
                 if proc.stderr:
                     proc.stderr.close()
+
+
+class TestPreToolAdapterPayloadShape(unittest.TestCase):
+    """#409: Codex delivers ONE JSON object on stdin. Every other top-level
+    JSON type (null / array / string / number / bool), an empty stream, and a
+    syntactically invalid stream must all route through the SAME bounded
+    handling path — the documented `decision: block` response at exit 0 — and
+    must never dispatch a guard with an unvalidated payload.
+
+    Before the fix the adapter called `.get()` on the decoded value while
+    catching only TypeError/ValueError, so a valid-JSON non-object payload
+    raised AttributeError out of the process (exit 1, traceback on stderr, no
+    decision emitted at all), and a non-string `tool_name` raised TypeError
+    from the write-tool set membership test one line later. The empty and
+    invalid-JSON legs did not crash but DID spawn pre-bash.py with input the
+    adapter had never validated, where `_hooklib.read_input()`'s documented
+    fail-open silently allowed the gated call.
+    """
+
+    # Every top-level JSON type the RFC allows, minus the object the adapter
+    # actually contracts for.
+    NON_OBJECT_PAYLOADS = ("null", "[]", '["Write"]', '"str"', "3", "-1.5",
+                           "true", "false")
+
+    ARBITER_ENABLED_FIXTURE = True
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        td = self._tmp.name
+        self.launch_log = os.path.join(td, "launched.log")
+        self.adapter = stage_codex_hooks(td, lambda script: (
+            "import io\n"
+            f"with io.open({self.launch_log!r}, 'a', encoding='utf-8') as fh:\n"
+            f"    fh.write({script!r} + '\\n')\n"
+        ))
+        self.repo = stage_repo(td, "repo", enabled=self.ARBITER_ENABLED_FIXTURE)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _run(self, raw):
+        return subprocess.run(
+            [sys.executable, self.adapter], input=raw, text=True,
+            capture_output=True, timeout=30, cwd=self.repo, env=adapter_env(),
+        )
+
+    def _launched(self):
+        if not os.path.exists(self.launch_log):
+            return []
+        with open(self.launch_log, encoding="utf-8") as f:
+            return f.read().split()
+
+    def assertBoundedBlock(self, res, raw):
+        tag = f"payload {raw!r}"
+        self.assertNotIn("Traceback", res.stderr, f"{tag}: leaked a traceback")
+        self.assertEqual(res.returncode, 0,
+                         f"{tag}: expected a clean exit 0 decision, got "
+                         f"exit={res.returncode} stderr={res.stderr[:300]!r}")
+        try:
+            decision = json.loads(res.stdout)
+        except ValueError:
+            self.fail(f"{tag}: stdout is not a hook decision: {res.stdout!r}")
+        self.assertEqual(decision.get("decision"), "block",
+                         f"{tag}: an unroutable payload must fail closed")
+        reason = decision.get("reason", "")
+        self.assertTrue(reason.startswith("Blocked by codeArbiter policy"), tag)
+        # Bounded: a short deterministic diagnostic, never the payload text or
+        # an exception rendering.
+        self.assertLessEqual(len(reason), 120, f"{tag}: diagnostic not bounded")
+        self.assertEqual(
+            self._launched(), [],
+            f"{tag}: a guard was dispatched with an unvalidated payload")
+
+    def test_non_object_json_payloads_block_without_a_traceback(self):
+        for raw in self.NON_OBJECT_PAYLOADS:
+            with self.subTest(payload=raw):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_syntactically_invalid_json_blocks_without_dispatching_a_guard(self):
+        for raw in ("{not json", "{", "[1,", "\x00\x01"):
+            with self.subTest(payload=raw):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_empty_and_whitespace_payloads_block_without_dispatching_a_guard(self):
+        for raw in ("", "   ", "\n\t "):
+            with self.subTest(payload=raw):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_non_string_tool_name_blocks_instead_of_raising_typeerror(self):
+        # `tool_name in {"apply_patch", "Write", "Edit"}` raises TypeError for
+        # an unhashable value; a wrong-typed tool_name also makes the
+        # write-vs-exec routing decision unknowable, so it fails closed.
+        for value in ('["Write"]', "{}", "3", "true", "null"):
+            raw = '{"hook_event_name": "PreToolUse", "tool_name": %s}' % value
+            with self.subTest(tool_name=value):
+                self.assertBoundedBlock(self._run(raw), raw)
+
+    def test_object_payload_routes_write_tools_to_pre_write(self):
+        for tool in ("apply_patch", "Write", "Edit"):
+            with self.subTest(tool=tool):
+                res = self._run(json.dumps(
+                    {"hook_event_name": "PreToolUse", "tool_name": tool,
+                     "tool_input": {"command": PATCH_ADD}}))
+                self.assertEqual(res.returncode, 0, res.stderr[:300])
+                self.assertEqual(self._launched(), ["pre-write.py"])
+                os.remove(self.launch_log)
+
+    def test_object_payload_routes_other_tools_to_pre_bash(self):
+        for tool in ("Bash", "shell_command", "mcp__github__create_issue"):
+            with self.subTest(tool=tool):
+                res = self._run(json.dumps(
+                    {"hook_event_name": "PreToolUse", "tool_name": tool,
+                     "tool_input": {"command": "ls -la"}}))
+                self.assertEqual(res.returncode, 0, res.stderr[:300])
+                self.assertEqual(self._launched(), ["pre-bash.py"])
+                os.remove(self.launch_log)
+
+    def test_object_payload_without_tool_name_still_routes_to_pre_bash(self):
+        # An ABSENT tool_name keeps its documented default (""), which is not
+        # a write tool — unchanged pre-#409 behavior. Only a present-but-
+        # wrong-typed tool_name is a malformed shape.
+        res = self._run(json.dumps({"hook_event_name": "PreToolUse"}))
+        self.assertEqual(res.returncode, 0, res.stderr[:300])
+        self.assertEqual(self._launched(), ["pre-bash.py"])
+
+
+class TestPreToolAdapterDormancy(TestPreToolAdapterPayloadShape):
+    """codeArbiter is DORMANT in any repo that never opted in — no
+    `.codearbiter/CONTEXT.md` carrying `arbiter: enabled`. The contract, stated
+    verbatim by the cold-install harness (test_hooks_cold_install.py module
+    docstring) and asserted there for pre-bash.py: "the hook layer must take no
+    action — no exit 2, no stdout".
+
+    Every guard enforces that itself (`if not arbiter_active(root): sys.exit(0)`
+    is the first thing pre-bash.py / pre-write.py do). The adapter's unroutable
+    path SHORT-CIRCUITS before any guard runs, so nothing downstream is left to
+    apply the check — the adapter has to make it. Without this, installing
+    ca-codex would make a plugin that is supposed to be inert start emitting
+    `decision: block` in unrelated projects the moment Codex's Windows shell
+    boundary hands over an empty or truncated stream.
+
+    Inherits the fixture and every routing assertion from the enabled case and
+    re-points the repo at a dormant one, so the two halves of the gate can
+    never drift apart: the tests that must still BLOCK are overridden here to
+    assert silence instead, and the routing tests are inherited unchanged
+    (a well-formed payload is still dispatched — the guard applies its own
+    dormancy check, exactly as it did before the adapter existed).
+    """
+
+    ARBITER_ENABLED_FIXTURE = False
+
+    def assertBoundedBlock(self, res, raw):
+        """In a dormant repo the SAME payloads must pass through untouched."""
+        tag = f"payload {raw!r} (dormant repo)"
+        self.assertNotIn("Traceback", res.stderr, f"{tag}: leaked a traceback")
+        self.assertEqual(res.returncode, 0,
+                         f"{tag}: a dormant repo must never see a non-zero exit, "
+                         f"got exit={res.returncode} stderr={res.stderr[:300]!r}")
+        self.assertNotEqual(res.returncode, 2,
+                            f"{tag}: a dormant repo must never be blocked")
+        self.assertEqual(res.stdout, "",
+                         f"{tag}: a dormant repo must produce no stdout — a "
+                         f"decision here blocks a repo that never opted in")
+        self.assertEqual(res.stderr, "", f"{tag}: expected no stderr")
+        self.assertEqual(self._launched(), [],
+                         f"{tag}: no guard may be dispatched")
+
+    def test_incomplete_stdin_is_untouched_in_a_dormant_repo(self):
+        """The pre-existing timed-out-stdin leg is the same short-circuit and
+        the same contract violation: an unclosed stream is a plumbing condition
+        of the shell boundary this shim papers over, not consent to enforce."""
+        proc = subprocess.Popen(
+            [sys.executable, self.adapter],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, text=True, cwd=self.repo,
+            env=adapter_env(),
+        )
+        try:
+            proc.wait(timeout=20)
+            self.assertEqual(proc.returncode, 0)
+            self.assertEqual(proc.stdout.read(), "",
+                             "a dormant repo must produce no stdout")
+            self.assertEqual(self._launched(), [])
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
+            for stream in (proc.stdin, proc.stdout, proc.stderr):
+                if stream:
+                    stream.close()
+
+
+class TestPreToolAdapterBrokenInstall(unittest.TestCase):
+    """An install whose shared library will not import cannot ANSWER the
+    activation question — and the guards this adapter dispatches import those
+    very same modules, so it cannot enforce anything either. Indeterminate
+    therefore reads as active and the unroutable payload still fails closed:
+    exiting 0 in silence here would turn a broken install into a silent allow,
+    which is the failure mode the whole hook layer exists to prevent."""
+
+    def test_unroutable_payload_fails_closed_when_the_shared_library_is_missing(self):
+        with tempfile.TemporaryDirectory() as td:
+            adapter = stage_codex_hooks(td, lambda script: "")
+            os.remove(os.path.join(os.path.dirname(adapter), "_hooklib.py"))
+            repo = stage_repo(td, "repo-dormant", enabled=False)
+            res = subprocess.run(
+                [sys.executable, adapter], input="[]", text=True,
+                capture_output=True, timeout=60, cwd=repo, env=adapter_env())
+            self.assertEqual(res.returncode, 0, res.stderr[:300])
+            self.assertNotIn("Traceback", res.stderr)
+            self.assertEqual(json.loads(res.stdout).get("decision"), "block")
+
+
+class TestPreToolAdapterWriteToolSet(unittest.TestCase):
+    """The adapter routes write-vs-exec off its own literal set because it runs
+    BEFORE the shared helpers are imported. That copy is only safe if it is
+    gated against the canonical source rather than linked by a prose comment —
+    otherwise a change to the Codex host's patch-tool set silently forks
+    routing and an apply_patch alias skips the write gate entirely."""
+
+    def _adapter(self):
+        return _load(os.path.join(CODEX_HOOKS, "pre-tool-adapter.py"),
+                     "codex_adapter_under_test")
+
+    def test_write_tools_matches_the_codex_host_patch_tool_set(self):
+        self.assertEqual(set(self._adapter().WRITE_TOOLS),
+                         set(codex_host()._PATCH_TOOLS))
+
+    def test_write_tools_matches_every_write_category_tool_name(self):
+        host = codex_host()
+        self.assertEqual(
+            set(self._adapter().WRITE_TOOLS),
+            {name for name, cat in host.TOOL_MAP.items() if cat == "WRITE"})
 
 
 def _load(path, name):

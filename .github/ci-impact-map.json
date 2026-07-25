@@ -12,6 +12,13 @@
       "lane": "CHECK",
       "scope": "PI",
       "contract": "Adapter contract",
+      "reproduce": "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10"
+    },
+    {
+      "id": "pi-checks",
+      "lane": "CHECK",
+      "scope": "PI",
+      "contract": "Host-independent adapter contract",
       "reproduce": "npm --prefix plugins/ca-pi/tools test"
     },
     {
@@ -45,7 +52,7 @@
   "edges": [
     {
       "glob": "plugins/ca-pi/**",
-      "checks": ["pi-adapter", "pi-latest"]
+      "checks": ["pi-adapter", "pi-checks", "pi-latest"]
     },
     {
       "glob": "core/pysrc/**",

@@ -1,14 +1,38 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import {
   extractTargets,
   isExternalOrSkippable,
   resolveToDistFile,
   auditDist,
+  missingRequiredAssets,
   BASE,
 } from "../../scripts/link-audit/lib";
+
+/** Build a throwaway dist/ tree. `assets` controls the chrome the audit pins;
+ * `pages` is a map of dist-relative path -> file contents. */
+function makeDist(options: {
+  favicon?: boolean;
+  astroDir?: boolean;
+  logoName?: string | null;
+  pages?: Record<string, string>;
+}): string {
+  const { favicon = true, astroDir = true, logoName = "logo.abc123.svg", pages = {} } = options;
+  const dist = mkdtempSync(join(tmpdir(), "link-audit-test-"));
+  if (favicon) writeFileSync(join(dist, "favicon.svg"), "<svg/>");
+  if (astroDir) {
+    mkdirSync(join(dist, "_astro"), { recursive: true });
+    if (logoName !== null) writeFileSync(join(dist, "_astro", logoName), "<svg/>");
+  }
+  for (const [rel, contents] of Object.entries(pages)) {
+    const full = join(dist, ...rel.split("/"));
+    mkdirSync(dirname(full), { recursive: true });
+    writeFileSync(full, contents);
+  }
+  return dist;
+}
 
 describe("extractTargets", () => {
   it("pulls href and src attribute values out of raw HTML", () => {
@@ -130,4 +154,112 @@ describe("auditDist", () => {
     expect(messages.some((m) => m.includes("good link"))).toBe(false);
     expect(result.failures.length).toBe(2);
   });
+});
+
+describe("auditDist page-inventory invariant", () => {
+  const dists: string[] = [];
+
+  afterAll(() => {
+    for (const d of dists) rmSync(d, { recursive: true, force: true });
+  });
+
+  function track(dist: string): string {
+    dists.push(dist);
+    return dist;
+  }
+
+  it("fails an existing but HTML-empty dist even when both required assets are present", () => {
+    // A generator/build regression that emits no pages must not read as green:
+    // "found nothing wrong" and "looked at nothing" are different outcomes.
+    const dist = track(makeDist({ pages: {} }));
+
+    const result = auditDist(dist, BASE);
+
+    expect(result.pageCount).toBe(0);
+    expect(missingRequiredAssets(dist)).toEqual([]);
+    expect(result.failures.length).toBeGreaterThan(0);
+    expect(result.failures.some((f) => /zero HTML pages/i.test(f.message))).toBe(true);
+  });
+
+  it("fails a dist that contains only non-HTML files", () => {
+    const dist = track(makeDist({ pages: { "robots.txt": "User-agent: *" } }));
+
+    const result = auditDist(dist, BASE);
+
+    expect(result.pageCount).toBe(0);
+    expect(result.failures.some((f) => /zero HTML pages/i.test(f.message))).toBe(true);
+  });
+
+  it("passes a minimal one-page dist, preserving the single-item boundary", () => {
+    const dist = track(
+      makeDist({
+        pages: { "index.html": `<a href="/codeArbiter/favicon.svg">icon</a>` },
+      }),
+    );
+
+    const result = auditDist(dist, BASE);
+
+    expect(result.pageCount).toBe(1);
+    expect(result.checked).toBe(1);
+    expect(result.failures).toEqual([]);
+    expect(missingRequiredAssets(dist)).toEqual([]);
+  });
+});
+
+describe("missingRequiredAssets", () => {
+  const dists: string[] = [];
+
+  afterAll(() => {
+    for (const d of dists) rmSync(d, { recursive: true, force: true });
+  });
+
+  const cases: Array<{
+    name: string;
+    options: Parameters<typeof makeDist>[0];
+    expected: string[];
+  }> = [
+    {
+      name: "a complete build reports nothing missing",
+      options: {},
+      expected: [],
+    },
+    {
+      name: "a missing favicon is reported",
+      options: { favicon: false },
+      expected: ["dist/favicon.svg"],
+    },
+    {
+      name: "a missing _astro directory is reported as a missing logo",
+      options: { astroDir: false },
+      expected: ["dist/_astro/logo.*.svg"],
+    },
+    {
+      name: "an _astro directory with no logo asset is reported",
+      options: { logoName: null },
+      expected: ["dist/_astro/logo.*.svg"],
+    },
+    {
+      name: "an unhashed logo.svg does not satisfy the hashed-logo pin",
+      options: { logoName: "logo.svg" },
+      expected: ["dist/_astro/logo.*.svg"],
+    },
+    {
+      name: "a differently named hashed svg does not satisfy the hashed-logo pin",
+      options: { logoName: "brand.abc123.svg" },
+      expected: ["dist/_astro/logo.*.svg"],
+    },
+    {
+      name: "both assets missing are reported together",
+      options: { favicon: false, astroDir: false },
+      expected: ["dist/favicon.svg", "dist/_astro/logo.*.svg"],
+    },
+  ];
+
+  for (const { name, options, expected } of cases) {
+    it(name, () => {
+      const dist = makeDist(options);
+      dists.push(dist);
+      expect(missingRequiredAssets(dist)).toEqual(expected);
+    });
+  }
 });

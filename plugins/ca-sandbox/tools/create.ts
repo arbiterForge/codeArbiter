@@ -46,8 +46,20 @@ import { computeDepHash, type ManifestFile } from "./dephash.ts";
 import { SANDBOX_LABEL, idLabel } from "./registry.ts";
 import { DOCKER_ENV, defaultDockerRun, type DockerRun } from "./docker.ts";
 
-/** Image used for the throwaway clone step (small, git built in). */
-export const CLONE_IMAGE = "alpine/git:latest";
+/**
+ * Image used for the throwaway clone step (small, git built in), PINNED to a
+ * reviewed multi-arch index digest (issue #402). A floating tag would let a
+ * retag or registry compromise swap the binary that checks out attacker-supplied
+ * source into the sandbox volume. Docker resolves the digest, not the tag, so
+ * the tag is kept only as human-readable provenance.
+ *
+ * Resolved 2026-07-24 with `docker buildx imagetools inspect alpine/git` (which
+ * resolves the default tag).
+ * Bump this ONLY through a reviewed dependency change (re-resolve the digest,
+ * re-run the ca-sandbox suite including the docker-gated lifecycle tests).
+ */
+export const CLONE_IMAGE =
+  "alpine/git:latest@sha256:77418e6e7c7f434c4a98eaff04ef16840cf03649c881c03948e3e213923e3136";
 /** In-container app dir; the source volume mounts here for both clone and run. */
 export const APP_DIR = "/work/repo";
 /** Prefix for the named volume of a sandbox. */
