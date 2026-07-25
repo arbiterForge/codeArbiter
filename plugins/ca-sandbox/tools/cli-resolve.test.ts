@@ -15,6 +15,7 @@
  *      resolve and run (AC-09 / AC-10 through the create-shaped naming).
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { readFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -44,11 +45,7 @@ describe("resolveContainerId — sandbox id -> container id (label registry)", (
 // --------------------------------------------------------------------------
 // DOCKER-GATED — the real seam: container NAME != sandbox id.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const d = dockerAvailable() ? describe : describe.skip;
+const d = dockerGate("cli-resolve");
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 
 d("CLI exec/cp resolve a sandbox id whose container name != id [docker] (AC-09/AC-10 regression)", () => {

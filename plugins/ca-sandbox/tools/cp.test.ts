@@ -20,6 +20,7 @@
  *      bytes match. Namespaced + cleaned up.
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { readFileSync, mkdtempSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -81,12 +82,7 @@ describe("assertNoCopyInBind — host->container bind is impossible (AC-10)", ()
 // DOCKER-GATED integration layer (AC-10).
 // cpOut copies a real file out of a real container to the host.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0;
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("cp");
 
 const NS = "ca-sbx-t12";
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };

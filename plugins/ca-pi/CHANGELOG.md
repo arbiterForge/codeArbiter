@@ -2,7 +2,7 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.1.8] - 2026-07-25
+## [0.1.9] - 2026-07-25
 
 ### Changed
 
@@ -10,6 +10,22 @@ All notable changes to `ca-pi` are documented in this file.
   plan contract (`parsePlan`, authoritative over `plan.schema.json`) and the
   split setup phases: `setup` runs once per worktree, `setupEachAttempt` reruns
   per attempt, and `setupInputs` invalidates the once-per-worktree cache.
+
+## [0.1.8] - 2026-07-25
+
+### Fixed
+
+- Windows Job Object admission is no longer bounded by one flat 15-second
+  wall-clock window. Cold admission pays two independent costs - starting the
+  PowerShell host, then the one-time Add-Type compilation of the constant C#
+  helper - and covering both with a single window made a loaded hosted runner
+  indistinguishable from a hung helper, refusing containment twice in one day
+  on `windows-latest`. The budget is now a no-progress budget per observable
+  phase (the helper announces its host start before the compile) plus a hard
+  30-second ceiling, so a slow-but-advancing helper is admitted while a silent
+  one still fails closed. The refusal now names the phase it stalled in and
+  how long it waited, while keeping its machine-readable `ready-timeout`
+  reason token intact.
 
 ## [0.1.7] - 2026-07-25
 
