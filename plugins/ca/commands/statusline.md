@@ -46,7 +46,13 @@ colors.
    show the user the resolved command and the prior line it will back up, and confirm.** Editing the
    user's global settings is their call, not yours.
 
+   The script REFUSES to wire a plugin root that will not outlive the session — a git worktree, for
+   instance. `settings.json` is global and the pin is absolute, so a worktree path breaks the
+   statusline the moment that checkout is pruned. On a refusal, report it verbatim and re-run from
+   the real install (the plugin cache, or the main checkout) rather than working around it.
+
 3. **uninstall** — restore the backed-up line, or remove `statusLine` entirely if none existed.
+   Never blocked, wherever it is run from — a user stuck with a dead pin must be able to clear it.
 
 4. **status** — report the current `statusLine.command`, whether it is codeArbiter's, and any backup
    on file. Changes nothing.

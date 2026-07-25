@@ -33,6 +33,7 @@ import sys
 # session-start.py and the test suite both do) — always resolve _hooklib
 # relative to THIS file rather than relying on the caller's sys.path state.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _durabilitylib  # noqa: E402 — "may this path be pinned?" (see below)
 import _hooklib  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 
@@ -230,6 +231,19 @@ def cmd_status(settings, exists, script_abs):
 
 
 def cmd_install(settings, path, script_abs, interp):
+    # Never pin a root that will not outlive the session (see refresh_if_stale's
+    # docstring for the defect). `install` is EXPLICIT — a human ran
+    # /ca:statusline, or passed `--plugin-root <worktree>` by hand — so this
+    # refuses LOUDLY where `refresh` degrades silently: a quiet no-op would leave
+    # that human believing the statusline was wired.
+    if _durabilitylib.is_ephemeral_path(script_abs):
+        raise SystemExit(
+            f"REFUSING TO WIRE: {script_abs} is inside a git worktree (or another "
+            "root that will not survive being pruned).\n"
+            "~/.claude/settings.json is GLOBAL and holds an ABSOLUTE path, so "
+            "pinning it here breaks your statusline the moment this checkout goes "
+            "away.\nRe-run from your real install (the plugin cache, or your main "
+            "checkout), or pass --plugin-root pointing at it.")
     if not os.path.exists(script_abs):
         raise SystemExit(f"ERROR: renderer not found at {script_abs}; nothing wired.")
     new_cmd = build_command(interp, script_abs)
@@ -272,7 +286,30 @@ def refresh_if_stale(settings, script_abs, interp):
       - statusLine is a third-party line, or absent                       -> never touched, False
 
     Returning a changed-flag lets the caller persist ONLY on a real change, so a
-    steady-state session start never churns settings.json."""
+    steady-state session start never churns settings.json.
+
+    NON-DURABLE ROOTS ARE INERT (found in-session 2026-07-25, after it broke the
+    maintainer's statusline three times in one day). settings.json is GLOBAL and
+    the pin is ABSOLUTE, but the running plugin root need not be long-lived: a
+    session started inside a git worktree (subagents run in
+    `<repo>/.claude/worktrees/<id>/`) resolved the root to that worktree and this
+    function cheerfully re-pointed the user's global config at it. The worktree
+    is then pruned — its entire purpose — and the statusline renders nothing.
+
+    So: when `script_abs` is not durable, LEAVE THE EXISTING PIN ALONE. Not
+    healed, not cleared, no error — the same silent degrade the rest of this path
+    already performs. It is emphatically NOT a kill-switch: a genuinely stale pin
+    from a real plugin-cache update still heals, because that root IS durable.
+    Clearing instead of skipping was considered and rejected — a user whose only
+    session that day is a worktree session would lose a working statusline over a
+    condition that resolves itself the next time they start from a real install.
+
+    The guard lives HERE, at the mutation itself, rather than only in
+    `cmd_refresh`: `session-start.heal_statusline_wiring` calls this function
+    DIRECTLY and never goes through `cmd_refresh`, so a guard one level up would
+    have left the confirmed corruption path wide open."""
+    if _durabilitylib.is_ephemeral_path(script_abs):
+        return False
     current = settings.get("statusLine")
     if not is_ours(current, settings):
         return False

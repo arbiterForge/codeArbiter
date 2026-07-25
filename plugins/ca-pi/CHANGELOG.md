@@ -2,6 +2,19 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.6] - 2026-07-25
+
+### Fixed
+
+- The SessionStart statusline self-heal no longer pins a NON-DURABLE plugin
+  root into the user's global `~/.claude/settings.json`. A session started
+  inside a git worktree resolved the plugin root to that worktree and rewrote
+  the global pin there; once the worktree was pruned the statusline rendered
+  nothing. A non-durable root is now inert - the existing pin is left exactly
+  as it is - while a genuinely stale pin from a real plugin-cache update still
+  heals. Explicit `wire-statusline.py install` from such a root refuses loudly
+  instead of writing a doomed path.
+
 ## [0.1.5] - 2026-07-25
 
 ### Security

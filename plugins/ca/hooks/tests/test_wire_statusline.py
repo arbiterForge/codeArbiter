@@ -1,3 +1,4 @@
+import contextlib
 import importlib.util
 import io
 import json
@@ -43,9 +44,30 @@ def _make_source_plugin_root(tmp):
     return root
 
 
+def _make_worktree_plugin_root(tmp):
+    """A plugin root inside a Claude Code subagent worktree —
+    `<repo>/.claude/worktrees/<id>/plugins/ca` — the exact shape that corrupted
+    the maintainer's global settings.json on 2026-07-25. Non-durable by
+    construction: the whole purpose of the directory is that it gets pruned.
+
+    Deliberately built with NO git metadata, so it pins the LEXICAL signal on
+    its own — the shape confirmed in production must be caught for free."""
+    root = os.path.join(tmp, "repo", ".claude", "worktrees",
+                        "wf_58ee3fa6-de1-8", "plugins", "ca")
+    hooks_dir = os.path.join(root, "hooks")
+    os.makedirs(hooks_dir, exist_ok=True)
+    open(os.path.join(hooks_dir, "statusline.py"), "w").close()
+    return root
+
+
 def _read(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def _read_bytes(path):
+    with open(path, "rb") as f:
+        return f.read()
 
 
 class TestFreshInstall(unittest.TestCase):
@@ -700,6 +722,127 @@ class TestRefreshStalePathOnSessionStart(unittest.TestCase):
         cmd = sl.get("command") if isinstance(sl, dict) else sl
         self.assertIn(self.script_abs, cmd)
         self.assertNotIn("2.0.1", cmd)
+
+
+class TestNonDurableRootIsNeverPinned(unittest.TestCase):
+    """Found in-session on 2026-07-25, after it broke the maintainer's
+    statusline three times in one day.
+
+    `~/.claude/settings.json` is GLOBAL and long-lived; a git-worktree plugin
+    root is neither. Writing one into the other yields a statusline that
+    renders nothing the moment the worktree is pruned — which is the entire
+    point of a worktree.
+
+    The guard lives HERE, in the producer, because every write to the pin flows
+    through this module: `cmd_install`, `cmd_refresh`, AND
+    `session-start.heal_statusline_wiring`, which calls `refresh_if_stale`
+    directly. The two writing paths get DIFFERENT treatment, because their
+    audiences differ:
+      - `refresh` is AUTOMATIC (SessionStart) -> silent no-op, matching the
+        surrounding degrade-silently contract.
+      - `install` is EXPLICIT (a human ran /ca:statusline, or passed
+        `--plugin-root <worktree>` by hand) -> LOUD refusal, because a silent
+        no-op would leave that human believing it worked.
+    Read-only and removal paths (`status`, `uninstall`) are never blocked."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.worktree_root = _make_worktree_plugin_root(self.tmp.name)
+        self.durable_root = _make_plugin_root(self.tmp.name)
+        self.stale_cmd = (
+            '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca'
+            '\\2.0.1\\hooks\\statusline.py"')
+        self.settings = _make_settings(
+            self.tmp.name,
+            {"statusLine": {"type": "command", "command": self.stale_cmd}})
+        self.before = _read_bytes(self.settings)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    # --- refresh: the automatic path (silent) ------------------------------
+
+    def test_refresh_from_worktree_root_leaves_settings_byte_identical(self):
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.worktree_root, "--interp", "python"])
+        self.assertEqual(_read_bytes(self.settings), self.before)
+
+    def test_refresh_from_worktree_root_never_writes_a_worktree_path(self):
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.worktree_root, "--interp", "python"])
+        with open(self.settings, encoding="utf-8") as f:
+            raw = f.read()
+        self.assertNotIn("worktrees", raw)
+        self.assertEqual(json.loads(raw)["statusLine"]["command"], self.stale_cmd)
+
+    def test_refresh_from_durable_root_still_heals(self):
+        # NOT a feature kill-switch: a genuine plugin-cache update still
+        # re-points the pin at the new version's renderer.
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.durable_root, "--interp", "python"])
+        cmd = _read(self.settings)["statusLine"]["command"]
+        self.assertIn(os.path.join(self.durable_root, "hooks", "statusline.py"), cmd)
+        self.assertNotIn("2.0.1", cmd)
+
+    def test_refresh_if_stale_declines_an_ephemeral_script_without_mutating(self):
+        # The choke point session-start.heal_statusline_wiring calls DIRECTLY —
+        # pinned separately from cmd_refresh so the heal cannot regress if
+        # cmd_refresh is ever restructured.
+        settings = {"statusLine": {"type": "command", "command": self.stale_cmd}}
+        snapshot = json.dumps(settings, sort_keys=True)
+        script = os.path.join(self.worktree_root, "hooks", "statusline.py")
+        self.assertFalse(ws.refresh_if_stale(settings, script, "python"))
+        self.assertEqual(json.dumps(settings, sort_keys=True), snapshot)
+
+    def test_refresh_declines_a_linked_worktree_with_no_worktrees_segment(self):
+        # The git signal earning its place: a worktree parked under an ordinary
+        # name, which the lexical rule cannot see.
+        root = os.path.join(self.tmp.name, "ca-feature")
+        os.makedirs(os.path.join(root, "hooks"), exist_ok=True)
+        open(os.path.join(root, "hooks", "statusline.py"), "w").close()
+        with open(os.path.join(root, ".git"), "w", encoding="utf-8",
+                  newline="\n") as f:
+            f.write("gitdir: C:/Users/me/codeArbiter/.git/worktrees/ca-feature\n")
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", root, "--interp", "python"])
+        self.assertEqual(_read_bytes(self.settings), self.before)
+
+    # --- install: the explicit path (loud) ---------------------------------
+
+    def test_install_from_worktree_root_refuses_loudly(self):
+        with self.assertRaises(SystemExit) as ctx:
+            ws.main(["install", "--settings", self.settings,
+                     "--plugin-root", self.worktree_root, "--interp", "python"])
+        self.assertIn("REFUSING", str(ctx.exception))
+
+    def test_install_from_worktree_root_leaves_settings_byte_identical(self):
+        with contextlib.suppress(SystemExit):
+            ws.main(["install", "--settings", self.settings,
+                     "--plugin-root", self.worktree_root, "--interp", "python"])
+        self.assertEqual(_read_bytes(self.settings), self.before)
+
+    def test_install_from_durable_root_still_wires(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.durable_root, "--interp", "python"])
+        cmd = _read(self.settings)["statusLine"]["command"]
+        self.assertIn(os.path.join(self.durable_root, "hooks", "statusline.py"), cmd)
+
+    # --- read-only / removal: never blocked --------------------------------
+
+    def test_uninstall_from_worktree_root_is_never_blocked(self):
+        # Removal is always safe, and a user stuck with a worktree pin must be
+        # able to get rid of it from wherever they happen to be.
+        ws.main(["uninstall", "--settings", self.settings,
+                 "--plugin-root", self.worktree_root])
+        self.assertNotIn("statusLine", _read(self.settings))
+
+    def test_status_from_worktree_root_still_reports_and_writes_nothing(self):
+        captured = io.StringIO()
+        with contextlib.redirect_stdout(captured):
+            ws.main(["status", "--settings", self.settings,
+                     "--plugin-root", self.worktree_root])
+        self.assertIn("settings.json", captured.getvalue())
+        self.assertEqual(_read_bytes(self.settings), self.before)
 
 
 if __name__ == "__main__":
