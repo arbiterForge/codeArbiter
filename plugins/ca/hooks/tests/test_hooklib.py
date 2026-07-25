@@ -1,3 +1,5 @@
+import io
+import json
 import os
 import sys
 import tempfile
@@ -193,6 +195,63 @@ class TestProjectRootMemoization(unittest.TestCase):
                 _hooklib._reset_root_cache()
                 project_root()
             self.assertEqual(len(calls), 2)
+
+
+class TestReadInputShape(unittest.TestCase):
+    """ADR-0020: unreadable input yields `{}` whether the failure is syntactic
+    or structural.
+
+    `read_input()` already carries a documented fail-open exception for a
+    malformed payload — a hook that blocks every subsequent tool call bricks
+    the session. That exception used to cover malformed SYNTAX only. A payload
+    that is valid JSON but not an object parses cleanly, never reaches the
+    except branch, and is handed downstream as a non-dict. The envelope is
+    host-produced rather than model-produced, so that is host drift, not an
+    attack — the same compatibility event the existing exception already rules
+    on."""
+
+    def _read(self, raw):
+        with mock.patch.object(sys, "stdin", io.StringIO(raw)), \
+                mock.patch.object(_hooklib, "warn") as warned:
+            return _hooklib.read_input(), warned
+
+    def test_object_payload_passes_through_unwarned(self):
+        payload = {"tool_name": "Write", "tool_input": {"file_path": "a.py"}}
+        data, warned = self._read(json.dumps(payload))
+        self.assertEqual(data, payload)
+        warned.assert_not_called()
+
+    def test_empty_stdin_is_an_empty_payload_unwarned(self):
+        # Not a malformation — nothing was sent. It must not warn.
+        data, warned = self._read("   \n")
+        self.assertEqual(data, {})
+        warned.assert_not_called()
+
+    def test_truthy_non_object_payload_normalizes_instead_of_raising(self):
+        # The decisive case. These parse cleanly, so the except branch never
+        # sees them; downstream `tool_input()` evaluates `(data or {}).get(...)`
+        # on a TRUTHY non-dict and raises AttributeError out of the guard.
+        for raw in ("3", '"str"', "true", '[{"tool_input": {}}]'):
+            with self.subTest(raw=raw):
+                data, warned = self._read(raw)
+                self.assertEqual(data, {})
+                self.assertEqual(_hooklib.tool_input(data), {})
+                self.assertEqual(warned.call_count, 1)
+
+    def test_falsy_non_object_payload_normalizes_at_the_chokepoint(self):
+        # `or {}` made these accidentally safe downstream. Normalizing here is
+        # what makes them deliberately safe, at the one place that decides it.
+        for raw in ("[]", "null", "0", '""'):
+            with self.subTest(raw=raw):
+                data, warned = self._read(raw)
+                self.assertEqual(data, {})
+                self.assertEqual(warned.call_count, 1)
+
+    def test_malformed_syntax_still_fails_open(self):
+        # The pre-existing exception is unchanged, not replaced.
+        data, warned = self._read("{not json")
+        self.assertEqual(data, {})
+        self.assertEqual(warned.call_count, 1)
 
 
 if __name__ == "__main__":

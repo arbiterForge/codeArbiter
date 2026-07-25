@@ -2,6 +2,18 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.20] - 2026-07-25
+
+### Fixed
+
+- A hook payload that is valid JSON but not an object (`[]`, `3`, `"str"`,
+  `true`, `null`) is normalized to an empty payload at `read_input()` instead of
+  being handed to the guards as a non-dict, where the truthy ones raised
+  `AttributeError` out of the guard and the falsy ones were only accidentally
+  safe. The envelope is host-produced, not model-produced, so an unreadable
+  shape is the same compatibility event as unreadable syntax and takes the same
+  documented warn-and-proceed path (ADR-0020).
+
 ## [0.1.18] - 2026-07-25
 
 ### Added

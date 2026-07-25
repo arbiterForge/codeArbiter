@@ -613,17 +613,37 @@ def arbiter_active(root):
 def read_input():
     """Parse the hook JSON from stdin.
 
-    Deliberately fail-open on parse error: a malformed stdin input must NOT
-    brick the session by blocking every subsequent tool call. This is an
+    Deliberately fail-open on unreadable input: a malformed stdin payload must
+    NOT brick the session by blocking every subsequent tool call. This is an
     explicit, documented exception to the fail-loud principle — the correct
     behaviour here is warn + allow, not warn + block.
+
+    "Unreadable" covers a malformed SHAPE as well as malformed syntax
+    (ADR-0020). A payload that is valid JSON but not an object — `[]`, `3`,
+    `"str"`, `true`, `null` — parses cleanly and never reaches the except
+    branch, so it used to be handed downstream as a non-dict: `tool_input()`
+    evaluates `(data or {}).get(...)`, which makes the falsy ones accidentally
+    safe and raises AttributeError out of the guard on the truthy ones. Both
+    are normalized to `{}` here instead, at the one chokepoint that decides it.
+
+    The distinction between the two failures carries no security content: the
+    hook envelope is host-produced (Claude Code, Codex, Pi), not
+    model-produced. A model can place hostile content INSIDE `tool_input`, but
+    cannot make the top-level object a list — so a non-dict envelope means host
+    misbehaviour or version drift, the same compatibility event the parse-error
+    branch already rules on.
     """
     try:
         raw = sys.stdin.read()
-        return json.loads(raw) if raw.strip() else {}
+        data = json.loads(raw) if raw.strip() else {}
     except Exception as e:  # noqa: BLE001 — any malformed input
         warn(f"hook input unparseable ({e}); proceeding without enforcement")
         return {}
+    if not isinstance(data, dict):
+        warn(f"hook input is a JSON {type(data).__name__}, not an object; "
+             "proceeding without enforcement")
+        return {}
+    return data
 
 
 def tool_input(data):
