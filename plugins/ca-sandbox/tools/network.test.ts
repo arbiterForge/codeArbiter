@@ -26,6 +26,7 @@
  *      (ca-sbx-t10-*) + labeled (ca.sandbox.build=1) + cleaned up.
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import {
   applyNetworkPolicy,
@@ -146,12 +147,7 @@ describe("applyNetworkPolicy — unknown policy", () => {
 // --------------------------------------------------------------------------
 // DOCKER-GATED integration layer (AC-08) — real containers, real curl.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0 && /linux/i.test(r.stdout);
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("network", { linux: true });
 
 const NS = "ca-sbx-t10";
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };

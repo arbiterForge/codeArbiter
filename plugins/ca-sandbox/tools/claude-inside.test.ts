@@ -23,6 +23,7 @@
  *      DUMMY token only — never a real credential.
  */
 import { describe, it, expect, afterAll } from "vitest";
+import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import {
   CLAUDE_CODE_VERSION,
@@ -206,12 +207,7 @@ function collectEnv(argv: string[]): Record<string, string> {
 // --------------------------------------------------------------------------
 // DOCKER-GATED integration layer (AC-12) — DUMMY token only.
 // --------------------------------------------------------------------------
-function dockerAvailable(): boolean {
-  const r = spawnSync("docker", ["info", "--format", "{{.OSType}}"], { encoding: "utf8" });
-  return r.status === 0 && /linux/i.test(r.stdout);
-}
-const HAS_DOCKER = dockerAvailable();
-const d = HAS_DOCKER ? describe : describe.skip;
+const d = dockerGate("claude-inside", { linux: true });
 
 const NS = "ca-sbx-t14";
 const DENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
