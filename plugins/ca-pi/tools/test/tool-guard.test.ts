@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { tmpdir } from "node:os";
@@ -15,6 +16,7 @@ import {
   guardUnknownTools,
   wrapBuiltins,
 } from "../src/tool-guard.ts";
+import type { ProjectTrustSource } from "../src/tool-guard.ts";
 
 type Execute = (
   id: string,
@@ -129,6 +131,7 @@ function interactiveContext(overrides: Record<string, unknown> = {}): Record<str
     cwd: "C:/repo",
     mode: "tui",
     hasUI: true,
+    isProjectTrusted: () => true,
     ui: {
       confirm: async () => true,
     },
@@ -159,7 +162,7 @@ describe("Pi final-wrapper permission decision", () => {
         name: "codearbiter_background_bash",
         execute: async () => ({ content: [{ type: "text", text: "started" }], isError: false }),
       }),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy: policy!,
     });
 
@@ -233,7 +236,7 @@ describe("Pi final-wrapper permission decision", () => {
           return { content: [{ type: "text", text: "started" }], isError: false };
         },
       }),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy: backgroundPolicy!,
       permissionAudit: async (_cwd, row) => { audits.push(row); return true; },
     });
@@ -291,7 +294,7 @@ describe("Pi final-wrapper permission decision", () => {
         name: "codearbiter_background_bash",
         execute: async () => ({ content: [], isError: false }),
       }),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     })).toThrow("bridge alias");
   });
   test("classifies frozen built-in facts conservatively and deterministically", () => {
@@ -334,7 +337,7 @@ describe("Pi final-wrapper permission decision", () => {
     const confirmations: unknown[] = [];
     const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "block", ruleId: "H-20", message: "blocked" }), {
-      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy,
     });
 
@@ -364,7 +367,7 @@ describe("Pi final-wrapper permission decision", () => {
       },
     });
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-      cwd: "C:/repo", descriptor, factories: permissionFactories, wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      cwd: "C:/repo", descriptor, factories: permissionFactories, wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy,
       permissionAudit: async (_cwd, row) => { audits.push(row); return true; },
     });
@@ -393,7 +396,7 @@ describe("Pi final-wrapper permission decision", () => {
     const auditCwds: string[] = [];
     let message = "";
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-      cwd: "C:/repo", descriptor, factories: factories([]), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+      cwd: "C:/repo", descriptor, factories: factories([]), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
       permissionAudit: async (cwd) => { auditCwds.push(cwd); return true; },
     });
     await pi.definitions.get("write")!.execute("cwd-bound", { path: "src/x.ts", content: "x" }, undefined, undefined, interactiveContext({
@@ -410,7 +413,7 @@ describe("Pi final-wrapper permission decision", () => {
       const pi = new FakePi();
       const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
       wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
       });
       await expect(pi.definitions.get("write")!.execute("missing-ui", { path: "src/x.ts", content: "x" }, undefined, undefined, context)).rejects.toThrow();
       expect(executions).toEqual([]);
@@ -419,7 +422,7 @@ describe("Pi final-wrapper permission decision", () => {
     const pi = new FakePi();
     const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
       permissionAudit: async () => false,
     });
     await expect(pi.definitions.get("write")!.execute("audit-failure", { path: "src/x.ts", content: "x" }, undefined, undefined, interactiveContext())).rejects.toThrow("audit");
@@ -432,7 +435,7 @@ describe("Pi final-wrapper permission decision", () => {
       const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
       const audits: unknown[] = [];
       wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
         permissionAudit: async (_cwd, row) => { audits.push(row); return true; },
       });
       await expect(pi.definitions.get("write")!.execute("cancelled", { path: "src/x.ts", content: "x" }, undefined, undefined, interactiveContext({
@@ -446,7 +449,7 @@ describe("Pi final-wrapper permission decision", () => {
     const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
     let confirmations = 0;
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
       getMode: () => "plan",
       permissionAudit: async () => true,
     });
@@ -461,7 +464,7 @@ describe("Pi final-wrapper permission decision", () => {
     const pi = new FakePi();
     const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
       permissionAudit: async () => true,
     });
     const context = {
@@ -484,7 +487,7 @@ describe("Pi final-wrapper permission decision", () => {
       installer.beginBootstrap();
       let mode: "execute" | "plan" = "execute";
       installer.ensureBuiltins(pi, bridge, {
-        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
         getMode: () => mode,
         permissionAudit: async () => true,
       });
@@ -519,7 +522,7 @@ describe("Pi final-wrapper permission decision", () => {
       },
     };
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-      cwd: "C:/repo", descriptor, factories: guardedFactories, wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+      cwd: "C:/repo", descriptor, factories: guardedFactories, wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
       permissionAudit: async () => { pi.sources.delete("write"); return true; },
     });
     await expect(pi.definitions.get("write")!.execute("identity", { path: "src/x.ts", content: "x" }, undefined, undefined, interactiveContext({
@@ -538,7 +541,7 @@ describe("Pi final-wrapper permission decision", () => {
     const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
     let received: AbortSignal | undefined;
     wrapBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
-      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+      cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
       permissionAudit: async () => true,
     });
     await expect(pi.definitions.get("write")!.execute("aborted-confirm", { path: "src/x.ts", content: "x" }, controller.signal, undefined, interactiveContext({
@@ -577,7 +580,7 @@ describe("Pi final-wrapper permission decision", () => {
       installer.beginBootstrap();
       installer.ensureBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
         cwd: "C:/repo", descriptor, factories: trustedFactories, nativeFactories,
-        wrapperSourcePath: "C:/package/extensions/codearbiter.js", permissionPolicy,
+        wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true, permissionPolicy,
         permissionAudit: async () => {
           if (drift.startsWith("lifecycle")) installer.deactivate();
           if (drift.includes("abort")) controller.abort();
@@ -706,7 +709,7 @@ describe("final-execution Pi tool enforcement", () => {
           cwd: "C:/enabled",
           descriptor,
           factories: factoriesWithStop,
-          wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+          wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
         });
         if (stage === "read") install();
         else expect(install).toThrow("partial stop");
@@ -753,7 +756,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/first-enabled",
       descriptor,
       factories: cwdFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
     installer.deactivate();
@@ -771,7 +774,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/second-enabled",
       descriptor,
       factories: cwdFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
     executions.length = 0;
@@ -808,7 +811,7 @@ describe("final-execution Pi tool enforcement", () => {
       descriptor,
       factories: makeFactories("trusted-first"),
       nativeFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
     const retainedRead = pi.definitions.get("read")!;
@@ -828,7 +831,7 @@ describe("final-execution Pi tool enforcement", () => {
       descriptor,
       factories: makeFactories("trusted-second"),
       nativeFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
     await pi.definitions.get("read")!.execute("current", {}, undefined, undefined, { cwd: "C:/same" });
@@ -860,7 +863,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/old-enabled",
       descriptor,
       factories: cwdFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy,
       permissionAudit: async () => true,
     });
@@ -881,7 +884,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/new-enabled",
       descriptor,
       factories: cwdFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy,
       permissionAudit: async () => true,
     });
@@ -923,7 +926,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/old-enabled",
       descriptor,
       factories: cwdFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy,
       permissionAudit: async () => true,
     });
@@ -973,7 +976,7 @@ describe("final-execution Pi tool enforcement", () => {
           },
         }),
       },
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
     const pendingRead = pi.definitions.get("read")!.execute("read", { path: "README.md" });
@@ -1048,7 +1051,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/old-enabled",
       descriptor,
       factories: cwdFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
     const pendingOldWrite = pi.definitions.get("write")!.execute(
@@ -1066,7 +1069,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/new-enabled",
       descriptor,
       factories: cwdFactories,
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy,
       permissionAudit: async () => true,
     });
@@ -1113,7 +1116,7 @@ describe("final-execution Pi tool enforcement", () => {
         cwd: "C:/old-enabled",
         descriptor,
         factories: cwdFactories,
-        wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+        wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       });
       installer.markReady();
       const originalSignal = new AbortController().signal;
@@ -1133,7 +1136,7 @@ describe("final-execution Pi tool enforcement", () => {
           cwd: "C:/new-enabled",
           descriptor,
           factories: cwdFactories,
-          wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+          wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
         });
         installer.markReady();
       }
@@ -1219,7 +1222,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/enabled",
       descriptor,
       factories: factories(executions),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     wrapperInstaller.markReady();
     const pendingWrite = wrapperPi.definitions.get("write")!.execute("write", { path: "x", content: "x" });
@@ -1263,7 +1266,7 @@ describe("final-execution Pi tool enforcement", () => {
       const bridge = new DelayedBridge();
       const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
       wrapBuiltins(pi, bridge, {
-        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+        cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
         permissionPolicy, permissionAudit: async () => true,
       });
       const mutable = structuredClone(input) as Record<string, unknown>;
@@ -1281,7 +1284,7 @@ describe("final-execution Pi tool enforcement", () => {
     const pi = new FakePi();
     const bridge = new FakeBridge({ version: 1, outcome: "allow" });
     const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
-    wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js" });
+    wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true });
     const cyclic: Record<string, unknown> = { command: "true" };
     cyclic.secret = "OPENAI_API_KEY=synthetic-secret";
     cyclic.self = cyclic;
@@ -1311,7 +1314,7 @@ describe("final-execution Pi tool enforcement", () => {
       }),
     };
     wrapBuiltins(pi, bridge, {
-      cwd: "C:/repo", descriptor, factories: snapshotFactories, wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      cwd: "C:/repo", descriptor, factories: snapshotFactories, wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy, permissionAudit: async () => true,
     });
     await pi.definitions.get("bash")!.execute("plain", { command: "true", nested: { values: [1, { ok: true }] }, }, undefined, undefined, interactiveContext());
@@ -1327,7 +1330,7 @@ describe("final-execution Pi tool enforcement", () => {
     const pi = new FakePi();
     const bridge = new FakeBridge({ version: 1, outcome: "block", ruleId: "H-19", message: "OPENAI_API_KEY=synthetic-secret" });
     const executions: Array<{ tool: string; params: Record<string, unknown> }> = [];
-    wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js" });
+    wrapBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(executions), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true });
     const execution = pi.definitions.get("write")!.execute("blocked", { path: "x", content: "x" });
     await expect(execution).rejects.toThrow();
     await expect(execution).rejects.not.toThrow("synthetic-secret");
@@ -1355,7 +1358,7 @@ describe("final-execution Pi tool enforcement", () => {
         return factory(cwd);
       }])) as ReturnType<typeof factories>;
       const installer = new EnforcementInstaller();
-      const options = { cwd: "C:/repo", descriptor, factories: staged, wrapperSourcePath: "C:/package/extensions/codearbiter.js" };
+      const options = { cwd: "C:/repo", descriptor, factories: staged, wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true };
       expect(() => { installer.ensureGuard(pi, descriptor, options.wrapperSourcePath); installer.ensureResults(pi, bridge, descriptor); installer.ensureBuiltins(pi, bridge, options); }).toThrow();
       installer.ensureGuard(pi, descriptor, options.wrapperSourcePath);
       installer.ensureResults(pi, bridge, descriptor);
@@ -1380,7 +1383,7 @@ describe("final-execution Pi tool enforcement", () => {
         originalRegister(tool);
       }) as typeof pi.registerTool;
       const installer = new EnforcementInstaller();
-      const options = { cwd: "C:/repo", descriptor, factories: factories([]), wrapperSourcePath: "C:/package/extensions/codearbiter.js" };
+      const options = { cwd: "C:/repo", descriptor, factories: factories([]), wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true };
       installer.ensureGuard(pi, descriptor, options.wrapperSourcePath);
       installer.ensureResults(pi, bridge, descriptor);
       expect(() => installer.ensureBuiltins(pi, bridge, options)).toThrow();
@@ -1399,7 +1402,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/repo",
       descriptor,
       factories: factories(executions),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     const finalInput = { command: "git commit --no-verify" };
     await expect(pi.definitions.get("bash")!.execute("call-1", finalInput)).rejects.toThrow("blocked");
@@ -1415,7 +1418,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/repo",
       descriptor,
       factories: factories(executions),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     const result = await pi.definitions.get("read")!.execute("call-2", { path: "README.md" });
     expect(executions).toEqual([{ tool: "read", params: { path: "README.md" } }]);
@@ -1448,7 +1451,7 @@ describe("final-execution Pi tool enforcement", () => {
           },
         }),
       },
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
 
     const result = await pi.definitions.get("read")!.execute(
@@ -1491,7 +1494,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/repo",
       descriptor,
       factories: factories([]),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
 
@@ -1522,7 +1525,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/repo",
       descriptor,
       factories: factories([]),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
     });
     installer.markReady();
     const refreshedRead = pi.definitions.get("read")!;
@@ -1547,7 +1550,7 @@ describe("final-execution Pi tool enforcement", () => {
       cwd: "C:/repo",
       descriptor,
       factories: factories(executions),
-      wrapperSourcePath: "C:/package/extensions/codearbiter.js",
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
       permissionPolicy,
       permissionAudit: async () => true,
     });
@@ -1696,5 +1699,347 @@ describe("final-execution Pi tool enforcement", () => {
     pi.sources.set("codearbiter_farm_preview", "C:/foreign/replacement.js");
     const replaced = await pi.emit("tool_call", { toolName: "codearbiter_farm_preview", input: {} });
     expect(replaced).toMatchObject({ block: true, reason: expect.stringContaining("source drift") });
+  });
+});
+
+describe("Pi live project trust withdrawal", () => {
+  const wrapperSourcePath = "C:/package/extensions/codearbiter.js";
+
+  function trustHarness(options: { projectTrust?: ProjectTrustSource } = {}) {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const governed: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    const native: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    const audits: unknown[] = [];
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    installer.ensureGuard(pi, descriptor, wrapperSourcePath);
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories(governed),
+      nativeFactories: factories(native),
+      wrapperSourcePath,
+      permissionPolicy,
+      permissionAudit: async (_cwd, row) => { audits.push(row); return true; },
+      // No affirmative session-scoped probe by default, so an execution context
+      // that omits isProjectTrusted must be treated as untrusted.
+      projectTrust: () => false,
+      ...options,
+    });
+    installer.markReady();
+    return { pi, installer, bridge, governed, native, audits };
+  }
+
+  const mutatorCall = (tool: string): Record<string, unknown> => tool === "bash"
+    ? { command: "git commit -m fixture" }
+    : { path: "src/module.ts", content: "fixture" };
+
+  test("governed mutators execute only while live project trust is affirmative", async () => {
+    const harness = trustHarness();
+    for (const tool of ["bash", "write", "edit"]) {
+      await harness.pi.definitions.get(tool)!.execute(
+        `trusted-${tool}`,
+        mutatorCall(tool),
+        undefined,
+        undefined,
+        interactiveContext({ isProjectTrusted: () => true }),
+      );
+    }
+    expect(harness.governed.map((execution) => execution.tool)).toEqual(["bash", "write", "edit"]);
+    expect(harness.native).toEqual([]);
+  });
+
+  test("mutators fail closed when live project trust is absent, false, or throwing", async () => {
+    const states: ReadonlyArray<readonly [string, (() => boolean) | undefined]> = [
+      ["absent", undefined],
+      ["false", () => false],
+      ["throwing", () => { throw new Error("OPENAI_API_KEY=synthetic-secret trust probe failed"); }],
+    ];
+    for (const [label, isProjectTrusted] of states) {
+      const harness = trustHarness();
+      for (const tool of ["bash", "write", "edit"]) {
+        await expect(harness.pi.definitions.get(tool)!.execute(
+          `${label}-${tool}`,
+          mutatorCall(tool),
+          undefined,
+          undefined,
+          interactiveContext({ isProjectTrusted }),
+        )).rejects.toThrow(/trust/iu);
+      }
+      expect(harness.governed, label).toEqual([]);
+      expect(harness.native, label).toEqual([]);
+      expect(harness.bridge.requests, label).toEqual([]);
+    }
+  });
+
+  test("a custom mutator fails closed on withdrawn trust with no native escape", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const executions: Record<string, unknown>[] = [];
+    const backgroundDescriptor = { ...descriptor, codearbiter_background_bash: "EXEC" as const };
+    const backgroundPolicy = compileBuiltinPermissionPolicy(backgroundDescriptor, {
+      codearbiter_background_bash: "background-launch",
+    })!;
+    installer.beginBootstrap();
+    installer.ensureCustomTool(pi, bridge, {
+      cwd: "C:/repo",
+      name: "codearbiter_background_bash",
+      bridgeToolName: "bash",
+      descriptor: backgroundDescriptor,
+      factory: () => ({
+        name: "codearbiter_background_bash",
+        execute: async (_id, params) => { executions.push(params); return { content: [], isError: false }; },
+      }),
+      wrapperSourcePath,
+      permissionPolicy: backgroundPolicy,
+      permissionAudit: async () => true,
+      projectTrust: () => true,
+    });
+    installer.markReady();
+
+    await expect(pi.definitions.get("codearbiter_background_bash")!.execute(
+      "background-untrusted",
+      { command: "npm install fixture" },
+      undefined,
+      undefined,
+      interactiveContext({ isProjectTrusted: () => false }),
+    )).rejects.toThrow(/trust/iu);
+    expect(executions).toEqual([]);
+    expect(bridge.requests).toEqual([]);
+  });
+
+  test("trust withdrawal during bridge evaluation blocks the pending mutation", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    const bridge = new DelayedBridge();
+    const governed: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories(governed),
+      wrapperSourcePath,
+      permissionPolicy,
+      permissionAudit: async () => true,
+      projectTrust: () => true,
+    });
+    installer.markReady();
+    let trusted = true;
+    const pending = pi.definitions.get("write")!.execute(
+      "withdrawn-during-bridge",
+      { path: "src/module.ts", content: "fixture" },
+      undefined,
+      undefined,
+      interactiveContext({ isProjectTrusted: () => trusted }),
+    );
+    await bridge.entered;
+    trusted = false;
+    bridge.resume();
+
+    await expect(pending).rejects.toThrow(/blocked/iu);
+    expect(governed).toEqual([]);
+  });
+
+  test("trust withdrawal during permission confirmation makes the approval stale", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const governed: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    const audits: Array<Record<string, unknown>> = [];
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories(governed),
+      wrapperSourcePath,
+      permissionPolicy,
+      permissionAudit: async (_cwd, row) => { audits.push(row as unknown as Record<string, unknown>); return true; },
+      projectTrust: () => true,
+    });
+    installer.markReady();
+    let trusted = true;
+
+    await expect(pi.definitions.get("bash")!.execute(
+      "withdrawn-during-confirmation",
+      { command: "npm install fixture" },
+      undefined,
+      undefined,
+      interactiveContext({
+        isProjectTrusted: () => trusted,
+        ui: { confirm: async () => { trusted = false; return true; } },
+      }),
+    )).rejects.toThrow(/stale/iu);
+    expect(governed).toEqual([]);
+    expect(audits.at(-1)).toMatchObject({ decision: "denied" });
+  });
+
+  test("withdrawal routes reads to the untrusted native path and retires the lifecycle", async () => {
+    const harness = trustHarness();
+    let trusted = true;
+    const context = interactiveContext({ isProjectTrusted: () => trusted });
+
+    await harness.pi.definitions.get("read")!.execute("read-trusted", { path: "README.md" }, undefined, undefined, context);
+    expect(harness.governed).toEqual([{ tool: "read", params: { path: "README.md" } }]);
+    expect(harness.native).toEqual([]);
+
+    trusted = false;
+    await harness.pi.definitions.get("read")!.execute("read-withdrawn", { path: "README.md" }, undefined, undefined, context);
+    expect(harness.native).toEqual([{ tool: "read", params: { path: "README.md" } }]);
+    expect(harness.governed).toHaveLength(1);
+
+    trusted = true;
+    for (const tool of ["bash", "write", "edit"]) {
+      await expect(harness.pi.definitions.get(tool)!.execute(
+        `restored-without-new-session-${tool}`,
+        mutatorCall(tool),
+        undefined,
+        undefined,
+        context,
+      )).rejects.toThrow("/ca-doctor");
+    }
+    expect(harness.governed).toHaveLength(1);
+    expect(harness.native).toHaveLength(1);
+  });
+
+  test("withdrawal restores the bootstrap block for every potentially mutating tool", async () => {
+    const pi = new FakePi();
+    const installer = new EnforcementInstaller();
+    let trusted = true;
+    installer.ensureBootstrap(pi, descriptor);
+    installer.beginBootstrap();
+    installer.ensureBuiltins(pi, new FakeBridge({ version: 1, outcome: "allow" }), {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories([]),
+      wrapperSourcePath,
+      permissionPolicy,
+      permissionAudit: async () => true,
+      projectTrust: () => trusted,
+    });
+    installer.markReady();
+    await expect(pi.emit("tool_call", { toolName: "write", input: {} })).resolves.toBeUndefined();
+
+    trusted = false;
+    await pi.definitions.get("read")!.execute("read-withdrawal", { path: "README.md" });
+
+    for (const name of ["bash", "write", "edit", "mystery"]) {
+      await expect(pi.emit("tool_call", { toolName: name, input: {} }))
+        .resolves.toMatchObject({ block: true });
+    }
+    await expect(pi.emit("tool_call", { toolName: "read", input: {} })).resolves.toBeUndefined();
+  });
+
+  test("the session-scoped trust probe governs the doctor self-test path that carries no tool context", async () => {
+    const selfTest = { command: "git add --all --dry-run" };
+    const trusted = trustHarness({ projectTrust: () => true });
+    await trusted.installer.runDoctorWrapperSelfTest();
+    expect(trusted.governed).toEqual([{ tool: "bash", params: selfTest }]);
+
+    const withdrawn = trustHarness({ projectTrust: () => false });
+    await expect(withdrawn.installer.runDoctorWrapperSelfTest()).rejects.toThrow(/trust/iu);
+    expect(withdrawn.governed).toEqual([]);
+  });
+
+  test("the withdrawal diagnostic never echoes a trust probe failure detail", async () => {
+    const harness = trustHarness();
+    const execution = harness.pi.definitions.get("write")!.execute(
+      "redaction",
+      { path: "src/module.ts", content: "fixture" },
+      undefined,
+      undefined,
+      interactiveContext({
+        isProjectTrusted: () => { throw new Error("OPENAI_API_KEY=synthetic-secret"); },
+      }),
+    );
+
+    await expect(execution).rejects.toThrow(/trust/iu);
+    await expect(execution).rejects.not.toThrow("synthetic-secret");
+    await expect(execution).rejects.not.toThrow("OPENAI_API_KEY");
+    expect(harness.governed).toEqual([]);
+  });
+});
+
+describe("Pi bridge tool-call correlation", () => {
+  const digest = (value: string) => createHash("sha256").update(value, "utf8").digest("hex");
+
+  test("governed tool calls forward the hashed correlation shared with the permission audit", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const audits: Array<{ correlation: string }> = [];
+    wrapBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories([]),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
+      permissionPolicy,
+      permissionAudit: async (_cwd, row) => { audits.push(row as { correlation: string }); return true; },
+    });
+    const toolCallId = "pi-call-OPENAI_API_KEY=synthetic-secret";
+
+    await pi.definitions.get("write")!.execute(
+      toolCallId,
+      { path: "src/module.ts", content: "fixture" },
+      undefined,
+      undefined,
+      interactiveContext(),
+    );
+
+    expect(bridge.requests).toHaveLength(1);
+    expect(bridge.requests[0]!.correlation).toBe(digest(toolCallId));
+    expect(audits[0]!.correlation).toBe(digest(toolCallId));
+    expect(JSON.stringify(bridge.requests[0])).not.toContain("synthetic-secret");
+  });
+
+  test("concurrent governed calls carry distinct joinable correlations", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    wrapBuiltins(pi, bridge, {
+      cwd: "C:/repo",
+      descriptor,
+      factories: factories([]),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
+      permissionPolicy,
+      permissionAudit: async () => true,
+    });
+
+    await Promise.all(["call-a", "call-b"].map((id) => pi.definitions.get("read")!.execute(
+      id,
+      { path: "README.md" },
+      undefined,
+      undefined,
+      interactiveContext(),
+    )));
+
+    const correlations = bridge.requests.map((entry) => entry.correlation);
+    expect(new Set(correlations).size).toBe(2);
+    expect(correlations).toEqual(expect.arrayContaining([digest("call-a"), digest("call-b")]));
+  });
+
+  test("tool-result bridge calls reuse the originating tool-call correlation", async () => {
+    const pi = new FakePi();
+    const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    bridgeToolResults(pi, bridge, descriptor);
+    const context: ExtensionContextPort = {
+      cwd: "C:/repo",
+      signal: undefined,
+      ui: { setStatus: () => undefined, notify: () => undefined },
+    };
+
+    for (const handler of pi.handlers.get("tool_result") ?? []) {
+      await handler({
+        toolCallId: "pi-call-result",
+        toolName: "write",
+        input: { path: "x" },
+        content: [],
+        isError: false,
+      }, context);
+    }
+
+    expect(bridge.requests.at(-1)!.correlation).toBe(digest("pi-call-result"));
   });
 });
