@@ -10,6 +10,11 @@ The single source of truth for the shape of an Architecture Decision Record unde
 `NNNN-<slug>.md` — a zero-padded 4-digit sequential number with no gaps (`0001-…`, `0002-…`),
 numbered across the existing `decisions/` directory.
 
+**The filename stem is the ADR's identifier** — `0014-githook-shim-dropin-fail-closed`, not
+`0014`. The number alone is a sort key, not a name: this repository already holds two ADRs
+numbered 0014, so `supersedes: 0014` named two documents at once until it was disambiguated.
+Reference an ADR by its full stem everywhere a machine reads it.
+
 ## File format
 
 ```markdown
@@ -18,7 +23,7 @@ status: proposed
 date: YYYY-MM-DD
 title: <title>
 decided-by: <user identifier>
-supersedes: NNNN | none
+supersedes: NNNN-<slug> | none
 governs: <optional, comma-separated path globs this decision constrains — e.g. src/auth/*, config/tls/*>
 ---
 
@@ -53,8 +58,16 @@ governs: <optional, comma-separated path globs this decision constrains — e.g.
   Phase 5 (a frontmatter `status:` edit only — never a body rewrite). Status transitions otherwise
   require explicit user instruction; never advance status on the skill's own judgment.
 - **`decided-by:`** names the user who made the decision — real attribution, never inferred.
-- **`supersedes:`** names the prior ADR's number (or `none`). Supersession is a forward-only chain:
-  set it on the new ADR; never edit the prior ADR to add a back-reference.
+- **`supersedes:`** names the prior ADR's full filename stem — `supersedes:
+  0014-githook-shim-dropin-fail-closed`, not `supersedes: 0014` — or `none`. A bare number is
+  still accepted for the legacy records that carry one, but ONLY while it names exactly one
+  ADR; once a number is shared it is an error, not a guess, and
+  `.github/scripts/check_adr_identity.py` fails the build. Supersession is a forward-only
+  chain: set it on the new ADR; never edit the prior ADR to add a back-reference.
+- **`supersedes:` cannot say WHICH CLAUSE it supersedes.** A partial supersession — the new ADR
+  replaces some clauses of the prior one and leaves the rest in force — must say so in prose, and
+  a chain may legitimately fork when two ADRs supersede different clauses of one predecessor.
+  The frontmatter records only *which document*; the body records *how much of it*.
 - **`governs:`** (optional) lists fnmatch-style, repo-relative forward-slash path globs. When present,
   the post-write hook surfaces a "governed by ADR-NNNN" notice on any Write/Edit touching a matching
   file. Omit it for decisions without a file footprint.

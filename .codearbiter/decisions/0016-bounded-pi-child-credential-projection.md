@@ -3,7 +3,7 @@ status: accepted
 date: 2026-07-22
 title: Permit bounded selected-provider credential projection for isolated Pi children
 decided-by: SUaDtL@users.noreply.github.com
-supersedes: 0014
+supersedes: 0014-pi-host-authentication-and-fail-closed-tool-boundary
 governs: .codearbiter/security-controls.md, .codearbiter/specs/pi-support.md, .codearbiter/plans/pi-support.md, plugins/ca-pi/**
 ---
 
