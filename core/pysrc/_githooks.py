@@ -113,6 +113,7 @@ import subprocess
 import sys
 
 import _hooklib
+from _durabilitylib import is_ephemeral_path
 from _gitexec import git_executable, trusted_git_executable, trusted_python_executable
 
 SENTINEL = "# codeArbiter-managed git hook (#161) — refreshed each session; edits are overwritten."
@@ -274,7 +275,33 @@ def _write_path_entry(dropin_dir, plugin, enforcer):
     `<plugin>.path` drop-in entry — the self-heal half of ADR-0014: a live
     host rewrites its own entry every SessionStart regardless of whether the
     shared shim itself needed any change, so a stale entry from a version
-    bump never outlives one session on a live install."""
+    bump never outlives one session on a live install.
+
+    #441: that self-heal must never pin an EPHEMERAL enforcer. The drop-in dir
+    lives in the git COMMON dir, so every linked worktree writes the MAIN
+    repository's entry (`TestDropInSharedDir` proves the sharing, and it is the
+    point of ADR-0014). A session started inside a worktree — subagents do this
+    routinely — therefore repoints the main repo's enforcer at a directory that
+    vanishes the moment that worktree is pruned, which is what worktrees are
+    for.
+
+    Losing this entry is SILENT gate loss, not a visible break like #438's
+    statusline: H-01, H-03, H-05, H-09b, H-10b, H-11 and H-19 all run through
+    the enforcer named here, and a repo that loses it keeps looking governed.
+    So an ephemeral enforcer is refused outright, leaving whatever durable entry
+    is already there untouched — a stale-but-durable enforcer still enforces, an
+    absent one does not.
+
+    A stale but DURABLE path is still refreshed exactly as before; the guard is
+    not a kill-switch. `is_ephemeral_path` fails toward "durable", so an
+    unreadable or unrecognised layout keeps the old behaviour rather than
+    silently disabling the self-heal."""
+    if is_ephemeral_path(enforcer):
+        _warn(f"'{plugin}' was loaded from a path that will not outlive this session "
+              f"({enforcer}); leaving the shared enforcer entry as it is. Git-level "
+              f"enforcement keeps using the previously registered install. Start a "
+              f"session from the main checkout to refresh it.")
+        return False
     shell_enforcer = _shell_path(enforcer)
     if _path_entry_current(dropin_dir, plugin, shell_enforcer):
         return True

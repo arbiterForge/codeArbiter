@@ -1,20 +1,38 @@
 # Redirect
 
-Canned messages for §6 when the user sends a direct instruction outside a slash command. Loaded only
-when needed. Offer the command list — the user picks. Before sending, infer the likely intent and
-pre-fill the closest command with the user's own words, so the user can route with one keystroke.
-Match the channel to the *phrasing*, not just the topic — an interrogative is a question, not a build
-request (e.g. "add a healthcheck endpoint" → `$ca-feature "add a healthcheck endpoint"`, but
-"should we add a healthcheck?" → `$ca-btw "should we add a healthcheck?"`; "do my ADRs conflict?" →
-`$ca-reconcile`). A question pulled into the heavy spec lane is a misroute.
+Canned messages for §6 **tiers 2 and 3** — when a direct off-channel instruction is *not* both
+unambiguous and non-destructive. Loaded only when needed.
 
-## First redirect — first off-channel message
+Tier 1 does not use this file at all. An unambiguous, non-destructive intent is routed directly into
+its command with a one-line statement of the route (ADR-0022): naming the command and then asking the
+user to type it back is ceremony, not governance.
+
+Match the channel to the *phrasing*, not just the topic. An interrogative is a question, not a build
+request: "add a healthcheck endpoint" is tier 1 into `$ca-feature`, while "should we add a
+healthcheck?" is tier 1 into `$ca-btw`, and "do my ADRs conflict?" is tier 1 into
+`$ca-reconcile`. A question pulled into the heavy spec lane is a misroute.
+
+## Tier 2 — probable intent, or an unambiguous but destructive one
+
+One question, naming the command. The user approves; they do not retype.
 
 ```
-codeArbiter routes all work through commands, so every change clears its gates
-and lands on the audit trail.
+That reads as <inferred intent> → <$ca- skill, prefilled with the user's own words>
 
-That looks like <inferred intent> → <prefilled $ca- skill>
+Run it? Its own gates still apply.
+```
+
+Use this — not tier 1 — whenever the command is irreversible or gate-bypassing, however clear the
+intent: `$ca-override`, merge to the default branch, branch or worktree deletion, release and tag
+publication, `$ca-dev` entry. There the confirmation is the gate, not friction.
+
+## Tier 3 — genuinely unclear
+
+```
+codeArbiter routes work through commands, so every change clears its gates
+and lands on the audit trail. This one could go a few ways:
+
+<up to three prefilled $ca- skills, closest first>
 
 Or pick a channel:
 → Start a new project:      $ca-decompose
@@ -26,19 +44,26 @@ Or pick a channel:
 → See all commands:         $ca-commands
 ```
 
-When no intent is inferable, drop the "That looks like" line and lead with the channel list.
+When no intent is inferable at all, drop the candidate lines and lead with the channel list.
 
-## Repeat redirect — user insists after the first redirect
+## Repeat — user insists off-channel after tier 3
 
 ```
-Still need a command channel. Closest matches first:
-<up to three prefilled $ca- skills for the inferred intent>
+Still need a channel for this one. Closest matches first:
+<up to three prefilled $ca- skills>
 
 Full list:
 $ca-decompose  $ca-create-context  $ca-feature  $ca-sprint  $ca-fix  $ca-refactor  $ca-debug  $ca-chore  $ca-spike
 $ca-commit  $ca-pr  $ca-watch  $ca-review  $ca-checkpoint  $ca-release  $ca-add-dep
 $ca-threat-model  $ca-adr  $ca-adr-status  $ca-reconcile  $ca-conflict
-$ca-init  $ca-status  $ca-metrics  $ca-audit  $ca-preview  $ca-doctor  $ca-standup  $ca-task
+$ca-init  $ca-status  $ca-metrics  $ca-audit  $ca-preview  $ca-doctor  $ca-standup  $ca-cleanup  $ca-task
 $ca-new-skill  $ca-btw  $ca-commands
 Or $ca-override "reason" to proceed anyway with an audit entry.
 ```
+
+## Never
+
+A missing owner is a **routing gap**, not an override case. When no command owns the operation, say
+so and surface the gap — never steer the user toward `$ca-override` to get past a coverage hole.
+That substitution is exactly what issue #308 recorded: a routine post-merge cleanup routed first to
+`$ca-chore`, which does not accept it, and then to `$ca-override`, which exists to be rare.
