@@ -28,7 +28,7 @@ sys.path.insert(0, _TESTS_DIR)
 
 import _githooks  # noqa: E402
 import _prunelib as P  # noqa: E402
-from _helpers import redirect_home, restore_home  # noqa: E402
+from _helpers import durable_plugin_copy, redirect_home, restore_home  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -209,7 +209,11 @@ class HealReloadBeforeSaveTest(unittest.TestCase):
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.plugin = os.path.dirname(os.path.dirname(os.path.abspath(_ss.__file__)))
+        # A DURABLE plugin root (see _helpers.durable_plugin_copy): the heal now
+        # refuses a non-durable one, and codeArbiter's own checkout is very often
+        # a git worktree — which would make these reliability-009 assertions
+        # depend on where the suite was run from.
+        self.plugin = durable_plugin_copy(self.tmp.name)
         d = os.path.join(self.tmp.name, ".claude")
         os.makedirs(d)
         self.settings = os.path.join(d, "settings.json")

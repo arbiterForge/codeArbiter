@@ -36,6 +36,38 @@ def fixture(name):
         return f.read()
 
 
+HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def durable_plugin_copy(tmpdir):
+    """Copy the real plugin's top-level `hooks/*.py` payload into `tmpdir` and
+    return the copy's plugin root.
+
+    Since 2026-07-25 the statusline pin writers REFUSE a non-durable plugin root
+    (a git worktree), and codeArbiter's own checkout is very often exactly that:
+    subagents run in `<repo>/.claude/worktrees/<id>/`. A test that drove the REAL
+    plugin root would therefore heal or decline depending on where the suite
+    happened to be run from — green in CI, red on a maintainer's machine, for
+    reasons having nothing to do with the behaviour under test.
+
+    Copying into a plain temp dir makes "durable" a property of the FIXTURE
+    rather than of the developer's checkout. Only top-level `.py` files are
+    copied: that is the whole import surface `wire-statusline.py` needs
+    (`_hooklib`, `hostapi`, `_gitexec`, `_durabilitylib`, `_host`), and it keeps
+    the copy cheap enough to run in setUp."""
+    root = os.path.join(tmpdir, "durable-plugin", "ca")
+    hooks = os.path.join(root, "hooks")
+    os.makedirs(hooks, exist_ok=True)
+    for name in os.listdir(HOOKS):
+        src = os.path.join(HOOKS, name)
+        if name.endswith(".py") and os.path.isfile(src):
+            with open(src, "rb") as f:
+                data = f.read()
+            with open(os.path.join(hooks, name), "wb") as f:
+                f.write(data)
+    return root
+
+
 def _line(obj):
     return json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
 
