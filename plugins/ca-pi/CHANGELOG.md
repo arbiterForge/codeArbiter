@@ -2,6 +2,17 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.14] - 2026-07-25
+
+### Fixed
+
+- The Pi security contract asserted the exact CodeQL action SHA, so dependabot
+  could never land a codeql-action bump on its own - it cannot edit a test, and
+  every upgrade failed there until a human hand-edited the literal. The
+  assertion now checks the property that matters: both refs are 40-hex commit
+  SHAs, and init and analyze pin the same commit, so a split pair cannot
+  silently analyse with a different CodeQL than it initialised.
+
 ## [0.1.13] - 2026-07-25
 
 ### Fixed
