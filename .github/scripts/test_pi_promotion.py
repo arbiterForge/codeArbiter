@@ -368,6 +368,25 @@ class PromotionReceiptTests(unittest.TestCase):
             self.assertEqual(failing, 7)
             self.assertEqual(module.read_receipt_state(state)["contracts"], ("docs-contract",))
 
+    def test_the_rendered_artifact_and_job_summary_are_byte_identical(self):
+        # The workflow appends this stdout to GITHUB_STEP_SUMMARY, so text-mode
+        # newline translation on a Windows cell would make the summary and the
+        # uploaded artifact disagree byte for byte.
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            receipt = root / "pi-promotion-receipt.txt"
+            completed = subprocess.run(
+                [
+                    sys.executable, str(MODULE_PATH), "render",
+                    "--candidate", "0.80.11", "--platform", "windows-latest",
+                    "--state", str(self.state(root)), "--receipt", str(receipt),
+                ],
+                cwd=REPO, check=False, capture_output=True, timeout=120,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertEqual(completed.stdout, receipt.read_bytes())
+            self.assertNotIn(b"\r", completed.stdout)
+
     def test_the_runner_streams_command_output_to_the_job_log_only(self):
         module = load_module()
         with tempfile.TemporaryDirectory() as raw:

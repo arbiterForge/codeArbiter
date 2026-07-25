@@ -532,7 +532,11 @@ def _main() -> int:
             arguments.receipt.write_text(receipt, encoding="utf-8", newline="\n")
         except OSError as error:
             raise PromotionError(f"cannot write the promotion receipt: {error}") from error
-        sys.stdout.write(receipt)
+        # Binary, so the bytes appended to GITHUB_STEP_SUMMARY are the artifact's
+        # bytes: text mode would translate the newlines on a Windows cell.
+        sys.stdout.flush()
+        sys.stdout.buffer.write(receipt.encode("utf-8"))
+        sys.stdout.buffer.flush()
         return 0
     targets = load_targets(arguments.targets)
     root = Path.cwd()
