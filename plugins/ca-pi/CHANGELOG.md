@@ -2,6 +2,60 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.14] - 2026-07-25
+
+### Changed
+
+- **Breaking (isolation contract):** the isolated Pi child no longer receives
+  the operator's provider credential in any form. The parent binds a per-child
+  loopback broker on `127.0.0.1:0` and projects a provider configuration whose
+  `baseUrl` names that listener and whose `apiKey` references a per-child
+  ephemeral token. The child's Pi makes ordinary provider calls to loopback;
+  the parent authenticates the token, attaches the real credential, forwards
+  upstream, and streams the response back incrementally. `cat`-ing the child's
+  projected configuration now yields a token that dies with the child and is
+  worthless off-host, which retires the whole encoding-transform exfiltration
+  class rather than one instance of it.
+- The `auth.json` projection is deleted outright, not merely unused, and the
+  provider credential environment variables are no longer copied into the
+  child. The parent still reads the operator store, for its own upstream call.
+- Providers a bearer-substituting broker cannot serve fail the launch closed
+  with the new `isolation-broker` stage identifier: `amazon-bedrock` and
+  `google-vertex` (SDK request signing), `github-copilot` and `openai-codex`
+  (OAuth refresh inside the child), any `oauth` provider record, and any
+  provider with neither an operator `baseUrl` nor a pinned built-in endpoint.
+
+### Fixed
+
+- A model-level `baseUrl` in the operator's provider record skipped endpoint
+  acceptance entirely whenever a provider-level endpoint had already been
+  captured, so a credential-bearing model endpoint could cross unvalidated.
+
+## [0.1.13] - 2026-07-25
+
+### Fixed
+
+- Every Pi audit sink is hardened against link and race redirection. The bridge
+  failure audit, the child-dispatch audit, and the confirmed-compaction audit
+  each resolved the project's `.codearbiter` governance log from a
+  caller-supplied cwd and appended to it directly, which follows file symlinks,
+  directory junctions, and hardlinks - so a trusted project could redirect those
+  records onto another same-user file and leave the real log without them. All
+  five producers now share one primitive that canonicalizes the state directory,
+  refuses a linked or escaping one, opens the target no-follow and
+  create-exclusive, and re-verifies the opened handle's identity on both sides
+  of the append. A failed or hostile sink returns false rather than throwing, so
+  no producer's enforcement outcome or fail direction changes.
+- Pi native compaction events are validated before they are narrowed. Both host
+  records were laundered through a type assertion, and the before-compact
+  handler read `event.signal.aborted` and `event.preparation.tokensBefore`
+  before its fail-safe block opened, so a malformed or drifted native record
+  rejected the host callback with a raw `TypeError` instead of the fixed
+  `Pi native compaction failed safely; run /ca-doctor.` diagnostic. Both events
+  are now parsed from `unknown` through exact bounded validators covering the
+  abort signal, preparation, entry array, reason enum, booleans, and optional
+  strings.
+
 ## [0.1.12] - 2026-07-25
 
 ### Changed

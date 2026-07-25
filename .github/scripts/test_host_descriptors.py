@@ -152,6 +152,13 @@ _ISSUE_370_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/live-pi-host.ts",
 })
 
+# Exact artifacts approved by issue #374's single hardened audit sink. Path-exact
+# like every set above, so an unlisted file under tools/ still fails closed.
+_ISSUE_374_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/src/audit-sink.ts",
+    "tools/test/audit-sink.test.ts",
+})
+
 # Exact artifacts of issue #455's loopback inference broker — the parent-side
 # module that replaces the operator credential in the child with a per-child
 # ephemeral token, plus its contract suite. Path-exact like every set above, so
@@ -390,6 +397,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS)
         | set(_MODULE_STRUCTURE_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_370_NON_POLICY_ARTIFACTS)
+        | set(_ISSUE_374_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_455_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
@@ -734,7 +742,7 @@ class GenerationContractTest(unittest.TestCase):
         for rel in (_TASK_2_NON_POLICY_ARTIFACTS | _TASK_3_NON_POLICY_ARTIFACTS
                     | _TASK_4_NON_POLICY_ARTIFACTS | _TASK_5_NON_POLICY_ARTIFACTS
                     | _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS | _TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS
-                    | _ISSUE_370_NON_POLICY_ARTIFACTS):
+                    | _ISSUE_370_NON_POLICY_ARTIFACTS | _ISSUE_374_NON_POLICY_ARTIFACTS):
             with self.subTest(rel=rel):
                 self.assertIn(rel, exemptions)
         self.assertFalse(any(item.startswith("tools/") and item.endswith("/**") for item in exemptions))

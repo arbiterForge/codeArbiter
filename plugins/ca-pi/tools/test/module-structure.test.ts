@@ -18,6 +18,12 @@ const COMMAND_SURFACE_CLUSTER = Object.freeze([
   "path-boundary.ts",
 ]);
 
+/** The governance log a Pi producer may only reach through the shared hardened primitive. */
+const AUDIT_SINK_TARGET = /gate-events\.log/u;
+
+/** A filesystem append: a second, unhardened audit-sink implementation if it is not the owner. */
+const DIRECT_APPEND = /\bappendFile\b/u;
+
 const COMMAND_SURFACE_CEILING = 350;
 const CLUSTER_CEILING = 450;
 
@@ -75,6 +81,24 @@ describe("Pi module structure", () => {
     const boundary = await import("../src/path-boundary.ts");
     for (const name of ["lexicallyInside", "canonicallyInside", "canonicalPath", "flavorForPlatform"]) {
       expect(typeof (boundary as Record<string, unknown>)[name]).toBe("function");
+    }
+  });
+
+  test("gate-events audit appends have exactly one owner", () => {
+    const owners = sourceFiles().filter((name) => AUDIT_SINK_TARGET.test(sourceOf(name)));
+    expect(owners).toEqual(["audit-sink.ts"]);
+  });
+
+  test("no production module appends to the filesystem outside the audit sink", () => {
+    const direct = sourceFiles()
+      .filter((name) => name !== "audit-sink.ts" && DIRECT_APPEND.test(sourceOf(name)));
+    expect(direct).toEqual([]);
+  });
+
+  test("the audit sink module exports the hardened primitive and its injectable seam", async () => {
+    const sink = await import("../src/audit-sink.ts");
+    for (const name of ["appendAuditLine", "appendAuditLineWithIo"]) {
+      expect(typeof (sink as Record<string, unknown>)[name]).toBe("function");
     }
   });
 

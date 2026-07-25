@@ -1069,6 +1069,11 @@ type Result = {
   // writing to the same .farm/ directory produce distinguishable lines that tie
   // back to a single farm-report.json header.
   runId?: string;
+  // #398: teardown outcomes for the resources this task owned — its worktree and
+  // any best-of-N sample worktrees/branches. Present only when at least one
+  // could not be verified released, so a green status is never unqualified:
+  // the leak travels with the result, into the receipt, and into the exit code.
+  cleanup?: CleanupOutcome[];
 };
 
 // observability-003 (T-07c): a run-id minted once at main() startup.
@@ -1199,6 +1204,11 @@ export type RunArtifactHealth = {
   // inside the report itself (the payload is already serialized by the time the
   // pointers are written), so main() surfaces them on the summary instead.
   report: { latestMirrorErrors: string[] };
+  // #398: RUN-level resource teardown that could not be verified — today the
+  // integration worktree, which no task owns. Task-owned leaks ride on the
+  // Result; these have nowhere else to live, so they are collected here and
+  // folded into the same report section and exit code.
+  cleanup: { failures: { target: string; detail: string }[] };
 };
 
 export function newRunArtifactHealth(): RunArtifactHealth {
@@ -1206,6 +1216,7 @@ export function newRunArtifactHealth(): RunArtifactHealth {
     stream: { errors: [] },
     diffs: { unavailable: [], unavailableTotal: 0, latestMirrorErrors: [] },
     report: { latestMirrorErrors: [] },
+    cleanup: { failures: [] },
   };
 }
 
@@ -1260,6 +1271,198 @@ async function prepareWorktree(branch: string, wt: string, from: string): Promis
   const add = await git(["worktree", "add", "-b", branch, wt, from]);
   if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
   return null;
+}
+
+// --------------------------------------------------------------------------
+// #398 — verified resource teardown.
+//
+// Every teardown site in this file used to be `git(...).catch(() => {})`, and
+// the task's success path returned `status: "green"` on the very next line. A
+// Windows file lock, an antivirus scan holding a handle, or any git failure
+// therefore left a worktree registered and on disk while the run reported
+// success — and the NEXT run's best-effort destructive pre-cleanup was the only
+// thing standing between that leak and an ambiguous re-registration.
+//
+// #430 established the tiering rule this follows: an authoritative outcome
+// fails the run, a convenience mirror warns. Releasing ownership of a worktree
+// is authoritative — it is the farm's claim on a directory and a branch — so a
+// teardown that cannot be VERIFIED is reported on the result, printed on the
+// summary, persisted in the receipt, and lifts the run's exit code. The
+// operations below are non-destructive beyond what git itself does: they retry
+// and then TELL you, rather than escalating to an unbounded rm.
+// --------------------------------------------------------------------------
+
+// The outcome of one bounded, verified teardown. `ok` means the resource is
+// verifiably GONE — not merely that a removal command was issued.
+export type CleanupOutcome = { ok: boolean; target: string; attempts: number; detail?: string };
+
+// Bounded backoff for a transient Windows lock (a scanner or an editor holding a
+// handle usually clears in tens of milliseconds). Deliberately small: the point
+// is to ride out a race, not to wait out a genuinely stuck resource.
+const CLEANUP_ATTEMPTS = 3;
+const CLEANUP_DELAY_MS = 150;
+
+// Path comparison for `git worktree list --porcelain` output. git prints
+// forward slashes even on Windows, and Windows paths are case-insensitive, so
+// compare RESOLVED, normalized forms rather than raw strings.
+function samePath(a: string, b: string): boolean {
+  const norm = (p: string) => {
+    const r = path.resolve(p);
+    return process.platform === "win32" ? r.toLowerCase() : r;
+  };
+  return norm(a) === norm(b);
+}
+
+// Does git still register `wt` as a worktree? This — not the removal command's
+// exit code — is the authority: a removal that "failed" but left git with no
+// registration and no directory has still released ownership, and a removal
+// that "succeeded" while git keeps the registration has not.
+async function stillRegistered(gitFn: GitRunner, wt: string): Promise<boolean> {
+  const listed = await gitFn(["worktree", "list", "--porcelain"]);
+  if (listed.code !== 0) return true; // cannot verify ⇒ do not claim success
+  return listed.stdout
+    .split("\n")
+    .filter((l) => l.startsWith("worktree "))
+    .some((l) => samePath(l.slice("worktree ".length).trim(), wt));
+}
+
+async function pathExists(p: string): Promise<boolean> {
+  try {
+    await stat(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Remove a farm worktree and PROVE it is gone: `worktree remove --force`, then
+// `worktree prune` (which clears a registration whose directory already went
+// away), then re-verify against `worktree list --porcelain` AND the filesystem.
+// Retries a bounded number of times so a transient lock does not become a
+// permanent leak, and returns a diagnosable ok:false when it cannot be cleared.
+export async function removeWorktreeVerified(
+  gitFn: GitRunner,
+  wt: string,
+  opts: { attempts?: number; delayMs?: number } = {},
+): Promise<CleanupOutcome> {
+  const attempts = opts.attempts ?? CLEANUP_ATTEMPTS;
+  const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
+  let lastErr = "";
+  for (let i = 1; i <= attempts; i++) {
+    const rmR = await gitFn(["worktree", "remove", "--force", wt]);
+    if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
+    let registered = await stillRegistered(gitFn, wt);
+    const present = await pathExists(wt);
+    // Prune clears a stale registration whose directory is already gone — the
+    // exact state a partially-failed removal or an external delete leaves.
+    // Run it ONLY in that state: `git worktree prune` is repo-wide, and a
+    // blanket call would also deregister an unrelated worktree whose path is
+    // merely unreachable right now (an unmounted volume, a temporarily denied
+    // directory). Narrow it to the condition it is actually needed for.
+    if (registered && !present) {
+      await gitFn(["worktree", "prune"]);
+      registered = await stillRegistered(gitFn, wt);
+    }
+    if (!registered && !present) return { ok: true, target: wt, attempts: i };
+    if (i < attempts) await sleep(delayMs * i);
+    else
+      return {
+        ok: false,
+        target: wt,
+        attempts: i,
+        detail: redactSecrets(
+          [
+            registered ? `still registered as a git worktree after ${i} attempt(s)` : null,
+            present ? `directory still present on disk after ${i} attempt(s)` : null,
+            lastErr ? `last git error: ${lastErr}` : null,
+          ]
+            .filter(Boolean)
+            .join("; "),
+        ).slice(0, 500),
+      };
+  }
+  /* istanbul ignore next — the loop always returns */
+  return { ok: false, target: wt, attempts, detail: "cleanup loop did not settle" };
+}
+
+// Delete a farm scratch branch and PROVE it is gone. `branch --list` is used for
+// verification rather than `rev-parse` because an empty listing unambiguously
+// means "absent", whereas rev-parse's exit code also encodes other failures.
+export async function deleteBranchVerified(
+  gitFn: GitRunner,
+  branch: string,
+  opts: { attempts?: number; delayMs?: number } = {},
+): Promise<CleanupOutcome> {
+  const attempts = opts.attempts ?? CLEANUP_ATTEMPTS;
+  const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
+  let lastErr = "";
+  for (let i = 1; i <= attempts; i++) {
+    const del = await gitFn(["branch", "-D", branch]);
+    if (del.code !== 0) lastErr = del.out.trim().split("\n").slice(-1)[0] ?? "";
+    const listed = await gitFn(["branch", "--list", branch]);
+    const present = listed.code !== 0 || listed.stdout.trim() !== "";
+    if (!present) return { ok: true, target: branch, attempts: i };
+    if (i < attempts) await sleep(delayMs * i);
+    else
+      return {
+        ok: false,
+        target: branch,
+        attempts: i,
+        detail: redactSecrets(
+          `branch still present after ${i} attempt(s)${lastErr ? `; last git error: ${lastErr}` : ""}`,
+        ).slice(0, 500),
+      };
+  }
+  /* istanbul ignore next — the loop always returns */
+  return { ok: false, target: branch, attempts, detail: "cleanup loop did not settle" };
+}
+
+// The run's exit code from its two independent failure axes. #387 established
+// 0/2/3; #398 adds a third input on the "2" side — a run that leaked a worktree
+// or a branch has not come out clean, whatever the tasks did, because the next
+// run inherits ambiguous state. (3, the authoritative-receipt failure, still
+// outranks it and is applied by the caller.)
+export function runExitCode(o: {
+  escalated: number;
+  blocked: number;
+  aborted: boolean;
+  cleanupFailures: number;
+}): 0 | 2 {
+  return o.escalated || o.blocked || o.aborted || o.cleanupFailures ? 2 : 0;
+}
+
+// Every unreleased resource this run is responsible for, from both places they
+// can be recorded: the task results (worktrees and sample branches a task owned)
+// and the run-level health (the integration worktree, owned by no task).
+export function cleanupFailures(
+  health: RunArtifactHealth,
+  results: Result[],
+): { owner: string; target: string; detail: string }[] {
+  return [
+    ...results.flatMap((r) =>
+      (r.cleanup ?? [])
+        .filter((c) => !c.ok)
+        .map((c) => ({ owner: r.id, target: c.target, detail: c.detail ?? "unverified" })),
+    ),
+    ...health.cleanup.failures.map((f) => ({ owner: "run", target: f.target, detail: f.detail })),
+  ];
+}
+
+// The report's cleanup section. Stated in both directions on purpose: silence is
+// not evidence of a clean teardown, so the clean case says so explicitly rather
+// than omitting the section (an operator must be able to tell "nothing leaked"
+// from "this report predates the check").
+export function cleanupReportLines(health: RunArtifactHealth, results: Result[]): string[] {
+  const failures = cleanupFailures(health, results);
+  if (failures.length === 0)
+    return [`## Resource cleanup`, `Every farm worktree and scratch branch was removed and re-verified.`];
+  return [
+    `## Resource cleanup`,
+    `> **CLEANUP DEGRADED** — ${failures.length} resource(s) could not be released and re-verified. ` +
+      `They may still be registered with git or present on disk, and the next run will collide with or ` +
+      `destructively pre-clean them. Exit code is non-zero for this reason alone.`,
+    ...failures.map((f) => `- \`${f.target}\` (${f.owner}) — ${f.detail}`),
+  ];
 }
 
 // Injectable dependencies for runTask. Every field defaults to the real
@@ -1359,6 +1562,8 @@ async function bestOfN(
   bestFailure: SampleOutcome | null;
   promptTokens: number;
   completionTokens: number;
+  // #398: one entry per sample resource torn down, ok or not.
+  cleanup: CleanupOutcome[];
 }> {
   // All sample worktrees are cut from the same integration HEAD as the task
   // worktree, so they share the baseline the single `prompt` was enriched
@@ -1420,11 +1625,17 @@ async function bestOfN(
   // in-scope output for F2), else any failure.
   const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
   // Discard every sample worktree — the winner's files are already captured.
+  // #398: verified, and EVERY sample is attempted even after one fails. The old
+  // loop swallowed each failure, so one stuck sample was indistinguishable from
+  // a clean sweep; worse, a leaked sample worktree keeps its branch checked out,
+  // which then makes the branch delete fail too. Both outcomes are returned so
+  // the task result can carry the full list of what is still on disk.
+  const cleanup: CleanupOutcome[] = [];
   for (const o of outcomes) {
-    await deps.git(["worktree", "remove", "--force", o.wt]).catch(() => {});
-    await deps.git(["branch", "-D", o.branch]).catch(() => {});
+    cleanup.push(await removeWorktreeVerified(deps.git, o.wt));
+    cleanup.push(await deleteBranchVerified(deps.git, o.branch));
   }
-  return { winner, bestFailure, promptTokens, completionTokens };
+  return { winner, bestFailure, promptTokens, completionTokens, cleanup };
 }
 
 export async function runTask(
@@ -1457,9 +1668,21 @@ export async function runTask(
   const samples = Math.max(1, Math.floor(numEnv("FARM_SAMPLES", 1, { min: 1 })));
   const sampling = effectiveSampling(samples);
 
+  // #398: resources this task owned that could NOT be verified released —
+  // sample worktrees/branches from best-of-N, and the task worktree on the
+  // success path. Attached to whatever Result the task returns, so a leak is
+  // never dropped on the floor between the teardown and `status: "green"`.
+  const cleanupIssues: CleanupOutcome[] = [];
+  const noteCleanup = (...outcomes: CleanupOutcome[]) => {
+    for (const c of outcomes) if (!c.ok) cleanupIssues.push(c);
+  };
+  // Every return below routes through finish() so the cleanup record rides
+  // along regardless of which exit the task takes.
+  const finish = (r: Result): Result => (cleanupIssues.length ? { ...r, cleanup: [...cleanupIssues] } : r);
+
   const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
-    return { id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr };
+    return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
 
   const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
 
@@ -1505,7 +1728,7 @@ export async function runTask(
     // so it escalates immediately rather than burning a worker retry.
     const setupNote = await runSetupPhases(wt, t, deps, setupState);
     if (setupNote)
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens });
 
     // Enrichment (AC-03/AC-04): read the per-attempt worktree state — AFTER any
     // reset above — so the test source and existing in-scope file contents
@@ -1539,6 +1762,7 @@ export async function runTask(
       // (its in-scope output, per F2) and loop (AC-F1.5). Token spend across ALL
       // samples is summed; the winner's own tokens are recorded separately (AC-F1.6).
       const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps);
+      noteCleanup(...sel.cleanup); // #398: sample worktrees/branches left behind
       promptTokens += sel.promptTokens;
       completionTokens += sel.completionTokens;
       acceptedPromptTokens = sel.winner?.promptTokens ?? 0;
@@ -1553,7 +1777,7 @@ export async function runTask(
         await writeFilesInto(wt, sel.winner.files);
       } catch (error) {
         if (isUnsafeWorktreePathError(error)) {
-          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
         }
         throw error;
       }
@@ -1571,14 +1795,14 @@ export async function runTask(
     // inline guards remain defense-in-depth.
     const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
     if (sweepErr) {
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
 
     // The failing test must be untouched (defence in depth — the write path
     // already refuses test.path, this catches a sneaky in-scope edit too).
     const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
     if (testHashBefore !== null && testHashAfter !== testHashBefore) {
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
 
     // Drift: on the FIRST drift, retry once with a hardened prompt naming the
@@ -1591,7 +1815,7 @@ export async function runTask(
         priorFailure = `drift: you wrote outside the allowed files: ${driftFiles.join(", ")}`;
         continue;
       }
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
 
     const gate = await deps.runGate(wt, t.gate.commands);
@@ -1617,7 +1841,7 @@ export async function runTask(
         mut = await deps.mutationCheck(wt, t);
       } catch (error) {
         if (isUnsafeWorktreePathError(error)) {
-          return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens };
+          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
         }
         throw error;
       }
@@ -1651,7 +1875,7 @@ export async function runTask(
     if (risk === "high") {
       priorFailure = `${riskNote}. Implement real logic; do not hard-code or special-case the asserted value.`;
       if (attempt <= limit) continue; // give it a chance to fix
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
     }
     if (risk === "warn") lastWarning = riskNote;
 
@@ -1661,7 +1885,7 @@ export async function runTask(
     await deps.git(["add", "--", ...worker.filesWritten], wt);
     const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
     if (commit.code !== 0)
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
 
     const diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
 
@@ -1694,16 +1918,22 @@ export async function runTask(
         continue;
       }
       // retries exhausted — escalate exactly as before (worktree left for inspection)
-      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens };
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
 
-    // success — drop the worktree (branch stays, merged into integration)
-    await deps.git(["worktree", "remove", "--force", wt]).catch(() => {});
-    return { id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens };
+    // success — drop the worktree (branch stays, merged into integration).
+    // #398: verified. This teardown used to be a bare `.catch(() => {})` one
+    // line above `status: "green"`, so a locked or otherwise unremovable
+    // worktree produced an unqualified green result and a silent leak. Now the
+    // outcome travels on the Result (and from there into the receipt, the
+    // summary, and the exit code) — green still means the work merged, but it
+    // can no longer also mean "and we quietly abandoned a worktree".
+    noteCleanup(await removeWorktreeVerified(deps.git, wt));
+    return finish({ id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens });
   }
 
   // worktree intentionally left in place for inspection
-  return { id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore };
+  return finish({ id: t.id, status: "escalate", attempts: limit + 1, branch, worktree: wt, note: priorFailure?.split("\n")[0], filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore });
 }
 
 // --------------------------------------------------------------------------
@@ -2394,6 +2624,32 @@ async function main() {
       blocked.push({ id, reason: aborted ? "run aborted (circuit breaker)" : culprit ? `dependency ${culprit} escalated` : "not scheduled" });
     }
   } finally {
+    // reliability-004 (T-07a): only remove the integration worktree if it was
+    // actually assigned. An early throw (e.g. the integration branch could not
+    // be created) leaves `integrationWorktree` undefined; passing undefined as an
+    // argv element into spawn throws a synchronous TypeError out of this finally,
+    // masking the real, actionable error. Guard it so the original error
+    // surfaces.
+    //
+    // #398: this now runs BEFORE writeReport, not after. The teardown outcome
+    // has to be IN the receipt — a leak an operator only learns about from a
+    // console line they scrolled past is exactly the silent-green failure this
+    // fixes — and the report payload is serialized inside writeReport, so any
+    // teardown performed afterwards could never appear in it. Nothing in
+    // writeReport reads the integration worktree (its `git diff` runs against
+    // the main checkout), so the reordering is safe.
+    if (integrationWorktree) {
+      try {
+        const c = await removeWorktreeVerified(git, integrationWorktree);
+        if (!c.ok) health.cleanup.failures.push({ target: c.target, detail: c.detail ?? "unverified" });
+      } catch (e) {
+        // Belt and braces: nothing in removeWorktreeVerified is expected to
+        // throw (git() resolves rather than rejects, stat is guarded), but a
+        // throw HERE would propagate out of the finally and mask an in-flight
+        // exception — the exact failure mode reliability-004 fixed above.
+        health.cleanup.failures.push({ target: integrationWorktree, detail: `teardown threw: ${msgOf(e)}` });
+      }
+    }
     // #387: the report is still written from the `finally` (so an abort or a
     // mid-run throw still produces a receipt), but its failure is no longer
     // absorbed by a console.error. It is captured and turned into a distinct
@@ -2405,14 +2661,6 @@ async function main() {
       publishError = e;
       console.error("report publication failed:", e);
     }
-    // reliability-004 (T-07a): only remove the integration worktree if it was
-    // actually assigned. An early throw (e.g. the integration branch could not
-    // be created) leaves `integrationWorktree` undefined; passing undefined as an
-    // argv element into spawn throws a synchronous TypeError out of this finally,
-    // masking the real, actionable error. Guard it so the original error
-    // surfaces.
-    if (integrationWorktree)
-      await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
   }
 
   const results = [...done.values()];
@@ -2434,8 +2682,15 @@ async function main() {
   // last-writer-wins; failing the run on them would over-report failure in
   // exactly the concurrent-run case this design exists to make safe. They are
   // reported as a warning below instead.
-  const runExitCode = esc || blocked.length || aborted ? 2 : 0;
-  const exitCode = publishError ? 3 : runExitCode;
+  //
+  // #398 adds a fourth input on the "2" side: an unreleased worktree or branch.
+  // That is NOT a convenience-mirror failure — it is the farm still holding a
+  // claim on a directory and a ref that the next run will collide with or
+  // destructively pre-clean, so it belongs with "the run did not come out
+  // clean" rather than in a warning line.
+  const leaks = cleanupFailures(health, results);
+  const runOutcome = runExitCode({ escalated: esc, blocked: blocked.length, aborted, cleanupFailures: leaks.length });
+  const exitCode = publishError ? 3 : runOutcome;
   const latestReportErrors = health.report.latestMirrorErrors;
   const summary = [
     aborted ? `\nABORTED by circuit breaker — escalation rate exceeded ${ENV.abortEscalationRate}. The model may not be capable of this plan; consider the premium path or a different FARM_MODEL.` : ``,
@@ -2443,6 +2698,15 @@ async function main() {
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
     `Run: ${runId}  (artifacts: ${runDir})`,
+    // #398: never let a leak be something the operator has to go looking for.
+    leaks.length
+      ? [
+          `\nCLEANUP DEGRADED — ${leaks.length} resource(s) could not be released and re-verified:`,
+          ...leaks.map((l) => `  - ${l.target} (${l.owner}): ${l.detail}`),
+          `Git may still register these worktrees, or the directories may still be on disk. The next run's`,
+          `pre-cleanup is destructive and best-effort, so clear them before re-running. Exit is non-zero for this alone.`,
+        ].join("\n")
+      : ``,
     // The success breadcrumb is SUPPRESSED when the authoritative publication
     // failed — pointing an operator at a farm-report.md that is not there is
     // the defect. Every claim below has to be true of what is actually on disk:
@@ -2452,10 +2716,10 @@ async function main() {
     publishError
       ? [
           `\nRECEIPT PUBLICATION FAILED — run ${runId} could not publish its complete authoritative report under ${runDir}: ${msgOf(publishError)}`,
-          `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but this run's durable receipt is missing or incomplete,`,
+          `The tasks themselves finished ${runOutcome === 0 ? "green" : "with escalations/blocks/unreleased worktrees"}, but this run's durable receipt is missing or incomplete,`,
           `so it cannot be reliably reconciled or audited. Inspect ${runDir} for whatever did land.`,
           `${path.join(ENV.reportDir, "farm-report.json")} / .md were NOT refreshed and do not describe run ${runId}.`,
-          `Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`,
+          `Exiting 3 (receipt failure) rather than ${runOutcome} (task outcome).`,
         ].join("\n")
       : latestReportErrors.length
         ? // Non-fatal, and stated as such. The authoritative receipt is
@@ -2529,6 +2793,7 @@ async function writeReport(
 
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
+  const leaks = cleanupFailures(health, results);
 
   // #387: the report carries its own integrity statement, so a consumer never
   // has to guess whether a short stream or a missing patch is real or a
@@ -2551,6 +2816,10 @@ async function writeReport(
       unavailable_total: health.diffs.unavailableTotal,
       latest_mirror_errors: health.diffs.latestMirrorErrors,
     },
+    // #398: the run's resource-ownership statement. `released` is an explicit
+    // positive claim, so a consumer can distinguish "nothing leaked" from "this
+    // report predates the check" without inferring it from an absent key.
+    cleanup: { released: leaks.length === 0, failures: leaks },
   };
 
   const json = JSON.stringify(
@@ -2564,6 +2833,7 @@ async function writeReport(
     ``,
     aborted ? `> **ABORTED by circuit breaker** — escalation rate exceeded threshold.\n` : ``,
     streamComplete ? `` : `> **Streaming rail incomplete** — ${health.stream.errors.length} write failure(s) on \`farm-results.jsonl\`; this report is authoritative for settled tasks.\n`,
+    leaks.length ? `> **CLEANUP DEGRADED** — ${leaks.length} worktree/branch could not be released; see Resource cleanup below.\n` : ``,
     `Run: \`${runId}\` — artifacts under \`${runDir}\``,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     ``,
@@ -2584,6 +2854,8 @@ async function writeReport(
           ...unavailable.map((u) => `- **${u.id}** — diff evidence unavailable: ${u.reason}`),
         ]
       : [`Every settled task with a non-empty diff has a patch under \`${diffsDir}\`.`]),
+    ``,
+    ...cleanupReportLines(health, results),
     ``,
     `## Warnings — review during spec-compliance`,
     ...results.filter((r) => r.warning).map((r) => {
