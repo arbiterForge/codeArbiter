@@ -20,6 +20,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   clear the intent is (ADR-0022).
 
 ### Fixed
+- The guard layer now normalizes a non-object hook payload to an empty payload
+  at `read_input()`, so the adapter's shape check below is no longer the only
+  thing standing between a valid-JSON non-object and an `AttributeError` out of
+  a guard. The adapter's own refusal is unchanged and deliberate: it is a
+  router, so a payload it cannot route is one it cannot prove safe, while a
+  guard that cannot parse its own input takes the documented warn-and-proceed
+  path. ADR-0020 records the asymmetry.
 - The PreToolUse adapter validates the hook payload's shape before routing it.
   A valid-JSON but non-object payload (`null`, an array, a string, a number, a
   bool) used to raise `AttributeError` out of the adapter — exit 1, a traceback,
