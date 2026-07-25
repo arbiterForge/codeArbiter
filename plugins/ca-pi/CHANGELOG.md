@@ -2,6 +2,19 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.8] - 2026-07-25
+
+### Added
+
+- The final-argument authority promotion STOP named by ADR-0014/ADR-0016 is
+  now proven against the INSTALLED Pi candidate rather than an in-memory host
+  double. A new live fixture loads codeArbiter plus a deliberately later
+  trusted extension through Pi's own loader, runner, and tool wrapper, and
+  proves the later extension's argument rewrite is re-judged and blocked
+  before the governed mutator runs, that it cannot take ownership of that
+  mutator, and that real ownership drift fails closed. It runs in every
+  blocking supported-version platform cell.
+
 ## [0.1.7] - 2026-07-25
 
 ### Fixed
