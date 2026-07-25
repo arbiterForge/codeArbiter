@@ -41,6 +41,20 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- A session started inside a linked worktree no longer repoints the **main**
+  repository's git-level enforcement at a path that dies with that worktree.
+  The shared `<plugin>.path` enforcer entry lives in the git *common* dir, so
+  every linked worktree writes the main repo's copy — and the SessionStart
+  self-heal pinned it to whatever plugin root the session happened to load,
+  which inside a worktree is the worktree's own. Pruning the worktree then left
+  H-01, H-03, H-05, H-09b, H-10b, H-11 and H-19 pointing at nothing, with no
+  announcement: the repo keeps looking governed. An ephemeral enforcer is now
+  refused in both the producer (`_githooks._write_path_entry`) and the caller
+  (`session-start.py`), leaving the previously registered install in place — a
+  stale-but-durable enforcer still enforces, an absent one does not. A stale but
+  durable path is still refreshed, so the guard cannot become a kill-switch
+  (issue #441; same bug class as #438's statusline pin, sharing its
+  `_durabilitylib.is_ephemeral_path` predicate).
 - A hook payload that is valid JSON but not an object (`[]`, `3`, `"str"`,
   `true`, `null`) is normalized to an empty payload at `read_input()` rather
   than handed to the guards as a non-dict. Downstream, `tool_input()` evaluates

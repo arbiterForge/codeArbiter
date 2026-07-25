@@ -7,6 +7,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 ## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
 
 ### Fixed
+- A session started inside a linked worktree no longer repoints the main
+  repository's git-level enforcement at a worktree path that is pruned out from
+  under it. The enforcer entry is shared through the git common dir, so an
+  ephemeral plugin root used to overwrite the main repo's registration and leave
+  it silently ungated. Refused now in both the producer and the caller; a stale
+  but durable path is still refreshed (issue #441).
 - The guard layer now normalizes a non-object hook payload to an empty payload
   at `read_input()`, so the adapter's shape check below is no longer the only
   thing standing between a valid-JSON non-object and an `AttributeError` out of
