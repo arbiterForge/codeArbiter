@@ -2,6 +2,16 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.18] - 2026-07-25
+
+### Changed
+
+- The bundled `release` routine now documents published-tag immutability: a bad
+  release is corrected by publishing a new version, never by moving, retargeting,
+  or deleting an existing tag, and every newly published tag records where it
+  pointed so repository CI can prove it never moved (issue #386). Payload-only
+  change to the generated surface; no adapter behavior changes.
+
 ## [0.1.16] - 2026-07-25
 
 ### Changed
