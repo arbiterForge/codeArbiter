@@ -62,13 +62,19 @@ def sandbox_test_files(repo_root: Path) -> list[Path]:
     return sorted(found)
 
 
-def declared_layers(repo_root: Path) -> set[str]:
-    """Layer names the committed ca-sandbox sources gate a real-container suite on."""
-    layers: set[str] = set()
+def declared_layer_sites(repo_root: Path) -> dict[str, list[str]]:
+    """Layer name -> the files declaring it.  A layer must have exactly one site."""
+    sites: dict[str, list[str]] = {}
     for path in sandbox_test_files(repo_root):
         text = path.read_text(encoding="utf-8")
-        layers.update(match.group("layer") for match in _GATE_CALL.finditer(text))
-    return layers
+        for layer in {match.group("layer") for match in _GATE_CALL.finditer(text)}:
+            sites.setdefault(layer, []).append(path.name)
+    return {layer: sorted(files) for layer, files in sites.items()}
+
+
+def declared_layers(repo_root: Path) -> set[str]:
+    """Layer names the committed ca-sandbox sources gate a real-container suite on."""
+    return set(declared_layer_sites(repo_root))
 
 
 def recorded_layers(sentinel: Path) -> set[str]:
@@ -82,7 +88,15 @@ def recorded_layers(sentinel: Path) -> set[str]:
 
 def verify(repo_root: Path, sentinel: Path) -> tuple[int, str]:
     """Return (exit code, human report)."""
-    declared = declared_layers(repo_root)
+    sites = declared_layer_sites(repo_root)
+    shared = {layer: files for layer, files in sites.items() if len(files) > 1}
+    if shared:
+        # Two suites behind one sentinel key: either one alone recording makes
+        # both look executed, so the coverage check silently loses a layer.
+        return 1, "layer names shared by more than one suite: " + "; ".join(
+            f"{layer} <- {', '.join(files)}" for layer, files in sorted(shared.items())
+        )
+    declared = set(sites)
     if not declared:
         return 1, (
             "no dockerGate() layer declarations found under "

@@ -20,9 +20,12 @@
  *   5. Structural cross-check: `docker inspect` on the running container shows no
  *      "Type":"bind" mount (the structural reason the canary is unreachable).
  *
- * Docker-gated: the whole suite guards behind a `docker info` probe and skips
- * cleanly on a host without Docker. Every object created is namespaced with this
- * task id and the `ca.sandbox.build=1` label, and torn down in afterAll.
+ * Docker-gated through `dockerGate()` (docker-gate.ts): the suite skips cleanly
+ * on a developer host without Docker, but under CA_SANDBOX_REQUIRE_DOCKER — the
+ * mode required CI runs in — an absent daemon FAILS the run instead, because
+ * "the isolation canary did not run" must never read as "isolation holds"
+ * (issue #406). Every object created is namespaced with this task id and the
+ * `ca.sandbox.build=1` label, and torn down in afterAll.
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { dockerGate } from "../docker-gate.ts";

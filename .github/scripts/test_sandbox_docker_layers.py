@@ -127,6 +127,24 @@ class VerifyTest(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("ghost", report)
 
+    def test_two_suites_sharing_one_layer_name_is_rejected(self):
+        # One sentinel key for two suites means either suite alone recording
+        # makes both look executed - the coverage check would lose a layer.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = fake_tree(
+                Path(tmp),
+                {
+                    "run.test.ts": 'const d = dockerGate("run");\n',
+                    "rerun.test.ts": 'const d = dockerGate("run");\n',
+                },
+            )
+            sentinel = Path(tmp) / "sentinel.txt"
+            sentinel.write_text("run\n", encoding="utf-8", newline="\n")
+            code, report = layers.verify(root, sentinel)
+            self.assertEqual(code, 1)
+            self.assertIn("run.test.ts", report)
+            self.assertIn("rerun.test.ts", report)
+
     def test_a_tree_declaring_no_layers_fails_instead_of_vacuously_passing(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = fake_tree(Path(tmp), {"mounts.test.ts": "describe('unit', () => {});\n"})
