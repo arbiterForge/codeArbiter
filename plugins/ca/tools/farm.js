@@ -895,6 +895,29 @@ async function resetWorktree(wt) {
   await git(["reset", "--hard", "HEAD"], wt);
   await git(["clean", "-fd"], wt);
 }
+async function setupFingerprint(wt, t, deps) {
+  const parts = [JSON.stringify(t.setup ?? [])];
+  for (const rel of t.setupInputs ?? [])
+    parts.push(`${rel}=${await deps.fileHash(path3.resolve(wt, rel)) ?? "absent"}`);
+  return createHash("sha256").update(parts.join("\0")).digest("hex");
+}
+async function runSetupPhases(wt, t, deps, state) {
+  if (t.setup && t.setup.length > 0) {
+    const key = await setupFingerprint(wt, t, deps);
+    if (key !== state.key) {
+      const r = await deps.runGate(wt, t.setup);
+      if (!r.ok) return redactSecrets(`setup failed: ${r.failed}
+${r.tail}`);
+      state.key = key;
+    }
+  }
+  if (t.setupEachAttempt && t.setupEachAttempt.length > 0) {
+    const r = await deps.runGate(wt, t.setupEachAttempt);
+    if (!r.ok) return redactSecrets(`setup failed (setupEachAttempt): ${r.failed}
+${r.tail}`);
+  }
+  return null;
+}
 function mintRunId() {
   return randomBytes(8).toString("hex");
 }
@@ -1036,11 +1059,8 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
     try {
       const prep = await deps.prepareWorktree(branch, wt, taskBranch);
       if (prep) return { ...base, note: prep };
-      if (t.setup && t.setup.length > 0) {
-        const sr = await deps.runGate(wt, t.setup);
-        if (!sr.ok) return { ...base, note: redactSecrets(`setup failed: ${sr.failed}
-${sr.tail}`) };
-      }
+      const setupNote = await runSetupPhases(wt, t, deps, { key: null });
+      if (setupNote) return { ...base, note: setupNote };
       const testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
       const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
       const pt = w.promptTokens ?? 0;
@@ -1100,17 +1120,15 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   let completionTokens = 0;
   let lastWarning;
   let mutationScore = null;
+  const setupState = { key: null };
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) {
       if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
       await deps.resetWorktree(wt);
     }
-    if (t.setup && t.setup.length > 0) {
-      const setupResult = await deps.runGate(wt, t.setup);
-      if (!setupResult.ok)
-        return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: redactSecrets(`setup failed: ${setupResult.failed}
-${setupResult.tail}`), promptTokens, completionTokens };
-    }
+    const setupNote = await runSetupPhases(wt, t, deps, setupState);
+    if (setupNote)
+      return { id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens };
     const injected = await buildEnrichment(wt, t, priorInScope);
     const forbiddenExtra = driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0;
     const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
@@ -1261,6 +1279,99 @@ function assertSecureBaseUrl(url) {
   if (parsed.protocol === "http:" && LOOPBACK_HOSTS.has(parsed.hostname)) return;
   throw new Error("apiBaseUrl must use HTTPS (HTTP is allowed only for bare loopback hosts)");
 }
+var PLAN_SHAPE = {
+  plan: {
+    required: ["meta", "tasks"],
+    props: { meta: "meta", tasks: "task[]" }
+  },
+  meta: {
+    required: ["name"],
+    props: {
+      name: "string",
+      repo: "string",
+      model: "string",
+      apiBaseUrl: "string",
+      setup: "string[]",
+      setupEachAttempt: "string[]",
+      setupInputs: "string[]"
+    }
+  },
+  task: {
+    required: ["id", "description", "filesInScope", "test", "gate"],
+    props: {
+      id: "string",
+      description: "string",
+      deps: "string[]",
+      filesInScope: "string[]",
+      test: "test",
+      gate: "gate",
+      context: "string",
+      model: "string",
+      maxRetries: "integer",
+      setup: "string[]",
+      setupEachAttempt: "string[]",
+      setupInputs: "string[]"
+    }
+  },
+  test: { required: ["path"], props: { path: "string" } },
+  gate: { required: ["commands"], props: { commands: "string[]" } }
+};
+var PLAN_NON_EMPTY = /* @__PURE__ */ new Set(["plan.tasks", "task.filesInScope", "gate.commands"]);
+var PLAN_INT_MIN = { "task.maxRetries": 0 };
+var PLAN_LABEL_MAX = 40;
+var clipLabel = (s) => s.length <= PLAN_LABEL_MAX ? s : `${s.slice(0, PLAN_LABEL_MAX)}\u2026`;
+var jsonTypeName = (v) => v === null ? "null" : Array.isArray(v) ? "array" : typeof v;
+var isJsonObject = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+function checkPlanField(v, type, at, key) {
+  switch (type) {
+    case "string":
+      if (typeof v !== "string") throw new Error(`${at} must be a string (got ${jsonTypeName(v)})`);
+      return;
+    case "integer": {
+      const min = PLAN_INT_MIN[key] ?? 0;
+      if (typeof v !== "number" || !Number.isInteger(v))
+        throw new Error(`${at} must be an integer >= ${min} (got ${jsonTypeName(v)})`);
+      if (v < min) throw new Error(`${at} must be an integer >= ${min}`);
+      return;
+    }
+    case "string[]": {
+      if (!Array.isArray(v)) throw new Error(`${at} must be an array of strings (got ${jsonTypeName(v)})`);
+      if (PLAN_NON_EMPTY.has(key) && v.length === 0)
+        throw new Error(`${at} must list at least one entry`);
+      for (const [i, entry] of v.entries())
+        if (typeof entry !== "string")
+          throw new Error(`${at}[${i}] must be a string (got ${jsonTypeName(entry)})`);
+      return;
+    }
+    case "task[]": {
+      if (!Array.isArray(v)) throw new Error(`${at} must be an array of task objects (got ${jsonTypeName(v)})`);
+      if (PLAN_NON_EMPTY.has(key) && v.length === 0)
+        throw new Error(`${at} must list at least one task`);
+      for (const [i, entry] of v.entries()) checkPlanObject(entry, "task", `${at}[${i}]`);
+      return;
+    }
+    default:
+      checkPlanObject(v, type, at);
+  }
+}
+function checkPlanObject(value, spec, at) {
+  if (!isJsonObject(value)) throw new Error(`${at} must be a JSON object (got ${jsonTypeName(value)})`);
+  const { required, props } = PLAN_SHAPE[spec];
+  const declared = props;
+  for (const key of Object.keys(value))
+    if (!Object.hasOwn(declared, key)) throw new Error(`${at}: unknown property "${clipLabel(key)}"`);
+  for (const key of required)
+    if (value[key] === void 0) throw new Error(`${at}.${key} is required`);
+  for (const [key, type] of Object.entries(declared)) {
+    const v = value[key];
+    if (v === void 0) continue;
+    checkPlanField(v, type, `${at}.${key}`, `${spec}.${key}`);
+  }
+}
+function parsePlan(raw) {
+  checkPlanObject(raw, "plan", "plan");
+  return raw;
+}
 function validate(plan) {
   if (plan.meta.apiBaseUrl) assertSecureBaseUrl(plan.meta.apiBaseUrl);
   const checkSetup = (label, cmds) => {
@@ -1270,7 +1381,17 @@ function validate(plan) {
       if (cmd.length > 1024) throw new Error(`${label}: setup command exceeds 1024 chars`);
     }
   };
+  const checkSetupInputs = (label, inputs) => {
+    for (const rel of inputs) {
+      if (!rel || typeof rel !== "string")
+        throw new Error(`${label}: setupInputs entries must be non-empty strings`);
+      if (rel.includes("..") || path3.isAbsolute(rel))
+        throw new Error(`${label}: setupInputs entry "${rel}" must be a relative path with no ".." segments`);
+    }
+  };
   if (plan.meta.setup) checkSetup("plan.meta.setup", plan.meta.setup);
+  if (plan.meta.setupEachAttempt) checkSetup("plan.meta.setupEachAttempt", plan.meta.setupEachAttempt);
+  if (plan.meta.setupInputs) checkSetupInputs("plan.meta", plan.meta.setupInputs);
   const ids = /* @__PURE__ */ new Set();
   for (const t of plan.tasks) {
     if (!SAFE_TASK_ID.test(t.id))
@@ -1297,6 +1418,8 @@ function validate(plan) {
         throw new Error(`task ${t.id}: gate command exceeds 1024 chars`);
     }
     if (t.setup) checkSetup(`task ${t.id} setup`, t.setup);
+    if (t.setupEachAttempt) checkSetup(`task ${t.id} setupEachAttempt`, t.setupEachAttempt);
+    if (t.setupInputs) checkSetupInputs(`task ${t.id}`, t.setupInputs);
   }
   for (const t of plan.tasks)
     for (const d of t.deps ?? [])
@@ -1438,10 +1561,19 @@ async function main() {
   const args = process.argv.slice(2);
   const canary = args.includes("--canary");
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
-  const plan = JSON.parse(await readFile2(planPath, "utf8"));
-  validate(plan);
-  if (plan.meta.setup) {
-    for (const t of plan.tasks) if (t.setup === void 0) t.setup = plan.meta.setup;
+  let plan;
+  try {
+    plan = parsePlan(JSON.parse(await readFile2(planPath, "utf8")));
+    validate(plan);
+  } catch (e) {
+    console.error(`Error: invalid plan ${planPath}: ${msgOf(e).slice(0, 300)}`);
+    return process.exit(1);
+  }
+  for (const t of plan.tasks) {
+    if (plan.meta.setup && t.setup === void 0) t.setup = plan.meta.setup;
+    if (plan.meta.setupEachAttempt && t.setupEachAttempt === void 0)
+      t.setupEachAttempt = plan.meta.setupEachAttempt;
+    if (plan.meta.setupInputs && t.setupInputs === void 0) t.setupInputs = plan.meta.setupInputs;
   }
   if (canary) return runCanary(plan);
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
@@ -1731,6 +1863,7 @@ if (_thisFile === _entryFile) {
 }
 export {
   DEFAULT_API_BASE_URL,
+  PLAN_SHAPE,
   SAFE_RUN_ID,
   SAFE_TASK_ID,
   _resetAllowedWorktreeRoot,
@@ -1754,6 +1887,7 @@ export {
   numEnv,
   parseChatCompletion,
   parseMutationHookOutput,
+  parsePlan,
   readSampling,
   redactSecrets,
   run,
