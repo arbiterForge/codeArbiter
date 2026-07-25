@@ -56,6 +56,12 @@ export type ExecResult = {
   stderr: string;
   durationMs: number;
   truncated: boolean;
+  /**
+   * #394: the command hit its deadline and was killed, rather than exiting.
+   * Typed separately from `exitCode` because an ordinary non-zero exit and a
+   * hang are different events with different remedies.
+   */
+  timedOut?: boolean;
 };
 
 export type ExecOptions = {
@@ -126,9 +132,36 @@ export function execInSandbox(id: string, argv: string[], opts: ExecOptions = {}
   const r = dockerRun(args);
   const durationMs = Date.now() - start;
 
+  // #394 ESCALATION. spawnSync's deadline kills the docker CLIENT; the process
+  // it started INSIDE the container keeps running, holding the box open and
+  // whatever it was doing. Untrusted repository code can therefore wedge a
+  // sandbox permanently even after the exec "returns". So a timed-out exec
+  // reaches back in and stops the container it targeted.
+  //
+  // Only on a timeout. Escalation stops a container, and doing that on an
+  // ordinary non-zero exit would destroy a working box every time a command
+  // returned 1. Failure of the escalation itself is reported but never masks
+  // the original timeout - a wedged daemon is exactly the case where the
+  // cleanup cannot succeed, and the timeout is the more important fact.
+  let escalation = "";
+  if (r.timedOut) {
+    // `--time 0` on purpose: a graceful window is what the deadline already
+    // spent. Asking for another 5 seconds of grace here also means the
+    // escalation can itself exceed the runner's own timeout and be killed
+    // before it lands - measured, with a 4s runner deadline a `stop --time 5`
+    // never completes, and the container survives the "cleanup".
+    const stopped = dockerRun(["stop", "--time", "0", id]);
+    escalation = stopped.code === 0
+      ? `
+ca-sandbox: stopped container ${id} after the exec deadline.`
+      : `
+ca-sandbox: could not stop container ${id} after the exec deadline `
+        + `(${stopped.stderr.trim() || `exit ${stopped.code}`}); it may still be running.`;
+  }
+
   // Cap each stream INDEPENDENTLY (a huge stdout must not steal stderr's budget).
   const out = capBytes(r.stdout, maxBytes);
-  const err = capBytes(r.stderr, maxBytes);
+  const err = capBytes(r.stderr + escalation, maxBytes);
 
   return {
     id,
@@ -137,5 +170,6 @@ export function execInSandbox(id: string, argv: string[], opts: ExecOptions = {}
     stderr: err.value,
     durationMs,
     truncated: out.truncated || err.truncated,
+    ...(r.timedOut ? { timedOut: true } : {}),
   };
 }

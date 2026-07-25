@@ -83,8 +83,51 @@ function buildMountArgs(specs) {
 // docker.ts
 import { spawnSync } from "node:child_process";
 var DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
-function runDocker(args, extra = {}) {
-  const r = spawnSync("docker", args, { encoding: "utf8", env: DOCKER_ENV, ...extra });
+var DEFAULT_DOCKER_TIMEOUT_MS = 12e4;
+var DOCKER_OPERATION_TIMEOUTS_MS = Object.freeze({
+  inspect: 3e4,
+  ps: 3e4,
+  images: 3e4,
+  version: 3e4,
+  info: 3e4,
+  volume: 6e4,
+  stop: 6e4,
+  kill: 6e4,
+  rm: 6e4,
+  rmi: 12e4,
+  network: 6e4,
+  cp: 6e5,
+  run: 9e5,
+  create: 3e5,
+  start: 3e5,
+  exec: 18e5,
+  build: 18e5,
+  buildx: 18e5,
+  pull: 18e5
+});
+function timeoutForArgs(args) {
+  return DOCKER_OPERATION_TIMEOUTS_MS[args[0] ?? ""] ?? DEFAULT_DOCKER_TIMEOUT_MS;
+}
+var DOCKER_TIMEOUT_EXIT_CODE = 124;
+function runDocker(args, extra = {}, options = {}) {
+  const timeout = options.timeoutMs ?? timeoutForArgs(args);
+  const spawn3 = options.spawn ?? spawnSync;
+  const r = spawn3("docker", args, {
+    encoding: "utf8",
+    env: DOCKER_ENV,
+    ...extra,
+    timeout,
+    killSignal: "SIGKILL"
+  });
+  const timedOut = r.error?.code === "ETIMEDOUT" || r.status === null && r.signal !== null && r.signal !== void 0;
+  if (timedOut) {
+    return {
+      code: DOCKER_TIMEOUT_EXIT_CODE,
+      stdout: r.stdout ?? "",
+      stderr: `${r.stderr ?? ""}ca-sandbox: \`docker ${args[0] ?? ""}\` timed out after ${timeout}ms and was killed (issue #394).`,
+      timedOut: true
+    };
+  }
   return {
     code: r.status ?? 1,
     stdout: r.stdout ?? "",
@@ -94,8 +137,8 @@ function runDocker(args, extra = {}) {
 function defaultDockerRun(args) {
   return runDocker(args);
 }
-function makeDockerRun(extra) {
-  return (args) => runDocker(args, extra);
+function makeDockerRun(extra, options = {}) {
+  return (args) => runDocker(args, extra, options);
 }
 
 // run.ts
@@ -832,15 +875,23 @@ function execInSandbox(id, argv, opts = {}) {
   const start = Date.now();
   const r = dockerRun(args);
   const durationMs = Date.now() - start;
+  let escalation = "";
+  if (r.timedOut) {
+    const stopped = dockerRun(["stop", "--time", "0", id]);
+    escalation = stopped.code === 0 ? `
+ca-sandbox: stopped container ${id} after the exec deadline.` : `
+ca-sandbox: could not stop container ${id} after the exec deadline (${stopped.stderr.trim() || `exit ${stopped.code}`}); it may still be running.`;
+  }
   const out = capBytes(r.stdout, maxBytes);
-  const err = capBytes(r.stderr, maxBytes);
+  const err = capBytes(r.stderr + escalation, maxBytes);
   return {
     id,
     exitCode: r.code,
     stdout: out.value,
     stderr: err.value,
     durationMs,
-    truncated: out.truncated || err.truncated
+    truncated: out.truncated || err.truncated,
+    ...r.timedOut ? { timedOut: true } : {}
   };
 }
 
