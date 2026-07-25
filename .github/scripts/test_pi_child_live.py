@@ -23,6 +23,7 @@ REPO = pathlib.Path(__file__).resolve().parents[2]
 TASK_FILES = (
     "plugins/ca-pi/tools/src/child-env.ts",
     "plugins/ca-pi/tools/src/runner.ts",
+    "plugins/ca-pi/tools/src/inference-broker.ts",
     "plugins/ca-pi/tools/src/attestation.ts",
     "plugins/ca-pi/tools/src/roles.ts",
     "plugins/ca-pi/tools/src/child-extension.ts",
@@ -80,8 +81,8 @@ class PiChildFixtureContract(unittest.TestCase):
         # no credential-store reference at all. Widening this exemption to a second
         # file requires a superseding ADR, not an edit here.
         transport = "plugins/ca-pi/tools/src/child-env.ts"
-        self.assertIn(transport, TASK_FILES[:5])
-        non_transport = [item for item in TASK_FILES[:5] if item != transport]
+        self.assertIn(transport, TASK_FILES[:6])
+        non_transport = [item for item in TASK_FILES[:6] if item != transport]
         sources = "\n".join((REPO / item).read_text(encoding="utf-8") for item in non_transport)
         self.assertNotRegex(sources, r"auth\.json|models\.json|\.aws[/\\]credentials|statSync|lstatSync")
 
@@ -89,12 +90,13 @@ class PiChildFixtureContract(unittest.TestCase):
         # and never a stat-then-open race in place of a retained handle.
         child_env = (REPO / transport).read_text(encoding="utf-8")
         self.assertNotRegex(child_env, r"\.aws[/\\]credentials|statSync|lstatSync")
-        # ADR-0016's bounded-projection contract, asserted positively.
+        # ADR-0016's bounded-READ contract, asserted positively. The read survives #455 —
+        # the parent still needs the operator credential to attach it upstream itself.
         self.assertIn("MAX_AUTH_FILE_BYTES", child_env)          # strict size bound
         self.assertIn("mkdtemp", child_env)                      # fresh private child root
         self.assertIn("input.provider", child_env)               # exact selected record only
         self.assertIn("sensitiveValues", child_env)              # scrub set for every exit path
-        self.assertIn("truncate(0)", child_env)                  # credential scrubbed on cleanup
+        self.assertIn("truncate(0)", child_env)                  # projection scrubbed on cleanup
 
         # ADR-0017's credential-blind CONFIGURATION projection, asserted positively. It amends
         # only ADR-0016's "no Pi configuration" clause; credential projection is unchanged.
@@ -111,6 +113,41 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertIn("CODEARBITER_SUBAGENT", sources)
         self.assertIn("codearbiter-internal-child-handshake", sources)
         self.assertIn("codeArbiter isolated child readiness", sources)
+
+    def test_auth_json_projection_path_is_gone_not_merely_unused(self) -> None:
+        # #455 AC-5. ADR-0016's auth.json PROJECTION clause is superseded outright: the
+        # parent may still READ the operator store for the broker's upstream credential,
+        # but nothing writes a credential file into the child's private agent dir, and the
+        # provider credential environment variables no longer cross either. These
+        # assertions fail if either path is reintroduced.
+        child_env = (REPO / "plugins/ca-pi/tools/src/child-env.ts").read_text(encoding="utf-8")
+        self.assertNotIn("authPath", child_env)
+        self.assertNotIn("credentialHandle", child_env)
+        self.assertNotRegex(child_env, r'open\([^)]*"auth\.json"[^)]*"wx"')
+        self.assertNotRegex(child_env, r'PI_CODING_AGENT_DIR!?,\s*"auth\.json"')
+        self.assertNotIn("copyDefined(child, input.parent, providerNames)", child_env)
+        self.assertIn("BROKER_TOKEN_ENV_NAME", child_env)
+        self.assertIn("PI_BUILTIN_UPSTREAM", child_env)
+        self.assertIn("BROKER_INELIGIBLE_PROVIDERS", child_env)
+        self.assertIn("ChildBrokerAuthorityError", child_env)
+
+    def test_inference_broker_binds_loopback_only_streams_and_fails_closed(self) -> None:
+        # #455 AC-4 and the "loopback only, OS-assigned port" hard requirement, asserted at
+        # the source so a later edit cannot quietly widen the listener or start buffering.
+        broker = (REPO / "plugins/ca-pi/tools/src/inference-broker.ts").read_text(encoding="utf-8")
+        self.assertIn('host: "127.0.0.1", port: 0', broker)
+        self.assertNotIn("0.0.0.0", broker)
+        self.assertIn("codeArbiter inference broker failed closed.", broker)
+        self.assertIn("timingSafeEqual", broker)
+        self.assertIn("upstreamResponse.pipe(response)", broker)
+        self.assertIn("request.pipe(forward)", broker)
+        self.assertNotRegex(broker, r"await\s+\w*[Rr]esponse\.(text|json|arrayBuffer)\(")
+        # The runner owns the listener's lifetime and the token's revocation.
+        runner = (REPO / "plugins/ca-pi/tools/src/runner.ts").read_text(encoding="utf-8")
+        self.assertIn("startInferenceBroker", runner)
+        self.assertIn("isolation-broker", runner)
+        self.assertIn("broker.revoke()", runner)
+        self.assertIn("await closeBroker();", runner)
 
     def test_public_runner_has_no_shipping_test_injection_seam(self) -> None:
         tools = REPO / "plugins/ca-pi/tools"
@@ -255,8 +292,14 @@ class DeterministicOpenAiServer:
     def _handle(self, handler: http.server.BaseHTTPRequestHandler) -> None:
         if handler.path != "/v1/chat/completions":
             raise AssertionError(f"unexpected provider route: {handler.path}")
+        # #455 AC-3: the child holds only an ephemeral broker token, so the ONLY way the real
+        # operator key reaches this upstream is the parent's loopback broker substituting it.
         if handler.headers.get("Authorization") != f"Bearer {PROVIDER_KEY}":
             raise AssertionError("selected-provider key was not passed only as the auth header")
+        # ...and the child's token must never ride along on any header.
+        for name, value in handler.headers.items():
+            if re.fullmatch(r"(?:Bearer )?[0-9a-f]{64}", value or ""):
+                raise AssertionError(f"child broker token reached the upstream provider on {name}")
         length = int(handler.headers.get("Content-Length", "0"))
         if length <= 0 or length > 1_048_576:
             raise AssertionError(f"provider request size is invalid: {length}")

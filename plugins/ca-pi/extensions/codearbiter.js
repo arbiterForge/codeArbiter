@@ -6108,7 +6108,7 @@ async function loadRoleCatalog(packageRoot) {
 }
 
 // src/runner.ts
-import { randomBytes, randomUUID as randomUUID4 } from "node:crypto";
+import { randomBytes as randomBytes2, randomUUID as randomUUID4 } from "node:crypto";
 import { readFile as readFile5, realpath as realpath5, stat } from "node:fs/promises";
 import { dirname as dirname6, isAbsolute as isAbsolute7, resolve as resolve11 } from "node:path";
 import { StringDecoder } from "node:string_decoder";
@@ -6118,6 +6118,226 @@ import { fileURLToPath as fileURLToPath4 } from "node:url";
 import { mkdir, mkdtemp, open as open3, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute as isAbsolute6, join } from "node:path";
+
+// src/inference-broker.ts
+import { randomBytes, timingSafeEqual } from "node:crypto";
+import {
+  createServer,
+  request as httpRequest
+} from "node:http";
+import { request as httpsRequest } from "node:https";
+var BROKER_TOKEN_ENV_NAME = "CODEARBITER_PI_BROKER_TOKEN";
+var BROKER_ROUTE_PREFIX = "/v1";
+var MAX_REQUEST_TARGET_BYTES = 2048;
+var MAX_UPSTREAM_BASE_BYTES = 512;
+var UPSTREAM_PROTOCOLS = /* @__PURE__ */ new Set(["http:", "https:"]);
+var HOP_BY_HOP_HEADERS = /* @__PURE__ */ new Set([
+  "connection",
+  "keep-alive",
+  "proxy-authenticate",
+  "proxy-authorization",
+  "te",
+  "trailer",
+  "transfer-encoding",
+  "upgrade",
+  "host"
+]);
+var FAIL_CLOSED_BODY = '{"error":{"type":"codearbiter_broker_refused","message":"codeArbiter inference broker failed closed."}}';
+var InferenceBrokerError = class extends Error {
+  constructor() {
+    super("codeArbiter inference broker refused.");
+    this.name = "InferenceBrokerError";
+  }
+};
+function refuseBroker() {
+  throw new InferenceBrokerError();
+}
+function boundedUpstream(baseUrl) {
+  if (typeof baseUrl !== "string" || Buffer.byteLength(baseUrl, "utf8") > MAX_UPSTREAM_BASE_BYTES) refuseBroker();
+  if (baseUrl.includes("?") || baseUrl.includes("#")) refuseBroker();
+  let url;
+  try {
+    url = new URL(baseUrl);
+  } catch {
+    refuseBroker();
+  }
+  if (!UPSTREAM_PROTOCOLS.has(url.protocol)) refuseBroker();
+  if (url.username !== "" || url.password !== "") refuseBroker();
+  if (url.search !== "" || url.hash !== "") refuseBroker();
+  return {
+    origin: url.origin,
+    basePath: url.pathname.replace(/\/+$/u, ""),
+    secure: url.protocol === "https:"
+  };
+}
+function sameToken(candidate, token) {
+  const left = Buffer.from(candidate, "utf8");
+  const right = Buffer.from(token, "utf8");
+  return left.byteLength === right.byteLength && timingSafeEqual(left, right);
+}
+function substituteToken(value, token, credential) {
+  if (sameToken(value, token)) return credential;
+  const separator = value.indexOf(" ");
+  if (separator <= 0) return void 0;
+  const scheme = value.slice(0, separator);
+  const argument = value.slice(separator + 1);
+  if (scheme.includes(" ") || !sameToken(argument, token)) return void 0;
+  return `${scheme} ${credential}`;
+}
+function forwardedHeaders(raw, upstream, token) {
+  let authenticated = false;
+  const headers = /* @__PURE__ */ Object.create(null);
+  for (const [name, value] of Object.entries(raw)) {
+    if (value === void 0 || HOP_BY_HOP_HEADERS.has(name.toLowerCase())) continue;
+    if (typeof value === "string") {
+      const substituted = substituteToken(value, token, upstream.credential);
+      if (substituted === void 0) headers[name] = value;
+      else {
+        headers[name] = substituted;
+        authenticated = true;
+      }
+      continue;
+    }
+    headers[name] = value;
+  }
+  if (!authenticated) return void 0;
+  headers.host = new URL(upstream.origin).host;
+  for (const [name, value] of Object.entries(upstream.headers)) headers[name] = value;
+  return headers;
+}
+function upstreamTarget(requestUrl, upstream) {
+  if (typeof requestUrl !== "string" || Buffer.byteLength(requestUrl, "utf8") > MAX_REQUEST_TARGET_BYTES) return void 0;
+  let parsed;
+  try {
+    parsed = new URL(requestUrl, "http://127.0.0.1");
+  } catch {
+    return void 0;
+  }
+  if (parsed.pathname !== BROKER_ROUTE_PREFIX && !parsed.pathname.startsWith(`${BROKER_ROUTE_PREFIX}/`)) return void 0;
+  const suffix = parsed.pathname.slice(BROKER_ROUTE_PREFIX.length);
+  try {
+    return new URL(`${upstream.origin}${upstream.basePath}${suffix}${parsed.search}`);
+  } catch {
+    return void 0;
+  }
+}
+function failClosed(response, status) {
+  if (response.headersSent || response.writableEnded) {
+    response.destroy();
+    return;
+  }
+  response.writeHead(status, {
+    "Content-Type": "application/json",
+    "Content-Length": String(Buffer.byteLength(FAIL_CLOSED_BODY, "utf8")),
+    "Cache-Control": "no-store"
+  });
+  response.end(FAIL_CLOSED_BODY);
+}
+async function startInferenceBroker(options) {
+  if (typeof options?.nonce !== "string" || !/^[0-9a-f]{32}$/u.test(options.nonce)) refuseBroker();
+  const ownerNonce = options.nonce;
+  const token = randomBytes(32).toString("hex");
+  let upstream;
+  let revoked = false;
+  let closed;
+  const sockets = /* @__PURE__ */ new Set();
+  const handle = (request, response) => {
+    const bound = upstream;
+    if (revoked || bound === void 0) {
+      request.resume();
+      failClosed(response, 503);
+      return;
+    }
+    const target = upstreamTarget(request.url, bound);
+    if (target === void 0) {
+      request.resume();
+      failClosed(response, 404);
+      return;
+    }
+    const headers = forwardedHeaders(request.headers, bound, token);
+    if (headers === void 0) {
+      request.resume();
+      failClosed(response, 401);
+      return;
+    }
+    request.socket.setNoDelay(true);
+    const send = bound.secure ? httpsRequest : httpRequest;
+    const forward = send(target, { method: request.method ?? "POST", headers, agent: false }, (upstreamResponse) => {
+      if (response.writableEnded || response.destroyed) {
+        upstreamResponse.destroy();
+        return;
+      }
+      const responseHeaders = /* @__PURE__ */ Object.create(null);
+      for (const [name, value] of Object.entries(upstreamResponse.headers)) {
+        if (value === void 0 || HOP_BY_HOP_HEADERS.has(name.toLowerCase())) continue;
+        responseHeaders[name] = value;
+      }
+      responseHeaders.connection = "close";
+      if (responseHeaders["content-length"] === void 0) response.useChunkedEncodingByDefault = false;
+      response.writeHead(upstreamResponse.statusCode ?? 502, responseHeaders);
+      response.flushHeaders();
+      upstreamResponse.on("error", () => response.destroy());
+      upstreamResponse.pipe(response);
+    });
+    forward.setNoDelay(true);
+    forward.on("error", () => failClosed(response, 502));
+    response.on("close", () => {
+      if (!response.writableEnded) forward.destroy();
+    });
+    request.on("error", () => forward.destroy());
+    request.pipe(forward);
+  };
+  const server = createServer(handle);
+  server.on("connection", (socket) => {
+    sockets.add(socket);
+    socket.on("close", () => sockets.delete(socket));
+  });
+  await new Promise((resolve16, reject) => {
+    server.once("error", reject);
+    server.listen({ host: "127.0.0.1", port: 0, exclusive: true }, () => {
+      server.removeListener("error", reject);
+      resolve16();
+    });
+  }).catch(() => refuseBroker());
+  const address = server.address();
+  if (address === null || typeof address === "string") {
+    await new Promise((resolve16) => server.close(() => resolve16()));
+    refuseBroker();
+  }
+  const baseUrl = `http://127.0.0.1:${address.port}${BROKER_ROUTE_PREFIX}`;
+  return Object.freeze({
+    nonce: ownerNonce,
+    baseUrl,
+    token,
+    authorize(authority) {
+      if (revoked) refuseBroker();
+      if (typeof authority?.nonce !== "string" || !sameToken(authority.nonce, ownerNonce)) refuseBroker();
+      if (typeof authority?.credential !== "string" || authority.credential === "") refuseBroker();
+      const endpoint = boundedUpstream(authority.baseUrl);
+      upstream = Object.freeze({
+        ...endpoint,
+        credential: authority.credential,
+        headers: Object.freeze({ ...authority.headers })
+      });
+    },
+    revoke() {
+      revoked = true;
+      upstream = void 0;
+    },
+    async close() {
+      revoked = true;
+      upstream = void 0;
+      closed ??= new Promise((resolve16) => {
+        server.close(() => resolve16());
+        for (const socket of sockets) socket.destroy();
+        sockets.clear();
+      });
+      await closed;
+    }
+  });
+}
+
+// src/child-env.ts
 var WINDOWS_BASELINE = [
   "SystemRoot",
   "WINDIR",
@@ -6293,6 +6513,48 @@ var ChildConfigProjectionError = class extends Error {
 function refuseProjection() {
   throw new ChildConfigProjectionError();
 }
+var ChildBrokerAuthorityError = class extends Error {
+  constructor() {
+    super("Pi child inference broker authority refused.");
+    this.name = "ChildBrokerAuthorityError";
+  }
+};
+function refuseAuthority() {
+  throw new ChildBrokerAuthorityError();
+}
+var PI_BUILTIN_UPSTREAM = Object.freeze({
+  "ant-ling": "https://api.ant-ling.com/v1",
+  anthropic: "https://api.anthropic.com",
+  cerebras: "https://api.cerebras.ai/v1",
+  deepseek: "https://api.deepseek.com",
+  google: "https://generativelanguage.googleapis.com/v1beta",
+  groq: "https://api.groq.com/openai/v1",
+  huggingface: "https://router.huggingface.co/v1",
+  "kimi-coding": "https://api.kimi.com/coding",
+  minimax: "https://api.minimax.io/anthropic",
+  "minimax-cn": "https://api.minimaxi.com/anthropic",
+  mistral: "https://api.mistral.ai",
+  moonshotai: "https://api.moonshot.ai/v1",
+  "moonshotai-cn": "https://api.moonshot.cn/v1",
+  nvidia: "https://integrate.api.nvidia.com/v1",
+  openai: "https://api.openai.com/v1",
+  openrouter: "https://openrouter.ai/api/v1",
+  together: "https://api.together.ai/v1",
+  "vercel-ai-gateway": "https://ai-gateway.vercel.sh",
+  xai: "https://api.x.ai/v1",
+  xiaomi: "https://api.xiaomimimo.com/v1",
+  "xiaomi-token-plan-ams": "https://token-plan-ams.xiaomimimo.com/v1",
+  "xiaomi-token-plan-cn": "https://token-plan-cn.xiaomimimo.com/v1",
+  "xiaomi-token-plan-sgp": "https://token-plan-sgp.xiaomimimo.com/v1",
+  zai: "https://api.z.ai/api/coding/paas/v4",
+  "zai-coding-cn": "https://open.bigmodel.cn/api/coding/paas/v4"
+});
+var BROKER_INELIGIBLE_PROVIDERS = Object.freeze(/* @__PURE__ */ new Set([
+  "amazon-bedrock",
+  "google-vertex",
+  "github-copilot",
+  "openai-codex"
+]));
 function plainRecord(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
   const prototype = Object.getPrototypeOf(value);
@@ -6341,28 +6603,27 @@ function templateOnlyValue(value) {
   if (typeof value !== "string" || !PURE_ENV_REFERENCE.test(value)) refuseProjection();
   return value;
 }
-function sanitizedHeaderMap(value) {
+function capturedHeaderTemplates(value, capture) {
   if (!plainRecord(value)) refuseProjection();
   const entries = Object.entries(value);
   if (entries.length > MAX_PROJECTED_HEADERS) refuseProjection();
-  const headers = /* @__PURE__ */ Object.create(null);
   for (const [name, raw] of entries) {
     if (RESERVED_OBJECT_KEYS.has(name) || !PROJECTED_HEADER_NAME.test(name)) refuseProjection();
-    headers[name] = templateOnlyValue(raw);
+    capture.headerTemplates[name] = templateOnlyValue(raw);
   }
-  return headers;
 }
-function projectedModelRecord(value, allowed, shapes, endpoints) {
+function projectedModelRecord(value, allowed, shapes, capture) {
   if (!plainRecord(value)) refuseProjection();
   const record2 = /* @__PURE__ */ Object.create(null);
   for (const [key, raw] of Object.entries(value)) {
     if (!allowed.includes(key)) refuseProjection();
     if (key === "headers") {
-      record2[key] = sanitizedHeaderMap(raw);
+      capturedHeaderTemplates(raw, capture);
       continue;
     }
     if (key === "baseUrl") {
-      record2[key] = endpointOnlyValue(raw, endpoints);
+      const endpoint = endpointOnlyValue(raw, capture.endpoints);
+      capture.baseUrl ??= endpoint;
       continue;
     }
     if (!Object.prototype.hasOwnProperty.call(shapes, key) || !shapes[key](raw)) refuseProjection();
@@ -6370,26 +6631,27 @@ function projectedModelRecord(value, allowed, shapes, endpoints) {
   }
   return record2;
 }
-function projectedProviderRecord(value, endpoints) {
+function projectedProviderRecord(value, capture) {
   if (!plainRecord(value)) refuseProjection();
   const record2 = /* @__PURE__ */ Object.create(null);
   for (const [key, raw] of Object.entries(value)) {
     if (!PROJECTED_PROVIDER_KEYS.includes(key)) refuseProjection();
     if (key === "apiKey") {
-      record2[key] = templateOnlyValue(raw);
+      capture.apiKeyTemplate = templateOnlyValue(raw);
       continue;
     }
     if (key === "headers") {
-      record2[key] = sanitizedHeaderMap(raw);
+      capturedHeaderTemplates(raw, capture);
       continue;
     }
     if (key === "baseUrl") {
-      record2[key] = endpointOnlyValue(raw, endpoints);
+      capture.baseUrl = endpointOnlyValue(raw, capture.endpoints);
       continue;
     }
+    if (key === "oauth") refuseAuthority();
     if (key === "models") {
       if (!Array.isArray(raw) || raw.length > MAX_PROJECTED_ENTRIES) refuseProjection();
-      record2[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS, PROJECTED_MODEL_SHAPES, endpoints));
+      record2[key] = raw.map((entry) => projectedModelRecord(entry, PROJECTED_MODEL_KEYS, PROJECTED_MODEL_SHAPES, capture));
       continue;
     }
     if (key === "modelOverrides") {
@@ -6399,7 +6661,7 @@ function projectedProviderRecord(value, endpoints) {
       const overrides = /* @__PURE__ */ Object.create(null);
       for (const [id, entry] of entries) {
         if (id === "" || RESERVED_OBJECT_KEYS.has(id) || Buffer.byteLength(id, "utf8") > MAX_PROJECTED_STRING_BYTES) refuseProjection();
-        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS, PROJECTED_MODEL_OVERRIDE_SHAPES, endpoints);
+        overrides[id] = projectedModelRecord(entry, PROJECTED_MODEL_OVERRIDE_KEYS, PROJECTED_MODEL_OVERRIDE_SHAPES, capture);
       }
       record2[key] = overrides;
       continue;
@@ -6457,9 +6719,12 @@ function buildChildEnv(input) {
   if (providerNames === void 0) throw new Error("Unsupported Pi provider for isolated child launch.");
   const baseline = input.platform === "win32" ? WINDOWS_BASELINE : input.platform === "linux" || input.platform === "darwin" ? POSIX_BASELINE : void 0;
   if (baseline === void 0) throw new Error("Unsupported child platform for isolated Pi launch.");
+  if (typeof input.brokerToken !== "string" || !/^[0-9a-f]{64}$/u.test(input.brokerToken)) {
+    throw new Error("Pi child broker token is invalid.");
+  }
   const child = {};
   copyDefined(child, input.parent, baseline);
-  copyDefined(child, input.parent, providerNames);
+  child[BROKER_TOKEN_ENV_NAME] = input.brokerToken;
   const home = join(input.isolationRoot, "home");
   child.HOME = home;
   child.PI_CODING_AGENT_DIR = join(input.isolationRoot, "agent");
@@ -6479,6 +6744,7 @@ function buildChildEnv(input) {
   child.PI_TELEMETRY = "0";
   delete child.FARM_API_KEY;
   delete child.CLAUDE_CODE_OAUTH_TOKEN;
+  for (const names of Object.values(PI_PROVIDER_ENV)) for (const name of names) delete child[name];
   return child;
 }
 var DEFAULT_CLEANUP_IO = Object.freeze({
@@ -6535,7 +6801,10 @@ async function selectedStoredCredential(input, authIo) {
     const selected = record2[input.provider];
     if (selected === null || typeof selected !== "object" || Array.isArray(selected)) return void 0;
     const sensitiveValues = credentialStrings(selected);
-    return sensitiveValues === void 0 ? void 0 : { value: selected, sensitiveValues };
+    if (sensitiveValues === void 0) return void 0;
+    const shape = selected;
+    const apiKey = shape.type === "api_key" && typeof shape.key === "string" && shape.key !== "" ? shape.key : void 0;
+    return { apiKey, sensitiveValues };
   } catch {
     return void 0;
   } finally {
@@ -6566,25 +6835,51 @@ async function selectedProviderConfig(input, modelsIo) {
     if (providers === void 0) return void 0;
     if (!plainRecord(providers)) refuseProjection();
     if (!Object.prototype.hasOwnProperty.call(providers, input.provider)) return void 0;
-    const endpoints = /* @__PURE__ */ new Set();
-    const record2 = projectedProviderRecord(providers[input.provider], endpoints);
-    return { record: record2, endpoints: [...endpoints] };
+    const capture = { endpoints: /* @__PURE__ */ new Set(), headerTemplates: /* @__PURE__ */ Object.create(null) };
+    const record2 = projectedProviderRecord(providers[input.provider], capture);
+    return {
+      record: record2,
+      endpoints: [...capture.endpoints],
+      apiKeyTemplate: capture.apiKeyTemplate,
+      headerTemplates: capture.headerTemplates,
+      baseUrl: capture.baseUrl
+    };
   } finally {
     await handle.close().catch(() => void 0);
   }
 }
-async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, authIo = DEFAULT_AUTH_IO, modelsIo = DEFAULT_AUTH_IO) {
+function environmentNameOf(template) {
+  return template.startsWith("${") ? template.slice(2, -1) : template.slice(1);
+}
+function resolvedUpstreamCredential(input, apiKeyTemplate, stored) {
+  if (apiKeyTemplate !== void 0) {
+    const value = input.parent[environmentNameOf(apiKeyTemplate)];
+    if (typeof value === "string" && value !== "") return value;
+  }
+  for (const name of PI_PROVIDER_ENV[input.provider] ?? []) {
+    const value = input.parent[name];
+    if (typeof value === "string" && value !== "") return value;
+  }
+  if (stored?.apiKey !== void 0) return stored.apiKey;
+  refuseAuthority();
+}
+function resolvedUpstreamHeaders(input, templates) {
+  const headers = /* @__PURE__ */ Object.create(null);
+  for (const [name, template] of Object.entries(templates)) {
+    const value = input.parent[environmentNameOf(template)];
+    if (typeof value !== "string" || value === "") refuseAuthority();
+    headers[name] = value;
+  }
+  return headers;
+}
+async function prepareChildEnvironment(input, broker, cleanupIo = DEFAULT_CLEANUP_IO, authIo = DEFAULT_AUTH_IO, modelsIo = DEFAULT_AUTH_IO) {
+  if (typeof broker?.baseUrl !== "string" || typeof broker?.token !== "string") refuseAuthority();
   const isolationRoot = await mkdtemp(join(tmpdir(), "codearbiter-pi-child-"));
-  const env = buildChildEnv({ ...input, isolationRoot });
-  const authPath = join(env.PI_CODING_AGENT_DIR, "auth.json");
+  const env = buildChildEnv({ ...input, isolationRoot, brokerToken: broker.token });
   const configPath = join(env.PI_CODING_AGENT_DIR, "models.json");
-  let credentialHandle;
   let configHandle;
   const sensitiveValues = /* @__PURE__ */ new Set();
-  for (const name of PI_PROVIDER_ENV[input.provider] ?? []) {
-    const value = env[name];
-    if (typeof value === "string" && value !== "") sensitiveValues.add(value);
-  }
+  sensitiveValues.add(broker.token);
   const containsSensitiveValue = (text2) => {
     for (const value of sensitiveValues) if (text2.includes(value)) return true;
     return false;
@@ -6601,13 +6896,9 @@ async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, au
     }
   };
   const cleanup = async () => {
-    const credential = credentialHandle;
     const config = configHandle;
-    credentialHandle = void 0;
     configHandle = void 0;
-    const credentialRemoved = await scrubRetainedFile(credential);
     const configRemoved = await scrubRetainedFile(config);
-    await cleanupIo.remove(authPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => void 0);
     await cleanupIo.remove(configPath, { force: true, maxRetries: 5, retryDelay: 50 }).catch(() => void 0);
     let isolationRemoved = true;
     try {
@@ -6615,7 +6906,7 @@ async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, au
     } catch {
       isolationRemoved = false;
     }
-    if (!credentialRemoved || !configRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
+    if (!configRemoved || !isolationRemoved) throw new Error("Pi child credential cleanup failed safely.");
   };
   try {
     await Promise.all([
@@ -6624,27 +6915,33 @@ async function prepareChildEnvironment(input, cleanupIo = DEFAULT_CLEANUP_IO, au
       mkdir(env.PI_CODING_AGENT_SESSION_DIR, { recursive: true, mode: 448 }),
       ...input.platform === "win32" ? [mkdir(env.APPDATA, { recursive: true, mode: 448 }), mkdir(env.LOCALAPPDATA, { recursive: true, mode: 448 })] : [mkdir(env.XDG_CONFIG_HOME, { recursive: true, mode: 448 }), mkdir(env.XDG_CACHE_HOME, { recursive: true, mode: 448 }), mkdir(env.XDG_DATA_HOME, { recursive: true, mode: 448 })]
     ]);
+    if (BROKER_INELIGIBLE_PROVIDERS.has(input.provider)) refuseAuthority();
     const providerConfig = await selectedProviderConfig(input, modelsIo);
-    if (providerConfig !== void 0) {
-      const providers = /* @__PURE__ */ Object.create(null);
-      providers[input.provider] = providerConfig.record;
-      const document = JSON.stringify({ providers });
-      if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
-      for (const endpoint of providerConfig.endpoints) sensitiveValues.add(endpoint);
-      configHandle = await open3(configPath, "wx", 384);
-      await configHandle.writeFile(document + "\n", { encoding: "utf8" });
-    }
-    const credential = await selectedStoredCredential(input, authIo);
-    if (credential !== void 0) {
-      const projected = /* @__PURE__ */ Object.create(null);
-      projected[input.provider] = credential.value;
-      const serialized = JSON.stringify(projected);
-      if (Buffer.byteLength(serialized, "utf8") > MAX_AUTH_FILE_BYTES) throw new Error("Selected Pi credential exceeds the isolation limit.");
-      for (const value of credential.sensitiveValues) sensitiveValues.add(value);
-      credentialHandle = await open3(authPath, "wx", 384);
-      await credentialHandle.writeFile(serialized + "\n", { encoding: "utf8" });
-    }
-    return Object.freeze({ env, containsSensitiveValue, cleanup });
+    const stored = await selectedStoredCredential(input, authIo);
+    const upstreamBaseUrl = providerConfig?.baseUrl ?? PI_BUILTIN_UPSTREAM[input.provider];
+    if (upstreamBaseUrl === void 0) refuseAuthority();
+    const credential = resolvedUpstreamCredential(input, providerConfig?.apiKeyTemplate, stored);
+    const headers = resolvedUpstreamHeaders(input, providerConfig?.headerTemplates ?? {});
+    const projected = /* @__PURE__ */ Object.create(null);
+    for (const [key, value] of Object.entries(providerConfig?.record ?? {})) projected[key] = value;
+    projected.baseUrl = broker.baseUrl;
+    projected.apiKey = `$${BROKER_TOKEN_ENV_NAME}`;
+    const providers = /* @__PURE__ */ Object.create(null);
+    providers[input.provider] = projected;
+    const document = JSON.stringify({ providers });
+    if (Buffer.byteLength(document, "utf8") > MAX_MODELS_FILE_BYTES) refuseProjection();
+    for (const endpoint of providerConfig?.endpoints ?? []) sensitiveValues.add(endpoint);
+    for (const value of stored?.sensitiveValues ?? []) sensitiveValues.add(value);
+    for (const value of Object.values(headers)) sensitiveValues.add(value);
+    sensitiveValues.add(credential);
+    configHandle = await open3(configPath, "wx", 384);
+    await configHandle.writeFile(document + "\n", { encoding: "utf8" });
+    return Object.freeze({
+      env,
+      containsSensitiveValue,
+      cleanup,
+      upstream: Object.freeze({ baseUrl: upstreamBaseUrl, credential, headers: Object.freeze(headers) })
+    });
   } catch (error) {
     await cleanup().catch(() => void 0);
     throw error;
@@ -7044,7 +7341,10 @@ function parseChildJsonLine(line) {
 var CHILD_ISOLATION_FAILURE_REASONS = Object.freeze([
   "isolation-setup",
   "isolation-cleanup",
-  "isolation-config"
+  "isolation-config",
+  // #455: the loopback inference broker could not be bound, or the parent could not establish a
+  // real upstream endpoint + credential to broker to. Fixed identifier, no operator material.
+  "isolation-broker"
 ]);
 function childFailure(detail) {
   const allowlisted = typeof detail === "string" && (WINDOWS_SUPERVISOR_REFUSAL_REASONS.includes(detail) || CHILD_ISOLATION_FAILURE_REASONS.includes(detail));
@@ -7085,8 +7385,8 @@ async function runPiChild(request, signal) {
   }
   if (signal.aborted) return childFailure();
   const correlationId = randomUUID4();
-  const nonce = randomBytes(16).toString("hex");
-  const challenge = randomBytes(16).toString("hex");
+  const nonce = randomBytes2(16).toString("hex");
+  const challenge = randomBytes2(16).toString("hex");
   let records;
   try {
     records = encodeChildInput(request.task, correlationId, nonce, challenge);
@@ -7097,15 +7397,37 @@ async function runPiChild(request, signal) {
   if (handshakeRecord === void 0 || taskRecord === void 0) return childFailure();
   if (signal.aborted) return childFailure();
   const startedAt = Date.now();
+  let broker;
+  try {
+    broker = await startInferenceBroker({ nonce });
+  } catch {
+    return childFailure("isolation-broker");
+  }
+  let brokerClosed = false;
+  const closeBroker = async () => {
+    if (brokerClosed) return;
+    brokerClosed = true;
+    await broker.close().catch(() => void 0);
+  };
   let preparedEnvironment;
   try {
     preparedEnvironment = await prepareChildEnvironment({
       platform: request.platform ?? process.platform,
       parent: request.parentEnv ?? process.env,
       provider: launch.provider
+    }, { baseUrl: broker.baseUrl, token: broker.token });
+    broker.authorize({
+      nonce,
+      baseUrl: preparedEnvironment.upstream.baseUrl,
+      credential: preparedEnvironment.upstream.credential,
+      headers: preparedEnvironment.upstream.headers
     });
   } catch (error) {
-    return childFailure(error instanceof ChildConfigProjectionError ? "isolation-config" : "isolation-setup");
+    if (preparedEnvironment !== void 0) await preparedEnvironment.cleanup().catch(() => void 0);
+    await closeBroker();
+    if (error instanceof ChildConfigProjectionError) return childFailure("isolation-config");
+    if (error instanceof ChildBrokerAuthorityError || error instanceof InferenceBrokerError) return childFailure("isolation-broker");
+    return childFailure("isolation-setup");
   }
   let environmentCleanupStarted = false;
   const cleanupEnvironment = async () => {
@@ -7346,6 +7668,7 @@ async function runPiChild(request, signal) {
           else settle(Object.freeze({ terminal: "completed", pid: child.pid, correlationId, ...metrics(), ...output === void 0 ? {} : { output } }));
         }, () => settle(childFailure()));
       };
+      child.on("close", () => broker.revoke());
       child.on("close", handleClose);
       if (child.exitCode !== void 0 && child.exitCode !== null || child.signalCode !== void 0 && child.signalCode !== null) {
         queueMicrotask(() => handleClose(child.exitCode));
@@ -7355,6 +7678,7 @@ async function runPiChild(request, signal) {
     return await withEnvironmentCleanup(result3);
   } finally {
     await cleanupEnvironment();
+    await closeBroker();
   }
 }
 

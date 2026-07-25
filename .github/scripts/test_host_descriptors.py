@@ -152,6 +152,15 @@ _ISSUE_370_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/live-pi-host.ts",
 })
 
+# Exact artifacts of issue #455's loopback inference broker — the parent-side
+# module that replaces the operator credential in the child with a per-child
+# ephemeral token, plus its contract suite. Path-exact like every set above, so
+# an unlisted file under tools/ still fails closed.
+_ISSUE_455_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/src/inference-broker.ts",
+    "tools/test/inference-broker.test.ts",
+})
+
 
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -381,6 +390,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS)
         | set(_MODULE_STRUCTURE_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_370_NON_POLICY_ARTIFACTS)
+        | set(_ISSUE_455_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )

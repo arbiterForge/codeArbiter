@@ -650,7 +650,7 @@ export async function runPiChild(
 
   const startedAt = Date.now();
   // #455: the loopback broker binds BEFORE the environment is prepared, because the child's
-  // projected models.json names its endpoint and carries its token. It refuses every request
+  // projected provider configuration names its endpoint and carries its token. It refuses
   // until `authorize` attaches the real upstream, so the window between bind and authorize is
   // fail-closed rather than open.
   let broker;

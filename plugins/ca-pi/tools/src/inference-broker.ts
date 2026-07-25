@@ -1,8 +1,8 @@
 /** inference-broker.ts - codeArbiter's per-child loopback inference broker (#455).
  *
  * The isolated Pi child no longer receives the operator's provider credential in ANY form. It
- * receives a per-child ephemeral token and a `models.json` whose `baseUrl` names this broker's
- * loopback listener. The child's Pi makes ordinary provider calls to loopback; this module
+ * receives a per-child ephemeral token and a projected provider configuration whose `baseUrl`
+ * names this broker's loopback listener. The child's Pi makes ordinary calls to it; this module
  * authenticates the token, swaps in the real credential, forwards upstream, and streams the
  * response back incrementally.
  *
@@ -28,8 +28,8 @@ import {
 import { request as httpsRequest } from "node:https";
 import type { AddressInfo, Socket } from "node:net";
 
-/** The child's `models.json` names this variable, never a literal token, so the projected
- * configuration file itself carries no secret material at all. */
+/** The child's projected provider configuration names this variable, never a literal token, so
+ * the projected configuration file itself carries no secret material at all. */
 export const BROKER_TOKEN_ENV_NAME = "CODEARBITER_PI_BROKER_TOKEN";
 
 /** The fixed route prefix the child's projected `baseUrl` carries. Everything the child appends
@@ -78,7 +78,7 @@ export interface BrokerUpstreamAuthority {
   credential: string;
   /** Operator-configured provider headers, already resolved from the PARENT environment. These
    * can themselves carry credential material, which is exactly why they are attached here and
-   * not projected into the child's `models.json`. */
+   * not projected into the child's configuration. */
   headers?: Readonly<Record<string, string>>;
 }
 
@@ -93,7 +93,7 @@ interface BoundUpstream {
 export interface InferenceBroker {
   /** The handshake nonce of the one child this broker serves. */
   readonly nonce: string;
-  /** The loopback endpoint projected into the child's `models.json`. */
+  /** The loopback endpoint projected as the child's provider base URL. */
   readonly baseUrl: string;
   /** The per-child ephemeral token projected into the child's environment. */
   readonly token: string;
@@ -239,7 +239,9 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
     }
     request.socket.setNoDelay(true);
     const send = bound.secure ? httpsRequest : httpRequest;
-    const forward = send(target, { method: request.method ?? "POST", headers }, (upstreamResponse) => {
+    // `agent: false` keeps the broker's own upstream sockets out of Node's keep-alive pool, so
+    // closing the broker genuinely tears down every connection it opened.
+    const forward = send(target, { method: request.method ?? "POST", headers, agent: false }, (upstreamResponse) => {
       if (response.writableEnded || response.destroyed) {
         upstreamResponse.destroy();
         return;
@@ -249,6 +251,18 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
         if (value === undefined || HOP_BY_HOP_HEADERS.has(name.toLowerCase())) continue;
         responseHeaders[name] = value;
       }
+      // One request, one connection, and the UPSTREAM's own body framing.
+      //
+      // Both halves of that matter. A kept-alive socket to a per-child broker is a live handle
+      // in the CHILD's event loop, so nothing may outlive the exchange that needed it. And when
+      // the upstream declares no length, re-framing its stream as `Transfer-Encoding: chunked`
+      // splits "body ended" from "connection closed" into two events the child observes at
+      // different times — which on Windows lands the FIN inside Pi's own shutdown and aborts the
+      // child in libuv (`uv_async_send` on a closing handle) AFTER a fully successful run.
+      // Clearing `useChunkedEncodingByDefault` restores close-delimited framing, so body end and
+      // socket close are the same event, exactly as the provider sent them.
+      responseHeaders.connection = "close";
+      if (responseHeaders["content-length"] === undefined) response.useChunkedEncodingByDefault = false;
       response.writeHead(upstreamResponse.statusCode ?? 502, responseHeaders);
       // Header flush + pipe, never buffer-to-completion: a long streamed generation must reach
       // the child frame by frame or it breaks outright.
@@ -270,7 +284,7 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
   });
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
-    // Loopback ONLY and port 0 so the OS assigns. Never `0.0.0.0`, never a fixed port.
+    // Loopback ONLY and port 0 so the OS assigns. Never a wildcard bind, never a fixed port.
     server.listen({ host: "127.0.0.1", port: 0, exclusive: true }, () => {
       server.removeListener("error", reject);
       resolve();
