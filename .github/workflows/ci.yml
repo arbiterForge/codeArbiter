@@ -176,6 +176,12 @@ jobs:
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
+              # Issue #435: payload_scope.py owns what the version gates count as
+              # a shipped change, and test_payload_scope.py is its only guard. A
+              # PR that ONLY widened the exclusion - the exact shape of a gate
+              # quietly stopping - would otherwise skip the job that checks it.
+              - '.github/scripts/payload_scope.py'
+              - '.github/scripts/test_payload_scope.py'
               - 'core/hosts.json'
               - 'tools/ci-impact.py'
               - 'tools/host_descriptors.py'
@@ -237,6 +243,14 @@ jobs:
           python-version: "3.x"
       - name: Validate impact-map fallback, receipt, and name contracts
         run: python .github/scripts/test_ci_impact.py
+      - name: Validate the version gates' shipped-payload scope
+        # Issue #435. The version gates decide "did anything an installed user
+        # can observe change?", and they answer it with a git pathspec - the
+        # kind of thing that looks right and matches nothing. This runs the rule
+        # against a real throwaway repository in both directions: a dev-only
+        # lockfile bump must NOT demand a version advance, and a committed
+        # esbuild artifact must.
+        run: python .github/scripts/test_payload_scope.py
 
   tools:
     name: "[CHECK] | [CA  ] | Farm dispatcher contract"
@@ -928,8 +942,18 @@ jobs:
         run: |
           BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
-          if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca; then
-            echo "no payload change - version bump not required"
+          # Issue #435: the scope is the plugin MINUS its tools/ BUILD directory,
+          # plus the committed esbuild artifacts inside it. `plugins/<name>/tools/`
+          # holds TypeScript sources, a vitest config and a lockfile - none of
+          # which run on an installed machine - so a dev-only dependabot lockfile
+          # bump used to demand a version advance describing a change no user can
+          # observe. That is not just noise: it trains contributors to bump a
+          # version to silence a gate, which is the exact habit this gate exists
+          # to prevent. The artifacts (farm.js, sandbox.js) DO ship and still
+          # trigger it. payload_scope.py owns the rule; test_payload_scope.py
+          # pins both directions against a real repository.
+          if [ "$(python3 .github/scripts/payload_scope.py --plugin plugins/ca --base "origin/$BASE")" = unchanged ]; then
+            echo "no shipped payload change - version bump not required"
             exit 0
           fi
           ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca/.claude-plugin/plugin.json','utf8')).version")
@@ -965,8 +989,18 @@ jobs:
         run: |
           BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
-          if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca-sandbox; then
-            echo "no payload change - version bump not required"
+          # Issue #435: the scope is the plugin MINUS its tools/ BUILD directory,
+          # plus the committed esbuild artifacts inside it. `plugins/<name>/tools/`
+          # holds TypeScript sources, a vitest config and a lockfile - none of
+          # which run on an installed machine - so a dev-only dependabot lockfile
+          # bump used to demand a version advance describing a change no user can
+          # observe. That is not just noise: it trains contributors to bump a
+          # version to silence a gate, which is the exact habit this gate exists
+          # to prevent. The artifacts (farm.js, sandbox.js) DO ship and still
+          # trigger it. payload_scope.py owns the rule; test_payload_scope.py
+          # pins both directions against a real repository.
+          if [ "$(python3 .github/scripts/payload_scope.py --plugin plugins/ca-sandbox --base "origin/$BASE")" = unchanged ]; then
+            echo "no shipped payload change - version bump not required"
             exit 0
           fi
           ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-sandbox/.claude-plugin/plugin.json','utf8')).version")
