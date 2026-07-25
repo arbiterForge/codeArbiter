@@ -989,11 +989,18 @@ type Result = {
   runId?: string;
 };
 
-// observability-003 (T-07c): a short run-id minted once at main() startup. Six
-// hex chars from crypto.randomBytes — enough to disambiguate concurrent runs in
-// the shared JSONL stream without bloating every line.
+// observability-003 (T-07c): a run-id minted once at main() startup.
+//
+// #397 widened this from 3 bytes to 8. It was originally a cosmetic
+// correlation label in a shared JSONL stream, where a rare duplicate cost
+// nothing; it is now the NAME OF THE DIRECTORY that holds a run's durable
+// receipts, so a collision does not merely duplicate a label — it makes a new
+// run publish over a previous run's evidence. 24 bits put a birthday collision
+// at roughly 4k runs in one long-lived `.farm/`, which is reachable; 64 bits
+// put it past any plausible number of runs. 16 hex chars still fits
+// assertSafeRunId's 64-character path-segment budget.
 export function mintRunId(): string {
-  return randomBytes(3).toString("hex");
+  return randomBytes(8).toString("hex");
 }
 
 const msgOf = (e: unknown) => (e instanceof Error ? e.message : String(e));
@@ -1046,11 +1053,19 @@ async function renameWithRetry(from: string, to: string, attempts = 4): Promise<
 // before it writes, so a crash — or a second farm process — can leave a
 // half-written farm-report.json where a complete one used to be, destroying the
 // restart evidence exactly when it is needed. Write the whole payload to a
-// same-directory temp file, fsync it (durability is claimed for these receipts:
-// they are the recovery record), then rename over the destination. A rename
-// within a directory is atomic, so a reader sees either the previous complete
-// artifact or the new complete artifact — never a truncated one. On failure the
-// temp file is removed and the destination is left exactly as it was.
+// same-directory temp file, fsync its CONTENTS, then rename over the
+// destination. A rename within a directory is atomic, so a reader sees either
+// the previous complete artifact or the new complete artifact — never a
+// truncated one. On failure the temp file is removed and the destination is
+// left exactly as it was.
+//
+// Scope of the guarantee, stated precisely rather than generously: what this
+// buys is NO-TORN-FILE ATOMICITY against process death and against a concurrent
+// publisher — the failure modes farm actually hits. It is NOT full crash
+// durability: the directory entry created by the rename is never fsynced (Node
+// has no portable directory-fsync, and none at all on Windows), so a power loss
+// immediately after publication may still lose the rename. Do not read the
+// fh.sync() below as a promise that a published receipt survives a host crash.
 export async function atomicWriteFile(dest: string, data: string): Promise<void> {
   const tmp = path.join(
     path.dirname(dest),
@@ -1071,20 +1086,45 @@ export async function atomicWriteFile(dest: string, data: string): Promise<void>
   }
 }
 
-// #387: the artifacts a run publishes are of two kinds. The JSON/Markdown
-// report is AUTHORITATIVE — failing to publish it fails the run. The streaming
-// rail and the per-task diffs are best-effort EVIDENCE — a failure there must
-// not sink an otherwise good run, but it can no longer be swallowed silently
-// either: it is recorded here and surfaced in the published report so a
-// consumer never infers completeness from a silently short file or follows a
-// patch link that was never written.
+// #387/#397: the artifacts a run publishes fall into exactly two classes, and
+// the whole exit-code contract rests on keeping them apart.
+//
+//   AUTHORITATIVE — `${reportDir}/runs/<runId>/farm-report.{json,md}`. This is
+//   the run's durable, attributable receipt, written by this process alone.
+//   Failing to publish it fails the run (exit 3): there is then nothing to
+//   reconcile or audit against.
+//
+//   NON-AUTHORITATIVE — the shared "latest" pointers under `${reportDir}/`
+//   (farm-report.{json,md}, farm-results.jsonl, diffs/) and the streaming rail
+//   and per-task diffs generally. These are convenience and best-effort
+//   evidence. A failure here must NOT sink a run whose authoritative receipt
+//   landed — that would over-report failure exactly where two concurrent runs
+//   race the same pointer, which is the case #397 exists for. But it can no
+//   longer be swallowed silently either: it is recorded here and surfaced so a
+//   consumer never infers completeness from a silently short file, follows a
+//   patch link that was never written, or reads a stale pointer as this run's.
 export type RunArtifactHealth = {
   stream: { errors: string[] };
-  diffs: { unavailable: { id: string; reason: string }[]; latestMirrorErrors: string[] };
+  diffs: {
+    unavailable: { id: string; reason: string }[];
+    // The TRUE count, which `unavailable` deliberately stops recording at
+    // MAX_RECORDED_ARTIFACT_ERRORS. Reported separately so bounding the list
+    // never understates the damage.
+    unavailableTotal: number;
+    latestMirrorErrors: string[];
+  };
+  // Failures to refresh the shared latest report pointers. These cannot appear
+  // inside the report itself (the payload is already serialized by the time the
+  // pointers are written), so main() surfaces them on the summary instead.
+  report: { latestMirrorErrors: string[] };
 };
 
 export function newRunArtifactHealth(): RunArtifactHealth {
-  return { stream: { errors: [] }, diffs: { unavailable: [], latestMirrorErrors: [] } };
+  return {
+    stream: { errors: [] },
+    diffs: { unavailable: [], unavailableTotal: 0, latestMirrorErrors: [] },
+    report: { latestMirrorErrors: [] },
+  };
 }
 
 // Bound the recorded error list — a dead stream path fails once per settled
@@ -1093,6 +1133,20 @@ const MAX_RECORDED_ARTIFACT_ERRORS = 10;
 function noteArtifactError(bucket: string[], message: string) {
   if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(message);
   else if (bucket.length === MAX_RECORDED_ARTIFACT_ERRORS) bucket.push("(further errors suppressed)");
+}
+
+// Same bound for the per-task diff-evidence list, which has the identical
+// failure shape (one unusable diffs directory = one entry per task in the
+// plan). The running total is kept so the report states how many tasks are
+// actually affected even though it only lists the first few.
+function noteUnavailableDiff(diffs: RunArtifactHealth["diffs"], id: string, reason: string) {
+  diffs.unavailableTotal += 1;
+  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason });
+  else if (diffs.unavailable.length === MAX_RECORDED_ARTIFACT_ERRORS)
+    diffs.unavailable.push({
+      id: "(suppressed)",
+      reason: `further entries suppressed after ${MAX_RECORDED_ARTIFACT_ERRORS}`,
+    });
 }
 
 // Integration merges happen inside a dedicated worktree — never the main
@@ -2111,30 +2165,53 @@ async function main() {
   const pTok = results.reduce((n, r) => n + (r.promptTokens ?? 0), 0);
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
   // #387: two independent outcomes, two distinguishable exit codes.
-  //   0 — every task settled green AND the receipt was published.
+  //   0 — every task settled green AND the authoritative receipt was published.
   //   2 — the RUN did not come out clean (escalation, blocked, breaker abort);
   //       the receipt IS on disk and can be reconciled.
-  //   3 — the RECEIPT could not be published. Whatever the tasks did, this run
-  //       left no durable, authoritative record, so it cannot be reconciled or
-  //       audited — that is its own failure mode and must not be reported as a
-  //       success (nor conflated with "tasks failed").
+  //   3 — the run-scoped AUTHORITATIVE receipt could not be published in full.
+  //       Whatever the tasks did, this run's durable record is missing or
+  //       incomplete, so it cannot be reliably reconciled or audited — its own
+  //       failure mode, not a success and not "tasks failed".
+  //
+  // Deliberately NOT exit 3: a failure to refresh the shared "latest" pointers
+  // under `${reportDir}`. Those are documented as non-authoritative and
+  // last-writer-wins; failing the run on them would over-report failure in
+  // exactly the concurrent-run case this design exists to make safe. They are
+  // reported as a warning below instead.
   const runExitCode = esc || blocked.length || aborted ? 2 : 0;
   const exitCode = publishError ? 3 : runExitCode;
+  const latestReportErrors = health.report.latestMirrorErrors;
   const summary = [
     aborted ? `\nABORTED by circuit breaker — escalation rate exceeded ${ENV.abortEscalationRate}. The model may not be capable of this plan; consider the premium path or a different FARM_MODEL.` : ``,
     `\nDone. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
     `Run: ${runId}  (artifacts: ${runDir})`,
-    // The success breadcrumb is SUPPRESSED when publication failed — pointing an
-    // operator at a farm-report.md that is not there is the defect.
+    // The success breadcrumb is SUPPRESSED when the authoritative publication
+    // failed — pointing an operator at a farm-report.md that is not there is
+    // the defect. Every claim below has to be true of what is actually on disk:
+    // the message names the run directory and says "missing or incomplete"
+    // rather than asserting no receipt exists, because a partial failure (e.g.
+    // the JSON landed and the Markdown did not) leaves a real receipt behind.
     publishError
       ? [
-          `\nRECEIPT PUBLICATION FAILED — run ${runId} could not publish its authoritative report: ${msgOf(publishError)}`,
-          `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but there is no durable receipt for this run,`,
-          `so it cannot be reconciled or audited. Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`,
+          `\nRECEIPT PUBLICATION FAILED — run ${runId} could not publish its complete authoritative report under ${runDir}: ${msgOf(publishError)}`,
+          `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but this run's durable receipt is missing or incomplete,`,
+          `so it cannot be reliably reconciled or audited. Inspect ${runDir} for whatever did land.`,
+          `${path.join(ENV.reportDir, "farm-report.json")} / .md were NOT refreshed and do not describe run ${runId}.`,
+          `Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`,
         ].join("\n")
-      : `Report: ${path.join(runDir, "farm-report.md")}  (latest: ${path.join(ENV.reportDir, "farm-report.md")})`,
+      : latestReportErrors.length
+        ? // Non-fatal, and stated as such. The authoritative receipt is
+          // unaffected; what the operator must not assume is that the shared
+          // path now describes THIS run.
+          [
+            `Report: ${path.join(runDir, "farm-report.md")}`,
+            `WARNING: the latest convenience pointer under ${ENV.reportDir} could not be refreshed for this run:`,
+            ...latestReportErrors.map((m) => `  - ${m}`),
+            `The authoritative receipt above is unaffected, but ${path.join(ENV.reportDir, "farm-report.json")} does not describe run ${runId}.`,
+          ].join("\n")
+        : `Report: ${path.join(runDir, "farm-report.md")}  (latest: ${path.join(ENV.reportDir, "farm-report.md")})`,
     "",
   ].join("\n");
   await new Promise<void>((resolve) => process.stdout.write(summary, () => resolve()));
@@ -2170,12 +2247,12 @@ async function writeReport(
 
   for (const r of results) {
     if (diffsDirError !== null) {
-      unavailable.push({ id: r.id, reason: `diffs directory unavailable: ${diffsDirError}` });
+      noteUnavailableDiff(health.diffs, r.id, `diffs directory unavailable: ${diffsDirError}`);
       continue;
     }
     const d = await git(["diff", `${ENV.base}...${r.branch}`]);
     if (d.code !== 0) {
-      unavailable.push({ id: r.id, reason: `git diff failed: ${d.out.trim().split("\n")[0] ?? ""}`.slice(0, 300) });
+      noteUnavailableDiff(health.diffs, r.id, `git diff failed: ${d.out.trim().split("\n")[0] ?? ""}`.slice(0, 300));
       continue;
     }
     // An empty diff is a legitimate outcome (nothing was written), not missing
@@ -2186,7 +2263,7 @@ async function writeReport(
       await atomicWriteFile(dest, d.out);
       patchPath.set(r.id, dest);
     } catch (e) {
-      unavailable.push({ id: r.id, reason: `patch write failed: ${msgOf(e)}` });
+      noteUnavailableDiff(health.diffs, r.id, `patch write failed: ${msgOf(e)}`);
       continue;
     }
     await atomicWriteFile(path.join(latestDiffsDir, `${r.id}.patch`), d.out).catch((e) =>
@@ -2212,7 +2289,10 @@ async function writeReport(
     diffs: {
       dir: diffsDir,
       latest_dir: latestDiffsDir,
+      // `unavailable` is capped; `unavailable_total` is not, so a bounded list
+      // never understates how many tasks lack diff evidence.
       unavailable,
+      unavailable_total: health.diffs.unavailableTotal,
       latest_mirror_errors: health.diffs.latestMirrorErrors,
     },
   };
@@ -2242,8 +2322,11 @@ async function writeReport(
       .map((r) => `- **${r.id}** — worktree \`${r.worktree}\`, branch \`${r.branch}\`. ${r.note ?? ""}`),
     ``,
     `## Diff evidence`,
-    ...(unavailable.length
-      ? unavailable.map((u) => `- **${u.id}** — diff evidence unavailable: ${u.reason}`)
+    ...(health.diffs.unavailableTotal
+      ? [
+          `${health.diffs.unavailableTotal} task(s) have no diff evidence${unavailable.length < health.diffs.unavailableTotal ? ` (first ${MAX_RECORDED_ARTIFACT_ERRORS} listed)` : ``}:`,
+          ...unavailable.map((u) => `- **${u.id}** — diff evidence unavailable: ${u.reason}`),
+        ]
       : [`Every settled task with a non-empty diff has a patch under \`${diffsDir}\`.`]),
     ``,
     `## Warnings — review during spec-compliance`,
@@ -2253,14 +2336,29 @@ async function writeReport(
     }),
   ].join("\n");
 
-  // #387/#397: the AUTHORITATIVE publication. Run-scoped first (the durable,
-  // attributable receipt), then the shared "latest" convenience pointers. Every
-  // write is atomic (temp + fsync + rename), and any failure THROWS — main()
-  // turns it into exit 3 instead of a console line behind a green summary.
+  // #387/#397: publication, in two clearly separated tiers.
+  //
+  // Tier 1 — the AUTHORITATIVE receipt, run-scoped and exclusively owned. Any
+  // failure THROWS, and main() turns it into exit 3 instead of a console line
+  // behind a green summary.
   await atomicWriteFile(path.join(runDir, "farm-report.json"), json);
   await atomicWriteFile(path.join(runDir, "farm-report.md"), md);
-  await atomicWriteFile(path.join(ENV.reportDir, "farm-report.json"), json);
-  await atomicWriteFile(path.join(ENV.reportDir, "farm-report.md"), md);
+
+  // Tier 2 — the shared "latest" convenience pointers. These are explicitly
+  // NON-authoritative and last-writer-wins, so their failure must not fail a
+  // run whose durable receipt just landed above. (Getting this wrong inverts
+  // the fix: two concurrent runs racing this very rename on Windows are what
+  // renameWithRetry exists for, and exhausting its retries would otherwise sink
+  // a fully green, fully receipted run.) Recorded and surfaced on the summary,
+  // never silently dropped — a stale pointer that is not this run's is exactly
+  // the thing an operator must not be left to assume.
+  for (const [dest, data] of [
+    [path.join(ENV.reportDir, "farm-report.json"), json],
+    [path.join(ENV.reportDir, "farm-report.md"), md],
+  ] as const)
+    await atomicWriteFile(dest, data).catch((e) =>
+      noteArtifactError(health.report.latestMirrorErrors, `${dest}: ${msgOf(e)}`),
+    );
 }
 
 // Only execute when this file is the direct entry point (not when imported by

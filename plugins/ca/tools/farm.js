@@ -896,7 +896,7 @@ async function resetWorktree(wt) {
   await git(["clean", "-fd"], wt);
 }
 function mintRunId() {
-  return randomBytes(3).toString("hex");
+  return randomBytes(8).toString("hex");
 }
 var msgOf = (e) => e instanceof Error ? e.message : String(e);
 var SAFE_RUN_ID = /^[A-Za-z0-9._-]{1,64}$/;
@@ -943,12 +943,25 @@ async function atomicWriteFile(dest, data) {
   }
 }
 function newRunArtifactHealth() {
-  return { stream: { errors: [] }, diffs: { unavailable: [], latestMirrorErrors: [] } };
+  return {
+    stream: { errors: [] },
+    diffs: { unavailable: [], unavailableTotal: 0, latestMirrorErrors: [] },
+    report: { latestMirrorErrors: [] }
+  };
 }
 var MAX_RECORDED_ARTIFACT_ERRORS = 10;
 function noteArtifactError(bucket, message) {
   if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(message);
   else if (bucket.length === MAX_RECORDED_ARTIFACT_ERRORS) bucket.push("(further errors suppressed)");
+}
+function noteUnavailableDiff(diffs, id, reason) {
+  diffs.unavailableTotal += 1;
+  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason });
+  else if (diffs.unavailable.length === MAX_RECORDED_ARTIFACT_ERRORS)
+    diffs.unavailable.push({
+      id: "(suppressed)",
+      reason: `further entries suppressed after ${MAX_RECORDED_ARTIFACT_ERRORS}`
+    });
 }
 var mergeChain = Promise.resolve();
 var integrationWorktree;
@@ -1568,6 +1581,7 @@ ${String(e.stack).slice(0, 1500)}` : ""}`
   const cTok = results.reduce((n, r) => n + (r.completionTokens ?? 0), 0);
   const runExitCode = esc || blocked.length || aborted ? 2 : 0;
   const exitCode = publishError ? 3 : runExitCode;
+  const latestReportErrors = health.report.latestMirrorErrors;
   const summary = [
     aborted ? `
 ABORTED by circuit breaker \u2014 escalation rate exceeded ${ENV.abortEscalationRate}. The model may not be capable of this plan; consider the premium path or a different FARM_MODEL.` : ``,
@@ -1576,14 +1590,30 @@ Done. green=${green} escalate=${esc} blocked=${blocked.length}`,
     `Worker tokens: prompt=${pTok} completion=${cTok}`,
     `Integration: ${ENV.integration}  ->  review & PR to ${ENV.base}`,
     `Run: ${runId}  (artifacts: ${runDir})`,
-    // The success breadcrumb is SUPPRESSED when publication failed — pointing an
-    // operator at a farm-report.md that is not there is the defect.
+    // The success breadcrumb is SUPPRESSED when the authoritative publication
+    // failed — pointing an operator at a farm-report.md that is not there is
+    // the defect. Every claim below has to be true of what is actually on disk:
+    // the message names the run directory and says "missing or incomplete"
+    // rather than asserting no receipt exists, because a partial failure (e.g.
+    // the JSON landed and the Markdown did not) leaves a real receipt behind.
     publishError ? [
       `
-RECEIPT PUBLICATION FAILED \u2014 run ${runId} could not publish its authoritative report: ${msgOf(publishError)}`,
-      `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but there is no durable receipt for this run,`,
-      `so it cannot be reconciled or audited. Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`
-    ].join("\n") : `Report: ${path3.join(runDir, "farm-report.md")}  (latest: ${path3.join(ENV.reportDir, "farm-report.md")})`,
+RECEIPT PUBLICATION FAILED \u2014 run ${runId} could not publish its complete authoritative report under ${runDir}: ${msgOf(publishError)}`,
+      `The tasks themselves finished ${runExitCode === 0 ? "green" : "with escalations/blocks"}, but this run's durable receipt is missing or incomplete,`,
+      `so it cannot be reliably reconciled or audited. Inspect ${runDir} for whatever did land.`,
+      `${path3.join(ENV.reportDir, "farm-report.json")} / .md were NOT refreshed and do not describe run ${runId}.`,
+      `Exiting 3 (receipt failure) rather than ${runExitCode} (task outcome).`
+    ].join("\n") : latestReportErrors.length ? (
+      // Non-fatal, and stated as such. The authoritative receipt is
+      // unaffected; what the operator must not assume is that the shared
+      // path now describes THIS run.
+      [
+        `Report: ${path3.join(runDir, "farm-report.md")}`,
+        `WARNING: the latest convenience pointer under ${ENV.reportDir} could not be refreshed for this run:`,
+        ...latestReportErrors.map((m) => `  - ${m}`),
+        `The authoritative receipt above is unaffected, but ${path3.join(ENV.reportDir, "farm-report.json")} does not describe run ${runId}.`
+      ].join("\n")
+    ) : `Report: ${path3.join(runDir, "farm-report.md")}  (latest: ${path3.join(ENV.reportDir, "farm-report.md")})`,
     ""
   ].join("\n");
   await new Promise((resolve) => process.stdout.write(summary, () => resolve()));
@@ -1604,12 +1634,12 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
   );
   for (const r of results) {
     if (diffsDirError !== null) {
-      unavailable.push({ id: r.id, reason: `diffs directory unavailable: ${diffsDirError}` });
+      noteUnavailableDiff(health.diffs, r.id, `diffs directory unavailable: ${diffsDirError}`);
       continue;
     }
     const d = await git(["diff", `${ENV.base}...${r.branch}`]);
     if (d.code !== 0) {
-      unavailable.push({ id: r.id, reason: `git diff failed: ${d.out.trim().split("\n")[0] ?? ""}`.slice(0, 300) });
+      noteUnavailableDiff(health.diffs, r.id, `git diff failed: ${d.out.trim().split("\n")[0] ?? ""}`.slice(0, 300));
       continue;
     }
     if (!d.out.trim()) continue;
@@ -1618,7 +1648,7 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
       await atomicWriteFile(dest, d.out);
       patchPath.set(r.id, dest);
     } catch (e) {
-      unavailable.push({ id: r.id, reason: `patch write failed: ${msgOf(e)}` });
+      noteUnavailableDiff(health.diffs, r.id, `patch write failed: ${msgOf(e)}`);
       continue;
     }
     await atomicWriteFile(path3.join(latestDiffsDir, `${r.id}.patch`), d.out).catch(
@@ -1639,7 +1669,10 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
     diffs: {
       dir: diffsDir,
       latest_dir: latestDiffsDir,
+      // `unavailable` is capped; `unavailable_total` is not, so a bounded list
+      // never understates how many tasks lack diff evidence.
       unavailable,
+      unavailable_total: health.diffs.unavailableTotal,
       latest_mirror_errors: health.diffs.latestMirrorErrors
     }
   };
@@ -1667,7 +1700,10 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
     ...results.filter((r) => r.status === "escalate").map((r) => `- **${r.id}** \u2014 worktree \`${r.worktree}\`, branch \`${r.branch}\`. ${r.note ?? ""}`),
     ``,
     `## Diff evidence`,
-    ...unavailable.length ? unavailable.map((u) => `- **${u.id}** \u2014 diff evidence unavailable: ${u.reason}`) : [`Every settled task with a non-empty diff has a patch under \`${diffsDir}\`.`],
+    ...health.diffs.unavailableTotal ? [
+      `${health.diffs.unavailableTotal} task(s) have no diff evidence${unavailable.length < health.diffs.unavailableTotal ? ` (first ${MAX_RECORDED_ARTIFACT_ERRORS} listed)` : ``}:`,
+      ...unavailable.map((u) => `- **${u.id}** \u2014 diff evidence unavailable: ${u.reason}`)
+    ] : [`Every settled task with a non-empty diff has a patch under \`${diffsDir}\`.`],
     ``,
     `## Warnings \u2014 review during spec-compliance`,
     ...results.filter((r) => r.warning).map((r) => {
@@ -1677,8 +1713,13 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
   ].join("\n");
   await atomicWriteFile(path3.join(runDir, "farm-report.json"), json);
   await atomicWriteFile(path3.join(runDir, "farm-report.md"), md);
-  await atomicWriteFile(path3.join(ENV.reportDir, "farm-report.json"), json);
-  await atomicWriteFile(path3.join(ENV.reportDir, "farm-report.md"), md);
+  for (const [dest, data] of [
+    [path3.join(ENV.reportDir, "farm-report.json"), json],
+    [path3.join(ENV.reportDir, "farm-report.md"), md]
+  ])
+    await atomicWriteFile(dest, data).catch(
+      (e) => noteArtifactError(health.report.latestMirrorErrors, `${dest}: ${msgOf(e)}`)
+    );
 }
 var _thisFile = fileURLToPath(import.meta.url);
 var _entryFile = path3.resolve(process.argv[1] ?? "");

@@ -1701,11 +1701,20 @@ describe("T-07a validate() named errors on malformed required fields (migration-
 });
 
 describe("T-07c run-id correlation (observability-003)", () => {
-  it("mints a short, non-empty, distinct run id", () => {
+  // #397 widened this from 6 hex chars to 16: the run id stopped being a
+  // cosmetic log label and became the name of the directory that holds a run's
+  // durable receipts, so a birthday collision now silently OVERWRITES a prior
+  // run's evidence. 64 bits of entropy puts a collision beyond any plausible
+  // number of runs in one `.farm/`.
+  it("mints a collision-resistant, non-empty, distinct run id", () => {
     const a = mintRunId();
     const b = mintRunId();
-    expect(a).toMatch(/^[0-9a-f]{6}$/);
+    expect(a).toMatch(/^[0-9a-f]{16}$/);
     expect(a).not.toBe(b); // overwhelmingly likely distinct
+  });
+
+  it("mints ids that are valid run-artifact directory names", () => {
+    for (let i = 0; i < 32; i++) expect(() => assertSafeRunId(mintRunId())).not.toThrow();
   });
 });
 

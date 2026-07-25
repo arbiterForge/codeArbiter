@@ -1591,4 +1591,69 @@ describe("farm artifact publication (#397 / #387)", () => {
     expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id)).toEqual(["task-a"]);
     expect(existsSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-b.patch"))).toBe(true);
   });
+
+  // -------------------------------------------------------------------------
+  // #387 — the authoritative/convenience split has to hold in BOTH directions.
+  // Exit 3 is reserved for a failure of the run-scoped receipt; the "latest"
+  // pointer is explicitly non-authoritative, so its failure must not sink a run
+  // whose durable receipt is on disk, and no emitted message may deny a receipt
+  // that exists.
+  // -------------------------------------------------------------------------
+  it("#387: a failed LATEST report pointer does not fail a run whose authoritative receipt landed", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("mirror-fail", ["task-a", "task-b"], port));
+    // Block only the non-authoritative convenience pointer.
+    mkdirSync(join(tmpDir, ".farm/farm-report.json"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mirrorbad" });
+
+    // The durable receipt is on disk, so this is not a receipt failure.
+    expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.json"))).toBe(true);
+    expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.md"))).toBe(true);
+    expect(result.code, result.out).toBe(0);
+    expect(result.out).not.toMatch(/RECEIPT PUBLICATION FAILED/);
+    // The operator is still pointed at the receipt that exists...
+    expect(result.out).toContain(join(".farm", "runs", "mirrorbad", "farm-report.md"));
+    // ...and told, truthfully, that the shared pointer was not refreshed.
+    expect(result.out).toMatch(/latest.*pointer.*not.*refresh/i);
+  });
+
+  it("#387: the exit-3 message names the run's artifact directory and never denies a receipt that exists", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const planPath = writePlan("plan.json", planFor("md-only-fail", ["task-a"], port));
+    // The Markdown receipt cannot be published; the JSON one still can.
+    mkdirSync(join(tmpDir, ".farm/runs/mdonly/farm-report.md"), { recursive: true });
+
+    const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdonly" });
+    expect(result.code).toBe(3);
+    // The JSON receipt DID land — a message asserting "there is no durable
+    // receipt for this run" would be false.
+    expect(existsSync(join(tmpDir, ".farm/runs/mdonly/farm-report.json"))).toBe(true);
+    expect(result.out).not.toMatch(/there is no durable receipt/i);
+    expect(result.out).toContain(join(".farm", "runs", "mdonly"));
+  });
+
+  it("#387: the unavailable-diff list is bounded and still reports the true total", async () => {
+    ({ server: mockServer, port } = await startMockServer(greenHandler()));
+    const ids = Array.from({ length: 12 }, (_, i) => `bulk${i}`);
+    const planPath = writePlan("plan.json", planFor("bounded", ids, port));
+    mkdirSync(join(tmpDir, ".farm/runs/bounded"), { recursive: true });
+    // A regular FILE where the diffs directory belongs → every task's diff
+    // evidence is unavailable for the same single reason.
+    writeFileSync(join(tmpDir, ".farm/runs/bounded/diffs"), "not a directory");
+
+    const result = await runFarm(tmpDir, planPath, {
+      FARM_API_KEY: "test-key",
+      FARM_RUN_ID: "bounded",
+      FARM_CONCURRENCY: "6",
+    });
+    expect(result.code, result.out).toBe(0);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/bounded/farm-report.json"), "utf8"));
+    // 12 tasks, one diagnosis — the report carries the diagnosis and the count,
+    // not 12 copies of the same line.
+    expect(report.artifacts.diffs.unavailable_total).toBe(12);
+    expect(report.artifacts.diffs.unavailable.length).toBeLessThanOrEqual(11);
+    const md = readFileSync(join(tmpDir, ".farm/runs/bounded/farm-report.md"), "utf8");
+    expect(md).toMatch(/12 task\(s\) have no diff evidence/i);
+  });
 });

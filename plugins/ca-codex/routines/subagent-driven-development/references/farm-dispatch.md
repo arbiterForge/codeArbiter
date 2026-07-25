@@ -53,20 +53,31 @@ enforces gates and a zero-token anti-gaming guard, and writes to `<project-root>
 
 Each of those is published twice: once under the run's own artifact directory
 `<project-root>/.farm/runs/<run-id>/` (the durable, attributable receipt — concurrent runs never
-overwrite each other) and once at the top-level `.farm/` path above as a **latest** convenience pointer.
-The final summary line prints both. When two runs may share a repository, reconcile against the run
-directory; the pointer is last-writer-wins (always complete, never truncated).
+overwrite each other's artifacts) and once at the top-level `.farm/` path above as a **latest**
+convenience pointer. The final summary line prints both. When two runs may share a repository, reconcile
+against the run directory; the pointer is last-writer-wins (always complete, never truncated).
+
+Isolated receipts are not a licence to run two farms on one repository unattended: the git state is
+still shared. Concurrent runs each need a distinct `FARM_INTEGRATION_BRANCH` and `FARM_WORKTREE_ROOT`,
+and non-overlapping task ids (each task branch is `farm/<task-id>`). At defaults the second run fails at
+startup on `cannot lock ref 'refs/heads/farm/integration'`.
 
 Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run was aborted;
-**exit code 3 = the run's authoritative report could not be published.** Exit 3 is a RECEIPT failure,
-not a task failure — the tasks may all have been green — and it means there is no durable record to
-reconcile against. Treat the run as unverified and re-dispatch; do not accept tasks off a run that
-exited 3.
+**exit code 3 = the run's authoritative, run-scoped report could not be published in full.** Exit 3 is a
+RECEIPT failure, not a task failure — the tasks may all have been green — and it means this run's
+durable record is missing or incomplete. Treat the run as unverified and re-dispatch; do not accept
+tasks off a run that exited 3. Inspect `.farm/runs/<run-id>/` for whatever did land before discarding.
+
+A failure to refresh the top-level **latest** pointer is *not* exit 3 — that pointer is explicitly
+non-authoritative. The run settles on its task outcome and prints a `WARNING:` naming what could not be
+refreshed; when you see it, `.farm/farm-report.json` describes some *other* run, so read the run
+directory.
 
 `farm-report.json` also carries an `artifacts` block: `artifacts.stream.complete` is `false` when a
 streaming-rail write failed (so a short `.jsonl` is not mistaken for a short run), and
-`artifacts.diffs.unavailable[]` names every task whose patch could not be written, with the reason.
-Never assume a `diffs/<task-id>.patch` exists for a task listed there.
+`artifacts.diffs.unavailable[]` names tasks whose patch could not be written, with the reason. That
+list is capped — `artifacts.diffs.unavailable_total` is the true count. Never assume a
+`diffs/<task-id>.patch` exists for a task listed there.
 
 ## Step 2.5 — Circuit-breaker abort
 
