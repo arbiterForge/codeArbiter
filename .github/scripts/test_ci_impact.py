@@ -20,6 +20,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
+GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
 PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
@@ -83,6 +85,70 @@ def workflow_jobs(text: str) -> dict[str, str]:
     if current is not None:
         jobs[current] = "".join(body)
     return jobs
+
+
+def push_trigger_paths(workflow: str) -> list[str]:
+    """Quoted globs under the workflow's `on.push.paths:` block.
+
+    Textual like every other contract here.  The block ends at the first line
+    that is not a `      - "<glob>"` entry, which is what makes this sensitive
+    to a deleted path rather than merely to the block's existence.
+    """
+    match = re.search(
+        r'(?ms)^  push:\n(?:.*?)^    paths:\n(?P<body>(?:      (?:- "[^"\n]+"|#[^\n]*)\n)+)',
+        workflow,
+    )
+    if match is None:
+        return []
+    return _globs(match.group("body"), '"')
+
+
+def paths_filter(ci: str, name: str) -> list[str]:
+    """Single-quoted globs under one `filters:` entry of the changes job."""
+    match = re.search(
+        rf"(?ms)^            {re.escape(name)}:\n"
+        rf"(?P<body>(?:              (?:- '[^'\n]+'|#[^\n]*)\n)+)",
+        ci,
+    )
+    if match is None:
+        return []
+    return _globs(match.group("body"), "'")
+
+
+def _globs(body: str, quote: str) -> list[str]:
+    """Quoted list entries in a YAML block, ignoring interleaved comments."""
+    return [
+        line.strip()[2:].strip().strip(quote)
+        for line in body.splitlines()
+        if line.strip().startswith("- ")
+    ]
+
+
+def npm_audit_invocations(workflow: str) -> list[str]:
+    """Every `npm audit ...` command line in a workflow, whitespace-normalised."""
+    return [
+        " ".join(match.group(0).split())
+        for match in re.finditer(r"(?m)^\s*(?:run: )?npm audit[^\n]*$", workflow)
+    ]
+
+
+def gitleaks_allowlist_blocks(config: str) -> list[str]:
+    """Every `[[allowlists]]` block body in the gitleaks config."""
+    return re.findall(r"(?ms)^\[\[allowlists\]\]\n(.*?)(?=^\[\[|\Z)", config)
+
+
+def gitleaks_allowlist_regexes(config: str) -> list[str]:
+    """Every literal inside an allowlist block's `regexes = [...]`.
+
+    Handles both the single-entry (`regexes = ['''x''']`) and multi-line array
+    spellings, so a waiver cannot hide from the narrowness contract by changing
+    its formatting.
+    """
+    found: list[str] = []
+    for block in gitleaks_allowlist_blocks(config):
+        for array in re.findall(r"(?ms)^regexes\s*=\s*\[(.*?)\]", block):
+            found += re.findall(r"'''([^'\n]+)'''", array)
+    return found
 
 
 def aggregate_needs(ci: str) -> list[str]:
@@ -406,6 +472,7 @@ class WorkflowContractTest(unittest.TestCase):
             "[CHECK] | [REPO] | License consistency",
             "[CHECK] | [CORE] | Generated surface",
             "[CHECK] | [CDX ] | Reference graph",
+            "[CHECK] | [REPO] | Secret scan",
             "[GATE ] | [REPO] | Merge readiness",
         )
         for name in expected:
@@ -619,6 +686,172 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("GITHUB_STEP_SUMMARY", canary, "the advisory verdict must be visible")
         # And the aggregate gate stays independent of the advisory result.
         self.assertNotIn("ca-pi-latest", aggregate_required_results(ci))
+
+    def test_codex_parity_fixture_edits_reach_their_own_test(self):
+        # Issue #384: `.github/scripts/test_codex_parity_fixture.py` runs inside
+        # the path-scoped `hooks` job, but neither the push trigger nor the
+        # `hooks` filter listed the generator it tests.  A PR editing only
+        # tools/codex-parity-fixture.py therefore skipped its own test, and the
+        # merged push started no workflow at all.  Three registrations must
+        # agree: push trigger, `hooks` filter, and the test invocation.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        generator = "tools/codex-parity-fixture.py"
+        push = push_trigger_paths(ci)
+        self.assertIn(
+            "tools/sync-core.py", push, "the push-trigger scan drifted off the real block"
+        )
+        self.assertIn(generator, push, "a push of the fixture generator starts no CI run")
+        hooks = paths_filter(ci, "hooks")
+        self.assertIn(
+            ".github/scripts/**", hooks, "the hooks-filter scan drifted off the real block"
+        )
+        self.assertIn(
+            generator, hooks, "a PR touching only the fixture generator skips the hooks job"
+        )
+        self.assertIn(
+            "run: python .github/scripts/test_codex_parity_fixture.py",
+            workflow_jobs(ci)["hooks"],
+            "the hooks job no longer runs the fixture generator's own test",
+        )
+
+    def test_every_npm_audit_gate_fails_the_build_on_a_high_advisory(self):
+        # Issue #403 plus the maintainer fold-in: the farm and sandbox audits
+        # gated at `critical`, so every advisory cleared by #400 - all HIGH -
+        # would have sailed through.  One threshold, asserted per invocation,
+        # across every workflow that audits a dependency graph.
+        expected = "npm audit --omit=dev --audit-level=high"
+        invocations: list[tuple[str, str]] = []
+        for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
+            invocations += [
+                (workflow.name, command)
+                for command in npm_audit_invocations(workflow.read_text(encoding="utf-8"))
+            ]
+        self.assertEqual(
+            len(invocations), 3, "expected exactly the farm, sandbox, and site audit gates"
+        )
+        for name, command in invocations:
+            with self.subTest(workflow=name, command=command):
+                self.assertEqual(command, f"run: {expected}")
+
+    def test_docs_workflow_gates_the_site_dependency_graph_before_publishing(self):
+        # Issue #403: site-check ran npm ci/typecheck/test and build ran
+        # build/link-audit, but nothing ever audited site/package-lock.json - a
+        # known-vulnerable production dependency could build and deploy to
+        # GitHub Pages with the whole workflow green.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(docs)
+        self.assertIn("site-check", sorted(jobs))
+        site_check = jobs["site-check"]
+        self.assertIn("run: npm ci", site_check)
+        self.assertIn("run: npm audit --omit=dev --audit-level=high", site_check)
+        # The audit is only a gate if the publish step waits on the job that
+        # runs it.  `deploy` needs BOTH build and site-check today; assert the
+        # site-check edge specifically so dropping it is caught.
+        deploy = jobs["deploy"]
+        self.assertRegex(
+            deploy,
+            r"(?m)^    needs: \[[^\]]*\bsite-check\b[^\]]*\]",
+            "deploy no longer waits on the audited site-check job",
+        )
+
+    def test_ci_runs_a_pinned_read_only_secret_scan_wired_into_the_merge_gate(self):
+        # Issue #404: the repository had NO independent secret scanner - only a
+        # manual staged-diff sweep and the cooperative local H-10b hook, neither
+        # of which a bot, a fork, or a direct push ever runs.  The hosted
+        # backstop must be pinned (no floating tag can be swapped under us),
+        # read-only, and enforced by the aggregate gate.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("secret-scan", sorted(jobs), "ci.yml has no secret-scan job")
+        job = jobs["secret-scan"]
+        self.assertIn('name: "[CHECK] | [REPO] | Secret scan"', job)
+        # Pinned by image digest, not by a mutable tag.
+        self.assertRegex(
+            job,
+            r"ghcr\.io/gitleaks/gitleaks@sha256:[0-9a-f]{64}",
+            "the scanner image is not pinned by digest",
+        )
+        self.assertNotRegex(
+            job,
+            r"ghcr\.io/gitleaks/gitleaks:[^@\s]",
+            "a floating image tag defeats the pin",
+        )
+        # Read-only: the repository is mounted `:ro` and the scanner gets no
+        # network, so a supply-chain compromise of the image cannot rewrite the
+        # tree it is auditing or exfiltrate what it finds.
+        self.assertIn(":/repo:ro", job, "the scanned tree is not mounted read-only")
+        self.assertIn("--network none", job, "the scanner is not network-isolated")
+        self.assertIn("--redact", job, "a finding would print the credential in public logs")
+        self.assertIn("--exit-code 1", job, "a finding would not fail the job")
+        self.assertIn("--config /repo/.gitleaks.toml", job)
+        # Enforced through BOTH aggregate registrations (the #390 contract).
+        self.assertIn("secret-scan", aggregate_needs(ci), "ci-passed.needs omits secret-scan")
+        self.assertIn(
+            "secret-scan",
+            aggregate_required_results(ci),
+            "ci-passed.required_results omits secret-scan",
+        )
+
+    def test_the_secret_scan_allowlist_stays_narrow_and_value_scoped(self):
+        # A broad ignore defeats the whole job, and in gitleaks the broad ignore
+        # is `paths`: a global `paths = [...]` entry does not waive a finding,
+        # it drops the file from the scan entirely.  Measured against the pinned
+        # image - a config whose sole waiver was
+        # `paths = ['''^test_hooklib\\.py$''']` (condition = "AND", plus a regex
+        # matching nothing) reported `scanned ~189 bytes` and missed a freshly
+        # planted `aws_secret_access_key = "kR3m..."` in that file.  So every
+        # waiver here must be a VALUE waiver naming one fixed adversarial
+        # literal, which leaves every file fully scanned.
+        self.assertTrue(GITLEAKS_CONFIG.is_file(), "no .gitleaks.toml in the repo root")
+        config = GITLEAKS_CONFIG.read_text(encoding="utf-8")
+        self.assertIn("useDefault = true", config, "the config must extend the default ruleset")
+        directives = re.findall(r"(?m)^\s*(paths|commits|stopwords)\s*=", config)
+        self.assertEqual(
+            directives, [], "path/commit waivers un-scan whole files - waive by value instead"
+        )
+        blocks = gitleaks_allowlist_blocks(config)
+        self.assertEqual(
+            len(blocks),
+            len(re.findall(r"(?m)^\[\[allowlists\]\]$", config)),
+            "the allowlist block scan drifted off the config",
+        )
+        self.assertTrue(blocks, "no allowlist blocks found")
+        for block in blocks:
+            with self.subTest(block=block.splitlines()[0]):
+                self.assertIn("description =", block, "every waiver must carry its rationale")
+                self.assertIn("regexes = [", block, "a waiver with no value is unbounded")
+        regexes = gitleaks_allowlist_regexes(config)
+        self.assertTrue(regexes, "the allowlist waives no concrete value")
+        for literal in regexes:
+            with self.subTest(literal=literal):
+                # A fixed literal can only ever waive the exact fixture string
+                # it names; a metacharacter could swallow a real credential.
+                self.assertRegex(
+                    literal,
+                    r"\A[A-Za-z0-9_-]+\Z",
+                    "allowlist entries must be fixed literals, not patterns",
+                )
+        # The two credential-shaped-but-benign payload files the audit named are
+        # covered by the literals they carry, and named in the rationale so a
+        # reviewer can check the claim.
+        self.assertIn("plugins/ca/hooks/secret-detection-corpus.json", config)
+        self.assertIn("plugins/ca/tools/.env.example", config)
+        corpus = json.loads(
+            (REPO_ROOT / "plugins/ca/hooks/secret-detection-corpus.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        waived = set(regexes)
+        self.assertTrue(
+            {literal for literal in waived if any(literal in row for row in corpus["must_match"])},
+            "no corpus literal is waived - the rationale claims otherwise",
+        )
+        self.assertIn(
+            "sk-REPLACE_ME",
+            waived,
+            "the .env.example placeholder is not the waived value, so the file is waived by "
+            "something broader",
+        )
 
     def test_documentation_contract_is_always_required_by_merge_readiness(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")

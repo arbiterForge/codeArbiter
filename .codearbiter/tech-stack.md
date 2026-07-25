@@ -153,23 +153,41 @@ node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" <file>.
 
 ## CVE gate (supply chain)
 
-The configured CVE gate is `npm audit --omit=dev --audit-level=critical`, run in
-CI (the `tools` job, after `npm ci`) against the shipped dependency set. A
-CRITICAL advisory fails the build; lower severities are intentionally not
-gating, so routine dev-tool advisories don't block unrelated PRs. This enforces
-the supply-chain posture described in `security-controls.md`.
+The configured CVE gate is `npm audit --omit=dev --audit-level=high`, run after
+`npm ci` against every dependency graph the repo ships or publishes:
+
+| graph | workflow / job |
+| --- | --- |
+| `plugins/ca/tools` | `ci.yml` — `tools` |
+| `plugins/ca-sandbox/tools` | `ci.yml` — `ca-sandbox-tools` |
+| `site` (docs site) | `docs.yml` — `site-check`, which `deploy` needs |
+
+A HIGH-or-worse advisory fails the build; `--omit=dev` scopes the gate to
+shipped dependencies so routine dev-tool advisories don't block unrelated PRs.
+The threshold was `critical` until issue #403: every advisory cleared by #400
+was rated HIGH, so the gate would have passed all of them. This enforces the
+supply-chain posture described in `security-controls.md`.
 
 ## Secrets scan
 
-No dedicated secrets scanner is configured. The gate is two-layered:
+The gate is three-layered — one hosted backstop plus two cooperative local
+layers:
 
-1. Manual sweep of the staged diff for credential patterns
+1. `ci.yml`'s `secret-scan` job (issue #404): gitleaks' full default ruleset,
+   run over the tracked tree on every pull request as a required check for the
+   `ci-passed` merge gate. The scanner is pinned by image digest and runs in a
+   network-isolated, read-only container over a read-only mount. This is the
+   only layer a bot, a fork, a web edit, or a plain `git push` cannot skip — the
+   two below run only inside a contributor's local session. Its allowlist
+   (`.gitleaks.toml`) waives individual fake fixture literals by value, never a
+   file path: a `paths` waiver would drop the whole file from the scan.
+2. Manual sweep of the staged diff for credential patterns
    (`api[_-]?key|token|secret|password|private[_-]?key|passphrase|credential|BEGIN.*PRIVATE|AKIA|ghp_|sk-ant`),
    case-insensitive. This is the convenience layer; the authoritative classifier
    is `_hooklib.SECRET_RE`, pinned against the farm redactor by the shared
    `hooks/secret-detection-corpus.json`, which also matches a secret keyword as
    the trailing segment of a compound name (e.g. `FARM_API_KEY = "..."`).
-2. The plugin's own enforcement hooks: H-09b (crypto/TLS) and H-10b (secrets)
+3. The plugin's own enforcement hooks: H-09b (crypto/TLS) and H-10b (secrets)
    block any commit whose diff touches a crypto or secret line until a diff-bound
    security-gate pass marker covers those exact lines (`hooks/security-pass.py`).
 

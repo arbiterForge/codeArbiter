@@ -56,6 +56,14 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - name: Install deps
         run: npm ci
+      - name: Audit (CVE gate - fail on HIGH)
+        # Issue #403: nothing audited site/package-lock.json, so a known-
+        # vulnerable production dependency could build and publish to GitHub
+        # Pages with this whole workflow green. `deploy` needs this job, so a
+        # red audit blocks the publish. Same threshold as the farm and sandbox
+        # gates in ci.yml; --omit=dev scopes it to what the built site actually
+        # ships, keeping routine Astro/vitest dev advisories non-blocking.
+        run: npm audit --omit=dev --audit-level=high
       - name: Typecheck
         run: npm run typecheck
       - name: Test

@@ -1,0 +1,97 @@
+# Hosted secret-scan configuration (issue #404).
+#
+# codeArbiter's own secret gates are COOPERATIVE: H-10b blocks a commit whose
+# diff touches a secret line, and /ca:preview sweeps the working diff. Both run
+# locally, inside the contributor's Claude/Codex/Pi session. A bot, a fork, a
+# web edit, or a plain `git push` runs neither. The `secret-scan` job in
+# .github/workflows/ci.yml is the independent hosted backstop, and this file is
+# the only thing standing between it and a false positive.
+#
+# WHY THERE IS NO `paths` ALLOWLIST HERE
+# A global `paths = [...]` entry does not waive a finding - it removes the file
+# from the scan altogether. Verified against the pinned image: a config whose
+# only waiver was `paths = ['''^test_hooklib\.py$''']` (with condition = "AND"
+# and a regex that matches nothing) reported `scanned ~189 bytes`, i.e. the
+# 89 KB Python file was never read, and a freshly planted
+# `aws_secret_access_key = "kR3m..."` in it went unreported. Path waivers are
+# therefore permanent blind spots, not narrow exceptions, and this config uses
+# VALUE waivers instead: one exact adversarial literal per entry, waived
+# wherever it appears. Every file stays fully scanned, so a real credential
+# landing in any fixture file below still fails the job.
+#
+# ADDING AN ENTRY - the rules .github/scripts/test_ci_impact.py enforces:
+#   1. No `paths` / `commits` key anywhere in this file (see above).
+#   2. Every `[[allowlists]]` block carries a `description` naming the file the
+#      literal legitimately lives in and why it is benign.
+#   3. Every block waives by `regexes`, and every regex is a fixed literal - no
+#      `.*`, no character classes, nothing that could match an unseen value.
+
+title = "codeArbiter hosted secret scan"
+
+[extend]
+# Start from gitleaks' full first-party ruleset. This file only ever SUBTRACTS
+# known-fake fixture literals from it; it never adds a rule of its own.
+useDefault = true
+
+[[allowlists]]
+description = """
+Canonical secret-detection corpus literals (architecture-001), which live in
+plugins/ca/hooks/secret-detection-corpus.json and are inlined as test input by
+.github/scripts/test_hooklib.py, plugins/ca/tools/farm.unit.test.ts, and the
+archived .codearbiter/reports/2026-07-14-pi-support-handoff/ review packages.
+Each is a deliberately fake credential SHAPE that both first-party classifiers
+(_hooklib.SECRET_RE and the farm redactor) are required to flag; deleting them
+would delete the adversarial coverage the corpus exists to provide.
+"""
+regexTarget = "line"
+regexes = [
+  '''sk-CVlQvxKsecretvalue123''',
+  '''correct-horse-battery''',
+  '''abc12345def''',
+  '''wJalrXUtnFEMIabcd1234''',
+  '''wJalrXUtnFEMI1234''',
+  '''sk-test-abcd1234''',
+  '''AKIAIOSFODNN7EXAMPLE''',
+  '''ghp_abcdefghijklmnopqrstuvwxyz0123456789''',
+  '''sk-ant-api03-AbCdEf1234567890abcdef''',
+]
+
+[[allowlists]]
+description = """
+The fixed fake value the H-01/H-10b guard-matrix cases assign so the hook is
+proven to block them - .github/scripts/test_hook_guards.py and
+.github/scripts/test_hooklib.py.
+"""
+regexTarget = "line"
+regexes = ['''abcd1234efgh''']
+
+[[allowlists]]
+description = """
+Placeholder in the shipped env template plugins/ca/tools/.env.example:
+FARM_API_KEY carries the literal `sk-REPLACE_ME`, never a value. Waived by that
+exact literal only, so an edit that pastes a real key into the template - the
+populated-.env.example regression this job exists to catch - still fails.
+"""
+regexTarget = "line"
+regexes = ['''sk-REPLACE_ME''']
+
+[[allowlists]]
+description = """
+The non-real PEM plugins/ca/tools/farm.test.ts plants into a scratch repo. The
+BEGIN/END markers wrap the test-local constants KEY_BODY_1/2/3, whose values are
+the literal strings FAKEKEYBODYLINE{ONE,TWO,THREE} - chosen precisely because
+they carry no trigger word, which is the property that test asserts about the
+per-line redactor. Waived by the constant name that appears inside the match, so
+a PEM carrying real key material is not waived.
+"""
+regexTarget = "match"
+regexes = ['''KEY_BODY_1''']
+
+[[allowlists]]
+description = """
+`highEntropyToken` in plugins/ca-pi/tools/test/dispatch.test.ts: a hand-typed
+high-entropy string with no trigger word, used to assert safeDiagnostic never
+fragments the audit log. Not a credential for any system.
+"""
+regexTarget = "line"
+regexes = ['''Zx9qP2mK7vN4wR8tY1uJ6hL3sD5fA0cE''']

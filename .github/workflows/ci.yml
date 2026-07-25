@@ -40,6 +40,10 @@ on:
       - "tools/sync-core.py"
       - "tools/build-host-packages.py"
       - "tools/ci-impact.py"
+      # Issue #384: the hooks job runs this generator's own unit tests
+      # (.github/scripts/test_codex_parity_fixture.py), so a push that edits
+      # only the generator must still start a run.
+      - "tools/codex-parity-fixture.py"
 
 permissions:
   contents: read
@@ -122,6 +126,10 @@ jobs:
               - 'plugins/ca-pi/hooks/**'
               - 'core/**'
               - '.github/scripts/**'
+              # Issue #384: test_codex_parity_fixture.py runs in the hooks job
+              # below, so a PR touching only the generator it tests must flag
+              # this filter - otherwise the fixture skips its own test.
+              - 'tools/codex-parity-fixture.py'
               - '.github/workflows/ci.yml'
             impact:
               - '.github/ci-impact-map.json'
@@ -197,12 +205,17 @@ jobs:
           cache-dependency-path: plugins/ca/tools/package-lock.json
       - name: Install (locked)
         run: npm ci
-      - name: Audit (CVE gate - fail on CRITICAL)
-        # Supply-chain gate per security-controls.md: a CRITICAL advisory in a
-        # production dependency fails the build. --omit=dev scopes to shipped
-        # deps; --audit-level=critical intentionally ignores lower severities so
-        # routine dev-tool advisories don't block unrelated PRs.
-        run: npm audit --omit=dev --audit-level=critical
+      - name: Audit (CVE gate - fail on HIGH)
+        # Supply-chain gate per security-controls.md: a HIGH-or-worse advisory
+        # in a production dependency fails the build. --omit=dev scopes to
+        # shipped deps so routine dev-tool advisories don't block unrelated PRs.
+        #
+        # The threshold was `critical` until issue #403: every advisory cleared
+        # by #400 was rated HIGH, so the gate would have passed all of them and
+        # the repo would have shipped them silently. One threshold now applies
+        # to all three audited dependency graphs (farm, sandbox, docs site);
+        # test_ci_impact.py asserts that.
+        run: npm audit --omit=dev --audit-level=high
       - name: Typecheck
         run: npm run typecheck
       - name: Test
@@ -235,8 +248,9 @@ jobs:
           cache-dependency-path: plugins/ca-sandbox/tools/package-lock.json
       - name: Install (locked)
         run: npm ci
-      - name: Audit (CVE gate - fail on CRITICAL)
-        run: npm audit --omit=dev --audit-level=critical
+      - name: Audit (CVE gate - fail on HIGH)
+        # Same threshold as the farm and docs-site audits (issue #403).
+        run: npm audit --omit=dev --audit-level=high
       - name: Typecheck
         run: npm run typecheck
       - name: Test
@@ -983,6 +997,65 @@ jobs:
       - name: Check cross-reference graph (ca-codex)
         run: python3 .github/scripts/check-plugin-refs.py ca-codex
 
+  secret-scan:
+    name: "[CHECK] | [REPO] | Secret scan"
+    # Issue #404: until this job existed the repository had NO independent
+    # secret scanner. Both existing layers are COOPERATIVE - the H-10b commit
+    # hook and /ca:preview's sweep only run inside a contributor's local
+    # Claude/Codex/Pi session. A bot, a fork, a github.com web edit, or a plain
+    # `git push` runs neither, so a real credential could merge and stay in
+    # history with every hosted check green.
+    #
+    # Repo-wide and always-on, like license-consistency and surface: a
+    # credential can ride any diff, so there is deliberately no `needs: changes`
+    # path gate here. On push the workflow's own path filter still applies -
+    # main's branch protection requires this check on the pull request, which is
+    # the enforcement point.
+    #
+    # PINNED: the scanner is an image digest, not a tag. A tag can be re-pointed
+    # by anyone who compromises the upstream registry account, and a scanner
+    # runs over the entire repository - it is exactly the thing that must not be
+    # swappable. Bump the digest deliberately, the way the SHA-pinned actions
+    # above are bumped.
+    #
+    # READ-ONLY: the tree is mounted `:ro` into a network-isolated, capability-
+    # stripped, read-only-rootfs container running as a non-root uid. The
+    # scanner cannot rewrite what it audits and cannot phone home with what it
+    # finds. `--redact` keeps any finding out of the public job log; the
+    # file/line is enough for a maintainer to act on.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Materialize the tracked tree
+        # Scan exactly the committed content: no .git internals, no runner-
+        # generated files, no node_modules. On a pull_request HEAD is the merge
+        # result, which is the tree that would land on main.
+        run: |
+          mkdir -p "$RUNNER_TEMP/secret-scan"
+          git archive --format=tar HEAD | tar -x -C "$RUNNER_TEMP/secret-scan"
+      - name: Scan the tracked tree for credentials
+        env:
+          # gitleaks v8.30.1
+          GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+        run: |
+          docker run --rm \
+            --network none \
+            --read-only \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" \
+            --workdir /repo \
+            --volume "$RUNNER_TEMP/secret-scan:/repo:ro" \
+            "$GITLEAKS_IMAGE" \
+            dir . \
+              --config /repo/.gitleaks.toml \
+              --no-banner \
+              --redact \
+              --exit-code 1
+
   documentation-contract:
     name: "[CHECK] | [REPO] | Documentation contract"
     # Repository documentation is a cross-cutting public interface: validate
@@ -1030,11 +1103,12 @@ jobs:
       - license-consistency
       - surface
       - prose-codex
+      - secret-scan
     runs-on: ubuntu-latest
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"
