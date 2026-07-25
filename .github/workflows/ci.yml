@@ -307,9 +307,12 @@ jobs:
         run: npm audit --audit-level=high
       - name: Typecheck
         run: npm run typecheck
-      - name: Test
-        run: npm test
       - name: Rebuild farm.js
+        # Issue #407: the rebuild moves AHEAD of the tests, so the shard that
+        # executes the shipped bundle runs against a freshly built one rather
+        # than against whatever happens to be committed. The staleness gate
+        # below is unaffected - it still compares the rebuild to the committed
+        # copy, and now does so before the suite rather than after.
         run: npm run build
       - name: Fail if committed farm.js is stale
         run: |
@@ -319,6 +322,13 @@ jobs:
             exit 1
           fi
           echo "farm.js is in sync with farm.ts"
+      - name: Test
+        # Includes farm-dist.test.ts (issue #407), which executes the REBUILT
+        # farm.js under plain Node. Before it, CI proved source behaviour and
+        # deterministic generation but never that the ESM bundle users actually
+        # run starts, parses argv, resolves its bundled modules, or preserves
+        # exit semantics. A byte-identical artifact is not a working one.
+        run: npm test
 
   ca-sandbox-tools:
     name: "[CHECK] | [SBX ] | Sandbox driver contract"
