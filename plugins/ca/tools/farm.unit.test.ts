@@ -6,12 +6,13 @@ import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir } from "node:fs/promises";
+import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir, chmod as fsChmod, stat as fsStat, open as fsOpen } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines } from "./farm.ts";
+import { projectPlanMetaForReport, noteArtifactError, noteUnavailableDiff, MAX_RECORDED_ARTIFACT_ERRORS } from "./farm.ts";
 import { scrubbedEnv, treeKill, taskkillPath } from "./exec.ts";
 import type { RunResult } from "./exec.ts";
 import { spawn } from "node:child_process";
@@ -2252,6 +2253,256 @@ describe("atomicWriteFile — publish-or-preserve (#397)", () => {
     // ...and the aborted write left no partial temp file lying around.
     expect((await fsReaddir(dir)).sort()).toEqual(["blocked", "report.json"]);
     await fsRm(dir, { recursive: true, force: true });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 - what the run's PERMANENT receipt is allowed to contain.
+//
+// The run-scoped change did not create the exposure, it changed its shape:
+// `.farm/farm-report.json` used to be clobbered by the next run, and
+// `.farm/runs/<runId>/` now accumulates indefinitely with no prune path. A
+// secret that landed in the report used to be destroyed within one run; now it
+// persists.
+//
+// A CORRECTION to the issue's premise, which changes what the fix must be: the
+// issue says there is "no control - schema or runtime - on what meta carries
+// into the report". That is wrong. `checkPlanObject` is a CLOSED object check,
+// and plan-contract.test.ts already pins that an unknown `meta` property throws
+// at parse. An allowlist at the sink would be a second copy of a control that
+// already exists, and would have caught nothing.
+//
+// The real exposure is the opposite shape: the ALLOWED fields are the dangerous
+// ones. `meta.setup`, `meta.setupEachAttempt` and `meta.setupInputs` are raw
+// shell-command arrays, and `meta.apiBaseUrl` is a URL that can carry
+// credentials. A token in a setup command is a perfectly legal plan that parses
+// cleanly and lands verbatim in a permanently retained receipt. So the fix is
+// REDACTION of the free-text meta fields at the sink, not an allowlist.
+// ---------------------------------------------------------------------------
+describe("#439 - the permanent receipt redacts what it is allowed to carry", () => {
+  it("redacts a credential in meta.setup, the field an allowlist would have kept", () => {
+    const projected = projectPlanMetaForReport({
+      name: "p",
+      setup: ["export API_KEY=sk-ant-REDPROOF-must-not-persist", "npm ci"],
+    });
+    expect(JSON.stringify(projected)).not.toContain("sk-ant-REDPROOF-must-not-persist");
+    expect(JSON.stringify(projected)).toContain("REDACTED");
+    // The surrounding structure survives: this is redaction, not deletion. A
+    // receipt that silently drops the setup it ran is a worse receipt.
+    expect(projected.setup).toHaveLength(2);
+    expect(projected.setup?.[1]).toBe("npm ci");
+  });
+
+  it("redacts every free-text meta field, not just setup", () => {
+    const secret = "ghp_" + "a".repeat(36);
+    const projected = projectPlanMetaForReport({
+      name: "p",
+      apiBaseUrl: `https://token:${secret}@api.example.com`,
+      setup: [`echo ${secret}`],
+      setupEachAttempt: [`echo ${secret}`],
+      setupInputs: [`echo ${secret}`],
+    });
+    expect(JSON.stringify(projected)).not.toContain(secret);
+  });
+
+  it("leaves an ordinary plan's meta readable", () => {
+    // Over-redaction would make the receipt useless for the thing it exists
+    // for: telling an operator which plan produced this run.
+    const meta = { name: "nightly", repo: "acme/widgets", model: "gpt-test", setup: ["npm ci"] };
+    expect(projectPlanMetaForReport(meta)).toEqual(meta);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 AC-2 - the artifacts block is the one NEW class of report content that
+// skipped the file's own redaction chokepoint. Every other report-bound
+// free-text field is redacted at construction; `git diff failed: <raw git
+// output>` and `msgOf(e)` strings were not.
+// ---------------------------------------------------------------------------
+describe("#439 - artifact error text goes through the redaction chokepoint", () => {
+  it("redacts a credential that appears in an artifact error string", () => {
+    const bucket: string[] = [];
+    noteArtifactError(bucket, "git diff failed: fatal: could not read Password for 'https://x:sk-ant-ARTIFACT@h'");
+    expect(bucket).toHaveLength(1);
+    expect(bucket[0]).not.toContain("sk-ant-ARTIFACT");
+  });
+
+  it("still bounds the error list, and says so when it suppresses", () => {
+    // Redaction must not disturb the existing bound: an unusable diffs
+    // directory produces one entry per task, and an unbounded list would be
+    // echoed verbatim into the report.
+    const bucket: string[] = [];
+    for (let i = 0; i < 50; i++) noteArtifactError(bucket, `failure ${i}`);
+    expect(bucket.length).toBeLessThanOrEqual(MAX_RECORDED_ARTIFACT_ERRORS + 1);
+    expect(bucket[bucket.length - 1]).toContain("suppressed");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 AC-3/AC-4 - the publication primitive must not silently re-permission
+// the destination, and must not leave a payload-bearing temp file behind when
+// the WRITE fails (the existing test only exercised the RENAME path, so its
+// title read broader than its coverage).
+// ---------------------------------------------------------------------------
+describe("atomicWriteFile - mode preservation and write-path cleanup (#439)", () => {
+  it("preserves a hardened destination's mode instead of resetting it to 0644", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-mode-"));
+    const dest = path.join(dir, "report.json");
+    await fsWriteFile(dest, '{"prior":true}');
+    await fsChmod(dest, 0o600);
+    const before = (await fsStat(dest)).mode & 0o777;
+    // An adversarial pass caught this test passing against the UNFIXED
+    // implementation on Windows: NTFS does not honour POSIX mode bits, so
+    // chmod(0o600) reports back 0o666 and before === after no matter what
+    // atomicWriteFile does. A test that cannot fail is worse than no test, so
+    // it declares that rather than quietly proving nothing. It has teeth on
+    // POSIX CI, which is where the guarantee is real.
+    if (before !== 0o600) {
+      expect(process.platform).toBe("win32");
+      return;
+    }
+    await atomicWriteFile(dest, '{"new":true}');
+    const after = (await fsStat(dest)).mode & 0o777;
+    expect(after).toBe(before);
+    expect(JSON.parse(await fsReadFile(dest, "utf8"))).toEqual({ new: true });
+    await fsRm(dir, { recursive: true, force: true });
+  });
+
+  it("leaves no temp residue when the WRITE fails, not just the rename", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "farm-writefail-"));
+    const dest = path.join(dir, "report.json");
+    // The failure has to land AFTER the temp exists - that is the window the
+    // rename-only cleanup left uncovered. There is no "bad data" that forces
+    // it: Node substitutes U+FFFD for an unencodable payload rather than
+    // throwing. So the write is failed through the injectable open seam, which
+    // is how every other failure path in this file is exercised.
+    const failingOpen = (async (p: string, flags: string) => {
+      const real = await fsOpen(p, flags);
+      return Object.assign(Object.create(Object.getPrototypeOf(real)), real, {
+        writeFile: async () => { throw new Error("ENOSPC: no space left on device"); },
+        sync: () => real.sync(),
+        chmod: (m: number) => real.chmod(m),
+        close: () => real.close(),
+      });
+    }) as unknown as typeof fsOpen;
+    await expect(atomicWriteFile(dest, "payload", { open: failingOpen })).rejects.toThrow(/ENOSPC/);
+    expect(await fsReaddir(dir)).toEqual([]);
+    await fsRm(dir, { recursive: true, force: true });
+  });
+});
+
+
+
+// ---------------------------------------------------------------------------
+// #439 (adversarial pass) - the redactor's reach, measured rather than assumed.
+//
+// The first cut of the receipt fix claimed to "redact every free-text field".
+// An adversarial run proved four real credential shapes reached a permanently
+// retained receipt anyway, because SECRET_LINE is keyword/prefix driven. Three
+// are closed here. The fourth is deliberately NOT, and that is the interesting
+// one: `curl -u user:pass` shares its shape with `docker run -u 1000:1000`.
+// ---------------------------------------------------------------------------
+describe("#439 - redactor reach on shapes a farm plan actually carries", () => {
+  it("redacts the shapes an adversarial run found leaking", () => {
+    for (const line of [
+      'git clone https://ci-bot:glpat-LEAKLEAKLEAK123@gitlab.example.com/x/y.git',
+      'curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.LEAKPAYLOAD.sig"',
+      "export OPENAI_KEY=sk-proj-LEAK1234567890",
+    ]) {
+      expect(redactSecrets(line), line).toContain("REDACTED");
+    }
+  });
+
+  it("does NOT fire on a uid:gid pair, which is why -u is unhandled", () => {
+    // The honest limit. A `-u user:pass` rule would catch the fourth shape and
+    // would also redact every `docker run -u 1000:1000`. Broad is the safe
+    // direction for this redactor, but not at the cost of ordinary container
+    // arguments - so the gap is recorded rather than papered over.
+    for (const line of ["docker run -u 1000:1000 alpine", "podman run -u 0:0 img"]) {
+      expect(redactSecrets(line)).toBe(line);
+    }
+    expect(redactSecrets("curl -u ci-bot:Hunter2 https://x")).not.toContain("REDACTED");
+  });
+
+  it("leaves ordinary plan setup commands and package URLs alone", () => {
+    for (const line of [
+      "npm ci",
+      "pip install -r requirements.txt",
+      "see https://example.com/@scope/pkg for details",
+      'node -e "0"',
+    ]) {
+      expect(redactSecrets(line), line).toBe(line);
+    }
+  });
+});
+
+
+// ---------------------------------------------------------------------------
+// #439 (adversarial pass) - BOTH receipts, not just the JSON.
+//
+// The first cut wrapped the JSON sink and left `farm-report.md` reading raw
+// plan.meta three lines later. An end-to-end run with
+// meta.name = "nightly sk-ant-MDPROOF-9999" produced a redacted JSON receipt
+// and a Markdown sibling whose first line was
+//   # Farm report - nightly sk-ant-MDPROOF-9999
+// verbatim, in the same never-pruned run directory, on a fully green run.
+// Redacting one of two tier-1 artifacts is not a fix, so the projection is now
+// computed once and both sinks read it.
+// ---------------------------------------------------------------------------
+describe("#439 - the Markdown receipt is redacted too", () => {
+  it("projects meta once so a second sink cannot be forgotten", () => {
+    // A unit-level guard on the source itself: `plan.meta` must not be read
+    // directly at either sink. This is deliberately a source assertion - the
+    // end-to-end proof is expensive, and the failure mode is precisely "someone
+    // added a third sink and read the raw object again".
+    const src = readFileSync(new URL("./farm.ts", import.meta.url), "utf8");
+    const reportSection = src.slice(src.indexOf("const reportMeta = projectPlanMetaForReport"));
+    const header = reportSection.slice(0, reportSection.indexOf("## Diff evidence"));
+    expect(header).toContain("reportMeta.name");
+    expect(header).not.toContain("plan.meta.name");
+  });
+
+  it("redacts a credential wherever it sits in meta, for both sinks", () => {
+    const projected = projectPlanMetaForReport({
+      name: "nightly sk-ant-MDPROOF-9999",
+      setup: ["npm ci"],
+    });
+    // The name is what the Markdown H1 interpolates.
+    expect(projected.name).not.toContain("sk-ant-MDPROOF-9999");
+    expect(projected.name).toContain("REDACTED");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #439 (adversarial pass) - the diff-evidence reasons are the strings the issue
+// actually named, and they went through a DIFFERENT function.
+//
+// `git diff failed: <raw git stderr>`, `diffs directory unavailable: <fs
+// error>` and `patch write failed: <msgOf(e)>` are all passed to
+// noteUnavailableDiff, not noteArtifactError. Redacting only the latter left
+// the cited example un-redacted in BOTH receipts: artifacts.diffs.unavailable
+// in the JSON and the "Diff evidence" list in the Markdown. Reproduced with a
+// blocked diffs directory in a repo whose path carried a token-shaped segment.
+// ---------------------------------------------------------------------------
+describe("#439 - diff-evidence reasons go through the chokepoint", () => {
+  it("redacts a credential in an unavailable-diff reason", () => {
+    const health = newRunArtifactHealth();
+    noteUnavailableDiff(
+      health.diffs,
+      "task-a",
+      "diffs directory unavailable: EEXIST: mkdir 'C:\\farm-ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\.farm'",
+    );
+    expect(health.diffs.unavailable).toHaveLength(1);
+    expect(health.diffs.unavailable[0]!.reason).not.toContain("ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  });
+
+  it("keeps the running total exact past the retention bound", () => {
+    // Redaction must not disturb the property that made this list trustworthy:
+    // the bounded list never understates how many tasks lack diff evidence.
+    const health = newRunArtifactHealth();
+    for (let i = 0; i < 40; i++) noteUnavailableDiff(health.diffs, `t${i}`, `reason ${i}`);
+    expect(health.diffs.unavailableTotal).toBe(40);
+    expect(health.diffs.unavailable.length).toBeLessThanOrEqual(MAX_RECORDED_ARTIFACT_ERRORS + 1);
   });
 });
 

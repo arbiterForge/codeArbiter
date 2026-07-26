@@ -188,7 +188,33 @@ async function readWorktreeFile(wt, relPath) {
 }
 
 // redactor.ts
-var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
+var SECRET_LINE = new RegExp(
+  [
+    "api[_-]?key",
+    "token",
+    "secret",
+    "password",
+    "BEGIN.*PRIVATE",
+    "sk-ant",
+    "sk-proj-[A-Za-z0-9_-]{8}",
+    "AKIA[0-9A-Z]{16}",
+    "ghp_[A-Za-z0-9]{36}",
+    "glpat-[A-Za-z0-9_-]{8}",
+    // basic auth in a URL: scheme://user:secret@host - the colon-and-at shape,
+    // not any "@", so `https://example.com/@scope/pkg` is untouched.
+    // NOTE the doubled backslashes: these are JS STRING literals, and "\\s" in
+    // a string is a literal "s". The first cut of this shipped `[^/\s:@]`,
+    // which silently became `[^/s:@]` and only matched by luck.
+    "https?://[^/\\s:@]+:[^/\\s@]+@",
+    // a bearer credential, which is dot-segmented base64url in practice
+    "Bearer\\s+[A-Za-z0-9_-]{10,}"
+    // DELIBERATELY NOT ADDED: a `-u user:pass` rule for curl. `-u 1000:1000`
+    // is an everyday docker/podman uid:gid pair, so the shape collides with
+    // benign input. Broad is the safe direction for this redactor, but not at
+    // the cost of firing on ordinary container arguments.
+  ].join("|"),
+  "i"
+);
 var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
 var PEM_END = /^-----END .*-----\s*$/;
 var REDACTION_MARKER = "[REDACTED \u2014 secret-pattern match removed before transmission]";
@@ -1069,18 +1095,25 @@ async function renameWithRetry(from, to, attempts = 4) {
     }
   }
 }
-async function atomicWriteFile(dest, data) {
+async function atomicWriteFile(dest, data, deps = {}) {
   const tmp = path3.join(
     path3.dirname(dest),
     `.${path3.basename(dest)}.${process.pid}-${randomBytes(4).toString("hex")}.tmp`
   );
-  const fh = await open2(tmp, "w");
+  const priorMode = await stat(dest).then((s) => s.mode & 511).catch(() => void 0);
+  const fh = await (deps.open ?? open2)(tmp, "wx");
   try {
     await fh.writeFile(data, "utf8");
     await fh.sync();
-  } finally {
-    await fh.close();
+    if (priorMode !== void 0) await fh.chmod(priorMode);
+  } catch (e) {
+    await fh.close().catch(() => {
+    });
+    await rm(tmp, { force: true }).catch(() => {
+    });
+    throw e;
   }
+  await fh.close();
   try {
     await renameWithRetry(tmp, dest);
   } catch (e) {
@@ -1097,14 +1130,20 @@ function newRunArtifactHealth() {
     cleanup: { failures: [] }
   };
 }
+function projectPlanMetaForReport(meta) {
+  const scrub = (v) => typeof v === "string" ? redactSecrets(v) : Array.isArray(v) ? v.map(scrub) : v;
+  return Object.fromEntries(Object.entries(meta).map(([k, v]) => [k, scrub(v)]));
+}
 var MAX_RECORDED_ARTIFACT_ERRORS = 10;
 function noteArtifactError(bucket, message) {
-  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(message);
+  const safe = redactSecrets(message);
+  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(safe);
   else if (bucket.length === MAX_RECORDED_ARTIFACT_ERRORS) bucket.push("(further errors suppressed)");
 }
 function noteUnavailableDiff(diffs, id, reason) {
+  const safe = redactSecrets(reason);
   diffs.unavailableTotal += 1;
-  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason });
+  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason: safe });
   else if (diffs.unavailable.length === MAX_RECORDED_ARTIFACT_ERRORS)
     diffs.unavailable.push({
       id: "(suppressed)",
@@ -2053,13 +2092,14 @@ async function writeReport(plan, results, blocked, aborted, runId, health) {
     // report predates the check" without inferring it from an absent key.
     cleanup: { released: leaks.length === 0, failures: leaks }
   };
+  const reportMeta = projectPlanMetaForReport(plan.meta);
   const json = JSON.stringify(
-    { run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, artifacts, ts: (/* @__PURE__ */ new Date()).toISOString() },
+    { run_id: runId, plan: reportMeta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, artifacts, ts: (/* @__PURE__ */ new Date()).toISOString() },
     null,
     2
   );
   const md = [
-    `# Farm report \u2014 ${plan.meta.name}`,
+    `# Farm report \u2014 ${reportMeta.name}`,
     ``,
     aborted ? `> **ABORTED by circuit breaker** \u2014 escalation rate exceeded threshold.
 ` : ``,
@@ -2112,6 +2152,7 @@ if (_thisFile === _entryFile) {
 }
 export {
   DEFAULT_API_BASE_URL,
+  MAX_RECORDED_ARTIFACT_ERRORS,
   PLAN_SHAPE,
   SAFE_RUN_ID,
   SAFE_TASK_ID,
@@ -2136,10 +2177,13 @@ export {
   makeEntitlementProbe,
   mintRunId,
   newRunArtifactHealth,
+  noteArtifactError,
+  noteUnavailableDiff,
   numEnv,
   parseChatCompletion,
   parseMutationHookOutput,
   parsePlan,
+  projectPlanMetaForReport,
   readSampling,
   redactSecrets,
   removeWorktreeVerified,
