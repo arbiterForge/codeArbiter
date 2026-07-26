@@ -106,6 +106,67 @@ describe("generated Pi command aliases", () => {
     expect(notifications.some((message) => message.includes("Background job completed:"))).toBe(false);
   });
 
+  // #504 OB-5: the tool already asks the runtime why a launch refused, but only the sticky
+  // health diagnostic could ever answer. A spawn failure left the operator with the generic
+  // "Background job launch was blocked" and no cause.
+  test("surfaces the launch refusal diagnostic, preferring runtime health when both are present", async () => {
+    const spawnRefusal = "Background job could not start the configured shell (ENOENT); run /ca-doctor.";
+    const unhealthy = "Background job cleanup could not be verified; run /ca-doctor.";
+
+    // The tool re-checks runtime health at entry (native-background.ts), so a runtime that is
+    // already unhealthy never launches. The precedence case only arises when the runtime
+    // degrades DURING the launch — which is exactly when both diagnostics are available.
+    async function failureText(
+      health: (launched: boolean) => Readonly<{ healthy: boolean; diagnostic?: string }>,
+    ): Promise<string> {
+      const fixture = await tempPlugin();
+      const commands = new Map<string, { handler: (args: string, context: ExtensionContextPort) => unknown }>();
+      const sourceInfo = { path: resolve(fixture.root, "extensions", "codearbiter.js"), source: "fixture", scope: "user" as const, origin: "package" as const, baseDir: fixture.root };
+      const pi = {
+        on: () => undefined,
+        registerCommand: (name: string, options: { handler: (args: string, context: ExtensionContextPort) => unknown }) => { commands.set(name, options); },
+        sendUserMessage: () => undefined,
+        getCommands: () => [...commands.keys()].map((name) => ({ name, source: "extension" as const, sourceInfo })),
+      } satisfies ParentPiPort;
+      const lease = Object.freeze({});
+      let launched = false;
+      const runtime: BackgroundJobRuntime = {
+        launch: async (input) => {
+          launched = true;
+          input.onRefusal?.(spawnRefusal);
+          return undefined;
+        },
+        cancel: async () => true, stop: async () => true, settled: async () => undefined,
+        health: () => health(launched),
+        getJob: () => undefined, listJobs: () => [], activeJobIds: () => [],
+        tail: () => undefined, dispose: async () => true,
+      };
+      const controller = createNativeBackgroundController(pi, {
+        packageRoot: fixture.root, currentLifecycle: () => lease, toolOwnershipValid: () => true,
+        createRuntime: () => runtime, createAuditLifecycleId: () => "c".repeat(64),
+        resolveLaunch: async () => ({ shellPath: process.execPath, env: [] }),
+        audit: async () => true,
+      });
+      const context: ExtensionContextPort = {
+        cwd: fixture.root, signal: undefined, mode: "tui", hasUI: true,
+        isProjectTrusted: () => true, sessionManager: { getSessionId: () => "session" },
+        ui: { setStatus: () => undefined, notify: () => undefined },
+      };
+      controller.register(context); expect(controller.activate(context)).toBe(true);
+      const result = await controller.toolFactory(fixture.root).execute(
+        "refusal", { command: "work", label: "refusal" }, undefined, undefined, context,
+      );
+      expect(result.isError).toBe(true);
+      return (result.content as Array<{ text: string }>)[0]!.text;
+    }
+
+    expect(await failureText(() => ({ healthy: true }))).toBe(spawnRefusal);
+    // A sticky unhealthy runtime is the more actionable fact and still wins.
+    expect(await failureText((launched) => launched
+      ? { healthy: false, diagnostic: unhealthy }
+      : { healthy: true })).toBe(unhealthy);
+  });
+
   test("cancels and terminal-audits without publishing when the tool signal aborts during launch audit", async () => {
     const fixture = await tempPlugin();
     const commands = new Map<string, { handler: (args: string, context: ExtensionContextPort) => unknown }>();
