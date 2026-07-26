@@ -94,6 +94,12 @@ export type CreateOptions = {
   /** Injectable docker runner (defaults to spawnSync("docker", ...)). */
   dockerRun?: DockerRun;
   /**
+   * Cancellation for the docker calls this create makes (#479). On abort
+   * the failure path runs its normal best-effort teardown, so a cancelled
+   * create does not leave the half-built sandbox behind.
+   */
+  signal?: AbortSignal;
+  /**
    * Injectable repo cloner. Defaults to the throwaway alpine/git container.
    * Accepts either the new `CloneResult` shape (preferred — surfaces git stderr in
    * error messages) or a plain exit-code number (backward-compatible with existing
@@ -403,7 +409,8 @@ export async function createSandbox(
   // 1. Labeled named volume (the live source mount). Labels make it discoverable
   // by destroy/prune via label filter alone.
   const volLabelArgs = sandboxLabels.flatMap((l) => ["--label", l]);
-  const mk = await dockerRun(["volume", "create", ...volLabelArgs, volumeName]);
+  const mk = await dockerRun(["volume", "create", ...volLabelArgs, volumeName],
+                             { signal: opts.signal });
   if (mk.code !== 0) {
     throw new Error(
       `ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})\n${mk.stderr.slice(-1000)}`,
@@ -430,11 +437,12 @@ export async function createSandbox(
     const build = await buildImage(volumeName, id);
 
     // 4. Run the isolated sandbox container, labeled with the id.
-    const containerId = runContainer(build.tag, volumeName, netPolicy, {
+    const containerId = await runContainer(build.tag, volumeName, netPolicy, {
       extraLabels: [idLabel(id), ...(opts.extraLabels ?? [])],
       namePrefix: `ca-sbx-${id}`,
+      signal: opts.signal,
       dockerRun: opts.dockerRun
-        ? (args) => opts.dockerRun!(args)
+        ? (args, call) => opts.dockerRun!(args, call)
         : undefined,
     });
 
@@ -442,7 +450,7 @@ export async function createSandbox(
       id,
       volumeName,
       image: build.tag,
-      containerId: await containerId,
+      containerId,
       notes: build.notes,
     };
   } catch (err) {
