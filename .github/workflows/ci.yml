@@ -197,6 +197,7 @@ jobs:
               # PR that ONLY widened the exclusion - the exact shape of a gate
               # quietly stopping - would otherwise skip the job that checks it.
               - '.github/scripts/payload_scope.py'
+              - '.github/scripts/check_codex_host.py'
               - '.github/scripts/test_payload_scope.py'
               - 'core/hosts.json'
               - 'tools/ci-impact.py'
@@ -1285,6 +1286,49 @@ jobs:
       - name: Check rendered surfaces match core/surface/ templates (both hosts)
         run: python3 tools/build-surface.py --check
 
+  codex-host:
+    name: "[CHECK] | [CDX ] | Real-host install"
+    # Issue #408. Every other ca-codex gate invokes Python directly and proves
+    # what the GUARD answers; none of them proves the HOST calls it, or even
+    # that the host can load the plugin at all. The live-parity runbook says so
+    # explicitly, and the shipped manifest still advertises Codex >= 0.143.0 on
+    # the strength of one manual check.
+    #
+    # This lane installs the CHECKED-OUT plugin through a real Codex runtime and
+    # reads it back. Deliberately credential-free, which a 2026-07-26 spike
+    # measured: `plugin marketplace add <local path>` + `plugin add` + `plugin
+    # list` need no provider key and no network, so this can be REQUIRED and
+    # still run on fork PRs.
+    #
+    # What it does NOT cover is stated rather than implied: proving a hook FIRES
+    # needs a turn, a turn needs a model, and a provider credential cannot be a
+    # required check on forks. That half is tracked separately.
+    needs: changes
+    if: needs.changes.outputs.ca-codex == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - name: Install the pinned Codex runtime
+        # Pinned, not @latest: an unpinned host makes this gate report upstream
+        # drift as a ca-codex regression, and the version claim in the manifest
+        # has to mean something continuously tested.
+        run: npm install -g @openai/codex@0.145.0
+      - name: Install ca-codex through the real host and read it back
+        env:
+          # A missing runtime must FAIL here rather than skip. On a developer
+          # machine the same script skips with a notice; on the merge gate,
+          # "the host check did not run" must never look like "it passed"
+          # (the docker-gate discipline from #406).
+          CA_REQUIRE_CODEX: "1"
+        run: python3 .github/scripts/check_codex_host.py
+
   prose-codex:
     name: "[CHECK] | [CDX ] | Reference graph"
     needs: changes
@@ -1555,6 +1599,7 @@ jobs:
       - version-bump
       - version-bump-sandbox
       - version-bump-codex
+      - codex-host
       - version-bump-pi
       - prose
       - badge-consistency
@@ -1568,7 +1613,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"
