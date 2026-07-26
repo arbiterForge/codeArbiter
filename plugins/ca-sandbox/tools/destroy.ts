@@ -261,7 +261,7 @@ export async function destroySandbox(
     removedVolumes.push(...await removeEach(volumesList.items, "volume", dockerRun, log));
   }
 
-  const still = verifyScope(labels, dockerRun, log);
+  const still = await verifyScope(labels, dockerRun, log);
   // #433: under --keep-volume NO volume was targeted for removal, so no volume
   // can be a leak - and the surviving ones ARE the kept ones. Filtering against
   // `keptVolumes` alone was not enough: when the DISCOVERY listing failed,
@@ -328,7 +328,7 @@ export async function prune(opts: PruneOptions = {}): Promise<PruneResult> {
   // target and could not remove is still reported - that is what this is for.
   const targetedContainers = new Set(containersList.items);
   const targetedVolumes = new Set(volumesList.items);
-  const still = verifyScope(SANDBOX_LABEL, dockerRun, log);
+  const still = await verifyScope(SANDBOX_LABEL, dockerRun, log);
   return {
     removedContainers,
     removedVolumes,

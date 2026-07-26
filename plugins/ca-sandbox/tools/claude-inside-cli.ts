@@ -37,7 +37,7 @@ import {
   type ClaudeNetPolicy,
   type ClaudeRunOptions,
 } from "./claude-inside.ts";
-import { defaultDockerRun, type RunResult } from "./docker.ts";
+import { defaultDockerRun, type DockerRun, type RunResult } from "./docker.ts";
 
 /** A usage error, mirroring cli.ts's exit-code contract. */
 export const USAGE_ERROR_EXIT = 2;
@@ -127,8 +127,8 @@ export function usage(): string {
 }
 
 export type ClaudeCliDeps = {
-  dockerRun?: (args: string[]) => RunResult;
-  run?: (opts: ClaudeRunOptions, dockerRun: (args: string[]) => RunResult) => string;
+  dockerRun?: DockerRun;
+  run?: (opts: ClaudeRunOptions, dockerRun: DockerRun) => Promise<string>;
   stdout?: (line: string) => void;
   stderr?: (line: string) => void;
 };
@@ -138,11 +138,11 @@ export type ClaudeCliDeps = {
  * process exit code and NEVER throws for an expected condition, mirroring
  * cli.ts's contract so a caller can rely on the code alone.
  */
-export function runClaudeInsideCli(
+export async function runClaudeInsideCli(
   argv: readonly string[],
   env: NodeJS.ProcessEnv = process.env,
   deps: ClaudeCliDeps = {},
-): number {
+): Promise<number> {
   const out = deps.stdout ?? ((l: string) => process.stdout.write(`${l}\n`));
   const err = deps.stderr ?? ((l: string) => process.stderr.write(`${l}\n`));
 
@@ -168,7 +168,7 @@ export function runClaudeInsideCli(
   }
 
   try {
-    const id = (deps.run ?? runClaudeInside)(
+    const id = await (deps.run ?? runClaudeInside)(
       { image: parsed.image, homeVolume: parsed.homeVolume, netPolicy: parsed.netPolicy, token },
       deps.dockerRun ?? defaultDockerRun,
     );
@@ -190,5 +190,15 @@ export function runClaudeInsideCli(
 const _thisFile = fileURLToPath(import.meta.url);
 const _entryFile = path.resolve(process.argv[1] ?? "");
 if (_thisFile === _entryFile) {
-  process.exit(runClaudeInsideCli(process.argv.slice(2)));
+  // The exit code is still resolved before the process exits: the entry awaits
+  // the promise rather than exiting on it (#479). Exiting on a pending promise
+  // would report 0 while the container start was still in flight.
+  runClaudeInsideCli(process.argv.slice(2)).then(
+    (code) => process.exit(code),
+    (e: unknown) => {
+      process.stderr.write(`ca-sandbox: ${e instanceof Error ? e.message : String(e)}
+`);
+      process.exit(1);
+    },
+  );
 }

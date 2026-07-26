@@ -83,11 +83,11 @@ export type Command =
 /** The injectable dispatch table. The real ones shell the modules; tests fake them. */
 export type Handlers = {
   create: (url: string, opts: { netPolicy: CliNetPolicy }) => Promise<CreateResult>;
-  destroy: (id: string, opts: { keepVolume: boolean }) => DestroyResult;
-  prune: () => PruneResult;
-  exec: (id: string, argv: string[]) => ExecResult;
-  cp: (id: string, containerPath: string, hostDest: string) => RunResult;
-  shell: (id: string, shell: string) => number;
+  destroy: (id: string, opts: { keepVolume: boolean }) => Promise<DestroyResult>;
+  prune: () => Promise<PruneResult>;
+  exec: (id: string, argv: string[]) => Promise<ExecResult>;
+  cp: (id: string, containerPath: string, hostDest: string) => Promise<RunResult>;
+  shell: (id: string, shell: string) => Promise<number>;
 };
 
 // --------------------------------------------------------------------------
@@ -317,13 +317,17 @@ async function defaultShell(id: string, shell: string): Promise<number> {
  * `create`/`destroy`/`prune` already resolve by label inside their modules.
  */
 export const defaultHandlers: Handlers = {
-  create: (url, opts) => await createSandbox(url, { netPolicy: opts.netPolicy }),
-  destroy: (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume }),
-  prune: () => await prune(),
+  create: async (url, opts) => await createSandbox(url, { netPolicy: opts.netPolicy }),
+  destroy: async (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume }),
+  prune: async () => await prune(),
   // Preserve the sandbox id the caller passed in the returned contract, even
   // though the exec runs against the resolved container id.
-  exec: (id, argv) => ({ ...execInSandbox(await resolveContainerId(id), argv), id }),
-  cp: (id, containerPath, hostDest) => await cpOut(await resolveContainerId(id), containerPath, hostDest),
+  exec: async (id, argv) => ({
+    ...(await execInSandbox(await resolveContainerId(id), argv)),
+    id,
+  }),
+  cp: async (id, containerPath, hostDest) =>
+    await cpOut(await resolveContainerId(id), containerPath, hostDest),
   shell: defaultShell,
 };
 
@@ -399,25 +403,25 @@ export async function runCli(argv: string[], handlers: Handlers = defaultHandler
       return 0;
     }
     case "shell":
-      return handlers.shell(cmd.id, cmd.shell);
+      return await handlers.shell(cmd.id, cmd.shell);
     case "exec": {
-      const r = handlers.exec(cmd.id, cmd.argv);
+      const r = await handlers.exec(cmd.id, cmd.argv);
       process.stdout.write(`${JSON.stringify(r)}\n`);
       // Propagate the in-container exit code as the CLI's own (AC-09).
       return r.exitCode;
     }
     case "cp": {
-      const r = handlers.cp(cmd.id, cmd.containerPath, cmd.hostDest);
+      const r = await handlers.cp(cmd.id, cmd.containerPath, cmd.hostDest);
       if (r.code !== 0 && r.stderr) process.stderr.write(`${r.stderr}\n`);
       return r.code;
     }
     case "destroy": {
-      const r = handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
+      const r = await handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
       process.stdout.write(`${JSON.stringify(r)}\n`);
       return teardownExit("destroy", r);
     }
     case "prune": {
-      const r = handlers.prune();
+      const r = await handlers.prune();
       process.stdout.write(`${JSON.stringify(r)}\n`);
       return teardownExit("prune", r);
     }

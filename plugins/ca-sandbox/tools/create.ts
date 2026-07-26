@@ -442,7 +442,7 @@ export async function createSandbox(
       id,
       volumeName,
       image: build.tag,
-      containerId,
+      containerId: await containerId,
       notes: build.notes,
     };
   } catch (err) {
