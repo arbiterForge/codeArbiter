@@ -90,9 +90,27 @@ RELEASE_TAG_PREFIXES = {
 
 
 def _bare_version(tag):
-    """`v2.6.0` / `[2.6.0]` / `2.6.0` -> `2.6.0`. Lets the heading match compare
-    a `vX.Y.Z` tag against a bracket-style heading without caring about style."""
-    return tag.strip().lstrip("v").strip("[]") if isinstance(tag, str) else tag
+    """`v2.6.0` / `[2.6.0]` / `2.6.0` / `ca-pi-v0.1.31` -> the bare SemVer.
+
+    Lets the heading match compare a tag against a bracket-style changelog
+    heading without caring about either spelling.
+
+    This used to be `tag.lstrip("v")`, which strips only a LEADING "v" — right
+    for ca's bare `v2.9.1`, and wrong for every namespaced sibling, because
+    `"ca-pi-v0.1.31".lstrip("v")` is unchanged and never equals the `0.1.31`
+    parsed out of the heading. The hosted publish action treats a failed
+    `notes-match` as a STOP, so the ca-codex, ca-sandbox and ca-pi lanes could
+    not have completed a release at all: they would have aborted at that guard
+    on a perfectly correct changelog, every time. Nothing caught it because the
+    lanes had never been dispatched and every test used a bare `v` tag.
+
+    Anchored on the SemVer at the END rather than by stripping a known prefix,
+    so a fifth plugin's namespace works without being enumerated here."""
+    if not isinstance(tag, str):
+        return tag
+    text = tag.strip().strip("[]")
+    match = re.search(r"(\d+\.\d+\.\d+.*)$", text)
+    return match.group(1) if match else text.lstrip("v")
 
 
 def last_tag_select(tags, prefix="v"):
