@@ -14,6 +14,29 @@ predate the plugin rewrite and are grouped by date.
 
 ### Added
 
+- `/ca:review` can review an inbound GitHub pull request, not only the diff you
+  just wrote: `/ca:review #123` fetches that PR's diff and runs the same fleet,
+  the same path matrix, and the same `finding-triage` -> `checkpoint-aggregator`
+  funnel. A gate that only reviews its own author's change is a linter, not a
+  team gate, and reviewing code you did NOT write is where it earns its keep
+  (issue #80).
+
+  Deliberately an ARGUMENT rather than a `/ca:review-pr` command. The scope
+  resolver already took one, the fleet is scope-agnostic, and every phase
+  downstream operates on a diff regardless of where it came from - so a second
+  command would be a whole public surface (the catalog, three host projections,
+  the README counts, the site sidebar) whose only distinguishing feature is
+  where the diff was fetched from. The command count is unchanged.
+
+  Three guards ride with it. A missing or unauthenticated `gh` STOPs rather than
+  falling back to the working diff, which would report a verdict on the wrong
+  change under the PR's name. The diff is resolved ONCE, because the fleet runs
+  in parallel and a PR updated mid-review would otherwise have reviewers reading
+  different code. And posting the verdict is a separate, confirmed step that
+  never uses `--approve` or `--request-changes`: a comment on someone else's PR
+  is public the moment it lands, and those two flags carry merge authority this
+  command does not have.
+
 - `/ca:release` releases any of the four plugins, as one command taking the
   target as its argument (default `ca`, so a bare `/ca:release` is unchanged).
   It could only ever target `ca` before, because `LAST_TAG` resolution matched
