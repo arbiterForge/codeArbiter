@@ -20,6 +20,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   clear the intent is (ADR-0022).
 
 ### Fixed
+- The shared guard and anti-slop libraries pick up the `git commit-graph`
+  mis-gating fix (#485) and the line-wrap-boundary detector fix (#484). Both are
+  core changes projected to this host unchanged.
+
 - A session started inside a linked worktree no longer repoints the main
   repository's git-level enforcement at a worktree path that is pruned out from
   under it. The enforcer entry is shared through the git common dir, so an

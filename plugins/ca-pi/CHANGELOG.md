@@ -2,6 +2,18 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.30] - 2026-07-26
+
+### Fixed
+
+- The shared guard and anti-slop libraries pick up two enforcement papercuts.
+  `git commit-graph` is no longer gated as a commit - the H-09b/H-10b matcher
+  took every `commit-*` verb, so object-database maintenance was told to run the
+  crypto-compliance gate and the only escapes were a pass certifying nothing or
+  an override covering a coverage hole (#485). And the prose-separator-dash
+  detector now reads a paragraph at a time, so a separator at a soft-wrap
+  boundary is reported instead of scoring zero in both directions (#484).
+
 ## [0.1.27] - 2026-07-26
 
 ### Fixed

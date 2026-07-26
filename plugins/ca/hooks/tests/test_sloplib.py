@@ -222,5 +222,94 @@ class TestDefinitionListDashExempt(unittest.TestCase):
         self.assertEqual(len(S.find_prose_separator_dashes(line)), 1)
 
 
+
+class TestWrappedSeparatorDashes(unittest.TestCase):
+    """#484: the detector was line-based, so `_segment_separates` required word
+    characters on both sides of the dash ON THE SAME LINE. A separator that
+    landed at a soft-wrap boundary was invisible, and a contributor who wrapped
+    a line could pass the gate without meaning to.
+
+    All three fixtures below are REAL misses, found by hand in
+    site/src/content/docs/codearbiter-directory.md while fixing #338's 118
+    flagged lines — VOICE.md violations a reader sees that the gate did not
+    report."""
+
+    def test_trailing_dash_before_a_wrap_is_reported(self):
+        text = ("The board: one top-level bullet per task, in one of three states —\n"
+                "listed below.\n")
+        findings = S.find_prose_separator_dashes(text)
+        self.assertEqual([f["line"] for f in findings], [1],
+                         "the finding must carry the line of the DASH, not the wrap")
+
+    def test_the_frontmatter_case_is_reported(self):
+        text = ("  (`plugins/ca/hooks/_hooklib.py`). It must appear inside a "
+                "*properly closed* frontmatter block —\n"
+                "the loader stops at the first unterminated one.\n")
+        self.assertEqual([f["line"] for f in S.find_prose_separator_dashes(text)], [1])
+
+    def test_leading_dash_after_a_wrap_is_reported(self):
+        # The mirror image: the dash opens the continuation line, so its
+        # left-hand context is on the line BEFORE it. Attribution still belongs
+        # to the line holding the dash.
+        text = ("A tribunal is the heavyweight audit\n"
+                "— checkpoints are the lean, routine sweep.\n")
+        self.assertEqual([f["line"] for f in S.find_prose_separator_dashes(text)], [2])
+
+    # -- AC-2: joining must not invent findings across a block boundary -------- #
+    def test_no_join_across_a_blank_line(self):
+        text = f"Ends with a dash —\n\nA new paragraph starts here.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_no_join_across_a_list_item_boundary(self):
+        text = (f"- first item ends with a dash —\n"
+                "- second item is a different item\n")
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_no_join_across_a_heading(self):
+        text = f"A line ending in a dash —\n## A new section\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_no_join_across_a_table_row(self):
+        text = (f"| cell | — |\n"
+                f"| next | row |\n")
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_no_join_across_a_fence_boundary(self):
+        text = (f"Prose ending in a dash —\n"
+                "```\n"
+                "code_line_with_words()\n"
+                "```\n")
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_no_join_across_a_thematic_break(self):
+        text = f"A line ending in a dash —\n---\nAfter the break.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    # -- AC-3: every existing exemption survives the join --------------------- #
+    def test_a_numeric_range_split_by_a_wrap_stays_exempt(self):
+        text = f"See pages 12–\n18 for the detail.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_inline_code_across_a_wrap_stays_exempt(self):
+        text = f"Write `a — b`\nliterally in the file.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_a_definition_dash_is_still_exempt_when_the_line_wraps(self):
+        text = (f"- **term** — the meaning of it,\n"
+                "  continued on the next line.\n")
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
+    def test_a_real_separator_after_a_definition_lead_in_still_reports(self):
+        # The #338 regression guard, now across a wrap: only the definition dash
+        # is dropped, so a genuine separator later in the same paragraph is
+        # still found.
+        text = (f"- **The hooks** — `a.py`, `b.py` —\n"
+                "  make zero calls.\n")
+        self.assertEqual([f["line"] for f in S.find_prose_separator_dashes(text)], [1])
+
+    def test_a_single_line_paragraph_behaves_exactly_as_before(self):
+        text = f"The gate blocks — the human resolves.\n"
+        self.assertEqual([f["line"] for f in S.find_prose_separator_dashes(text)], [1])
+
 if __name__ == "__main__":
     unittest.main()

@@ -203,9 +203,42 @@ GIT = r"\bgit(?:\s+" + GIT_GLOBAL_OPTION + r")*"
 # `/ca:checkpoint)` made `git diff HEAD -- …` fatal ("outside repository"),
 # failing the H-09b scan CLOSED on a clean commit.
 ARGS = r"(?P<args>(?:\"[^\"]*\"|'[^']*'|[^|;&])*)"
-COMMIT_RE = re.compile(GIT + r"\s+commit\b" + ARGS)
+# The `commit` SUBCOMMAND, not every verb starting with it (#485). A word
+# boundary sits between `commit` and `-`, so a bare `commit\b` matched
+# `git commit-graph write` and gated object-database maintenance as though it
+# were a commit — pointing the operator at the crypto-compliance gate for a
+# command that writes no objects and creates no commit, whose only escapes were
+# a pass certifying nothing or an override covering a coverage hole (the habit
+# ADR-0022 and #308 exist to prevent). It bit at the worst moment too: a stale
+# graph is what a batch of `--delete-branch` merges leaves behind.
+#
+# The exclusion is an explicit ALLOW of one proven-safe verb rather than an
+# allowlist of gated ones, so the failure direction stays closed — a `commit-*`
+# name this matcher has never seen is still gated. `commit-tree` deliberately
+# stays in scope: it creates a commit object, and a crafted commit plus
+# `update-ref` is a real path around H-01.
+COMMIT_SUBCOMMAND = r"commit(?:-(?!graph(?![-\w]))[\w-]+)?(?![-\w])"
+COMMIT_RE = re.compile(GIT + r"\s+" + COMMIT_SUBCOMMAND + ARGS)
 PUSH_RE = re.compile(GIT + r"\s+push\b" + ARGS)
 ADD_RE = re.compile(GIT + r"\s+add\b" + ARGS)
+# #485 AC-4, the audit of the sibling matchers. Neither needs the same
+# treatment, and both were left alone deliberately:
+#
+#   push  — git has no `push-*` subcommand, so `push\b` has nothing to
+#           over-match onto. If one ever ships, it is gated until reviewed.
+#   add   — `git add--interactive` is a real plumbing helper and it DOES stage,
+#           so `add\b` reaching it is correct, not a false positive.
+#
+# What the audit DID surface is a different shape, and it is knowingly not
+# fixed here: these matchers scan the command TEXT, so a git command quoted
+# inside another command's arguments is gated as if it were being run — a
+# `grep "git add"` trips H-03. Skipping quoted occurrences would be wrong, not
+# merely conservative: `sh -c "git add ."` executes what it quotes, so the
+# exemption would be a real bypass of the staging gate. Distinguishing the two
+# needs actual shell tokenization, which is a larger change with a worse
+# failure direction; over-blocking a mention is the fail-CLOSED side of that
+# trade (ORCHESTRATOR §2: security before velocity). Tracked separately rather
+# than half-fixed.
 # reliability-004 (#190): GIT_C_DIR_RE previously matched `-C` ONLY as the
 # FIRST token after `git`, so a global option in front of it (`--no-pager`,
 # `-c k=v`, `--git-dir=…`) hid the -C target entirely and git_cwd() fell back
