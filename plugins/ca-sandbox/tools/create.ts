@@ -1,7 +1,7 @@
 /**
  * create.ts — ca-sandbox lifecycle entry (T-09, covers AC-01 / AC-11).
  *
- * createSandbox(url, opts) pulls an untrusted repo into an isolated, ephemeral
+ * await createSandbox(url, opts) pulls an untrusted repo into an isolated, ephemeral
  * box, end to end:
  *
  *   1. Mint a short random sandbox id and derive the namespaced object names.
@@ -14,17 +14,17 @@
  *      mounts the volume at /work/repo and is `--rm`'d immediately after — it is
  *      NOT a sandbox object (destroy.ts never targets it directly), but it DOES
  *      carry the `ca.sandbox=1` + `ca.sandbox.id=<id>` labels (reliability-015)
- *      so prune()'s sweep can still reclaim it if it outlives its `--rm`, and it
+ *      so await prune()'s sweep can still reclaim it if it outlives its `--rm`, and it
  *      is never co-run with the untrusted code: clone-then-cut.
  *   4. BUILD (or reuse) the image via build.ts (dephash-cached, deps to /deps).
  *   5. RUN the sandbox container via run.ts — structurally isolated, no host bind,
  *      offline by default — tagging it `ca.sandbox=1` + `ca.sandbox.id=<id>`.
  *
- * Everything created is labeled so destroy.ts / prune() can reclaim it by label
+ * Everything created is labeled so destroy.ts / await prune() can reclaim it by label
  * alone — INCLUDING the throwaway clone container and the docker-cp helper
  * (reliability-015): both now carry `ca.sandbox=1` + `ca.sandbox.id=<id>` even
  * though neither is a sandbox object itself, so a hung clone / a host crash
- * mid-create still leaves something `prune()` can reclaim, and each step is
+ * mid-create still leaves something `await prune()` can reclaim, and each step is
  * wall-clock timed out so a dead remote / giant repo cannot hang forever. On
  * any failure AFTER the volume is created, the partial objects are torn down —
  * containers FIRST, then the volume (matching destroySandbox's order, so an
@@ -70,7 +70,7 @@ export const VOLUME_PREFIX = "ca-sbx-vol";
  * exceeding this kills the local `docker run` client (SIGTERM, then the
  * process's own close handling resolves). The clone container is labeled
  * regardless of outcome, so even a kill that outlives the client-side timeout
- * (docker's sig-proxy is best-effort) leaves an object `prune()` reclaims.
+ * (docker's sig-proxy is best-effort) leaves an object `await prune()` reclaims.
  * Overridable for tests via CA_SANDBOX_CLONE_TIMEOUT_MS.
  */
 export const CLONE_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CLONE_TIMEOUT_MS ?? 5 * 60_000);
@@ -93,6 +93,12 @@ export type CreateOptions = {
   id?: string;
   /** Injectable docker runner (defaults to spawnSync("docker", ...)). */
   dockerRun?: DockerRun;
+  /**
+   * Cancellation for the docker calls this create makes (#479). On abort
+   * the failure path runs its normal best-effort teardown, so a cancelled
+   * create does not leave the half-built sandbox behind.
+   */
+  signal?: AbortSignal;
   /**
    * Injectable repo cloner. Defaults to the throwaway alpine/git container.
    * Accepts either the new `CloneResult` shape (preferred — surfaces git stderr in
@@ -183,7 +189,7 @@ export function newSandboxId(): string {
  * SIGTERM) once it elapses, so a dead remote / hung clone cannot block this
  * promise forever. The underlying docker container may still carry on past
  * the client-side kill (docker's sig-proxy is best-effort against SIGTERM) —
- * that is exactly why the CALLER must label the container so `prune()` can
+ * that is exactly why the CALLER must label the container so `await prune()` can
  * reclaim it regardless.
  */
 function spawnAsync(cmd: string, args: string[], timeoutMs?: number): Promise<CloneResult> {
@@ -212,7 +218,7 @@ function spawnAsync(cmd: string, args: string[], timeoutMs?: number): Promise<Cl
  * the instant the clone finishes. It is NOT a sandbox object (destroy.ts never
  * targets it directly), but it now carries `ca.sandbox=1` + `ca.sandbox.id=<id>`
  * (reliability-015) so a hung clone / a host crash before the `--rm` fires still
- * leaves something `prune()` can reclaim, and it is wall-clock timed out
+ * leaves something `await prune()` can reclaim, and it is wall-clock timed out
  * (CLONE_TIMEOUT_MS) so a dead remote cannot hang indefinitely.
  */
 export async function defaultCloneRepo(
@@ -234,7 +240,7 @@ export async function defaultCloneRepo(
  *
  * Labeled `ca.sandbox=1` + `ca.sandbox.id=<id>` (reliability-015) — the ONE
  * change from the pre-fix argv shape — so this throwaway container is
- * discoverable by `prune()`'s label sweep even though it is never a registered
+ * discoverable by `await prune()`'s label sweep even though it is never a registered
  * sandbox object.
  */
 export function buildCloneArgs(url: string, volumeName: string, id: string): string[] {
@@ -265,7 +271,7 @@ export function buildCloneArgs(url: string, volumeName: string, id: string): str
  * unit-testable without docker. Labeled `ca.sandbox=1` + `ca.sandbox.id=<id>`
  * (reliability-015) — the helper is never a registered sandbox object (it
  * exists only to `docker cp` a temp checkout out of the volume), but the label
- * makes it discoverable by `prune()`'s sweep if the host process dies before
+ * makes it discoverable by `await prune()`'s sweep if the host process dies before
  * the `finally` block's `docker rm -f` runs.
  */
 export function buildCpHelperCreateArgs(volumeName: string, helperName: string, id: string): string[] {
@@ -294,7 +300,7 @@ export function buildCpHelperCreateArgs(volumeName: string, helperName: string, 
  *
  * The helper container is labeled and each docker step (create + cp) is
  * wall-clock timed out (CP_TIMEOUT_MS, reliability-015) so a stuck copy cannot
- * hang forever and, if it does, the label still makes it `prune()`-reclaimable.
+ * hang forever and, if it does, the label still makes it `await prune()`-reclaimable.
  */
 async function defaultBuildImage(volumeName: string, id: string): Promise<BuildResult> {
   const { mkdtemp, rm } = await import("node:fs/promises");
@@ -403,7 +409,8 @@ export async function createSandbox(
   // 1. Labeled named volume (the live source mount). Labels make it discoverable
   // by destroy/prune via label filter alone.
   const volLabelArgs = sandboxLabels.flatMap((l) => ["--label", l]);
-  const mk = dockerRun(["volume", "create", ...volLabelArgs, volumeName]);
+  const mk = await dockerRun(["volume", "create", ...volLabelArgs, volumeName],
+                             { signal: opts.signal });
   if (mk.code !== 0) {
     throw new Error(
       `ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})\n${mk.stderr.slice(-1000)}`,
@@ -430,11 +437,12 @@ export async function createSandbox(
     const build = await buildImage(volumeName, id);
 
     // 4. Run the isolated sandbox container, labeled with the id.
-    const containerId = runContainer(build.tag, volumeName, netPolicy, {
+    const containerId = await runContainer(build.tag, volumeName, netPolicy, {
       extraLabels: [idLabel(id), ...(opts.extraLabels ?? [])],
       namePrefix: `ca-sbx-${id}`,
+      signal: opts.signal,
       dockerRun: opts.dockerRun
-        ? (args) => opts.dockerRun!(args)
+        ? (args, call) => opts.dockerRun!(args, call)
         : undefined,
     });
 
@@ -452,7 +460,10 @@ export async function createSandbox(
     // (e.g. the clone container, now also labeled with this id) fails `volume
     // rm` until that container is gone; removing the volume first (the old
     // order) left it un-retried and orphaned in exactly that case.
-    const leftover = dockerRun([
+    // No signal on the teardown path: this runs BECAUSE the create failed or
+     // was cancelled, so handing it the aborted signal would cancel the cleanup
+     // and orphan exactly the objects it exists to reclaim (#479).
+    const leftover = await dockerRun([
       "ps",
       "-a",
       "-q",
@@ -460,10 +471,10 @@ export async function createSandbox(
       "--filter",
       `label=${idLabel(id)}`,
     ]);
-    for (const c of leftover.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
-      dockerRun(["rm", "-f", c]);
+    for (const c of leftover.stdout.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean)) {
+      await dockerRun(["rm", "-f", c]);
     }
-    dockerRun(["volume", "rm", "-f", volumeName]);
+    await dockerRun(["volume", "rm", "-f", volumeName]);
     throw err;
   }
 }

@@ -1,7 +1,7 @@
 /**
  * run.test.ts — T-06. Covers AC-01.
  *
- * runContainer(image, volumeName, netPolicy) starts an isolated sandbox
+ * await runContainer(image, volumeName, netPolicy) starts an isolated sandbox
  * container. The load-bearing invariant (spec "Load-bearing invariant" / AC-01):
  * untrusted code in the box can never reach the host filesystem, enforced
  * STRUCTURALLY by the run flags:
@@ -33,14 +33,14 @@ import { buildRunArgs, runContainer } from "./run.ts";
 describe("buildRunArgs — isolation flags (AC-01)", () => {
   const argv = buildRunArgs("ca-sbx:demo-abc", "ca-sbx-vol-demo", "offline");
 
-  it("is a detached run with the image and the sleep-infinity keep-alive command", () => {
+  it("is a detached run with the image and the sleep-infinity keep-alive command", async () => {
     expect(argv[0]).toBe("run");
     expect(argv).toContain("-d");
     // image then `sleep infinity` are the final tokens, in order.
     expect(argv.slice(-3)).toEqual(["ca-sbx:demo-abc", "sleep", "infinity"]);
   });
 
-  it("mounts the source volume at /work/repo via type=volume (never a bind)", () => {
+  it("mounts the source volume at /work/repo via type=volume (never a bind)", async () => {
     expect(argv).toContain("--mount");
     expect(argv).toContain("type=volume,source=ca-sbx-vol-demo,target=/work/repo");
     // No bind expression anywhere in the argv.
@@ -49,14 +49,14 @@ describe("buildRunArgs — isolation flags (AC-01)", () => {
     }
   });
 
-  it("sets workdir, non-root user, read-only root, and a tmpfs /tmp", () => {
+  it("sets workdir, non-root user, read-only root, and a tmpfs /tmp", async () => {
     expect(argvPair(argv, "--workdir")).toBe("/work/repo");
     expect(argvPair(argv, "--user")).toBe("1000:1000");
     expect(argv).toContain("--read-only");
     expect(argvPair(argv, "--tmpfs")).toBe("/tmp");
   });
 
-  it("drops all caps, blocks privilege escalation, and applies the resource caps", () => {
+  it("drops all caps, blocks privilege escalation, and applies the resource caps", async () => {
     expect(argvPair(argv, "--cap-drop")).toBe("ALL");
     expect(argvPair(argv, "--security-opt")).toBe("no-new-privileges");
     expect(argvPair(argv, "--pids-limit")).toBe("512");
@@ -64,18 +64,18 @@ describe("buildRunArgs — isolation flags (AC-01)", () => {
     expect(argvPair(argv, "--cpus")).toBe("2");
   });
 
-  it("labels the container ca.sandbox=1 for the lifecycle registry", () => {
+  it("labels the container ca.sandbox=1 for the lifecycle registry", async () => {
     expect(argvPair(argv, "--label")).toBe("ca.sandbox=1");
   });
 
-  it("NEVER passes --privileged and NEVER mounts the docker socket", () => {
+  it("NEVER passes --privileged and NEVER mounts the docker socket", async () => {
     expect(argv).not.toContain("--privileged");
     expect(argv.join(" ")).not.toMatch(/docker\.sock/);
   });
 });
 
 describe("buildRunArgs — network policy (AC-01 / AC-08 seam)", () => {
-  it("offline detaches the container from all networking", () => {
+  it("offline detaches the container from all networking", async () => {
     const argv = buildRunArgs("img", "vol", "offline");
     expect(argvPair(argv, "--network")).toBe("none");
   });
@@ -85,19 +85,19 @@ describe("buildRunArgs — network policy (AC-01 / AC-08 seam)", () => {
   // "offline", or a policy no layer implements — must still get --network none
   // rather than silently run on docker's default bridge. (Replaces the prior test
   // that asserted a bare non-offline string passed through, which was the gap.)
-  it("a typo of 'offline' still gets --network none (fail closed)", () => {
+  it("a typo of 'offline' still gets --network none (fail closed)", async () => {
     const argv = buildRunArgs("img", "vol", "offlien");
     expect(argvPair(argv, "--network")).toBe("none");
   });
 
-  it("an unrecognized policy fails closed to --network none", () => {
+  it("an unrecognized policy fails closed to --network none", async () => {
     for (const policy of ["open", "Offline", " offline ", "bridge", ""]) {
       const argv = buildRunArgs("img", "vol", policy);
       expect(networkValues(argv), `policy ${JSON.stringify(policy)} must airgap`).toContain("none");
     }
   });
 
-  it("refuses an empty image or volume name", () => {
+  it("refuses an empty image or volume name", async () => {
     expect(() => buildRunArgs("", "vol", "offline")).toThrow();
     expect(() => buildRunArgs("img", "", "offline")).toThrow();
   });
@@ -135,7 +135,7 @@ d("runContainer [docker] — real container is structurally isolated (AC-01)", (
     for (const i of created.images) spawnSync("docker", ["rmi", "-f", i], { env: DENV });
   });
 
-  it("inspect shows no bind mount, no docker.sock, not privileged, cap-drop ALL, read-only, non-root", () => {
+  it("inspect shows no bind mount, no docker.sock, not privileged, cap-drop ALL, read-only, non-root", async () => {
     // A tiny base image with a shell + `sleep`. busybox is small and ubiquitous.
     const image = "busybox:latest";
     const pull = spawnSync("docker", ["pull", image], { encoding: "utf8", env: DENV });
@@ -152,7 +152,7 @@ d("runContainer [docker] — real container is structurally isolated (AC-01)", (
     expect(mk.status, mk.stderr).toBe(0);
     created.volumes.push(vol);
 
-    const id = runContainer(image, vol, "offline", {
+    const id = await runContainer(image, vol, "offline", {
       extraLabels: ["ca.sandbox.build=1"],
       namePrefix: NS,
     });

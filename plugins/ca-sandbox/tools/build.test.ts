@@ -46,16 +46,16 @@ import { computeDepHash } from "./dephash.ts";
 // --------------------------------------------------------------------------
 describe("relocationOverlay — appended to the nixpacks-generated Dockerfile", () => {
   const overlay = relocationOverlay();
-  it("relocates deps FROM /app (nixpacks' app dir) TO /deps, not from /work/repo", () => {
+  it("relocates deps FROM /app (nixpacks' app dir) TO /deps, not from /work/repo", async () => {
     expect(overlay).toMatch(/mv\s+\/app\/node_modules\s+\/deps\/node_modules/);
     // The move source must be /app, never /work/repo (the old, never-run bug).
     expect(overlay).not.toMatch(/mv\s+\/work\/repo\/node_modules/);
   });
-  it("relocates python deps from nixpacks' /opt/venv, not /app/.venv only", () => {
+  it("relocates python deps from nixpacks' /opt/venv, not /app/.venv only", async () => {
     // nixpacks installs python into a venv at /opt/venv; the overlay must look there.
     expect(overlay).toMatch(/\/opt\/venv\/lib\/python\*\/site-packages/);
   });
-  it("exports NODE_PATH/PYTHONPATH at /deps and resets the nixpacks ENTRYPOINT", () => {
+  it("exports NODE_PATH/PYTHONPATH at /deps and resets the nixpacks ENTRYPOINT", async () => {
     expect(overlay).toMatch(/ENV NODE_PATH=\/deps\/node_modules/);
     expect(overlay).toMatch(/ENV PYTHONPATH=\/deps\/site-packages/);
     // Reset so the sandbox `sleep infinity` keepalive runs as a plain command.
@@ -68,11 +68,11 @@ describe("relocationOverlay — appended to the nixpacks-generated Dockerfile", 
 // PURE unit layer — injected deps, no real docker.
 // --------------------------------------------------------------------------
 describe("imageTag", () => {
-  it("tags ca-sbx:<repo>-<dephash> from the repo dir basename", () => {
+  it("tags ca-sbx:<repo>-<dephash> from the repo dir basename", async () => {
     expect(imageTag("/tmp/some/myrepo", "abc123def456")).toBe("ca-sbx:myrepo-abc123def456");
   });
 
-  it("sanitizes a basename that is not docker-tag-safe", () => {
+  it("sanitizes a basename that is not docker-tag-safe", async () => {
     const tag = imageTag("/tmp/My Repo!@#", "abc123def456");
     // docker tags allow [A-Za-z0-9_.-]; everything else folds away.
     expect(tag).toMatch(/^ca-sbx:[A-Za-z0-9_.-]+-abc123def456$/);
@@ -80,7 +80,7 @@ describe("imageTag", () => {
   });
 });
 
-describe("buildOrReuseImage — cache hit (AC-04)", () => {
+describe("buildOrReuseImage — cache hit (AC-04)", async () => {
   it("reuses an existing tag and performs NO build", async () => {
     let inspected: string | null = null;
     let buildCalls = 0;
@@ -105,7 +105,7 @@ describe("buildOrReuseImage — cache hit (AC-04)", () => {
   });
 });
 
-describe("buildOrReuseImage — cache miss builds (AC-05)", () => {
+describe("buildOrReuseImage — cache miss builds (AC-05)", async () => {
   it("builds when the tag does not exist", async () => {
     let buildCalls = 0;
     let builtTag: string | null = null;
@@ -206,7 +206,7 @@ describe("dephash drives the tag — unchanged vs manifest-changed (AC-04/AC-05)
     expect(builds).toBe(0);
   });
 
-  it("manifest change -> different dephash -> different tag", () => {
+  it("manifest change -> different dephash -> different tag", async () => {
     const a = computeDepHash([{ path: "package.json", bytes: '{"lodash":"^4"}' }], "1.40.0");
     const b = computeDepHash([{ path: "package.json", bytes: '{"lodash":"^5"}' }], "1.40.0");
     expect(a).not.toBe(b);
@@ -317,7 +317,7 @@ d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () 
 // also the two most likely to hang - and the only ones with no escape.
 // ---------------------------------------------------------------------------
 describe("#394 - build.ts's spawn is bounded too", () => {
-  it("reuses the shared per-operation deadlines rather than inventing a second policy", () => {
+  it("reuses the shared per-operation deadlines rather than inventing a second policy", async () => {
     // One timeout policy for the whole driver. A second map here would drift
     // from docker.ts's the first time either moved.
     const src = readFileSync(new URL("./build.ts", import.meta.url), "utf8");

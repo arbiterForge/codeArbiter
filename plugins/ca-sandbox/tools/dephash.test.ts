@@ -29,12 +29,12 @@ describe("computeDepHash", () => {
     mf("package-lock.json", '{"lockfileVersion":3}'),
   ];
 
-  it("is 12 lowercase hex chars", () => {
+  it("is 12 lowercase hex chars", async () => {
     const h = computeDepHash(base, NIX);
     expect(h).toMatch(/^[0-9a-f]{12}$/);
   });
 
-  it("returns an identical hash for an identical manifest set", () => {
+  it("returns an identical hash for an identical manifest set", async () => {
     const a = computeDepHash(base, NIX);
     const b = computeDepHash(
       [
@@ -46,16 +46,16 @@ describe("computeDepHash", () => {
     expect(a).toBe(b);
   });
 
-  it("is deterministic across two calls on the same input", () => {
+  it("is deterministic across two calls on the same input", async () => {
     expect(computeDepHash(base, NIX)).toBe(computeDepHash(base, NIX));
   });
 
-  it("is order-independent — the hash is over the SET, not the listing order", () => {
+  it("is order-independent — the hash is over the SET, not the listing order", async () => {
     const reordered = [base[1], base[0]];
     expect(computeDepHash(reordered, NIX)).toBe(computeDepHash(base, NIX));
   });
 
-  it("changes when a manifest byte changes (manifest edit -> rebuild)", () => {
+  it("changes when a manifest byte changes (manifest edit -> rebuild)", async () => {
     const edited = [
       mf("package.json", '{"name":"x","dependencies":{"lodash":"^5"}}'),
       base[1],
@@ -63,30 +63,30 @@ describe("computeDepHash", () => {
     expect(computeDepHash(edited, NIX)).not.toBe(computeDepHash(base, NIX));
   });
 
-  it("changes when a lockfile byte changes (lockfile edit -> rebuild)", () => {
+  it("changes when a lockfile byte changes (lockfile edit -> rebuild)", async () => {
     const edited = [base[0], mf("package-lock.json", '{"lockfileVersion":4}')];
     expect(computeDepHash(edited, NIX)).not.toBe(computeDepHash(base, NIX));
   });
 
-  it("changes when a manifest is added to the set", () => {
+  it("changes when a manifest is added to the set", async () => {
     const more = [...base, mf("requirements.txt", "requests==2.31.0")];
     expect(computeDepHash(more, NIX)).not.toBe(computeDepHash(base, NIX));
   });
 
-  it("changes when a manifest is removed from the set", () => {
+  it("changes when a manifest is removed from the set", async () => {
     expect(computeDepHash([base[0]], NIX)).not.toBe(computeDepHash(base, NIX));
   });
 
-  it("binds the path: same bytes at a different relpath -> different hash", () => {
+  it("binds the path: same bytes at a different relpath -> different hash", async () => {
     const renamed = [mf("sub/package.json", base[0].bytes.toString("utf8")), base[1]];
     expect(computeDepHash(renamed, NIX)).not.toBe(computeDepHash(base, NIX));
   });
 
-  it("changes when the pinned nixpacks version changes (toolchain rebuild)", () => {
+  it("changes when the pinned nixpacks version changes (toolchain rebuild)", async () => {
     expect(computeDepHash(base, "1.41.0")).not.toBe(computeDepHash(base, NIX));
   });
 
-  it("accepts string and Uint8Array bytes equivalently to a Buffer", () => {
+  it("accepts string and Uint8Array bytes equivalently to a Buffer", async () => {
     const asString: ManifestFile[] = [
       { path: "package.json", bytes: '{"name":"x","dependencies":{"lodash":"^4"}}' },
       { path: "package-lock.json", bytes: new Uint8Array(Buffer.from('{"lockfileVersion":3}')) },
@@ -94,7 +94,7 @@ describe("computeDepHash", () => {
     expect(computeDepHash(asString, NIX)).toBe(computeDepHash(base, NIX));
   });
 
-  it("matches an independently computed reference digest (algorithm is the documented one)", () => {
+  it("matches an independently computed reference digest (algorithm is the documented one)", async () => {
     // Reference: sha256 over the sorted "<relpath>\0<sha256(bytes)>\n" lines
     // followed by the nixpacks version line, truncated to 12 hex.
     const lines = base
@@ -107,7 +107,7 @@ describe("computeDepHash", () => {
     expect(computeDepHash(base, NIX)).toBe(expected);
   });
 
-  it("rejects a duplicate relpath in the manifest set", () => {
+  it("rejects a duplicate relpath in the manifest set", async () => {
     const dup = [base[0], base[1], mf("package.json", "different")];
     expect(() => computeDepHash(dup, NIX)).toThrow(/duplicate/i);
   });

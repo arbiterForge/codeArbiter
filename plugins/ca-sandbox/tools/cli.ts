@@ -47,7 +47,7 @@ import {
 import { execInSandbox, type ExecResult } from "./exec.ts";
 import { cpOut, type RunResult } from "./cp.ts";
 import { resolveContainerId } from "./registry.ts";
-import { DOCKER_ENV } from "./docker.ts";
+import { DOCKER_ENV, type DockerCallOptions } from "./docker.ts";
 
 /** The three CLI-exposed network policies (run.ts treats the latter two as the
  * pass-through richer policies; cli.ts only accepts these known names). */
@@ -81,13 +81,16 @@ export type Command =
   | { kind: "prune" };
 
 /** The injectable dispatch table. The real ones shell the modules; tests fake them. */
+/** Conventional exit code for "terminated by SIGINT" (128 + 2), #479. */
+export const SIGINT_EXIT_CODE = 130;
+
 export type Handlers = {
   create: (url: string, opts: { netPolicy: CliNetPolicy }) => Promise<CreateResult>;
-  destroy: (id: string, opts: { keepVolume: boolean }) => DestroyResult;
-  prune: () => PruneResult;
-  exec: (id: string, argv: string[]) => ExecResult;
-  cp: (id: string, containerPath: string, hostDest: string) => RunResult;
-  shell: (id: string, shell: string) => number;
+  destroy: (id: string, opts: { keepVolume: boolean }) => Promise<DestroyResult>;
+  prune: () => Promise<PruneResult>;
+  exec: (id: string, argv: string[]) => Promise<ExecResult>;
+  cp: (id: string, containerPath: string, hostDest: string) => Promise<RunResult>;
+  shell: (id: string, shell: string) => Promise<number>;
 };
 
 // --------------------------------------------------------------------------
@@ -298,10 +301,10 @@ function parsePrune(args: string[]): Command {
  * own (it is purely an interactive convenience over a running container), so it
  * lives here; it is injectable, so tests never spawn a real tty.
  */
-function defaultShell(id: string, shell: string): number {
+async function defaultShell(id: string, shell: string): Promise<number> {
   // `id` is the user-facing sandbox id; resolve it to the real container id
   // (the container is `ca-sbx-<id>-<suffix>`, not the bare id) before exec.
-  const containerId = resolveContainerId(id);
+  const containerId = await resolveContainerId(id);
   const r = spawnSync("docker", ["exec", "-it", containerId, shell], {
     stdio: "inherit",
     env: DOCKER_ENV,
@@ -316,16 +319,26 @@ function defaultShell(id: string, shell: string): number {
  * `ca-sbx-<id>-<suffix>`, so the bare id is not a valid `docker exec` target).
  * `create`/`destroy`/`prune` already resolve by label inside their modules.
  */
-export const defaultHandlers: Handlers = {
-  create: (url, opts) => createSandbox(url, { netPolicy: opts.netPolicy }),
-  destroy: (id, opts) => destroySandbox(id, { keepVolume: opts.keepVolume }),
-  prune: () => prune(),
+export function makeDefaultHandlers(call: DockerCallOptions = {}): Handlers {
+  return {
+  create: async (url, opts) =>
+    await createSandbox(url, { netPolicy: opts.netPolicy, signal: call.signal }),
+  destroy: async (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume }),
+  prune: async () => await prune(),
   // Preserve the sandbox id the caller passed in the returned contract, even
   // though the exec runs against the resolved container id.
-  exec: (id, argv) => ({ ...execInSandbox(resolveContainerId(id), argv), id }),
-  cp: (id, containerPath, hostDest) => cpOut(resolveContainerId(id), containerPath, hostDest),
+  exec: async (id, argv) => ({
+    ...(await execInSandbox(await resolveContainerId(id), argv, { signal: call.signal })),
+    id,
+  }),
+  cp: async (id, containerPath, hostDest) =>
+    await cpOut(await resolveContainerId(id), containerPath, hostDest, { signal: call.signal }),
   shell: defaultShell,
-};
+  };
+}
+
+/** The uncancellable default, kept so every existing caller is unchanged. */
+export const defaultHandlers: Handlers = makeDefaultHandlers();
 
 // --------------------------------------------------------------------------
 // teardown verdict -> exit code (#393)
@@ -399,25 +412,25 @@ export async function runCli(argv: string[], handlers: Handlers = defaultHandler
       return 0;
     }
     case "shell":
-      return handlers.shell(cmd.id, cmd.shell);
+      return await handlers.shell(cmd.id, cmd.shell);
     case "exec": {
-      const r = handlers.exec(cmd.id, cmd.argv);
+      const r = await handlers.exec(cmd.id, cmd.argv);
       process.stdout.write(`${JSON.stringify(r)}\n`);
       // Propagate the in-container exit code as the CLI's own (AC-09).
       return r.exitCode;
     }
     case "cp": {
-      const r = handlers.cp(cmd.id, cmd.containerPath, cmd.hostDest);
+      const r = await handlers.cp(cmd.id, cmd.containerPath, cmd.hostDest);
       if (r.code !== 0 && r.stderr) process.stderr.write(`${r.stderr}\n`);
       return r.code;
     }
     case "destroy": {
-      const r = handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
+      const r = await handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
       process.stdout.write(`${JSON.stringify(r)}\n`);
       return teardownExit("destroy", r);
     }
     case "prune": {
-      const r = handlers.prune();
+      const r = await handlers.prune();
       process.stdout.write(`${JSON.stringify(r)}\n`);
       return teardownExit("prune", r);
     }
@@ -441,8 +454,41 @@ function usage(): string {
 const _thisFile = fileURLToPath(import.meta.url);
 const _entryFile = path.resolve(process.argv[1] ?? "");
 if (_thisFile === _entryFile) {
-  runCli(process.argv.slice(2))
-    .then((code) => process.exit(code))
+  // #479: Ctrl-C cancels the docker call in flight rather than killing this
+  // process out from under it.
+  //
+  // The difference is what happens to the container. Node's default SIGINT
+  // handling ends the CLI immediately, which leaves the box the operator was
+  // exec-ing into still running with no one left to reclaim it - the same
+  // orphan a timeout left before #394. Aborting instead lets the runner kill
+  // its child, return a typed `aborted` result, and lets the command module run
+  // the SAME bounded teardown a timeout gets.
+  //
+  // Installed at the ENTRY, not in the runner: the signal is a property of this
+  // process, while docker.ts stays a primitive that observes a signal handed to
+  // it. That is what keeps the cancellation path testable without a daemon.
+  const cancel = new AbortController();
+  let interrupted = false;
+  process.on("SIGINT", () => {
+    if (interrupted) {
+      // A SECOND Ctrl-C says the teardown itself is stuck. Honour it literally
+      // rather than politely - the first one already asked nicely, and a CLI
+      // that refuses to exit is how one earns a `kill -9`.
+      process.exit(SIGINT_EXIT_CODE);
+    }
+    interrupted = true;
+    process.stderr.write(
+      "ca-sandbox: cancelling - stopping the container this command started, "
+      + "then exiting. Press Ctrl-C again to exit immediately.\n",
+    );
+    cancel.abort();
+  });
+
+  runCli(process.argv.slice(2), makeDefaultHandlers({ signal: cancel.signal }))
+    // An interrupted run reports 130 rather than whatever exit code the aborted
+    // docker call happened to produce, so a caller can tell a cancellation from
+    // a failure.
+    .then((code) => process.exit(interrupted ? SIGINT_EXIT_CODE : code))
     .catch((e) => {
       console.error(e);
       process.exit(1);

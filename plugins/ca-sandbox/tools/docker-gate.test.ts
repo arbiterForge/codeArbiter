@@ -59,7 +59,7 @@ function maskDockerFromPath(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
 }
 
 describe("requiredMode — the explicit local/required switch (AC-2)", () => {
-  it("is off when the variable is unset, empty, 0 or false", () => {
+  it("is off when the variable is unset, empty, 0 or false", async () => {
     expect(requiredMode({})).toBe(false);
     expect(requiredMode({ [REQUIRE_ENV]: "" })).toBe(false);
     expect(requiredMode({ [REQUIRE_ENV]: "   " })).toBe(false);
@@ -67,30 +67,30 @@ describe("requiredMode — the explicit local/required switch (AC-2)", () => {
     expect(requiredMode({ [REQUIRE_ENV]: "false" })).toBe(false);
   });
 
-  it("is on for the spellings CI actually uses", () => {
+  it("is on for the spellings CI actually uses", async () => {
     expect(requiredMode({ [REQUIRE_ENV]: "1" })).toBe(true);
     expect(requiredMode({ [REQUIRE_ENV]: "true" })).toBe(true);
   });
 });
 
 describe("decideGate — what counts as an available daemon", () => {
-  it("runs on a healthy daemon", () => {
+  it("runs on a healthy daemon", async () => {
     expect(decideGate({ probe: linux })).toMatchObject({ run: true });
   });
 
-  it("does not run when docker is not on PATH at all", () => {
+  it("does not run when docker is not on PATH at all", async () => {
     const decision = decideGate({ probe: absent });
     expect(decision.run).toBe(false);
     expect(decision.run === false && decision.reason).toMatch(/PATH/i);
   });
 
-  it("does not run when `docker info` exits non-zero", () => {
+  it("does not run when `docker info` exits non-zero", async () => {
     const decision = decideGate({ probe: broken });
     expect(decision.run).toBe(false);
     expect(decision.run === false && decision.reason).toMatch(/exited 1/);
   });
 
-  it("treats a windows-container daemon as unavailable for a linux-only layer", () => {
+  it("treats a windows-container daemon as unavailable for a linux-only layer", async () => {
     expect(decideGate({ probe: windows, linux: true }).run).toBe(false);
     // ...and as fine for a layer that does not care.
     expect(decideGate({ probe: windows }).run).toBe(true);
@@ -98,23 +98,23 @@ describe("decideGate — what counts as an available daemon", () => {
 });
 
 describe("dockerGate — required mode fails instead of skipping (AC-1)", () => {
-  it("throws, naming the layer and the switch, when the daemon is unavailable", () => {
+  it("throws, naming the layer and the switch, when the daemon is unavailable", async () => {
     expect(() =>
       dockerGate("isolation", { probe: absent, env: { [REQUIRE_ENV]: "1" } }),
     ).toThrow(new RegExp(`${REQUIRE_ENV}[\\s\\S]*isolation|isolation[\\s\\S]*${REQUIRE_ENV}`));
   });
 
-  it("throws when a linux-only layer meets a windows daemon", () => {
+  it("throws when a linux-only layer meets a windows daemon", async () => {
     expect(() =>
       dockerGate("network", { probe: windows, linux: true, env: { [REQUIRE_ENV]: "1" } }),
     ).toThrow(/windows/i);
   });
 
-  it("still self-skips on a developer machine with the switch off", () => {
+  it("still self-skips on a developer machine with the switch off", async () => {
     expect(() => dockerGate("isolation", { probe: absent, env: {} })).not.toThrow();
   });
 
-  it("does not throw when the daemon is healthy", () => {
+  it("does not throw when the daemon is healthy", async () => {
     expect(() =>
       dockerGate("isolation", { probe: linux, env: { [REQUIRE_ENV]: "1" } }),
     ).not.toThrow();
@@ -122,7 +122,7 @@ describe("dockerGate — required mode fails instead of skipping (AC-1)", () => 
 });
 
 describe("recordLayer — the machine-checkable execution sentinel (AC-3)", () => {
-  it("appends one line per executed layer", () => {
+  it("appends one line per executed layer", async () => {
     const sentinel = join(mkdtempSync(join(tmpdir(), "ca-sbx-sentinel-")), "layers.txt");
     recordLayer("isolation", { [SENTINEL_ENV]: sentinel });
     recordLayer("lifecycle", { [SENTINEL_ENV]: sentinel });
@@ -132,18 +132,18 @@ describe("recordLayer — the machine-checkable execution sentinel (AC-3)", () =
     ]);
   });
 
-  it("is inert when no sentinel path is configured", () => {
+  it("is inert when no sentinel path is configured", async () => {
     expect(() => recordLayer("isolation", {})).not.toThrow();
   });
 });
 
 describe("PATH-masked reproduction — the issue's own repro (AC-4)", () => {
-  it("the real probe reports unavailable when docker is masked from PATH", () => {
+  it("the real probe reports unavailable when docker is masked from PATH", async () => {
     const result = defaultProbe(maskDockerFromPath());
     expect(result.status).not.toBe(0);
   });
 
-  it("a required-mode Vitest child with docker masked from PATH exits NON-ZERO", () => {
+  it("a required-mode Vitest child with docker masked from PATH exits NON-ZERO", async () => {
     const env = maskDockerFromPath({ [REQUIRE_ENV]: "1" });
     delete env[SENTINEL_ENV];
     const child = spawnSync(

@@ -92,14 +92,14 @@ const PRESENT = STACKS.filter(fixturePresent);
 // PURE layer — deterministic dephash across two reads (AC-07), no docker.
 // --------------------------------------------------------------------------
 describe("multistack fixtures — present + deterministic dephash (AC-07)", () => {
-  it("ships the go and rust fixtures this task owns, with their manifests", () => {
+  it("ships the go and rust fixtures this task owns, with their manifests", async () => {
     const go = STACKS.find((s) => s.dir === "go")!;
     const rust = STACKS.find((s) => s.dir === "rust")!;
     expect(fixturePresent(go)).toBe(true);
     expect(fixturePresent(rust)).toBe(true);
   });
 
-  it("covers a real multi-stack matrix (at least go + rust present)", () => {
+  it("covers a real multi-stack matrix (at least go + rust present)", async () => {
     expect(PRESENT.length).toBeGreaterThanOrEqual(2);
   });
 

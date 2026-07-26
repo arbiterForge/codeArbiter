@@ -1,13 +1,13 @@
 /**
  * destroy.ts — ca-sandbox teardown + prune (T-09, covers AC-11).
  *
- * destroySandbox(id, opts) removes the docker objects of ONE sandbox, discovered
+ * await destroySandbox(id, opts) removes the docker objects of ONE sandbox, discovered
  * purely by the `ca.sandbox.id=<id>` label (no JSON file — registry.ts is the
  * label-only state). It `docker rm -f`'s every labeled container and `volume rm`'s
  * the named volume UNLESS `--keep-volume` is set, in which case the container goes
  * but the volume (the cloned source) is preserved for a later re-run.
  *
- * prune(opts) reclaims EVERY object carrying `ca.sandbox=1` — including a
+ * await prune(opts) reclaims EVERY object carrying `ca.sandbox=1` — including a
  * manually-leaked one that lost its id label — so a partial/abandoned sandbox can
  * always be swept. This is the AC-11 guarantee: after a normal `create -> destroy`
  * there are zero `ca.sandbox=1` objects; a leaked labeled object is reclaimed by
@@ -193,16 +193,16 @@ function oneLine(stderr: string): string {
  * attempted even after one fails — a partial teardown must still reclaim what it
  * can. Returns the refs that were actually removed.
  */
-function removeEach(
+async function removeEach(
   refs: string[],
   kind: "container" | "volume",
   dockerRun: DockerRun,
   log: FailureLog,
-): string[] {
+): Promise<string[]> {
   const removed: string[] = [];
   for (const ref of refs) {
     const args = kind === "container" ? ["rm", "-f", ref] : ["volume", "rm", "-f", ref];
-    const r = dockerRun(args);
+    const r = await dockerRun(args);
     if (r.code === 0) removed.push(ref);
     else log.add(kind === "container" ? "remove-container" : "remove-volume", ref, r.code, r.stderr);
   }
@@ -214,14 +214,14 @@ function removeEach(
  * PRESENT rather than only what we managed to delete. A failed verification
  * listing is recorded as a failure: an unverifiable teardown is not a clean one.
  */
-function verifyScope(
+async function verifyScope(
   labels: string | string[],
   dockerRun: DockerRun,
   log: FailureLog,
-): { containers: string[]; volumes: string[] } {
-  const c = listContainersResult(labels, dockerRun);
+): Promise<{ containers: string[]; volumes: string[] }> {
+  const c = await listContainersResult(labels, dockerRun);
   if (c.code !== 0) log.add("list-containers", c.scope, c.code, c.stderr);
-  const v = listVolumesResult(labels, dockerRun);
+  const v = await listVolumesResult(labels, dockerRun);
   if (v.code !== 0) log.add("list-volumes", v.scope, v.code, v.stderr);
   return { containers: c.items, volumes: v.items };
 }
@@ -233,20 +233,23 @@ function verifyScope(
  * @param id the sandbox id (the `ca.sandbox.id` label value).
  * @param opts keepVolume to preserve the source volume; injectable docker runner.
  */
-export function destroySandbox(id: string, opts: DestroyOptions = {}): DestroyResult {
+export async function destroySandbox(
+  id: string,
+  opts: DestroyOptions = {},
+): Promise<DestroyResult> {
   if (!id) throw new Error("ca-sandbox: destroySandbox requires a sandbox id");
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const labels = [SANDBOX_LABEL, idLabel(id)];
   const log = new FailureLog();
 
-  const containersList = listContainersResult(labels, dockerRun);
+  const containersList = await listContainersResult(labels, dockerRun);
   if (containersList.code !== 0)
     log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
-  const volumesList = listVolumesResult(labels, dockerRun);
+  const volumesList = await listVolumesResult(labels, dockerRun);
   if (volumesList.code !== 0)
     log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
 
-  const removedContainers = removeEach(containersList.items, "container", dockerRun, log);
+  const removedContainers = await removeEach(containersList.items, "container", dockerRun, log);
 
   const removedVolumes: string[] = [];
   const keptVolumes: string[] = [];
@@ -255,10 +258,10 @@ export function destroySandbox(id: string, opts: DestroyOptions = {}): DestroyRe
   } else {
     // A volume in use by a container can't be removed until the container is
     // gone; containers were removed above, so this now succeeds.
-    removedVolumes.push(...removeEach(volumesList.items, "volume", dockerRun, log));
+    removedVolumes.push(...await removeEach(volumesList.items, "volume", dockerRun, log));
   }
 
-  const still = verifyScope(labels, dockerRun, log);
+  const still = await verifyScope(labels, dockerRun, log);
   // #433: under --keep-volume NO volume was targeted for removal, so no volume
   // can be a leak - and the surviving ones ARE the kept ones. Filtering against
   // `keptVolumes` alone was not enough: when the DISCOVERY listing failed,
@@ -302,19 +305,19 @@ export type PruneResult = TeardownReport & {
  * Cached images are intentionally NOT removed (tracked by tag; reused across
  * creates — AC-11 "cached images excepted").
  */
-export function prune(opts: PruneOptions = {}): PruneResult {
+export async function prune(opts: PruneOptions = {}): Promise<PruneResult> {
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const log = new FailureLog();
 
-  const containersList = listContainersResult(SANDBOX_LABEL, dockerRun);
+  const containersList = await listContainersResult(SANDBOX_LABEL, dockerRun);
   if (containersList.code !== 0)
     log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
-  const removedContainers = removeEach(containersList.items, "container", dockerRun, log);
+  const removedContainers = await removeEach(containersList.items, "container", dockerRun, log);
 
-  const volumesList = listVolumesResult(SANDBOX_LABEL, dockerRun);
+  const volumesList = await listVolumesResult(SANDBOX_LABEL, dockerRun);
   if (volumesList.code !== 0)
     log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
-  const removedVolumes = removeEach(volumesList.items, "volume", dockerRun, log);
+  const removedVolumes = await removeEach(volumesList.items, "volume", dockerRun, log);
 
   // #433: verification is scoped to what THIS invocation targeted. Re-listing
   // the global ca.sandbox=1 scope meant a sandbox another process created AFTER
@@ -325,7 +328,7 @@ export function prune(opts: PruneOptions = {}): PruneResult {
   // target and could not remove is still reported - that is what this is for.
   const targetedContainers = new Set(containersList.items);
   const targetedVolumes = new Set(volumesList.items);
-  const still = verifyScope(SANDBOX_LABEL, dockerRun, log);
+  const still = await verifyScope(SANDBOX_LABEL, dockerRun, log);
   return {
     removedContainers,
     removedVolumes,

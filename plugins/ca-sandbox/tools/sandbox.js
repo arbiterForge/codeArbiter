@@ -3,10 +3,10 @@
 // cli.ts
 import { fileURLToPath } from "node:url";
 import path2 from "node:path";
-import { spawnSync as spawnSync3 } from "node:child_process";
+import { spawnSync as spawnSync2 } from "node:child_process";
 
 // create.ts
-import { spawnSync as spawnSync2, spawn as spawn2 } from "node:child_process";
+import { spawnSync, spawn as spawn3 } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { readdir } from "node:fs/promises";
 
@@ -81,7 +81,7 @@ function buildMountArgs(specs) {
 }
 
 // docker.ts
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 var DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 var DEFAULT_DOCKER_TIMEOUT_MS = 12e4;
 var DOCKER_OPERATION_TIMEOUTS_MS = Object.freeze({
@@ -109,36 +109,106 @@ function timeoutForArgs(args) {
   return DOCKER_OPERATION_TIMEOUTS_MS[args[0] ?? ""] ?? DEFAULT_DOCKER_TIMEOUT_MS;
 }
 var DOCKER_TIMEOUT_EXIT_CODE = 124;
-function runDocker(args, extra = {}, options = {}) {
+var DOCKER_ABORT_EXIT_CODE = 130;
+var DEFAULT_DOCKER_MAX_BUFFER = 64 * 1024 * 1024;
+function runDocker(args, extra = {}, options = {}, call = {}) {
   const timeout = options.timeoutMs ?? timeoutForArgs(args);
-  const spawn3 = options.spawn ?? spawnSync;
-  const r = spawn3("docker", args, {
-    encoding: "utf8",
-    env: DOCKER_ENV,
-    ...extra,
-    timeout,
-    killSignal: "SIGKILL"
-  });
-  const timedOut = r.error?.code === "ETIMEDOUT" || r.status === null && r.signal !== null && r.signal !== void 0;
-  if (timedOut) {
-    return {
-      code: DOCKER_TIMEOUT_EXIT_CODE,
-      stdout: r.stdout ?? "",
-      stderr: `${r.stderr ?? ""}ca-sandbox: \`docker ${args[0] ?? ""}\` timed out after ${timeout}ms and was killed (issue #394).`,
-      timedOut: true
-    };
+  const spawnFn = options.spawn ?? spawn;
+  const maxBuffer = options.maxBuffer ?? DEFAULT_DOCKER_MAX_BUFFER;
+  const signal = call.signal;
+  const label = `docker ${args[0] ?? ""}`;
+  if (signal?.aborted) {
+    return Promise.resolve({
+      code: DOCKER_ABORT_EXIT_CODE,
+      stdout: "",
+      stderr: `ca-sandbox: \`${label}\` was cancelled before it started (issue #479).`,
+      aborted: true
+    });
   }
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : "")
-  };
+  return new Promise((resolve) => {
+    let child;
+    try {
+      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra });
+    } catch (e) {
+      resolve({ code: 1, stdout: "", stderr: String(e) });
+      return;
+    }
+    let stdout = "";
+    let stderr = "";
+    let bytes = 0;
+    let killedBy;
+    let settled = false;
+    const kill = (why) => {
+      if (killedBy !== void 0) return;
+      killedBy = why;
+      try {
+        child.kill("SIGKILL");
+      } catch {
+      }
+    };
+    const collect = (which) => (chunk) => {
+      const text = String(chunk);
+      bytes += Buffer.byteLength(text);
+      if (bytes > maxBuffer) {
+        kill("overflow");
+        return;
+      }
+      if (which === "out") stdout += text;
+      else stderr += text;
+    };
+    child.stdout?.setEncoding?.("utf8");
+    child.stderr?.setEncoding?.("utf8");
+    child.stdout?.on("data", collect("out"));
+    child.stderr?.on("data", collect("err"));
+    const timer = setTimeout(() => kill("timeout"), timeout);
+    timer.unref?.();
+    const onAbort = () => kill("abort");
+    signal?.addEventListener?.("abort", onAbort, { once: true });
+    const settle = (r) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      signal?.removeEventListener?.("abort", onAbort);
+      resolve(r);
+    };
+    child.on("error", (e) => settle({ code: 1, stdout: "", stderr: String(e) }));
+    child.on("close", (code) => {
+      if (killedBy === "timeout") {
+        settle({
+          code: DOCKER_TIMEOUT_EXIT_CODE,
+          stdout,
+          stderr: `${stderr}ca-sandbox: \`${label}\` timed out after ${timeout}ms and was killed (issue #394).`,
+          timedOut: true
+        });
+        return;
+      }
+      if (killedBy === "abort") {
+        settle({
+          code: DOCKER_ABORT_EXIT_CODE,
+          stdout,
+          stderr: `${stderr}ca-sandbox: \`${label}\` was cancelled and killed (issue #479).`,
+          aborted: true
+        });
+        return;
+      }
+      if (killedBy === "overflow") {
+        settle({
+          code: 1,
+          stdout,
+          stderr: `${stderr}ca-sandbox: \`${label}\` exceeded the ${maxBuffer}-byte output cap and was killed (issue #479).`,
+          overflowed: true
+        });
+        return;
+      }
+      settle({ code: code ?? 1, stdout, stderr });
+    });
+  });
 }
-function defaultDockerRun(args) {
-  return runDocker(args);
+function defaultDockerRun(args, call = {}) {
+  return runDocker(args, {}, {}, call);
 }
 function makeDockerRun(extra, options = {}) {
-  return (args) => runDocker(args, extra, options);
+  return (args, call) => runDocker(args, extra, options, call);
 }
 
 // run.ts
@@ -197,10 +267,10 @@ function buildRunArgs(image, volumeName, netPolicy, opts = {}) {
     "infinity"
   ];
 }
-function runContainer(image, volumeName, netPolicy, opts = {}) {
+async function runContainer(image, volumeName, netPolicy, opts = {}) {
   const args = buildRunArgs(image, volumeName, netPolicy, opts);
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
-  const r = dockerRun(args);
+  const r = await dockerRun(args, { signal: opts.signal });
   if (r.code !== 0) {
     throw new Error(
       `ca-sandbox: docker run failed for ${image} (exit ${r.code})
@@ -211,7 +281,7 @@ ${(r.stderr || r.stdout).slice(-2e3)}`
 }
 
 // build.ts
-import { spawn } from "node:child_process";
+import { spawn as spawn2 } from "node:child_process";
 import { writeFile, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 var IMAGE_PREFIX = "ca-sbx";
@@ -224,7 +294,7 @@ function run(cmd, args, opts = {}) {
   const { timeoutMs, ...spawnOpts } = opts;
   const deadline = timeoutMs ?? (cmd === "docker" ? timeoutForArgs(args) : DEFAULT_DOCKER_TIMEOUT_MS);
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { env: DOCKER_ENV, ...spawnOpts });
+    const c = spawn2(cmd, args, { env: DOCKER_ENV, ...spawnOpts });
     let stdout = "";
     let stderr = "";
     let timedOut = false;
@@ -497,32 +567,32 @@ function labelFilterArgs(labels) {
   return list.flatMap((l) => ["--filter", `label=${l}`]);
 }
 var scopeOf = (labels) => (Array.isArray(labels) ? labels : [labels]).map((l) => `label=${l}`).join(" ");
-function listContainersResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
-  const r = dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
+async function listContainersResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
+  const r = await dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
   return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
 }
-function listVolumesResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
-  const r = dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
+async function listVolumesResult(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
+  const r = await dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
   return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
 }
-function listContainers(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
-  return listContainersResult(labels, dockerRun).items;
+async function listContainers(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
+  return (await listContainersResult(labels, dockerRun)).items;
 }
-function listVolumes(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
-  return listVolumesResult(labels, dockerRun).items;
+async function listVolumes(labels = SANDBOX_LABEL2, dockerRun = defaultDockerRun) {
+  return (await listVolumesResult(labels, dockerRun)).items;
 }
 function splitLines(out) {
   return out.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
 }
-function findSandbox(id, dockerRun = defaultDockerRun) {
+async function findSandbox(id, dockerRun = defaultDockerRun) {
   const labels = [SANDBOX_LABEL2, idLabel(id)];
-  const containers = listContainers(labels, dockerRun);
-  const volumes = listVolumes(labels, dockerRun);
+  const containers = await listContainers(labels, dockerRun);
+  const volumes = await listVolumes(labels, dockerRun);
   if (containers.length === 0 && volumes.length === 0) return null;
   return { id, containers, volumes };
 }
-function resolveContainerId(id, dockerRun = defaultDockerRun) {
-  const rec = findSandbox(id, dockerRun);
+async function resolveContainerId(id, dockerRun = defaultDockerRun) {
+  const rec = await findSandbox(id, dockerRun);
   const containerId = rec?.containers[0];
   if (!containerId)
     throw new Error(
@@ -565,7 +635,7 @@ function newSandboxId() {
 }
 function spawnAsync(cmd, args, timeoutMs) {
   return new Promise((resolve) => {
-    const c = spawn2(cmd, args, {
+    const c = spawn3(cmd, args, {
       env: DOCKER_ENV,
       stdio: ["ignore", "ignore", "pipe"],
       ...timeoutMs !== void 0 ? { timeout: timeoutMs } : {}
@@ -625,7 +695,7 @@ async function defaultBuildImage(volumeName, id) {
   const path3 = await import("node:path");
   const dir = await mkdtemp2(path3.join(tmpdir(), "ca-sbx-checkout-"));
   const helper = `ca-sbx-cp-${newSandboxId()}`;
-  const createResult = spawnSync2("docker", buildCpHelperCreateArgs(volumeName, helper, id), {
+  const createResult = spawnSync("docker", buildCpHelperCreateArgs(volumeName, helper, id), {
     env: DOCKER_ENV,
     encoding: "utf8",
     timeout: CP_TIMEOUT_MS
@@ -640,7 +710,7 @@ ${hint}` : ""}`
     );
   }
   try {
-    const cpResult = spawnSync2("docker", ["cp", `${helper}:${APP_DIR3}/.`, dir], {
+    const cpResult = spawnSync("docker", ["cp", `${helper}:${APP_DIR3}/.`, dir], {
       env: DOCKER_ENV,
       encoding: "utf8",
       timeout: CP_TIMEOUT_MS
@@ -656,7 +726,7 @@ ${hint}` : ""}`
     const dephash = computeDepHash(manifests);
     return await buildOrReuseImage(dir, dephash);
   } finally {
-    spawnSync2("docker", ["rm", "-f", helper], { env: DOCKER_ENV });
+    spawnSync("docker", ["rm", "-f", helper], { env: DOCKER_ENV });
     await rm2(dir, { recursive: true, force: true }).catch(() => {
     });
   }
@@ -703,7 +773,10 @@ async function createSandbox(url, opts = {}) {
   const volumeName = `${VOLUME_PREFIX}-${id}`;
   const sandboxLabels = [SANDBOX_LABEL2, idLabel(id), ...opts.extraLabels ?? []];
   const volLabelArgs = sandboxLabels.flatMap((l) => ["--label", l]);
-  const mk = dockerRun(["volume", "create", ...volLabelArgs, volumeName]);
+  const mk = await dockerRun(
+    ["volume", "create", ...volLabelArgs, volumeName],
+    { signal: opts.signal }
+  );
   if (mk.code !== 0) {
     throw new Error(
       `ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})
@@ -722,10 +795,11 @@ ${cloneStderr.trim()}` : "";
       );
     }
     const build = await buildImage(volumeName, id);
-    const containerId = runContainer(build.tag, volumeName, netPolicy, {
+    const containerId = await runContainer(build.tag, volumeName, netPolicy, {
       extraLabels: [idLabel(id), ...opts.extraLabels ?? []],
       namePrefix: `ca-sbx-${id}`,
-      dockerRun: opts.dockerRun ? (args) => opts.dockerRun(args) : void 0
+      signal: opts.signal,
+      dockerRun: opts.dockerRun ? (args, call) => opts.dockerRun(args, call) : void 0
     });
     return {
       id,
@@ -735,7 +809,7 @@ ${cloneStderr.trim()}` : "";
       notes: build.notes
     };
   } catch (err) {
-    const leftover = dockerRun([
+    const leftover = await dockerRun([
       "ps",
       "-a",
       "-q",
@@ -744,9 +818,9 @@ ${cloneStderr.trim()}` : "";
       `label=${idLabel(id)}`
     ]);
     for (const c of leftover.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
-      dockerRun(["rm", "-f", c]);
+      await dockerRun(["rm", "-f", c]);
     }
-    dockerRun(["volume", "rm", "-f", volumeName]);
+    await dockerRun(["volume", "rm", "-f", volumeName]);
     throw err;
   }
 }
@@ -779,43 +853,43 @@ function oneLine(stderr) {
   if (!s) return "(no stderr from docker)";
   return s.length > MAX_FAILURE_MESSAGE_CHARS ? `${s.slice(0, MAX_FAILURE_MESSAGE_CHARS)}...` : s;
 }
-function removeEach(refs, kind, dockerRun, log) {
+async function removeEach(refs, kind, dockerRun, log) {
   const removed = [];
   for (const ref of refs) {
     const args = kind === "container" ? ["rm", "-f", ref] : ["volume", "rm", "-f", ref];
-    const r = dockerRun(args);
+    const r = await dockerRun(args);
     if (r.code === 0) removed.push(ref);
     else log.add(kind === "container" ? "remove-container" : "remove-volume", ref, r.code, r.stderr);
   }
   return removed;
 }
-function verifyScope(labels, dockerRun, log) {
-  const c = listContainersResult(labels, dockerRun);
+async function verifyScope(labels, dockerRun, log) {
+  const c = await listContainersResult(labels, dockerRun);
   if (c.code !== 0) log.add("list-containers", c.scope, c.code, c.stderr);
-  const v = listVolumesResult(labels, dockerRun);
+  const v = await listVolumesResult(labels, dockerRun);
   if (v.code !== 0) log.add("list-volumes", v.scope, v.code, v.stderr);
   return { containers: c.items, volumes: v.items };
 }
-function destroySandbox(id, opts = {}) {
+async function destroySandbox(id, opts = {}) {
   if (!id) throw new Error("ca-sandbox: destroySandbox requires a sandbox id");
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const labels = [SANDBOX_LABEL2, idLabel(id)];
   const log = new FailureLog();
-  const containersList = listContainersResult(labels, dockerRun);
+  const containersList = await listContainersResult(labels, dockerRun);
   if (containersList.code !== 0)
     log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
-  const volumesList = listVolumesResult(labels, dockerRun);
+  const volumesList = await listVolumesResult(labels, dockerRun);
   if (volumesList.code !== 0)
     log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
-  const removedContainers = removeEach(containersList.items, "container", dockerRun, log);
+  const removedContainers = await removeEach(containersList.items, "container", dockerRun, log);
   const removedVolumes = [];
   const keptVolumes = [];
   if (opts.keepVolume) {
     keptVolumes.push(...volumesList.items);
   } else {
-    removedVolumes.push(...removeEach(volumesList.items, "volume", dockerRun, log));
+    removedVolumes.push(...await removeEach(volumesList.items, "volume", dockerRun, log));
   }
-  const still = verifyScope(labels, dockerRun, log);
+  const still = await verifyScope(labels, dockerRun, log);
   const survivingVolumes = opts.keepVolume ? [] : still.volumes.filter((v) => !keptVolumes.includes(v));
   const keptFromVerification = opts.keepVolume ? [.../* @__PURE__ */ new Set([...keptVolumes, ...still.volumes])] : keptVolumes;
   return {
@@ -829,20 +903,20 @@ function destroySandbox(id, opts = {}) {
     remainingVolumes: survivingVolumes
   };
 }
-function prune(opts = {}) {
+async function prune(opts = {}) {
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const log = new FailureLog();
-  const containersList = listContainersResult(SANDBOX_LABEL2, dockerRun);
+  const containersList = await listContainersResult(SANDBOX_LABEL2, dockerRun);
   if (containersList.code !== 0)
     log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
-  const removedContainers = removeEach(containersList.items, "container", dockerRun, log);
-  const volumesList = listVolumesResult(SANDBOX_LABEL2, dockerRun);
+  const removedContainers = await removeEach(containersList.items, "container", dockerRun, log);
+  const volumesList = await listVolumesResult(SANDBOX_LABEL2, dockerRun);
   if (volumesList.code !== 0)
     log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
-  const removedVolumes = removeEach(volumesList.items, "volume", dockerRun, log);
+  const removedVolumes = await removeEach(volumesList.items, "volume", dockerRun, log);
   const targetedContainers = new Set(containersList.items);
   const targetedVolumes = new Set(volumesList.items);
-  const still = verifyScope(SANDBOX_LABEL2, dockerRun, log);
+  const still = await verifyScope(SANDBOX_LABEL2, dockerRun, log);
   return {
     removedContainers,
     removedVolumes,
@@ -880,7 +954,7 @@ function formatTeardownDiagnostic(verb, r) {
 var DEFAULT_EXEC_MAX_BYTES = Number(
   process.env.CA_SANDBOX_EXEC_MAX_BYTES ?? 1024 * 1024
 );
-var defaultDockerRun2 = makeDockerRun({ maxBuffer: 256 * 1024 * 1024 });
+var defaultDockerRun2 = makeDockerRun({}, { maxBuffer: 256 * 1024 * 1024 });
 function buildExecArgs(id, argv) {
   if (!id) throw new Error("ca-sandbox: execInSandbox requires a non-empty container id");
   if (!argv || argv.length === 0)
@@ -896,19 +970,20 @@ function capBytes(s, maxBytes) {
   }
   return { value, truncated: true };
 }
-function execInSandbox(id, argv, opts = {}) {
+async function execInSandbox(id, argv, opts = {}) {
   const args = buildExecArgs(id, argv);
   const dockerRun = opts.dockerRun ?? defaultDockerRun2;
   const maxBytes = opts.maxBytes ?? DEFAULT_EXEC_MAX_BYTES;
   const start = Date.now();
-  const r = dockerRun(args);
+  const r = await dockerRun(args, { signal: opts.signal });
   const durationMs = Date.now() - start;
   let escalation = "";
-  if (r.timedOut) {
-    const stopped = dockerRun(["stop", "--time", "0", id]);
+  if (r.timedOut || r.aborted) {
+    const why = r.timedOut ? "the exec deadline" : "cancellation";
+    const stopped = await dockerRun(["stop", "--time", "0", id]);
     escalation = stopped.code === 0 ? `
-ca-sandbox: stopped container ${id} after the exec deadline.` : `
-ca-sandbox: could not stop container ${id} after the exec deadline (${stopped.stderr.trim() || `exit ${stopped.code}`}); it may still be running.`;
+ca-sandbox: stopped container ${id} after ${why}.` : `
+ca-sandbox: could not stop container ${id} after ${why} (${stopped.stderr.trim() || `exit ${stopped.code}`}); it may still be running.`;
   }
   const out = capBytes(r.stdout, maxBytes);
   const err = capBytes(r.stderr + escalation, maxBytes);
@@ -919,7 +994,8 @@ ca-sandbox: could not stop container ${id} after the exec deadline (${stopped.st
     stderr: err.value,
     durationMs,
     truncated: out.truncated || err.truncated,
-    ...r.timedOut ? { timedOut: true } : {}
+    ...r.timedOut ? { timedOut: true } : {},
+    ...r.aborted ? { aborted: true } : {}
   };
 }
 
@@ -933,7 +1009,7 @@ function buildCpOutArgs(id, containerPath, hostDest) {
 function cpOut(id, containerPath, hostDest, opts = {}) {
   const args = buildCpOutArgs(id, containerPath, hostDest);
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
-  return dockerRun(args);
+  return dockerRun(args, { signal: opts.signal });
 }
 
 // cli.ts
@@ -945,6 +1021,7 @@ var CliError = class extends Error {
     this.name = "CliError";
   }
 };
+var SIGINT_EXIT_CODE = 130;
 function isFlag(tok) {
   return tok.startsWith("--");
 }
@@ -1095,24 +1172,30 @@ function parsePrune(args) {
   for (const tok of args) rejectUnknown("prune", tok);
   return { kind: "prune" };
 }
-function defaultShell(id, shell) {
-  const containerId = resolveContainerId(id);
-  const r = spawnSync3("docker", ["exec", "-it", containerId, shell], {
+async function defaultShell(id, shell) {
+  const containerId = await resolveContainerId(id);
+  const r = spawnSync2("docker", ["exec", "-it", containerId, shell], {
     stdio: "inherit",
     env: DOCKER_ENV
   });
   return r.status ?? 1;
 }
-var defaultHandlers = {
-  create: (url, opts) => createSandbox(url, { netPolicy: opts.netPolicy }),
-  destroy: (id, opts) => destroySandbox(id, { keepVolume: opts.keepVolume }),
-  prune: () => prune(),
-  // Preserve the sandbox id the caller passed in the returned contract, even
-  // though the exec runs against the resolved container id.
-  exec: (id, argv) => ({ ...execInSandbox(resolveContainerId(id), argv), id }),
-  cp: (id, containerPath, hostDest) => cpOut(resolveContainerId(id), containerPath, hostDest),
-  shell: defaultShell
-};
+function makeDefaultHandlers(call = {}) {
+  return {
+    create: async (url, opts) => await createSandbox(url, { netPolicy: opts.netPolicy, signal: call.signal }),
+    destroy: async (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume }),
+    prune: async () => await prune(),
+    // Preserve the sandbox id the caller passed in the returned contract, even
+    // though the exec runs against the resolved container id.
+    exec: async (id, argv) => ({
+      ...await execInSandbox(await resolveContainerId(id), argv, { signal: call.signal }),
+      id
+    }),
+    cp: async (id, containerPath, hostDest) => await cpOut(await resolveContainerId(id), containerPath, hostDest, { signal: call.signal }),
+    shell: defaultShell
+  };
+}
+var defaultHandlers = makeDefaultHandlers();
 var TEARDOWN_FAILURE_EXIT = 1;
 var USAGE_ERROR_EXIT = 2;
 function teardownExit(verb, r) {
@@ -1141,27 +1224,27 @@ async function runCli(argv, handlers = defaultHandlers) {
       return 0;
     }
     case "shell":
-      return handlers.shell(cmd.id, cmd.shell);
+      return await handlers.shell(cmd.id, cmd.shell);
     case "exec": {
-      const r = handlers.exec(cmd.id, cmd.argv);
+      const r = await handlers.exec(cmd.id, cmd.argv);
       process.stdout.write(`${JSON.stringify(r)}
 `);
       return r.exitCode;
     }
     case "cp": {
-      const r = handlers.cp(cmd.id, cmd.containerPath, cmd.hostDest);
+      const r = await handlers.cp(cmd.id, cmd.containerPath, cmd.hostDest);
       if (r.code !== 0 && r.stderr) process.stderr.write(`${r.stderr}
 `);
       return r.code;
     }
     case "destroy": {
-      const r = handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
+      const r = await handlers.destroy(cmd.id, { keepVolume: cmd.keepVolume });
       process.stdout.write(`${JSON.stringify(r)}
 `);
       return teardownExit("destroy", r);
     }
     case "prune": {
-      const r = handlers.prune();
+      const r = await handlers.prune();
       process.stdout.write(`${JSON.stringify(r)}
 `);
       return teardownExit("prune", r);
@@ -1182,7 +1265,19 @@ function usage() {
 var _thisFile = fileURLToPath(import.meta.url);
 var _entryFile = path2.resolve(process.argv[1] ?? "");
 if (_thisFile === _entryFile) {
-  runCli(process.argv.slice(2)).then((code) => process.exit(code)).catch((e) => {
+  const cancel = new AbortController();
+  let interrupted = false;
+  process.on("SIGINT", () => {
+    if (interrupted) {
+      process.exit(SIGINT_EXIT_CODE);
+    }
+    interrupted = true;
+    process.stderr.write(
+      "ca-sandbox: cancelling - stopping the container this command started, then exiting. Press Ctrl-C again to exit immediately.\n"
+    );
+    cancel.abort();
+  });
+  runCli(process.argv.slice(2), makeDefaultHandlers({ signal: cancel.signal })).then((code) => process.exit(interrupted ? SIGINT_EXIT_CODE : code)).catch((e) => {
     console.error(e);
     process.exit(1);
   });
@@ -1191,9 +1286,11 @@ export {
   CliError,
   DEFAULT_SHELL,
   NET_POLICIES,
+  SIGINT_EXIT_CODE,
   TEARDOWN_FAILURE_EXIT,
   USAGE_ERROR_EXIT,
   defaultHandlers,
+  makeDefaultHandlers,
   parseCli,
   runCli
 };

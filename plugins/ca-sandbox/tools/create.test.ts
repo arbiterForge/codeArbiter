@@ -25,25 +25,25 @@ import { SANDBOX_LABEL, idLabel, listAllContainers } from "./registry.ts";
 import { prune } from "./destroy.ts";
 
 describe("validateRepoUrl — clone-input trust model (AC-01)", () => {
-  it("accepts plain network remotes (https / ssh / scp-like)", () => {
+  it("accepts plain network remotes (https / ssh / scp-like)", async () => {
     expect(() => validateRepoUrl("https://github.com/owner/repo.git")).not.toThrow();
     expect(() => validateRepoUrl("https://gitlab.example.com/a/b")).not.toThrow();
     expect(() => validateRepoUrl("ssh://git@github.com/owner/repo.git")).not.toThrow();
     expect(() => validateRepoUrl("git@github.com:owner/repo.git")).not.toThrow();
   });
 
-  it("REJECTS git argument injection (a url beginning with '-')", () => {
+  it("REJECTS git argument injection (a url beginning with '-')", async () => {
     expect(() => validateRepoUrl("--upload-pack=touch /tmp/pwned")).toThrow(InvalidRepoUrlError);
     expect(() => validateRepoUrl("-x")).toThrow(InvalidRepoUrlError);
   });
 
-  it("REJECTS git transport-helper / local transports (ext::, fd::, file://)", () => {
+  it("REJECTS git transport-helper / local transports (ext::, fd::, file://)", async () => {
     expect(() => validateRepoUrl('ext::sh -c "touch /tmp/pwned"')).toThrow(InvalidRepoUrlError);
     expect(() => validateRepoUrl("fd::17")).toThrow(InvalidRepoUrlError);
     expect(() => validateRepoUrl("file:///etc/passwd")).toThrow(InvalidRepoUrlError);
   });
 
-  it("REJECTS other unknown / non-network schemes and empties", () => {
+  it("REJECTS other unknown / non-network schemes and empties", async () => {
     expect(() => validateRepoUrl("")).toThrow();
     expect(() => validateRepoUrl("http://insecure.example.com/repo")).toThrow(InvalidRepoUrlError);
     expect(() => validateRepoUrl("javascript:alert(1)")).toThrow(InvalidRepoUrlError);
@@ -55,7 +55,7 @@ describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
   const url = "https://github.com/owner/repo.git";
   const argv = buildCloneArgs(url, "ca-sbx-vol-demo", "demo-id");
 
-  it("emits an end-of-options `--` immediately before the url", () => {
+  it("emits an end-of-options `--` immediately before the url", async () => {
     const sep = argv.indexOf("--");
     expect(sep).toBeGreaterThanOrEqual(0);
     // `--` must sit directly before the untrusted url so a leading-`-` value is an
@@ -64,7 +64,7 @@ describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
     expect(argv[sep + 2]).toBe(APP_DIR);
   });
 
-  it("the `--` follows the clone subcommand and its flags (git parses it)", () => {
+  it("the `--` follows the clone subcommand and its flags (git parses it)", async () => {
     const sep = argv.indexOf("--");
     const clone = argv.indexOf("clone");
     expect(clone).toBeGreaterThanOrEqual(0);
@@ -77,7 +77,7 @@ describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
   // the documented single chokepoint — so they are covered by the bind-rejection
   // guarantee and there is genuinely one mount-argv path. Pin that the emitted
   // mount argv is EXACTLY what buildMountArgs produces for the volume spec.
-  it("routes the source-volume mount through the buildMountArgs chokepoint", () => {
+  it("routes the source-volume mount through the buildMountArgs chokepoint", async () => {
     const expected = buildMountArgs([
       { type: "volume", source: "ca-sbx-vol-demo", target: APP_DIR },
     ]);
@@ -94,7 +94,7 @@ describe("buildCloneArgs — argv shape (AC-01 defense in depth)", () => {
 // hung clone or a host crash mid-create doesn't orphan an unreclaimable object.
 // ---------------------------------------------------------------------------
 describe("buildCloneArgs — carries the sandbox labels (reliability-015)", () => {
-  it("labels the throwaway clone container ca.sandbox=1 + ca.sandbox.id=<id>", () => {
+  it("labels the throwaway clone container ca.sandbox=1 + ca.sandbox.id=<id>", async () => {
     const argv = buildCloneArgs("https://github.com/owner/repo.git", "ca-sbx-vol-demo", "abc123");
     // Two independent --label flags (docker requires one per label, same
     // discipline as buildRunArgs / registry.ts's labelFilterArgs).
@@ -106,7 +106,7 @@ describe("buildCloneArgs — carries the sandbox labels (reliability-015)", () =
     expect(labelValues).toContain(idLabel("abc123"));
   });
 
-  it("a different id produces a different id-label (no cross-sandbox collision)", () => {
+  it("a different id produces a different id-label (no cross-sandbox collision)", async () => {
     const a = buildCloneArgs("https://github.com/owner/repo.git", "vol-a", "id-a");
     const b = buildCloneArgs("https://github.com/owner/repo.git", "vol-b", "id-b");
     expect(a).toContain(idLabel("id-a"));
@@ -116,7 +116,7 @@ describe("buildCloneArgs — carries the sandbox labels (reliability-015)", () =
 });
 
 describe("buildCpHelperCreateArgs — carries the sandbox labels (reliability-015)", () => {
-  it("labels the docker-cp helper container ca.sandbox=1 + ca.sandbox.id=<id>", () => {
+  it("labels the docker-cp helper container ca.sandbox=1 + ca.sandbox.id=<id>", async () => {
     const argv = buildCpHelperCreateArgs("ca-sbx-vol-demo", "ca-sbx-cp-deadbeef", "abc123");
     const labelValues: string[] = [];
     argv.forEach((tok, i) => {
@@ -127,7 +127,7 @@ describe("buildCpHelperCreateArgs — carries the sandbox labels (reliability-01
     expect(argv).toContain("ca-sbx-cp-deadbeef");
   });
 
-  it("still routes the volume mount through the buildMountArgs chokepoint", () => {
+  it("still routes the volume mount through the buildMountArgs chokepoint", async () => {
     const argv = buildCpHelperCreateArgs("ca-sbx-vol-demo", "helper", "abc123");
     const expected = buildMountArgs([{ type: "volume", source: "ca-sbx-vol-demo", target: APP_DIR }]);
     const m = argv.indexOf("--mount");
@@ -137,10 +137,10 @@ describe("buildCpHelperCreateArgs — carries the sandbox labels (reliability-01
   });
 });
 
-describe("createSandbox failure teardown — containers before volume (reliability-015)", () => {
+describe("createSandbox failure teardown — containers before volume (reliability-015)", async () => {
   it("removes leftover labeled containers BEFORE removing the volume", async () => {
     const calls: string[][] = [];
-    const dockerRun = (args: string[]) => {
+    const dockerRun = async (args: string[]) => {
       calls.push(args);
       if (args[0] === "volume" && args[1] === "create") return { code: 0, stdout: "vol", stderr: "" };
       if (args[0] === "ps") return { code: 0, stdout: "leftover-container-id", stderr: "" };
@@ -166,13 +166,13 @@ describe("createSandbox failure teardown — containers before volume (reliabili
 // DOCKER-GATED integration layer (reliability-015).
 // Proves an orphaned clone/cp-helper-shaped container — the exact object a
 // hung clone or a host crash mid-create would leave behind — is reclaimable by
-// prune() purely because it carries the ca.sandbox=1 label, even though it is
+// await prune() purely because it carries the ca.sandbox=1 label, even though it is
 // not a registered sandbox object.
 // --------------------------------------------------------------------------
 const d = dockerGate("create");
 
-d("orphaned helper containers [docker] — prune() reclaims them (reliability-015)", () => {
-  it("a labeled, detached clone-shaped orphan is removed by prune()", () => {
+d("orphaned helper containers [docker] — await prune() reclaims them (reliability-015)", async () => {
+  it("a labeled, detached clone-shaped orphan is removed by await prune()", async () => {
     const id = "t173-clone-orphan";
     const name = `ca-sbx-clone-orphan-${Date.now()}`;
     // Simulate the crash scenario: the host process died before the `--rm`
@@ -200,16 +200,16 @@ d("orphaned helper containers [docker] — prune() reclaims them (reliability-01
     const cid = run.stdout.trim();
 
     try {
-      expect(listAllContainers()).toContain(cid);
-      const result = prune();
+      expect(await listAllContainers()).toContain(cid);
+      const result = await prune();
       expect(result.removedContainers).toContain(cid);
-      expect(listAllContainers()).not.toContain(cid);
+      expect(await listAllContainers()).not.toContain(cid);
     } finally {
       spawnSync("docker", ["rm", "-f", name]);
     }
   }, 60_000);
 
-  it("a labeled, detached cp-helper-shaped orphan is removed by prune()", () => {
+  it("a labeled, detached cp-helper-shaped orphan is removed by await prune()", async () => {
     const id = "t173-cphelper-orphan";
     const name = `ca-sbx-cp-orphan-${Date.now()}`;
     const run = spawnSync(
@@ -233,7 +233,7 @@ d("orphaned helper containers [docker] — prune() reclaims them (reliability-01
     const cid = run.stdout.trim();
 
     try {
-      const result = prune();
+      const result = await prune();
       expect(result.removedContainers).toContain(cid);
     } finally {
       spawnSync("docker", ["rm", "-f", name]);
@@ -245,7 +245,7 @@ d("orphaned helper containers [docker] — prune() reclaims them (reliability-01
 // T-10 (coverage-003) — validateRepoUrl scp-like edge cases
 // ---------------------------------------------------------------------------
 describe("validateRepoUrl — scp-like edge cases (coverage-003)", () => {
-  it("REJECTS double-colon transport-helper form git@github.com::evil (InvalidRepoUrlError)", () => {
+  it("REJECTS double-colon transport-helper form git@github.com::evil (InvalidRepoUrlError)", async () => {
     // The `:[^:]` guard in the scp regex means a second colon at position 0 of
     // the path segment fails the match — this is the transport-helper hole being
     // pinned to prevent regex regressions.
@@ -253,7 +253,7 @@ describe("validateRepoUrl — scp-like edge cases (coverage-003)", () => {
     expect(() => validateRepoUrl("git@github.com::evil-command")).toThrow(InvalidRepoUrlError);
   });
 
-  it("ACCEPTS scp-like url with single colon and a nested path (git@github.com:path/sub)", () => {
+  it("ACCEPTS scp-like url with single colon and a nested path (git@github.com:path/sub)", async () => {
     expect(() => validateRepoUrl("git@github.com:path/sub")).not.toThrow();
     expect(() => validateRepoUrl("git@github.com:owner/repo.git")).not.toThrow();
   });
@@ -265,7 +265,7 @@ describe("validateRepoUrl — scp-like edge cases (coverage-003)", () => {
 
 /** Minimal fake docker runner covering the volume create/rm and ps paths. */
 function makeDockerRun() {
-  return (args: string[]) => {
+  return async (args: string[]) => {
     if (args[0] === "volume" && args[1] === "create") return { code: 0, stdout: "vol", stderr: "" };
     if (args[0] === "volume" && args[1] === "rm") return { code: 0, stdout: "", stderr: "" };
     if (args[0] === "ps") return { code: 0, stdout: "", stderr: "" };

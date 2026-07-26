@@ -1,7 +1,7 @@
 /**
  * exec.test.ts — T-11. Covers AC-09.
  *
- * execInSandbox(id, argv) wraps `docker exec` and returns a JSON contract:
+ * await execInSandbox(id, argv) wraps `docker exec` and returns a JSON contract:
  *   { id, exitCode, stdout, stderr, durationMs, truncated }
  * stdout and stderr are captured SEPARATELY (reusing farm's RunResult shape),
  * and each stream is bounded by a byte cap (reusing farm's cap discipline) —
@@ -25,7 +25,7 @@ import { execInSandbox, buildExecArgs, type ExecResult } from "./exec.ts";
 // PURE unit layer — injected docker runner, no real docker.
 // --------------------------------------------------------------------------
 describe("buildExecArgs — docker exec argv assembly (AC-09)", () => {
-  it("wraps the argv as a non-interactive `docker exec <id> -- <argv>`", () => {
+  it("wraps the argv as a non-interactive `docker exec <id> -- <argv>`", async () => {
     const args = buildExecArgs("deadbeef", ["sh", "-c", "exit 7"]);
     expect(args[0]).toBe("exec");
     expect(args).toContain("deadbeef");
@@ -36,16 +36,16 @@ describe("buildExecArgs — docker exec argv assembly (AC-09)", () => {
     expect(args).not.toContain("-t");
   });
 
-  it("refuses an empty id or empty argv", () => {
+  it("refuses an empty id or empty argv", async () => {
     expect(() => buildExecArgs("", ["sh"])).toThrow();
     expect(() => buildExecArgs("id", [])).toThrow();
   });
 });
 
 describe("execInSandbox — JSON contract (AC-09)", () => {
-  it("is importable and callable from a vitest and returns the full shape", () => {
-    const res: ExecResult = execInSandbox("box1", ["sh", "-c", "true"], {
-      dockerRun: () => ({ code: 0, stdout: "", stderr: "" }),
+  it("is importable and callable from a vitest and returns the full shape", async () => {
+    const res: ExecResult = await execInSandbox("box1", ["sh", "-c", "true"], {
+      dockerRun: async () => ({ code: 0, stdout: "", stderr: "" }),
     });
     expect(res.id).toBe("box1");
     expect(res.exitCode).toBe(0);
@@ -55,53 +55,53 @@ describe("execInSandbox — JSON contract (AC-09)", () => {
     expect(res.truncated).toBe(false);
   });
 
-  it("propagates a non-zero exit code (exit 7 -> exitCode 7)", () => {
-    const res = execInSandbox("box1", ["sh", "-c", "exit 7"], {
-      dockerRun: () => ({ code: 7, stdout: "", stderr: "" }),
+  it("propagates a non-zero exit code (exit 7 -> exitCode 7)", async () => {
+    const res = await execInSandbox("box1", ["sh", "-c", "exit 7"], {
+      dockerRun: async () => ({ code: 7, stdout: "", stderr: "" }),
     });
     expect(res.exitCode).toBe(7);
   });
 
-  it("captures stdout and stderr SEPARATELY", () => {
-    const res = execInSandbox("box1", ["sh", "-c", "..."], {
-      dockerRun: () => ({ code: 0, stdout: "this is stdout", stderr: "this is stderr" }),
+  it("captures stdout and stderr SEPARATELY", async () => {
+    const res = await execInSandbox("box1", ["sh", "-c", "..."], {
+      dockerRun: async () => ({ code: 0, stdout: "this is stdout", stderr: "this is stderr" }),
     });
     expect(res.stdout).toBe("this is stdout");
     expect(res.stderr).toBe("this is stderr");
   });
 
-  it("does NOT truncate when both streams are within the byte cap", () => {
-    const res = execInSandbox("box1", ["sh"], {
+  it("does NOT truncate when both streams are within the byte cap", async () => {
+    const res = await execInSandbox("box1", ["sh"], {
       maxBytes: 100,
-      dockerRun: () => ({ code: 0, stdout: "x".repeat(50), stderr: "y".repeat(50) }),
+      dockerRun: async () => ({ code: 0, stdout: "x".repeat(50), stderr: "y".repeat(50) }),
     });
     expect(res.truncated).toBe(false);
     expect(res.stdout.length).toBe(50);
     expect(res.stderr.length).toBe(50);
   });
 
-  it("trips truncated:true and caps stdout past the byte cap", () => {
-    const res = execInSandbox("box1", ["sh"], {
+  it("trips truncated:true and caps stdout past the byte cap", async () => {
+    const res = await execInSandbox("box1", ["sh"], {
       maxBytes: 100,
-      dockerRun: () => ({ code: 0, stdout: "x".repeat(500), stderr: "" }),
+      dockerRun: async () => ({ code: 0, stdout: "x".repeat(500), stderr: "" }),
     });
     expect(res.truncated).toBe(true);
     expect(Buffer.byteLength(res.stdout, "utf8")).toBeLessThanOrEqual(100);
   });
 
-  it("trips truncated:true when only stderr exceeds the cap", () => {
-    const res = execInSandbox("box1", ["sh"], {
+  it("trips truncated:true when only stderr exceeds the cap", async () => {
+    const res = await execInSandbox("box1", ["sh"], {
       maxBytes: 100,
-      dockerRun: () => ({ code: 0, stdout: "", stderr: "e".repeat(500) }),
+      dockerRun: async () => ({ code: 0, stdout: "", stderr: "e".repeat(500) }),
     });
     expect(res.truncated).toBe(true);
     expect(Buffer.byteLength(res.stderr, "utf8")).toBeLessThanOrEqual(100);
   });
 
-  it("caps each stream INDEPENDENTLY (a huge stdout does not steal stderr budget)", () => {
-    const res = execInSandbox("box1", ["sh"], {
+  it("caps each stream INDEPENDENTLY (a huge stdout does not steal stderr budget)", async () => {
+    const res = await execInSandbox("box1", ["sh"], {
       maxBytes: 10,
-      dockerRun: () => ({ code: 0, stdout: "x".repeat(500), stderr: "yyyyy" }),
+      dockerRun: async () => ({ code: 0, stdout: "x".repeat(500), stderr: "yyyyy" }),
     });
     expect(res.truncated).toBe(true);
     expect(Buffer.byteLength(res.stdout, "utf8")).toBeLessThanOrEqual(10);
@@ -109,11 +109,11 @@ describe("execInSandbox — JSON contract (AC-09)", () => {
     expect(res.stderr).toBe("yyyyy");
   });
 
-  it("truncates on a UTF-8 boundary (no mojibake / no partial code unit)", () => {
+  it("truncates on a UTF-8 boundary (no mojibake / no partial code unit)", async () => {
     // 'é' is 2 bytes in UTF-8; a naive byte slice at an odd cap would split it.
-    const res = execInSandbox("box1", ["sh"], {
+    const res = await execInSandbox("box1", ["sh"], {
       maxBytes: 5,
-      dockerRun: () => ({ code: 0, stdout: "é".repeat(20), stderr: "" }),
+      dockerRun: async () => ({ code: 0, stdout: "é".repeat(20), stderr: "" }),
     });
     expect(res.truncated).toBe(true);
     // the captured stdout must remain valid UTF-8 (re-encoding round-trips).
@@ -158,17 +158,17 @@ d("execInSandbox [docker] — real exec JSON contract (AC-09)", () => {
     return cid;
   }
 
-  it("`sh -c 'exit 7'` -> exitCode 7 in the JSON", () => {
+  it("`sh -c 'exit 7'` -> exitCode 7 in the JSON", async () => {
     const id = ensureContainer();
-    const res = execInSandbox(id, ["sh", "-c", "exit 7"]);
+    const res = await execInSandbox(id, ["sh", "-c", "exit 7"]);
     expect(res.id).toBe(id);
     expect(res.exitCode).toBe(7);
     expect(typeof res.durationMs).toBe("number");
   }, 120_000);
 
-  it("captures stdout and stderr SEPARATELY from a real exec", () => {
+  it("captures stdout and stderr SEPARATELY from a real exec", async () => {
     const id = ensureContainer();
-    const res = execInSandbox(id, ["sh", "-c", "echo OUT; echo ERR 1>&2"]);
+    const res = await execInSandbox(id, ["sh", "-c", "echo OUT; echo ERR 1>&2"]);
     expect(res.exitCode).toBe(0);
     expect(res.stdout).toContain("OUT");
     expect(res.stdout).not.toContain("ERR");
@@ -176,18 +176,18 @@ d("execInSandbox [docker] — real exec JSON contract (AC-09)", () => {
     expect(res.stderr).not.toContain("OUT");
   }, 120_000);
 
-  it("trips truncated:true on output past the byte cap", () => {
+  it("trips truncated:true on output past the byte cap", async () => {
     const id = ensureContainer();
     // emit ~5000 bytes to stdout, cap at 100.
-    const res = execInSandbox(id, ["sh", "-c", "yes x | head -c 5000"], { maxBytes: 100 });
+    const res = await execInSandbox(id, ["sh", "-c", "yes x | head -c 5000"], { maxBytes: 100 });
     expect(res.exitCode).toBe(0);
     expect(res.truncated).toBe(true);
     expect(Buffer.byteLength(res.stdout, "utf8")).toBeLessThanOrEqual(100);
   }, 120_000);
 
-  it("does NOT trip truncated for small real output under the cap", () => {
+  it("does NOT trip truncated for small real output under the cap", async () => {
     const id = ensureContainer();
-    const res = execInSandbox(id, ["sh", "-c", "echo hi"], { maxBytes: 1024 });
+    const res = await execInSandbox(id, ["sh", "-c", "echo hi"], { maxBytes: 1024 });
     expect(res.exitCode).toBe(0);
     expect(res.truncated).toBe(false);
     expect(res.stdout).toContain("hi");

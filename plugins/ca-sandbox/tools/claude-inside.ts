@@ -41,7 +41,12 @@
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
 import { applyNetworkPolicy } from "./network.ts";
 import { SANDBOX_LABEL, hardeningFlags } from "./run.ts";
-import { defaultDockerRun, type RunResult } from "./docker.ts";
+import {
+  defaultDockerRun,
+  type DockerCallOptions,
+  type DockerRun,
+  type RunResult,
+} from "./docker.ts";
 
 /**
  * The PINNED Claude Code CLI version baked into the sandbox image. Pinned (never
@@ -343,12 +348,13 @@ export type ClaudeRunResult = RunResult;
  *
  * @throws every guarantee of buildClaudeRunArgs, plus on a non-zero `docker run`.
  */
-export function runClaudeInside(
+export async function runClaudeInside(
   opts: ClaudeRunOptions,
-  dockerRun: (args: string[]) => ClaudeRunResult = defaultDockerRun,
-): string {
+  dockerRun: DockerRun = defaultDockerRun,
+  call: DockerCallOptions = {},
+): Promise<string> {
   const args = buildClaudeRunArgs(opts);
-  const r = dockerRun(args);
+  const r = await dockerRun(args, call);
   if (r.code !== 0) {
     throw new Error(
       `ca-sandbox: docker run failed for --with-claude image ${opts.image} (exit ${r.code})\n` +
@@ -369,12 +375,12 @@ export function runClaudeInside(
   const firewallScript = claudeFirewallScript(opts);
   if (firewallScript === undefined) return id;
 
-  const applied = dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
+  const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
   if (applied.code !== 0) {
     // Best effort, and deliberately not conditional on its own success: if the
     // teardown ALSO fails there is nothing further this process can do, and the
     // thrown error names the container so an operator can finish the job.
-    dockerRun(["rm", "-f", id]);
+    await dockerRun(["rm", "-f", id]);
     throw new Error(
       `ca-sandbox: --with-claude could not apply the egress firewall to ${id} ` +
         `(exit ${applied.code}); the container has been destroyed rather than left ` +

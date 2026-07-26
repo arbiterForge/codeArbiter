@@ -41,18 +41,18 @@ import {
 describe("applyNetworkPolicy — offline (AC-08, solid default)", () => {
   const plan = applyNetworkPolicy("offline");
 
-  it("detaches the container from all networking via --network none", () => {
+  it("detaches the container from all networking via --network none", async () => {
     expect(plan.runArgs).toContain("--network");
     expect(plan.runArgs[plan.runArgs.indexOf("--network") + 1]).toBe("none");
   });
 
-  it("adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)", () => {
+  it("adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)", async () => {
     expect(plan.runArgs).not.toContain("--cap-add");
     expect(plan.firewallScript).toBeUndefined();
     expect(plan.experimental).toBe(false);
   });
 
-  it("requires no post-start cut (it was never connected)", () => {
+  it("requires no post-start cut (it was never connected)", async () => {
     expect(plan.postStart).toEqual([]);
   });
 });
@@ -60,14 +60,14 @@ describe("applyNetworkPolicy — offline (AC-08, solid default)", () => {
 describe("applyNetworkPolicy — clone-then-cut (AC-08, solid default)", () => {
   const plan = applyNetworkPolicy("clone-then-cut", { containerId: "deadbeefcafe" });
 
-  it("brings the container UP on a network (so the clone/build can fetch)", () => {
+  it("brings the container UP on a network (so the clone/build can fetch)", async () => {
     // It must NOT be --network none at start — the whole point is egress is up
     // during clone/build.
     const i = plan.runArgs.indexOf("--network");
     if (i >= 0) expect(plan.runArgs[i + 1]).not.toBe("none");
   });
 
-  it("schedules a post-start DETACH of the container from its network", () => {
+  it("schedules a post-start DETACH of the container from its network", async () => {
     // After clone/build, the network is cut: a `docker network disconnect`
     // targeting this container id.
     const flat = plan.postStart.map((a) => a.join(" "));
@@ -83,13 +83,13 @@ describe("applyNetworkPolicy — egress-allowlist (AC-08, EXPERIMENTAL)", () => 
     networkName: "ca-sbx-t10-net",
   });
 
-  it("is flagged EXPERIMENTAL (Spike C: CDN drift + DNS-exfil hole)", () => {
+  it("is flagged EXPERIMENTAL (Spike C: CDN drift + DNS-exfil hole)", async () => {
     expect(plan.experimental).toBe(true);
     // The marker constant is exported and non-empty so docs/CLI can surface it.
     expect(ALLOWLIST_EXPERIMENTAL).toMatch(/experimental/i);
   });
 
-  it("attaches the custom bridge network and adds NET_ADMIN + NET_RAW caps", () => {
+  it("attaches the custom bridge network and adds NET_ADMIN + NET_RAW caps", async () => {
     const i = plan.runArgs.indexOf("--network");
     expect(i).toBeGreaterThanOrEqual(0);
     expect(plan.runArgs[i + 1]).toBe("ca-sbx-t10-net");
@@ -101,7 +101,7 @@ describe("applyNetworkPolicy — egress-allowlist (AC-08, EXPERIMENTAL)", () => 
     expect(caps).toContain("NET_RAW");
   });
 
-  it("emits an init-firewall script: default OUTPUT DROP + lo/established/DNS + resolved allow IPs", () => {
+  it("emits an init-firewall script: default OUTPUT DROP + lo/established/DNS + resolved allow IPs", async () => {
     const fw = plan.firewallScript;
     expect(fw).toBeTruthy();
     const s = fw as string;
@@ -118,13 +118,13 @@ describe("applyNetworkPolicy — egress-allowlist (AC-08, EXPERIMENTAL)", () => 
     expect(s).toMatch(/--dport\s+443/);
   });
 
-  it("requires at least one allow host", () => {
+  it("requires at least one allow host", async () => {
     expect(() => applyNetworkPolicy("egress-allowlist", { allowHosts: [] })).toThrow();
   });
 });
 
 describe("buildFirewallScript — pure script builder", () => {
-  it("pins each provided IP on 80 and 443 with ACCEPT rules", () => {
+  it("pins each provided IP on 80 and 443 with ACCEPT rules", async () => {
     const s = buildFirewallScript(["1.2.3.4", "5.6.7.8"]);
     expect(s).toMatch(/-d\s+1\.2\.3\.4\b/);
     expect(s).toMatch(/-d\s+5\.6\.7\.8\b/);
@@ -133,13 +133,13 @@ describe("buildFirewallScript — pure script builder", () => {
     expect(s).toMatch(/-P\s+OUTPUT\s+DROP/);
   });
 
-  it("refuses to build with no IPs (default-deny with nothing allowed is a footgun)", () => {
+  it("refuses to build with no IPs (default-deny with nothing allowed is a footgun)", async () => {
     expect(() => buildFirewallScript([])).toThrow();
   });
 });
 
 describe("applyNetworkPolicy — unknown policy", () => {
-  it("throws on an unrecognized policy", () => {
+  it("throws on an unrecognized policy", async () => {
     expect(() => applyNetworkPolicy("wide-open" as NetworkPolicy)).toThrow();
   });
 });
@@ -171,7 +171,7 @@ d("network policy [docker] — AC-08 real egress behavior", () => {
     for (const i of created.images) dk(["rmi", "-f", i]);
   });
 
-  it("offline: curl github.com from inside FAILS (no egress)", () => {
+  it("offline: curl github.com from inside FAILS (no egress)", async () => {
     const pull = dk(["pull", CURL_IMAGE]);
     expect(pull.status, pull.stderr).toBe(0);
 
@@ -189,7 +189,7 @@ d("network policy [docker] — AC-08 real egress behavior", () => {
     expect(r.status).not.toBe(0);
   }, 120_000);
 
-  it("clone-then-cut: egress works at start, then post-cut egress FAILS", () => {
+  it("clone-then-cut: egress works at start, then post-cut egress FAILS", async () => {
     const name = `${NS}-cut-${Date.now()}`;
     // Start a long-lived container WITH network up (clone-then-cut start args).
     const plan = applyNetworkPolicy("clone-then-cut", { containerId: name });

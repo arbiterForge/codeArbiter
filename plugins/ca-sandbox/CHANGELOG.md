@@ -10,6 +10,33 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 - **`--with-claude` finally has a shipped code path (#377).** The feature was documented, and `runClaudeInside` had zero callers — so esbuild tree-shook it out of `sandbox.js` entirely and the skill told operators to call TypeScript that no install contained. It now ships as `plugins/ca-sandbox/tools/claude-inside.js`, its **own binary rather than a `sandbox` subcommand**. That separation *is* the gate: a subcommand would let anyone start a container holding a live OAuth token with one ungated command, which would turn the `sandbox-claude-inside` skill's five BLOCK phases from enforcement into advice. The entry refuses a `--token` flag outright — an argument list is world-readable, so passing a credential there publishes it to every process on the host — and refuses `--source-volume` at parse time, so the co-mount mistake never reaches docker. Egress is `offline` by default, the only guaranteed posture for a token-bearing box, with `anthropic-only` the sole opt-in alternative.
 
 ### Fixed
+- **The docker boundary is async and cancellable (#479, closing #394's AC-3).**
+  `spawnSync` is uninterruptible by construction: #394 could put a deadline on a
+  call but nothing could interrupt one in flight, because the calling thread sits
+  inside the syscall and there is no point at which an `AbortSignal` could be
+  observed. Ctrl-C therefore killed the CLI and left the container the operator
+  was exec-ing into still running, with nothing left to reclaim it - the same
+  orphan the deadline was added to prevent. The chokepoint now spawns
+  asynchronously and takes a per-call signal, the CLI installs a SIGINT handler
+  that aborts instead of exiting, and an aborted call runs the SAME bounded
+  teardown a timed-out one does. A second Ctrl-C exits immediately.
+
+  Abort is typed apart from timeout rather than folded into it. Both arrive as
+  `close(null, "SIGKILL")` and are indistinguishable after the fact, so the
+  runner records which killer fired before killing; reporting one as the other
+  would put "timed out" in an audit trail for a deliberate cancellation and send
+  a reader looking for a wedged daemon that does not exist. An already-aborted
+  signal now refuses to spawn at all, so a cancelled multi-step command cannot
+  still create the next container.
+
+  Two latent defects surfaced on the way. `exec.ts` passed its 256 MB output cap
+  as a **spawn option**, which async `spawn` does not have - so the conversion
+  would have silently removed the bound had it not moved into the runner. And the
+  old path mis-classified an output overflow as a TIMEOUT: `spawnSync` killed the
+  child on a `maxBuffer` breach, producing the same `status === null` plus signal
+  shape the deadline check read, so an oversized stream reported exit 124 and
+  "timed out". Overflow is now its own typed outcome.
+
 - **`build.ts`'s own spawn is bounded (#394 follow-up).** #480 gave every invocation through `docker.ts` a finite deadline and its docblock claimed "every docker invocation is bounded". That claim was false: `build.ts` never imports the shared runner — it takes only `DOCKER_ENV` — and had its own `run()` helper with no timeout at all. That helper executes `docker image inspect` and *both* `docker build` calls, so `sandbox create` against a wedged builder or a stalled registry pull hung forever, and `DOCKER_OPERATION_TIMEOUTS_MS.build` / `.pull` were dead constants nothing in production could reach. Build and pull are the two longest operations in the driver, which made them the two most likely to hang and the only ones with no escape. The helper now takes its deadline from the shared per-operation map rather than a second policy invented beside it, kills the child with SIGKILL when it fires, and returns the same typed `timedOut` result `docker.ts` does.
 - **`--with-claude`'s `anthropic-only` posture ran NET_ADMIN with no firewall (#377).** `resolveClaudeNetworkArgs` called `applyNetworkPolicy("egress-allowlist", ...)` and took only `.runArgs`, discarding `.firewallScript` — with a comment saying the caller would apply it, and no such caller anywhere in the tree. The result was a container with `--cap-add NET_ADMIN --cap-add NET_RAW` on a custom bridge and no iptables rules: wide-open egress *plus* elevated network capabilities around a live OAuth token, which is strictly worse than plain default networking and the opposite of what an operator selecting that posture is asking for. The flags and the rules now travel together, `runClaudeInside` installs them inside the box after start, and a box whose firewall cannot be applied is **destroyed rather than returned** — handing back the id would tell the caller it is locked down when it is not. `offline`, the guaranteed posture, still execs nothing, because it has no interface to firewall. Unexploitable before this fix only because `runClaudeInside` has no callers yet, which is exactly why it is fixed before it gets one.
 - **One unreachable daemon reads as one failure (#433).** Discovery listed containers and volumes, then the post-sweep verification re-listed the same two scopes against the same dead daemon — `DOCKER_HOST=tcp://127.0.0.1:1 node sandbox.js prune` reported `failureCount: 4` for one fact. Listing failures now dedupe on the failure's *shape* rather than its text, because a real daemon returns the same connection error carrying different URLs; two listings failing *differently* still read as two. Removal failures dedupe on the whole identity, so two containers refusing for their own reasons are never collapsed.

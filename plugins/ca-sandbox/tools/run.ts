@@ -37,7 +37,12 @@
  * mangled (Spike A/B).
  */
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
-import { defaultDockerRun, type RunResult } from "./docker.ts";
+import {
+  defaultDockerRun,
+  type DockerCallOptions,
+  type DockerRun,
+  type RunResult,
+} from "./docker.ts";
 
 /** In-container app dir; the live source named volume mounts here (Spike A). */
 export const APP_DIR = "/work/repo";
@@ -80,7 +85,13 @@ export type RunOptions = {
    */
   namePrefix?: string;
   /** Injectable docker runner (defaults to spawnSync("docker", ...)). */
-  dockerRun?: (args: string[]) => RunResult;
+  dockerRun?: DockerRun;
+  /**
+   * Cancellation for the docker call this command makes (#479). Aborting it
+   * kills the child and returns a typed `aborted` result, so a caller can run
+   * the same bounded teardown a timeout gets.
+   */
+  signal?: AbortSignal;
 };
 
 export type { RunResult };
@@ -190,15 +201,15 @@ export function buildRunArgs(
  * @returns the container id.
  * @throws if `docker run` fails (non-zero exit).
  */
-export function runContainer(
+export async function runContainer(
   image: string,
   volumeName: string,
   netPolicy: NetPolicy,
   opts: RunOptions = {},
-): string {
+): Promise<string> {
   const args = buildRunArgs(image, volumeName, netPolicy, opts);
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
-  const r = dockerRun(args);
+  const r = await dockerRun(args, { signal: opts.signal });
   if (r.code !== 0) {
     throw new Error(
       `ca-sandbox: docker run failed for ${image} (exit ${r.code})\n${(r.stderr || r.stdout).slice(-2000)}`,

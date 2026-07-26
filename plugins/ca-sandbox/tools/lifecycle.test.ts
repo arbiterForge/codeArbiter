@@ -55,7 +55,7 @@ function fakeDocker(routes: Array<{ match: (a: string[]) => boolean; stdout?: st
   const isListing = (a: string[]) => a[0] === "ps" || (a[0] === "volume" && a[1] === "ls");
   const isRemoval = (a: string[]) => a[0] === "rm" || (a[0] === "volume" && a[1] === "rm");
 
-  const run: DockerRun = (args) => {
+  const run: DockerRun = async (args) => {
     calls.push(args);
     let res: DockerResult = { code: 0, stdout: "", stderr: "" };
     for (const r of routes) {
@@ -88,12 +88,12 @@ const labelFiltersOf = (args: string[]): string[] => {
 };
 
 describe("registry — label-only discovery (AC-11)", () => {
-  it("findSandbox filters by ca.sandbox=1 AND ca.sandbox.id=<id>, no JSON file", () => {
+  it("findSandbox filters by ca.sandbox=1 AND ca.sandbox.id=<id>, no JSON file", async () => {
     const { run, calls } = fakeDocker([
       { match: (a) => a[0] === "ps", stdout: "container123\n" },
       { match: (a) => a[0] === "volume" && a[1] === "ls", stdout: "ca-sbx-vol-abc\n" },
     ]);
-    const rec = findSandbox("abc", run);
+    const rec = await findSandbox("abc", run);
     expect(rec).not.toBeNull();
     expect(rec!.containers).toEqual(["container123"]);
     expect(rec!.volumes).toEqual(["ca-sbx-vol-abc"]);
@@ -105,31 +105,31 @@ describe("registry — label-only discovery (AC-11)", () => {
     expect(labelFiltersOf(volCall)).toEqual([SANDBOX_LABEL, idLabel("abc")]);
   });
 
-  it("findSandbox returns null when no labeled object carries the id", () => {
+  it("findSandbox returns null when no labeled object carries the id", async () => {
     const { run } = fakeDocker([]); // everything returns empty stdout
-    expect(findSandbox("missing", run)).toBeNull();
+    expect(await findSandbox("missing", run)).toBeNull();
   });
 
-  it("listSandboxes groups containers + volumes by their ca.sandbox.id label", () => {
+  it("listSandboxes groups containers + volumes by their ca.sandbox.id label", async () => {
     const { run } = fakeDocker([
       { match: (a) => a[0] === "ps", stdout: "c1\n" },
       { match: (a) => a[0] === "volume" && a[1] === "ls", stdout: "ca-sbx-vol-x\n" },
       { match: (a) => a[0] === "inspect", stdout: "x\n" }, // container id label
       { match: (a) => a[0] === "volume" && a[1] === "inspect", stdout: "x\n" }, // volume id label
     ]);
-    const list = listSandboxes(run);
+    const list = await listSandboxes(run);
     expect(list).toHaveLength(1);
     expect(list[0]).toEqual({ id: "x", containers: ["c1"], volumes: ["ca-sbx-vol-x"] });
   });
 });
 
 describe("destroySandbox — teardown by label (AC-11)", () => {
-  it("removes the container AND the volume of the id", () => {
+  it("removes the container AND the volume of the id", async () => {
     const { run, calls } = fakeDocker([
       { match: (a) => a[0] === "ps", stdout: "c1\n" },
       { match: (a) => a[0] === "volume" && a[1] === "ls", stdout: "ca-sbx-vol-id1\n" },
     ]);
-    const res = destroySandbox("id1", { dockerRun: run });
+    const res = await destroySandbox("id1", { dockerRun: run });
     expect(res.removedContainers).toEqual(["c1"]);
     expect(res.removedVolumes).toEqual(["ca-sbx-vol-id1"]);
     expect(res.keptVolumes).toEqual([]);
@@ -141,12 +141,12 @@ describe("destroySandbox — teardown by label (AC-11)", () => {
     expect(res.remainingVolumes).toEqual([]);
   });
 
-  it("--keep-volume removes the container but SPARES the volume", () => {
+  it("--keep-volume removes the container but SPARES the volume", async () => {
     const { run, calls } = fakeDocker([
       { match: (a) => a[0] === "ps", stdout: "c1\n" },
       { match: (a) => a[0] === "volume" && a[1] === "ls", stdout: "ca-sbx-vol-id1\n" },
     ]);
-    const res = destroySandbox("id1", { keepVolume: true, dockerRun: run });
+    const res = await destroySandbox("id1", { keepVolume: true, dockerRun: run });
     expect(res.removedContainers).toEqual(["c1"]);
     expect(res.removedVolumes).toEqual([]);
     expect(res.keptVolumes).toEqual(["ca-sbx-vol-id1"]);
@@ -156,12 +156,12 @@ describe("destroySandbox — teardown by label (AC-11)", () => {
 });
 
 describe("prune — reclaims ALL ca.sandbox=1 objects incl. leaked (AC-11)", () => {
-  it("removes every labeled container and volume regardless of id label", () => {
+  it("removes every labeled container and volume regardless of id label", async () => {
     const { run, calls } = fakeDocker([
       { match: (a) => a[0] === "ps", stdout: "c1\nc2\n" },
       { match: (a) => a[0] === "volume" && a[1] === "ls", stdout: "vol-leaked\n" },
     ]);
-    const res = prune({ dockerRun: run });
+    const res = await prune({ dockerRun: run });
     expect(res.removedContainers).toEqual(["c1", "c2"]);
     expect(res.removedVolumes).toEqual(["vol-leaked"]);
     expect(res.failureCount).toBe(0);
@@ -174,11 +174,11 @@ describe("prune — reclaims ALL ca.sandbox=1 objects incl. leaked (AC-11)", () 
   });
 });
 
-describe("createSandbox — clones into a named volume + runs (AC-01)", () => {
+describe("createSandbox — clones into a named volume + runs (AC-01)", async () => {
   it("creates a LABELED named volume, clones into it, builds, and runs a container", async () => {
     const created: string[][] = [];
     const cloneCalls: Array<{ url: string; vol: string }> = [];
-    const run: DockerRun = (args) => {
+    const run: DockerRun = async (args) => {
       created.push(args);
       // runContainer's docker run prints the container id to stdout.
       if (args[0] === "run") return { code: 0, stdout: "deadbeefcafe123456\n", stderr: "" };
@@ -222,7 +222,7 @@ describe("createSandbox — clones into a named volume + runs (AC-01)", () => {
 
   it("tears down the volume if the clone fails (no leaked half-sandbox)", async () => {
     const calls: string[][] = [];
-    const run: DockerRun = (args) => {
+    const run: DockerRun = async (args) => {
       calls.push(args);
       return { code: 0, stdout: "", stderr: "" };
     };
@@ -329,7 +329,7 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
     return srcVol;
   }
 
-  it("create clones into a named volume + starts a container; destroy sweeps to zero", () => {
+  it("create clones into a named volume + starts a container; destroy sweeps to zero", async () => {
     const srcVol = seedLocalRepo();
     images.push();
 
@@ -361,7 +361,7 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
     // Build the real image from the cloned volume (default build path); capture
     // the image tag for cleanup.
     let builtTag = "";
-    return createSandbox("https://example.invalid/src.git", {
+    return await createSandbox("https://example.invalid/src.git", {
       id,
       extraLabels: ["ca.sandbox.build=1"],
       cloneRepo: cloneViaLocal(id),
@@ -393,13 +393,13 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
         await rm(dir, { recursive: true, force: true }).catch(() => {});
         return res;
       },
-    }).then((res) => {
+    }).then(async (res) => {
       // AC-01: a container was started and a named volume holds the clone.
       expect(res.containerId).toMatch(/^[0-9a-f]{12,}$/);
       expect(res.volumeName).toBe(`ca-sbx-vol-${id}`);
 
       // The named volume exists and is discoverable by label ONLY (no file).
-      const found = findSandbox(id);
+      const found = await findSandbox(id);
       expect(found).not.toBeNull();
       expect(found!.volumes).toContain(`ca-sbx-vol-${id}`);
       expect(found!.containers).toContain(res.containerId);
@@ -414,7 +414,7 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
       expect(ls.stdout).toMatch(/package\.json/);
 
       // AC-11: create -> destroy leaves ZERO ca.sandbox=1 objects (this id).
-      const dres = destroySandbox(id);
+      const dres = await destroySandbox(id);
       expect(dres.removedContainers).toContain(res.containerId);
       expect(dres.removedVolumes).toContain(res.volumeName);
       // Against REAL docker the teardown reports itself verified-clean (#393).
@@ -422,11 +422,11 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
       expect(dres.failureCount).toBe(0);
       expect(dres.remainingContainers).toEqual([]);
       expect(dres.remainingVolumes).toEqual([]);
-      expect(findSandbox(id)).toBeNull();
+      expect(await findSandbox(id)).toBeNull();
     });
   }, 300_000);
 
-  it("--keep-volume leaves the volume after destroy", () => {
+  it("--keep-volume leaves the volume after destroy", async () => {
     const srcVol = seedLocalRepo();
     const cloneViaLocal = async (_url: string, destVol: string) => {
       const r = spawnSync(
@@ -451,7 +451,7 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
     const id = `keep${Date.now().toString(16)}`;
     ids.push(id);
 
-    return createSandbox("https://example.invalid/src.git", {
+    return await createSandbox("https://example.invalid/src.git", {
       id,
       extraLabels: ["ca.sandbox.build=1"],
       cloneRepo: cloneViaLocal,
@@ -476,14 +476,14 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
         await rm(dir, { recursive: true, force: true }).catch(() => {});
         return res;
       },
-    }).then((res) => {
-      const dres = destroySandbox(id, { keepVolume: true });
+    }).then(async (res) => {
+      const dres = await destroySandbox(id, { keepVolume: true });
       expect(dres.removedContainers).toContain(res.containerId);
       expect(dres.keptVolumes).toContain(res.volumeName);
       expect(dres.removedVolumes).toEqual([]);
 
       // The container is gone but the volume survives.
-      expect(findSandbox(id)!.containers).toEqual([]);
+      expect((await findSandbox(id))!.containers).toEqual([]);
       const volExists = spawnSync("docker", ["volume", "inspect", res.volumeName], { encoding: "utf8", env: DENV });
       expect(volExists.status).toBe(0);
 
@@ -492,7 +492,7 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
     });
   }, 300_000);
 
-  it("prune reclaims a manually-leaked ca.sandbox=1 object", () => {
+  it("prune reclaims a manually-leaked ca.sandbox=1 object", async () => {
     // Hand-leak a labeled volume with NO id label — exactly the abandoned/partial
     // object prune must reclaim.
     const leaked = `${NS}-leaked-${Date.now()}`;
@@ -505,10 +505,10 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
     expect(mk.status, mk.stderr).toBe(0);
 
     // It's visible to the registry by the bare membership label.
-    const before = listSandboxes().some((s) => s.volumes.includes(leaked));
+    const before = (await listSandboxes()).some((s) => s.volumes.includes(leaked));
     expect(before).toBe(true);
 
-    const pres = prune();
+    const pres = await prune();
     expect(pres.removedVolumes).toContain(leaked);
 
     // Gone — no ca.sandbox=1 + build-marked objects remain.

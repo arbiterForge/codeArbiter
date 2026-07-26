@@ -2,7 +2,7 @@
  * cp.ts — host-initiated, PULL-ONLY file extraction from a sandbox (T-12, AC-10).
  *
  * Controlled egress out of the box is host-initiated ONLY (spec "Scope": "sandbox
- * cp <id>:/work/<f> ./dest via docker cp"). `cpOut(id, containerPath, hostDest)`
+ * cp <id>:/work/<f> ./dest via docker cp"). `await cpOut(id, containerPath, hostDest)`
  * shells `docker cp <container>:<path> <hostDest>` — the host reaches IN and pulls
  * a file OUT. There is no `cpIn` counterpart by design: the box is for exploring
  * untrusted code, so the only sanctioned data flow is OUT to the host.
@@ -23,14 +23,25 @@
  * (e.g. `<id>:/work/out.txt`) is not mangled by MSYS path conversion (Spike A/B).
  */
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
-import { defaultDockerRun, type RunResult } from "./docker.ts";
+import {
+  defaultDockerRun,
+  type DockerCallOptions,
+  type DockerRun,
+  type RunResult,
+} from "./docker.ts";
 
 export type { RunResult };
 
 /** Optional knobs for cpOut — chiefly an injectable docker runner for tests. */
 export type CpOptions = {
   /** Injectable docker runner (defaults to spawnSync("docker", ...)). */
-  dockerRun?: (args: string[]) => RunResult;
+  dockerRun?: DockerRun;
+  /**
+   * Cancellation for the docker call this command makes (#479). Aborting it
+   * kills the child and returns a typed `aborted` result, so a caller can run
+   * the same bounded teardown a timeout gets.
+   */
+  signal?: AbortSignal;
 };
 
 /**
@@ -71,10 +82,10 @@ export function cpOut(
   containerPath: string,
   hostDest: string,
   opts: CpOptions = {},
-): RunResult {
+): Promise<RunResult> {
   const args = buildCpOutArgs(id, containerPath, hostDest);
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
-  return dockerRun(args);
+  return dockerRun(args, { signal: opts.signal });
 }
 
 /**

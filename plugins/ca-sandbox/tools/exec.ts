@@ -1,7 +1,7 @@
 /**
  * exec.ts — ca-sandbox in-container command exec (T-11, covers AC-09).
  *
- * execInSandbox(id, argv) wraps `docker exec`, captures stdout and stderr
+ * await execInSandbox(id, argv) wraps `docker exec`, captures stdout and stderr
  * SEPARATELY, and returns a stable JSON contract:
  *
  *   { id, exitCode, stdout, stderr, durationMs, truncated }
@@ -28,7 +28,7 @@
  * docker are not mangled (Spike A/B). docker exec is run NON-interactively (no
  * `-it`) so a wrapped call never blocks on a tty.
  */
-import { makeDockerRun, type RunResult } from "./docker.ts";
+import { makeDockerRun, type DockerRun, type RunResult } from "./docker.ts";
 
 /**
  * Default per-stream output cap in bytes (1 MiB). Bounds the host-side capture
@@ -62,18 +62,35 @@ export type ExecResult = {
    * hang are different events with different remedies.
    */
   timedOut?: boolean;
+  /**
+   * #479: the command was CANCELLED and killed, rather than exiting or hitting
+   * its deadline. Typed apart from `timedOut` for the same reason `timedOut` is
+   * typed apart from `exitCode`: a wedged operation and an operator pressing
+   * Ctrl-C are different events, and reporting one as the other sends a reader
+   * looking for a hang that never happened. Both run the same teardown.
+   */
+  aborted?: boolean;
 };
 
 export type ExecOptions = {
   /** Per-stream byte cap; defaults to DEFAULT_EXEC_MAX_BYTES. */
   maxBytes?: number;
-  /** Injectable docker runner (defaults to spawnSync("docker", ...)). */
-  dockerRun?: (args: string[]) => RunResult;
+  /** Injectable docker runner (defaults to an async spawn("docker", ...)). */
+  dockerRun?: DockerRun;
+  /**
+   * Cancellation for the exec (#479). An aborted exec runs the SAME bounded
+   * teardown a timed-out one does, because the container is left running
+   * either way and the reason it stopped mattering does not change that.
+   */
+  signal?: AbortSignal;
 };
 
-// maxBuffer is set high so spawnSync itself does not throw on large output;
-// our own byte cap (capBytes) is the authoritative, deterministic bound.
-const defaultDockerRun = makeDockerRun({ maxBuffer: 256 * 1024 * 1024 });
+// The runner-level output backstop is raised well above anything real, so our
+// own byte cap (capBytes) stays the authoritative, deterministic bound. It is
+// the SECOND argument now, not part of the spawn options bag: async `spawn`
+// has no `maxBuffer`, so passing it as a spawn option would have been silently
+// dropped and left this call unbounded (#479).
+const defaultDockerRun = makeDockerRun({}, { maxBuffer: 256 * 1024 * 1024 });
 
 /**
  * Assemble the `docker exec` argv (everything AFTER `docker`). Pure: builds the
@@ -123,13 +140,17 @@ function capBytes(s: string, maxBytes: number): { value: string; truncated: bool
  * @param opts optional per-stream cap / injectable docker runner.
  * @returns { id, exitCode, stdout, stderr, durationMs, truncated }.
  */
-export function execInSandbox(id: string, argv: string[], opts: ExecOptions = {}): ExecResult {
+export async function execInSandbox(
+  id: string,
+  argv: string[],
+  opts: ExecOptions = {},
+): Promise<ExecResult> {
   const args = buildExecArgs(id, argv);
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const maxBytes = opts.maxBytes ?? DEFAULT_EXEC_MAX_BYTES;
 
   const start = Date.now();
-  const r = dockerRun(args);
+  const r = await dockerRun(args, { signal: opts.signal });
   const durationMs = Date.now() - start;
 
   // #394 ESCALATION. spawnSync's deadline kills the docker CLIENT; the process
@@ -138,24 +159,35 @@ export function execInSandbox(id: string, argv: string[], opts: ExecOptions = {}
   // sandbox permanently even after the exec "returns". So a timed-out exec
   // reaches back in and stops the container it targeted.
   //
-  // Only on a timeout. Escalation stops a container, and doing that on an
-  // ordinary non-zero exit would destroy a working box every time a command
-  // returned 1. Failure of the escalation itself is reported but never masks
-  // the original timeout - a wedged daemon is exactly the case where the
-  // cleanup cannot succeed, and the timeout is the more important fact.
+  // Only on a timeout or an ABORT. Escalation stops a container, and doing that
+  // on an ordinary non-zero exit would destroy a working box every time a
+  // command returned 1. Failure of the escalation itself is reported but never
+  // masks the original outcome - a wedged daemon is exactly the case where the
+  // cleanup cannot succeed, and why the exec ended is the more important fact.
+  //
+  // #479 AC-2: cancellation gets the same teardown. The container is left
+  // running whether the deadline fired or the operator pressed Ctrl-C, and an
+  // orphaned box is the same leak either way. What differs is only what the
+  // report calls it, which is why docker.ts types the two apart instead of
+  // collapsing both into `timedOut`.
   let escalation = "";
-  if (r.timedOut) {
+  if (r.timedOut || r.aborted) {
+    const why = r.timedOut ? "the exec deadline" : "cancellation";
     // `--time 0` on purpose: a graceful window is what the deadline already
     // spent. Asking for another 5 seconds of grace here also means the
     // escalation can itself exceed the runner's own timeout and be killed
     // before it lands - measured, with a 4s runner deadline a `stop --time 5`
     // never completes, and the container survives the "cleanup".
-    const stopped = dockerRun(["stop", "--time", "0", id]);
+    //
+    // The stop deliberately carries NO signal. It is the teardown for a call
+    // that was just cancelled, so handing it the same aborted signal would
+    // cancel the cleanup too and guarantee the orphan this exists to prevent.
+    const stopped = await dockerRun(["stop", "--time", "0", id]);
     escalation = stopped.code === 0
       ? `
-ca-sandbox: stopped container ${id} after the exec deadline.`
+ca-sandbox: stopped container ${id} after ${why}.`
       : `
-ca-sandbox: could not stop container ${id} after the exec deadline `
+ca-sandbox: could not stop container ${id} after ${why} `
         + `(${stopped.stderr.trim() || `exit ${stopped.code}`}); it may still be running.`;
   }
 
@@ -171,5 +203,6 @@ ca-sandbox: could not stop container ${id} after the exec deadline `
     durationMs,
     truncated: out.truncated || err.truncated,
     ...(r.timedOut ? { timedOut: true } : {}),
+    ...(r.aborted ? { aborted: true } : {}),
   };
 }

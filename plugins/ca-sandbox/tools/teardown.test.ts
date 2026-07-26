@@ -58,7 +58,7 @@ function fakeDocker(
   const lines = (xs: string[]) => (xs.length ? `${xs.join("\n")}\n` : "");
   const DEAD = "Cannot connect to the Docker daemon at unix:///var/run/docker.sock";
 
-  const run: DockerRun = (args) => {
+  const run: DockerRun = async (args) => {
     calls.push(args);
     if (args[0] === "ps") {
       if (opts.failList) return { code: 1, stdout: "", stderr: DEAD };
@@ -99,9 +99,9 @@ const removalTargets = (calls: string[][]): string[] =>
 // destroySandbox
 // --------------------------------------------------------------------------
 describe("destroySandbox — a failed removal is retained, not dropped (#393)", () => {
-  it("complete success reports zero failures and nothing remaining", () => {
+  it("complete success reports zero failures and nothing remaining", async () => {
     const { run } = fakeDocker({ containers: ["c1"], volumes: ["ca-sbx-vol-id1"] });
-    const res = destroySandbox("id1", { dockerRun: run });
+    const res = await destroySandbox("id1", { dockerRun: run });
 
     expect(res.removedContainers).toEqual(["c1"]);
     expect(res.removedVolumes).toEqual(["ca-sbx-vol-id1"]);
@@ -111,12 +111,12 @@ describe("destroySandbox — a failed removal is retained, not dropped (#393)", 
     expect(res.remainingVolumes).toEqual([]);
   });
 
-  it("a mixed run keeps the successes AND records the failure with its docker code", () => {
+  it("a mixed run keeps the successes AND records the failure with its docker code", async () => {
     const { run } = fakeDocker(
       { containers: ["c1"], volumes: ["ca-sbx-vol-id1"] },
       { failRemove: (kind) => (kind === "volume" ? 125 : undefined) },
     );
-    const res = destroySandbox("id1", { dockerRun: run });
+    const res = await destroySandbox("id1", { dockerRun: run });
 
     // The container really went; the volume did not.
     expect(res.removedContainers).toEqual(["c1"]);
@@ -134,12 +134,12 @@ describe("destroySandbox — a failed removal is retained, not dropped (#393)", 
     expect(res.remainingVolumes).toEqual(["ca-sbx-vol-id1"]);
   });
 
-  it("keeps attempting EVERY discovered target after the first failure", () => {
+  it("keeps attempting EVERY discovered target after the first failure", async () => {
     const { run, calls } = fakeDocker(
       { containers: ["c1", "c2", "c3"], volumes: ["v1", "v2"] },
       { failRemove: (_k, ref) => (ref === "c1" || ref === "v1" ? 125 : undefined) },
     );
-    const res = destroySandbox("id1", { dockerRun: run });
+    const res = await destroySandbox("id1", { dockerRun: run });
 
     // Partial teardown still removed what it could...
     expect(res.removedContainers).toEqual(["c2", "c3"]);
@@ -153,9 +153,9 @@ describe("destroySandbox — a failed removal is retained, not dropped (#393)", 
     expect(res.remainingVolumes).toEqual(["v1"]);
   });
 
-  it("a dead daemon is a FAILURE, not an empty successful sweep", () => {
+  it("a dead daemon is a FAILURE, not an empty successful sweep", async () => {
     const { run } = fakeDocker({ containers: ["c1"], volumes: ["v1"] }, { failList: true });
-    const res = destroySandbox("id1", { dockerRun: run });
+    const res = await destroySandbox("id1", { dockerRun: run });
 
     expect(res.removedContainers).toEqual([]);
     expect(res.removedVolumes).toEqual([]);
@@ -170,9 +170,9 @@ describe("destroySandbox — a failed removal is retained, not dropped (#393)", 
     expect(res.failures[0].message).toContain("Cannot connect to the Docker daemon");
   });
 
-  it("--keep-volume: the deliberately kept volume is NOT reported as remaining", () => {
+  it("--keep-volume: the deliberately kept volume is NOT reported as remaining", async () => {
     const { run } = fakeDocker({ containers: ["c1"], volumes: ["ca-sbx-vol-id1"] });
-    const res = destroySandbox("id1", { keepVolume: true, dockerRun: run });
+    const res = await destroySandbox("id1", { keepVolume: true, dockerRun: run });
 
     expect(res.keptVolumes).toEqual(["ca-sbx-vol-id1"]);
     expect(res.failureCount).toBe(0);
@@ -180,10 +180,10 @@ describe("destroySandbox — a failed removal is retained, not dropped (#393)", 
     expect(res.remainingContainers).toEqual([]);
   });
 
-  it("the failure list is BOUNDED while the count stays truthful", () => {
+  it("the failure list is BOUNDED while the count stays truthful", async () => {
     const many = Array.from({ length: 50 }, (_, i) => `c${i}`);
     const { run } = fakeDocker({ containers: many }, { failRemove: () => 125 });
-    const res = destroySandbox("id1", { dockerRun: run });
+    const res = await destroySandbox("id1", { dockerRun: run });
 
     expect(res.failureCount).toBe(50);
     expect(res.failures.length).toBeGreaterThan(0);
@@ -195,9 +195,9 @@ describe("destroySandbox — a failed removal is retained, not dropped (#393)", 
 // prune
 // --------------------------------------------------------------------------
 describe("prune — a failed reclaim is retained, not dropped (#393)", () => {
-  it("complete success reports zero failures and nothing remaining", () => {
+  it("complete success reports zero failures and nothing remaining", async () => {
     const { run } = fakeDocker({ containers: ["c1", "c2"], volumes: ["vol-leaked"] });
-    const res = prune({ dockerRun: run });
+    const res = await prune({ dockerRun: run });
 
     expect(res.removedContainers).toEqual(["c1", "c2"]);
     expect(res.removedVolumes).toEqual(["vol-leaked"]);
@@ -207,12 +207,12 @@ describe("prune — a failed reclaim is retained, not dropped (#393)", () => {
     expect(res.remainingVolumes).toEqual([]);
   });
 
-  it("a mixed run records the failure and names the object left behind", () => {
+  it("a mixed run records the failure and names the object left behind", async () => {
     const { run, calls } = fakeDocker(
       { containers: ["c1", "c2"], volumes: ["vol-leaked"] },
       { failRemove: (_k, ref) => (ref === "c2" ? 1 : undefined) },
     );
-    const res = prune({ dockerRun: run });
+    const res = await prune({ dockerRun: run });
 
     expect(res.removedContainers).toEqual(["c1"]);
     expect(res.removedVolumes).toEqual(["vol-leaked"]);
@@ -227,9 +227,9 @@ describe("prune — a failed reclaim is retained, not dropped (#393)", () => {
     expect(res.remainingVolumes).toEqual([]);
   });
 
-  it("a dead daemon is a FAILURE, not an empty successful sweep", () => {
+  it("a dead daemon is a FAILURE, not an empty successful sweep", async () => {
     const { run } = fakeDocker({ containers: ["c1"], volumes: ["v1"] }, { failList: true });
-    const res = prune({ dockerRun: run });
+    const res = await prune({ dockerRun: run });
 
     expect(res.removedContainers).toEqual([]);
     expect(res.failureCount).toBeGreaterThan(0);
@@ -245,8 +245,8 @@ function handlersOver(run: DockerRun): Handlers {
     create: async () => {
       throw new Error("not used");
     },
-    destroy: (id, opts) => destroySandbox(id, { keepVolume: opts.keepVolume, dockerRun: run }),
-    prune: () => prune({ dockerRun: run }),
+    destroy: async (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume, dockerRun: run }),
+    prune: async () => await prune({ dockerRun: run }),
     exec: () => {
       throw new Error("not used");
     },
@@ -352,7 +352,7 @@ describe("runCli — teardown failure must not exit 0 (#393)", () => {
 // #433 — the diagnostics themselves, after the adversarial review of #429
 // --------------------------------------------------------------------------
 describe("#433 — teardown diagnostics say what actually happened", () => {
-  it("AC-1: one unreachable daemon is ONE failure, not four", () => {
+  it("AC-1: one unreachable daemon is ONE failure, not four", async () => {
     // Reproduced against the shipped artifact:
     //   DOCKER_HOST=tcp://127.0.0.1:1 node sandbox.js prune -> failureCount: 4
     // Discovery lists containers and volumes, then verifyScope re-lists the
@@ -360,13 +360,13 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
     // "error during ..." lines for one fact. An operator counting failures is
     // being told the damage is four times what it is.
     const { run } = fakeDocker({ containers: ["c1"] }, { failList: true });
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     expect(report.failureCount).toBe(1);
     expect(report.failures).toHaveLength(1);
     expect(report.failures[0]!.message).toMatch(/Cannot connect to the Docker daemon/);
   });
 
-  it("AC-1: a REAL dead daemon dedups, even though the two errors differ", () => {
+  it("AC-1: a REAL dead daemon dedups, even though the two errors differ", async () => {
     // The synthetic fake above returns the identical string for both listings,
     // so it cannot catch this. Against a real dead daemon the two errors carry
     // DIFFERENT URLs, and a whole-message comparison collapses nothing:
@@ -378,27 +378,27 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
       `error during connect: Get "http://127.0.0.1:1/v1.54/${path}": `
       + "dial tcp 127.0.0.1:1: connectex: No connection could be made because "
       + "the target machine actively refused it.";
-    const run: DockerRun = (args) => {
+    const run: DockerRun = async (args) => {
       if (args[0] === "ps") return { code: 1, stdout: "", stderr: message("containers/json?all=1") };
       if (args[0] === "volume" && args[1] === "ls") return { code: 1, stdout: "", stderr: message("volumes?filters=x") };
       return { code: 0, stdout: "", stderr: "" };
     };
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     expect(report.failureCount).toBe(1);
   });
 
-  it("AC-1: two listings failing DIFFERENTLY stay two failures", () => {
+  it("AC-1: two listings failing DIFFERENTLY stay two failures", async () => {
     // The fingerprint must not become a blanket "all listing failures are one".
-    const run: DockerRun = (args) => {
+    const run: DockerRun = async (args) => {
       if (args[0] === "ps") return { code: 1, stdout: "", stderr: "permission denied while trying to connect" };
       if (args[0] === "volume" && args[1] === "ls") return { code: 1, stdout: "", stderr: "Cannot connect to the Docker daemon" };
       return { code: 0, stdout: "", stderr: "" };
     };
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     expect(report.failureCount).toBe(2);
   });
 
-  it("AC-1: genuinely different failures are still counted separately", () => {
+  it("AC-1: genuinely different failures are still counted separately", async () => {
     // Dedup must collapse REPEATS of one fact, never distinct facts. Two
     // containers that each refuse removal for their own reason are two
     // failures, and collapsing them would understate the damage.
@@ -406,12 +406,12 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
       { containers: ["c1", "c2"] },
       { failRemove: (_kind, ref) => (ref === "c1" ? 125 : 126) },
     );
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     expect(report.failureCount).toBe(2);
     expect(new Set(report.failures.map((f) => f.ref))).toEqual(new Set(["c1", "c2"]));
   });
 
-  it("AC-2: a sandbox created AFTER discovery does not fail prune", () => {
+  it("AC-2: a sandbox created AFTER discovery does not fail prune", async () => {
     // prune verified by re-listing the GLOBAL ca.sandbox=1 scope, so a box
     // another agent created mid-run landed in remainingContainers and produced
     // "These objects may be running UNTRUSTED code" for something prune never
@@ -419,7 +419,7 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
     // ignore the signal - which defeats the point of #393.
     const containers = ["c1"];
     let listed = 0;
-    const run: DockerRun = (args) => {
+    const run: DockerRun = async (args) => {
       if (args[0] === "ps") {
         listed += 1;
         // The second listing is the post-sweep verification; by then another
@@ -430,22 +430,22 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
       if (args[0] === "volume" && args[1] === "ls") return { code: 0, stdout: "", stderr: "" };
       return { code: 0, stdout: "", stderr: "" };
     };
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     expect(report.removedContainers).toEqual(["c1"]);
     expect(report.remainingContainers).toEqual([]);
     expect(teardownIncomplete(report)).toBe(false);
   });
 
-  it("AC-2: an object this invocation DID target and failed to remove is still reported", () => {
+  it("AC-2: an object this invocation DID target and failed to remove is still reported", async () => {
     // The scoping must not become a blindfold. A container prune tried to
     // remove and could not is exactly what remainingContainers is for.
     const { run } = fakeDocker({ containers: ["c1"] }, { failRemove: () => 125 });
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     expect(report.remainingContainers).toEqual(["c1"]);
     expect(teardownIncomplete(report)).toBe(true);
   });
 
-  it("AC-3: the teardown exit code is pinned, and differs from the usage error", () => {
+  it("AC-3: the teardown exit code is pinned, and differs from the usage error", async () => {
     // Every existing assertion is `not.toBe(0)`, so this could regress to 2 -
     // colliding with the usage-error code that #429's comment explicitly says
     // it is distinct from - and the whole suite would stay green.
@@ -454,34 +454,34 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
     expect(USAGE_ERROR_EXIT).toBe(2);
   });
 
-  it("AC-4: the RENDERED diagnostic elides an over-long failure list", () => {
+  it("AC-4: the RENDERED diagnostic elides an over-long failure list", async () => {
     // The bounded-failure test asserted only on the result object. The bound
     // that matters is the one on the string an operator actually reads.
     const many = Array.from({ length: MAX_TEARDOWN_FAILURES + 7 }, (_, i) => `c${i}`);
     const { run } = fakeDocker({ containers: many }, { failRemove: () => 125 });
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     const text = formatTeardownDiagnostic("prune", report);
     expect(report.failureCount).toBe(many.length);
     expect(text).toMatch(/and 7 more failure\(s\) not shown/);
   });
 
-  it("AC-4: the RENDERED diagnostic elides an over-long remaining list", () => {
+  it("AC-4: the RENDERED diagnostic elides an over-long remaining list", async () => {
     const many = Array.from({ length: MAX_DIAGNOSTIC_REFS + 3 }, (_, i) => `c${i}`);
     const { run } = fakeDocker({ containers: many }, { failRemove: () => 125 });
-    const report = prune({ dockerRun: run });
+    const report = await prune({ dockerRun: run });
     const text = formatTeardownDiagnostic("prune", report);
     expect(report.remainingContainers).toHaveLength(many.length);
     expect(text).toMatch(/and 3 more container\(s\)/);
   });
 
-  it("AC-5: a deliberately kept volume is never reported as remaining", () => {
+  it("AC-5: a deliberately kept volume is never reported as remaining", async () => {
     // If the DISCOVERY volume listing fails, keptVolumes is empty - but the
     // VERIFICATION listing can still succeed, and the volume the operator
     // explicitly asked to keep then falls through the filter and is named as a
     // leak. The exit is already non-zero from the listing failure, so there is
     // no false success; the diagnostic is just confusing at the worst moment.
     let volumeListings = 0;
-    const run: DockerRun = (args) => {
+    const run: DockerRun = async (args) => {
       if (args[0] === "ps") return { code: 0, stdout: "", stderr: "" };
       if (args[0] === "volume" && args[1] === "ls") {
         volumeListings += 1;
@@ -492,7 +492,7 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
       }
       return { code: 0, stdout: "", stderr: "" };
     };
-    const report = destroySandbox("id1", { keepVolume: true, dockerRun: run });
+    const report = await destroySandbox("id1", { keepVolume: true, dockerRun: run });
     expect(report.remainingVolumes).toEqual([]);
     expect(report.keptVolumes).toEqual(["ca-sbx-vol-id1"]);
     // The listing failure is still a failure - this hides a confusing line, not
