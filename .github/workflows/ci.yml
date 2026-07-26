@@ -285,7 +285,14 @@ jobs:
           cache: npm
           cache-dependency-path: plugins/ca/tools/package-lock.json
       - name: Install (locked)
-        run: npm ci
+        # --ignore-scripts: this graph's OUTPUT is a committed artifact, so an
+        # install-time script from a compromised dev dependency would execute
+        # alongside the build that produces it - the blast radius the
+        # dev-inclusive CVE gate below exists for. esbuild declares an install
+        # script; it is a binary-placement optimization, and both the module
+        # and CLI paths resolve the platform package without it. Asserted by
+        # test_ci_impact.py so the next tools job cannot omit it.
+        run: npm ci --ignore-scripts
       - name: Audit (CVE gate - fail on HIGH)
         # Supply-chain gate per security-controls.md: a HIGH-or-worse advisory
         # in a production dependency fails the build. --omit=dev scopes to
@@ -384,7 +391,14 @@ jobs:
         with:
           python-version: "3.x"
       - name: Install (locked)
-        run: npm ci
+        # --ignore-scripts: this graph's OUTPUT is a committed artifact, so an
+        # install-time script from a compromised dev dependency would execute
+        # alongside the build that produces it - the blast radius the
+        # dev-inclusive CVE gate below exists for. esbuild declares an install
+        # script; it is a binary-placement optimization, and both the module
+        # and CLI paths resolve the platform package without it. Asserted by
+        # test_ci_impact.py so the next tools job cannot omit it.
+        run: npm ci --ignore-scripts
       - name: Audit (CVE gate - fail on HIGH)
         # Same threshold as every other audited graph (issue #403), and the same
         # caveat as the farm: ca-sandbox/tools declares no production
