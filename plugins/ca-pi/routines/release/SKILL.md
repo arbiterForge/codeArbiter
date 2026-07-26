@@ -26,7 +26,7 @@ Three of these rows carry a trap worth stating rather than discovering:
 
 - **`ca-pi` has TWO manifests.** Pi installs the repository ROOT as the package (`pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`), so the root `package.json` is what a consumer's install actually reads. It is GENERATED — regenerate it with `python3 tools/build-host-packages.py`, never hand-edit it — and it must equal `plugins/ca-pi/package.json` before tagging, or the tag installs a package claiming a version the tag does not name.
 - **`ca-pi`'s payload excludes `tools/`.** `plugins/ca-pi/tools/` holds TypeScript sources, a vitest config, and a lockfile, none of which run on an installed machine (`.github/scripts/payload_scope.py` owns this rule). Its *built* bundles under `extensions/` do ship and are in scope.
-- **Only `ca` takes `--latest`.** GitHub has one repo-wide "Latest" badge and this repo ships four series; a sibling claiming it hides ca's current release from every visitor.
+- **Only `ca` takes `--latest`, and every sibling must pass `--latest=false` EXPLICITLY.** Omitting the flag is not declining it: GitHub defaults `make_latest` to true for any non-prerelease, so a sibling that simply does not ask for the badge still takes it. That is not hypothetical — the first `ca-pi` release displaced `ca`'s from the position every visitor sees, because the hosted lane omitted the flag rather than refusing it. GitHub has one repo-wide "Latest" and this repo ships four series.
 
 ## Pre-flight
 

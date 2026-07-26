@@ -502,21 +502,34 @@ class PublishExecutionTest(_ShellHarness):
                 self.assertNotIn("gh release create", log)
 
     # -- the "Latest" badge is opt-in, and only ca opts in --------------------- #
-    def test_only_an_explicit_mark_latest_claims_the_latest_badge(self):
+    def test_a_sibling_release_explicitly_declines_the_latest_badge(self):
+        # The bug this exists to prevent, and the test that FAILED to prevent it:
+        # asserting `--latest` is ABSENT is not the same as asserting the badge
+        # is declined. GitHub defaults `make_latest` to true for any
+        # non-prerelease, so omitting the flag hands the badge over. The first
+        # real ca-pi release displaced ca v2.8.13 from the position every
+        # visitor sees, while this assertion was green.
         off, log_off, _ = self._publish("ca-pi-v9.9.9", mark_latest="false")
         self.assertEqual(off.returncode, 0, off.stderr)
         self.assertIn("gh release create ca-pi-v9.9.9", log_off)
-        self.assertNotIn("--latest", log_off)
+        self.assertIn("--latest=false", log_off,
+                      "a sibling must DECLINE the badge explicitly; omitting "
+                      "the flag lets GitHub default it to latest")
+
+    def test_the_primary_release_claims_the_badge(self):
         on, log_on, _ = self._publish("v9.9.9", mark_latest="true")
         self.assertEqual(on.returncode, 0, on.stderr)
         self.assertIn("--latest", log_on)
+        self.assertNotIn("--latest=false", log_on)
 
-    def test_an_unset_latest_flag_expands_to_no_argument(self):
-        # `$LATEST` is deliberately unquoted, so an empty value must vanish
-        # rather than become an empty argument `gh` would reject.
-        proc, log, _ = self._publish("ca-sandbox-v9.9.9", mark_latest="")
-        self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertNotIn("--latest", log)
+    def test_an_unrecognised_mark_latest_value_still_declines_the_badge(self):
+        # Fail-closed on the badge: anything that is not exactly "true" must
+        # DECLINE, not fall through to GitHub's default of claiming it.
+        for value in ("", "false", "no", "TRUE", "1"):
+            with self.subTest(mark_latest=value):
+                proc, log, _ = self._publish("ca-sandbox-v9.9.9", mark_latest=value)
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertIn("--latest=false", log)
         self.assertIn("gh release create ca-sandbox-v9.9.9 --title ca-sandbox 9.9.9",
                       log.replace("codeArbiter", "ca-sandbox"))
 
@@ -851,6 +864,14 @@ class LaneIsolationTest(unittest.TestCase):
                     if _lane_inputs(job)["mark-latest"].strip('"') == "true"]
         self.assertEqual(claiming, ["release"],
                          "only ca may take the repository's \"Latest\" badge")
+
+    def test_the_action_declines_the_badge_rather_than_omitting_the_flag(self):
+        # Structural backstop for the execution test above: omitting `--latest`
+        # is NOT declining it, because GitHub defaults a non-prerelease to
+        # latest. The shipped action must spell the refusal out.
+        action = PUBLISH_ACTION.read_text(encoding="utf-8")
+        self.assertIn("--latest=false", action,
+                      "a sibling lane must pass --latest=false explicitly")
 
     def test_each_lane_reads_its_own_dispatch_input(self):
         # Wiring a lane to another lane's input would publish the wrong plugin
