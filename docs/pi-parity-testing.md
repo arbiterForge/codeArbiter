@@ -36,9 +36,9 @@ examples that name an npm source do not install `ca-pi` today.
 
 The generated public catalog counts are:
 
-- `ca: 39` Claude Code commands
-- `ca-codex: 37` Codex CLI entry skills
-- `ca-pi: 38` Pi entry skills
+- `ca: 40` Claude Code commands
+- `ca-codex: 38` Codex CLI entry skills
+- `ca-pi: 39` Pi entry skills
 
 The source catalogs are [Claude](../plugins/ca/COMMANDS.md),
 [Codex](../plugins/ca-codex/COMMANDS.md), and

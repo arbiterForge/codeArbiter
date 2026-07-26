@@ -310,7 +310,7 @@ Every intent flows through a command; direct off-channel instructions get redire
 Claude's `/ca:*` catalog is in [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md). Codex uses the
 generated `$ca-*` catalog in [`plugins/ca-codex/COMMANDS.md`](./plugins/ca-codex/COMMANDS.md), and
 Pi uses the generated alias catalog in [`plugins/ca-pi/COMMANDS.md`](./plugins/ca-pi/COMMANDS.md).
-The generated counts are `ca: 39`, `ca-codex: 37`, and `ca-pi: 38`. Codex omits `statusline` and
+The generated counts are `ca: 40`, `ca-codex: 38`, and `ca-pi: 39`. Codex omits `statusline` and
 `prune`; Pi omits only `statusline` and implements prune through native compaction.
 
 | Command | Purpose |

@@ -1982,5 +1982,83 @@ class ReceiptCommandTest(unittest.TestCase):
             self.assertIn("## CI impact receipt", markdown)
 
 
+
+class NoOrphanedSuiteTest(unittest.TestCase):
+    """Every test suite in .github/scripts must actually RUN somewhere.
+
+    `test_public_pi_docs.py` existed, asserted a real contract, and was invoked
+    by no workflow at all - so it had never executed on a merge gate, and the
+    counts it guards drifted by one on all three plugins without a word. Four
+    more suites were in the same state, each guarding a script CI itself depends
+    on (pi_promotion, check_sandbox_docker_layers, check_license_consistency,
+    _planfilelib).
+
+    A suite nobody runs is not a gate, it is a file. This is the guard that keeps
+    the next one from going quiet the same way.
+
+    A suite counts as reachable if a workflow names it, OR if another script in
+    this directory invokes it - several Pi suites run only through
+    `verify_pi_support.py` and `test_pi_platform_contract.py`, which is a
+    deliberate composition rather than an oversight."""
+
+    #: Suites that legitimately run nowhere, with the reason. Empty by design -
+    #: an entry here is a documented exemption, not a place to park a new orphan.
+    EXEMPT: dict = {}
+
+    @staticmethod
+    def _strip_comments(text: str) -> str:
+        """Drop whole-line `#` comments.
+
+        A suite named in PROSE is not a suite that runs. The first version of
+        this guard counted any occurrence, so the comment block documenting the
+        wiring - and then this class's own docstring - made un-wired suites look
+        reachable. Both were caught by mutation, which is the only reason this
+        distinction is here."""
+        return "\n".join(line for line in text.splitlines()
+                          if not line.lstrip().startswith("#"))
+
+    def _corpus(self):
+        workflows = "\n".join(
+            self._strip_comments(p.read_text(encoding="utf-8"))
+            for p in (REPO_ROOT / ".github" / "workflows").glob("*.yml"))
+        # This module is excluded from the sibling corpus on purpose: it is the
+        # one file guaranteed to name every suite it discusses, so counting it
+        # would let this guard vouch for orphans by describing them.
+        scripts = "\n".join(
+            p.read_text(encoding="utf-8")
+            for p in (REPO_ROOT / ".github" / "scripts").glob("*.py")
+            if p.name != "test_ci_impact.py")
+        return workflows, scripts
+
+    def test_every_suite_is_reachable(self):
+        workflows, scripts = self._corpus()
+        orphans = []
+        for path in sorted((REPO_ROOT / ".github" / "scripts").glob("test_*.py")):
+            name = path.name
+            if name in self.EXEMPT:
+                continue
+            # An INVOCATION, not a mention. Matching bare presence was the
+            # first cut and it was vacuous: the comment documenting these
+            # very steps names each file, so deleting the `run:` line left
+            # the suite looking reachable via its own explanatory prose.
+            # Caught by mutation - un-wiring test_planfilelib.py did not
+            # turn the first version red.
+            invocation = re.compile(
+                r"\s\.github/scripts/" + re.escape(name))
+            if invocation.search(workflows):
+                continue
+            # Or invoked by a sibling script, excluding its own source:
+            # several Pi suites run only through verify_pi_support.py and
+            # test_pi_platform_contract.py, which is composition rather
+            # than oversight.
+            others = scripts.replace(path.read_text(encoding="utf-8"), "")
+            if name in others or name[:-3] in others:
+                continue
+            orphans.append(name)
+        self.assertEqual(
+            orphans, [],
+            "these suites are invoked by no workflow and no sibling script, so "
+            "they never run: " + ", ".join(orphans))
+
 if __name__ == "__main__":
     unittest.main()
