@@ -62,6 +62,20 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- The shipped `farm.js` bundle is now executed by the test suite, not merely
+  regenerated and byte-compared. `includes/farm.md` tells operators to run
+  `node <plugin>/tools/farm.js`, but the integration launcher ran `farm.ts`
+  through the tsx loader and the unit suite imported `farm.ts` — so the merge
+  gate proved source behaviour and deterministic generation, and never that the
+  ESM bundle starts, parses argv, resolves its bundled modules, or preserves
+  exit semantics under plain Node. A byte-identical artifact is not a working
+  one. A focused shard now covers plan validation, a missing credential, the
+  loopback API's success and failure paths, and report emission against the
+  rebuilt bundle; a parity test runs one fixture through both entry points and
+  compares exit code, tally, and report; and a negative control proves a
+  syntactically valid but behaviourally altered bundle fails the shard while
+  every `farm.ts` test stays green. CI rebuilds before testing so the shard runs
+  against a fresh artifact (issue #407).
 - The test suites no longer write outside their own temp directories. Running
   the hook suite rewrote the developer's real `~/.claude/settings.json` — both
   the statusline command and its owner key repointed at whatever plugin root the
