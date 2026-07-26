@@ -4,7 +4,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execSync, spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve, basename } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
@@ -1390,6 +1390,44 @@ describe("farm artifact publication (#397 / #387)", () => {
   let mockServer: Server;
   let port: number;
 
+  /**
+   * #515: name the escalation.
+   *
+   * These tests deliberately sabotage an artifact path and then assert the run
+   * still exits 0. When a task escalates for an UNRELATED reason the exit code
+   * flips to 2 and the failure reads `expected 2 to be +0` — true, and useless.
+   * `result.out` is already passed as the assertion message, but the farm's
+   * stdout summary reports only COUNTS ("green=11 escalate=1"); it never says
+   * which task escalated or why.
+   *
+   * The reason is on disk the whole time. This lifts every non-green result out
+   * of the run report and into the assertion message, so a flake names its own
+   * cause on the first occurrence instead of requiring a reproduction — which,
+   * measured, does not reproduce on an idle machine or under synthetic CPU load
+   * (see the issue). Diagnosis only: it changes no assertion, and a failure to
+   * read the report is reported rather than swallowed.
+   */
+  function diagnose(result: { code: number; out: string }): string {
+    const lines: string[] = [];
+    const runsDir = join(tmpDir, ".farm/runs");
+    try {
+      for (const runId of existsSync(runsDir) ? readdirSync(runsDir) : []) {
+        const reportPath = join(runsDir, runId, "farm-report.json");
+        if (!existsSync(reportPath)) continue;
+        const report = JSON.parse(readFileSync(reportPath, "utf8")) as {
+          results?: Array<{ id: string; status: string; note?: string; attempts?: number }>;
+        };
+        for (const r of report.results ?? []) {
+          if (r.status === "green") continue;
+          lines.push(`  [${runId}] ${r.id}: ${r.status} after ${r.attempts ?? "?"} attempt(s) — ${r.note ?? "(no note)"}`);
+        }
+      }
+    } catch (error) {
+      lines.push(`  (run report unreadable: ${String(error)})`);
+    }
+    return lines.length ? `${result.out}\n\nnon-green tasks:\n${lines.join("\n")}` : result.out;
+  }
+
   // Every task in these plans owns exactly one `src/<id>.ts`; the worker echoes
   // back whichever in-scope file the prompt names.
   function greenHandler(): MockHandler {
@@ -1449,7 +1487,7 @@ describe("farm artifact publication (#397 / #387)", () => {
       FARM_API_KEY: "test-key",
       FARM_RUN_ID: "runone",
     });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
 
     const runDir = join(tmpDir, ".farm/runs/runone");
     const report = JSON.parse(readFileSync(join(runDir, "farm-report.json"), "utf8"));
@@ -1581,7 +1619,7 @@ describe("farm artifact publication (#397 / #387)", () => {
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "streambad" });
     // The rail is best-effort — the run still settles on task outcome...
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     // ...but the authoritative report says so, instead of leaving a consumer to
     // infer completeness from a silently short file.
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/streambad/farm-report.json"), "utf8"));
@@ -1598,7 +1636,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     mkdirSync(join(tmpDir, ".farm/farm-results.jsonl"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "lstream" });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/lstream/farm-report.json"), "utf8"));
     expect(report.artifacts.stream.complete).toBe(false);
     // The run-scoped rail itself is fine — only the shared pointer failed.
@@ -1613,7 +1651,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     writeFileSync(join(tmpDir, ".farm/runs/diffdirbad/diffs"), "not a directory");
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "diffdirbad" });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/diffdirbad/farm-report.json"), "utf8"));
     expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id).sort()).toEqual([
       "task-a",
@@ -1630,7 +1668,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     mkdirSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-a.patch"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "patchbad" });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/patchbad/farm-report.json"), "utf8"));
     expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id)).toEqual(["task-a"]);
     expect(existsSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-b.patch"))).toBe(true);
@@ -1654,7 +1692,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     // The durable receipt is on disk, so this is not a receipt failure.
     expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.json"))).toBe(true);
     expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.md"))).toBe(true);
-    expect(result.code, result.out).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     expect(result.out).not.toMatch(/RECEIPT PUBLICATION FAILED/);
     // The operator is still pointed at the receipt that exists...
     expect(result.out).toContain(join(".farm", "runs", "mirrorbad", "farm-report.md"));
@@ -1691,7 +1729,7 @@ describe("farm artifact publication (#397 / #387)", () => {
       FARM_RUN_ID: "bounded",
       FARM_CONCURRENCY: "6",
     });
-    expect(result.code, result.out).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/bounded/farm-report.json"), "utf8"));
     // 12 tasks, one diagnosis — the report carries the diagnosis and the count,
     // not 12 copies of the same line.
