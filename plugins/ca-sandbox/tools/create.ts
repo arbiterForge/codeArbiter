@@ -403,7 +403,7 @@ export async function createSandbox(
   // 1. Labeled named volume (the live source mount). Labels make it discoverable
   // by destroy/prune via label filter alone.
   const volLabelArgs = sandboxLabels.flatMap((l) => ["--label", l]);
-  const mk = dockerRun(["volume", "create", ...volLabelArgs, volumeName]);
+  const mk = await dockerRun(["volume", "create", ...volLabelArgs, volumeName]);
   if (mk.code !== 0) {
     throw new Error(
       `ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})\n${mk.stderr.slice(-1000)}`,
@@ -452,7 +452,10 @@ export async function createSandbox(
     // (e.g. the clone container, now also labeled with this id) fails `volume
     // rm` until that container is gone; removing the volume first (the old
     // order) left it un-retried and orphaned in exactly that case.
-    const leftover = dockerRun([
+    // No signal on the teardown path: this runs BECAUSE the create failed or
+     // was cancelled, so handing it the aborted signal would cancel the cleanup
+     // and orphan exactly the objects it exists to reclaim (#479).
+    const leftover = await dockerRun([
       "ps",
       "-a",
       "-q",
@@ -460,10 +463,10 @@ export async function createSandbox(
       "--filter",
       `label=${idLabel(id)}`,
     ]);
-    for (const c of leftover.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
-      dockerRun(["rm", "-f", c]);
+    for (const c of leftover.stdout.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean)) {
+      await dockerRun(["rm", "-f", c]);
     }
-    dockerRun(["volume", "rm", "-f", volumeName]);
+    await dockerRun(["volume", "rm", "-f", volumeName]);
     throw err;
   }
 }
