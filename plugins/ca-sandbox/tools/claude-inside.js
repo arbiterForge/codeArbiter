@@ -163,7 +163,7 @@ function applyNetworkPolicy(policy, opts = {}) {
 }
 
 // docker.ts
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 var DOCKER_ENV = { ...process.env, MSYS_NO_PATHCONV: "1" };
 var DEFAULT_DOCKER_TIMEOUT_MS = 12e4;
 var DOCKER_OPERATION_TIMEOUTS_MS = Object.freeze({
@@ -191,33 +191,103 @@ function timeoutForArgs(args) {
   return DOCKER_OPERATION_TIMEOUTS_MS[args[0] ?? ""] ?? DEFAULT_DOCKER_TIMEOUT_MS;
 }
 var DOCKER_TIMEOUT_EXIT_CODE = 124;
-function runDocker(args, extra = {}, options = {}) {
+var DOCKER_ABORT_EXIT_CODE = 130;
+var DEFAULT_DOCKER_MAX_BUFFER = 64 * 1024 * 1024;
+function runDocker(args, extra = {}, options = {}, call = {}) {
   const timeout = options.timeoutMs ?? timeoutForArgs(args);
-  const spawn = options.spawn ?? spawnSync;
-  const r = spawn("docker", args, {
-    encoding: "utf8",
-    env: DOCKER_ENV,
-    ...extra,
-    timeout,
-    killSignal: "SIGKILL"
-  });
-  const timedOut = r.error?.code === "ETIMEDOUT" || r.status === null && r.signal !== null && r.signal !== void 0;
-  if (timedOut) {
-    return {
-      code: DOCKER_TIMEOUT_EXIT_CODE,
-      stdout: r.stdout ?? "",
-      stderr: `${r.stderr ?? ""}ca-sandbox: \`docker ${args[0] ?? ""}\` timed out after ${timeout}ms and was killed (issue #394).`,
-      timedOut: true
-    };
+  const spawnFn = options.spawn ?? spawn;
+  const maxBuffer = options.maxBuffer ?? DEFAULT_DOCKER_MAX_BUFFER;
+  const signal = call.signal;
+  const label = `docker ${args[0] ?? ""}`;
+  if (signal?.aborted) {
+    return Promise.resolve({
+      code: DOCKER_ABORT_EXIT_CODE,
+      stdout: "",
+      stderr: `ca-sandbox: \`${label}\` was cancelled before it started (issue #479).`,
+      aborted: true
+    });
   }
-  return {
-    code: r.status ?? 1,
-    stdout: r.stdout ?? "",
-    stderr: r.stderr ?? (r.error ? String(r.error) : "")
-  };
+  return new Promise((resolve) => {
+    let child;
+    try {
+      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra });
+    } catch (e) {
+      resolve({ code: 1, stdout: "", stderr: String(e) });
+      return;
+    }
+    let stdout = "";
+    let stderr = "";
+    let bytes = 0;
+    let killedBy;
+    let settled = false;
+    const kill = (why) => {
+      if (killedBy !== void 0) return;
+      killedBy = why;
+      try {
+        child.kill("SIGKILL");
+      } catch {
+      }
+    };
+    const collect = (which) => (chunk) => {
+      const text = String(chunk);
+      bytes += Buffer.byteLength(text);
+      if (bytes > maxBuffer) {
+        kill("overflow");
+        return;
+      }
+      if (which === "out") stdout += text;
+      else stderr += text;
+    };
+    child.stdout?.setEncoding?.("utf8");
+    child.stderr?.setEncoding?.("utf8");
+    child.stdout?.on("data", collect("out"));
+    child.stderr?.on("data", collect("err"));
+    const timer = setTimeout(() => kill("timeout"), timeout);
+    timer.unref?.();
+    const onAbort = () => kill("abort");
+    signal?.addEventListener?.("abort", onAbort, { once: true });
+    const settle = (r) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      signal?.removeEventListener?.("abort", onAbort);
+      resolve(r);
+    };
+    child.on("error", (e) => settle({ code: 1, stdout: "", stderr: String(e) }));
+    child.on("close", (code) => {
+      if (killedBy === "timeout") {
+        settle({
+          code: DOCKER_TIMEOUT_EXIT_CODE,
+          stdout,
+          stderr: `${stderr}ca-sandbox: \`${label}\` timed out after ${timeout}ms and was killed (issue #394).`,
+          timedOut: true
+        });
+        return;
+      }
+      if (killedBy === "abort") {
+        settle({
+          code: DOCKER_ABORT_EXIT_CODE,
+          stdout,
+          stderr: `${stderr}ca-sandbox: \`${label}\` was cancelled and killed (issue #479).`,
+          aborted: true
+        });
+        return;
+      }
+      if (killedBy === "overflow") {
+        settle({
+          code: 1,
+          stdout,
+          stderr: `${stderr}ca-sandbox: \`${label}\` exceeded the ${maxBuffer}-byte output cap and was killed (issue #479).`,
+          overflowed: true
+        });
+        return;
+      }
+      settle({ code: code ?? 1, stdout, stderr });
+    });
+  });
 }
-function defaultDockerRun(args) {
-  return runDocker(args);
+function defaultDockerRun(args, call = {}) {
+  return runDocker(args, {}, {}, call);
 }
 
 // run.ts
@@ -341,9 +411,9 @@ function buildClaudeRunArgs(opts) {
 function claudeFirewallScript(opts) {
   return resolveClaudeNetworkPlan(opts.netPolicy ?? "offline").firewallScript;
 }
-function runClaudeInside(opts, dockerRun = defaultDockerRun) {
+async function runClaudeInside(opts, dockerRun = defaultDockerRun, call = {}) {
   const args = buildClaudeRunArgs(opts);
-  const r = dockerRun(args);
+  const r = await dockerRun(args, call);
   if (r.code !== 0) {
     throw new Error(
       `ca-sandbox: docker run failed for --with-claude image ${opts.image} (exit ${r.code})
@@ -353,9 +423,9 @@ ${(r.stderr || r.stdout).slice(-2e3)}`
   const id = r.stdout.trim();
   const firewallScript = claudeFirewallScript(opts);
   if (firewallScript === void 0) return id;
-  const applied = dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
+  const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
   if (applied.code !== 0) {
-    dockerRun(["rm", "-f", id]);
+    await dockerRun(["rm", "-f", id]);
     throw new Error(
       `ca-sandbox: --with-claude could not apply the egress firewall to ${id} (exit ${applied.code}); the container has been destroyed rather than left running with NET_ADMIN and no rules around a live token.
 ${(applied.stderr || applied.stdout).slice(-2e3)}`
@@ -432,7 +502,7 @@ function usage() {
     "`sandbox` subcommand."
   ].join("\n");
 }
-function runClaudeInsideCli(argv, env = process.env, deps = {}) {
+async function runClaudeInsideCli(argv, env = process.env, deps = {}) {
   const out = deps.stdout ?? ((l) => process.stdout.write(`${l}
 `));
   const err = deps.stderr ?? ((l) => process.stderr.write(`${l}
@@ -456,7 +526,7 @@ function runClaudeInsideCli(argv, env = process.env, deps = {}) {
     return USAGE_ERROR_EXIT;
   }
   try {
-    const id = (deps.run ?? runClaudeInside)(
+    const id = await (deps.run ?? runClaudeInside)(
       { image: parsed.image, homeVolume: parsed.homeVolume, netPolicy: parsed.netPolicy, token },
       deps.dockerRun ?? defaultDockerRun
     );
@@ -471,7 +541,14 @@ function runClaudeInsideCli(argv, env = process.env, deps = {}) {
 var _thisFile = fileURLToPath(import.meta.url);
 var _entryFile = path.resolve(process.argv[1] ?? "");
 if (_thisFile === _entryFile) {
-  process.exit(runClaudeInsideCli(process.argv.slice(2)));
+  runClaudeInsideCli(process.argv.slice(2)).then(
+    (code) => process.exit(code),
+    (e) => {
+      process.stderr.write(`ca-sandbox: ${e instanceof Error ? e.message : String(e)}
+`);
+      process.exit(1);
+    }
+  );
 }
 export {
   ClaudeCliError,
