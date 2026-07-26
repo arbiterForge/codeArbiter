@@ -56,13 +56,30 @@ therefore the only option, not a preference.
 
 ## Test standard (binding on every slice)
 
-> Every new test must carry at least one assertion that fails if the line it covers is mutated —
-> a negated condition, a changed constant, a removed statement, an off-by-one boundary.
+> Every new test must carry at least one assertion that fails if the **property** the covered line
+> enforces is removed — a negated condition, a changed constant, a removed statement, an off-by-one
+> boundary.
 
 Per test: *if I flip this `if` in the source, does my test go red?* Exact values over
 `toBeDefined()`; exact call arguments over `toHaveBeenCalled()`; both sides of every branch claimed;
 error identity **and** observable consequence. No broad snapshots, no lone `not.toThrow()`, no
 asserting on a mock instead of the subject.
+
+### Amended after slice 2 — "line" was the wrong unit
+
+The original wording said *"fails if the LINE it covers is mutated"*. That is **unsatisfiable by
+construction for layered code**, and `worktree-fs.ts` proved it: 4 of 24 single-point mutants died,
+yet every survivor was a guard whose property another layer also enforces. Removing all four
+`isSymbolicLink()` checks passes (a Windows junction also fails `isDirectory()`); removing all three
+`isDirectory()` checks passes (`isSymbolicLink()` catches it). Redundant guards cannot be
+distinguished from outside the module — that is what defence in depth *means*.
+
+So the unit is the **property**, not the line, and the mutation harness needs a multi-edit mode that
+removes every layer guarding one property at once (`mutate-multi.mjs`). A single-point survivor on a
+layered module is evidence about the design, not about the test.
+
+Where a single guard is *fully* redundant with another, say so and move on rather than inventing an
+input to pin it — no such input exists.
 
 Each slice runs a hand mutation pass: mutate the covered source lines, show the tests go red,
 restore. **A control run on unmutated source must pass first** — a harness whose control fails
@@ -76,12 +93,33 @@ Test-only, so `test(farm):` and no version bump (see Constraints).
 
 | # | target | branches | status |
 |---|---|---|---|
-| 1 | `redactor.ts` — PEM span boundaries, basename denylist | ~3 | in progress |
-| 2 | `worktree-fs.ts` — 19 `unsafe()` refusal / TOCTOU arms | ~19 | |
+| 1 | `redactor.ts` — PEM span boundaries, basename denylist | +3 | **DONE** (#517) |
+| 2 | `worktree-fs.ts` — `unsafe()` refusal / TOCTOU arms | **+4** (est. 19) | **DONE** |
 | 3 | `mutation.ts` — `antiGamingCheck`, `FARM_MUTATION_CMD` hook path, loop bounds | ~45 | |
 | 4 | `exec.ts` — `numEnv`, `awaitTaskkill`, `treeKill`, `run` timeout | ~20 | |
-| 5 | `farm.ts` **exported only** — `runTask`, `validate`, `cleanupFailures` | ~40 | |
+| 5 | `farm.ts` **exported only** — `runTask`, `validate`, `cleanupFailures` | ~68 | |
 | 6 | clean-export measurement, close #511 | — | |
+
+### Budget, corrected after slice 2
+
+Slice 2 returned **+4 branches, not the estimated 19**. Fifteen of `worktree-fs.ts`'s uncovered arms
+are structurally unreachable through the public API — an earlier layer always fires first — plus one
+that is platform-dead (`O_NOFOLLOW` is `undefined` on Windows, so the true arm of that ternary cannot
+be taken) and one whose guard (`segment === "" | "." | ".."`) cannot trigger because
+`path.resolve` + `path.relative` normalise those segments away before the split. Reaching them needs
+fault injection, i.e. new test seams in the source — and a source change to `worktree-fs.ts` rebuilds
+`farm.js`, which **is** declared payload, forcing a `ca` version bump for coverage's sake. Not worth
+it; recorded instead.
+
+| | now | need | gap |
+|---|---|---|---|
+| Lines | 803/1187 = 67.64% | 831 | +28 |
+| Branches | 582/967 = 60.18% | 677 | **+95** |
+
+Remaining realistic supply: `exec.ts` ~20, `mutation.ts` ~55, `farm.ts` exported ~68 = **~143**
+against a need of **95**. Feasible, but it needs ~66% conversion across all three — slice 5
+(`farm.ts`'s exported surface) is now load-bearing rather than a top-up, and slices 3–5 have no
+slack for another over-estimate.
 
 Slice 1 is deliberately small so the file convention and the mutation bar are validated on a
 cheap surface before slices 3–5 scale them.
