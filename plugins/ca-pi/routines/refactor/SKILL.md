@@ -74,6 +74,8 @@ Gate: full suite green with zero pre-existing tests modified. BLOCK if any pre-e
 
 Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold on both lines and branches — a refactor MUST NOT reduce coverage of the surface it touched on either metric.
 
+Where the surface has no coverage tooling, the same clause as Phase 2 applies: record that there is no numeric floor and verify parity through Phase 5's unmodified pre-existing tests alone. Phase 2 and Phase 6 MUST NOT give different answers about the same surface.
+
 Gate: clean lint and type-check, zero errors, and no coverage regression on the named surface. "Mostly passes" is not passing — this is what clears the path to `commit-gate`.
 
 ## Hard rules

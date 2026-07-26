@@ -1790,6 +1790,38 @@ class WorkflowContractTest(unittest.TestCase):
                 )
                 self.assertIn(guarded, push, "a push of this file starts no CI run")
 
+    def test_gate_command_subjects_reach_the_guard_that_constrains_them(self):
+        # Issue #507, same defect class as the test above and as #384/#403/#404.
+        # GateCommandTest lives in THIS file, which runs only in the path-scoped
+        # `ci-impact` job. Its two subjects are the gate prose and the file that
+        # prose points at - and neither matched a filter, so a PR whose ONLY
+        # change was deleting the coverage section from tech-stack.md, or
+        # rewording the phrase the guard keys on, skipped the single job that
+        # would have caught it. The guard was green on the PR that introduced it
+        # purely because that PR also edited this file.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        impact = paths_filter(ci, "impact")
+        push = push_trigger_paths(ci)
+        self.assertIn(
+            "tools/ci-impact.py", impact, "the impact-filter scan drifted off the real block"
+        )
+        for guarded in (
+            ".codearbiter/tech-stack.md",
+            "plugins/ca/skills/**",
+            "plugins/ca/agents/**",
+            "core/surface/skills/**",
+            "core/surface/agents/**",
+        ):
+            with self.subTest(path=guarded):
+                self.assertIn(
+                    guarded, impact, "a PR touching only this path skips its own contract test"
+                )
+        # The prose side is already covered for pushes by `plugins/ca/**` and
+        # `core/**`; tech-stack.md is under neither and needs its own entry.
+        self.assertIn(
+            ".codearbiter/tech-stack.md", push, "a push of this file starts no CI run"
+        )
+
     def test_the_allowlist_guard_also_runs_unconditionally_in_the_secret_scan_job(self):
         # Belt AND braces.  A path filter is a promise that has already been
         # broken twice in this repo (#384, and the .gitleaks.toml gap above), so
@@ -2112,32 +2144,89 @@ class GateCommandTest(unittest.TestCase):
     asserts that codeArbiter satisfies the contract its own gates impose.
     """
 
-    # token -> proof the command is actually defined, not merely discussed.
+    # token -> proof tech-stack.md DEFINES it, not merely discusses it. This map
+    # is checked in BOTH directions below: a token demanded by gate prose with no
+    # entry here fails, and an entry here with no demander fails. A one-directional
+    # map is how a guard rots into decoration - the first cut of this test carried
+    # a `typecheck` entry that matched no prose and therefore asserted nothing,
+    # while the live `test` demander was absent from the map entirely.
     DEFINITIONS = {
         "coverage": re.compile(r"(?m)^\s*npm\b.*\brun coverage\b"),
-        "typecheck": re.compile(r"(?m)^\s*npm\b.*\brun typecheck\b"),
+        "test": re.compile(r"(?ms)^## Test\b.*?```sh\n.+?```"),
+        # `dependency-reviewer` reads this one. It was found by the
+        # no-dead-entry check below on the first run, which is the point of
+        # checking both directions - a one-way map had no way to notice.
+        "audit": re.compile(r"npm audit\b[^\n]*--audit-level=high"),
     }
+
+    # Deliberately keyed on the canonical phrasing the gates use. Tokens named
+    # only in list form ("run lint, the type-check ..., and coverage, all from
+    # tech-stack.md") are NOT discovered, and that limit is recorded rather than
+    # papered over: widening the pattern to prose-match those would produce
+    # false demanders, which is worse than a known gap.
+    DEMAND = re.compile(r"\b([a-z][a-z-]*) command from `tech-stack\.md`")
+
+    def _gate_docs(self):
+        """Skills AND agents. `coverage-auditor` reads the same command a skill does."""
+        root = REPO_ROOT / "plugins" / "ca"
+        return sorted([*root.glob("skills/*/SKILL.md"), *root.glob("agents/*.md")])
+
+    def _demanded(self):
+        found: dict[str, set[str]] = {}
+        for path in self._gate_docs():
+            label = path.parent.name if path.name == "SKILL.md" else path.stem
+            for token in self.DEMAND.findall(path.read_text(encoding="utf-8")):
+                found.setdefault(token, set()).add(label)
+        return found
 
     def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
         tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
-        skills = sorted((REPO_ROOT / "plugins" / "ca" / "skills").glob("*/SKILL.md"))
         missing = []
-        for token, defined in sorted(self.DEFINITIONS.items()):
-            demanders = [
-                path.parent.name
-                for path in skills
-                if re.search(
-                    rf"\b{token} command from `tech-stack\.md`",
-                    path.read_text(encoding="utf-8"),
-                )
-            ]
-            if demanders and defined.search(tech_stack) is None:
+        for token, who in sorted(self._demanded().items()):
+            names = ", ".join(sorted(who))
+            proof = self.DEFINITIONS.get(token)
+            if proof is None:
                 missing.append(
-                    f"{token}: demanded by {', '.join(sorted(set(demanders)))}, "
-                    f"but .codearbiter/tech-stack.md defines no such command")
+                    f"{token}: demanded by {names}, but this test has no definition "
+                    f"check for it - add one to DEFINITIONS rather than leaving it unguarded")
+            elif proof.search(tech_stack) is None:
+                missing.append(
+                    f"{token}: demanded by {names}, but .codearbiter/tech-stack.md "
+                    f"defines no such command")
         self.assertEqual(
             missing, [],
             "a gate cannot run a command its tech-stack.md never defines: " + "; ".join(missing))
+
+    def test_no_definition_check_is_dead(self):
+        """An entry matching no prose asserts nothing while looking like protection."""
+        dead = sorted(set(self.DEFINITIONS) - set(self._demanded()))
+        self.assertEqual(
+            dead, [],
+            "these DEFINITIONS entries have no demander, so they guard nothing - either "
+            "the prose was reworded (fix DEMAND) or the entry is stale (delete it): "
+            + ", ".join(dead))
+
+    def test_every_npm_script_named_by_tech_stack_actually_exists(self):
+        """The command must RESOLVE, not merely appear.
+
+        Checking that tech-stack.md mentions `npm --prefix X run Y` proves only
+        that the prose is self-consistent. Deleting `Y` from `X/package.json`
+        leaves the gate pointing at nothing while every text assertion still
+        passes - #507 reachable straight through the fix for #507.
+        """
+        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        broken = []
+        for prefix, script in sorted(set(re.findall(r"npm --prefix (\S+) run ([\w:-]+)", tech_stack))):
+            manifest = REPO_ROOT / prefix / "package.json"
+            if not manifest.exists():
+                broken.append(f"{prefix}/package.json does not exist (named for `run {script}`)")
+                continue
+            scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts", {})
+            if script not in scripts:
+                broken.append(f"{prefix}/package.json defines no `{script}` script")
+        self.assertEqual(
+            broken, [],
+            "tech-stack.md names npm scripts that do not exist: " + "; ".join(broken))
 
 
 if __name__ == "__main__":

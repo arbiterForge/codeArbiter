@@ -16,6 +16,10 @@ All notable changes to `ca-pi` are documented in this file.
   Previously it said only "minimum coverage", and a report gives four numbers
   that disagree - so the same tree was compliant or not depending on which
   column the reader picked.
+- The projected `coverage-auditor` no longer carries its own copy of the
+  threshold table. The copies drifted the moment the canonical one gained a
+  metric rule, leaving the dispatched auditor applying a one-number test the
+  dispatching routine had stopped using. It reads the shared table instead.
 
 ## [0.1.34] - 2026-07-26
 

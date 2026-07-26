@@ -15,14 +15,20 @@ Read-only. Verify the suite covers all TDD obligations and exercises real behavi
 
 - `<project-root>/.codearbiter/tech-stack.md` — test runner, coverage command, test file convention.
 - `<project-root>/.codearbiter/CONTEXT.md` — `stage:` maturity value (1–4) governing the coverage threshold.
+- `<plugin-root>/includes/maturity-coverage.md` — the threshold table AND which metrics bind. Read it; do not carry a remembered copy.
 
-Coverage thresholds by maturity: **1 ≥ 60% · 2 ≥ 70% · 3 ≥ 85% · 4 ≥ 90%**.
+This file previously restated the table inline, and the copies drifted the moment
+the canonical one gained a metric rule (issue #507) — leaving this agent applying
+a one-number test the dispatching skill no longer used. The table lives in exactly
+one place for that reason.
 
 ## What to Check
 
 ### 1. Coverage threshold
 
-Run the coverage command from `tech-stack.md` (or use the last run output). Compare against the threshold for the `stage:` maturity value in `CONTEXT.md`. Flag coverage below threshold as **HIGH** (blocks PR at the commit gate).
+Run the coverage command from `tech-stack.md` (or use the last run output). Compare against the threshold for the `stage:` maturity value in `CONTEXT.md`, applying **every metric `maturity-coverage.md` names as binding** — a report clearing one and failing another is below threshold. Flag that as **HIGH** (blocks PR at the commit gate).
+
+Where the surface has no coverage tooling, say so and flag nothing on this check; do not invent a command or infer a number.
 
 ### 2. Untested source files
 

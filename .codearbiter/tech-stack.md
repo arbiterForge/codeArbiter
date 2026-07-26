@@ -167,7 +167,7 @@ Measured baseline at stage 2 (≥ 70%), 2026-07-26:
 
 | tree | lines | branches | verdict |
 | --- | --- | --- | --- |
-| `plugins/ca/tools` | 67.22% | 59.46% | **below floor** — backfill tracked in #511 |
+| `plugins/ca/tools` | 67.31% | 59.46% | **below floor** — backfill tracked in #511 |
 | `plugins/ca-pi/tools` | 85.37% | 78.73% | clears |
 | `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears |
 
