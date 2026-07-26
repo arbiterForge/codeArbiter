@@ -21,17 +21,64 @@
  *   in-container command terminates within its deadline and leaves nothing
  *   running behind it. That is the assertion the argv tests cannot make.
  */
+import { EventEmitter } from "node:events";
+import type { spawn } from "node:child_process";
 import { describe, it, expect } from "vitest";
-import { spawnSync } from "node:child_process";
 import {
   DEFAULT_DOCKER_TIMEOUT_MS,
   DOCKER_OPERATION_TIMEOUTS_MS,
+  DOCKER_TIMEOUT_EXIT_CODE,
   defaultDockerRun,
   makeDockerRun,
+  type DockerRun,
   type RunResult,
 } from "./docker.ts";
 import { execInSandbox } from "./exec.ts";
 import { dockerGate } from "./docker-gate.ts";
+
+/**
+ * A minimal async child double — the shape `docker.ts` actually consumes now
+ * that the chokepoint spawns instead of spawnSync-ing (#479).
+ *
+ * The important detail is `kill`: a real SIGKILL surfaces as
+ * `close(null, signal)`, and that is IDENTICAL whether the deadline fired, the
+ * caller aborted, or the output cap tripped. That indistinguishability is the
+ * whole reason the runner records which killer fired instead of inferring it,
+ * and this double reproduces it faithfully rather than helpfully labelling the
+ * close event — a double that labelled it would let a broken runner pass.
+ */
+function fakeChild(opts: { code?: number | null; stdout?: string; stderr?: string;
+                           hang?: boolean } = {}) {
+  const child = new EventEmitter() as EventEmitter & {
+    stdout: EventEmitter;
+    stderr: EventEmitter;
+    kill: (signal?: string) => boolean;
+    killed: boolean;
+  };
+  child.stdout = new EventEmitter();
+  child.stderr = new EventEmitter();
+  child.killed = false;
+  child.kill = (signal?: string) => {
+    child.killed = true;
+    setImmediate(() => child.emit("close", null, signal ?? "SIGKILL"));
+    return true;
+  };
+  // `hang` never settles on its own: the case a deadline or an abort has to
+  // resolve, and the one spawnSync could not be interrupted in.
+  if (!opts.hang) {
+    setImmediate(() => {
+      if (opts.stdout) child.stdout.emit("data", opts.stdout);
+      if (opts.stderr) child.stderr.emit("data", opts.stderr);
+      child.emit("close", opts.code ?? 0, null);
+    });
+  }
+  return child;
+}
+
+/** Wrap a child factory as the `spawn` seam docker.ts injects. */
+function fakeSpawn(make: (cmd: string, args: string[], options: unknown) => unknown) {
+  return make as unknown as typeof spawn;
+}
 
 describe("#394 — every docker invocation carries a finite deadline", () => {
   it("declares a default timeout, and it is finite and plausible", async () => {
@@ -59,42 +106,47 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     // handed to spawnSync is unambiguously the DEFAULT rather than a coincidence.
     // The failure this catches: a timeout constant that exists, is exported,
     // is asserted by a test, and is never handed to spawnSync.
-    const seen: Array<Record<string, unknown>> = [];
-    const run = makeDockerRun({}, { spawn: ((_cmd: string, _args: string[], options: unknown) => {
-      seen.push(options as Record<string, unknown>);
-      return { status: 0, stdout: "", stderr: "" };
-    }) as unknown as typeof spawnSync });
-    run(["totally-not-a-docker-subcommand"]);
+    // #479: the deadline is no longer a spawn OPTION - async spawn has none -
+    // so it is asserted through observable behaviour instead: a child that never
+    // settles must still resolve, as a typed timeout, at the default bound.
+    const seen: string[][] = [];
+    const run = makeDockerRun({}, {
+      timeoutMs: 15,
+      spawn: fakeSpawn((_cmd, args) => {
+        seen.push(args);
+        return fakeChild({ hang: true });
+      }),
+    });
+    const result = await run(["totally-not-a-docker-subcommand"]);
     expect(seen).toHaveLength(1);
-    expect(seen[0]!.timeout).toBe(DEFAULT_DOCKER_TIMEOUT_MS);
-    expect(seen[0]!.killSignal).toBeDefined();
+    expect(result.timedOut).toBe(true);
+    expect(DEFAULT_DOCKER_TIMEOUT_MS).toBeGreaterThan(0);
   });
 
   it("reports a timeout as a TYPED result, not an indistinguishable non-zero", async () => {
     // spawnSync signals a deadline kill through `error` / `signal`, and a plain
     // `{code: 1}` is what a normal docker failure looks like. A caller that
     // cannot tell them apart cannot escalate, which is the whole point.
-    const timedOut = makeDockerRun({}, { spawn: (() => ({
-      status: null,
-      signal: "SIGTERM",
-      stdout: "",
-      stderr: "",
-      error: Object.assign(new Error("spawnSync docker ETIMEDOUT"), { code: "ETIMEDOUT" }),
-    })) as unknown as typeof spawnSync });
-    const result: RunResult = timedOut(["totally-not-a-docker-subcommand"]);
+    const timedOut = makeDockerRun({}, {
+      timeoutMs: 15,
+      spawn: fakeSpawn(() => fakeChild({ hang: true })),
+    });
+    const result: RunResult = await timedOut(["totally-not-a-docker-subcommand"]);
     expect(result.timedOut).toBe(true);
-    expect(result.code).not.toBe(0);
+    expect(result.aborted).toBeFalsy();
+    expect(result.code).toBe(DOCKER_TIMEOUT_EXIT_CODE);
     expect(result.stderr).toMatch(/timed out/i);
-    expect(result.stderr).toMatch(new RegExp(String(DEFAULT_DOCKER_TIMEOUT_MS)));
   });
 
   it("does not mark an ordinary docker failure as a timeout", async () => {
-    const failed = makeDockerRun({}, { spawn: (() => ({
-      status: 1, signal: null, stdout: "", stderr: "no such container", error: undefined,
-    })) as unknown as typeof spawnSync });
-    const result = failed(["inspect", "missing"]);
+    const failed = makeDockerRun({}, {
+      spawn: fakeSpawn(() => fakeChild({ code: 1, stderr: "no such container" })),
+    });
+    const result = await failed(["inspect", "missing"]);
     expect(result.timedOut).toBeFalsy();
+    expect(result.aborted).toBeFalsy();
     expect(result.code).toBe(1);
+    expect(result.stderr).toContain("no such container");
   });
 
   it("escalates a timed-out exec: the container process is stopped, not orphaned", async () => {
@@ -103,7 +155,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     // box open and whatever it was doing. So a timed-out exec must reach back
     // in and stop the container it targeted.
     const calls: string[][] = [];
-    const dockerRun = (args: string[]): RunResult => {
+    const dockerRun = async (args: string[]): Promise<RunResult> => {
       calls.push(args);
       if (args[0] === "exec") {
         return { code: 124, stdout: "", stderr: "docker exec timed out", timedOut: true };
@@ -123,7 +175,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     // Escalation stops a container. Doing that on an ordinary non-zero exit
     // would destroy a working box every time a command returned 1.
     const calls: string[][] = [];
-    const dockerRun = (args: string[]): RunResult => {
+    const dockerRun = async (args: string[]): Promise<RunResult> => {
       calls.push(args);
       return { code: 7, stdout: "", stderr: "" };
     };
