@@ -31,8 +31,11 @@ import {
   TOKEN_ENV_VAR,
   buildClaudeImageDockerfile,
   buildClaudeRunArgs,
+  runClaudeInside,
+  ANTHROPIC_ALLOW_HOSTS,
   TokenCoMountRejectedError,
 } from "./claude-inside.ts";
+import { applyNetworkPolicy } from "./network.ts";
 import { SANDBOX_USER, hardeningFlags } from "./run.ts";
 
 // --------------------------------------------------------------------------
@@ -359,4 +362,111 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
     // non-zero). Either way it is NOT a clean 0.
     expect(r.status).not.toBe(0);
   }, 180_000);
+});
+
+// ---------------------------------------------------------------------------
+// #377 - `anthropic-only` was NET_ADMIN with no firewall.
+//
+// `resolveClaudeNetworkArgs` called applyNetworkPolicy("egress-allowlist", ...)
+// and took ONLY `.runArgs`, discarding `.firewallScript`. Its own comment says
+// "The firewall script must still be applied INSIDE the box by the caller" -
+// and there is no such caller. Nothing in production references
+// `firewallScript` at all; only tests do.
+//
+// So the `anthropic-only` posture produced a container with `--cap-add
+// NET_ADMIN --cap-add NET_RAW` on a custom bridge and NO iptables rules: wide
+// open egress PLUS elevated network capabilities, around a live OAuth token.
+// That is strictly worse than plain default networking, and it is the posture a
+// user selects when they want the box locked down.
+//
+// It is unexploitable today only because `runClaudeInside` has zero callers
+// (#377 is the issue to wire it up). Fixing it BEFORE it becomes reachable is
+// the entire point.
+// ---------------------------------------------------------------------------
+describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall", () => {
+  const baseOpts = {
+    image: "ca-sbx-claude:test",
+    token: "DUMMY-NOT-A-REAL-TOKEN",
+    homeVolume: "ca-sbx-claude-home-test",
+  };
+
+  it("applies the firewall inside the box for anthropic-only", () => {
+    const calls: string[][] = [];
+    const dockerRun = (args: string[]) => {
+      calls.push(args);
+      return { code: 0, stdout: args[0] === "run" ? "container-id-1\n" : "", stderr: "" };
+    };
+    const id = runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun);
+    expect(id).toBe("container-id-1");
+
+    // The run itself still carries the capabilities...
+    expect(calls[0]!.join(" ")).toContain("NET_ADMIN");
+    // ...and something must then install the rules INSIDE the box.
+    const execs = calls.slice(1).filter((a) => a[0] === "exec");
+    expect(execs.length, "no firewall was applied after start").toBeGreaterThan(0);
+    const applied = execs.map((a) => a.join(" ")).join("\n");
+    expect(applied).toContain("container-id-1");
+    expect(applied).toMatch(/iptables/);
+  });
+
+  it("destroys the box when the firewall cannot be applied", () => {
+    // Fail closed. A started, token-bearing container with NET_ADMIN and no
+    // rules must never be handed back to a caller - returning the id would be
+    // worse than never starting it, because the caller believes it is locked
+    // down.
+    const calls: string[][] = [];
+    const dockerRun = (args: string[]) => {
+      calls.push(args);
+      if (args[0] === "run") return { code: 0, stdout: "container-id-2\n", stderr: "" };
+      if (args[0] === "exec") return { code: 1, stdout: "", stderr: "iptables: Permission denied" };
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    expect(() => runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun))
+      .toThrow(/firewall/i);
+    const teardown = calls.filter((a) => (a[0] === "rm" || a[0] === "kill") && a.includes("container-id-2"));
+    expect(teardown.length, "the unprotected box was left running").toBeGreaterThan(0);
+  });
+
+  it("does not exec anything extra for offline, which needs no rules", () => {
+    // `offline` gets no interface at all, so there is nothing to firewall and
+    // an extra exec would be pure attack surface.
+    const calls: string[][] = [];
+    const dockerRun = (args: string[]) => {
+      calls.push(args);
+      return { code: 0, stdout: args[0] === "run" ? "container-id-3\n" : "", stderr: "" };
+    };
+    const id = runClaudeInside({ ...baseOpts, netPolicy: "offline" }, dockerRun);
+    expect(id).toBe("container-id-3");
+    expect(calls.filter((a) => a[0] === "exec")).toHaveLength(0);
+  });
+
+  it("defaults to offline, so the guaranteed posture needs no opt-in", () => {
+    const calls: string[][] = [];
+    const dockerRun = (args: string[]) => {
+      calls.push(args);
+      return { code: 0, stdout: args[0] === "run" ? "container-id-4\n" : "", stderr: "" };
+    };
+    runClaudeInside({ ...baseOpts }, dockerRun);
+    expect(calls[0]!.join(" ")).toContain("--network");
+    expect(calls.filter((a) => a[0] === "exec")).toHaveLength(0);
+  });
+
+  it("the firewall script it applies is the one network.ts produced", () => {
+    // Not a re-implementation: the rules must come from the single owner, so a
+    // change to the allowlist cannot silently diverge from what is installed.
+    const plan = applyNetworkPolicy("egress-allowlist", {
+      allowHosts: [...ANTHROPIC_ALLOW_HOSTS],
+      networkName: "ca-sbx-claude-egress",
+    });
+    expect(plan.firewallScript).toBeTruthy();
+
+    const calls: string[][] = [];
+    const dockerRun = (args: string[]) => {
+      calls.push(args);
+      return { code: 0, stdout: args[0] === "run" ? "cid\n" : "", stderr: "" };
+    };
+    runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun);
+    const execArgv = calls.find((a) => a[0] === "exec")!;
+    expect(execArgv[execArgv.length - 1]).toBe(plan.firewallScript);
+  });
 });
