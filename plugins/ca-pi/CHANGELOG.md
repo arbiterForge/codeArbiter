@@ -22,6 +22,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 - The projected release routine named two independently-versioned plugins
   instead of four, and routes a sibling release to its hosted lane (#382).
+## [0.1.28] - 2026-07-26
+
+### Added
+
+- `$ca-add-dep` gains a bounded **Ephemeral tool run** section: a pinned
+  developer tool run once against the repository, adopting nothing, is not a
+  project dependency and no longer takes dependency review. The distinguishing
+  test is the dependency GRAPH, not the download. Version pinning and the
+  approved registry still apply at full strength; a manifest or lockfile change
+  is prohibited and verified after the run rather than trusted, because a tool
+  that writes one has adopted itself (issue #346, ADR-0023).
 
 ## [0.1.27] - 2026-07-26
 

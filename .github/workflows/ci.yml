@@ -430,14 +430,25 @@ jobs:
         run: python3 .github/scripts/check_sandbox_docker_layers.py --sentinel "$CA_SANDBOX_DOCKER_SENTINEL"
       - name: Rebuild sandbox.js
         run: npm run build
-      - name: Fail if committed sandbox.js is stale
+      - name: Fail if a committed ca-sandbox artifact is stale
+        # Issue #377: ca-sandbox ships TWO binaries now. claude-inside.js is
+        # deliberately separate from sandbox.js - it starts a container holding
+        # a live OAuth token, and the sandbox-claude-inside skill's five BLOCK
+        # gates are what make that safe, so it is not a `sandbox` subcommand
+        # anyone can reach. A second shipped artifact needs its own staleness
+        # gate or it silently rots, which is the exact failure #407 found for
+        # farm.js: a byte-identical rebuild proves generation, not behaviour.
         run: |
-          if ! git diff --quiet -- sandbox.js; then
-            echo "::error file=plugins/ca-sandbox/tools/sandbox.js::sandbox.js is out of date with cli.ts. Run 'npm run build' in plugins/ca-sandbox/tools and commit the result - the plugin ships sandbox.js, not the TypeScript sources."
-            git --no-pager diff -- sandbox.js
-            exit 1
-          fi
-          echo "sandbox.js is in sync with the TypeScript sources"
+          stale=0
+          for artifact in sandbox.js claude-inside.js; do
+            if ! git diff --quiet -- "$artifact"; then
+              echo "::error file=plugins/ca-sandbox/tools/$artifact::$artifact is out of date with the TypeScript sources. Run 'npm run build' in plugins/ca-sandbox/tools and commit the result - the plugin ships the bundles, not the sources."
+              git --no-pager diff -- "$artifact"
+              stale=1
+            fi
+          done
+          [ "$stale" -eq 0 ] || exit 1
+          echo "sandbox.js and claude-inside.js are in sync with the TypeScript sources"
 
   ca-pi-checks:
     name: "[CHECK] | [PI  ] | Host-independent adapter contract"

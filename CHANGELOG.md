@@ -14,6 +14,21 @@ predate the plugin rewrite and are grouped by date.
 
 ### Added
 
+- `/ca:add-dep` gains a bounded **Ephemeral tool run** section. The command
+  applied to any download-and-execute, so a one-time analysis tool was pushed
+  through project-dependency review — and with no command owning that action,
+  the routing loop reached for `/ca:override` for an operation that adds no risk
+  at all. The distinguishing test is now the dependency *graph*, not the
+  download: anything entering a manifest, a lockfile, or a base image takes the
+  existing review unchanged. The carve-out keeps the part of supply-chain review
+  that still applies — an exact pinned version and the approved registry — and
+  requires one confirmation rather than a review, because the operator has
+  already decided not to adopt. A manifest or lockfile change is prohibited and
+  *verified* with `git status --porcelain` after the run rather than trusted: a
+  tool that writes one has adopted itself, and that stops and takes the full
+  review. It is a section rather than a command because a new command would add
+  a public surface across three hosts to govern an action whose whole definition
+  is that it changes nothing (issue #346, ADR-0023).
 - Added `/ca:cleanup` and its `post-merge-cleanup` skill: the already-merged
   branch transition, which no command owned. It fetches, proves `HEAD` is an
   ancestor of the *fetched* default branch, classifies every dirty and untracked

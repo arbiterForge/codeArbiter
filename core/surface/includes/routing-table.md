@@ -26,6 +26,7 @@ command is **invoked**; the orchestrator **routes** to a skill; a skill **dispat
 | Auth / crypto / key change | `auth-crypto-reviewer` | `security-reviewer` | BLOCK on banned primitive, exposed secret, shell injection |
 | Migration file added or changed | `migration-reviewer` | — | BLOCK on missing classification or irreversible destructive op |
 | `package.json` / lockfile / base image changed | `/add-dep` → `dependency-reviewer` | — | BLOCK on denied license or supply-chain concern |
+| Run a pinned third-party tool ONCE, adopting nothing (`npx jscpd@4.0.5 .`) | `{{CMD:add-dep}}` → its *Ephemeral tool run* section (no `dependency-reviewer` dispatch) | — | Exact pinned version + approved registry + one confirmation; MUST NOT touch a manifest or lockfile, verified after the run, or it is adoption and takes the full review |
 | Sensitive feature / attack-surface change | `/threat-model` → `security-architecture` (optional) | `security-reviewer`, `auth-crypto-reviewer` | STOP only on a critical unmitigated threat |
 | Arbitration / variance / ADR reconciliation | `/reconcile` → `decision-variance` | `scout`, `grader`, `decision-challenger` | No decision recorded without user attribution |
 | New / aged ADR, unresolved `[CONFIRM-NN]` | `/adr`, `/adr-status` → `decision-lifecycle` | `decision-challenger` (optional) | No `[CONFIRM-NN]` resolved by guessing |

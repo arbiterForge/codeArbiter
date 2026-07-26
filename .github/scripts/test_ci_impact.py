@@ -1140,6 +1140,30 @@ class WorkflowContractTest(unittest.TestCase):
         guard = (REPO_ROOT / "tools" / "build-host-packages.py").read_text(encoding="utf-8")
         self.assertIn('":(exclude)plugins/ca-pi/tools"', guard)
 
+    def test_every_declared_shipped_artifact_has_a_staleness_gate(self):
+        """Issues #377 / #407: a committed bundle that nothing rebuild-checks rots.
+
+        Derived from payload_scope's declaration rather than a hardcoded list, so
+        adding a third shipped artifact fails HERE until its gate exists, instead
+        of shipping unchecked. That declaration is already the thing the payload
+        gate keys on, so the two cannot disagree about what ships."""
+        sys.path.insert(0, str(REPO_ROOT / ".github" / "scripts"))
+        import payload_scope
+
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        for plugin, artifacts in payload_scope.SHIPPED_TOOLS_ARTIFACTS.items():
+            for artifact in artifacts:
+                name = artifact.rsplit("/", 1)[-1]
+                with self.subTest(artifact=artifact):
+                    self.assertIn(
+                        f'git diff --quiet -- "$artifact"' if name != "farm.js" else "git diff --quiet -- farm.js",
+                        ci,
+                        f"{artifact} has no staleness gate in ci.yml",
+                    )
+                    self.assertIn(
+                        name, ci, f"{name} is never named in ci.yml, so nothing rebuild-checks it"
+                    )
+
     def test_every_npm_audit_gate_fails_the_build_on_a_high_advisory(self):
         # Issue #403: site/package-lock.json - the ONLY graph in this repo that
         # declares production dependencies (astro, starlight, markdown-remark) -
