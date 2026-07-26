@@ -17,10 +17,15 @@ while every `_releaselib` unit test stays green.
                                    GITHUB_SHA through the shared classifier
   PreflightExecutionTest    #378/#385 — the preflight's own shell, executed
                                    against fake GitHub responses
-  PublishExecutionTest      #380 — the publisher's own shell, executed against
-                                   fake git/gh responses: fresh, tag-only
-                                   resume, already published, tag at the wrong
-                                   commit, and Release at the wrong commit
+  PublishExecutionTest      #380 — the shared publish action's own shell,
+                                   executed against fake git/gh/node responses:
+                                   fresh, tag-only resume, already published,
+                                   tag at the wrong commit, and Release at the
+                                   wrong commit
+  LaneIsolationTest         #382 — four lanes, each with its own manifest,
+                                   CHANGELOG and tag namespace, only ca taking
+                                   the "Latest" badge, and every declared
+                                   target having exactly one publisher
   RegistrationTest                 a release.yml-only edit must start the CI
                                    job that runs this file
 
@@ -47,9 +52,53 @@ from test_ci_impact import paths_filter, push_trigger_paths, workflow_jobs  # no
 
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+# The publish mechanics all four lanes share (#382). Every assertion that used
+# to read a publisher job's shell now reads THIS file, and proves it for all
+# four lanes at once rather than for two of four copies.
+PUBLISH_ACTION = REPO_ROOT / ".github" / "actions" / "publish-release" / "action.yml"
+PUBLISH_ACTION_REF = "./.github/actions/publish-release"
 
-# The two write-token publishers, and the read-only job that authorizes them.
-PUBLISH_JOBS = ("release", "release-codex")
+# What each lane must bring of its own. Issue #382's acceptance criteria name
+# these paths; the tests below also assert every one of them EXISTS, because a
+# typo here is otherwise discovered by a failed release rather than by CI.
+LANES = {
+    "release": {
+        "target": "ca",
+        "manifest": "plugins/ca/.claude-plugin/plugin.json",
+        "changelog": "CHANGELOG.md",
+        "tag-prefix": "v",
+        "title-prefix": "codeArbiter",
+        "mark-latest": '"true"',
+    },
+    "release-codex": {
+        "target": "ca-codex",
+        "manifest": "plugins/ca-codex/.codex-plugin/plugin.json",
+        "changelog": "plugins/ca-codex/CHANGELOG.md",
+        "tag-prefix": "ca-codex-v",
+        "title-prefix": "ca-codex",
+        "mark-latest": '"false"',
+    },
+    "release-sandbox": {
+        "target": "ca-sandbox",
+        "manifest": "plugins/ca-sandbox/.claude-plugin/plugin.json",
+        "changelog": "plugins/ca-sandbox/CHANGELOG.md",
+        "tag-prefix": "ca-sandbox-v",
+        "title-prefix": "ca-sandbox",
+        "mark-latest": '"false"',
+    },
+    "release-pi": {
+        "target": "ca-pi",
+        "manifest": "plugins/ca-pi/package.json",
+        "companion-manifest": "package.json",
+        "changelog": "plugins/ca-pi/CHANGELOG.md",
+        "tag-prefix": "ca-pi-v",
+        "title-prefix": "ca-pi",
+        "mark-latest": '"false"',
+    },
+}
+
+# The write-token publishers, and the read-only job that authorizes them.
+PUBLISH_JOBS = tuple(LANES)
 PREFLIGHT_JOB = "preflight"
 
 # A job-level `if:` that uses one of these status functions opts OUT of the
@@ -72,28 +121,76 @@ def _job_if(block: str) -> str:
     return match.group(1).strip() if match else ""
 
 
-def _step_run(job: str, name_fragment: str) -> str:
+def _extract_run(text: str, name_fragment: str, step_indent: int, where: str) -> str:
     """The dedented body of a named step's `run: |` block, verbatim from the
-    shipped workflow. The execution tests below run exactly this text — no
+    shipped YAML. The execution tests below run exactly this text — no
     transcription of the logic into the test, which would only assert that a
-    copy behaves, not that the workflow does."""
-    lines = _jobs()[job].splitlines(keepends=True)
+    copy behaves, not that the shipped file does.
+
+    `step_indent` is the column of the step's `- name:`; the body sits four
+    columns further in (`- name:` -> keys at +2 -> block scalar at +4). A
+    workflow job nests one level deeper than a composite action's steps, which
+    is the only difference between the two callers below."""
+    key_indent = step_indent + 2
+    body_indent = step_indent + 4
+    lines = text.splitlines(keepends=True)
+    marker = " " * step_indent + "- name:"
     starts = [i for i, line in enumerate(lines)
-              if line.startswith("      - name:") and name_fragment in line]
+              if line.startswith(marker) and name_fragment in line]
     if len(starts) != 1:
         raise AssertionError(
-            f"{job}: {len(starts)} steps match {name_fragment!r}, expected exactly 1")
+            f"{where}: {len(starts)} steps match {name_fragment!r}, expected exactly 1")
     index = starts[0] + 1
     while index < len(lines) and lines[index].strip() != "run: |":
-        if lines[index].startswith("      - "):
-            raise AssertionError(f"{job}/{name_fragment}: step has no `run: |` block")
+        if lines[index].startswith(" " * step_indent + "- "):
+            raise AssertionError(f"{where}/{name_fragment}: step has no `run: |` block")
         index += 1
     body = []
     for line in lines[index + 1:]:
-        if line.strip() and not line.startswith(" " * 10):
+        if line.strip() and not line.startswith(" " * body_indent):
             break
-        body.append(line[10:] if len(line) > 10 else "\n")
+        body.append(line[body_indent:] if len(line) > body_indent else "\n")
+    del key_indent
     return "".join(body)
+
+
+def _step_run(job: str, name_fragment: str) -> str:
+    """A named step's shell, from a job in release.yml (steps at column 6)."""
+    return _extract_run(_jobs()[job], name_fragment, 6, job)
+
+
+def _action_step(name_fragment: str) -> str:
+    """A named step's shell, from the shared publish action (steps at column 4).
+
+    #382: the four lanes run this one text, so an assertion here is an assertion
+    about every lane — strictly stronger than the previous suite, which proved
+    the guards for `release` and `release-codex` and would have said nothing
+    about a hand-copied third and fourth.
+    """
+    return _extract_run(PUBLISH_ACTION.read_text(encoding="utf-8"),
+                        name_fragment, 4, "publish-release action")
+
+
+def _lane_inputs(job: str) -> dict:
+    """The `with:` mapping a publisher job hands the shared publish action."""
+    block = _jobs()[job]
+    tail = block.split(f"- uses: {PUBLISH_ACTION_REF}", 1)
+    if len(tail) != 2:
+        raise AssertionError(f"{job} does not use {PUBLISH_ACTION_REF}")
+    found = {}
+    for line in tail[1].splitlines()[1:]:
+        if not line.strip() or line.strip() == "with:":
+            continue
+        # The `with:` keys sit two columns inside `with:` itself; anything
+        # shallower ends this step and must not be read as one of its inputs.
+        if not line.startswith(" " * 10):
+            break
+        match = re.match(r"\s*([a-z-]+):\s*(.+?)\s*$", line)
+        if match:
+            found[match.group(1)] = match.group(2)
+    if not found:
+        raise AssertionError(f"{job} passes no inputs to {PUBLISH_ACTION_REF}")
+    return found
 
 
 # --------------------------------------------------------------------------- #
@@ -137,6 +234,16 @@ gh() {
   return 0
 }
 python3() { "$STUB_PYTHON" "$@"; }
+node() {
+  echo "node $*" >> "$STUB_LOG"
+  # `node -p "require('./<path>').version"`. The ROOT package.json is ca-pi's
+  # companion manifest, so it must answer separately from the plugin manifest -
+  # otherwise the disagreement guard could never be observed to fire.
+  case "$*" in
+    *"require('./package.json')"*) echo "$STUB_ROOT_VERSION" ;;
+    *) echo "$STUB_MANIFEST_VERSION" ;;
+  esac
+}
 """
 
 
@@ -172,7 +279,8 @@ class _ShellHarness(unittest.TestCase):
         return root
 
     def _run(self, script, *, env=None, ls_remote="", checks="[]",
-             release="none", tagname="", notes="## [9.9.9] - 2026-07-24\n"):
+             release="none", tagname="", notes="## [9.9.9] - 2026-07-24\n",
+             manifest_version="9.9.9", root_version=None):
         root = self._sandbox()
         (root / "notes.md").write_text(notes, encoding="utf-8", newline="\n")
         (root / "ls-remote.txt").write_text(ls_remote, encoding="utf-8", newline="\n")
@@ -186,6 +294,9 @@ class _ShellHarness(unittest.TestCase):
             "STUB_CHECKS": str(root / "stub-checks.json"),
             "STUB_RELEASE": release,
             "STUB_TAGNAME": tagname,
+            "STUB_MANIFEST_VERSION": manifest_version,
+            "STUB_ROOT_VERSION": (manifest_version if root_version is None
+                                  else root_version),
             "STUB_PYTHON": sys.executable.replace("\\", "/"),
             "GITHUB_SHA": self.HEAD,
             "GITHUB_REPOSITORY": "arbiterForge/codeArbiter",
@@ -213,6 +324,7 @@ class PreflightExecutionTest(_ShellHarness):
     def setUpClass(cls):
         cls.branch_step = _step_run("preflight", "Refuse a dispatch off")
         cls.target_step = _step_run("preflight", "Resolve exactly one release target")
+        cls.maxDiff = None
         cls.readiness_step = _step_run("preflight", "Require green merge readiness")
 
     def _check_run(self, conclusion="success", status="completed", head=None):
@@ -222,31 +334,57 @@ class PreflightExecutionTest(_ShellHarness):
                 + ("null" if conclusion is None else f'"{conclusion}"')
                 + f', "head_sha": "{head}"}}]}}')
 
-    # -- #378: the four-cell dispatch truth table ------------------------------
-    def test_ca_only_selects_ca(self):
-        proc, _, out = self._run(self.target_step,
-                                 env={"CONFIRM": "2.6.1", "CODEX_CONFIRM": ""})
-        self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("target=ca\n", out)
+    # -- #378 / #382: the dispatch truth table, over all four inputs -----------
+    #
+    # The inputs are positional in _releaselib.RELEASE_TARGETS order, and the
+    # workflow passes them in that order. A lane wired to the wrong input would
+    # resolve the wrong plugin and publish an irreversible tag for it, so every
+    # single-input case is asserted rather than sampled.
+    DISPATCH_INPUTS = ("CONFIRM", "CODEX_CONFIRM", "SANDBOX_CONFIRM", "PI_CONFIRM")
 
-    def test_codex_only_selects_ca_codex(self):
-        proc, _, out = self._run(self.target_step,
-                                 env={"CONFIRM": "", "CODEX_CONFIRM": "0.2.4"})
-        self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("target=ca-codex\n", out)
+    def _select(self, **supplied):
+        """Run the preflight's resolver with every input set — blank unless
+        named. All four must be present: the step runs under `set -u`, exactly
+        as it does on the runner, where the job's `env:` always defines them."""
+        env = {name: "" for name in self.DISPATCH_INPUTS}
+        env.update(supplied)
+        return self._run(self.target_step, env=env)
 
-    def test_neither_input_refuses(self):
-        proc, _, out = self._run(self.target_step,
-                                 env={"CONFIRM": "", "CODEX_CONFIRM": ""})
+    def test_each_input_alone_selects_its_own_plugin(self):
+        cases = {
+            "CONFIRM": ("2.6.1", "ca"),
+            "CODEX_CONFIRM": ("0.2.4", "ca-codex"),
+            "SANDBOX_CONFIRM": ("0.1.5", "ca-sandbox"),
+            "PI_CONFIRM": ("0.1.28", "ca-pi"),
+        }
+        self.assertEqual(tuple(cases), self.DISPATCH_INPUTS)
+        self.assertEqual(tuple(t for _, t in cases.values()),
+                         _releaselib.RELEASE_TARGETS,
+                         "the dispatch inputs must stay in RELEASE_TARGETS order")
+        for name, (version, target) in cases.items():
+            with self.subTest(input=name):
+                proc, _, out = self._select(**{name: version})
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertIn(f"target={target}\n", out)
+
+    def test_no_input_refuses(self):
+        proc, _, out = self._select()
         self.assertNotEqual(proc.returncode, 0)
         self.assertEqual(out, "", "a refused dispatch must publish no target")
 
-    def test_both_inputs_refuse_before_any_publisher_is_eligible(self):
-        proc, _, out = self._run(self.target_step,
-                                 env={"CONFIRM": "2.6.1", "CODEX_CONFIRM": "0.2.4"})
-        self.assertNotEqual(proc.returncode, 0)
-        self.assertIn("more than one plugin", proc.stdout + proc.stderr)
-        self.assertEqual(out, "")
+    def test_any_two_inputs_refuse_before_any_publisher_is_eligible(self):
+        versions = dict(zip(self.DISPATCH_INPUTS,
+                            ("2.6.1", "0.2.4", "0.1.5", "0.1.28")))
+        pairs = [(a, b) for i, a in enumerate(self.DISPATCH_INPUTS)
+                 for b in self.DISPATCH_INPUTS[i + 1:]]
+        self.assertEqual(len(pairs), 6, "all six pairs must be covered")
+        for first, second in pairs:
+            with self.subTest(inputs=(first, second)):
+                proc, _, out = self._select(**{first: versions[first],
+                                               second: versions[second]})
+                self.assertNotEqual(proc.returncode, 0)
+                self.assertIn("more than one plugin", proc.stdout + proc.stderr)
+                self.assertEqual(out, "")
 
     def test_a_dispatch_off_main_is_refused(self):
         ok, _, _ = self._run(self.branch_step, env={"GITHUB_REF": "refs/heads/main"})
@@ -282,48 +420,71 @@ class PreflightExecutionTest(_ShellHarness):
 
 @POSIX_ONLY
 class PublishExecutionTest(_ShellHarness):
-    """#380, executed: fresh, resume, published, and both wrong-commit states."""
+    """#380, executed: fresh, resume, published, and both wrong-commit states.
+
+    #382 moved this shell out of the two publisher jobs and into the action all
+    four lanes use, so each case below now covers every lane. The cases that
+    depend on the tag NAMESPACE are run once per lane's prefix, because
+    `TAG_VERSION="${TAG##*v}"` has to strip `ca-sandbox-v` and `ca-pi-v` just as
+    correctly as a bare `v`, and a namespace it mis-parsed would reach the
+    classifier as a version mismatch and abort a legitimate release."""
 
     STEP_NAME = "Create the tag and GitHub Release"
     VERIFY_NAME = "Verify the published Release"
+    VERSION_NAME = "Resolve and verify version"
 
-    def _publish(self, job, tag, version, *, tag_at=None, release="none"):
+    # (lane, tag) for a 9.9.9 release in each namespace.
+    NAMESPACES = tuple((job, LANES[job]["tag-prefix"] + "9.9.9") for job in LANES)
+
+    def _publish(self, tag, version="9.9.9", *, tag_at=None, release="none",
+                 mark_latest="false", summary="", title_prefix="codeArbiter"):
         ls_remote = ""
         if tag_at:
             ls_remote = (f"9{'0' * 39}\trefs/tags/{tag}\n"
                          f"{tag_at}\trefs/tags/{tag}^{{}}\n")
-        return self._run(_step_run(job, self.STEP_NAME),
-                         env={"TAG": tag, "VER": version, "SUMMARY": ""},
+        return self._run(_action_step(self.STEP_NAME),
+                         env={"TAG": tag, "VER": version, "SUMMARY": summary,
+                              "TITLE_PREFIX": title_prefix,
+                              "MARK_LATEST": mark_latest},
                          ls_remote=ls_remote, release=release, tagname=tag)
 
     def test_fresh_publish_tags_and_releases(self):
-        proc, log, _ = self._publish("release", "v9.9.9", "9.9.9")
+        proc, log, _ = self._publish("v9.9.9")
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn("publish state: publish_fresh", proc.stdout)
         self.assertIn("git tag -a v9.9.9", log)
         self.assertIn("git push origin refs/tags/v9.9.9", log)
         self.assertIn("gh release create v9.9.9", log)
 
+    def test_every_namespace_publishes_fresh(self):
+        # Proves the namespace parsing, which is the one thing the four lanes do
+        # not share: each supplies its own tag prefix.
+        for job, tag in self.NAMESPACES:
+            with self.subTest(lane=job, tag=tag):
+                proc, log, _ = self._publish(tag)
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertIn("publish state: publish_fresh", proc.stdout)
+                self.assertIn(f"git tag -a {tag}", log)
+                self.assertIn(f"gh release create {tag}", log)
+
     def test_tag_only_resume_creates_the_release_without_retagging(self):
-        proc, log, _ = self._publish("release", "v9.9.9", "9.9.9", tag_at=self.HEAD)
+        proc, log, _ = self._publish("v9.9.9", tag_at=self.HEAD)
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn("publish state: resume_publish", proc.stdout)
         self.assertNotIn("git tag -a", log)
         self.assertIn("gh release create v9.9.9", log)
 
     def test_already_published_is_a_no_op(self):
-        proc, log, _ = self._publish("release", "v9.9.9", "9.9.9",
-                                     tag_at=self.HEAD, release="published")
+        proc, log, _ = self._publish("v9.9.9", tag_at=self.HEAD, release="published")
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn("publish state: already_published", proc.stdout)
         self.assertNotIn("git tag -a", log)
         self.assertNotIn("gh release create", log)
 
     def test_a_tag_at_another_commit_aborts_before_publishing(self):
-        for job, tag, version in (("release", "v9.9.9", "9.9.9"),
-                                  ("release-codex", "ca-codex-v0.9.9", "0.9.9")):
-            with self.subTest(job=job):
-                proc, log, _ = self._publish(job, tag, version, tag_at=self.OTHER)
+        for job, tag in self.NAMESPACES:
+            with self.subTest(lane=job, tag=tag):
+                proc, log, _ = self._publish(tag, tag_at=self.OTHER)
                 self.assertNotEqual(proc.returncode, 0)
                 self.assertIn("publish state: abort_mismatch", proc.stdout)
                 self.assertNotIn("gh release create", log)
@@ -332,23 +493,90 @@ class PublishExecutionTest(_ShellHarness):
     def test_a_published_release_on_a_tag_at_another_commit_aborts(self):
         # The regression #380 names: a non-draft Release used to short-circuit
         # the comparison, so a wrong-commit tag reported a clean rerun.
-        for job, tag, version in (("release", "v9.9.9", "9.9.9"),
-                                  ("release-codex", "ca-codex-v0.9.9", "0.9.9")):
-            with self.subTest(job=job):
-                proc, log, _ = self._publish(job, tag, version, tag_at=self.OTHER,
+        for job, tag in self.NAMESPACES:
+            with self.subTest(lane=job, tag=tag):
+                proc, log, _ = self._publish(tag, tag_at=self.OTHER,
                                              release="published")
                 self.assertNotEqual(proc.returncode, 0)
                 self.assertIn("abort_mismatch", proc.stdout)
                 self.assertNotIn("gh release create", log)
 
-    def test_the_codex_publisher_never_claims_the_latest_badge(self):
-        proc, log, _ = self._publish("release-codex", "ca-codex-v0.9.9", "0.9.9")
+    # -- the "Latest" badge is opt-in, and only ca opts in --------------------- #
+    def test_only_an_explicit_mark_latest_claims_the_latest_badge(self):
+        off, log_off, _ = self._publish("ca-pi-v9.9.9", mark_latest="false")
+        self.assertEqual(off.returncode, 0, off.stderr)
+        self.assertIn("gh release create ca-pi-v9.9.9", log_off)
+        self.assertNotIn("--latest", log_off)
+        on, log_on, _ = self._publish("v9.9.9", mark_latest="true")
+        self.assertEqual(on.returncode, 0, on.stderr)
+        self.assertIn("--latest", log_on)
+
+    def test_an_unset_latest_flag_expands_to_no_argument(self):
+        # `$LATEST` is deliberately unquoted, so an empty value must vanish
+        # rather than become an empty argument `gh` would reject.
+        proc, log, _ = self._publish("ca-sandbox-v9.9.9", mark_latest="")
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("gh release create ca-codex-v0.9.9", log)
         self.assertNotIn("--latest", log)
+        self.assertIn("gh release create ca-sandbox-v9.9.9 --title ca-sandbox 9.9.9",
+                      log.replace("codeArbiter", "ca-sandbox"))
+
+    # -- version/manifest agreement, including ca-pi's companion root --------- #
+    def _resolve(self, *, manifest, requested, tag_prefix, companion="",
+                 manifest_version="9.9.9", root_version=None):
+        return self._run(_action_step(self.VERSION_NAME),
+                         env={"CONFIRM": requested, "MANIFEST": manifest,
+                              "COMPANION": companion, "TAG_PREFIX": tag_prefix},
+                         manifest_version=manifest_version,
+                         root_version=root_version)
+
+    def test_a_requested_version_must_equal_the_manifest(self):
+        ok, _, out = self._resolve(manifest="plugins/ca/.claude-plugin/plugin.json",
+                                   requested="9.9.9", tag_prefix="v")
+        self.assertEqual(ok.returncode, 0, ok.stderr)
+        self.assertIn("version=9.9.9\n", out)
+        self.assertIn("tag=v9.9.9\n", out)
+        bad, _, out = self._resolve(manifest="plugins/ca/.claude-plugin/plugin.json",
+                                    requested="9.9.8", tag_prefix="v")
+        self.assertNotEqual(bad.returncode, 0)
+        self.assertIn("bump/align first", bad.stdout + bad.stderr)
+        self.assertEqual(out, "")
+
+    def test_the_tag_is_built_from_the_lane_prefix(self):
+        for job, params in LANES.items():
+            with self.subTest(lane=job):
+                proc, _, out = self._resolve(manifest=params["manifest"],
+                                             requested="9.9.9",
+                                             tag_prefix=params["tag-prefix"])
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertIn(f"tag={params['tag-prefix']}9.9.9\n", out)
+
+    def test_a_companion_manifest_that_disagrees_refuses_to_publish(self):
+        # ca-pi: the root package.json is what Pi installs. A root that
+        # disagrees with the plugin manifest would install a package claiming a
+        # version the tag does not name.
+        agree, _, out = self._resolve(manifest="plugins/ca-pi/package.json",
+                                      companion="package.json",
+                                      requested="9.9.9", tag_prefix="ca-pi-v",
+                                      root_version="9.9.9")
+        self.assertEqual(agree.returncode, 0, agree.stderr)
+        self.assertIn("tag=ca-pi-v9.9.9\n", out)
+        drift, _, out = self._resolve(manifest="plugins/ca-pi/package.json",
+                                      companion="package.json",
+                                      requested="9.9.9", tag_prefix="ca-pi-v",
+                                      root_version="9.9.8")
+        self.assertNotEqual(drift.returncode, 0)
+        self.assertIn("would not match the tag", drift.stdout + drift.stderr)
+        self.assertEqual(out, "", "a refused lane must emit no tag")
+
+    def test_lanes_without_a_companion_skip_the_check(self):
+        proc, log, _ = self._resolve(manifest="plugins/ca/.claude-plugin/plugin.json",
+                                     requested="9.9.9", tag_prefix="v",
+                                     root_version="0.0.0")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertNotIn("require('./package.json')", log)
 
     def test_read_back_rejects_a_tag_that_moved_off_the_dispatched_commit(self):
-        script = _step_run("release", self.VERIFY_NAME)
+        script = _action_step(self.VERIFY_NAME)
         good, _, _ = self._run(script, env={"TAG": "v9.9.9"}, release="published",
                                tagname="v9.9.9",
                                ls_remote=f"{self.HEAD}\trefs/tags/v9.9.9\n")
@@ -360,7 +588,7 @@ class PublishExecutionTest(_ShellHarness):
         self.assertIn("not the dispatched commit", moved.stdout + moved.stderr)
 
     def test_read_back_rejects_a_release_naming_another_tag(self):
-        script = _step_run("release", self.VERIFY_NAME)
+        script = _action_step(self.VERIFY_NAME)
         proc, _, _ = self._run(script, env={"TAG": "v9.9.9"}, release="published",
                                tagname="v9.9.8",
                                ls_remote=f"{self.HEAD}\trefs/tags/v9.9.9\n")
@@ -368,7 +596,7 @@ class PublishExecutionTest(_ShellHarness):
         self.assertIn("names tag", proc.stdout + proc.stderr)
 
     def test_read_back_rejects_a_draft(self):
-        script = _step_run("release", self.VERIFY_NAME)
+        script = _action_step(self.VERIFY_NAME)
         proc, _, _ = self._run(script, env={"TAG": "v9.9.9"}, release="draft",
                                tagname="v9.9.9",
                                ls_remote=f"{self.HEAD}\trefs/tags/v9.9.9\n")
@@ -395,7 +623,7 @@ class DispatchExclusivityTest(unittest.TestCase):
         writers = sorted(job for job, block in _jobs().items()
                          if re.search(r"(?m)^      contents: write$", block))
         self.assertEqual(writers, sorted(PUBLISH_JOBS),
-                         "exactly the two publishers may declare `contents: write`")
+                         "exactly the declared publishers may declare `contents: write`")
 
     def test_preflight_holds_no_write_permission(self):
         block = _jobs()[PREFLIGHT_JOB]
@@ -421,7 +649,7 @@ class DispatchExclusivityTest(unittest.TestCase):
 
     def test_publish_jobs_gate_on_the_single_resolved_target(self):
         jobs = _jobs()
-        expected = {"release": "'ca'", "release-codex": "'ca-codex'"}
+        expected = {job: f"'{params['target']}'" for job, params in LANES.items()}
         for job, literal in expected.items():
             with self.subTest(job=job):
                 condition = _job_if(jobs[job])
@@ -484,53 +712,167 @@ class MergeReadinessGateTest(unittest.TestCase):
         for job, block in ((j, _jobs()[j]) for j in PUBLISH_JOBS):
             with self.subTest(job=job):
                 self.assertNotIn("merge-readiness", block)
+        self.assertNotIn("merge-readiness",
+                         PUBLISH_ACTION.read_text(encoding="utf-8"),
+                         "#385: the shared publish action must not gate itself")
 
 
 class ExistingTagIntegrityTest(unittest.TestCase):
-    """#380: never resume onto a tag that names another commit."""
+    """#380: never resume onto a tag that names another commit.
 
-    def test_both_publishers_peel_the_remote_tag(self):
-        for job, block in ((j, _jobs()[j]) for j in PUBLISH_JOBS):
-            with self.subTest(job=job):
-                self.assertIn('"refs/tags/$TAG^{}"', block,
-                              "an annotated tag must be peeled to its commit")
-                self.assertIn("_releaselib.py peel-tag", block,
-                              "peeling must route through the tested helper")
+    #382 moved these guards into the shared publish action, so each assertion
+    below now holds for all four lanes at once. `LaneIsolationTest` is what
+    keeps that true — it proves every publisher actually routes through this
+    action, so a lane cannot opt out of the guards by hand-rolling its own
+    shell."""
 
-    def test_both_publishers_classify_before_tagging(self):
-        for job, block in ((j, _jobs()[j]) for j in PUBLISH_JOBS):
-            with self.subTest(job=job):
-                self.assertIn("_releaselib.py classify", block,
-                              "#380: the shared publish-state classifier must decide")
-                self.assertIn('"$GITHUB_SHA"', block)
+    @staticmethod
+    def _action() -> str:
+        return PUBLISH_ACTION.read_text(encoding="utf-8")
+
+    def test_the_publisher_peels_the_remote_tag(self):
+        action = self._action()
+        self.assertIn('"refs/tags/$TAG^{}"', action,
+                      "an annotated tag must be peeled to its commit")
+        self.assertIn("_releaselib.py peel-tag", action,
+                      "peeling must route through the tested helper")
+
+    def test_the_publisher_classifies_before_tagging(self):
+        action = self._action()
+        self.assertIn("_releaselib.py classify", action,
+                      "#380: the shared publish-state classifier must decide")
+        self.assertIn('"$GITHUB_SHA"', action)
 
     def test_the_bare_tag_exists_skip_is_gone(self):
         # The exact defect: any remote hit was treated as resumable and tag
         # creation was skipped without comparing the tag to GITHUB_SHA.
-        text = _release()
-        self.assertNotIn('if git ls-remote --exit-code --tags origin "$TAG"', text)
-        self.assertNotIn("already on remote — skipping tag creation", text)
+        for text in (_release(), self._action()):
+            self.assertNotIn('if git ls-remote --exit-code --tags origin "$TAG"', text)
+            self.assertNotIn("already on remote — skipping tag creation", text)
 
     def test_a_mismatch_fails_before_gh_release_create(self):
-        for job, block in ((j, _jobs()[j]) for j in PUBLISH_JOBS):
-            with self.subTest(job=job):
-                case_body = block.split("STATE=", 1)[1]
-                mismatch = case_body.split("*)", 1)[1]
-                self.assertNotIn("gh release create", mismatch.split("esac", 1)[0],
-                                 "the fail-closed arm must not publish")
-                self.assertIn("exit 1", mismatch.split("esac", 1)[0])
+        case_body = self._action().split("STATE=", 1)[1]
+        mismatch = case_body.split("*)", 1)[1].split("esac", 1)[0]
+        self.assertNotIn("gh release create", mismatch,
+                         "the fail-closed arm must not publish")
+        self.assertIn("exit 1", mismatch)
 
     def test_verification_checks_the_tag_and_its_commit_not_only_isdraft(self):
-        for job, block in ((j, _jobs()[j]) for j in PUBLISH_JOBS):
-            with self.subTest(job=job):
-                verify = block.split("Verify the published Release", 1)
-                self.assertEqual(len(verify), 2, f"{job} has no read-back step")
-                body = verify[1]
-                self.assertIn(".tagName", body, "the read-back must compare tagName")
-                self.assertIn("FINAL_SHA", body,
-                              "the read-back must re-peel the tag to its commit")
-                self.assertIn('[ "$FINAL_SHA" = "$GITHUB_SHA" ]', body)
-                self.assertIn(".isDraft", body)
+        verify = self._action().split("Verify the published Release", 1)
+        self.assertEqual(len(verify), 2, "the publish action has no read-back step")
+        body = verify[1]
+        self.assertIn(".tagName", body, "the read-back must compare tagName")
+        self.assertIn("FINAL_SHA", body,
+                      "the read-back must re-peel the tag to its commit")
+        self.assertIn('[ "$FINAL_SHA" = "$GITHUB_SHA" ]', body)
+        self.assertIn(".isDraft", body)
+
+
+class LaneIsolationTest(unittest.TestCase):
+    """#382: four independent streams, and no lane outside the shared guards.
+
+    The acceptance criteria ask for version/tag/changelog isolation across all
+    four streams. Isolation here means two things, and both are asserted: no two
+    lanes share a manifest, a CHANGELOG, or a tag namespace, and every lane
+    routes its publish through the one action that carries the #380 guards."""
+
+    def test_every_declared_target_has_exactly_one_publisher(self):
+        # The register in _releaselib and the jobs in release.yml must agree. A
+        # target the selector can resolve with no job to run it would report a
+        # successful dispatch that published nothing at all.
+        self.assertEqual([LANES[job]["target"] for job in PUBLISH_JOBS],
+                         list(_releaselib.RELEASE_TARGETS),
+                         "RELEASE_TARGETS and the publisher lanes have diverged")
+        jobs = _jobs()
+        for job in PUBLISH_JOBS:
+            self.assertIn(job, jobs, f"{job} is declared but not in release.yml")
+
+    def test_the_preflight_accepts_exactly_the_declared_targets(self):
+        block = _jobs()[PREFLIGHT_JOB]
+        arm = "|".join(_releaselib.RELEASE_TARGETS) + ")"
+        self.assertIn(arm, block,
+                      "the preflight's accepting arm must list exactly RELEASE_TARGETS")
+
+    def test_every_lane_publishes_through_the_shared_action(self):
+        for job in PUBLISH_JOBS:
+            with self.subTest(lane=job):
+                self.assertIn(f"- uses: {PUBLISH_ACTION_REF}", _jobs()[job],
+                              "a lane must not hand-roll its own publish shell")
+
+    def test_no_lane_carries_its_own_publish_shell(self):
+        # The duplication #382 removed: a lane with its own `run:` block is a
+        # fifth copy of the tag classifier waiting to drift out of step.
+        for job in PUBLISH_JOBS:
+            with self.subTest(lane=job):
+                self.assertNotIn("gh release create", _jobs()[job])
+                self.assertNotIn("git tag -a", _jobs()[job])
+
+    def test_each_lane_declares_the_paths_the_issue_specifies(self):
+        for job, params in LANES.items():
+            with self.subTest(lane=job):
+                wired = _lane_inputs(job)
+                for key, value in params.items():
+                    self.assertEqual(wired.get(key), value,
+                                     f"{job} must pass {key}: {value}")
+
+    def test_manifests_changelogs_and_namespaces_do_not_overlap(self):
+        for key in ("manifest", "changelog", "tag-prefix", "target"):
+            values = [_lane_inputs(job)[key] for job in PUBLISH_JOBS]
+            with self.subTest(field=key):
+                self.assertEqual(len(set(values)), len(values),
+                                 f"two lanes share a {key}: {values}")
+
+    def test_every_declared_manifest_and_changelog_exists(self):
+        # A typo in one of these paths is otherwise found by a failed release.
+        for job in PUBLISH_JOBS:
+            wired = _lane_inputs(job)
+            for key in ("manifest", "companion-manifest", "changelog"):
+                path = wired.get(key)
+                if not path:
+                    continue
+                with self.subTest(lane=job, field=key):
+                    self.assertTrue((REPO_ROOT / path).is_file(),
+                                    f"{job}'s {key} '{path}' does not exist")
+
+    def test_only_the_primary_release_claims_the_latest_badge(self):
+        claiming = [job for job in PUBLISH_JOBS
+                    if _lane_inputs(job)["mark-latest"].strip('"') == "true"]
+        self.assertEqual(claiming, ["release"],
+                         "only ca may take the repository's \"Latest\" badge")
+
+    def test_each_lane_reads_its_own_dispatch_input(self):
+        # Wiring a lane to another lane's input would publish the wrong plugin
+        # at a version the operator typed for something else.
+        seen = set()
+        for job in PUBLISH_JOBS:
+            wired = _lane_inputs(job)
+            with self.subTest(lane=job):
+                requested = wired["requested-version"]
+                self.assertRegex(requested,
+                                 r"^\$\{\{ github\.event\.inputs\.\w+ \}\}$")
+                self.assertNotIn(requested, seen,
+                                 f"{job} reuses another lane's version input")
+                seen.add(requested)
+
+    def test_the_dispatch_declares_a_version_input_per_lane(self):
+        header = _release().split("jobs:", 1)[0]
+        declared = set(re.findall(r"(?m)^      (\w+):$", header))
+        for job in PUBLISH_JOBS:
+            wired = _lane_inputs(job)
+            for key in ("requested-version", "summary"):
+                name = re.search(r"inputs\.(\w+)", wired[key]).group(1)
+                with self.subTest(lane=job, field=key):
+                    self.assertIn(name, declared,
+                                  f"{job} reads undeclared dispatch input {name!r}")
+
+    def test_the_publish_action_never_resolves_its_own_authorization(self):
+        # Staleness and merge readiness are the preflight's job (#385). An
+        # action that re-decided either would be a second policy to keep in
+        # agreement with ci.yml, and the publish path is the copy nobody
+        # notices is wrong.
+        action = PUBLISH_ACTION.read_text(encoding="utf-8")
+        self.assertNotIn("merge-readiness", action)
+        self.assertNotIn("select-target", action)
 
 
 class RegistrationTest(unittest.TestCase):
@@ -541,10 +883,23 @@ class RegistrationTest(unittest.TestCase):
         self.assertIn(".github/workflows/release.yml", paths_filter(ci, "hooks"),
                       "the hooks filter must flag a release.yml-only change")
 
+    def test_the_publish_action_is_in_the_hooks_filter(self):
+        # #382: the publish mechanics moved OUT of release.yml. Without this the
+        # only file that can weaken the #380 guards would be the one file no
+        # filter watched.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(".github/actions/**", paths_filter(ci, "hooks"),
+                      "the hooks filter must flag a publish-action-only change")
+
     def test_release_workflow_starts_a_push_run(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn(".github/workflows/release.yml", push_trigger_paths(ci),
                       "a push touching only release.yml must still start CI")
+
+    def test_the_publish_action_starts_a_push_run(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(".github/actions/**", push_trigger_paths(ci),
+                      "a push touching only the publish action must still start CI")
 
     def test_ci_invokes_this_suite(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")

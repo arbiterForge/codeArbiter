@@ -10,11 +10,28 @@ name: release
 # extracts the matching CHANGELOG section as the notes, and is idempotent — a
 # re-run at the SAME commit is a no-op, not a failure.
 
-# ca-codex (the OpenAI Codex CLI sibling, ADR-0011) versions and releases
-# independently — its own tag namespace (ca-codex-v*), its own manifest
-# (plugins/ca-codex/.codex-plugin/plugin.json), its own CHANGELOG
-# (plugins/ca-codex/CHANGELOG.md). Both plugins share this one dispatched
-# workflow.
+# Every plugin versions and releases independently (ADR-0007 for the sibling
+# split, ADR-0011 for the Codex host), and each brings its own tag namespace,
+# manifest, and CHANGELOG to this one dispatched workflow:
+#
+#   ca          v*             plugins/ca/.claude-plugin/plugin.json         CHANGELOG.md
+#   ca-codex    ca-codex-v*    plugins/ca-codex/.codex-plugin/plugin.json    plugins/ca-codex/CHANGELOG.md
+#   ca-sandbox  ca-sandbox-v*  plugins/ca-sandbox/.claude-plugin/plugin.json plugins/ca-sandbox/CHANGELOG.md
+#   ca-pi       ca-pi-v*       plugins/ca-pi/package.json (+ root package.json)
+#                                                                            plugins/ca-pi/CHANGELOG.md
+#
+# The ca-sandbox and ca-pi lanes are issue #382. Before them the repository
+# enforced independent ca-sandbox-v*/ca-pi-v* version guards in CI and the
+# README told users to install a pinned `ca-pi-v<version>` tag, while no
+# workflow or sanctioned skill could create one — a documented install nothing
+# could satisfy, and a standing invitation to hand-cut a tag outside the
+# changelog, freshness, and read-back guarantees below.
+#
+# The four publisher jobs are deliberately thin. The mechanical publish they
+# share — version/manifest agreement, notes extraction, the #380 tag classifier,
+# and the #380 read-back — lives once in `.github/actions/publish-release`,
+# because four copies of an irreversible-publish guard is three copies that will
+# not get the next fix.
 
 # AUTHORIZATION MODEL (issues #378, #385). Everything this workflow publishes is
 # public and irreversible, so the decision to publish is made ONCE, by a job that
@@ -22,9 +39,9 @@ name: release
 #
 #   preflight (contents: read, checks: read)
 #     1. refuses a dispatch off the default branch;
-#     2. resolves EXACTLY ONE target from the two confirmation inputs — both
-#        blank, or both filled, is a refusal, not a guess (#378: the two jobs
-#        used to test only their own input, so one dispatch supplying both
+#     2. resolves EXACTLY ONE target from the four confirmation inputs — none
+#        filled, or more than one filled, is a refusal, not a guess (#378: the
+#        jobs used to test only their own input, so one dispatch supplying two
 #        started two write-token publishers);
 #     3. requires a green `[GATE ] | [REPO] | Merge readiness` check run for
 #        GITHUB_SHA itself (#385: branch protection proves how a commit ENTERED
@@ -39,7 +56,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: "ca version to release (must equal plugins/ca/.claude-plugin/plugin.json), e.g. 2.6.1 — leave blank to release ca-codex instead"
+        description: "ca version to release (must equal plugins/ca/.claude-plugin/plugin.json), e.g. 2.6.1 — leave every other version input blank"
         required: false
         default: ""
       summary:
@@ -47,15 +64,31 @@ on:
         required: false
         default: ""
       codex_confirm:
-        description: "ca-codex version to release (must equal plugins/ca-codex/.codex-plugin/plugin.json), e.g. 0.1.0 — leave blank to release ca instead"
+        description: "ca-codex version to release (must equal plugins/ca-codex/.codex-plugin/plugin.json), e.g. 0.1.0 — leave every other version input blank"
         required: false
         default: ""
       codex_summary:
         description: "Optional release-title summary for the ca-codex release"
         required: false
         default: ""
+      sandbox_confirm:
+        description: "ca-sandbox version to release (must equal plugins/ca-sandbox/.claude-plugin/plugin.json), e.g. 0.1.5 — leave every other version input blank"
+        required: false
+        default: ""
+      sandbox_summary:
+        description: "Optional release-title summary for the ca-sandbox release"
+        required: false
+        default: ""
+      pi_confirm:
+        description: "ca-pi version to release (must equal plugins/ca-pi/package.json AND the root package.json), e.g. 0.1.28 — leave every other version input blank"
+        required: false
+        default: ""
+      pi_summary:
+        description: "Optional release-title summary for the ca-pi release"
+        required: false
+        default: ""
 
-# Least privilege by default. Only the two publishing jobs widen this to
+# Least privilege by default. Only the publishing jobs widen this to
 # `contents: write`; the preflight that authorizes them never holds a write
 # token, so the job deciding whether to publish cannot itself publish.
 permissions:
@@ -89,22 +122,28 @@ jobs:
         env:
           CONFIRM: ${{ github.event.inputs.confirm }}
           CODEX_CONFIRM: ${{ github.event.inputs.codex_confirm }}
+          SANDBOX_CONFIRM: ${{ github.event.inputs.sandbox_confirm }}
+          PI_CONFIRM: ${{ github.event.inputs.pi_confirm }}
         run: |
           set -euo pipefail
           # The helper prints a label and never raises; the '*' arm below is the
           # fail-closed default, so an unknown label refuses too — and a helper
           # that crashed prints nothing and trips `set -e` on the assignment.
-          TARGET=$(python3 .github/scripts/_releaselib.py select-target "$CONFIRM" "$CODEX_CONFIRM")
+          # Argument ORDER is the contract (_releaselib.RELEASE_TARGETS): the
+          # helper refuses a wrong-length call with the non-target label `arity`
+          # rather than resolving a plugin from the wrong input.
+          TARGET=$(python3 .github/scripts/_releaselib.py select-target \
+            "$CONFIRM" "$CODEX_CONFIRM" "$SANDBOX_CONFIRM" "$PI_CONFIRM")
           case "$TARGET" in
-            ca|ca-codex)
+            ca|ca-codex|ca-sandbox|ca-pi)
               echo "resolved release target: $TARGET"
               ;;
             multiple)
-              echo "::error::this dispatch selected more than one plugin — supply exactly one of the two version inputs, never both"
+              echo "::error::this dispatch selected more than one plugin — supply exactly one version input, never two"
               exit 1
               ;;
             none)
-              echo "::error::this dispatch selected no plugin — supply exactly one of the two version inputs"
+              echo "::error::this dispatch selected no plugin — supply exactly one version input"
               exit 1
               ;;
             *)
@@ -142,9 +181,10 @@ jobs:
 
   release:
     name: CA | [Release] - Publish
-    # Publish only from the default branch, where the merged CHANGELOG section
-    # lives, and only when the read-only preflight resolved `ca` as the single
-    # target of this dispatch. `needs: preflight` IS the authorization: the
+    # The repository's primary release, and the only lane that claims the
+    # "Latest" badge. Publish only from the default branch, where the merged
+    # CHANGELOG section lives, and only when the read-only preflight resolved
+    # `ca` as the single target. `needs: preflight` IS the authorization: the
     # condition below carries no status function, so a failed preflight skips
     # this job rather than letting it run anyway.
     needs: preflight
@@ -158,136 +198,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve and verify version against the manifest
-        id: v
-        env:
-          CONFIRM: ${{ github.event.inputs.confirm }}
-        run: |
-          set -euo pipefail
-          MANIFEST=$(node -p "require('./plugins/ca/.claude-plugin/plugin.json').version")
-          REQ="$CONFIRM"
-          if [ "$REQ" != "$MANIFEST" ]; then
-            echo "::error::requested '$REQ' does not equal plugin.json version '$MANIFEST' — bump/align first"
-            exit 1
-          fi
-          echo "version=$MANIFEST" >> "$GITHUB_OUTPUT"
-          echo "tag=v$MANIFEST" >> "$GITHUB_OUTPUT"
-
-      - name: Extract the CHANGELOG section as release notes
-        env:
-          VER: ${{ steps.v.outputs.version }}
-          TAG: ${{ steps.v.outputs.tag }}
-        run: |
-          set -euo pipefail
-          # Capture from "## [VER]" up to (not including) the next "## [" section heading.
-          awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' CHANGELOG.md > notes.md
-          # Trim a trailing Keep-a-Changelog "---" separator and blank lines.
-          python3 - <<'PY'
-          import re
-          t = open("notes.md").read().rstrip()
-          open("notes.md", "w").write(re.sub(r"\n+---$", "", t).rstrip() + "\n")
-          PY
-          test -s notes.md || { echo "::error::no CHANGELOG section found for $VER"; exit 1; }
-          # The notes' first heading must match the tag (the same guard /ca:release Phase 3 runs).
-          python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
-          echo "---- notes.md ----"; head -1 notes.md
-
-      - name: Create the tag and GitHub Release (resumable, mismatch-aborting)
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SUMMARY: ${{ github.event.inputs.summary }}
-          TAG: ${{ steps.v.outputs.tag }}
-          VER: ${{ steps.v.outputs.version }}
-        run: |
-          set -euo pipefail
-          SUM="$SUMMARY"
-          if [ -n "$SUM" ]; then TITLE="codeArbiter $VER: $SUM"; else TITLE="codeArbiter $VER"; fi
-
-          # An annotated tag needs a committer identity; the runner has none by default.
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # PEEL the remote tag (#380). An annotated tag's own object id is not
-          # the commit it names, so the `^{}` line is the one that can be
-          # compared against GITHUB_SHA. Empty output = no such tag.
-          TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
-            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
-          if [ -n "$TAG_SHA" ]; then TAG_EXISTS=true; else TAG_EXISTS=false; fi
-          # The tag name is built from the manifest version, so this is the
-          # version the REMOTE tag claims; the load-bearing comparison here is
-          # TAG_SHA against GITHUB_SHA.
-          TAG_VERSION="${TAG##*v}"
-
-          RELEASE_NONDRAFT=false
-          if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
-            if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = "false" ]; then
-              RELEASE_NONDRAFT=true
-            fi
-          fi
-
-          # One classifier shared with the /ca:release skill: the hosted and the
-          # local publish path must not disagree about what an existing tag means.
-          STATE=$(python3 .github/scripts/_releaselib.py classify \
-            "$TAG_EXISTS" "$TAG_SHA" "$GITHUB_SHA" "$TAG_VERSION" "$VER" "$RELEASE_NONDRAFT")
-          echo "publish state: $STATE (tag=$TAG tag_sha='$TAG_SHA' head='$GITHUB_SHA')"
-
-          case "$STATE" in
-            publish_fresh)
-              printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
-              git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
-              git push origin "refs/tags/$TAG"
-              # This dispatched release is the newest by publish time; mark it latest.
-              gh release create "$TAG" \
-                --title "$TITLE" \
-                --notes-file notes.md \
-                --target "$GITHUB_SHA" \
-                --latest --verify-tag
-              ;;
-            resume_publish)
-              echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
-              gh release create "$TAG" \
-                --title "$TITLE" \
-                --notes-file notes.md \
-                --target "$GITHUB_SHA" \
-                --latest --verify-tag
-              ;;
-            already_published)
-              echo "release $TAG is already published at $GITHUB_SHA — nothing to publish"
-              ;;
-            *)
-              echo "::error::refusing to publish $TAG: state '$STATE' — the existing tag resolves to '$TAG_SHA', this dispatch targets '$GITHUB_SHA'"
-              exit 1
-              ;;
-          esac
-
-      - name: Verify the published Release names this tag at this commit
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.v.outputs.tag }}
-        run: |
-          set -euo pipefail
-          # Verify publication rather than assume it (a create can partially succeed),
-          # and verify WHAT was published: non-draft alone says nothing about which
-          # commit the tag installs (#380).
-          gh release view "$TAG" --json url,isDraft,tagName
-          DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
-          [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
-          NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
-          [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
-          FINAL_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
-            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
-          [ "$FINAL_SHA" = "$GITHUB_SHA" ] || { echo "::error::tag $TAG resolves to '$FINAL_SHA', not the dispatched commit '$GITHUB_SHA'"; exit 1; }
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca
+          manifest: plugins/ca/.claude-plugin/plugin.json
+          changelog: CHANGELOG.md
+          tag-prefix: v
+          title-prefix: codeArbiter
+          requested-version: ${{ github.event.inputs.confirm }}
+          summary: ${{ github.event.inputs.summary }}
+          mark-latest: "true"
+          github-token: ${{ github.token }}
 
   release-codex:
     name: CA-Codex | [Release] - Publish
-    # Sibling twin of the `release` job (ADR-0007-style per-plugin
-    # independence, ADR-0011 for the Codex host). Publish only from the
-    # default branch, and only when the read-only preflight resolved
-    # `ca-codex` as the single target of this dispatch. The tag is namespaced
-    # (ca-codex-v*) so it never collides with ca's bare v* series, and this job
-    # never passes --latest to `gh release create` — ca-codex is an
-    # independently versioned sibling, not the repo's primary release, and must
-    # not steal the "Latest" badge from ca.
+    # An independently versioned sibling, never the repository's primary
+    # release: the tag is namespaced so it cannot collide with ca's bare v*
+    # series, and `mark-latest` stays false so it cannot take ca's "Latest"
+    # badge. Publish only from the default branch, and only for the one
+    # target the read-only preflight resolved.
     needs: preflight
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
     permissions:
@@ -299,123 +228,81 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve and verify version against the manifest
-        id: v
-        env:
-          CONFIRM: ${{ github.event.inputs.codex_confirm }}
-        run: |
-          set -euo pipefail
-          MANIFEST=$(node -p "require('./plugins/ca-codex/.codex-plugin/plugin.json').version")
-          REQ="$CONFIRM"
-          if [ "$REQ" != "$MANIFEST" ]; then
-            echo "::error::requested '$REQ' does not equal plugin.json version '$MANIFEST' — bump/align first"
-            exit 1
-          fi
-          echo "version=$MANIFEST" >> "$GITHUB_OUTPUT"
-          echo "tag=ca-codex-v$MANIFEST" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca-codex
+          manifest: plugins/ca-codex/.codex-plugin/plugin.json
+          changelog: plugins/ca-codex/CHANGELOG.md
+          tag-prefix: ca-codex-v
+          title-prefix: ca-codex
+          requested-version: ${{ github.event.inputs.codex_confirm }}
+          summary: ${{ github.event.inputs.codex_summary }}
+          mark-latest: "false"
+          github-token: ${{ github.token }}
 
-      - name: Extract the CHANGELOG section as release notes
-        env:
-          VER: ${{ steps.v.outputs.version }}
-          TAG: ${{ steps.v.outputs.tag }}
-        run: |
-          set -euo pipefail
-          # Capture from "## [VER]" up to (not including) the next "## [" section heading.
-          awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' plugins/ca-codex/CHANGELOG.md > notes.md
-          # Trim a trailing Keep-a-Changelog "---" separator and blank lines.
-          python3 - <<'PY'
-          import re
-          t = open("notes.md").read().rstrip()
-          open("notes.md", "w").write(re.sub(r"\n+---$", "", t).rstrip() + "\n")
-          PY
-          test -s notes.md || { echo "::error::no CHANGELOG section found for $VER in plugins/ca-codex/CHANGELOG.md"; exit 1; }
-          # The notes' first heading must match the tag (the same guard /ca:release Phase 3 runs).
-          python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
-          echo "---- notes.md ----"; head -1 notes.md
+  release-sandbox:
+    name: CA-Sandbox | [Release] - Publish
+    # An independently versioned sibling, never the repository's primary
+    # release: the tag is namespaced so it cannot collide with ca's bare v*
+    # series, and `mark-latest` stays false so it cannot take ca's "Latest"
+    # badge. Publish only from the default branch, and only for the one
+    # target the read-only preflight resolved.
+    needs: preflight
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-sandbox'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
 
-      - name: Create the tag and GitHub Release (resumable, mismatch-aborting)
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SUMMARY: ${{ github.event.inputs.codex_summary }}
-          TAG: ${{ steps.v.outputs.tag }}
-          VER: ${{ steps.v.outputs.version }}
-        run: |
-          set -euo pipefail
-          SUM="$SUMMARY"
-          if [ -n "$SUM" ]; then TITLE="ca-codex $VER: $SUM"; else TITLE="ca-codex $VER"; fi
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca-sandbox
+          manifest: plugins/ca-sandbox/.claude-plugin/plugin.json
+          changelog: plugins/ca-sandbox/CHANGELOG.md
+          tag-prefix: ca-sandbox-v
+          title-prefix: ca-sandbox
+          requested-version: ${{ github.event.inputs.sandbox_confirm }}
+          summary: ${{ github.event.inputs.sandbox_summary }}
+          mark-latest: "false"
+          github-token: ${{ github.token }}
 
-          # An annotated tag needs a committer identity; the runner has none by default.
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+  release-pi:
+    name: CA-Pi | [Release] - Publish
+    # An independently versioned sibling, never the repository's primary
+    # release: the tag is namespaced so it cannot collide with ca's bare v*
+    # series, and `mark-latest` stays false so it cannot take ca's "Latest"
+    # badge. Publish only from the default branch, and only for the one
+    # target the read-only preflight resolved.
+    #
+    # Pi installs the REPOSITORY ROOT as the package (`pi install
+    # git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`), so the root
+    # package.json is a second manifest that must already agree with the
+    # plugin's — hence `companion-manifest`. A root disagreeing with the tag
+    # would install a package claiming a version the tag does not name.
+    needs: preflight
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-pi'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
 
-          # PEEL the remote tag (#380). An annotated tag's own object id is not
-          # the commit it names, so the `^{}` line is the one that can be
-          # compared against GITHUB_SHA. Empty output = no such tag.
-          TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
-            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
-          if [ -n "$TAG_SHA" ]; then TAG_EXISTS=true; else TAG_EXISTS=false; fi
-          # The tag name is built from the manifest version, so this is the
-          # version the REMOTE tag claims; the load-bearing comparison here is
-          # TAG_SHA against GITHUB_SHA.
-          TAG_VERSION="${TAG##*v}"
-
-          RELEASE_NONDRAFT=false
-          if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
-            if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = "false" ]; then
-              RELEASE_NONDRAFT=true
-            fi
-          fi
-
-          # One classifier shared with the /ca:release skill: the hosted and the
-          # local publish path must not disagree about what an existing tag means.
-          STATE=$(python3 .github/scripts/_releaselib.py classify \
-            "$TAG_EXISTS" "$TAG_SHA" "$GITHUB_SHA" "$TAG_VERSION" "$VER" "$RELEASE_NONDRAFT")
-          echo "publish state: $STATE (tag=$TAG tag_sha='$TAG_SHA' head='$GITHUB_SHA')"
-
-          case "$STATE" in
-            publish_fresh)
-              printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
-              git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
-              git push origin "refs/tags/$TAG"
-              # Not --latest: ca-codex is an independently versioned sibling, not the
-              # repo's primary release; it must never displace ca's "Latest" badge.
-              gh release create "$TAG" \
-                --title "$TITLE" \
-                --notes-file notes.md \
-                --target "$GITHUB_SHA" \
-                --verify-tag
-              ;;
-            resume_publish)
-              echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
-              gh release create "$TAG" \
-                --title "$TITLE" \
-                --notes-file notes.md \
-                --target "$GITHUB_SHA" \
-                --verify-tag
-              ;;
-            already_published)
-              echo "release $TAG is already published at $GITHUB_SHA — nothing to publish"
-              ;;
-            *)
-              echo "::error::refusing to publish $TAG: state '$STATE' — the existing tag resolves to '$TAG_SHA', this dispatch targets '$GITHUB_SHA'"
-              exit 1
-              ;;
-          esac
-
-      - name: Verify the published Release names this tag at this commit
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.v.outputs.tag }}
-        run: |
-          set -euo pipefail
-          # Verify publication rather than assume it (a create can partially succeed),
-          # and verify WHAT was published: non-draft alone says nothing about which
-          # commit the tag installs (#380).
-          gh release view "$TAG" --json url,isDraft,tagName
-          DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
-          [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
-          NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
-          [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
-          FINAL_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
-            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
-          [ "$FINAL_SHA" = "$GITHUB_SHA" ] || { echo "::error::tag $TAG resolves to '$FINAL_SHA', not the dispatched commit '$GITHUB_SHA'"; exit 1; }
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca-pi
+          manifest: plugins/ca-pi/package.json
+          companion-manifest: package.json
+          changelog: plugins/ca-pi/CHANGELOG.md
+          tag-prefix: ca-pi-v
+          title-prefix: ca-pi
+          requested-version: ${{ github.event.inputs.pi_confirm }}
+          summary: ${{ github.event.inputs.pi_summary }}
+          mark-latest: "false"
+          github-token: ${{ github.token }}

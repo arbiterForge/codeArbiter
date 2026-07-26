@@ -2,6 +2,26 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.29] - 2026-07-26
+
+### Added
+
+- ca-pi has a sanctioned release lane, and therefore a way to produce the
+  `ca-pi-v*` tag the install instructions have always told users to pin. It had
+  none: the hosted release workflow published `ca` and `ca-codex` only, CI
+  enforced an independent `ca-pi-v*` version guard the whole time, and no tag in
+  the series had ever been cut - so the documented install could not be
+  satisfied by anything, and the only way to produce one was to hand-cut a tag
+  outside the changelog, tag-state, and read-back guarantees. The lane also
+  treats the repository-root `package.json` as a companion manifest that must
+  already agree with the plugin's, because Pi installs the ROOT as the package:
+  a root disagreeing with the tag would install a version the tag does not name
+  (#382).
+
+### Changed
+
+- The projected release routine named two independently-versioned plugins
+  instead of four, and routes a sibling release to its hosted lane (#382).
 ## [0.1.28] - 2026-07-26
 
 ### Added

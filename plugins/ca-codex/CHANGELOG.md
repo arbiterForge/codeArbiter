@@ -14,6 +14,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   The remote branch is never touched (issue #308).
 
 ### Changed
+- The projected release routine named two independently-versioned plugins
+  instead of four, and told the reader nothing about how a `ca-codex` release is
+  actually cut. It now names every tag series and routes a sibling release to
+  the hosted `release` workflow's own lane, which carries the changelog-heading
+  guard, the existing-tag classifier, and the published-release read-back that a
+  hand-cut tag has none of (#382).
+
 - ORCHESTRATOR §6 routes on understood intent rather than asking the user to
   retype a command it has already named, in three tiers, with everything
   irreversible or gate-bypassing held at the ask-once tier regardless of how

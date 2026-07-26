@@ -50,6 +50,14 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- The release skill named two independently-versioned plugins; the repository
+  has four. It now names every series (`v*`, `ca-codex-v*`, `ca-sandbox-v*`,
+  `ca-pi-v*`) and routes a sibling release to the hosted dispatch lane instead
+  of leaving it undefined. `/ca:release` still owns `ca` itself. The stale count
+  was load-bearing in one place: the guidance for resolving `LAST_TAG` and for
+  setting `--latest` reasoned about "both plugins", which understated by two the
+  set of tags that can shadow ca's baseline or take the "Latest" badge (#382).
+
 - ORCHESTRATOR §6 now routes on understood intent instead of naming a command
   and then asking the user to retype it. Unambiguous, non-destructive intent
   routes directly into the command with every gate intact; probable intent asks
