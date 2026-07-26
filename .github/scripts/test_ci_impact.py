@@ -2157,18 +2157,13 @@ class GateCommandTest(unittest.TestCase):
         # patterns, and that asymmetry is deliberate rather than an oversight -
         # neither names an npm script there is anything to resolve against.
         "coverage": re.compile(r"(?m)^\s*npm\b.*\brun coverage\b"),
-        # Requires an EXECUTABLE line inside the fence, not merely a non-empty
-        # one: replacing the whole section body with a single `:` satisfied the
-        # first cut while deleting every real invocation. A missing test command
-        # is loud in a way a missing coverage command was not - every lane runs
-        # it - so this is a weaker guarantee for a lower-stakes token.
-        # The `(?:(?!^## )[\s\S])*?` temper is load-bearing: a plain `.*?` under
-        # DOTALL scans PAST the Test section to any later ```sh fence containing
-        # a command, so gutting this section still matched via `## Coverage`'s
-        # block. Caught by mutation - the tightened-but-untempered version was
-        # green on a `## Test` body reduced to a bare `:`.
-        "test": re.compile(
-            r"(?ms)^## Test\b(?:(?!^## )[\s\S])*?```sh\n[^`]*?^\s*(?:python|npm|npx|pytest)\b"),
+        # Structural, and checked in Python rather than by regex - see
+        # _section_has_executable_line. A 90-character pattern here grew three
+        # false-failure modes (`python3`, a backtick inside a comment, a
+        # ```bash fence) while protecting the one token that needs it least: a
+        # missing test command is loud, because every lane runs it. A guard that
+        # fires falsely on a legitimate edit teaches people to weaken the guard.
+        "test": None,
         # `dependency-reviewer` reads this one. It was found by the
         # no-dead-entry check below on the first run, which is the point of
         # checking both directions - a one-way map had no way to notice.
@@ -2181,6 +2176,42 @@ class GateCommandTest(unittest.TestCase):
     # papered over: widening the pattern to prose-match those would produce
     # false demanders, which is worse than a known gap.
     DEMAND = re.compile(r"\b([a-z][a-z-]*) command from `tech-stack\.md`")
+
+    # `site/` is a tested TypeScript tree with no coverage command (issue #514).
+    # Named here so the gap is a reviewed decision rather than a scoping accident,
+    # and asserted to be a real tree below - a stale exemption must fail, not
+    # silently widen the hole it was cut for.
+    COVERAGE_EXEMPT = frozenset({"site"})
+
+    @staticmethod
+    def _section(text, heading):
+        """The body of one `## <heading>` section, stopping at the next H2."""
+        found = re.search(rf"(?ms)^## {re.escape(heading)}\b(.*?)(?=^## |\Z)", text)
+        return found.group(1) if found else ""
+
+    @staticmethod
+    def _section_has_executable_line(section):
+        """A fenced block containing something that would actually run.
+
+        Blank lines, comments and a bare `:` do not count - replacing the whole
+        section body with `:` was a live evasion. Deliberately not a regex: the
+        regex version could not tell `python` from `python3`, tripped on a
+        backtick inside a comment, and required the fence be tagged exactly
+        ```sh. All three were false failures on legitimate edits.
+        """
+        for fence in re.findall(r"(?ms)^```[a-z]*\n(.*?)^```", section):
+            for line in fence.splitlines():
+                stripped = line.strip()
+                if stripped and stripped != ":" and not stripped.startswith("#"):
+                    return True
+        return False
+
+    def _defines(self, token, tech_stack):
+        """Does tech-stack.md define `token`? Regex where one fits, structure where not."""
+        proof = self.DEFINITIONS[token]
+        if proof is not None:
+            return proof.search(tech_stack) is not None
+        return self._section_has_executable_line(self._section(tech_stack, token.capitalize()))
 
     def _gate_docs(self):
         """Skills AND agents. `coverage-auditor` reads the same command a skill does."""
@@ -2200,12 +2231,11 @@ class GateCommandTest(unittest.TestCase):
         missing = []
         for token, who in sorted(self._demanded().items()):
             names = ", ".join(sorted(who))
-            proof = self.DEFINITIONS.get(token)
-            if proof is None:
+            if token not in self.DEFINITIONS:
                 missing.append(
                     f"{token}: demanded by {names}, but this test has no definition "
                     f"check for it - add one to DEFINITIONS rather than leaving it unguarded")
-            elif proof.search(tech_stack) is None:
+            elif not self._defines(token, tech_stack):
                 missing.append(
                     f"{token}: demanded by {names}, but .codearbiter/tech-stack.md "
                     f"defines no such command")
@@ -2250,13 +2280,14 @@ class GateCommandTest(unittest.TestCase):
         """
         tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
         pairs = self._npm_invocations(tech_stack)
-        # Non-vacuity. An empty scan produces an empty finding list and a green
-        # test - the same fail-open shape this whole class exists to close, and
-        # the exact way a reworded invocation would silently disarm the check.
+        # Non-vacuity, and scoped to `coverage` specifically. A bare `assertTrue(pairs)`
+        # is satisfied by the unrelated `build` and `typecheck` invocations in the same
+        # file, so every coverage line could be rewritten into a form the parser misses
+        # while this still passed - saying less than its message claimed.
         self.assertTrue(
-            pairs,
-            "no `npm --prefix <dir> run <script>` invocation parsed out of tech-stack.md; "
-            "either the file stopped naming one or the parser drifted off its phrasing")
+            {prefix for prefix, script in pairs if script == "coverage"},
+            "no `npm ... run coverage` invocation parsed out of tech-stack.md; either the "
+            "file stopped naming one or the parser drifted off its phrasing")
         broken = []
         for prefix, script in sorted(pairs):
             manifest = REPO_ROOT / prefix / "package.json"
@@ -2270,29 +2301,53 @@ class GateCommandTest(unittest.TestCase):
             broken, [],
             "tech-stack.md names npm scripts that do not exist: " + "; ".join(broken))
 
-    def test_every_tree_with_a_coverage_script_is_documented(self):
-        """Completeness, driven by the filesystem rather than by the prose.
+    def _tested_trees(self):
+        """Every tree in the repo that runs tests, keyed off `test`, NOT off `coverage`.
 
-        The resolution check above verifies whatever it happens to parse and is
-        blind to what the document omits. A new `plugins/<x>/tools` tree, or one
-        documented in a phrasing the parser misses, would be unguarded
-        invisibly. Deriving the expected set from the manifests instead means a
-        tree cannot be added without its command being named.
+        Keying off `coverage` derived the obligation from the very thing being
+        enforced: deleting a tree's `coverage` script deleted the requirement to
+        document it, so a tree could drop out of the gate silently. Keying off
+        `test` states the actual rule - a tree that runs tests owes a coverage
+        command - and cannot be satisfied by removing the subject.
+
+        Repo-wide, not `plugins/*/tools`: `site/` is a tested TypeScript tree too,
+        and a completeness check scoped past a quarter of the filesystem it claims
+        to derive from is not complete.
         """
+        trees = {}
+        for manifest in sorted(REPO_ROOT.rglob("package.json")):
+            relative = manifest.relative_to(REPO_ROOT).as_posix()
+            if "node_modules" in relative:
+                continue
+            try:
+                scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts", {})
+            except json.JSONDecodeError:
+                continue
+            if "test" in scripts:
+                trees[manifest.parent.relative_to(REPO_ROOT).as_posix()] = scripts
+        return trees
+
+    def test_every_tested_tree_has_its_coverage_command_documented(self):
+        """Completeness, driven by the filesystem rather than by the prose."""
         tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
         documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
-        undocumented = []
-        for manifest in sorted(REPO_ROOT.glob("plugins/*/tools/package.json")):
-            scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts", {})
-            if "coverage" not in scripts:
-                continue
-            tree = manifest.parent.relative_to(REPO_ROOT).as_posix()
-            if tree not in documented:
-                undocumented.append(tree)
+        undocumented = [
+            tree for tree in sorted(self._tested_trees())
+            if tree not in documented and tree not in self.COVERAGE_EXEMPT
+        ]
         self.assertEqual(
             undocumented, [],
-            "these trees define a `coverage` script that tech-stack.md never names, so the "
-            "gates cannot run it there: " + ", ".join(undocumented))
+            "these trees run tests but tech-stack.md names no coverage command for them, so "
+            "tdd Phase 5 and refactor Phase 2/6 cannot run there: " + ", ".join(undocumented))
+
+    def test_no_coverage_exemption_is_stale(self):
+        """An exemption for a tree that no longer exists silently widens the hole."""
+        trees = set(self._tested_trees())
+        stale = sorted(self.COVERAGE_EXEMPT - trees)
+        self.assertEqual(
+            stale, [],
+            "these COVERAGE_EXEMPT entries name no tested tree, so they exempt nothing and "
+            "hide the next one that matches the name: " + ", ".join(stale))
 
 
 if __name__ == "__main__":

@@ -180,6 +180,13 @@ Two caveats when reading a local report:
   a required check — deliberately, since wiring a red `ca/tools` into required CI
   would block every merge on an unrelated backfill.
 
+**`site/` is a fourth tested TypeScript tree and has no coverage command** — it
+runs vitest 3 with its own suites under `site/test/`, and `tdd` Phase 5 on a
+`site/` change therefore still has nothing to run. That gap is tracked in #514
+and held open explicitly: `COVERAGE_EXEMPT` in
+`.github/scripts/test_ci_impact.py` names it, and a companion test fails if the
+exemption ever stops matching a real tree. Visible and reviewed, not closed.
+
 There is **no coverage tooling for the Python hooks**. `refactor` Phase 2 on a
 Python surface therefore has no numeric floor to check; use the per-symbol
 direct-test proof alone and say so in the phase record.
