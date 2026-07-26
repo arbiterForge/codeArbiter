@@ -62,6 +62,14 @@ export type ExecResult = {
    * hang are different events with different remedies.
    */
   timedOut?: boolean;
+  /**
+   * #479: the command was CANCELLED and killed, rather than exiting or hitting
+   * its deadline. Typed apart from `timedOut` for the same reason `timedOut` is
+   * typed apart from `exitCode`: a wedged operation and an operator pressing
+   * Ctrl-C are different events, and reporting one as the other sends a reader
+   * looking for a hang that never happened. Both run the same teardown.
+   */
+  aborted?: boolean;
 };
 
 export type ExecOptions = {

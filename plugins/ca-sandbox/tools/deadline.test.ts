@@ -27,6 +27,7 @@ import { describe, it, expect } from "vitest";
 import {
   DEFAULT_DOCKER_TIMEOUT_MS,
   DOCKER_OPERATION_TIMEOUTS_MS,
+  DOCKER_ABORT_EXIT_CODE,
   DOCKER_TIMEOUT_EXIT_CODE,
   defaultDockerRun,
   makeDockerRun,
@@ -227,4 +228,140 @@ realDocker("#394 — a real hung command terminates within its deadline", () => 
       defaultDockerRun(["rm", "-f", id || name]);
     }
   }, 120_000);
+});
+
+describe("#479 — an in-flight docker call is cancellable", () => {
+  it("aborts a call that would otherwise run to its deadline (AC-1)", async () => {
+    // The child NEVER settles on its own. Under spawnSync this was
+    // unreachable by construction: the thread sat inside the syscall, so there
+    // was no point at which a signal could be observed. The only thing that
+    // could end it was the deadline - which is why #394 could bound the call
+    // but not cancel it.
+    const controller = new AbortController();
+    const run = makeDockerRun({}, {
+      timeoutMs: 60_000,        // far beyond the test, so ONLY the abort can end it
+      spawn: fakeSpawn(() => fakeChild({ hang: true })),
+    });
+    const started = Date.now();
+    const pending = run(["exec", "box", "sleep", "infinity"], { signal: controller.signal });
+    controller.abort();
+    const result = await pending;
+
+    expect(result.aborted).toBe(true);
+    expect(result.timedOut).toBeFalsy();
+    expect(result.code).toBe(DOCKER_ABORT_EXIT_CODE);
+    expect(result.stderr).toMatch(/cancelled/i);
+    // It returned because of the abort, not because a deadline elapsed.
+    expect(Date.now() - started).toBeLessThan(10_000);
+  });
+
+  it("kills the child rather than merely resolving around it (AC-1)", async () => {
+    // Resolving the promise while leaving the process alive would look like
+    // cancellation and leak a running docker client.
+    const controller = new AbortController();
+    let child: ReturnType<typeof fakeChild> | undefined;
+    const run = makeDockerRun({}, {
+      timeoutMs: 60_000,
+      spawn: fakeSpawn(() => (child = fakeChild({ hang: true }))),
+    });
+    const pending = run(["ps"], { signal: controller.signal });
+    controller.abort();
+    await pending;
+    expect(child!.killed).toBe(true);
+  });
+
+  it("refuses to spawn at all when the signal is ALREADY aborted (AC-1)", async () => {
+    // Checking only after the spawn would still create the next container in a
+    // multi-step command that was cancelled mid-way, and teardown would then
+    // have something to reclaim the caller never knew existed.
+    const controller = new AbortController();
+    controller.abort();
+    let spawned = 0;
+    const run = makeDockerRun({}, {
+      spawn: fakeSpawn(() => {
+        spawned += 1;
+        return fakeChild({});
+      }),
+    });
+    const result = await run(["run", "-d", "image"], { signal: controller.signal });
+
+    expect(spawned).toBe(0);
+    expect(result.aborted).toBe(true);
+    expect(result.code).toBe(DOCKER_ABORT_EXIT_CODE);
+    expect(result.stderr).toMatch(/before it started/i);
+  });
+
+  it("types an abort apart from a timeout (AC-4)", async () => {
+    // Both arrive as close(null, "SIGKILL"), so the runner has to record WHICH
+    // killer fired. Reporting one as the other would put "timed out" in an
+    // audit trail for a deliberate Ctrl-C, and would send a caller looking for
+    // a wedged daemon that does not exist.
+    const controller = new AbortController();
+    const spawn = fakeSpawn(() => fakeChild({ hang: true }));
+
+    const aborting = makeDockerRun({}, { timeoutMs: 60_000, spawn });
+    const pending = aborting(["ps"], { signal: controller.signal });
+    controller.abort();
+    const aborted = await pending;
+
+    const expiring = makeDockerRun({}, { timeoutMs: 15, spawn });
+    const timedOut = await expiring(["ps"]);
+
+    expect(aborted.aborted).toBe(true);
+    expect(aborted.timedOut).toBeFalsy();
+    expect(timedOut.timedOut).toBe(true);
+    expect(timedOut.aborted).toBeFalsy();
+    expect(aborted.code).not.toBe(timedOut.code);
+  });
+
+  it("an unrelated signal firing after the call settles changes nothing", async () => {
+    // The listener has to come off, or a later abort on a reused controller
+    // would try to kill a child that already closed.
+    const controller = new AbortController();
+    const run = makeDockerRun({}, {
+      spawn: fakeSpawn(() => fakeChild({ code: 0, stdout: "ok" })),
+    });
+    const result = await run(["ps"], { signal: controller.signal });
+    expect(result.code).toBe(0);
+    expect(result.aborted).toBeFalsy();
+    expect(() => controller.abort()).not.toThrow();
+    expect(result.aborted).toBeFalsy();
+  });
+
+  it("stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)", async () => {
+    // The box is left running whether the deadline fired or the operator
+    // pressed Ctrl-C, and an orphan is the same leak either way.
+    const calls: string[][] = [];
+    const dockerRun: DockerRun = async (args) => {
+      calls.push(args);
+      if (args[0] === "exec") {
+        return {
+          code: DOCKER_ABORT_EXIT_CODE, stdout: "", stderr: "cancelled", aborted: true,
+        };
+      }
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    const result = await execInSandbox("box-9", ["sh", "-c", "sleep infinity"], { dockerRun });
+
+    expect(result.aborted).toBe(true);
+    const escalation = calls.slice(1);
+    expect(escalation).toHaveLength(1);
+    expect(escalation[0]).toEqual(["stop", "--time", "0", "box-9"]);
+    expect(result.stderr).toMatch(/stopped container box-9 after cancellation/i);
+  });
+
+  it("does not stop the container on an ordinary non-zero exec (AC-2)", async () => {
+    // Escalation destroys a working box; doing it on exit 1 would tear one down
+    // every time a command in it simply failed.
+    const calls: string[][] = [];
+    const dockerRun: DockerRun = async (args) => {
+      calls.push(args);
+      return { code: 1, stdout: "", stderr: "command failed" };
+    };
+    const result = await execInSandbox("box-10", ["false"], { dockerRun });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.aborted).toBeFalsy();
+    expect(calls).toHaveLength(1);
+  });
 });
