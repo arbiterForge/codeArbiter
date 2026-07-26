@@ -581,6 +581,152 @@ describe("session-local background job state", () => {
     expect(openTree).toHaveBeenCalledTimes(1);
   });
 
+  // #504: `launch` refuses with `undefined` on five paths. Four are policy refusals the
+  // caller can predict; the fifth is an environment failure it cannot. These pin the
+  // fifth path to a per-launch diagnostic drawn from a CLOSED vocabulary - #428's
+  // supervisor refusal reasons, or an errno shape - so a real spawn failure explains
+  // itself without opening a free-text channel to the operator.
+  const SPAWN_REFUSAL = (detail?: string) => detail === undefined
+    ? "Background job could not start the configured shell; run /ca-doctor."
+    : `Background job could not start the configured shell (${detail}); run /ca-doctor.`;
+
+  function refusalFixture(openTree: BackgroundJobRuntimeDependencies["openTree"]) {
+    const activityEvents: unknown[] = [];
+    const runtime = createBackgroundJobRuntime({ openTree, activity: { publish: (event) => activityEvents.push(event) } })!;
+    const lease = Object.freeze({});
+    return {
+      activityEvents,
+      runtime,
+      lease,
+      base: {
+        authorization: { lease, isCurrent: (candidate: unknown) => candidate === lease },
+        command: "printf ok",
+        cwd: process.cwd(),
+        env: [] as readonly (readonly [string, string | undefined])[],
+        shellPath: process.platform === "win32" ? process.execPath : "/bin/bash",
+      },
+    };
+  }
+
+  test("reports an allowlisted containment reason when the spawn refuses, and nothing on a policy refusal", async () => {
+    const openTree = vi.fn(async () => {
+      throw new Error("Windows Job Object holder refused containment (arming): ready-timeout");
+    });
+    const { runtime, lease, base, activityEvents } = refusalFixture(openTree);
+    const diagnostics: string[] = [];
+
+    expect(await runtime.launch({ ...base, label: "spawn refusal", onRefusal: (d) => diagnostics.push(d) })).toBeUndefined();
+    expect(diagnostics).toEqual([SPAWN_REFUSAL("ready-timeout")]);
+
+    // OB-6: the refusal stays fail-closed - terminal state reached, published, nothing owned.
+    expect(runtime.getJob(1)).toMatchObject({ state: "failed" });
+    expect(runtime.activeJobIds()).toEqual([]);
+    expect(activityEvents).toEqual([
+      { kind: "job", id: "1", label: "spawn refusal", state: "active" },
+      { kind: "job", id: "1", label: "spawn refusal", state: "completed" },
+    ]);
+
+    // OB-1 negative: a policy refusal is predictable and reports no spawn diagnostic.
+    diagnostics.length = 0;
+    expect(await runtime.launch({
+      ...base, label: "stale", authorization: { lease, isCurrent: () => false },
+      onRefusal: (d) => diagnostics.push(d),
+    })).toBeUndefined();
+    expect(diagnostics).toEqual([]);
+    expect(openTree).toHaveBeenCalledTimes(1);
+  });
+
+  test("reports a bounded errno and never the shell path, cwd, command, or env", async () => {
+    const secret = "fixture-env-value";
+    const openTree = vi.fn(async () => {
+      const error: NodeJS.ErrnoException = new Error(
+        `ENOENT: no such file or directory, realpath '${process.cwd()}/missing-shell'`,
+      );
+      error.code = "ENOENT";
+      throw error;
+    });
+    const { runtime, base } = refusalFixture(openTree);
+    const diagnostics: string[] = [];
+
+    expect(await runtime.launch({
+      ...base, label: "errno", env: [["SECRET", secret]], onRefusal: (d) => diagnostics.push(d),
+    })).toBeUndefined();
+
+    expect(diagnostics).toEqual([SPAWN_REFUSAL("ENOENT")]);
+    const reported = diagnostics.join("\n");
+    for (const forbidden of [process.cwd(), base.shellPath, "missing-shell", "printf ok", "SECRET", secret]) {
+      expect(reported).not.toContain(forbidden);
+    }
+  });
+
+  test("degrades to a generic diagnostic when the spawn failure carries no recognized reason", async () => {
+    for (const thrown of [
+      new Error("process-tree launch identities are invalid"),
+      Object.assign(new Error("hostile"), { code: "ENOENT; rm -rf /" }),
+      Object.assign(new Error("hostile"), { code: "E".repeat(64) }),
+      Object.assign(new Error("hostile"), { code: 13 }),
+      "not an error at all",
+    ]) {
+      const { runtime, base } = refusalFixture(vi.fn(async () => { throw thrown; }));
+      const diagnostics: string[] = [];
+      expect(await runtime.launch({ ...base, label: "unknown", onRefusal: (d) => diagnostics.push(d) })).toBeUndefined();
+      expect(diagnostics).toEqual([SPAWN_REFUSAL()]);
+      expect(diagnostics[0]).not.toContain("hostile");
+      expect(diagnostics[0]).not.toContain("identities");
+      expect(diagnostics[0]).not.toContain("rm -rf");
+    }
+  });
+
+  test("correlates each spawn diagnostic to its own launch when launches overlap", async () => {
+    // A runtime-scoped "last refusal" field cannot pass this: the two launches settle in
+    // the reverse of the order they spawned, so a shared slot reports one launch's
+    // environment failure as the other's - the exact misdiagnosis #504 is about.
+    const queued = ["ready-timeout", "pid-invalid"];
+    let index = 0;
+    let release!: () => void;
+    const gate = new Promise<void>((resolveGate) => { release = resolveGate; });
+    const openTree = vi.fn(async () => {
+      const mine = queued[index++]!;
+      if (mine === "ready-timeout") await gate;
+      throw new Error(`Windows contained Pi launch was refused: ${mine}`);
+    });
+    const { runtime, base } = refusalFixture(openTree);
+    const first: string[] = [];
+    const second: string[] = [];
+
+    const slower = runtime.launch({ ...base, label: "first", onRefusal: (d) => first.push(d) });
+    const faster = runtime.launch({ ...base, label: "second", onRefusal: (d) => second.push(d) });
+    expect(await faster).toBeUndefined();
+    expect(second).toEqual([SPAWN_REFUSAL("pid-invalid")]);
+    release();
+    expect(await slower).toBeUndefined();
+
+    expect(first).toEqual([SPAWN_REFUSAL("ready-timeout")]);
+    expect(second).toEqual([SPAWN_REFUSAL("pid-invalid")]);
+  });
+
+  test("a throwing or malformed refusal sink never changes the refusal path", async () => {
+    const openTree = vi.fn(async () => { throw new Error("Windows contained Pi launch was refused: spawn-error"); });
+    const { runtime, base, activityEvents } = refusalFixture(openTree);
+
+    expect(await runtime.launch({
+      ...base, label: "hostile sink", onRefusal: () => { throw new Error("sink exploded"); },
+    })).toBeUndefined();
+    expect(runtime.getJob(1)).toMatchObject({ state: "failed" });
+    expect(activityEvents).toEqual([
+      { kind: "job", id: "1", label: "hostile sink", state: "active" },
+      { kind: "job", id: "1", label: "hostile sink", state: "completed" },
+    ]);
+    expect(await runtime.dispose()).toBe(true);
+
+    // A non-function sink is malformed input, refused before anything is spawned.
+    const malformed = refusalFixture(vi.fn(async () => { throw new Error("unreachable"); }));
+    expect(await malformed.runtime.launch({
+      ...malformed.base, label: "malformed sink", onRefusal: "not a function" as never,
+    })).toBeUndefined();
+    expect(malformed.activityEvents).toEqual([]);
+  });
+
   async function runLiveGitBashJob(
     openTree?: BackgroundJobRuntimeDependencies["openTree"],
   ): Promise<void> {

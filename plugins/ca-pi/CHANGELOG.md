@@ -2,6 +2,25 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.34] - 2026-07-26
+
+### Fixed
+
+- A background job that could not start its shell now says why. `launch` refuses
+  with `undefined` on five paths; four are policy decisions the caller can
+  predict, and the fifth is an environment failure it cannot - a spawn that
+  threw. That error was discarded by a bare `catch {}`, so a Git Bash launch
+  that failed on CI surfaced only as `expected undefined to be defined`, and the
+  runtime's designed, fail-closed refusal was indistinguishable from a real
+  fault. The spawn path now reports a per-launch diagnostic, and the background
+  bash tool surfaces it instead of the generic block message (#504).
+- The refusal detail is drawn from a closed vocabulary - a recognized Windows
+  containment reason or an errno shape - never from `error.message`, which
+  embeds the resolved shell path and working directory. Following the same
+  bounded-reason-code convention already used for the child-process diagnostic
+  channel (#428) keeps one convention across both layers rather than widening a
+  second channel to free text.
+
 ## [0.1.33] - 2026-07-26
 
 ### Fixed

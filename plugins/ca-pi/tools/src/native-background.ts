@@ -322,6 +322,10 @@ export function createNativeBackgroundController(
           const launch = await options.resolveLaunch(value.cwd);
           if (!stable(value, context) || launch === undefined || currentToolSignal()?.aborted === true) return await toolFailure();
           const startedAt = now();
+          // #504: four of the five refusal paths are policy decisions this caller can predict;
+          // the fifth is a spawn failure it cannot. Capture that one per launch so a real
+          // environment failure reaches the operator instead of the generic block message.
+          let spawnRefusal: string | undefined;
           const job = await value.runtime.launch({
             authorization: {
               lease: value.lease,
@@ -331,12 +335,13 @@ export function createNativeBackgroundController(
             ...frozen,
             cwd: value.cwd,
             env: launch.env,
+            onRefusal: (diagnostic) => { spawnRefusal = diagnostic; },
             shellPath: launch.shellPath,
             ...(launch.commandPrefix === undefined ? {} : { commandPrefix: launch.commandPrefix }),
           });
           if (job === undefined) {
             if (!runtimeHealthy(value)) degrade(value);
-            return await toolFailure(value.runtime.health().diagnostic);
+            return await toolFailure(value.runtime.health().diagnostic ?? spawnRefusal);
           }
           if (!(stable(value, context) && currentToolSignal()?.aborted !== true)) {
             await value.runtime.cancel(job.id);

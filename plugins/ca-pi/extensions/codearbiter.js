@@ -2752,19 +2752,45 @@ function authorizationCurrent(authorization) {
     return false;
   }
 }
+var SPAWN_REFUSAL_ERRNO = /^E[A-Z]{1,15}$/u;
+function spawnRefusalDetail(error) {
+  if (!(error instanceof Error)) return void 0;
+  const reason = windowsRefusalReasonFromMessage(error.message);
+  if (reason !== void 0) return reason;
+  const code = error.code;
+  return typeof code === "string" && SPAWN_REFUSAL_ERRNO.test(code) ? code : void 0;
+}
+function describeSpawnRefusal(error) {
+  let detail;
+  try {
+    detail = spawnRefusalDetail(error);
+  } catch {
+    detail = void 0;
+  }
+  return detail === void 0 ? "Background job could not start the configured shell; run /ca-doctor." : `Background job could not start the configured shell (${detail}); run /ca-doctor.`;
+}
+function reportRefusal(sink, diagnostic) {
+  if (sink === void 0) return;
+  try {
+    sink(diagnostic);
+  } catch {
+  }
+}
 function parseRuntimeLaunchInput(input) {
   const record2 = fixedDataRecord2(
     input,
     ["authorization", "command", "cwd", "env", "label", "shellPath"],
-    ["commandPrefix", "timeoutMs"]
+    ["commandPrefix", "onRefusal", "timeoutMs"]
   );
   if (record2 === void 0) return void 0;
   const command = record2.descriptors.command?.value;
   const commandPrefix = record2.descriptors.commandPrefix?.value;
   const cwd = record2.descriptors.cwd?.value;
   const shellPath = record2.descriptors.shellPath?.value;
+  const onRefusal = record2.descriptors.onRefusal?.value;
   const env = boundedEnvironment(record2.descriptors.env?.value);
   if (!boundedString(cwd, 4096, 8192) || env === void 0) return void 0;
+  if (onRefusal !== void 0 && typeof onRefusal !== "function") return void 0;
   const shell = piShellLaunch({
     shellPath,
     command,
@@ -2776,6 +2802,7 @@ function parseRuntimeLaunchInput(input) {
     cwd,
     env,
     label: record2.descriptors.label?.value,
+    ...onRefusal === void 0 ? {} : { onRefusal },
     shell,
     ...record2.keys.includes("timeoutMs") ? { timeoutMs: record2.descriptors.timeoutMs?.value } : {}
   });
@@ -2861,11 +2888,12 @@ var SessionBackgroundJobRuntime = class {
         env: parsed.env,
         stdio: ["pipe", "pipe", "pipe", "pipe"]
       });
-    } catch {
+    } catch (error) {
       releaseOwnership();
       this.#pendingOwnership.delete(ownership);
       const terminal = this.#manager.transitionJob({ id: job.id, state: "failed" });
       if (terminal !== void 0) this.#publish(terminal, "completed");
+      reportRefusal(parsed.onRefusal, describeSpawnRefusal(error));
       return void 0;
     }
     let finish;
@@ -3290,6 +3318,7 @@ function createNativeBackgroundController(pi, options) {
             const launch = await options.resolveLaunch(value.cwd);
             if (!stable(value, context) || launch === void 0 || currentToolSignal()?.aborted === true) return await toolFailure();
             const startedAt = now();
+            let spawnRefusal;
             const job = await value.runtime.launch({
               authorization: {
                 lease: value.lease,
@@ -3298,12 +3327,15 @@ function createNativeBackgroundController(pi, options) {
               ...frozen,
               cwd: value.cwd,
               env: launch.env,
+              onRefusal: (diagnostic) => {
+                spawnRefusal = diagnostic;
+              },
               shellPath: launch.shellPath,
               ...launch.commandPrefix === void 0 ? {} : { commandPrefix: launch.commandPrefix }
             });
             if (job === void 0) {
               if (!runtimeHealthy(value)) degrade(value);
-              return await toolFailure(value.runtime.health().diagnostic);
+              return await toolFailure(value.runtime.health().diagnostic ?? spawnRefusal);
             }
             if (!(stable(value, context) && currentToolSignal()?.aborted !== true)) {
               await value.runtime.cancel(job.id);

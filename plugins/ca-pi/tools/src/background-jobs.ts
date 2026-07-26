@@ -4,7 +4,7 @@ import { posix, win32 } from "node:path";
 import type { LifecycleAuthorization } from "./contracts.ts";
 import { publishActivity } from "./activity.ts";
 import type { ActivityPublisher, ActivityState } from "./activity.ts";
-import { openProcessTree } from "./process-tree.ts";
+import { openProcessTree, windowsRefusalReasonFromMessage } from "./process-tree.ts";
 import type {
   ManagedProcessTree,
   ProcessTreeCleanupReason,
@@ -81,6 +81,13 @@ export interface BackgroundJobLaunchInput {
   readonly label: string;
   readonly shellPath: string;
   readonly timeoutMs?: number;
+  /**
+   * #504: invoked only when the spawn itself failed — the single refusal an operator cannot
+   * predict, as against the four policy refusals that also resolve `undefined`. Per-launch by
+   * construction, so overlapping launches never read each other's environment failure.
+   * Diagnosis only: it is never awaited, and a throw from it is swallowed.
+   */
+  readonly onRefusal?: (diagnostic: string) => void;
 }
 
 export interface BackgroundJobRuntime {
@@ -621,26 +628,60 @@ function authorizationCurrent(authorization: LifecycleAuthorization): boolean {
   catch { return false; }
 }
 
+/**
+ * #504: the `#openTree` refusal is the one launch path that reports an ENVIRONMENT failure
+ * rather than a policy decision the caller could have predicted, so it is the one that must
+ * say why. The detail comes from a closed vocabulary — #428's supervisor refusal reasons, or
+ * an errno shape — and never from `error.message`, which embeds the resolved shell path and
+ * cwd and is not a contract any caller may widen.
+ */
+const SPAWN_REFUSAL_ERRNO = /^E[A-Z]{1,15}$/u;
+
+function spawnRefusalDetail(error: unknown): string | undefined {
+  if (!(error instanceof Error)) return undefined;
+  const reason = windowsRefusalReasonFromMessage(error.message);
+  if (reason !== undefined) return reason;
+  const code = (error as NodeJS.ErrnoException).code;
+  return typeof code === "string" && SPAWN_REFUSAL_ERRNO.test(code) ? code : undefined;
+}
+
+function describeSpawnRefusal(error: unknown): string {
+  let detail: string | undefined;
+  try { detail = spawnRefusalDetail(error); } catch { detail = undefined; }
+  return detail === undefined
+    ? "Background job could not start the configured shell; run /ca-doctor."
+    : `Background job could not start the configured shell (${detail}); run /ca-doctor.`;
+}
+
+/** Diagnosis reporting is fail-soft at the producer boundary, exactly like publishActivity. */
+function reportRefusal(sink: ((diagnostic: string) => void) | undefined, diagnostic: string): void {
+  if (sink === undefined) return;
+  try { sink(diagnostic); } catch { /* Producer behavior is authoritative. */ }
+}
+
 function parseRuntimeLaunchInput(input: unknown): Readonly<{
   authorization: LifecycleAuthorization;
   cwd: string;
   env: NodeJS.ProcessEnv;
   label: unknown;
+  onRefusal?: (diagnostic: string) => void;
   shell: Readonly<PiShellLaunch>;
   timeoutMs?: unknown;
 }> | undefined {
   const record = fixedDataRecord(
     input,
     ["authorization", "command", "cwd", "env", "label", "shellPath"],
-    ["commandPrefix", "timeoutMs"],
+    ["commandPrefix", "onRefusal", "timeoutMs"],
   );
   if (record === undefined) return undefined;
   const command = record.descriptors.command?.value as unknown;
   const commandPrefix = record.descriptors.commandPrefix?.value as unknown;
   const cwd = record.descriptors.cwd?.value as unknown;
   const shellPath = record.descriptors.shellPath?.value as unknown;
+  const onRefusal = record.descriptors.onRefusal?.value as unknown;
   const env = boundedEnvironment(record.descriptors.env?.value);
   if (!boundedString(cwd, 4_096, 8_192) || env === undefined) return undefined;
+  if (onRefusal !== undefined && typeof onRefusal !== "function") return undefined;
   const shell = piShellLaunch({
     shellPath: shellPath as string,
     command: command as string,
@@ -652,6 +693,7 @@ function parseRuntimeLaunchInput(input: unknown): Readonly<{
     cwd,
     env,
     label: record.descriptors.label?.value,
+    ...(onRefusal === undefined ? {} : { onRefusal: onRefusal as (diagnostic: string) => void }),
     shell,
     ...(record.keys.includes("timeoutMs") ? { timeoutMs: record.descriptors.timeoutMs?.value } : {}),
   });
@@ -750,11 +792,13 @@ class SessionBackgroundJobRuntime implements BackgroundJobRuntime {
         env: parsed.env,
         stdio: ["pipe", "pipe", "pipe", "pipe"],
       });
-    } catch {
+    } catch (error) {
       releaseOwnership();
       this.#pendingOwnership.delete(ownership);
       const terminal = this.#manager.transitionJob({ id: job.id, state: "failed" });
       if (terminal !== undefined) this.#publish(terminal, "completed");
+      // Fail-closed first, diagnosis second: the caller's sink never precedes the terminal state.
+      reportRefusal(parsed.onRefusal, describeSpawnRefusal(error));
       return undefined;
     }
     let finish!: () => void;
