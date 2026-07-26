@@ -221,14 +221,42 @@ var NIXPACKS_APP_DIR = "/app";
 var FALLBACK_BASE_IMAGE = "node:20-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0";
 var BUILD_ENV = { ...DOCKER_ENV, DOCKER_BUILDKIT: "1" };
 function run(cmd, args, opts = {}) {
+  const { timeoutMs, ...spawnOpts } = opts;
+  const deadline = timeoutMs ?? (cmd === "docker" ? timeoutForArgs(args) : DEFAULT_DOCKER_TIMEOUT_MS);
   return new Promise((resolve) => {
-    const c = spawn(cmd, args, { env: DOCKER_ENV, ...opts });
+    const c = spawn(cmd, args, { env: DOCKER_ENV, ...spawnOpts });
     let stdout = "";
     let stderr = "";
+    let timedOut = false;
+    let settled = false;
+    const settle = (r) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(r);
+    };
+    const timer = setTimeout(() => {
+      timedOut = true;
+      try {
+        c.kill("SIGKILL");
+      } catch {
+      }
+      settle({
+        code: DOCKER_TIMEOUT_EXIT_CODE,
+        out: `${stdout}${stderr}ca-sandbox: \`${cmd} ${args[0] ?? ""}\` timed out after ${deadline}ms and was killed (issue #394).`,
+        stdout,
+        stderr,
+        timedOut: true
+      });
+    }, deadline);
+    timer.unref?.();
     c.stdout?.on("data", (d) => stdout += d);
     c.stderr?.on("data", (d) => stderr += d);
-    c.on("error", (e) => resolve({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
-    c.on("close", (code) => resolve({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
+    c.on("error", (e) => settle({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
+    c.on("close", (code) => {
+      if (timedOut) return;
+      settle({ code: code ?? 1, out: stdout + stderr, stdout, stderr });
+    });
   });
 }
 function sanitizeRepoName(repoDir) {
