@@ -2,7 +2,7 @@
  * cp.ts — host-initiated, PULL-ONLY file extraction from a sandbox (T-12, AC-10).
  *
  * Controlled egress out of the box is host-initiated ONLY (spec "Scope": "sandbox
- * cp <id>:/work/<f> ./dest via docker cp"). `cpOut(id, containerPath, hostDest)`
+ * cp <id>:/work/<f> ./dest via docker cp"). `await cpOut(id, containerPath, hostDest)`
  * shells `docker cp <container>:<path> <hostDest>` — the host reaches IN and pulls
  * a file OUT. There is no `cpIn` counterpart by design: the box is for exploring
  * untrusted code, so the only sanctioned data flow is OUT to the host.

@@ -301,7 +301,7 @@ function parsePrune(args: string[]): Command {
 function defaultShell(id: string, shell: string): number {
   // `id` is the user-facing sandbox id; resolve it to the real container id
   // (the container is `ca-sbx-<id>-<suffix>`, not the bare id) before exec.
-  const containerId = resolveContainerId(id);
+  const containerId = await resolveContainerId(id);
   const r = spawnSync("docker", ["exec", "-it", containerId, shell], {
     stdio: "inherit",
     env: DOCKER_ENV,
@@ -317,13 +317,13 @@ function defaultShell(id: string, shell: string): number {
  * `create`/`destroy`/`prune` already resolve by label inside their modules.
  */
 export const defaultHandlers: Handlers = {
-  create: (url, opts) => createSandbox(url, { netPolicy: opts.netPolicy }),
-  destroy: (id, opts) => destroySandbox(id, { keepVolume: opts.keepVolume }),
-  prune: () => prune(),
+  create: (url, opts) => await createSandbox(url, { netPolicy: opts.netPolicy }),
+  destroy: (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume }),
+  prune: () => await prune(),
   // Preserve the sandbox id the caller passed in the returned contract, even
   // though the exec runs against the resolved container id.
-  exec: (id, argv) => ({ ...execInSandbox(resolveContainerId(id), argv), id }),
-  cp: (id, containerPath, hostDest) => cpOut(resolveContainerId(id), containerPath, hostDest),
+  exec: (id, argv) => ({ ...execInSandbox(await resolveContainerId(id), argv), id }),
+  cp: (id, containerPath, hostDest) => await cpOut(await resolveContainerId(id), containerPath, hostDest),
   shell: defaultShell,
 };
 

@@ -1,13 +1,13 @@
 /**
  * destroy.ts — ca-sandbox teardown + prune (T-09, covers AC-11).
  *
- * destroySandbox(id, opts) removes the docker objects of ONE sandbox, discovered
+ * await destroySandbox(id, opts) removes the docker objects of ONE sandbox, discovered
  * purely by the `ca.sandbox.id=<id>` label (no JSON file — registry.ts is the
  * label-only state). It `docker rm -f`'s every labeled container and `volume rm`'s
  * the named volume UNLESS `--keep-volume` is set, in which case the container goes
  * but the volume (the cloned source) is preserved for a later re-run.
  *
- * prune(opts) reclaims EVERY object carrying `ca.sandbox=1` — including a
+ * await prune(opts) reclaims EVERY object carrying `ca.sandbox=1` — including a
  * manually-leaked one that lost its id label — so a partial/abandoned sandbox can
  * always be swept. This is the AC-11 guarantee: after a normal `create -> destroy`
  * there are zero `ca.sandbox=1` objects; a leaked labeled object is reclaimed by
@@ -219,9 +219,9 @@ function verifyScope(
   dockerRun: DockerRun,
   log: FailureLog,
 ): { containers: string[]; volumes: string[] } {
-  const c = listContainersResult(labels, dockerRun);
+  const c = await listContainersResult(labels, dockerRun);
   if (c.code !== 0) log.add("list-containers", c.scope, c.code, c.stderr);
-  const v = listVolumesResult(labels, dockerRun);
+  const v = await listVolumesResult(labels, dockerRun);
   if (v.code !== 0) log.add("list-volumes", v.scope, v.code, v.stderr);
   return { containers: c.items, volumes: v.items };
 }
@@ -242,10 +242,10 @@ export async function destroySandbox(
   const labels = [SANDBOX_LABEL, idLabel(id)];
   const log = new FailureLog();
 
-  const containersList = listContainersResult(labels, dockerRun);
+  const containersList = await listContainersResult(labels, dockerRun);
   if (containersList.code !== 0)
     log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
-  const volumesList = listVolumesResult(labels, dockerRun);
+  const volumesList = await listVolumesResult(labels, dockerRun);
   if (volumesList.code !== 0)
     log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
 
@@ -309,12 +309,12 @@ export async function prune(opts: PruneOptions = {}): Promise<PruneResult> {
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const log = new FailureLog();
 
-  const containersList = listContainersResult(SANDBOX_LABEL, dockerRun);
+  const containersList = await listContainersResult(SANDBOX_LABEL, dockerRun);
   if (containersList.code !== 0)
     log.add("list-containers", containersList.scope, containersList.code, containersList.stderr);
   const removedContainers = await removeEach(containersList.items, "container", dockerRun, log);
 
-  const volumesList = listVolumesResult(SANDBOX_LABEL, dockerRun);
+  const volumesList = await listVolumesResult(SANDBOX_LABEL, dockerRun);
   if (volumesList.code !== 0)
     log.add("list-volumes", volumesList.scope, volumesList.code, volumesList.stderr);
   const removedVolumes = await removeEach(volumesList.items, "volume", dockerRun, log);

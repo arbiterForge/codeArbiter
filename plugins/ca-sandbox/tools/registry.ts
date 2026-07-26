@@ -7,7 +7,7 @@
  * label every object of that sandbox carries (container + named volume). This
  * means the registry can never drift from reality: there is no file to get stale,
  * and `docker` is the single source of truth. A manually-leaked labeled object is
- * therefore visible to `list()`/`prune()` for free — exactly what AC-11 asks for.
+ * therefore visible to `list()`/`await prune()` for free — exactly what AC-11 asks for.
  *
  * Process/shell handling routes through docker.ts (architecture-007): a thin
  * docker runner returning code/stdout/stderr, MSYS_NO_PATHCONV=1 set on
@@ -83,20 +83,20 @@ const scopeOf = (labels: string | string[]): string =>
   (Array.isArray(labels) ? labels : [labels]).map((l) => `label=${l}`).join(" ");
 
 /** `listContainers` with docker's exit status retained — see `ListResult`. */
-export function listContainersResult(
+export async function listContainersResult(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
-): ListResult {
-  const r = dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
+): Promise<ListResult> {
+  const r = await dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
   return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
 }
 
 /** `listVolumes` with docker's exit status retained — see `ListResult`. */
-export function listVolumesResult(
+export async function listVolumesResult(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
-): ListResult {
-  const r = dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
+): Promise<ListResult> {
+  const r = await dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
   return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
 }
 
@@ -105,22 +105,22 @@ export function listVolumesResult(
  * --no-trunc --filter label=<expr> [...]` prints one full id per line; blank
  * output => none. Pass an array to require ALL labels (e.g. membership + id).
  */
-export function listContainers(
+export async function listContainers(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
-): string[] {
-  return listContainersResult(labels, dockerRun).items;
+): Promise<string[]> {
+  return (await listContainersResult(labels, dockerRun)).items;
 }
 
 /**
  * Named volumes matching one or more label expressions (ANDed). `docker volume
  * ls -q --filter label=<expr> [...]` prints one volume name per line.
  */
-export function listVolumes(
+export async function listVolumes(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
-): string[] {
-  return listVolumesResult(labels, dockerRun).items;
+): Promise<string[]> {
+  return (await listVolumesResult(labels, dockerRun)).items;
 }
 
 function splitLines(out: string): string[] {
@@ -136,15 +136,15 @@ function splitLines(out: string): string[] {
 /**
  * Every ca-sandbox container id (label=ca.sandbox=1). Flat — does not group by
  * instance; `list()` is the grouped view, this is the raw membership set used by
- * `prune()` to reclaim ALL labeled containers including manually-leaked ones.
+ * `await prune()` to reclaim ALL labeled containers including manually-leaked ones.
  */
-export function listAllContainers(dockerRun: DockerRun = defaultDockerRun): string[] {
-  return listContainers(SANDBOX_LABEL, dockerRun);
+export async function listAllContainers(dockerRun: DockerRun = defaultDockerRun): Promise<string[]> {
+  return await listContainers(SANDBOX_LABEL, dockerRun);
 }
 
 /** Every ca-sandbox named volume (label=ca.sandbox=1), including leaked ones. */
-export function listAllVolumes(dockerRun: DockerRun = defaultDockerRun): string[] {
-  return listVolumes(SANDBOX_LABEL, dockerRun);
+export async function listAllVolumes(dockerRun: DockerRun = defaultDockerRun): Promise<string[]> {
+  return await listVolumes(SANDBOX_LABEL, dockerRun);
 }
 
 /**
@@ -155,7 +155,11 @@ export function listAllVolumes(dockerRun: DockerRun = defaultDockerRun): string[
  * container; volumes expose `.Labels` directly. We try the container shape first,
  * then the volume shape, since the caller may not know the object kind.
  */
-function labelValue(objectRef: string, kind: "container" | "volume", dockerRun: DockerRun): string {
+async function labelValue(
+  objectRef: string,
+  kind: "container" | "volume",
+  dockerRun: DockerRun,
+): Promise<string> {
   const fmt =
     kind === "container"
       ? `{{ index .Config.Labels "${SANDBOX_ID_LABEL_KEY}" }}`
@@ -164,7 +168,7 @@ function labelValue(objectRef: string, kind: "container" | "volume", dockerRun: 
     kind === "container"
       ? ["inspect", "-f", fmt, objectRef]
       : ["volume", "inspect", "-f", fmt, objectRef];
-  const r = dockerRun(args);
+  const r = await dockerRun(args);
   if (r.code !== 0) return "";
   // Go template prints "<no value>" when the label is absent on some engines.
   const v = r.stdout.trim();
@@ -174,9 +178,9 @@ function labelValue(objectRef: string, kind: "container" | "volume", dockerRun: 
 /**
  * List sandboxes grouped by their `ca.sandbox.id`. Pure label-filter discovery,
  * no JSON file. Objects that carry `ca.sandbox=1` but NO id label are grouped
- * under the empty-string id "" — these are the leaked objects `prune()` reclaims.
+ * under the empty-string id "" — these are the leaked objects `await prune()` reclaims.
  */
-export function listSandboxes(dockerRun: DockerRun = defaultDockerRun): SandboxRecord[] {
+export async function listSandboxes(dockerRun: DockerRun = defaultDockerRun): Promise<SandboxRecord[]> {
   const byId = new Map<string, SandboxRecord>();
   const ensure = (id: string): SandboxRecord => {
     let rec = byId.get(id);
@@ -187,11 +191,11 @@ export function listSandboxes(dockerRun: DockerRun = defaultDockerRun): SandboxR
     return rec;
   };
 
-  for (const c of listAllContainers(dockerRun)) {
-    ensure(labelValue(c, "container", dockerRun)).containers.push(c);
+  for (const c of await listAllContainers(dockerRun)) {
+    ensure(await labelValue(c, "container", dockerRun)).containers.push(c);
   }
-  for (const v of listAllVolumes(dockerRun)) {
-    ensure(labelValue(v, "volume", dockerRun)).volumes.push(v);
+  for (const v of await listAllVolumes(dockerRun)) {
+    ensure(await labelValue(v, "volume", dockerRun)).volumes.push(v);
   }
   return [...byId.values()];
 }
@@ -201,13 +205,13 @@ export function listSandboxes(dockerRun: DockerRun = defaultDockerRun): SandboxR
  * (no scan of a JSON file). Returns the record, or null when no labeled object
  * carries that id.
  */
-export function findSandbox(
+export async function findSandbox(
   id: string,
   dockerRun: DockerRun = defaultDockerRun,
-): SandboxRecord | null {
+): Promise<SandboxRecord | null> {
   const labels = [SANDBOX_LABEL, idLabel(id)];
-  const containers = listContainers(labels, dockerRun);
-  const volumes = listVolumes(labels, dockerRun);
+  const containers = await listContainers(labels, dockerRun);
+  const volumes = await listVolumes(labels, dockerRun);
   if (containers.length === 0 && volumes.length === 0) return null;
   return { id, containers, volumes };
 }
@@ -223,11 +227,11 @@ export function findSandbox(
  *
  * @throws if no labeled container carries that sandbox id (unknown/destroyed id).
  */
-export function resolveContainerId(
+export async function resolveContainerId(
   id: string,
   dockerRun: DockerRun = defaultDockerRun,
-): string {
-  const rec = findSandbox(id, dockerRun);
+): Promise<string> {
+  const rec = await findSandbox(id, dockerRun);
   const containerId = rec?.containers[0];
   if (!containerId)
     throw new Error(

@@ -1,7 +1,7 @@
 /**
  * exec.ts — ca-sandbox in-container command exec (T-11, covers AC-09).
  *
- * execInSandbox(id, argv) wraps `docker exec`, captures stdout and stderr
+ * await execInSandbox(id, argv) wraps `docker exec`, captures stdout and stderr
  * SEPARATELY, and returns a stable JSON contract:
  *
  *   { id, exitCode, stdout, stderr, durationMs, truncated }
