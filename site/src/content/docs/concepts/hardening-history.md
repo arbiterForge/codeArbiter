@@ -16,7 +16,7 @@ Coverage is what closes the time-of-check / time-of-use window: a pass minted fo
 
 The gate fails closed when the diff cannot be read. If git is unavailable or times out, `added_lines()` returns `None` (distinct from an empty diff), and codeArbiter treats that as a reason to block the commit rather than wave it through. H-14's file-list read follows the same fail-closed rule.
 
-The detection corpus is shared: `CRYPTO_RE` and `SECRET_RE` live once in `_hooklib.py`, so the redactor and the gate stay aligned on what counts as crypto or a secret — there is exactly one place either pattern set can be edited, and both consumers pick up the change together.
+The detection corpus is shared: `CRYPTO_RE` and `SECRET_RE` live once in `_hooklib.py`, so the redactor and the gate stay aligned on what counts as crypto or a secret. There is exactly one place either pattern set can be edited, and both consumers pick up the change together.
 
 ## Why the Board Has One Writer (ADR-0008)
 
@@ -24,7 +24,7 @@ The detection corpus is shared: `CRYPTO_RE` and `SECRET_RE` live once in `_hookl
 
 The commit gate is the single board-sync chokepoint. Phase 6 of the commit-gate skill identifies a schema-valid board transition and exempts it from the scope-creep check; Phase 7 stages it alongside the work. The board flip lands atomically with the code it describes: an abandoned PR abandons the flip with it, and there is no window where the board reads done while the corresponding work is not yet merged.
 
-This design replaced an earlier pattern of a separate, lagging `chore(board)` PR that could drift from the code it described. Cross-session board drift — a task left open after its work lands — is now eliminated by construction rather than by process discipline. See ADR-0008 for the full design rationale.
+This design replaced an earlier pattern of a separate, lagging `chore(board)` PR that could drift from the code it described. Cross-session board drift (a task left open after its work lands) is now eliminated by construction rather than by process discipline. See ADR-0008 for the full design rationale.
 
 `/ca:standup` and `/ca:doctor` each run a read-only reconciliation sweep and surface any merged-but-not-flipped task; they report findings without writing to the board themselves.
 
@@ -40,6 +40,6 @@ Dated record of enforcement hardening as it shipped, newest first. Versions corr
 
 ## Related
 
-- [Enforcement & Security](/enforcement/) — the user-facing statement of what is enforced.
+- [Enforcement & Security](/enforcement/): the user-facing statement of what is enforced.
 - [ADRs and the Decision Log](/concepts/adrs/)
 - [Hooks reference](/hooks/)

@@ -13,17 +13,17 @@ audit history available to the other host.
 Enforcement in a repository is controlled by a single flag: `arbiter: enabled` in `.codearbiter/CONTEXT.md`
 frontmatter. Every enforcement hook checks that flag through `arbiter_active()` and exits immediately,
 without running any gate logic, when it is absent or set to anything other than `enabled`. Turning it
-off makes the plugin genuinely dormant in that repository — the orchestrator persona never loads, and
+off makes the plugin genuinely dormant in that repository: the orchestrator persona never loads, and
 every `PreToolUse`/`PreToolUse`-guarded hook returns before doing anything.
 
 The flag is deliberately hard to flip from inside a session, by design. **H-18** blocks a shell
 redirect, `Write`, or `Edit` that would change `arbiter: enabled` to `arbiter: disabled` (or otherwise
-corrupt the frontmatter) through `.codearbiter/CONTEXT.md` — the gates cannot silence themselves from
+corrupt the frontmatter) through `.codearbiter/CONTEXT.md`. The gates cannot silence themselves from
 inside the repo they govern. Reads (`cat`, `grep`) still pass through untouched.
 
 Unlike the crypto/secret and migration gates (H-09b/H-10b, H-14), H-18 has no marker-based bypass that
 `/ca:override` can unlock. Its block calls in `pre-bash.py`, `pre-write.py`, and `pre-edit.py` are
-unconditional — there is no override flag the hook code checks. Running `/ca:override` first does not
+unconditional: there is no override flag the hook code checks. Running `/ca:override` first does not
 make the block go away; the hook still fires on the next Bash/Write/Edit call that touches
 `CONTEXT.md`. That's deliberate: the block exists precisely so a session cannot talk itself past it.
 
@@ -31,7 +31,7 @@ The honest, sanctioned path is to make the edit through a channel H-18 doesn't i
 only subscribes to Claude Code's own `PreToolUse` hook on the Bash, Write, and Edit tools:
 
 1. Close or step outside the active Claude Code session for that repo (or use a different terminal /
-   editor entirely — a plain text editor, `vim`, VS Code, a shell outside Claude Code's Bash tool).
+   editor entirely: a plain text editor, `vim`, VS Code, a shell outside Claude Code's Bash tool).
 2. Edit `.codearbiter/CONTEXT.md` directly and change the frontmatter line to:
 
    ```yaml
@@ -42,27 +42,27 @@ only subscribes to Claude Code's own `PreToolUse` hook on the Bash, Write, and E
 
 3. Log the change for the audit trail, the same way any other gate exception is recorded, by running
    `/ca:override "disabling codeArbiter for this repository"` in a session **after** the edit (or
-   before — the log entry and the edit are independent; only the edit itself needs to happen outside
-   the tool-mediated path). This keeps `.codearbiter/overrides.log` an honest record of the change even
-   though the hook itself never granted permission.
+   before, because the log entry and the edit are independent; only the edit itself needs to happen
+   outside the tool-mediated path). This keeps `.codearbiter/overrides.log` an honest record of the
+   change even though the hook itself never granted permission.
 4. Verify: open a new Claude Code session in the repo. No orchestrator persona loads, the statusline's
    arbiter row (stage · tasks · questions · overrides) does not render, and any tool call proceeds
    without a gate check.
 
-There is no hidden bypass inside a session, and this page will not pretend there is one — H-18 guards
+There is no hidden bypass inside a session, and this page will not pretend there is one. H-18 guards
 exactly the tool flanks Claude Code mediates, and an edit outside those tools was never something it
 could stop.
 
 Re-enabling is the same edit in reverse (`arbiter: disabled` → `arbiter: enabled`), no override
-required — H-18 only blocks disabling the switch, not re-enabling it.
+required. H-18 only blocks disabling the switch, not re-enabling it.
 
 ## Pi
 
 `ca-pi` currently ships as a Feature Forge `preview`. Real use and feedback are
 welcome while broader testing continues before stable status.
 
-`ca-pi` is distributed Git-only, versioned independently as `ca-pi-v<version>` tags — not tied to
-the `ca`/`ca-codex` release cadence. There is no npm release and no auto-update.
+`ca-pi` is distributed Git-only, versioned independently as `ca-pi-v<version>` tags (not tied to
+the `ca`/`ca-codex` release cadence). There is no npm release and no auto-update.
 
 **Upgrade or pin a version:** re-run `pi install` with the new pinned tag:
 
@@ -78,7 +78,7 @@ pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 
 (`pi uninstall` is the equivalent alias.) Confirm removal with `pi list`.
 
-Uninstalling `ca-pi` does not touch `.codearbiter/` in any repository — that state survives, the
+Uninstalling `ca-pi` does not touch `.codearbiter/` in any repository: that state survives, the
 same as for Claude Code and Codex, and another governance host can pick it up.
 
 ## Full Uninstall
@@ -107,18 +107,18 @@ pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 
 This removes the plugin payload (hooks, commands, agents, skills) from Claude Code's plugin cache.
 Hooks, commands, and the statusline wiring stop loading from the next session onward. `claude plugin
-update` is **not** sufficient for a full removal — it can leave a stale cached payload behind when the
+update` is **not** sufficient for a full removal. It can leave a stale cached payload behind when the
 marketplace version string hasn't changed; `uninstall` is the clean path.
 
-You can also manage the marketplace entry (`codearbiter`) itself — added at install time with
-`/plugin marketplace add arbiterForge/codeArbiter` — through the `/plugin` command's interactive
-marketplace management screen in any Claude Code session, if you want it gone too.
+The marketplace entry (`codearbiter`) itself was added at install time with
+`/plugin marketplace add arbiterForge/codeArbiter`. If you want that gone too, you can manage it
+through the `/plugin` command's interactive marketplace management screen in any Claude Code session.
 
 ### 2. Decide What Happens to `.codearbiter/`
 
 Uninstalling the plugin does **not** touch `.codearbiter/` in any repository. That directory is your
-repo's state — specs, plans, ADRs, the decision log, tribunal reports, and the append-only overrides
-audit trail — and it survives the plugin by design, the same way it's meant to survive a plugin update.
+repo's state (specs, plans, ADRs, the decision log, tribunal reports, and the append-only overrides
+audit trail), and it survives the plugin by design, the same way it's meant to survive a plugin update.
 Deleting it is a separate, deliberate act:
 
 ```text
@@ -126,7 +126,7 @@ rm -rf .codearbiter/
 ```
 
 Consider whether the audit trail in `.codearbiter/overrides.log` and `.codearbiter/decisions/` has
-value to keep even after you stop using the plugin day to day — it's a plain-file record, readable
+value to keep even after you stop using the plugin day to day: it's a plain-file record, readable
 without codeArbiter installed.
 
 ### 3. Remove the Statusline
@@ -139,11 +139,11 @@ plugin (the command needs the plugin's `wire-statusline.py` to run):
 ```
 
 This restores whatever `statusLine.command` was in `~/.claude/settings.json` before you wired
-codeArbiter in — or removes the key entirely if there was none — and restores any prior `spinnerVerbs`
+codeArbiter in (or removes the key entirely if there was none), and restores any prior `spinnerVerbs`
 the same way. See [Set Up the Statusline](/guides/the-statusline/#remove-the-statusline) for the full
 behavior.
 
-If you already uninstalled the plugin first, `/ca:statusline uninstall` is no longer available — edit
+If you already uninstalled the plugin first, `/ca:statusline uninstall` is no longer available. Edit
 `~/.claude/settings.json` by hand and remove the `statusLine` entry that points at
 `hooks/statusline.py` under the plugin's cache path.
 
@@ -156,19 +156,19 @@ Bash hook's literal-string match (`g=git; c=commit; $g $c`) would otherwise slip
 entirely.
 
 These shims are managed only in repositories you opened with the plugin active, and only removed
-automatically the next time codeArbiter runs there — which won't happen once the plugin is
+automatically the next time codeArbiter runs there, which won't happen once the plugin is
 uninstalled. Remove them by hand, per repository:
 
 ```sh
 python plugins/ca/hooks/_githooks.py uninstall .
 ```
 
-(Run this from a checkout that still has the plugin's hook files present — for example, before you
+(Run this from a checkout that still has the plugin's hook files present: for example, before you
 uninstall the plugin, or from a fresh clone of the codeArbiter repo pointed at your target repo's path
 as the second argument.) `_githooks.py uninstall` removes only shims that carry codeArbiter's sentinel
 comment; a pre-existing hook from another tool (husky, pre-commit-framework) is left untouched.
 
-If that script isn't available, remove the files directly — they only exist if codeArbiter installed
+If that script isn't available, remove the files directly. They only exist if codeArbiter installed
 them (check for the sentinel comment `# codeArbiter-managed git hook (#161)` at the top):
 
 ```sh
@@ -199,8 +199,8 @@ what to check first.
 **Before you uninstall mid-feature, check:**
 
 1. Run <kbd>/ca:status</kbd> to see the current stage, open tasks, and any unresolved `CONFIRM-NN`
-   questions — resolve or note anything open before losing the orchestrator's view of it.
+   questions. Resolve or note anything open before losing the orchestrator's view of it.
 2. Confirm the branch is pushed or otherwise backed up if you're also about to remove local state.
 3. If a commit is staged but hasn't cleared `commit-gate`, either finish the commit through the plugin
    first or be aware you're now committing without the gate's verification, secret-scan, and
-   behavioral-proof checks — nothing enforces those once the plugin is gone.
+   behavioral-proof checks. Nothing enforces those once the plugin is gone.

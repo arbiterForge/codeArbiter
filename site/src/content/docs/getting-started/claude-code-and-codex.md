@@ -79,11 +79,11 @@ the supported bar for it is [ADR-0012](https://github.com/arbiterForge/codeArbit
 dual-host concurrency is accepted **at parity with same-host concurrency**, not stronger than it.
 Concretely:
 
-- **Safe:** the append-only audit writes (`overrides.log`, `gate-events.log`) — each line now
+- **Safe:** the append-only audit writes (`overrides.log`, `gate-events.log`). Each line now
   carries host attribution, and concurrent writers do not lose records.
 - **Not hardened, and not new to dual-host:** the task board (`open-tasks.md`) and the dev-marker
-  file are mutated with a lock-free read-modify-write. Two sessions racing the same mutation — for
-  example, both flipping the same task, or both entering/exiting `/ca:dev` — can drop an update or
+  file are mutated with a lock-free read-modify-write. Two sessions racing the same mutation (for
+  example, both flipping the same task, or both entering/exiting `/ca:dev`) can drop an update or
   clobber the marker, exactly as two concurrent Claude Code sessions on one checkout already can.
   This is pre-existing, host-agnostic concurrency debt, not a Codex-specific gap.
 

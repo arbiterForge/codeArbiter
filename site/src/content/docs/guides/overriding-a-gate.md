@@ -3,7 +3,7 @@ title: "Override a Gate Safely"
 description: "Bypass a blocked gate with /ca:override, the only sanctioned path: one audit line is appended to overrides.log, your identity comes from git config user.email, and the bypass is permanent in the trail."
 ---
 
-A gate blocked your command and the action is genuinely justified. Use `/ca:override "reason"` to bypass it — the only sanctioned path, since any other bypass leaves no record in the audit trail.
+A gate blocked your command and the action is genuinely justified. Use `/ca:override "reason"` to bypass it. That is the only sanctioned path, since any other bypass leaves no record in the audit trail.
 
 Before running it, identify which kind of gate you are facing. The two paths are different.
 

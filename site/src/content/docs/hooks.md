@@ -27,7 +27,7 @@ codeArbiter enforces its gates as Claude Code hooks under `plugins/ca/hooks/`. E
 
 Every hook is registered **twice** in `hooks.json`: once under `python3`, and once under a `python3 -c "" || python` fallback. On a stock Windows box that has only the `python` interpreter, the gates still fire. The two entries each receive their own stdin, so a real block is never swallowed by the fallback.
 
-For the exact, word-for-word message text a hook prints for every gate ID — generated directly from each `block()`/`remind()` call site, so it can never drift from the narrative summaries below — see the [Hook Gates reference](/reference/hooks-gates/).
+For the exact, word-for-word message text a hook prints for every gate ID (generated directly from each `block()`/`remind()` call site, so it can never drift from the narrative summaries below), see the [Hook Gates reference](/reference/hooks-gates/).
 
 ## Registered Hooks
 
@@ -66,7 +66,7 @@ For the exact, word-for-word message text a hook prints for every gate ID — ge
 - **Event:** `PreToolUse`, matcher `Bash|PowerShell`.
 - **Script:** `pre-bash.py`.
 - **What it enforces:**
-  - **H-00:** fail-closed backstop. If the guard itself crashes on an unexpected input, or git cannot be read to resolve the branch/diff state, the operation is **blocked** rather than allowed through — a guard that cannot determine whether an operation is safe treats it as unsafe.
+  - **H-00:** fail-closed backstop. If the guard itself crashes on an unexpected input, or git cannot be read to resolve the branch/diff state, the operation is **blocked** rather than allowed through. A guard that cannot determine whether an operation is safe treats it as unsafe.
   - **H-01:** no direct commit/push to the default branch (`main`/`master` case-insensitive), including a detached HEAD on a protected tip and protected refspecs (`HEAD:main`, `:main`, `refs/heads/main`, `--all`/`--mirror`). The branch is resolved against the repository the git command actually targets (a `git -C <dir>` composes repeated `-C` the way git does), not the session's project dir.
   - **H-02:** no force-push (`--force`, `--force-with-lease`, `--force-if-includes`, `-f`, `+refspec`).
   - **H-03:** no wildcard staging (flag forms `-A`/`--all`/`-u`/`.`; argument forms globs, directories, pathspec magic).
@@ -100,7 +100,7 @@ For the exact, word-for-word message text a hook prints for every gate ID — ge
 - **Event:** `PreToolUse`, matcher `Edit|MultiEdit`.
 - **Script:** `pre-edit.py`.
 - **What it enforces:**
-  - **H-05:** on an audit log, MultiEdit is blocked outright (cannot express a verifiable append), an Edit with an empty `old_string` is blocked (it can never be a pure append), a `replace_all` Edit is rejected outright, and an Edit is admitted only as a strict **tail append** — `new_string` must equal the current content plus an appended tail, with `old_string` occurring exactly once. This closes the earlier hole where a mid-file insertion or a multi-site suffix rewrite passed as an "append".
+  - **H-05:** on an audit log, MultiEdit is blocked outright (cannot express a verifiable append), an Edit with an empty `old_string` is blocked (it can never be a pure append), a `replace_all` Edit is rejected outright, and an Edit is admitted only as a strict **tail append**: `new_string` must equal the current content plus an appended tail, with `old_string` occurring exactly once. This closes the earlier hole where a mid-file insertion or a multi-site suffix rewrite passed as an "append".
   - **H-11:** the same fresh `adr-authoring-active` marker requirement for `decisions/` `.md` files.
   - **H-18 / H-19:** the same activation-switch and gate-marker protections as the Write flank.
 - **Why:** Closes the Edit/MultiEdit flank; an append-only log accepts only verifiable tail appends.
@@ -158,7 +158,7 @@ The settings-wired statusline renderer (installed by `wire-statusline.py`; the r
 
 ### git-enforce.py
 
-The `pre-commit` / `pre-push` shim installed into the repo's own `.git/hooks/` (idempotently, at `/ca:init` and on session start; never overwriting a pre-existing foreign hook). It enforces the protected-branch, force-push, and crypto/secret/migration gates **at the git operation itself**, below the command spelling — so shell indirection (`g=git; $g commit`) that never reaches the `pre-bash.py` matcher is still gated. It resolves the repository it runs in via `git rev-parse --show-toplevel` from its own working directory, reuses the same detection primitives as `pre-bash.py` so the two cannot drift, and is written atomically so a torn install can never leave a sentinel-less partial shim. This backstop is what `pre-bash.py`'s H-20 protects (a `--no-verify` would skip it).
+The `pre-commit` / `pre-push` shim installed into the repo's own `.git/hooks/` (idempotently, at `/ca:init` and on session start; never overwriting a pre-existing foreign hook). It enforces the protected-branch, force-push, and crypto/secret/migration gates **at the git operation itself**, below the command spelling: shell indirection (`g=git; $g commit`) that never reaches the `pre-bash.py` matcher is still gated. It resolves the repository it runs in via `git rev-parse --show-toplevel` from its own working directory, reuses the same detection primitives as `pre-bash.py` so the two cannot drift, and is written atomically so a torn install can never leave a sentinel-less partial shim. This backstop is what `pre-bash.py`'s H-20 protects (a `--no-verify` would skip it).
 
 ### security-pass.py / migration-pass.py
 

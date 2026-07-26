@@ -86,7 +86,7 @@ addition: an enabled repository still requires Pi's own affirmative project-trus
 repository-aware startup. The parent registers repository-aware dispatch, farm preview, and native
 compaction only after the current session reports that trust, the repository is enabled, and the
 enforcement lifecycle is ready. A session opened before trust is granted, or before the repo opted
-in, stays inert — nothing repository-aware runs.
+in, stays inert: nothing repository-aware runs.
 
 `codearbiter_dispatch` and `codearbiter_farm_preview` are **parent-only** EXEC tools. A child
 process spawned to do author or reviewer work cannot escalate itself into repository-aware dispatch
@@ -96,7 +96,7 @@ governance secrets; that key is scoped to the trusted parent only.
 Run `/ca-doctor` to verify this is actually live: it inspects the active package path, command
 ownership, Python/core/bridge health, child fingerprint, and the H-03 wrapper self-test. Its
 module-identity check proves self-consistency between the operator-launched Pi CLI, imported module,
-package root, and reported version — it does **not** prove publisher authenticity. Verify the
+package root, and reported version. It does **not** prove publisher authenticity. Verify the
 installed source separately with `pi list` and `pi config`.
 
 ## Fail-Loud, Never Silently Dormant

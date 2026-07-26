@@ -32,7 +32,7 @@ pi list
 pi config
 ```
 
-`pi list` and `pi config` let you verify the installed source before trusting it — see
+`pi list` and `pi config` let you verify the installed source before trusting it. See
 [Trust and Security](#trust-and-security) below.
 
 ## 2. Grant Project Trust
@@ -41,7 +41,7 @@ Installing the plugin does not enforce anything. After inspecting the project, g
 trust, then start a fresh session. The parent only registers repository-aware dispatch, farm
 preview, and native compaction once the current session reports affirmative project trust, the
 repository is enabled, and the enforcement lifecycle is ready. Nothing repository-aware runs before
-that — a session started before trust was granted, or before it opted the repo in, stays inert.
+that: a session started before trust was granted, or before it opted the repo in, stays inert.
 
 ## 3. Scaffold and Activate the Repo
 
@@ -70,7 +70,7 @@ Run `/ca-doctor`:
 Doctor inspects the active package path, the canonical Pi CLI and package origin, command ownership,
 supported-version expansion fingerprints, Python/core/bridge health, child fingerprint, final mutator
 wrappers, and the H-03 wrapper self-test. The module-identity row proves self-consistency between the
-operator-launched Pi CLI, imported module, package root, and reported version — it does **not** prove
+operator-launched Pi CLI, imported module, package root, and reported version. It does **not** prove
 publisher authenticity. Verify the source separately with `pi list` and `pi config`.
 
 ## Trust and Security
@@ -88,8 +88,8 @@ removing `ca-pi`.
 
 Windows is a promoted, tested platform for `ca-pi`. Child Pi processes (author and reviewer work,
 dispatched through `codearbiter_dispatch`) are supervised through a Windows-specific helper so
-cancellation and timeout cleanup terminate the whole process tree — no zombie processes left behind
-on `Ctrl+C` or a dispatch timeout.
+cancellation and timeout cleanup terminate the whole process tree: no zombie processes are left
+behind on `Ctrl+C` or a dispatch timeout.
 
 ## Next steps
 

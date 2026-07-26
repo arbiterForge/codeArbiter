@@ -3,11 +3,11 @@ title: What Is codeArbiter
 description: How codeArbiter orchestrates shared gated workflows in Claude Code, Codex, and Pi.
 ---
 
-codeArbiter ships four sibling plugins from one marketplace: three governance hosts — `ca` for Claude
-Code, `ca-codex` for Codex, and `ca-pi` for Pi — plus `ca-sandbox`, an infrastructure plugin unrelated
-to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)). All three governance hosts inject the
-same orchestrator responsibilities, enforce the same policy core, and use one checked-in
-`.codearbiter/` directory for project context and audit state. See the
+codeArbiter ships four sibling plugins from one marketplace. Three are governance hosts: `ca` for
+Claude Code, `ca-codex` for Codex, and `ca-pi` for Pi. The fourth is `ca-sandbox`, an infrastructure
+plugin unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)). All three governance
+hosts inject the same orchestrator responsibilities, enforce the same policy core, and use one
+checked-in `.codearbiter/` directory for project context and audit state. See the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
 between those two, and [Pi](/getting-started/pi/) for the third host's install and trust model.
 The complete `ca-pi` adapter is currently a Feature Forge `preview`: real use

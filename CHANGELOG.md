@@ -62,6 +62,25 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- site/VOICE.md's punctuation rule is finally enforced. It has banned the
+  em-dash as a sentence separator in site prose since 2026-07-02, and nothing
+  checked it: the anti-slop detector's scope covered repo-root docs and
+  `docs/**` and had never included `site/`. Sixteen of the thirty-six authored
+  pages violated the rule for twenty-four days while reviewers cited it at
+  contributors. A rule with no gate is worse than no rule, because people learn
+  that the style docs are advisory. 118 offending lines across 15 pages are
+  restructured with a period, a comma, a colon, or parentheses, and
+  `check_site_voice.py` now blocks the site publish on a new one (issue #338).
+- The detector no longer flags a definition-list dash (`- **term** - meaning`).
+  The rule is about *sentence* separators, and VOICE.md's own Terminology
+  anchors are written in that exact form, so enforcing it as written would have
+  made the gate contradict the guide. A real separator later on the same line is
+  still caught: only the definition dash is dropped, never the term before it.
+  The first cut of that exemption blanked the whole lead-in and silently
+  suppressed a genuine finding whenever inline code followed it, which an
+  adversarial reader caught before it shipped.
+- The detector's scope predicate recognises `.mdx` as prose. It keyed on `.md`
+  alone, so two authored site pages were invisible to a rule about writing.
 - The shipped `farm.js` bundle is now executed by the test suite, not merely
   regenerated and byte-compared. `includes/farm.md` tells operators to run
   `node <plugin>/tools/farm.js`, but the integration launcher ran `farm.ts`
