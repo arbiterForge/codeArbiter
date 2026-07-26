@@ -900,3 +900,46 @@ end, in which no command owned the operation and the redirect loop produced an u
 `/ca:override`.
 
 ---
+
+## DECISION-0028 — ADR-0023 — Ephemeral tool runs are a carve-out inside /ca:add-dep
+
+**Date:** 2026-07-26
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com (chose "Carve-out inside /ca:add-dep" over a new command projected to all three hosts, and over closing the issue; authoring approved 2026-07-26)
+**Decision category:** orchestration / dependency governance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `/ca:add-dep` applied whenever an agent needed to download and execute a third-party package, making no distinction between adopting a dependency and running a pinned tool once.
+- **Scaffold position:** Those are different actions with different risk. Issue #346 records the conflation interrupting a duplicate-code investigation over `jscpd`, which the operator had explicitly said must never be a dependency — and with no owner for the action, the routing loop reached for `/ca:override`.
+- **Status type:** coverage-gap-closure
+
+### Decision
+Add a bounded **Ephemeral tool run** section inside `/ca:add-dep`, plus a routing-table row pointing
+at it. No new command. The distinguishing test is the dependency GRAPH, not the download: anything
+entering a manifest, a lockfile, or a base image takes the existing review unchanged. The carve-out
+keeps the exact pinned version and the approved registry, requires one confirmation rather than a
+review, and MUST NOT modify a manifest or lockfile — verified with `git status --porcelain` after the
+run, not trusted.
+
+### SMARTS rationale
+Maintainable decided it. A new command would drag in the command catalog, the Pi command catalog, the
+README badges and counts, and the site sidebar — a public surface across three hosts to govern an
+action whose entire definition is that it changes nothing. Securable is unaffected either way: the
+part of supply-chain review that still applies (version pinning, approved registry) is kept at full
+strength, and the part that does not (manifest review) has nothing to review. Available favours the
+carve-out, since the distinction is written where an operator actually hits it. The cost is
+Reviewability: the section can be missed by someone scanning the command list, which the routing-table
+row exists to catch. Conflict hierarchy Level 3 governs; Level 1 is untouched.
+
+### Implementation implication
+Add the section to `core/surface/commands/add-dep.md` and the row to
+`core/surface/includes/routing-table.md`, then regenerate all three host projections via
+`build-surface`. Pin the distinction with a surface contract test so the carve-out cannot silently
+widen into a dependency bypass. Two of #346's four acceptance criteria were already satisfied — the
+routing table, review matrix, and `dependency-reviewer` frontmatter were already manifest-scoped — so
+the work is the sanctioned path for the other case. If operators cannot find the section and reach for
+`/ca:override` again, promote it to its own command.
+
+---

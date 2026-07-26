@@ -184,30 +184,86 @@ class ClassifyPublishTest(unittest.TestCase):
 class SelectReleaseTargetTest(unittest.TestCase):
     """Issue #378: one dispatch selects exactly one plugin, or none at all.
 
-    `confirm` and `codex_confirm` are independent optional strings, so the
-    workflow's two publish jobs used to test only their own input — supplying
-    both started two write-token publishers from one dispatch."""
+    The confirmation inputs are independent optional strings, so the workflow's
+    publish jobs used to test only their own input — supplying two started two
+    write-token publishers from one dispatch.
 
-    def test_ca_only(self):
-        self.assertEqual(_releaselib.select_release_target("2.6.1", ""), "ca")
+    Issue #382 widened the register from two plugins to four. The inputs are
+    POSITIONAL in RELEASE_TARGETS order, which makes ordering part of the
+    contract: a caller that passed them in a different order would resolve the
+    wrong plugin and publish an irreversible tag for it."""
 
-    def test_codex_only(self):
-        self.assertEqual(_releaselib.select_release_target("", "0.2.4"), "ca-codex")
+    VERSIONS = ("2.6.1", "0.2.4", "0.1.5", "0.1.28")
 
-    def test_neither_is_none(self):
-        self.assertEqual(_releaselib.select_release_target("", ""), "none")
+    def _inputs(self, **supplied):
+        """A full-arity argument list, blank except where named by target."""
+        values = {target: "" for target in _releaselib.RELEASE_TARGETS}
+        values.update(supplied)
+        return [values[target] for target in _releaselib.RELEASE_TARGETS]
 
-    def test_both_is_multiple(self):
-        self.assertEqual(_releaselib.select_release_target("2.6.1", "0.2.4"), "multiple")
+    def test_the_register_is_the_four_shipped_plugins(self):
+        self.assertEqual(_releaselib.RELEASE_TARGETS,
+                         ("ca", "ca-codex", "ca-sandbox", "ca-pi"))
+        self.assertEqual(len(self.VERSIONS), len(_releaselib.RELEASE_TARGETS))
+
+    def test_each_position_selects_its_own_target(self):
+        for index, target in enumerate(_releaselib.RELEASE_TARGETS):
+            with self.subTest(target=target):
+                args = [""] * len(_releaselib.RELEASE_TARGETS)
+                args[index] = self.VERSIONS[index]
+                self.assertEqual(_releaselib.select_release_target(*args), target)
+
+    def test_none_is_none(self):
+        self.assertEqual(
+            _releaselib.select_release_target(*self._inputs()), "none")
+
+    def test_any_two_is_multiple(self):
+        targets = _releaselib.RELEASE_TARGETS
+        pairs = [(a, b) for i, a in enumerate(targets) for b in targets[i + 1:]]
+        self.assertEqual(len(pairs), 6)
+        for first, second in pairs:
+            with self.subTest(pair=(first, second)):
+                selected = self._inputs(**{first: "1.0.0", second: "2.0.0"})
+                self.assertEqual(
+                    _releaselib.select_release_target(*selected), "multiple")
+
+    def test_all_four_is_multiple(self):
+        self.assertEqual(
+            _releaselib.select_release_target(*self.VERSIONS), "multiple")
 
     def test_whitespace_is_not_a_selection(self):
         # A stray space in a dispatch field must not read as a second target.
-        self.assertEqual(_releaselib.select_release_target("   ", "0.2.4"), "ca-codex")
-        self.assertEqual(_releaselib.select_release_target("  ", "\t"), "none")
+        self.assertEqual(
+            _releaselib.select_release_target(*self._inputs(**{"ca": "   ",
+                                                              "ca-pi": "0.1.28"})),
+            "ca-pi")
+        self.assertEqual(
+            _releaselib.select_release_target("  ", "\t", "\n", " "), "none")
 
     def test_never_raises_on_non_string(self):
-        self.assertEqual(_releaselib.select_release_target(None, None), "none")
-        self.assertEqual(_releaselib.select_release_target(42, "0.2.4"), "ca-codex")
+        self.assertEqual(
+            _releaselib.select_release_target(None, None, None, None), "none")
+        self.assertEqual(
+            _releaselib.select_release_target(42, "", "", ()), "none")
+        self.assertEqual(
+            _releaselib.select_release_target(42, "0.2.4", None, ""), "ca-codex")
+
+    def test_the_wrong_number_of_inputs_resolves_no_target(self):
+        # A caller wired for two would otherwise resolve `ca` from a dispatch
+        # that also selected ca-pi. `arity` is not a target and matches no
+        # `case` arm in release.yml, so the fail-closed `*)` default refuses it.
+        for args in ((), ("2.6.1",), ("2.6.1", ""), ("", "", ""),
+                     ("", "", "", "", "")):
+            with self.subTest(count=len(args)):
+                verdict = _releaselib.select_release_target(*args)
+                self.assertEqual(verdict, "arity")
+                self.assertNotIn(verdict, _releaselib.RELEASE_TARGETS)
+
+    def test_the_cli_refuses_a_wrong_length_invocation(self):
+        # The shell assigns from this command under `set -e`, so a non-zero exit
+        # with no label on stdout refuses the dispatch.
+        self.assertEqual(_releaselib.main(["select-target", "2.6.1", ""]), 2)
+        self.assertEqual(_releaselib.main(["select-target", "2.6.1", "", "", "", ""]), 2)
 
 
 class MergeReadinessTest(unittest.TestCase):
@@ -354,12 +410,15 @@ class CLITest(unittest.TestCase):
     def test_select_target_prints_the_label(self):
         # The workflow cases on the label, so the label — not the exit code —
         # is the contract; an unknown label lands on its fail-closed `*` arm.
-        for confirm, codex, expected in (("2.6.1", "", "ca"),
-                                         ("", "0.2.4", "ca-codex"),
-                                         ("", "", "none"),
-                                         ("2.6.1", "0.2.4", "multiple")):
-            with self.subTest(confirm=confirm, codex=codex):
-                rc, out = self._run(["select-target", confirm, codex])
+        # Arguments are positional in RELEASE_TARGETS order (#382).
+        for args, expected in ((("2.6.1", "", "", ""), "ca"),
+                               (("", "0.2.4", "", ""), "ca-codex"),
+                               (("", "", "0.1.5", ""), "ca-sandbox"),
+                               (("", "", "", "0.1.28"), "ca-pi"),
+                               (("", "", "", ""), "none"),
+                               (("2.6.1", "", "", "0.1.28"), "multiple")):
+            with self.subTest(args=args):
+                rc, out = self._run(["select-target", *args])
                 self.assertEqual(rc, 0)
                 self.assertEqual(out, expected)
 

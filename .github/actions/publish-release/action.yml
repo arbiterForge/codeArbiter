@@ -1,0 +1,221 @@
+name: "Publish a plugin release"
+description: >
+  The mechanical publish shared by every plugin release lane: verify the
+  requested version against the plugin's own manifest, cut the release notes
+  from its own CHANGELOG, create the namespaced tag and GitHub Release
+  idempotently, and read back what was actually published.
+
+# Issue #382 added the ca-sandbox and ca-pi lanes. The `release` and
+# `release-codex` jobs were byte-identical apart from nine parameters, so a
+# fourth and fifth copy would have put the #380 tag classifier, the #380
+# read-back, and the notes extraction in FOUR places. Every one of those is a
+# guard against publishing something irreversible at the wrong commit, and a
+# guard that exists in four copies is a guard that will be fixed in three.
+#
+# So the mechanics live here, once, and each lane is a thin job that supplies
+# its own manifest, changelog, tag namespace, and latest-badge policy. What
+# stays in release.yml is exactly what a contract test must read there: the
+# `needs: preflight` edge, the `contents: write` grant, and the single-target
+# `if:` condition. Those are per-job facts; these steps are not.
+#
+# STALENESS (#382 AC). No lane re-runs the built/generated-payload freshness
+# gates here. They already hold: the preflight refuses to authorize any
+# publisher unless `[GATE ] | [REPO] | Merge readiness` is green for GITHUB_SHA
+# ITSELF (#385), and that aggregate includes the surface, sync-core, and
+# esbuild staleness jobs. A stale payload is therefore a red gate and an
+# unauthorized dispatch, before this action runs at all. A second freshness
+# policy implemented here would be a second thing to keep in agreement with
+# ci.yml, and the first time they disagreed the publish path would be the copy
+# nobody noticed was wrong.
+
+inputs:
+  target:
+    description: "The resolved target label, for log lines (e.g. ca-pi)"
+    required: true
+  manifest:
+    description: "Path to the plugin manifest whose `.version` is authoritative"
+    required: true
+  companion-manifest:
+    description: >
+      Optional second manifest that MUST already agree with `manifest`. ca-pi
+      needs it: the repository-root package.json is the manifest Pi itself
+      reads on `pi install git:...@<tag>`, so a root that disagrees with the
+      plugin manifest would install a package claiming a version the tag does
+      not name.
+    required: false
+    default: ""
+  changelog:
+    description: "Path to the CHANGELOG holding this version's section"
+    required: true
+  tag-prefix:
+    description: "Tag namespace, e.g. `v` for ca or `ca-pi-v` for ca-pi"
+    required: true
+  title-prefix:
+    description: "Release-title prefix, e.g. `codeArbiter` or `ca-pi`"
+    required: true
+  requested-version:
+    description: "The dispatched version; must equal the manifest version"
+    required: true
+  summary:
+    description: "Optional release-title summary, appended after the version"
+    required: false
+    default: ""
+  mark-latest:
+    description: >
+      "true" only for the repository's primary release (ca). Every sibling
+      plugin is independently versioned and must never displace ca's "Latest"
+      badge, so this defaults to false and a lane has to ask for it.
+    required: false
+    default: "false"
+  github-token:
+    description: "Token with `contents: write` for the tag and Release"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve and verify version against the manifest
+      id: v
+      shell: bash
+      env:
+        CONFIRM: ${{ inputs.requested-version }}
+        MANIFEST: ${{ inputs.manifest }}
+        COMPANION: ${{ inputs.companion-manifest }}
+        TAG_PREFIX: ${{ inputs.tag-prefix }}
+      run: |
+        set -euo pipefail
+        MANIFEST_VERSION=$(node -p "require('./$MANIFEST').version")
+        REQ="$CONFIRM"
+        if [ "$REQ" != "$MANIFEST_VERSION" ]; then
+          echo "::error::requested '$REQ' does not equal $MANIFEST version '$MANIFEST_VERSION' — bump/align first"
+          exit 1
+        fi
+        # ca-pi only: the manifest the host installs must already agree with the
+        # plugin manifest. CI's bump gate enforces this on every PR; asserting it
+        # again here costs one `node -p` and is the last point before an
+        # irreversible public tag.
+        if [ -n "$COMPANION" ]; then
+          COMPANION_VERSION=$(node -p "require('./$COMPANION').version")
+          if [ "$COMPANION_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "::error::$COMPANION says '$COMPANION_VERSION' but $MANIFEST says '$MANIFEST_VERSION' — the installed manifest would not match the tag"
+            exit 1
+          fi
+        fi
+        echo "version=$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
+        echo "tag=${TAG_PREFIX}${MANIFEST_VERSION}" >> "$GITHUB_OUTPUT"
+
+    - name: Extract the CHANGELOG section as release notes
+      shell: bash
+      env:
+        VER: ${{ steps.v.outputs.version }}
+        TAG: ${{ steps.v.outputs.tag }}
+        CHANGELOG: ${{ inputs.changelog }}
+      run: |
+        set -euo pipefail
+        # Capture from "## [VER]" up to (not including) the next "## [" section heading.
+        awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' "$CHANGELOG" > notes.md
+        # Trim a trailing Keep-a-Changelog "---" separator and blank lines.
+        python3 - <<'PY'
+        import re
+        t = open("notes.md").read().rstrip()
+        open("notes.md", "w").write(re.sub(r"\n+---$", "", t).rstrip() + "\n")
+        PY
+        test -s notes.md || { echo "::error::no CHANGELOG section found for $VER in $CHANGELOG"; exit 1; }
+        # The notes' first heading must match the tag (the same guard /ca:release Phase 3 runs).
+        python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
+        echo "---- notes.md ----"; head -1 notes.md
+
+    - name: Create the tag and GitHub Release (resumable, mismatch-aborting)
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        SUMMARY: ${{ inputs.summary }}
+        TITLE_PREFIX: ${{ inputs.title-prefix }}
+        MARK_LATEST: ${{ inputs.mark-latest }}
+        TAG: ${{ steps.v.outputs.tag }}
+        VER: ${{ steps.v.outputs.version }}
+      run: |
+        set -euo pipefail
+        SUM="$SUMMARY"
+        if [ -n "$SUM" ]; then TITLE="$TITLE_PREFIX $VER: $SUM"; else TITLE="$TITLE_PREFIX $VER"; fi
+
+        # Only the primary release claims the "Latest" badge; every sibling
+        # plugin versions independently and must not steal it. Deliberately
+        # UNQUOTED below: set to `--latest` it is one word, and set to empty it
+        # must expand to no argument at all, which "$LATEST" would not do.
+        if [ "$MARK_LATEST" = "true" ]; then LATEST=--latest; else LATEST=; fi
+
+        # An annotated tag needs a committer identity; the runner has none by default.
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        # PEEL the remote tag (#380). An annotated tag's own object id is not
+        # the commit it names, so the `^{}` line is the one that can be
+        # compared against GITHUB_SHA. Empty output = no such tag.
+        TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+          | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+        if [ -n "$TAG_SHA" ]; then TAG_EXISTS=true; else TAG_EXISTS=false; fi
+        # The tag name is built from the manifest version, so this is the
+        # version the REMOTE tag claims; the load-bearing comparison here is
+        # TAG_SHA against GITHUB_SHA.
+        TAG_VERSION="${TAG##*v}"
+
+        RELEASE_NONDRAFT=false
+        if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
+          if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = "false" ]; then
+            RELEASE_NONDRAFT=true
+          fi
+        fi
+
+        # One classifier shared with the /ca:release skill: the hosted and the
+        # local publish path must not disagree about what an existing tag means.
+        STATE=$(python3 .github/scripts/_releaselib.py classify \
+          "$TAG_EXISTS" "$TAG_SHA" "$GITHUB_SHA" "$TAG_VERSION" "$VER" "$RELEASE_NONDRAFT")
+        echo "publish state: $STATE (tag=$TAG tag_sha='$TAG_SHA' head='$GITHUB_SHA')"
+
+        case "$STATE" in
+          publish_fresh)
+            printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
+            git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
+            git push origin "refs/tags/$TAG"
+            gh release create "$TAG" \
+              --title "$TITLE" \
+              --notes-file notes.md \
+              --target "$GITHUB_SHA" \
+              $LATEST --verify-tag
+            ;;
+          resume_publish)
+            echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
+            gh release create "$TAG" \
+              --title "$TITLE" \
+              --notes-file notes.md \
+              --target "$GITHUB_SHA" \
+              $LATEST --verify-tag
+            ;;
+          already_published)
+            echo "release $TAG is already published at $GITHUB_SHA — nothing to publish"
+            ;;
+          *)
+            echo "::error::refusing to publish $TAG: state '$STATE' — the existing tag resolves to '$TAG_SHA', this dispatch targets '$GITHUB_SHA'"
+            exit 1
+            ;;
+        esac
+
+    - name: Verify the published Release names this tag at this commit
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+      run: |
+        set -euo pipefail
+        # Verify publication rather than assume it (a create can partially succeed),
+        # and verify WHAT was published: non-draft alone says nothing about which
+        # commit the tag installs (#380).
+        gh release view "$TAG" --json url,isDraft,tagName
+        DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
+        [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
+        NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
+        [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
+        FINAL_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+          | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+        [ "$FINAL_SHA" = "$GITHUB_SHA" ] || { echo "::error::tag $TAG resolves to '$FINAL_SHA', not the dispatched commit '$GITHUB_SHA'"; exit 1; }

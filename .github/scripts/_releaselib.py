@@ -19,7 +19,7 @@
 #   release_dates_consistent(changelog_section, tag_message) -> bool
 #   classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
 #                          manifest_version, release_is_nondraft) -> str
-#   select_release_target(confirm, codex_confirm) -> str
+#   select_release_target(*confirmations) -> str   (RELEASE_TARGETS order)
 #   classify_merge_readiness(check_runs, head_sha, check_name) -> str
 #   peel_tag(ls_remote_text, tag) -> str
 #
@@ -55,6 +55,14 @@ _HEADING_RE = re.compile(r"^##\s+\[?v?(\d+\.\d+\.\d+)\]?", re.MULTILINE)
 _CHANGELOG_DATE_RE = re.compile(
     r"^##\s+\[?v?\d+\.\d+\.\d+\]?\D+(\d{4}-\d{2}-\d{2})", re.MULTILINE)
 _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
+
+
+# Every plugin that has a sanctioned release lane, in dispatch-input order
+# (#382). The names are the labels `select_release_target` returns and the
+# values release.yml's publisher `if:` conditions compare against; adding a
+# plugin here without adding its publisher job turns the workflow contract
+# suite red rather than resolving a target nothing can publish.
+RELEASE_TARGETS = ("ca", "ca-codex", "ca-sandbox", "ca-pi")
 
 
 def _bare_version(tag):
@@ -143,30 +151,42 @@ def classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
     return "resume_publish"
 
 
-def select_release_target(confirm, codex_confirm):
-    """Resolve which single plugin a release dispatch selected. Returns one of:
+def select_release_target(*confirmations):
+    """Resolve which single plugin a release dispatch selected. `confirmations`
+    are the per-plugin version inputs, positionally aligned with
+    RELEASE_TARGETS. Returns one of:
 
-      ca         - only the `confirm` (ca) version input was supplied.
-      ca-codex   - only the `codex_confirm` input was supplied.
-      none       - neither; there is nothing to publish.
-      multiple   - both; the dispatch is ambiguous and MUST be refused.
+      <target>   - exactly one input was supplied; the name from RELEASE_TARGETS.
+      none       - no input was supplied; there is nothing to publish.
+      multiple   - more than one; the dispatch is ambiguous and MUST be refused.
+      arity      - the caller passed the wrong NUMBER of inputs.
 
-    Issue #378: the two publish jobs each tested only their OWN confirmation
-    input, so one dispatch supplying both started two `contents: write`
-    publishers and could create two tags and two public Releases. Selection is
-    one decision, made once, by a job that holds no write token. Blank-ish
-    input (whitespace, non-string) counts as "not selected" so a stray space
-    can never read as a second target."""
+    Issue #378: the publish jobs each tested only their OWN confirmation input,
+    so one dispatch supplying both started two `contents: write` publishers and
+    could create two tags and two public Releases. Selection is one decision,
+    made once, by a job that holds no write token. Blank-ish input (whitespace,
+    non-string) counts as "not selected" so a stray space can never read as a
+    second target.
+
+    Issue #382 widened this from two plugins to four (ca, ca-codex, ca-sandbox,
+    ca-pi). The count is checked rather than zipped-to-shortest on purpose: a
+    caller wired for two would otherwise resolve `ca` from a dispatch that also
+    selected ca-pi, silently publishing the wrong plugin. `arity` is not a
+    target and matches no `case` arm in release.yml, so the workflow's
+    fail-closed `*)` default refuses it - and, like every other return here,
+    it is a LABEL rather than an exception, so the caller's contract of "prints
+    a label and never raises" holds."""
     def _selected(value):
         return isinstance(value, str) and value.strip() != ""
 
-    ca, codex = _selected(confirm), _selected(codex_confirm)
-    if ca and codex:
+    if len(confirmations) != len(RELEASE_TARGETS):
+        return "arity"
+    selected = [target for target, value in zip(RELEASE_TARGETS, confirmations)
+                if _selected(value)]
+    if len(selected) > 1:
         return "multiple"
-    if ca:
-        return "ca"
-    if codex:
-        return "ca-codex"
+    if selected:
+        return selected[0]
     return "none"
 
 
@@ -252,7 +272,9 @@ def main(argv):
       dates-consistent <changelog> <tagmsg>    exit 0 iff the two dates agree
       classify <tag_exists> <tag_sha> <head_sha> <tag_version> <manifest_version> <release_nondraft>
                                                prints the publish-state label (bools: true/false)
-      select-target <confirm> <codex_confirm>  prints ca | ca-codex | none | multiple
+      select-target <ca> <ca-codex> <ca-sandbox> <ca-pi>
+                                               prints one of RELEASE_TARGETS,
+                                               or none | multiple | arity
       merge-readiness <head_sha> <checks_json> prints green | missing | pending |
                                                sha_mismatch | not_successful
       peel-tag <tag>                           stdin=`git ls-remote --tags` -> commit sha / ""
@@ -281,8 +303,8 @@ def main(argv):
             tag_exists=b(rest[0]), tag_sha=rest[1], head_sha=rest[2],
             tag_version=rest[3], manifest_version=rest[4], release_is_nondraft=b(rest[5])))
         return 0
-    if cmd == "select-target" and len(rest) == 2:
-        print(select_release_target(rest[0], rest[1]))
+    if cmd == "select-target" and len(rest) == len(RELEASE_TARGETS):
+        print(select_release_target(*rest))
         return 0
     if cmd == "merge-readiness" and len(rest) == 2:
         import json
