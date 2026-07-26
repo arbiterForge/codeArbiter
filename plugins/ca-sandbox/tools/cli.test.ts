@@ -223,7 +223,7 @@ function fakeHandlers(): Handlers {
 }
 
 describe("runCli — dispatch to modules (AC-01/09/10/11)", () => {
-  it("dispatches create -> handlers.create(url, {netPolicy, keepVolume})", async () => {
+  it("dispatches create -> await handlers.create(url, {netPolicy, keepVolume})", async () => {
     const h = fakeHandlers();
     const code = await runCli(["create", "https://x", "--net=clone-then-cut"], h);
     expect(code).toBe(0);
@@ -233,7 +233,7 @@ describe("runCli — dispatch to modules (AC-01/09/10/11)", () => {
     expect(opts.netPolicy).toBe("clone-then-cut");
   });
 
-  it("dispatches exec -> handlers.exec(id, argv) and returns the inner exitCode (AC-09)", async () => {
+  it("dispatches exec -> await handlers.exec(id, argv) and returns the inner exitCode (AC-09)", async () => {
     const h = fakeHandlers();
     const code = await runCli(["exec", "abc123", "--", "sh", "-c", "exit 7"], h);
     expect(h.exec).toHaveBeenCalledWith("abc123", ["sh", "-c", "exit 7"]);
@@ -241,14 +241,14 @@ describe("runCli — dispatch to modules (AC-01/09/10/11)", () => {
     expect(code).toBe(7);
   });
 
-  it("dispatches cp -> handlers.cp(id, containerPath, hostDest) (AC-10)", async () => {
+  it("dispatches cp -> await handlers.cp(id, containerPath, hostDest) (AC-10)", async () => {
     const h = fakeHandlers();
     const code = await runCli(["cp", "abc123:/work/out.txt", "./out.txt"], h);
     expect(h.cp).toHaveBeenCalledWith("abc123", "/work/out.txt", "./out.txt");
     expect(code).toBe(0);
   });
 
-  it("dispatches destroy -> handlers.destroy(id, {keepVolume}) (AC-11)", async () => {
+  it("dispatches destroy -> await handlers.destroy(id, {keepVolume}) (AC-11)", async () => {
     const h = fakeHandlers();
     await runCli(["destroy", "abc123", "--keep-volume"], h);
     const [id, opts] = (h.destroy as any).mock.calls[0];
@@ -256,13 +256,13 @@ describe("runCli — dispatch to modules (AC-01/09/10/11)", () => {
     expect(opts.keepVolume).toBe(true);
   });
 
-  it("dispatches prune -> handlers.prune() (AC-11)", async () => {
+  it("dispatches prune -> await handlers.prune() (AC-11)", async () => {
     const h = fakeHandlers();
     await runCli(["prune"], h);
     expect(h.prune).toHaveBeenCalledTimes(1);
   });
 
-  it("dispatches shell -> handlers.shell(id, shell) and returns its code", async () => {
+  it("dispatches shell -> await handlers.shell(id, shell) and returns its code", async () => {
     const h = fakeHandlers();
     const code = await runCli(["shell", "abc123", "--shell=bash"], h);
     expect(h.shell).toHaveBeenCalledWith("abc123", "bash");

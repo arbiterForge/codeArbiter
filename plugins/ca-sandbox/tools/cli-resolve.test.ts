@@ -38,7 +38,7 @@ describe("resolveContainerId — sandbox id -> container id (label registry)", (
 
   it("throws when no labeled container carries the id (unknown/destroyed)", async () => {
     const run: DockerRun = async () => ({ code: 0, stdout: "", stderr: "" });
-    expect(() => await resolveContainerId("missing", run)).toThrow(/no running container/i);
+    await expect(resolveContainerId("missing", run)).rejects.toThrow(/no running container/i);
   });
 });
 
@@ -78,7 +78,7 @@ d("CLI exec/cp resolve a sandbox id whose container name != id [docker] (AC-09/A
     expect(bare.stderr).toMatch(/no such container/i);
 
     // The FIX: the CLI handler resolves the sandbox id to the container id.
-    const r = defaultHandlers.exec(id, ["sh", "-c", "echo RESOLVED_OK"]);
+    const r = await defaultHandlers.exec(id, ["sh", "-c", "echo RESOLVED_OK"]);
     expect(r.exitCode, r.stderr).toBe(0);
     expect(r.stdout).toContain("RESOLVED_OK");
     expect(r.id).toBe(id); // the sandbox id is preserved in the contract
@@ -96,11 +96,11 @@ d("CLI exec/cp resolve a sandbox id whose container name != id [docker] (AC-09/A
     containers.push(name);
 
     // Put a known file inside, then pull it out BY SANDBOX ID.
-    defaultHandlers.exec(id, ["sh", "-c", "echo pulled-ok > /tmp/out.txt"]);
+    await defaultHandlers.exec(id, ["sh", "-c", "echo pulled-ok > /tmp/out.txt"]);
     const dir = mkdtempSync(path.join(tmpdir(), "ca-sbx-cpr-"));
     tmps.push(dir);
     const dest = path.join(dir, "out.txt");
-    const cpr = defaultHandlers.cp(id, "/tmp/out.txt", dest);
+    const cpr = await defaultHandlers.cp(id, "/tmp/out.txt", dest);
     expect(cpr.code, cpr.stderr).toBe(0);
     expect(readFileSync(dest, "utf8")).toContain("pulled-ok");
   }, 120_000);
