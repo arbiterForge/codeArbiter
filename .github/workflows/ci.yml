@@ -78,6 +78,9 @@ on:
       # workflow's dispatch-exclusivity, merge-readiness, and tag-integrity
       # gates. A push that weakens only release.yml must still start a run.
       - ".github/workflows/release.yml"
+      # The publish mechanics moved out of release.yml into a shared
+      # composite action (#382), so the same reasoning covers it.
+      - ".github/actions/**"
 
 permissions:
   contents: read
@@ -177,6 +180,10 @@ jobs:
               # test_release_workflow.py runs in the hooks job and is the only
               # guard on the release workflow's publish gates (#378/#380/#385).
               - '.github/workflows/release.yml'
+              # The publish mechanics moved out of release.yml into a
+              # shared composite action (#382); without this, the one
+              # file that can weaken the #380 tag guards is unwatched.
+              - '.github/actions/**'
               # Issue #416: check_adr_identity.py runs in the hooks job and is
               # the only guard on ADR identity. A PR that ONLY adds a decision
               # file - the exact shape of a duplicate-number collision - would
