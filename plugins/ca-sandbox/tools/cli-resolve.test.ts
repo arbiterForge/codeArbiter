@@ -28,17 +28,17 @@ import { execInSandbox } from "./exec.ts";
 // PURE — resolveContainerId via injected fake docker.
 // --------------------------------------------------------------------------
 describe("resolveContainerId — sandbox id -> container id (label registry)", () => {
-  it("returns the container id discovered by the ca.sandbox.id label filter", () => {
-    const run: DockerRun = (args) =>
+  it("returns the container id discovered by the ca.sandbox.id label filter", async () => {
+    const run: DockerRun = async (args) =>
       args[0] === "ps"
         ? { code: 0, stdout: "container-abc123\n", stderr: "" }
         : { code: 0, stdout: "", stderr: "" };
-    expect(resolveContainerId("sbx1", run)).toBe("container-abc123");
+    expect(await resolveContainerId("sbx1", run)).toBe("container-abc123");
   });
 
-  it("throws when no labeled container carries the id (unknown/destroyed)", () => {
-    const run: DockerRun = () => ({ code: 0, stdout: "", stderr: "" });
-    expect(() => resolveContainerId("missing", run)).toThrow(/no running container/i);
+  it("throws when no labeled container carries the id (unknown/destroyed)", async () => {
+    const run: DockerRun = async () => ({ code: 0, stdout: "", stderr: "" });
+    expect(() => await resolveContainerId("missing", run)).toThrow(/no running container/i);
   });
 });
 
@@ -56,7 +56,7 @@ d("CLI exec/cp resolve a sandbox id whose container name != id [docker] (AC-09/A
     for (const t of tmps) rmSync(t, { recursive: true, force: true });
   });
 
-  it("exec by sandbox id resolves to the container; bare id does NOT (the bug)", () => {
+  it("exec by sandbox id resolves to the container; bare id does NOT (the bug)", async () => {
     const id = `r${Date.now().toString(16)}`;
     const name = `ca-sbx-${id}-deadbeef`; // create-shaped: name != id
     const start = spawnSync(
@@ -73,7 +73,7 @@ d("CLI exec/cp resolve a sandbox id whose container name != id [docker] (AC-09/A
 
     // The OLD behavior: addressing the box by the bare sandbox id fails — the
     // container is not named after the id. This is the regression guard.
-    const bare = execInSandbox(id, ["true"]);
+    const bare = await execInSandbox(id, ["true"]);
     expect(bare.exitCode).not.toBe(0);
     expect(bare.stderr).toMatch(/no such container/i);
 
@@ -84,7 +84,7 @@ d("CLI exec/cp resolve a sandbox id whose container name != id [docker] (AC-09/A
     expect(r.id).toBe(id); // the sandbox id is preserved in the contract
   }, 120_000);
 
-  it("cp by sandbox id pulls a file from the box to the host", () => {
+  it("cp by sandbox id pulls a file from the box to the host", async () => {
     const id = `c${Date.now().toString(16)}`;
     const name = `ca-sbx-${id}-feedface`;
     const start = spawnSync(

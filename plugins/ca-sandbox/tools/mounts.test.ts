@@ -13,32 +13,32 @@ import { describe, it, expect } from "vitest";
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
 
 describe("buildMountArgs — bind rejection (AC-02)", () => {
-  it("throws on an explicit type=bind spec", () => {
+  it("throws on an explicit type=bind spec", async () => {
     const specs: MountSpec[] = [
       { type: "bind", source: "/etc/passwd", target: "/work/passwd" } as unknown as MountSpec,
     ];
     expect(() => buildMountArgs(specs)).toThrow(/bind/i);
   });
 
-  it("throws on the classic -v host:container shorthand", () => {
+  it("throws on the classic -v host:container shorthand", async () => {
     const specs = [
       { v: "/home/user/secrets:/work/secrets" } as unknown as MountSpec,
     ];
     expect(() => buildMountArgs(specs)).toThrow(/bind/i);
   });
 
-  it("throws on a -v spec given as a bare string", () => {
+  it("throws on a -v spec given as a bare string", async () => {
     expect(() => buildMountArgs(["/var/run/docker.sock:/var/run/docker.sock" as unknown as MountSpec])).toThrow(/bind/i);
   });
 
-  it("throws on an unknown mount type", () => {
+  it("throws on an unknown mount type", async () => {
     const specs = [
       { type: "npipe", source: "x", target: "/work/x" } as unknown as MountSpec,
     ];
     expect(() => buildMountArgs(specs)).toThrow();
   });
 
-  it("rejects even when a volume spec precedes a bind spec (no partial argv)", () => {
+  it("rejects even when a volume spec precedes a bind spec (no partial argv)", async () => {
     const specs: MountSpec[] = [
       { type: "volume", source: "ca-sbx-vol-1", target: "/work/repo" },
       { type: "bind", source: "/etc", target: "/work/etc" } as unknown as MountSpec,
@@ -48,30 +48,30 @@ describe("buildMountArgs — bind rejection (AC-02)", () => {
 });
 
 describe("buildMountArgs — only volume/tmpfs argv (AC-02)", () => {
-  it("emits --mount type=volume argv for a named-volume spec", () => {
+  it("emits --mount type=volume argv for a named-volume spec", async () => {
     const argv = buildMountArgs([
       { type: "volume", source: "ca-sbx-vol-abc", target: "/work/repo" },
     ]);
     expect(argv).toEqual(["--mount", "type=volume,source=ca-sbx-vol-abc,target=/work/repo"]);
   });
 
-  it("emits --mount type=tmpfs argv for a tmpfs spec (no source)", () => {
+  it("emits --mount type=tmpfs argv for a tmpfs spec (no source)", async () => {
     const argv = buildMountArgs([{ type: "tmpfs", target: "/tmp" }]);
     expect(argv).toEqual(["--mount", "type=tmpfs,target=/tmp"]);
   });
 
-  it("honours a read-only volume flag", () => {
+  it("honours a read-only volume flag", async () => {
     const argv = buildMountArgs([
       { type: "volume", source: "ca-sbx-deps", target: "/deps", readonly: true },
     ]);
     expect(argv).toEqual(["--mount", "type=volume,source=ca-sbx-deps,target=/deps,readonly"]);
   });
 
-  it("returns an empty argv for no specs", () => {
+  it("returns an empty argv for no specs", async () => {
     expect(buildMountArgs([])).toEqual([]);
   });
 
-  it("every generated token's type= field is volume or tmpfs only — never bind", () => {
+  it("every generated token's type= field is volume or tmpfs only — never bind", async () => {
     const argv = buildMountArgs([
       { type: "volume", source: "ca-sbx-vol-abc", target: "/work/repo" },
       { type: "tmpfs", target: "/run" },

@@ -18,7 +18,7 @@ import { dockerGate } from "../../docker-gate.ts";
 const d = dockerGate("fixture-layer");
 
 d("a layer that must never be silently skipped in required mode", () => {
-  it("would have proven containment", () => {
+  it("would have proven containment", async () => {
     expect(true).toBe(true);
   });
 });

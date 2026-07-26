@@ -44,18 +44,18 @@ import { SANDBOX_USER, hardeningFlags } from "./run.ts";
 describe("buildClaudeImageDockerfile — pinned install + autoupdater off (AC-12)", () => {
   const df = buildClaudeImageDockerfile();
 
-  it("installs @anthropic-ai/claude-code at a PINNED version (reproducible image)", () => {
+  it("installs @anthropic-ai/claude-code at a PINNED version (reproducible image)", async () => {
     // The version must be pinned (semver), never a floating `@latest`.
     expect(CLAUDE_CODE_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
     expect(df).toContain(`@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}`);
     expect(df).not.toMatch(/@anthropic-ai\/claude-code@latest/);
   });
 
-  it("disables the autoupdater so the pinned version stays put", () => {
+  it("disables the autoupdater so the pinned version stays put", async () => {
     expect(df).toMatch(/DISABLE_AUTOUPDATER=1/);
   });
 
-  it("runs non-root and owns CLAUDE_HOME by the run uid (writable under --read-only)", () => {
+  it("runs non-root and owns CLAUDE_HOME by the run uid (writable under --read-only)", async () => {
     // The box runs as uid 1000; the credential store under the named-volume HOME
     // must be writable for that uid, so the image chowns it and defaults USER to it.
     expect(df).toMatch(/chown -R 1000:1000/);
@@ -75,7 +75,7 @@ describe("buildClaudeRunArgs — hardening parity with run.ts (architecture-002)
     homeVolume: "ca-sbx-claude-home-demo",
   });
 
-  it("carries every shared hardening flag the ordinary sandbox emits", () => {
+  it("carries every shared hardening flag the ordinary sandbox emits", async () => {
     const flags = hardeningFlags();
     // hardeningFlags() is a flat [flag, value, valuelessFlag, ...] argv. Assert
     // each flag — and the value following a valued flag — appears in the claude
@@ -100,7 +100,7 @@ describe("buildClaudeRunArgs — env-token auth, no host bind (AC-12)", () => {
     homeVolume: "ca-sbx-claude-home-demo",
   });
 
-  it("injects the OAuth token via the environment (the auth path, Spike B)", () => {
+  it("injects the OAuth token via the environment (the auth path, Spike B)", async () => {
     const i = argv.indexOf("-e");
     expect(i).toBeGreaterThanOrEqual(0);
     // Some `-e KEY=VALUE` token carries the OAuth env var with the supplied value.
@@ -108,7 +108,7 @@ describe("buildClaudeRunArgs — env-token auth, no host bind (AC-12)", () => {
     expect(envEntries[TOKEN_ENV_VAR]).toBe("dummy-not-a-real-token");
   });
 
-  it("backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists", () => {
+  it("backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists", async () => {
     // HOME points at the in-container claude home...
     const envEntries = collectEnv(argv);
     expect(envEntries.HOME).toBe(CLAUDE_HOME);
@@ -121,12 +121,12 @@ describe("buildClaudeRunArgs — env-token auth, no host bind (AC-12)", () => {
     for (const tok of argv) expect(tok).not.toMatch(/type=bind/);
   });
 
-  it("NEVER passes --privileged and NEVER mounts the docker socket", () => {
+  it("NEVER passes --privileged and NEVER mounts the docker socket", async () => {
     expect(argv).not.toContain("--privileged");
     expect(argv.join(" ")).not.toMatch(/docker\.sock/);
   });
 
-  it("runs NON-ROOT and drops ALL capabilities, matching run.ts (token box is no softer)", () => {
+  it("runs NON-ROOT and drops ALL capabilities, matching run.ts (token box is no softer)", async () => {
     // The load-bearing isolation parity: the token-bearing box must be as
     // locked-down as an ordinary sandbox. Regression guard for the gap where the
     // docstring claimed cap-drop/non-root but the argv omitted them.
@@ -140,7 +140,7 @@ describe("buildClaudeRunArgs — env-token auth, no host bind (AC-12)", () => {
     expect(argv).toContain("no-new-privileges");
   });
 
-  it("defaults egress to offline (the hard default — Spike B caveat)", () => {
+  it("defaults egress to offline (the hard default — Spike B caveat)", async () => {
     // With no netPolicy supplied the box is offline: --network none.
     const i = argv.indexOf("--network");
     expect(i).toBeGreaterThanOrEqual(0);
@@ -149,7 +149,7 @@ describe("buildClaudeRunArgs — env-token auth, no host bind (AC-12)", () => {
 });
 
 describe("buildClaudeRunArgs — hardened posture is enforced, not optional (AC-12)", () => {
-  it("accepts an Anthropic-domains-only allowlist as the other permitted default", () => {
+  it("accepts an Anthropic-domains-only allowlist as the other permitted default", async () => {
     const argv = buildClaudeRunArgs({
       image: "img",
       token: "dummy",
@@ -162,7 +162,7 @@ describe("buildClaudeRunArgs — hardened posture is enforced, not optional (AC-
     expect(flat).toMatch(/--cap-add NET_ADMIN/);
   });
 
-  it("REFUSES an arbitrary wide-open network policy (no escaping the hard default)", () => {
+  it("REFUSES an arbitrary wide-open network policy (no escaping the hard default)", async () => {
     expect(() =>
       buildClaudeRunArgs({
         image: "img",
@@ -175,7 +175,7 @@ describe("buildClaudeRunArgs — hardened posture is enforced, not optional (AC-
     ).toThrow();
   });
 
-  it("THROWS when the token volume would be co-mounted with an untrusted-code run", () => {
+  it("THROWS when the token volume would be co-mounted with an untrusted-code run", async () => {
     // The load-bearing Spike B caveat: never co-mount the token/credential volume
     // with a run that also mounts the untrusted source volume at /work/repo.
     expect(() =>
@@ -188,7 +188,7 @@ describe("buildClaudeRunArgs — hardened posture is enforced, not optional (AC-
     ).toThrow(TokenCoMountRejectedError);
   });
 
-  it("requires a non-empty image, token, and home volume", () => {
+  it("requires a non-empty image, token, and home volume", async () => {
     expect(() => buildClaudeRunArgs({ image: "", token: "t", homeVolume: "h" })).toThrow();
     expect(() => buildClaudeRunArgs({ image: "i", token: "", homeVolume: "h" })).toThrow();
     expect(() => buildClaudeRunArgs({ image: "i", token: "t", homeVolume: "" })).toThrow();
@@ -243,7 +243,7 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
     for (const i of created.images) dk(["rmi", "-f", i]);
   });
 
-  it("builds the pinned claude image (DISABLE_AUTOUPDATER baked)", () => {
+  it("builds the pinned claude image (DISABLE_AUTOUPDATER baked)", async () => {
     expect(built.status, built.stderr).toBe(0);
     created.images.push(img);
     // The pinned version is the one the CLI reports.
@@ -252,7 +252,7 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
     expect(ver.stdout).toContain(CLAUDE_CODE_VERSION);
   }, 300_000);
 
-  it("claude -p with the DUMMY token reaches AUTH (real 401 Invalid bearer token)", () => {
+  it("claude -p with the DUMMY token reaches AUTH (real 401 Invalid bearer token)", async () => {
     // Auth needs to talk to the API: bring the box up WITH egress (a real run uses
     // anthropic-only; the dummy 401 only needs to reach the endpoint). DUMMY token.
     const homeVol = `${NS}-home-${Date.now()}`;
@@ -284,7 +284,7 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
     expect(`${r.stdout}\n${r.stderr}`).toMatch(/401|invalid bearer token/i);
   }, 180_000);
 
-  it(".claude state under the named-volume HOME persists across a restart", () => {
+  it(".claude state under the named-volume HOME persists across a restart", async () => {
     // Run 1 writes a marker into the in-container HOME (the named volume). Run 2 —
     // a FRESH container on the SAME volume — sees it. Same mechanism as the live
     // .claude/.credentials.json store (Spike B): named-volume HOME survives restart.
@@ -327,7 +327,7 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
     expect(read.stdout.trim()).toBe("persisted");
   }, 180_000);
 
-  it("the offline default truly has no egress (curl reaches nothing)", () => {
+  it("the offline default truly has no egress (curl reaches nothing)", async () => {
     // buildClaudeRunArgs defaults to offline. Prove the box under that posture has
     // no network: the install image has node; use it to attempt a fetch that fails.
     const homeVol = `${NS}-offline-${Date.now()}`;
@@ -383,20 +383,20 @@ d("claude-inside [docker] — env-token auth + named-volume persistence (AC-12)"
 // (#377 is the issue to wire it up). Fixing it BEFORE it becomes reachable is
 // the entire point.
 // ---------------------------------------------------------------------------
-describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall", () => {
+describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall", async () => {
   const baseOpts = {
     image: "ca-sbx-claude:test",
     token: "DUMMY-NOT-A-REAL-TOKEN",
     homeVolume: "ca-sbx-claude-home-test",
   };
 
-  it("applies the firewall inside the box for anthropic-only", () => {
+  it("applies the firewall inside the box for anthropic-only", async () => {
     const calls: string[][] = [];
     const dockerRun = (args: string[]) => {
       calls.push(args);
       return { code: 0, stdout: args[0] === "run" ? "container-id-1\n" : "", stderr: "" };
     };
-    const id = runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun);
+    const id = await runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun);
     expect(id).toBe("container-id-1");
 
     // The run itself still carries the capabilities...
@@ -409,49 +409,49 @@ describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall",
     expect(applied).toMatch(/iptables/);
   });
 
-  it("destroys the box when the firewall cannot be applied", () => {
+  it("destroys the box when the firewall cannot be applied", async () => {
     // Fail closed. A started, token-bearing container with NET_ADMIN and no
     // rules must never be handed back to a caller - returning the id would be
     // worse than never starting it, because the caller believes it is locked
     // down.
     const calls: string[][] = [];
-    const dockerRun = (args: string[]) => {
+    const dockerRun = async (args: string[]) => {
       calls.push(args);
       if (args[0] === "run") return { code: 0, stdout: "container-id-2\n", stderr: "" };
       if (args[0] === "exec") return { code: 1, stdout: "", stderr: "iptables: Permission denied" };
       return { code: 0, stdout: "", stderr: "" };
     };
-    expect(() => runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun))
+    expect(() => await runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun))
       .toThrow(/firewall/i);
     const teardown = calls.filter((a) => (a[0] === "rm" || a[0] === "kill") && a.includes("container-id-2"));
     expect(teardown.length, "the unprotected box was left running").toBeGreaterThan(0);
   });
 
-  it("does not exec anything extra for offline, which needs no rules", () => {
+  it("does not exec anything extra for offline, which needs no rules", async () => {
     // `offline` gets no interface at all, so there is nothing to firewall and
     // an extra exec would be pure attack surface.
     const calls: string[][] = [];
-    const dockerRun = (args: string[]) => {
+    const dockerRun = async (args: string[]) => {
       calls.push(args);
       return { code: 0, stdout: args[0] === "run" ? "container-id-3\n" : "", stderr: "" };
     };
-    const id = runClaudeInside({ ...baseOpts, netPolicy: "offline" }, dockerRun);
+    const id = await runClaudeInside({ ...baseOpts, netPolicy: "offline" }, dockerRun);
     expect(id).toBe("container-id-3");
     expect(calls.filter((a) => a[0] === "exec")).toHaveLength(0);
   });
 
-  it("defaults to offline, so the guaranteed posture needs no opt-in", () => {
+  it("defaults to offline, so the guaranteed posture needs no opt-in", async () => {
     const calls: string[][] = [];
-    const dockerRun = (args: string[]) => {
+    const dockerRun = async (args: string[]) => {
       calls.push(args);
       return { code: 0, stdout: args[0] === "run" ? "container-id-4\n" : "", stderr: "" };
     };
-    runClaudeInside({ ...baseOpts }, dockerRun);
+    await runClaudeInside({ ...baseOpts }, dockerRun);
     expect(calls[0]!.join(" ")).toContain("--network");
     expect(calls.filter((a) => a[0] === "exec")).toHaveLength(0);
   });
 
-  it("the firewall script it applies is the one network.ts produced", () => {
+  it("the firewall script it applies is the one network.ts produced", async () => {
     // Not a re-implementation: the rules must come from the single owner, so a
     // change to the allowlist cannot silently diverge from what is installed.
     const plan = applyNetworkPolicy("egress-allowlist", {
@@ -461,11 +461,11 @@ describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall",
     expect(plan.firewallScript).toBeTruthy();
 
     const calls: string[][] = [];
-    const dockerRun = (args: string[]) => {
+    const dockerRun = async (args: string[]) => {
       calls.push(args);
       return { code: 0, stdout: args[0] === "run" ? "cid\n" : "", stderr: "" };
     };
-    runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun);
+    await runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun);
     const execArgv = calls.find((a) => a[0] === "exec")!;
     expect(execArgv[execArgv.length - 1]).toBe(plan.firewallScript);
   });

@@ -202,14 +202,14 @@ function scanUnpinnedImages(src: string, label: string): string[] {
 }
 
 describe("supply chain: no remote-fetch-and-execute in production code (#401)", () => {
-  it("has at least one production file to scan (guards the scanner itself)", () => {
+  it("has at least one production file to scan (guards the scanner itself)", async () => {
     const files = productionFiles();
     expect(files.length).toBeGreaterThan(5);
     expect(files.map(rel)).toContain("build.ts");
     expect(files.map(rel)).toContain("sandbox.js");
   });
 
-  it("never pipes network-fetched bytes into a shell or interpreter", () => {
+  it("never pipes network-fetched bytes into a shell or interpreter", async () => {
     // A downloader (curl/wget/Invoke-WebRequest) whose output flows into a shell,
     // an interpreter, or `source`/`eval` — in any order, on one line.
     const PIPE_TO_SHELL = [
@@ -273,15 +273,15 @@ describe("supply chain: no remote-fetch-and-execute in production code (#401)", 
 });
 
 describe("supply chain: container inputs are digest-pinned (#402)", () => {
-  it("pins the throwaway clone image by digest", () => {
+  it("pins the throwaway clone image by digest", async () => {
     expect(CLONE_IMAGE).toMatch(DIGEST_PINNED);
   });
 
-  it("pins the --with-claude base image by digest (token co-runs with it)", () => {
+  it("pins the --with-claude base image by digest (token co-runs with it)", async () => {
     expect(CLAUDE_BASE_IMAGE).toMatch(DIGEST_PINNED);
   });
 
-  it("emits only digest-pinned FROM lines from every generated Dockerfile", () => {
+  it("emits only digest-pinned FROM lines from every generated Dockerfile", async () => {
     const dockerfiles = [
       generateDockerfile({ node: false, python: false }),
       generateDockerfile({ node: true, python: true }),
@@ -296,7 +296,7 @@ describe("supply chain: container inputs are digest-pinned (#402)", () => {
     }
   });
 
-  it("references no floating `:latest` tag in production code", () => {
+  it("references no floating `:latest` tag in production code", async () => {
     const hits: string[] = [];
     for (const file of productionFiles()) {
       const lines = readFileSync(file, "utf8").split(/\r?\n/);
@@ -314,7 +314,7 @@ describe("supply chain: container inputs are digest-pinned (#402)", () => {
     ).toEqual([]);
   });
 
-  it("digest-pins every image constant and literal FROM in production code", () => {
+  it("digest-pins every image constant and literal FROM in production code", async () => {
     const hits: string[] = [];
     for (const file of productionFiles()) {
       hits.push(...scanUnpinnedImages(readFileSync(file, "utf8"), rel(file)));
@@ -335,21 +335,21 @@ describe("supply chain: container inputs are digest-pinned (#402)", () => {
  * this driver uses; these cases make that failure mode loud.
  */
 describe("supply chain: the digest scanner itself fires (#402)", () => {
-  it("catches an unpinned image constant declared across two lines", () => {
+  it("catches an unpinned image constant declared across two lines", async () => {
     const src = ["export const PROBE_HELPER_IMAGE =", '  "aquasec/trivy:0.50.0";'].join("\n");
     expect(scanUnpinnedImages(src, "probe.ts")).toEqual([
       "probe.ts:2: unpinned image constant: PROBE_HELPER_IMAGE = aquasec/trivy:0.50.0",
     ]);
   });
 
-  it("catches an unpinned namespaced ref bound to a constant not named *IMAGE*", () => {
+  it("catches an unpinned namespaced ref bound to a constant not named *IMAGE*", async () => {
     const src = 'const scanner =\n  "aquasec/trivy:0.50.0";';
     expect(scanUnpinnedImages(src, "probe.ts")).toEqual([
       "probe.ts:2: unpinned image reference: aquasec/trivy:0.50.0",
     ]);
   });
 
-  it("catches a literal FROM and a FROM interpolating an unproven binding", () => {
+  it("catches a literal FROM and a FROM interpolating an unproven binding", async () => {
     const src = [
       "const other = opts.baseImage;",
       "lines.push(`FROM ${other}`);",
@@ -361,12 +361,12 @@ describe("supply chain: the digest scanner itself fires (#402)", () => {
     ]);
   });
 
-  it("reports an unpinned constant exactly once, not once per rule", () => {
+  it("reports an unpinned constant exactly once, not once per rule", async () => {
     const src = 'export const CLONE_IMAGE =\n  "alpine/git:latest";';
     expect(scanUnpinnedImages(src, "probe.ts")).toHaveLength(1);
   });
 
-  it("stays silent on the pinned multi-line form the driver actually ships", () => {
+  it("stays silent on the pinned multi-line form the driver actually ships", async () => {
     const pinned = `alpine/git:latest@sha256:${"0".repeat(64)}`;
     const src = [
       "export const CLONE_IMAGE =",

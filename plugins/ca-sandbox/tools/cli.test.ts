@@ -24,17 +24,17 @@ import { parseCli, runCli, CliError, type Handlers } from "./cli.ts";
 // parseCli — each subcommand parses its own args into a typed command.
 // --------------------------------------------------------------------------
 describe("parseCli — subcommand recognition", () => {
-  it("rejects an empty argv (no subcommand) with a CliError", () => {
+  it("rejects an empty argv (no subcommand) with a CliError", async () => {
     expect(() => parseCli([])).toThrow(CliError);
   });
 
-  it("rejects an unknown subcommand with a CliError", () => {
+  it("rejects an unknown subcommand with a CliError", async () => {
     expect(() => parseCli(["frobnicate"])).toThrow(CliError);
   });
 });
 
 describe("parseCli — create (AC-01)", () => {
-  it("parses `create <url>` into a create command with offline default", () => {
+  it("parses `create <url>` into a create command with offline default", async () => {
     const cmd = parseCli(["create", "https://github.com/o/r"]);
     expect(cmd.kind).toBe("create");
     if (cmd.kind !== "create") throw new Error("type");
@@ -42,33 +42,33 @@ describe("parseCli — create (AC-01)", () => {
     expect(cmd.netPolicy).toBe("offline");
   });
 
-  it("parses `--net=clone-then-cut` into the netPolicy", () => {
+  it("parses `--net=clone-then-cut` into the netPolicy", async () => {
     const cmd = parseCli(["create", "https://x", "--net=clone-then-cut"]);
     if (cmd.kind !== "create") throw new Error("type");
     expect(cmd.netPolicy).toBe("clone-then-cut");
   });
 
-  it("parses `--net allowlist` (space form) into the netPolicy", () => {
+  it("parses `--net allowlist` (space form) into the netPolicy", async () => {
     const cmd = parseCli(["create", "https://x", "--net", "allowlist"]);
     if (cmd.kind !== "create") throw new Error("type");
     expect(cmd.netPolicy).toBe("allowlist");
   });
 
-  it("rejects an unknown --net value", () => {
+  it("rejects an unknown --net value", async () => {
     expect(() => parseCli(["create", "https://x", "--net=sideways"])).toThrow(CliError);
   });
 
-  it("requires a url", () => {
+  it("requires a url", async () => {
     expect(() => parseCli(["create"])).toThrow(CliError);
   });
 
-  it("rejects an UNKNOWN FLAG on create", () => {
+  it("rejects an UNKNOWN FLAG on create", async () => {
     expect(() => parseCli(["create", "https://x", "--turbo"])).toThrow(CliError);
   });
 });
 
 describe("parseCli — exec (AC-09)", () => {
-  it("parses `exec <id> -- sh -c 'exit 7'` keeping the post-`--` argv verbatim", () => {
+  it("parses `exec <id> -- sh -c 'exit 7'` keeping the post-`--` argv verbatim", async () => {
     const cmd = parseCli(["exec", "abc123", "--", "sh", "-c", "exit 7"]);
     expect(cmd.kind).toBe("exec");
     if (cmd.kind !== "exec") throw new Error("type");
@@ -76,28 +76,28 @@ describe("parseCli — exec (AC-09)", () => {
     expect(cmd.argv).toEqual(["sh", "-c", "exit 7"]);
   });
 
-  it("treats flags AFTER `--` as part of the in-container argv, not CLI flags", () => {
+  it("treats flags AFTER `--` as part of the in-container argv, not CLI flags", async () => {
     const cmd = parseCli(["exec", "abc123", "--", "ls", "--all"]);
     if (cmd.kind !== "exec") throw new Error("type");
     // `--all` is the container command's flag, not an unknown CLI flag.
     expect(cmd.argv).toEqual(["ls", "--all"]);
   });
 
-  it("requires an id", () => {
+  it("requires an id", async () => {
     expect(() => parseCli(["exec"])).toThrow(CliError);
   });
 
-  it("requires a non-empty command after `--`", () => {
+  it("requires a non-empty command after `--`", async () => {
     expect(() => parseCli(["exec", "abc123", "--"])).toThrow(CliError);
   });
 
-  it("rejects an UNKNOWN FLAG before `--`", () => {
+  it("rejects an UNKNOWN FLAG before `--`", async () => {
     expect(() => parseCli(["exec", "abc123", "--loud", "--", "ls"])).toThrow(CliError);
   });
 });
 
 describe("parseCli — cp (AC-10)", () => {
-  it("parses `cp <id>:<path> <dest>` into the pull-only triple", () => {
+  it("parses `cp <id>:<path> <dest>` into the pull-only triple", async () => {
     const cmd = parseCli(["cp", "abc123:/work/out.txt", "./out.txt"]);
     expect(cmd.kind).toBe("cp");
     if (cmd.kind !== "cp") throw new Error("type");
@@ -106,21 +106,21 @@ describe("parseCli — cp (AC-10)", () => {
     expect(cmd.hostDest).toBe("./out.txt");
   });
 
-  it("rejects a source without the `<id>:` container prefix (no host->container push)", () => {
+  it("rejects a source without the `<id>:` container prefix (no host->container push)", async () => {
     expect(() => parseCli(["cp", "./local.txt", "abc123:/work/in.txt"])).toThrow(CliError);
   });
 
-  it("requires both a source and a dest", () => {
+  it("requires both a source and a dest", async () => {
     expect(() => parseCli(["cp", "abc123:/work/out.txt"])).toThrow(CliError);
   });
 
-  it("rejects an UNKNOWN FLAG on cp", () => {
+  it("rejects an UNKNOWN FLAG on cp", async () => {
     expect(() => parseCli(["cp", "abc:/work/x", "./x", "--force"])).toThrow(CliError);
   });
 });
 
 describe("parseCli — destroy / prune (AC-11)", () => {
-  it("parses `destroy <id>` into a destroy command", () => {
+  it("parses `destroy <id>` into a destroy command", async () => {
     const cmd = parseCli(["destroy", "abc123"]);
     expect(cmd.kind).toBe("destroy");
     if (cmd.kind !== "destroy") throw new Error("type");
@@ -128,32 +128,32 @@ describe("parseCli — destroy / prune (AC-11)", () => {
     expect(cmd.keepVolume).toBe(false);
   });
 
-  it("parses `destroy <id> --keep-volume`", () => {
+  it("parses `destroy <id> --keep-volume`", async () => {
     const cmd = parseCli(["destroy", "abc123", "--keep-volume"]);
     if (cmd.kind !== "destroy") throw new Error("type");
     expect(cmd.keepVolume).toBe(true);
   });
 
-  it("requires an id for destroy", () => {
+  it("requires an id for destroy", async () => {
     expect(() => parseCli(["destroy"])).toThrow(CliError);
   });
 
-  it("rejects an UNKNOWN FLAG on destroy", () => {
+  it("rejects an UNKNOWN FLAG on destroy", async () => {
     expect(() => parseCli(["destroy", "abc123", "--now"])).toThrow(CliError);
   });
 
-  it("parses bare `prune` (no id) into a prune command", () => {
+  it("parses bare `prune` (no id) into a prune command", async () => {
     const cmd = parseCli(["prune"]);
     expect(cmd.kind).toBe("prune");
   });
 
-  it("rejects an UNKNOWN FLAG on prune", () => {
+  it("rejects an UNKNOWN FLAG on prune", async () => {
     expect(() => parseCli(["prune", "--all"])).toThrow(CliError);
   });
 });
 
 describe("parseCli — shell", () => {
-  it("parses `shell <id>` into a shell command with a default shell", () => {
+  it("parses `shell <id>` into a shell command with a default shell", async () => {
     const cmd = parseCli(["shell", "abc123"]);
     expect(cmd.kind).toBe("shell");
     if (cmd.kind !== "shell") throw new Error("type");
@@ -161,17 +161,17 @@ describe("parseCli — shell", () => {
     expect(cmd.shell).toBe("sh");
   });
 
-  it("parses `shell <id> --shell=bash`", () => {
+  it("parses `shell <id> --shell=bash`", async () => {
     const cmd = parseCli(["shell", "abc123", "--shell=bash"]);
     if (cmd.kind !== "shell") throw new Error("type");
     expect(cmd.shell).toBe("bash");
   });
 
-  it("requires an id for shell", () => {
+  it("requires an id for shell", async () => {
     expect(() => parseCli(["shell"])).toThrow(CliError);
   });
 
-  it("rejects an UNKNOWN FLAG on shell", () => {
+  it("rejects an UNKNOWN FLAG on shell", async () => {
     expect(() => parseCli(["shell", "abc123", "--root"])).toThrow(CliError);
   });
 });
@@ -217,7 +217,7 @@ function fakeHandlers(): Handlers {
       durationMs: 1,
       truncated: false,
     })),
-    cp: vi.fn(() => ({ code: 0, stdout: "", stderr: "" })),
+    cp: vi.fn(async () => ({ code: 0, stdout: "", stderr: "" })),
     shell: vi.fn(() => 0),
   };
 }

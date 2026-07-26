@@ -7,7 +7,7 @@ import { describe, it, expect } from "vitest";
 import { toolchainOk } from "./smoke.ts";
 
 describe("ca-sandbox toolchain", () => {
-  it("imports a local .ts module and runs a function", () => {
+  it("imports a local .ts module and runs a function", async () => {
     expect(toolchainOk()).toBe(true);
   });
 });

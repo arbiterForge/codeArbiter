@@ -16,7 +16,7 @@
  *   1. buildOrReuseImage(fixture) -> image with deps baked to /deps (build.ts).
  *   2. create a namespaced named volume; SEED it from the image's baked
  *      /work/repo so the live source starts as a faithful copy of the repo.
- *   3. runContainer(image, vol, "offline") -> the isolated keep-alive container,
+ *   3. await runContainer(image, vol, "offline") -> the isolated keep-alive container,
  *      source volume at /work/repo, deps at /deps (run.ts). Offline: deps are
  *      baked, so no network is needed — this also proves /deps is self-contained.
  *   4. exec the entry point -> assert SRC=original AND DEP_OK=true
@@ -49,7 +49,7 @@ const FIXTURES = path.join(HERE, "__fixtures__");
 // PURE layer — the structural precondition: deps and source never collide.
 // --------------------------------------------------------------------------
 describe("layering precondition — /deps is outside the /work/repo mount (AC-06)", () => {
-  it("the run argv mounts the source volume at /work/repo and never at /deps", () => {
+  it("the run argv mounts the source volume at /work/repo and never at /deps", async () => {
     const argv = buildRunArgs("ca-sbx:demo-abc", "ca-sbx-vol-demo", "offline");
     const mountValues = argv.filter((_, i) => argv[i - 1] === "--mount");
     // The source volume targets /work/repo …
@@ -60,7 +60,7 @@ describe("layering precondition — /deps is outside the /work/repo mount (AC-06
     }
   });
 
-  it("APP_DIR and DEPS_DIR are disjoint paths (one cannot shadow the other)", () => {
+  it("APP_DIR and DEPS_DIR are disjoint paths (one cannot shadow the other)", async () => {
     expect(DEPS_DIR).toBe("/deps");
     expect(APP_DIR).toBe("/work/repo");
     expect(APP_DIR.startsWith(DEPS_DIR + "/")).toBe(false);
@@ -154,7 +154,7 @@ d("layering [docker] — deps at /deps survive the /work/repo volume + live-edit
 
     // Start the isolated sandbox container: source volume only at /work/repo,
     // deps baked at /deps, offline (deps are self-contained — no network).
-    const id = runContainer(build.tag, vol, "offline", {
+    const id = await runContainer(build.tag, vol, "offline", {
       extraLabels: [BUILD_LABEL],
       namePrefix: `${NS}-node`,
     });
@@ -193,7 +193,7 @@ d("layering [docker] — deps at /deps survive the /work/repo volume + live-edit
     seedVolumeFromImage(build.tag, vol);
     t.volumes.push(vol);
 
-    const id = runContainer(build.tag, vol, "offline", {
+    const id = await runContainer(build.tag, vol, "offline", {
       extraLabels: [BUILD_LABEL],
       namePrefix: `${NS}-py`,
     });

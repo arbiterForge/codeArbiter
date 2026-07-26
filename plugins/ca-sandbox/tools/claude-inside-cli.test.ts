@@ -34,25 +34,25 @@ function collect() {
 }
 
 describe("#377 parseClaudeCli — what the entry point refuses", () => {
-  it("accepts the minimal invocation and defaults to the guaranteed posture", () => {
+  it("accepts the minimal invocation and defaults to the guaranteed posture", async () => {
     // `offline` is the only GUARANTEED posture for a token-bearing box, so it is
     // what you get without asking. Requiring an opt-IN to safety would be the
     // wrong default.
     expect(parseClaudeCli(ARGV)).toEqual({ ...OK, netPolicy: "offline" });
   });
 
-  it("accepts the experimental allowlist posture explicitly", () => {
+  it("accepts the experimental allowlist posture explicitly", async () => {
     expect(parseClaudeCli([...ARGV, "--net", "anthropic-only"]).netPolicy).toBe("anthropic-only");
   });
 
-  it("refuses any other egress posture, naming why", () => {
+  it("refuses any other egress posture, naming why", async () => {
     for (const bad of ["bridge", "host", "none", "allowlist", ""]) {
       expect(() => parseClaudeCli([...ARGV, "--net", bad]), bad).toThrow(ClaudeCliError);
     }
     expect(() => parseClaudeCli([...ARGV, "--net", "host"])).toThrow(/wide-open egress/);
   });
 
-  it("REFUSES --token, because argv is world-readable", () => {
+  it("REFUSES --token, because argv is world-readable", async () => {
     // The load-bearing one. A process argument list is readable by every other
     // process on the host (ps, /proc/<pid>/cmdline, WMI), so a --token flag
     // would publish the credential. The refusal says so rather than just "no".
@@ -62,31 +62,31 @@ describe("#377 parseClaudeCli — what the entry point refuses", () => {
     );
   });
 
-  it("REFUSES --source-volume before a container can exist", () => {
+  it("REFUSES --source-volume before a container can exist", async () => {
     // The co-mount guard is structural in buildClaudeRunArgs, but catching it at
     // parse time means the mistake never reaches docker at all.
     expect(() => parseClaudeCli([...ARGV, "--source-volume", "v"])).toThrow(/NEVER co-mounted/);
   });
 
-  it("requires both the image and the home volume", () => {
+  it("requires both the image and the home volume", async () => {
     expect(() => parseClaudeCli(["--home-volume", OK.homeVolume])).toThrow(/--image is required/);
     expect(() => parseClaudeCli(["--image", OK.image])).toThrow(/--home-volume is required/);
   });
 
-  it("refuses an unknown flag rather than ignoring it", () => {
+  it("refuses an unknown flag rather than ignoring it", async () => {
     expect(() => parseClaudeCli([...ARGV, "--privileged"])).toThrow(/unknown argument/);
   });
 
-  it("refuses a flag with no value", () => {
+  it("refuses a flag with no value", async () => {
     expect(() => parseClaudeCli(["--image"])).toThrow(/requires a value/);
   });
 });
 
 describe("#377 runClaudeInsideCli — the process contract", () => {
-  it("starts the box and prints only the container id", () => {
+  it("starts the box and prints only the container id", async () => {
     const { out, err, sinks } = collect();
     let seen: Record<string, unknown> | undefined;
-    const code = runClaudeInsideCli(ARGV, ENV, {
+    const code = await runClaudeInsideCli(ARGV, ENV, {
       ...sinks,
       run: (opts) => { seen = opts as unknown as Record<string, unknown>; return "cid-1"; },
     });
@@ -96,18 +96,18 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
     expect(seen).toMatchObject({ ...OK, netPolicy: "offline" });
   });
 
-  it("passes the token from the ENVIRONMENT, not from argv", () => {
+  it("passes the token from the ENVIRONMENT, not from argv", async () => {
     let seenToken: unknown;
-    runClaudeInsideCli(ARGV, ENV, {
+    await runClaudeInsideCli(ARGV, ENV, {
       ...collect().sinks,
       run: (opts) => { seenToken = opts.token; return "cid"; },
     });
     expect(seenToken).toBe("DUMMY-NOT-A-REAL-TOKEN");
   });
 
-  it("exits with the usage code when the token is absent, and says where it comes from", () => {
+  it("exits with the usage code when the token is absent, and says where it comes from", async () => {
     const { err, sinks } = collect();
-    const code = runClaudeInsideCli(ARGV, {} as NodeJS.ProcessEnv, {
+    const code = await runClaudeInsideCli(ARGV, {} as NodeJS.ProcessEnv, {
       ...sinks,
       run: () => { throw new Error("must not start a box without a token"); },
     });
@@ -115,20 +115,20 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
     expect(err.join("\n")).toContain(TOKEN_ENV_VAR);
   });
 
-  it("never echoes the token, on any path", () => {
+  it("never echoes the token, on any path", async () => {
     // Including the failure path, where a diagnostic is most likely to carry
     // something it should not.
     const { out, err, sinks } = collect();
-    runClaudeInsideCli(ARGV, ENV, {
+    await runClaudeInsideCli(ARGV, ENV, {
       ...sinks,
       run: () => { throw new Error("docker run failed: exit 125"); },
     });
     expect([...out, ...err].join("\n")).not.toContain("DUMMY-NOT-A-REAL-TOKEN");
   });
 
-  it("returns 1 and names the co-mount guard when it fires", () => {
+  it("returns 1 and names the co-mount guard when it fires", async () => {
     const { err, sinks } = collect();
-    const code = runClaudeInsideCli(ARGV, ENV, {
+    const code = await runClaudeInsideCli(ARGV, ENV, {
       ...sinks,
       run: () => { throw new TokenCoMountRejectedError("token volume co-mount refused"); },
     });
@@ -136,9 +136,9 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
     expect(err.join("\n")).toMatch(/co-mount refused/);
   });
 
-  it("returns 1 on an ordinary start failure, distinct from the usage code", () => {
+  it("returns 1 on an ordinary start failure, distinct from the usage code", async () => {
     const { sinks } = collect();
-    const code = runClaudeInsideCli(ARGV, ENV, {
+    const code = await runClaudeInsideCli(ARGV, ENV, {
       ...sinks,
       run: () => { throw new Error("docker run failed"); },
     });
@@ -146,13 +146,13 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
     expect(code).not.toBe(USAGE_ERROR_EXIT);
   });
 
-  it("never throws for a usage error; it returns a code", () => {
+  it("never throws for a usage error; it returns a code", async () => {
     const { sinks } = collect();
-    expect(() => runClaudeInsideCli(["--nonsense"], ENV, sinks)).not.toThrow();
-    expect(runClaudeInsideCli(["--nonsense"], ENV, sinks)).toBe(USAGE_ERROR_EXIT);
+    expect(() => await runClaudeInsideCli(["--nonsense"], ENV, sinks)).not.toThrow();
+    expect(await runClaudeInsideCli(["--nonsense"], ENV, sinks)).toBe(USAGE_ERROR_EXIT);
   });
 
-  it("the usage text states that this is skill-gated, not a sandbox subcommand", () => {
+  it("the usage text states that this is skill-gated, not a sandbox subcommand", async () => {
     // The gating is a documented contract, not just an absent subcommand. If
     // someone finds this binary directly, the text tells them what they are
     // bypassing.

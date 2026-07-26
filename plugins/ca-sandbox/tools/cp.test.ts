@@ -1,7 +1,7 @@
 /**
  * cp.test.ts — T-12. Covers AC-10.
  *
- * Host-initiated, PULL-ONLY file extraction. `cpOut(id, containerPath, hostDest)`
+ * Host-initiated, PULL-ONLY file extraction. `await cpOut(id, containerPath, hostDest)`
  * shells `docker cp <container>:<path> <hostDest>` — the host reaches IN and pulls
  * a file out. The reverse direction (getting host files INTO the box) is the
  * danger: the only way to bulk-inject host files would be a bind mount, and the
@@ -32,12 +32,12 @@ import { BindMountRejectedError } from "./mounts.ts";
 // PURE unit layer — argv assembly + reverse-bind rejection, no real docker.
 // --------------------------------------------------------------------------
 describe("buildCpOutArgs — pull-only direction (AC-10)", () => {
-  it("assembles `cp <id>:<containerPath> <hostDest>` in the pull direction", () => {
+  it("assembles `cp <id>:<containerPath> <hostDest>` in the pull direction", async () => {
     const argv = buildCpOutArgs("abc123", "/work/out.txt", "./dest/out.txt");
     expect(argv).toEqual(["cp", "abc123:/work/out.txt", "./dest/out.txt"]);
   });
 
-  it("never produces the reverse direction (host source before container dest)", () => {
+  it("never produces the reverse direction (host source before container dest)", async () => {
     const argv = buildCpOutArgs("abc123", "/work/out.txt", "./dest/out.txt");
     // The container ref (`<id>:`) is the SOURCE (argv[1]); the host path is the
     // DEST (argv[2]). A reversed `cp <hostDest> <id>:<path>` would be a push.
@@ -46,7 +46,7 @@ describe("buildCpOutArgs — pull-only direction (AC-10)", () => {
     expect(argv[2].startsWith("abc123:")).toBe(false);
   });
 
-  it("refuses an empty container id, container path, or host dest", () => {
+  it("refuses an empty container id, container path, or host dest", async () => {
     expect(() => buildCpOutArgs("", "/work/x", "./x")).toThrow();
     expect(() => buildCpOutArgs("abc", "", "./x")).toThrow();
     expect(() => buildCpOutArgs("abc", "/work/x", "")).toThrow();
@@ -54,19 +54,19 @@ describe("buildCpOutArgs — pull-only direction (AC-10)", () => {
 });
 
 describe("assertNoCopyInBind — host->container bind is impossible (AC-10)", () => {
-  it("throws (via the mount chokepoint) on a -v host:container bind copy-in", () => {
+  it("throws (via the mount chokepoint) on a -v host:container bind copy-in", async () => {
     expect(() => assertNoCopyInBind("/home/user/secrets:/work/secrets")).toThrow(
       BindMountRejectedError,
     );
   });
 
-  it("throws on an explicit type=bind copy-in spec", () => {
+  it("throws on an explicit type=bind copy-in spec", async () => {
     expect(() =>
       assertNoCopyInBind({ type: "bind", source: "/etc", target: "/work/etc" }),
     ).toThrow(/bind/i);
   });
 
-  it("the rejection comes from mounts.ts (cp does not hand-roll its own check)", () => {
+  it("the rejection comes from mounts.ts (cp does not hand-roll its own check)", async () => {
     // BindMountRejectedError is mounts.ts's error type — proving the routing.
     let err: unknown;
     try {
@@ -96,7 +96,7 @@ d("cpOut [docker] — pulls a file from /work to the host (AC-10)", () => {
     if (tmp) rmSync(tmp, { recursive: true, force: true });
   });
 
-  it("copies /work/<f> out to a host dest with identical bytes", () => {
+  it("copies /work/<f> out to a host dest with identical bytes", async () => {
     const image = "busybox:latest";
     const pull = spawnSync("docker", ["pull", image], { encoding: "utf8", env: DENV });
     expect(pull.status, pull.stderr).toBe(0);
@@ -138,7 +138,7 @@ d("cpOut [docker] — pulls a file from /work to the host (AC-10)", () => {
     tmp = mkdtempSync(path.join(tmpdir(), "ca-sbx-t12-"));
     const dest = path.join(tmp, "pulled.txt");
 
-    const r = cpOut(id, "/work/out.txt", dest, { dockerRun: (args) => {
+    const r = await cpOut(id, "/work/out.txt", dest, { dockerRun: async (args) => {
       const res = spawnSync("docker", args, { encoding: "utf8", env: DENV });
       return { code: res.status ?? 1, stdout: res.stdout ?? "", stderr: res.stderr ?? "" };
     } });

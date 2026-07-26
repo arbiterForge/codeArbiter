@@ -34,7 +34,7 @@ import { execInSandbox } from "./exec.ts";
 import { dockerGate } from "./docker-gate.ts";
 
 describe("#394 — every docker invocation carries a finite deadline", () => {
-  it("declares a default timeout, and it is finite and plausible", () => {
+  it("declares a default timeout, and it is finite and plausible", async () => {
     expect(Number.isFinite(DEFAULT_DOCKER_TIMEOUT_MS)).toBe(true);
     expect(DEFAULT_DOCKER_TIMEOUT_MS).toBeGreaterThan(0);
     // A deadline nobody can hit is not a deadline. Anything past a few minutes
@@ -42,7 +42,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     expect(DEFAULT_DOCKER_TIMEOUT_MS).toBeLessThanOrEqual(5 * 60_000);
   });
 
-  it("gives every declared operation a finite deadline, longest for builds", () => {
+  it("gives every declared operation a finite deadline, longest for builds", async () => {
     const entries = Object.entries(DOCKER_OPERATION_TIMEOUTS_MS);
     expect(entries.length).toBeGreaterThan(0);
     for (const [operation, ms] of entries) {
@@ -54,7 +54,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     expect(DOCKER_OPERATION_TIMEOUTS_MS.build).toBeGreaterThan(DOCKER_OPERATION_TIMEOUTS_MS.inspect);
   });
 
-  it("passes the deadline through to the spawn, not merely stores it", () => {
+  it("passes the deadline through to the spawn, not merely stores it", async () => {
     // An argv whose subcommand is NOT in the per-operation map, so the value
     // handed to spawnSync is unambiguously the DEFAULT rather than a coincidence.
     // The failure this catches: a timeout constant that exists, is exported,
@@ -70,7 +70,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     expect(seen[0]!.killSignal).toBeDefined();
   });
 
-  it("reports a timeout as a TYPED result, not an indistinguishable non-zero", () => {
+  it("reports a timeout as a TYPED result, not an indistinguishable non-zero", async () => {
     // spawnSync signals a deadline kill through `error` / `signal`, and a plain
     // `{code: 1}` is what a normal docker failure looks like. A caller that
     // cannot tell them apart cannot escalate, which is the whole point.
@@ -88,7 +88,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     expect(result.stderr).toMatch(new RegExp(String(DEFAULT_DOCKER_TIMEOUT_MS)));
   });
 
-  it("does not mark an ordinary docker failure as a timeout", () => {
+  it("does not mark an ordinary docker failure as a timeout", async () => {
     const failed = makeDockerRun({}, { spawn: (() => ({
       status: 1, signal: null, stdout: "", stderr: "no such container", error: undefined,
     })) as unknown as typeof spawnSync });
@@ -97,7 +97,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     expect(result.code).toBe(1);
   });
 
-  it("escalates a timed-out exec: the container process is stopped, not orphaned", () => {
+  it("escalates a timed-out exec: the container process is stopped, not orphaned", async () => {
     // THE POINT OF THE ESCALATION. spawnSync's timeout kills the docker CLIENT.
     // The process it started inside the container keeps running, holding the
     // box open and whatever it was doing. So a timed-out exec must reach back
@@ -110,7 +110,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
       }
       return { code: 0, stdout: "", stderr: "" };
     };
-    const result = execInSandbox("box-1", ["sh", "-c", "sleep infinity"], { dockerRun });
+    const result = await execInSandbox("box-1", ["sh", "-c", "sleep infinity"], { dockerRun });
 
     expect(result.timedOut).toBe(true);
     expect(result.exitCode).not.toBe(0);
@@ -119,7 +119,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
     expect(escalation.some((argv) => argv[0] === "stop" && argv.includes("box-1"))).toBe(true);
   });
 
-  it("does not escalate when the exec merely fails", () => {
+  it("does not escalate when the exec merely fails", async () => {
     // Escalation stops a container. Doing that on an ordinary non-zero exit
     // would destroy a working box every time a command returned 1.
     const calls: string[][] = [];
@@ -127,19 +127,19 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
       calls.push(args);
       return { code: 7, stdout: "", stderr: "" };
     };
-    const result = execInSandbox("box-2", ["sh", "-c", "exit 7"], { dockerRun });
+    const result = await execInSandbox("box-2", ["sh", "-c", "exit 7"], { dockerRun });
     expect(result.exitCode).toBe(7);
     expect(result.timedOut).toBeFalsy();
     expect(calls).toHaveLength(1);
   });
 
-  it("still returns a result when the escalation itself fails", () => {
+  it("still returns a result when the escalation itself fails", async () => {
     // A wedged daemon is exactly the case where the escalation cannot succeed.
     // Reporting the original timeout matters more than reporting the cleanup.
     const dockerRun = (args: string[]): RunResult => (args[0] === "exec"
       ? { code: 124, stdout: "", stderr: "timed out", timedOut: true }
       : { code: 1, stdout: "", stderr: "Cannot connect to the Docker daemon" });
-    const result = execInSandbox("box-3", ["sh", "-c", "sleep infinity"], { dockerRun });
+    const result = await execInSandbox("box-3", ["sh", "-c", "sleep infinity"], { dockerRun });
     expect(result.timedOut).toBe(true);
     expect(result.stderr).toMatch(/timed out/i);
   });
@@ -148,7 +148,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
 const realDocker = dockerGate("deadline", { linux: true });
 
 realDocker("#394 — a real hung command terminates within its deadline", () => {
-  it("a sleeping exec is killed at the deadline and leaves nothing running", () => {
+  it("a sleeping exec is killed at the deadline and leaves nothing running", async () => {
     const name = `ca-sbx-deadline-${Date.now().toString(36)}`;
     const created = defaultDockerRun([
       "run", "-d", "--rm", "--name", name, "alpine:latest", "sleep", "600",
@@ -157,7 +157,7 @@ realDocker("#394 — a real hung command terminates within its deadline", () => 
     const id = created.stdout.trim();
     try {
       const started = Date.now();
-      const result = execInSandbox(id, ["sh", "-c", "sleep 600"], {
+      const result = await execInSandbox(id, ["sh", "-c", "sleep 600"], {
         dockerRun: makeDockerRun({ maxBuffer: 8 * 1024 * 1024 }, { timeoutMs: 4_000 }),
       });
       const elapsed = Date.now() - started;

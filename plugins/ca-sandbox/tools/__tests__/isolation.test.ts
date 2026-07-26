@@ -82,7 +82,7 @@ d("host-FS isolation canary [docker] (AC-03)", () => {
     created.volumes.push(vol);
 
     // 2. Start the real isolated sandbox container (no host bind, offline).
-    containerId = runContainer(image, vol, "offline", {
+    containerId = await runContainer(image, vol, "offline", {
       extraLabels: ["ca.sandbox.build=1"],
       namePrefix: NS,
     });
@@ -97,14 +97,14 @@ d("host-FS isolation canary [docker] (AC-03)", () => {
     if (hostDir) rmSync(hostDir, { recursive: true, force: true });
   });
 
-  it("NEGATIVE control: the canary IS readable from the HOST at its abspath", () => {
+  it("NEGATIVE control: the canary IS readable from the HOST at its abspath", async () => {
     // Proves the file genuinely exists and carries the real uuid, so the in-box
     // failure below is true isolation — not a bad path or an empty file.
     const onHost = readFileSync(hostCanaryPath, "utf8");
     expect(onHost).toContain(uuid);
   });
 
-  it("a process INSIDE the box cannot read the host canary at its real abspath", () => {
+  it("a process INSIDE the box cannot read the host canary at its real abspath", async () => {
     // The host abspath (Windows or POSIX) simply does not exist in the
     // container's filesystem view — reading it MUST fail and MUST NOT surface
     // the uuid. We probe both the raw host abspath and a POSIX-normalized form
@@ -118,7 +118,7 @@ d("host-FS isolation canary [docker] (AC-03)", () => {
     }
   });
 
-  it("a brute whole-FS grep for the uuid INSIDE the box finds NOTHING", () => {
+  it("a brute whole-FS grep for the uuid INSIDE the box finds NOTHING", async () => {
     // The attacker's strongest move: scan the entire container filesystem for
     // the marker. We grep every REAL on-disk root, EXCLUDING the kernel
     // pseudo-filesystems /proc, /sys and /dev. That exclusion is correct, not a
@@ -150,7 +150,7 @@ d("host-FS isolation canary [docker] (AC-03)", () => {
     expect(alive.stdout.trim()).toBe("true");
   });
 
-  it("docker inspect shows NO bind mount (the structural reason the canary is unreachable)", () => {
+  it("docker inspect shows NO bind mount (the structural reason the canary is unreachable)", async () => {
     const inspect = spawnSync("docker", ["inspect", containerId], { encoding: "utf8", env: DENV });
     expect(inspect.status, inspect.stderr).toBe(0);
     const info = JSON.parse(inspect.stdout)[0];
