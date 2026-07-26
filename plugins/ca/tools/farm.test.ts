@@ -4,7 +4,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execSync, spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve, basename } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
@@ -1390,6 +1390,56 @@ describe("farm artifact publication (#397 / #387)", () => {
   let mockServer: Server;
   let port: number;
 
+  /**
+   * #515: name the escalation.
+   *
+   * A run that flips to a non-zero exit fails as `expected 2 to be +0`, and the
+   * farm's stdout carries only counts ("green=11 escalate=1") — never which task
+   * or why. The reason is in the run report, which `afterEach` deletes with the
+   * temp tree, so it has to be lifted into the message while the tree still
+   * exists. Message only: no assertion changes.
+   */
+  function diagnose(result: { code: number; out: string }): string {
+    const tasks: string[] = [];
+    const problems: string[] = [];
+    const runsDir = join(tmpDir, ".farm/runs");
+    let runIds: string[] = [];
+    try {
+      runIds = existsSync(runsDir) ? readdirSync(runsDir) : [];
+    } catch (error) {
+      problems.push(`runs directory unreadable: ${String(error)}`);
+    }
+    for (const runId of runIds) {
+      // Per-run, deliberately: one unreadable report must not hide the others.
+      // A test in this block plants a DIRECTORY at a report path, which
+      // existsSync reports true and readFileSync rejects with EISDIR.
+      try {
+        const reportPath = join(runsDir, runId, "farm-report.json");
+        if (!existsSync(reportPath)) continue;
+        const report = JSON.parse(readFileSync(reportPath, "utf8")) as {
+          results?: Array<{ id: string; status: string; note?: string; attempts?: number }>;
+          blocked?: Array<{ id: string; reason: string }>;
+        };
+        for (const r of report.results ?? []) {
+          if (r.status === "green") continue;
+          tasks.push(`  [${runId}] ${r.id}: ${r.status} after ${r.attempts ?? "?"} attempt(s) — ${r.note ?? "(no note)"}`);
+        }
+        // `blocked` flips the exit code independently of `results` (runExitCode),
+        // so a blocked-only run would otherwise report counts and no names.
+        for (const b of report.blocked ?? []) {
+          tasks.push(`  [${runId}] ${b.id}: blocked — ${b.reason}`);
+        }
+      } catch (error) {
+        problems.push(`[${runId}] report unreadable: ${String(error)}`);
+      }
+    }
+    return [
+      result.out,
+      tasks.length ? `\n\nnon-green tasks:\n${tasks.join("\n")}` : "",
+      problems.length ? `\n\ndiagnostic could not read:\n  ${problems.join("\n  ")}` : "",
+    ].join("");
+  }
+
   // Every task in these plans owns exactly one `src/<id>.ts`; the worker echoes
   // back whichever in-scope file the prompt names.
   function greenHandler(): MockHandler {
@@ -1449,7 +1499,7 @@ describe("farm artifact publication (#397 / #387)", () => {
       FARM_API_KEY: "test-key",
       FARM_RUN_ID: "runone",
     });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
 
     const runDir = join(tmpDir, ".farm/runs/runone");
     const report = JSON.parse(readFileSync(join(runDir, "farm-report.json"), "utf8"));
@@ -1491,7 +1541,7 @@ describe("farm artifact publication (#397 / #387)", () => {
       }),
     ]);
 
-    expect([a.code, b.code], `${a.out}\n---\n${b.out}`).toEqual([0, 0]);
+    expect([a.code, b.code], `${diagnose(a)}\n---\n${diagnose(b)}`).toEqual([0, 0]);
 
     for (const [runId, ids] of [
       ["runalpha", ["alpha1", "alpha2"]],
@@ -1520,7 +1570,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     const planPath = writePlan("plan.json", planFor("prior", ["task-a", "task-b"], port));
 
     const first = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "goodrun" });
-    expect(first.code).toBe(0);
+    expect(first.code, diagnose(first)).toBe(0);
     const before = readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8");
     expect(JSON.parse(before).run_id).toBe("goodrun");
 
@@ -1542,7 +1592,7 @@ describe("farm artifact publication (#397 / #387)", () => {
       FARM_API_KEY: "test-key",
       FARM_RUN_ID: "../escape",
     });
-    expect(result.code).toBe(1);
+    expect(result.code, diagnose(result)).toBe(1);
     expect(result.out).toContain("FARM_RUN_ID");
   });
 
@@ -1559,7 +1609,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     // Every task went green — the RUN succeeded, the RECEIPT did not. Those are
     // distinguished in both the exit code and the message.
     expect(result.out).toContain("green=2");
-    expect(result.code).toBe(3);
+    expect(result.code, diagnose(result)).toBe(3);
     expect(result.out).toMatch(/receipt/i);
     expect(result.out).not.toMatch(/^Report: /m);
   });
@@ -1570,7 +1620,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     mkdirSync(join(tmpDir, ".farm/runs/mdbad/farm-report.md"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdbad" });
-    expect(result.code).toBe(3);
+    expect(result.code, diagnose(result)).toBe(3);
     expect(result.out).toMatch(/receipt/i);
   });
 
@@ -1581,7 +1631,7 @@ describe("farm artifact publication (#397 / #387)", () => {
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "streambad" });
     // The rail is best-effort — the run still settles on task outcome...
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     // ...but the authoritative report says so, instead of leaving a consumer to
     // infer completeness from a silently short file.
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/streambad/farm-report.json"), "utf8"));
@@ -1598,7 +1648,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     mkdirSync(join(tmpDir, ".farm/farm-results.jsonl"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "lstream" });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/lstream/farm-report.json"), "utf8"));
     expect(report.artifacts.stream.complete).toBe(false);
     // The run-scoped rail itself is fine — only the shared pointer failed.
@@ -1613,7 +1663,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     writeFileSync(join(tmpDir, ".farm/runs/diffdirbad/diffs"), "not a directory");
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "diffdirbad" });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/diffdirbad/farm-report.json"), "utf8"));
     expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id).sort()).toEqual([
       "task-a",
@@ -1630,7 +1680,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     mkdirSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-a.patch"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "patchbad" });
-    expect(result.code).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/patchbad/farm-report.json"), "utf8"));
     expect(report.artifacts.diffs.unavailable.map((u: { id: string }) => u.id)).toEqual(["task-a"]);
     expect(existsSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-b.patch"))).toBe(true);
@@ -1654,7 +1704,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     // The durable receipt is on disk, so this is not a receipt failure.
     expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.json"))).toBe(true);
     expect(existsSync(join(tmpDir, ".farm/runs/mirrorbad/farm-report.md"))).toBe(true);
-    expect(result.code, result.out).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     expect(result.out).not.toMatch(/RECEIPT PUBLICATION FAILED/);
     // The operator is still pointed at the receipt that exists...
     expect(result.out).toContain(join(".farm", "runs", "mirrorbad", "farm-report.md"));
@@ -1669,7 +1719,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     mkdirSync(join(tmpDir, ".farm/runs/mdonly/farm-report.md"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdonly" });
-    expect(result.code).toBe(3);
+    expect(result.code, diagnose(result)).toBe(3);
     // The JSON receipt DID land — a message asserting "there is no durable
     // receipt for this run" would be false.
     expect(existsSync(join(tmpDir, ".farm/runs/mdonly/farm-report.json"))).toBe(true);
@@ -1691,7 +1741,7 @@ describe("farm artifact publication (#397 / #387)", () => {
       FARM_RUN_ID: "bounded",
       FARM_CONCURRENCY: "6",
     });
-    expect(result.code, result.out).toBe(0);
+    expect(result.code, diagnose(result)).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/runs/bounded/farm-report.json"), "utf8"));
     // 12 tasks, one diagnosis — the report carries the diagnosis and the count,
     // not 12 copies of the same line.
