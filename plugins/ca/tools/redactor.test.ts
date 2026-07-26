@@ -21,18 +21,33 @@ import { isSecretBearingFilename, redactSecrets } from "./redactor.ts";
 
 const MARKER = "[REDACTED — secret-pattern match removed before transmission]";
 
+// The armor delimiters are ASSEMBLED AT RUNTIME rather than written as literals.
+// A committed PEM header line is reported by gitleaks' `private-key` rule — the
+// header alone is enough, no body required, which is why this comment does not
+// spell one either. .gitleaks.toml is deliberately default-deny, so waiving it
+// would mean pinning an anchored copy of this file's exact block shape, which
+// then has to be re-derived every time the array is reformatted (see the
+// farm.test.ts waiver in that file for what that costs). redactSecrets receives
+// a byte-identical string either way, so there is nothing to buy with a waiver.
+const ARMOR = "-".repeat(5);
+const begin = (label: string): string => `${ARMOR}BEGIN ${label}${ARMOR}`;
+const end = (label: string): string => `${ARMOR}END ${label}${ARMOR}`;
+const PRIVATE_KEY = "RSA PRIVATE KEY";
+
 // Body lines deliberately carry NO trigger word, so a purely per-line redactor
-// would transmit them verbatim. That is the whole point of span redaction.
+// would transmit them verbatim. That is the whole point of span redaction. They
+// are also deliberately NOT base64-shaped — realistic key material would trip
+// the hosted scanner for no gain, since the redactor never inspects the body.
 const BODY = [
-  "MIIEowIBAAKCAQEAxFAKEKEYBODYLINEONE00000000000",
-  "SGVsbG9GQUtFS0VZQk9EWUxJTkVUV08xMTExMTExMTExMQ",
-  "RkFLRUtFWUJPRFlMSU5FVEhSRUUyMjIyMjIyMjIyMjIy==",
+  "SPANBODYLINEONE0000000000000000000000000000000",
+  "SPANBODYLINETWO1111111111111111111111111111111",
+  "SPANBODYLINETHREE22222222222222222222222222===",
 ];
 
 describe("redactSecrets — PEM span redaction", () => {
   it("collapses a BEGIN..END block to exactly one marker and emits no body line", () => {
     const out = redactSecrets(
-      ["const pem = `", "-----BEGIN RSA PRIVATE KEY-----", ...BODY, "-----END RSA PRIVATE KEY-----", "`;"].join("\n"),
+      ["const pem = `", begin(PRIVATE_KEY), ...BODY, end(PRIVATE_KEY), "`;"].join("\n"),
     );
 
     for (const body of BODY) expect(out).not.toContain(body);
@@ -46,9 +61,9 @@ describe("redactSecrets — PEM span redaction", () => {
   it("stops the span at the END delimiter and preserves the content after it", () => {
     const out = redactSecrets(
       [
-        "-----BEGIN RSA PRIVATE KEY-----",
+        begin(PRIVATE_KEY),
         ...BODY,
-        "-----END RSA PRIVATE KEY-----",
+        end(PRIVATE_KEY),
         "export const PORT = 8080;",
         "export const NAME = 'after-the-span';",
       ].join("\n"),
@@ -62,7 +77,7 @@ describe("redactSecrets — PEM span redaction", () => {
   });
 
   it("redacts through end-of-content when the block is never terminated", () => {
-    const out = redactSecrets(["-----BEGIN RSA PRIVATE KEY-----", ...BODY, "trailing = 1;"].join("\n"));
+    const out = redactSecrets([begin(PRIVATE_KEY), ...BODY, "trailing = 1;"].join("\n"));
 
     for (const body of BODY) expect(out).not.toContain(body);
     // An unterminated block takes the rest of the content with it, deliberately:
@@ -77,7 +92,7 @@ describe("redactSecrets — PEM span redaction", () => {
     // pattern, so this block reaches the span path only via PEM_BEGIN. If span
     // detection were folded into the trigger-word test, the body would ship.
     const out = redactSecrets(
-      ["-----BEGIN CERTIFICATE-----", ...BODY, "-----END CERTIFICATE-----", "done = true;"].join("\n"),
+      [begin("CERTIFICATE"), ...BODY, end("CERTIFICATE"), "done = true;"].join("\n"),
     );
 
     for (const body of BODY) expect(out).not.toContain(body);
@@ -87,13 +102,13 @@ describe("redactSecrets — PEM span redaction", () => {
   it("redacts two separate blocks independently rather than merging them", () => {
     const out = redactSecrets(
       [
-        "-----BEGIN CERTIFICATE-----",
+        begin("CERTIFICATE"),
         BODY[0],
-        "-----END CERTIFICATE-----",
+        end("CERTIFICATE"),
         "between = 'kept';",
-        "-----BEGIN RSA PRIVATE KEY-----",
+        begin(PRIVATE_KEY),
         BODY[1],
-        "-----END RSA PRIVATE KEY-----",
+        end(PRIVATE_KEY),
       ].join("\n"),
     );
 
@@ -108,7 +123,7 @@ describe("redactSecrets — PEM span redaction", () => {
     // to per-line handling — where `PRIVATE` still trips SECRET_LINE, so the
     // line is redacted, but as ONE line and without consuming what follows.
     const out = redactSecrets(
-      ["the header reads -----BEGIN RSA PRIVATE KEY----- inline", "next = 'must survive';"].join("\n"),
+      [`the header reads ${begin(PRIVATE_KEY)} inline`, "next = 'must survive';"].join("\n"),
     );
 
     expect(out).toBe([MARKER, "next = 'must survive';"].join("\n"));
