@@ -585,7 +585,31 @@ describe("session-local background job state", () => {
     openTree?: BackgroundJobRuntimeDependencies["openTree"],
   ): Promise<void> {
     const shellPath = await realpath(resolve(process.env.ProgramFiles ?? "C:\\Program Files", "Git", "bin", "bash.exe"));
-    const runtime = createBackgroundJobRuntime(openTree === undefined ? {} : { openTree })!;
+
+    // #504: `launch` returns `Snapshot | undefined`, and `undefined` is a
+    // DESIGNED refusal - the runtime is fail-closed and never owns an
+    // untracked process. But the spawn error on the `#openTree` path is
+    // discarded by a bare `catch {}`, so a real environment failure on CI
+    // arrived as `expected undefined to be defined` with no cause, and the old
+    // diagnostic ("the contained launch never returned") actively misdescribed
+    // it: the launch DID return, with a refusal.
+    //
+    // Wrapping the tree opener here captures that cause without touching the
+    // published activity contract, so the next occurrence explains itself.
+    let spawnFailure: unknown;
+    const observedOpenTree: BackgroundJobRuntimeDependencies["openTree"] =
+      async (command, args, options) => {
+        try {
+          return await (openTree === undefined
+            ? openProcessTree(command, args, options)
+            : openTree(command, args, options));
+        } catch (error) {
+          spawnFailure = error;
+          throw error;
+        }
+      };
+
+    const runtime = createBackgroundJobRuntime({ openTree: observedOpenTree })!;
     const lease = Object.freeze({});
     const job = await awaitLiveCondition(
       runtime.launch({
@@ -597,10 +621,21 @@ describe("session-local background job state", () => {
         shellPath,
       }),
       "the live Git Bash launch",
-      () => "no job handle - the contained launch never returned",
+      () => (spawnFailure === undefined
+        ? `the launch REFUSED without a spawn attempt (runtime unhealthy, `
+          + `unparseable input, a stale lease, or createJob declined) - `
+          + `shellPath was ${shellPath}`
+        : `the Git Bash spawn threw: ${spawnFailure instanceof Error
+            ? `${spawnFailure.name}: ${spawnFailure.message}` : String(spawnFailure)}`),
     );
 
-    expect(job).toBeDefined();
+    expect(
+      job,
+      spawnFailure === undefined
+        ? "launch refused before spawning; see the diagnose() detail above"
+        : `launch refused because the spawn threw: ${spawnFailure instanceof Error
+            ? spawnFailure.message : String(spawnFailure)}`,
+    ).toBeDefined();
     await awaitLiveCondition(
       runtime.settled(job!.id),
       `live Git Bash job ${job!.id}`,
