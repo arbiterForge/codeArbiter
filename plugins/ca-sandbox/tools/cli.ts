@@ -298,7 +298,7 @@ function parsePrune(args: string[]): Command {
  * own (it is purely an interactive convenience over a running container), so it
  * lives here; it is injectable, so tests never spawn a real tty.
  */
-function defaultShell(id: string, shell: string): number {
+async function defaultShell(id: string, shell: string): Promise<number> {
   // `id` is the user-facing sandbox id; resolve it to the real container id
   // (the container is `ca-sbx-<id>-<suffix>`, not the bare id) before exec.
   const containerId = await resolveContainerId(id);

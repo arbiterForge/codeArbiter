@@ -214,11 +214,11 @@ async function removeEach(
  * PRESENT rather than only what we managed to delete. A failed verification
  * listing is recorded as a failure: an unverifiable teardown is not a clean one.
  */
-function verifyScope(
+async function verifyScope(
   labels: string | string[],
   dockerRun: DockerRun,
   log: FailureLog,
-): { containers: string[]; volumes: string[] } {
+): Promise<{ containers: string[]; volumes: string[] }> {
   const c = await listContainersResult(labels, dockerRun);
   if (c.code !== 0) log.add("list-containers", c.scope, c.code, c.stderr);
   const v = await listVolumesResult(labels, dockerRun);

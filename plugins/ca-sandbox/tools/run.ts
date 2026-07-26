@@ -201,7 +201,7 @@ export function buildRunArgs(
  * @returns the container id.
  * @throws if `docker run` fails (non-zero exit).
  */
-export function runContainer(
+export async function runContainer(
   image: string,
   volumeName: string,
   netPolicy: NetPolicy,

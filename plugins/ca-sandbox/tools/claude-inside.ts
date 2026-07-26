@@ -375,12 +375,12 @@ export async function runClaudeInside(
   const firewallScript = claudeFirewallScript(opts);
   if (firewallScript === undefined) return id;
 
-  const applied = dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
+  const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
   if (applied.code !== 0) {
     // Best effort, and deliberately not conditional on its own success: if the
     // teardown ALSO fails there is nothing further this process can do, and the
     // thrown error names the container so an operator can finish the job.
-    dockerRun(["rm", "-f", id]);
+    await dockerRun(["rm", "-f", id]);
     throw new Error(
       `ca-sandbox: --with-claude could not apply the egress firewall to ${id} ` +
         `(exit ${applied.code}); the container has been destroyed rather than left ` +
