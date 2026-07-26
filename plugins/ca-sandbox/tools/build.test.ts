@@ -25,16 +25,18 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from "node:fs";
+import { mkdtempSync, writeFileSync, rmSync, mkdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import {
   buildOrReuseImage,
   imageTag,
   relocationOverlay,
+  runForTests,
   type BuildDeps,
   type BuildResult,
 } from "./build.ts";
+import { DOCKER_OPERATION_TIMEOUTS_MS, timeoutForArgs } from "./docker.ts";
 import { computeDepHash } from "./dephash.ts";
 
 // --------------------------------------------------------------------------
@@ -297,4 +299,86 @@ d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () 
     expect(r3.tag).not.toBe(r1.tag);
     expect(r3.built).toBe(true);
   }, 300_000);
+});
+
+// ---------------------------------------------------------------------------
+// #394 follow-up - build.ts's own spawn was never bounded.
+//
+// #480 gave every invocation through docker.ts a finite deadline and its
+// docblock claims "every docker invocation is bounded". That claim was FALSE.
+// build.ts never imports the shared runner - it takes only DOCKER_ENV - and has
+// its own `run()` helper with no timeout at all. That helper is what executes
+// `docker image inspect` and BOTH `docker build` calls, so `sandbox create`
+// against a wedged builder or a stalled registry pull hung forever, and
+// DOCKER_OPERATION_TIMEOUTS_MS.build / .pull were dead constants that nothing
+// in production could reach.
+//
+// Build and pull are the two LONGEST operations in the driver, so they were
+// also the two most likely to hang - and the only ones with no escape.
+// ---------------------------------------------------------------------------
+describe("#394 - build.ts's spawn is bounded too", () => {
+  it("reuses the shared per-operation deadlines rather than inventing a second policy", () => {
+    // One timeout policy for the whole driver. A second map here would drift
+    // from docker.ts's the first time either moved.
+    const src = readFileSync(new URL("./build.ts", import.meta.url), "utf8");
+    expect(src).toMatch(/from "\.\/docker\.ts"/);
+    expect(src).toMatch(/timeoutForArgs|DOCKER_OPERATION_TIMEOUTS_MS/);
+  });
+
+  it("kills a child that outlives its deadline and reports it as a timeout", async () => {
+    // A real child that ignores everything and sleeps. Without a deadline this
+    // test hangs; that IS the defect.
+    //
+    // The child prints its OWN pid first, because asserting on the result alone
+    // is not enough: a version that reports a timeout and leaves the process
+    // running passes every result assertion while leaking a docker build that
+    // keeps consuming the builder. Caught by mutation - removing the kill left
+    // this test green until the liveness check below was added.
+    const started = Date.now();
+    const r = await runForTests(
+      process.execPath,
+      ["-e", "process.stdout.write(String(process.pid)); setTimeout(() => {}, 600000)"],
+      { timeoutMs: 1_500 },
+    );
+    const elapsed = Date.now() - started;
+    expect(r.timedOut).toBe(true);
+    expect(r.code).not.toBe(0);
+    expect(elapsed).toBeLessThan(30_000);
+    expect(r.out).toMatch(/timed out/i);
+
+    const pid = Number(r.stdout.trim());
+    expect(Number.isInteger(pid) && pid > 0, `no pid captured from ${JSON.stringify(r.stdout)}`).toBe(true);
+    // libuv maps signal 0 to a liveness probe on every platform, so this is a
+    // faithful cross-platform "is it still running?". Give the OS a moment to
+    // reap it before asking.
+    await new Promise((r2) => setTimeout(r2, 500));
+    let alive = true;
+    try { process.kill(pid, 0); } catch { alive = false; }
+    expect(alive, `child ${pid} survived its deadline`).toBe(false);
+  }, 60_000);
+
+  it("does not mark an ordinary non-zero exit as a timeout", async () => {
+    const r = await runForTests(process.execPath, ["-e", "process.exit(7)"], { timeoutMs: 30_000 });
+    expect(r.code).toBe(7);
+    expect(r.timedOut).toBeFalsy();
+  }, 30_000);
+
+  it("leaves a fast success completely alone", async () => {
+    const r = await runForTests(process.execPath, ["-e", "process.stdout.write('ok')"], {
+      timeoutMs: 30_000,
+    });
+    expect(r.code).toBe(0);
+    expect(r.stdout).toBe("ok");
+    expect(r.timedOut).toBeFalsy();
+  }, 30_000);
+
+  it("gives a docker build the build deadline, not the short default", async () => {
+    // The regression this catches: bounding the helper with ONE short default
+    // and thereby killing legitimate cold builds. `build` is minutes by design.
+    expect(DOCKER_OPERATION_TIMEOUTS_MS.build).toBeGreaterThanOrEqual(600_000);
+    expect(timeoutForArgs(["build", "-t", "x", "."])).toBe(DOCKER_OPERATION_TIMEOUTS_MS.build);
+    expect(timeoutForArgs(["image", "inspect", "x"])).toBeLessThan(
+      DOCKER_OPERATION_TIMEOUTS_MS.build,
+    );
+  });
 });

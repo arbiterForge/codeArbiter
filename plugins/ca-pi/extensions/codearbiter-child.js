@@ -149,7 +149,33 @@ async function appendAuditLine(cwd, line) {
 import { randomBytes } from "node:crypto";
 
 // ../../ca/tools/redactor.ts
-var SECRET_LINE = /(api[_-]?key|token|secret|password|BEGIN.*PRIVATE|sk-ant|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})/i;
+var SECRET_LINE = new RegExp(
+  [
+    "api[_-]?key",
+    "token",
+    "secret",
+    "password",
+    "BEGIN.*PRIVATE",
+    "sk-ant",
+    "sk-proj-[A-Za-z0-9_-]{8}",
+    "AKIA[0-9A-Z]{16}",
+    "ghp_[A-Za-z0-9]{36}",
+    "glpat-[A-Za-z0-9_-]{8}",
+    // basic auth in a URL: scheme://user:secret@host - the colon-and-at shape,
+    // not any "@", so `https://example.com/@scope/pkg` is untouched.
+    // NOTE the doubled backslashes: these are JS STRING literals, and "\\s" in
+    // a string is a literal "s". The first cut of this shipped `[^/\s:@]`,
+    // which silently became `[^/s:@]` and only matched by luck.
+    "https?://[^/\\s:@]+:[^/\\s@]+@",
+    // a bearer credential, which is dot-segmented base64url in practice
+    "Bearer\\s+[A-Za-z0-9_-]{10,}"
+    // DELIBERATELY NOT ADDED: a `-u user:pass` rule for curl. `-u 1000:1000`
+    // is an everyday docker/podman uid:gid pair, so the shape collides with
+    // benign input. Broad is the safe direction for this redactor, but not at
+    // the cost of firing on ordinary container arguments.
+  ].join("|"),
+  "i"
+);
 var PEM_BEGIN = /^-----BEGIN .*-----\s*$/;
 var PEM_END = /^-----END .*-----\s*$/;
 var REDACTION_MARKER = "[REDACTED \u2014 secret-pattern match removed before transmission]";

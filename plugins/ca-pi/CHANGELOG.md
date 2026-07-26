@@ -2,6 +2,17 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.27] - 2026-07-26
+
+### Fixed
+
+- The extension bundles are rebuilt against the widened outbound redactor. The
+  bundles EMBED the shared farm redactor, so #487's widening (GitLab PATs,
+  OpenAI project keys, basic auth in a clone URL, bearer tokens) reached
+  `farm.js` but not `codearbiter.js` or `codearbiter-child.js` - a Pi install
+  would have kept redacting on the narrower pattern set. The parent's baked
+  child fingerprint is regenerated with them.
+
 ## [0.1.26] - 2026-07-25
 
 ### Fixed

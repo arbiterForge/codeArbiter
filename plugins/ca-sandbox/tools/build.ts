@@ -44,7 +44,7 @@ import { spawn, type SpawnOptionsWithoutStdio } from "node:child_process";
 import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { DOCKER_ENV } from "./docker.ts";
+import { DEFAULT_DOCKER_TIMEOUT_MS, DOCKER_TIMEOUT_EXIT_CODE, timeoutForArgs, DOCKER_ENV } from "./docker.ts";
 
 /** Image tag prefix for every sandbox image. */
 export const IMAGE_PREFIX = "ca-sbx";
@@ -72,7 +72,17 @@ export const FALLBACK_BASE_IMAGE =
 // --------------------------------------------------------------------------
 // process helper (mirrors farm.ts run()/RunResult)
 // --------------------------------------------------------------------------
-export type RunResult = { code: number; out: string; stdout: string; stderr: string };
+export type RunResult = {
+  code: number;
+  out: string;
+  stdout: string;
+  stderr: string;
+  /** #394: the child hit its deadline and was killed, rather than exiting.
+   * Typed separately from `code` for the same reason docker.ts does it - a
+   * caller that cannot tell a hang from an ordinary failure cannot react to
+   * one. */
+  timedOut?: boolean;
+};
 
 /**
  * The child-process seam used by the toolchain probes (`defaultEnsureNixpacks`
@@ -92,19 +102,67 @@ const BUILD_ENV = { ...DOCKER_ENV, DOCKER_BUILDKIT: "1" };
 // below) rather than an unconstrained spread — a future opts literal is now
 // compiler-checked to stay a well-formed env override (must preserve
 // MSYS_NO_PATHCONV explicitly, not drop it by accident).
-type RunOpts = { env?: NodeJS.ProcessEnv } & Omit<SpawnOptionsWithoutStdio, "env" | "shell">;
+type RunOpts = { env?: NodeJS.ProcessEnv; timeoutMs?: number } &
+  Omit<SpawnOptionsWithoutStdio, "env" | "shell" | "timeout">;
 
 function run(cmd: string, args: string[], opts: RunOpts = {}): Promise<RunResult> {
+  // #394: this helper had NO timeout, and #480's claim that "every docker
+  // invocation is bounded" was false because of it. build.ts never imports the
+  // shared runner - only DOCKER_ENV - so `docker image inspect` and BOTH
+  // `docker build` calls came through here unbounded, and a wedged builder or a
+  // stalled registry pull hung `sandbox create` forever. Build and pull are the
+  // two longest operations in the driver, which made them the two most likely
+  // to hang and the only ones with no escape.
+  //
+  // The deadline comes from docker.ts's per-operation map, not a second one
+  // invented here: two policies would drift the first time either moved. A
+  // non-docker probe (nixpacks, wsl.exe) falls back to the shared default,
+  // which is right - those are fast commands, and a wedged one is just as
+  // unrecoverable.
+  const { timeoutMs, ...spawnOpts } = opts;
+  const deadline = timeoutMs ?? (cmd === "docker" ? timeoutForArgs(args) : DEFAULT_DOCKER_TIMEOUT_MS);
   return new Promise<RunResult>((resolve) => {
-    const c = spawn(cmd, args, { env: DOCKER_ENV, ...opts });
+    const c = spawn(cmd, args, { env: DOCKER_ENV, ...spawnOpts });
     let stdout = "";
     let stderr = "";
+    let timedOut = false;
+    let settled = false;
+    const settle = (r: RunResult) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(r);
+    };
+    const timer = setTimeout(() => {
+      timedOut = true;
+      // SIGKILL, not SIGTERM: the deadline has already spent whatever grace was
+      // available, and a build that ignores a polite signal is exactly the case
+      // this exists for.
+      try { c.kill("SIGKILL"); } catch { /* already gone */ }
+      settle({
+        code: DOCKER_TIMEOUT_EXIT_CODE,
+        out: `${stdout}${stderr}ca-sandbox: \`${cmd} ${args[0] ?? ""}\` timed out after ${deadline}ms and was killed (issue #394).`,
+        stdout,
+        stderr,
+        timedOut: true,
+      });
+    }, deadline);
+    // `unref` so a pending deadline cannot hold the process open past a run that
+    // finished normally.
+    timer.unref?.();
     c.stdout?.on("data", (d) => (stdout += d));
     c.stderr?.on("data", (d) => (stderr += d));
-    c.on("error", (e) => resolve({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
-    c.on("close", (code) => resolve({ code: code ?? 1, out: stdout + stderr, stdout, stderr }));
+    c.on("error", (e) => settle({ code: 1, out: String(e), stdout: "", stderr: String(e) }));
+    c.on("close", (code) => {
+      if (timedOut) return;
+      settle({ code: code ?? 1, out: stdout + stderr, stdout, stderr });
+    });
   });
 }
+
+/** The bounded child-process helper, exposed for its own contract tests (#394).
+ * Production callers go through `run` directly; this is the same function. */
+export const runForTests = run;
 
 // --------------------------------------------------------------------------
 // tag derivation
