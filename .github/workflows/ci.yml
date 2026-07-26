@@ -134,6 +134,15 @@ jobs:
             ca-pi:
               - 'plugins/ca-pi/**'
               - 'core/**'
+              # The ca-pi extension bundles EMBED the shared farm redactor
+              # (tools/src/redaction.ts imports ../../../ca/tools/redactor.ts),
+              # so a change there makes the committed bundles stale while
+              # touching nothing under plugins/ca-pi/. #487 widened that
+              # redactor, rebuilt farm.js, and left both ca-pi bundles behind -
+              # main shipped stale bundles until the next ca-pi-touching PR
+              # happened to run this job and fail. A cross-plugin import needs a
+              # cross-plugin filter.
+              - 'plugins/ca/tools/redactor.ts'
               - 'package.json'
               - 'tools/build-host-packages.py'
               - '.github/scripts/test_pi_package.py'
