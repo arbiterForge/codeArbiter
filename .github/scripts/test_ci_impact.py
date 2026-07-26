@@ -2060,5 +2060,49 @@ class NoOrphanedSuiteTest(unittest.TestCase):
             "these suites are invoked by no workflow and no sibling script, so "
             "they never run: " + ", ".join(orphans))
 
+class GateCommandTest(unittest.TestCase):
+    """A gate that reads its command from tech-stack.md needs that command to exist.
+
+    Issue #507: `tdd` Phase 5 and `refactor` Phase 2/6 instructed "run the
+    coverage command from tech-stack.md", and tech-stack.md contained the word
+    "coverage" zero times.  Both skills forbid guessing the command, so every
+    run reached the phase, found nothing to run, and passed through on a gap.
+    A BLOCK gate that cannot execute is worse than an absent one: it reads as
+    satisfied in every lane, which is the same failure shape as #501's suites
+    that ran on nothing and #506's assertion that agreed with the bug.
+
+    Enforced from THIS repo's own tech-stack.md, which is correct even though
+    the skills ship to other projects: the file is project state, so this
+    asserts that codeArbiter satisfies the contract its own gates impose.
+    """
+
+    # token -> proof the command is actually defined, not merely discussed.
+    DEFINITIONS = {
+        "coverage": re.compile(r"(?m)^\s*npm\b.*\brun coverage\b"),
+        "typecheck": re.compile(r"(?m)^\s*npm\b.*\brun typecheck\b"),
+    }
+
+    def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
+        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        skills = sorted((REPO_ROOT / "plugins" / "ca" / "skills").glob("*/SKILL.md"))
+        missing = []
+        for token, defined in sorted(self.DEFINITIONS.items()):
+            demanders = [
+                path.parent.name
+                for path in skills
+                if re.search(
+                    rf"\b{token} command from `tech-stack\.md`",
+                    path.read_text(encoding="utf-8"),
+                )
+            ]
+            if demanders and defined.search(tech_stack) is None:
+                missing.append(
+                    f"{token}: demanded by {', '.join(sorted(set(demanders)))}, "
+                    f"but .codearbiter/tech-stack.md defines no such command")
+        self.assertEqual(
+            missing, [],
+            "a gate cannot run a command its tech-stack.md never defines: " + "; ".join(missing))
+
+
 if __name__ == "__main__":
     unittest.main()

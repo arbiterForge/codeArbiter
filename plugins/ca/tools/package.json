@@ -10,6 +10,7 @@
     "farm:example": "node --env-file-if-exists=.env --import tsx farm.ts __fixtures__/simple.plan.json",
     "build": "npx esbuild farm.ts --bundle --platform=node --format=esm --outfile=farm.js \"--banner:js=#!/usr/bin/env node\"",
     "test": "npx vitest run",
+    "coverage": "npx vitest run --coverage",
     "typecheck": "npx tsc --noEmit"
   },
   "engines": {
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
+    "@vitest/coverage-v8": "4.1.9",
     "esbuild": "^0.28.1",
     "tsx": "^4.19.0",
     "typescript": "^5.5.0",

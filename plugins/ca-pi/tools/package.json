@@ -9,10 +9,12 @@
   "scripts": {
     "build": "node ./build.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@types/node": "25.9.4",
+    "@vitest/coverage-v8": "4.1.9",
     "esbuild": "0.28.1",
     "typescript": "5.9.3",
     "vitest": "4.1.9"

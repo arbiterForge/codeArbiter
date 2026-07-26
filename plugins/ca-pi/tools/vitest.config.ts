@@ -21,6 +21,16 @@ export default defineConfig({
   test: {
     environment: "node",
     fileParallelism: false,
+    // Issue #507. Scoped to src/ so the report measures the adapter, not the
+    // test files exercising it. No `thresholds`: the maturity floor is applied
+    // by the tdd/refactor skills from .codearbiter/CONTEXT.md `stage:` against
+    // plugins/ca/includes/maturity-coverage.md, and duplicating the number here
+    // would fork that source of truth across three package configs.
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts"],
+      reporter: ["text-summary", "html"],
+    },
     // Issue #464: security-controls.md states that tests use disposable Pi
     // homes and dummy credentials and never inspect the real auth store. This
     // makes that true by construction rather than per test file - the request

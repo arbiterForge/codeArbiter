@@ -78,6 +78,12 @@ plugins/ca-sandbox/tools/node_modules/
 plugins/ca-sandbox/tools/**/.nixpacks/
 plugins/ca-sandbox/tools/**/.ca-sandbox.nixpacks.Dockerfile
 
+# Coverage output (issue #507). `npm run coverage` in any plugins/*/tools tree
+# writes a text summary to stdout and an html report here. Run output, never
+# project state — the maturity floor is applied by the tdd/refactor skills from
+# the reported numbers, not from a committed report.
+plugins/*/tools/coverage/
+
 # ca-sandbox real-container execution sentinel (issue #406) — the append-only
 # record of which docker-gated layers actually ran. Written per-run by
 # docker-gate.ts when CA_SANDBOX_DOCKER_SENTINEL is set (required CI does; a

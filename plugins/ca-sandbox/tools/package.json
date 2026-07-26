@@ -7,6 +7,7 @@
   "scripts": {
     "build": "npx esbuild cli.ts --bundle --platform=node --format=esm --outfile=sandbox.js \"--banner:js=#!/usr/bin/env node\" && npx esbuild claude-inside-cli.ts --bundle --platform=node --format=esm --outfile=claude-inside.js \"--banner:js=#!/usr/bin/env node\"",
     "test": "npx vitest run",
+    "coverage": "npx vitest run --coverage",
     "typecheck": "npx tsc --noEmit"
   },
   "engines": {
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
+    "@vitest/coverage-v8": "4.1.9",
     "esbuild": "^0.28.1",
     "tsx": "^4.19.0",
     "typescript": "^5.5.0",

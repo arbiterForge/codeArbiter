@@ -914,12 +914,21 @@ class PiPackageTests(unittest.TestCase):
                 "build": "node ./build.mjs",
                 "typecheck": "tsc --noEmit",
                 "test": "vitest run",
+                # Issue #507: tdd Phase 5 and refactor Phase 2/6 read a coverage
+                # command from tech-stack.md and forbid guessing one. Before this
+                # script existed there was nothing to read, so both gates passed
+                # on a gap. Scope and reporters live in vitest.config.ts so the
+                # invocation stays argument-free and identical on every platform.
+                "coverage": "vitest run --coverage",
             },
         )
         self.assertEqual(
             data["devDependencies"],
             {
                 "@types/node": "25.9.4",
+                # Peer-pinned to vitest EXACTLY by upstream; the two must move
+                # together or `npm ci` ERESOLVEs.
+                "@vitest/coverage-v8": "4.1.9",
                 "esbuild": "0.28.1",
                 "typescript": "5.9.3",
                 "vitest": "4.1.9",

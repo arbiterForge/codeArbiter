@@ -141,6 +141,49 @@ scripts disabled. CI owns the Windows/macOS/Linux matrix.
   `python -m py_compile plugins/ca/hooks/<file>.py` for any touched hook.
 - TypeScript: `npm run typecheck` in `plugins/ca/tools` (only when tools changed).
 
+## Coverage
+
+One command per TypeScript tree, only when that tree changed:
+
+```sh
+npm --prefix plugins/ca/tools run coverage
+npm --prefix plugins/ca-pi/tools run coverage
+npm --prefix plugins/ca-sandbox/tools run coverage
+```
+
+Each prints a text summary and writes an html report to that tree's `coverage/`
+(gitignored — run output, never project state). Scope, provider and reporters
+live in each tree's `vitest.config.ts`; the script takes no arguments so it is
+identical on every platform.
+
+**The threshold is not encoded in the tooling.** `tdd` Phase 5 and `refactor`
+Phase 2/6 apply it, reading `stage:` from `.codearbiter/CONTEXT.md` against
+`plugins/ca/includes/maturity-coverage.md`. **Lines and branches must both
+clear it**; a report satisfying one and not the other does not pass. Putting the
+number in three `vitest.config.ts` files would fork that single source of truth
+and the copies would drift the first time the stage moves.
+
+Measured baseline at stage 2 (≥ 70%), 2026-07-26:
+
+| tree | lines | branches | verdict |
+| --- | --- | --- | --- |
+| `plugins/ca/tools` | 67.22% | 59.46% | **below floor** — backfill tracked in #511 |
+| `plugins/ca-pi/tools` | 85.37% | 78.73% | clears |
+| `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears |
+
+Two caveats when reading a local report:
+
+- **ca-sandbox self-skips its docker-gated suites** on a host without Docker, so
+  a local number reads lower than required CI's. Compare against a run with
+  `CA_SANDBOX_REQUIRE_DOCKER=1` before concluding that tree regressed.
+- **No CI job enforces coverage.** It is an orchestrator gate the skills run, not
+  a required check — deliberately, since wiring a red `ca/tools` into required CI
+  would block every merge on an unrelated backfill.
+
+There is **no coverage tooling for the Python hooks**. `refactor` Phase 2 on a
+Python surface therefore has no numeric floor to check; use the per-symbol
+direct-test proof alone and say so in the phase record.
+
 ## Static checks (CI parity)
 
 ```sh
