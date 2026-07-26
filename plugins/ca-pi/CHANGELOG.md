@@ -2,6 +2,17 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.32] - 2026-07-26
+
+### Added
+
+- The projected review routine accepts an inbound pull request as its argument
+  (`#123`, a bare number, or a PR URL) and reviews it through the same fleet and
+  the same triage funnel as a local diff. Shipped as an ARGUMENT rather than a
+  second command, so the Pi command catalog and skill count are unchanged - a
+  `review-pr` skill would have been a new public surface whose only difference
+  is where the diff came from (#80).
+
 ## [0.1.31] - 2026-07-26
 
 ### Added

@@ -151,7 +151,7 @@
   },
   {
     "name": "review",
-    "description": "Review the current diff with the reviewer fleet, funneled to one triaged verdict.",
+    "description": "Review a diff with the reviewer fleet, funneled to one triaged verdict. Targets the current working diff, a path, or an inbound GitHub PR.",
     "skillPath": "skills/ca-review/SKILL.md"
   },
   {

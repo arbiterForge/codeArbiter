@@ -36,7 +36,7 @@ skill is invoked — never bulk-read this directory.
 | `/ca-reconcile` | SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice. |
 | `/ca-refactor` | Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change. |
 | `/ca-release` | Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. The only path to a version tag. |
-| `/ca-review` | Review the current diff with the reviewer fleet, funneled to one triaged verdict. |
+| `/ca-review` | Review a diff with the reviewer fleet, funneled to one triaged verdict. Targets the current working diff, a path, or an inbound GitHub PR. |
 | `/ca-spike` | Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or /ca-feature. |
 | `/ca-sprint` | Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops. |
 | `/ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |

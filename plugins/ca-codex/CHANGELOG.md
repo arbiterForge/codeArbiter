@@ -7,6 +7,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 ## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
 
 ### Added
+- The projected review routine accepts an inbound pull request as its argument,
+  reviewing code the operator did not write through the existing fleet (#80).
+
 - `$ca-cleanup` (`post-merge-cleanup`): the already-merged branch transition —
   prove ancestry of the fetched default branch, classify leftover artifacts as
   unique / redundant / superseded, resolve each under its own confirmation,
