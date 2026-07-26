@@ -815,6 +815,18 @@ class LaneIsolationTest(unittest.TestCase):
                     self.assertEqual(wired.get(key), value,
                                      f"{job} must pass {key}: {value}")
 
+    def test_every_lane_tag_prefix_comes_from_the_shared_register(self):
+        # #382: the hosted lane and the /ca:release command must not disagree
+        # about a namespace. `_releaselib.RELEASE_TAG_PREFIXES` is the one source
+        # of truth; a lane that drifts from it would publish into a series the
+        # command cannot resolve a baseline for.
+        for job, params in LANES.items():
+            with self.subTest(lane=job):
+                self.assertEqual(
+                    _lane_inputs(job)["tag-prefix"],
+                    _releaselib.RELEASE_TAG_PREFIXES[params["target"]],
+                    f"{job}'s tag namespace differs from the shared register")
+
     def test_manifests_changelogs_and_namespaces_do_not_overlap(self):
         for key in ("manifest", "changelog", "tag-prefix", "target"):
             values = [_lane_inputs(job)[key] for job in PUBLISH_JOBS]

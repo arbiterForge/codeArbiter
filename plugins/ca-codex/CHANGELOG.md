@@ -14,6 +14,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   The remote branch is never touched (issue #308).
 
 ### Changed
+- The projected release routine takes the target plugin as an argument and
+  covers all four series, instead of documenting `ca` and leaving the siblings
+  undefined. Shared-core change, projected to this host unchanged (#382).
+
 - The projected release routine named two independently-versioned plugins
   instead of four, and told the reader nothing about how a `ca-codex` release is
   actually cut. It now names every tag series and routes a sibling release to
