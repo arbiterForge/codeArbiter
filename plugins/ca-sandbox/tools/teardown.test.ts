@@ -245,8 +245,8 @@ function handlersOver(run: DockerRun): Handlers {
     create: async () => {
       throw new Error("not used");
     },
-    destroy: (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume, dockerRun: run }),
-    prune: () => await prune({ dockerRun: run }),
+    destroy: async (id, opts) => await destroySandbox(id, { keepVolume: opts.keepVolume, dockerRun: run }),
+    prune: async () => await prune({ dockerRun: run }),
     exec: () => {
       throw new Error("not used");
     },

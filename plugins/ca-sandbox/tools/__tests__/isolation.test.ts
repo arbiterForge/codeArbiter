@@ -57,7 +57,7 @@ d("host-FS isolation canary [docker] (AC-03)", () => {
   let uuid = "";
   let containerId = "";
 
-  beforeAll(() => {
+  beforeAll(async () => {
     // 1. Plant the host-side canary with a globally unique marker.
     uuid = randomUUID();
     hostDir = mkdtempSync(join(tmpdir(), `${NS}-canary-`));

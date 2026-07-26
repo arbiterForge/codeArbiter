@@ -88,7 +88,7 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
     let seen: Record<string, unknown> | undefined;
     const code = await runClaudeInsideCli(ARGV, ENV, {
       ...sinks,
-      run: (opts) => { seen = opts as unknown as Record<string, unknown>; return "cid-1"; },
+      run: async (opts) => { seen = opts as unknown as Record<string, unknown>; return "cid-1"; },
     });
     expect(code).toBe(0);
     expect(out).toEqual(["cid-1"]);
@@ -100,7 +100,7 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
     let seenToken: unknown;
     await runClaudeInsideCli(ARGV, ENV, {
       ...collect().sinks,
-      run: (opts) => { seenToken = opts.token; return "cid"; },
+      run: async (opts) => { seenToken = opts.token; return "cid"; },
     });
     expect(seenToken).toBe("DUMMY-NOT-A-REAL-TOKEN");
   });
@@ -148,7 +148,10 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
 
   it("never throws for a usage error; it returns a code", async () => {
     const { sinks } = collect();
-    expect(() => await runClaudeInsideCli(["--nonsense"], ENV, sinks)).not.toThrow();
+    // The async equivalent of "does not throw": the promise RESOLVES with a
+    // code rather than rejecting (#479).
+    await expect(runClaudeInsideCli(["--nonsense"], ENV, sinks))
+      .resolves.toBeTypeOf("number");
     expect(await runClaudeInsideCli(["--nonsense"], ENV, sinks)).toBe(USAGE_ERROR_EXIT);
   });
 

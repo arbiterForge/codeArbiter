@@ -392,7 +392,7 @@ describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall",
 
   it("applies the firewall inside the box for anthropic-only", async () => {
     const calls: string[][] = [];
-    const dockerRun = (args: string[]) => {
+    const dockerRun = async (args: string[]) => {
       calls.push(args);
       return { code: 0, stdout: args[0] === "run" ? "container-id-1\n" : "", stderr: "" };
     };
@@ -421,8 +421,8 @@ describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall",
       if (args[0] === "exec") return { code: 1, stdout: "", stderr: "iptables: Permission denied" };
       return { code: 0, stdout: "", stderr: "" };
     };
-    expect(() => await runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun))
-      .toThrow(/firewall/i);
+    await expect(runClaudeInside({ ...baseOpts, netPolicy: "anthropic-only" }, dockerRun))
+      .rejects.toThrow(/firewall/i);
     const teardown = calls.filter((a) => (a[0] === "rm" || a[0] === "kill") && a.includes("container-id-2"));
     expect(teardown.length, "the unprotected box was left running").toBeGreaterThan(0);
   });

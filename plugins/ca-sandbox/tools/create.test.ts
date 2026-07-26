@@ -140,7 +140,7 @@ describe("buildCpHelperCreateArgs — carries the sandbox labels (reliability-01
 describe("createSandbox failure teardown — containers before volume (reliability-015)", async () => {
   it("removes leftover labeled containers BEFORE removing the volume", async () => {
     const calls: string[][] = [];
-    const dockerRun = (args: string[]) => {
+    const dockerRun = async (args: string[]) => {
       calls.push(args);
       if (args[0] === "volume" && args[1] === "create") return { code: 0, stdout: "vol", stderr: "" };
       if (args[0] === "ps") return { code: 0, stdout: "leftover-container-id", stderr: "" };

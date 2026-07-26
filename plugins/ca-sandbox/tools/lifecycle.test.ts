@@ -393,7 +393,7 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
         await rm(dir, { recursive: true, force: true }).catch(() => {});
         return res;
       },
-    }).then((res) => {
+    }).then(async (res) => {
       // AC-01: a container was started and a named volume holds the clone.
       expect(res.containerId).toMatch(/^[0-9a-f]{12,}$/);
       expect(res.volumeName).toBe(`ca-sbx-vol-${id}`);
@@ -476,14 +476,14 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
         await rm(dir, { recursive: true, force: true }).catch(() => {});
         return res;
       },
-    }).then((res) => {
+    }).then(async (res) => {
       const dres = await destroySandbox(id, { keepVolume: true });
       expect(dres.removedContainers).toContain(res.containerId);
       expect(dres.keptVolumes).toContain(res.volumeName);
       expect(dres.removedVolumes).toEqual([]);
 
       // The container is gone but the volume survives.
-      expect(await findSandbox(id)!.containers).toEqual([]);
+      expect((await findSandbox(id))!.containers).toEqual([]);
       const volExists = spawnSync("docker", ["volume", "inspect", res.volumeName], { encoding: "utf8", env: DENV });
       expect(volExists.status).toBe(0);
 
@@ -505,7 +505,7 @@ d("create -> destroy lifecycle [docker] (AC-01, AC-11)", () => {
     expect(mk.status, mk.stderr).toBe(0);
 
     // It's visible to the registry by the bare membership label.
-    const before = await listSandboxes().some((s) => s.volumes.includes(leaked));
+    const before = (await listSandboxes()).some((s) => s.volumes.includes(leaked));
     expect(before).toBe(true);
 
     const pres = await prune();

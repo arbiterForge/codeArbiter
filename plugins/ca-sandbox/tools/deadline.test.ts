@@ -188,7 +188,7 @@ describe("#394 — every docker invocation carries a finite deadline", () => {
   it("still returns a result when the escalation itself fails", async () => {
     // A wedged daemon is exactly the case where the escalation cannot succeed.
     // Reporting the original timeout matters more than reporting the cleanup.
-    const dockerRun = (args: string[]): RunResult => (args[0] === "exec"
+    const dockerRun = async (args: string[]): Promise<RunResult> => (args[0] === "exec"
       ? { code: 124, stdout: "", stderr: "timed out", timedOut: true }
       : { code: 1, stdout: "", stderr: "Cannot connect to the Docker daemon" });
     const result = await execInSandbox("box-3", ["sh", "-c", "sleep infinity"], { dockerRun });
@@ -202,7 +202,7 @@ const realDocker = dockerGate("deadline", { linux: true });
 realDocker("#394 — a real hung command terminates within its deadline", () => {
   it("a sleeping exec is killed at the deadline and leaves nothing running", async () => {
     const name = `ca-sbx-deadline-${Date.now().toString(36)}`;
-    const created = defaultDockerRun([
+    const created = await defaultDockerRun([
       "run", "-d", "--rm", "--name", name, "alpine:latest", "sleep", "600",
     ]);
     expect(created.code, created.stderr).toBe(0);
@@ -210,7 +210,7 @@ realDocker("#394 — a real hung command terminates within its deadline", () => 
     try {
       const started = Date.now();
       const result = await execInSandbox(id, ["sh", "-c", "sleep 600"], {
-        dockerRun: makeDockerRun({ maxBuffer: 8 * 1024 * 1024 }, { timeoutMs: 4_000 }),
+        dockerRun: makeDockerRun({}, { maxBuffer: 8 * 1024 * 1024, timeoutMs: 4_000 }),
       });
       const elapsed = Date.now() - started;
 
@@ -221,7 +221,7 @@ realDocker("#394 — a real hung command terminates within its deadline", () => 
 
       // AC: no targeted process is left running in the container. The
       // escalation stops the box, so the container itself is gone (--rm).
-      const alive = defaultDockerRun(["ps", "-q", "--filter", `name=${name}`]);
+      const alive = await defaultDockerRun(["ps", "-q", "--filter", `name=${name}`]);
       expect(alive.stdout.trim()).toBe("");
     } finally {
       defaultDockerRun(["rm", "-f", id || name]);
