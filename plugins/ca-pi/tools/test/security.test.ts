@@ -409,6 +409,22 @@ describe("ADR-0014 adversarial promotion contract", () => {
     expect(workflow).toContain("test_pi_security.py --sarif");
   });
 
+  // #495: the two tests below each launch a cold CPython process SYNCHRONOUSLY,
+  // so the wait is billed against the test's own deadline. The script is not the
+  // slow part - `test_pi_security.py --contract-only` runs in about 70ms. What
+  // does not fit in vitest's default 5s is process creation plus interpreter
+  // startup on a loaded windows-latest runner, where both are an order of
+  // magnitude more expensive than on Linux; ubuntu and macos passed every run
+  // that windows failed. The deadline therefore has to cover a process LAUNCH,
+  // not a computation, and it is platform-aware rather than uniformly larger so
+  // a genuine hang on the fast platforms still surfaces as a hang.
+  //
+  // This is not cosmetic. `[GATE ] | [REPO] | Merge readiness` aggregates this
+  // suite, and the release preflight requires that gate green for the EXACT
+  // commit being tagged (#385) - so a flake here blocks the release lane for that
+  // SHA, and trains readers to re-run a red gate without reading it.
+  const PYTHON_SPAWN_TIMEOUT_MS = process.platform === "win32" ? 30_000 : 5_000;
+
   test("security evidence output is result-code-only even with secret-bearing ambient values", () => {
     const python = process.platform === "win32" ? "python" : "python3";
     const script = resolve(import.meta.dirname, "../../../../.github/scripts/test_pi_security.py");
@@ -429,7 +445,7 @@ describe("ADR-0014 adversarial promotion contract", () => {
     expect(JSON.stringify(report)).not.toContain("prompt");
     expect(JSON.stringify(report)).not.toContain("provider");
     expect(JSON.stringify(report)).not.toContain("stderr");
-  });
+  }, PYTHON_SPAWN_TIMEOUT_MS);
 
   test("SARIF high gate reports only a fixed code and count", async () => {
     const root = await mkdtemp(resolve(tmpdir(), "ca-pi-security-sarif-"));
@@ -463,7 +479,7 @@ describe("ADR-0014 adversarial promotion contract", () => {
     } finally {
       await rm(root, { recursive: true, force: true });
     }
-  });
+  }, PYTHON_SPAWN_TIMEOUT_MS);
 });
 
 // Issue #464 AC-2. `security-controls.md` states that tests use disposable Pi
