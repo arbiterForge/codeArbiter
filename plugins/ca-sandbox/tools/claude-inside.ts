@@ -41,7 +41,12 @@
 import { buildMountArgs, type MountSpec } from "./mounts.ts";
 import { applyNetworkPolicy } from "./network.ts";
 import { SANDBOX_LABEL, hardeningFlags } from "./run.ts";
-import { defaultDockerRun, type RunResult } from "./docker.ts";
+import {
+  defaultDockerRun,
+  type DockerCallOptions,
+  type DockerRun,
+  type RunResult,
+} from "./docker.ts";
 
 /**
  * The PINNED Claude Code CLI version baked into the sandbox image. Pinned (never
@@ -343,12 +348,13 @@ export type ClaudeRunResult = RunResult;
  *
  * @throws every guarantee of buildClaudeRunArgs, plus on a non-zero `docker run`.
  */
-export function runClaudeInside(
+export async function runClaudeInside(
   opts: ClaudeRunOptions,
-  dockerRun: (args: string[]) => ClaudeRunResult = defaultDockerRun,
-): string {
+  dockerRun: DockerRun = defaultDockerRun,
+  call: DockerCallOptions = {},
+): Promise<string> {
   const args = buildClaudeRunArgs(opts);
-  const r = dockerRun(args);
+  const r = await dockerRun(args, call);
   if (r.code !== 0) {
     throw new Error(
       `ca-sandbox: docker run failed for --with-claude image ${opts.image} (exit ${r.code})\n` +
