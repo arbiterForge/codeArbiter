@@ -127,6 +127,21 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- A sibling release now DECLINES the repo-wide "Latest" badge explicitly
+  instead of omitting the flag. Omitting `--latest` is not neutral: GitHub
+  defaults `make_latest` to true for any non-prerelease, so every namespaced
+  sibling silently claimed it. Caught by publishing - `ca-pi-v0.1.32`, the first
+  sanctioned ca-pi release, displaced `ca v2.8.13` from the position every
+  visitor sees. The badge was restored with `gh release edit --latest`, a
+  metadata change that moves no ref; the ca-pi release stays exactly where it
+  was published.
+
+  The test that should have caught it asserted `--latest` was ABSENT from the
+  command log, which is the defect restated as an assertion - absence of the
+  flag WAS the bug, so a test demanding absence could only ever agree with it.
+  It now asserts the refusal is present, with a fail-closed case for any value
+  other than `"true"`.
+
 - `git commit-graph` is no longer gated as though it were `git commit` (#485).
   A word boundary sits between `commit` and `-`, so the H-09b/H-10b matcher took
   every `commit-*` verb. The cost was not the annoyance: the gate told the
