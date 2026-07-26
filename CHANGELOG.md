@@ -12,6 +12,52 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+### Fixed
+
+- `tdd` Phase 5 and `refactor` Phase 2/6 can actually run. Both instructed
+  "run the coverage command from `tech-stack.md`" and both forbid guessing one -
+  and no coverage command existed, in any tree, for any of the four plugins. So
+  every run reached the phase, found nothing to run, and passed through on a
+  gap. A BLOCK gate that cannot execute is worse than an absent one: it reads as
+  satisfied in every lane, which is the same defect class as issue #501's five
+  suites that ran on nothing (#507).
+
+  `refactor` was the worse casualty. Phase 2 is "Behavioral parity coverage
+  proof" - the gate that justifies the lane by showing the tests can detect a
+  behavior change BEFORE production code is touched - and it rested entirely on
+  a command that did not exist.
+
+- The threshold table never said WHICH metric, and the omission was
+  load-bearing rather than cosmetic: a report gives four numbers that disagree,
+  so "≥ 70%" with no column named is not something anyone can be held to. It is
+  now **lines and branches, both binding**. Lines catches code no test reaches
+  (issue #504 was exactly that - a `catch` with zero executions inside a
+  750-test suite); branches catches the untaken half of a condition a test does
+  reach, which lines alone reports as covered.
+
+- A contract test now asserts that any command a gate reads from
+  `tech-stack.md` is actually defined there, so the next gate cannot ship
+  pointing at nothing. It goes further than the text check that shape usually
+  gets, because adversarial review broke three weaker versions of it in
+  succession:
+
+  - it **runs for the files it guards** — the gate prose and `tech-stack.md`
+    are registered in the `impact` filter and the push trigger, so a PR that
+    only deletes the coverage section no longer skips the one job that checks
+    it (the same omission as #384, #403/#404 and #416);
+  - it **resolves the command**, asserting the named `npm run <script>` exists
+    in the named manifest rather than trusting that the prose is
+    self-consistent;
+  - it is **complete by construction**, deriving the expected set from the
+    `plugins/*/tools` manifests, so a new tree cannot be added undocumented;
+  - it is **checked in both directions**, so an entry guarding nothing fails
+    loudly instead of looking like protection. Running that check for the first
+    time surfaced a third command reader nobody had noticed —
+    `dependency-reviewer` reads an `audit` command from the same file.
+
+  Every branch above is mutation-verified: six mutations, each confirmed to
+  fire, against a control that passes.
+
 ### Added
 
 - `/ca:review` can review an inbound GitHub pull request, not only the diff you

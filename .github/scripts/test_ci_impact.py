@@ -1790,6 +1790,38 @@ class WorkflowContractTest(unittest.TestCase):
                 )
                 self.assertIn(guarded, push, "a push of this file starts no CI run")
 
+    def test_gate_command_subjects_reach_the_guard_that_constrains_them(self):
+        # Issue #507, same defect class as the test above and as #384/#403/#404.
+        # GateCommandTest lives in THIS file, which runs only in the path-scoped
+        # `ci-impact` job. Its two subjects are the gate prose and the file that
+        # prose points at - and neither matched a filter, so a PR whose ONLY
+        # change was deleting the coverage section from tech-stack.md, or
+        # rewording the phrase the guard keys on, skipped the single job that
+        # would have caught it. The guard was green on the PR that introduced it
+        # purely because that PR also edited this file.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        impact = paths_filter(ci, "impact")
+        push = push_trigger_paths(ci)
+        self.assertIn(
+            "tools/ci-impact.py", impact, "the impact-filter scan drifted off the real block"
+        )
+        for guarded in (
+            ".codearbiter/tech-stack.md",
+            "plugins/ca/skills/**",
+            "plugins/ca/agents/**",
+            "core/surface/skills/**",
+            "core/surface/agents/**",
+        ):
+            with self.subTest(path=guarded):
+                self.assertIn(
+                    guarded, impact, "a PR touching only this path skips its own contract test"
+                )
+        # The prose side is already covered for pushes by `plugins/ca/**` and
+        # `core/**`; tech-stack.md is under neither and needs its own entry.
+        self.assertIn(
+            ".codearbiter/tech-stack.md", push, "a push of this file starts no CI run"
+        )
+
     def test_the_allowlist_guard_also_runs_unconditionally_in_the_secret_scan_job(self):
         # Belt AND braces.  A path filter is a promise that has already been
         # broken twice in this repo (#384, and the .gitleaks.toml gap above), so
@@ -2095,6 +2127,228 @@ class NoOrphanedSuiteTest(unittest.TestCase):
             orphans, [],
             "these suites are invoked by no workflow and no sibling script, so "
             "they never run: " + ", ".join(orphans))
+
+class GateCommandTest(unittest.TestCase):
+    """A gate that reads its command from tech-stack.md needs that command to exist.
+
+    Issue #507: `tdd` Phase 5 and `refactor` Phase 2/6 instructed "run the
+    coverage command from tech-stack.md", and tech-stack.md contained the word
+    "coverage" zero times.  Both skills forbid guessing the command, so every
+    run reached the phase, found nothing to run, and passed through on a gap.
+    A BLOCK gate that cannot execute is worse than an absent one: it reads as
+    satisfied in every lane, which is the same failure shape as #501's suites
+    that ran on nothing and #506's assertion that agreed with the bug.
+
+    Enforced from THIS repo's own tech-stack.md, which is correct even though
+    the skills ship to other projects: the file is project state, so this
+    asserts that codeArbiter satisfies the contract its own gates impose.
+    """
+
+    # token -> proof tech-stack.md DEFINES it, not merely discusses it. This map
+    # is checked in BOTH directions below: a token demanded by gate prose with no
+    # entry here fails, and an entry here with no demander fails. A one-directional
+    # map is how a guard rots into decoration - the first cut of this test carried
+    # a `typecheck` entry that matched no prose and therefore asserted nothing,
+    # while the live `test` demander was absent from the map entirely.
+    DEFINITIONS = {
+        # `coverage` is the only entry backed by RESOLUTION as well as text:
+        # test_every_npm_script_named_by_tech_stack_actually_exists proves the
+        # named script exists in the named manifest. The other two are text
+        # patterns, and that asymmetry is deliberate rather than an oversight -
+        # neither names an npm script there is anything to resolve against.
+        "coverage": re.compile(r"(?m)^\s*npm\b.*\brun coverage\b"),
+        # Structural, and checked in Python rather than by regex - see
+        # _section_has_executable_line. A 90-character pattern here grew three
+        # false-failure modes (`python3`, a backtick inside a comment, a
+        # ```bash fence) while protecting the one token that needs it least: a
+        # missing test command is loud, because every lane runs it. A guard that
+        # fires falsely on a legitimate edit teaches people to weaken the guard.
+        "test": None,
+        # `dependency-reviewer` reads this one. It was found by the
+        # no-dead-entry check below on the first run, which is the point of
+        # checking both directions - a one-way map had no way to notice.
+        "audit": re.compile(r"npm audit\b[^\n]*--audit-level=high"),
+    }
+
+    # Deliberately keyed on the canonical phrasing the gates use. Tokens named
+    # only in list form ("run lint, the type-check ..., and coverage, all from
+    # tech-stack.md") are NOT discovered, and that limit is recorded rather than
+    # papered over: widening the pattern to prose-match those would produce
+    # false demanders, which is worse than a known gap.
+    DEMAND = re.compile(r"\b([a-z][a-z-]*) command from `tech-stack\.md`")
+
+    # `site/` is a tested TypeScript tree with no coverage command (issue #514).
+    # Named here so the gap is a reviewed decision rather than a scoping accident,
+    # and asserted to be a real tree below - a stale exemption must fail, not
+    # silently widen the hole it was cut for.
+    COVERAGE_EXEMPT = frozenset({"site"})
+
+    @staticmethod
+    def _section(text, heading):
+        """The body of one `## <heading>` section, stopping at the next H2."""
+        found = re.search(rf"(?ms)^## {re.escape(heading)}\b(.*?)(?=^## |\Z)", text)
+        return found.group(1) if found else ""
+
+    @staticmethod
+    def _section_has_executable_line(section):
+        """A fenced block containing something that would actually run.
+
+        Blank lines, comments and a bare `:` do not count - replacing the whole
+        section body with `:` was a live evasion. Deliberately not a regex: the
+        regex version could not tell `python` from `python3`, tripped on a
+        backtick inside a comment, and required the fence be tagged exactly
+        ```sh. All three were false failures on legitimate edits.
+        """
+        for fence in re.findall(r"(?ms)^```[a-z]*\n(.*?)^```", section):
+            for line in fence.splitlines():
+                stripped = line.strip()
+                if stripped and stripped != ":" and not stripped.startswith("#"):
+                    return True
+        return False
+
+    def _defines(self, token, tech_stack):
+        """Does tech-stack.md define `token`? Regex where one fits, structure where not."""
+        proof = self.DEFINITIONS[token]
+        if proof is not None:
+            return proof.search(tech_stack) is not None
+        return self._section_has_executable_line(self._section(tech_stack, token.capitalize()))
+
+    def _gate_docs(self):
+        """Skills AND agents. `coverage-auditor` reads the same command a skill does."""
+        root = REPO_ROOT / "plugins" / "ca"
+        return sorted([*root.glob("skills/*/SKILL.md"), *root.glob("agents/*.md")])
+
+    def _demanded(self):
+        found: dict[str, set[str]] = {}
+        for path in self._gate_docs():
+            label = path.parent.name if path.name == "SKILL.md" else path.stem
+            for token in self.DEMAND.findall(path.read_text(encoding="utf-8")):
+                found.setdefault(token, set()).add(label)
+        return found
+
+    def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
+        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        missing = []
+        for token, who in sorted(self._demanded().items()):
+            names = ", ".join(sorted(who))
+            if token not in self.DEFINITIONS:
+                missing.append(
+                    f"{token}: demanded by {names}, but this test has no definition "
+                    f"check for it - add one to DEFINITIONS rather than leaving it unguarded")
+            elif not self._defines(token, tech_stack):
+                missing.append(
+                    f"{token}: demanded by {names}, but .codearbiter/tech-stack.md "
+                    f"defines no such command")
+        self.assertEqual(
+            missing, [],
+            "a gate cannot run a command its tech-stack.md never defines: " + "; ".join(missing))
+
+    def test_no_definition_check_is_dead(self):
+        """An entry matching no prose asserts nothing while looking like protection."""
+        dead = sorted(set(self.DEFINITIONS) - set(self._demanded()))
+        self.assertEqual(
+            dead, [],
+            "these DEFINITIONS entries have no demander, so they guard nothing - either "
+            "the prose was reworded (fix DEMAND) or the entry is stale (delete it): "
+            + ", ".join(dead))
+
+    # `--prefix X` and `--prefix=X` are both valid, and `run` may precede or
+    # follow the flag. The first cut matched only `npm --prefix X run Y`, so
+    # `npm run coverage --prefix plugins/ca/tools` - a working invocation -
+    # parsed to nothing and the check passed vacuously.
+    NPM_LINE = re.compile(r"(?m)^\s*npm\b[^\n]*")
+    NPM_PREFIX = re.compile(r"--prefix[= ]\s*(\S+)")
+    NPM_RUN = re.compile(r"\brun\s+([\w:-]+)")
+
+    def _npm_invocations(self, tech_stack):
+        """Every `(prefix, script)` tech-stack.md names, in any argument order."""
+        found = set()
+        for line in self.NPM_LINE.findall(tech_stack):
+            prefix = self.NPM_PREFIX.search(line)
+            script = self.NPM_RUN.search(line)
+            if prefix and script:
+                found.add((prefix.group(1).rstrip("/"), script.group(1)))
+        return found
+
+    def test_every_npm_script_named_by_tech_stack_actually_exists(self):
+        """The command must RESOLVE, not merely appear.
+
+        Checking that tech-stack.md mentions `npm --prefix X run Y` proves only
+        that the prose is self-consistent. Deleting `Y` from `X/package.json`
+        leaves the gate pointing at nothing while every text assertion still
+        passes - #507 reachable straight through the fix for #507.
+        """
+        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        pairs = self._npm_invocations(tech_stack)
+        # Non-vacuity, and scoped to `coverage` specifically. A bare `assertTrue(pairs)`
+        # is satisfied by the unrelated `build` and `typecheck` invocations in the same
+        # file, so every coverage line could be rewritten into a form the parser misses
+        # while this still passed - saying less than its message claimed.
+        self.assertTrue(
+            {prefix for prefix, script in pairs if script == "coverage"},
+            "no `npm ... run coverage` invocation parsed out of tech-stack.md; either the "
+            "file stopped naming one or the parser drifted off its phrasing")
+        broken = []
+        for prefix, script in sorted(pairs):
+            manifest = REPO_ROOT / prefix / "package.json"
+            if not manifest.exists():
+                broken.append(f"{prefix}/package.json does not exist (named for `run {script}`)")
+                continue
+            scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts", {})
+            if script not in scripts:
+                broken.append(f"{prefix}/package.json defines no `{script}` script")
+        self.assertEqual(
+            broken, [],
+            "tech-stack.md names npm scripts that do not exist: " + "; ".join(broken))
+
+    def _tested_trees(self):
+        """Every tree in the repo that runs tests, keyed off `test`, NOT off `coverage`.
+
+        Keying off `coverage` derived the obligation from the very thing being
+        enforced: deleting a tree's `coverage` script deleted the requirement to
+        document it, so a tree could drop out of the gate silently. Keying off
+        `test` states the actual rule - a tree that runs tests owes a coverage
+        command - and cannot be satisfied by removing the subject.
+
+        Repo-wide, not `plugins/*/tools`: `site/` is a tested TypeScript tree too,
+        and a completeness check scoped past a quarter of the filesystem it claims
+        to derive from is not complete.
+        """
+        trees = {}
+        for manifest in sorted(REPO_ROOT.rglob("package.json")):
+            relative = manifest.relative_to(REPO_ROOT).as_posix()
+            if "node_modules" in relative:
+                continue
+            try:
+                scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts", {})
+            except json.JSONDecodeError:
+                continue
+            if "test" in scripts:
+                trees[manifest.parent.relative_to(REPO_ROOT).as_posix()] = scripts
+        return trees
+
+    def test_every_tested_tree_has_its_coverage_command_documented(self):
+        """Completeness, driven by the filesystem rather than by the prose."""
+        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
+        undocumented = [
+            tree for tree in sorted(self._tested_trees())
+            if tree not in documented and tree not in self.COVERAGE_EXEMPT
+        ]
+        self.assertEqual(
+            undocumented, [],
+            "these trees run tests but tech-stack.md names no coverage command for them, so "
+            "tdd Phase 5 and refactor Phase 2/6 cannot run there: " + ", ".join(undocumented))
+
+    def test_no_coverage_exemption_is_stale(self):
+        """An exemption for a tree that no longer exists silently widens the hole."""
+        trees = set(self._tested_trees())
+        stale = sorted(self.COVERAGE_EXEMPT - trees)
+        self.assertEqual(
+            stale, [],
+            "these COVERAGE_EXEMPT entries name no tested tree, so they exempt nothing and "
+            "hide the next one that matches the name: " + ", ".join(stale))
+
 
 if __name__ == "__main__":
     unittest.main()

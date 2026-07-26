@@ -32,5 +32,21 @@ export default defineConfig({
     testTimeout: 300_000,
     hookTimeout: 300_000,
     fileParallelism: false,
+    // Issue #507. `__fixtures__/**` is excluded for the same reason it is
+    // excluded from `include` above: it holds build fixtures and the #406
+    // reproduction, none of which is driver source. No `thresholds` - the
+    // maturity floor is applied by the tdd/refactor skills from
+    // .codearbiter/CONTEXT.md `stage:` against maturity-coverage.md.
+    //
+    // Note the docker gate interacts with this: on a host without Docker the
+    // gated suites self-skip, so a local report reads LOWER than required CI's.
+    // Compare against a run with CA_SANDBOX_REQUIRE_DOCKER=1 before concluding
+    // this tree regressed.
+    coverage: {
+      provider: "v8",
+      include: ["*.ts"],
+      exclude: ["*.test.ts", "*.config.ts", "__fixtures__/**"],
+      reporter: ["text-summary", "html"],
+    },
   },
 });

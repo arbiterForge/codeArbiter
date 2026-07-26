@@ -68,6 +68,11 @@ on:
       # (.github/scripts/test_codex_parity_fixture.py), so a push that edits
       # only the generator must still start a run.
       - "tools/codex-parity-fixture.py"
+      # Issue #507: GateCommandTest asserts this file defines every command the
+      # gates read from it. `plugins/ca/**` already starts a run for the prose
+      # side; without this line a push that ONLY deletes the coverage section
+      # starts no run at all, so the guard never evaluates.
+      - ".codearbiter/tech-stack.md"
       # Same defect class, same fix: test_ci_impact.py is the ONLY guard on the
       # secret-scan allowlist (#404) and on docs.yml's site CVE gate (#403), so
       # a change to either must start a run that can execute it.
@@ -199,6 +204,19 @@ jobs:
               - '.github/scripts/payload_scope.py'
               - '.github/scripts/check_codex_host.py'
               - '.github/scripts/test_payload_scope.py'
+              # Issue #507: test_ci_impact.py's GateCommandTest is the only guard
+              # that a command a gate READS from tech-stack.md is actually
+              # DEFINED there. Its two subjects are the gate prose and the file
+              # it points at, so both must reach the job that runs it - a PR
+              # deleting the coverage section, or rewording the phrase the guard
+              # keys on, is exactly the regression it exists to stop. Same
+              # omission as #384, #403/#404 and #416; listing them here is the
+              # established fix, not a new pattern.
+              - '.codearbiter/tech-stack.md'
+              - 'plugins/ca/skills/**'
+              - 'plugins/ca/agents/**'
+              - 'core/surface/skills/**'
+              - 'core/surface/agents/**'
               - 'core/hosts.json'
               - 'tools/ci-impact.py'
               - 'tools/host_descriptors.py'

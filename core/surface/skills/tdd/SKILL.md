@@ -84,13 +84,22 @@ Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — a rigor k
 gate. The threshold table is the shared `{{PLUGIN_ROOT}}/includes/maturity-coverage.md` (the
 single source of truth, also used by `refactor` Phase 2).
 
-Run the coverage command from `tech-stack.md`. Below the maturity threshold → add tests until it is met.
+Run the coverage command from `tech-stack.md`. **Lines and branches must both clear the threshold**
+— a report satisfying one and not the other does not pass (issue #507). Below it on either → add
+tests until both are met.
+
+Where the surface has no coverage tooling at all, there is no numeric floor to check. Record that
+explicitly and pass the phase on the Phase 4 obligation verify alone; do NOT invent a command, and
+do NOT silently skip the phase as though it had been run — a gate that cannot execute still reads as
+satisfied, which is worse than an absent one.
 
 **Stakes:** when coverage blocks below threshold, name the class of code left dark — the paths a later
 regression could rot unnoticed — not just "below threshold." The number is the rule; the untested paths
 are why it matters.
 
-Gate: threshold met for the current maturity value.
+Gate: threshold met on BOTH lines and branches for the current maturity value, or the surface
+recorded as having no coverage tooling. A test added only to move the percentage fails this gate in
+spirit — it converts an honest red into a green that asserts nothing.
 
 ## Phase 6 — Lint · gate: BLOCK
 

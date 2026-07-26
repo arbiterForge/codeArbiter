@@ -39,9 +39,14 @@ using the shared threshold table `${CLAUDE_PLUGIN_ROOT}/includes/maturity-covera
 
 Every public method in the surface table MUST have at least one direct test — transitive coverage through a higher-level integration test does not count. A public method with zero direct tests is uncovered for this gate.
 
-If surface coverage is below the maturity threshold, OR any public method has zero direct tests, halt and route to the `tdd` skill Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
+**Lines and branches must both clear the threshold** (issue #507); a surface satisfying one and not
+the other is not proven. Where the surface has no coverage tooling, the per-symbol direct-test proof
+stands alone: record that there is no numeric floor for this surface rather than inventing a command
+or treating the phase as passed unexamined.
 
-Gate: surface coverage at or above the maturity threshold AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
+If surface coverage is below the maturity threshold on either metric, OR any public method has zero direct tests, halt and route to the `tdd` skill Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
+
+Gate: surface coverage at or above the maturity threshold on BOTH lines and branches AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
 
 ## Phase 3 — Red parity tests (conditional) · gate: BLOCK
 
@@ -67,7 +72,9 @@ Gate: full suite green with zero pre-existing tests modified. BLOCK if any pre-e
 
 ## Phase 6 — Lint and coverage · gate: BLOCK
 
-Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold — a refactor MUST NOT reduce coverage of the surface it touched.
+Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold on both lines and branches — a refactor MUST NOT reduce coverage of the surface it touched on either metric.
+
+Where the surface has no coverage tooling, the same clause as Phase 2 applies: record that there is no numeric floor and verify parity through Phase 5's unmodified pre-existing tests alone. Phase 2 and Phase 6 MUST NOT give different answers about the same surface.
 
 Gate: clean lint and type-check, zero errors, and no coverage regression on the named surface. "Mostly passes" is not passing — this is what clears the path to `commit-gate`.
 

@@ -2,6 +2,25 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.35] - 2026-07-26
+
+### Fixed
+
+- The projected `tdd` and `refactor` routines can actually run their coverage
+  gate. Both instructed "run the coverage command from `tech-stack.md`" and both
+  forbid guessing one - and no such command existed for any tree, so every run
+  reached the phase, found nothing to run, and passed through on a gap. A BLOCK
+  gate that cannot execute reads as satisfied in every lane, which is worse than
+  no gate at all (#507).
+- The maturity threshold now names its metric: lines and branches, both binding.
+  Previously it said only "minimum coverage", and a report gives four numbers
+  that disagree - so the same tree was compliant or not depending on which
+  column the reader picked.
+- The projected `coverage-auditor` no longer carries its own copy of the
+  threshold table. The copies drifted the moment the canonical one gained a
+  metric rule, leaving the dispatched auditor applying a one-number test the
+  dispatching routine had stopped using. It reads the shared table instead.
+
 ## [0.1.34] - 2026-07-26
 
 ### Fixed
