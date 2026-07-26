@@ -34,10 +34,28 @@ _RANGE_RE = re.compile(r"\d\s*[–—]\s*\d")
 # A letter or digit (Unicode), used to confirm a dash actually joins two text
 # spans rather than standing alone (e.g. a lone "—" N/A marker in a table cell).
 _WORD_RE = re.compile(r"[^\W_]", re.UNICODE)
+# A DEFINITION-LIST dash: `- **term** — meaning`. Structural, not a sentence
+# separator, and the rule this detector enforces says "sentence separators" -
+# site/VOICE.md's own Terminology anchors section is written in exactly this
+# form, so flagging it would make the gate contradict the style guide it exists
+# to enforce (#338). Anchored to the start of the line and to a bolded lead-in,
+# so an ordinary sentence that happens to contain bold text is untouched.
+#
+# The TERM is captured and kept; only the dash is dropped. Blanking the whole
+# lead-in was the first cut and it was a false-negative generator: on
+#     - **The gate-enforcement hooks** — `a.py`, `b.py` — make zero calls.
+# it removed the left-hand words, then _INLINE_CODE_RE blanked the backticks,
+# and the SECOND dash - a real separator - was left with no word character on
+# its left and escaped. That loosened the shared detector for docs/** and
+# repo-root too, not only for site prose.
+_DEFINITION_RE = re.compile(r"^(\s*(?:[-*+]\s+)?\*\*[^*]+\*\*\s*)[–—]")
 
 
 def _prose_only(line):
     """Drop the spans §3.A exempts so only candidate prose remains."""
+    # Only the definition DASH is dropped; the term is kept (group 1), so a
+    # later separator on the same line still has its left-hand context.
+    line = _DEFINITION_RE.sub(r"\1 ", line)
     line = _INLINE_CODE_RE.sub(" ", line)
     line = _URL_RE.sub(" ", line)
     line = _RANGE_RE.sub(" ", line)
@@ -78,18 +96,43 @@ def find_prose_separator_dashes(text):
     return findings
 
 
+# Authored site prose (#338). site/VOICE.md has banned em-dashes as sentence
+# separators since 2026-07-02, and nothing enforced it: this predicate covered
+# repo-root docs and docs/**, never site/. A rule with no gate, violated in 16
+# of its own 36 authored files, is worse than no rule - reviewers cite it and it
+# is wrong.
+#
+# Scope is AUTHORED prose only. Everything under content/docs/reference/ is
+# generated on every build (91 of the 128 files there), changelog.md is a
+# verbatim pass-through of the repo CHANGELOG, and site/src/curated/** mirrors
+# plugins/ca bodies - which are framework prose under a different register, and
+# already excluded via plugins/. Flagging any of those would report a finding
+# nobody wrote and nobody can fix in place.
+_SITE_PROSE_ROOT = "site/src/content/docs/"
+_SITE_PROSE_EXCLUDED = ("reference/", "changelog.md")
+
+
 def in_antislop_doc_scope(rel_path):
     """True for user-facing Markdown the anti-slop bundle governs: repo-root
-    community docs and docs/**. Excludes codeArbiter's own framework bodies
-    (everything under plugins/) and machine-managed .codearbiter/ state."""
+    community docs, docs/**, and AUTHORED site prose under
+    site/src/content/docs/ (#338). Excludes codeArbiter's own framework bodies
+    (everything under plugins/), machine-managed .codearbiter/ state, and every
+    generated site page."""
     if not rel_path:
         return False
     p = rel_path.replace("\\", "/")
     if p.startswith("./"):
         p = p[2:]
-    if not p.lower().endswith(".md"):
+    # `.mdx` counts: the rule is about prose, not about a file extension, and
+    # two authored site pages are .mdx.
+    if not p.lower().endswith((".md", ".mdx")):
         return False
     if p.startswith("plugins/") or p.startswith(".codearbiter/"):
+        return False
+    if p.startswith(_SITE_PROSE_ROOT):
+        rest = p[len(_SITE_PROSE_ROOT):]
+        return not rest.startswith(_SITE_PROSE_EXCLUDED)
+    if p.startswith("site/"):
         return False
     if p.startswith("docs/"):
         return True

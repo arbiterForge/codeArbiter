@@ -41,10 +41,10 @@ As the author writes `payment.ts`, the [advisory](/glossary/#advisory) hook fire
 REMINDER [H-09]: Crypto/TLS pattern detected. Run the crypto-compliance check + dispatch auth-crypto-reviewer (no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish; do not disable TLS verification). The commit will block until the gate records a pass.
 ```
 
-`[H-09]` is a gate ID — look up any gate ID you see bracketed like this in the
+`[H-09]` is a gate ID. Look up any gate ID you see bracketed like this in the
 [hook gates reference](/reference/hooks-gates/).
 
-The author wrote `createHash("md5")` to derive an idempotency key from the payment payload. MD5 is in codeArbiter's banned-primitive list. The advisory does not stop the write — it tells you the commit will. (The scan behind this gate is language-agnostic: a Python `hashlib.md5` call trips the identical H-09/H-09b pair.)
+The author wrote `createHash("md5")` to derive an idempotency key from the payment payload. MD5 is in codeArbiter's banned-primitive list. The advisory does not stop the write. It tells you the commit will. (The scan behind this gate is language-agnostic: a Python `hashlib.md5` call trips the identical H-09/H-09b pair.)
 
 ## 3. Observe the Gate Catch
 
@@ -60,14 +60,14 @@ The commit gate runs `pre-bash.py` before the `git commit` shell call fires. It 
 BLOCKED [H-09b]: This commit introduces crypto/TLS changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the crypto-compliance gate (it records the pass), then commit.
 ```
 
-`.codearbiter/.markers/security-gate-passed` is a [marker](/glossary/#marker) — a small file that
+`.codearbiter/.markers/security-gate-passed` is a [marker](/glossary/#marker), a small file that
 records a gate's pass state so a later gate can check it without re-running the review. `[H-09b]` is
 the blocking counterpart to the `[H-09]` advisory above; see the
 [hook gates reference](/reference/hooks-gates/) for both.
 
 The `git commit` did not run. The mistake did not reach version control.
 
-To clear the gate, the crypto-compliance skill reviews the flagged line. MD5 as a hashing primitive is a banned pattern; the skill proposes replacing it with `createHash("sha256")`, which is on the approved list. Once the fix lands and the tests still pass, run `/ca:commit` again — you should see it succeed, with a line confirming the security-gate pass was recorded and bound to the changed line.
+To clear the gate, the crypto-compliance skill reviews the flagged line. MD5 as a hashing primitive is a banned pattern; the skill proposes replacing it with `createHash("sha256")`, which is on the approved list. Once the fix lands and the tests still pass, run `/ca:commit` again. You should see it succeed, with a line confirming the security-gate pass was recorded and bound to the changed line.
 
 That is the commit gate working as designed: the advisory surfaces the problem at write time, and the hard gate closes before the mistake ships.
 

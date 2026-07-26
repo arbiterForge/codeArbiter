@@ -3,11 +3,11 @@ title: Install
 description: "Install codeArbiter for Claude Code, Codex, or Pi, opt into the shared .codearbiter/ store, and verify enforcement."
 ---
 
-codeArbiter ships four sibling plugins from one marketplace: three governance hosts — `ca` (Claude
-Code), `ca-codex` (Codex), and `ca-pi` (Pi) — plus `ca-sandbox`, an infrastructure plugin unrelated to
-gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)). This page covers Claude Code and Codex
-install; Pi has its own dedicated walkthrough at [Install for Pi](/getting-started/pi/) (a different
-distribution model — Git-only, no npm release). All three governance hosts enforce the same
+codeArbiter ships four sibling plugins from one marketplace. Three are governance hosts: `ca` (Claude
+Code), `ca-codex` (Codex), and `ca-pi` (Pi). The fourth, `ca-sandbox`, is an infrastructure plugin
+unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)). This page covers Claude Code
+and Codex install; Pi has its own dedicated walkthrough at [Install for Pi](/getting-started/pi/) (a
+different distribution model: Git-only, no npm release). All three governance hosts enforce the same
 `.codearbiter/` project store. The
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) defines the verified boundary,
 and [Compatibility](/getting-started/compatibility/) has the full host-differences matrix.
@@ -23,7 +23,7 @@ Confirm both before installing:
   python3 --version || python --version
   ```
 
-  Either succeeding is enough — hooks are registered under both names, falling back to whichever
+  Either succeeding is enough: hooks are registered under both names, falling back to whichever
   resolves.
 
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity. Verify with:
@@ -46,9 +46,9 @@ codeArbiter self-hosts a multi-plugin marketplace from its GitHub repo. In any C
 /plugin install ca@codearbiter
 ```
 
-Claude Code's own plugin trust flow governs whether the hooks fire at all — the standard prompt you
-see when installing any plugin that registers hooks. Approve it once at install time (no separate
-per-hook approval step, unlike Codex's `/hooks` review) and hooks, commands, and agents load
+Whether the hooks fire at all is governed by Claude Code's own plugin trust flow: the standard
+prompt you see when installing any plugin that registers hooks. Approve it once at install time
+(no separate per-hook approval step, unlike Codex's `/hooks` review) and hooks, commands, and agents load
 automatically from then on. All commands resolve under the `/ca:` namespace.
 
 **Verify the install succeeded** before moving on. Run `/plugin list` (or `/plugin`) and confirm `ca`
@@ -110,7 +110,7 @@ claude plugin uninstall ca
 ```
 
 (Substitute `codex plugin remove ca-codex@codearbiter` / `codex plugin add ca-codex@codearbiter` for
-Codex.) `.codearbiter/` in every repository is untouched by either uninstall or reinstall — only the
+Codex.) `.codearbiter/` in every repository is untouched by either uninstall or reinstall: only the
 plugin payload moves. `/ca:doctor` reports the currently cached version so you can confirm the update
 actually landed; see its [remediation ladder](/reference/commands/doctor/) if it still looks stale.
-Pi updates differently — see [Uninstall, Upgrade, and Version Pinning](/getting-started/pi/#uninstall-upgrade-and-version-pinning).
+Pi updates differently. See [Uninstall, Upgrade, and Version Pinning](/getting-started/pi/#uninstall-upgrade-and-version-pinning).

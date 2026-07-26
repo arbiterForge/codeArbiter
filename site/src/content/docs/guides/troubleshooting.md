@@ -91,7 +91,7 @@ Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` p
 `ca-pi` currently ships as a Feature Forge `preview`. Real use and feedback are
 welcome; reports from live repositories help it graduate.
 
-On Pi, run `/ca-doctor` first — it is the diagnostic entry point, checking the active package path,
+On Pi, run `/ca-doctor` first. It is the diagnostic entry point, checking the active package path,
 canonical Pi CLI and package origin, command ownership, supported-version fingerprints,
 Python/core/bridge health, child fingerprint, final mutator wrappers, and the H-03 wrapper
 self-test.
@@ -102,9 +102,9 @@ Pi has several distinct silent-inactivity states that look alike but have differ
 |---------|--------------|-----|
 | Nothing enforces, no orchestrator persona | `.codearbiter/CONTEXT.md` missing or `arbiter: enabled` not set | Run `/ca-init`, per [Repo Activation](#repo-activation) above |
 | Repo is enabled but still dormant | Pi project trust not granted | Grant Pi project trust for the repo, then start a fresh session |
-| Trust was just granted but still dormant | Trust was granted in the current session, not a fresh one | Start a new session after granting trust — the parent registers repository-aware dispatch only on a fresh session that reports the trust decision |
+| Trust was just granted but still dormant | Trust was granted in the current session, not a fresh one | Start a new session after granting trust: the parent registers repository-aware dispatch only on a fresh session that reports the trust decision |
 | Mutating calls fail, or an interpreter breadcrumb appears | Python 3 not on `PATH` | Add Python 3 to `PATH`; `ca-pi` blocks mutating calls rather than failing silently when the interpreter is missing |
-| `/ca-<name>` doesn't do anything | Wrong invocation syntax | Pi uses `/ca-<name>` generated aliases with `/skill:ca-<name>` as the host-native fallback — this differs from Codex's `$ca-<name>` convention |
+| `/ca-<name>` doesn't do anything | Wrong invocation syntax | Pi uses `/ca-<name>` generated aliases with `/skill:ca-<name>` as the host-native fallback. This differs from Codex's `$ca-<name>` convention |
 | Doctor reports an unsupported version | Pi CLI is not 0.80.5 or 0.80.10 | Upgrade to Pi 0.80.5 or Pi 0.80.10, the only supported versions in this release line; see [Compatibility](/getting-started/compatibility/) |
 
 ## Symptom Reference

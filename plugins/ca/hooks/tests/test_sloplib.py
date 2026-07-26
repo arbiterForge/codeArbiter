@@ -119,5 +119,108 @@ class TestAntiSlopDocScope(unittest.TestCase):
         self.assertFalse(S.in_antislop_doc_scope(None))
 
 
+
+
+class TestSitePoseScope(unittest.TestCase):
+    """#338 - site/VOICE.md has banned em-dashes as sentence separators since
+    2026-07-02, and nothing enforced it: `in_antislop_doc_scope` covered
+    repo-root docs and docs/**, never site/. A rule with no gate, violated in 16
+    of its own 36 authored files, is worse than no rule - reviewers cite it and
+    it is wrong.
+
+    The scope is AUTHORED site prose only. Everything generated is excluded, by
+    path, because the generator would otherwise be flagged for output nobody
+    writes by hand and nobody can fix in place."""
+
+    def test_authored_site_docs_in_scope(self):
+        for p in (
+            "site/src/content/docs/overview.md",
+            "site/src/content/docs/guides/uninstalling.md",
+            "site/src/content/docs/concepts/hardening-history.md",
+            "site/src/content/docs/getting-started/install.md",
+            "site/src/content/docs/feature-forge/index.md",
+        ):
+            self.assertTrue(S.in_antislop_doc_scope(p), p)
+
+    def test_generated_reference_pages_out_of_scope(self):
+        # 91 of the 128 files under content/docs are generated into reference/
+        # on every build. They are not authored, not committed, and not fixable
+        # in place.
+        for p in (
+            "site/src/content/docs/reference/commands.md",
+            "site/src/content/docs/reference/agents/backend-author.md",
+        ):
+            self.assertFalse(S.in_antislop_doc_scope(p), p)
+
+    def test_generated_changelog_page_out_of_scope(self):
+        # Verbatim pass-through of the repo CHANGELOG, which is payload prose
+        # under a different voice.
+        self.assertFalse(S.in_antislop_doc_scope("site/src/content/docs/changelog.md"))
+
+    def test_curated_plugin_mirrors_out_of_scope(self):
+        # site/src/curated/** mirrors plugins/ca bodies. Those are framework
+        # prose governed by the plugin's own register, already excluded via
+        # plugins/ - mirroring them into site must not smuggle them back in.
+        for p in (
+            "site/src/curated/agents/backend-author.md",
+            "site/src/curated/commands/fix.md",
+        ):
+            self.assertFalse(S.in_antislop_doc_scope(p), p)
+
+    def test_site_source_that_is_not_docs_prose_out_of_scope(self):
+        for p in ("site/README.md", "site/VOICE.md", "site/src/components/Thing.md"):
+            self.assertFalse(S.in_antislop_doc_scope(p), p)
+
+    def test_mdx_authored_pages_are_in_scope_too(self):
+        # Two authored pages are .mdx. The predicate keyed on ".md" only, so
+        # they were invisible to a rule that is about prose, not file format.
+        self.assertTrue(S.in_antislop_doc_scope("site/src/content/docs/index.mdx"))
+
+
+
+
+class TestDefinitionListDashExempt(unittest.TestCase):
+    """#338 - the rule is about SENTENCE separators. A definition-list dash is
+    structural, and site/VOICE.md's own Terminology anchors are written in that
+    exact form, so flagging it would make the gate contradict the guide."""
+
+    def test_definition_list_dash_is_not_a_finding(self):
+        for line in (
+            "- **gate** — a phase exit condition (STOP/BLOCK).",
+            "* **lane** — a sanctioned path through the system.",
+            "**skill** — an orchestrator routine with phases.",
+        ):
+            self.assertEqual(S.find_prose_separator_dashes(line), [], line)
+
+    def test_a_real_separator_after_a_definition_is_still_caught(self):
+        # Only the definition DASH is dropped, never the term before it. A
+        # second dash on the same line is still a separator and must not ride in
+        # behind the exemption.
+        line = "- **gate** — a phase exit condition — and it blocks the call."
+        self.assertEqual(len(S.find_prose_separator_dashes(line)), 1)
+
+    def test_definition_exemption_survives_inline_code_after_it(self):
+        # The regression this exemption first shipped with, and the reason the
+        # test above was not enough: dropping the whole `- **term**` lead-in left
+        # the NEXT dash with no word character on its left once
+        # _INLINE_CODE_RE blanked the backticks, so a real separator vanished.
+        # Verbatim from site/src/content/docs/getting-started/compatibility.md,
+        # which the detector scored 1 before the exemption and 0 after.
+        line = "- **The gate-enforcement hooks** — `pre-bash.py`, `pre-write.py` — make **zero** network calls."
+        self.assertEqual(len(S.find_prose_separator_dashes(line)), 1)
+
+    def test_definition_term_is_preserved_for_downstream_checks(self):
+        # Stated as a property, not an implementation detail: whatever the
+        # exemption does, the term's own words must survive into the analysed
+        # text, or any later dash on the line loses its left-hand context.
+        self.assertIn("gate", S._prose_only("- **gate** — a phase exit condition"))
+
+    def test_bold_mid_sentence_is_not_treated_as_a_definition(self):
+        # The exemption is anchored to the start of the line, so an ordinary
+        # sentence containing bold text keeps its finding.
+        line = "The **commit gate** runs nine checks — every one must be green."
+        self.assertEqual(len(S.find_prose_separator_dashes(line)), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -23,6 +23,11 @@ on:
       - "site/**"
       - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
       - ".github/workflows/docs.yml" # this workflow gates the site graph; it must see its own edits
+      # Issue #338: the site-voice gate and the detector it calls. Without these
+      # a PR that only loosened the rule would skip the job that enforces it -
+      # the same defect class the impact filter already guards for ci.yml.
+      - ".github/scripts/check_site_voice.py"
+      - "core/pysrc/_sloplib.py"
   pull_request:
     branches: [main]
     paths:
@@ -74,6 +79,23 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
       - name: Typecheck
         run: npm run typecheck
+      - name: Enforce site/VOICE.md punctuation (issue #338)
+        # site/VOICE.md has banned the em-dash as a sentence separator in site
+        # prose since 2026-07-02, and NOTHING enforced it: _sloplib's scope
+        # covered repo-root docs and docs/**, never site/. 16 of the 36 authored
+        # pages violated the rule for 24 days while reviewers cited it at
+        # contributors. A rule with no gate is worse than no rule - people learn
+        # that the style docs are advisory.
+        #
+        # `deploy` needs this job, so a violation blocks the publish. Scope is
+        # AUTHORED prose only, drawn from `git ls-files` via the shared
+        # in_antislop_doc_scope: generated reference pages, the changelog
+        # pass-through, and the curated plugin mirrors are all excluded, because
+        # a finding nobody wrote and nobody can fix in place is noise.
+        #
+        # Runs from the repo root, not site/, since it audits tracked paths.
+        working-directory: .
+        run: python .github/scripts/check_site_voice.py
       - name: Test
         run: npm test
 

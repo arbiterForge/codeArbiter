@@ -96,4 +96,4 @@ This is advisory only. It does not block the write. The install gate depends on 
 
 - [add-dep command reference](/reference/commands/add-dep/)
 - [dependency-reviewer agent](/reference/agents/dependency-reviewer/)
-- [Enforcement & Security](/enforcement/) — H-07 advisory and the full gate catalog
+- [Enforcement & Security](/enforcement/): H-07 advisory and the full gate catalog

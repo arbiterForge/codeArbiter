@@ -2,6 +2,22 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.26] - 2026-07-25
+
+### Fixed
+
+- The anti-slop dash detector no longer flags a definition-list dash
+  (`- **term** - meaning`). The rule it enforces is about SENTENCE separators,
+  and the style guides are themselves written in that form, so the detector was
+  contradicting the guides it exists to serve. A real separator later on the
+  same line is still reported: only the definition dash is dropped, never the
+  term before it (issue #338).
+
+### Changed
+
+- The detector's document scope now covers authored site prose, and recognises
+  `.mdx` as prose rather than keying on `.md` alone.
+
 ## [0.1.25] - 2026-07-25
 
 ### Fixed
