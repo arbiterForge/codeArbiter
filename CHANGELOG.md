@@ -62,25 +62,32 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
-- site/VOICE.md's punctuation rule is finally enforced. It has banned the
-  em-dash as a sentence separator in site prose since 2026-07-02, and nothing
-  checked it: the anti-slop detector's scope covered repo-root docs and
-  `docs/**` and had never included `site/`. Sixteen of the thirty-six authored
-  pages violated the rule for twenty-four days while reviewers cited it at
-  contributors. A rule with no gate is worse than no rule, because people learn
-  that the style docs are advisory. 118 offending lines across 15 pages are
-  restructured with a period, a comma, a colon, or parentheses, and
-  `check_site_voice.py` now blocks the site publish on a new one (issue #338).
-- The detector no longer flags a definition-list dash (`- **term** - meaning`).
-  The rule is about *sentence* separators, and VOICE.md's own Terminology
-  anchors are written in that exact form, so enforcing it as written would have
-  made the gate contradict the guide. A real separator later on the same line is
-  still caught: only the definition dash is dropped, never the term before it.
-  The first cut of that exemption blanked the whole lead-in and silently
-  suppressed a genuine finding whenever inline code followed it, which an
-  adversarial reader caught before it shipped.
-- The detector's scope predicate recognises `.mdx` as prose. It keyed on `.md`
-  alone, so two authored site pages were invisible to a rule about writing.
+- A secret in a farm plan no longer persists in the run's permanent receipt.
+  `plan.meta` was serialized verbatim into `.farm/runs/<runId>/farm-report.json`
+  and its Markdown sibling, and the run-scoped change made that permanent: the
+  old `.farm/farm-report.json` was clobbered by the next run, while
+  `.farm/runs/` accumulates with no prune path. `meta.setup`,
+  `setupEachAttempt` and `setupInputs` are raw shell-command arrays and
+  `apiBaseUrl` is a URL, so a token in a setup command was a perfectly legal
+  plan that landed on disk forever. Every free-text `meta` field is now redacted
+  at the sink, once, for both receipts. Note this is redaction and not an
+  allowlist: `checkPlanObject` is already a closed-object check that rejects
+  unknown `meta` keys at parse, so the allowlist the issue proposed would have
+  duplicated an existing control and caught nothing — the *allowed* fields were
+  the exposed ones (issue #439).
+- The artifacts block and the diff-evidence reasons now pass through the file's
+  own redaction chokepoint, so raw `git` stderr and filesystem error text cannot
+  reach either receipt un-redacted.
+- The outbound redactor recognises four credential shapes an adversarial run
+  proved were reaching a receipt intact: GitLab PATs (`glpat-`), OpenAI project
+  keys (`sk-proj-`), basic auth embedded in a clone URL, and bearer tokens. A
+  `curl -u user:pass` rule is deliberately *not* added — that shape collides
+  with `docker run -u 1000:1000`, and the gap is recorded rather than papered
+  over.
+- `atomicWriteFile` preserves an existing destination's permission bits instead
+  of resetting them to the umask default, opens its temp file `O_EXCL`, and
+  cleans up when the *write* fails rather than only when the rename does. The
+  test that claimed to cover that path only exercised the rename.
 - The shipped `farm.js` bundle is now executed by the test suite, not merely
   regenerated and byte-compared. `includes/farm.md` tells operators to run
   `node <plugin>/tools/farm.js`, but the integration launcher ran `farm.ts`
