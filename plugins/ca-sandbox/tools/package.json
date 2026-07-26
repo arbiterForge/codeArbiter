@@ -5,7 +5,7 @@
   "type": "module",
   "description": "codeArbiter ca-sandbox driver: clone an untrusted repo into an ephemeral, host-isolated docker box, explore, tear down.",
   "scripts": {
-    "build": "npx esbuild cli.ts --bundle --platform=node --format=esm --outfile=sandbox.js \"--banner:js=#!/usr/bin/env node\"",
+    "build": "npx esbuild cli.ts --bundle --platform=node --format=esm --outfile=sandbox.js \"--banner:js=#!/usr/bin/env node\" && npx esbuild claude-inside-cli.ts --bundle --platform=node --format=esm --outfile=claude-inside.js \"--banner:js=#!/usr/bin/env node\"",
     "test": "npx vitest run",
     "typecheck": "npx tsc --noEmit"
   },
