@@ -148,7 +148,7 @@ describe("createSandbox failure teardown — containers before volume (reliabili
     };
 
     await expect(
-      await createSandbox("https://github.com/owner/repo.git", {
+      createSandbox("https://github.com/owner/repo.git", {
         id: "test-teardown-order",
         dockerRun,
         cloneRepo: async (): Promise<CloneResult> => ({ code: 1, stderr: "fatal: boom" }),
@@ -283,7 +283,7 @@ describe("createSandbox — clone failure surfaces stderr (observability-004)", 
     });
 
     await expect(
-      await createSandbox("https://github.com/no/repo.git", {
+      createSandbox("https://github.com/no/repo.git", {
         id: "test-clone-fail",
         dockerRun: makeDockerRun(),
         cloneRepo: fakeClone,
@@ -296,7 +296,7 @@ describe("createSandbox — clone failure surfaces stderr (observability-004)", 
     const fakeClone = async (): Promise<CloneResult> => ({ code: 128, stderr: "" });
 
     await expect(
-      await createSandbox("https://github.com/owner/repo.git", {
+      createSandbox("https://github.com/owner/repo.git", {
         id: "test-clone-code-only",
         dockerRun: makeDockerRun(),
         cloneRepo: fakeClone,
@@ -345,7 +345,7 @@ describe("defaultBuildImage — docker create/cp failures surface as errors (rel
     const fakeClone = async (): Promise<CloneResult> => ({ code: 0, stderr: "" });
 
     await expect(
-      await createSandbox("https://github.com/owner/repo.git", {
+      createSandbox("https://github.com/owner/repo.git", {
         id: "test-docker-create-fail",
         dockerRun: makeDockerRun(),
         cloneRepo: fakeClone,
@@ -364,7 +364,7 @@ describe("defaultBuildImage — docker create/cp failures surface as errors (rel
     const fakeClone = async (): Promise<CloneResult> => ({ code: 0, stderr: "" });
 
     await expect(
-      await createSandbox("https://github.com/owner/repo.git", {
+      createSandbox("https://github.com/owner/repo.git", {
         id: "test-docker-cp-fail",
         dockerRun: makeDockerRun(),
         cloneRepo: fakeClone,

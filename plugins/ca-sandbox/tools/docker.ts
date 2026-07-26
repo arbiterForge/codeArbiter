@@ -195,7 +195,20 @@ function runDocker(
   }
 
   return new Promise<RunResult>((resolve) => {
-    const child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra });
+    // A launch failure must be a RESULT, not a rejection. `spawnSync` reported
+    // one through `r.error` and the old runner mapped it to `{code: 1}`; async
+    // `spawn` normally emits an `error` event, but an invalid argument, a bad
+    // `cwd`, or a blocked exec can still throw straight out of `spawn()`. A
+    // throw inside a Promise executor rejects, and nothing in this driver
+    // catches - so an unusable docker would surface as an unhandled rejection
+    // rather than the `{code: 1}` every caller is written against.
+    let child;
+    try {
+      child = spawnFn("docker", args, { env: DOCKER_ENV, ...extra });
+    } catch (e) {
+      resolve({ code: 1, stdout: "", stderr: String(e) });
+      return;
+    }
     let stdout = "";
     let stderr = "";
     let bytes = 0;

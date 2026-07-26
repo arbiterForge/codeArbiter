@@ -227,7 +227,7 @@ describe("createSandbox — clones into a named volume + runs (AC-01)", async ()
       return { code: 0, stdout: "", stderr: "" };
     };
     await expect(
-      await createSandbox("https://example.com/repo.git", {
+      createSandbox("https://example.com/repo.git", {
         id: "fail1",
         dockerRun: run,
         cloneRepo: async () => 1, // clone fails
