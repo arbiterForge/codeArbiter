@@ -2,6 +2,20 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.31] - 2026-07-26
+
+### Added
+
+- The projected release routine can target `ca-pi`. It documented `ca` only, so
+  the one sanctioned path to a version tag could not read ca-pi's manifest, its
+  changelog, or its `ca-pi-v*` namespace - and, notably, could not resolve a
+  baseline in a series that had no tag at all. It now reads a Targets row per
+  plugin, and ca-pi's row carries the two traps specific to it: Pi installs the
+  repository ROOT as the package, so the generated root `package.json` is a
+  second manifest that must agree with the plugin's before tagging, and
+  `plugins/ca-pi/tools/` is outside the shipped payload while the built bundles
+  under `extensions/` are inside it (#382).
+
 ## [0.1.30] - 2026-07-26
 
 ### Fixed

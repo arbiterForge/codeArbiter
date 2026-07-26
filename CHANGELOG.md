@@ -14,6 +14,25 @@ predate the plugin rewrite and are grouped by date.
 
 ### Added
 
+- `/ca:release` releases any of the four plugins, as one command taking the
+  target as its argument (default `ca`, so a bare `/ca:release` is unchanged).
+  It could only ever target `ca` before, because `LAST_TAG` resolution matched
+  `^vMAJOR.MINOR.PATCH` and nothing else - so the three siblings had version
+  guards in CI, a changelog, and a tag namespace, but no sanctioned command that
+  could read any of them. Every phase is now written once against a Targets
+  table rather than four times: one row per plugin giving its tag namespace,
+  manifest, changelog, payload scope, shipped bundles, and whether it may claim
+  the repo-wide "Latest" badge (only `ca` may). No new command was added - four
+  commands would be four public surfaces to govern and carry for one operation
+  whose only difference is which row it reads (#382).
+- `_releaselib.last_tag_select` takes the tag namespace as a parameter, and
+  `RELEASE_TAG_PREFIXES` is now the single source of truth for it - the same
+  register the hosted release lanes' `tag-prefix` inputs are asserted against, so
+  the command and the workflow cannot disagree about a namespace. Series
+  isolation is a property of the ANCHORED match rather than an exclusion list to
+  maintain: `^v` cannot match `ca-pi-v0.1.30`, so a fifth plugin cannot leak into
+  an existing series by being forgotten somewhere (#382).
+
 - `/ca:add-dep` gains a bounded **Ephemeral tool run** section. The command
   applied to any download-and-execute, so a one-time analysis tool was pushed
   through project-dependency review — and with no command owning that action,
