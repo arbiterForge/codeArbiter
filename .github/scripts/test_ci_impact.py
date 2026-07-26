@@ -762,6 +762,42 @@ class WorkflowContractTest(unittest.TestCase):
             "every third-party `uses:` must pin a 40-hex commit SHA, never a movable tag",
         )
 
+    def test_every_plugin_tools_install_disables_lifecycle_scripts(self):
+        """A bare `npm ci` lets any dependency run arbitrary code at install time.
+
+        It matters most where the dev graph's OUTPUT is the product. The
+        `plugins/*/tools` trees build the committed `farm.js`, `sandbox.js`,
+        and ca-pi extension bundles, so a build-time compromise lands inside a
+        reviewed artifact - the blast radius `tech-stack.md`'s CVE gate is
+        written about, and the reason those trees are audited dev-inclusive.
+
+        `ca-pi-checks` already passed `--ignore-scripts`; the two jobs that
+        actually emit committed bundles did not, and nothing asserted it. The
+        convention was held up by whoever wrote the newest job last.
+
+        `site/` is deliberately out of scope: its build output is a static site
+        republished from source on every deploy, not a committed artifact, and
+        it is excluded from the dev-inclusive audit gate for the same reason.
+
+        Derived from the workflow rather than listed by hand, for exactly the
+        reason `npm_install_jobs` is: a hardcoded list is how the next tree
+        slips in unguarded.
+        """
+        scripted = []
+        for path in sorted((REPO_ROOT / ".github/workflows").glob("*.yml")):
+            workflow = path.read_text(encoding="utf-8")
+            jobs = workflow_jobs(workflow)
+            for job_id, directory in sorted(npm_install_jobs(workflow).items()):
+                if not directory.startswith("plugins/"):
+                    continue
+                for line in re.findall(r"(?m)^.*\bnpm ci\b.*$", jobs[job_id]):
+                    if "--ignore-scripts" not in line:
+                        scripted.append(f"{path.name}: {job_id} ({directory}): {line.strip()}")
+        self.assertEqual(
+            scripted, [],
+            "every `npm ci` installing a plugins/*/tools graph must pass --ignore-scripts",
+        )
+
     def test_ci_runs_impact_planner_without_replacing_existing_job_conditions(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn(
