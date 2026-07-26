@@ -187,19 +187,41 @@ export type ClaudeRunOptions = {
  * the Anthropic domains (custom bridge + NET_ADMIN/NET_RAW caps). Anything else is
  * a hard error — a token-bearing box must never get wide-open egress.
  */
-function resolveClaudeNetworkArgs(policy: ClaudeNetPolicy): string[] {
+/** Run-time flags plus the rules that must be installed inside the box. #377:
+ * these travel TOGETHER. Handing back only the flags is what produced a
+ * NET_ADMIN container with no firewall. */
+type ClaudeNetworkPlan = { runArgs: string[]; firewallScript?: string };
+
+function resolveClaudeNetworkPlan(policy: ClaudeNetPolicy): ClaudeNetworkPlan {
   switch (policy) {
     case "offline":
-      return applyNetworkPolicy("offline").runArgs;
+      // No interface at all, so there is nothing to firewall. An extra exec
+      // here would be pure attack surface.
+      return { runArgs: applyNetworkPolicy("offline").runArgs };
     case "anthropic-only": {
       // The Anthropic-domains allowlist. The allowlist machinery is EXPERIMENTAL
       // (Spike C); offline is the only GUARANTEED posture for a token-bearing box.
-      // The firewall script must still be applied INSIDE the box by the caller
-      // (network.ts owns it); here we only contribute the run-time flags.
-      return applyNetworkPolicy("egress-allowlist", {
+      //
+      // #377: this used to return `.runArgs` ONLY, discarding `.firewallScript`,
+      // with a comment saying the caller would apply it - and no caller existed.
+      // The result was `--cap-add NET_ADMIN --cap-add NET_RAW` on a custom bridge
+      // with NO iptables rules: wide-open egress PLUS elevated network
+      // capabilities around a live OAuth token, which is strictly worse than
+      // plain default networking, and is the posture a user picks when they want
+      // the box locked DOWN. The script now travels with the flags so it cannot
+      // be dropped on the floor again.
+      const plan = applyNetworkPolicy("egress-allowlist", {
         allowHosts: [...ANTHROPIC_ALLOW_HOSTS],
         networkName: "ca-sbx-claude-egress",
-      }).runArgs;
+      });
+      if (!plan.firewallScript) {
+        throw new Error(
+          "ca-sandbox: --with-claude refuses 'anthropic-only' without a firewall script - " +
+            "the posture grants NET_ADMIN/NET_RAW, so an unenforced allowlist is worse " +
+            "than no allowlist. Use 'offline', the guaranteed posture.",
+        );
+      }
+      return { runArgs: plan.runArgs, firewallScript: plan.firewallScript };
     }
     default: {
       // Exhaustiveness: a non-hardened policy is rejected, never passed through.
@@ -248,7 +270,7 @@ export function buildClaudeRunArgs(opts: ClaudeRunOptions): string[] {
   }
 
   const netPolicy: ClaudeNetPolicy = opts.netPolicy ?? "offline";
-  const networkArgs = resolveClaudeNetworkArgs(netPolicy);
+  const networkArgs = resolveClaudeNetworkPlan(netPolicy).runArgs;
 
   // Mounts go through the ONE chokepoint (mounts.ts): the home named volume at
   // HOME (so .claude persists) and a tmpfs /tmp for a read-only root. No bind can
@@ -298,6 +320,18 @@ export function buildClaudeRunArgs(opts: ClaudeRunOptions): string[] {
   ];
 }
 
+/**
+ * The rules a `--with-claude` box must have installed after it starts, for
+ * `opts`. `undefined` when the posture needs none (offline has no interface).
+ *
+ * Exported so the entrypoint and the tests read the SAME answer the runner
+ * acts on, rather than re-deriving it - a second derivation is a second thing
+ * that can drift from network.ts's allowlist.
+ */
+export function claudeFirewallScript(opts: ClaudeRunOptions): string | undefined {
+  return resolveClaudeNetworkPlan(opts.netPolicy ?? "offline").firewallScript;
+}
+
 /** Kept as a distinct exported name for existing importers — one underlying
  * shape (docker.ts's RunResult), never a second parallel definition. */
 export type ClaudeRunResult = RunResult;
@@ -321,5 +355,32 @@ export function runClaudeInside(
         `${(r.stderr || r.stdout).slice(-2000)}`,
     );
   }
-  return r.stdout.trim();
+  const id = r.stdout.trim();
+
+  // #377: install the allowlist INSIDE the box, or destroy it.
+  //
+  // The run flags for `anthropic-only` grant NET_ADMIN and NET_RAW on a custom
+  // bridge. Until the rules land, that container has wide-open egress AND the
+  // capability to manipulate its own networking, while holding a live OAuth
+  // token - strictly worse than the default posture, and the opposite of what
+  // the operator asked for. So a box whose firewall cannot be applied is torn
+  // down rather than returned: handing back the id would tell the caller it is
+  // locked down when it is not, which is the failure that matters.
+  const firewallScript = claudeFirewallScript(opts);
+  if (firewallScript === undefined) return id;
+
+  const applied = dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript]);
+  if (applied.code !== 0) {
+    // Best effort, and deliberately not conditional on its own success: if the
+    // teardown ALSO fails there is nothing further this process can do, and the
+    // thrown error names the container so an operator can finish the job.
+    dockerRun(["rm", "-f", id]);
+    throw new Error(
+      `ca-sandbox: --with-claude could not apply the egress firewall to ${id} ` +
+        `(exit ${applied.code}); the container has been destroyed rather than left ` +
+        `running with NET_ADMIN and no rules around a live token.\n` +
+        `${(applied.stderr || applied.stdout).slice(-2000)}`,
+    );
+  }
+  return id;
 }
