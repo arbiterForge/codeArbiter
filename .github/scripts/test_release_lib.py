@@ -667,5 +667,67 @@ class LastTagPerSeriesTest(unittest.TestCase):
         self.assertEqual(rc, 2)
         self.assertIn("unknown release target", err.getvalue())
 
+
+class NotesHeadingNamespacedTagTest(unittest.TestCase):
+    """#493's sibling lanes abort at the notes guard, on every dispatch.
+
+    `_bare_version` stripped only a LEADING "v" (`tag.lstrip("v")`), which is
+    right for ca's bare `v2.9.1` and wrong for every namespaced sibling:
+    `"ca-pi-v0.1.31".lstrip("v")` is unchanged, so it never equals the `0.1.31`
+    parsed out of the changelog heading.
+
+    The hosted publish action runs
+
+        python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
+
+    and a non-zero exit STOPS the publish. So the ca-codex, ca-sandbox and ca-pi
+    lanes added by #382 could never have completed a release - they would have
+    aborted at this guard every time, on a correct changelog. Undetected because
+    the lanes had never been dispatched and every existing test here used a bare
+    `v` tag."""
+
+    def _notes(self, version):
+        return f"## [{version}] - 2026-07-26\n\n### Added\n\n- a thing\n"
+
+    def test_every_release_series_matches_its_own_notes(self):
+        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+            version = "1.2.3"
+            with self.subTest(target=target):
+                self.assertTrue(
+                    _releaselib.notes_heading_matches(
+                        self._notes(version), f"{prefix}{version}"),
+                    f"{target}: a correct changelog must satisfy its own tag")
+
+    def test_a_namespaced_tag_still_rejects_the_wrong_section(self):
+        # The guard must keep its actual job: a stale notes file publishes the
+        # wrong changelog section under the right tag.
+        self.assertFalse(
+            _releaselib.notes_heading_matches(self._notes("0.1.30"), "ca-pi-v0.1.31"))
+        self.assertFalse(
+            _releaselib.notes_heading_matches(self._notes("1.0.0"), "ca-sandbox-v2.0.0"))
+
+    def test_one_series_does_not_satisfy_another(self):
+        # `ca-pi-v1.2.3` and `ca-sandbox-v1.2.3` share a version. The guard
+        # compares VERSIONS, so both match a 1.2.3 section - which is correct:
+        # the tag namespace is enforced by the lane that chose it, not here.
+        # Pinned so a future "strip the prefix" change cannot quietly start
+        # rejecting a legitimate release.
+        notes = self._notes("1.2.3")
+        self.assertTrue(_releaselib.notes_heading_matches(notes, "ca-pi-v1.2.3"))
+        self.assertTrue(_releaselib.notes_heading_matches(notes, "ca-sandbox-v1.2.3"))
+
+    def test_bare_version_extracts_the_semver_from_any_spelling(self):
+        cases = {
+            "v2.6.0": "2.6.0",
+            "2.6.0": "2.6.0",
+            "[2.6.0]": "2.6.0",
+            "ca-pi-v0.1.31": "0.1.31",
+            "ca-codex-v0.3.0": "0.3.0",
+            "ca-sandbox-v0.1.5": "0.1.5",
+        }
+        for spelling, want in cases.items():
+            with self.subTest(spelling=spelling):
+                self.assertEqual(_releaselib._bare_version(spelling), want)
+
 if __name__ == "__main__":
     unittest.main()
