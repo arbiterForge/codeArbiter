@@ -153,3 +153,26 @@ high-entropy string with no trigger word, used to assert safeDiagnostic never
 fragments the audit log. Not a credential for any system.
 """
 regexes = ['''\AZx9qP2mK7vN4wR8tY1uJ6hL3sD5fA0cE\z''']
+
+[[allowlists]]
+description = """
+The three credential SHAPES the #439 redactor-reach tests assert on, in
+plugins/ca/tools/farm.unit.test.ts. An adversarial pass measured four real
+shapes reaching a permanently retained farm receipt un-redacted; three are now
+matched by the outbound redactor and one (curl's `-u user:pass`) is deliberately
+left alone because it collides with `docker run -u 1000:1000`. Each fixture
+exists to prove that boundary in a specific direction, so deleting them would
+delete the coverage:
+  sk-proj-LEAK1234567890     - must BE redacted (the api_key keyword misses
+                               OPENAI_KEY, which is why the prefix rule exists)
+  LEAKPAYLOADNOTAREALJWT123  - must BE redacted, as `Authorization: Bearer <it>`
+  ci-bot:Hunter2             - must NOT be redacted, pinning the known gap
+None is a credential for any system. Each waiver is the exact value gitleaks
+reports for that fixture, measured against the pinned image with
+--report-format json, so it can never cover anything but the literal it names.
+"""
+regexes = [
+  '''\Ask-proj-LEAK1234567890\z''',
+  '''\ALEAKPAYLOADNOTAREALJWT123\z''',
+  '''\Aci-bot:Hunter2\z''',
+]

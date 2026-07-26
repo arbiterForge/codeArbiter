@@ -2406,7 +2406,7 @@ describe("#439 - redactor reach on shapes a farm plan actually carries", () => {
   it("redacts the shapes an adversarial run found leaking", () => {
     for (const line of [
       'git clone https://ci-bot:glpat-LEAKLEAKLEAK123@gitlab.example.com/x/y.git',
-      'curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.LEAKPAYLOAD.sig"',
+      'curl -H "Authorization: Bearer LEAKPAYLOADNOTAREALJWT123"',
       "export OPENAI_KEY=sk-proj-LEAK1234567890",
     ]) {
       expect(redactSecrets(line), line).toContain("REDACTED");
