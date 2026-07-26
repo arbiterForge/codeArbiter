@@ -45,7 +45,14 @@ REPO = Path(__file__).resolve().parents[2]
 # excluded scope, so it declares none.
 SHIPPED_TOOLS_ARTIFACTS: dict[str, tuple[str, ...]] = {
     "plugins/ca": ("plugins/ca/tools/farm.js",),
-    "plugins/ca-sandbox": ("plugins/ca-sandbox/tools/sandbox.js",),
+    # #377: ca-sandbox ships TWO binaries. `claude-inside.js` is deliberately
+    # separate from `sandbox.js` - it starts a container holding a live OAuth
+    # token, and the sandbox-claude-inside skill's five BLOCK gates are what
+    # make that safe, so it is not a `sandbox` subcommand anyone can reach.
+    "plugins/ca-sandbox": (
+        "plugins/ca-sandbox/tools/sandbox.js",
+        "plugins/ca-sandbox/tools/claude-inside.js",
+    ),
     "plugins/ca-pi": (),
 }
 
