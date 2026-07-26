@@ -2151,8 +2151,24 @@ class GateCommandTest(unittest.TestCase):
     # a `typecheck` entry that matched no prose and therefore asserted nothing,
     # while the live `test` demander was absent from the map entirely.
     DEFINITIONS = {
+        # `coverage` is the only entry backed by RESOLUTION as well as text:
+        # test_every_npm_script_named_by_tech_stack_actually_exists proves the
+        # named script exists in the named manifest. The other two are text
+        # patterns, and that asymmetry is deliberate rather than an oversight -
+        # neither names an npm script there is anything to resolve against.
         "coverage": re.compile(r"(?m)^\s*npm\b.*\brun coverage\b"),
-        "test": re.compile(r"(?ms)^## Test\b.*?```sh\n.+?```"),
+        # Requires an EXECUTABLE line inside the fence, not merely a non-empty
+        # one: replacing the whole section body with a single `:` satisfied the
+        # first cut while deleting every real invocation. A missing test command
+        # is loud in a way a missing coverage command was not - every lane runs
+        # it - so this is a weaker guarantee for a lower-stakes token.
+        # The `(?:(?!^## )[\s\S])*?` temper is load-bearing: a plain `.*?` under
+        # DOTALL scans PAST the Test section to any later ```sh fence containing
+        # a command, so gutting this section still matched via `## Coverage`'s
+        # block. Caught by mutation - the tightened-but-untempered version was
+        # green on a `## Test` body reduced to a bare `:`.
+        "test": re.compile(
+            r"(?ms)^## Test\b(?:(?!^## )[\s\S])*?```sh\n[^`]*?^\s*(?:python|npm|npx|pytest)\b"),
         # `dependency-reviewer` reads this one. It was found by the
         # no-dead-entry check below on the first run, which is the point of
         # checking both directions - a one-way map had no way to notice.
@@ -2206,6 +2222,24 @@ class GateCommandTest(unittest.TestCase):
             "the prose was reworded (fix DEMAND) or the entry is stale (delete it): "
             + ", ".join(dead))
 
+    # `--prefix X` and `--prefix=X` are both valid, and `run` may precede or
+    # follow the flag. The first cut matched only `npm --prefix X run Y`, so
+    # `npm run coverage --prefix plugins/ca/tools` - a working invocation -
+    # parsed to nothing and the check passed vacuously.
+    NPM_LINE = re.compile(r"(?m)^\s*npm\b[^\n]*")
+    NPM_PREFIX = re.compile(r"--prefix[= ]\s*(\S+)")
+    NPM_RUN = re.compile(r"\brun\s+([\w:-]+)")
+
+    def _npm_invocations(self, tech_stack):
+        """Every `(prefix, script)` tech-stack.md names, in any argument order."""
+        found = set()
+        for line in self.NPM_LINE.findall(tech_stack):
+            prefix = self.NPM_PREFIX.search(line)
+            script = self.NPM_RUN.search(line)
+            if prefix and script:
+                found.add((prefix.group(1).rstrip("/"), script.group(1)))
+        return found
+
     def test_every_npm_script_named_by_tech_stack_actually_exists(self):
         """The command must RESOLVE, not merely appear.
 
@@ -2215,8 +2249,16 @@ class GateCommandTest(unittest.TestCase):
         passes - #507 reachable straight through the fix for #507.
         """
         tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        pairs = self._npm_invocations(tech_stack)
+        # Non-vacuity. An empty scan produces an empty finding list and a green
+        # test - the same fail-open shape this whole class exists to close, and
+        # the exact way a reworded invocation would silently disarm the check.
+        self.assertTrue(
+            pairs,
+            "no `npm --prefix <dir> run <script>` invocation parsed out of tech-stack.md; "
+            "either the file stopped naming one or the parser drifted off its phrasing")
         broken = []
-        for prefix, script in sorted(set(re.findall(r"npm --prefix (\S+) run ([\w:-]+)", tech_stack))):
+        for prefix, script in sorted(pairs):
             manifest = REPO_ROOT / prefix / "package.json"
             if not manifest.exists():
                 broken.append(f"{prefix}/package.json does not exist (named for `run {script}`)")
@@ -2227,6 +2269,30 @@ class GateCommandTest(unittest.TestCase):
         self.assertEqual(
             broken, [],
             "tech-stack.md names npm scripts that do not exist: " + "; ".join(broken))
+
+    def test_every_tree_with_a_coverage_script_is_documented(self):
+        """Completeness, driven by the filesystem rather than by the prose.
+
+        The resolution check above verifies whatever it happens to parse and is
+        blind to what the document omits. A new `plugins/<x>/tools` tree, or one
+        documented in a phrasing the parser misses, would be unguarded
+        invisibly. Deriving the expected set from the manifests instead means a
+        tree cannot be added without its command being named.
+        """
+        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
+        undocumented = []
+        for manifest in sorted(REPO_ROOT.glob("plugins/*/tools/package.json")):
+            scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts", {})
+            if "coverage" not in scripts:
+                continue
+            tree = manifest.parent.relative_to(REPO_ROOT).as_posix()
+            if tree not in documented:
+                undocumented.append(tree)
+        self.assertEqual(
+            undocumented, [],
+            "these trees define a `coverage` script that tech-stack.md never names, so the "
+            "gates cannot run it there: " + ", ".join(undocumented))
 
 
 if __name__ == "__main__":

@@ -37,7 +37,26 @@ predate the plugin rewrite and are grouped by date.
 
 - A contract test now asserts that any command a gate reads from
   `tech-stack.md` is actually defined there, so the next gate cannot ship
-  pointing at nothing. Verified against the pre-fix file: it fires.
+  pointing at nothing. It goes further than the text check that shape usually
+  gets, because adversarial review broke three weaker versions of it in
+  succession:
+
+  - it **runs for the files it guards** — the gate prose and `tech-stack.md`
+    are registered in the `impact` filter and the push trigger, so a PR that
+    only deletes the coverage section no longer skips the one job that checks
+    it (the same omission as #384, #403/#404 and #416);
+  - it **resolves the command**, asserting the named `npm run <script>` exists
+    in the named manifest rather than trusting that the prose is
+    self-consistent;
+  - it is **complete by construction**, deriving the expected set from the
+    `plugins/*/tools` manifests, so a new tree cannot be added undocumented;
+  - it is **checked in both directions**, so an entry guarding nothing fails
+    loudly instead of looking like protection. Running that check for the first
+    time surfaced a third command reader nobody had noticed —
+    `dependency-reviewer` reads an `audit` command from the same file.
+
+  Every branch above is mutation-verified: six mutations, each confirmed to
+  fire, against a control that passes.
 
 ### Added
 
