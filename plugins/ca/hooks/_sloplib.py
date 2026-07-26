@@ -65,7 +65,7 @@ def _prose_only(line):
 def _segment_separates(seg):
     """True if `seg` contains an em/en dash with word characters on BOTH sides —
     i.e. it joins two text spans (a prose separator), not a lone filler dash."""
-    return _separating_dash_in("", seg, "")
+    return _separating_dash_in(seg)
 
 
 # Block openers: a line matching any of these starts a new markdown block, so
@@ -95,9 +95,11 @@ def _starts_new_block(raw):
                 or _BLOCKQUOTE_RE.match(raw))
 
 
-def _separating_dash_in(prefix, head, rest):
+def _separating_dash_in(head, *, words_before=False, words_after=False,
+                        tail_before="", head_after=""):
     """True if a dash INSIDE `head` joins two text spans, where its left context
-    may reach back into `prefix` and its right context forward into `rest`.
+    may reach back into the preceding lines of its paragraph and its right
+    context forward into the following ones.
 
     #484: `_segment_separates` required word characters on both sides of the
     dash on the SAME line, so a separator at a soft-wrap boundary scored zero —
@@ -107,16 +109,28 @@ def _separating_dash_in(prefix, head, rest):
     real, unreported VOICE.md violations in the site's own pages.
 
     Only dashes inside `head` are considered, so attribution stays on the line
-    that actually holds the dash (AC-1) no matter how wide the paragraph is."""
+    that actually holds the dash (AC-1) no matter how wide the paragraph is.
+
+    The surrounding context arrives PRE-REDUCED rather than as joined text:
+    `words_before`/`words_after` are booleans the caller accumulates once per
+    paragraph, and `tail_before`/`head_after` are only the nearest neighbours,
+    which is all the numeric-range adjacency check can see. Building the joined
+    strings here instead was quadratic in paragraph length - 14x slower at 3000
+    lines, measured - and this runs on every write and edit through H-13."""
     for d in _DASHES:
         idx = head.find(d)
         while idx != -1:
-            left = prefix + head[:idx]
-            right = head[idx + 1:] + " " + rest
-            if (_WORD_RE.search(left) and _WORD_RE.search(right)
-                    and not (_RANGE_LEFT_RE.search(left)
-                             and _RANGE_RIGHT_RE.search(right))):
-                return True
+            left, right = head[:idx], head[idx + 1:]
+            if ((words_before or _WORD_RE.search(left))
+                    and (_WORD_RE.search(right) or words_after)):
+                # A range split BY the wrap: the digit adjacency lives on the
+                # neighbouring line, so fall back to it only when this line
+                # contributes nothing on that side.
+                near_left = left if left.strip() else tail_before
+                near_right = right if right.strip() else head_after
+                if not (_RANGE_LEFT_RE.search(near_left)
+                        and _RANGE_RIGHT_RE.search(near_right)):
+                    return True
             idx = head.find(d, idx + 1)
     return False
 
@@ -154,6 +168,18 @@ def find_prose_separator_dashes(text):
             group.append(following)
             following += 1
         prose = [_prose_only(lines[i]) for i in group]
+        # Reduce the paragraph's context to what the dash test actually needs,
+        # in one pass each direction. `word_before[k]` is "some EARLIER line in
+        # this paragraph has a word character", `word_after[k]` the same looking
+        # forward. It has to accumulate over the whole group rather than peek at
+        # the neighbour: a line that is entirely inline code strips to
+        # whitespace, so the real continuation can sit two lines from the dash.
+        word_before = [False] * len(prose)
+        for k in range(1, len(prose)):
+            word_before[k] = word_before[k - 1] or bool(_WORD_RE.search(prose[k - 1]))
+        word_after = [False] * len(prose)
+        for k in range(len(prose) - 2, -1, -1):
+            word_after[k] = word_after[k + 1] or bool(_WORD_RE.search(prose[k + 1]))
         for position, i in enumerate(group):
             head = prose[position]
             if "|" in lines[i]:
@@ -161,8 +187,14 @@ def find_prose_separator_dashes(text):
                 # neighbouring row lend it context.
                 hit = any(_segment_separates(cell) for cell in head.split("|"))
             else:
-                hit = _separating_dash_in(" ".join(prose[:position]), head,
-                                          " ".join(prose[position + 1:]))
+                hit = _separating_dash_in(
+                    head,
+                    words_before=word_before[position],
+                    words_after=word_after[position],
+                    tail_before=prose[position - 1] if position else "",
+                    head_after=(prose[position + 1]
+                                if position + 1 < len(prose) else ""),
+                )
             if hit:
                 findings.append({"line": i + 1, "context": lines[i].strip()})
         index = following

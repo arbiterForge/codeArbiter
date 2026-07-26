@@ -307,6 +307,25 @@ class TestWrappedSeparatorDashes(unittest.TestCase):
                 "  make zero calls.\n")
         self.assertEqual([f["line"] for f in S.find_prose_separator_dashes(text)], [1])
 
+    def test_context_reaches_past_a_line_that_strips_to_nothing(self):
+        # The paragraph context is reduced to booleans accumulated over the
+        # WHOLE group, not just the neighbouring line -- and it has to be. A line
+        # that is entirely inline code strips to whitespace, so the real
+        # continuation can sit two lines below the dash. A one-line lookahead
+        # would miss this, which makes it the case the linear reduction of the
+        # original quadratic join could most easily have broken.
+        text = ("Some text —\n"
+                "`code`\n"
+                "the real continuation.\n")
+        self.assertEqual([f["line"] for f in S.find_prose_separator_dashes(text)],
+                         [1])
+
+    def test_a_range_split_by_the_wrap_stays_exempt_after_the_reduction(self):
+        # The digit adjacency lives on the neighbouring line, so the reduction
+        # keeps `tail_before`/`head_after` rather than only the booleans.
+        text = "See pages 12–\n18 for the detail.\n"
+        self.assertEqual(S.find_prose_separator_dashes(text), [])
+
     def test_a_single_line_paragraph_behaves_exactly_as_before(self):
         text = f"The gate blocks — the human resolves.\n"
         self.assertEqual([f["line"] for f in S.find_prose_separator_dashes(text)], [1])
