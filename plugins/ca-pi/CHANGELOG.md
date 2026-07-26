@@ -2,6 +2,16 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.33] - 2026-07-26
+
+### Fixed
+
+- The projected release routine names the latest-badge trap: a sibling must pass
+  `--latest=false` explicitly, because omitting the flag is not declining it -
+  GitHub defaults `make_latest` to true for any non-prerelease. This is the
+  correction to `ca-pi-v0.1.32`, which took the repository's "Latest" badge on
+  publication and displaced `ca`'s release from it.
+
 ## [0.1.32] - 2026-07-26
 
 ### Added

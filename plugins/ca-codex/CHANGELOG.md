@@ -34,6 +34,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   clear the intent is (ADR-0022).
 
 ### Fixed
+- The projected release routine names the latest-badge trap directly: a sibling
+  must pass `--latest=false`, because omitting the flag lets GitHub default the
+  badge to the newest non-prerelease.
+
 - The shared guard and anti-slop libraries pick up the `git commit-graph`
   mis-gating fix (#485) and the line-wrap-boundary detector fix (#484). Both are
   core changes projected to this host unchanged.

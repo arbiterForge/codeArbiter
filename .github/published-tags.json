@@ -157,6 +157,11 @@
       "commit_sha": "1fba34644c85a34c24f4c022f0910744758593e0",
       "object_sha": "f001f8afa5fef0f37b8ab70a5e23b1fb0a96cb41",
       "object_type": "tag"
+    },
+    "ca-pi-v0.1.32": {
+      "object_sha": "f9027d5ba53ca0918e50b4df866f687262256c13",
+      "object_type": "tag",
+      "commit_sha": "d11c74568fe581850872d3ae01e3502dc65ef654"
     }
   }
 }

@@ -140,10 +140,18 @@ runs:
         if [ -n "$SUM" ]; then TITLE="$TITLE_PREFIX $VER: $SUM"; else TITLE="$TITLE_PREFIX $VER"; fi
 
         # Only the primary release claims the "Latest" badge; every sibling
-        # plugin versions independently and must not steal it. Deliberately
-        # UNQUOTED below: set to `--latest` it is one word, and set to empty it
-        # must expand to no argument at all, which "$LATEST" would not do.
-        if [ "$MARK_LATEST" = "true" ]; then LATEST=--latest; else LATEST=; fi
+        # plugin versions independently and must not steal it.
+        #
+        # `--latest=false` EXPLICITLY, never an omitted flag. Omitting it is not
+        # neutral: GitHub defaults `make_latest` to true for any non-prerelease,
+        # so a sibling that simply "does not pass --latest" still takes the
+        # badge. Measured the hard way — ca-pi-v0.1.32, the first ca-pi release,
+        # displaced ca v2.8.13 from the position every visitor sees, and the
+        # comment here previously claimed that could not happen.
+        #
+        # Deliberately unquoted below: each value is a single word, and this way
+        # the flag is always present rather than conditionally absent.
+        if [ "$MARK_LATEST" = "true" ]; then LATEST=--latest; else LATEST=--latest=false; fi
 
         # An annotated tag needs a committer identity; the runner has none by default.
         git config user.name "github-actions[bot]"
