@@ -176,5 +176,90 @@ class TestPostMergeCleanupOwnerExistsOnEveryHost(unittest.TestCase):
                 self.assertRegex(read(rel), r"(?i)MUST NOT require")
 
 
+
+
+class TestEphemeralToolCarveOut(unittest.TestCase):
+    """Issue #346 / ADR-0023 - a one-time tool run is not a dependency.
+
+    `/ca:add-dep` applied to any download-and-execute, so a duplicate-code
+    investigation was pushed toward project-dependency review for `jscpd` that
+    the operator had explicitly said must never be a dependency - and with no
+    owner for the action, the routing loop reached for `/ca:override`.
+
+    This pins the carve-out on every host projection, and pins the constraints
+    that keep it from widening into a dependency bypass. It is deliberately a
+    section inside `/ca:add-dep` rather than a command, so the assertions are
+    about that command's text.
+    """
+
+    def add_dep_surfaces(self):
+        yield "core/surface/commands/add-dep.md", read("core/surface/commands/add-dep.md")
+        for plugin, _, _, _ in HOSTS:
+            rel = ("plugins/ca/commands/add-dep.md" if plugin == "plugins/ca"
+                   else f"{plugin}/skills/ca-add-dep/SKILL.md")
+            yield rel, read(rel)
+
+    def test_the_carve_out_exists_on_every_host(self):
+        for rel, text in self.add_dep_surfaces():
+            with self.subTest(rel=rel):
+                self.assertRegex(text, r"(?i)ephemeral tool run")
+
+    def test_the_test_is_the_dependency_graph_not_the_download(self):
+        # The distinction that makes the carve-out safe. Anything entering a
+        # manifest, lockfile, or base image is still the full review.
+        for rel, text in self.add_dep_surfaces():
+            with self.subTest(rel=rel):
+                self.assertRegex(text, r"(?i)dependency GRAPH, not the download")
+                self.assertRegex(text, r"(?i)lockfile")
+
+    def test_it_keeps_the_review_that_still_applies(self):
+        # Pinning and the approved registry are the parts of supply-chain review
+        # that do not stop mattering just because nothing is adopted.
+        for rel, text in self.add_dep_surfaces():
+            with self.subTest(rel=rel):
+                self.assertRegex(text, r"(?i)pin the exact version")
+                self.assertRegex(text, r"registry\.npmjs\.org")
+
+    def test_it_must_not_touch_a_manifest_or_lockfile_and_verifies_it(self):
+        # The load-bearing constraint, and the fact that it is CHECKED rather
+        # than taken on trust. A tool that writes a lockfile has adopted itself.
+        for rel, text in self.add_dep_surfaces():
+            with self.subTest(rel=rel):
+                self.assertRegex(text, r"(?i)MUST NOT modify a manifest or a lockfile")
+                self.assertRegex(text, r"git status --porcelain")
+
+    def test_it_does_not_become_an_override_route(self):
+        # The specific harm #346 recorded. The carve-out exists so the routing
+        # loop terminates; it must never point back at the bypass.
+        for rel, text in self.add_dep_surfaces():
+            with self.subTest(rel=rel):
+                section = text[text.lower().index("ephemeral tool run"):]
+                # `/ca:override` may be NAMED as the thing that went wrong, but
+                # never offered as a route.
+                self.assertNotRegex(section, r"(?i)(use|run|route to|reach for) `?[/$]ca[:-]override")
+
+    def test_the_routing_table_distinguishes_the_two_rows(self):
+        for plugin, _, _, _ in HOSTS:
+            rel = f"{plugin}/includes/routing-table.md"
+            with self.subTest(rel=rel):
+                rows = [ln for ln in read(rel).splitlines() if "add-dep" in ln]
+                self.assertGreaterEqual(len(rows), 2, "the ephemeral row is missing")
+                # Keyed on the section name, not on a loose word: "once" also
+                # appears inside "c-once-rn" in the dependency row above.
+                ephemeral = [ln for ln in rows if "Ephemeral tool run" in ln]
+                self.assertEqual(len(ephemeral), 1, "expected exactly one ephemeral-tool row")
+                # It must NOT dispatch the dependency reviewer - that is the
+                # whole point of the distinction.
+                self.assertRegex(ephemeral[0], r"(?i)no `?dependency-reviewer")
+
+    def test_adr_0023_records_the_decision_with_user_attribution(self):
+        adr = read(".codearbiter/decisions/0023-ephemeral-tool-runs-are-a-carve-out-inside-add-dep.md")
+        self.assertRegex(adr, r"(?m)^decided-by: \S+@\S+")
+        self.assertRegex(adr, r"(?m)^status: accepted")
+        # The rejected alternative is recorded, because it is the remedy if the
+        # carve-out proves too easy to miss.
+        self.assertRegex(adr, r"(?i)new command projected to all three hosts")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2 if "-v" in sys.argv else 1)
