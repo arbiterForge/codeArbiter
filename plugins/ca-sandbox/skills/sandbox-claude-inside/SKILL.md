@@ -27,10 +27,26 @@ posture, or the persistence mechanism:
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/0007-second-plugin-ca-sandbox.md`
   — the governing decision; ca-sandbox is infrastructure, sibling to `ca`.
 
-The driver lives at `plugins/ca-sandbox/tools/claude-inside.ts`
+The shipped driver is `plugins/ca-sandbox/tools/claude-inside.js`, its OWN
+binary rather than a `sandbox` subcommand (#377):
+
+```
+node <plugin>/tools/claude-inside.js --image <tag> --home-volume <name> [--net offline|anthropic-only]
+```
+
+That separation IS the gate. A `sandbox with-claude` subcommand would let anyone
+start a token-bearing box with one ungated command, which would turn the five
+BLOCK phases below from enforcement into advice. This routine is the only
+sanctioned caller.
+
+The token MUST come from the approved store as `CLAUDE_CODE_OAUTH_TOKEN`, in the
+ENVIRONMENT. The entry point refuses a `--token` flag outright: an argument list
+is world-readable, so passing a credential there publishes it to every process
+on the host. In tests use a DUMMY token only.
+
+Sources: `plugins/ca-sandbox/tools/claude-inside.ts`
 (`buildClaudeImageDockerfile`, `buildClaudeRunArgs`, `runClaudeInside`,
-`TokenCoMountRejectedError`). The token MUST come from the approved store as
-`CLAUDE_CODE_OAUTH_TOKEN`; in tests use a DUMMY token only.
+`TokenCoMountRejectedError`) and `claude-inside-cli.ts` (the entry).
 
 ## Phase 1 — Posture · gate: BLOCK
 
