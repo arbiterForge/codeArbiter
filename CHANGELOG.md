@@ -85,6 +85,26 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- `git commit-graph` is no longer gated as though it were `git commit` (#485).
+  A word boundary sits between `commit` and `-`, so the H-09b/H-10b matcher took
+  every `commit-*` verb. The cost was not the annoyance: the gate told the
+  operator to run the crypto-compliance gate for a command that writes no
+  objects and creates no commit, leaving only a pass that certifies nothing or
+  an `/ca:override` invented to cover a coverage hole. It bit at the worst
+  moment too, since a stale commit-graph is exactly what a batch of
+  `--delete-branch` merges leaves behind. `commit-tree` stays in scope
+  deliberately: it creates a commit object, and a crafted commit plus
+  `update-ref` is a real path around H-01. Anything else in the `commit-*` space
+  is still gated, so an unfamiliar verb fails closed rather than open.
+- The prose-separator-dash detector reads a paragraph at a time instead of a
+  line at a time (#484). It required word characters on both sides of the dash
+  ON THE SAME LINE, so a separator that landed at a soft-wrap boundary scored
+  zero in both directions - the right-hand span on the next line, or the
+  left-hand span on the previous one. Three real violations in the site's own
+  pages had to be found by hand for that reason. Joining stops at every block
+  boundary (blank line, list item, heading, table row, thematic break, fence),
+  and each finding still carries the line of its own dash.
+
 - A secret in a farm plan no longer persists in the run's permanent receipt.
   `plan.meta` was serialized verbatim into `.farm/runs/<runId>/farm-report.json`
   and its Markdown sibling, and the run-scoped change made that permanent: the

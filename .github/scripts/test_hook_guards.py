@@ -409,6 +409,29 @@ def main():
         expect_block(fx, "git commit -m 'add hashing'", "H-09b",
                      "H-09b block: crypto commit with no recorded pass")
 
+        # 6a-bis (#485): object-database maintenance is not a commit. In the
+        # exact state 6a just proved blocks a real commit, `git commit-graph`
+        # must pass -- it writes no objects, creates no commit, and can
+        # introduce neither a crypto nor a secret change. `commit\b` matched it
+        # anyway, because a word boundary sits between `commit` and `-`. The
+        # cost was not the annoyance: the gate told the operator to run the
+        # crypto-compliance gate for a command that touches no content, leaving
+        # only a pass that certifies nothing or an /ca:override invented to
+        # cover a coverage hole -- the habit ADR-0022 and #308 exist to prevent.
+        # It also bites at the worst moment, since a stale graph is what a batch
+        # of --delete-branch merges leaves behind.
+        expect_allow(fx, "git commit-graph write --reachable",
+                     "#485 allow: git commit-graph is not git commit")
+        expect_allow(fx, "git commit-graph verify",
+                     "#485 allow: commit-graph verify is read-only")
+        # The exclusion is exactly one proven-safe verb, so anything else in the
+        # `commit-*` space stays gated rather than failing open on a name this
+        # matcher has never seen.
+        expect_block(fx, "git commit-tree HEAD^{tree} -p HEAD", "H-09b",
+                     "#485 block: commit-tree does create a commit object")
+        expect_block(fx, "git commit-graphish --sneak", "H-09b",
+                     "#485 block: an unknown commit-* verb is still gated")
+
         # 6b. legacy empty marker (the old `touch`) -> binding block.
         # An empty marker proves only that *something* passed recently; it
         # covers no lines, so the diff-bound check must reject it.

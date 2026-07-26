@@ -31,16 +31,13 @@ The file set comes from `git ls-files`, so a generated page cannot drift into
 scope by being written into a tracked directory: if it is not committed, it is
 not audited.
 
-KNOWN GAP, stated rather than discovered later. The detector is line-based: it
-requires word characters on both sides of the dash ON THE SAME LINE. A separator
-dash that lands at a line-wrap boundary -
-    ...it holds in one of three states —
-    listed below.
-- is therefore invisible to it, and three such dashes were found by hand in
-`codearbiter-directory.md` while fixing the flagged ones. They were fixed too,
-but the gate did not catch them and would not catch a new one. Closing that
-needs paragraph-level analysis rather than a per-line scan, which is a larger
-change than this gate; it is filed separately rather than implied to be handled.
+The line-wrap gap this gate shipped with is closed (#484). The detector used to
+require word characters on both sides of the dash ON THE SAME LINE, so a
+separator that landed at a soft-wrap boundary was invisible to it, and three
+such dashes had to be found by hand in `codearbiter-directory.md`. It now scans
+a paragraph at a time and attributes each finding to the line holding its dash,
+with joining stopped at every block boundary (blank line, list item, heading,
+table row, thematic break, fence) so a wrap is never confused for one.
 
 Usage:
     python .github/scripts/check_site_voice.py           # audit, exit 1 on findings
