@@ -1176,18 +1176,48 @@ async function renameWithRetry(from: string, to: string, attempts = 4): Promise<
 // has no portable directory-fsync, and none at all on Windows), so a power loss
 // immediately after publication may still lose the rename. Do not read the
 // fh.sync() below as a promise that a published receipt survives a host crash.
-export async function atomicWriteFile(dest: string, data: string): Promise<void> {
+/** Injectable file-open seam. Production passes nothing; a test supplies a
+ * handle whose write rejects, which is the only deterministic way to exercise
+ * the WRITE-path cleanup - Node silently substitutes U+FFFD for an unencodable
+ * payload rather than throwing, so there is no "bad data" that forces it. Same
+ * dependency-injection shape this file already uses for RunTaskDeps and the
+ * worker/gate seams (#439 AC-4). */
+export type AtomicWriteDeps = { open?: typeof open };
+
+export async function atomicWriteFile(
+  dest: string,
+  data: string,
+  deps: AtomicWriteDeps = {},
+): Promise<void> {
   const tmp = path.join(
     path.dirname(dest),
     `.${path.basename(dest)}.${process.pid}-${randomBytes(4).toString("hex")}.tmp`,
   );
-  const fh = await open(tmp, "w");
+  // #439 AC-3: the destination's mode, if it already exists. The old
+  // `writeFile(dest, ...)` opened O_TRUNC and PRESERVED the mode; creating a
+  // temp at the umask default (0644) and renaming over the destination lets the
+  // temp's mode win, so an operator who hardened a report to 0600 got it reset
+  // on every run. Read before the write so a mid-publish failure cannot lose it.
+  const priorMode = await stat(dest).then((s) => s.mode & 0o777).catch(() => undefined);
+  // "wx" (O_EXCL): the random suffix already makes the name unpredictable, but
+  // exclusive creation means the temp can never follow a pre-existing symlink
+  // planted at that path. Free, so there is no reason not to.
+  const fh = await (deps.open ?? open)(tmp, "wx");
   try {
     await fh.writeFile(data, "utf8");
     await fh.sync();
-  } finally {
-    await fh.close();
+    if (priorMode !== undefined) await fh.chmod(priorMode);
+  } catch (e) {
+    // #439 AC-4: cleanup used to be attached only to the RENAME. A failing
+    // write or sync (ENOSPC, EIO, an unencodable payload) left a
+    // partially-written temp file on disk holding the payload - and the test
+    // that claimed to cover this only exercised the rename path, so its title
+    // read broader than its coverage.
+    await fh.close().catch(() => {});
+    await rm(tmp, { force: true }).catch(() => {});
+    throw e;
   }
+  await fh.close();
   try {
     await renameWithRetry(tmp, dest);
   } catch (e) {
@@ -1243,11 +1273,54 @@ export function newRunArtifactHealth(): RunArtifactHealth {
   };
 }
 
+// #439 - what the run's PERMANENT receipt is allowed to carry.
+//
+// The run-scoped change did not create this exposure, it changed its shape.
+// `.farm/farm-report.json` used to be clobbered by the next run; `.farm/runs/
+// <runId>/` now accumulates indefinitely with no prune path, so a secret that
+// used to be destroyed within one run persists instead.
+//
+// NOT an allowlist, deliberately. The issue proposed projecting
+// `{name, repo, model, apiBaseUrl, setup}` at the sink, but `checkPlanObject`
+// is already a CLOSED object check and plan-contract.test.ts pins that an
+// unknown `meta` property throws at parse. A sink allowlist would be a second
+// copy of a control that already exists, and would have caught nothing.
+//
+// The exposure is the opposite shape: the ALLOWED fields are the dangerous
+// ones. `setup`, `setupEachAttempt` and `setupInputs` are raw shell-command
+// arrays and `apiBaseUrl` is a URL that can carry credentials, so a token in a
+// setup command is a perfectly legal plan that parses cleanly and lands
+// verbatim in the receipt. Redaction - not deletion: a receipt that silently
+// dropped the setup it ran would be a worse receipt.
+//
+// WHAT THIS DOES NOT CLOSE, stated plainly rather than implied. `redactSecrets`
+// is keyword- and prefix-driven, so a credential wearing none of its shapes
+// still lands in the receipt - measured misses include `glpat-`, `sk-proj-`,
+// basic-auth in a clone URL (`https://user:pass@host`), and a bare
+// `Authorization: Bearer eyJ...`. Several of those are widened in redactor.ts
+// alongside this change, but the class is open-ended: this reduces the blast
+// radius of a secret in a plan, it does not make plan.meta a safe place to put
+// one. The per-task `.patch` files in the same run directory are also written
+// raw, deliberately - a patch that has been redacted no longer applies.
+export function projectPlanMetaForReport<T extends Record<string, unknown>>(meta: T): T {
+  const scrub = (v: unknown): unknown =>
+    typeof v === "string" ? redactSecrets(v) : Array.isArray(v) ? v.map(scrub) : v;
+  return Object.fromEntries(Object.entries(meta).map(([k, v]) => [k, scrub(v)])) as T;
+}
+
 // Bound the recorded error list — a dead stream path fails once per settled
 // task, and the report should carry a diagnosis, not N copies of it.
-const MAX_RECORDED_ARTIFACT_ERRORS = 10;
-function noteArtifactError(bucket: string[], message: string) {
-  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(message);
+export const MAX_RECORDED_ARTIFACT_ERRORS = 10;
+// #439: redact HERE rather than at each of the five call sites. Every other
+// report-bound free-text field in this file is redacted at construction; the
+// artifacts block was the one new class of report content that skipped the
+// chokepoint, and it carries raw git stderr (`git diff failed: <output>`) and
+// `msgOf(e)` strings straight into a permanently retained receipt. One sink,
+// one rule - a sixth caller cannot forget. `redactSecrets` is documented
+// idempotent, so a message that was already redacted upstream is unharmed.
+export function noteArtifactError(bucket: string[], message: string) {
+  const safe = redactSecrets(message);
+  if (bucket.length < MAX_RECORDED_ARTIFACT_ERRORS) bucket.push(safe);
   else if (bucket.length === MAX_RECORDED_ARTIFACT_ERRORS) bucket.push("(further errors suppressed)");
 }
 
@@ -1255,9 +1328,16 @@ function noteArtifactError(bucket: string[], message: string) {
 // failure shape (one unusable diffs directory = one entry per task in the
 // plan). The running total is kept so the report states how many tasks are
 // actually affected even though it only lists the first few.
-function noteUnavailableDiff(diffs: RunArtifactHealth["diffs"], id: string, reason: string) {
+export function noteUnavailableDiff(diffs: RunArtifactHealth["diffs"], id: string, reason: string) {
+  // #439: redacted here for the same reason noteArtifactError is. This is the
+  // function that actually receives `git diff failed: <raw git stderr>`,
+  // `diffs directory unavailable: <fs error>` and `patch write failed:
+  // <msgOf(e)>` - the three strings the issue names. Those reasons reach BOTH
+  // receipts: artifacts.diffs.unavailable[].reason in the JSON, and the
+  // "Diff evidence" list in the Markdown.
+  const safe = redactSecrets(reason);
   diffs.unavailableTotal += 1;
-  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason });
+  if (diffs.unavailable.length < MAX_RECORDED_ARTIFACT_ERRORS) diffs.unavailable.push({ id, reason: safe });
   else if (diffs.unavailable.length === MAX_RECORDED_ARTIFACT_ERRORS)
     diffs.unavailable.push({
       id: "(suppressed)",
@@ -2845,14 +2925,22 @@ async function writeReport(
     cleanup: { released: leaks.length === 0, failures: leaks },
   };
 
+  // One projection, two sinks. #439.
+  const reportMeta = projectPlanMetaForReport(plan.meta);
+
   const json = JSON.stringify(
-    { run_id: runId, plan: plan.meta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, artifacts, ts: new Date().toISOString() },
+    { run_id: runId, plan: reportMeta, aborted, tokens: { prompt: pTok, completion: cTok }, results, blocked, artifacts, ts: new Date().toISOString() },
     null,
     2,
   );
 
+  // #439: BOTH receipts, not just the JSON. `farm-report.md` is written by the
+  // same tier-1 publish and mirrored to the latest pointer, so redacting the
+  // JSON alone left the one field it does redact leaking verbatim into the
+  // Markdown sibling. Projected once, above, and used by both sinks - a second
+  // call here would be a second place to forget.
   const md = [
-    `# Farm report — ${plan.meta.name}`,
+    `# Farm report — ${reportMeta.name}`,
     ``,
     aborted ? `> **ABORTED by circuit breaker** — escalation rate exceeded threshold.\n` : ``,
     streamComplete ? `` : `> **Streaming rail incomplete** — ${health.stream.errors.length} write failure(s) on \`farm-results.jsonl\`; this report is authoritative for settled tasks.\n`,
