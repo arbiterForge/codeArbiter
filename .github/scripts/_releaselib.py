@@ -41,7 +41,16 @@ MERGE_READINESS_CHECK = "[GATE ] | [REPO] | Merge readiness"
 # form already excludes pre-releases (`v2.6.0-beta.1`) and the namespaced
 # `ca-sandbox-v*` series (no leading bare `v`); PRERELEASE_MARKERS is the
 # explicit, legible second line of defense the spec names.
-_CA_RELEASE_RE = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
+_RELEASE_RE_CACHE = {}
+
+
+def _release_re(prefix):
+    """The anchored `<prefix>MAJOR.MINOR.PATCH` matcher for one release series."""
+    rx = _RELEASE_RE_CACHE.get(prefix)
+    if rx is None:
+        rx = re.compile(r"^" + re.escape(prefix) + r"(\d+)\.(\d+)\.(\d+)$")
+        _RELEASE_RE_CACHE[prefix] = rx
+    return rx
 _PRERELEASE_MARKERS = ("-beta", "-rc", "-alpha")
 
 # A changelog section heading, in either the `## vX.Y.Z - DATE` form or the
@@ -64,6 +73,21 @@ _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
 # suite red rather than resolving a target nothing can publish.
 RELEASE_TARGETS = ("ca", "ca-codex", "ca-sandbox", "ca-pi")
 
+# Each target's tag namespace. `ca` owns the bare `v*` series as the repository's
+# primary release; every sibling is namespaced so it cannot collide with it. The
+# ANCHORED match built from these prefixes is also what keeps one series from
+# resolving another's tag as its own baseline — `^v` cannot match `ca-pi-v0.1.30`
+# — so series isolation is a property of the match rather than an exclusion list
+# somebody has to remember to extend. release.yml's per-lane `tag-prefix` inputs
+# are asserted against this map by the workflow contract suite, so the hosted
+# lane and the /ca:release command cannot disagree about a namespace.
+RELEASE_TAG_PREFIXES = {
+    "ca": "v",
+    "ca-codex": "ca-codex-v",
+    "ca-sandbox": "ca-sandbox-v",
+    "ca-pi": "ca-pi-v",
+}
+
 
 def _bare_version(tag):
     """`v2.6.0` / `[2.6.0]` / `2.6.0` -> `2.6.0`. Lets the heading match compare
@@ -71,21 +95,36 @@ def _bare_version(tag):
     return tag.strip().lstrip("v").strip("[]") if isinstance(tag, str) else tag
 
 
-def last_tag_select(tags):
-    """Return the highest `ca` SemVer tag (`vMAJOR.MINOR.PATCH`) in `tags`,
-    excluding pre-releases (`-beta`/`-rc`/`-alpha`) and the `ca-sandbox-v*`
-    series. Returns NONE_SENTINEL when no ca release tag is present. This is the
-    single source of `LAST_TAG`, replacing the skill's inline grep one-liner -
-    bare `git describe --tags` resolves to a ca-sandbox tag in this repo."""
+def last_tag_select(tags, prefix="v"):
+    """Return the highest SemVer tag in `tags` for ONE release series, excluding
+    pre-releases (`-beta`/`-rc`/`-alpha`). Returns NONE_SENTINEL when the series
+    has no release tag yet.
+
+    `prefix` selects the series and defaults to `"v"` — ca, the primary release —
+    so every existing caller keeps its behaviour unchanged. Pass a value from
+    RELEASE_TAG_PREFIXES for a sibling (#382, the /ca:release command half).
+
+    This is the single source of `LAST_TAG`, replacing the skill's inline grep
+    one-liner: bare `git describe --tags` returns the nearest tag by commit-graph
+    ANCESTRY, which in a multi-plugin repo is routinely another plugin's tag, and
+    silently bases an entire release on the wrong baseline.
+
+    Series isolation is a property of the ANCHORED match rather than a list of
+    exclusions to maintain: `^v` cannot match `ca-pi-v0.1.30`, and `^ca-pi-v`
+    cannot match `v2.9.1`. A fifth plugin therefore cannot leak into an existing
+    series by being forgotten in an exclusion list."""
     best = None  # ((major, minor, patch), original_tag)
     if not isinstance(tags, (list, tuple)):
         return NONE_SENTINEL
+    if not isinstance(prefix, str) or not prefix:
+        return NONE_SENTINEL
+    matcher = _release_re(prefix)
     for t in tags:
         if not isinstance(t, str):
             continue
         if any(marker in t for marker in _PRERELEASE_MARKERS):
             continue
-        m = _CA_RELEASE_RE.match(t)
+        m = matcher.match(t)
         if not m:
             continue
         ver = tuple(int(g) for g in m.groups())
@@ -290,8 +329,18 @@ def main(argv):
             "|select-target|merge-readiness|peel-tag} ...\n")
         return 2
     cmd, rest = argv[0], argv[1:]
-    if cmd == "last-tag":
-        print(last_tag_select(sys.stdin.read().split()))
+    if cmd == "last-tag" and len(rest) <= 1:
+        # No argument keeps ca's series, so the existing invocation is unchanged.
+        print(last_tag_select(sys.stdin.read().split(), *(rest or ())))
+        return 0
+    if cmd == "tag-prefix" and len(rest) == 1:
+        # One source of truth for a namespace: the release skill asks for the
+        # prefix rather than restating four of them in prose.
+        prefix = RELEASE_TAG_PREFIXES.get(rest[0])
+        if prefix is None:
+            sys.stderr.write(f"unknown release target: {rest[0]}\n")
+            return 2
+        print(prefix)
         return 0
     if cmd == "notes-match" and len(rest) == 2:
         return 0 if notes_heading_matches(_read(rest[1]), rest[0]) else 1

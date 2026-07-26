@@ -475,18 +475,69 @@ class SkillProseTest(unittest.TestCase):
                       "release_dates_consistent", "classify_publish_state"):
             self.assertIn(token, self.text, f"SKILL.md must invoke {token}")
 
-    def test_farmjs_freshness_is_unconditional(self):
+    def test_artifact_freshness_is_unconditional(self):
         # The rebuild + diff must be present and described as unconditional...
-        self.assertIn("git diff --quiet -- plugins/ca/tools/farm.js", self.text)
+        self.assertIn("git diff --quiet", self.text)
         self.assertIn("unconditional", self.text.lower())
         # ...and NOT gated behind the old in-window farm.ts conditional (0002).
         self.assertNotIn(
             "if `plugins/ca/tools/farm.ts` was modified in the release window",
             self.text,
-            "0002: the farm.js rebuild must not be conditional on an in-window farm.ts change")
+            "0002: the rebuild must not be conditional on an in-window source change")
+
+    def test_every_shipped_bundle_is_named_for_its_target(self):
+        # #382 generalised the freshness step over four targets, so the check
+        # that used to name ONE artifact now has to name all of them: a plugin
+        # whose bundle is absent from the Targets table can release a stale one
+        # simply because nothing told the orchestrator to rebuild it. Listed
+        # explicitly rather than derived, because ca-pi's bundles are NOT in
+        # payload_scope.SHIPPED_TOOLS_ARTIFACTS - they live under extensions/,
+        # which is already inside the payload scope.
+        for artifact in ("plugins/ca/tools/farm.js",
+                         "plugins/ca-sandbox/tools/sandbox.js",
+                         "plugins/ca-sandbox/tools/claude-inside.js",
+                         "plugins/ca-pi/extensions/codearbiter.js",
+                         "plugins/ca-pi/extensions/codearbiter-child.js"):
+            with self.subTest(artifact=artifact):
+                self.assertIn(artifact, self.text,
+                              "the Targets table must name every shipped bundle")
+
+    def test_every_release_target_is_reachable_from_the_command(self):
+        # The command half of #382: one command, four targets. Each target and
+        # its namespace must appear, and the namespace must come from the shared
+        # register rather than being typed into the prose.
+        self.assertIn("_releaselib.py tag-prefix", self.text,
+                      "the skill must ASK for the namespace, not restate four of them")
+        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+            with self.subTest(target=target):
+                self.assertIn(f"`{target}`", self.text)
+                self.assertIn(f"`{prefix}`", self.text)
+
+    def test_each_target_names_its_own_manifest_and_changelog(self):
+        for path in ("plugins/ca/.claude-plugin/plugin.json",
+                     "plugins/ca-codex/.codex-plugin/plugin.json",
+                     "plugins/ca-sandbox/.claude-plugin/plugin.json",
+                     "plugins/ca-pi/package.json",
+                     "plugins/ca-codex/CHANGELOG.md",
+                     "plugins/ca-sandbox/CHANGELOG.md",
+                     "plugins/ca-pi/CHANGELOG.md"):
+            with self.subTest(path=path):
+                self.assertIn(path, self.text)
+
+    def test_only_ca_may_claim_the_latest_badge(self):
+        # One repo-wide "Latest" across four series; a sibling claiming it hides
+        # ca's current release from every visitor.
+        self.assertIn("MUST NOT assert `--latest` for any target except `ca`",
+                      self.text)
+
+    def test_the_pi_root_manifest_is_generated_not_hand_edited(self):
+        # Pi installs the repository ROOT as the package, so the root manifest is
+        # a second thing that must agree with the tag - and it is generated.
+        self.assertIn("tools/build-host-packages.py", self.text)
+        self.assertIn("never hand-edit", self.text.lower())
 
     def test_names_ci_tools_job_as_backstop(self):
-        self.assertIn("CI `tools` job", self.text,
+        self.assertIn("`tools` job", self.text,
                       "AC-5: the local check must name the CI tools job as the mechanical backstop")
 
     def test_date_derived_once(self):
@@ -503,6 +554,118 @@ class SkillProseTest(unittest.TestCase):
         self.assertIn("## [MAJOR.MINOR.PATCH]", self.text)
         self.assertNotIn("## vMAJOR.MINOR.PATCH", self.text)
 
+
+
+class LastTagPerSeriesTest(unittest.TestCase):
+    """#382: `LAST_TAG` has to resolve for whichever plugin is being released.
+
+    Before this, `last_tag_select` matched `^vMAJOR.MINOR.PATCH` only, so it
+    could answer for `ca` and for nothing else - which is why the release command
+    could only ever target `ca`. Series isolation is a property of the ANCHORED
+    match rather than an exclusion list: a fifth plugin cannot leak into an
+    existing series by being forgotten somewhere."""
+
+    TAGS = ["v2.9.1", "v2.10.0", "ca-pi-v0.1.30", "ca-pi-v0.1.9",
+            "ca-sandbox-v0.1.3", "ca-codex-v0.3.0", "v3.0.0-beta.1"]
+
+    def test_the_prefix_register_covers_exactly_the_release_targets(self):
+        self.assertEqual(tuple(_releaselib.RELEASE_TAG_PREFIXES),
+                         _releaselib.RELEASE_TARGETS,
+                         "every releasable target needs a tag namespace, and no"
+                         " namespace may exist for a target that cannot release")
+
+    def test_every_series_resolves_its_own_highest_tag(self):
+        expected = {
+            "ca": "v2.10.0",
+            "ca-codex": "ca-codex-v0.3.0",
+            "ca-sandbox": "ca-sandbox-v0.1.3",
+            "ca-pi": "ca-pi-v0.1.30",
+        }
+        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+            with self.subTest(target=target):
+                self.assertEqual(_releaselib.last_tag_select(self.TAGS, prefix),
+                                 expected[target])
+
+    def test_no_series_resolves_another_series_tag(self):
+        # The defect this prevents: basing an entire release on another plugin's
+        # baseline, which `git describe --tags` does by commit-graph ancestry.
+        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+            with self.subTest(target=target):
+                chosen = _releaselib.last_tag_select(self.TAGS, prefix)
+                self.assertTrue(chosen.startswith(prefix), chosen)
+                for other, other_prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+                    if other == target or not other_prefix.startswith(prefix):
+                        continue
+                    self.assertFalse(
+                        chosen.startswith(other_prefix),
+                        f"{target} resolved {other}'s tag {chosen!r}")
+
+    def test_ca_does_not_pick_up_a_namespaced_sibling(self):
+        # `^v` must not match `ca-pi-v0.1.30`. This is the whole reason the
+        # sibling series are prefixed rather than bare.
+        self.assertEqual(
+            _releaselib.last_tag_select(["ca-pi-v9.9.9", "ca-sandbox-v9.9.9"], "v"),
+            _releaselib.NONE_SENTINEL)
+
+    def test_the_default_series_is_ca_so_existing_callers_are_unchanged(self):
+        self.assertEqual(_releaselib.last_tag_select(self.TAGS),
+                         _releaselib.last_tag_select(self.TAGS, "v"))
+
+    def test_a_series_with_no_release_yet_is_the_none_sentinel(self):
+        # ca-pi's real state until #382 gave it a lane: guards existed, tags did not.
+        self.assertEqual(_releaselib.last_tag_select(["v1.0.0"], "ca-pi-v"),
+                         _releaselib.NONE_SENTINEL)
+
+    def test_prereleases_are_excluded_in_every_series(self):
+        for prefix in _releaselib.RELEASE_TAG_PREFIXES.values():
+            with self.subTest(prefix=prefix):
+                self.assertEqual(
+                    _releaselib.last_tag_select(
+                        [f"{prefix}1.0.0-beta.1", f"{prefix}1.0.0-rc.2",
+                         f"{prefix}1.0.0-alpha"], prefix),
+                    _releaselib.NONE_SENTINEL)
+
+    def test_a_missing_or_empty_prefix_resolves_nothing(self):
+        # Fail-closed: an unusable series must not silently fall back to ca's.
+        for bad in ("", None, 42):
+            with self.subTest(prefix=bad):
+                self.assertEqual(_releaselib.last_tag_select(self.TAGS, bad),
+                                 _releaselib.NONE_SENTINEL)
+
+    def test_the_cli_answers_for_a_named_series_and_defaults_to_ca(self):
+        import io
+        import contextlib
+        for args, expected in ((["last-tag"], "v2.10.0"),
+                               (["last-tag", "ca-pi-v"], "ca-pi-v0.1.30")):
+            with self.subTest(args=args):
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    stdin = sys.stdin
+                    sys.stdin = io.StringIO(" ".join(self.TAGS))
+                    try:
+                        rc = _releaselib.main(args)
+                    finally:
+                        sys.stdin = stdin
+                self.assertEqual(rc, 0)
+                self.assertEqual(out.getvalue().strip(), expected)
+
+    def test_the_cli_exposes_the_namespace_lookup(self):
+        import io
+        import contextlib
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = _releaselib.main(["tag-prefix", "ca-sandbox"])
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.getvalue().strip(), "ca-sandbox-v")
+
+    def test_the_cli_refuses_an_unknown_target(self):
+        import io
+        import contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = _releaselib.main(["tag-prefix", "ca-nope"])
+        self.assertEqual(rc, 2)
+        self.assertIn("unknown release target", err.getvalue())
 
 if __name__ == "__main__":
     unittest.main()
