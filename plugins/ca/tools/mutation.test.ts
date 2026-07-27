@@ -205,8 +205,16 @@ describe("mutationCheck — configuration gates", () => {
 });
 
 describe("mutationCheck — pluggable FARM_MUTATION_CMD hook", () => {
+  // The JSON payloads below are SINGLE-QUOTED inside the echo, and must stay
+  // that way. The hook runs under `bash -c` off Windows, where an unquoted
+  // `{"a":1,"b":2}` is BRACE-EXPANDED into `{a:1 b:2}`-ish garbage and the score
+  // line never parses — green on Windows, red on Linux, which is where CI runs
+  // this job. cmd.exe does not brace-expand and prints the quotes literally, but
+  // `parseMutationHookOutput` matches the JSON substring, so the surrounding
+  // quotes are harmless there.
+
   it("returns the hook's parsed score when it prints a trailing JSON line", async () => {
-    MUT.cmd = `echo {"score":0.75,"total":8,"survived":["a.ts:1"]}`;
+    MUT.cmd = `echo '{"score":0.75,"total":8,"survived":["a.ts:1"]}'`;
     expect(await mutationCheck(wt, task())).toEqual({
       score: 0.75,
       evaluated: 8,
@@ -218,10 +226,10 @@ describe("mutationCheck — pluggable FARM_MUTATION_CMD hook", () => {
     // The `total ?? evaluated ?? 99` chain. A hook that reports neither still
     // yields a usable result rather than NaN — 99 is deliberately implausible so
     // it reads as "unknown denominator" on a report.
-    MUT.cmd = `echo {"score":0.5,"evaluated":4}`;
+    MUT.cmd = `echo '{"score":0.5,"evaluated":4}'`;
     expect(await mutationCheck(wt, task())).toEqual({ score: 0.5, evaluated: 4, survivors: [] });
 
-    MUT.cmd = `echo {"score":0.5}`;
+    MUT.cmd = `echo '{"score":0.5}'`;
     expect(await mutationCheck(wt, task())).toEqual({ score: 0.5, evaluated: 99, survivors: [] });
   });
 
