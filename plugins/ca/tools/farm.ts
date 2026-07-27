@@ -1569,14 +1569,27 @@ export function cleanupReportLines(health: RunArtifactHealth, results: Result[])
   ];
 }
 
-// #525 (DECISION-0029): both mutation risk arms report the SAME quantity — how
-// many mutants the task's test failed to catch — and they were written
-// independently, so they drifted. The escalate arm interpolated `evaluated`
-// under a "survived" label, so a run that killed 1 of 10 reported "10 mutants
-// survived" while printing a 0.10 score in the same sentence. One formatter now
-// renders it for both arms, so the two cannot disagree again.
+// #525: both mutation risk arms report the SAME quantity — how many mutants the
+// task's test failed to catch — and they were written independently, so they
+// drifted. The escalate arm interpolated `evaluated` under a "survived" label,
+// so a run that killed 1 of 10 reported "10 mutants survived" while printing a
+// 0.10 score in the same sentence. One formatter now renders it for both arms,
+// so the two cannot disagree again.
+//
+// The count is DERIVED, not taken from `survivors.length`. A pluggable
+// FARM_MUTATION_CMD is only required to print a trailing JSON line with a
+// numeric `score` (includes/farm.md) — `survived` and `total` are optional — so
+// on that path `survivors` is `[]` while `evaluated` falls back to a default.
+// Reading the list's length there would report "0/99 survived" while escalating
+// the task FOR having too many survivors: the same self-contradiction #525 was
+// filed about, in a worse form. `score` is `killed / evaluated`, so
+// `evaluated * (1 - score)` is exact arithmetic over the two fields the hook
+// contract does guarantee, and it agrees with `survivors.length` on the
+// built-in path by construction. Clamped because a hook's `score` is arbitrary
+// operator-supplied input.
 export function mutationSurvivalNote(m: MutationResult): string {
-  return `score ${m.score.toFixed(2)} (${m.survivors.length}/${m.evaluated} survived)`;
+  const survived = Math.min(m.evaluated, Math.max(0, Math.round(m.evaluated * (1 - m.score))));
+  return `score ${m.score.toFixed(2)} (${survived}/${m.evaluated} survived)`;
 }
 
 // Injectable dependencies for runTask. Every field defaults to the real

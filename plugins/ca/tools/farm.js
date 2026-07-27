@@ -471,8 +471,10 @@ function parseMutationHookOutput(out) {
   try {
     const parsed = JSON.parse(j[0]);
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number")
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+    if (typeof parsed.score === "number") {
+      const survivors = Array.isArray(parsed.survived) ? parsed.survived.filter((s) => typeof s === "string") : [];
+      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors };
+    }
   } catch {
   }
   return null;
@@ -1272,7 +1274,8 @@ function cleanupReportLines(health, results) {
   ];
 }
 function mutationSurvivalNote(m) {
-  return `score ${m.score.toFixed(2)} (${m.survivors.length}/${m.evaluated} survived)`;
+  const survived = Math.min(m.evaluated, Math.max(0, Math.round(m.evaluated * (1 - m.score))));
+  return `score ${m.score.toFixed(2)} (${survived}/${m.evaluated} survived)`;
 }
 var defaultRunTaskDeps = () => ({
   worker: httpWorker,

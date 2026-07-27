@@ -179,8 +179,18 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
   try {
     const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number")
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+    if (typeof parsed.score === "number") {
+      // #525: `survived` is operator-supplied and optional. It was assigned
+      // straight through, so a hook emitting `"survived": 9` (a count, the
+      // natural reading) or `"survived": "a,b"` (a string) produced a
+      // MutationResult whose `survivors` was not a string[] at all, and any
+      // consumer reading `.length` got `undefined` or a character count.
+      // Accept only an actual array of strings; anything else is no list.
+      const survivors = Array.isArray(parsed.survived)
+        ? parsed.survived.filter((s): s is string => typeof s === "string")
+        : [];
+      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors };
+    }
   } catch {
     /* unparseable — skip leniently */
   }
