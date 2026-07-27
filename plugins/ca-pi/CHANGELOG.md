@@ -2,6 +2,27 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.36] - 2026-07-27
+
+### Fixed
+
+- The coverage gate's no-tooling exemption required no evidence. The projected
+  `tdd` Phase 5 and `refactor` Phase 2/6 are BLOCK gates that may be passed when
+  a surface has no coverage tooling, but the trigger was a bare self-assertion
+  by the agent running the phase - and "I could not find the command" is
+  indistinguishable, from the inside, from "this surface has none". The two
+  demand opposite responses: the first is a STOP under the routines' own hard
+  rule, the second is the exemption. An agent that merely failed to locate the
+  command could therefore pass a BLOCK gate by describing its own failure as a
+  property of the repo, which is the same shape as #507 - a gate that reads as
+  satisfied without ever executing.
+
+  The exemption now requires the record to quote the `tech-stack.md` Coverage
+  section it read and name the surface it found no command for. No citation, no
+  exemption: the phase STOPs instead. The conditions live in
+  `includes/maturity-coverage.md` alone, with `tdd`, `refactor` and the
+  `coverage-auditor` agent deferring to it rather than each restating them.
+
 ## [0.1.35] - 2026-07-26
 
 ### Fixed
