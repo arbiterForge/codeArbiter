@@ -14,6 +14,23 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- The farm's mutation-escalation note reported the wrong number. It
+  interpolated the count of mutants *evaluated* under a "survived" label, so a
+  task where the test caught 1 of 10 mutants was rejected with the message
+  "mutation score 0.10 (10 mutants survived)" — a claim the score printed in
+  the same sentence disproves. This note is the entire operator-facing
+  explanation for a hard-escalated task, and it is fed back into the next
+  worker's prompt, so the wrong count was both misleading a human and
+  misinforming a retry (#525).
+
+  The warn arm four lines below had always rendered it correctly. The two arms
+  described one quantity in two independently-written format strings, which is
+  how they drifted, so the fix is a single shared formatter both arms call
+  rather than a corrected literal — the class of defect is removed, not just
+  this instance. The escalate note now reads
+  `gaming: mutation score 0.10 (9/10 survived) — …`, matching the warn arm's
+  shape; the warn arm's output is unchanged.
+
 - `tdd` Phase 5 and `refactor` Phase 2/6 can actually run. Both instructed
   "run the coverage command from `tech-stack.md`" and both forbid guessing one -
   and no coverage command existed, in any tree, for any of the four plugins. So

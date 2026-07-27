@@ -49,6 +49,7 @@ import { run, readWorktreeFile, SHELL_BIN, SHELL_FLAG, SHELL_OPTS, GATE_TIMEOUT_
 import type { RunResult } from "./exec.ts";
 import { redactSecrets, isSecretBearingFilename } from "./redactor.ts";
 import { MUT, mutationCheck, antiGamingCheck } from "./mutation.ts";
+import type { MutationResult } from "./mutation.ts";
 import { UnsafeWorktreePathError, isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
 export { run, redactSecrets, numEnv };
 export { extractLiterals, codeLineCount, parseMutationHookOutput } from "./mutation.ts";
@@ -1568,6 +1569,16 @@ export function cleanupReportLines(health: RunArtifactHealth, results: Result[])
   ];
 }
 
+// #525 (DECISION-0029): both mutation risk arms report the SAME quantity — how
+// many mutants the task's test failed to catch — and they were written
+// independently, so they drifted. The escalate arm interpolated `evaluated`
+// under a "survived" label, so a run that killed 1 of 10 reported "10 mutants
+// survived" while printing a 0.10 score in the same sentence. One formatter now
+// renders it for both arms, so the two cannot disagree again.
+export function mutationSurvivalNote(m: MutationResult): string {
+  return `score ${m.score.toFixed(2)} (${m.survivors.length}/${m.evaluated} survived)`;
+}
+
 // Injectable dependencies for runTask. Every field defaults to the real
 // implementation, so callers (main/canary) get unchanged behavior. The seam
 // exists so the task-execution path can drive a stub Worker — and stub its
@@ -1952,11 +1963,11 @@ export async function runTask(
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
           risk = "high";
-          riskNote = `gaming: mutation score ${mut.score.toFixed(2)} (${mut.evaluated} mutants survived — the test does not constrain the implementation)`;
+          riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
         } else if (mut.score < MUT.warnBelow) {
           if (risk !== "warn") {
             risk = "warn";
-            riskNote = `mutation-risk: score ${mut.score.toFixed(2)} (${mut.survivors.length}/${mut.evaluated} survived) — weak test or under-implemented logic`;
+            riskNote = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
           }
         }
       } else if (mut && "failed" in mut) {

@@ -1271,6 +1271,9 @@ function cleanupReportLines(health, results) {
     ...failures.map((f) => `- \`${f.target}\` (${f.owner}) \u2014 ${f.detail}`)
   ];
 }
+function mutationSurvivalNote(m) {
+  return `score ${m.score.toFixed(2)} (${m.survivors.length}/${m.evaluated} survived)`;
+}
 var defaultRunTaskDeps = () => ({
   worker: httpWorker,
   prepareWorktree,
@@ -1475,11 +1478,11 @@ ${gate.tail}`);
         mutationScore = mut.score;
         if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
           risk = "high";
-          riskNote = `gaming: mutation score ${mut.score.toFixed(2)} (${mut.evaluated} mutants survived \u2014 the test does not constrain the implementation)`;
+          riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} \u2014 the test does not constrain the implementation`;
         } else if (mut.score < MUT.warnBelow) {
           if (risk !== "warn") {
             risk = "warn";
-            riskNote = `mutation-risk: score ${mut.score.toFixed(2)} (${mut.survivors.length}/${mut.evaluated} survived) \u2014 weak test or under-implemented logic`;
+            riskNote = `mutation-risk: ${mutationSurvivalNote(mut)} \u2014 weak test or under-implemented logic`;
           }
         }
       } else if (mut && "failed" in mut) {
@@ -2176,6 +2179,7 @@ export {
   httpWorker,
   makeEntitlementProbe,
   mintRunId,
+  mutationSurvivalNote,
   newRunArtifactHealth,
   noteArtifactError,
   noteUnavailableDiff,

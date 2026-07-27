@@ -23,7 +23,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import path from "node:path";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { captureInScope, runTask, buildPrompt, parsePlan, validate } from "./farm.ts";
+import { captureInScope, mutationSurvivalNote, runTask, buildPrompt, parsePlan, validate } from "./farm.ts";
 import type { Plan, RunTaskDeps, Task, Worker, WorkerResult } from "./farm.ts";
 import { MUT } from "./mutation.ts";
 
@@ -306,6 +306,21 @@ describe("runTask mutation-score handling", () => {
     survivors: Array.from({ length: evaluated - killed }, (_, i) => `mutant-${i}`),
   });
 
+  it("renders the survivor count as survivors-over-evaluated, never evaluated alone (#525)", () => {
+    // The formatter both risk arms share. Asserted directly, because the whole
+    // point of extracting it is that neither arm can render this differently —
+    // and the two arms DID drift before it existed.
+    expect(mutationSurvivalNote({ score: 0.1, evaluated: 10, survivors: Array(9).fill("m") })).toBe(
+      "score 0.10 (9/10 survived)",
+    );
+    // A perfect run still names both numbers rather than collapsing to one.
+    expect(mutationSurvivalNote({ score: 1, evaluated: 8, survivors: [] })).toBe("score 1.00 (0/8 survived)");
+    // Two decimal places, always — 0.5 must not render as "0.5".
+    expect(mutationSurvivalNote({ score: 0.5, evaluated: 4, survivors: ["m", "m"] })).toBe(
+      "score 0.50 (2/4 survived)",
+    );
+  });
+
   it("escalates at a score EXACTLY at escalateBelow — the comparison is inclusive", async () => {
     // 1 of 10 killed = 0.1 = escalateBelow exactly. The mirror of the warnBelow
     // boundary below; without it, `<=` could be `<` and nothing would notice.
@@ -314,14 +329,11 @@ describe("runTask mutation-score handling", () => {
       deps({ mutationCheck: async () => mutResult(10, 1) }),
     );
     expect(r.status).toBe("escalate");
-    // NOTE the "(10 mutants survived" — 10 is `evaluated`, but only 9 survived.
-    // farm.ts:1955 interpolates `mut.evaluated` under a "survived" label while
-    // the warn arm one branch down correctly renders `survivors.length/evaluated`.
-    // That is a real reporting defect (see the issue linked in the PR); this
-    // assertion pins CURRENT behaviour so the fix is a deliberate, visible edit
-    // rather than a silent one. Update this string when it is fixed.
+    // 9 of 10 survived, and the note says so. Before #525 this arm interpolated
+    // `evaluated` under a "survived" label and claimed 10 — contradicting the
+    // 0.10 score in the same sentence. The count and the score now agree.
     expect(r.note).toBe(
-      "gaming: mutation score 0.10 (10 mutants survived — the test does not constrain the implementation)",
+      "gaming: mutation score 0.10 (9/10 survived) — the test does not constrain the implementation",
     );
     expect(r.mutationScore).toBe(0.1);
   });
@@ -335,7 +347,7 @@ describe("runTask mutation-score handling", () => {
     );
     expect(r.status).toBe("escalate");
     expect(r.note).toBe(
-      "gaming: mutation score 0.00 (5 mutants survived — the test does not constrain the implementation)",
+      "gaming: mutation score 0.00 (5/5 survived) — the test does not constrain the implementation",
     );
   });
 
@@ -350,6 +362,20 @@ describe("runTask mutation-score handling", () => {
     expect(r.mutationScore).toBe(0);
     // It still falls through to the softer warn arm rather than vanishing.
     expect(r.warning).toBe("mutation-risk: score 0.00 (4/4 survived) — weak test or under-implemented logic");
+  });
+
+  it("warns with the survivor count on a middling score", async () => {
+    // 8 of 10 survived. The fixture DELIBERATELY has survivors !== evaluated:
+    // the floor test above is forced to use 4-of-4 (it needs a near-zero score
+    // at fewer than 5 mutants), and against a 4/4 fixture a warn arm rendering
+    // `evaluated/evaluated` is indistinguishable from the correct one.
+    const r = await RUN(
+      task({ id: "s5-mut-warn", maxRetries: 0 }),
+      deps({ mutationCheck: async () => mutResult(10, 2) }),
+    );
+    expect(r.status).toBe("green");
+    expect(r.warning).toBe("mutation-risk: score 0.20 (8/10 survived) — weak test or under-implemented logic");
+    expect(r.mutationScore).toBe(0.2);
   });
 
   it("treats a score EXACTLY at warnBelow as clean — the comparison is strict", async () => {
