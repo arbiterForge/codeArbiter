@@ -23,7 +23,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import path from "node:path";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { runTask, buildPrompt, parsePlan, validate } from "./farm.ts";
+import { captureInScope, runTask, buildPrompt, parsePlan, validate } from "./farm.ts";
 import type { Plan, RunTaskDeps, Task, Worker, WorkerResult } from "./farm.ts";
 import { MUT } from "./mutation.ts";
 
@@ -73,7 +73,15 @@ function deps(over: Partial<RunTaskDeps> = {}): RunTaskDeps {
     runGate: async () => ({ ok: true as const }),
     antiGamingCheck: async () => ({ risk: "none" as const }),
     mutationCheck: async () => null,
-    git: async () => okGit,
+    // Real `git worktree remove --force` deletes the directory, and
+    // removeWorktreeVerified verifies against the FILESYSTEM, not the exit
+    // code. A stub that reports success while the seeded directory survives
+    // sends every green result through three real backoff sleeps (150ms +
+    // 300ms) and attaches a spurious cleanup failure — so the stub removes it.
+    git: async (args: string[]) => {
+      if (args[0] === "worktree" && args[1] === "remove") await rm(args[3], { recursive: true, force: true });
+      return okGit;
+    },
     withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
     ...over,
   };
@@ -183,6 +191,23 @@ describe("runTask escalations are distinguished by note, not just by status", ()
     expect(r.attempts).toBe(2);
   });
 
+  it("escalates on the FIRST drift when there are no retries to spend", async () => {
+    // The `attempt <= limit` half of the retry condition. With maxRetries 0 the
+    // retry arm must not be taken at all — and the difference is not just the
+    // attempt count: taking it makes the task fall out of the loop and report
+    // the RETRY prompt's wording ("drift: you wrote outside the allowed
+    // files: …") as its escalation note, which is exactly the collapse this
+    // describe exists to prevent.
+    const r = await RUN(
+      task({ id: "s5-drift-noretry", maxRetries: 0 }),
+      deps({ checkDrift: async () => ["docs/a.md"] }),
+    );
+    expect(r.status).toBe("escalate");
+    expect(r.attempts).toBe(1);
+    expect(r.note).toBe("drift: docs/a.md");
+    expect(r.filesWritten).toEqual(["src/impl.ts"]);
+  });
+
   it("escalates on the SECOND drift even with retries left — the latch, not the counter", async () => {
     // maxRetries 5 leaves four attempts unspent. The `driftedOnce` latch is the
     // only thing that stops the loop here; if it never sets, this runs to 6.
@@ -254,35 +279,67 @@ describe("runTask mutation-score handling", () => {
     expect(MUT.escalateBelow).toBe(0.1);
   });
 
-  it("escalates on a near-zero score once at least 5 mutants were evaluated", async () => {
+  // Fixtures are internally consistent with what mutationCheck actually
+  // produces: `score === killed / evaluated`, so `survivors.length` must equal
+  // `evaluated - killed`. A fixture like `{score: 0.05, evaluated: 8}` implies
+  // 0.4 mutants killed and cannot be emitted by the engine at all.
+  const mutResult = (evaluated: number, killed: number) => ({
+    score: killed / evaluated,
+    evaluated,
+    survivors: Array.from({ length: evaluated - killed }, (_, i) => `mutant-${i}`),
+  });
+
+  it("escalates at a score EXACTLY at escalateBelow — the comparison is inclusive", async () => {
+    // 1 of 10 killed = 0.1 = escalateBelow exactly. The mirror of the warnBelow
+    // boundary below; without it, `<=` could be `<` and nothing would notice.
     const r = await RUN(
       task({ id: "s5-mut-escalate", maxRetries: 0 }),
-      deps({ mutationCheck: async () => ({ score: 0.05, evaluated: 8, survivors: ["a", "b"] }) }),
+      deps({ mutationCheck: async () => mutResult(10, 1) }),
+    );
+    expect(r.status).toBe("escalate");
+    // NOTE the "(10 mutants survived" — 10 is `evaluated`, but only 9 survived.
+    // farm.ts:1955 interpolates `mut.evaluated` under a "survived" label while
+    // the warn arm one branch down correctly renders `survivors.length/evaluated`.
+    // That is a real reporting defect (see the issue linked in the PR); this
+    // assertion pins CURRENT behaviour so the fix is a deliberate, visible edit
+    // rather than a silent one. Update this string when it is fixed.
+    expect(r.note).toBe(
+      "gaming: mutation score 0.10 (10 mutants survived — the test does not constrain the implementation)",
+    );
+    expect(r.mutationScore).toBe(0.1);
+  });
+
+  it("escalates at EXACTLY 5 evaluated mutants — the floor is inclusive", async () => {
+    // 0 of 5 killed. Without this the `>= 5` floor can slide to `> 5` and the
+    // escalation quietly stops firing on the smallest run that should trigger it.
+    const r = await RUN(
+      task({ id: "s5-mut-floor-boundary", maxRetries: 0 }),
+      deps({ mutationCheck: async () => mutResult(5, 0) }),
     );
     expect(r.status).toBe("escalate");
     expect(r.note).toBe(
-      "gaming: mutation score 0.05 (8 mutants survived — the test does not constrain the implementation)",
+      "gaming: mutation score 0.00 (5 mutants survived — the test does not constrain the implementation)",
     );
-    expect(r.mutationScore).toBe(0.05);
   });
 
   it("does NOT escalate the same near-zero score when fewer than 5 mutants were evaluated", async () => {
-    // The `evaluated >= 5` floor exists because a 1-of-2 sample is noise. Drop
+    // The `evaluated >= 5` floor exists because a 0-of-4 sample is noise. Drop
     // it and every tiny mutation run hard-escalates.
     const r = await RUN(
       task({ id: "s5-mut-floor", maxRetries: 0 }),
-      deps({ mutationCheck: async () => ({ score: 0.05, evaluated: 4, survivors: ["a"] }) }),
+      deps({ mutationCheck: async () => mutResult(4, 0) }),
     );
     expect(r.status).toBe("green");
-    expect(r.mutationScore).toBe(0.05);
+    expect(r.mutationScore).toBe(0);
     // It still falls through to the softer warn arm rather than vanishing.
-    expect(r.warning).toBe("mutation-risk: score 0.05 (1/4 survived) — weak test or under-implemented logic");
+    expect(r.warning).toBe("mutation-risk: score 0.00 (4/4 survived) — weak test or under-implemented logic");
   });
 
   it("treats a score EXACTLY at warnBelow as clean — the comparison is strict", async () => {
+    // 4 of 8 killed = 0.5 = warnBelow exactly.
     const r = await RUN(
       task({ id: "s5-mut-boundary", maxRetries: 0 }),
-      deps({ mutationCheck: async () => ({ score: MUT.warnBelow, evaluated: 8, survivors: [] }) }),
+      deps({ mutationCheck: async () => mutResult(8, 4) }),
     );
     expect(r.status).toBe("green");
     expect(r.warning).toBeUndefined();
@@ -319,13 +376,13 @@ describe("runTask mutation-score handling", () => {
       task({ id: "s5-mut-warn-keep", maxRetries: 0 }),
       deps({
         antiGamingCheck: async () => ({ risk: "warn" as const, note: "anti-gaming: borderline literal reuse" }),
-        mutationCheck: async () => ({ score: 0.3, evaluated: 8, survivors: ["a"] }),
+        mutationCheck: async () => mutResult(8, 2),
       }),
     );
     expect(r.status).toBe("green");
     expect(r.warning).toBe("anti-gaming: borderline literal reuse");
     // The score is still recorded even though its warning lost the tie.
-    expect(r.mutationScore).toBe(0.3);
+    expect(r.mutationScore).toBe(0.25);
   });
 });
 
@@ -517,7 +574,10 @@ describe("validate — setup, setupEachAttempt, and setupInputs", () => {
     expect(() =>
       validate(
         plan(
-          { setup: ["npm ci"], setupEachAttempt: ["npm run clean"], setupInputs: ["package-lock.json"] },
+          // A command of EXACTLY 1024 chars must be accepted — the cap is
+          // `> 1024`. Without this the reject-side test alone leaves `>` free to
+          // become `>=`, silently moving the limit by one.
+          { setup: ["x".repeat(1024)], setupEachAttempt: ["npm run clean"], setupInputs: ["package-lock.json"] },
           { setup: ["pip install -e ."], setupEachAttempt: ["rm -rf .cache"], setupInputs: ["requirements.txt"] },
         ),
       ),
@@ -587,9 +647,10 @@ describe("parsePlan — declared-type guards name the field AND what arrived", (
   });
 
   it("rejects a negative maxRetries against the declared minimum of 0", () => {
-    expect(() => parsePlan(withTask({ maxRetries: -1 }))).toThrowError(
-      "plan.tasks[0].maxRetries must be an integer >= 0",
-    );
+    // Anchored: `toThrowError(string)` is a SUBSTRING match, and the minimum
+    // message is a strict prefix of the type message ("… >= 0 (got number)"),
+    // so an unanchored assertion cannot tell the two throws apart.
+    expect(() => parsePlan(withTask({ maxRetries: -1 }))).toThrowError(/must be an integer >= 0$/);
   });
 
   it("rejects a non-integer maxRetries", () => {
@@ -644,14 +705,19 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
   it("never reads a secret-bearing in-scope filename, even to redact it", async () => {
     const id = "s5-enrich-secret-scope";
     await seedWorktree(id, {
-      "src/impl.test.ts": "expect(cfg.token).toBeDefined();",
-      ".env": "API_TOKEN=hunter2-not-a-real-value",
+      "src/impl.test.ts": "expect(cfg.value).toBe(3);",
+      // DELIBERATELY carries no SECRET_LINE trigger word. An earlier draft used
+      // `API_TOKEN=...`, which made the body assertion below pass because the
+      // downstream redactor stripped the line — whether or not the FILENAME
+      // denylist ran. The denylist is what this test is about, so the payload
+      // has to be something only the denylist can stop.
+      ".env": "PLAIN_MARKER=zzz-denylist-canary-zzz",
       "src/impl.ts": "export const cfg = {};",
     });
     const p = await promptFor(task({ id, filesInScope: [".env", "src/impl.ts"] }));
     // Data minimization: the body never crosses the boundary, and neither does
     // the header that would advertise it.
-    expect(p).not.toContain("hunter2-not-a-real-value");
+    expect(p).not.toContain("zzz-denylist-canary-zzz");
     expect(p).not.toContain("--- .env ---");
     // The benign sibling in the same list is still injected.
     expect(p).toContain("--- src/impl.ts ---\nexport const cfg = {};");
@@ -705,8 +771,9 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
     // retry prompt, so that is what this asserts.
     const id = "s5-enrich-secret-prior";
     await seedWorktree(id, {
-      "src/impl.test.ts": "expect(cfg.token).toBeDefined();",
-      ".env": "API_TOKEN=hunter2-not-a-real-value",
+      "src/impl.test.ts": "expect(cfg.value).toBe(3);",
+      // Same rule as above: no trigger word, so only the denylist can stop it.
+      ".env": "PLAIN_MARKER=zzz-prior-canary-zzz",
       "src/impl.ts": "export const cfg = {};",
     });
     const prompts: string[] = [];
@@ -720,8 +787,23 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
     expect(prompts).toHaveLength(2);
     // The retry DOES get its own prior output — just not this file.
     expect(prompts[1]).toContain("--- src/impl.ts (your previous attempt — FAILED) ---");
-    expect(prompts[1]).not.toContain("hunter2-not-a-real-value");
+    expect(prompts[1]).not.toContain("zzz-prior-canary-zzz");
     expect(prompts[1]).not.toContain(".env (your previous attempt");
+  });
+
+  it("captureInScope refuses a secret-bearing name on the way IN", async () => {
+    // The INNER of the two layers, and the reachable one: buildEnrichment's
+    // prior-output filter only ever sees what captureInScope already returned.
+    // Asserted directly, so deleting either layer alone is caught — otherwise a
+    // future refactor could drop the outer one as "redundant" and leave this as
+    // the sole guard with nothing pinning it.
+    const id = "s5-capture-secret";
+    const wt = await seedWorktree(id, {
+      ".env": "PLAIN_MARKER=zzz-capture-canary-zzz",
+      "src/impl.ts": "export const cfg = {};",
+    });
+    const captured = await captureInScope(wt, task({ id, filesInScope: [".env", "src/impl.ts"] }));
+    expect(captured).toEqual([{ path: "src/impl.ts", contents: "export const cfg = {};" }]);
   });
 
   it("does NOT re-show prior output when the previous attempt wrote nothing", async () => {
