@@ -2,6 +2,46 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.38] - 2026-07-27
+
+### Fixed
+
+- Two holes in the #528 arbitration-log reclassification, both found by
+  adversarial review before merge, both leaving the append-only log destructible
+  from the shell.
+
+  The H-11 carve-out was case-insensitive while H-05 - the guard taking over for
+  that file - is case-sensitive on both flanks, so a case-varied spelling of the
+  path was stripped from one guard's view and invisible to the other. On
+  Windows/NTFS and default macOS/APFS that spelling resolves to the real file,
+  so a delete under it removed the log with no gate firing.
+
+  And `New-Item -Force`, which truncates an existing file, was covered by H-11
+  but not by H-05, so the log lost that verb on reclassification - a gap the flat
+  audit logs shared, now closed for all of them.
+
+  The carve-out also lacked a right-edge anchor, so the log's path shielded any
+  token beginning with it, letting the shell create files under `decisions/`
+  that the Write/Edit guard still treats as immutable ADR history.
+
+## [0.1.37] - 2026-07-27
+
+### Fixed
+
+- The projected `decision-variance` routine could not record a decision. Its
+  Phase 4 is required to append every SMARTS arbitration to
+  `.codearbiter/decisions/decision-log.md` "immediately, never batched" - and
+  H-11 refused every write, because its path rule matched any `.md` under
+  `decisions/` and so governed the arbitration log as immutable ADR history
+  requiring the `/adr` authoring marker. Only `decision-lifecycle` arms that
+  marker, so any arbitration outside an `/adr` session made a decision it could
+  not write down (#528).
+
+  The log is not an ADR - its own format doc states H-05's rule verbatim
+  ("strictly append-only ... to supersede, append a new entry") - so it is now
+  governed by H-05: append freely, never rewrite. ADR files beside it keep the
+  marker gate unchanged, and the carve-out is exactly one path wide.
+
 ## [0.1.36] - 2026-07-27
 
 ### Fixed

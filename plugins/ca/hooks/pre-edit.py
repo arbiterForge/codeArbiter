@@ -147,7 +147,7 @@ def _run(root):
         # the batch.
         if any(op.get("batched") for op in ops):
             block("H-05", "MultiEdit cannot guarantee a pure append to an append-only "
-                          ".codearbiter audit log (overrides.log, triage.log, sprint-log.md) "
+                          ".codearbiter audit log (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) "
                           "(ORCHESTRATOR §7). Append with a single Edit or '>>'.")
         # Exactly one non-batched op reaches this point (Edit).
         op = ops[0]
@@ -158,7 +158,7 @@ def _run(root):
         # Reject it outright before even looking at old_string/new_string.
         if op.get("replace_all"):
             block("H-05", "An Edit with replace_all=true on an append-only .codearbiter "
-                          "audit log (overrides.log, triage.log, sprint-log.md) cannot be a "
+                          "audit log (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) cannot be a "
                           "verifiable pure append (ORCHESTRATOR §7) — replace_all rewrites "
                           "every matching occurrence, not just the file's tail. Append with "
                           "'>>', or a single non-replace_all Edit whose old_string is the "
@@ -172,7 +172,7 @@ def _run(root):
         # to extend); block it outright.
         if not old:
             block("H-05", "An Edit with an empty old_string on an append-only .codearbiter "
-                          "audit log (overrides.log, triage.log, sprint-log.md) cannot be a "
+                          "audit log (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) cannot be a "
                           "verifiable pure append (ORCHESTRATOR §7) — every string starts with "
                           "the empty string. Append with '>>', or a single Edit whose old_string "
                           "is the file's current trailing content.")

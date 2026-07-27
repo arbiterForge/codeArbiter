@@ -64,7 +64,7 @@ import subprocess
 import sys
 
 from _hooklib import (
-    AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE,
+    AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
     GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block, content_digest,
     is_migration_path, line_digest, marker_fresh, sensitive_scan_added_lines,
 )
@@ -296,6 +296,12 @@ LOG_NAMES = AUDIT_LOG_NAMES
 LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES)
 LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
+    # #528: `New-Item -Force` TRUNCATES an existing file (verified in PowerShell:
+    # a 20-byte file becomes 0). H-11 already covered this family, so the
+    # arbitration log lost it on the way to H-05 — and the flat logs never had
+    # it. `touch` and `Add-Content` are deliberately NOT here: neither truncates,
+    # and Add-Content is the sanctioned append for exactly these files.
+    r"|ni|New-Item"
     r"|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File)\b"
     r"[^|;&]*" + LOG_NAMES, re.I,
 )
@@ -312,6 +318,23 @@ LOG_GIT_RESTORE_RE = re.compile(
 # redirect into .codearbiter/decisions/, or any write/delete verb naming it,
 # blocks — `cat`/`ls`/`grep` reads pass untouched.
 DECISIONS = DECISIONS_DIR_RE + r"\b"
+# #528: the one path under decisions/ that H-11 must NOT claim — see
+# _check_h11_decisions. Matched on the raw command, so both separators.
+#
+# DELIBERATELY CASE-SENSITIVE. H-05, which takes over for this file, is itself
+# case-sensitive on both flanks: _check_h05_audit_log pre-filters with a plain
+# `in` test over AUDIT_LOG_BASENAMES, and LOG_TRUNC_RE carries no re.I. An re.I
+# here therefore stripped `Decision-Log.md` out of H-11's view and handed it to a
+# guard that could not see it — and on Windows/NTFS and default macOS/APFS that
+# spelling resolves to the real file, so `rm …/Decision-Log.md` destroyed the
+# append-only log with nothing firing at all. The two flanks must agree on case.
+#
+# The right edge is anchored so this path cannot SHIELD a sibling token: without
+# it, `touch …/decision-log.md.evil.md` was stripped to a harmless remainder and
+# H-11 stopped seeing a decisions/ write at all.
+DECISION_LOG_SHELL_RE = re.compile(
+    DECISIONS_DIR_RE + r"[\\/]+" + re.escape(DECISION_LOG_BASENAME) + r"""(?=$|[\s>|;&"'])""",
+)
 # `>>?\|?` covers `>`, `>>`, and the `>|` force-clobber form into decisions/.
 DECISIONS_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + DECISIONS, re.I)
 DECISIONS_WRITE_RE = re.compile(
@@ -957,15 +980,24 @@ def _check_h05_audit_log(cmd):
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
             or LOG_GIT_RESTORE_RE.search(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
-                      "gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, "
-                      "overwriting, or deleting the audit trail is prohibited; append with "
-                      "'>>' only.")
+                      "gate-events.log, decisions/decision-log.md) are append-only "
+                      "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit "
+                      "trail is prohibited; append with '>>' only.")
 
 
 def _check_h11_decisions(cmd):
     """H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
     pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,
-    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched."""
+    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched.
+
+    #528: decisions/decision-log.md is the append-only arbitration log, not an
+    ADR, and belongs to H-05 — which already covers it, since LOG_NAMES is
+    composed from the same _hooklib alternation. Blank its path out of the
+    string H-11 scans so an append to it is not read as an ADR write. Only that
+    exact path is removed, so a directory-level operation
+    (`rm -rf .codearbiter/decisions`) still carries a decisions/ reference and
+    still blocks."""
+    cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
     if DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
                       "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
