@@ -1,14 +1,28 @@
 /**
  * Unit tests for exec.ts — the low-level process/shell layer.
  *
- * farm.unit.test.ts already pins `numEnv` (all four arms), `scrubbedEnv`, the
- * real-hang timeout, and treeKill's success path with a genuine grandchild.
- * This file does not restate any of that. What it adds is the CONTAINMENT
- * FAILURE half, which the existing suite cannot reach: every one of those tests
- * arranges a kill that WORKS, and the interesting branches are the ones taken
- * when it does not.
+ * WHAT farm.unit.test.ts ALREADY COVERS — checked, after an earlier version of
+ * this header got it wrong. It pins `numEnv` (all four arms), `scrubbedEnv`, the
+ * real-hang timeout, treeKill's success path with a genuine grandchild, AND —
+ * the part the earlier version missed — the containment-FAILURE result, at
+ * `farm.unit.test.ts:2668` ("reports an UNVERIFIED cleanup distinctly from an
+ * ordinary timeout"), which injects a killer returning ok:false and asserts code
+ * 125 with the CLEANUP UNVERIFIED note. Fourteen of this file's first mutant set
+ * were already dead because of it.
  *
- * That half is reachable deterministically because `run()` takes its killer as
+ * So this file is NOT "the failure half". What it actually adds, measured by
+ * which mutants only it kills:
+ *   - the exit codes anchored to LITERALS, not to the constants under test
+ *   - the note being APPENDED to the timeout line rather than substituted
+ *   - the close/timeout race under a deliberately slow killer
+ *   - an `error` event arriving DURING containment
+ *   - treeKill's own ok:false path, on both platforms, with a live pid and an
+ *     inert kill — farm.unit.test.ts injects a fake result, this exercises the
+ *     real verification loop
+ *   - spawn failure, signal termination, the taskkillPath fallbacks, and
+ *     readWorktreeFile's contract
+ *
+ * All of it is reachable deterministically because `run()` takes its killer as
  * a parameter — `kill: TreeKiller = treeKill` — documented in the source as
  * "the injectable containment seam ... so the 'cleanup could not be verified'
  * branch is testable without arranging a genuinely unkillable process (which is
@@ -33,13 +47,26 @@ import {
 const HANG = [process.execPath, ["-e", "setInterval(() => {}, 1000);"]] as const;
 
 describe("run() — containment failure is distinguishable from a clean timeout", () => {
+  it("uses non-zero, DISTINCT literal exit codes", () => {
+    // Anchored to literals on purpose. Every other assertion in this block
+    // compares `r.code` to an imported constant, which means setting BOTH
+    // constants to 0 passes all of them — measured — while turning every
+    // timeout into the success code `code !== 0` consumers branch on. The
+    // literals are the only thing that can catch that.
+    expect(EXIT_TIMEOUT).toBe(124);
+    expect(EXIT_TIMEOUT_UNCLEAN).toBe(125);
+    expect(EXIT_TIMEOUT).not.toBe(EXIT_TIMEOUT_UNCLEAN);
+    expect(EXIT_TIMEOUT).not.toBe(0);
+    expect(EXIT_TIMEOUT_UNCLEAN).not.toBe(0);
+  });
+
   it("reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone", async () => {
     // The injected killer stands in for a VERIFIED kill. Paired with the case
     // below, this is what makes the two outcomes distinguishable rather than
     // both being "non-zero".
     const r = await run(HANG[0], [...HANG[1]], undefined, {}, 60, async () => ({ ok: true }));
 
-    expect(r.code).toBe(EXIT_TIMEOUT);
+    expect(r.code).toBe(124);
     expect(r.timedOut).toBe(true);
     expect(r.cleanupFailed).toBeUndefined();
     expect(r.stderr).toContain("exceeded 60ms wall-clock timeout");
@@ -56,8 +83,7 @@ describe("run() — containment failure is distinguishable from a clean timeout"
       detail: "pid 4242 still present after taskkill",
     }));
 
-    expect(r.code).toBe(EXIT_TIMEOUT_UNCLEAN);
-    expect(r.code).not.toBe(EXIT_TIMEOUT);
+    expect(r.code).toBe(125);
     expect(r.timedOut).toBe(true);
     expect(r.cleanupFailed).toBe(true);
     expect(r.stderr).toContain("CLEANUP UNVERIFIED");
@@ -85,6 +111,23 @@ describe("run() — containment failure is distinguishable from a clean timeout"
     const r = await run(HANG[0], [...HANG[1]], undefined, {}, 60, async () => ({ ok: true }));
     expect(r.out).toContain("wall-clock timeout");
     expect(r.stdout).toBe("");
+  });
+
+  it("ignores an `error` event that arrives DURING containment", async () => {
+    // The `killing` guard on the error handler. An earlier version of this file
+    // called this unreachable "with no seam to force it" — but the injected
+    // killer is handed the ChildProcess, so the event just gets emitted. With
+    // the guard removed the error handler wins and resolves code 1, discarding
+    // the timeout verdict entirely.
+    const r = await run(HANG[0], [...HANG[1]], undefined, {}, 60, async (child) => {
+      child.emit("error", new Error("late spawn error during containment"));
+      await new Promise((resolve) => setTimeout(resolve, 60));
+      return { ok: false, detail: "still present" };
+    });
+
+    expect(r.code).toBe(125);
+    expect(r.timedOut).toBe(true);
+    expect(r.stderr).not.toContain("late spawn error");
   });
 
   it("does not resolve twice when the child's own close races the timeout kill", async () => {
@@ -129,6 +172,28 @@ describe("run() — spawn failure", () => {
     expect(r.out).toBe(r.stderr);
     expect(r.timedOut).toBeUndefined();
   });
+});
+
+describe("run() — stream capture", () => {
+  it("captures stderr separately from stdout and merges both into `out`", async () => {
+    // Deleting the `stderr` data handler entirely survived the whole 8-file
+    // suite — stderr capture was unpinned repo-wide. It matters twice over:
+    // `runGate`'s failure tail and every diagnostic come from here, and #91
+    // turns on stdout staying UNCONTAMINATED by stderr (a git CRLF warning
+    // parsed as a changed path tripped a false drift escalation).
+    const r = await run(
+      process.execPath,
+      ["-e", "process.stdout.write('OUT-ONLY'); process.stderr.write('ERR-ONLY');"],
+      undefined,
+      {},
+      0,
+    );
+
+    expect(r.code).toBe(0);
+    expect(r.stdout).toBe("OUT-ONLY");
+    expect(r.stderr).toBe("ERR-ONLY");
+    expect(r.out).toBe("OUT-ONLYERR-ONLY");
+  }, 20000);
 });
 
 describe("treeKill() — nothing to contain", () => {
@@ -183,9 +248,11 @@ describe("treeKill() — the tree cannot be confirmed gone", () => {
         expect(k.ok).toBe(false);
         expect(k.detail).toContain(String(hanger!.pid));
         expect(k.detail).toContain("150ms");
-        // The taskkill failure reason rides along — without it an operator sees
-        // "still present" and has no idea the killer never even started.
-        expect(k.detail).toMatch(/taskkill/i);
+        // The taskkill failure reason rides along. Matching /taskkill/i would
+        // NOT prove it: the base message already reads "after taskkill /T /F",
+        // so that pattern passes with the detail deleted (measured). Only the
+        // spawn-failure wording is unique to the appended reason.
+        expect(k.detail).toMatch(/failed to start|could not be spawned/i);
       } finally {
         if (savedRoot === undefined) delete process.env.SystemRoot;
         else process.env.SystemRoot = savedRoot;
@@ -211,7 +278,12 @@ describe("treeKill() — the tree cannot be confirmed gone", () => {
     // The other side of the same budget: a process that IS dead must verify
     // clean rather than waiting out the deadline.
     const { spawn } = await import("node:child_process");
-    const doomed = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000);"], { stdio: "ignore" });
+    // Assigned to `hanger` so afterEach reaps it. An earlier version used a
+    // local, and when this test failed once on a Linux runner the process
+    // leaked — the cleanup has to cover the failure path, which is the only
+    // path where it matters.
+    hanger = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000);"], { stdio: "ignore" });
+    const doomed = hanger;
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const k = await treeKill(doomed, { budgetMs: 4000 });
@@ -229,9 +301,16 @@ describe("taskkillPath() — absolute resolution", () => {
     else process.env.windir = saved.windir;
   });
 
-  it("prefers SystemRoot", () => {
+  it("prefers SystemRoot over windir", () => {
+    // BOTH must be set to distinct values. `windir` is undefined on Linux, and
+    // ubuntu-latest is the only platform CI runs this job on — so setting only
+    // SystemRoot made the preference ORDER, which is the whole point of this
+    // function, unpinned exactly where it is measured. Swapping the `??` operands
+    // survived on CI and died only on a Windows host.
     process.env.SystemRoot = path.join("D:", "AltWindows");
+    process.env.windir = path.join("E:", "WrongWindows");
     expect(taskkillPath()).toBe(path.join("D:", "AltWindows", "System32", "taskkill.exe"));
+    expect(taskkillPath()).not.toContain("WrongWindows");
   });
 
   it("falls back to windir when SystemRoot is unset", () => {
@@ -267,6 +346,27 @@ describe("readWorktreeFile()", () => {
     expect(await readWorktreeFile(wt, "a.txt")).toBe("contents\n");
   });
 
+  it("resolves an ABSOLUTE relPath against the filesystem root, not under the worktree", async () => {
+    // `path.resolve(wt, relPath)`, and the distinction is not cosmetic: with
+    // `path.join` an absolute relPath would be concatenated UNDER the worktree
+    // and read nothing, whereas `resolve` lets it win outright.
+    //
+    // Pinned as the behaviour that exists, with the implication stated: a caller
+    // passing an absolute path reads OUTSIDE the worktree. That is safe for
+    // today's callers — antiGamingCheck, mutationCheck and prompt enrichment all
+    // pass plan-declared relative paths — but it is a property worth noticing if
+    // a model-supplied path ever reaches this function.
+    wt = await mkdtemp(path.join(tmpdir(), "farm-read-"));
+    const outside = await mkdtemp(path.join(tmpdir(), "farm-outside-"));
+    try {
+      const absolute = path.join(outside, "external.txt");
+      await writeFile(absolute, "outside-the-worktree\n", "utf8");
+      expect(await readWorktreeFile(wt, absolute)).toBe("outside-the-worktree\n");
+    } finally {
+      await rm(outside, { recursive: true, force: true });
+    }
+  });
+
   it("returns null rather than throwing on any read failure", async () => {
     // Every consumer (antiGamingCheck, mutationCheck, prompt enrichment) treats
     // null as "not available"; a throw would escalate a task for a missing file.
@@ -284,11 +384,23 @@ describe("readWorktreeFile()", () => {
  *    settled promise is a no-op in JS and the only other statement is a
  *    `clearTimeout` of an already-fired timer, so the mutant is observationally
  *    identical. An equivalent mutant; no test can kill it.
- *  - the `error` handler's `if (killing) return;` removed. Reaching it needs a
- *    spawn error to arrive DURING the timeout kill — a genuine race with no
- *    seam to force it. The sibling guard on `close` IS pinned (by the slow-kill
- *    case above), and it is the one that actually fires, because the kill causes
- *    the close.
+ *  - (removed: the `error`-handler guard was listed here as needing "a genuine
+ *    race with no seam to force it". That was wrong — the injected killer
+ *    receives the ChildProcess, so the event can simply be emitted. It is now
+ *    pinned by a test rather than excused by a comment.)
+ *  - `taskkill` losing its `/T` flag, so descendants are not killed. A REAL gap
+ *    and the only one here: it needs a parent-plus-grandchild subject and is
+ *    Windows-only, while CI runs Linux. Recorded rather than closed — the
+ *    equivalent POSIX guarantee (the negative-pid group signal) IS pinned by the
+ *    containment test above, which dies on Linux when that line is removed.
+ *  - `code === 0 || code === 128` narrowed to `code === 0`. Equivalent AT THE
+ *    PUBLIC BOUNDARY: a 128 ("process not found") that stops counting as success
+ *    falls through to the direct-kill fallback and then to `waitUntilGone`,
+ *    which finds the pid absent and returns the same `{ ok: true }`. No caller
+ *    can tell the two apart.
+ *  - `Date.now() + budget` reduced to `Date.now()`, so the verification budget
+ *    is never waited. Survives on Windows and is KILLED on Linux — CI's
+ *    platform — because the POSIX path reaches the polling loop differently.
  *  - `code ?? 1` weakened to `code ?? 0`. This one is PLATFORM-SPLIT, not
  *    unreachable: a signal-terminated child closes with a null code on POSIX,
  *    where the mutant dies, but Windows supplies a real exit code so the `??`
