@@ -96,7 +96,7 @@ Test-only, so `test(farm):` and no version bump (see Constraints).
 | # | target | branches | status |
 |---|---|---|---|
 | 1 | `redactor.ts` — PEM span boundaries, basename denylist | +3 | **DONE** (#517) |
-| 2 | `worktree-fs.ts` — `unsafe()` refusal / TOCTOU arms | **+8** (est. 19) | **DONE** |
+| 2 | `worktree-fs.ts` — `unsafe()` refusal / TOCTOU arms | **+6** (est. 19) | **DONE** |
 | 3 | `mutation.ts` — `antiGamingCheck`, `FARM_MUTATION_CMD` hook path, loop bounds | ~42 | |
 | 4 | `exec.ts` — `numEnv`, `awaitTaskkill`, `treeKill`, `run` timeout | ~20 | |
 | 5 | `farm.ts` **exported only** — `runTask`, `validate`, `cleanupFailures` | ~68 | |
@@ -104,7 +104,19 @@ Test-only, so `test(farm):` and no version bump (see Constraints).
 
 ### Budget, corrected after slice 2
 
-Slice 2 returned **+8 branches** (85.89% branches, 100% lines on `worktree-fs.ts`).
+Slice 2 returned **+6 branches** (83.33% branches, 100% lines on `worktree-fs.ts`, measured on
+Windows).
+
+**The measurement platform is not settled and it matters.** CI runs the `tools` job on
+**ubuntu-latest only**, and the two platforms disagree: Windows reports 83.33% branches here, Linux
+84.61%, because an over-long path segment reaches the `mkdir` failure arm on Windows but fails
+earlier at `lstat` with ENAMETOOLONG on Linux. Every figure in this plan is a Windows figure. Before
+#511 is closed, AC-1 needs a stated platform — the issue's baseline table was Windows, CI is Linux,
+and they will not agree at the 70% line either.
+
+Two tests were deleted from this slice AFTER they were written and measured: they covered branches
+but killed no mutant that another test did not. That is AC-1 versus AC-2 in miniature, resolved the
+way AC-2 requires — the count went down by 2 and the suite got no weaker.
 
 An earlier draft of this slice stopped at +4 and justified it by calling fifteen arms
 "structurally unreachable, reaching them needs fault injection". **That was wrong**, and adversarial
@@ -124,8 +136,10 @@ Eleven arms remain, and these are characterised rather than claimed:
   dead code.
 - **Needs a genuine race:** the post-open `sameFile` check (L122) and the `verifyDirectories`
   compound (L69).
-- **POSIX-only:** L70 — an ancestor rename mid-write. Windows returns EPERM renaming a directory
-  with an open descendant handle, so it cannot fire on the measurement host.
+- **Also a redundant backstop:** L70. An earlier draft called this "POSIX-only, because Windows
+  returns EPERM renaming a directory with an open descendant handle". Measured on this host, that
+  rename SUCCEEDS — and `verifyDirectories` is called once before any handle exists anyway, so the
+  argument was wrong twice. L70 is reachable on Windows once the layers ahead of it are removed.
 
 Worth recording about the source, not the tests: L124/L125/L129/L130 re-check `realpath` AFTER the
 handle is open, but the write goes through that retained handle — so those checks cannot change
@@ -134,11 +148,11 @@ Not changed here: touching `worktree-fs.ts` rebuilds `farm.js`, which is declare
 
 | | now | need | gap |
 |---|---|---|---|
-| Lines | 807/1187 = 67.73% | 831 | +24 |
-| Branches | 586/967 = 60.59% | 677 | **+91** |
+| Lines | 804/1187 = 67.73% | 831 | +27 |
+| Branches | 584/967 = 60.39% | 677 | **+93** |
 
 Remaining realistic supply: `exec.ts` ~20, `mutation.ts` ~42, `farm.ts` exported ~68 = **~130**
-against a need of **91**. `mutation.ts` was sized against its uncovered report before committing to
+against a need of **93**. `mutation.ts` was sized against its uncovered report before committing to
 a number this time: its arms are business logic, not layered guards, and `MUT` is an exported
 mutable object, so its knobs are settable from a test with no module surgery.
 

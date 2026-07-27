@@ -1,4 +1,4 @@
-import { link, lstat, mkdtemp, readdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { link, lstat, mkdir, mkdtemp, readdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -130,8 +130,14 @@ describe("symlink-safe worktree writer", () => {
  * means anything is the PROPERTY (every layer guarding it removed at once), not
  * the line. That does NOT excuse leaving reachable arms untested: an earlier
  * draft of this block called four of them "structurally unreachable" and a NUL
- * byte, an over-long segment, and 40 concurrent calls reached three of them
- * through the public API with no seam at all.
+ * byte and 40 concurrent calls reached three of them through the public API with
+ * no seam at all.
+ *
+ * Platform note: CI runs the tools job on ubuntu-latest ONLY, so Linux is the
+ * platform that matters for these numbers. Windows and Linux do not agree here —
+ * an over-long path segment reaches the mkdir failure arm on Windows but fails
+ * earlier at `lstat` with ENAMETOOLONG on Linux, so that case bought nothing on
+ * CI and is not in this block.
  */
 describe("symlink-safe worktree writer — refusal paths", () => {
   const MESSAGE = "unsafe worktree path rejected";
@@ -154,10 +160,13 @@ describe("symlink-safe worktree writer — refusal paths", () => {
 
   async function expectRefused(promise: Promise<unknown>): Promise<void> {
     await expect(promise).rejects.toThrow(MESSAGE);
-    await promise.catch((error: unknown) => {
-      expect(isUnsafeWorktreePathError(error)).toBe(true);
-      expect((error as Error).name).toBe("UnsafeWorktreePathError");
-    });
+    await promise.then(
+      () => expect.unreachable("write should have been refused"),
+      (error: unknown) => {
+        expect(isUnsafeWorktreePathError(error)).toBe(true);
+        expect((error as Error).name).toBe("UnsafeWorktreePathError");
+      },
+    );
   }
 
   it("refuses a worktree root that is itself a link", async () => {
@@ -177,32 +186,26 @@ describe("symlink-safe worktree writer — refusal paths", () => {
   });
 
   it("refuses an escaping relative path and writes NOTHING outside the root", async () => {
-    // The post-state assertion is the whole test. Measured with the escape
-    // guards removed, this input creates `escaped.txt` in the root's PARENT and
-    // leaves it there — a version of this test that only asserted rejection
-    // passed while that happened.
-    const { root, cleanup } = await arena("farm-escape");
-    const parentOfRoot = path.dirname(root);
-    const wouldBe = path.join(parentOfRoot, "escaped.txt");
+    // The post-state assertion is the whole test. Measured with every escape
+    // guard removed, this input CREATES `escaped.txt` one level up and leaves it
+    // there — an earlier version of this test passed while that happened,
+    // because it only checked that the promise rejected.
+    //
+    // The root is nested inside a private container so the escape target is
+    // ours. An earlier version used `path.dirname(root)` — which, for a root
+    // from `mkdtemp(tmpdir())`, IS the shared OS temp directory: the assertion
+    // failed spuriously if anything else had put an `escaped.txt` there, and the
+    // cleanup then deleted a file this suite does not own.
+    const container = await mkdtemp(path.join(tmpdir(), "farm-escape-box-"));
+    const root = path.join(container, "root");
+    await mkdir(root);
     try {
       await expectRefused(writeWorktreeFile(root, path.join("..", "escaped.txt"), "payload"));
-      expect(existsSync(wouldBe)).toBe(false);
+      expect(existsSync(path.join(container, "escaped.txt"))).toBe(false);
+      expect(await readdir(container)).toEqual(["root"]);
       expect(await readdir(root)).toEqual([]);
     } finally {
-      await rm(wouldBe, { force: true });
-      await cleanup();
-    }
-  });
-
-  it("refuses a relative path resolving to the root itself", async () => {
-    // `""` and `"."` both produce the same `relative === ""` arm, so one case
-    // covers both; the second would be a duplicate.
-    const { root, cleanup } = await arena("farm-rootself");
-    try {
-      await expectRefused(writeWorktreeFile(root, "", "payload"));
-      expect(await readdir(root)).toEqual([]);
-    } finally {
-      await cleanup();
+      await rm(container, { recursive: true, force: true });
     }
   });
 
@@ -256,18 +259,6 @@ describe("symlink-safe worktree writer — refusal paths", () => {
     }
   });
 
-  it("refuses an intermediate segment the filesystem cannot create", async () => {
-    // Reaches the non-EEXIST arm of the mkdir guard: lstat says ENOENT, so a
-    // directory is attempted, and mkdir fails for a reason that is NOT a lost
-    // race. That error must propagate rather than be mistaken for one.
-    const { root, cleanup } = await arena("farm-longseg");
-    try {
-      await expectRefused(writeWorktreeFile(root, path.join("d".repeat(300), "x.txt"), "payload"));
-    } finally {
-      await cleanup();
-    }
-  });
-
   it("absorbs a lost mkdir race between concurrent writers", async () => {
     // The EEXIST arm — the race the guard exists for. Forty writers share the
     // same nested ancestors, so many of them lose the mkdir and must treat
@@ -282,34 +273,6 @@ describe("symlink-safe worktree writer — refusal paths", () => {
       const written = await readdir(path.join(root, "shared", "nested", "deep"));
       expect(written).toHaveLength(40);
       expect(await readFile(path.join(root, "shared", "nested", "deep", "f39.txt"), "utf8")).toBe("payload-39\n");
-    } finally {
-      await cleanup();
-    }
-  });
-
-  it("refuses a destination swapped for a link after validation but before truncate", async () => {
-    // The destination is validated, opened, and then — before the retained
-    // handle is truncated — replaced with a link pointing outside the root. This
-    // is the containment re-check, not the symlink check: every pre-open
-    // observation is stale by this point.
-    //
-    // The post-state that matters is the EXTERNAL directory, not the sentinel:
-    // the handle refers to the now-unlinked original inode, so the sentinel
-    // survives whatever the guards do. What must not happen is a new file
-    // appearing through the link.
-    const { root, external, cleanup } = await arena("farm-lateswap");
-    const destination = path.join(root, "inside.txt");
-    await writeFile(destination, "inside-original", "utf8");
-    try {
-      await expectRefused(
-        writeWorktreeFile(root, "inside.txt", "overwrite", {
-          beforeFinalAuthorization: async () => {
-            await rm(destination, { force: true });
-            await symlink(external, destination, process.platform === "win32" ? "junction" : "dir");
-          },
-        }),
-      );
-      expect(await readdir(external)).toEqual(["sentinel.txt"]);
     } finally {
       await cleanup();
     }
@@ -359,8 +322,10 @@ describe("symlink-safe worktree writer — write contracts", () => {
   });
 
   it("round-trips non-ASCII content without re-encoding it", async () => {
-    // Pins the utf8 encoding on both the write and the read-back. A latin1 slip
-    // is invisible to every ASCII fixture in this file.
+    // Kills a WRONG encoding (latin1) on the write. It does NOT pin the option's
+    // presence — `FileHandle.writeFile` defaults to utf8, so deleting it changes
+    // nothing. Either way, a non-ASCII fixture is the only thing in this file
+    // that would notice a re-encoding at all.
     const root = await mkdtemp(path.join(tmpdir(), "farm-utf8-"));
     try {
       const content = "héllo — ünïcode ✓\n";
