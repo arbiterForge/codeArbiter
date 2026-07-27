@@ -97,7 +97,7 @@ Test-only, so `test(farm):` and no version bump (see Constraints).
 |---|---|---|---|
 | 1 | `redactor.ts` — PEM span boundaries, basename denylist | +3 | **DONE** (#517) |
 | 2 | `worktree-fs.ts` — `unsafe()` refusal / TOCTOU arms | **+6** (est. 19) | **DONE** |
-| 3 | `mutation.ts` — `antiGamingCheck`, `FARM_MUTATION_CMD` hook path, loop bounds | ~42 | |
+| 3 | `mutation.ts` — `antiGamingCheck`, `FARM_MUTATION_CMD` hook path, loop bounds | **+39** (est. 42) | **DONE** |
 | 4 | `exec.ts` — `numEnv`, `awaitTaskkill`, `treeKill`, `run` timeout | ~20 | |
 | 5 | `farm.ts` **exported only** — `runTask`, `validate`, `cleanupFailures` | ~68 | |
 | 6 | clean-export measurement, close #511 | — | |
@@ -146,13 +146,20 @@ handle is open, but the write goes through that retained handle — so those che
 where bytes land. `handle.stat()`/`sameFile` (L122, L136) are the only post-open checks that can.
 Not changed here: touching `worktree-fs.ts` rebuilds `farm.js`, which is declared payload.
 
-| | now | need | gap |
-|---|---|---|---|
-| Lines | 804/1187 = 67.73% | 831 | +27 |
-| Branches | 584/967 = 60.39% | 677 | **+93** |
+| | after slice 2 | after slice 3 | need | gap |
+|---|---|---|---|---|
+| Lines | 804 = 67.73% | **848 = 71.44%** | 831 | **CLEARED** |
+| Branches | 584 = 60.39% | **623 = 64.42%** | 677 | **+54** |
 
-Remaining realistic supply: `exec.ts` ~20, `mutation.ts` ~42, `farm.ts` exported ~68 = **~130**
-against a need of **93**. `mutation.ts` was sized against its uncovered report before committing to
+**Lines has cleared the floor.** Branches remains the binding column, exactly as the plan predicted
+at the outset — and it is now the ONLY thing between this tree and AC-1.
+
+Slice 3 returned +39 against an estimate of 42, the first estimate in this campaign that held. It
+held because it was built from the uncovered report's *shape* (business logic, independently
+reachable) rather than from its size — the lesson slice 2 paid for.
+
+Remaining supply: `exec.ts` ~20 and `farm.ts`'s exported surface ~68 = **~88** against a need of
+**54**. Slice 5 no longer has to be near-perfect, but it is still the largest single contributor. `mutation.ts` was sized against its uncovered report before committing to
 a number this time: its arms are business logic, not layered guards, and `MUT` is an exported
 mutable object, so its knobs are settable from a test with no module surgery.
 
