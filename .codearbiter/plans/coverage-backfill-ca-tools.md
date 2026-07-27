@@ -170,6 +170,51 @@ a factor of three. `mutation.ts` was sized against its uncovered report before c
 a number this time: its arms are business logic, not layered guards, and `MUT` is an exported
 mutable object, so its knobs are settable from a test with no module surgery.
 
+## Slice 5 — `farm.ts` exported surface: CLEARED, on both platforms
+
+| | before slice 5 (Win) | after (Win) | before (Linux) | **after (Linux)** | floor |
+|---|---|---|---|---|---|
+| Lines | 72.03% | 75.82% | 70.93% | **74.72%** | 70% |
+| Branches | 66.18% | 72.59% | 65.35% | **71.76%** | 70% |
+
+**AC-1 is met on both platforms**, which dissolves #521 as a *dependency* of #511: whichever
+platform is declared authoritative, the answer is the same. #521 remains open on its own merits —
+the divergence is real (`exec.ts`: 87.50% Win vs 76.38% Linux) and will bind again at the next floor.
+
+The slice-5 estimate of "~68 available, need 38" was **wrong in both terms, and wrongly framed as
+tight**. It counted only `runTask` (36) + `validate` (12) + small helpers, and missed the nested
+closures — `bestOfN`'s per-sample body (8 arms) and `validate`'s `checkSetupInputs` (8) — which the
+per-function attribution only surfaces if you resolve each branch to its *innermost* enclosing
+function. Real in-scope supply was ~107. The need was also understated: it was derived from Windows
+(+38) when the binding platform is Linux (+45).
+
+Two lessons, and they point opposite ways. Sizing from the uncovered report's *shape* (slices 3–5)
+beats sizing from its raw count (slice 2) — that held again. But the report must be read with
+functions attributed innermost-first, or every arrow function and callback is silently credited to
+its parent and disappears from the supply estimate.
+
+### Mutation results — 46 single-point + 3 property-level
+
+39 killed. **Four real gaps found and fixed**, three of them the same defect the amended standard
+was written for: *an assertion that cannot distinguish an inner layer from the outer layer behind
+it*. The sample-level containment sweep and the sample tamper guard both looked covered, because
+disabling either produced an identical note from the task-level layer. Both now assert an outcome
+only the inner layer can produce — a clean sibling sample *winning*, rather than the whole task
+escalating. The third was the secret-bearing-filename guard in `buildEnrichment`, redundant with
+`captureInScope`'s filter; proven defended by a 3-layer property mutant rather than claimed.
+
+The survivors are classified, not waved through:
+
+- **Killed by the pre-existing suites** (`t.model ?? model`, the cleanup attach, `noteCleanup`,
+  prepErr `attempts`) — verified by re-running each against `farm.unit.test.ts`, not assumed.
+- **Provably dead code:** `Math.max(1, …)` on `FARM_SAMPLES`. `numEnv(…, {min: 1})` returns the
+  default, a clamp to 1, or a finite `n ≥ 1` — every path is ≥ 1, so the `Math.max` cannot change
+  the result. That is a proof from `numEnv`'s body, not an inference from the mutant surviving.
+- **Not reachable without replicating production arithmetic:** the two byte-cap boundary arms
+  (`used + rendered === maxBytes`, and the marker-only stub, which needs `used` to land within
+  ~90 bytes of the 131072-byte cap). Reaching them means computing `renderInjectedFile`'s exact
+  byte overhead inside the test, which makes the test assert the implementation it is testing.
+
 ## Constraints and known-unreachable
 
 - **No version bump for test-only slices.** `payload_scope.py` excludes `plugins/ca/tools/` from
