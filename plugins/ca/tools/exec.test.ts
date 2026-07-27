@@ -247,7 +247,11 @@ describe("taskkillPath() — absolute resolution", () => {
     delete process.env.SystemRoot;
     delete process.env.windir;
     expect(taskkillPath()).toBe(path.join("C:\\Windows", "System32", "taskkill.exe"));
-    expect(path.isAbsolute(taskkillPath())).toBe(true);
+    // WIN32 semantics deliberately, whatever the host: this path is only ever
+    // spawned on Windows, and POSIX `isAbsolute` reports false for a
+    // drive-letter path — which made this assertion pass on Windows and fail on
+    // the Linux runner CI actually uses.
+    expect(path.win32.isAbsolute(taskkillPath())).toBe(true);
   });
 });
 
