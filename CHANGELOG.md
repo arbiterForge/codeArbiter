@@ -14,6 +14,32 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- The coverage gate's no-tooling exemption required no evidence. `tdd` Phase 5
+  and `refactor` Phase 2/6 are BLOCK gates that may be passed when a surface has
+  no coverage tooling, but the trigger was a bare self-assertion by the agent
+  running the phase — and "I could not find the command" is indistinguishable,
+  from the inside, from "this surface has none". The two demand opposite
+  responses: the first is a STOP under the skills' own hard rule, the second is
+  the exemption. So an agent that merely failed to locate the command could walk
+  through a BLOCK gate by describing its own failure as a property of the repo,
+  which is the shape of issue #507 — a gate that reads as satisfied without ever
+  executing.
+
+  The exemption now requires the record to name the surface and quote, from
+  `tech-stack.md`, either the whole Coverage section or the passage stating the
+  absence for that surface by name. A partial quote that stops before the
+  commands does not count, and a section that merely never mentions the surface
+  must be quoted in full so the silence is visible and judged rather than
+  asserted. No citation, no exemption: the phase STOPs. The record travels into
+  the PR description, so the claim is still falsifiable when a human reviews and
+  not only while the lane is live.
+
+  **This repo takes the exemption.** `site/` and the Python hooks have no
+  coverage command, and `tech-stack.md` had a local copy of the old, laxer rule
+  for exactly those surfaces — naming only `refactor` Phase 2, telling an agent
+  to "say so" rather than cite. That copy is now a pointer, which is the whole
+  point: the conditions live in `includes/maturity-coverage.md` and nowhere else.
+
 - The farm's mutation-escalation note stated survivor counts it had invented.
   It interpolated the number of mutants *evaluated* under a "survived" label, so
   a task whose test caught 1 of 10 was rejected with "mutation score 0.10 (10
