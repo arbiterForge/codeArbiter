@@ -655,13 +655,29 @@ describe("parseMutationHookOutput — a field is reported or it is absent", () =
     expect(parse('{"score":0.1,"total":10,"survived":"a,b,c"}')?.survivors).toBeUndefined();
   });
 
-  it("drops non-string entries from a mixed array", () => {
-    expect(parse('{"score":0.1,"total":10,"survived":["a.ts",7,null,"b.ts"]}')?.survivors).toEqual(["a.ts", "b.ts"]);
+  it("PRESERVES the count when survivor ids are not strings", () => {
+    // Filtering these out silently shortened the list, so a hook emitting
+    // numeric mutant ids reported "0/10 survived" while escalating the task FOR
+    // its survivors. The count is trustworthy even when an id is not a string,
+    // and nothing renders the ids.
+    expect(parse('{"score":0.1,"total":10,"survived":["a.ts",7,null,"b.ts"]}')?.survivors).toEqual([
+      "a.ts",
+      "7",
+      "null",
+      "b.ts",
+    ]);
+    expect(parse('{"score":0.05,"total":10,"survived":[1,2,3]}')?.survivors).toHaveLength(3);
+  });
+
+  it("renders the true survivor count for non-string ids, never a shortened one", () => {
+    const r = parseMutationHookOutput('{"score":0.05,"total":10,"survived":[1,2,3]}')!;
+    expect(mutationSurvivalNote(r)).toBe("score 0.05 (3/10 survived)");
   });
 
   it.each([
     ['{"score":0.1,"total":"abc"}', "a non-numeric total"],
     ['{"score":0.1,"total":-5}', "a negative total"],
+    ['{"score":0.1,"total":-1}', "a total of -1 (the guard's actual boundary)"],
     ['{"score":0.1,"total":true}', "a boolean total"],
     ['{"score":0.1,"total":2.5}', "a fractional total"],
   ])("reports NO evaluated count for %s (%s)", (json) => {
@@ -747,27 +763,50 @@ describe("#525 the mutation note never invents a number", () => {
     }
   });
 
-  it("keeps the escalation gate byte-identical to its pre-#525 behaviour", async () => {
-    // The `evaluated >= 5` floor decides whether a task is REJECTED. #525 is a
-    // reporting defect; the gate must not move with it. An absent count still
-    // takes the 99 fallback and clears the floor (pre-existing, [NEEDS-TRIAGE]);
-    // a reported 0 still fails it.
-    const escalated = async (json: string) => {
-      const r = await RUN(
-        task({ id: `s5-gate-${json.replace(/\W+/g, "").slice(0, 20)}`, maxRetries: 0 }),
-        deps({ mutationCheck: async () => parsed(json) }),
-      );
-      return r.status;
-    };
-    expect(await escalated('{"score":0.05}')).toBe("escalate");
-    expect(await escalated('{"score":0,"total":0}')).toBe("green");
-    expect(await escalated('{"score":0.05,"total":8}')).toBe("escalate");
+  it("only escalates when the producer REPORTED enough mutants to justify it", async () => {
+    // The `evaluated >= 5` floor refuses to hard-reject on thin evidence. These
+    // are the shapes that decide it, and the three groups are the whole
+    // contract: reported-and-sufficient escalates; reported-and-insufficient
+    // does not; and NOT REPORTED does not either, because an unstated count is
+    // the thinnest evidence there is.
+    //
+    // The last group is a deliberate, narrow behaviour change from before #525,
+    // where an unreported count took a 99 sentinel and cleared the floor. The
+    // twelve middle rows are a RESTORATION: routing every unusable value
+    // through that sentinel had flipped them to escalate.
+    const status = async (json: string, id: string) =>
+      (
+        await RUN(
+          task({ id: `s5-gate-${id}`, maxRetries: 0 }),
+          deps({ mutationCheck: async () => parsed(json) }),
+        )
+      ).status;
+
+    // reported, and enough
+    expect(await status('{"score":0.05,"total":8}', "eight")).toBe("escalate");
+    expect(await status('{"score":0.05,"total":5}', "five")).toBe("escalate");
+    // reported, but not enough
+    expect(await status('{"score":0.05,"total":4}', "four")).toBe("green");
+    expect(await status('{"score":0,"total":0}', "zero")).toBe("green");
+    // reported unusably — these all landed on warn before #525 too
+    for (const [json, id] of [
+      ['{"score":0.05,"total":"4"}', "quoted"],
+      ['{"score":0.05,"total":-5}', "neg"],
+      ['{"score":0.05,"total":2.5}', "frac"],
+      ['{"score":0.05,"total":true}', "bool"],
+    ] as const) {
+      expect(await status(json, id), json).toBe("green");
+    }
+    // not reported at all
+    expect(await status('{"score":0.05}', "absent")).toBe("green");
   });
 
   it("states the escalation reason without a fabricated count", async () => {
+    // A reported count clears the floor; the survivor LIST is still absent, so
+    // the note carries the score and nothing it was not told.
     const r = await RUN(
       task({ id: "s5-esc-nocount", maxRetries: 0 }),
-      deps({ mutationCheck: async () => parsed('{"score":0.05}') }),
+      deps({ mutationCheck: async () => parsed('{"score":0.05,"total":8}') }),
     );
     expect(r.status).toBe("escalate");
     expect(r.note).toBe("gaming: mutation score 0.05 — the test does not constrain the implementation");

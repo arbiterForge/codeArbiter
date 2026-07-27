@@ -36,10 +36,20 @@ predate the plugin rewrite and are grouped by date.
   score now yields `gaming: mutation score 0.05 — …` with no survivor clause,
   where it previously claimed `(99 mutants survived)`. A hook that reports
   survivors but no total yields `(9 survived)` rather than inventing a
-  denominator. Escalation behaviour is unchanged: the `evaluated >= 5` floor
-  still treats an unreported count as `99` and still clears on it — that
-  sentinel moved to the floor itself, where "unknown" becomes a decision,
-  instead of living in the parser where it leaked into the report.
+  denominator. A hook whose survivor ids are not strings keeps its true count;
+  an earlier cut of this fix filtered them out and reported `(0/10 survived)`
+  while escalating the task for its survivors.
+
+  **Behaviour change to the escalation gate, for hook users only.** The
+  `evaluated >= 5` floor exists to refuse hard-rejecting a task on thin
+  evidence. It previously substituted `99` for an unreported mutant count, so a
+  hook that never said how many mutants it ran cleared the floor and could get a
+  task rejected. It now requires a count the hook actually reported; such a run
+  attaches a warning instead. Nothing changes for the built-in mutator, which
+  always reports one, and nothing changes for a hook that reports a real count.
+  This also restores the pre-existing handling of twelve unusable-count shapes
+  (`"total":"4"` from a shell hook that quotes its numbers, `-5`, `2.5`, `true`)
+  which an intermediate version of this fix had flipped to escalate.
 
 - `tdd` Phase 5 and `refactor` Phase 2/6 can actually run. Both instructed
   "run the coverage command from `tech-stack.md`" and both forbid guessing one -

@@ -1977,16 +1977,21 @@ export async function runTask(
       }
       if (mut && "score" in mut) {
         mutationScore = mut.score;
-        // #525: the `?? 99` unknown-count sentinel lives HERE now, at the one
-        // place that has to turn "the hook did not say" into a decision, rather
-        // than inside the parser where it became indistinguishable from a
-        // reported count and leaked into the note. Behaviour is unchanged from
-        // before #525 — an unreported count still clears this floor.
-        // [NEEDS-TRIAGE] whether it SHOULD: this floor exists to refuse
-        // escalating on thin evidence, and 99 is the thinnest evidence there is.
-        // That is a gate-behaviour question, not a reporting bug, so it is not
-        // decided here.
-        if (mut.score <= MUT.escalateBelow && (mut.evaluated ?? 99) >= 5) {
+        // #525: the unknown-count sentinel is GONE, and this is a deliberate,
+        // narrow behaviour change. This floor exists to refuse hard-rejecting a
+        // task on thin evidence; an unreported mutant count is the thinnest
+        // evidence there is, so it no longer clears the floor. Such a run warns
+        // instead of escalating.
+        //
+        // The alternative — keeping `?? 99` here — was measured and is worse.
+        // Before #525 the sentinel only applied to a NULLISH count, so a hook
+        // that reported an unusable one ("total":"4" from a shell hook that
+        // quotes its numbers, -5, 2.5, true) kept that value and failed the
+        // comparison, landing on warn. Routing every unusable value through the
+        // sentinel flipped twelve such shapes to escalate — false rejections in
+        // exactly the direction this floor guards. Requiring a reported count
+        // restores all twelve AND resolves the unreported case the same way.
+        if (mut.score <= MUT.escalateBelow && mut.evaluated !== undefined && mut.evaluated >= 5) {
           risk = "high";
           riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
         } else if (mut.score < MUT.warnBelow) {

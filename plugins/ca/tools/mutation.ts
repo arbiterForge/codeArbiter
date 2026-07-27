@@ -202,8 +202,15 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
       // and -5 previously reached arithmetic and rendered `NaN` and negatives.
       // Zero IS reported — "I evaluated nothing" is information, and it is
       // what keeps such a run below the escalation floor.
+      // Stringify rather than FILTER. An earlier cut dropped non-string
+      // entries, which silently shortened the list — a hook emitting numeric
+      // mutant ids (`"survived": [1,2,3]`, an entirely natural shape) reported
+      // "0/10 survived" while escalating the task FOR its survivors. Shortening
+      // is the one option that yields a confident wrong number, which is the
+      // defect this whole issue is about. The COUNT is trustworthy even when an
+      // id is not a string, and nothing renders the ids, so preserve length.
       const survivors = Array.isArray(parsed.survived)
-        ? parsed.survived.filter((s): s is string => typeof s === "string")
+        ? parsed.survived.map((s) => (typeof s === "string" ? s : String(s)))
         : undefined;
       const declared = parsed.total ?? parsed.evaluated;
       const evaluated = Number.isInteger(declared) && (declared as number) >= 0 ? (declared as number) : undefined;
