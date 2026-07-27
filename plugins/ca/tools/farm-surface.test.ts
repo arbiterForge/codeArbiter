@@ -648,11 +648,14 @@ describe("parseMutationHookOutput — a field is reported or it is absent", () =
   it("treats a NUMERIC survived count as no list rather than trusting the type", () => {
     // "survived": 9 is the natural reading of the field name, and it used to
     // sail through as `survivors`, so `.length` read `undefined`.
-    expect(parse('{"score":0.1,"total":10,"survived":9}')?.survivors).toBeUndefined();
+    // NOT `?.` — an optional chain returns undefined for a NULL result too, so
+    // the assertion would pass whether the parser reported "no survivor list" or
+    // rejected the whole hook line. Those are the two states this pins apart.
+    expect(parse('{"score":0.1,"total":10,"survived":9}')).toEqual({ score: 0.1, evaluated: 10, survivors: undefined });
   });
 
   it("treats a STRING survived value as no list, not as its character count", () => {
-    expect(parse('{"score":0.1,"total":10,"survived":"a,b,c"}')?.survivors).toBeUndefined();
+    expect(parse('{"score":0.1,"total":10,"survived":"a,b,c"}')).toEqual({ score: 0.1, evaluated: 10, survivors: undefined });
   });
 
   it("PRESERVES the count when survivor ids are not strings", () => {
@@ -678,13 +681,41 @@ describe("parseMutationHookOutput — a field is reported or it is absent", () =
     ['{"score":0.1,"total":"abc"}', "a non-numeric total"],
     ['{"score":0.1,"total":-5}', "a negative total"],
     ['{"score":0.1,"total":-1}', "a total of -1 (the guard's actual boundary)"],
+    ['{"score":0.1,"total":[10]}', "an array total"],
+    ['{"score":0.1,"total":{}}', "an object total"],
     ['{"score":0.1,"total":true}', "a boolean total"],
-    ['{"score":0.1,"total":2.5}', "a fractional total"],
   ])("reports NO evaluated count for %s (%s)", (json) => {
     // `evaluated` is the denominator the note divides the run by, so a value
     // that is not a count of mutants must not reach the arithmetic: "abc"
     // rendered `NaN/abc` and -5 rendered `-5/-5`.
     expect(parse(json)?.evaluated).toBeUndefined();
+  });
+
+  it("REPORTS a numeric count verbatim, quoted or fractional, rather than discarding it", () => {
+    // The gate compares this against its floor, and before #525 it compared the
+    // RAW value with JS coercion. Parsing preserves both sides of that: "10"
+    // clears the floor as it always did, 2.5 and "4" still fall below it.
+    expect(parse('{"score":0.1,"total":"10"}')?.evaluated).toBe(10);
+    expect(parse('{"score":0.1,"total":" 6 "}')?.evaluated).toBe(6);
+    expect(parse('{"score":0.1,"total":2.5}')?.evaluated).toBe(2.5);
+    expect(parse('{"score":0.1,"evaluated":"8"}')?.evaluated).toBe(8);
+  });
+
+  it("refuses a non-finite count — Infinity is not a number of mutants", () => {
+    // JSON.parse turns 1e400 into Infinity, and `Infinity >= 0` is true, so
+    // without the finiteness check this is accepted and the note renders
+    // "N/Infinity survived" while the gate treats it as unlimited evidence.
+    expect(parse('{"score":0.05,"total":1e400}')?.evaluated).toBeUndefined();
+  });
+
+  it("keeps a survivor whose id cannot be stringified, rather than losing the result", () => {
+    // `String({toString: 1})` throws — JSON.parse can produce exactly that. The
+    // throw used to land in the parser's catch and discard an otherwise valid
+    // score AND total, turning a real escalation into a hook-failure warning.
+    const r = parseMutationHookOutput('{"score":0.05,"total":10,"survived":[{"toString":1}]}');
+    expect(r).not.toBeNull();
+    expect(r!.survivors).toHaveLength(1);
+    expect(mutationSurvivalNote(r!)).toBe("score 0.05 (1/10 survived)");
   });
 
   it("REPORTS a zero total — evaluating nothing is information, not an absent field", () => {
@@ -770,10 +801,14 @@ describe("#525 the mutation note never invents a number", () => {
     // does not; and NOT REPORTED does not either, because an unstated count is
     // the thinnest evidence there is.
     //
-    // The last group is a deliberate, narrow behaviour change from before #525,
-    // where an unreported count took a 99 sentinel and cleared the floor. The
-    // twelve middle rows are a RESTORATION: routing every unusable value
-    // through that sentinel had flipped them to escalate.
+    // The last group is the ONE deliberate behaviour change from before #525,
+    // where an unreported count took a 99 sentinel and cleared the floor.
+    //
+    // The quoted-number rows matter most. Before #525 this value was compared
+    // RAW against the floor, so coercion made "10" escalate and "4" not. Both
+    // directions are preserved here: a quoted count is parsed, not discarded.
+    // An intermediate fix discarded it, which turned the gate permanently off
+    // for any hook that quotes its numbers.
     const status = async (json: string, id: string) =>
       (
         await RUN(
@@ -788,7 +823,13 @@ describe("#525 the mutation note never invents a number", () => {
     // reported, but not enough
     expect(await status('{"score":0.05,"total":4}', "four")).toBe("green");
     expect(await status('{"score":0,"total":0}', "zero")).toBe("green");
-    // reported unusably — these all landed on warn before #525 too
+    // a QUOTED count is a real count — parsed, not discarded. Both sides of
+    // the floor, because before #525 coercion made "10" escalate and "4" not.
+    expect(await status('{"score":0.05,"total":"10"}', "q10")).toBe("escalate");
+    expect(await status('{"score":0.05,"total":" 6 "}', "q6")).toBe("escalate");
+    expect(await status('{"score":0.05,"evaluated":"8"}', "qe8")).toBe("escalate");
+    expect(await status('{"score":0.05,"total":7.5}', "frac75")).toBe("escalate");
+    // genuinely unusable — these all landed on warn before #525 too
     for (const [json, id] of [
       ['{"score":0.05,"total":"4"}', "quoted"],
       ['{"score":0.05,"total":-5}', "neg"],

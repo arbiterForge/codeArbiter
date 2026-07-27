@@ -44,12 +44,21 @@ predate the plugin rewrite and are grouped by date.
   `evaluated >= 5` floor exists to refuse hard-rejecting a task on thin
   evidence. It previously substituted `99` for an unreported mutant count, so a
   hook that never said how many mutants it ran cleared the floor and could get a
-  task rejected. It now requires a count the hook actually reported; such a run
-  attaches a warning instead. Nothing changes for the built-in mutator, which
-  always reports one, and nothing changes for a hook that reports a real count.
-  This also restores the pre-existing handling of twelve unusable-count shapes
-  (`"total":"4"` from a shell hook that quotes its numbers, `-5`, `2.5`, `true`)
-  which an intermediate version of this fix had flipped to escalate.
+  task rejected on no evidence at all. It now requires a count the hook actually
+  reported.
+
+  Measured across 27 hook shapes, exactly four change, all in the same
+  direction (escalate → warn) and all under the same rule — *the producer
+  stated no usable count*: `{"score":0.05}` (absent), `"total":null`,
+  `"total":[10]`, and `"total":1e400` (Infinity). Nothing changes for the
+  built-in mutator, which always reports a count, nor for any hook that reports
+  a real one, and nothing newly escalates.
+
+  A count is read as reported when it is a number or a numeric string, so
+  `"total":"10"` from a shell hook that quotes its numbers still clears the
+  floor exactly as before. An intermediate version of this fix rejected quoted
+  numbers, which silently disabled the anti-gaming gate for such hooks at every
+  count.
 
 - `tdd` Phase 5 and `refactor` Phase 2/6 can actually run. Both instructed
   "run the coverage command from `tech-stack.md`" and both forbid guessing one -

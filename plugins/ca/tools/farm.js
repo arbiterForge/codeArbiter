@@ -472,9 +472,17 @@ function parseMutationHookOutput(out) {
     const parsed = JSON.parse(j[0]);
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     if (typeof parsed.score === "number") {
-      const survivors = Array.isArray(parsed.survived) ? parsed.survived.map((s) => typeof s === "string" ? s : String(s)) : void 0;
+      const label = (s) => {
+        try {
+          return typeof s === "string" ? s : String(s);
+        } catch {
+          return "[unprintable id]";
+        }
+      };
+      const survivors = Array.isArray(parsed.survived) ? parsed.survived.map(label) : void 0;
       const declared = parsed.total ?? parsed.evaluated;
-      const evaluated = Number.isInteger(declared) && declared >= 0 ? declared : void 0;
+      const n = typeof declared === "number" ? declared : typeof declared === "string" ? Number(declared) : Number.NaN;
+      const evaluated = Number.isFinite(n) && n >= 0 ? n : void 0;
       return { score: parsed.score, evaluated, survivors };
     }
   } catch {

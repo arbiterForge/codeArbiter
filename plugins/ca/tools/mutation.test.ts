@@ -279,10 +279,11 @@ describe("mutationCheck — pluggable FARM_MUTATION_CMD hook", () => {
     // count (the escalate note read "99/99 survived" for a hook that reported
     // evaluating nothing) and cleared the `evaluated >= 5` rejection floor.
     //
-    // The sentinel now lives at the one call site that must turn "unknown" into
-    // a decision — the floor in runTask, still `?? 99`, so gate behaviour is
-    // unchanged — and the field itself stays absent so no reader can mistake it
-    // for a measurement.
+    // The field now stays ABSENT, so no reader can mistake it for a
+    // measurement, and the `evaluated >= 5` escalation floor requires a count
+    // the hook actually reported rather than substituting one. A run that never
+    // said how many mutants it evaluated warns instead of escalating — a
+    // deliberate change, recorded in the CHANGELOG.
     MUT.cmd = `echo '{"score":0.5,"evaluated":4}'`;
     expect(await mutationCheck(wt, task())).toEqual({ score: 0.5, evaluated: 4, survivors: undefined });
 

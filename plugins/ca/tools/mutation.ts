@@ -209,11 +209,33 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
       // is the one option that yields a confident wrong number, which is the
       // defect this whole issue is about. The COUNT is trustworthy even when an
       // id is not a string, and nothing renders the ids, so preserve length.
-      const survivors = Array.isArray(parsed.survived)
-        ? parsed.survived.map((s) => (typeof s === "string" ? s : String(s)))
-        : undefined;
+      //
+      // `String(x)` THROWS on an object with a non-callable toString/valueOf,
+      // which `JSON.parse` can produce (`[{"toString":1}]`). Unguarded, that
+      // threw into the catch below and discarded an otherwise valid result,
+      // losing the escalation entirely — lenient in the wrong direction.
+      const label = (s: unknown): string => {
+        try {
+          return typeof s === "string" ? s : String(s);
+        } catch {
+          return "[unprintable id]";
+        }
+      };
+      const survivors = Array.isArray(parsed.survived) ? parsed.survived.map(label) : undefined;
+      // A NUMERIC STRING is accepted. Requiring a JSON number looked stricter
+      // and was a hole: before #525 this value was compared raw against the
+      // escalation floor, so JS coercion made `"total":"10"` escalate. Rejecting
+      // it here sends it to "unreported", which no longer clears the floor — so
+      // a shell hook that quotes its numbers (`echo "{\"total\":\"$n\"}"`, the
+      // most natural way to emit JSON from bash) could never escalate at ANY
+      // count. That silently disables the anti-gaming gate for a whole class of
+      // hooks, which is worse than the false escalations the strictness avoided.
+      // Booleans, arrays and objects are still refused: coercing those to a
+      // mutant count would be inventing one.
       const declared = parsed.total ?? parsed.evaluated;
-      const evaluated = Number.isInteger(declared) && (declared as number) >= 0 ? (declared as number) : undefined;
+      const n =
+        typeof declared === "number" ? declared : typeof declared === "string" ? Number(declared) : Number.NaN;
+      const evaluated = Number.isFinite(n) && n >= 0 ? n : undefined;
       return { score: parsed.score, evaluated, survivors };
     }
   } catch {
