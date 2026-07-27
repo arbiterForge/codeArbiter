@@ -41,7 +41,20 @@ function task(over: Partial<Task> = {}): Task {
 }
 
 let wt: string;
-const saved = { ...MUT };
+
+// PINNED DEFAULTS, not `{ ...MUT }`. MUT is built at import from the ambient
+// environment via numEnv, so snapshotting it captures whatever the developer
+// happens to export. Measured: with `FARM_MUTATION=off` in the shell this file
+// produced 10 failures, `FARM_MUTATION_CMD=...` 6, `FARM_MUTATION_BUDGET_MS=0`
+// 3 — a red suite on unrelated work for anyone with a farm .env sourced.
+const saved: typeof MUT = {
+  enabled: true,
+  sample: 15,
+  budgetMs: 30_000,
+  warnBelow: 0.5,
+  escalateBelow: 0.1,
+  cmd: null,
+};
 
 beforeEach(async () => {
   wt = await mkdtemp(path.join(tmpdir(), "farm-mut-"));
@@ -69,8 +82,13 @@ describe("antiGamingCheck", () => {
   it("returns none when the test asserts no literal worth matching", async () => {
     // Single-character numbers and 0/1 are filtered out: they collide with
     // ordinary code (`length > 1`, `x + 1`) and would flag every impl.
+    //
+    // The impl deliberately CONTAINS both `1` and `0`. With the empty-literals
+    // guard deleted the loop runs, finds those characters in a one-line impl,
+    // and escalates — so this now fails for its stated reason instead of
+    // reaching "none" down the hits-empty path regardless.
     await write("src/impl.test.ts", "expect(x).toBe(1);\nexpect(y).toBe(0);\n");
-    await write("src/impl.ts", "export const x = 1;\n");
+    await write("src/impl.ts", "export const x = 1 + 0;\n");
     expect(await antiGamingCheck(wt, task())).toEqual({ risk: "none" });
   });
 
@@ -135,6 +153,29 @@ describe("antiGamingCheck", () => {
     expect(overBoundary.note).toBe('gaming-risk: src/impl.ts contains test literal "the-magic-value"');
   });
 
+  it("names the FIRST hit in the warn note, not the last", async () => {
+    // `hits[0]` on the warn branch. With a single hit, first and last coincide
+    // and the index is unpinned — measured, `hits[hits.length - 1]` survives the
+    // whole tools suite. Two hitting files make the order observable.
+    await write("src/impl.test.ts", 'expect(answer()).toBe("the-magic-value");\n');
+    const substantial = (name: string): string =>
+      [
+        `export function ${name}() {`,
+        "  const a = 1;",
+        "  const b = 2;",
+        "  const c = 3;",
+        "  const d = 4;",
+        '  return "the-magic-value";',
+        "}",
+      ].join("\n");
+    await write("src/first.ts", substantial("first"));
+    await write("src/second.ts", substantial("second"));
+
+    const result = await antiGamingCheck(wt, task({ filesInScope: ["src/first.ts", "src/second.ts"] }));
+    expect(result.risk).toBe("warn");
+    expect(result.note).toBe('gaming-risk: src/first.ts contains test literal "the-magic-value"');
+  });
+
   it("ignores a single-character literal that ordinary code would trip over", async () => {
     // `extractLiterals` yields a bare 2-9 as a literal; the `length > 1` filter
     // is what stops `toBe(7)` flagging every impl that contains a 7. Relaxing it
@@ -184,6 +225,13 @@ describe("antiGamingCheck", () => {
 
 describe("mutationCheck — configuration gates", () => {
   it("returns null when mutation checking is disabled", async () => {
+    // Same requirement as the gate-command case below, and it was missed here
+    // first time: without a mutable impl the built-in path returns null anyway,
+    // so DELETING the `MUT.enabled` guard entirely left this green.
+    await write(
+      "src/impl.ts",
+      ["export function f(n) {", "  if (n >= 2) {", "    return true;", "  }", "  return n > 1;", "}"].join("\n"),
+    );
     MUT.enabled = false;
     expect(await mutationCheck(wt, task())).toBeNull();
   });
@@ -296,16 +344,45 @@ describe("mutationCheck — pluggable FARM_MUTATION_CMD hook", () => {
   });
 
   it("passes the FARM_MUTATION_* contract vars through to the hook", async () => {
+    await write("src/a.ts", "export const a = 1;\n");
+    await write("src/b.ts", "export const b = 2;\n");
+    // All THREE vars the contract names. An earlier version echoed two while
+    // the title promised the set, so dropping FARM_MUTATION_TEST_CMD from the
+    // spawn was invisible.
     MUT.cmd =
       process.platform === "win32"
-        ? `echo files=[%FARM_MUTATION_FILES%] test=[%FARM_MUTATION_TEST_PATH%] && ${SHELL_FALSE}`
-        : `echo "files=[$FARM_MUTATION_FILES] test=[$FARM_MUTATION_TEST_PATH]" && ${SHELL_FALSE}`;
+        ? `echo files=[%FARM_MUTATION_FILES%] test=[%FARM_MUTATION_TEST_PATH%] cmd=[%FARM_MUTATION_TEST_CMD%] && ${SHELL_FALSE}`
+        : `echo "files=[$FARM_MUTATION_FILES] test=[$FARM_MUTATION_TEST_PATH] cmd=[$FARM_MUTATION_TEST_CMD]" && ${SHELL_FALSE}`;
 
-    const detail = (await mutationCheck(wt, task({ filesInScope: ["src/impl.ts", "src/impl.test.ts"] })) as { detail: string }).detail;
+    const detail = (await mutationCheck(wt, task({ filesInScope: ["src/a.ts", "src/b.ts", "src/impl.test.ts"] })) as { detail: string }).detail;
     // The test path is excluded from the mutation file list — mutating the test
-    // would measure nothing about the implementation.
-    expect(detail).toContain("files=[src/impl.ts]");
+    // would measure nothing about the implementation. TWO impl files, so the
+    // comma separator is observable; with one the join is invisible.
+    expect(detail).toContain("files=[src/a.ts,src/b.ts]");
     expect(detail).toContain("test=[src/impl.test.ts]");
+    expect(detail).toContain(`cmd=[${SHELL_TRUE}]`);
+  });
+
+  it("runs the hook IN the worktree and keeps the TAIL of a long output", async () => {
+    // Two properties one fixture can pin, because both need output the existing
+    // cases are too small to expose:
+    //
+    //  - `cwd: wt`. The hook reads a file that exists only in the worktree, so a
+    //    hook launched from anywhere else produces no marker.
+    //  - `.slice(-500)`. The marker sits AFTER 600 characters of filler, so the
+    //    last 500 characters contain it and the FIRST 500 do not. Every other
+    //    hook fixture here is under 500 characters, where the two slices agree.
+    await write("filler.txt", `${"A".repeat(600)}\nTAIL-MARKER-XYZ`);
+    MUT.cmd = process.platform === "win32" ? `type filler.txt && ${SHELL_FALSE}` : `cat filler.txt && ${SHELL_FALSE}`;
+
+    const detail = (await mutationCheck(wt, task()) as { detail: string }).detail;
+    // Present ONLY if the tail was taken: the marker sits past character 600, so
+    // `slice(0, 500)` cannot reach it, and a hook launched outside the worktree
+    // never produces it.
+    expect(detail).toContain("TAIL-MARKER-XYZ");
+    // ...and the tail is BOUNDED. Without any slice the whole 616-character
+    // output would ride into the task result and onto the report.
+    expect(detail.length).toBeLessThan(520);
   });
 });
 
@@ -321,6 +398,32 @@ describe("mutationCheck — built-in text mutation", () => {
     "  return n > 5;",
     "}",
   ].join("\n");
+
+  /**
+   * A gate whose exit code DEPENDS ON THE FILE ON DISK.
+   *
+   * This is the difference between testing the engine and testing nothing. A
+   * `true`/`false` gate returns the same code no matter what was written, so
+   * mutate -> run -> classify is entirely unobserved: measured, replacing the
+   * mutant write with a write of the ORIGINAL survives the whole 402-test tools
+   * suite. Every assertion about scores and survivors below is only meaningful
+   * because this gate can tell the two apart.
+   *
+   * Written as a file rather than `node -e "..."` deliberately — an inline
+   * script has to survive both `cmd.exe` and `bash -c` quoting, which is how the
+   * hook fixtures in this file got brace-expanded on Linux.
+   */
+  async function writeContentSensitiveGate(needle: string): Promise<string> {
+    await write(
+      "check.cjs",
+      [
+        'const fs = require("fs");',
+        'const src = fs.readFileSync("src/impl.ts", "utf8");',
+        `process.exit(src.includes(${JSON.stringify(needle)}) ? 0 : 1);`,
+      ].join("\n"),
+    );
+    return "node check.cjs";
+  }
 
   it("puts the trivial-file cutoff at exactly two code lines", async () => {
     // Both sides of `codeLineCount(src) <= 2`. At two lines the file is skipped
@@ -376,15 +479,72 @@ describe("mutationCheck — built-in text mutation", () => {
     for (const tag of survivors) expect(tag).toMatch(/^src\/impl\.ts:\d+ /);
   });
 
-  it("RESTORES the original file after mutating it, whatever the outcome", async () => {
-    // The single most consequential property here: a mutant left on disk is
-    // corrupted worker output that the gate already passed. Asserted on the
-    // survivor path, where every mutant is written and rolled back.
+  it("actually MUTATES the file, re-runs the gate, and classifies by the result", async () => {
+    // The engine's whole contract, and the only test here that can observe it.
+    // The gate passes iff `>= 10` is still present, so the mutant that rewrites
+    // that operator MUST be killed while mutants on other lines survive.
+    //
+    // Measured against this test: writing the original instead of the mutant,
+    // dropping the mutant write entirely, and having generateMutants emit
+    // unmutated source ALL survive a `true`/`false` gate. None survive this one.
     await write("src/impl.ts", IMPL);
-    MUT.sample = 5;
+    const gate = await writeContentSensitiveGate(">= 10");
+    MUT.sample = 20; // above the candidate count, so nothing is sampled away
 
-    await mutationCheck(wt, task({ gate: { commands: [SHELL_TRUE] } }));
+    const result = await mutationCheck(wt, task({ gate: { commands: [gate] } }));
+    expect(result).not.toBeNull();
+    const { score, evaluated, survivors } = result as { score: number; evaluated: number; survivors: string[] };
+
+    // Some mutants died and some lived — a 0 or a 1 here would mean the gate
+    // ignored the file, which is exactly the failure this test exists to catch.
+    expect(score).toBeGreaterThan(0);
+    expect(score).toBeLessThan(1);
+    expect(survivors.length).toBeGreaterThan(0);
+    expect(survivors.length).toBeLessThan(evaluated);
+
+    // The `>=` mutant on line 2 rewrites the needle, so the gate fails and it is
+    // KILLED — it must not appear among the survivors.
+    expect(survivors).not.toContain("src/impl.ts:2 >=>");
+    // ...while line 8's `>` mutant leaves the needle intact and survives. The
+    // EXACT tag is asserted, not a shape: it pins the file, the 1-indexed line,
+    // and the rule name together. A tag carrying the wrong line or a generic
+    // name still matches `/^src\/impl\.ts:\d+ /`, and a reviewer chasing a
+    // survivor to the wrong line learns nothing.
+    expect(survivors).toContain("src/impl.ts:8 >>=");
+  });
+
+  it("restores the original file through BOTH the in-loop and the final path", async () => {
+    // A mutant left on disk is corrupted worker output that the gate already
+    // passed. Two mechanisms guarantee it is gone: the per-iteration restore and
+    // the `finally` sweep. Either alone passes a simple end-state check, so the
+    // end state is asserted here AND the mid-run state is asserted by the gate
+    // itself, which records what it saw on every invocation.
+    await write("src/impl.ts", IMPL);
+    await write("orig.txt", IMPL);
+    // The probe compares against the ORIGINAL rather than looking for one
+    // needle. A needle only changes for the mutant that rewrites that specific
+    // line, and with a random shuffle over more candidates than the sample, that
+    // mutant is often not drawn — measured, a needle-based probe here failed
+    // about one run in three. Comparing whole contents makes every iteration
+    // report "mutated" deterministically.
+    await write(
+      "check.cjs",
+      [
+        'const fs = require("fs");',
+        'const cur = fs.readFileSync("src/impl.ts", "utf8");',
+        'const orig = fs.readFileSync("orig.txt", "utf8");',
+        'fs.appendFileSync("seen.log", cur === orig ? "clean\\n" : "mutated\\n");',
+        "process.exit(0);",
+      ].join("\n"),
+    );
+    MUT.sample = 6;
+
+    await mutationCheck(wt, task({ gate: { commands: ["node check.cjs"] } }));
+
     expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(IMPL);
+    // The gate ran against a MUTATED file at least once — proof the restore is
+    // undoing real work rather than a no-op over an untouched file.
+    expect(await readFile(path.join(wt, "seen.log"), "utf8")).toContain("mutated");
   });
 
   it("returns null rather than a score when too few mutants were evaluated", async () => {
@@ -395,17 +555,84 @@ describe("mutationCheck — built-in text mutation", () => {
     expect(await mutationCheck(wt, task({ gate: { commands: [SHELL_TRUE] } }))).toBeNull();
   });
 
-  // DELIBERATELY NOT PINNED, both measured as surviving:
+  it("stops mid-run at the wall-clock budget and scores only what it evaluated", async () => {
+    // Two properties in one run, because both need a budget that expires PART
+    // WAY through rather than before the first iteration:
+    //
+    //  - the denominator is `evaluated`, not `candidates.length`. With every
+    //    mutant evaluated the two are equal and the difference is invisible;
+    //    measured, swapping them survives the whole tools suite.
+    //  - the break is real. A 400ms gate against a 1500ms budget stops after
+    //    three or four iterations — the assertion is a RANGE with wide margins
+    //    on both sides, not a tuned count, so process-spawn jitter cannot flake
+    //    it. (A 200ms gate was too tight: spawn overhead alone is ~200ms here,
+    //    so only two iterations fit and the fairness floor returned null.)
+    await write("src/impl.ts", IMPL);
+    await write("slow-fail.cjs", "setTimeout(() => process.exit(1), 400);");
+    MUT.sample = 8;
+    MUT.budgetMs = 1500;
+
+    const result = await mutationCheck(wt, task({ gate: { commands: ["node slow-fail.cjs"] } }));
+    expect(result).not.toBeNull();
+    const { score, evaluated } = result as { score: number; evaluated: number };
+
+    // Stopped short of the sample, but past the fairness floor.
+    expect(evaluated).toBeGreaterThanOrEqual(3);
+    expect(evaluated).toBeLessThan(8);
+    // Every evaluated mutant was killed, so the score is 1 — and ONLY if the
+    // denominator is what was evaluated. Over candidates.length it would be
+    // evaluated/8, well under 1.
+    expect(score).toBe(1);
+  });
+
+  // EQUIVALENT MUTANTS — deleting either of these guards changes no observable
+  // behaviour, so no test can kill them and none is written to pretend
+  // otherwise:
   //
-  //  - `Date.now() - start > MUT.budgetMs` relaxed to `>=`. The two differ only
-  //    when the elapsed time is exactly 0ms, so distinguishing them means racing
-  //    the clock; a test that did would be a flake, not a guard.
-  //  - the in-loop `writeWorktreeFile(wt, c.file, orig)` restore removed. The
-  //    `finally` block restores every original from the same map, so the file is
-  //    correct at the end either way. The in-loop call is a narrower guarantee
-  //    (correct BETWEEN iterations) that nothing outside the loop can observe.
+  //  - `if (literals.length === 0) return { risk: "none" };`  With it deleted
+  //    the scope loop runs over an EMPTY literal list, produces no hits, and
+  //    returns "none" by the next guard down. Pure short-circuit.
+  //  - `if (candidates.length === 0) return null;`  With it deleted,
+  //    `shuffle([]).slice(0, n)` is `[]`, the loop body never runs, `evaluated`
+  //    stays 0, and the `evaluated < 3` floor returns null anyway.
   //
-  // Recorded rather than papered over with an assertion that pins neither.
+  // Both were reported as surviving by review. They survive because they are
+  // optimisations, not behaviour.
+
+  // DELIBERATELY NOT PINNED, each measured as surviving and each for a reason:
+  //
+  //  - `shuffle()` replaced by identity or by reverse. Nothing here asserts
+  //    sampling ORDER, and pinning it would mean either freezing Math.random or
+  //    asserting a statistical property — the first tests the stub, the second
+  //    is a flake. The shuffle exists so repeated runs sample differently; that
+  //    is a property of many runs, not of one.
+  //  - the in-loop restore and the `finally` sweep, INDIVIDUALLY. They are
+  //    mutually redundant: the next iteration rewrites the file wholesale from
+  //    `originals`, and the `finally` sweep covers the exit. Removing EITHER
+  //    leaves the observable end state correct — removing BOTH does not, and
+  //    that combination IS killed. Same layered-guard shape as worktree-fs.ts,
+  //    and the same conclusion: the property is pinned, the individual layers
+  //    cannot be.
+
+  it("checks the budget BEFORE each mutant, so a zero budget still runs exactly one", async () => {
+    // `Date.now() - start > MUT.budgetMs`, at the boundary. An earlier note in
+    // this file claimed the `>` / `>=` distinction "differs only when elapsed is
+    // exactly 0ms, so distinguishing them means racing the clock" — that was
+    // wrong. Elapsed IS 0 at the first check, essentially always, and counting
+    // gate invocations makes the two deterministic: `>` runs one mutant before
+    // breaking, `>=` runs none.
+    //
+    // The one-run behaviour is also worth recording on its own: at a zero budget
+    // the engine still writes a mutant and spawns a gate before deciding the
+    // budget is spent. Benign (the result is null either way) but not obvious.
+    await write("src/impl.ts", IMPL);
+    await write("count.cjs", 'require("fs").appendFileSync("runs.log", "x"); process.exit(0);');
+    MUT.sample = 6;
+    MUT.budgetMs = 0;
+
+    await mutationCheck(wt, task({ gate: { commands: ["node count.cjs"] } }));
+    expect(await readFile(path.join(wt, "runs.log"), "utf8")).toBe("x");
+  });
 
   it("stops at the wall-clock budget and reports nothing when it expires first", async () => {
     // Budget 0 means the very first iteration breaks, so nothing is evaluated
