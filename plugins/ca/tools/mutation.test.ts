@@ -270,15 +270,24 @@ describe("mutationCheck — pluggable FARM_MUTATION_CMD hook", () => {
     });
   });
 
-  it("falls back to `evaluated` then to 99 when `total` is absent", async () => {
-    // The `total ?? evaluated ?? 99` chain. A hook that reports neither still
-    // yields a usable result rather than NaN — 99 is deliberately implausible so
-    // it reads as "unknown denominator" on a report.
+  it("falls back to `evaluated` when `total` is absent, and reports NOTHING when both are", async () => {
+    // #525 CHANGED THE SECOND HALF OF THIS TEST, deliberately. It previously
+    // asserted a 99 fallback here, and its own comment explained the intent:
+    // "99 is deliberately implausible so it reads as 'unknown denominator' on a
+    // report." That intent was right and the representation could not carry it
+    // — `evaluated: number` cannot say "unknown", so 99 printed as an ordinary
+    // count (the escalate note read "99/99 survived" for a hook that reported
+    // evaluating nothing) and cleared the `evaluated >= 5` rejection floor.
+    //
+    // The sentinel now lives at the one call site that must turn "unknown" into
+    // a decision — the floor in runTask, still `?? 99`, so gate behaviour is
+    // unchanged — and the field itself stays absent so no reader can mistake it
+    // for a measurement.
     MUT.cmd = `echo '{"score":0.5,"evaluated":4}'`;
-    expect(await mutationCheck(wt, task())).toEqual({ score: 0.5, evaluated: 4, survivors: [] });
+    expect(await mutationCheck(wt, task())).toEqual({ score: 0.5, evaluated: 4, survivors: undefined });
 
     MUT.cmd = `echo '{"score":0.5}'`;
-    expect(await mutationCheck(wt, task())).toEqual({ score: 0.5, evaluated: 99, survivors: [] });
+    expect(await mutationCheck(wt, task())).toEqual({ score: 0.5, evaluated: undefined, survivors: undefined });
   });
 
   it("reports a CONFIGURED-BUT-FAILED hook distinctly from an unconfigured one", async () => {

@@ -151,7 +151,17 @@ function generateMutants(file: string, src: string): Array<{ file: string; mutat
   return out;
 }
 
-export type MutationResult = { score: number; evaluated: number; survivors: string[] };
+// #525: `evaluated` and `survivors` are OPTIONAL because a pluggable
+// FARM_MUTATION_CMD is only contractually required to print a numeric `score`
+// (includes/farm.md). They used to be declared required, so parseMutationHookOutput
+// had to invent values (`?? 99`, `?? []`) to satisfy the type — and once
+// invented, no consumer could tell a fabricated count from a measured one. That
+// is the root cause of #525 and of three successive wrong fixes to it: the type
+// could not express "the producer did not say", so every reader had to guess.
+// Optional makes the absence representable and lets the compiler force each
+// consumer to decide what to do about it. The built-in path always populates
+// both.
+export type MutationResult = { score: number; evaluated?: number; survivors?: string[] };
 
 // observability-002 (#187): the pluggable-hook branch of mutationCheck used to
 // collapse EVERY failure mode (non-zero exit, timeout, crash, unparseable
@@ -180,22 +190,23 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
     const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     if (typeof parsed.score === "number") {
-      // #525: `survived` is operator-supplied and optional. It was assigned
-      // straight through, so a hook emitting `"survived": 9` (a count, the
-      // natural reading) or `"survived": "a,b"` (a string) produced a
-      // MutationResult whose `survivors` was not a string[] at all, and any
-      // consumer reading `.length` got `undefined` or a character count.
-      // Accept only an actual array of strings; anything else is no list.
+      // #525: report only what the hook actually reported. Both fields are
+      // optional in the contract, so an absent or unusable one stays ABSENT
+      // rather than becoming a default that later reads as a measurement.
+      //
+      // `survived` accepts only a real array of strings: a hook emitting
+      // `"survived": 9` (a count — the natural reading of the field name) or
+      // `"survived": "a,b"` produced a `survivors` that was not a string[] at
+      // all, so a consumer reading `.length` got `undefined` or a character
+      // count. `total`/`evaluated` accept only a non-negative integer; "abc"
+      // and -5 previously reached arithmetic and rendered `NaN` and negatives.
+      // Zero IS reported — "I evaluated nothing" is information, and it is
+      // what keeps such a run below the escalation floor.
       const survivors = Array.isArray(parsed.survived)
         ? parsed.survived.filter((s): s is string => typeof s === "string")
-        : [];
-      // #525: `total`/`evaluated` were passed through unchecked too, and this is
-      // the field the note's arithmetic divides the run by. A hook emitting
-      // `"total": "abc"` produced `NaN/abc`, and `"total": -5` produced
-      // `-5/-5`. Only a positive integer is a count of mutants; anything else
-      // takes the same fallback as an absent field.
+        : undefined;
       const declared = parsed.total ?? parsed.evaluated;
-      const evaluated = Number.isInteger(declared) && (declared as number) > 0 ? (declared as number) : 99;
+      const evaluated = Number.isInteger(declared) && (declared as number) >= 0 ? (declared as number) : undefined;
       return { score: parsed.score, evaluated, survivors };
     }
   } catch {

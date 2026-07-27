@@ -1576,29 +1576,23 @@ export function cleanupReportLines(health: RunArtifactHealth, results: Result[])
 // 0.10 score in the same sentence. One formatter now renders it for both arms,
 // so the two cannot disagree again.
 //
-// The count PREFERS the actual survivor list and derives only when there is
-// none. Both halves matter, and each was got wrong once:
+// #525: state the score, and state a survivor count ONLY when the producer
+// actually reported one. Three earlier fixes each tried to always produce a
+// count — reading a list that is empty on the hook path, then deriving from the
+// score, then substituting a default denominator — and each moved the
+// fabrication to a different input instead of removing it. A hook is only
+// required to print a numeric `score` (includes/farm.md), so for the rest there
+// is often nothing to say, and saying nothing is the correct output.
 //
-//   - Reading `survivors.length` unconditionally is wrong because a pluggable
-//     FARM_MUTATION_CMD need only print a trailing JSON line with a numeric
-//     `score` (includes/farm.md) — `survived` and `total` are optional. With no
-//     list the length is 0, so the note read "0/99 survived" while escalating
-//     the task FOR having too many survivors: #525's own contradiction, worse.
-//   - Deriving unconditionally is wrong because a hook that DOES report its
-//     survivors is authoritative, and replacing its real count with an inferred
-//     one is the same defect pointed the other way.
-//
-// The derivation is `evaluated * (1 - score)`, from `score = killed/evaluated`.
-// That identity holds by construction on the built-in path and is an ASSUMPTION
-// about third-party output on the hook path — which is why it is the fallback,
-// not the primary. The product is NOT exact in floating point (12 * (1 - 5/12)
-// is 6.999999999999999), so `Math.round` is load-bearing, not cosmetic. The
-// clamp runs `max` LAST so it cannot itself hand back a negative count.
+// This note is the whole operator-facing justification for rejecting a task and
+// it is fed back into the next worker's prompt. A missing count costs a reader
+// some detail; an invented one tells them something false in the sentence that
+// explains the rejection, which is what #525 was.
 export function mutationSurvivalNote(m: MutationResult): string {
-  const derived = Math.round(m.evaluated * (1 - m.score));
-  const survived = m.survivors.length > 0 ? m.survivors.length : derived;
-  const bounded = Math.max(0, Math.min(m.evaluated, survived));
-  return `score ${m.score.toFixed(2)} (${bounded}/${m.evaluated} survived)`;
+  const score = `score ${m.score.toFixed(2)}`;
+  if (m.survivors === undefined) return score;
+  const of = m.evaluated === undefined ? "" : `/${m.evaluated}`;
+  return `${score} (${m.survivors.length}${of} survived)`;
 }
 
 // Injectable dependencies for runTask. Every field defaults to the real
@@ -1983,7 +1977,16 @@ export async function runTask(
       }
       if (mut && "score" in mut) {
         mutationScore = mut.score;
-        if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
+        // #525: the `?? 99` unknown-count sentinel lives HERE now, at the one
+        // place that has to turn "the hook did not say" into a decision, rather
+        // than inside the parser where it became indistinguishable from a
+        // reported count and leaked into the note. Behaviour is unchanged from
+        // before #525 — an unreported count still clears this floor.
+        // [NEEDS-TRIAGE] whether it SHOULD: this floor exists to refuse
+        // escalating on thin evidence, and 99 is the thinnest evidence there is.
+        // That is a gate-behaviour question, not a reporting bug, so it is not
+        // decided here.
+        if (mut.score <= MUT.escalateBelow && (mut.evaluated ?? 99) >= 5) {
           risk = "high";
           riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
         } else if (mut.score < MUT.warnBelow) {

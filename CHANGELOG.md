@@ -14,33 +14,32 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
-- The farm's mutation-escalation note reported the wrong number. It
-  interpolated the count of mutants *evaluated* under a "survived" label, so a
-  task where the test caught 1 of 10 mutants was rejected with the message
-  "mutation score 0.10 (10 mutants survived)" — a claim the score printed in
-  the same sentence disproves. This note is the entire operator-facing
-  explanation for a hard-escalated task, and it is fed back into the next
-  worker's prompt, so the wrong count was both misleading a human and
-  misinforming a retry (#525).
+- The farm's mutation-escalation note stated survivor counts it had invented.
+  It interpolated the number of mutants *evaluated* under a "survived" label, so
+  a task whose test caught 1 of 10 was rejected with "mutation score 0.10 (10
+  mutants survived)" — a claim the score in the same sentence disproves. This
+  note is the entire operator-facing explanation for a hard-escalated task and
+  is fed back into the next worker's prompt, so a wrong count both misled a
+  human and misinformed a retry (#525).
 
-  The warn arm four lines below had always rendered it correctly. The two arms
-  described one quantity in two independently-written format strings, which is
-  how they drifted, so the fix is a single shared formatter both arms call
-  rather than a corrected literal — the class of defect is removed, not just
-  this instance. The escalate note now reads
-  `gaming: mutation score 0.10 (9/10 survived) — …`, matching the warn arm's
-  shape.
+  The root cause was the `MutationResult` type, not the format string. A
+  pluggable `FARM_MUTATION_CMD` is only required to print a trailing JSON line
+  with a numeric `score`; `total` and `survived` are optional. But the type
+  declared all three fields as always present, so the parser had to invent the
+  missing ones — an empty survivor list and a `99` denominator — and once
+  invented, nothing downstream could tell a fabricated count from a measured
+  one. `evaluated` and `survivors` are now optional, absent when the producer
+  did not report them, and the note states a survivor count only when there is
+  one to state.
 
-  **If you use a pluggable `FARM_MUTATION_CMD`, the survivor count may now be
-  inferred.** The documented hook contract requires only a numeric `score`;
-  `survived` and `total` are optional. When a hook reports its survivors, that
-  count is used unchanged — but when it does not, the count is now derived from
-  the score (`evaluated × (1 - score)`, rounded) instead of reported as `0`,
-  which is what an absent list previously produced. So a hook that emits only a
-  score will see a non-zero survivor count where it used to see zero; that
-  number is an inference from the score, not a count the hook supplied. A
-  `total` that is not a positive integer is ignored rather than divided by — it
-  previously reached the arithmetic and could render `NaN` or a negative count.
+  **If you use a pluggable `FARM_MUTATION_CMD`,** a hook that reports only a
+  score now yields `gaming: mutation score 0.05 — …` with no survivor clause,
+  where it previously claimed `(99 mutants survived)`. A hook that reports
+  survivors but no total yields `(9 survived)` rather than inventing a
+  denominator. Escalation behaviour is unchanged: the `evaluated >= 5` floor
+  still treats an unreported count as `99` and still clears on it — that
+  sentinel moved to the floor itself, where "unknown" becomes a decision,
+  instead of living in the parser where it leaked into the report.
 
 - `tdd` Phase 5 and `refactor` Phase 2/6 can actually run. Both instructed
   "run the coverage command from `tech-stack.md`" and both forbid guessing one -

@@ -472,9 +472,9 @@ function parseMutationHookOutput(out) {
     const parsed = JSON.parse(j[0]);
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     if (typeof parsed.score === "number") {
-      const survivors = Array.isArray(parsed.survived) ? parsed.survived.filter((s) => typeof s === "string") : [];
+      const survivors = Array.isArray(parsed.survived) ? parsed.survived.filter((s) => typeof s === "string") : void 0;
       const declared = parsed.total ?? parsed.evaluated;
-      const evaluated = Number.isInteger(declared) && declared > 0 ? declared : 99;
+      const evaluated = Number.isInteger(declared) && declared >= 0 ? declared : void 0;
       return { score: parsed.score, evaluated, survivors };
     }
   } catch {
@@ -1276,10 +1276,10 @@ function cleanupReportLines(health, results) {
   ];
 }
 function mutationSurvivalNote(m) {
-  const derived = Math.round(m.evaluated * (1 - m.score));
-  const survived = m.survivors.length > 0 ? m.survivors.length : derived;
-  const bounded = Math.max(0, Math.min(m.evaluated, survived));
-  return `score ${m.score.toFixed(2)} (${bounded}/${m.evaluated} survived)`;
+  const score = `score ${m.score.toFixed(2)}`;
+  if (m.survivors === void 0) return score;
+  const of = m.evaluated === void 0 ? "" : `/${m.evaluated}`;
+  return `${score} (${m.survivors.length}${of} survived)`;
 }
 var defaultRunTaskDeps = () => ({
   worker: httpWorker,
@@ -1483,7 +1483,7 @@ ${gate.tail}`);
       }
       if (mut && "score" in mut) {
         mutationScore = mut.score;
-        if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
+        if (mut.score <= MUT.escalateBelow && (mut.evaluated ?? 99) >= 5) {
           risk = "high";
           riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} \u2014 the test does not constrain the implementation`;
         } else if (mut.score < MUT.warnBelow) {
