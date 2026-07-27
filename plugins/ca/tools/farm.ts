@@ -1576,20 +1576,29 @@ export function cleanupReportLines(health: RunArtifactHealth, results: Result[])
 // 0.10 score in the same sentence. One formatter now renders it for both arms,
 // so the two cannot disagree again.
 //
-// The count is DERIVED, not taken from `survivors.length`. A pluggable
-// FARM_MUTATION_CMD is only required to print a trailing JSON line with a
-// numeric `score` (includes/farm.md) — `survived` and `total` are optional — so
-// on that path `survivors` is `[]` while `evaluated` falls back to a default.
-// Reading the list's length there would report "0/99 survived" while escalating
-// the task FOR having too many survivors: the same self-contradiction #525 was
-// filed about, in a worse form. `score` is `killed / evaluated`, so
-// `evaluated * (1 - score)` is exact arithmetic over the two fields the hook
-// contract does guarantee, and it agrees with `survivors.length` on the
-// built-in path by construction. Clamped because a hook's `score` is arbitrary
-// operator-supplied input.
+// The count PREFERS the actual survivor list and derives only when there is
+// none. Both halves matter, and each was got wrong once:
+//
+//   - Reading `survivors.length` unconditionally is wrong because a pluggable
+//     FARM_MUTATION_CMD need only print a trailing JSON line with a numeric
+//     `score` (includes/farm.md) — `survived` and `total` are optional. With no
+//     list the length is 0, so the note read "0/99 survived" while escalating
+//     the task FOR having too many survivors: #525's own contradiction, worse.
+//   - Deriving unconditionally is wrong because a hook that DOES report its
+//     survivors is authoritative, and replacing its real count with an inferred
+//     one is the same defect pointed the other way.
+//
+// The derivation is `evaluated * (1 - score)`, from `score = killed/evaluated`.
+// That identity holds by construction on the built-in path and is an ASSUMPTION
+// about third-party output on the hook path — which is why it is the fallback,
+// not the primary. The product is NOT exact in floating point (12 * (1 - 5/12)
+// is 6.999999999999999), so `Math.round` is load-bearing, not cosmetic. The
+// clamp runs `max` LAST so it cannot itself hand back a negative count.
 export function mutationSurvivalNote(m: MutationResult): string {
-  const survived = Math.min(m.evaluated, Math.max(0, Math.round(m.evaluated * (1 - m.score))));
-  return `score ${m.score.toFixed(2)} (${survived}/${m.evaluated} survived)`;
+  const derived = Math.round(m.evaluated * (1 - m.score));
+  const survived = m.survivors.length > 0 ? m.survivors.length : derived;
+  const bounded = Math.max(0, Math.min(m.evaluated, survived));
+  return `score ${m.score.toFixed(2)} (${bounded}/${m.evaluated} survived)`;
 }
 
 // Injectable dependencies for runTask. Every field defaults to the real

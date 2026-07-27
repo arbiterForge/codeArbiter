@@ -189,7 +189,14 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
       const survivors = Array.isArray(parsed.survived)
         ? parsed.survived.filter((s): s is string => typeof s === "string")
         : [];
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors };
+      // #525: `total`/`evaluated` were passed through unchecked too, and this is
+      // the field the note's arithmetic divides the run by. A hook emitting
+      // `"total": "abc"` produced `NaN/abc`, and `"total": -5` produced
+      // `-5/-5`. Only a positive integer is a count of mutants; anything else
+      // takes the same fallback as an absent field.
+      const declared = parsed.total ?? parsed.evaluated;
+      const evaluated = Number.isInteger(declared) && (declared as number) > 0 ? (declared as number) : 99;
+      return { score: parsed.score, evaluated, survivors };
     }
   } catch {
     /* unparseable — skip leniently */

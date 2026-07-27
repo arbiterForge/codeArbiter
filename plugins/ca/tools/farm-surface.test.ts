@@ -340,11 +340,38 @@ describe("runTask mutation-score handling", () => {
     expect(mutationSurvivalNote({ score: 0.2, evaluated: 10, survivors: [] })).toBe("score 0.20 (8/10 survived)");
   });
 
+  it("PREFERS a hook's real survivor list over the derivation (#525)", () => {
+    // The mirror of the case above, and the one that matters more: when the
+    // hook DID report its survivors, that count is authoritative. Deriving here
+    // would replace a true 9 with an inferred 89 — the same defect as #525,
+    // pointed the other way. `total` is absent, so `evaluated` is the fallback;
+    // the numerator must still be the number the hook actually stated.
+    expect(mutationSurvivalNote({ score: 0.1, evaluated: 99, survivors: Array(9).fill("m") })).toBe(
+      "score 0.10 (9/99 survived)",
+    );
+  });
+
+  it("ROUNDS the derived count — the product is not exact in floating point", () => {
+    // 12 * (1 - 5/12) is 6.999999999999999, not 7. Truncating gives 6, which is
+    // wrong by one at a perfectly ordinary built-in sample size. Math.round is
+    // load-bearing; nothing else in this file distinguishes it from floor.
+    expect(mutationSurvivalNote({ score: 5 / 12, evaluated: 12, survivors: [] })).toBe("score 0.42 (7/12 survived)");
+    expect(mutationSurvivalNote({ score: 5 / 17, evaluated: 17, survivors: [] })).toBe("score 0.29 (12/17 survived)");
+  });
+
   it("clamps a nonsense hook score rather than rendering a negative survivor count", () => {
     // A hook's `score` is arbitrary operator-supplied input; only its type is
-    // checked. Out-of-range values must degrade to a bounded count.
+    // checked. Out-of-range values must degrade to a bounded count — and the
+    // clamp has to apply `max(0, …)` LAST, or a bad denominator drags the
+    // count back below zero after the floor has already been applied.
     expect(mutationSurvivalNote({ score: 5, evaluated: 10, survivors: [] })).toBe("score 5.00 (0/10 survived)");
     expect(mutationSurvivalNote({ score: -3, evaluated: 10, survivors: [] })).toBe("score -3.00 (10/10 survived)");
+    // A negative `evaluated` can no longer reach this from either producer —
+    // parseMutationHookOutput rejects it and the built-in path never goes below
+    // 3 — but this is an EXPORTED function whose signature admits one, and with
+    // the clamp written `min(evaluated, max(0, …))` the denominator drags the
+    // count back below zero AFTER the floor. Order is the whole guard.
+    expect(mutationSurvivalNote({ score: 0.1, evaluated: -5, survivors: [] })).toBe("score 0.10 (0/-5 survived)");
   });
 
   it("escalates at a score EXACTLY at escalateBelow — the comparison is inclusive", async () => {
@@ -668,6 +695,27 @@ describe("parseMutationHookOutput — survivors is a string[] or it is empty", (
 
   it("drops non-string entries from a mixed array", () => {
     expect(parse('{"score":0.1,"total":10,"survived":["a.ts",7,null,"b.ts"]}')?.survivors).toEqual(["a.ts", "b.ts"]);
+  });
+
+  it.each([
+    ['{"score":0.1,"total":"abc"}', "a non-numeric total"],
+    ['{"score":0.1,"total":-5}', "a negative total"],
+    ['{"score":0.1,"total":0}', "a zero total"],
+    ['{"score":0.1,"total":true}', "a boolean total"],
+    ['{"score":0.1,"total":2.5}', "a fractional total"],
+  ])("falls back to the default evaluated count for %s (%s)", (json) => {
+    // `evaluated` is the denominator the note divides the run by, so a value
+    // that is not a count of mutants must not reach the arithmetic: "abc"
+    // rendered `NaN/abc` and -5 rendered `-5/-5`.
+    expect(parse(json)?.evaluated).toBe(99);
+  });
+
+  it("prefers `total` over `evaluated` when a hook emits both", () => {
+    // Two accepted spellings for the same field. Which one wins is a real
+    // contract — it decides the denominator of every mutation note — and
+    // nothing pinned it, so the precedence was free to flip silently.
+    expect(parse('{"score":0.1,"total":10,"evaluated":50}')?.evaluated).toBe(10);
+    expect(parse('{"score":0.1,"evaluated":50}')?.evaluated).toBe(50);
   });
 
   it("still applies the documented minimum — a numeric score alone is accepted", () => {

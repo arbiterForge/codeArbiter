@@ -473,7 +473,9 @@ function parseMutationHookOutput(out) {
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     if (typeof parsed.score === "number") {
       const survivors = Array.isArray(parsed.survived) ? parsed.survived.filter((s) => typeof s === "string") : [];
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors };
+      const declared = parsed.total ?? parsed.evaluated;
+      const evaluated = Number.isInteger(declared) && declared > 0 ? declared : 99;
+      return { score: parsed.score, evaluated, survivors };
     }
   } catch {
   }
@@ -1274,8 +1276,10 @@ function cleanupReportLines(health, results) {
   ];
 }
 function mutationSurvivalNote(m) {
-  const survived = Math.min(m.evaluated, Math.max(0, Math.round(m.evaluated * (1 - m.score))));
-  return `score ${m.score.toFixed(2)} (${survived}/${m.evaluated} survived)`;
+  const derived = Math.round(m.evaluated * (1 - m.score));
+  const survived = m.survivors.length > 0 ? m.survivors.length : derived;
+  const bounded = Math.max(0, Math.min(m.evaluated, survived));
+  return `score ${m.score.toFixed(2)} (${bounded}/${m.evaluated} survived)`;
 }
 var defaultRunTaskDeps = () => ({
   worker: httpWorker,

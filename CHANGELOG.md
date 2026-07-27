@@ -29,7 +29,18 @@ predate the plugin rewrite and are grouped by date.
   rather than a corrected literal — the class of defect is removed, not just
   this instance. The escalate note now reads
   `gaming: mutation score 0.10 (9/10 survived) — …`, matching the warn arm's
-  shape; the warn arm's output is unchanged.
+  shape.
+
+  **If you use a pluggable `FARM_MUTATION_CMD`, the survivor count may now be
+  inferred.** The documented hook contract requires only a numeric `score`;
+  `survived` and `total` are optional. When a hook reports its survivors, that
+  count is used unchanged — but when it does not, the count is now derived from
+  the score (`evaluated × (1 - score)`, rounded) instead of reported as `0`,
+  which is what an absent list previously produced. So a hook that emits only a
+  score will see a non-zero survivor count where it used to see zero; that
+  number is an inference from the score, not a count the hook supplied. A
+  `total` that is not a positive integer is ignored rather than divided by — it
+  previously reached the arithmetic and could render `NaN` or a negative count.
 
 - `tdd` Phase 5 and `refactor` Phase 2/6 can actually run. Both instructed
   "run the coverage command from `tech-stack.md`" and both forbid guessing one -
