@@ -1,7 +1,9 @@
-import { link, lstat, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { link, lstat, mkdir, mkdtemp, readdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
 
 type WorktreeFs = typeof import("./worktree-fs.ts");
 
@@ -101,5 +103,252 @@ describe("symlink-safe worktree writer", () => {
     expect(farm).not.toMatch(/writeFile\((?:absPath|abs),/u);
     expect(mutation).not.toContain("writeFile(path.resolve(wt");
     expect((mutation.match(/writeWorktreeFile\(/gu) ?? []).length).toBeGreaterThanOrEqual(3);
+  });
+});
+
+/**
+ * Refusal paths (#511 slice 2).
+ *
+ * The suite above pins the writer's happy path and the three link attacks it was
+ * built for. This block works the rest of the refusal surface.
+ *
+ * Two rules, and the first cut of this block broke both:
+ *
+ *  - Assert the POST-STATE, never merely that the call rejected. A refusal that
+ *    still wrote is the exact failure this module exists to prevent, and
+ *    `rejects.toThrow()` cannot tell the two apart. Measured: with the escape
+ *    guards removed, `../escaped.txt` CREATES a file in the parent directory —
+ *    an earlier version of these tests passed anyway, because it only checked
+ *    that the promise rejected.
+ *  - Assert error IDENTITY, not just the message. `isUnsafeWorktreePathError` is
+ *    what callers branch on (mutation.ts rethrows on it); a refusal arriving as
+ *    a plain Error would break them while still "throwing".
+ *
+ * On mutation testing here: the module is layered on purpose, so single-point
+ * mutants mostly survive by design — removing all four `isSymbolicLink()` checks
+ * still passes, because a junction also fails `isDirectory()`. The unit that
+ * means anything is the PROPERTY (every layer guarding it removed at once), not
+ * the line. That does NOT excuse leaving reachable arms untested: an earlier
+ * draft of this block called four of them "structurally unreachable" and a NUL
+ * byte and 40 concurrent calls reached three of them through the public API with
+ * no seam at all.
+ *
+ * Platform note: CI runs the tools job on ubuntu-latest ONLY, so Linux is the
+ * platform that matters for these numbers. Windows and Linux do not agree here —
+ * an over-long path segment reaches the mkdir failure arm on Windows but fails
+ * earlier at `lstat` with ENAMETOOLONG on Linux, so that case bought nothing on
+ * CI and is not in this block.
+ */
+describe("symlink-safe worktree writer — refusal paths", () => {
+  const MESSAGE = "unsafe worktree path rejected";
+
+  async function arena(prefix: string): Promise<{ root: string; external: string; sentinel: string; cleanup: () => Promise<void> }> {
+    const root = await mkdtemp(path.join(tmpdir(), `${prefix}-root-`));
+    const external = await mkdtemp(path.join(tmpdir(), `${prefix}-ext-`));
+    const sentinel = path.join(external, "sentinel.txt");
+    await writeFile(sentinel, "outside-must-survive", "utf8");
+    return {
+      root,
+      external,
+      sentinel,
+      cleanup: async () => {
+        await rm(root, { recursive: true, force: true });
+        await rm(external, { recursive: true, force: true });
+      },
+    };
+  }
+
+  async function expectRefused(promise: Promise<unknown>): Promise<void> {
+    await expect(promise).rejects.toThrow(MESSAGE);
+    await promise.then(
+      () => expect.unreachable("write should have been refused"),
+      (error: unknown) => {
+        expect(isUnsafeWorktreePathError(error)).toBe(true);
+        expect((error as Error).name).toBe("UnsafeWorktreePathError");
+      },
+    );
+  }
+
+  it("refuses a worktree root that is itself a link", async () => {
+    // Sole killer of dropping the root guard entirely. Distinct from the
+    // existing intermediate-link case: here the ROOT handed to the writer is the
+    // link, so the very first lstat is what has to catch it.
+    const { root, external, sentinel, cleanup } = await arena("farm-rootlink");
+    const linkedRoot = path.join(root, "linked-root");
+    try {
+      await symlink(external, linkedRoot, process.platform === "win32" ? "junction" : "dir");
+      await expectRefused(writeWorktreeFile(linkedRoot, "sentinel.txt", "overwrite"));
+      expect(await readFile(sentinel, "utf8")).toBe("outside-must-survive");
+      expect(await readdir(external)).toEqual(["sentinel.txt"]);
+    } finally {
+      await cleanup();
+    }
+  });
+
+  it("refuses an escaping relative path and writes NOTHING outside the root", async () => {
+    // The post-state assertion is the whole test. Measured with every escape
+    // guard removed, this input CREATES `escaped.txt` one level up and leaves it
+    // there — an earlier version of this test passed while that happened,
+    // because it only checked that the promise rejected.
+    //
+    // The root is nested inside a private container so the escape target is
+    // ours. An earlier version used `path.dirname(root)` — which, for a root
+    // from `mkdtemp(tmpdir())`, IS the shared OS temp directory: the assertion
+    // failed spuriously if anything else had put an `escaped.txt` there, and the
+    // cleanup then deleted a file this suite does not own.
+    const container = await mkdtemp(path.join(tmpdir(), "farm-escape-box-"));
+    const root = path.join(container, "root");
+    await mkdir(root);
+    try {
+      await expectRefused(writeWorktreeFile(root, path.join("..", "escaped.txt"), "payload"));
+      expect(existsSync(path.join(container, "escaped.txt"))).toBe(false);
+      expect(await readdir(container)).toEqual(["root"]);
+      expect(await readdir(root)).toEqual([]);
+    } finally {
+      await rm(container, { recursive: true, force: true });
+    }
+  });
+
+  it("judges an absolute destination by where it LANDS, not by its shape", async () => {
+    // Both arms. `path.isAbsolute` is applied to the RESOLVED relative path, not
+    // the caller's input — so an absolute path inside the root is legitimate (it
+    // names the same file) and one outside is caught by the `..` check. Sole
+    // killer of a guard rewritten to reject all absolute input, which would
+    // silently break a valid caller.
+    const { root, external, sentinel, cleanup } = await arena("farm-abs");
+    try {
+      await writeWorktreeFile(root, path.join(root, "inside.txt"), "accepted\n");
+      expect(await readFile(path.join(root, "inside.txt"), "utf8")).toBe("accepted\n");
+
+      // win32 `path.relative` is case-insensitive, so a case-variant absolute
+      // path still lands inside and must still be accepted.
+      if (process.platform === "win32") {
+        await writeWorktreeFile(root, path.join(root, "cased.txt").toUpperCase(), "cased\n");
+        expect(await readFile(path.join(root, "cased.txt"), "utf8")).toBe("cased\n");
+      }
+
+      await expectRefused(writeWorktreeFile(root, path.join(external, "sentinel.txt"), "overwrite"));
+      expect(await readFile(sentinel, "utf8")).toBe("outside-must-survive");
+    } finally {
+      await cleanup();
+    }
+  });
+
+  it("refuses a NUL byte in the destination segment", async () => {
+    // Reaches the non-ENOENT arm of the destination lstat: the error is neither
+    // "missing" nor an `unsafe()` call, so the catch has to funnel it. An
+    // earlier draft called this arm structurally unreachable; it needs one byte.
+    const { root, cleanup } = await arena("farm-nul-dest");
+    try {
+      await expectRefused(writeWorktreeFile(root, "a\0b.txt", "payload"));
+      expect(await readdir(root)).toEqual([]);
+    } finally {
+      await cleanup();
+    }
+  });
+
+  it("refuses a NUL byte in an intermediate segment", async () => {
+    // The same arm one level up, in the segment walk rather than at the
+    // destination — a different `lstat` with its own non-ENOENT guard.
+    const { root, cleanup } = await arena("farm-nul-mid");
+    try {
+      await expectRefused(writeWorktreeFile(root, path.join("a\0b", "c.txt"), "payload"));
+      expect(await readdir(root)).toEqual([]);
+    } finally {
+      await cleanup();
+    }
+  });
+
+  it("absorbs a lost mkdir race between concurrent writers", async () => {
+    // The EEXIST arm — the race the guard exists for. Forty writers share the
+    // same nested ancestors, so many of them lose the mkdir and must treat
+    // EEXIST as success rather than as a failure. Any rejection here means a
+    // legitimate concurrent write was refused.
+    const { root, cleanup } = await arena("farm-mkdir-race");
+    try {
+      const writes = Array.from({ length: 40 }, (_, i) =>
+        writeWorktreeFile(root, path.join("shared", "nested", "deep", `f${i}.txt`), `payload-${i}\n`),
+      );
+      await Promise.all(writes);
+      const written = await readdir(path.join(root, "shared", "nested", "deep"));
+      expect(written).toHaveLength(40);
+      expect(await readFile(path.join(root, "shared", "nested", "deep", "f39.txt"), "utf8")).toBe("payload-39\n");
+    } finally {
+      await cleanup();
+    }
+  });
+
+  it("funnels an unexpected filesystem error into the same refusal, leaking nothing", async () => {
+    // A root that does not exist makes the FIRST lstat throw ENOENT — not an
+    // `unsafe()` call. The catch must convert it, so a caller cannot tell
+    // "escaped the root" from "disk error"; the raw errno must not surface, and
+    // the missing root must not be created on the way out.
+    const missing = path.join(tmpdir(), `farm-missing-root-${Date.now()}`);
+    await expectRefused(writeWorktreeFile(missing, "a.txt", "payload"));
+    await expect(writeWorktreeFile(missing, "a.txt", "payload")).rejects.not.toThrow(/ENOENT/);
+    expect(existsSync(missing)).toBe(false);
+  });
+
+  it("leaves ancestor directories behind on a refusal — refusal is not a rollback", async () => {
+    // Documented, previously unasserted. The segment walk creates missing
+    // ancestors BEFORE the destination is validated, so a refused write can
+    // leave empty directories. They are inside the root and owner-only, so this
+    // is benign — but it is not atomic, and a caller assuming otherwise would be
+    // wrong. Pinned so a change to it is a deliberate one.
+    const { root, cleanup } = await arena("farm-partial");
+    try {
+      await expectRefused(writeWorktreeFile(root, path.join("n1", "n2", "a\0.txt"), "payload"));
+      expect(existsSync(path.join(root, "n1", "n2"))).toBe(true);
+      expect(await readdir(path.join(root, "n1", "n2"))).toEqual([]);
+    } finally {
+      await cleanup();
+    }
+  });
+});
+
+describe("symlink-safe worktree writer — write contracts", () => {
+  it("truncates rather than appends when rewriting a shorter payload", async () => {
+    // Sole killer of dropping `truncate(0)`. Without it the tail of a longer
+    // previous payload survives, which for a restored mutant means the worktree
+    // silently keeps mutated source.
+    const root = await mkdtemp(path.join(tmpdir(), "farm-truncate-"));
+    try {
+      await writeWorktreeFile(root, "f.txt", "AAAAAAAAAAAAAAAAAAAAAAAA\n");
+      await writeWorktreeFile(root, "f.txt", "BBB\n");
+      expect(await readFile(path.join(root, "f.txt"), "utf8")).toBe("BBB\n");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("round-trips non-ASCII content without re-encoding it", async () => {
+    // Kills a WRONG encoding (latin1) on the write. It does NOT pin the option's
+    // presence — `FileHandle.writeFile` defaults to utf8, so deleting it changes
+    // nothing. Either way, a non-ASCII fixture is the only thing in this file
+    // that would notice a re-encoding at all.
+    const root = await mkdtemp(path.join(tmpdir(), "farm-utf8-"));
+    try {
+      const content = "héllo — ünïcode ✓\n";
+      await writeWorktreeFile(root, "u.txt", content);
+      expect(await readFile(path.join(root, "u.txt"), "utf8")).toBe(content);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it.skipIf(process.platform === "win32")("creates directories 0o700 and files 0o600", async () => {
+    // Both modes, and both matter: the directory mode is what keeps a shared
+    // temp root from listing worker output, the file mode is what keeps its
+    // CONTENTS unreadable. An earlier draft asserted only the directory, and
+    // skipped the whole assertion on the measurement platform — so on Windows it
+    // asserted nothing at all while appearing to pin the threat model.
+    const root = await mkdtemp(path.join(tmpdir(), "farm-mode-"));
+    try {
+      await writeWorktreeFile(root, path.join("fresh", "deep", "file.txt"), "made\n");
+      expect((await lstat(path.join(root, "fresh"))).mode & 0o777).toBe(0o700);
+      expect((await lstat(path.join(root, "fresh", "deep", "file.txt"))).mode & 0o777).toBe(0o600);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

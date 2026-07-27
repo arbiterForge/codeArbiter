@@ -56,13 +56,32 @@ therefore the only option, not a preference.
 
 ## Test standard (binding on every slice)
 
-> Every new test must carry at least one assertion that fails if the line it covers is mutated —
-> a negated condition, a changed constant, a removed statement, an off-by-one boundary.
+> Every new test must carry at least one assertion that fails if the **property** the covered line
+> enforces is removed — a negated condition, a changed constant, a removed statement, an off-by-one
+> boundary.
 
 Per test: *if I flip this `if` in the source, does my test go red?* Exact values over
 `toBeDefined()`; exact call arguments over `toHaveBeenCalled()`; both sides of every branch claimed;
 error identity **and** observable consequence. No broad snapshots, no lone `not.toThrow()`, no
 asserting on a mock instead of the subject.
+
+### Amended after slice 2 — "line" was the wrong unit
+
+The original wording said *"fails if the LINE it covers is mutated"*. That is **unsatisfiable by
+construction for layered code**, and `worktree-fs.ts` proved it: 4 of 24 single-point mutants died,
+yet every survivor was a guard whose property another layer also enforces. Removing all four
+`isSymbolicLink()` checks passes (a Windows junction also fails `isDirectory()`); removing all three
+`isDirectory()` checks passes (`isSymbolicLink()` catches it). Redundant guards cannot be
+distinguished from outside the module — that is what defence in depth *means*.
+
+So the unit is the **property**, not the line, and the mutation harness needs a multi-edit mode that
+removes every layer guarding one property at once (`mutate-multi.mjs`). A single-point survivor on a
+layered module is evidence about the design, not about the test.
+
+Where a single guard is *fully* redundant with another, say so and move on rather than inventing an
+input to pin it — no such input exists. **But prove the redundancy before claiming it.** The first
+draft of slice 2 asserted four arms were unreachable and a NUL byte, a long segment, and concurrent
+writers reached three of them. "Layered, therefore untestable" is a conclusion to earn, not assume.
 
 Each slice runs a hand mutation pass: mutate the covered source lines, show the tests go red,
 restore. **A control run on unmutated source must pass first** — a harness whose control fails
@@ -76,23 +95,66 @@ Test-only, so `test(farm):` and no version bump (see Constraints).
 
 | # | target | branches | status |
 |---|---|---|---|
-| 1 | `redactor.ts` — PEM span boundaries, basename denylist | ~3 | in progress |
-| 2 | `worktree-fs.ts` — 19 `unsafe()` refusal / TOCTOU arms | ~19 | |
-| 3 | `mutation.ts` — `antiGamingCheck`, `FARM_MUTATION_CMD` hook path, loop bounds | ~45 | |
+| 1 | `redactor.ts` — PEM span boundaries, basename denylist | +3 | **DONE** (#517) |
+| 2 | `worktree-fs.ts` — `unsafe()` refusal / TOCTOU arms | **+6** (est. 19) | **DONE** |
+| 3 | `mutation.ts` — `antiGamingCheck`, `FARM_MUTATION_CMD` hook path, loop bounds | ~42 | |
 | 4 | `exec.ts` — `numEnv`, `awaitTaskkill`, `treeKill`, `run` timeout | ~20 | |
-| 5 | `farm.ts` **exported only** — `runTask`, `validate`, `cleanupFailures` | ~40 | |
+| 5 | `farm.ts` **exported only** — `runTask`, `validate`, `cleanupFailures` | ~68 | |
 | 6 | clean-export measurement, close #511 | — | |
 
-Slice 1 is deliberately small so the file convention and the mutation bar are validated on a
-cheap surface before slices 3–5 scale them.
+### Budget, corrected after slice 2
 
-### Sequencing note
+Slice 2 returned **+6 branches** (83.33% branches, 100% lines on `worktree-fs.ts`, measured on
+Windows).
 
-`worktree-fs.ts` is **not** "effectively done". That reading comes from the line column (97.1%). On
-branches it is 75.64% with 19 uncovered arms, every one an `unsafe()` refusal — symlinked root,
-containment escape, `mkdir` EEXIST race, hardlink (`nlink !== 1`), and the three TOCTOU
-re-verifications before the retained handle is truncated. Largest security-refusal gap outside
-`farm.ts`, and exactly AC-3.
+**The measurement platform is not settled and it matters.** CI runs the `tools` job on
+**ubuntu-latest only**, and the two platforms disagree: Windows reports 83.33% branches here, Linux
+84.61%, because an over-long path segment reaches the `mkdir` failure arm on Windows but fails
+earlier at `lstat` with ENAMETOOLONG on Linux. Every figure in this plan is a Windows figure. Before
+#511 is closed, AC-1 needs a stated platform — the issue's baseline table was Windows, CI is Linux,
+and they will not agree at the 70% line either.
+
+Two tests were deleted from this slice AFTER they were written and measured: they covered branches
+but killed no mutant that another test did not. That is AC-1 versus AC-2 in miniature, resolved the
+way AC-2 requires — the count went down by 2 and the suite got no weaker.
+
+An earlier draft of this slice stopped at +4 and justified it by calling fifteen arms
+"structurally unreachable, reaching them needs fault injection". **That was wrong**, and adversarial
+review proved it with ordinary inputs and no source change: a NUL byte in a path segment reaches
+both non-ENOENT `lstat` arms, a 300-character segment reaches the non-EEXIST `mkdir` arm, 40
+concurrent writers reach the EEXIST arm, and the containment re-check is reachable through the same
+exported hook the suite already used. Redundancy is a real property of this module, but it was being
+used to retire work rather than to describe it.
+
+Eleven arms remain, and these are characterised rather than claimed:
+
+- **Platform-dead here:** the `O_NOFOLLOW` ternary's true arm (`constants.O_NOFOLLOW` is `undefined`
+  on Windows — verified).
+- **Mutually redundant:** the `contained()` backstops (L96, L103, L112, L124, L125, L129) and the
+  `segment === "" | "." | ".."` guard (L80). Each is reachable only once an earlier layer is
+  removed; L80 in particular fires the moment the lexical guard goes, so it is a live backstop, not
+  dead code.
+- **Needs a genuine race:** the post-open `sameFile` check (L122) and the `verifyDirectories`
+  compound (L69).
+- **Also a redundant backstop:** L70. An earlier draft called this "POSIX-only, because Windows
+  returns EPERM renaming a directory with an open descendant handle". Measured on this host, that
+  rename SUCCEEDS — and `verifyDirectories` is called once before any handle exists anyway, so the
+  argument was wrong twice. L70 is reachable on Windows once the layers ahead of it are removed.
+
+Worth recording about the source, not the tests: L124/L125/L129/L130 re-check `realpath` AFTER the
+handle is open, but the write goes through that retained handle — so those checks cannot change
+where bytes land. `handle.stat()`/`sameFile` (L122, L136) are the only post-open checks that can.
+Not changed here: touching `worktree-fs.ts` rebuilds `farm.js`, which is declared payload.
+
+| | now | need | gap |
+|---|---|---|---|
+| Lines | 804/1187 = 67.73% | 831 | +27 |
+| Branches | 584/967 = 60.39% | 677 | **+93** |
+
+Remaining realistic supply: `exec.ts` ~20, `mutation.ts` ~42, `farm.ts` exported ~68 = **~130**
+against a need of **93**. `mutation.ts` was sized against its uncovered report before committing to
+a number this time: its arms are business logic, not layered guards, and `MUT` is an exported
+mutable object, so its knobs are settable from a test with no module surgery.
 
 ## Constraints and known-unreachable
 
