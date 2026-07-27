@@ -471,8 +471,20 @@ function parseMutationHookOutput(out) {
   try {
     const parsed = JSON.parse(j[0]);
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number")
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+    if (typeof parsed.score === "number") {
+      const label = (s) => {
+        try {
+          return typeof s === "string" ? s : String(s);
+        } catch {
+          return "[unprintable id]";
+        }
+      };
+      const survivors = Array.isArray(parsed.survived) ? parsed.survived.map(label) : void 0;
+      const declared = parsed.total ?? parsed.evaluated;
+      const n = typeof declared === "number" ? declared : typeof declared === "string" ? Number(declared) : Number.NaN;
+      const evaluated = Number.isFinite(n) && n >= 0 ? n : void 0;
+      return { score: parsed.score, evaluated, survivors };
+    }
   } catch {
   }
   return null;
@@ -1271,6 +1283,12 @@ function cleanupReportLines(health, results) {
     ...failures.map((f) => `- \`${f.target}\` (${f.owner}) \u2014 ${f.detail}`)
   ];
 }
+function mutationSurvivalNote(m) {
+  const score = `score ${m.score.toFixed(2)}`;
+  if (m.survivors === void 0) return score;
+  const of = m.evaluated === void 0 ? "" : `/${m.evaluated}`;
+  return `${score} (${m.survivors.length}${of} survived)`;
+}
 var defaultRunTaskDeps = () => ({
   worker: httpWorker,
   prepareWorktree,
@@ -1473,13 +1491,13 @@ ${gate.tail}`);
       }
       if (mut && "score" in mut) {
         mutationScore = mut.score;
-        if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
+        if (mut.score <= MUT.escalateBelow && mut.evaluated !== void 0 && mut.evaluated >= 5) {
           risk = "high";
-          riskNote = `gaming: mutation score ${mut.score.toFixed(2)} (${mut.evaluated} mutants survived \u2014 the test does not constrain the implementation)`;
+          riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} \u2014 the test does not constrain the implementation`;
         } else if (mut.score < MUT.warnBelow) {
           if (risk !== "warn") {
             risk = "warn";
-            riskNote = `mutation-risk: score ${mut.score.toFixed(2)} (${mut.survivors.length}/${mut.evaluated} survived) \u2014 weak test or under-implemented logic`;
+            riskNote = `mutation-risk: ${mutationSurvivalNote(mut)} \u2014 weak test or under-implemented logic`;
           }
         }
       } else if (mut && "failed" in mut) {
@@ -2176,6 +2194,7 @@ export {
   httpWorker,
   makeEntitlementProbe,
   mintRunId,
+  mutationSurvivalNote,
   newRunArtifactHealth,
   noteArtifactError,
   noteUnavailableDiff,

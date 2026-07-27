@@ -23,7 +23,15 @@
 import { describe, it, expect, afterEach } from "vitest";
 import path from "node:path";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { captureInScope, runTask, buildPrompt, parsePlan, validate } from "./farm.ts";
+import {
+  captureInScope,
+  mutationSurvivalNote,
+  parseMutationHookOutput,
+  runTask,
+  buildPrompt,
+  parsePlan,
+  validate,
+} from "./farm.ts";
 import type { Plan, RunTaskDeps, Task, Worker, WorkerResult } from "./farm.ts";
 import { MUT } from "./mutation.ts";
 
@@ -306,6 +314,45 @@ describe("runTask mutation-score handling", () => {
     survivors: Array.from({ length: evaluated - killed }, (_, i) => `mutant-${i}`),
   });
 
+  it("renders the survivor count as survivors-over-evaluated, never evaluated alone (#525)", () => {
+    // The formatter both risk arms share. Asserted directly, because the whole
+    // point of extracting it is that neither arm can render this differently —
+    // and the two arms DID drift before it existed.
+    expect(mutationSurvivalNote({ score: 0.1, evaluated: 10, survivors: Array(9).fill("m") })).toBe(
+      "score 0.10 (9/10 survived)",
+    );
+    // A perfect run still names both numbers rather than collapsing to one.
+    expect(mutationSurvivalNote({ score: 1, evaluated: 8, survivors: [] })).toBe("score 1.00 (0/8 survived)");
+    // Two decimal places, always — 0.5 must not render as "0.5".
+    expect(mutationSurvivalNote({ score: 0.5, evaluated: 4, survivors: ["m", "m"] })).toBe(
+      "score 0.50 (2/4 survived)",
+    );
+  });
+
+  it("states a survivor count ONLY when the producer reported one (#525)", () => {
+    // A hook is required to print a numeric `score` and nothing else. Earlier
+    // fixes each tried to always produce a count — reading an empty list, then
+    // deriving from the score, then defaulting the denominator — and each moved
+    // the fabrication to a different input. There is often nothing to say.
+    expect(mutationSurvivalNote({ score: 0.05 })).toBe("score 0.05");
+    expect(mutationSurvivalNote({ score: 0.05, evaluated: 10 })).toBe("score 0.05");
+  });
+
+  it("keeps a reported survivor count even when the total was NOT reported", () => {
+    // The numerator is real; the denominator was never stated. Print the part
+    // that exists rather than inventing the other half to complete the pair.
+    expect(mutationSurvivalNote({ score: 0.1, survivors: Array(9).fill("m") })).toBe("score 0.10 (9 survived)");
+    expect(mutationSurvivalNote({ score: 0.1, evaluated: 10, survivors: Array(9).fill("m") })).toBe(
+      "score 0.10 (9/10 survived)",
+    );
+  });
+
+  it("reports a genuinely empty survivor list as zero, not as absent", () => {
+    // `survived: []` from a perfect run is a REPORT of zero survivors, which is
+    // different information from the field being missing.
+    expect(mutationSurvivalNote({ score: 1, evaluated: 8, survivors: [] })).toBe("score 1.00 (0/8 survived)");
+  });
+
   it("escalates at a score EXACTLY at escalateBelow — the comparison is inclusive", async () => {
     // 1 of 10 killed = 0.1 = escalateBelow exactly. The mirror of the warnBelow
     // boundary below; without it, `<=` could be `<` and nothing would notice.
@@ -314,14 +361,11 @@ describe("runTask mutation-score handling", () => {
       deps({ mutationCheck: async () => mutResult(10, 1) }),
     );
     expect(r.status).toBe("escalate");
-    // NOTE the "(10 mutants survived" — 10 is `evaluated`, but only 9 survived.
-    // farm.ts:1955 interpolates `mut.evaluated` under a "survived" label while
-    // the warn arm one branch down correctly renders `survivors.length/evaluated`.
-    // That is a real reporting defect (see the issue linked in the PR); this
-    // assertion pins CURRENT behaviour so the fix is a deliberate, visible edit
-    // rather than a silent one. Update this string when it is fixed.
+    // 9 of 10 survived, and the note says so. Before #525 this arm interpolated
+    // `evaluated` under a "survived" label and claimed 10 — contradicting the
+    // 0.10 score in the same sentence. The count and the score now agree.
     expect(r.note).toBe(
-      "gaming: mutation score 0.10 (10 mutants survived — the test does not constrain the implementation)",
+      "gaming: mutation score 0.10 (9/10 survived) — the test does not constrain the implementation",
     );
     expect(r.mutationScore).toBe(0.1);
   });
@@ -335,7 +379,7 @@ describe("runTask mutation-score handling", () => {
     );
     expect(r.status).toBe("escalate");
     expect(r.note).toBe(
-      "gaming: mutation score 0.00 (5 mutants survived — the test does not constrain the implementation)",
+      "gaming: mutation score 0.00 (5/5 survived) — the test does not constrain the implementation",
     );
   });
 
@@ -350,6 +394,20 @@ describe("runTask mutation-score handling", () => {
     expect(r.mutationScore).toBe(0);
     // It still falls through to the softer warn arm rather than vanishing.
     expect(r.warning).toBe("mutation-risk: score 0.00 (4/4 survived) — weak test or under-implemented logic");
+  });
+
+  it("warns with the survivor count on a middling score", async () => {
+    // 8 of 10 survived. The fixture DELIBERATELY has survivors !== evaluated:
+    // the floor test above is forced to use 4-of-4 (it needs a near-zero score
+    // at fewer than 5 mutants), and against a 4/4 fixture a warn arm rendering
+    // `evaluated/evaluated` is indistinguishable from the correct one.
+    const r = await RUN(
+      task({ id: "s5-mut-warn", maxRetries: 0 }),
+      deps({ mutationCheck: async () => mutResult(10, 2) }),
+    );
+    expect(r.status).toBe("green");
+    expect(r.warning).toBe("mutation-risk: score 0.20 (8/10 survived) — weak test or under-implemented logic");
+    expect(r.mutationScore).toBe(0.2);
   });
 
   it("treats a score EXACTLY at warnBelow as clean — the comparison is strict", async () => {
@@ -568,6 +626,231 @@ describe("best-of-N sample failures each surface their own cause", () => {
       worker: { async apply() { throw "raw string failure"; } },
     });
     expect(note).toBe("sample error: raw string failure");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// parseMutationHookOutput — an operator's FARM_MUTATION_CMD is arbitrary
+// third-party output crossing into a typed result. `survived` was assigned
+// straight through, so the declared `string[]` was a claim, not a fact (#525).
+// ---------------------------------------------------------------------------
+describe("parseMutationHookOutput — a field is reported or it is absent", () => {
+  const parse = (json: string) => parseMutationHookOutput(`some log noise\n${json}`);
+
+  it("keeps a well-formed survivor list", () => {
+    expect(parse('{"score":0.5,"total":4,"survived":["a.ts:1","a.ts:2"]}')).toEqual({
+      score: 0.5,
+      evaluated: 4,
+      survivors: ["a.ts:1", "a.ts:2"],
+    });
+  });
+
+  it("treats a NUMERIC survived count as no list rather than trusting the type", () => {
+    // "survived": 9 is the natural reading of the field name, and it used to
+    // sail through as `survivors`, so `.length` read `undefined`.
+    // NOT `?.` — an optional chain returns undefined for a NULL result too, so
+    // the assertion would pass whether the parser reported "no survivor list" or
+    // rejected the whole hook line. Those are the two states this pins apart.
+    expect(parse('{"score":0.1,"total":10,"survived":9}')).toEqual({ score: 0.1, evaluated: 10, survivors: undefined });
+  });
+
+  it("treats a STRING survived value as no list, not as its character count", () => {
+    expect(parse('{"score":0.1,"total":10,"survived":"a,b,c"}')).toEqual({ score: 0.1, evaluated: 10, survivors: undefined });
+  });
+
+  it("PRESERVES the count when survivor ids are not strings", () => {
+    // Filtering these out silently shortened the list, so a hook emitting
+    // numeric mutant ids reported "0/10 survived" while escalating the task FOR
+    // its survivors. The count is trustworthy even when an id is not a string,
+    // and nothing renders the ids.
+    expect(parse('{"score":0.1,"total":10,"survived":["a.ts",7,null,"b.ts"]}')?.survivors).toEqual([
+      "a.ts",
+      "7",
+      "null",
+      "b.ts",
+    ]);
+    expect(parse('{"score":0.05,"total":10,"survived":[1,2,3]}')?.survivors).toHaveLength(3);
+  });
+
+  it("renders the true survivor count for non-string ids, never a shortened one", () => {
+    const r = parseMutationHookOutput('{"score":0.05,"total":10,"survived":[1,2,3]}')!;
+    expect(mutationSurvivalNote(r)).toBe("score 0.05 (3/10 survived)");
+  });
+
+  it.each([
+    ['{"score":0.1,"total":"abc"}', "a non-numeric total"],
+    ['{"score":0.1,"total":-5}', "a negative total"],
+    ['{"score":0.1,"total":-1}', "a total of -1 (the guard's actual boundary)"],
+    ['{"score":0.1,"total":[10]}', "an array total"],
+    ['{"score":0.1,"total":{}}', "an object total"],
+    ['{"score":0.1,"total":true}', "a boolean total"],
+  ])("reports NO evaluated count for %s (%s)", (json) => {
+    // `evaluated` is the denominator the note divides the run by, so a value
+    // that is not a count of mutants must not reach the arithmetic: "abc"
+    // rendered `NaN/abc` and -5 rendered `-5/-5`.
+    expect(parse(json)?.evaluated).toBeUndefined();
+  });
+
+  it("REPORTS a numeric count verbatim, quoted or fractional, rather than discarding it", () => {
+    // The gate compares this against its floor, and before #525 it compared the
+    // RAW value with JS coercion. Parsing preserves both sides of that: "10"
+    // clears the floor as it always did, 2.5 and "4" still fall below it.
+    expect(parse('{"score":0.1,"total":"10"}')?.evaluated).toBe(10);
+    expect(parse('{"score":0.1,"total":" 6 "}')?.evaluated).toBe(6);
+    expect(parse('{"score":0.1,"total":2.5}')?.evaluated).toBe(2.5);
+    expect(parse('{"score":0.1,"evaluated":"8"}')?.evaluated).toBe(8);
+  });
+
+  it("refuses a non-finite count — Infinity is not a number of mutants", () => {
+    // JSON.parse turns 1e400 into Infinity, and `Infinity >= 0` is true, so
+    // without the finiteness check this is accepted and the note renders
+    // "N/Infinity survived" while the gate treats it as unlimited evidence.
+    expect(parse('{"score":0.05,"total":1e400}')?.evaluated).toBeUndefined();
+  });
+
+  it("keeps a survivor whose id cannot be stringified, rather than losing the result", () => {
+    // `String({toString: 1})` throws — JSON.parse can produce exactly that. The
+    // throw used to land in the parser's catch and discard an otherwise valid
+    // score AND total, turning a real escalation into a hook-failure warning.
+    const r = parseMutationHookOutput('{"score":0.05,"total":10,"survived":[{"toString":1}]}');
+    expect(r).not.toBeNull();
+    expect(r!.survivors).toHaveLength(1);
+    expect(mutationSurvivalNote(r!)).toBe("score 0.05 (1/10 survived)");
+  });
+
+  it("REPORTS a zero total — evaluating nothing is information, not an absent field", () => {
+    // A hook stating it evaluated 0 mutants has told us something, and it is
+    // what keeps that run below the `evaluated >= 5` escalation floor. Folding
+    // it into the unknown case would let it clear the floor via the sentinel.
+    expect(parse('{"score":0,"total":0}')?.evaluated).toBe(0);
+  });
+
+  it("prefers `total` over `evaluated` when a hook emits both", () => {
+    // Two accepted spellings for the same field. Which one wins is a real
+    // contract — it decides the denominator of every mutation note — and
+    // nothing pinned it, so the precedence was free to flip silently.
+    expect(parse('{"score":0.1,"total":10,"evaluated":50}')?.evaluated).toBe(10);
+    expect(parse('{"score":0.1,"evaluated":50}')?.evaluated).toBe(50);
+  });
+
+  it("still applies the documented minimum — a numeric score alone is accepted", () => {
+    // `total` and `survived` are both optional per includes/farm.md; only the
+    // score is required. This is the shape the escalate-arm test above pins.
+    expect(parse('{"score":0.05}')).toEqual({ score: 0.05, evaluated: undefined, survivors: undefined });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// #525 regression — the note names ONLY numbers the producer supplied.
+//
+// Driven through the REAL parseMutationHookOutput rather than a fixture
+// builder, deliberately. The `mutResult` helper above constructs
+// `survivors.length === evaluated - killed` and `score === killed/evaluated`,
+// so every fixture it makes is internally consistent — which is exactly the
+// shape the hook path does NOT produce. Three successive fixes to this note
+// were verified green against those fixtures and were wrong anyway. The
+// producer is the only honest fixture.
+// ---------------------------------------------------------------------------
+describe("#525 the mutation note never invents a number", () => {
+  const NINE = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+  const parsed = (json: string) => {
+    const r = parseMutationHookOutput(`some hook log\n${json}`);
+    expect(r, `parseMutationHookOutput rejected ${json}`).not.toBeNull();
+    return r!;
+  };
+
+  it.each([
+    // R1 — the original #525 defect: `evaluated` printed under a "survived" label.
+    ["R1 full report", `{"score":0.05,"total":10,"survived":${JSON.stringify(NINE)}}`, "score 0.05 (9/10 survived)"],
+    // R2 — the doc-minimal hook. Only `score` is contractually required, so
+    // there is no survivor count to state and none is stated.
+    ["R2 score only", '{"score":0.05}', "score 0.05"],
+    // R3 — a real survivor list with no total. The 9 is reported and kept; the
+    // denominator was never reported, so none is printed.
+    ["R3 list, no total", `{"score":0.1,"survived":${JSON.stringify(NINE)}}`, "score 0.10 (9 survived)"],
+    // R4 — the producer states it evaluated nothing. Nothing is claimed.
+    ["R4 zero total", '{"score":0,"total":0}', "score 0.00"],
+  ])("%s renders %s", (_label, json, expected) => {
+    expect(mutationSurvivalNote(parsed(json))).toBe(expected);
+  });
+
+  it.each([
+    ["R2 score only", '{"score":0.05}'],
+    ["R4 zero total", '{"score":0,"total":0}'],
+    ["non-numeric total", '{"score":0.05,"total":"abc"}'],
+    ["negative total", '{"score":0.05,"total":-5}'],
+  ])("%s states no survivor count at all", (_label, json) => {
+    // The property, not one rendering of it: with nothing reported, the note
+    // must not contain a survivor clause for a reader to act on.
+    expect(mutationSurvivalNote(parsed(json))).not.toContain("survived");
+  });
+
+  it("never emits the 99 unknown-count sentinel as if it were a measurement", () => {
+    // `?? 99` means "the hook did not say". Printing it renders a fabricated
+    // count that reads exactly like a real one — the escalate arm claimed
+    // "99/99 survived" for a hook that reported evaluating zero mutants.
+    for (const json of ['{"score":0.05}', '{"score":0,"total":0}', '{"score":0.05,"total":"abc"}']) {
+      expect(mutationSurvivalNote(parsed(json)), json).not.toContain("99");
+    }
+  });
+
+  it("only escalates when the producer REPORTED enough mutants to justify it", async () => {
+    // The `evaluated >= 5` floor refuses to hard-reject on thin evidence. These
+    // are the shapes that decide it, and the three groups are the whole
+    // contract: reported-and-sufficient escalates; reported-and-insufficient
+    // does not; and NOT REPORTED does not either, because an unstated count is
+    // the thinnest evidence there is.
+    //
+    // The last group is the ONE deliberate behaviour change from before #525,
+    // where an unreported count took a 99 sentinel and cleared the floor.
+    //
+    // The quoted-number rows matter most. Before #525 this value was compared
+    // RAW against the floor, so coercion made "10" escalate and "4" not. Both
+    // directions are preserved here: a quoted count is parsed, not discarded.
+    // An intermediate fix discarded it, which turned the gate permanently off
+    // for any hook that quotes its numbers.
+    const status = async (json: string, id: string) =>
+      (
+        await RUN(
+          task({ id: `s5-gate-${id}`, maxRetries: 0 }),
+          deps({ mutationCheck: async () => parsed(json) }),
+        )
+      ).status;
+
+    // reported, and enough
+    expect(await status('{"score":0.05,"total":8}', "eight")).toBe("escalate");
+    expect(await status('{"score":0.05,"total":5}', "five")).toBe("escalate");
+    // reported, but not enough
+    expect(await status('{"score":0.05,"total":4}', "four")).toBe("green");
+    expect(await status('{"score":0,"total":0}', "zero")).toBe("green");
+    // a QUOTED count is a real count — parsed, not discarded. Both sides of
+    // the floor, because before #525 coercion made "10" escalate and "4" not.
+    expect(await status('{"score":0.05,"total":"10"}', "q10")).toBe("escalate");
+    expect(await status('{"score":0.05,"total":" 6 "}', "q6")).toBe("escalate");
+    expect(await status('{"score":0.05,"evaluated":"8"}', "qe8")).toBe("escalate");
+    expect(await status('{"score":0.05,"total":7.5}', "frac75")).toBe("escalate");
+    // genuinely unusable — these all landed on warn before #525 too
+    for (const [json, id] of [
+      ['{"score":0.05,"total":"4"}', "quoted"],
+      ['{"score":0.05,"total":-5}', "neg"],
+      ['{"score":0.05,"total":2.5}', "frac"],
+      ['{"score":0.05,"total":true}', "bool"],
+    ] as const) {
+      expect(await status(json, id), json).toBe("green");
+    }
+    // not reported at all
+    expect(await status('{"score":0.05}', "absent")).toBe("green");
+  });
+
+  it("states the escalation reason without a fabricated count", async () => {
+    // A reported count clears the floor; the survivor LIST is still absent, so
+    // the note carries the score and nothing it was not told.
+    const r = await RUN(
+      task({ id: "s5-esc-nocount", maxRetries: 0 }),
+      deps({ mutationCheck: async () => parsed('{"score":0.05,"total":8}') }),
+    );
+    expect(r.status).toBe("escalate");
+    expect(r.note).toBe("gaming: mutation score 0.05 — the test does not constrain the implementation");
   });
 });
 

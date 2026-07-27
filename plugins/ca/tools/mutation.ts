@@ -151,7 +151,17 @@ function generateMutants(file: string, src: string): Array<{ file: string; mutat
   return out;
 }
 
-export type MutationResult = { score: number; evaluated: number; survivors: string[] };
+// #525: `evaluated` and `survivors` are OPTIONAL because a pluggable
+// FARM_MUTATION_CMD is only contractually required to print a numeric `score`
+// (includes/farm.md). They used to be declared required, so parseMutationHookOutput
+// had to invent values (`?? 99`, `?? []`) to satisfy the type — and once
+// invented, no consumer could tell a fabricated count from a measured one. That
+// is the root cause of #525 and of three successive wrong fixes to it: the type
+// could not express "the producer did not say", so every reader had to guess.
+// Optional makes the absence representable and lets the compiler force each
+// consumer to decide what to do about it. The built-in path always populates
+// both.
+export type MutationResult = { score: number; evaluated?: number; survivors?: string[] };
 
 // observability-002 (#187): the pluggable-hook branch of mutationCheck used to
 // collapse EVERY failure mode (non-zero exit, timeout, crash, unparseable
@@ -179,8 +189,55 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
   try {
     const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number")
-      return { score: parsed.score, evaluated: parsed.total ?? parsed.evaluated ?? 99, survivors: parsed.survived ?? [] };
+    if (typeof parsed.score === "number") {
+      // #525: report only what the hook actually reported. Both fields are
+      // optional in the contract, so an absent or unusable one stays ABSENT
+      // rather than becoming a default that later reads as a measurement.
+      //
+      // `survived` accepts only a real array of strings: a hook emitting
+      // `"survived": 9` (a count — the natural reading of the field name) or
+      // `"survived": "a,b"` produced a `survivors` that was not a string[] at
+      // all, so a consumer reading `.length` got `undefined` or a character
+      // count. `total`/`evaluated` accept only a non-negative integer; "abc"
+      // and -5 previously reached arithmetic and rendered `NaN` and negatives.
+      // Zero IS reported — "I evaluated nothing" is information, and it is
+      // what keeps such a run below the escalation floor.
+      // Stringify rather than FILTER. An earlier cut dropped non-string
+      // entries, which silently shortened the list — a hook emitting numeric
+      // mutant ids (`"survived": [1,2,3]`, an entirely natural shape) reported
+      // "0/10 survived" while escalating the task FOR its survivors. Shortening
+      // is the one option that yields a confident wrong number, which is the
+      // defect this whole issue is about. The COUNT is trustworthy even when an
+      // id is not a string, and nothing renders the ids, so preserve length.
+      //
+      // `String(x)` THROWS on an object with a non-callable toString/valueOf,
+      // which `JSON.parse` can produce (`[{"toString":1}]`). Unguarded, that
+      // threw into the catch below and discarded an otherwise valid result,
+      // losing the escalation entirely — lenient in the wrong direction.
+      const label = (s: unknown): string => {
+        try {
+          return typeof s === "string" ? s : String(s);
+        } catch {
+          return "[unprintable id]";
+        }
+      };
+      const survivors = Array.isArray(parsed.survived) ? parsed.survived.map(label) : undefined;
+      // A NUMERIC STRING is accepted. Requiring a JSON number looked stricter
+      // and was a hole: before #525 this value was compared raw against the
+      // escalation floor, so JS coercion made `"total":"10"` escalate. Rejecting
+      // it here sends it to "unreported", which no longer clears the floor — so
+      // a shell hook that quotes its numbers (`echo "{\"total\":\"$n\"}"`, the
+      // most natural way to emit JSON from bash) could never escalate at ANY
+      // count. That silently disables the anti-gaming gate for a whole class of
+      // hooks, which is worse than the false escalations the strictness avoided.
+      // Booleans, arrays and objects are still refused: coercing those to a
+      // mutant count would be inventing one.
+      const declared = parsed.total ?? parsed.evaluated;
+      const n =
+        typeof declared === "number" ? declared : typeof declared === "string" ? Number(declared) : Number.NaN;
+      const evaluated = Number.isFinite(n) && n >= 0 ? n : undefined;
+      return { score: parsed.score, evaluated, survivors };
+    }
   } catch {
     /* unparseable — skip leniently */
   }

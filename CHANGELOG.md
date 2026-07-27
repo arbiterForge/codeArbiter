@@ -14,6 +14,52 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- The farm's mutation-escalation note stated survivor counts it had invented.
+  It interpolated the number of mutants *evaluated* under a "survived" label, so
+  a task whose test caught 1 of 10 was rejected with "mutation score 0.10 (10
+  mutants survived)" — a claim the score in the same sentence disproves. This
+  note is the entire operator-facing explanation for a hard-escalated task and
+  is fed back into the next worker's prompt, so a wrong count both misled a
+  human and misinformed a retry (#525).
+
+  The root cause was the `MutationResult` type, not the format string. A
+  pluggable `FARM_MUTATION_CMD` is only required to print a trailing JSON line
+  with a numeric `score`; `total` and `survived` are optional. But the type
+  declared all three fields as always present, so the parser had to invent the
+  missing ones — an empty survivor list and a `99` denominator — and once
+  invented, nothing downstream could tell a fabricated count from a measured
+  one. `evaluated` and `survivors` are now optional, absent when the producer
+  did not report them, and the note states a survivor count only when there is
+  one to state.
+
+  **If you use a pluggable `FARM_MUTATION_CMD`,** a hook that reports only a
+  score now yields `gaming: mutation score 0.05 — …` with no survivor clause,
+  where it previously claimed `(99 mutants survived)`. A hook that reports
+  survivors but no total yields `(9 survived)` rather than inventing a
+  denominator. A hook whose survivor ids are not strings keeps its true count;
+  an earlier cut of this fix filtered them out and reported `(0/10 survived)`
+  while escalating the task for its survivors.
+
+  **Behaviour change to the escalation gate, for hook users only.** The
+  `evaluated >= 5` floor exists to refuse hard-rejecting a task on thin
+  evidence. It previously substituted `99` for an unreported mutant count, so a
+  hook that never said how many mutants it ran cleared the floor and could get a
+  task rejected on no evidence at all. It now requires a count the hook actually
+  reported.
+
+  Measured across 27 hook shapes, exactly four change, all in the same
+  direction (escalate → warn) and all under the same rule — *the producer
+  stated no usable count*: `{"score":0.05}` (absent), `"total":null`,
+  `"total":[10]`, and `"total":1e400` (Infinity). Nothing changes for the
+  built-in mutator, which always reports a count, nor for any hook that reports
+  a real one, and nothing newly escalates.
+
+  A count is read as reported when it is a number or a numeric string, so
+  `"total":"10"` from a shell hook that quotes its numbers still clears the
+  floor exactly as before. An intermediate version of this fix rejected quoted
+  numbers, which silently disabled the anti-gaming gate for such hooks at every
+  count.
+
 - `tdd` Phase 5 and `refactor` Phase 2/6 can actually run. Both instructed
   "run the coverage command from `tech-stack.md`" and both forbid guessing one -
   and no coverage command existed, in any tree, for any of the four plugins. So

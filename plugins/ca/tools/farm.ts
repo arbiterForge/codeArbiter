@@ -49,6 +49,7 @@ import { run, readWorktreeFile, SHELL_BIN, SHELL_FLAG, SHELL_OPTS, GATE_TIMEOUT_
 import type { RunResult } from "./exec.ts";
 import { redactSecrets, isSecretBearingFilename } from "./redactor.ts";
 import { MUT, mutationCheck, antiGamingCheck } from "./mutation.ts";
+import type { MutationResult } from "./mutation.ts";
 import { UnsafeWorktreePathError, isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
 export { run, redactSecrets, numEnv };
 export { extractLiterals, codeLineCount, parseMutationHookOutput } from "./mutation.ts";
@@ -1568,6 +1569,32 @@ export function cleanupReportLines(health: RunArtifactHealth, results: Result[])
   ];
 }
 
+// #525: both mutation risk arms report the SAME quantity — how many mutants the
+// task's test failed to catch — and they were written independently, so they
+// drifted. The escalate arm interpolated `evaluated` under a "survived" label,
+// so a run that killed 1 of 10 reported "10 mutants survived" while printing a
+// 0.10 score in the same sentence. One formatter now renders it for both arms,
+// so the two cannot disagree again.
+//
+// #525: state the score, and state a survivor count ONLY when the producer
+// actually reported one. Three earlier fixes each tried to always produce a
+// count — reading a list that is empty on the hook path, then deriving from the
+// score, then substituting a default denominator — and each moved the
+// fabrication to a different input instead of removing it. A hook is only
+// required to print a numeric `score` (includes/farm.md), so for the rest there
+// is often nothing to say, and saying nothing is the correct output.
+//
+// This note is the whole operator-facing justification for rejecting a task and
+// it is fed back into the next worker's prompt. A missing count costs a reader
+// some detail; an invented one tells them something false in the sentence that
+// explains the rejection, which is what #525 was.
+export function mutationSurvivalNote(m: MutationResult): string {
+  const score = `score ${m.score.toFixed(2)}`;
+  if (m.survivors === undefined) return score;
+  const of = m.evaluated === undefined ? "" : `/${m.evaluated}`;
+  return `${score} (${m.survivors.length}${of} survived)`;
+}
+
 // Injectable dependencies for runTask. Every field defaults to the real
 // implementation, so callers (main/canary) get unchanged behavior. The seam
 // exists so the task-execution path can drive a stub Worker — and stub its
@@ -1950,13 +1977,27 @@ export async function runTask(
       }
       if (mut && "score" in mut) {
         mutationScore = mut.score;
-        if (mut.score <= MUT.escalateBelow && mut.evaluated >= 5) {
+        // #525: the unknown-count sentinel is GONE, and this is a deliberate,
+        // narrow behaviour change. This floor exists to refuse hard-rejecting a
+        // task on thin evidence; an unreported mutant count is the thinnest
+        // evidence there is, so it no longer clears the floor. Such a run warns
+        // instead of escalating.
+        //
+        // The alternative — keeping `?? 99` here — was measured and is worse.
+        // Before #525 the sentinel only applied to a NULLISH count, so a hook
+        // that reported an unusable one ("total":"4" from a shell hook that
+        // quotes its numbers, -5, 2.5, true) kept that value and failed the
+        // comparison, landing on warn. Routing every unusable value through the
+        // sentinel flipped twelve such shapes to escalate — false rejections in
+        // exactly the direction this floor guards. Requiring a reported count
+        // restores all twelve AND resolves the unreported case the same way.
+        if (mut.score <= MUT.escalateBelow && mut.evaluated !== undefined && mut.evaluated >= 5) {
           risk = "high";
-          riskNote = `gaming: mutation score ${mut.score.toFixed(2)} (${mut.evaluated} mutants survived — the test does not constrain the implementation)`;
+          riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
         } else if (mut.score < MUT.warnBelow) {
           if (risk !== "warn") {
             risk = "warn";
-            riskNote = `mutation-risk: score ${mut.score.toFixed(2)} (${mut.survivors.length}/${mut.evaluated} survived) — weak test or under-implemented logic`;
+            riskNote = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
           }
         }
       } else if (mut && "failed" in mut) {
