@@ -1,8 +1,8 @@
 # Maturity → minimum coverage
 
 The single source of truth for the coverage threshold. Coverage scales with the maturity value
-(`stage:` in `CONTEXT.md`) — a rigor knob, not a promotion gate. Referenced by `tdd` Phase 5 and
-`refactor` Phase 2.
+(`stage:` in `CONTEXT.md`) — a rigor knob, not a promotion gate. Referenced by `tdd` Phase 5,
+`refactor` Phase 2 and Phase 6, and the `coverage-auditor` agent.
 
 | maturity | minimum coverage |
 |---|---|
@@ -39,18 +39,36 @@ the number follow.
 Where a surface has no coverage tooling at all, there is no numeric floor to check. Record that
 explicitly; do not invent a command, and do not treat the phase as passed unexamined.
 
-**The record MUST quote the `tech-stack.md` Coverage section it read, and name the surface it found
-no command for.** An agent that could not FIND the command is indistinguishable, from the inside,
-from a surface that genuinely HAS none — and the two demand opposite responses: the first is a STOP,
-the second is this exemption. Only the citation separates them, and it is what makes the exemption
-falsifiable by a reviewer rather than a claim that closes a BLOCK gate on the word of the agent that
-wanted through it.
+**The record MUST name the surface, and quote from `tech-stack.md` either its whole Coverage section
+or the passage that states the absence FOR THAT SURFACE BY NAME.** An agent that could not FIND the
+command is indistinguishable, from the inside, from a surface that genuinely HAS none — and the two
+demand opposite responses: the first is a STOP, the second is this exemption. Only the citation
+separates them, and it is what makes the exemption falsifiable by a reviewer rather than a claim
+that closes a BLOCK gate on the word of the agent that wanted through it.
 
-So: no citation, no exemption. A phase that cannot produce the quoted section STOPs and surfaces the
-gap instead — the same response the skills' hard rule already requires for a missing test or lint
-command. This is deliberately the narrower reading: the failure mode being guarded is a gate that
-reads as satisfied without executing, which is what issue #507 found in five suites at once.
+Three readings are excluded deliberately, because each would let the citation pass while proving
+nothing:
+
+- **A Coverage section that lists commands is still quotable.** The section does not have to be
+  empty; it has to fail to give a command for THIS surface. Quoting a section that names commands
+  for other trees is correct and expected.
+- **A partial quote that stops before the commands is not a citation.** Quote the section entire, or
+  quote the sentence that names this surface as uncovered. Nothing in between.
+- **Silence is not evidence.** A section that simply never mentions the surface does not establish
+  that no command exists for it — that is the "could not find" case. Quote the section in full so a
+  reviewer can see the silence and judge it, and say plainly that the surface is unmentioned.
+
+**Where the record goes:** the phase output, and — because this exemption passes a BLOCK gate — it
+travels into the PR description for the change, so the claim is still falsifiable when a human
+reviews rather than only while the lane is live.
+
+So: no citation, no exemption. A phase that cannot produce one STOPs and surfaces the gap instead —
+the same response the skills' hard rule already requires for a missing test or lint command. This is
+deliberately the narrower reading: the failure mode being guarded is a gate that reads as satisfied
+without executing, which is what issue #507 found in five suites at once.
 
 Consumers of this rule: `tdd` Phase 5, `refactor` Phase 2 and Phase 6, and the `coverage-auditor`
-agent. They MUST NOT restate the exemption's conditions locally — divergent copies are how Phase 2
-and Phase 6 could start giving different answers about the same surface.
+agent. They point here and MUST NOT restate the exemption's CONDITIONS locally — a local gloss
+naming the requirement is fine, a local copy of what satisfies it is not. Divergent copies are how
+Phase 2 and Phase 6 start giving different answers about one surface, and how project state can end
+up instructing an agent to assert where this file requires it to cite.

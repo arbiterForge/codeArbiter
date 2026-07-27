@@ -182,14 +182,28 @@ Two caveats when reading a local report:
 
 **`site/` is a fourth tested TypeScript tree and has no coverage command** — it
 runs vitest 3 with its own suites under `site/test/`, and `tdd` Phase 5 on a
-`site/` change therefore still has nothing to run. That gap is tracked in #514
-and held open explicitly: `COVERAGE_EXEMPT` in
+`site/` change therefore still has nothing to run, and takes the **no-tooling
+exemption** on the same terms as the Python hooks below — conditions in
+`plugins/ca/includes/maturity-coverage.md`, citation required, not restated
+here. That gap is tracked in #514 and held open explicitly: `COVERAGE_EXEMPT` in
 `.github/scripts/test_ci_impact.py` names it, and a companion test fails if the
 exemption ever stops matching a real tree. Visible and reviewed, not closed.
+(`COVERAGE_EXEMPT` is a CI allowlist for the doc-contract test — it is not the
+agent-facing exemption and cannot be taken in place of one.)
 
-There is **no coverage tooling for the Python hooks**. `refactor` Phase 2 on a
-Python surface therefore has no numeric floor to check; use the per-symbol
-direct-test proof alone and say so in the phase record.
+There is **no coverage tooling for the Python hooks** (`plugins/*/hooks/*.py`,
+`.github/scripts/*.py`). No numeric floor exists for those surfaces, so `tdd`
+Phase 5 and `refactor` Phase 2 and Phase 6 all take the **no-tooling exemption**
+— whose conditions live in `plugins/ca/includes/maturity-coverage.md` and are
+NOT restated here. In short: it requires a citation, not an assertion, and the
+sentence above is the passage to quote.
+
+This paragraph previously read "use the per-symbol direct-test proof alone and
+say so in the phase record" — a local copy of the old, laxer rule, naming only
+`refactor` Phase 2. That is exactly the drift the exemption's single-source rule
+exists to stop: project state was instructing an agent to assert on the one
+surface class in this repo where the exemption actually fires, while the include
+required it to cite. Deferring, rather than restating, is the fix.
 
 ## Static checks (CI parity)
 
