@@ -289,7 +289,9 @@ AUDIT_LOG_FLAT_BASENAMES = ("overrides.log", "triage.log", "gate-events.log", "s
 # from the H-11 set below leaves the append blocked, because classify_protected
 # reports every class a path hits and pre-write checks them independently.
 DECISION_LOG_BASENAME = "decision-log.md"
-DECISION_LOG_RE = re.compile(r"\.codearbiter/decisions/" + re.escape(DECISION_LOG_BASENAME) + r"$")
+DECISION_LOG_RE = re.compile(
+    r"\.codearbiter[\\/]+decisions[\\/]+" + re.escape(DECISION_LOG_BASENAME) + r"$"
+)
 # AUDIT_LOG_BASENAMES stays the SINGLE AUTHORITATIVE BASENAME LIST, and the
 # arbitration log is in it. _bashguardlib's H-05 shell check pre-filters with
 # `any(n in cmd for n in AUDIT_LOG_BASENAMES)` precisely so a newly added audit
@@ -364,9 +366,10 @@ def is_decisions_path(rel):
 
     decisions/decision-log.md is the ONE exception (#528): it is the append-only
     arbitration log, not immutable ADR history, and is governed by H-05 instead.
-    The carve-out is exactly one path wide and anchored — `decision-log.md.bak`,
-    `old-decision-log.md` and a nested `sub/decision-log.md` all remain ADRs, so
-    a near-miss filename cannot launder itself out of the marker gate."""
+    The carve-out is exactly one path wide and anchored — `old-decision-log.md`
+    and a nested `sub/decision-log.md` remain ADRs, so a near-miss filename
+    cannot launder itself out of the marker gate. (`decision-log.md.bak` is in
+    NEITHER set: it does not end in `.md`, so it was never an H-11 path either.)"""
     n = norm_path(rel)
     if DECISION_LOG_RE.search(n):
         return False

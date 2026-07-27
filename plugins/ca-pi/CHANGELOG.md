@@ -2,6 +2,28 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.38] - 2026-07-27
+
+### Fixed
+
+- Two holes in the #528 arbitration-log reclassification, both found by
+  adversarial review before merge, both leaving the append-only log destructible
+  from the shell.
+
+  The H-11 carve-out was case-insensitive while H-05 - the guard taking over for
+  that file - is case-sensitive on both flanks, so a case-varied spelling of the
+  path was stripped from one guard's view and invisible to the other. On
+  Windows/NTFS and default macOS/APFS that spelling resolves to the real file,
+  so a delete under it removed the log with no gate firing.
+
+  And `New-Item -Force`, which truncates an existing file, was covered by H-11
+  but not by H-05, so the log lost that verb on reclassification - a gap the flat
+  audit logs shared, now closed for all of them.
+
+  The carve-out also lacked a right-edge anchor, so the log's path shielded any
+  token beginning with it, letting the shell create files under `decisions/`
+  that the Write/Edit guard still treats as immutable ADR history.
+
 ## [0.1.37] - 2026-07-27
 
 ### Fixed

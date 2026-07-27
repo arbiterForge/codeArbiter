@@ -297,6 +297,40 @@ def main():
                     "rm .codearbiter/decisions/sub/decision-log.md"):
             expect_block(fx, cmd, "H-05", f"#528 lookalike destructive still blocked: {cmd}")
 
+        # ---- #528 review: the three dimensions that shipped a hole -----------
+        # CASE. The H-11 strip was re.I while H-05's pre-filter and LOG_TRUNC_RE
+        # are case-SENSITIVE, so a case-varied spelling was removed from H-11's
+        # view and never reached H-05's. On Windows/NTFS and default macOS/APFS
+        # that spelling resolves to the real file, so this DELETED the
+        # append-only arbitration log with no gate firing.
+        for cmd in ("rm .codearbiter/decisions/Decision-Log.md",
+                    "echo x > .codearbiter/decisions/Decision-Log.md",
+                    "mv .codearbiter/decisions/DECISION-LOG.MD /tmp/x",
+                    "rm .codearbiter/Decisions/Decision-Log.md",
+                    "sed -i s/a/b/ .codearbiter/decisions/Decision-Log.md"):
+            expect_block(fx, cmd, "H-11", f"#528 case variant must not slip the strip: {cmd}")
+
+        # VERB SET. H-11 covered the New-Item family; H-05 did not, so the log
+        # lost those verbs on reclassification. `New-Item -Force` truncates an
+        # existing file, so this was a silent wipe on the exact lowercase path.
+        for cmd in ("New-Item -Force -ItemType File .codearbiter/decisions/decision-log.md",
+                    "ni -Force .codearbiter/decisions/decision-log.md",
+                    "New-Item -Force .codearbiter/overrides.log"):
+            expect_block(fx, cmd, "H-05", f"#528 New-Item family truncates: {cmd}")
+
+        # TOKEN BOUNDARY. Without a right-edge anchor the log's path SHIELDED any
+        # token beginning with it, so the shell could create and grow a file that
+        # pre-write/pre-edit still treat as immutable ADR history.
+        for cmd in ("touch .codearbiter/decisions/decision-log.md.evil.md",
+                    "echo x >> .codearbiter/decisions/decision-log.md.evil.md",
+                    "touch .codearbiter/decisions/decision-log.mdEVIL"):
+            expect_block(fx, cmd, "H-11", f"#528 strip must not shield a sibling: {cmd}")
+
+        # The intended appends still work — the point of the whole change.
+        for cmd in ("cat rows.txt >> .codearbiter/decisions/decision-log.md",
+                    "Add-Content .codearbiter/decisions/decision-log.md 'entry'"):
+            expect_allow(fx, cmd, f"#528 sanctioned append still allowed: {cmd}")
+
         # ---- H-19: interpreter one-liners forging a gate marker (#237) -------
         # The mv/cp/tee/sed/redirect flank (below, exercised via H-05-style
         # verbs elsewhere) misses an arbitrary interpreter invocation entirely —

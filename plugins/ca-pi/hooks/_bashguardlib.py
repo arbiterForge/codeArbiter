@@ -296,6 +296,12 @@ LOG_NAMES = AUDIT_LOG_NAMES
 LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES)
 LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
+    # #528: `New-Item -Force` TRUNCATES an existing file (verified in PowerShell:
+    # a 20-byte file becomes 0). H-11 already covered this family, so the
+    # arbitration log lost it on the way to H-05 — and the flat logs never had
+    # it. `touch` and `Add-Content` are deliberately NOT here: neither truncates,
+    # and Add-Content is the sanctioned append for exactly these files.
+    r"|ni|New-Item"
     r"|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File)\b"
     r"[^|;&]*" + LOG_NAMES, re.I,
 )
@@ -314,8 +320,20 @@ LOG_GIT_RESTORE_RE = re.compile(
 DECISIONS = DECISIONS_DIR_RE + r"\b"
 # #528: the one path under decisions/ that H-11 must NOT claim — see
 # _check_h11_decisions. Matched on the raw command, so both separators.
+#
+# DELIBERATELY CASE-SENSITIVE. H-05, which takes over for this file, is itself
+# case-sensitive on both flanks: _check_h05_audit_log pre-filters with a plain
+# `in` test over AUDIT_LOG_BASENAMES, and LOG_TRUNC_RE carries no re.I. An re.I
+# here therefore stripped `Decision-Log.md` out of H-11's view and handed it to a
+# guard that could not see it — and on Windows/NTFS and default macOS/APFS that
+# spelling resolves to the real file, so `rm …/Decision-Log.md` destroyed the
+# append-only log with nothing firing at all. The two flanks must agree on case.
+#
+# The right edge is anchored so this path cannot SHIELD a sibling token: without
+# it, `touch …/decision-log.md.evil.md` was stripped to a harmless remainder and
+# H-11 stopped seeing a decisions/ write at all.
 DECISION_LOG_SHELL_RE = re.compile(
-    DECISIONS_DIR_RE + r"[\\/]+" + re.escape(DECISION_LOG_BASENAME), re.I,
+    DECISIONS_DIR_RE + r"[\\/]+" + re.escape(DECISION_LOG_BASENAME) + r"""(?=$|[\s>|;&"'])""",
 )
 # `>>?\|?` covers `>`, `>>`, and the `>|` force-clobber form into decisions/.
 DECISIONS_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + DECISIONS, re.I)

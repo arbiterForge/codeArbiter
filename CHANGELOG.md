@@ -26,8 +26,20 @@ predate the plugin rewrite and are grouped by date.
   doc states H-05's rule verbatim ("strictly append-only … to supersede, append
   a new entry") — so it is now governed by H-05 instead: append freely, never
   rewrite. ADR files beside it keep the marker gate unchanged, and the carve-out
-  is exactly one path wide: `old-decision-log.md`, `decision-log.md.bak` and a
-  nested `sub/decision-log.md` are all still ADRs.
+  is exactly one path wide: `old-decision-log.md` and a nested
+  `sub/decision-log.md` are still ADRs. (`decision-log.md.bak` is in neither
+  guard set — it does not end in `.md`, so it was never an ADR path either.)
+
+  Adversarial review caught two holes in the first cut of this, both of which
+  left the append-only log destructible from the shell. The carve-out was
+  case-insensitive while H-05 — the guard taking over for that file — is
+  case-sensitive on both flanks, so a case-varied spelling was stripped from one
+  guard's view and invisible to the other; on Windows/NTFS and default
+  macOS/APFS that spelling resolves to the real file. And `New-Item -Force`,
+  which truncates, was covered by H-11 but not H-05, so the log lost that verb
+  on reclassification — a gap the flat audit logs shared, now closed for all of
+  them. The carve-out also lacked a right-edge anchor, so the log's path
+  shielded any token beginning with it.
 
   Consequence of the deadlock, for the record: blocked from writing DECISION-0029
   during this session, the assistant cited it in `farm.ts` anyway — a dangling

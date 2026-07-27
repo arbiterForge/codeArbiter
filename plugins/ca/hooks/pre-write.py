@@ -9,7 +9,7 @@
 #         frontmatter, which would make every gate dormant.
 #   H-19  .codearbiter/.markers/* are the gate-pass tokens that turn a hard-gate
 #         BLOCK into an allow (#160) — never writable via the Write tool.
-#   H-05  audit logs (overrides.log, triage.log, sprint-log.md) are append-only.
+#   H-05  audit logs (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) are append-only.
 #   H-11  ADRs under decisions/ are authored only via /adr.
 #
 # Every protected-path decision resolves symlinks (#162): classify_protected()
@@ -93,12 +93,12 @@ def _guard_op(root, op):
     # a Write is a full overwrite. (path set: _hooklib.is_audit_log)
     if "audit" in classes:
         if kind == "write":
-            block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
+            block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) "
                           "are append-only (ORCHESTRATOR §7). Append with Edit or '>>', never Write.")
         # A patch edit is positional (it can rewrite interior lines) and a
         # patch delete destroys the trail — neither can be a verifiable pure
         # append the way pre-edit.py's tail-anchored Edit can.
-        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md) "
+        block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) "
                       "are append-only (ORCHESTRATOR §7). A patch cannot express a verifiable "
                       "pure append; append with '>>' instead.")
 
