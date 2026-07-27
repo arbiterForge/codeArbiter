@@ -601,6 +601,15 @@ describe("mutationCheck — built-in text mutation", () => {
 
   // DELIBERATELY NOT PINNED, each measured as surviving and each for a reason:
   //
+  //  - `Date.now() - start > MUT.budgetMs` relaxed to `>=`. The two differ ONLY
+  //    when elapsed equals the budget exactly, which for a zero budget means
+  //    racing the millisecond tick between `start` and the first check. Windows
+  //    has ~15ms timer granularity so elapsed is almost always 0 there; Linux
+  //    has 1ms resolution and it is a coin flip. A test that counted gate
+  //    invocations at budget 0 was added here on review feedback, passed CI once
+  //    by luck, and failed on a clean Linux run with ENOENT because ZERO gates
+  //    ran. It has been removed: it was a flake, not a guard, which is what the
+  //    original note said before it was over-corrected.
   //  - `shuffle()` replaced by identity or by reverse. Nothing here asserts
   //    sampling ORDER, and pinning it would mean either freezing Math.random or
   //    asserting a statistical property — the first tests the stub, the second
@@ -613,26 +622,6 @@ describe("mutationCheck — built-in text mutation", () => {
   //    that combination IS killed. Same layered-guard shape as worktree-fs.ts,
   //    and the same conclusion: the property is pinned, the individual layers
   //    cannot be.
-
-  it("checks the budget BEFORE each mutant, so a zero budget still runs exactly one", async () => {
-    // `Date.now() - start > MUT.budgetMs`, at the boundary. An earlier note in
-    // this file claimed the `>` / `>=` distinction "differs only when elapsed is
-    // exactly 0ms, so distinguishing them means racing the clock" — that was
-    // wrong. Elapsed IS 0 at the first check, essentially always, and counting
-    // gate invocations makes the two deterministic: `>` runs one mutant before
-    // breaking, `>=` runs none.
-    //
-    // The one-run behaviour is also worth recording on its own: at a zero budget
-    // the engine still writes a mutant and spawns a gate before deciding the
-    // budget is spent. Benign (the result is null either way) but not obvious.
-    await write("src/impl.ts", IMPL);
-    await write("count.cjs", 'require("fs").appendFileSync("runs.log", "x"); process.exit(0);');
-    MUT.sample = 6;
-    MUT.budgetMs = 0;
-
-    await mutationCheck(wt, task({ gate: { commands: ["node count.cjs"] } }));
-    expect(await readFile(path.join(wt, "runs.log"), "utf8")).toBe("x");
-  });
 
   it("stops at the wall-clock budget and reports nothing when it expires first", async () => {
     // Budget 0 means the very first iteration breaks, so nothing is evaluated
