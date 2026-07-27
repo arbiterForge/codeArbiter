@@ -257,6 +257,46 @@ def main():
                     "grep -r seed .codearbiter/decisions/"):
             expect_allow(fx, cmd, f"H-11 allow: {cmd}")
 
+        # ---- #528: the arbitration log is H-05, not H-11 ---------------------
+        # decisions/decision-log.md is the append-only SMARTS log, not an ADR.
+        # H-11 governed it as immutable history requiring the /adr marker, which
+        # deadlocked decision-variance Phase 4 — it MUST append there and has no
+        # marker to arm. It now takes H-05's semantics instead: append freely,
+        # never rewrite. Both directions are pinned, because a reclassification
+        # that only opens the gate would leave the log deletable from the shell.
+        for cmd in ("cat rows.txt >> .codearbiter/decisions/decision-log.md",
+                    "cat rows.txt >> .codearbiter\\decisions\\decision-log.md",
+                    "printf '%s\\n' entry >> .codearbiter/decisions/decision-log.md",
+                    "cat .codearbiter/decisions/decision-log.md",
+                    "tail -20 .codearbiter/decisions/decision-log.md"):
+            expect_allow(fx, cmd, f"#528 append/read allow: {cmd}")
+        for cmd in ("echo x > .codearbiter/decisions/decision-log.md",
+                    "echo x >| .codearbiter/decisions/decision-log.md",
+                    "rm .codearbiter/decisions/decision-log.md",
+                    "mv .codearbiter/decisions/decision-log.md /tmp/",
+                    "sed -i 's/accepted/rejected/' .codearbiter/decisions/decision-log.md",
+                    "truncate -s 0 .codearbiter/decisions/decision-log.md"):
+            expect_block(fx, cmd, "H-05", f"#528 rewrite still blocked: {cmd}")
+        # The carve-out is exactly one path wide. The sharpest test is APPEND:
+        # that is the operation the carve-out newly permits, so a lookalike or a
+        # nested path must still be refused by H-11 — otherwise the exemption
+        # widened past the single file it was scoped to.
+        for cmd in ("cat x >> .codearbiter/decisions/old-decision-log.md",
+                    "cat x >> .codearbiter/decisions/sub/decision-log.md",
+                    "cat x >> .codearbiter/decisions/0001-seed.md",
+                    "rm -rf .codearbiter/decisions"):
+            expect_block(fx, cmd, "H-11", f"#528 carve-out stays narrow: {cmd}")
+        # Destructive verbs on those same lookalikes are also refused, but by
+        # H-05 rather than H-11: the shell flank matches BARE BASENAMES, so
+        # `old-decision-log.md` contains `decision-log.md` as a substring. That
+        # lexical over-match is pre-existing and deliberate for every audit log
+        # (the guards' own header concedes "the shell flank remains lexical",
+        # with the Write/Edit guard as the precise boundary). Over-blocking is
+        # the safe direction; what matters is that neither is permitted.
+        for cmd in ("cp /tmp/x.md .codearbiter/decisions/old-decision-log.md",
+                    "rm .codearbiter/decisions/sub/decision-log.md"):
+            expect_block(fx, cmd, "H-05", f"#528 lookalike destructive still blocked: {cmd}")
+
         # ---- H-19: interpreter one-liners forging a gate marker (#237) -------
         # The mv/cp/tee/sed/redirect flank (below, exercised via H-05-style
         # verbs elsewhere) misses an arbitrary interpreter invocation entirely —

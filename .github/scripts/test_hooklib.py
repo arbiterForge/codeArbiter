@@ -241,6 +241,84 @@ class AuditPathHelperTest(unittest.TestCase):
             with self.subTest(rel=rel):
                 self.assertFalse(_hooklib.is_decisions_path(rel), rel)
 
+    # ------------------------------------------------------------------
+    # #528 — decision-log.md is an append-only ARBITRATION LOG, not an ADR.
+    #
+    # It lives under decisions/ purely by filesystem accident, and H-11's path
+    # regex matched every .md there, so the log was governed as immutable
+    # history requiring the /adr authoring marker. `decision-variance` Phase 4
+    # is REQUIRED to append to it and has no marker to arm, so every SMARTS
+    # arbitration outside an /adr session made a decision it could not record.
+    # H-05 already carries the right semantics: append freely, never rewrite.
+    # ------------------------------------------------------------------
+
+    def test_decision_log_is_an_audit_log(self):
+        self.assertTrue(_hooklib.is_audit_log(".codearbiter/decisions/decision-log.md"))
+        self.assertTrue(_hooklib.is_audit_log(".codearbiter\\decisions\\decision-log.md"))
+
+    def test_decision_log_is_NOT_an_h11_decisions_path(self):
+        # BOTH halves of the reclassification are required. classify_protected
+        # returns every class a path hits and pre-write.py checks the decisions
+        # class independently, so adding the log to the audit set while leaving
+        # it in the H-11 set still blocks the append. This test fails if only
+        # the is_audit_log half is applied.
+        self.assertFalse(_hooklib.is_decisions_path(".codearbiter/decisions/decision-log.md"))
+        self.assertFalse(_hooklib.is_decisions_path(".codearbiter\\decisions\\decision-log.md"))
+
+    def test_adrs_beside_the_log_keep_the_h11_marker_gate(self):
+        # The reclassification must be exactly one filename wide. An ADR in the
+        # same directory — including a non-numbered draft and a nested path —
+        # stays under H-11, and is not laundered into the append-only set.
+        for rel in (".codearbiter/decisions/0029-some-adr.md",
+                    ".codearbiter/decisions/draft.md",
+                    ".codearbiter/decisions/sub/0002-x.md"):
+            with self.subTest(rel=rel):
+                self.assertTrue(_hooklib.is_decisions_path(rel), rel)
+                self.assertFalse(_hooklib.is_audit_log(rel), rel)
+
+    def test_a_lookalike_filename_is_not_reclassified(self):
+        # Only the exact basename, only directly under decisions/. A near-miss
+        # must not inherit append-only status and thereby escape the ADR gate.
+        # These are still .md files under decisions/, so they stay H-11 ADRs.
+        for rel in (".codearbiter/decisions/old-decision-log.md",
+                    ".codearbiter/decisions/decision-log-2.md",
+                    ".codearbiter/decisions/sub/decision-log.md"):
+            with self.subTest(rel=rel):
+                self.assertFalse(_hooklib.is_audit_log(rel), rel)
+                self.assertTrue(_hooklib.is_decisions_path(rel), rel)
+
+    def test_a_non_md_lookalike_is_in_neither_guard_set(self):
+        # `.md.bak` does not end in `.md`, so it was never an H-11 path — it
+        # must not become an append-only log either, or a backup copy would be
+        # writable by any caller under H-05's rules.
+        rel = ".codearbiter/decisions/decision-log.md.bak"
+        self.assertFalse(_hooklib.is_audit_log(rel))
+        self.assertFalse(_hooklib.is_decisions_path(rel))
+
+    def test_classify_protected_puts_the_log_in_audit_and_NOT_decisions(self):
+        # The composition is what makes both halves load-bearing. pre-write.py
+        # and pre-edit.py branch on these class names INDEPENDENTLY, so a set
+        # containing both "audit" and "decisions" still blocks on the decisions
+        # branch — reclassifying only is_audit_log() would look correct in a
+        # predicate test and change nothing at the hook.
+        with tempfile.TemporaryDirectory() as root:
+            log = os.path.join(root, ".codearbiter", "decisions", "decision-log.md")
+            adr = os.path.join(root, ".codearbiter", "decisions", "0029-x.md")
+            os.makedirs(os.path.dirname(log))
+            for p in (log, adr):
+                with open(p, "w", encoding="utf-8") as fh:
+                    fh.write("x\n")
+            self.assertEqual(_hooklib.classify_protected(log, root), {"audit"})
+            self.assertEqual(_hooklib.classify_protected(adr, root), {"decisions"})
+
+    def test_decision_log_edit_must_still_be_a_pure_tail_append(self):
+        # H-05's rewrite protection is what replaces H-11's blanket block, so
+        # it has to actually hold for this file: appending is allowed, editing
+        # an existing entry is not.
+        current = "## DECISION-0001\n\nbody\n\n---\n"
+        self.assertTrue(_hooklib.is_tail_append(current, "---\n", "---\n\n## DECISION-0002\n"))
+        self.assertFalse(_hooklib.is_tail_append(current, "## DECISION-0001", "## DECISION-0001-REWRITTEN"))
+
 
 class PathGlobTest(unittest.TestCase):
     """is_migration_path / is_ci_path / is_deploy_path against default globs

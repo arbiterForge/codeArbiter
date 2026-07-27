@@ -273,9 +273,38 @@ ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
 # AUDIT_LOG_NAMES is built FROM this tuple (re.escape'd, alternated) — behavior
 # is unchanged from the prior hand-written pattern (same four literal
 # filenames, same (?:...) grouping), only the source of truth moved.
-AUDIT_LOG_BASENAMES = ("overrides.log", "triage.log", "gate-events.log", "sprint-log.md")
+AUDIT_LOG_FLAT_BASENAMES = ("overrides.log", "triage.log", "gate-events.log", "sprint-log.md")
+# #528: the SMARTS arbitration log is an append-only audit artifact that happens
+# to sit under decisions/ for filing reasons. It is NOT an ADR, and governing it
+# as one was a live deadlock: `decision-variance` Phase 4 is REQUIRED to append
+# to it, H-11 refused every write without the /adr authoring marker, and only
+# decision-lifecycle arms that marker. So a SMARTS arbitration outside an /adr
+# session made a decision it could not record. Its own format doc states H-05's
+# rule verbatim — "strictly append-only … to supersede, append a new entry" — so
+# H-05 is the correct guard: append freely, never rewrite.
+#
+# It is listed separately from AUDIT_LOG_BASENAMES because those are anchored
+# directly under .codearbiter/ and this one is nested a level deeper. Both halves
+# of the reclassification are load-bearing: adding it here WITHOUT removing it
+# from the H-11 set below leaves the append blocked, because classify_protected
+# reports every class a path hits and pre-write checks them independently.
+DECISION_LOG_BASENAME = "decision-log.md"
+DECISION_LOG_RE = re.compile(r"\.codearbiter/decisions/" + re.escape(DECISION_LOG_BASENAME) + r"$")
+# AUDIT_LOG_BASENAMES stays the SINGLE AUTHORITATIVE BASENAME LIST, and the
+# arbitration log is in it. _bashguardlib's H-05 shell check pre-filters with
+# `any(n in cmd for n in AUDIT_LOG_BASENAMES)` precisely so a newly added audit
+# log cannot silently skip the shell flank — adding the name only to the regex
+# alternation below would sail past that pre-filter and leave the log deletable
+# from the shell. (Caught by test_hook_guards.py, which the comment on that
+# pre-filter predicted verbatim.)
+AUDIT_LOG_BASENAMES = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
 AUDIT_LOG_NAMES = "(?:" + "|".join(re.escape(n) for n in AUDIT_LOG_BASENAMES) + ")"
-AUDIT_LOG_RE = re.compile(r"\.codearbiter/" + AUDIT_LOG_NAMES + r"$")
+# The path anchor stays scoped to the FLAT logs — those sit directly under
+# .codearbiter/, the arbitration log one level deeper — so is_audit_log() tests
+# both patterns rather than loosening this one into matching any nesting.
+AUDIT_LOG_RE = re.compile(
+    r"\.codearbiter/" + "(?:" + "|".join(re.escape(n) for n in AUDIT_LOG_FLAT_BASENAMES) + ")" + r"$"
+)
 DECISIONS_DIR_RE = r"\.codearbiter[\\/]+decisions"
 DECISIONS_PATH_RE = re.compile(DECISIONS_DIR_RE + r"[\\/]+.+\.md$")
 
@@ -297,9 +326,10 @@ GATE_MARKER_NAMES = r"(?:security-gate-passed|migration-gate-passed)"
 
 def is_audit_log(rel):
     """True iff `rel` is one of the append-only .codearbiter audit logs
-    (overrides.log, triage.log, sprint-log.md, gate-events.log) — the H-05
-    guard set."""
-    return bool(AUDIT_LOG_RE.search(norm_path(rel)))
+    (overrides.log, triage.log, sprint-log.md, gate-events.log) or the SMARTS
+    arbitration log decisions/decision-log.md (#528) — the H-05 guard set."""
+    n = norm_path(rel)
+    return bool(AUDIT_LOG_RE.search(n) or DECISION_LOG_RE.search(n))
 
 
 def is_tail_append(current, old, new):
@@ -330,8 +360,17 @@ def is_tail_append(current, old, new):
 
 def is_decisions_path(rel):
     """True iff `rel` is a `.md` ADR anywhere under .codearbiter/decisions/ —
-    the H-11 guard set (a non-numbered draft or a nested path still counts)."""
-    return bool(DECISIONS_PATH_RE.search(norm_path(rel)))
+    the H-11 guard set (a non-numbered draft or a nested path still counts).
+
+    decisions/decision-log.md is the ONE exception (#528): it is the append-only
+    arbitration log, not immutable ADR history, and is governed by H-05 instead.
+    The carve-out is exactly one path wide and anchored — `decision-log.md.bak`,
+    `old-decision-log.md` and a nested `sub/decision-log.md` all remain ADRs, so
+    a near-miss filename cannot launder itself out of the marker gate."""
+    n = norm_path(rel)
+    if DECISION_LOG_RE.search(n):
+        return False
+    return bool(DECISIONS_PATH_RE.search(n))
 
 
 def is_context_md(rel):

@@ -64,7 +64,7 @@ import subprocess
 import sys
 
 from _hooklib import (
-    AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISIONS_DIR_RE,
+    AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
     GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block, content_digest,
     is_migration_path, line_digest, marker_fresh, sensitive_scan_added_lines,
 )
@@ -312,6 +312,11 @@ LOG_GIT_RESTORE_RE = re.compile(
 # redirect into .codearbiter/decisions/, or any write/delete verb naming it,
 # blocks — `cat`/`ls`/`grep` reads pass untouched.
 DECISIONS = DECISIONS_DIR_RE + r"\b"
+# #528: the one path under decisions/ that H-11 must NOT claim — see
+# _check_h11_decisions. Matched on the raw command, so both separators.
+DECISION_LOG_SHELL_RE = re.compile(
+    DECISIONS_DIR_RE + r"[\\/]+" + re.escape(DECISION_LOG_BASENAME), re.I,
+)
 # `>>?\|?` covers `>`, `>>`, and the `>|` force-clobber form into decisions/.
 DECISIONS_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + DECISIONS, re.I)
 DECISIONS_WRITE_RE = re.compile(
@@ -957,15 +962,24 @@ def _check_h05_audit_log(cmd):
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
             or LOG_GIT_RESTORE_RE.search(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
-                      "gate-events.log) are append-only (ORCHESTRATOR §7). Truncating, "
-                      "overwriting, or deleting the audit trail is prohibited; append with "
-                      "'>>' only.")
+                      "gate-events.log, decisions/decision-log.md) are append-only "
+                      "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit "
+                      "trail is prohibited; append with '>>' only.")
 
 
 def _check_h11_decisions(cmd):
     """H-11: ADRs exist only via /adr — the Write/Edit tools are guarded by
     pre-write/pre-edit, and this closes the shell flank (`echo > decisions/…`,
-    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched."""
+    `touch`, `cp`, `rm`, `sed -i`, …). Reads are untouched.
+
+    #528: decisions/decision-log.md is the append-only arbitration log, not an
+    ADR, and belongs to H-05 — which already covers it, since LOG_NAMES is
+    composed from the same _hooklib alternation. Blank its path out of the
+    string H-11 scans so an append to it is not read as an ADR write. Only that
+    exact path is removed, so a directory-level operation
+    (`rm -rf .codearbiter/decisions`) still carries a decisions/ reference and
+    still blocks."""
+    cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
     if DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
                       "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
