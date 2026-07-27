@@ -33,15 +33,21 @@ import { MUT } from "./mutation.ts";
 const WORKTREE_ROOT = path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees");
 const worktreeFor = (id: string) => path.join(WORKTREE_ROOT, id);
 
+// Windows raises EBUSY/EPERM/ENOTEMPTY when a scanner or a sibling process holds
+// a handle under the tree, and `force: true` only suppresses ENOENT — it does
+// NOT retry. An unretried rm on a shared, concurrently-used directory is a flake
+// generator, so every removal in this file goes through here.
+const rmrf = (p: string) => rm(p, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+
 const created: string[] = [];
 afterEach(async () => {
-  for (const wt of created.splice(0)) await rm(wt, { recursive: true, force: true });
+  for (const wt of created.splice(0)) await rmrf(wt);
 });
 
 async function seedWorktree(id: string, files: Record<string, string>): Promise<string> {
   const wt = worktreeFor(id);
   created.push(wt);
-  await rm(wt, { recursive: true, force: true });
+  await rmrf(wt);
   for (const [rel, body] of Object.entries(files)) {
     const abs = path.join(wt, rel);
     await mkdir(path.dirname(abs), { recursive: true });
@@ -78,8 +84,15 @@ function deps(over: Partial<RunTaskDeps> = {}): RunTaskDeps {
     // code. A stub that reports success while the seeded directory survives
     // sends every green result through three real backoff sleeps (150ms +
     // 300ms) and attaches a spurious cleanup failure — so the stub removes it.
+    // The real `git()` seam NEVER rejects — it resolves to {code, out, ...} and
+    // lets the caller inspect the code. `removeWorktreeVerified` calls it with no
+    // try/catch, so a stub that throws would propagate a raw fs error straight
+    // out of runTask. Swallow: the removal is best-effort here, and
+    // removeWorktreeVerified decides the outcome from the filesystem anyway.
     git: async (args: string[]) => {
-      if (args[0] === "worktree" && args[1] === "remove") await rm(args[3], { recursive: true, force: true });
+      if (args[0] === "worktree" && args[1] === "remove" && typeof args[3] === "string") {
+        await rmrf(args[3]).catch(() => {});
+      }
       return okGit;
     },
     withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
@@ -100,7 +113,11 @@ function recordingWorker(prompts: string[], files: string[] = ["src/impl.ts"]): 
 }
 
 // ---------------------------------------------------------------------------
-// runTask — the eleven escalations, each pinned to its own note
+// runTask escalations. `runTask` has eleven escalate-returns; this file pins
+// SEVEN of them. The other four — the task-level containment sweep, the merge
+// failure, and the two UnsafeWorktreePathError paths — are already pinned by
+// their exact notes in farm.unit.test.ts (verified by mutation, not assumed),
+// so they are not duplicated here.
 // ---------------------------------------------------------------------------
 describe("runTask escalations are distinguished by note, not just by status", () => {
   it("returns prepareWorktree's own message with attempts: 0 — it never reached a worker", async () => {
@@ -472,6 +489,37 @@ describe("best-of-N sample failures each surface their own cause", () => {
     expect(r.filesWritten).toEqual(["src/clean.ts"]);
   });
 
+  it("lets a CLEAN sample win when a SIBLING sample tampered with the test", async () => {
+    // Same asymmetry as the sweep test above, and for the same reason: the
+    // task-level tamper check emits a BYTE-IDENTICAL note, so an escalation-only
+    // assertion cannot tell the sample guard from the task guard behind it.
+    // Deleting the sample guard entirely leaves an escalation-only test green.
+    process.env.FARM_SAMPLES = "2";
+    const reads = new Map<string, number>();
+    const r = await RUN(
+      task({ id: "s5-bon-tamper-sibling", maxRetries: 0 }),
+      deps({
+        fileHash: async (p: string) => {
+          const wt = path.dirname(path.dirname(p));
+          const n = (reads.get(wt) ?? 0) + 1;
+          reads.set(wt, n);
+          // ONLY sample 0's test changes between its before/after read.
+          return wt.endsWith("__s0") && n > 1 ? "hash-after" : "hash-before";
+        },
+        worker: {
+          async apply(ctx) {
+            const k = Number(ctx.cwd.match(/__s(\d+)$/)?.[1] ?? -1);
+            return { ok: true, filesWritten: [`src/s${k}.ts`] } satisfies WorkerResult;
+          },
+        },
+      }),
+    );
+    expect(r.status).toBe("green");
+    // Sample 0 is rejected, so sample 1 wins. Without the sample guard, sample 0
+    // goes green and wins on index — and its files are what ship.
+    expect(r.filesWritten).toEqual(["src/s1.ts"]);
+  });
+
   it("does NOT reject a sample whose test hash was UNREADABLE before the worker ran", async () => {
     // The same null-means-unknown rule as the task-level guard. Drop it inside a
     // sample and every sample fails, so the task escalates reporting tampering
@@ -689,9 +737,12 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
     await seedWorktree(id, { "src/impl.test.ts": "expect(add(1, 2)).toBe(3);" });
     const p = await promptFor(task({ id }));
     expect(p).toContain("--- src/impl.test.ts (read-only — the failing test) ---");
-    // No header, and above all no "null" body, for the not-yet-written target.
+    // No enrichment header for the not-yet-written target...
     expect(p).not.toContain("--- src/impl.ts ---");
-    expect(p).not.toContain("null");
+    // ...but it is still named as a file the worker MAY create. "Absent from
+    // enrichment" and "out of scope" are different states, and conflating them
+    // would leave the worker with nothing it is allowed to write.
+    expect(p).toContain("You may ONLY create or edit these files:\n  - src/impl.ts");
   });
 
   it("injects nothing at all when even the test file is unreadable", async () => {
@@ -791,18 +842,26 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
     expect(prompts[1]).not.toContain(".env (your previous attempt");
   });
 
-  it("captureInScope refuses a secret-bearing name on the way IN", async () => {
-    // The INNER of the two layers, and the reachable one: buildEnrichment's
-    // prior-output filter only ever sees what captureInScope already returned.
-    // Asserted directly, so deleting either layer alone is caught — otherwise a
-    // future refactor could drop the outer one as "redundant" and leave this as
-    // the sole guard with nothing pinning it.
+  it("captureInScope skips both the read-only test and a secret-bearing name", async () => {
+    // captureInScope is the INNER of the two secret-bearing-name layers and the
+    // only REACHABLE one: buildEnrichment's prior-output filter (farm.ts:468)
+    // never sees anything captureInScope did not already return, so no
+    // black-box test can reach it and deleting it alone changes nothing
+    // observable. It is unreachable defence-in-depth, and this test does not
+    // pretend to pin it — it pins the layer that actually runs, directly,
+    // rather than only through the enrichment path.
     const id = "s5-capture-secret";
     const wt = await seedWorktree(id, {
       ".env": "PLAIN_MARKER=zzz-capture-canary-zzz",
+      "src/impl.test.ts": "expect(cfg.value).toBe(3);",
       "src/impl.ts": "export const cfg = {};",
     });
-    const captured = await captureInScope(wt, task({ id, filesInScope: [".env", "src/impl.ts"] }));
+    const captured = await captureInScope(
+      wt,
+      task({ id, filesInScope: [".env", "src/impl.test.ts", "src/impl.ts"] }),
+    );
+    // The test path is skipped even when a plan lists it as in-scope: it is
+    // read-only, and re-capturing it would feed it back as editable context.
     expect(captured).toEqual([{ path: "src/impl.ts", contents: "export const cfg = {};" }]);
   });
 
