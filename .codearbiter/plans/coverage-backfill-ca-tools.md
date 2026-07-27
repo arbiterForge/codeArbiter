@@ -98,7 +98,7 @@ Test-only, so `test(farm):` and no version bump (see Constraints).
 | 1 | `redactor.ts` — PEM span boundaries, basename denylist | +3 | **DONE** (#517) |
 | 2 | `worktree-fs.ts` — `unsafe()` refusal / TOCTOU arms | **+6** (est. 19) | **DONE** |
 | 3 | `mutation.ts` — `antiGamingCheck`, `FARM_MUTATION_CMD` hook path, loop bounds | **+39** (est. 42) | **DONE** |
-| 4 | `exec.ts` — `numEnv`, `awaitTaskkill`, `treeKill`, `run` timeout | ~20 | |
+| 4 | `exec.ts` — containment failure, `treeKill` unverified, `taskkillPath` | **+16** (est. 15-18) | **DONE** |
 | 5 | `farm.ts` **exported only** — `runTask`, `validate`, `cleanupFailures` | ~68 | |
 | 6 | clean-export measurement, close #511 | — | |
 
@@ -146,10 +146,10 @@ handle is open, but the write goes through that retained handle — so those che
 where bytes land. `handle.stat()`/`sameFile` (L122, L136) are the only post-open checks that can.
 Not changed here: touching `worktree-fs.ts` rebuilds `farm.js`, which is declared payload.
 
-| | after slice 2 | after slice 3 | need | gap |
-|---|---|---|---|---|
-| Lines | 804 = 67.73% | **848 = 71.44%** | 831 | **CLEARED** |
-| Branches | 584 = 60.39% | **623 = 64.42%** | 677 | **+54** |
+| | after slice 2 | after slice 3 | after slice 4 | need | gap |
+|---|---|---|---|---|---|
+| Lines | 804 = 67.73% | 848 = 71.44% | **855 = 72.03%** | 831 | **CLEARED** |
+| Branches | 584 = 60.39% | 623 = 64.42% | **639 = 66.08%** | 677 | **+38** |
 
 **Lines has cleared the floor.** Branches remains the binding column, exactly as the plan predicted
 at the outset — and it is now the ONLY thing between this tree and AC-1.
@@ -158,8 +158,15 @@ Slice 3 returned +39 against an estimate of 42, the first estimate in this campa
 held because it was built from the uncovered report's *shape* (business logic, independently
 reachable) rather than from its size — the lesson slice 2 paid for.
 
-Remaining supply: `exec.ts` ~20 and `farm.ts`'s exported surface ~68 = **~88** against a need of
-**54**. Slice 5 no longer has to be near-perfect, but it is still the largest single contributor. `mutation.ts` was sized against its uncovered report before committing to
+Remaining supply is now ONLY `farm.ts`'s exported surface — ~68 uncovered branches against a need
+of **38**. Slice 5 is the last one that can move the number, and it needs a ~56% conversion rate on
+`runTask` (36), `validate` (12) and the smaller exported helpers. `main`, `writeReport`, `runCanary`
+and `callApi` (220 branches between them) stay out of scope: they are private and only reachable
+through `spawn()`, which the v8 provider does not instrument.
+
+Slices 3 and 4 both landed inside their estimates (+39 vs 42, +16 vs 15-18) because both were sized
+from the uncovered report's SHAPE rather than its size. Slice 2, sized from the raw count, was out by
+a factor of three. `mutation.ts` was sized against its uncovered report before committing to
 a number this time: its arms are business logic, not layered guards, and `MUT` is an exported
 mutable object, so its knobs are settable from a test with no module surgery.
 
