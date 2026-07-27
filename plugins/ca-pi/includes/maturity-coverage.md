@@ -34,5 +34,23 @@ the gap it closed, because it converts an honest red into a green that asserts n
 backfilling to clear this bar, work the uncovered *report* — error and refusal paths first — and let
 the number follow.
 
+## The no-tooling exemption — cite it, never assert it
+
 Where a surface has no coverage tooling at all, there is no numeric floor to check. Record that
 explicitly; do not invent a command, and do not treat the phase as passed unexamined.
+
+**The record MUST quote the `tech-stack.md` Coverage section it read, and name the surface it found
+no command for.** An agent that could not FIND the command is indistinguishable, from the inside,
+from a surface that genuinely HAS none — and the two demand opposite responses: the first is a STOP,
+the second is this exemption. Only the citation separates them, and it is what makes the exemption
+falsifiable by a reviewer rather than a claim that closes a BLOCK gate on the word of the agent that
+wanted through it.
+
+So: no citation, no exemption. A phase that cannot produce the quoted section STOPs and surfaces the
+gap instead — the same response the skills' hard rule already requires for a missing test or lint
+command. This is deliberately the narrower reading: the failure mode being guarded is a gate that
+reads as satisfied without executing, which is what issue #507 found in five suites at once.
+
+Consumers of this rule: `tdd` Phase 5, `refactor` Phase 2 and Phase 6, and the `coverage-auditor`
+agent. They MUST NOT restate the exemption's conditions locally — divergent copies are how Phase 2
+and Phase 6 could start giving different answers about the same surface.

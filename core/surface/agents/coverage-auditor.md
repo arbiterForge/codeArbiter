@@ -28,7 +28,7 @@ one place for that reason.
 
 Run the coverage command from `tech-stack.md` (or use the last run output). Compare against the threshold for the `stage:` maturity value in `CONTEXT.md`, applying **every metric `maturity-coverage.md` names as binding** — a report clearing one and failing another is below threshold. Flag that as **HIGH** (blocks PR at the commit gate).
 
-Where the surface has no coverage tooling, say so and flag nothing on this check; do not invent a command or infer a number.
+Where the surface has no coverage tooling, say so and flag nothing on this check; do not invent a command or infer a number. Report it as the no-tooling exemption from `maturity-coverage.md`, quoting the `tech-stack.md` Coverage section that omits a command for this surface — an audit that cannot show what it read is the same unverifiable claim the exemption exists to prevent.
 
 ### 2. Untested source files
 
