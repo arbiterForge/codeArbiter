@@ -54,6 +54,12 @@ SHIPPED_TOOLS_ARTIFACTS: dict[str, tuple[str, ...]] = {
         "plugins/ca-sandbox/tools/claude-inside.js",
     ),
     "plugins/ca-pi": (),
+    # #530: ca-codex's gate used to diff the plugin WHOLESALE, so it was the one
+    # lane with no declared scope at all. It has no `tools/` directory and ships
+    # no committed `.js`, so declaring it changes nothing today - and the day it
+    # grows a build directory, it inherits the same rule as its siblings instead
+    # of quietly demanding a version bump for a lockfile.
+    "plugins/ca-codex": (),
 }
 
 

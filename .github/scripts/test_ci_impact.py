@@ -1150,27 +1150,47 @@ class WorkflowContractTest(unittest.TestCase):
         )
 
     def test_the_version_gates_ask_payload_scope_not_the_whole_plugin_directory(self):
-        """Issue #435 AC-3, workflow half.
+        """Issue #435 AC-3, workflow half — and issue #530's relocation of it.
 
         `test_payload_scope.py` pins the RULE; this pins that the gates actually
         USE it. A version gate that quietly reverts to `git diff -- plugins/ca`
-        would pass every test in that file while reinstating the tax."""
+        would pass every test in that file while reinstating the tax.
+
+        #530 moved the decision out of inline shell and into
+        `payload_version_gate.py`, so the scope call is now one layer down. Both
+        halves are asserted: the job must invoke the gate script, and the gate
+        script must be the thing that consults payload_scope. Asserting only the
+        first would let the gate stop scoping without any test noticing."""
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(ci)
         for job_id, plugin in (("version-bump", "plugins/ca"),
-                               ("version-bump-sandbox", "plugins/ca-sandbox")):
+                               ("version-bump-sandbox", "plugins/ca-sandbox"),
+                               ("version-bump-codex", "plugins/ca-codex")):
             with self.subTest(job=job_id):
                 body = jobs[job_id]
                 self.assertIn(
-                    f"payload_scope.py --plugin {plugin}",
+                    f"payload_version_gate.py --plugin {plugin}",
                     body,
-                    f"{job_id} no longer asks payload_scope.py what shipped",
+                    f"{job_id} no longer runs the payload-version gate",
                 )
                 self.assertNotIn(
                     f'git diff --quiet "origin/$BASE"...HEAD -- {plugin};',
                     body,
                     f"{job_id} reverted to the wholesale pre-#435 scope",
                 )
+                # #530: the tag lookup is no longer what decides publication.
+                # A gate that reinstates it inline is back to the original bug.
+                self.assertNotIn(
+                    "refs/tags/",
+                    body,
+                    f"{job_id} keys publication on a git tag again (issue #530)",
+                )
+
+        gate_src = (REPO_ROOT / ".github" / "scripts" / "payload_version_gate.py").read_text(
+            encoding="utf-8")
+        self.assertIn("payload_scope.payload_changed", gate_src,
+                      "the version gate stopped asking payload_scope what shipped")
+
         # ca-pi's gate lives in build-host-packages.py rather than inline shell,
         # so the same exclusion is asserted at its source.
         guard = (REPO_ROOT / "tools" / "build-host-packages.py").read_text(encoding="utf-8")

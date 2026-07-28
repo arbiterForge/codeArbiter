@@ -1068,31 +1068,21 @@ jobs:
         run: |
           BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
-          # Issue #435: the scope is the plugin MINUS its tools/ BUILD directory,
-          # plus the committed esbuild artifacts inside it. `plugins/<name>/tools/`
-          # holds TypeScript sources, a vitest config and a lockfile - none of
-          # which run on an installed machine - so a dev-only dependabot lockfile
-          # bump used to demand a version advance describing a change no user can
-          # observe. That is not just noise: it trains contributors to bump a
-          # version to silence a gate, which is the exact habit this gate exists
-          # to prevent. The artifacts (farm.js, sandbox.js) DO ship and still
-          # trigger it. payload_scope.py owns the rule; test_payload_scope.py
-          # pins both directions against a real repository.
-          if [ "$(python3 .github/scripts/payload_scope.py --plugin plugins/ca --base "origin/$BASE")" = unchanged ]; then
-            echo "no shipped payload change - version bump not required"
-            exit 0
-          fi
-          ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca/.claude-plugin/plugin.json','utf8')).version")
-          base_ver=$(git show "origin/$BASE:plugins/ca/.claude-plugin/plugin.json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
-          if [ "$ver" != "$base_ver" ]; then
-            echo "payload changed and version bumped: $base_ver -> $ver"
-            exit 0
-          fi
-          if git rev-parse -q --verify "refs/tags/v$ver" > /dev/null; then
-            echo "::error file=plugins/ca/.claude-plugin/plugin.json::plugins/ca/** changed but version is still $ver, which is already published (tag v$ver exists). 'claude plugin update' no-ops on an unchanged version, so installed users would silently keep the old payload. Bump the version."
-            exit 1
-          fi
-          echo "payload changed on unpublished version $ver (no tag v$ver) - allowed"
+          # Issue #435 scopes the payload (the plugin MINUS its tools/ BUILD
+          # directory, PLUS the committed esbuild artifacts inside it, since
+          # TypeScript sources and a lockfile never run on an installed machine).
+          # Issue #530 decides what makes a version unusable for a FURTHER
+          # payload change. Both rules live in Python so they can be unit-tested
+          # against a real repository rather than asserted about shell embedded
+          # in YAML - payload_scope.py and payload_version_gate.py, pinned by
+          # test_payload_scope.py and test_payload_version_gate.py.
+          #
+          # #530: this step used to ask "does tag v$ver exist?" and allow
+          # everything else. A marketplace install populates its cache from the
+          # MANIFEST VERSION with no tag involved, so an untagged-but-already-
+          # shipped version bought unlimited free payload changes that could
+          # reach no installed user. Three merged PRs shipped that way on 2.9.1.
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca --base "origin/$BASE"
 
   version-bump-sandbox:
     name: "[GATE ] | [SBX ] | Payload version"
@@ -1115,49 +1105,13 @@ jobs:
         run: |
           BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
-          # Issue #435: the scope is the plugin MINUS its tools/ BUILD directory,
-          # plus the committed esbuild artifacts inside it. `plugins/<name>/tools/`
-          # holds TypeScript sources, a vitest config and a lockfile - none of
-          # which run on an installed machine - so a dev-only dependabot lockfile
-          # bump used to demand a version advance describing a change no user can
-          # observe. That is not just noise: it trains contributors to bump a
-          # version to silence a gate, which is the exact habit this gate exists
-          # to prevent. The artifacts (farm.js, sandbox.js) DO ship and still
-          # trigger it. payload_scope.py owns the rule; test_payload_scope.py
-          # pins both directions against a real repository.
-          if [ "$(python3 .github/scripts/payload_scope.py --plugin plugins/ca-sandbox --base "origin/$BASE")" = unchanged ]; then
-            echo "no shipped payload change - version bump not required"
-            exit 0
-          fi
-          ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-sandbox/.claude-plugin/plugin.json','utf8')).version")
-          # First introduction of the plugin: plugin.json does not exist on base.
-          # That is never a silent-staleness trap (nothing is published yet), so
-          # allow it. NOTE: `git cat-file -e` on the tree-ish:path form exits
-          # 128 (not 1) when the PATH is absent from the tree, so absence cannot
-          # be distinguished from a bad ref by exit code alone. Instead, verify
-          # the base ref resolves first; once it does, any cat-file failure on
-          # the path means the file is genuinely absent at $BASE. A ref that
-          # does not resolve (transient fetch error, a race on origin/$BASE)
-          # must fail the step, not be swallowed as "first introduction".
-          if ! git rev-parse --verify --quiet "origin/$BASE^{commit}" > /dev/null; then
-            echo "::error::origin/$BASE does not resolve to a commit - bad ref or failed fetch"
-            exit 1
-          fi
-          if ! git cat-file -e "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json" 2>/dev/null; then
-            echo "ca-sandbox is new on $BASE (no prior plugin.json) - first introduction, version bump not required"
-            exit 0
-          fi
-          base_json=$(git show "origin/$BASE:plugins/ca-sandbox/.claude-plugin/plugin.json")
-          base_ver=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
-          if [ "$ver" != "$base_ver" ]; then
-            echo "payload changed and version bumped: $base_ver -> $ver"
-            exit 0
-          fi
-          if git rev-parse -q --verify "refs/tags/ca-sandbox-v$ver" > /dev/null; then
-            echo "::error file=plugins/ca-sandbox/.claude-plugin/plugin.json::plugins/ca-sandbox/** changed but version is still $ver, which is already published (tag ca-sandbox-v$ver exists). 'claude plugin update' no-ops on an unchanged version, so installed users would silently keep the old payload. Bump the version."
-            exit 1
-          fi
-          echo "payload changed on unpublished version $ver (no tag ca-sandbox-v$ver) - allowed"
+          # See the ca guard above. Same two rules, same scripts, one plugin
+          # argument apart: issue #435 owns the payload scope, issue #530 owns
+          # what makes a version unusable for a further payload change. The
+          # first-introduction case (no plugin.json on base) and the
+          # unresolvable-base case both moved into payload_version_gate.py,
+          # where they are unit-tested rather than asserted about shell.
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-sandbox --base "origin/$BASE"
 
   version-bump-codex:
     name: "[GATE ] | [CDX ] | Payload version"
@@ -1181,39 +1135,12 @@ jobs:
         run: |
           BASE="${BASE#refs/heads/}"
           git fetch -q origin "$BASE" --tags
-          if git diff --quiet "origin/$BASE"...HEAD -- plugins/ca-codex; then
-            echo "no payload change - version bump not required"
-            exit 0
-          fi
-          ver=$(node -p "JSON.parse(require('fs').readFileSync('plugins/ca-codex/.codex-plugin/plugin.json','utf8')).version")
-          # First introduction of the plugin: plugin.json does not exist on base.
-          # That is never a silent-staleness trap (nothing is published yet), so
-          # allow it. NOTE: `git cat-file -e` on the tree-ish:path form exits
-          # 128 (not 1) when the PATH is absent from the tree, so absence cannot
-          # be distinguished from a bad ref by exit code alone. Instead, verify
-          # the base ref resolves first; once it does, any cat-file failure on
-          # the path means the file is genuinely absent at $BASE. A ref that
-          # does not resolve (transient fetch error, a race on origin/$BASE)
-          # must fail the step, not be swallowed as "first introduction".
-          if ! git rev-parse --verify --quiet "origin/$BASE^{commit}" > /dev/null; then
-            echo "::error::origin/$BASE does not resolve to a commit - bad ref or failed fetch"
-            exit 1
-          fi
-          if ! git cat-file -e "origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json" 2>/dev/null; then
-            echo "ca-codex is new on $BASE (no prior plugin.json) - first introduction, version bump not required"
-            exit 0
-          fi
-          base_json=$(git show "origin/$BASE:plugins/ca-codex/.codex-plugin/plugin.json")
-          base_ver=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
-          if [ "$ver" != "$base_ver" ]; then
-            echo "payload changed and version bumped: $base_ver -> $ver"
-            exit 0
-          fi
-          if git rev-parse -q --verify "refs/tags/ca-codex-v$ver" > /dev/null; then
-            echo "::error file=plugins/ca-codex/.codex-plugin/plugin.json::plugins/ca-codex/** changed but version is still $ver, which is already published (tag ca-codex-v$ver exists). 'claude plugin update' no-ops on an unchanged version, so installed users would silently keep the old payload. Bump the version."
-            exit 1
-          fi
-          echo "payload changed on unpublished version $ver (no tag ca-codex-v$ver) - allowed"
+          # See the ca guard above. This lane additionally GAINS the #435 payload
+          # scope, which it never had: it used to diff `plugins/ca-codex`
+          # wholesale. That is behaviour-neutral today because ca-codex has no
+          # tools/ directory and ships no committed .js, and it means the tree
+          # is already correct the day it grows one.
+          python3 .github/scripts/payload_version_gate.py --plugin plugins/ca-codex --base "origin/$BASE"
 
   version-bump-pi:
     name: "[GATE ] | [PI  ] | Payload version"

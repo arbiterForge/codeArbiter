@@ -167,7 +167,7 @@ class TestTheExclusionCannotSilentlyWiden(unittest.TestCase):
     """AC-3: the exclusion is declared once, and its shape is pinned."""
 
     def test_only_the_tools_build_directory_is_excluded(self):
-        for plugin in ("plugins/ca", "plugins/ca-sandbox", "plugins/ca-pi"):
+        for plugin in ("plugins/ca", "plugins/ca-sandbox", "plugins/ca-pi", "plugins/ca-codex"):
             with self.subTest(plugin=plugin):
                 spec = payload_scope.pathspec(plugin)
                 self.assertEqual(spec[0], plugin)
