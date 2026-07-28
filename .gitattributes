@@ -34,3 +34,29 @@ docs/**/*.md    text eol=lf
 # why nothing caught it.
 .github/workflows/*.yml text eol=lf
 .github/actions/**/*.yml text eol=lf
+
+# TypeScript/JavaScript/JSON across the plugin and site trees. #515 showed this
+# is not cosmetic. An editor pass on Windows flipped farm.ts and
+# farm.unit.test.ts to CRLF, which made git read the ENTIRE file as added — and
+# the H-09b security backstop scans ADDED lines for crypto and secret patterns.
+# Every pre-existing hash-construction call and every credential-shaped test
+# fixture in those files therefore counted as newly introduced, and a
+# concurrency fix touching no such code was blocked demanding a security pass.
+#
+# (Naming the actual API here would trip that same scanner on this comment —
+# which it did, once, while this note was being written.)
+#
+# A whole-file diff does not just bury the change; it makes every line-scanning
+# gate in this repo fire on code nobody wrote. README.md was already immune
+# because `/*.md` above pins it, which is exactly why its diff stayed two lines
+# while farm.ts's was six thousand.
+#
+# Verified before adding: no committed file under these globs is CRLF today, so
+# this normalizes nothing retroactively and only prevents the next drift.
+plugins/**/*.ts   text eol=lf
+plugins/**/*.js   text eol=lf
+plugins/**/*.mjs  text eol=lf
+plugins/**/*.json text eol=lf
+site/**/*.ts      text eol=lf
+site/**/*.json    text eol=lf
+.claude-plugin/*.json text eol=lf

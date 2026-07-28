@@ -12,6 +12,30 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.10.1] — 2026-07-28
+
+### Fixed
+
+- **The farm dispatcher serializes access to git's worktree registry (#515).**
+  `.git/worktrees/` is a shared registry that git mutates non-atomically:
+  `git worktree add` scans the existing entries while creating its own, so a
+  second concurrent add could read a sibling's directory after it existed but
+  before its `commondir` was written. The dispatcher ran up to
+  `FARM_CONCURRENCY` prepare sequences at once with no lock, so one task would
+  intermittently escalate at `attempts: 0` with
+  `worktree add failed: … failed to read .git/worktrees/<other>/commondir`,
+  flipping an otherwise green run's exit code from 0 to 2.
+
+  Measured directly against real git: six concurrent prepare sequences over 40
+  rounds produced two failures with that signature, and zero when serialized.
+
+  Worktree creation, removal and prune now run under a dedicated lock, separate
+  from the existing merge lock so that short registry calls never queue behind a
+  long merge. Concurrency is unchanged — the worker API call, the gate and the
+  tests all still run in parallel; only the brief registry mutations are
+  serialized, and the retry backoff deliberately runs outside the lock so one
+  worker's retry schedule cannot stall the others.
+
 ## [2.10.0] — 2026-07-27
 
 A MINOR bump, not a patch: this window adds `ca-pi` as a fourth sibling plugin,

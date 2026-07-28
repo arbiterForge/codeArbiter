@@ -1357,7 +1357,46 @@ function withMergeLock<T>(fn: () => Promise<T>): Promise<T> {
   return next;
 }
 
-async function prepareWorktree(branch: string, wt: string, from: string): Promise<string | null> {
+// #515 — `.git/worktrees/` is a SHARED REGISTRY, and git mutates it
+// non-atomically. `git worktree add` scans the existing entries while creating
+// its own, so a second add running at the same time can read a sibling's
+// directory after it exists but before its `commondir` is written:
+//
+//   fatal: failed to read .git/worktrees/bulk0/commondir: No error
+//
+// which is the flake reported in #515 — one task escalating at `attempts: 0`
+// under six-way concurrency, flipping a green run's exit code to 2. Measured
+// directly: 6 concurrent prepare sequences over 40 rounds produced 2 failures
+// with that exact signature, and 0 when serialized.
+//
+// This is a SEPARATE chain from mergeChain on purpose. A merge holds its lock
+// across a git merge plus its gate, which is long; worktree registry calls are
+// short. Sharing one lock would park every worktree setup behind an unrelated
+// merge for no correctness gain. Nothing takes both in the opposite order, so
+// the two cannot deadlock against each other.
+//
+// It does NOT reduce the dispatcher's concurrency: the worker API call, the
+// gate and the tests — everything that actually takes time — stay parallel.
+// Only the brief registry mutations are queued, which is why #515 AC-4 (do not
+// drop FARM_CONCURRENCY below 6 to dodge this) is satisfied rather than dodged.
+let worktreeChain: Promise<unknown> = Promise.resolve();
+
+export function withWorktreeLock<T>(fn: () => Promise<T>): Promise<T> {
+  const next = worktreeChain.then(fn, fn);
+  worktreeChain = next.catch(() => {});
+  return next;
+}
+
+// `gitFn` is injectable for the same reason `removeWorktreeVerified` takes one:
+// this is the function #515's race lives in, and a test that cannot observe the
+// git calls cannot prove they are serialized. Defaults to the module runner, so
+// every existing caller is unchanged.
+export async function prepareWorktree(
+  branch: string,
+  wt: string,
+  from: string,
+  gitFn: GitRunner = git,
+): Promise<string | null> {
   // #163: fail closed before the recursive delete — the resolved path must be
   // strictly inside the allowed (in-repo) farm worktree root. This is the
   // load-bearing guard: `rm(wt, {recursive, force})` below is the exact
@@ -1369,12 +1408,20 @@ async function prepareWorktree(branch: string, wt: string, from: string): Promis
   }
   // Clean any stale worktree dir and branch so a re-run doesn't trip over the
   // leftovers of a prior run (git worktree add -b fails if the branch exists).
-  await git(["worktree", "remove", "--force", wt]).catch(() => {});
-  await rm(wt, { recursive: true, force: true }).catch(() => {});
-  await git(["branch", "-D", branch]).catch(() => {});
-  const add = await git(["worktree", "add", "-b", branch, wt, from]);
-  if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
-  return null;
+  //
+  // #515: the whole sequence is taken under the worktree lock, not just the
+  // `add`. The removal and the add both write the shared registry, so leaving
+  // either outside would still let one worker observe another mid-write. The
+  // containment guard above stays OUTSIDE deliberately — a rejected path must
+  // not queue behind other workers to be told it was never allowed.
+  return withWorktreeLock(async () => {
+    await gitFn(["worktree", "remove", "--force", wt]).catch(() => {});
+    await rm(wt, { recursive: true, force: true }).catch(() => {});
+    await gitFn(["branch", "-D", branch]).catch(() => {});
+    const add = await gitFn(["worktree", "add", "-b", branch, wt, from]);
+    if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
+    return null;
+  });
 }
 
 // --------------------------------------------------------------------------
@@ -1453,20 +1500,32 @@ export async function removeWorktreeVerified(
   const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
   let lastErr = "";
   for (let i = 1; i <= attempts; i++) {
-    const rmR = await gitFn(["worktree", "remove", "--force", wt]);
-    if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
-    let registered = await stillRegistered(gitFn, wt);
-    const present = await pathExists(wt);
-    // Prune clears a stale registration whose directory is already gone — the
-    // exact state a partially-failed removal or an external delete leaves.
-    // Run it ONLY in that state: `git worktree prune` is repo-wide, and a
-    // blanket call would also deregister an unrelated worktree whose path is
-    // merely unreachable right now (an unmounted volume, a temporarily denied
-    // directory). Narrow it to the condition it is actually needed for.
-    if (registered && !present) {
-      await gitFn(["worktree", "prune"]);
-      registered = await stillRegistered(gitFn, wt);
-    }
+    // #515: removal, prune and the two verification reads all touch the shared
+    // `.git/worktrees/` registry, so the whole attempt is taken under the
+    // worktree lock. `prune` is the most dangerous of the three to run
+    // unserialized — it DELETES sibling metadata directories, which is exactly
+    // what a concurrent `worktree add` is scanning.
+    //
+    // The backoff below is deliberately OUTSIDE the lock: holding it across a
+    // sleep would park every other worker behind this one's retry schedule,
+    // turning a bounded local delay into a global stall.
+    const { registered, present } = await withWorktreeLock(async () => {
+      const rmR = await gitFn(["worktree", "remove", "--force", wt]);
+      if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
+      let reg = await stillRegistered(gitFn, wt);
+      const exists = await pathExists(wt);
+      // Prune clears a stale registration whose directory is already gone — the
+      // exact state a partially-failed removal or an external delete leaves.
+      // Run it ONLY in that state: `git worktree prune` is repo-wide, and a
+      // blanket call would also deregister an unrelated worktree whose path is
+      // merely unreachable right now (an unmounted volume, a temporarily denied
+      // directory). Narrow it to the condition it is actually needed for.
+      if (reg && !exists) {
+        await gitFn(["worktree", "prune"]);
+        reg = await stillRegistered(gitFn, wt);
+      }
+      return { registered: reg, present: exists };
+    });
     if (!registered && !present) return { ok: true, target: wt, attempts: i };
     if (i < attempts) await sleep(delayMs * i);
     else

@@ -1170,21 +1170,30 @@ function withMergeLock(fn) {
   });
   return next;
 }
-async function prepareWorktree(branch, wt, from) {
+var worktreeChain = Promise.resolve();
+function withWorktreeLock(fn) {
+  const next = worktreeChain.then(fn, fn);
+  worktreeChain = next.catch(() => {
+  });
+  return next;
+}
+async function prepareWorktree(branch, wt, from, gitFn = git) {
   try {
     assertContainedWorktree(wt);
   } catch (e) {
     return e instanceof Error ? e.message : String(e);
   }
-  await git(["worktree", "remove", "--force", wt]).catch(() => {
+  return withWorktreeLock(async () => {
+    await gitFn(["worktree", "remove", "--force", wt]).catch(() => {
+    });
+    await rm(wt, { recursive: true, force: true }).catch(() => {
+    });
+    await gitFn(["branch", "-D", branch]).catch(() => {
+    });
+    const add = await gitFn(["worktree", "add", "-b", branch, wt, from]);
+    if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
+    return null;
   });
-  await rm(wt, { recursive: true, force: true }).catch(() => {
-  });
-  await git(["branch", "-D", branch]).catch(() => {
-  });
-  const add = await git(["worktree", "add", "-b", branch, wt, from]);
-  if (add.code !== 0) return `worktree add failed: ${add.out.slice(0, 200)}`;
-  return null;
 }
 var CLEANUP_ATTEMPTS = 3;
 var CLEANUP_DELAY_MS = 150;
@@ -1213,14 +1222,17 @@ async function removeWorktreeVerified(gitFn, wt, opts = {}) {
   const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
   let lastErr = "";
   for (let i = 1; i <= attempts; i++) {
-    const rmR = await gitFn(["worktree", "remove", "--force", wt]);
-    if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
-    let registered = await stillRegistered(gitFn, wt);
-    const present = await pathExists(wt);
-    if (registered && !present) {
-      await gitFn(["worktree", "prune"]);
-      registered = await stillRegistered(gitFn, wt);
-    }
+    const { registered, present } = await withWorktreeLock(async () => {
+      const rmR = await gitFn(["worktree", "remove", "--force", wt]);
+      if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
+      let reg = await stillRegistered(gitFn, wt);
+      const exists = await pathExists(wt);
+      if (reg && !exists) {
+        await gitFn(["worktree", "prune"]);
+        reg = await stillRegistered(gitFn, wt);
+      }
+      return { registered: reg, present: exists };
+    });
     if (!registered && !present) return { ok: true, target: wt, attempts: i };
     if (i < attempts) await sleep(delayMs * i);
     else
@@ -2202,6 +2214,7 @@ export {
   parseChatCompletion,
   parseMutationHookOutput,
   parsePlan,
+  prepareWorktree,
   projectPlanMetaForReport,
   readSampling,
   redactSecrets,
@@ -2214,5 +2227,6 @@ export {
   screenEntitlements,
   validate,
   validateWorktreeRoot,
+  withWorktreeLock,
   writeFilesInto
 };

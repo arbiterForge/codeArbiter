@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
-import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines } from "./farm.ts";
+import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines, withWorktreeLock, prepareWorktree } from "./farm.ts";
 import { projectPlanMetaForReport, noteArtifactError, noteUnavailableDiff, MAX_RECORDED_ARTIFACT_ERRORS } from "./farm.ts";
 import { scrubbedEnv, treeKill, taskkillPath } from "./exec.ts";
 import type { RunResult } from "./exec.ts";
@@ -2731,6 +2731,93 @@ describe("#398 — verified, retried, reported worktree teardown", () => {
     expect(r.target).toBe(wt);
     expect(r.detail).toMatch(/still registered/i);
     expect(r.detail).toMatch(/is locked/);
+  });
+
+  // #515 — the shared `.git/worktrees/` registry is mutated non-atomically by
+  // git, so two registry commands in flight at once let one read a sibling
+  // entry that exists but is not finished. Measured directly against real git:
+  // 6 concurrent prepare sequences over 40 rounds produced 2 failures reading
+  // `.git/worktrees/<other>/commondir`, and 0 when serialized.
+  //
+  // These assert the PROPERTY (never two registry commands overlapping) rather
+  // than the absence of the flake. Asserting "the suite went green" would pass
+  // ~95% of the time on the unfixed dispatcher and prove nothing.
+  describe("#515 worktree registry serialization", () => {
+    /** A git runner that reports the maximum overlap it ever observed. */
+    function overlapTrackingGit() {
+      let inFlight = 0;
+      let maxInFlight = 0;
+      const isRegistryOp = (a: string[]) =>
+        a[0] === "worktree" && (a[1] === "remove" || a[1] === "add" || a[1] === "prune" || a[1] === "list");
+      const git = async (args: string[]): Promise<RunResult> => {
+        if (!isRegistryOp(args)) return res(0);
+        inFlight++;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        // Yield across a macrotask so a genuinely concurrent caller is given
+        // every chance to interleave. Without the lock it takes it.
+        await new Promise((r) => setTimeout(r, 0));
+        inFlight--;
+        return args[1] === "list" ? res(0, "") : res(0);
+      };
+      return { git, max: () => maxInFlight };
+    }
+
+    it("never runs two registry commands at once across concurrent removals", async () => {
+      const { git, max } = overlapTrackingGit();
+      await Promise.all(
+        Array.from({ length: 6 }, (_, i) =>
+          removeWorktreeVerified(git, path.resolve(`.farm/worktrees/par-${i}`), { attempts: 1, delayMs: 1 })),
+      );
+      expect(max()).toBe(1);
+    });
+
+    it("serializes callers in the order they arrive", async () => {
+      const order: number[] = [];
+      await Promise.all(
+        Array.from({ length: 5 }, (_, i) =>
+          withWorktreeLock(async () => {
+            order.push(i);
+            await new Promise((r) => setTimeout(r, 0));
+            order.push(i);
+          })),
+      );
+      // Each caller's pair is adjacent — nobody ran inside anybody else.
+      expect(order).toEqual([0, 0, 1, 1, 2, 2, 3, 3, 4, 4]);
+    });
+
+    it("never runs two registry commands at once across concurrent PREPARES", async () => {
+      // prepareWorktree is where the reported failure actually occurred
+      // ("worktree add failed: ... failed to read .git/worktrees/bulk0/
+      // commondir"). Testing only removeWorktreeVerified left the lock on this
+      // path unpinned — removing it entirely kept every other test in this
+      // block green.
+      const { git, max } = overlapTrackingGit();
+      const errs = await Promise.all(
+        Array.from({ length: 6 }, (_, i) =>
+          prepareWorktree(`farm/par-${i}`, path.resolve(`.farm/worktrees/par-${i}`), "main", git)),
+      );
+      expect(max()).toBe(1);
+      expect(errs.every((e) => e === null)).toBe(true);
+    });
+
+    it("a rejecting caller does not wedge the lock, and does not let the queue reorder", async () => {
+      // `worktree add` failing is the ORDINARY case this lock exists around, so
+      // a chain that stops draining after one rejection would convert the flake
+      // into a hang — strictly worse than the bug. Order is asserted too: a
+      // rejection must not let a queued caller overtake one that arrived first.
+      const order: string[] = [];
+      const failing = withWorktreeLock(async () => {
+        order.push("first");
+        throw new Error("boom");
+      });
+      const after = withWorktreeLock(async () => {
+        order.push("second");
+        return "after";
+      });
+      await expect(failing).rejects.toThrow("boom");
+      await expect(after).resolves.toBe("after");
+      expect(order).toEqual(["first", "second"]);
+    });
   });
 
   it("deleteBranchVerified reports a branch git still lists", async () => {
