@@ -212,12 +212,19 @@ class TestTheGateRefusesTheOtherDirections(_Repo):
         self.assertEqual(code, gate.FAIL, message)
         self.assertIn("does not resolve", message)
 
-    def test_an_unparseable_manifest_version_fails(self):
+    def test_an_unparseable_manifest_version_fails_and_SAYS_SO(self):
+        """The diagnosis must name the real problem.
+
+        `semver_greater` degrades to False on malformed input — the right gate
+        answer with the wrong explanation, since "the version is still
+        <garbage>" sends the reader hunting for a bump they already made."""
         self.write(self.PAYLOAD, "changed\n")
         self.write(self.MANIFEST, '{"name": "ca", "version": "not-a-version"}\n')
         self.commit()
         code, message = self.run_gate()
         self.assertEqual(code, gate.FAIL, message)
+        self.assertIn("not valid SemVer", message)
+        self.assertNotIn("still", message)
 
     def test_a_manifest_without_a_version_key_fails(self):
         self.write(self.PAYLOAD, "changed\n")

@@ -50,7 +50,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _releaselib import RELEASE_TAG_PREFIXES, semver_greater  # noqa: E402
+from _releaselib import RELEASE_TAG_PREFIXES, semver_greater, semver_key  # noqa: E402
 import payload_scope  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
@@ -134,6 +134,16 @@ def gate(base: str, plugin: str, root: Path = REPO) -> tuple[int, str]:
     current = head_version(plugin, root)
     if current is None:
         return FAIL, f"{annotate}{manifest} is missing or has no usable version string"
+
+    # Diagnose an unparseable version HERE rather than letting it fall through.
+    # `semver_greater` degrades to False on malformed input, which is the right
+    # gate answer and the wrong explanation: it would report "the version is
+    # still <garbage>", sending the reader to look for a bump they already made.
+    if semver_key(current) is None:
+        return FAIL, (
+            f"{annotate}{manifest} declares version {current!r}, which is not valid SemVer, "
+            f"so whether it advances cannot be decided. Fix the version string."
+        )
 
     previous = base_version(base, plugin, root)
     if previous is None:
