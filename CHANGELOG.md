@@ -12,7 +12,11 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.9.2] — 2026-07-27
+## [2.10.0] — 2026-07-27
+
+A MINOR bump, not a patch: this window adds `ca-pi` as a fourth sibling plugin,
+`/ca:cleanup`, inbound-PR review, multi-plugin release lanes, and the §6 routing
+model — nine `feat` commits since the 2.9.1 section, no breaking changes.
 
 Cut so the fixes below actually reach installed users. They had been merged onto
 an untagged `2.9.1`, and `claude plugin update` is a no-op while the manifest
