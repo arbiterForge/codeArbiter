@@ -2112,8 +2112,15 @@ class NoOrphanedSuiteTest(unittest.TestCase):
         # This module is excluded from the sibling corpus on purpose: it is the
         # one file guaranteed to name every suite it discusses, so counting it
         # would let this guard vouch for orphans by describing them.
+        # Comments are stripped from the SIBLING corpus for the same reason they
+        # are stripped from the workflows: a suite named in prose is not a suite
+        # that runs. Until #530 this half counted comments, so a script that
+        # merely MENTIONED its own test file vouched for it - and #530's new
+        # suite was genuinely un-wired while reading as reachable via one line of
+        # its subject's documentation. Exactly the vacuity this method's
+        # docstring describes, surviving on the half nobody had mutated.
         scripts = "\n".join(
-            p.read_text(encoding="utf-8")
+            self._strip_comments(p.read_text(encoding="utf-8"))
             for p in (REPO_ROOT / ".github" / "scripts").glob("*.py")
             if p.name != "test_ci_impact.py")
         return workflows, scripts
@@ -2139,7 +2146,11 @@ class NoOrphanedSuiteTest(unittest.TestCase):
             # several Pi suites run only through verify_pi_support.py and
             # test_pi_platform_contract.py, which is composition rather
             # than oversight.
-            others = scripts.replace(path.read_text(encoding="utf-8"), "")
+            # Stripped on BOTH sides: `scripts` is comment-free, so subtracting
+            # the raw source would match nothing and leave the suite vouching
+            # for itself.
+            others = scripts.replace(
+                self._strip_comments(path.read_text(encoding="utf-8")), "")
             if name in others or name[:-3] in others:
                 continue
             orphans.append(name)

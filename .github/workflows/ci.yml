@@ -204,6 +204,14 @@ jobs:
               - '.github/scripts/payload_scope.py'
               - '.github/scripts/check_codex_host.py'
               - '.github/scripts/test_payload_scope.py'
+              # Issue #530: payload_version_gate.py decides whether a shipped
+              # payload change may ride the current manifest version, and
+              # test_payload_version_gate.py is its only guard. Same reasoning as
+              # payload_scope.py above - a PR that ONLY loosened the rule is the
+              # exact shape of a gate quietly stopping, and would otherwise skip
+              # the job that checks it.
+              - '.github/scripts/payload_version_gate.py'
+              - '.github/scripts/test_payload_version_gate.py'
               # Issue #507: test_ci_impact.py's GateCommandTest is the only guard
               # that a command a gate READS from tech-stack.md is actually
               # DEFINED there. Its two subjects are the gate prose and the file
@@ -286,6 +294,14 @@ jobs:
         # lockfile bump must NOT demand a version advance, and a committed
         # esbuild artifact must.
         run: python .github/scripts/test_payload_scope.py
+      - name: Validate the payload-version gate
+        # Issue #530. payload_scope.py above answers "did anything an installed
+        # user can observe change?"; this answers "may that change ride the
+        # current version?" - and it used to answer it with a git TAG lookup,
+        # while `claude plugin update` keys on the MANIFEST VERSION. Runs the
+        # rule against real throwaway repositories in both directions, including
+        # the untagged-but-already-shipped case that produced the issue.
+        run: python .github/scripts/test_payload_version_gate.py
 
   tools:
     name: "[CHECK] | [CA  ] | Farm dispatcher contract"
