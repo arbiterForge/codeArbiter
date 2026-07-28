@@ -24,3 +24,13 @@ core/surface/** text eol=lf
 plugins/**/*.md text eol=lf
 docs/**/*.md    text eol=lf
 /*.md           text eol=lf
+
+# Workflows and their composite actions. Not a style preference: an editor on
+# Windows that rewrites one of these wholesale turns a four-line change into a
+# whole-file diff, which is what happened to ci.yml in #530 (3323 changed lines
+# for 44 real insertions) and which hides the actual edit from every reviewer
+# and every future `git blame`. YAML block scalars normalize line breaks when
+# parsed, so the runner never noticed - nothing failed, and that is precisely
+# why nothing caught it.
+.github/workflows/*.yml text eol=lf
+.github/actions/**/*.yml text eol=lf
