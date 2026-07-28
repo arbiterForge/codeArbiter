@@ -943,3 +943,174 @@ the work is the sanctioned path for the other case. If operators cannot find the
 `/ca:override` again, promote it to its own command.
 
 ---
+
+## DECISION-0029 — #525 — One shared formatter renders the mutation survivor count for both risk arms
+
+**Date:** 2026-07-27
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com (chose "shared formatter" from a four-option SMARTS table, over the minimal one-line fix, over deferring to the next farm.ts change, and over closing won't-fix)
+**Decision category:** observability / operator-facing reporting
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `farm.ts`'s mutation-escalation arm rendered `${mut.evaluated} mutants survived` — the count EVALUATED, under a "survived" label.
+- **Scaffold position:** the warn arm four lines below rendered `${mut.survivors.length}/${mut.evaluated} survived`. Two independently-written format strings for one quantity, one of them wrong.
+- **Status type:** divergent
+
+### Decision
+Extract a single formatter and call it from both arms, rather than correcting the
+literal. This removes the class of drift that produced the defect instead of the
+instance, and the warn arm keeps its distinct suffix so the two notes stay
+distinguishable.
+
+### SMARTS rationale
+Reliable and Maintainable decided it; the shared formatter dominated the minimal
+fix — strictly better on Maintainable, equal on every other lens. The argument
+that had favoured the minimal fix, that a `farm.js` payload rebuild makes any
+`farm.ts` change expensive, did not survive measurement: the version was
+unpublished and the five most recent `farm.ts` commits were all standalone
+`fix(farm)`. Securable was Indifferent — the note carries a score and a count and
+crosses into the worker prompt either way.
+
+### Implementation implication
+Shipped in #526 over six commits and five adversarial rounds. The final design went
+further than this decision anticipated: the root cause was `MutationResult`
+declaring optional hook fields as required, so `parseMutationHookOutput` had to
+invent them. `evaluated` and `survivors` are now optional and the note states a
+count only when one was reported. Four hook shapes changed from escalate to warn,
+measured across 27 shapes and recorded in the CHANGELOG.
+
+---
+
+## DECISION-0030 — #527 — The coverage no-tooling exemption must cite `tech-stack.md`, not assert it
+
+**Date:** 2026-07-27
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com (chose "require a citation" over removing the escape hatch entirely, and over passing the gate while logging the exemption to the audit trail)
+**Decision category:** governance / gate integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `tdd` Phase 5 and `refactor` Phase 2/6 are BLOCK gates that may be passed when a surface has no coverage tooling, on the agent's own say-so.
+- **Scaffold position:** the same skills carry "MUST NOT guess the test, coverage, or lint command — read `tech-stack.md` or STOP". "I could not find the command" and "this surface has none" are indistinguishable from inside the agent, and demand opposite responses.
+- **Status type:** divergent
+
+### Decision
+Keep the exemption but make its trigger evidenced: the record must name the
+surface and quote, from `tech-stack.md`, either the whole Coverage section or the
+passage stating the absence for that surface by name. No citation, no exemption —
+the phase STOPs. The record travels into the PR description so the claim is
+falsifiable at review time, not only while the lane is live.
+
+### SMARTS rationale
+Reliable and Securable drove it: a BLOCK gate that passes on an unverifiable
+self-assertion is the #507 failure mode — a gate that reads as satisfied without
+executing. Removing the hatch outright scored worse on Available: a consumer repo
+genuinely lacking coverage tooling could never complete a `tdd` lane, and #308
+records what follows when no command owns a situation. Logging the exemption to
+the audit trail surfaced repeated use but still passed each individual gate on an
+unverifiable claim; its one real advantage, durability, is taken here by routing
+the citation into the PR.
+
+### Implementation implication
+Shipped in #527. Conditions live in `includes/maturity-coverage.md` alone, with
+`tdd`, `refactor` and `coverage-auditor` deferring to it. Review found this repo
+was itself a counterexample — `site/` and the Python hooks have no coverage
+command, and `tech-stack.md` carried a local copy of the older, laxer wording for
+exactly those surfaces; both are now pointers.
+
+---
+
+## DECISION-0031 — #521 — A quoted coverage figure is the union across supported hosts, per tree
+
+**Date:** 2026-07-28
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com (chose "union across hosts, per-tree" from a four-option SMARTS table, over naming ubuntu-latest authoritative, over requiring the floor to clear on the lower host, and over a documentation-only fix)
+**Decision category:** governance / gate integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `tech-stack.md`'s Coverage section states the script takes no arguments "so it is identical on every platform", and #511's AC-1 names a command with no host.
+- **Scaffold position:** measured reports diverge by host — 66.18% branches on Windows against 65.35% on Linux for `plugins/ca/tools`, and 87.50% against 76.38% for `exec.ts` alone. CI measures on ubuntu-latest; the gate is orchestrator-run wherever the developer is.
+- **Status type:** divergent
+
+### Decision
+A quoted coverage figure is the UNION of the supported hosts' reports for that
+tree, not any single host's. The rule applies per-tree: trees carrying
+platform-forked code (`plugins/ca/tools`, `plugins/ca-pi/tools`) are measured on
+ubuntu-latest and windows-latest and merged; trees with no platform fork (`site/`)
+stay single-host. `tech-stack.md` states that the command is identical while the
+report is host-dependent, and names the measurement rule.
+
+### SMARTS rationale
+Reliable, Testable and Securable aligned on the union. `exec.ts`'s `awaitTaskkill`
+and its win32 `treeKill` arm cannot execute on Linux, and the POSIX arm cannot
+execute on Windows — so every single-host rule scores structurally-unreachable
+code as uncovered permanently, and the 11-point `exec.ts` gap is a platform
+artifact rather than a test gap. Securable decided the margin: `treeKill` is a
+process-containment path, and under a single-host rule a genuine gap in it is
+indistinguishable from the artifact. Maintainable is the cost — blob artifacts
+plus a merge step — and is bounded, because the 3-OS matrix already runs in two
+jobs and `--mergeReports` is first-class in vitest 4. Available was the live
+objection, #504 and #515 both being open Windows flakes, and is answered by the
+gate being orchestrator-run rather than a required check: a missing Windows blob
+degrades to the ubuntu figure with the gap named, and blocks nothing.
+Precedent: none on record for coverage platform. DECISION-0017 is nearest, having
+established testing supported platforms rather than assuming parity.
+
+### Implementation implication
+A coverage-only CI cell — install plus `vitest run --coverage --reporter=blob` —
+on ubuntu-latest and windows-latest for the two platform-forked trees, plus a
+merge step. Not the full tools job duplicated. `tech-stack.md`'s Coverage section
+drops "identical on every platform" and states the union rule;
+`includes/maturity-coverage.md` and `tdd` Phase 5 are aligned to it per #521 AC-3.
+#511's closing measurement is restated against the merged figure.
+
+---
+
+## DECISION-0032 — #514 — `site/` is inside the coverage gate
+
+**Date:** 2026-07-28
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com (chose "inside — migrate and measure" over a permanent documented exemption, and over deferring behind #513's visible exemption)
+**Decision category:** governance / gate integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `tdd` Phase 5 and `refactor` Phase 2/6 read a coverage command from `tech-stack.md`; #513 landed one for the three plugin tool trees.
+- **Scaffold position:** `site/` is a fourth tested TypeScript tree — `vitest.config.ts`, a `test` script, and real suites under `test/generator/` and `test/content/` — with no coverage command, so those gates reach the phase and pass on a gap.
+- **Status type:** divergent
+
+### Decision
+`site/` is inside the coverage gate. It migrates from vitest 3 to vitest 4, gains
+a `coverage` script and config, and `tech-stack.md` names the invocation. The
+measured baseline is recorded against the stage-2 floor, and any shortfall is
+tracked as its own issue rather than blocking. `COVERAGE_EXEMPT` in
+`.github/scripts/test_ci_impact.py` is emptied.
+
+### SMARTS rationale
+Reliable and Testable decided it. A tested tree whose coverage gate no-ops is the
+#507 failure mode DECISION-0030 was written to close, and leaving one tree outside
+re-opens it by a different door. The argument for a permanent exemption — that
+`site/`'s build output is republished from source rather than committed, which is
+why it sits off the dev-inclusive CVE gate — bears on supply-chain posture, not on
+whether its suites are measured. Securable is unaffected: adding a coverage
+provider does not inherit the audit posture the plugin trees carry, and that stays
+documented. Maintainable is the cost, since `site/` declares production
+dependencies (astro, starlight, markdown-remark) and a major bump there is a
+different risk profile than a dev-only tree — bounded here because vitest and the
+coverage provider are dev-only within it. Per DECISION-0031 `site/` carries no
+platform fork and stays single-host.
+
+### Implementation implication
+vitest 3 to 4 in `site/`, `@vitest/coverage-v8` added via `/ca:add-dep` per #513's
+precedent, a `coverage` script, and a config whose `include` is scoped to `site/`'s
+own sources so the report does not count its tests as covered source.
+`tech-stack.md` gains the invocation and a sentence on the CVE-gate distinction.
+Baseline recorded; shortfall tracked like #511.
+
+---

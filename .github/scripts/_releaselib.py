@@ -14,6 +14,8 @@
 #     gate that crashes is worse than one that conservatively refuses.
 #
 # Public API:
+#   semver_key(value) -> tuple | None
+#   semver_greater(current, base) -> bool
 #   last_tag_select(tags) -> str
 #   notes_heading_matches(notes_text, tag) -> bool
 #   release_dates_consistent(changelog_section, tag_message) -> bool
@@ -64,6 +66,67 @@ _HEADING_RE = re.compile(r"^##\s+\[?v?(\d+\.\d+\.\d+)\]?", re.MULTILINE)
 _CHANGELOG_DATE_RE = re.compile(
     r"^##\s+\[?v?\d+\.\d+\.\d+\]?\D+(\d{4}-\d{2}-\d{2})", re.MULTILINE)
 _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
+
+# Full SemVer, including the pre-release and build-metadata tails a release tag
+# never carries but a MANIFEST does (`0.2.4-beta.1` shipped on ca-codex). The
+# anchored `_release_re` above deliberately rejects those, because it selects a
+# published release series; this one parses a version for ORDERING, which is a
+# different question and needs the tail.
+SEMVER = re.compile(
+    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+    r"(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?"
+    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
+)
+
+
+def semver_key(value):
+    """`"2.9.1"` -> a sortable key; `None` when `value` is not valid SemVer.
+
+    Non-raising per this module's invariant — a caller that needs the raising
+    contract wraps it (`tools/build-host-packages.py` does, to keep its own
+    diagnosis wording). Build metadata is parsed and discarded: SemVer §10 says
+    it is not part of precedence, so `1.0.0+a` and `1.0.0+b` compare equal.
+    """
+    if not isinstance(value, str):
+        return None
+    match = SEMVER.fullmatch(value)
+    if match is None:
+        return None
+    prerelease = match.group(4)
+    if prerelease is None:
+        pre_key = None
+    else:
+        pre_key = tuple(
+            (0, int(part)) if part.isdigit() else (1, part)
+            for part in prerelease.split(".")
+        )
+    return int(match.group(1)), int(match.group(2)), int(match.group(3)), pre_key
+
+
+def semver_greater(current, base):
+    """True iff `current` is a STRICT SemVer advance over `base`.
+
+    The single definition of "advance" for every payload-version gate (#530), so
+    `ca`, `ca-sandbox`, `ca-codex` and `ca-pi` cannot disagree about what
+    advancing means — issue #530 AC-3.
+
+    Degrades to False when either side is unparseable, which refuses the gate
+    rather than passing it. Pre-release ordering follows SemVer §11: a
+    pre-release is LOWER than its release (`1.0.0-beta` < `1.0.0`), numeric
+    identifiers compare numerically and rank below alphanumeric ones.
+    """
+    current_key = semver_key(current)
+    base_key = semver_key(base)
+    if current_key is None or base_key is None:
+        return False
+    if current_key[:3] != base_key[:3]:
+        return current_key[:3] > base_key[:3]
+    current_pre, base_pre = current_key[3], base_key[3]
+    if current_pre is None:
+        return base_pre is not None
+    if base_pre is None:
+        return False
+    return current_pre > base_pre
 
 
 # Every plugin that has a sanctioned release lane, in dispatch-input order

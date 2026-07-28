@@ -12,13 +12,14 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from host_descriptors import HostDescriptor, host_descriptor  # noqa: E402
 
-
 REPO = Path(__file__).resolve().parents[1]
-SEMVER = re.compile(
-    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
-    r"(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?"
-    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
-)
+
+# Issue #530 AC-3: "advance" must mean ONE thing across all four payload gates.
+# This guard is the one that already had the rule right, so the definition moved
+# to _releaselib (where RELEASE_TAG_PREFIXES already lives) and the other three
+# adopted it rather than each carrying a copy that can drift apart.
+sys.path.insert(0, str(REPO / ".github" / "scripts"))
+from _releaselib import SEMVER, semver_greater, semver_key  # noqa: E402,F401
 
 
 def render_package(
@@ -57,31 +58,22 @@ def expected_package(repo: Path = REPO) -> bytes:
 
 
 def _semver_key(value: str) -> tuple[int, int, int, tuple[tuple[int, object], ...] | None]:
-    match = SEMVER.fullmatch(value)
-    if match is None:
+    """`_releaselib.semver_key` with this module's RAISING contract restored.
+
+    The shared helper degrades to None because a release gate that crashes is
+    worse than one that refuses; `pi_release_guard` and
+    `validate_pi_release_advance` both branch on the exception to report
+    "not valid SemVer" rather than the misleading "must strictly advance"."""
+    key = semver_key(value)
+    if key is None:
         raise ValueError(f"{value!r} is not valid SemVer")
-    prerelease = match.group(4)
-    if prerelease is None:
-        pre_key = None
-    else:
-        pre_key = tuple(
-            (0, int(part)) if part.isdigit() else (1, part)
-            for part in prerelease.split(".")
-        )
-    return int(match.group(1)), int(match.group(2)), int(match.group(3)), pre_key
+    return key
 
 
 def _semver_greater(current: str, base: str) -> bool:
-    current_key = _semver_key(current)
-    base_key = _semver_key(base)
-    if current_key[:3] != base_key[:3]:
-        return current_key[:3] > base_key[:3]
-    current_pre, base_pre = current_key[3], base_key[3]
-    if current_pre is None:
-        return base_pre is not None
-    if base_pre is None:
-        return False
-    return current_pre > base_pre
+    _semver_key(current)
+    _semver_key(base)
+    return semver_greater(current, base)
 
 
 def validate_pi_release_advance(
