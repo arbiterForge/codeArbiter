@@ -12,6 +12,20 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.10.0] — 2026-07-27
+
+A MINOR bump, not a patch: this window adds `ca-pi` as a fourth sibling plugin,
+`/ca:cleanup`, inbound-PR review, multi-plugin release lanes, and the §6 routing
+model — nine `feat` commits since the 2.9.1 section, no breaking changes.
+
+Cut so the fixes below actually reach installed users. They had been merged onto
+an untagged `2.9.1`, and `claude plugin update` is a no-op while the manifest
+version string is unchanged — so a populated `2.9.1` plugin cache stayed frozen
+at the pre-fix payload. The maintainer's own session was still being blocked by
+the pre-fix copy of a hook guard whose fix had already merged. The gate that is
+supposed to catch this keys on the git tag rather than the manifest, and `v2.9.1`
+was never tagged; that gap is #530.
+
 ### Fixed
 
 - `decision-variance` could not record a decision. Its Phase 4 is required to
