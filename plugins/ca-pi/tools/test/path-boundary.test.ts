@@ -16,7 +16,12 @@ import type { PathFlavor } from "../src/path-boundary.ts";
 const temporaryRoots: string[] = [];
 
 async function temporaryRoot(): Promise<string> {
-  const created = realpathSync(await mkdtemp(resolve(tmpdir(), "ca-pi-path-boundary-")));
+  // `.native` deliberately: plain realpathSync resolves symlinks but does NOT
+  // expand a Windows 8.3 short name, and tmpdir() on a GitHub runner is the
+  // RUNNER~1 form. The subject under test canonicalizes with `.native`, so a
+  // fixture built from the non-native form hands every case in this file a
+  // root the implementation will legitimately disagree with.
+  const created = realpathSync.native(await mkdtemp(resolve(tmpdir(), "ca-pi-path-boundary-")));
   temporaryRoots.push(created);
   return created;
 }
@@ -97,7 +102,10 @@ describe("Pi path boundary", () => {
     const root = await temporaryRoot();
     const child = resolve(root, "child");
     await mkdir(child);
-    expect(canonicalPath(resolve(root, ".", "child"))).toBe(realpathSync(child));
+    // Both sides through `.native`, matching canonicalPath. With plain
+    // realpathSync this compared a long-form result against a short-form
+    // expectation, and failed on windows-latest only.
+    expect(canonicalPath(resolve(root, ".", "child"))).toBe(realpathSync.native(child));
   });
 
   test("canonicalPath falls back to lexical resolution for absent paths", async () => {
