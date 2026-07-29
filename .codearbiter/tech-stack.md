@@ -200,22 +200,25 @@ clear it**; a report satisfying one and not the other does not pass. Putting the
 number in three `vitest.config.ts` files would fork that single source of truth
 and the copies would drift the first time the stage moves.
 
-Measured baseline at stage 2 (≥ 70%), 2026-07-26, **windows-latest only** — taken
-before the union rule existed, and left labelled rather than restated so the
-figures stay comparable to what #511 was driven against:
+Measured baseline at stage 2 (≥ 70%), refreshed 2026-07-29 from CI. The two
+platform-forked trees carry their **union** figure; the others are single-host
+because they have nothing to merge. Every row names how it was measured, which
+is the rule #521 exists to enforce:
 
 | tree | lines | branches | verdict | host |
 | --- | --- | --- | --- | --- |
-| `plugins/ca/tools` | 67.31% | 59.46% | **below floor** — backfill tracked in #511 | windows |
-| `plugins/ca-pi/tools` | 85.37% | 78.73% | clears | windows |
+| `plugins/ca/tools` | 76.82% | 73.15% | clears | **union** (ubuntu + windows) |
+| `plugins/ca-pi/tools` | 82.51% | 77.10% | clears | **union** (ubuntu + windows) |
 | `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears | windows |
 | `site` | 91.29% | 84.85% | clears | ubuntu-equivalent (no platform fork) |
 
-#511's closing measurement was 72.03% lines / 66.18% branches on Windows against
-70.93% / 65.35% on Linux — the divergence that produced #521. Under the union
-rule the authoritative figure for that tree is the merged one, which the CI job
-above now publishes; the single-host numbers above are superseded as a basis for
-a threshold decision the next time this table is refreshed.
+**The union changed the answer for `plugins/ca/tools`.** #511 drove that tree
+against 66.18% branches on Windows and 65.35% on Linux — both below the floor.
+Merged, it is 73.15%, and clears by three points. The shortfall was never missing
+tests: it was ~7 points of platform-forked `exec.ts` code that cannot execute off
+its own host, scored as uncovered on whichever host happened to run. That is the
+concrete case for the rule, and the reason a single-host figure is no longer
+quotable here.
 
 Two caveats when reading a local report:
 
