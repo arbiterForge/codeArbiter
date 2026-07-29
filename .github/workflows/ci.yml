@@ -319,6 +319,14 @@ jobs:
     # merge on a figure no check consumes. That is the trade DECISION-0031 made
     # when it weighed Available, and test_ci_impact.py pins it.
     #
+    # KNOWN RED on windows-latest, tracked in #539. This tree had never run on
+    # Windows in CI - the `tools` job is ubuntu-only - and the first run here
+    # surfaced 15 failures, all downstream of one lexical containment check that
+    # refuses a legitimate worktree root when the 8.3 short path and the long
+    # path spell the same directory differently. The failure is real, it predates
+    # this job, and the cell is advisory so it blocks nothing. It goes green when
+    # #539 lands; do NOT silence it with continue-on-error in the meantime.
+    #
     # Scoped to plugins/ca/tools. ca-pi/tools is the other platform-forked tree
     # per tech-stack.md and is NOT covered here - deliberately, and tracked:
     # this job installs a graph, and the audited-graph contract is satisfied by
