@@ -286,6 +286,24 @@ function contained(root, candidate) {
   const relative = path2.relative(root, candidate);
   return relative === "" || !relative.startsWith(`..${path2.sep}`) && relative !== ".." && !path2.isAbsolute(relative);
 }
+async function canonicalizeAncestors(target, resolvePath = realpath) {
+  const resolved = path2.resolve(target);
+  const leaf = path2.basename(resolved);
+  const missing = [];
+  let cursor = path2.dirname(resolved);
+  for (; ; ) {
+    try {
+      const real = await resolvePath(cursor);
+      return path2.join(real, ...missing.slice().reverse(), leaf);
+    } catch (error) {
+      if (!isMissing(error)) throw error;
+      const parent = path2.dirname(cursor);
+      if (parent === cursor) return resolved;
+      missing.push(path2.basename(cursor));
+      cursor = parent;
+    }
+  }
+}
 function sameFile(left, right) {
   return left.dev === right.dev && left.ino === right.ino;
 }
@@ -308,7 +326,8 @@ async function writeWorktreeFile(worktree, relPath, contents, testHooks = {}) {
         if (!contained(canonicalRoot, await realpath(verified.path))) unsafe();
       }
     };
-    const target = path2.resolve(canonicalRoot, relPath);
+    const requested = path2.isAbsolute(relPath) ? await canonicalizeAncestors(relPath) : relPath;
+    const target = path2.resolve(canonicalRoot, requested);
     const relative = path2.relative(canonicalRoot, target);
     if (relative === "" || relative === ".." || relative.startsWith(`..${path2.sep}`) || path2.isAbsolute(relative)) unsafe();
     const segments = relative.split(path2.sep);
