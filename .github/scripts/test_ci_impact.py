@@ -1021,10 +1021,23 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn(
             "ca-pi-checks", required, "ci-passed.required_results is missing ca-pi-checks"
         )
+        # The sanctioned advisory set. Each entry is awaited so the run settles
+        # and a hang is visible, but never enforced:
+        #   ca-pi-latest        - the upstream Pi canary (#381).
+        #   coverage-union*     - #521 / DECISION-0031. The coverage GATE is
+        #                         orchestrator-run (`tdd` Phase 5); these jobs
+        #                         PRODUCE the figure it quotes and gate nothing.
+        #                         Enforcing them would let a Windows runner flake
+        #                         (#535 is live) block a merge on a number no
+        #                         check consumes - the precise trade the decision
+        #                         rejected when it weighed Available.
+        # Adding to this list is a deliberate contract change, not a fix for a
+        # red build: anything here can fail silently forever.
         self.assertEqual(
             sorted(set(needs) - set(required)),
-            ["ca-pi-latest"],
-            "awaited but unenforced jobs (only the advisory Pi canary may appear here)",
+            ["ca-pi-latest", "coverage-union", "coverage-union-merge"],
+            "awaited but unenforced jobs (only the advisory Pi canary and the "
+            "#521 coverage-union jobs may appear here)",
         )
         self.assertEqual(
             sorted(set(required) - set(needs)),
@@ -1195,6 +1208,45 @@ class WorkflowContractTest(unittest.TestCase):
         # so the same exclusion is asserted at its source.
         guard = (REPO_ROOT / "tools" / "build-host-packages.py").read_text(encoding="utf-8")
         self.assertIn('":(exclude)plugins/ca-pi/tools"', guard)
+
+    def test_the_coverage_union_actually_merges_more_than_one_host(self):
+        """Issue #521 / DECISION-0031.
+
+        The union is the whole point: a single-host report scores the other
+        platform's arm as permanently uncovered. A job that quietly lost its
+        second host, or stopped merging, would still be green and still print a
+        coverage number — just the wrong one, under a name claiming otherwise.
+        """
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("coverage-union", jobs)
+        self.assertIn("coverage-union-merge", jobs)
+
+        cells = jobs["coverage-union"]
+        for host in ("ubuntu-latest", "windows-latest"):
+            self.assertIn(host, cells, f"the coverage union no longer measures on {host}")
+        # A blob is what `--merge-reports` can recombine; a text summary is not.
+        self.assertIn("--reporter=blob", cells, "the union cells stopped emitting mergeable reports")
+        self.assertIn("--coverage", cells)
+
+        merge = jobs["coverage-union-merge"]
+        self.assertIn("--merge-reports", merge, "the union job stopped merging")
+        self.assertIn("coverage-blob-ca-*", merge, "the merge job no longer collects the host blobs")
+
+    def test_the_coverage_union_is_advisory_not_a_required_check(self):
+        """DECISION-0031 weighed Available and made this explicitly non-blocking.
+
+        The coverage gate is orchestrator-run; these jobs only produce a figure.
+        Enforcing them would let a Windows runner flake block a merge on a
+        number no check consumes.
+        """
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        required = aggregate_required_results(ci)
+        for job in ("coverage-union", "coverage-union-merge"):
+            self.assertNotIn(
+                job, required,
+                f"{job} became a required check - see DECISION-0031; it gates nothing",
+            )
 
     def test_every_declared_shipped_artifact_has_a_staleness_gate(self):
         """Issues #377 / #407: a committed bundle that nothing rebuild-checks rots.

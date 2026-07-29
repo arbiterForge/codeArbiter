@@ -2,6 +2,16 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
+## [0.1.39] - 2026-07-28
+
+### Changed
+
+- Projection of the shared surface change in ca 2.10.2: coverage figures are the
+  union across a tree's supported hosts, and `tdd` Phase 5 requires the
+  measuring host to be named (#521). `plugins/ca-pi/tools` is platform-forked
+  and therefore in scope for the rule; its union job is tracked in #537. No
+  Pi-specific behaviour changed.
+
 ## [0.1.38] - 2026-07-27
 
 ### Fixed

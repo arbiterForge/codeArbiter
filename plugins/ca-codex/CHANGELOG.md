@@ -4,6 +4,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ---
 
+## [0.3.1] — 2026-07-28
+
+### Changed
+
+- Projection of the shared surface change in ca 2.10.2: coverage figures are the
+  union across a tree's supported hosts, and `tdd` Phase 5 requires the
+  measuring host to be named (#521). No Codex-specific behaviour changed.
+
 ## [0.3.0] — 2026-07-12 — Shared-state concurrency hardening
 
 ### Added
