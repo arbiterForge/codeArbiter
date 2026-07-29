@@ -19,6 +19,27 @@ const TSX_LOADER = pathToFileURL(
   createRequire(import.meta.url).resolve("tsx"),
 ).href;
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import { vi } from "vitest";
+
+// #542, third pass — and the last, because the budget finally matches the
+// population it applies to.
+//
+// EVERY case in this file launches a real farm subprocess. Process creation on a
+// hosted Windows runner is far slower than on a developer box, so the 5000ms
+// default is marginal there for the whole file, not for any one case in it.
+//
+// The first fix raised one case (the heaviest, measured at 3553ms isolated and
+// 5331ms under CI load). Seven more in its block then timed out. The second fix
+// raised that block. Two cases in a DIFFERENT block then timed out. Each pass
+// fixed the sample the last failure happened to name, and the next-slowest case
+// was always waiting.
+//
+// So: the file. 30s is ~6x the slowest measured run and still bounded, so a
+// genuine hang fails rather than sitting until the job timeout. Scoped here
+// rather than in vitest.config.ts on purpose - the sibling suites are ordinary
+// in-process unit tests, and a 30s default there would turn a hung unit test
+// from a 5s failure into a 30s one.
+vi.setConfig({ testTimeout: 30_000 });
 import type { Server } from "node:http";
 
 // --------------------------------------------------------------------------
@@ -1439,20 +1460,7 @@ describe("farm.ts smoke tests", () => {
 // live in main()'s artifact lifecycle (stream init/append, diff writes, final
 // report publication, exit-code derivation), not in a pure helper.
 // ---------------------------------------------------------------------------
-// #542, second pass. The first fix sized the budget from the ONE case the issue
-// named - the heaviest, at 12 tasks and FARM_CONCURRENCY 6 - and left the rest of
-// the block on the 5000ms default. Seven of them then timed out together on a
-// windows-latest runner. The slow thing is not that case's concurrency; it is
-// that EVERY case here launches real farm subprocesses, and process creation on a
-// hosted Windows runner is far slower than on a developer box.
-//
-// So the budget belongs to the BLOCK, not to one member of it. 30s is ~6x the
-// slowest run observed for the heaviest case and still bounded, so a genuine hang
-// fails rather than sitting until the job timeout.
-//
-// The lesson worth keeping: a per-case fix derived from a per-case report will
-// keep finding the next-slowest case. Measure the population, not the sample.
-describe("farm artifact publication (#397 / #387)", { timeout: 30_000 }, () => {
+describe("farm artifact publication (#397 / #387)", () => {
   let tmpDir: string;
   let mockServer: Server;
   let port: number;
