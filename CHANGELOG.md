@@ -12,6 +12,26 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.10.2] — 2026-07-28
+
+### Changed
+
+- **A quoted coverage figure is now the union across a tree's supported hosts,
+  per tree (#521).** The command is identical on every platform; the report is
+  not. Code behind a platform fork cannot execute off its own platform, so a
+  single-host report scores the other platform's arm as uncovered no matter how
+  well tested it is — measured here, `exec.ts` reads 87.50% branches on Windows
+  against 76.38% on Linux, an 11-point gap that is entirely `awaitTaskkill` plus
+  the win32 `treeKill` arm on one side and the POSIX arm on the other.
+
+  That matters beyond arithmetic: `treeKill` is a process-containment path, so
+  under a single-host rule a genuine gap in it is indistinguishable from the
+  platform artifact.
+
+  `includes/maturity-coverage.md` gains the rule and `tdd` Phase 5 now requires
+  the measuring host to be named. Trees with no platform fork stay single-host —
+  a union of identical reports is the same report.
+
 ## [2.10.1] — 2026-07-28
 
 ### Fixed

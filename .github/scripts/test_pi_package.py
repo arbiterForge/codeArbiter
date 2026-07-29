@@ -1240,10 +1240,22 @@ class PiPackageTests(unittest.TestCase):
             "every upstream-compatibility probe must absorb its own failure at step level",
         )
 
-        latest_receipt_dropped = ci.replace(
+        # Scoped to the ca-pi-latest job body, NOT the whole file. `if: always()`
+        # is a generic line, and a bare first-occurrence replace mutates whichever
+        # job happens to sit earliest in ci.yml - so this assertion silently
+        # stopped testing the Pi receipt the moment an unrelated job above it grew
+        # one (issue #521's coverage-union upload, which needs `always()` so a
+        # FAILING host still publishes its blob). The mutation must hit the thing
+        # the assertion is about, or it proves nothing about it.
+        latest_start = ci.index("  ca-pi-latest:\n")
+        latest_receipt_dropped = ci[:latest_start] + ci[latest_start:].replace(
             "        if: always()\n",
             "        if: success()\n",
             1,
+        )
+        self.assertNotEqual(
+            latest_receipt_dropped, ci,
+            "the ca-pi-latest receipt no longer carries an `if: always()` to drop",
         )
         self.assertTrue(
             pi_ci_contract_violations(latest_receipt_dropped),

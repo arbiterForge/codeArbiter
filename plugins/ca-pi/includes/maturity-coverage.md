@@ -34,6 +34,34 @@ the gap it closed, because it converts an honest red into a green that asserts n
 backfilling to clear this bar, work the uncovered *report* — error and refusal paths first — and let
 the number follow.
 
+## Which host (issue #521)
+
+**A quoted coverage figure is the UNION of the supported hosts' reports for that tree.** Not any
+single host's.
+
+The command is identical everywhere; the REPORT is not. Code behind a platform fork cannot execute
+off its own platform, so a single-host report scores the other platform's arm as uncovered — and it
+stays uncovered no matter how many tests are written for it. Measured on this repo: `exec.ts` reads
+87.50% branches on Windows and 76.38% on Linux, an 11-point gap that is entirely `awaitTaskkill` and
+the win32 `treeKill` arm on one side and the POSIX arm on the other. Neither number is wrong; both
+are incomplete.
+
+That matters beyond arithmetic. `treeKill` is a process-containment path, so under a single-host
+rule a GENUINE gap in it is indistinguishable from the platform artifact — the figure stops
+measuring test quality and starts measuring how much of the tree is POSIX.
+
+**Applies per tree, and only where it earns its cost.** A tree with platform-forked code is measured
+on more than one host and merged; a tree with none stays single-host, because a union of identical
+reports is the same report. `tech-stack.md` names which trees are which, and which hosts a tree is
+measured on.
+
+**When quoting a figure — in an issue, an ADR, a phase record — name the host or hosts it came
+from.** An unattributed number is not reproducible, and this is the ambiguity #521 was filed for.
+
+Where only one host's report is available, that is a legitimate figure: state the host and say the
+other's contribution is missing. A partial measurement that says so is worth more than a merged one
+that cannot be reproduced.
+
 ## The no-tooling exemption — cite it, never assert it
 
 Where a surface has no coverage tooling at all, there is no numeric floor to check. Record that

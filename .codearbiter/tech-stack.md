@@ -153,8 +153,43 @@ npm --prefix plugins/ca-sandbox/tools run coverage
 
 Each prints a text summary and writes an html report to that tree's `coverage/`
 (gitignored — run output, never project state). Scope, provider and reporters
-live in each tree's `vitest.config.ts`; the script takes no arguments so it is
-identical on every platform.
+live in each tree's `vitest.config.ts`.
+
+**The COMMAND is identical on every platform. The REPORT is not** (issue #521).
+The script takes no arguments, so nothing about the invocation varies — but code
+behind a platform fork cannot execute off its own platform, and a single-host
+report scores the other platform's arm as uncovered no matter how well tested it
+is. Measured here: `plugins/ca/tools` reads 66.18% branches on Windows and
+65.35% on Linux, and `exec.ts` alone reads 87.50% against 76.38% — an 11-point
+gap that is entirely `awaitTaskkill` plus the win32 `treeKill` arm on one side
+and the POSIX arm on the other.
+
+**A quoted figure is the union across a tree's supported hosts**, per tree:
+
+| tree | forks on platform | union in CI |
+| --- | --- | --- |
+| `plugins/ca/tools` | yes — `exec.ts` on `process.platform` | **ubuntu + windows**, merged |
+| `plugins/ca-pi/tools` | yes — Windows supervisor / process-tree paths | not yet — tracked in #537 |
+| `plugins/ca-sandbox/tools` | no | single-host (ubuntu); docker caveat below |
+| `site/` | no | single-host (ubuntu) |
+
+CI produces the union for `plugins/ca/tools` in
+`[CHECK] | [REPO] | Coverage union` — one advisory matrix cell per host writing a
+vitest **blob** report, merged with `vitest --merge-reports`. Merging is a
+genuine union of executed code, not the last report winning: verified on two
+disjoint suites, 7 + 65 branches merging to 72 and 18 + 69 lines to 87. The job
+says so when only one host reported, so a partial figure is never mistaken for
+the union.
+
+`ca-pi/tools` is platform-forked and therefore *in scope for the rule*, but its
+union job is not built yet (#537). Until it is, quote its figures with the host
+named — the rule above applies to how you REPORT a number regardless of whether
+CI computes it for you.
+
+Locally, one host's report is a legitimate figure — **name the host** and say the
+other's contribution is missing. The rule and its conditions live in
+`plugins/ca/includes/maturity-coverage.md`; this table is the per-tree half it
+refers to.
 
 **The threshold is not encoded in the tooling.** `tdd` Phase 5 and `refactor`
 Phase 2/6 apply it, reading `stage:` from `.codearbiter/CONTEXT.md` against
@@ -163,13 +198,21 @@ clear it**; a report satisfying one and not the other does not pass. Putting the
 number in three `vitest.config.ts` files would fork that single source of truth
 and the copies would drift the first time the stage moves.
 
-Measured baseline at stage 2 (≥ 70%), 2026-07-26:
+Measured baseline at stage 2 (≥ 70%), 2026-07-26, **windows-latest only** — taken
+before the union rule existed, and left labelled rather than restated so the
+figures stay comparable to what #511 was driven against:
 
-| tree | lines | branches | verdict |
-| --- | --- | --- | --- |
-| `plugins/ca/tools` | 67.31% | 59.46% | **below floor** — backfill tracked in #511 |
-| `plugins/ca-pi/tools` | 85.37% | 78.73% | clears |
-| `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears |
+| tree | lines | branches | verdict | host |
+| --- | --- | --- | --- | --- |
+| `plugins/ca/tools` | 67.31% | 59.46% | **below floor** — backfill tracked in #511 | windows |
+| `plugins/ca-pi/tools` | 85.37% | 78.73% | clears | windows |
+| `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears | windows |
+
+#511's closing measurement was 72.03% lines / 66.18% branches on Windows against
+70.93% / 65.35% on Linux — the divergence that produced #521. Under the union
+rule the authoritative figure for that tree is the merged one, which the CI job
+above now publishes; the single-host numbers above are superseded as a basis for
+a threshold decision the next time this table is refreshed.
 
 Two caveats when reading a local report:
 

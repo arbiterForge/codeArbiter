@@ -88,6 +88,12 @@ Run the coverage command from `tech-stack.md`. **Lines and branches must both cl
 — a report satisfying one and not the other does not pass (issue #507). Below it on either → add
 tests until both are met.
 
+**Name the host you measured on**, and for a tree `tech-stack.md` marks as platform-forked, the
+figure is the UNION across its supported hosts — a single-host report scores the other platform's
+arm as permanently uncovered (issue #521, conditions in `{{PLUGIN_ROOT}}/includes/maturity-coverage.md`).
+Where only one host is available, say so and name what is missing rather than quoting it as the
+whole.
+
 Where the surface has no coverage tooling at all, take the no-tooling exemption in
 `{{PLUGIN_ROOT}}/includes/maturity-coverage.md` — which requires QUOTING the `tech-stack.md`
 Coverage section that omits a command for this surface — and pass the phase on the Phase 4
