@@ -35,6 +35,49 @@ function contained(root: string, candidate: string): boolean {
   return relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative));
 }
 
+// #541 — an ABSOLUTE destination is compared against `realpath(worktree)`, but
+// resolved from the caller's own spelling of the root. Those are the same
+// directory and different strings whenever a link or a Windows 8.3 short name
+// sits on the path: a GitHub runner hands out `C:\Users\RUNNER~1\...` while
+// realpath returns `C:\Users\runneradmin\...`, so a caller building an absolute
+// path from the root IT passed in was refused for writing inside the worktree.
+// Same root cause as #539, one module down.
+//
+// Only the ANCESTOR chain is canonicalized; the final component is kept
+// literal. Resolving the leaf would follow a symlink AT the destination, which
+// is precisely what the per-segment lstat checks below exist to catch — this
+// must not quietly pre-resolve the thing they are guarding.
+//
+// Canonicalizing tightens rather than loosens: a path whose ancestors traverse
+// a symlink OUT of the root now fails `contained` here instead of relying on a
+// later check. A missing ancestor is normal (directories are created on
+// demand), so walk up to the deepest existing one; any non-ENOENT failure
+// propagates and refuses rather than falling through.
+// `resolvePath` is injectable for the same reason #539's canonicalize is: an
+// EACCES or ELOOP cannot be induced portably, and a guard whose refusal path
+// never executes is a fail-closed stance asserted rather than proven.
+export async function canonicalizeAncestors(
+  target: string,
+  resolvePath: (p: string) => Promise<string> = realpath,
+): Promise<string> {
+  const resolved = path.resolve(target);
+  const leaf = path.basename(resolved);
+  const missing: string[] = [];
+  let cursor = path.dirname(resolved);
+  for (;;) {
+    try {
+      const real = await resolvePath(cursor);
+      return path.join(real, ...missing.slice().reverse(), leaf);
+    } catch (error) {
+      if (!isMissing(error)) throw error;
+      const parent = path.dirname(cursor);
+      if (parent === cursor) return resolved;
+      missing.push(path.basename(cursor));
+      cursor = parent;
+    }
+  }
+}
+
 function sameFile(left: Stats, right: Stats): boolean {
   return left.dev === right.dev && left.ino === right.ino;
 }
@@ -70,7 +113,12 @@ export async function writeWorktreeFile(
         if (!contained(canonicalRoot, await realpath(verified.path))) unsafe();
       }
     };
-    const target = path.resolve(canonicalRoot, relPath);
+    // #541: an absolute destination is canonicalized against the same reality
+    // `canonicalRoot` came from, so the two are comparable. A relative one is
+    // resolved against `canonicalRoot`, which is already canonical, and is
+    // therefore untouched.
+    const requested = path.isAbsolute(relPath) ? await canonicalizeAncestors(relPath) : relPath;
+    const target = path.resolve(canonicalRoot, requested);
     const relative = path.relative(canonicalRoot, target);
     if (relative === "" || relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) unsafe();
 

@@ -1,9 +1,9 @@
-import { link, lstat, mkdir, mkdtemp, readdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { link, lstat, mkdir, mkdtemp, readdir, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
+import { canonicalizeAncestors, isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
 
 type WorktreeFs = typeof import("./worktree-fs.ts");
 
@@ -133,11 +133,15 @@ describe("symlink-safe worktree writer", () => {
  * byte and 40 concurrent calls reached three of them through the public API with
  * no seam at all.
  *
- * Platform note: CI runs the tools job on ubuntu-latest ONLY, so Linux is the
- * platform that matters for these numbers. Windows and Linux do not agree here —
- * an over-long path segment reaches the mkdir failure arm on Windows but fails
- * earlier at `lstat` with ENAMETOOLONG on Linux, so that case bought nothing on
- * CI and is not in this block.
+ * Platform note: this tree now runs on BOTH ubuntu-latest and windows-latest —
+ * the tools job is still ubuntu-only, but #521's coverage-union cells execute
+ * the suite on each host and merge the reports, so Linux is no longer the only
+ * platform whose numbers count. Windows and Linux still do not agree here: an
+ * over-long path segment reaches the mkdir failure arm on Windows but fails
+ * earlier at `lstat` with ENAMETOOLONG on Linux. That divergence is the reason
+ * the union exists rather than a reason to ignore one side, and it is why #541
+ * — an absolute destination refused on Windows alone — went unseen until a
+ * second host ran this file.
  */
 describe("symlink-safe worktree writer — refusal paths", () => {
   const MESSAGE = "unsafe worktree path rejected";
@@ -231,6 +235,133 @@ describe("symlink-safe worktree writer — refusal paths", () => {
       expect(await readFile(sentinel, "utf8")).toBe("outside-must-survive");
     } finally {
       await cleanup();
+    }
+  });
+
+  // #541 — the absolute-destination check compared the caller's spelling of the
+  // root against `realpath(worktree)`. Those are the same directory and
+  // different strings whenever a link or a Windows 8.3 short name is on the
+  // path, so a caller writing INSIDE its own worktree was refused. Same root
+  // cause as #539, one module down; it never reproduced on a developer box
+  // whose tmpdir is already canonical, and surfaced only when #521's coverage
+  // union first ran this tree on Windows CI.
+  //
+  // A junction gives two real spellings of one directory on any platform.
+  it("accepts an absolute destination spelled through a link into the same root", async () => {
+    const base = await realpath(await mkdtemp(path.join(tmpdir(), "farm-541-")));
+    try {
+      const real = path.join(base, "real");
+      const root = path.join(real, "wt");
+      await mkdir(root, { recursive: true });
+      const link = path.join(base, "link");
+      try {
+        await symlink(real, link, "junction");
+      } catch {
+        return; // unprivileged Windows without developer mode
+      }
+      const rootViaLink = path.join(link, "wt");
+
+      // Precondition: the two spellings are NOT lexically comparable, which is
+      // the whole reason this case exists.
+      expect(path.relative(root, rootViaLink).startsWith("..")).toBe(true);
+
+      // The caller passes its own spelling as the worktree AND builds the
+      // destination from it — the natural thing to do.
+      await writeWorktreeFile(rootViaLink, path.join(rootViaLink, "inside.txt"), "accepted\n");
+      expect(await readFile(path.join(root, "inside.txt"), "utf8")).toBe("accepted\n");
+
+      // Mirror: canonical root, destination spelled through the link.
+      await writeWorktreeFile(root, path.join(rootViaLink, "mirror.txt"), "accepted\n");
+      expect(await readFile(path.join(root, "mirror.txt"), "utf8")).toBe("accepted\n");
+
+      // Deep, not-yet-created ancestors through the link still land inside.
+      await writeWorktreeFile(rootViaLink, path.join(rootViaLink, "a", "b", "deep.txt"), "deep\n");
+      expect(await readFile(path.join(root, "a", "b", "deep.txt"), "utf8")).toBe("deep\n");
+    } finally {
+      await rm(base, { recursive: true, force: true });
+    }
+  });
+
+  it("does NOT pre-resolve the leaf, so a symlinked destination is still refused", async () => {
+    // The canonicalization added for #541 walks the ANCESTOR chain only. If it
+    // resolved the final component too, a symlink AT the destination pointing
+    // to another file INSIDE the root would resolve to a contained path, pass
+    // containment, and be written THROUGH — silently overwriting the target the
+    // per-segment checks exist to protect. Refusing symlinked destinations is
+    // this module's contract, and canonicalizing must not quietly undo it.
+    const base = await realpath(await mkdtemp(path.join(tmpdir(), "farm-541leaf-")));
+    try {
+      const root = path.join(base, "wt");
+      await mkdir(root, { recursive: true });
+      await writeFile(path.join(root, "real.txt"), "original\n", "utf8");
+      try {
+        await symlink(path.join(root, "real.txt"), path.join(root, "alias.txt"), "file");
+      } catch {
+        return; // unprivileged Windows without developer mode
+      }
+      await expectRefused(writeWorktreeFile(root, path.join(root, "alias.txt"), "written-through\n"));
+      expect(await readFile(path.join(root, "real.txt"), "utf8")).toBe("original\n");
+    } finally {
+      await rm(base, { recursive: true, force: true });
+    }
+  });
+
+  it("REFUSES when an ancestor cannot be canonicalized for a reason other than absence", async () => {
+    // EACCES and ELOOP are not portably inducible, so the failure is injected.
+    // Without this the refusal branch never runs and the fail-closed stance is
+    // a comment rather than behaviour.
+    const err = (code: string) => {
+      const e = new Error(`simulated ${code}`) as NodeJS.ErrnoException;
+      e.code = code;
+      return e;
+    };
+    await expect(
+      canonicalizeAncestors(path.join(path.sep, "repo", "wt", "f.txt"), async () => { throw err("EACCES"); }),
+    ).rejects.toThrow(/EACCES/);
+    await expect(
+      canonicalizeAncestors(path.join(path.sep, "repo", "wt", "f.txt"), async () => { throw err("ELOOP"); }),
+    ).rejects.toThrow(/ELOOP/);
+  });
+
+  it("treats a missing ancestor as normal and walks up to the deepest existing one", async () => {
+    const seen: string[] = [];
+    const target = path.join(path.sep, "a", "b", "c", "f.txt");
+    const out = await canonicalizeAncestors(target, async (p) => {
+      seen.push(p);
+      if (p === path.resolve(path.sep, "a")) return path.resolve(path.sep, "REAL");
+      const e = new Error("missing") as NodeJS.ErrnoException;
+      e.code = "ENOENT";
+      throw e;
+    });
+    expect(out).toBe(path.join(path.resolve(path.sep, "REAL"), "b", "c", "f.txt"));
+    expect(seen.length).toBeGreaterThan(1);
+  });
+
+  it("still refuses an absolute destination whose ancestors link OUT of the root", async () => {
+    // The tightening half. Canonicalizing the ancestor chain means a directory
+    // inside the root that links outside is caught HERE, by containment, rather
+    // than relying on a later check to notice.
+    const base = await realpath(await mkdtemp(path.join(tmpdir(), "farm-541e-")));
+    try {
+      const root = path.join(base, "wt");
+      const outside = path.join(base, "outside");
+      await mkdir(root, { recursive: true });
+      await mkdir(outside, { recursive: true });
+      await writeFile(path.join(outside, "sentinel.txt"), "outside-must-survive", "utf8");
+
+      const escape = path.join(root, "escape");
+      try {
+        await symlink(outside, escape, "junction");
+      } catch {
+        return;
+      }
+      // Lexically this looks contained — that is what makes it worth refusing.
+      expect(path.relative(root, escape).startsWith("..")).toBe(false);
+
+      await expectRefused(writeWorktreeFile(root, path.join(escape, "sentinel.txt"), "overwrite"));
+      expect(await readFile(path.join(outside, "sentinel.txt"), "utf8")).toBe("outside-must-survive");
+    } finally {
+      await rm(base, { recursive: true, force: true });
     }
   });
 

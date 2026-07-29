@@ -72,6 +72,55 @@ function createTempRepo(dir: string) {
 // --------------------------------------------------------------------------
 // Run farm.ts via tsx (dev path) against the temp repo
 // --------------------------------------------------------------------------
+// #542 — every farm launch here is a real subprocess, and nothing tracked it.
+// When vitest abandons a case on timeout the child keeps running, keeps its cwd
+// open, and the afterEach `rmSync(tmpDir)` then fails with EBUSY on Windows. The
+// teardown error is louder than the timeout that caused it, so the log names the
+// wrong problem.
+//
+// Track every live child so teardown can release the directory before deleting
+// it. A test that times out is already failing; it must not also corrupt the
+// diagnosis of the next one.
+const liveChildren = new Set<ReturnType<typeof spawn>>();
+
+function trackChild(child: ReturnType<typeof spawn>): void {
+  liveChildren.add(child);
+  child.on("close", () => liveChildren.delete(child));
+}
+
+/** Kill any subprocess still running, and wait for the OS to release its handles. */
+async function reapStrayChildren(): Promise<void> {
+  if (liveChildren.size === 0) return;
+  for (const child of liveChildren) {
+    try {
+      child.kill("SIGKILL");
+    } catch {
+      /* already gone */
+    }
+  }
+  // Windows releases the cwd handle asynchronously after the process dies, so a
+  // kill alone is not enough to make rmSync succeed on the next line.
+  for (let i = 0; i < 40 && liveChildren.size > 0; i++) {
+    await new Promise((r) => setTimeout(r, 25));
+  }
+  liveChildren.clear();
+}
+
+/** `rmSync` that tolerates Windows' asynchronous handle release. */
+function rmWithRetry(target: string): void {
+  for (let attempt = 1; attempt <= 10; attempt++) {
+    try {
+      rmSync(target, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if ((code !== "EBUSY" && code !== "EPERM" && code !== "ENOTEMPTY") || attempt === 10) throw error;
+      const until = Date.now() + 50 * attempt;
+      while (Date.now() < until) { /* brief spin; afterEach is sync */ }
+    }
+  }
+}
+
 function runFarm(
   repoDir: string,
   planPath: string,
@@ -101,6 +150,7 @@ function runFarm(
         },
       },
     );
+    trackChild(child);
     let out = "";
     child.stdout.on("data", (d: Buffer) => (out += d));
     child.stderr.on("data", (d: Buffer) => (out += d));
@@ -141,6 +191,7 @@ function runFarmWithArgs(
       ["--import", TSX_LOADER, farmTs, ...extraArgs, planPath],
       { cwd: repoDir, env: spawnEnv },
     );
+    trackChild(child);
     let out = "";
     child.stdout.on("data", (d: Buffer) => (out += d));
     child.stderr.on("data", (d: Buffer) => (out += d));
@@ -181,9 +232,12 @@ describe("farm.ts smoke tests", () => {
     createTempRepo(tmpDir);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     mockServer?.close();
-    rmSync(tmpDir, { recursive: true, force: true });
+    // #542, same reasoning as the artifact block: this suite launches the same
+    // real subprocesses, so it inherits the same abandoned-child teardown.
+    await reapStrayChildren();
+    rmWithRetry(tmpDir);
     // Clean up any leftover farm worktrees
     rmSync(join(tmpDir, "../.codearbiter-farm"), { recursive: true, force: true });
   });
@@ -1483,9 +1537,13 @@ describe("farm artifact publication (#397 / #387)", () => {
     createTempRepo(tmpDir);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     mockServer?.close();
-    rmSync(tmpDir, { recursive: true, force: true });
+    // #542: release any subprocess a timed-out case abandoned BEFORE deleting
+    // its cwd, or the delete fails EBUSY and reports the teardown instead of
+    // the timeout that caused it.
+    await reapStrayChildren();
+    rmWithRetry(tmpDir);
   });
 
   // -------------------------------------------------------------------------
@@ -1727,7 +1785,20 @@ describe("farm artifact publication (#397 / #387)", () => {
     expect(result.out).toContain(join(".farm", "runs", "mdonly"));
   });
 
-  it("#387: the unavailable-diff list is bounded and still reports the true total", async () => {
+  // #542 — MEASURED, not nudged. This is the heaviest case in the file: 12 tasks
+  // at FARM_CONCURRENCY 6, each spawning a real gate subprocess. Isolated on a
+  // developer Windows box it takes 3553ms against the 5000ms default — 29%
+  // headroom before any load at all. Under full-suite load on a windows-latest
+  // runner it took 5331ms and timed out, which then abandoned a live child and
+  // turned the teardown into a second, louder EBUSY failure.
+  //
+  // 30s is ~6x the slowest observed run: comfortable for a loaded runner, still
+  // bounded, so a genuine hang fails rather than sitting until the job timeout.
+  // The case is NOT made cheaper - FARM_CONCURRENCY stays 6 and the bounded-at-11
+  // / true-total-12 assertions are untouched (#515 AC-4, #542 AC-2). The six-way
+  // path is the thing under test; buying headroom by shrinking it would delete
+  // the coverage this case exists for.
+  it("#387: the unavailable-diff list is bounded and still reports the true total", { timeout: 30_000 }, async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const ids = Array.from({ length: 12 }, (_, i) => `bulk${i}`);
     const planPath = writePlan("plan.json", planFor("bounded", ids, port));

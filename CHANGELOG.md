@@ -12,6 +12,36 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.10.4] — 2026-07-29
+
+### Fixed
+
+- **The symlink-safe worktree writer accepts an absolute destination spelled
+  through a link (#541).** `writeWorktreeFile` canonicalized the worktree ROOT
+  but resolved the caller's absolute path as-is, then compared the two — so a
+  caller building a destination from the root it had itself passed in was
+  refused for writing inside its own worktree. Same root cause as #539, one
+  module down, and it never reproduced on a host whose paths are already
+  canonical.
+
+  Only the ANCESTOR chain is canonicalized; the final component stays literal,
+  so a symlinked destination is still refused rather than written through. Like
+  #539 this tightens the guard: a path whose ancestors traverse a link out of
+  the root is now caught by containment instead of relying on a later check.
+
+- **A timed-out farm test no longer abandons a live subprocess (#542).** Every
+  launch in `farm.test.ts` is a real child process and none were tracked, so a
+  vitest timeout left one running with the temp directory as its cwd and the
+  teardown then failed `EBUSY` — reporting the cleanup instead of the timeout
+  that caused it. Children are now reaped before the directory is removed, and
+  the removal tolerates Windows' asynchronous handle release.
+
+  The heaviest case (12 tasks at `FARM_CONCURRENCY` 6) also gets a budget drawn
+  from measurement rather than a nudge: 3553 ms isolated on a developer box
+  against a 5000 ms default, 5331 ms under load on a CI runner. It is now 30 s —
+  bounded, so a genuine hang still fails. The case itself is unchanged;
+  concurrency stays at 6 and every assertion stands.
+
 ## [2.10.3] — 2026-07-28
 
 ### Fixed
