@@ -9,6 +9,7 @@ selects the broad validation lane instead of silently predicting a skip.
 """
 import importlib.util
 import json
+import fnmatch
 import re
 import sys
 import tempfile
@@ -1035,7 +1036,8 @@ class WorkflowContractTest(unittest.TestCase):
         # red build: anything here can fail silently forever.
         self.assertEqual(
             sorted(set(needs) - set(required)),
-            ["ca-pi-latest", "coverage-union", "coverage-union-merge"],
+            ["ca-pi-latest", "coverage-union", "coverage-union-merge",
+             "coverage-union-pi", "coverage-union-pi-merge"],
             "awaited but unenforced jobs (only the advisory Pi canary and the "
             "#521 coverage-union jobs may appear here)",
         )
@@ -1219,19 +1221,62 @@ class WorkflowContractTest(unittest.TestCase):
         """
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(ci)
-        self.assertIn("coverage-union", jobs)
-        self.assertIn("coverage-union-merge", jobs)
+        # Every platform-forked tree per tech-stack.md gets a pair (#537).
+        pairs = (
+            ("coverage-union", "coverage-union-merge", "coverage-blob-ca-os-*"),
+            ("coverage-union-pi", "coverage-union-pi-merge", "coverage-blob-ca-pi-os-*"),
+        )
+        for cell_job, merge_job, artifact_glob in pairs:
+            with self.subTest(tree=cell_job):
+                self.assertIn(cell_job, jobs)
+                self.assertIn(merge_job, jobs)
 
-        cells = jobs["coverage-union"]
-        for host in ("ubuntu-latest", "windows-latest"):
-            self.assertIn(host, cells, f"the coverage union no longer measures on {host}")
-        # A blob is what `--merge-reports` can recombine; a text summary is not.
-        self.assertIn("--reporter=blob", cells, "the union cells stopped emitting mergeable reports")
-        self.assertIn("--coverage", cells)
+                cells = jobs[cell_job]
+                for host in ("ubuntu-latest", "windows-latest"):
+                    self.assertIn(host, cells, f"{cell_job} no longer measures on {host}")
+                # A blob is what `--merge-reports` can recombine; a summary is not.
+                self.assertIn("--reporter=blob", cells,
+                              f"{cell_job} stopped emitting mergeable reports")
+                self.assertIn("--coverage", cells)
 
-        merge = jobs["coverage-union-merge"]
-        self.assertIn("--merge-reports", merge, "the union job stopped merging")
-        self.assertIn("coverage-blob-ca-*", merge, "the merge job no longer collects the host blobs")
+                merge = jobs[merge_job]
+                self.assertIn("--merge-reports", merge, f"{merge_job} stopped merging")
+                self.assertIn(artifact_glob, merge,
+                              f"{merge_job} no longer collects its host blobs")
+
+        # The two pairs must not collect each other's artifacts, and the naive
+        # names DID: `coverage-blob-ca-*` matches `coverage-blob-ca-pi-ubuntu-latest`,
+        # so on any PR touching both trees the ca merge job would have absorbed
+        # Pi's blobs and reported a meaningless cross-tree union under ca's name —
+        # silently, and with a plausible number. Hence the `-os-` terminator.
+        #
+        # Checked by actually globbing each pattern against the other's real
+        # artifact names rather than by eyeballing the strings.
+        names = {}
+        patterns = {}
+        for cell_job, merge_job, _ in pairs:
+            found = re.search(r"name:\s*(coverage-blob-\S*?)\$\{\{\s*matrix\.os", jobs[cell_job])
+            self.assertIsNotNone(found, f"{cell_job} has no coverage-blob artifact name")
+            names[cell_job] = [found.group(1) + host for host in ("ubuntu-latest", "windows-latest")]
+            pat = re.search(r"pattern:\s*(coverage-blob-\S+)", jobs[merge_job])
+            self.assertIsNotNone(pat, f"{merge_job} has no download pattern")
+            patterns[merge_job] = pat.group(1)
+
+        for cell_job, merge_job, _ in pairs:
+            for other_cell, other_merge, _ in pairs:
+                if other_cell == cell_job:
+                    continue
+                for foreign in names[other_cell]:
+                    self.assertFalse(
+                        fnmatch.fnmatch(foreign, patterns[merge_job]),
+                        f"{merge_job}'s pattern {patterns[merge_job]!r} also matches "
+                        f"{foreign!r} from {other_cell} — the two trees' unions would merge",
+                    )
+            for own in names[cell_job]:
+                self.assertTrue(
+                    fnmatch.fnmatch(own, patterns[merge_job]),
+                    f"{merge_job}'s pattern does not match its own artifact {own!r}",
+                )
 
     def test_the_coverage_union_artifact_path_is_not_a_hidden_directory(self):
         """The union silently merged NOTHING for every run after it shipped.
@@ -1246,7 +1291,8 @@ class WorkflowContractTest(unittest.TestCase):
         """
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(ci)
-        for job_id in ("coverage-union", "coverage-union-merge"):
+        for job_id in ("coverage-union", "coverage-union-merge",
+                       "coverage-union-pi", "coverage-union-pi-merge"):
             body = jobs[job_id]
             for match in re.finditer(r"path:\s*(\S+)", body):
                 target = match.group(1)
@@ -1268,7 +1314,8 @@ class WorkflowContractTest(unittest.TestCase):
         """
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         required = aggregate_required_results(ci)
-        for job in ("coverage-union", "coverage-union-merge"):
+        for job in ("coverage-union", "coverage-union-merge",
+                    "coverage-union-pi", "coverage-union-pi-merge"):
             self.assertNotIn(
                 job, required,
                 f"{job} became a required check - see DECISION-0031; it gates nothing",

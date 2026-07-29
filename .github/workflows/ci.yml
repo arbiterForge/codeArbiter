@@ -380,7 +380,7 @@ jobs:
         # host had nothing to add.
         if: always()
         with:
-          name: coverage-blob-ca-${{ matrix.os }}
+          name: coverage-blob-ca-os-${{ matrix.os }}
           path: plugins/ca/tools/coverage-blobs/
           retention-days: 5
 
@@ -406,7 +406,7 @@ jobs:
         run: npm ci --ignore-scripts
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          pattern: coverage-blob-ca-*
+          pattern: coverage-blob-ca-os-*
           merge-multiple: true
           path: plugins/ca/tools/coverage-blobs/
       - name: Merge and report the union
@@ -416,6 +416,126 @@ jobs:
         # reading a partial local report.
         run: |
           echo "### Coverage union - plugins/ca/tools" >> "$GITHUB_STEP_SUMMARY"
+          blobs=$(ls coverage-blobs/*.json 2>/dev/null | wc -l)
+          echo "blobs merged: $blobs" | tee -a "$GITHUB_STEP_SUMMARY"
+          ls coverage-blobs/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
+          if [ "$blobs" -eq 0 ]; then
+            echo "no host produced a blob - nothing to merge (advisory)" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$blobs" -lt 2 ]; then
+            echo "PARTIAL: only $blobs of 2 hosts reported - this is NOT the union figure"               | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          npx vitest --merge-reports coverage-blobs --coverage --coverage.reporter=text-summary             2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+  coverage-union-pi:
+    # Issue #521 / DECISION-0031. The coverage GATE is orchestrator-run (`tdd`
+    # Phase 5), not a required check - this job exists to PRODUCE the number
+    # that gate quotes, on every host the tree actually forks across.
+    #
+    # ca-pi forks on platform in its Windows supervisor and process-tree paths,
+    # so a single-host report scores the other platform's arm as uncovered no
+    # matter how well tested it is. tech-stack.md's per-tree table is what
+    # decides which trees earn a second host.
+    #
+    # ADVISORY BY DESIGN. `ci-passed` awaits it so a hang stays visible, but
+    # never enforces it: a Windows runner flake (#535 is live) must not block a
+    # merge on a figure no check consumes. That is the trade DECISION-0031 made
+    # when it weighed Available, and test_ci_impact.py pins it.
+    #
+    # Issue #537. A literal working directory, not a matrix over trees: the
+    # audited-graph contract attributes a job's dependency graph BY its working
+    # directory, and a templated one resolves to `.`, which nothing audits.
+    # Compensating with extra `npm audit` steps breaks the contract pinning the
+    # exact audit inventory. Hence one job per tree - mechanical duplication,
+    # not a design choice. `ca-pi-checks` audits this same literal directory
+    # under the identical path filter.
+    name: "Coverage union (Pi)  <os: ${{ matrix.os }}>"
+    needs: changes
+    if: needs.changes.outputs.ca-pi == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: plugins/ca-pi/tools
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: plugins/ca-pi/tools/package-lock.json
+      - name: Install (locked)
+        # --ignore-scripts for the same reason every sibling job uses it: this
+        # graph's output is a committed artifact. The graph itself is audited by
+        # the `ca-pi-checks` job, which runs under the identical `ca-pi` path filter - the
+        # derived audited-graph rule in test_ci_impact.py checks exactly that.
+        run: npm ci --ignore-scripts
+      - name: Coverage (blob)
+        # A BLOB report is what `--merge-reports` recombines, and vitest
+        # recomputes coverage across blobs rather than letting the last one win.
+        # Verified on two disjoint suites - 7 + 65 branches merge to 72, 18 + 69
+        # lines to 87.
+        #
+        # `default` is requested ALONGSIDE it because blob REPLACES the console
+        # reporter: the first run of this job failed on Windows and the log
+        # showed only "exit code 1" with no summary, no failing test name and no
+        # assertion. A cell that cannot say what broke is not worth having.
+        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-blobs/${{ matrix.os }}.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
+        # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
+        # the merge job silently reported `blobs merged: 0` for every run since
+        # this job shipped. A non-hidden directory needs no flag to be correct.
+        #
+        # always(): a FAILING host's blob is the one most worth having. Without
+        # this the upload is skipped exactly when the run needs diagnosing, and
+        # the merge job silently reports a one-host figure as though the other
+        # host had nothing to add.
+        if: always()
+        with:
+          name: coverage-blob-ca-pi-os-${{ matrix.os }}
+          path: plugins/ca-pi/tools/coverage-blobs/
+          retention-days: 5
+
+  coverage-union-pi-merge:
+    # The union half of #521: every host's blob merged into the single figure
+    # `tdd` Phase 5 is meant to quote. Advisory, like the cells that feed it.
+    name: "[CHECK] | [PI  ] | Coverage union"
+    needs: [changes, coverage-union-pi]
+    if: always() && needs.changes.outputs.ca-pi == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: plugins/ca-pi/tools
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: plugins/ca-pi/tools/package-lock.json
+      - name: Install (locked)
+        run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: coverage-blob-ca-pi-os-*
+          merge-multiple: true
+          path: plugins/ca-pi/tools/coverage-blobs/
+      - name: Merge and report the union
+        # A missing blob (a cancelled or flaked host cell) degrades to "report
+        # what we have and name what is missing" rather than failing a lane
+        # nothing gates on - the same thing maturity-coverage.md tells a human
+        # reading a partial local report.
+        run: |
+          echo "### Coverage union - plugins/ca-pi/tools" >> "$GITHUB_STEP_SUMMARY"
           blobs=$(ls coverage-blobs/*.json 2>/dev/null | wc -l)
           echo "blobs merged: $blobs" | tee -a "$GITHUB_STEP_SUMMARY"
           ls coverage-blobs/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
@@ -1730,6 +1850,8 @@ jobs:
       - ca-pi-latest
       - coverage-union
       - coverage-union-merge
+      - coverage-union-pi
+      - coverage-union-pi-merge
       - ca-pi-codeql
       - hooks
       - version-bump
