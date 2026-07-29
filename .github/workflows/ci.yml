@@ -367,8 +367,13 @@ jobs:
         # reporter: the first run of this job failed on Windows and the log
         # showed only "exit code 1" with no summary, no failing test name and no
         # assertion. A cell that cannot say what broke is not worth having.
-        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=.vitest-reports/${{ matrix.os }}.json
+        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-blobs/${{ matrix.os }}.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
+        # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
+        # the merge job silently reported `blobs merged: 0` for every run since
+        # this job shipped. A non-hidden directory needs no flag to be correct.
+        #
         # always(): a FAILING host's blob is the one most worth having. Without
         # this the upload is skipped exactly when the run needs diagnosing, and
         # the merge job silently reports a one-host figure as though the other
@@ -376,7 +381,7 @@ jobs:
         if: always()
         with:
           name: coverage-blob-ca-${{ matrix.os }}
-          path: plugins/ca/tools/.vitest-reports/
+          path: plugins/ca/tools/coverage-blobs/
           retention-days: 5
 
   coverage-union-merge:
@@ -403,7 +408,7 @@ jobs:
         with:
           pattern: coverage-blob-ca-*
           merge-multiple: true
-          path: plugins/ca/tools/.vitest-reports/
+          path: plugins/ca/tools/coverage-blobs/
       - name: Merge and report the union
         # A missing blob (a cancelled or flaked host cell) degrades to "report
         # what we have and name what is missing" rather than failing a lane
@@ -411,9 +416,9 @@ jobs:
         # reading a partial local report.
         run: |
           echo "### Coverage union - plugins/ca/tools" >> "$GITHUB_STEP_SUMMARY"
-          blobs=$(ls .vitest-reports/*.json 2>/dev/null | wc -l)
+          blobs=$(ls coverage-blobs/*.json 2>/dev/null | wc -l)
           echo "blobs merged: $blobs" | tee -a "$GITHUB_STEP_SUMMARY"
-          ls .vitest-reports/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
+          ls coverage-blobs/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
           if [ "$blobs" -eq 0 ]; then
             echo "no host produced a blob - nothing to merge (advisory)" | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -422,7 +427,7 @@ jobs:
             echo "PARTIAL: only $blobs of 2 hosts reported - this is NOT the union figure"               | tee -a "$GITHUB_STEP_SUMMARY"
           fi
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          npx vitest --merge-reports .vitest-reports --coverage --coverage.reporter=text-summary             2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || true
+          npx vitest --merge-reports coverage-blobs --coverage --coverage.reporter=text-summary             2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
   tools:

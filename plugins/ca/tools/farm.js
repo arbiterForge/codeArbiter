@@ -4,6 +4,7 @@
 import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm, stat, rename, open as open2 } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
+import { realpathSync } from "node:fs";
 import path3 from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -679,9 +680,30 @@ function repoTopLevel() {
   }
   return path3.resolve(process.cwd());
 }
+function canonicalize(target, label, realpath2 = realpathSync.native) {
+  const resolved = path3.resolve(target);
+  const missing = [];
+  let cursor = resolved;
+  for (; ; ) {
+    try {
+      const real = realpath2(cursor);
+      return missing.length ? path3.join(real, ...missing.slice().reverse()) : real;
+    } catch (error) {
+      const code = error.code;
+      if (code !== "ENOENT" && code !== "ENOTDIR")
+        throw new Error(
+          `${label} '${resolved}' could not be canonicalized (${code ?? "unknown error"}) while checking worktree containment, so it is refused (#163 fail-closed, #539).`
+        );
+      const parent = path3.dirname(cursor);
+      if (parent === cursor) return resolved;
+      missing.push(path3.basename(cursor));
+      cursor = parent;
+    }
+  }
+}
 function validateWorktreeRoot(rawRoot, repo, external) {
   const root = path3.resolve(rawRoot);
-  if (!external && !isInside(path3.resolve(repo), root))
+  if (!external && !isInside(canonicalize(repo, "the repository root"), canonicalize(rawRoot, "FARM_WORKTREE_ROOT")))
     throw new Error(
       `FARM_WORKTREE_ROOT resolves to '${root}', outside the repository root '${path3.resolve(repo)}'. farm recursively deletes task worktrees under this root, so an out-of-repo root is refused (#163). Point it inside the repo, or set FARM_ALLOW_EXTERNAL_WORKTREE_ROOT=1 to override.`
     );
@@ -2194,6 +2216,7 @@ export {
   atomicWriteFile,
   buildChatBody,
   buildPrompt,
+  canonicalize,
   captureInScope,
   checkDrift,
   cleanupFailures,

@@ -1233,6 +1233,32 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("--merge-reports", merge, "the union job stopped merging")
         self.assertIn("coverage-blob-ca-*", merge, "the merge job no longer collects the host blobs")
 
+    def test_the_coverage_union_artifact_path_is_not_a_hidden_directory(self):
+        """The union silently merged NOTHING for every run after it shipped.
+
+        `actions/upload-artifact` defaults to `include-hidden-files: false`, so
+        vitest's default `.vitest-reports/` uploaded zero files and the merge job
+        reported `blobs merged: 0` while still passing — an advisory job that
+        looks healthy and measures nothing is worse than an absent one.
+
+        Asserted structurally rather than by the directory's name: any hidden
+        upload path is acceptable ONLY with the flag that makes it work.
+        """
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        for job_id in ("coverage-union", "coverage-union-merge"):
+            body = jobs[job_id]
+            for match in re.finditer(r"path:\s*(\S+)", body):
+                target = match.group(1)
+                hidden = any(part.startswith(".") and part not in (".", "..")
+                             for part in target.replace("\\", "/").split("/"))
+                if hidden:
+                    self.assertIn(
+                        "include-hidden-files: true", body,
+                        f"{job_id} uploads the hidden path {target} without "
+                        "include-hidden-files, so it uploads nothing",
+                    )
+
     def test_the_coverage_union_is_advisory_not_a_required_check(self):
         """DECISION-0031 weighed Available and made this explicitly non-blocking.
 

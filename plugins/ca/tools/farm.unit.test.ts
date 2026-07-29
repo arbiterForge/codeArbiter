@@ -4,11 +4,11 @@
  */
 import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import path from "node:path";
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdtempSync, mkdirSync, symlinkSync, rmSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir, chmod as fsChmod, stat as fsStat, open as fsOpen } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines, withWorktreeLock, prepareWorktree } from "./farm.ts";
@@ -2194,6 +2194,143 @@ describe("validateWorktreeRoot — out-of-repo root refused (#163)", () => {
 
   it("permits an out-of-repo root only with the explicit override", () => {
     expect(() => validateWorktreeRoot("/tmp/wt", "/repo", true)).not.toThrow();
+  });
+});
+
+// #539 — the containment compare was LEXICAL, and `path.resolve` neither expands
+// a Windows 8.3 short name nor follows a link. Two spellings of ONE directory
+// therefore compared as different paths, and a root genuinely inside the repo was
+// refused with a message telling the operator to move it inside the repo.
+//
+// Found when #521's coverage-union job ran this tree on Windows CI for the first
+// time: 15 failures, all downstream of this one refusal, because the runner's
+// tmpdir is `C:\Users\RUNNER~1\...` while git reports `C:/Users/runneradmin/...`.
+// It does not reproduce on a developer box whose profile path is already 8.3-clean.
+//
+// A junction reproduces the same shape on any platform and is what these use: two
+// real, existing spellings of one directory.
+describe("validateWorktreeRoot — two spellings of one directory (#539)", () => {
+  let base: string;
+  let repo: string;
+  let linked: string;
+  let supported = true;
+
+  beforeEach(() => {
+    base = realpathSync.native(mkdtempSync(path.join(tmpdir(), "wt539-")));
+    repo = path.join(base, "real", "repo");
+    mkdirSync(path.join(repo, ".farm", "worktrees"), { recursive: true });
+    linked = path.join(base, "link");
+    try {
+      symlinkSync(path.join(base, "real"), linked, "junction");
+    } catch {
+      // Unprivileged Windows without developer mode cannot create one. Skip
+      // rather than assert nothing: a silently-passing test here would be worse
+      // than an absent one.
+      supported = false;
+    }
+  });
+
+  afterEach(() => rmSync(base, { recursive: true, force: true }));
+
+  it("accepts a root reached through a link when the repo is canonical", () => {
+    if (!supported) return;
+    const viaLink = path.join(linked, "repo", ".farm", "worktrees");
+    // The precondition: a purely lexical check REFUSES this.
+    expect(path.relative(repo, path.resolve(viaLink)).startsWith("..")).toBe(true);
+    expect(() => validateWorktreeRoot(viaLink, repo, false)).not.toThrow();
+  });
+
+  it("accepts a canonical root when the REPO is the side reached through a link", () => {
+    if (!supported) return;
+    const canonicalRoot = path.join(repo, ".farm", "worktrees");
+    expect(() => validateWorktreeRoot(canonicalRoot, path.join(linked, "repo"), false)).not.toThrow();
+  });
+
+  it("still refuses a genuinely outside root", () => {
+    if (!supported) return;
+    const outside = path.join(base, "outside");
+    mkdirSync(outside, { recursive: true });
+    expect(() => validateWorktreeRoot(outside, repo, false)).toThrow(/outside the repository root/);
+  });
+
+  it("now refuses a link INSIDE the repo whose target is outside it", () => {
+    if (!supported) return;
+    // The lexical check accepted this. Not exploitable — `fs.rm` removes the
+    // link rather than recursing through it, measured — but accepting it was
+    // still wrong, and canonicalizing makes the guard strictly tighter.
+    const outside = path.join(base, "outside");
+    mkdirSync(outside, { recursive: true });
+    const escape = path.join(repo, "escape");
+    symlinkSync(outside, escape, "junction");
+    expect(path.relative(repo, path.resolve(escape)).startsWith("..")).toBe(false);
+    expect(() => validateWorktreeRoot(escape, repo, false)).toThrow(/outside the repository root/);
+  });
+
+  it("accepts a not-yet-created root reached THROUGH the link", () => {
+    if (!supported) return;
+    // The root is created later, so a missing path is normal. It must be
+    // canonicalized by walking up to the deepest EXISTING ancestor — giving up
+    // at the first missing segment would leave the link unresolved and refuse
+    // it, which is the bug in a second costume.
+    //
+    // Deliberately routed through the link: a not-yet-created path under the
+    // CANONICAL repo is already lexically inside, so that version of this test
+    // passes whether or not the walk-up works, and proves nothing.
+    const notYet = path.join(linked, "repo", ".farm", "worktrees", "deep", "not", "created");
+    expect(path.relative(repo, path.resolve(notYet)).startsWith("..")).toBe(true);
+    expect(() => validateWorktreeRoot(notYet, repo, false)).not.toThrow();
+  });
+
+  it("keeps refusing an out-of-repo root that does not exist either", () => {
+    if (!supported) return;
+    expect(() => validateWorktreeRoot(path.join(base, "nope", "wt"), repo, false)).toThrow(
+      /outside the repository root/,
+    );
+  });
+});
+
+describe("canonicalize — fail-closed on a real realpath failure (#539/#163)", () => {
+  const err = (code: string) => {
+    const e = new Error(`simulated ${code}`) as NodeJS.ErrnoException;
+    e.code = code;
+    return e;
+  };
+
+  it("REFUSES when realpath fails for a reason other than absence", () => {
+    // EACCES and ELOOP cannot be induced portably, so the failure is injected.
+    // Without this the refusal branch never executes and #163's fail-closed
+    // stance is asserted in a comment rather than proven.
+    expect(() =>
+      canonicalize("/repo/wt", "FARM_WORKTREE_ROOT", () => { throw err("EACCES"); }),
+    ).toThrow(/could not be canonicalized \(EACCES\)/);
+  });
+
+  it("names the path and the label it could not canonicalize", () => {
+    expect(() =>
+      canonicalize("/repo/wt", "the repository root", () => { throw err("ELOOP"); }),
+    ).toThrow(/the repository root '.*' could not be canonicalized \(ELOOP\)/);
+  });
+
+  it("reports an errorless failure rather than passing it off as success", () => {
+    expect(() =>
+      canonicalize("/repo/wt", "FARM_WORKTREE_ROOT", () => { throw new Error("no code"); }),
+    ).toThrow(/could not be canonicalized \(unknown error\)/);
+  });
+
+  it("treats absence as normal and walks up to the deepest existing ancestor", () => {
+    const seen: string[] = [];
+    const out = canonicalize(path.join(path.sep, "a", "b", "c"), "x", (p) => {
+      seen.push(p);
+      if (p === path.resolve(path.sep, "a")) return path.resolve(path.sep, "REAL");
+      throw err("ENOENT");
+    });
+    expect(out).toBe(path.join(path.resolve(path.sep, "REAL"), "b", "c"));
+    expect(seen.length).toBeGreaterThan(1);
+  });
+
+  it("falls back to the lexical form when nothing on the path exists", () => {
+    const target = path.resolve(path.sep, "a", "b");
+    expect(canonicalize(target, "x", () => { throw err("ENOENT"); })).toBe(target);
   });
 });
 
