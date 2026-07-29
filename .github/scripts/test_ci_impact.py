@@ -2290,7 +2290,11 @@ class GateCommandTest(unittest.TestCase):
     # Named here so the gap is a reviewed decision rather than a scoping accident,
     # and asserted to be a real tree below - a stale exemption must fail, not
     # silently widen the hole it was cut for.
-    COVERAGE_EXEMPT = frozenset({"site"})
+    # Empty since #514 / DECISION-0032 put `site/` inside the gate. An entry
+    # here is a tested tree whose coverage gate cannot run, so it must cite the
+    # decision that put it there - not an issue number, which reads as "someone
+    # will get to it" and outlives everyone who would.
+    COVERAGE_EXEMPT: frozenset[str] = frozenset()
 
     @staticmethod
     def _section(text, heading):
