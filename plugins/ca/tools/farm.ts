@@ -37,6 +37,7 @@
 import { readFile, writeFile, appendFile, mkdir, rm, stat, rename, open } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
+import { realpathSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 // v2.rev.0020 god-module split (architecture-003): the process/shell layer, the
@@ -263,12 +264,62 @@ function repoTopLevel(): string {
   return path.resolve(process.cwd());
 }
 
-// Pure, side-effect-free root validation (directly unit-testable): the resolved
-// worktree root must live inside `repo` unless `external` opts out. Throws with a
+// #539 — canonicalize before comparing. `path.resolve` normalizes separators and
+// `.`/`..`, but it does NOT expand a Windows 8.3 short name or follow a symlink,
+// so two spellings of ONE directory compare as different paths and containment
+// refuses a root that is genuinely inside the repo. GitHub's Windows runner hands
+// out `C:\Users\RUNNER~1\...` from tmpdir() while `git rev-parse --show-toplevel`
+// returns `C:/Users/runneradmin/...`; that mismatch failed 15 tests the first time
+// this tree ran on Windows CI, and the message told the operator to point the root
+// inside the repo, where it already was.
+//
+// This TIGHTENS the guard rather than loosening it: resolving links means a
+// junction inside the repo whose target is outside is now refused, where the
+// lexical check accepted it. (That was not exploitable - `fs.rm` removes the link
+// rather than recursing through it, measured - but accepting it was still wrong.)
+//
+// A missing path is NORMAL here: the root is created later. So canonicalize the
+// deepest EXISTING ancestor and re-attach the rest. Any realpath failure that is
+// not "does not exist" is a genuine failure and refuses, per #163's fail-closed
+// stance - never a silent fall-back to the lexical compare this replaces.
+// `realpath` is injectable so the fail-closed branch is reachable from a test:
+// an EACCES or ELOOP cannot be induced portably, and a guard whose refusal path
+// is never executed is the #163 stance asserted rather than proven.
+export function canonicalize(
+  target: string,
+  label: string,
+  realpath: (p: string) => string = realpathSync.native,
+): string {
+  const resolved = path.resolve(target);
+  const missing: string[] = [];
+  let cursor = resolved;
+  for (;;) {
+    try {
+      const real = realpath(cursor);
+      return missing.length ? path.join(real, ...missing.slice().reverse()) : real;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== "ENOENT" && code !== "ENOTDIR")
+        throw new Error(
+          `${label} '${resolved}' could not be canonicalized (${code ?? "unknown error"}) while ` +
+            `checking worktree containment, so it is refused (#163 fail-closed, #539).`,
+        );
+      const parent = path.dirname(cursor);
+      // Root of the volume reached and nothing on the path exists: fall back to
+      // the lexical form. Nothing was resolved, so nothing was weakened.
+      if (parent === cursor) return resolved;
+      missing.push(path.basename(cursor));
+      cursor = parent;
+    }
+  }
+}
+
+// Root validation (directly unit-testable): the CANONICAL worktree root must live
+// inside the canonical `repo` unless `external` opts out. Throws with a
 // remediating message otherwise; returns the resolved absolute root.
 export function validateWorktreeRoot(rawRoot: string, repo: string, external: boolean): string {
   const root = path.resolve(rawRoot);
-  if (!external && !isInside(path.resolve(repo), root))
+  if (!external && !isInside(canonicalize(repo, "the repository root"), canonicalize(rawRoot, "FARM_WORKTREE_ROOT")))
     throw new Error(
       `FARM_WORKTREE_ROOT resolves to '${root}', outside the repository root '${path.resolve(repo)}'. ` +
         `farm recursively deletes task worktrees under this root, so an out-of-repo root is ` +

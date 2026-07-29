@@ -12,6 +12,30 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.10.3] — 2026-07-28
+
+### Fixed
+
+- **The farm worktree containment check canonicalizes both paths before
+  comparing them (#539).** It was lexical, and `path.resolve` neither expands a
+  Windows 8.3 short name nor follows a link — so two spellings of one directory
+  compared as different paths and a worktree root genuinely inside the repo was
+  refused, with a message telling the operator to point it inside the repo where
+  it already was. The only escape was `FARM_ALLOW_EXTERNAL_WORKTREE_ROOT=1`,
+  which disables the guard outright to work around a false positive in it.
+
+  Surfaced by #521's coverage-union job the first time this tree ran on Windows
+  CI: 15 failures, all downstream of one refusal, because the runner's tmpdir is
+  `C:\Users\RUNNER~1\...` while git reports `C:/Users/runneradmin/...`. It does
+  not reproduce on a developer box whose profile path is already 8.3-clean.
+
+  The change **tightens** the guard: resolving links means a junction inside the
+  repo whose target is outside is now refused, where the lexical check accepted
+  it. That was never exploitable — `fs.rm` removes the link rather than
+  recursing through it, measured — but accepting it was still wrong. A missing
+  root is normal and is canonicalized by walking up to the deepest existing
+  ancestor; any realpath failure that is not absence refuses, per #163.
+
 ## [2.10.2] — 2026-07-28
 
 ### Changed
