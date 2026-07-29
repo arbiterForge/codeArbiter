@@ -170,22 +170,23 @@ and the POSIX arm on the other.
 | tree | forks on platform | union in CI |
 | --- | --- | --- |
 | `plugins/ca/tools` | yes — `exec.ts` on `process.platform` | **ubuntu + windows**, merged |
-| `plugins/ca-pi/tools` | yes — Windows supervisor / process-tree paths | not yet — tracked in #537 |
+| `plugins/ca-pi/tools` | yes — Windows supervisor / process-tree paths | **ubuntu + windows**, merged |
 | `plugins/ca-sandbox/tools` | no | single-host (ubuntu); docker caveat below |
 | `site/` | no | single-host (ubuntu) |
 
-CI produces the union for `plugins/ca/tools` in
-`[CHECK] | [REPO] | Coverage union` — one advisory matrix cell per host writing a
-vitest **blob** report, merged with `vitest --merge-reports`. Merging is a
+CI produces the union for both forked trees — `[CHECK] | [REPO] | Coverage union`
+for `plugins/ca/tools` and `[CHECK] | [PI  ] | Coverage union` for
+`plugins/ca-pi/tools` — one advisory matrix cell per host writing a vitest
+**blob** report, merged with `vitest --merge-reports`. Merging is a
 genuine union of executed code, not the last report winning: verified on two
 disjoint suites, 7 + 65 branches merging to 72 and 18 + 69 lines to 87. The job
 says so when only one host reported, so a partial figure is never mistaken for
 the union.
 
-`ca-pi/tools` is platform-forked and therefore *in scope for the rule*, but its
-union job is not built yet (#537). Until it is, quote its figures with the host
-named — the rule above applies to how you REPORT a number regardless of whether
-CI computes it for you.
+Each tree's blobs are namespaced `coverage-blob-<tree>-os-<host>`, so one
+tree's merge cannot collect another's. The naive names collided — a `ca-*` glob
+also matches `ca-pi-*` — which would have merged two trees into one figure under
+`ca`'s name, silently and with a plausible number.
 
 Locally, one host's report is a legitimate figure — **name the host** and say the
 other's contribution is missing. The rule and its conditions live in
