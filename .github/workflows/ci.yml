@@ -350,12 +350,22 @@ jobs:
         # derived audited-graph rule in test_ci_impact.py checks exactly that.
         run: npm ci --ignore-scripts
       - name: Coverage (blob)
-        # A BLOB report, not a text summary: blobs are what `--merge-reports`
-        # recombines, and vitest recomputes coverage across them rather than
-        # letting the last one win. Verified on two disjoint suites - 7 + 65
-        # branches merge to 72, 18 + 69 lines to 87.
-        run: npx vitest run --coverage --reporter=blob --outputFile.blob=.vitest-reports/${{ matrix.os }}.json
+        # A BLOB report is what `--merge-reports` recombines, and vitest
+        # recomputes coverage across blobs rather than letting the last one win.
+        # Verified on two disjoint suites - 7 + 65 branches merge to 72, 18 + 69
+        # lines to 87.
+        #
+        # `default` is requested ALONGSIDE it because blob REPLACES the console
+        # reporter: the first run of this job failed on Windows and the log
+        # showed only "exit code 1" with no summary, no failing test name and no
+        # assertion. A cell that cannot say what broke is not worth having.
+        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=.vitest-reports/${{ matrix.os }}.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        # always(): a FAILING host's blob is the one most worth having. Without
+        # this the upload is skipped exactly when the run needs diagnosing, and
+        # the merge job silently reports a one-host figure as though the other
+        # host had nothing to add.
+        if: always()
         with:
           name: coverage-blob-ca-${{ matrix.os }}
           path: plugins/ca/tools/.vitest-reports/
