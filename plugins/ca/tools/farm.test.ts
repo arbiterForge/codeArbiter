@@ -1439,7 +1439,20 @@ describe("farm.ts smoke tests", () => {
 // live in main()'s artifact lifecycle (stream init/append, diff writes, final
 // report publication, exit-code derivation), not in a pure helper.
 // ---------------------------------------------------------------------------
-describe("farm artifact publication (#397 / #387)", () => {
+// #542, second pass. The first fix sized the budget from the ONE case the issue
+// named - the heaviest, at 12 tasks and FARM_CONCURRENCY 6 - and left the rest of
+// the block on the 5000ms default. Seven of them then timed out together on a
+// windows-latest runner. The slow thing is not that case's concurrency; it is
+// that EVERY case here launches real farm subprocesses, and process creation on a
+// hosted Windows runner is far slower than on a developer box.
+//
+// So the budget belongs to the BLOCK, not to one member of it. 30s is ~6x the
+// slowest run observed for the heaviest case and still bounded, so a genuine hang
+// fails rather than sitting until the job timeout.
+//
+// The lesson worth keeping: a per-case fix derived from a per-case report will
+// keep finding the next-slowest case. Measure the population, not the sample.
+describe("farm artifact publication (#397 / #387)", { timeout: 30_000 }, () => {
   let tmpDir: string;
   let mockServer: Server;
   let port: number;
@@ -1785,20 +1798,13 @@ describe("farm artifact publication (#397 / #387)", () => {
     expect(result.out).toContain(join(".farm", "runs", "mdonly"));
   });
 
-  // #542 — MEASURED, not nudged. This is the heaviest case in the file: 12 tasks
-  // at FARM_CONCURRENCY 6, each spawning a real gate subprocess. Isolated on a
-  // developer Windows box it takes 3553ms against the 5000ms default — 29%
-  // headroom before any load at all. Under full-suite load on a windows-latest
-  // runner it took 5331ms and timed out, which then abandoned a live child and
-  // turned the teardown into a second, louder EBUSY failure.
-  //
-  // 30s is ~6x the slowest observed run: comfortable for a loaded runner, still
-  // bounded, so a genuine hang fails rather than sitting until the job timeout.
-  // The case is NOT made cheaper - FARM_CONCURRENCY stays 6 and the bounded-at-11
-  // / true-total-12 assertions are untouched (#515 AC-4, #542 AC-2). The six-way
-  // path is the thing under test; buying headroom by shrinking it would delete
-  // the coverage this case exists for.
-  it("#387: the unavailable-diff list is bounded and still reports the true total", { timeout: 30_000 }, async () => {
+  // The heaviest case in the block: 12 tasks at FARM_CONCURRENCY 6, each
+  // spawning a real gate subprocess. Measured at 3553ms isolated on a
+  // developer box and 5331ms under load on a CI runner - which is what first
+  // exposed #542. It inherits the block's 30s budget above; do NOT shrink the
+  // six-way path to buy headroom, since that path is the thing under test
+  // (#515 AC-4, #542 AC-2).
+  it("#387: the unavailable-diff list is bounded and still reports the true total", async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const ids = Array.from({ length: 12 }, (_, i) => `bulk${i}`);
     const planPath = writePlan("plan.json", planFor("bounded", ids, port));
