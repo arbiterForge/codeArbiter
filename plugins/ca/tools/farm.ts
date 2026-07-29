@@ -1060,7 +1060,7 @@ async function setupFingerprint(wt: string, t: Task, deps: RunTaskDeps): Promise
   const parts = [JSON.stringify(t.setup ?? [])];
   for (const rel of t.setupInputs ?? [])
     parts.push(`${rel}=${(await deps.fileHash(path.resolve(wt, rel))) ?? "absent"}`);
-  return createHash("sha256").update(parts.join(" ")).digest("hex");
+  return createHash("sha256").update(parts.join("\0")).digest("hex");
 }
 
 /** Runs both setup phases for one attempt. Returns a redacted note on failure, null on success. */

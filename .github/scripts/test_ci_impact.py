@@ -11,6 +11,7 @@ import importlib.util
 import json
 import fnmatch
 import re
+import subprocess
 import sys
 import tempfile
 import tomllib
@@ -2499,6 +2500,72 @@ class GateCommandTest(unittest.TestCase):
             undocumented, [],
             "these trees run tests but tech-stack.md names no coverage command for them, so "
             "tdd Phase 5 and refactor Phase 2/6 cannot run there: " + ", ".join(undocumented))
+
+    def test_no_tracked_source_file_contains_a_raw_nul_byte(self):
+        """Issue #536: a raw NUL makes ripgrep treat a source file as BINARY.
+
+        `farm.ts` carried one inside `parts.join("<NUL>")` — written as the
+        literal character instead of the `\\0` escape. It behaved correctly, and
+        git diffed it normally (git's binary sniff reads only the first 8000
+        bytes and the NUL sat well past that), so nothing caught it. But every
+        content search across the repo silently skipped the largest source file
+        in it, returning "binary file matches" instead of results.
+
+        A search tool that quietly excludes a file is worse than one that errors:
+        the answer looks complete. Cheap to prevent, invisible once reintroduced.
+        """
+        # Driven from `git ls-files`, not an rglob: the claim is about TRACKED
+        # sources, and a filesystem walk also picks up gitignored build output —
+        # an untracked `site/coverage/` was present the first time this ran. A
+        # generated artifact carrying a NUL would then fail this test with a
+        # message blaming a source file, which is a worse failure than the one it
+        # exists to catch.
+        #
+        # EVERY tracked file, with no pathspec. A first cut listed five trees and
+        # left 335 tracked files of the same extensions unscanned — `.codearbiter/`,
+        # `docs/`, the workflows themselves — while the failure message claimed
+        # "tracked source files" without qualification. A NUL breaks ripgrep
+        # wherever it lands, so the scope should match the claim rather than the
+        # other way round. The extension allowlist below is what keeps genuinely
+        # binary files out.
+        listed = subprocess.run(
+            ["git", "ls-files", "-z"],
+            cwd=REPO_ROOT, capture_output=True, timeout=120,
+        )
+        self.assertEqual(listed.returncode, 0, "git ls-files failed, so nothing was scanned")
+        offenders = []
+        scanned = 0
+        for entry in listed.stdout.split(b"\0"):
+            if not entry:
+                continue
+            rel = entry.decode("utf-8", "surrogateescape")
+            if not rel.endswith((".ts", ".js", ".mjs", ".py", ".md", ".json", ".yml", ".sh")):
+                continue
+            path = REPO_ROOT / rel
+            try:
+                content = path.read_bytes()
+            except OSError:
+                continue
+            scanned += 1
+            if b"\x00" in content:
+                offenders.append(rel)
+
+        # A pathspec that matches nothing passes this test vacuously forever. The
+        # repo has hundreds of files under those roots; 100 is a floor no real
+        # state falls below and a typo'd pathspec cannot clear.
+        # `git ls-files` exits 0 on a pathspec that matches NOTHING, so the
+        # returncode check above cannot catch a typo — measured. This floor is
+        # what actually does the work.
+        self.assertGreater(
+            scanned, 500,
+            f"only {scanned} tracked files were scanned - the pathspec matched almost "
+            "nothing, so a clean result here proves nothing")
+        self.assertEqual(
+            sorted(offenders), [],
+            "these tracked source files contain a raw NUL byte, so ripgrep treats them as "
+            "binary and skips them in every content search - use the \\0 escape instead: "
+            + ", ".join(sorted(offenders)),
+        )
 
     def test_no_coverage_exemption_is_stale(self):
         """An exemption for a tree that no longer exists silently widens the hole."""
