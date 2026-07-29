@@ -83,6 +83,8 @@ plugins/ca-sandbox/tools/**/.ca-sandbox.nixpacks.Dockerfile
 # project state — the maturity floor is applied by the tdd/refactor skills from
 # the reported numbers, not from a committed report.
 plugins/*/tools/coverage/
+# ...and site/, which joined the coverage gate in #514 / DECISION-0032.
+site/coverage/
 
 # ca-sandbox real-container execution sentinel (issue #406) — the append-only
 # record of which docker-gated layers actually ran. Written per-run by

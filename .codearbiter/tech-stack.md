@@ -149,6 +149,7 @@ One command per TypeScript tree, only when that tree changed:
 npm --prefix plugins/ca/tools run coverage
 npm --prefix plugins/ca-pi/tools run coverage
 npm --prefix plugins/ca-sandbox/tools run coverage
+npm --prefix site run coverage
 ```
 
 Each prints a text summary and writes an html report to that tree's `coverage/`
@@ -207,6 +208,7 @@ figures stay comparable to what #511 was driven against:
 | `plugins/ca/tools` | 67.31% | 59.46% | **below floor** — backfill tracked in #511 | windows |
 | `plugins/ca-pi/tools` | 85.37% | 78.73% | clears | windows |
 | `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears | windows |
+| `site` | 91.29% | 84.85% | clears | ubuntu-equivalent (no platform fork) |
 
 #511's closing measurement was 72.03% lines / 66.18% branches on Windows against
 70.93% / 65.35% on Linux — the divergence that produced #521. Under the union
@@ -223,16 +225,29 @@ Two caveats when reading a local report:
   a required check — deliberately, since wiring a red `ca/tools` into required CI
   would block every merge on an unrelated backfill.
 
-**`site/` is a fourth tested TypeScript tree and has no coverage command** — it
-runs vitest 3 with its own suites under `site/test/`, and `tdd` Phase 5 on a
-`site/` change therefore still has nothing to run, and takes the **no-tooling
-exemption** on the same terms as the Python hooks below — conditions in
-`plugins/ca/includes/maturity-coverage.md`, citation required, not restated
-here. That gap is tracked in #514 and held open explicitly: `COVERAGE_EXEMPT` in
-`.github/scripts/test_ci_impact.py` names it, and a companion test fails if the
-exemption ever stops matching a real tree. Visible and reviewed, not closed.
-(`COVERAGE_EXEMPT` is a CI allowlist for the doc-contract test — it is not the
-agent-facing exemption and cannot be taken in place of one.)
+**`site/` is inside the coverage gate** (#514 / DECISION-0032). It was the one
+tested tree with no command, so `tdd` Phase 5 reached it and took the no-tooling
+exemption on a tree that has 438 real tests — the #507 failure mode, by a
+different door. It now runs vitest 4 like the plugin trees, with
+`@vitest/coverage-v8` pinned to the same exact version (the two are peer-pinned;
+a caret on one and not the other is how they drift apart).
+
+Its coverage `include` is scoped to `scripts/` — the generator, link-audit and
+rehype helpers that the suites actually exercise. Deliberately NOT `src/`: those
+are Astro components rendered at build time and covered by the build plus the
+link audit, so counting them would report a large permanently-dark surface no
+test in this tree was ever meant to reach.
+
+`COVERAGE_EXEMPT` in `.github/scripts/test_ci_impact.py` is now **empty**, and a
+companion test still fails on a stale entry. (It is a CI allowlist for the
+doc-contract test — never the agent-facing exemption, and it cannot be taken in
+place of one.)
+
+One thing that does NOT transfer: `site/` is the only tree here with production
+dependencies (astro, starlight, markdown-remark) and is deliberately off the
+dev-inclusive CVE gate, whose sweep lives in `docs.yml`. Adding a coverage
+provider does not change that posture — the provider is a dev dependency, and
+the audit scope is unchanged.
 
 There is **no coverage tooling for the Python hooks** (`plugins/*/hooks/*.py`,
 `.github/scripts/*.py`). No numeric floor exists for those surfaces, so `tdd`
