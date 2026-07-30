@@ -62,7 +62,7 @@ describe("buildEventMap / eventsFor", () => {
 
 describe("renderHooksReference", () => {
   const eventMap = buildEventMap(hooksJson);
-  const md = renderHooksReference(callSites, eventMap, "2.8.11");
+  const md = renderHooksReference(callSites, eventMap, "2.8.11", "main");
 
   it("renders frontmatter with title Hook Gates", () => {
     expect(md).toContain("title: Hook Gates");
@@ -103,7 +103,7 @@ describe("renderHooksReference", () => {
       line: 5,
       message: "{rel}: found an issue on line {line}.",
     };
-    const out = renderHooksReference([site], eventMap, "2.8.11");
+    const out = renderHooksReference([site], eventMap, "2.8.11", "main");
     expect(out).toContain("`{rel}`");
     expect(out).toContain("`{line}`");
   });

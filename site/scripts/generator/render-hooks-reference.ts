@@ -105,9 +105,9 @@ export function renderHooksReference(
   callSites: HookCallSite[],
   eventMap: Map<string, string[]>,
   pluginVersion: string,
+  sourceRef: string = repositorySourceRef(),
 ): string {
   const tag = `v${pluginVersion}`;
-  const sourceRef = repositorySourceRef();
   const byTag = new Map<string, HookCallSite[]>();
   for (const site of callSites) {
     const list = byTag.get(site.tag) ?? [];

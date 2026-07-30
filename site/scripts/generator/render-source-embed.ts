@@ -38,10 +38,10 @@ export function renderSourceEmbed(
   sourceRaw: string,
   sourceRelPath: string,
   pluginVersion: string,
+  sourceRef: string = repositorySourceRef(),
 ): string {
   const fence = chooseFence(sourceRaw);
   const tag = `v${pluginVersion}`;
-  const sourceRef = repositorySourceRef();
   const repoUrl = `https://github.com/arbiterForge/codeArbiter/blob/${sourceRef}/${sourceRelPath}`;
 
   return `<details class="ca-source" data-pagefind-ignore>

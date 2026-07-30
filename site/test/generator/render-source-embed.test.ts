@@ -26,8 +26,8 @@ describe("renderSourceEmbed", () => {
     expect(md).toContain("`````md");
   });
 
-  it("pins the View in repo link to the given version tag", () => {
-    const md = renderSourceEmbed("x", "plugins/ca/commands/sprint.md", "2.8.11");
+  it("pins the View in repo link to an explicit source ref", () => {
+    const md = renderSourceEmbed("x", "plugins/ca/commands/sprint.md", "2.8.11", "main");
     expect(md).toContain(
       '<a href="https://github.com/arbiterForge/codeArbiter/blob/main/plugins/ca/commands/sprint.md">View in repo</a>',
     );
