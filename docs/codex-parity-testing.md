@@ -9,9 +9,34 @@ the Codex adapter converts the shared guard's exit-2 verdict to Codex's structur
 the shell boundary cannot collapse the exit status.
 That is what you confirm here.
 
+## What CI covers, and what this document covers (issue #408)
+
+The division is deliberate, and the boundary is a credential rather than an oversight.
+
+**Continuously, on every ca-codex change**, CI installs the checked-out plugin through a real
+Codex host at both ends of the supported window (0.143.0 and 0.145.0), reads it back enabled,
+and asserts that every hook script the installed manifest declares actually exists in the
+install. An advisory lane repeats it against npm `latest`, so upstream drift is reported
+rather than discovered at the next pin bump.
+
+**By hand, per release, here**: that a hook *fires*. Live persona injection and a live block
+happen inside a turn, a turn needs a model, and a provider credential cannot be a required
+check on fork pull requests. So this half is manual by decision — and the manifest now says
+exactly that, instead of implying continuous coverage.
+
+**The failure mode of "manual per release" is that it quietly becomes "manual once."** It
+already did: the baseline below recorded `ca-codex` 0.2.4 and went unrefreshed across four
+minor versions. Re-run this runbook and update the baseline as part of any ca-codex release
+that touches `hooks/`. A stale baseline is a claim about a past afternoon, which is the exact
+thing #408 was filed about.
+
+<!-- CODEX-LIVE-BASELINE -->
 Verified baseline: **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows, 2026-07-11.
 The installed hook set was approved through `/hooks`; SessionStart persona injection completed,
-and `$ca-doctor`'s `git add --all --dry-run` probe was blocked with `[H-03]`.
+and `$ca-doctor`'s staged-everything dry-run probe was blocked with `[H-03]`.
+
+> **STALE.** This baseline predates `ca-codex` 0.3.x. The continuously-verified half above has
+> not lapsed, but the live-firing half has not been re-confirmed since 0.2.4.
 
 Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.143.0** (the source-verified
 structured-deny baseline; plugin-bundled hooks came on by default earlier, at 0.134.0),
