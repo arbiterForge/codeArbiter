@@ -6,6 +6,29 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [Unreleased]
+
+## [0.3.3] — 2026-07-29
+
+### Changed
+
+- **The support claim now separates what CI verifies continuously from what a
+  human verifies per release (#408 AC-2, closed by scoping).** Proving a hook
+  *fires* needs a turn, a turn needs a model, and a provider credential cannot be
+  a required check on fork pull requests — so that half is manual by decision.
+  The manifest says so explicitly and names `docs/codex-parity-testing.md` as the
+  record, instead of implying continuous coverage.
+
+  The runbook states the division and carries a machine-findable baseline marker,
+  because the failure mode of "manual per release" is that it quietly becomes
+  "manual once" — and it already had: the recorded baseline sat at ca-codex 0.2.4
+  across four minor versions, and is now marked stale rather than read as current.
+
+  A contract pins the distinction so it cannot erode back into an unqualified
+  promise: the description must disclose the manual half and name the runbook, and
+  the runbook must record both a Codex and a ca-codex version so staleness can be
+  judged at all.
+
 ## [0.3.2] — 2026-07-29
 
 ### Changed
