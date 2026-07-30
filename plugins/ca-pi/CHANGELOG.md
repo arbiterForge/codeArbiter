@@ -8,6 +8,28 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [Unreleased]
+
+## [0.1.43] - 2026-07-30
+
+### Changed
+
+- **`_hooklib` sheds activation, completing the #321 partition (slice 4 of 4).**
+  The hook core finishes at **557 lines, from 1,263** - a 56% reduction across
+  four slices. `_activationlib` now owns which Host the process runs under, where
+  the project root is, and whether the arbiter is switched on, together with the
+  two process-lifetime caches those answers share.
+
+  `_HOST` is deliberately **not** re-exported: importing a mutable global binds
+  its *value*, so a later `set_host()` would rebind it in the owning module and
+  leave a stale copy behind forever. The accessors are re-exported instead, and
+  a test proves both modules share one cache in both directions.
+
+  `_hooklib` re-exports every name with a consumer, so the public surface is
+  unchanged and parity rests on 1,185 pre-existing hook tests that did not move.
+
+  No behaviour change.
+
 ## [0.1.42] - 2026-07-30
 
 ### Changed
