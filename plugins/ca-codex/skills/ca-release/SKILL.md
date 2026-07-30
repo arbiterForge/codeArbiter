@@ -1,77 +1,53 @@
 ---
 name: ca-release
-description: Cut a release for one of the four independently-versioned plugins. Selects the target's tag series, payload, manifests, changelog, and built artifacts; derives SemVer from that payload's commit window; publishes only on explicit authorization.
-argument-hint: "[ca | ca-codex | ca-sandbox | ca-pi]"
+description: Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. The only path to a version tag.
+argument-hint: "[\"<version>\"] | --auto | --dry-run"
 ---
 
-# $ca-release — target-aware tagged release
+# $ca-release — tagged release
 
-The only permitted path to a version tag. A release is a deployment-readiness assertion for one
-specific plugin payload at one commit. `$ca-release` routes to the `release` skill; it does not
-duplicate the release gates here.
-
-## Target
-
-The optional argument selects one independently-versioned plugin. A bare command defaults to `ca`.
-
-| Target | Tag series | Manifest | Changelog |
-|---|---|---|---|
-| `ca` | `vX.Y.Z` | `plugins/ca/.claude-plugin/plugin.json` | `CHANGELOG.md` |
-| `ca-codex` | `ca-codex-vX.Y.Z` | `plugins/ca-codex/.codex-plugin/plugin.json` | `plugins/ca-codex/CHANGELOG.md` |
-| `ca-sandbox` | `ca-sandbox-vX.Y.Z` | `plugins/ca-sandbox/.claude-plugin/plugin.json` | `plugins/ca-sandbox/CHANGELOG.md` |
-| `ca-pi` | `ca-pi-vX.Y.Z` | `plugins/ca-pi/package.json` plus generated root `package.json` | `plugins/ca-pi/CHANGELOG.md` |
-
-An unknown target STOPs. It is never guessed from the current branch or changed files.
+The only permitted path to a version tag. A release is a deployment-readiness assertion: the codebase at this SHA satisfies the bar for shipping. `$ca-release` aggregates existing compliance — it does not duplicate it.
 
 ## Flow
 
-1. **Resolve the target row.** The shared release helper supplies the tag prefix. The last tag and
-   commit window are scoped to that tag series and payload only.
-2. **Prove readiness.** The tree is clean, HEAD is not the default branch, the target has a
-   bump-earning commit window, its manifests agree, and every shipped bundle rebuilds cleanly.
-3. **Derive version and changelog.** Conventional Commits determine the bump. Every `feat` and
-   `fix` requires a `CHANGELOG:` footer; `perf` footers are rolled when present, while `refactor`
-   earns a patch without inventing a user-facing entry.
-4. **Sync release surfaces.** The selected manifest and target-specific generated or README
-   surfaces move together through the normal commit gate.
-5. **Compose and report.** An annotated tag is created locally and the target, classification,
-   changelog section, and tag SHA are reported.
-6. **Publish on authorization.** The tag and GitHub Release publish together only after the user
-   explicitly approves publication. The release is read back and the tag provenance is recorded.
+Routes to the `release` skill. `$ca-release` targets the **`ca`** plugin only (ADR-0007): `LAST_TAG`
+is the newest `ca` SemVer tag (`v*`, never the sibling `ca-sandbox-v*`), and the release window is the
+`plugins/ca/`-scoped commit set — a `ca-sandbox` tag or commit never bumps `ca` or lands in its
+changelog.
 
-Only `ca` may hold GitHub's repo-wide Latest badge. Every sibling release explicitly declines it.
+1. **Pre-flight** — working tree clean, on the configured release branch, suite green, no blocking
+   `[CONFIRM-NN]` open, HEAD not produced via `$ca-override`. Identify `LAST_TAG` and the release window.
+2. **Version bump (SemVer)** — classify every commit in `LAST_TAG..HEAD` by Conventional Commits type
+   and apply the highest-precedence bump (major beats minor beats patch). An explicit version that
+   disagrees with the classification BLOCKS — the bump is never silently up- or downgraded.
+3. **Changelog** — roll up the `CHANGELOG:` footers from `feat`, `fix`, and `perf` commits into a new
+   section. BLOCK if any `feat`/`fix` commit lacks the footer; never auto-fill it.
+4. **Tag** — compose the annotated tag. Never push it to a remote without explicit user
+   authorization — publication is a separate decision.
 
-## Usage
+`--dry-run` runs every gate and surfaces the readiness report, then STOPs before composing the tag.
 
-```text
-$ca-release
-$ca-release ca
-$ca-release ca-codex
-$ca-release ca-sandbox
-$ca-release ca-pi
-```
+## Arguments
 
-Claude Code uses `/ca:release <target>`; Codex uses `$ca-release <target>`; Pi uses
-`/ca-release <target>`.
+- **`<version>`** (e.g. `"1.2.3"`) — explicit version; Phase 2 still classifies the window and BLOCKs
+  on disagreement.
+- **`--auto`** — derive the version from the commit log (default when no version is given).
+- **`--dry-run`** — run all gates, compose nothing. Combines with `--auto` or an explicit version.
+  An explicit version never combines with `--auto` — they are mutually exclusive.
 
 ## Routes to
 
 `release` (`${CLAUDE_PLUGIN_ROOT}/routines/release/SKILL.md`).
 
-## When not to use it
+## When NOT to use
 
-- Work is still in progress: land it through the owning feature, fix, or chore lane.
-- The tree is dirty or HEAD is the default branch: prepare a release branch first.
-- You only want readiness information: inspect the target's release workflow and commit window
-  without invoking the mutating release lane.
-- A published release is wrong: fix forward and publish a new version. Never move or delete the
-  published tag.
+- Tagging an in-progress branch → land work first via `$ca-feature` / `$ca-fix`.
+- Pushing an already-composed tag → that is a separate user-authorized step.
+- A changelog only → it is a phase output, not a standalone deliverable.
 
 ## Hard gate
 
-MUST resolve exactly one supported target before release work begins. MUST scope the tag series,
-commit window, manifest, changelog, payload, and built artifacts to that target. MUST derive SemVer
-from the target's Conventional-Commit history and MUST NOT tag a non-bumping window. MUST NOT
-auto-fill a missing required `feat`/`fix` changelog footer. MUST NOT publish a tag or GitHub Release
-without explicit authorization. MUST NOT give the Latest badge to a sibling series. MUST NOT move,
-retarget, or delete a published tag; correction is a new version.
+MUST NOT compose a tag on a red suite. MUST NOT silently up- or downgrade the SemVer classification —
+an explicit version that disagrees with the commit log BLOCKS. MUST NOT auto-fill a missing
+`CHANGELOG:` footer. MUST NOT write to the default branch or force-push. MUST NOT push the tag without
+explicit user authorization. Any BLOCK may be bypassed only via `$ca-override`.
