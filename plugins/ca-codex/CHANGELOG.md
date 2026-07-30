@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.3.5] — 2026-07-30
+
+### Fixed
+
+- Render the target-aware release command and footer rules from the canonical shared surface, so
+  the Codex package stays synchronized with the Claude Code and Pi hosts.
+
 ## [Unreleased]
 
 ## [Unreleased]

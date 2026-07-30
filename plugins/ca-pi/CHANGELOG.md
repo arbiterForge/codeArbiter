@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.1.41] - 2026-07-30
+
+### Fixed
+
+- Render the target-aware release command and footer rules from the canonical shared surface, so
+  the Pi package stays synchronized with the Claude Code and Codex hosts.
+
 ## [0.1.40] - 2026-07-30
 
 ### Changed
