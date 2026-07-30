@@ -162,7 +162,7 @@ pi config
 Replace `<version>` with the numeric suffix from the chosen tag while retaining the full
 `ca-pi-v...` tag in the install source.
 
-Pi 0.80.5 and Pi 0.80.10 are supported on this release line. Generated aliases use `/ca-*`;
+Pi 0.80.5 and Pi 0.80.10 are the supported hosts for this release line. Generated aliases use `/ca-*`;
 `/skill:ca-*` is the host-native fallback. There is **no npm release**. The
 [Pi runbook](./docs/pi-parity-testing.md) covers isolated install, trust, verification, shared-state
 continuity, and uninstall.

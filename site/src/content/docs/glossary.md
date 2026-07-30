@@ -158,7 +158,7 @@ points, scoring each auto-decision and logging it with a confidence flag. See
 
 ## Severity
 
-A finding classification—CRITICAL, HIGH, MEDIUM, or LOW—that expresses impact. Severity does not
+A finding classification (CRITICAL, HIGH, MEDIUM, or LOW) that expresses impact. Severity does not
 itself say whether a phase must STOP or BLOCK; gate action is a separate decision. See
 [Checkpoints](/concepts/checkpoints/#the-funnel).
 
