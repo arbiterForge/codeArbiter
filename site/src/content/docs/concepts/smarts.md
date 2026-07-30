@@ -45,6 +45,30 @@ SMARTS deliberately does not score cost, time-to-market, team-skill fit, or vend
 those matter, they are surfaced as non-SMARTS considerations alongside the table; they supplement the
 analysis, never replace it.
 
+## Audit a Verdict
+
+Read the verdict as an evidence record, not as a scorecard that makes the decision automatically:
+
+1. **Check the options.** They must be materially different choices, not one real proposal beside a
+   deliberately weak straw option.
+2. **Check all six lenses.** Each option gets the same lenses and the same verdict vocabulary.
+   Missing a lens because it is inconvenient invalidates the comparison.
+3. **Challenge the evidence sentence.** "This is an industry standard" is not enough. A useful
+   justification names a repository constraint, an observable property, or a concrete failure
+   mode, such as "this reuses the existing parser and adds no install or license surface."
+4. **Separate what SMARTS does not score.** Cost, schedule, team familiarity, and vendor lock-in
+   belong under non-SMARTS considerations where they stay visible to the user.
+5. **Recompute the recommendation strength.** A `strong` result needs multiple dominant lenses
+   pointing the same way. Close evidence should produce `moderate`; no meaningful separation should
+   produce `tied`.
+6. **Find the durable record.** During a sprint, locate the same options, verdict, recommendation,
+   and confidence flag in `.codearbiter/sprint-log.md`. Low confidence is a review target, not a
+   detail to smooth over.
+
+You have completed the audit when you can explain why the chosen option won, which lens could still
+reverse it, which important concerns sit outside the rubric, and where the exact decision is
+recorded.
+
 ## Where it runs
 
 The canonical rubric ships at `plugins/ca/includes/smarts/core.md`. The

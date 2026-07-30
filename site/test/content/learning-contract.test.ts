@@ -47,4 +47,53 @@ describe("hand-authored learning contract", () => {
     });
     expect(failures).toEqual([]);
   });
+
+  it("keeps every authored page substantial, structured, and connected to a next step", () => {
+    const failures = handPages.flatMap((path) => {
+      const source = readFileSync(path, "utf8");
+      const route = relative(docsRoot, path).replaceAll("\\", "/");
+      const body = source.replace(/^---\r?\n[\s\S]*?\r?\n---/, "");
+      const wordCount = body.match(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*\b/gu)?.length ?? 0;
+      const h2Count = body.match(/^## /gm)?.length ?? 0;
+      const hasInternalPath =
+        /(?:href=|]\()["']?\/?(?:getting-started|guides|concepts|reference|feature-forge|overview|learn|enforcement|hooks|faq|glossary|codearbiter-directory)/.test(body)
+        || body.includes("href={`${base}");
+      const gaps = [
+        wordCount < 250 ? `${wordCount} words` : "",
+        h2Count < 2 ? `${h2Count} H2 sections` : "",
+        !hasInternalPath ? "no internal next-step link" : "",
+      ].filter(Boolean);
+      return gaps.length ? [`${route}: ${gaps.join(", ")}`] : [];
+    });
+    expect(failures).toEqual([]);
+  });
+
+  it("gives every operational walkthrough a verification or recovery path", () => {
+    const operationalRoutes = [
+      "getting-started/install.md",
+      "getting-started/pi.md",
+      "getting-started/quickstart.md",
+      "feature-forge/using-preview-features.md",
+      "guides/adding-a-dependency.md",
+      "guides/autonomous-sprints.md",
+      "guides/ca-sandbox.md",
+      "guides/feature-lane.md",
+      "guides/opt-in-a-repo.md",
+      "guides/overriding-a-gate.md",
+      "guides/recording-adrs.md",
+      "guides/releasing-a-version.md",
+      "guides/the-statusline.md",
+      "guides/troubleshooting.md",
+      "guides/uninstalling.md",
+    ];
+    const failures = operationalRoutes.flatMap((route) => {
+      const body = readFileSync(join(docsRoot, route), "utf8");
+      const hasVerification = /verify|proof|healthy|completion/i.test(body);
+      const hasRecovery = /common stops|failure|fails|recovery|troubleshoot|clean up|turn it back off|unparseable|symptom|resume|interrupted|absent|malformed/i.test(body);
+      return hasVerification && hasRecovery ? [] : [
+        `${route}: ${!hasVerification ? "missing verification" : "missing recovery"}`,
+      ];
+    });
+    expect(failures).toEqual([]);
+  });
 });

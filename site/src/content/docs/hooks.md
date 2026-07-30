@@ -36,6 +36,25 @@ decision into its structured hook result. Pi wraps its native tools and sends no
 the bridge. Every surface checks the same repository activation state; see
 [Enforcement & Security](/enforcement/) for the activation contract and fail posture.
 
+## Trace One Live Decision
+
+Use a disposable repository or the quickstart's live-fire probe. Do not manufacture a destructive
+case in active work just to exercise a gate.
+
+1. Record the **host**, complete verdict, and gate id, for example `BLOCKED [H-03]`.
+2. Open the generated [Hook Gates reference](/reference/hooks-gates/) and search for that id. The
+   entry names the current message, source file, source line, event, and matcher.
+3. Find that event in the registration surface below: Claude Code's `hooks.json`, Codex's adapter
+   registrations, or Pi's wrapper lifecycle.
+4. Follow the source link into the shared guard and read its fail posture. A blocking pre-tool hook,
+   an advisory post-write reminder, and a SessionStart diagnostic do not make the same promise.
+5. Confirm the durable effect. A block or reminder may append to `gate-events.log`; an approved
+   override writes `overrides.log`; a read-context injection deliberately writes neither.
+
+For H-03, that trail is: doctor or a denied broad-stage attempt, the `H-03` Hook Gates entry,
+`pre-bash.py`, the host's shell registration, and an explicit-file staging remediation. If any
+link in that chain is missing, the result is not proven end to end.
+
 For the exact message text emitted at each shared guard call site, see the generated
 [Hook Gates reference](/reference/hooks-gates/). That page is generated from the Python
 `block()`/`remind()` calls. The host tables below explain how each host reaches those guards.

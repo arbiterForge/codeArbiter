@@ -231,6 +231,22 @@ describe("documentation presentation regressions", () => {
     expect(compatibility).toContain("npm --prefix plugins/ca-pi/tools ci --ignore-scripts");
   });
 
+  it("OBL-CONTENT-10 turns power-user internals into repeatable diagnostic drills", () => {
+    const enforcement = readFileSync(join(docsRoot, "enforcement.md"), "utf8");
+    const hooks = readFileSync(join(docsRoot, "hooks.md"), "utf8");
+    const smarts = readFileSync(join(docsRoot, "concepts", "smarts.md"), "utf8");
+
+    expect(enforcement).toContain("## Diagnose a Block End to End");
+    expect(enforcement).toContain("BLOCKED [H-03]");
+    expect(enforcement).toContain("explicit file paths");
+    expect(hooks).toContain("## Trace One Live Decision");
+    expect(hooks).toContain("generated [Hook Gates reference]");
+    expect(hooks).toContain("registration surface");
+    expect(smarts).toContain("## Audit a Verdict");
+    expect(smarts).toContain("non-SMARTS considerations");
+    expect(smarts).toContain("confidence flag");
+  });
+
   it("OBL-REF-01 suppresses inferred journey cards on generated entity pages", () => {
     const pageTitle = readFileSync(join(siteRoot, "src", "components", "PageTitle.astro"), "utf8");
 

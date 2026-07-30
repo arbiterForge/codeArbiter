@@ -19,6 +19,33 @@ handling cannot weaken the block. See the
 
 For the per-hook breakdown, see the [Hooks reference](/hooks).
 
+## Diagnose a Block End to End
+
+Start with the complete message. Do not begin by guessing which command or reviewer owns it:
+
+```text
+BLOCKED [H-03]: stage explicit file paths; broad staging is not allowed
+```
+
+Use this five-step trace:
+
+1. **Keep the gate id and exact action.** `H-03` identifies the rule; the denied Git command
+   identifies the boundary where it ran.
+2. **Name the host flank.** Claude Code receives the Python hook's exit-2 block, Codex receives the
+   adapter's structured deny result, and Pi receives the wrapper verdict. The policy is shared even
+   though the delivery surface differs.
+3. **Open the generated [Hook Gates reference](/reference/hooks-gates/).** Find `H-03` to see the
+   emitting source line, event, matcher, and current message from the shipped payload.
+4. **Choose the sanctioned remediation.** For H-03, inspect the worktree and stage explicit file
+   paths. A security or migration gate instead routes through its owning review. An override is
+   relevant only when the gate permits it and the exception is genuinely justified.
+5. **Prove the next boundary.** Re-run the intended narrow action. If the block is missing,
+   inconsistent across hosts, or appears before repository activation, run
+   [`doctor`](/reference/commands/doctor/) and diagnose registration before changing policy.
+
+The successful outcome is not merely "the command ran." It is that you can connect one visible
+verdict to its gate id, host registration, source call site, remediation, and durable audit effect.
+
 ## The Activation Contract
 
 codeArbiter is dormant until a repository opts in. Every enforcement hook calls `arbiter_active()`, which is true only when `.codearbiter/CONTEXT.md` carries `arbiter: enabled` in a properly closed leading YAML frontmatter block. A repo with no such file, or no such line, loads nothing and blocks nothing.
