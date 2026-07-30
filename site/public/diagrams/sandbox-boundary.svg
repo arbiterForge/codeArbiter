@@ -16,31 +16,31 @@
   <rect width="1104" height="510" rx="14" fill="url(#canvas)"/>
   <rect width="1104" height="510" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1102" height="508" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">CA-SANDBOX BOUNDARY</text>
-<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">The repository enters a constrained container; the host does not.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1038">CA-SANDBOX BOUNDARY</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1038">The repository enters a constrained container; the host does not.</text>
 <rect x="42" y="116" width="1020" height="336" rx="16" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="68" y="148" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#91a0b2" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">HOST</text>
+<text x="68" y="148" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#91a0b2" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="1012">HOST</text>
 <rect x="68" y="176" width="230" height="96" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="183" y="207" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Host filesystem</text>
-<text x="183" y="254" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">projects · credentials</text>
+<text x="183" y="207" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="206">Host filesystem</text>
+<text x="183" y="254" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="206">projects · credentials</text>
 <rect x="68" y="312" width="230" height="96" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="183" y="343" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Docker daemon</text>
-<text x="183" y="390" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">socket never mounted</text>
+<text x="183" y="343" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="206">Docker daemon</text>
+<text x="183" y="390" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="206">socket never mounted</text>
 <rect x="372" y="146" width="650" height="272" rx="14" fill="#17212d" stroke="#f0b92f" stroke-width="2"/>
-<text x="398" y="178" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">CONTAINER</text>
+<text x="398" y="178" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="682">CONTAINER</text>
 <rect x="398" y="202" width="260" height="92" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="528" y="233" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">/work/repo</text>
-<text x="528" y="276" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Docker named volume</text>
+<text x="528" y="233" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">/work/repo</text>
+<text x="528" y="276" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">Docker named volume</text>
 <rect x="714" y="202" width="276" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="852" y="233" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Runtime controls</text>
-<text x="852" y="276" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">read-only · user 1000:1000</text>
+<text x="852" y="233" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="252">Runtime controls</text>
+<text x="852" y="276" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="252">read-only · user 1000:1000</text>
 <rect x="398" y="322" width="260" height="68" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="528" y="353" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">No host mounts</text>
-<text x="528" y="372" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">no socket · no bind</text>
+<text x="528" y="353" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">No host mounts</text>
+<text x="528" y="372" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">no socket · no bind</text>
 <rect x="714" y="322" width="276" height="68" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="852" y="353" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Policy controls</text>
-<text x="852" y="372" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">no network · resource caps</text>
+<text x="852" y="353" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="252">Policy controls</text>
+<text x="852" y="372" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="252">no network · resource caps</text>
 <path d="M304 224 L362 248" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <polyline points="658,248 688,248 688,356 704,356" fill="none" stroke="#3a4c60" stroke-width="2.25" marker-end="url(#arrow)"/>
-<text x="552" y="478" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Reviewed output leaves only through host-initiated docker cp. Unknown network policy fails closed.</text>
+<text x="552" y="478" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="1056">Reviewed output leaves only through host-initiated docker cp. Unknown network policy fails closed.</text>
 </svg>

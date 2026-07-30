@@ -58,6 +58,60 @@ export function auditDiagram(svg: string, filename: string): string[] {
     }
   }
 
+  for (const match of svg.matchAll(/<text\b(?<attributes>[^>]*)>(?<copy>[^<]*)<\/text>/g)) {
+    const attributes = match.groups?.attributes ?? "";
+    const maximumMatch = attributes.match(/\bdata-max-width="([\d.]+)"/);
+    if (!maximumMatch) {
+      violations.push(`${filename}: text has no declared maximum width`);
+      continue;
+    }
+    const sizeMatch = attributes.match(/\bfont-size="([\d.]+)"/);
+    const familyMatch = attributes.match(/\bfont-family="([^"]+)"/);
+    if (!sizeMatch || !familyMatch) {
+      violations.push(`${filename}: bounded text is missing measurable font metrics`);
+      continue;
+    }
+
+    const size = Number(sizeMatch[1]);
+    const maximum = Number(maximumMatch[1]);
+    const entities: Record<string, string> = {
+      "&amp;": "&",
+      "&lt;": "<",
+      "&gt;": ">",
+      "&quot;": '"',
+    };
+    const copy = (match.groups?.copy ?? "").replace(
+      /&(amp|lt|gt|quot);/g,
+      (entity) => entities[entity],
+    );
+    const characters = [...copy];
+    const mono = familyMatch[1].includes("monospace");
+    const weight = Number(attributes.match(/\bfont-weight="([\d.]+)"/)?.[1] ?? 500);
+    const weightFactor = weight >= 700 ? 1.03 : weight >= 600 ? 1.015 : 1;
+    const letterSpacing = Number(
+      attributes.match(/\bletter-spacing="(-?[\d.]+)"/)?.[1] ?? 0,
+    );
+    const glyphWidth = characters.reduce((total, character) => {
+      if (mono) return total + size * 0.66;
+      if (character === " ") return total + size * 0.34;
+      if (/[ilI1.,:;|!'`]/.test(character)) return total + size * 0.38;
+      if (/[mw]/.test(character)) return total + size * 0.92;
+      if (/[MW@%&#]/.test(character)) return total + size;
+      if (/[A-Z0-9]/.test(character)) return total + size * 0.74;
+      if (/[-/()[\]]/.test(character)) return total + size * 0.46;
+      return total + size * 0.64;
+    }, 0);
+    const width =
+      glyphWidth * weightFactor + Math.max(0, characters.length - 1) * letterSpacing;
+
+    if (width > maximum) {
+      const kind = attributes.match(/\bdata-label-kind="([^"]+)"/)?.[1] ?? "text";
+      violations.push(
+        `${filename}: ${kind} width ${Math.round(width * 10) / 10} exceeds declared maximum ${maximum}`,
+      );
+    }
+  }
+
   const seenUnknownColors = new Set<string>();
   for (const match of svg.matchAll(/#[0-9a-fA-F]{6}\b/g)) {
     const color = match[0].toLowerCase();

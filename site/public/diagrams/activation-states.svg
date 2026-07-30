@@ -16,23 +16,23 @@
   <rect width="976" height="410" rx="14" fill="url(#canvas)"/>
   <rect width="976" height="410" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="974" height="408" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">ACTIVATION CONTRACT</text>
-<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Read .codearbiter/CONTEXT.md once; classify its leading frontmatter.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="910">ACTIVATION CONTRACT</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="910">Read .codearbiter/CONTEXT.md once; classify its leading frontmatter.</text>
 <rect x="42" y="126" width="248" height="96" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="166" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Read CONTEXT.md</text>
-<text x="166" y="204" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">leading YAML only</text>
+<text x="166" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="224">Read CONTEXT.md</text>
+<text x="166" y="204" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="224">leading YAML only</text>
 <rect x="372" y="112" width="240" height="94" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="492" y="143" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Dormant</text>
-<text x="492" y="188" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">missing file or no block</text>
+<text x="492" y="143" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="216">Dormant</text>
+<text x="492" y="188" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="216">missing file or no block</text>
 <rect x="372" y="236" width="240" height="94" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="492" y="267" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Malformed</text>
-<text x="492" y="312" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">error surfaced</text>
+<text x="492" y="267" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="216">Malformed</text>
+<text x="492" y="312" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="216">error surfaced</text>
 <rect x="694" y="174" width="240" height="94" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="814" y="205" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Enabled</text>
-<text x="814" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">arbiter: enabled</text>
+<text x="814" y="205" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="216">Enabled</text>
+<text x="814" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="216">arbiter: enabled</text>
 <path d="M296 174 L362 159" fill="none" stroke="#3a4c60" stroke-width="2.25" marker-end="url(#arrow)"/>
 <path d="M296 174 L362 283" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
 <path d="M618 252 L684 221" fill="none" stroke="#58d68d" stroke-width="2.25" marker-end="url(#arrow)"/>
-<text x="492" y="354" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#ff7b72" text-anchor="middle" data-label-kind="annotation">A malformed block never silently disables enforcement.</text>
-<text x="492" y="378" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">The next activation check sees any file change.</text>
+<text x="492" y="354" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#ff7b72" text-anchor="middle" data-label-kind="annotation" data-max-width="920">A malformed block never silently disables enforcement.</text>
+<text x="492" y="378" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="920">The next activation check sees any file change.</text>
 </svg>

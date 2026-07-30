@@ -43,6 +43,8 @@ function label(
     family?: "sans" | "mono";
     letterSpacing?: number;
     annotation?: boolean;
+    kind?: "copy";
+    maxWidth?: number;
   } = {},
 ): string {
   const size = options.size ?? 14;
@@ -57,7 +59,9 @@ function label(
     `text-anchor="${options.anchor ?? "start"}"`,
   ];
   if (options.letterSpacing) attrs.push(`letter-spacing="${options.letterSpacing}"`);
-  if (options.annotation) attrs.push('data-label-kind="annotation"');
+  if (options.kind) attrs.push(`data-label-kind="${options.kind}"`);
+  else if (options.annotation) attrs.push('data-label-kind="annotation"');
+  if (options.maxWidth) attrs.push(`data-max-width="${options.maxWidth}"`);
   return `<text ${attrs.join(" ")}>${escapeXml(value)}</text>`;
 }
 
@@ -81,6 +85,7 @@ function card(
   accent: string = C.lineStrong,
 ): string {
   const titleLines = title.split("\n");
+  const subtitleLines = subtitle.split("\n");
   const titleY = subtitle ? y + 31 : y + height / 2 + 5 - ((titleLines.length - 1) * 9);
   return [
     `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="10" fill="${C.panel}" stroke="${accent}" stroke-width="2"/>`,
@@ -89,15 +94,17 @@ function card(
       color: C.white,
       weight: 700,
       anchor: "middle",
+      maxWidth: width - 24,
     }),
     subtitle
-      ? label(x + width / 2, y + height - 18, subtitle, {
+      ? multiline(x + width / 2, y + height - 18 - ((subtitleLines.length - 1) * 16), subtitleLines, {
           size: 12,
           color: C.muted,
           anchor: "middle",
           family: "mono",
           annotation: true,
-        })
+          maxWidth: width - 24,
+        }, 16)
       : "",
   ].join("\n");
 }
@@ -121,7 +128,25 @@ function elbow(
   return `<polyline points="${points.map(([x, y]) => `${x},${y}`).join(" ")}" fill="none" stroke="${color}" stroke-width="2.25"${dashed ? ' stroke-dasharray="7 6"' : ""} marker-end="url(#arrow)"/>`;
 }
 
+function declareCanvasTextBounds(body: string, width: number): string {
+  const inset = 24;
+  return body.replace(/<text\b(?<attributes>[^>]*)>/g, (tag, attributes: string) => {
+    if (/\bdata-max-width=/.test(attributes)) return tag;
+    const x = Number(attributes.match(/\bx="([\d.]+)"/)?.[1]);
+    if (!Number.isFinite(x)) return tag;
+    const anchor = attributes.match(/\btext-anchor="([^"]+)"/)?.[1] ?? "start";
+    const maximum =
+      anchor === "middle"
+        ? 2 * Math.min(x - inset, width - inset - x)
+        : anchor === "end"
+          ? x - inset
+          : width - inset - x;
+    return tag.replace(/>$/, ` data-max-width="${Math.max(1, Math.floor(maximum))}">`);
+  });
+}
+
 function shell(title: string, desc: string, width: number, height: number, body: string): string {
+  const boundedBody = declareCanvasTextBounds(body, width);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" data-diagram-system="ca-v2">
   <title>${escapeXml(title)}</title>
   <desc>${escapeXml(desc)}</desc>
@@ -140,7 +165,7 @@ function shell(title: string, desc: string, width: number, height: number, body:
   <rect width="${width}" height="${height}" rx="14" fill="url(#canvas)"/>
   <rect width="${width}" height="${height}" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="13" fill="none" stroke="${C.lineStrong}" stroke-width="2"/>
-  ${body}
+  ${boundedBody}
 </svg>
 `;
 }
@@ -187,6 +212,7 @@ function laneDiagram(title: string, desc: string, columns: LaneColumn[], note: s
         color: C.white,
         weight: 650,
         anchor: "middle",
+        maxWidth: columnWidth - 42,
       }));
     });
     if (index < columns.length - 1) {
@@ -246,16 +272,46 @@ function gateModel(): string {
     `<rect x="584" y="116" width="512" height="284" rx="14" fill="${C.panel}" stroke="${C.danger}" stroke-width="2"/>`,
     label(74, 154, "SOFT GATE", { size: 12, annotation: true, family: "mono", color: C.gold, weight: 750, letterSpacing: 1.8 }),
     label(614, 154, "HARD GATE", { size: 12, annotation: true, family: "mono", color: C.danger, weight: 750, letterSpacing: 1.8 }),
-    card(74, 184, 190, 94, "Decision surfaced", "waiting for user", C.gold),
+    card(74, 184, 190, 94, "Decision\nsurfaced", "waiting for user", C.gold),
     card(344, 184, 182, 94, "Work proceeds", "after user acts", C.positive),
     arrow(270, 231, 334, 231, C.gold),
-    label(300, 216, "human choice", { size: 12, annotation: true, family: "mono", color: C.muted, anchor: "middle" }),
+    label(300, 216, "DECISION", {
+      size: 12,
+      annotation: true,
+      family: "mono",
+      color: C.gold,
+      anchor: "middle",
+      letterSpacing: 0.8,
+      maxWidth: 70,
+    }),
     card(614, 184, 190, 94, "Stopped", "never auto-decided", C.danger),
-    card(884, 184, 182, 94, "User action", "required to continue", C.danger),
+    card(884, 184, 182, 94, "User action", "required\nto continue", C.danger),
     arrow(810, 231, 874, 231, C.danger),
-    label(840, 216, "hard stop", { size: 12, annotation: true, family: "mono", color: C.danger, anchor: "middle" }),
-    multiline(74, 322, ["Surfaces the exact choice.", "Resumes when the user decides."], { size: 14, color: C.text }),
-    multiline(614, 322, ["Security, auth/crypto, irreversible ops,", "gate bypass, and merge-to-default remain stops."], { size: 14, color: C.text }),
+    label(840, 216, "STOP", {
+      size: 12,
+      annotation: true,
+      family: "mono",
+      color: C.danger,
+      anchor: "middle",
+      letterSpacing: 0.8,
+      maxWidth: 36,
+    }),
+    multiline(74, 322, ["Surfaces the exact choice.", "Resumes when the user decides."], {
+      size: 14,
+      color: C.text,
+      kind: "copy",
+      maxWidth: 452,
+    }),
+    multiline(614, 322, [
+      "Security, auth/crypto, and irreversible ops stop.",
+      "Gate bypass and merge-to-default stop.",
+      "Only the user can clear the gate.",
+    ], {
+      size: 14,
+      color: C.text,
+      kind: "copy",
+      maxWidth: 452,
+    }),
     label(44, 436, "Frequent hard-gate trips indicate a thin specification, not a normal control loop.", {
       size: 12,
       annotation: true,
@@ -301,10 +357,10 @@ function fourTierMap(): string {
   const title = "File-to-knowledge priority map";
   const desc = "A file read is matched in priority order against security controls, accepted architecture decisions, approved specifications, and fresh provenance.";
   const tiers = [
-    ["1", "security-controls.md", "security-entry files", C.danger],
-    ["2", "decisions/", "accepted ADR governs glob", C.gold],
-    ["3", "specs/", "approved Governs header", C.info],
-    ["4", "provenance", "stored hash still matches", C.positive],
+    ["1", "security-\ncontrols.md", "security-entry\nfiles", C.danger],
+    ["2", "decisions/", "accepted ADR\ngoverns glob", C.gold],
+    ["3", "specs/", "approved Governs\nheader", C.info],
+    ["4", "provenance", "stored hash\nstill matches", C.positive],
   ] as const;
   const body = [
     label(42, 48, "JUST-IN-TIME CONTEXT", { size: 14, family: "mono", color: C.gold, weight: 750, letterSpacing: 2 }),
@@ -312,10 +368,9 @@ function fourTierMap(): string {
     card(42, 154, 188, 92, "Read(file)", "PreToolUse hook", C.info),
   ];
   tiers.forEach(([number, name, subtitle, tone], index) => {
-    const x = 300 + index * 205;
-    body.push(card(x, 132, 170, 136, `${number} · ${name}`, subtitle, tone));
+    const x = 300 + index * 200;
+    body.push(card(x, 132, 184, 136, `${number}\n${name}`, subtitle, tone));
     if (index === 0) body.push(arrow(236, 200, 290, 200, C.info));
-    if (index < tiers.length - 1) body.push(arrow(x + 176, 200, x + 195, 200, tone));
   });
   body.push(card(300, 310, 375, 82, "Inject highest-priority pointer", "budget ≤ 150 tokens", C.gold));
   body.push(card(710, 310, 375, 82, "No tier matches", "no injection · zero git calls", C.lineStrong));
@@ -330,7 +385,7 @@ function coreFanout(): string {
   const body = [
     label(42, 48, "BUILD-TIME GENERATION", { size: 14, family: "mono", color: C.gold, weight: 750, letterSpacing: 2 }),
     label(42, 78, "One source fans out only after the byte-identity gate.", { size: 18, color: C.white, weight: 700 }),
-    card(42, 190, 220, 110, "core/pysrc\ncore/surface", "shared hook core + surface", C.info),
+    card(42, 190, 220, 110, "core/pysrc\ncore/surface", "shared hook core\n+ surface", C.info),
     card(334, 190, 190, 110, "CI gate", "byte-identity check", C.gold),
     arrow(268, 245, 324, 245, C.info),
     card(604, 118, 220, 84, "ca", "Claude Code plugin", C.gold),
@@ -417,8 +472,18 @@ function twoAxisModel(): string {
     card(886, 224, 154, 76, "stable", "on by default", C.positive),
     arrow(760, 262, 876, 262, C.gold),
     label(818, 246, "evidence", { size: 12, annotation: true, family: "mono", color: C.muted, anchor: "middle" }),
-    multiline(72, 344, ["A version bump reaches every user.", "Governed by MAJOR · MINOR · PATCH."], { size: 14, color: C.text }),
-    multiline(600, 344, ["A preview can exist inside a stable release.", "Promotion requires real-world evidence."], { size: 14, color: C.text }),
+    multiline(72, 344, ["A version bump reaches every user.", "Governed by MAJOR · MINOR · PATCH."], {
+      size: 14,
+      color: C.text,
+      kind: "copy",
+      maxWidth: 440,
+    }),
+    multiline(600, 344, ["A preview can exist inside a stable release.", "Promotion requires real-world evidence."], {
+      size: 14,
+      color: C.text,
+      kind: "copy",
+      maxWidth: 440,
+    }),
   ];
   return shell(title, desc, 1112, 450, body.join("\n"));
 }

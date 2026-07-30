@@ -16,49 +16,49 @@
   <rect width="1230" height="540" rx="14" fill="url(#canvas)"/>
   <rect width="1230" height="540" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1228" height="538" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">COMMIT-GATE</text>
-<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Nine phases. Every failure is a hard BLOCK.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1164">COMMIT-GATE</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1164">Nine phases. Every failure is a hard BLOCK.</text>
 <rect x="42" y="126" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="172" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Permission</text>
-<text x="172" y="200" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 1</text>
+<text x="172" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Permission</text>
+<text x="172" y="200" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 1</text>
 <path d="M308 172 L366 172" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="376" y="126" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="506" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Branch</text>
-<text x="506" y="200" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 2</text>
+<text x="506" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Branch</text>
+<text x="506" y="200" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 2</text>
 <path d="M642 172 L700 172" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="710" y="126" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="840" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Classify</text>
-<text x="840" y="200" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 3</text>
+<text x="840" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Classify</text>
+<text x="840" y="200" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 3</text>
 <polyline points="840,224 840,248" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="710" y="258" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="840" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Verify</text>
-<text x="840" y="332" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 4</text>
+<text x="840" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Verify</text>
+<text x="840" y="332" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 4</text>
 <path d="M704 304 L646 304" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="376" y="258" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="506" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Behavioral</text>
-<text x="506" y="308" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">proof</text>
-<text x="506" y="332" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 5</text>
+<text x="506" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Behavioral</text>
+<text x="506" y="308" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">proof</text>
+<text x="506" y="332" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 5</text>
 <path d="M370 304 L312 304" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="42" y="258" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="172" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Diff review</text>
-<text x="172" y="332" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 6</text>
+<text x="172" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Diff review</text>
+<text x="172" y="332" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 6</text>
 <polyline points="172,356 172,380" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="42" y="390" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="172" y="421" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Selective</text>
-<text x="172" y="440" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">stage</text>
-<text x="172" y="464" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 7</text>
+<text x="172" y="421" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Selective</text>
+<text x="172" y="440" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">stage</text>
+<text x="172" y="464" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 7</text>
 <path d="M308 436 L366 436" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="376" y="390" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="506" y="421" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Message</text>
-<text x="506" y="464" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 8</text>
+<text x="506" y="421" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Message</text>
+<text x="506" y="464" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 8</text>
 <path d="M642 436 L700 436" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="710" y="390" width="260" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="840" y="421" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Commit</text>
-<text x="840" y="464" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 9</text>
+<text x="840" y="421" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="236">Commit</text>
+<text x="840" y="464" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="236">phase 9</text>
 <rect x="970" y="258" width="218" height="92" rx="10" fill="#17212d" stroke="#f0b92f" stroke-width="2" stroke-dasharray="7 6"/>
-<text x="1079" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#f6f7f9" text-anchor="middle">5.5 · Provenance</text>
-<text x="1079" y="308" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#f6f7f9" text-anchor="middle">auto-heal</text>
-<text x="1079" y="334" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">only on drift</text>
+<text x="1079" y="289" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="254">5.5 · Provenance</text>
+<text x="1079" y="308" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="254">auto-heal</text>
+<text x="1079" y="334" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="254">only on drift</text>
 <polyline points="636,304 956,304" fill="none" stroke="#f0b92f" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
-<text x="1188" y="508" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">A BLOCK clears only through the logged /ca:override path.</text>
+<text x="1188" y="508" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1164">A BLOCK clears only through the logged /ca:override path.</text>
 </svg>
