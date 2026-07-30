@@ -1026,6 +1026,11 @@ class WorkflowContractTest(unittest.TestCase):
         # The sanctioned advisory set. Each entry is awaited so the run settles
         # and a hang is visible, but never enforced:
         #   ca-pi-latest        - the upstream Pi canary (#381).
+        #   codex-host-latest   - #408 AC-4. The required codex-host lane PINS the
+        #                         supported window, so by construction it cannot
+        #                         report that upstream moved. This one installs
+        #                         @latest and reports drift. An upstream release
+        #                         must not be able to block a merge here.
         #   coverage-union*     - #521 / DECISION-0031. The coverage GATE is
         #                         orchestrator-run (`tdd` Phase 5); these jobs
         #                         PRODUCE the figure it quotes and gate nothing.
@@ -1037,8 +1042,8 @@ class WorkflowContractTest(unittest.TestCase):
         # red build: anything here can fail silently forever.
         self.assertEqual(
             sorted(set(needs) - set(required)),
-            ["ca-pi-latest", "coverage-union", "coverage-union-merge",
-             "coverage-union-pi", "coverage-union-pi-merge"],
+            ["ca-pi-latest", "codex-host-latest", "coverage-union",
+             "coverage-union-merge", "coverage-union-pi", "coverage-union-pi-merge"],
             "awaited but unenforced jobs (only the advisory Pi canary and the "
             "#521 coverage-union jobs may appear here)",
         )

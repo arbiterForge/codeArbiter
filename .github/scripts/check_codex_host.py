@@ -46,6 +46,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -154,6 +155,43 @@ def check_install(home: Path) -> list[dict]:
                    f"installed {sorted(declared)} vs source {sorted(source)}")
         except (ValueError, KeyError) as error:
             record("CODEX-HOST-HOOKS-MATCH", False, str(error))
+
+        # Issue #408 AC-3. HOOKS-MATCH above compares the installed manifest to
+        # the SOURCE manifest — and the install is a fresh copy of that same
+        # source, so for anything the source declares the two agree by
+        # construction. Measured: adding a hook to source that ships no script
+        # left HOOKS-MATCH passing. It can catch the install DROPPING a file
+        # (its stated purpose) and nothing else.
+        #
+        # A hook Codex cannot execute is indistinguishable, from the outside,
+        # from a hook that allowed the operation. So resolve every script the
+        # INSTALLED manifest points at and require it to exist in the install.
+        # Still credential-free: this asks whether the host has something to
+        # run, not whether running it blocks.
+        plugin_root = cached[0].parent.parent
+        missing: list[str] = []
+        scripts: set[str] = set()
+        try:
+            installed = json.loads(cached[0].read_text(encoding="utf-8"))["hooks"]
+            for entries in installed.values():
+                for entry in entries:
+                    for hook in entry.get("hooks", []):
+                        for key in ("command", "commandWindows"):
+                            command = hook.get(key)
+                            if not isinstance(command, str):
+                                continue
+                            for match in re.finditer(
+                                    r"\$\{CLAUDE_PLUGIN_ROOT\}/(\S+?\.py)", command):
+                                rel = match.group(1)
+                                scripts.add(rel)
+                                if not (plugin_root / rel).is_file():
+                                    missing.append(rel)
+            record("CODEX-HOST-HOOK-SCRIPTS", not missing and bool(scripts),
+                   f"{len(scripts)} script(s) referenced, missing from the install: "
+                   f"{sorted(set(missing))}" if missing
+                   else "no hook script references were found to check")
+        except (ValueError, KeyError) as error:
+            record("CODEX-HOST-HOOK-SCRIPTS", False, str(error))
 
     return results
 

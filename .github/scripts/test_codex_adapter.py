@@ -1172,7 +1172,31 @@ class TestCodexPluginJson(unittest.TestCase):
         self.assertRegex(m["version"], r"^0[.]\d+[.]\d+$")
         self.assertEqual(m["license"], "AGPL-3.0-only")
         self.assertNotIn("beta", m["description"].lower())
-        self.assertIn("0.144.1", m["description"])
+
+        # Issue #408 AC-1. This used to pin the literal "0.144.1" - the version a
+        # human verified once, by hand, in 2026-07. That made the manifest's
+        # support claim a statement about a past afternoon, and the assertion
+        # guarded the sentence rather than the fact.
+        #
+        # DERIVED from the workflow instead: the description must name every
+        # Codex version the required real-host lane actually installs. The two
+        # cannot drift now - bumping the matrix without amending the claim fails
+        # here, and so does the reverse.
+        workflow = os.path.join(REPO, ".github", "workflows", "ci.yml")
+        with open(workflow, encoding="utf-8") as handle:
+            ci = handle.read()
+        matrix = re.search(r"codex-version:\s*\[([^\]]+)\]", ci)
+        self.assertIsNotNone(matrix, "the codex-host lane declares no version matrix")
+        tested = re.findall(r"\d+\.\d+\.\d+", matrix.group(1))
+        self.assertGreaterEqual(
+            len(tested), 2,
+            "the real-host lane tests fewer than two versions, so the supported "
+            "RANGE has an unexercised edge again (#408 AC-1)")
+        for version in tested:
+            self.assertIn(
+                version, m["description"],
+                f"the manifest does not name Codex {version}, which the required "
+                f"real-host lane installs on every run")
         self.assertNotIn("displayName", m)
         interface = m["interface"]
         for field in ("displayName", "shortDescription", "longDescription",
