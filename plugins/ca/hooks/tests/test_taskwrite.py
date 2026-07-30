@@ -54,6 +54,47 @@ import time
 import unittest
 
 _HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+
+def _closure(entry):
+    """Every hooks-dir module `entry` needs, transitively, as basenames.
+
+    Derived by walking flat sibling imports (`import _x` / `from _x import ...`)
+    with ast, because the hook scripts are executed from their own directory and
+    resolve siblings that way. A module that is not a file in the hooks dir is a
+    stdlib import and is ignored.
+
+    Exists because a HARDCODED closure silently rots: see setUpClass.
+    """
+    import ast as _ast
+
+    seen, pending = set(), [entry]
+    while pending:
+        name = pending.pop()
+        if name in seen:
+            continue
+        path = os.path.join(_HOOKS_DIR, name)
+        if not os.path.isfile(path):
+            continue
+        seen.add(name)
+        with open(path, encoding="utf-8") as handle:
+            try:
+                tree = _ast.parse(handle.read())
+            except SyntaxError:
+                continue
+        for node in _ast.walk(tree):
+            mods = []
+            if isinstance(node, _ast.Import):
+                mods = [a.name for a in node.names]
+            elif isinstance(node, _ast.ImportFrom) and node.level == 0 and node.module:
+                mods = [node.module]
+            for mod in mods:
+                candidate = mod.split(".")[0] + ".py"
+                if os.path.isfile(os.path.join(_HOOKS_DIR, candidate)):
+                    pending.append(candidate)
+    return sorted(seen)
+
+
 if _HOOKS_DIR not in sys.path:
     sys.path.insert(0, _HOOKS_DIR)
 
@@ -148,13 +189,22 @@ class TaskwriteContentionTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # One instrumented source copy shared by every test in this class:
-        # taskwrite.py, hostapi.py, _gitexec.py, _taskboardlib.py, and
-        # _hooklib.py are the complete stdlib-only dependency closure.
+        # One instrumented source copy shared by every test in this class.
+        #
+        # The closure is DERIVED, not listed. It used to be the hardcoded set
+        # {taskwrite, hostapi, _gitexec, _taskboardlib, _hooklib} described as
+        # "the complete stdlib-only dependency closure" — and issue #321 made
+        # that comment false the moment _hooklib grew a sibling import
+        # (_sensitivelib, itself importing _pathnorm). The subprocesses this
+        # class spawns then died on ModuleNotFoundError, which surfaced as
+        # "process 1 never acquired the real lock" — a lock diagnosis for an
+        # import failure, three tests deep.
+        #
+        # Walking the imports instead means the remaining #321 slices cannot
+        # reintroduce this: a new sibling module is picked up because it is
+        # imported, not because somebody remembered to add it here.
         cls._copy_dir = tempfile.mkdtemp(prefix="ca-taskwrite-hookscopy-")
-        for name in (
-                "taskwrite.py", "hostapi.py", "_gitexec.py",
-                "_taskboardlib.py", "_hooklib.py"):
+        for name in _closure("taskwrite.py"):
             shutil.copy2(os.path.join(_HOOKS_DIR, name),
                         os.path.join(cls._copy_dir, name))
         hooklib_copy = os.path.join(cls._copy_dir, "_hooklib.py")
