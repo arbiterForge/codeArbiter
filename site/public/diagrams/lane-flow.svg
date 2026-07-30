@@ -1,118 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 160" role="img"
-     aria-label="Lane flow: command invocation routes to the owning skill, clears its gate, then ships to version control.">
-  <title>Lane flow: command, route, gate, ship</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 310" role="img" data-diagram-system="ca-v2">
+  <title>Gated lane flow</title>
+  <desc>Intent routes to its owner, clears the applicable gates, and ships through a pull request.</desc>
   <defs>
-    <linearGradient id="lf-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0f14"/>
-      <stop offset="1" stop-color="#131a23"/>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#090d12"/>
+      <stop offset="1" stop-color="#0e141c"/>
     </linearGradient>
-    <pattern id="lf-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <filter id="lf-glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="2.4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <!-- arrowhead marker -->
-    <marker id="lf-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#46505a"/>
-    </marker>
-    <marker id="lf-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
-    </marker>
-    <marker id="lf-arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#3a8a44"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
     </marker>
   </defs>
-
-  <!-- ground -->
-  <rect width="900" height="160" fill="url(#lf-bg)"/>
-  <rect width="900" height="160" fill="url(#lf-grid)"/>
-
-  <!-- outer frame -->
-  <rect x="8" y="8" width="884" height="144" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
-
-  <!-- content row, nudged left so the first box and last box sit an equal
-       distance from the inner frame (left/right gap both 15) -->
-  <g transform="translate(-7 0)">
-
-  <!-- ── STEP 1: COMMAND ── -->
-  <!-- box -->
-  <rect x="30" y="52" width="136" height="56" rx="3" fill="#131a23" stroke="#46505a" stroke-width="1.5"/>
-  <!-- label -->
-  <text x="98" y="77" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="13" fill="#e6edf3" font-weight="600">/ca:fix</text>
-  <text x="98" y="96" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#8b95a2" letter-spacing="1.5">COMMAND</text>
-
-  <!-- connector 1→2 -->
-  <line x1="166" y1="80" x2="226" y2="80" stroke="#46505a" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
-
-  <!-- ── STEP 2: ROUTE ── -->
-  <rect x="234" y="52" width="136" height="56" rx="3" fill="#131a23" stroke="#46505a" stroke-width="1.5"/>
-  <text x="302" y="77" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#e6edf3" font-weight="600">orchestrator</text>
-  <text x="302" y="96" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#8b95a2" letter-spacing="1.5">ROUTE</text>
-
-  <!-- connector 2→3 -->
-  <line x1="370" y1="80" x2="430" y2="80" stroke="#46505a" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
-
-  <!-- ── STEP 3: GATE ── -->
-  <!-- gate pillars (the canonical brand motif) -->
-  <g filter="url(#lf-glow)">
-    <line x1="446" y1="44" x2="446" y2="116" stroke="#d29922" stroke-width="3"/>
-    <line x1="464" y1="44" x2="464" y2="116" stroke="#d29922" stroke-width="3"/>
-    <rect x="440" y="36" width="30" height="7" fill="#e3b341"/>
-  </g>
-  <!-- gate label -->
-  <text x="455" y="133" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" letter-spacing="2" fill="#8b95a2">GATE</text>
-  <!-- "tests · review · security" annotation above -->
-  <text x="455" y="26" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1" fill="#828d9a">tests · review · security</text>
-
-  <!-- commit dot approaching gate (hollow, unproven) -->
-  <circle cx="420" cy="80" r="5" fill="#0b0f14" stroke="#6e7b8b" stroke-width="1.5"/>
-
-  <!-- connector 3→4 (gold — proven, cleared) -->
-  <line x1="472" y1="80" x2="570" y2="80" stroke="#d29922" stroke-width="1.5" marker-end="url(#lf-arrow-gold)"/>
-  <!-- commit dot past gate (filled gold) -->
-  <circle cx="524" cy="80" r="5" fill="#e3b341" filter="url(#lf-glow)"/>
-
-  <!-- ── STEP 4: SHIP ── -->
-  <rect x="578" y="52" width="136" height="56" rx="3" fill="#131a23" stroke="#d29922" stroke-width="1.5"/>
-  <text x="646" y="77" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#e6edf3" font-weight="600">version control</text>
-  <text x="646" y="96" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#8b95a2" letter-spacing="1.5">SHIP</text>
-  <!-- gold glow on the border -->
-  <rect x="578" y="52" width="136" height="56" rx="3" fill="none" stroke="#e3b341" stroke-opacity="0.28" stroke-width="1"/>
-
-  <!-- connector 4→5 (green — the reviewed merge path) -->
-  <line x1="714" y1="80" x2="746" y2="80" stroke="#3a8a44" stroke-width="1.5" marker-end="url(#lf-arrow-green)"/>
-
-  <!-- ── STEP 5: PULL REQUEST ── (same box size as the other steps) -->
-  <rect x="748" y="52" width="136" height="56" rx="3" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.5"/>
-  <text x="816" y="77" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#e6edf3" font-weight="600">pull request</text>
-  <text x="816" y="96" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#5fae6a" letter-spacing="1.5">MERGE</text>
-  <rect x="748" y="52" width="136" height="56" rx="3" fill="none" stroke="#4caf57" stroke-opacity="0.3" stroke-width="1"/>
-
-  <!-- seam note -->
-  <text x="455" y="149" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="8" letter-spacing="1" fill="#828d9a">never a direct write to main</text>
-  </g>
+  <rect width="1200" height="310" rx="14" fill="url(#canvas)"/>
+  <rect width="1200" height="310" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1198" height="308" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">GATED LANE FLOW</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Intent routes to its owner, clears the applicable gates, and ships through a pull request.</text>
+<rect x="42" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="136.8" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">/ca:fix</text>
+<text x="136.8" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">COMMAND</text>
+<path d="M237.6 166 L265.6 166" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="273.6" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="368.40000000000003" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">orchestrator</text>
+<text x="368.40000000000003" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">ROUTE</text>
+<path d="M469.20000000000005 166 L497.20000000000005 166" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="505.2" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="600" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">tests · review</text>
+<text x="600" y="170" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">security</text>
+<text x="600" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">GATE</text>
+<path d="M700.8 166 L728.8 166" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="736.8" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="831.5999999999999" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">version control</text>
+<text x="831.5999999999999" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">SHIP</text>
+<path d="M932.4 166 L960.4 166" fill="none" stroke="#58d68d" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="968.4" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="1063.2" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">pull request</text>
+<text x="1063.2" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">MERGE PATH</text>
+<text x="1158" y="274" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">never a direct write to the default branch</text>
 </svg>

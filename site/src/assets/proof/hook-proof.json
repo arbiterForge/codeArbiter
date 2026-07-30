@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "evidenceKind": "direct-hook-invocation-rendered-replay",
+  "hostDiscoveryProven": false,
+  "capturedAt": "2026-07-30T13:34:06.903Z",
+  "source": "plugins/ca/hooks/pre-bash.py",
+  "sourceSha256": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+  "fixture": {
+    "branch": "feat/proof",
+    "activation": "arbiter: enabled",
+    "untrackedBefore": "?? note.txt",
+    "statusAfter": " M .codearbiter/gate-events.log\n?? note.txt",
+    "stagedBefore": "",
+    "stagedAfter": "",
+    "gateEvent": "[2026-07-30T13:34:06Z] BLOCK [H-03] host=claude hook=pre-bash.py | 'git add -A' / 'git add .' / 'git add --all' / 'git add -u' are prohibited. Stage files explicitly (commit-gate skill)."
+  },
+  "invocation": {
+    "attemptedCommand": "git add -A",
+    "hookEvent": "PreToolUse",
+    "toolName": "Bash",
+    "exitCode": 2,
+    "stderr": "BLOCKED [H-03]: 'git add -A' / 'git add .' / 'git add --all' / 'git add -u' are prohibited. Stage files explicitly (commit-gate skill).",
+    "commandExecuted": false
+  }
+}

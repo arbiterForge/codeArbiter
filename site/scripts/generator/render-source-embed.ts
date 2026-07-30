@@ -1,3 +1,5 @@
+import { repositorySourceRef } from "./source-ref";
+
 /** render-source-embed.ts — codeArbiter's verbatim source-embed renderer.
  *
  * The "source-visible" half of every reference page: a collapsible `<details>`
@@ -36,12 +38,13 @@ export function renderSourceEmbed(
   sourceRaw: string,
   sourceRelPath: string,
   pluginVersion: string,
+  sourceRef: string = repositorySourceRef(),
 ): string {
   const fence = chooseFence(sourceRaw);
   const tag = `v${pluginVersion}`;
-  const repoUrl = `https://github.com/arbiterForge/codeArbiter/blob/${tag}/${sourceRelPath}`;
+  const repoUrl = `https://github.com/arbiterForge/codeArbiter/blob/${sourceRef}/${sourceRelPath}`;
 
-  return `<details class="ca-source">
+  return `<details class="ca-source" data-pagefind-ignore>
 <summary>Source — <code>${sourceRelPath}</code> (${tag})</summary>
 
 ${fence}md

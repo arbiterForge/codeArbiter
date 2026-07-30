@@ -1,46 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 190" role="img"
-     aria-label="The /ca:adr lane across two rows by piece type, loaded in order. Commands row: /ca:adr, then later /ca:adr-status. Skills row: decision-lifecycle. A connector runs left to right in execution order: /ca:adr opens the decision-lifecycle interview that writes the record, then /ca:adr-status sweeps the decisions directory for health later.">
-  <title>The /ca:adr lane: the authoring command, the decision-lifecycle skill, and the status sweep</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 360" role="img" data-diagram-system="ca-v2">
+  <title>Decision lane</title>
+  <desc>Author a durable decision, then inspect its health.</desc>
   <defs>
-    <linearGradient id="ladr-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0f14"/>
-      <stop offset="1" stop-color="#131a23"/>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#090d12"/>
+      <stop offset="1" stop-color="#0e141c"/>
     </linearGradient>
-    <pattern id="ladr-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="ladr-arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L7,3 Z" fill="#6e7b8b"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
     </marker>
   </defs>
-
-  <rect width="920" height="190" fill="url(#ladr-bg)"/>
-  <rect width="920" height="190" fill="url(#ladr-grid)"/>
-  <rect x="8" y="8" width="904" height="174" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
-
-  <!-- row guides -->
-  <line x1="128" y1="70" x2="900" y2="70" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
-  <line x1="128" y1="135" x2="900" y2="135" stroke="#22303f" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 5"/>
-
-  <!-- row labels (these double as the legend) -->
-  <text x="116" y="74" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#d29922">COMMANDS</text>
-  <text x="116" y="139" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" letter-spacing="2" fill="#8957e5">SKILLS</text>
-
-  <!-- execution-order connector -->
-  <polyline points="180,70 400,135 650,70"
-            fill="none" stroke="#6e7b8b" stroke-width="1.4" marker-end="url(#ladr-arrow)"/>
-
-  <!-- chips: command = gold, skill = violet -->
-  <!-- 1 /ca:adr -->
-  <rect x="147" y="53" width="66" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
-  <text x="180" y="74" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:adr</text>
-  <!-- 2 decision-lifecycle -->
-  <rect x="337" y="118" width="126" height="34" rx="5" fill="#1a1330" stroke="#8957e5" stroke-width="1.4"/>
-  <text x="400" y="139" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#cbb6f5">decision-lifecycle</text>
-  <!-- 3 /ca:adr-status -->
-  <rect x="598" y="53" width="104" height="34" rx="5" fill="#1c1606" stroke="#d29922" stroke-width="1.4"/>
-  <text x="650" y="74" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11" fill="#f0dc88">/ca:adr-status</text>
-
-  <!-- flow legend -->
-  <text x="900" y="172" text-anchor="end" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="9" letter-spacing="1" fill="#828d9a">loaded in execution order →</text>
+  <rect width="1120" height="360" rx="14" fill="url(#canvas)"/>
+  <rect width="1120" height="360" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1118" height="358" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="52" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">DECISION LANE</text>
+<text x="52" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Author a durable decision, then inspect its health.</text>
+<rect x="52" y="112" width="489" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="70" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">COMMANDS</text>
+<rect x="68" y="160" width="457" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
+<text x="296.5" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:adr</text>
+<rect x="68" y="198" width="457" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
+<text x="296.5" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:adr-status</text>
+<path d="M547 202 L571 202" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="579" y="112" width="489" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="597" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">SKILL</text>
+<rect x="595" y="160" width="457" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
+<text x="823.5" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">decision-lifecycle</text>
+<text x="1068" y="329" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">the ADR is numbered, dated, user-attributed, and governed</text>
 </svg>

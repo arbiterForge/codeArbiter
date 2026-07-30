@@ -7,6 +7,7 @@
  * permalinks, never pasted Python.
  */
 import type { HookCallSite } from "./extract-hook-gates";
+import { repositorySourceRef } from "./source-ref";
 
 /** Parsed shape of `plugins/ca/hooks/hooks.json` (only the fields this module reads). */
 export interface HooksJson {
@@ -23,6 +24,9 @@ export interface HooksJson {
  * directly, not registered in `hooks.json`, so it gets a hand-mapped label. */
 const GIT_BACKSTOP_FILE = "git-enforce.py";
 const GIT_BACKSTOP_LABEL = "git backstop";
+const DELEGATED_EVENT_OWNER = new Map<string, string>([
+  ["_bashguardlib.py", "pre-bash.py"],
+]);
 
 /**
  * Build a script-basename -> event-label list map from a parsed `hooks.json`.
@@ -56,7 +60,8 @@ export function buildEventMap(hooksJson: HooksJson): Map<string, string[]> {
 /** Events label list for one hook source file — hand-mapped for the git backstop. */
 export function eventsFor(file: string, eventMap: Map<string, string[]>): string[] {
   if (file === GIT_BACKSTOP_FILE) return [GIT_BACKSTOP_LABEL];
-  return eventMap.get(file) ?? [];
+  const owner = DELEGATED_EVENT_OWNER.get(file) ?? file;
+  return eventMap.get(owner) ?? [];
 }
 
 /** Parse a gate tag into (numeric part, letter suffix) for natural sort:
@@ -100,6 +105,7 @@ export function renderHooksReference(
   callSites: HookCallSite[],
   eventMap: Map<string, string[]>,
   pluginVersion: string,
+  sourceRef: string = repositorySourceRef(),
 ): string {
   const tag = `v${pluginVersion}`;
   const byTag = new Map<string, HookCallSite[]>();
@@ -125,7 +131,7 @@ export function renderHooksReference(
 
     const entries = sites
       .map((site) => {
-        const permalink = `https://github.com/arbiterForge/codeArbiter/blob/${tag}/plugins/ca/hooks/${site.file}#L${site.line}`;
+        const permalink = `https://github.com/arbiterForge/codeArbiter/blob/${sourceRef}/plugins/ca/hooks/${site.file}#L${site.line}`;
         return `${toBlockquote(site.message)}\n>\n> — [\`${site.file}:${site.line}\`](${permalink})`;
       })
       .join("\n\n");

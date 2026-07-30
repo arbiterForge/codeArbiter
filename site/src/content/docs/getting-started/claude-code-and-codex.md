@@ -1,12 +1,19 @@
 ---
 title: Claude Code + Codex
 description: Verified shared enforcement and project-context parity across Claude Code and Codex, including evidence, installation status, and intentional host differences.
+journey:
+  level: "Reference"
+  time: "9 minutes"
+  outcome: "Choose safely between Claude Code and Codex while sharing one governed repository state."
+  prerequisites:
+    - "Choose Your Host"
+  proof: "You can name the shared enforcement core, the host-specific command form, and the concurrency boundary."
 ---
-
-# Shared enforcement and project-context parity across Claude Code and Codex
 
 **Documentation launch: 2026-07-12.** This page announces the verified 2026-07-11 Codex support
 result while retaining the public-marketplace smoke test as a release gate.
+
+**Shared enforcement and project-context parity across Claude Code and Codex.**
 
 Of codeArbiter's four sibling plugins, this page covers two: `ca` for Claude Code and `ca-codex` for
 OpenAI Codex (see [Pi](/getting-started/pi/) for the third governance host, currently a Feature Forge
@@ -131,7 +138,7 @@ absence. That closes the public-installation gate with the same GitHub-slug comm
 | Statusline | Available | No Codex statusline surface; startup state carries governance status |
 | Transcript pruning | Claude transcript-pruning engine available | No transcript pruning; the host-neutral audit-staleness warning remains |
 | Governed-file Read hook | Available on Claude's Read tool | No Codex Read hook; reads happen through shell, while write-time notices remain |
-| Reviewer roles | Plugin agents can be dispatched | Roles execute inline until Codex agent packaging reaches its later milestone |
+| Reviewer roles | Packaged plugin agents can be dispatched | Host-provided agent threads load the role charter and return a retained thread receipt; older hosts may fall back inline, except context creation requires isolated scouts |
 
 These differences are host capabilities and packaging choices. They do not create a second project
 context, weaken the blocking shell/write gates, or split the audit trail.

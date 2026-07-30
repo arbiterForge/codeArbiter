@@ -42,8 +42,9 @@ On a large repo, two optional read-only mappers ([`map-structure`](/reference/ag
 and [`map-deps`](/reference/agents/map-deps/)) build the codebase inventory ahead of the lenses, so
 that mapping work stays off the orchestrator's own context.
 
-On Codex, every lens runs inline in the current thread rather than through isolated `Task`-tool
-dispatch — see [Claude Code + Codex → Intentional host
+On current Codex hosts, codeArbiter loads each lens charter into a host-provided agent thread and
+retains its thread receipt. An older host may run a lens inline rather than silently omit it — see
+[Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
 
 A triage pass independently recalibrates every lens's own severity call rather than trusting it

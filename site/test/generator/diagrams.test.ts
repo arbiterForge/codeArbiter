@@ -14,6 +14,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { auditDiagram } from "../../scripts/diagram-audit";
 
 const SITE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DIAGRAM_DIR = join(SITE_ROOT, "public", "diagrams");
@@ -58,6 +59,11 @@ const statuslineGuide = readFileSync(
   join(SRC_DIR, "content", "docs", "guides", "the-statusline.md"),
   "utf8",
 );
+const packageJson = JSON.parse(readFileSync(join(SITE_ROOT, "package.json"), "utf8"));
+const designSystem = readFileSync(
+  join(SRC_DIR, "styles", "design-system.css"),
+  "utf8",
+);
 
 describe("concept diagrams (AC-9)", () => {
   for (const name of DIAGRAMS) {
@@ -71,6 +77,18 @@ describe("concept diagrams (AC-9)", () => {
       it("contains an in-SVG <title> element (accessibility)", () => {
         const svg = readFileSync(path, "utf8");
         expect(svg).toMatch(/<title\b[^>]*>[^<]+<\/title>/);
+      });
+
+      it("passes the shared professional diagram contract", () => {
+        const svg = readFileSync(path, "utf8");
+        expect(svg).toMatch(/<desc\b[^>]*>[^<]+<\/desc>/);
+        expect(svg).toContain(
+          'font-family="Manrope Variable, Segoe UI, Arial, sans-serif"',
+        );
+        expect(svg).toContain(
+          'font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace"',
+        );
+        expect(auditDiagram(svg, name)).toEqual([]);
       });
 
       it("is referenced by at least one page under src/", () => {
@@ -92,5 +110,26 @@ describe("concept diagrams (AC-9)", () => {
       expect(statuslineGuide).toContain(`| ${key} |`);
     }
     expect(statuslineGuide).toContain("| not shown | **subagents** |");
+  });
+
+  it("regenerates and audits diagrams through the normal content build", () => {
+    expect(packageJson.scripts["gen:diagrams"]).toBe(
+      "tsx scripts/generate-diagrams.ts",
+    );
+    expect(packageJson.scripts.gen).toContain("npm run gen:diagrams");
+    expect(packageJson.scripts.gen).toContain("npm run audit:diagrams");
+  });
+
+  it("publishes the diagram palette as part of the shared design system", () => {
+    for (const token of [
+      "--ca-diagram-canvas",
+      "--ca-diagram-surface",
+      "--ca-diagram-grid",
+      "--ca-diagram-line",
+      "--ca-diagram-copy",
+      "--ca-diagram-muted",
+    ]) {
+      expect(designSystem).toContain(token);
+    }
   });
 });

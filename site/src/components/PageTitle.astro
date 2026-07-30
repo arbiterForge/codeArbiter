@@ -6,9 +6,31 @@
    <h1>, so Starlight's default page-title <h1> would be a duplicate. Every other
    page falls through to the stock PageTitle unchanged. */
 import Default from '@astrojs/starlight/components/PageTitle.astro';
+import PageContext from './PageContext.astro';
 
-const { id } = Astro.locals.starlightRoute;
+const { id, entry } = Astro.locals.starlightRoute;
 const isHome = id === '' || id === 'index';
+const isGeneratedEntity = /^reference\/(?:commands|skills|agents)\//.test(id);
+const explicitJourney = entry.data.journey;
+const inferred = id.startsWith('reference/') || id === 'reference' || id === 'hooks' || id === 'glossary' || id === 'changelog'
+  ? { level: 'Reference' as const, time: 'Lookup', outcome: entry.data.description ?? `the source-backed details for ${entry.data.title}` }
+  : id.startsWith('getting-started/')
+    ? { level: 'Foundation' as const, time: '10–15 min', outcome: entry.data.description ?? `a working understanding of ${entry.data.title}` }
+    : id.startsWith('guides/')
+      ? { level: 'Practitioner' as const, time: '10–20 min', outcome: entry.data.description ?? `a repeatable ${entry.data.title} workflow` }
+      : id.startsWith('concepts/') || id === 'concepts' || id === 'enforcement'
+        ? { level: 'Power user' as const, time: '8–12 min', outcome: entry.data.description ?? `the operating model behind ${entry.data.title}` }
+        : id.startsWith('feature-forge/')
+          ? { level: 'Labs' as const, time: '5–10 min', outcome: entry.data.description ?? `a safe way to evaluate ${entry.data.title}` }
+          : { level: 'Foundation' as const, time: '5–10 min', outcome: entry.data.description ?? `a clear understanding of ${entry.data.title}` };
+const journey = explicitJourney ?? inferred;
 ---
 
-{!isHome && <Default><slot /></Default>}
+{
+  !isHome && (
+    <>
+      <Default><slot /></Default>
+      {!isGeneratedEntity && <PageContext {...journey} />}
+    </>
+  )
+}

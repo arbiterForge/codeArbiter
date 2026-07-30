@@ -1,7 +1,7 @@
 /* codeArbiter docs — brand theme.
-   Palette lifted from docs/banner.svg: "gate gold" (#e3b341 / #d29922) on a
-   deep slate (#0b0f14). The accent variables retint Starlight site-wide; the
-   rest is scoped to the splash landing page.
+   Gate gold (#e3b341 / #d29922) on deep slate (#0b0f14) anchors the shared
+   rendered-art and interface system. Accent variables retint Starlight
+   site-wide; landing-specific composition stays in landing.css.
 
    DESIGN SYSTEM CONTRACT — downstream authors build on these tokens and
    classes; never edit this file for per-page content.
@@ -17,14 +17,6 @@
 
    Diagram container:
      .ca-diagram            centers + constrains an SVG figure with accessible border
-
-   Gate-catch terminal:
-     .ca-terminal           animated terminal shell for the gate-catch demo
-     .ca-terminal__body     scrollable output area
-     .ca-terminal__line     one output line (role="listitem")
-     .ca-terminal__prompt   shell prompt prefix
-     .ca-terminal__error    red-tinted blocked-commit line
-     .ca-terminal__pass     green-tinted gate-pass line
 */
 
 :root {
@@ -57,15 +49,6 @@
   --ca-badge-stable-text:     #88b4ea;
 
   /* ---- Terminal palette ---- */
-  --ca-term-bg:       #0d1117;
-  --ca-term-border:   color-mix(in srgb, var(--ca-gold) 18%, transparent);
-  --ca-term-header:   #161c24;
-  --ca-term-text:     #c9d1d9;
-  --ca-term-prompt:   var(--ca-gold-dim);
-  --ca-term-error:    #ff7b72;
-  --ca-term-pass:     #3fb950;
-  --ca-term-dim:      #6e7b8b;
-
   /* ---- Starlight accent overrides ---- */
   --sl-color-accent-low:  var(--ca-gold-low);
   --sl-color-accent:      #9a6e1a;
@@ -238,7 +221,7 @@
 .ca-badge {
   display: inline-flex;
   align-items: center;
-  font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+  font-family: var(--ca-font-mono);
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -332,6 +315,79 @@
   letter-spacing: 0.04em;
 }
 
+@media (max-width: 48rem) {
+  /* Labeled process diagrams are reference material, not thumbnails. Keep a
+     readable drawing scale and let the bordered figure provide the scroll
+     viewport instead of shrinking labels into illegibility. */
+  .ca-diagram {
+    align-items: flex-start;
+    overscroll-behavior-inline: contain;
+    scrollbar-color: var(--ca-gold-dim) transparent;
+  }
+
+  .ca-diagram > svg,
+  .ca-diagram > img {
+    width: 42rem;
+    min-width: 42rem;
+    max-width: none;
+  }
+
+  .ca-diagram > .ca-statusline-map {
+    min-width: 54rem;
+  }
+
+  .ca-diagram figcaption {
+    position: sticky;
+    inset-inline-start: 0;
+    width: min(100%, calc(100vw - 4.5rem));
+    text-align: start;
+  }
+}
+
+/* Decorative rendered art establishes a section's emotional register; it never
+   substitutes for the precise diagrams that explain an operating contract. */
+.ca-art-banner {
+  position: relative;
+  margin-block: 1.75rem 2.25rem;
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 24%, var(--ca-border));
+  border-radius: 0.8rem;
+  background: var(--ca-slate);
+  box-shadow:
+    0 1.5rem 3rem rgb(0 0 0 / 24%),
+    inset 0 0 0 1px rgb(255 255 255 / 2%);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ca-art-banner::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent 45%, rgb(4 8 12 / 82%) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.ca-art-banner > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+}
+
+.ca-art-banner > figcaption {
+  position: absolute;
+  inset-inline: clamp(1rem, 3vw, 1.5rem);
+  inset-block-end: clamp(0.85rem, 2vw, 1.25rem);
+  z-index: 2;
+  max-width: 38rem;
+  margin: 0;
+  color: var(--ca-text);
+  font: 600 clamp(0.78rem, 1.35vw, 0.92rem) / 1.45 var(--ca-font-sans);
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 1rem rgb(0 0 0 / 90%);
+}
+
 /* The statusline guide annotates the real PNG without modifying or redrawing it. */
 .ca-statusline-map {
   position: relative;
@@ -397,136 +453,6 @@
   border-radius: 50%;
   color: var(--ca-text);
   font-weight: 700;
-}
-
-/* =========================================================
-   GATE-CATCH TERMINAL
-   Usage: <div class="ca-terminal" role="region" aria-label="Gate catch demo">
-            <div class="ca-terminal__titlebar" aria-hidden="true">
-              <span class="ca-terminal__dot"></span>
-              <span class="ca-terminal__dot"></span>
-              <span class="ca-terminal__dot"></span>
-              <span class="ca-terminal__title">terminal</span>
-            </div>
-            <ol class="ca-terminal__body" role="list" aria-label="Terminal output">
-              <li class="ca-terminal__line" role="listitem">
-                <span class="ca-terminal__prompt">$</span>
-                <span>git commit -m "add feature"</span>
-              </li>
-              <li class="ca-terminal__line ca-terminal__line--error" role="listitem">
-                <span>H-09 BLOCKED: banned crypto pattern detected.</span>
-              </li>
-              <li class="ca-terminal__line ca-terminal__line--pass" role="listitem">
-                <span>Gate passed after fix.</span>
-              </li>
-            </ol>
-          </div>
-
-   Animation: lines fade in sequentially via --ca-term-delay CSS custom property.
-   prefers-reduced-motion: collapse animation, render transcript statically.
-   ========================================================= */
-
-.ca-terminal {
-  background: var(--ca-term-bg);
-  border: 1px solid var(--ca-term-border);
-  border-radius: 0.6rem;
-  overflow: hidden;
-  font-family: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
-  font-size: 0.825rem;
-  line-height: 1.6;
-  margin-block: 1.5rem;
-  /* Prevent CLS when animation runs */
-  contain: layout;
-}
-
-.ca-terminal__titlebar {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.875rem;
-  background: var(--ca-term-header);
-  border-block-end: 1px solid color-mix(in srgb, var(--ca-gold) 10%, transparent);
-}
-
-.ca-terminal__dot {
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 50%;
-  background: var(--ca-slate-border);
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-.ca-terminal__title {
-  margin-inline-start: auto;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  color: var(--ca-term-dim);
-  text-transform: lowercase;
-}
-
-.ca-terminal__body {
-  padding: 0.875rem 1rem;
-  margin: 0;
-  list-style: none;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--ca-slate-border) transparent;
-}
-
-.ca-terminal__line {
-  display: flex;
-  gap: 0.6rem;
-  align-items: flex-start;
-  color: var(--ca-term-text);
-  /* Wrap long lines instead of clipping/scrolling in the narrow hero column.
-     pre-wrap keeps intentional spacing; overflow-wrap breaks overlong tokens
-     (paths, sed commands) that have no natural break point. The prompt hangs at
-     the first wrapped line thanks to align-items: flex-start. */
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  /* Animation: each line fades in after its delay */
-  opacity: 0;
-  animation: ca-term-fadein 0.25s ease forwards;
-  animation-delay: var(--ca-term-delay, 0s);
-}
-
-/* Flex children must be allowed to shrink below their content size to wrap; the
-   prompt keeps its width via flex-shrink: 0 (below). */
-.ca-terminal__line > span {
-  min-width: 0;
-}
-
-.ca-terminal__prompt {
-  color: var(--ca-term-prompt);
-  user-select: none;
-  flex-shrink: 0;
-}
-
-.ca-terminal__line--error {
-  color: var(--ca-term-error);
-}
-
-.ca-terminal__line--pass {
-  color: var(--ca-term-pass);
-}
-
-.ca-terminal__line--dim {
-  color: var(--ca-term-dim);
-}
-
-@keyframes ca-term-fadein {
-  from { opacity: 0; transform: translateY(3px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Reduced-motion: skip animation, render all lines immediately and statically */
-@media (prefers-reduced-motion: reduce) {
-  .ca-terminal__line {
-    opacity: 1;
-    animation: none;
-    transform: none;
-  }
 }
 
 /* =========================================================

@@ -1,0 +1,53 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "This path has no gate",
+    description:
+      "The requested documentation route does not exist. Return to the learning path or search the source-backed reference.",
+    template: "splash",
+    editUrl: false,
+    pagefind: false,
+    hero: {
+      tagline:
+        "The route ended, not your work. Pick up from the curriculum or search the source-backed catalog.",
+      actions: [
+        {
+          text: "Open the learning path",
+          link: `${base}/learn/`,
+          icon: "open-book",
+          variant: "primary",
+        },
+        {
+          text: "Search the reference",
+          link: `${base}/reference/`,
+          icon: "magnifier",
+          variant: "secondary",
+        },
+        {
+          text: "Return home",
+          link: `${base}/`,
+          icon: "right-arrow",
+          variant: "minimal",
+        },
+      ],
+    },
+  }}
+>
+  <p class="ca-404-note">
+    If a link from this site brought you here, use search to find the current source-backed page.
+  </p>
+</StarlightPage>
+
+<style>
+  .ca-404-note {
+    max-width: 46rem;
+    margin: 0 auto;
+    color: var(--ca-ink-muted);
+    text-align: center;
+  }
+</style>

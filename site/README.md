@@ -1,99 +1,117 @@
 # codeArbiter documentation site
 
-An [Astro Starlight](https://starlight.astro.build/) site for codeArbiter. The
-**Overview** and **Concepts** pages are hand-written; the entire **Reference**
-section (commands, skills, agents) is **auto-generated from the plugin's own
-frontmatter**, so it can never drift from the source.
+The public documentation for codeArbiter, built with
+[Astro Starlight](https://starlight.astro.build/). It combines:
 
-Everything is JavaScript/TypeScript — the generator is TypeScript, tests run on
-[Vitest](https://vitest.dev/), and the package manager is npm (Node LTS).
+- a purpose-built product splash page;
+- hand-authored onboarding, guide, concept, and operations pages;
+- generated command, skill, agent, hook-gate, configuration, and changelog reference; and
+- curated explanations layered over the exact plugin source.
 
-## Quick start
+The visual and content contract lives in [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md). Read it before
+adding a component or documentation page.
+
+## Local development
+
+Use Node LTS and npm:
 
 ```bash
 cd site
-npm install
-npm run dev      # generates the reference, then serves at http://localhost:4321
+npm ci
+npm run dev
 ```
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Run the generator (`predev`), then start the Astro dev server. |
-| `npm run build` | Run the generator (`prebuild`), then build the static site to `dist/`. |
-| `npm run preview` | Serve the built `dist/` locally. |
-| `npm run gen` | Regenerate the reference pages + sidebar only. |
-| `npm test` | Run the Vitest suite for the generator. |
-| `npm run typecheck` | Type-check the generator with `tsc --noEmit`. |
+The development URL is `http://localhost:4321/codeArbiter/` because the production site is a
+GitHub Pages project site.
 
-`npm run gen` is wired into `predev` and `prebuild`, so the reference is always
-fresh before the site is served or built.
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Regenerate reference content, then start Astro's development server. |
+| `npm run gen` | Regenerate command, skill, agent, hook, configuration, changelog, and sidebar artifacts. |
+| `npm test` | Run generator, content-contract, and landing-page tests. |
+| `npm run typecheck` | Type-check the generator and site support code. |
+| `npm run build` | Regenerate content, build every route, and create the Pagefind index. |
+| `npm run preview` | Serve the current production build locally. |
 
-## How the generator works
+Generated files are deterministic for a fixed source tree and source-link ref. Production builds
+use `GITHUB_SHA` so “View in repo” links point at the exact published commit; local builds use
+`main`. If two runs with the same source and ref produce a diff, the generator has a defect.
 
-The generator lives in `scripts/generator/` and is built as many small,
-single-responsibility, independently-tested modules. The pipeline:
+## Content ownership
 
-1. **`collect-sources`** reads `plugins/ca/commands/*.md`,
-   `plugins/ca/skills/*/SKILL.md`, and `plugins/ca/agents/*.md`.
-2. **`split-frontmatter` + `parse-fields` → `parse-doc`** parse each file's
-   frontmatter (`name`, `description`, `tools`, `model`) into a record. The
-   parser is dep-free and tolerant: missing fields are simply absent, extra
-   fields are preserved, malformed lines are skipped (never thrown).
-3. **`derive-name`** picks a display name (the `name` field, or the filename for
-   commands); **`slugify` + `assign-slugs`** produce stable, collision-free slugs.
-4. **`render-agent-page` / `render-command-page` / `render-skill-page`** emit one
-   Markdown page per source. Agent pages render the model tier (`model-tier`) and
-   tools list (`format-tools-list`); commands and skills render name + description.
-5. **`build-index`** groups the pages by type for the sidebar and index.
-6. **`generate`** orchestrates the above, writes one page per source to
-   `src/content/docs/reference/{commands,skills,agents}/<slug>.md`, writes
-   `src/content/docs/reference/index.md`, and writes the sidebar data to
-   `src/generated/sidebar.json` (consumed by `astro.config.mjs`).
+Choose the owner before editing:
 
-`generate` is **idempotent** — running it twice over the same sources produces
-byte-identical output. `INDEX.md` catalog files in the plugin are skipped (they
-are routing tables, not documentable entities). Source files are normalized
-(CRLF→LF, BOM stripped) at the read boundary so a Windows checkout parses cleanly.
+| Content | Owner | Where to change it |
+|---|---|---|
+| Splash, onboarding, guides, concepts, operations | Human-authored page | `src/content/docs/` |
+| Command behavior | Plugin source + curated explanation | `../plugins/ca/commands/` and `src/curated/commands/` |
+| Skill behavior | Plugin source + curated explanation | `../plugins/ca/skills/` and `src/curated/skills/` |
+| Agent behavior | Plugin source + curated explanation | `../plugins/ca/agents/` and `src/curated/agents/` |
+| Hook gate messages and source links | Hook call sites | `../plugins/ca/hooks/*.py` |
+| Configuration variables | Typed configuration catalog | `scripts/generator/configuration-reference.ts` |
+| Release history | Repository changelog | `../CHANGELOG.md` |
+| Navigation | Hand-authored IA + generated reference groups | `astro.config.mjs` and `src/generated/sidebar.json` |
+| Visual tokens and component rules | Design system | `DESIGN-SYSTEM.md` and `src/styles/design-system.css` |
 
-### Adding to the reference
+Do not edit generated pages under `src/content/docs/reference/{commands,skills,agents}/` or the
+generated `reference/hooks-gates.md`, `reference/configuration.md`, and `changelog.md`. Run
+`npm run gen` after changing their source.
 
-Don't edit `src/content/docs/reference/**` by hand — it's regenerated. To change
-the reference, change the frontmatter in `plugins/ca/**` and re-run `npm run gen`.
+### Generated reference pipeline
 
-## Tests
+`scripts/gen.ts` coordinates small modules under `scripts/generator/`:
 
-The generator is built test-first: each module has its own Vitest file under
-`test/generator/`, with fixtures under `test/fixtures/`. Run `npm test`.
+1. collect the plugin source files;
+2. parse and normalize their frontmatter and source;
+3. assign stable, collision-free slugs;
+4. combine a host-aware orientation lead, curated explanation, and exact source disclosure;
+5. emit pages and reference sidebar data;
+6. extract hook gates from literal `block()` and `remind()` call sites;
+7. emit the typed, maintainer-reviewed configuration catalog; and
+8. transform the repository changelog for Starlight.
 
-## Deploying to GitHub Pages
+Every command, skill, and agent must have a curated explanation. The coverage test fails when a
+new source entity ships without one.
 
-The site is wired for GitHub Pages at `https://arbiterforge.github.io/codeArbiter/`.
-The pieces are already in place:
+## Writing a usable page
 
-- **Base path** — `astro.config.mjs` sets `site` + `base: '/codeArbiter'`. Note this
-  also applies in local dev (the dev server serves at `http://localhost:4321/codeArbiter/`).
-- **Base-aware links** — Starlight prepends `base` to its own navigation (sidebar,
-  next/prev), but **not** to author-written links. So the hand-authored links are
-  base-safe explicitly: the home page (`index.mdx`) bakes the base into its links
-  (`/codeArbiter/overview/`); the plain-markdown pages use relative links
-  (`../concepts/`); the generated reference index links are relative too. (Astro does
-  **not** auto-rewrite root-relative links in content, and `import.meta.env.BASE_URL`
-  carries no trailing slash — that's why these are explicit. If you change `base`,
-  update the hardcoded home links to match.)
-- **Workflow** — `.github/workflows/docs.yml` builds with `withastro/action`
-  (`path: site`) and deploys via `actions/deploy-pages`. It triggers on push to
-  `main` touching `site/**` or `plugins/ca/**`, and can be run manually
-  (`workflow_dispatch`). The reference is regenerated in CI, so committing the
-  generated output isn't needed.
+A page is complete when a reader can tell:
 
-**To go live:** enable Pages once (Settings → Pages → Source: **GitHub Actions**),
-then merge to `main` (or run the workflow manually). Pages and Actions are free for
-this public repo.
+1. what outcome it provides;
+2. what must be true before they start;
+3. which host-native syntax to use;
+4. what inputs and defaults apply;
+5. what to do and what successful output looks like;
+6. how to verify the result independently;
+7. where the workflow stops and how to recover;
+8. whether the action is reversible; and
+9. what to read or invoke next.
 
-### Versioning against releases
+Concept pages adapt the same contract: explain the mental model, show a concrete example, state
+where the model matters in practice, and link to the workflow and exact reference.
 
-The reference reflects whatever `plugins/ca/**` is on `main`, and the workflow's
-`paths` filter rebuilds the docs whenever the plugin payload changes — so a release
-that bumps the payload republishes the reference automatically. Publishing *versioned*
-docs (one set per release tag) is a later step: add Starlight multi-version support or
-build one site per tag into a versioned subpath, once single-version docs are validated.
+Use root-absolute content links such as `/guides/feature-lane/`. The local
+`rehype-base-links` processor prefixes the configured project-site base. In Astro component props,
+use `import.meta.env.BASE_URL`. Never hard-code `/codeArbiter/` in a link.
+
+## Verification
+
+Before opening a documentation pull request:
+
+```bash
+npm test
+npm run typecheck
+npm run build
+```
+
+Then crawl the built sitemap and inspect the splash, one page from every hand-authored section,
+and representative command, skill, agent, hook, configuration, and changelog pages at desktop and
+mobile widths. Check response status, one visible H1, descriptions, image alt text, keyboard
+navigation, focus visibility, horizontal overflow, contrast, reduced motion, and useful Pagefind
+results.
+
+## Deployment
+
+`.github/workflows/docs.yml` builds the site from `site/` and deploys GitHub Pages when relevant
+changes land on `main`, or when started manually. The site and deployment use only repository and
+GitHub Pages resources; no paid service is required.

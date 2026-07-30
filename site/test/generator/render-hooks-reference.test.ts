@@ -49,6 +49,11 @@ describe("buildEventMap / eventsFor", () => {
     expect(eventsFor("git-enforce.py", map)).toEqual(["git backstop"]);
   });
 
+  it("attributes extracted shared-library gates to their registered entry hook", () => {
+    const map = buildEventMap(hooksJson);
+    expect(eventsFor("_bashguardlib.py", map)).toEqual(["PreToolUse (Bash|PowerShell)"]);
+  });
+
   it("returns an empty list for a script registered nowhere", () => {
     const map = buildEventMap(hooksJson);
     expect(eventsFor("nowhere.py", map)).toEqual([]);
@@ -57,7 +62,7 @@ describe("buildEventMap / eventsFor", () => {
 
 describe("renderHooksReference", () => {
   const eventMap = buildEventMap(hooksJson);
-  const md = renderHooksReference(callSites, eventMap, "2.8.11");
+  const md = renderHooksReference(callSites, eventMap, "2.8.11", "main");
 
   it("renders frontmatter with title Hook Gates", () => {
     expect(md).toContain("title: Hook Gates");
@@ -86,7 +91,7 @@ describe("renderHooksReference", () => {
 
   it("renders a line-pinned permalink in the expected format", () => {
     expect(md).toContain(
-      "https://github.com/arbiterForge/codeArbiter/blob/v2.8.11/plugins/ca/hooks/pre-bash.py#L10",
+      "https://github.com/arbiterForge/codeArbiter/blob/main/plugins/ca/hooks/pre-bash.py#L10",
     );
   });
 
@@ -98,7 +103,7 @@ describe("renderHooksReference", () => {
       line: 5,
       message: "{rel}: found an issue on line {line}.",
     };
-    const out = renderHooksReference([site], eventMap, "2.8.11");
+    const out = renderHooksReference([site], eventMap, "2.8.11", "main");
     expect(out).toContain("`{rel}`");
     expect(out).toContain("`{line}`");
   });

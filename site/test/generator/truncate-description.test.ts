@@ -21,4 +21,16 @@ describe("truncateDescription", () => {
   it("returns an empty string unchanged", () => {
     expect(truncateDescription("")).toBe("");
   });
+
+  it("does not split at vs. abbreviations", () => {
+    expect(
+      truncateDescription("Surface persona vs. docs vs. code. Present both sides."),
+    ).toBe("Surface persona vs. docs vs. code.");
+  });
+
+  it("does not split at e.g. or i.e. abbreviations", () => {
+    expect(
+      truncateDescription("Use a source, e.g. the manifest. Then verify it."),
+    ).toBe("Use a source, e.g. the manifest.");
+  });
 });

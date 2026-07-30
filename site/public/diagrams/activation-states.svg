@@ -1,56 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" role="img"
-     aria-label="Activation classification flow. A missing CONTEXT.md file or a file without leading frontmatter is dormant. Frontmatter that opens but never closes is malformed and surfaces an error. Properly closed frontmatter containing arbiter enabled activates codeArbiter; a closed block without that flag remains dormant.">
-  <title>How CONTEXT.md selects dormant, malformed, or enabled state</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 976 410" role="img" data-diagram-system="ca-v2">
+  <title>Repository activation contract</title>
+  <desc>The leading YAML frontmatter in .codearbiter/CONTEXT.md classifies a repository as dormant, malformed, or enabled.</desc>
   <defs>
-    <linearGradient id="as-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0f14"/>
-      <stop offset="1" stop-color="#131a23"/>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#090d12"/>
+      <stop offset="1" stop-color="#0e141c"/>
     </linearGradient>
-    <pattern id="as-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M40 0H0V40" fill="none" stroke="#e6edf3" stroke-opacity="0.028"/>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="as-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-      <path d="M0 0v6l8-3z" fill="#828d9a"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
     </marker>
   </defs>
-
-  <rect width="900" height="430" fill="url(#as-bg)"/>
-  <rect width="900" height="430" fill="url(#as-grid)"/>
-  <rect x="8" y="8" width="884" height="414" fill="none" stroke="#e3b341" stroke-opacity="0.14"/>
-
-  <text x="450" y="43" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="11" letter-spacing="3" fill="#8b95a2">ACTIVATION CONTRACT</text>
-  <rect x="315" y="64" width="270" height="58" rx="5" fill="#1c2430" stroke="#d29922" stroke-width="1.5"/>
-  <text x="450" y="89" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="16" font-weight="700" fill="#f0f3f6">Read .codearbiter/CONTEXT.md</text>
-  <text x="450" y="108" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" fill="#a8b2bd">classify leading YAML frontmatter</text>
-
-  <path d="M450 122V157H150V197" fill="none" stroke="#828d9a" stroke-width="1.5" marker-end="url(#as-arrow)"/>
-  <path d="M450 122V197" fill="none" stroke="#828d9a" stroke-width="1.5" marker-end="url(#as-arrow)"/>
-  <path d="M450 157H750V197" fill="none" stroke="#828d9a" stroke-width="1.5" marker-end="url(#as-arrow)"/>
-
-  <text x="150" y="151" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" fill="#8b95a2">missing file or no leading block</text>
-  <text x="450" y="184" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" fill="#c9a868">opens, never closes</text>
-  <text x="750" y="151" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" fill="#8b95a2">properly closed block</text>
-
-  <rect x="54" y="205" width="192" height="112" rx="6" fill="#17202a" stroke="#6b7785" stroke-width="1.5"/>
-  <circle cx="78" cy="231" r="6" fill="#6b7785"/>
-  <text x="150" y="238" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="700" fill="#f0f3f6">Dormant</text>
-  <text x="150" y="268" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#a8b2bd">nothing loads</text>
-  <text x="150" y="288" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#a8b2bd">nothing blocks</text>
-
-  <rect x="354" y="205" width="192" height="112" rx="6" fill="#2a1a1d" stroke="#c04040" stroke-width="1.5"/>
-  <circle cx="378" cy="231" r="6" fill="#ff566e"/>
-  <text x="450" y="238" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="700" fill="#f0f3f6">Malformed</text>
-  <text x="450" y="268" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#ff9cab">error surfaced</text>
-  <text x="450" y="288" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#a8b2bd">never silently disabled</text>
-
-  <rect x="654" y="205" width="192" height="112" rx="6" fill="#14251f" stroke="#4dbb7b" stroke-width="1.5"/>
-  <circle cx="678" cy="231" r="6" fill="#78dc96"/>
-  <text x="750" y="238" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="700" fill="#f0f3f6">Enabled</text>
-  <text x="750" y="268" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="12" fill="#78dc96">arbiter: enabled</text>
-  <text x="750" y="288" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#a8b2bd">persona and gates active</text>
-
-  <path d="M654 338H246" fill="none" stroke="#828d9a" stroke-width="1.5" marker-end="url(#as-arrow)"/>
-  <text x="450" y="331" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="10" fill="#8b95a2">closed block without arbiter: enabled</text>
-  <text x="450" y="382" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#a8b2bd">Changing the file changes the classification on the next activation check.</text>
+  <rect width="976" height="410" rx="14" fill="url(#canvas)"/>
+  <rect width="976" height="410" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="974" height="408" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">ACTIVATION CONTRACT</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Read .codearbiter/CONTEXT.md once; classify its leading frontmatter.</text>
+<rect x="42" y="126" width="248" height="96" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="166" y="157" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Read CONTEXT.md</text>
+<text x="166" y="204" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">leading YAML only</text>
+<rect x="372" y="112" width="240" height="94" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="492" y="143" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Dormant</text>
+<text x="492" y="188" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">missing file or no block</text>
+<rect x="372" y="236" width="240" height="94" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="492" y="267" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Malformed</text>
+<text x="492" y="312" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">error surfaced</text>
+<rect x="694" y="174" width="240" height="94" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="814" y="205" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Enabled</text>
+<text x="814" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">arbiter: enabled</text>
+<path d="M296 174 L362 159" fill="none" stroke="#3a4c60" stroke-width="2.25" marker-end="url(#arrow)"/>
+<path d="M296 174 L362 283" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
+<path d="M618 252 L684 221" fill="none" stroke="#58d68d" stroke-width="2.25" marker-end="url(#arrow)"/>
+<text x="492" y="354" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#ff7b72" text-anchor="middle" data-label-kind="annotation">A malformed block never silently disables enforcement.</text>
+<text x="492" y="378" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">The next activation check sees any file change.</text>
 </svg>

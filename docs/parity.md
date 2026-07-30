@@ -31,7 +31,7 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 |---|---|---|---|---|
 | Public entries | 39 `/ca:*` commands | 37 `$ca-*` entry skills | 38 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
 | Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
-| Role charters | 28 plugin agents | inline until Codex agent packaging lands | 28 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-pi/generated/roles.json` |
+| Role charters | 28 plugin agents | host-provided agent threads load the shared charters; inline is an older-host fallback | 28 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
@@ -50,8 +50,8 @@ and `ca-pi: 38`.
 | Git backstop | shared `.git/hooks` installer | same | same through Pi bridge |
 | Status | complete Claude statusline | startup state only | rich footer globally; governance row only when enabled and affirmatively trusted; rate windows omitted |
 | Prune/compaction | shared policy plus Claude transcript codec | transcript engine unavailable; audit warning remains | shared policy plus Pi native compaction; no active-session rewrite |
-| Role dispatch | Claude subagents | inline review/author fallback | fresh Pi RPC children: single, chain, parallel |
-| Process cleanup | host-managed subagents | host-managed inline work | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
+| Role dispatch | Claude subagents | host-provided agent threads with retained receipts; bounded inline fallback on older hosts | fresh Pi RPC children: single, chain, parallel |
+| Process cleanup | host-managed subagents | host-managed agent threads (or current-thread lifecycle for an inline fallback) | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
 | Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper plus footer/background health |
 
 ## Pi live surface classifications
@@ -99,7 +99,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex native Read event | HOST-IMPOSSIBLE | Codex exposes no equivalent read hook; governed notices still run after writes. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex transcript compaction | HOST-IMPOSSIBLE | Claude transcript JSONL is not a Codex session format. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
-| Codex packaged agents | DEGRADED | Roles run inline until a supported packaging surface lands. | `plugins/ca-codex/includes/codex-host-notes.md` |
+| Codex packaged agents | DEGRADED | The plugin does not vendor custom agent definitions; current hosts still dispatch host-provided threads loaded with the shared charter, while older hosts may fall back inline. Context creation blocks if isolated scouts are unavailable. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
 | Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.80.10 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |

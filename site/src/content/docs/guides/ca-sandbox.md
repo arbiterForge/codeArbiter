@@ -1,6 +1,14 @@
 ---
 title: "ca-sandbox: Explore Untrusted Code"
 description: "What ca-sandbox is, how its isolation model holds, and how to install and use it: a locally-hosted GitHub-Codespace equivalent, not part of the governance kernel."
+journey:
+  level: Labs
+  time: 15–30 min
+  outcome: "a disposable offline sandbox you can create, inspect, copy an artifact out of, and tear down while preserving the host-filesystem boundary."
+  prerequisites:
+    - Docker running Linux containers
+    - A repository URL you do not need to trust
+  proof: "The box runs without bind mounts or Docker socket access, copied output leaves only through the host command, and destroy reports zero labeled objects remaining."
 ---
 
 `ca-sandbox` is one of codeArbiter's four sibling plugins (ADR-0007). But unlike `ca`, `ca-codex`,
@@ -46,26 +54,81 @@ The isolation holds by construction, not by trust:
 
 ## Install
 
+Register the self-hosted marketplace first if `codearbiter` is not already listed, then install the
+sandbox sibling:
+
 ```text
+/plugin marketplace add arbiterForge/codeArbiter
 /plugin install ca-sandbox@codearbiter
 ```
 
-Then, in the target repository:
+The sandbox plugin is Claude Code-specific and has its own `/ca-sandbox:` namespace. It does not
+activate through `.codearbiter/`.
+
+## Create an Offline Box
+
+Start with the default offline policy:
 
 ```text
-/ca-sandbox:sandbox create <repo-url>
+/ca-sandbox:sandbox "https://github.com/owner/repository"
 ```
 
-## Commands
+The command checks Docker, clones into a named volume, builds the dependency-cached image, and
+returns a sandbox ID. Save that ID for the remaining commands.
+
+Before running untrusted code, inspect the reported container configuration. It should have no bind
+mount, no Docker socket, no privileged mode, all capabilities dropped, a read-only root filesystem,
+and `--network none`.
+
+## Explore and Run
 
 ```text
-sandbox create <url> [--net offline|clone-then-cut|allowlist]
-sandbox shell <id> [--shell sh|bash]
-sandbox exec <id> -- <cmd> [args...]
-sandbox cp <id>:<containerPath> <hostDest>
-sandbox destroy <id> [--keep-volume]
-sandbox prune
+/ca-sandbox:sandbox-shell "<id>"
+/ca-sandbox:sandbox-exec "<id> -- npm test"
 ```
+
+Use `sandbox-shell` for interactive exploration. Use `sandbox-exec` for a bounded, scriptable command
+that returns separate stdout, stderr, exit code, and a truncation flag.
+
+On Git Bash, wrap container paths to prevent MSYS rewriting:
+
+```text
+/ca-sandbox:sandbox-exec "<id> -- sh -c 'ls /work/repo'"
+```
+
+PowerShell and cmd do not need that workaround.
+
+## Copy Out and Destroy
+
+Copy only the artifact you intentionally want:
+
+```text
+/ca-sandbox:sandbox-cp "<id>:/work/repo/report.json ./review/report.json"
+```
+
+The host invokes `docker cp`; the container never receives a host path. Inspect the copied file as
+untrusted data before opening it with a privileged application.
+
+Then tear the box down:
+
+```text
+/ca-sandbox:sandbox-destroy "<id>"
+```
+
+Destroy removes the container and named volume and reports any failed Docker operation. A non-zero
+result is not success: use the destroy command's `--prune` recovery path and confirm no objects with
+the `ca.sandbox=1` label remain. `--keep-volume` deliberately retains source state and therefore is
+not a complete teardown.
+
+## Failure and Recovery
+
+| Symptom | Likely cause | Recovery |
+|---|---|---|
+| Docker preflight stops | Daemon unavailable or not using Linux containers | Start Docker, confirm `docker info`, retry |
+| nixpacks is unavailable | Missing host tool or Windows WSL bridge | Install nixpacks in the documented host/WSL location, or accept the narrower fallback |
+| Clone succeeds but later network access fails | Offline or clone-then-cut policy is working | Use the least permissive policy that supports the task; do not jump to experimental allowlist by default |
+| Exec times out | Untrusted process exceeded its bounded operation deadline | Inspect captured output, destroy the box, retry only with a justified narrower command |
+| Destroy reports failures | Docker could not remove one or more labeled objects | Run the explicit prune recovery and verify the remaining-object count |
 
 ## Not part of the governance kernel
 

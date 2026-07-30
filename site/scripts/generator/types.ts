@@ -1,6 +1,7 @@
 // Shared type contract for the codeArbiter reference generator.
 // Authored as the harness API; individual modules implement against it.
 import type { ForgeStatus } from "./forge-status";
+import type { CommandHostAvailability } from "./host-command-catalog";
 
 /** The three kinds of plugin source documents the generator reads. */
 export type SourceType = "command" | "skill" | "agent";
@@ -67,6 +68,8 @@ export interface PageInput {
   curated?: CuratedDoc;
   /** Resolved `related:` links, or undefined when there are none. */
   relatedLinks?: RelatedLink[];
+  /** Command availability derived from each shipped host adapter's catalog. */
+  commandHosts?: CommandHostAvailability;
   /** Verbatim raw contents of the plugin source file, for the source embed. */
   sourceRaw: string;
   /** Repo-relative path to the plugin source file, e.g. `plugins/ca/commands/sprint.md`. */

@@ -1,9 +1,21 @@
 ---
 title: "Override a Gate Safely"
-description: "Bypass a blocked gate with /ca:override, the only sanctioned path: one audit line is appended to overrides.log, your identity comes from git config user.email, and the bypass is permanent in the trail."
+description: "Bypass an overridable gate with /ca:override: one audit line is appended to overrides.log, your identity comes from git config user.email, and the immediate exception is permanent in the trail."
+journey:
+  level: "Power user"
+  time: "9 minutes"
+  outcome: "Distinguish a repair from a justified bypass and verify the immediate, permanent audit record."
+  prerequisites:
+    - "A specific blocked gate or review finding"
+    - "A configured git user email"
+  proof: "The immediate action proceeds and exactly one attributable line appears in overrides.log."
 ---
 
-A gate blocked your command and the action is genuinely justified. Use `/ca:override "reason"` to bypass it. That is the only sanctioned path, since any other bypass leaves no record in the audit trail.
+An overridable gate blocked your command and the action is genuinely justified. Use
+`/ca:override "reason"` to bypass the immediate action. That is the only sanctioned bypass path,
+because an alternate bypass leaves no record in the audit trail. H-18 activation protection is not
+overridable from inside the governed session; [Uninstall & Disable](/guides/uninstalling/) documents
+its external-edit boundary.
 
 Before running it, identify which kind of gate you are facing. The two paths are different.
 
@@ -25,6 +37,7 @@ Hard gates exist because the cost of the mistake they prevent is higher than the
 
 Do not use `/ca:override` when:
 
+- H-18 blocked an attempt to disable repository activation. It has no in-session override path.
 - The gate caught a real problem. Fix the problem instead: replace the banned primitive, correct the failing test, remove the secret.
 - Routine work passed all gates. The command is not needed and running it creates a permanent log entry for no reason.
 - Two sources conflict rather than one blocking the other. Use `/ca:conflict` instead.
@@ -34,10 +47,13 @@ The bypass applies only to the immediate action; future commands still hit the g
 ## Run the Command
 
 ```text
-/ca:override "H-03: wildcard staging blocked — the generated migration file was omitted from the explicit list; reviewed the staged diff, this commit only"
+/ca:override "design review: retain the deprecated v2 compatibility selector until the documented v3 removal release; supported v2 clients still depend on it, this commit only"
 ```
 
 The reason must name the gate and justify the action. A vague reason such as "just skip it" is rejected. codeArbiter asks for a specific one before proceeding.
+
+Codex uses `$ca-override "reason"`; Claude Code uses `/ca:override "reason"`; Pi uses
+`/ca-override "reason"`.
 
 ## What Happens
 
@@ -51,6 +67,18 @@ The reason must name the gate and justify the action. A vague reason such as "ju
 3. The blocked action proceeds. The response confirms that the override is logged.
 
 The override covers only the immediate action.
+
+## Verify the scope
+
+After the action:
+
+1. inspect the last line of `.codearbiter/overrides.log`;
+2. confirm its timestamp, `BY`, gate, and reason match what you approved;
+3. verify only the blocked immediate action advanced;
+4. invoke or preview the next governed action and confirm the original gate is active again.
+
+If the log line is absent, malformed, or unattributed, the bypass did not complete safely. Stop;
+do not add a line by hand to make the record appear complete.
 
 ## Security-Critical Stops
 

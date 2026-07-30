@@ -1,108 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 466" role="img"
-     aria-label="Two-axis labeling model, stacked. Top band, the SemVer axis, governs the whole plugin payload: versions progress v2.5.1, v2.5.2 (current), v2.6.0, and a version bump reaches every user at once. Bottom band, the Feature Forge axis, governs individual features: a feature moves from preview (opt-in, dormant) to stable (on by default) on real-world evidence, and can be preview inside a stable release.">
-  <title>Two-axis labeling model: SemVer (whole payload) and Feature Forge (per-feature preview)</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1112 450" role="img" data-diagram-system="ca-v2">
+  <title>Two independent release axes</title>
+  <desc>Semantic versioning governs the whole plugin payload. Feature Forge status governs each feature from preview to stable using evidence.</desc>
   <defs>
-    <linearGradient id="ta-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0f14"/>
-      <stop offset="1" stop-color="#131a23"/>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#090d12"/>
+      <stop offset="1" stop-color="#0e141c"/>
     </linearGradient>
-    <pattern id="ta-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="ta-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#56616d"/>
-    </marker>
-    <marker id="ta-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
     </marker>
   </defs>
-
-  <!-- ground -->
-  <rect width="720" height="466" fill="url(#ta-bg)"/>
-  <rect width="720" height="466" fill="url(#ta-grid)"/>
-  <rect x="8" y="8" width="704" height="450" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
-
-  <!-- ═══════════════════════════════════════════════
-       BAND 1: SEMVER — whole payload
-       ═══════════════════════════════════════════════ -->
-
-  <text x="360" y="46" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" letter-spacing="3" fill="#8b95a2">SEMVER AXIS</text>
-  <text x="360" y="71" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="19" fill="#f0f3f6" font-weight="700">Whole Payload</text>
-
-  <!-- version progression: v2.5.1 → v2.5.2 (current) → v2.6.0, centred on x=360 -->
-  <rect x="203" y="92" width="78" height="38" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1"/>
-  <text x="242" y="116" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="12" fill="#8b95a2">v2.5.1</text>
-
-  <line x1="281" y1="111" x2="317" y2="111" stroke="#56616d" stroke-width="1.5" marker-end="url(#ta-arrow)"/>
-
-  <rect x="317" y="92" width="86" height="38" rx="4" fill="#1c2430" stroke="#e3b341" stroke-width="1.5"/>
-  <text x="360" y="116" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="13" fill="#e3b341" font-weight="700">v2.5.2</text>
-
-  <line x1="403" y1="111" x2="439" y2="111" stroke="#56616d" stroke-width="1.5" marker-end="url(#ta-arrow)"/>
-
-  <rect x="439" y="92" width="78" height="38" rx="4" fill="#1c2430" stroke="#2a3340" stroke-width="1"/>
-  <text x="478" y="116" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="12" fill="#828d9a">v2.6.0</text>
-
-  <text x="360" y="160" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#8b95a2">a version bump reaches every user at once</text>
-
-  <text x="360" y="186" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#828d9a">Governed by</text>
-  <text x="360" y="204" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">a semantic versioning contract · MAJOR · MINOR · PATCH</text>
-
-  <!-- band divider -->
-  <line x1="40" y1="233" x2="680" y2="233" stroke="#2a3340" stroke-width="1"/>
-
-  <!-- ═══════════════════════════════════════════════
-       BAND 2: FEATURE FORGE — per-feature preview
-       ═══════════════════════════════════════════════ -->
-
-  <text x="360" y="277" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" letter-spacing="3" fill="#c08a6a">FEATURE FORGE AXIS</text>
-  <text x="360" y="302" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="19" fill="#f0f3f6" font-weight="700">Per-Feature Preview</text>
-
-  <!-- feature progression: preview → (evidence) → stable, centred on x=360 -->
-  <rect x="234" y="323" width="100" height="38" rx="4" fill="#1e1408" stroke="#d97757" stroke-width="1.5"/>
-  <text x="284" y="347" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="13" fill="#d97757" font-weight="700">preview</text>
-
-  <text x="362" y="333" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" fill="#828d9a">evidence</text>
-  <line x1="334" y1="342" x2="390" y2="342" stroke="#d29922" stroke-width="1.5"
-        stroke-dasharray="4 3" marker-end="url(#ta-arrow-gold)"/>
-
-  <rect x="390" y="323" width="96" height="38" rx="4" fill="#0f1c10" stroke="#3a8a44" stroke-width="1.5"/>
-  <text x="438" y="347" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="13" fill="#4caf57" font-weight="700">stable</text>
-
-  <text x="360" y="391" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#8b95a2">a feature can be preview inside a stable release</text>
-
-  <text x="360" y="417" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#828d9a">Governed by</text>
-  <text x="360" y="435" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">real-world evidence from users who opt in</text>
+  <rect width="1112" height="450" rx="14" fill="url(#canvas)"/>
+  <rect width="1112" height="450" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1110" height="448" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">RELEASE MODEL</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Payload versions and feature maturity answer different questions.</text>
+<rect x="42" y="116" width="500" height="300" rx="14" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<rect x="570" y="116" width="500" height="300" rx="14" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="72" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">SEMVER AXIS</text>
+<text x="600" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">FEATURE FORGE AXIS</text>
+<text x="72" y="188" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">Whole payload</text>
+<text x="600" y="188" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">Per-feature maturity</text>
+<rect x="72" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="134" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.5.1</text>
+<text x="134" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">released</text>
+<rect x="230" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="292" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.5.2</text>
+<text x="292" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">current</text>
+<rect x="388" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="450" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.6.0</text>
+<text x="450" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">next</text>
+<path d="M202 262 L220 262" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<path d="M360 262 L378 262" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="600" y="224" width="154" height="76" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="677" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">preview</text>
+<text x="677" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">opt-in · dormant</text>
+<rect x="886" y="224" width="154" height="76" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="963" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">stable</text>
+<text x="963" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">on by default</text>
+<path d="M760 262 L876 262" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<text x="818" y="246" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">evidence</text>
+<text x="72" y="344" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">A version bump reaches every user.</text>
+<text x="72" y="363" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Governed by MAJOR · MINOR · PATCH.</text>
+<text x="600" y="344" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">A preview can exist inside a stable release.</text>
+<text x="600" y="363" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Promotion requires real-world evidence.</text>
 </svg>

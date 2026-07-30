@@ -1,0 +1,50 @@
+---
+title: Concept Map
+description: "A practical map of codeArbiter's governance model: how work enters a lane, decisions are recorded, context stays current, and evidence becomes auditable."
+journey:
+  level: "Practitioner"
+  time: "7 minutes"
+  outcome: "Connect lanes, decisions, repository context, review, and audit evidence."
+  prerequisites:
+    - "What Is codeArbiter"
+  proof: "You can trace one real change from its entry lane to the evidence retained after shipment."
+---
+
+import ConceptNavigator from "../../components/ConceptNavigator.astro";
+
+codeArbiter is easiest to understand as a chain:
+
+1. **A request enters a lane.** The lane defines the work, its required evidence, and its stops.
+2. **Material choices are explicit.** The user decides hard gates; SMARTS records bounded autonomous
+   choices; ADRs preserve architectural choices.
+3. **The repository carries the context.** Provenance and just-in-time injection keep agents aligned
+   with the checked-in rules that govern the files they touch.
+4. **Independent reviewers challenge the result.** Checkpoints and lane-specific reviewers produce
+   findings without silently rewriting the author's work.
+5. **The audit record explains what happened.** Commits, decisions, overrides, questions, sprint
+   choices, and reports can be assembled for a range after the work is done.
+
+## Start with the problem you are trying to understand
+
+<ConceptNavigator />
+
+## A concrete example
+
+Suppose a feature adds an authentication dependency and changes a security entry point. The feature
+lane provides the specification, tests, and author/reviewer sequence. The dependency lane vets the
+new package before installation. Reading the security file injects the controlling security
+document. An unresolved trust-boundary choice becomes an ADR instead of an implementation guess.
+The commit gate requires the applicable evidence, and the final audit can show the decision,
+dependency review, security findings, override history, and commit together.
+
+No single concept is the product. The value comes from their composition: the lane limits what may
+happen, repository context says what must remain true, reviewers challenge the result, and the audit
+trail makes the path inspectable.
+
+## Put the model to work
+
+- To complete a task, choose a page under [Workflows](/guides/feature-lane/) and follow its
+  host-native command.
+- To investigate a block, start with [Troubleshooting](/guides/troubleshooting/) and the
+  [Hook Gates reference](/reference/hooks-gates/).
+- To inspect exact command, skill, or agent behavior, use [All Reference](/reference/).

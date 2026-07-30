@@ -1,147 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" role="img"
-     aria-label="Gate model, stacked. Top band, the soft gate: a commit reaches the gate, which surfaces a decision and waits; once the user acts the work proceeds. Bottom band, the hard gate: a true stop that is never auto-decided, even under autonomous execution; the user must act before work can continue. Hard gates cover security, auth/crypto, irreversible ops, gate bypass, and merge to main, and are rare by design.">
-  <title>Gate model: soft gate (surfaces and waits) and hard gate (a true stop)</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 470" role="img" data-diagram-system="ca-v2">
+  <title>Soft gates surface; hard gates stop</title>
+  <desc>Matched soft and hard gate paths. A soft gate waits for a human decision and then continues. A hard gate blocks until the user performs the required action.</desc>
   <defs>
-    <linearGradient id="gm-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0f14"/>
-      <stop offset="1" stop-color="#131a23"/>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#090d12"/>
+      <stop offset="1" stop-color="#0e141c"/>
     </linearGradient>
-    <pattern id="gm-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <filter id="gm-glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="2.4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="gm-glow-red" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="3" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <marker id="gm-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
-    </marker>
-    <marker id="gm-arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#c04040"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
     </marker>
   </defs>
-
-  <!-- ground -->
-  <rect width="720" height="470" fill="url(#gm-bg)"/>
-  <rect width="720" height="470" fill="url(#gm-grid)"/>
-  <rect x="8" y="8" width="704" height="454" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
-
-  <!-- ═══════════════════════════════════════════════
-       BAND 1: SOFT GATE — surfaces, then waits
-       ═══════════════════════════════════════════════ -->
-
-  <text x="360" y="46" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="11" letter-spacing="3" fill="#8b95a2">SOFT GATE</text>
-  <text x="360" y="73" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="19" fill="#f0f3f6" font-weight="700">Surfaces, Then Waits</text>
-
-  <!-- soft gate: gold pillars, open -->
-  <g filter="url(#gm-glow)">
-    <line x1="130" y1="98" x2="130" y2="162" stroke="#d29922" stroke-width="3"/>
-    <line x1="146" y1="98" x2="146" y2="162" stroke="#d29922" stroke-width="3"/>
-    <rect x="124" y="90" width="30" height="7" fill="#e3b341"/>
-  </g>
-  <text x="138" y="180" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="2" fill="#8b95a2">SOFT</text>
-
-  <!-- commit paused at the gate -->
-  <circle cx="106" cy="130" r="5" fill="#0b0f14" stroke="#d29922" stroke-width="2"/>
-  <rect x="102" y="125" width="3" height="10" rx="1" fill="#d29922"/>
-  <rect x="108" y="125" width="3" height="10" rx="1" fill="#d29922"/>
-
-  <!-- gate surfaces the decision -->
-  <line x1="162" y1="130" x2="214" y2="130" stroke="#d29922" stroke-width="1.5" marker-end="url(#gm-arrow-gold)"/>
-  <rect x="222" y="100" width="224" height="62" rx="4" fill="#1c2430" stroke="#d29922" stroke-width="1.2"/>
-  <path d="M 222 124 L 210 130 L 222 136 Z" fill="#1c2430" stroke="#d29922" stroke-width="1.2"/>
-  <text x="334" y="122" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#e6edf3">Decision surfaced.</text>
-  <text x="334" y="140" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">Which design do you want?</text>
-  <text x="334" y="156" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1" fill="#828d9a">waiting for user</text>
-
-  <!-- user acts → cleared → proceeds -->
-  <line x1="446" y1="130" x2="502" y2="130" stroke="#d29922" stroke-width="1.5" marker-end="url(#gm-arrow-gold)"/>
-  <text x="474" y="122" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" fill="#828d9a">user acts</text>
-  <circle cx="514" cy="130" r="5" fill="#e3b341" filter="url(#gm-glow)"/>
-  <line x1="522" y1="130" x2="574" y2="130" stroke="#d29922" stroke-width="1.5" marker-end="url(#gm-arrow-gold)"/>
-  <text x="616" y="134" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" fill="#8b95a2">proceeds</text>
-
-  <text x="360" y="198" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">Surfaces a choice; it never blocks forever.</text>
-  <text x="360" y="216" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#828d9a">Work resumes the moment the user decides.</text>
-
-  <!-- band divider -->
-  <line x1="40" y1="238" x2="680" y2="238" stroke="#2a3340" stroke-width="1"/>
-
-  <!-- ═══════════════════════════════════════════════
-       BAND 2: HARD GATE — a true stop
-       ═══════════════════════════════════════════════ -->
-
-  <text x="360" y="276" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="11" letter-spacing="3" fill="#c04040">HARD GATE</text>
-  <text x="360" y="303" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="19" fill="#f0f3f6" font-weight="700">A True Stop</text>
-
-  <!-- hard gate: red pillars, closed -->
-  <g filter="url(#gm-glow-red)">
-    <line x1="130" y1="326" x2="130" y2="390" stroke="#c04040" stroke-width="3.5"/>
-    <line x1="146" y1="326" x2="146" y2="390" stroke="#c04040" stroke-width="3.5"/>
-    <rect x="123" y="318" width="32" height="7" fill="#e05050"/>
-    <line x1="123" y1="358" x2="155" y2="358" stroke="#e05050" stroke-width="2.5"/>
-  </g>
-  <text x="139" y="406" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="2" fill="#c04040">HARD</text>
-
-  <!-- commit stopped at the gate -->
-  <circle cx="106" cy="358" r="5" fill="#0b0f14" stroke="#c04040" stroke-width="2"/>
-  <line x1="102" y1="354" x2="110" y2="362" stroke="#c04040" stroke-width="1.8"/>
-  <line x1="110" y1="354" x2="102" y2="362" stroke="#c04040" stroke-width="1.8"/>
-
-  <!-- the stop -->
-  <line x1="162" y1="358" x2="214" y2="358" stroke="#c04040" stroke-width="1.5" marker-end="url(#gm-arrow-red)"/>
-  <rect x="222" y="324" width="224" height="68" rx="4" fill="#1c1416" stroke="#c04040" stroke-width="1.2"/>
-  <path d="M 222 352 L 210 358 L 222 364 Z" fill="#1c1416" stroke="#c04040" stroke-width="1.2"/>
-  <text x="334" y="346" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="12" fill="#e6edf3">Stopped.</text>
-  <text x="334" y="364" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">Not auto-decided.</text>
-  <text x="334" y="381" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="10" fill="#828d9a">User must act to continue.</text>
-
-  <!-- no-bypass marker -->
-  <rect x="478" y="345" width="168" height="26" rx="3" fill="#1c1416" stroke="#3a2020" stroke-width="1"/>
-  <text x="562" y="362" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" letter-spacing="1" fill="#c04040">never auto-decided</text>
-
-  <text x="360" y="424" text-anchor="middle"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="11" fill="#8b95a2">Security · auth/crypto · irreversible ops · gate bypass · merge to main</text>
-  <text x="360" y="442" text-anchor="middle"
-        font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1" fill="#828d9a">Rare by design: frequent trips signal a thin spec.</text>
+  <rect width="1140" height="470" rx="14" fill="url(#canvas)"/>
+  <rect width="1140" height="470" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1138" height="468" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="44" y="50" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">GATE BEHAVIOR</text>
+<text x="44" y="82" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">The same approach. Two different outcomes.</text>
+<rect x="44" y="116" width="512" height="284" rx="14" fill="#121a24" stroke="#9b6811" stroke-width="2"/>
+<rect x="584" y="116" width="512" height="284" rx="14" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="74" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">SOFT GATE</text>
+<text x="614" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#ff7b72" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">HARD GATE</text>
+<rect x="74" y="184" width="190" height="94" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="169" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Decision surfaced</text>
+<text x="169" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">waiting for user</text>
+<rect x="344" y="184" width="182" height="94" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="435" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Work proceeds</text>
+<text x="435" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">after user acts</text>
+<path d="M270 231 L334 231" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<text x="300" y="216" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">human choice</text>
+<rect x="614" y="184" width="190" height="94" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="709" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Stopped</text>
+<text x="709" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">never auto-decided</text>
+<rect x="884" y="184" width="182" height="94" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="975" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">User action</text>
+<text x="975" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">required to continue</text>
+<path d="M810 231 L874 231" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
+<text x="840" y="216" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#ff7b72" text-anchor="middle" data-label-kind="annotation">hard stop</text>
+<text x="74" y="322" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Surfaces the exact choice.</text>
+<text x="74" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Resumes when the user decides.</text>
+<text x="614" y="322" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Security, auth/crypto, irreversible ops,</text>
+<text x="614" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">gate bypass, and merge-to-default remain stops.</text>
+<text x="44" y="436" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation">Frequent hard-gate trips indicate a thin specification, not a normal control loop.</text>
 </svg>

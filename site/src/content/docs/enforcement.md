@@ -1,6 +1,13 @@
 ---
 title: Enforcement & Security
 description: "How codeArbiter enforces its gates at the tool-call boundary: the activation contract, the blocking commit-time gates, advisory reminders, and the fail-loud posture."
+journey:
+  level: "Power user"
+  time: "12 minutes"
+  outcome: "Distinguish deterministic hook enforcement from orchestrator policy and diagnose the right layer."
+  prerequisites:
+    - "The gated-lane model"
+  proof: "Given a blocked action, you can name its hook flank, gate id, and sanctioned remediation."
 ---
 
 codeArbiter's gates are not advice the model can talk past. They run as Claude Code or Codex
@@ -11,6 +18,33 @@ handling cannot weaken the block. See the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/).
 
 For the per-hook breakdown, see the [Hooks reference](/hooks).
+
+## Diagnose a Block End to End
+
+Start with the complete message. Do not begin by guessing which command or reviewer owns it:
+
+```text
+BLOCKED [H-03]: stage explicit file paths; broad staging is not allowed
+```
+
+Use this five-step trace:
+
+1. **Keep the gate id and exact action.** `H-03` identifies the rule; the denied Git command
+   identifies the boundary where it ran.
+2. **Name the host flank.** Claude Code receives the Python hook's exit-2 block, Codex receives the
+   adapter's structured deny result, and Pi receives the wrapper verdict. The policy is shared even
+   though the delivery surface differs.
+3. **Open the generated [Hook Gates reference](/reference/hooks-gates/).** Find `H-03` to see the
+   emitting source line, event, matcher, and current message from the shipped payload.
+4. **Choose the sanctioned remediation.** For H-03, inspect the worktree and stage explicit file
+   paths. A security or migration gate instead routes through its owning review. An override is
+   relevant only when the gate permits it and the exception is genuinely justified.
+5. **Prove the next boundary.** Re-run the intended narrow action. If the block is missing,
+   inconsistent across hosts, or appears before repository activation, run
+   [`doctor`](/reference/commands/doctor/) and diagnose registration before changing policy.
+
+The successful outcome is not merely "the command ran." It is that you can connect one visible
+verdict to its gate id, host registration, source call site, remediation, and durable audit effect.
 
 ## The Activation Contract
 
@@ -33,7 +67,10 @@ codeArbiter is dormant until a repository opts in. Every enforcement hook calls 
 
 ## Blocking Commit-Time Gates
 
-These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit guards for the audit trail and ADRs). Each blocks the tool call outright. Ambiguity resolves **closed**: a spelling that cannot be told apart from a destructive one is blocked, and `/ca:override` is the sanctioned escape hatch.
+These originate in the shared Python guard core and reach each host through its registered hooks,
+adapter, or wrappers. Each blocks the tool call outright. Ambiguity resolves **closed**: a spelling
+that cannot be told apart from a destructive one is blocked. `/ca:override` is the sanctioned
+escape hatch only for gates that permit bypass; H-18 deliberately does not.
 
 | Gate | Enforces |
 |------|----------|
@@ -44,8 +81,11 @@ These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit
 | **H-09b / H-10b** | Crypto and secret commit gate. A commit that introduces a crypto/TLS or secret line is blocked unless the crypto-compliance / secret-handling gate has recorded a pass for **those exact lines**. |
 | **H-11** | ADRs are authored only via `/ca:adr`. Both the shell flank (redirects, `cp`, `rm`, `sed -i` into `decisions/`) and the Write/Edit flank are guarded; the skill drops a fresh authoring marker first. |
 | **H-14** | Migration review. A commit staging a database migration is blocked unless a migration-review pass is recorded for that file's current content. |
+| **H-18 / H-19** | Repository activation cannot be disabled through governed shell, Write, Edit, or patch operations. Common gate-pass marker forge paths are blocked as cooperative attestation; a determined same-user process remains outside that guarantee. |
+| **H-20** | `--no-verify` and its supported short forms cannot bypass the repository's pre-commit or pre-push backstop. |
+| **H-21** | A write or edit envelope the host adapter cannot decompose into guardable per-file operations is refused instead of being allowed through uninspected. Retry as a plain supported patch or split the operation. |
 
-H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. The board-sync behavior implied by the commit gate (only `/ca:task` writes `open-tasks.md`) follows from ADR-0008. For the design rationale behind both, see [Hardening History](/concepts/hardening-history/).
+H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. The board-sync behavior implied by the commit gate (only `/ca:task` writes `open-tasks.md`) follows from ADR-0008. For the design rationale behind both, see [Selected Hardening Notes](/concepts/hardening-history/).
 
 ## Advisory, Non-Blocking Reminders
 
@@ -62,7 +102,7 @@ These are advisory **because they bite at a later boundary, not at commit.** A b
 
 ## Sandbox Isolation for Untrusted Repositories
 
-codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-root (`--user 1000:1000`), with a `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, and a fail-closed network policy (default `--network none`; an unknown policy is a hard error, not a silent pass-through). No host bind mounts; the docker socket is never mounted. For how this posture evolved release over release, see [Hardening History](/concepts/hardening-history/).
+codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-root (`--user 1000:1000`), with a `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, and a fail-closed network policy (default `--network none`; an unknown policy is a hard error, not a silent pass-through). No host bind mounts; the docker socket is never mounted. For selected rationale behind this posture, see [Selected Hardening Notes](/concepts/hardening-history/).
 
 <figure class="ca-diagram">
   <img

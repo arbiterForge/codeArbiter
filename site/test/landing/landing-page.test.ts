@@ -1,23 +1,6 @@
-/**
- * TDD Phase 1 obligations — bespoke landing page (AC 6, 7, 8, 12, 15, 16, 19).
- *
- * These tests read the landing source files because the full Astro build is not
- * run inside vitest.  The "landing source" is the union of:
- *   - src/content/docs/index.mdx   (frontmatter + MDX body)
- *   - src/components/GateCatchTerminal.astro
- *   - src/components/ForgeShowcase.astro
- *   - src/styles/landing.css
- *
- * Source-level assertions are reliable here because:
- *   - AC 6/7/8/12/15/16: structural/markup obligations are authored in the above
- *     files and render directly to the built HTML without transformation.
- *   - AC 19: em-dash cap is a source-level prose check by spec definition.
- *
- * The design-quality-reviewer (AC-11) is dispatched separately as a visual gate.
- */
-
-import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import * as path from "node:path";
 
@@ -28,372 +11,257 @@ function readSrc(rel: string): string {
   return readFileSync(path.join(siteRoot, rel), "utf8");
 }
 
-// ---------------------------------------------------------------------------
-// Fixtures
-// ---------------------------------------------------------------------------
-
 const indexMdx = readSrc("src/content/docs/index.mdx");
-const terminalCmp = readSrc("src/components/GateCatchTerminal.astro");
-const installCmp = readSrc("src/components/InstallTerminal.astro");
-const searchCmp = readSrc("src/components/Search.astro");
+const proofCmp = readSrc("src/components/HookProof.astro");
 const astroConfig = readSrc("astro.config.mjs");
 const landingCss = readSrc("src/styles/landing.css");
+const designCss = readSrc("src/styles/design-system.css");
+const docsRailPath = path.join(siteRoot, "src/components/SplashDocsRail.astro");
+const docsRail = existsSync(docsRailPath) ? readFileSync(docsRailPath, "utf8") : "";
 
-/** Combined source of the landing page artifacts. The Feature Forge showcase
- *  moved off the home page into its own section — see feature-forge-content.test.ts. */
-const landingSrc = indexMdx + "\n" + terminalCmp + "\n" + installCmp;
-
-// ---------------------------------------------------------------------------
-// AC-6: Bespoke landing — stock CardGrid replaced
-// ---------------------------------------------------------------------------
-
-describe("AC-6: bespoke landing replaces stock CardGrid", () => {
-  it("index.mdx does not contain the stock <CardGrid> component from Starlight", () => {
-    expect(indexMdx).not.toMatch(/<CardGrid>/);
+describe("first-class product splash", () => {
+  it("uses the sidebar-free Starlight splash shell", () => {
+    expect(indexMdx).toMatch(/^template:\s*splash$/m);
+    expect(indexMdx).toContain('class="ca-splash"');
+    expect(landingCss).toContain(":root:has(.ca-landing) .main-pane");
   });
 
-  it("landing source contains the gate-catch terminal (ca-terminal)", () => {
-    expect(landingSrc).toContain("ca-terminal");
-  });
-
-  it("index.mdx contains the bespoke hero section (ca-hero)", () => {
-    expect(indexMdx).toContain("ca-hero");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// AC-7: prefers-reduced-motion honored for terminal animation
-// ---------------------------------------------------------------------------
-
-describe("AC-7: terminal honors prefers-reduced-motion", () => {
-  it("theme.css contains a prefers-reduced-motion media query that collapses animation", () => {
-    const themeCss = readSrc("src/styles/theme.css");
-    expect(themeCss).toContain("prefers-reduced-motion");
-    expect(themeCss).toContain("animation: none");
-  });
-
-  it("terminal lines carry the ca-terminal__line class (so the reduced-motion rule applies)", () => {
-    expect(terminalCmp).toContain("ca-terminal__line");
-  });
-
-  it("theme.css reduced-motion block sets opacity: 1 so all lines are visible statically", () => {
-    const themeCss = readSrc("src/styles/theme.css");
-    expect(themeCss).toMatch(/prefers-reduced-motion[\s\S]*?opacity:\s*1/);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// AC-8: Terminal transcript is real DOM text
-// ---------------------------------------------------------------------------
-
-describe("AC-8: terminal transcript is real DOM text, not canvas/image", () => {
-  it("terminal component does not use <canvas> elements", () => {
-    expect(terminalCmp).not.toContain("<canvas");
-  });
-
-  it("terminal component does not use <img> elements for the transcript", () => {
-    // The terminal transcript itself must not be an image
-    // (img is allowed in diagrams but not inside the terminal body)
-    const bodySection = terminalCmp.match(/ca-terminal__body[\s\S]*/)?.[0] ?? "";
-    expect(bodySection).not.toContain("<img");
-  });
-
-  it("terminal contains visible command text as plain DOM text", () => {
-    expect(terminalCmp).toMatch(/git commit|ca:commit/i);
-  });
-
-  it("terminal body has role=list for screen-reader grouping", () => {
-    expect(terminalCmp).toContain('role="list"');
-  });
-
-  it("terminal lines have role=listitem", () => {
-    expect(terminalCmp).toContain('role="listitem"');
-  });
-
-  it("terminal region has an aria-label", () => {
-    expect(terminalCmp).toMatch(/aria-label="[^"]+"/);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// AC-16: Above-the-fold: what / why / first command + single primary CTA
-// ---------------------------------------------------------------------------
-
-describe("AC-16: above-fold hero answers what/why/first command + one primary CTA", () => {
-  it("hero tagline (the 'why') is present in the bespoke hero body", () => {
-    // The landing moved off Starlight's splash `hero:` frontmatter to a bespoke
-    // two-column hero in the MDX body (doc template + sidebar). The tagline now
-    // lives in a .ca-landing__tagline element, not frontmatter.
-    expect(indexMdx).toContain("ca-landing__tagline");
-    expect(indexMdx).toMatch(/real stops/i);
-  });
-
-  it("exactly one primary CTA exists in the hero", () => {
-    const primaryMatches = indexMdx.match(/ca-landing__cta--primary/g);
-    expect(primaryMatches).not.toBeNull();
-    expect(primaryMatches!.length).toBe(1);
-  });
-
-  it("primary CTA uses a base-safe page-relative link (no hardcoded base, no leading slash)", () => {
-    // The hero CTAs are raw <a href> in the MDX body. A page-relative `./…`
-    // link resolves against the page URL (served at /codeArbiter/) and
-    // auto-corrects if the base changes — unlike a leading-slash `/…` link,
-    // which would 404 under the /codeArbiter base on GH Pages, or a hardcoded
-    // `/codeArbiter/…`, which silently desyncs if the base ever changes.
-    expect(indexMdx).toMatch(/href="\.\/getting-started\/install\//);
-    expect(indexMdx).not.toMatch(/href="\/codeArbiter/);
-  });
-
-  it("first command is shown in the hero section", () => {
-    // The hero now leads with the install commands (the new user's actual first
-    // commands), rendered in the animated install terminal. The old
-    // /ca:feature|/ca:fix|/ca:commit sample box was removed in favor of this
-    // get-it-running demo.
-    expect(landingSrc).toMatch(/\/plugin install/);
-  });
-
-  it("hero body answers 'what' (the orchestrator description)", () => {
-    expect(indexMdx).toMatch(/orchestrat|gated|lane/i);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Install demo: the get-it-running terminal replaced the sample-command box
-// ---------------------------------------------------------------------------
-
-describe("install demo terminal (get-it-running below the fold)", () => {
-  it("index.mdx imports and renders the InstallTerminal component", () => {
-    expect(indexMdx).toContain("InstallTerminal");
-  });
-
-  it("the install title and shared-host subtext are present above the demo", () => {
-    expect(indexMdx).toMatch(/Get the Arbiter on Your Case/);
-    expect(indexMdx).toMatch(/Claude Code or Codex/i);
-  });
-
-  it("the install title is a real heading, not a paragraph styled as one", () => {
-    // Hierarchy honesty + a11y: a section title must be an <h2> so it joins the
-    // document outline and screen-reader heading navigation, not a <p> wearing
-    // h1-sized type.
-    expect(indexMdx).toMatch(
-      /<h2 class="ca-hero__install-blurb">Get the Arbiter on Your Case<\/h2>/,
+  it("keeps the atmospheric hero artwork fixed behind the scrolling landing narrative", () => {
+    expect(indexMdx).toMatch(/class="ca-landing"[^>]*--ca-hero-art/);
+    expect(indexMdx).not.toMatch(/class="ca-splash"[^>]*--ca-hero-art/);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*position:\s*fixed;/s);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*background-repeat:\s*no-repeat;/s);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*background-size:\s*cover;/s);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*background-position:\s*center top;/s);
+    expect(landingCss).not.toContain(".ca-splash::before");
+    expect(landingCss).not.toContain("background-attachment");
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-landing::before\s*\{[^}]*background-position:/,
     );
   });
 
-  it("the old sample-command box was removed", () => {
-    expect(indexMdx).not.toContain("ca-hero__first-command");
+  it("opens the canonical docs sidebar from a persistent splash-only rail", () => {
+    expect(indexMdx).toContain("import SplashDocsRail");
+    expect(indexMdx).toContain("<SplashDocsRail />");
+    expect(docsRail).toContain("Astro.locals.starlightRoute");
+    expect(docsRail).toContain("<SidebarSublist sublist={sidebar} />");
+    expect(docsRail).toContain('aria-controls="ca-docs-drawer"');
+    expect(docsRail).toContain('aria-expanded="false"');
+    expect(docsRail).toContain('id="ca-docs-drawer"');
+    expect(docsRail).toContain('aria-labelledby="ca-docs-drawer-title"');
+    expect(docsRail).toContain('role="dialog"');
+    expect(docsRail).toContain('aria-modal="true"');
+    expect(docsRail).toContain("OPEN DOCS");
   });
 
-  it("the install terminal shows both install commands", () => {
-    expect(installCmp).toContain("/plugin marketplace add arbiterForge/codeArbiter");
-    expect(installCmp).toContain("/plugin install ca@codearbiter");
+  it("keeps the docs drawer keyboard-safe and restores page state when it closes", () => {
+    expect(docsRail).toContain('event.key === "Escape"');
+    expect(docsRail).toMatch(/event\.key\s*!==\s*"Tab"/);
+    expect(docsRail).toContain("document.body.style.overflow");
+    expect(docsRail).toContain("opener.focus()");
+    expect(docsRail).toContain("getFocusableElements");
+    expect(docsRail).toContain('"summary"');
+    expect(docsRail).toContain("element.getClientRects().length > 0");
+    expect(docsRail).toMatch(/\(first \?\? drawer\)\.focus\(\)/);
+    expect(docsRail).toContain("activeIndex <= 0");
+    expect(docsRail).toContain("customElements.define");
+    expect(docsRail).toContain("connectedCallback");
+    expect(docsRail).toContain("background.inert = true");
+    expect(docsRail).toContain("background.inert = state.inert");
+    expect(docsRail).toContain("ca-docs-drawer__backdrop");
+    expect(docsRail).toContain("import.meta.env.BASE_URL");
+    expect(docsRail).toContain('import.meta.env.BASE_URL.replace(/\\/$/, "")');
+    expect(docsRail).toContain('`${basePath}/overview/`');
+    expect(docsRail).toContain("<noscript>");
+    expect(docsRail).toContain("overview/");
   });
 
-  it("the install terminal runs /ca:statusline as the third command", () => {
-    expect(installCmp).toContain("/ca:statusline");
-  });
-
-  it("the real rendered statusline sits below the terminal (single-source asset)", () => {
-    // The bar is shown below the terminal in index.mdx, using the canonical
-    // statusline.png — the same asset the statusline guide and README serve —
-    // via the base-safe root-absolute literal sanctioned for .mdx pages.
-    expect(indexMdx).toContain("ca-hero__statusline");
-    expect(indexMdx).toContain("/codeArbiter/diagrams/statusline.png");
-  });
-
-  it("the install terminal reuses the animated terminal contract (ca-terminal lines)", () => {
-    expect(installCmp).toContain("ca-terminal__line");
-    expect(installCmp).toContain('role="list"');
-    expect(installCmp).toMatch(/aria-label="[^"]+"/);
-  });
-
-  it("the install terminal carries the full screen-reader contract", () => {
-    expect(installCmp).toContain('role="region"');
-    expect(installCmp).toContain('role="listitem"');
-    expect(installCmp).toContain('aria-hidden="true"');
-  });
-});
-
-describe("Claude Code and Codex launch contract", () => {
-  it("landing metadata, heading, and tagline name the governance hosts", () => {
-    expect(indexMdx).toMatch(/Claude Code.*Codex|Codex.*Claude Code/);
-    expect(indexMdx).toContain(
-      "Shared enforcement and project-context parity across Claude Code, Codex, and Pi",
+  it("uses the approved rail and drawer dimensions", () => {
+    expect(landingCss).toMatch(/\.ca-docs-rail\s*\{[^}]*width:\s*38px;/s);
+    expect(landingCss).toMatch(/\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*38px;/s);
+    expect(landingCss).toMatch(/\.ca-landing\s*\{[^}]*padding-inline-start:\s*38px;/s);
+    expect(landingCss).toMatch(/\.ca-docs-drawer\s*\{[^}]*width:\s*292px;/s);
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-rail\s*\{[^}]*width:\s*31px;/,
     );
-  });
-
-  it("install terminal presents both host paths", () => {
-    expect(installCmp).toContain("Claude Code");
-    expect(installCmp).toContain("Codex");
-    expect(installCmp).toContain("codex plugin marketplace add arbiterForge/codeArbiter");
-    expect(installCmp).toContain("codex plugin add ca-codex@codearbiter");
-    expect(installCmp).toContain("$ca-doctor");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Inline search: custom Search.astro override (replaces Starlight's modal)
-// ---------------------------------------------------------------------------
-
-describe("inline search override (replaces Starlight's modal search)", () => {
-  it("is registered as the Starlight Search component override", () => {
-    expect(astroConfig).toMatch(/Search:\s*["']\.\/src\/components\/Search\.astro["']/);
-  });
-
-  it("defines the custom element that drives it", () => {
-    expect(searchCmp).toContain("class CaSiteSearch extends HTMLElement");
-    expect(searchCmp).toContain('customElements.define("ca-site-search"');
-  });
-
-  it("uses a semantic search form with a search input", () => {
-    expect(searchCmp).toContain('role="search"');
-    expect(searchCmp).toContain('type="search"');
-  });
-
-  it("implements the WAI-ARIA combobox pattern (combobox + listbox + option)", () => {
-    // Input is a combobox controlling a listbox popup; results are options the
-    // input points at via aria-activedescendant (virtual focus).
-    expect(searchCmp).toContain('role="combobox"');
-    expect(searchCmp).toContain('aria-autocomplete="list"');
-    expect(searchCmp).toContain('aria-controls="ca-search-listbox"');
-    expect(searchCmp).toContain('aria-activedescendant');
-    expect(searchCmp).toContain('id="ca-search-listbox"');
-    expect(searchCmp).toContain('role="listbox"');
-    // Result options are created in the script with role="option".
-    expect(searchCmp).toMatch(/setAttribute\("role",\s*"option"\)/);
-  });
-
-  it("carries the rest of the search ARIA contract (labelled, expands, live count)", () => {
-    expect(searchCmp).toMatch(/aria-label="[^"]+"/);
-    expect(searchCmp).toContain('aria-expanded="false"');
-    expect(searchCmp).toContain('aria-live="polite"');
-  });
-
-  it("wires the combobox keyboard contract (arrows move, Enter activates)", () => {
-    expect(searchCmp).toContain('"ArrowDown"');
-    expect(searchCmp).toContain('"ArrowUp"');
-    expect(searchCmp).toContain('"Enter"');
-    // The highlight is tracked on the input via aria-activedescendant.
-    expect(searchCmp).toMatch(/setAttribute\("aria-activedescendant"/);
-  });
-
-  it("drives the Pagefind index via the base-safe runtime path", () => {
-    // Pagefind has no dev index, so the import is a runtime path (vite-ignored)
-    // built from BASE_URL, not a bundled/hardcoded one.
-    expect(searchCmp).toContain("import.meta.env.BASE_URL");
-    expect(searchCmp).toMatch(/\/pagefind\/pagefind\.js/);
-  });
-
-  it("the active option is visibly highlighted (no invisible selection)", () => {
-    // Guards the WCAG 2.4.7 concern: focus stays in the input, so the active
-    // option (aria-selected) carries a real gold ring, not just a ~1.1:1
-    // background shift.
-    const themeCss = readSrc("src/styles/theme.css");
-    expect(themeCss).toMatch(
-      /\.ca-search__result-link\[aria-selected="true"\]\s*\{[^}]*outline:\s*2px solid var\(--ca-gold\)/,
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*31px;/,
     );
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-landing\s*\{[^}]*padding-inline-start:\s*31px;/,
+    );
+    expect(landingCss).toContain("min(292px, calc(100vw - 31px))");
   });
 
-  it("Search.astro prose contains ≤3 em-dashes", () => {
-    const text = searchCmp
-      .replace(/<[^>]+>/g, " ")
-      .replace(/\/\*[\s\S]*?\*\//g, " ");
-    expect((text.match(/—/g) ?? []).length).toBeLessThanOrEqual(3);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// AC-19: Em-dash cap (≤3 per page, ≤1 per paragraph) on prose
-// ---------------------------------------------------------------------------
-
-describe("AC-19: em-dash cap on landing prose", () => {
-  /**
-   * Strips frontmatter, code blocks, HTML/JSX tags, and import statements
-   * so the cap applies only to hand-written prose, per spec.
-   */
-  function extractProse(src: string): string {
-    let text = src.replace(/^---[\s\S]*?---\n/, "");
-    text = text.replace(/```[\s\S]*?```/g, "");
-    text = text.replace(/`[^`\n]*`/g, "");
-    text = text.replace(/<[^>]+>/g, " ");
-    text = text.replace(/^import\s+.*$/gm, "");
-    return text;
-  }
-
-  it("index.mdx contains ≤3 em-dashes in hand-written prose", () => {
-    const prose = extractProse(indexMdx);
-    const emDashes = (prose.match(/—/g) ?? []).length;
-    expect(emDashes).toBeLessThanOrEqual(3);
+  it("gives the reused sidebar tree a compact drawer-specific presentation", () => {
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav ul ul li\s*\{[^}]*border-inline-start:\s*0;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav summary\s*\{[^}]*list-style:\s*none;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav summary\s*\{[^}]*display:\s*flex;[^}]*justify-content:\s*space-between;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav summary \.caret\s*\{[^}]*margin-inline-start:\s*auto;/s,
+    );
+    expect(docsRail).toContain('class="ca-docs-drawer-layer not-content"');
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav ul ul a\s*\{[^}]*padding:/s,
+    );
+    expect(docsRail).toContain('rail.dataset.open = "true"');
+    expect(docsRail).toContain("delete rail.dataset.open");
+    expect(docsRail).toContain("layer.hidden ? openDrawer() : closeDrawer()");
   });
 
-  it("no paragraph in index.mdx prose has more than one em-dash", () => {
-    const prose = extractProse(indexMdx);
-    const paragraphs = prose.split(/\n{2,}/);
-    for (const para of paragraphs) {
-      const count = (para.match(/—/g) ?? []).length;
-      expect(count).toBeLessThanOrEqual(1);
+  it("leads with the reader outcome and supported hosts", () => {
+    expect(indexMdx).toContain("Hard gates for agentic coding.");
+    expect(indexMdx).toContain("You decide. codeArbiter enforces.");
+    expect(indexMdx).toContain("Claude Code");
+    expect(indexMdx).toContain("Codex");
+    expect(indexMdx).toContain("Pi preview");
+  });
+
+  it("has one primary action above the fold", () => {
+    const primaryMatches = indexMdx.match(/ca-button--primary/g) ?? [];
+    expect(primaryMatches).toHaveLength(2);
+    const splash = indexMdx.match(/<section class="ca-splash"[\s\S]*?<\/section>/)?.[0] ?? "";
+    expect(splash.match(/ca-button--primary/g)).toHaveLength(1);
+    expect(splash).toContain("Protect a repository");
+  });
+
+  it("shows a faithful direct-hook replay, not a fictional terminal sequence", () => {
+    expect(indexMdx).toContain("<HookProof />");
+    expect(indexMdx).toContain("rendered as a faithful replay");
+    expect(indexMdx).toContain("not host discovery or registration");
+    expect(indexMdx).not.toContain("<CardGrid>");
+    expect(indexMdx).not.toContain("GateCatchTerminal");
+    expect(indexMdx).not.toContain("ca-source-map");
+  });
+
+  it("follows the adopter story through proof, guarantees, flow, hosts, fit, and final CTA", () => {
+    for (const className of [
+      "ca-proof-strip",
+      "ca-guarantees",
+      "ca-flow",
+      "ca-hosts",
+      "ca-fit",
+      "ca-final-cta",
+    ]) {
+      expect(indexMdx).toContain(className);
     }
   });
 
-  it("GateCatchTerminal.astro prose contains ≤3 em-dashes", () => {
-    const prose = extractProse(terminalCmp);
-    const emDashes = (prose.match(/—/g) ?? []).length;
-    expect(emDashes).toBeLessThanOrEqual(3);
+  it("links lifecycle and trust claims to their owning docs", () => {
+    expect(indexMdx).toContain("./enforcement/");
+    expect(indexMdx).toContain("./codearbiter-directory/");
+    expect(indexMdx).toContain("./concepts/auditability/");
+    expect(indexMdx).toContain("./getting-started/compatibility/");
+    expect(indexMdx).toContain("./guides/uninstalling/");
   });
 
-  it("InstallTerminal.astro prose contains ≤3 em-dashes", () => {
-    const prose = extractProse(installCmp);
-    const emDashes = (prose.match(/—/g) ?? []).length;
-    expect(emDashes).toBeLessThanOrEqual(3);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Lane-flow diagram embedded in landing
-// ---------------------------------------------------------------------------
-
-describe("lane-flow diagram embedded in landing", () => {
-  it("lane-flow.svg asset exists", () => {
-    const svgPath = path.join(siteRoot, "public/diagrams/lane-flow.svg");
-    expect(existsSync(svgPath)).toBe(true);
+  it("uses page-relative internal links instead of a hardcoded deployment base", () => {
+    expect(indexMdx).not.toMatch(/href="\/codeArbiter/);
+    expect(indexMdx).toMatch(/href="\.\/getting-started\/install\//);
   });
 
-  it("index.mdx references the lane-flow diagram", () => {
-    expect(indexMdx).toContain("lane-flow");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Docs source-map: handcrafted vs generated update boundaries
-// ---------------------------------------------------------------------------
-
-describe("docs source-map section", () => {
-  it("landing page makes handcrafted and generated docs boundaries visible", () => {
-    expect(indexMdx).toContain("ca-source-map");
-    expect(indexMdx).toMatch(/Handcrafted docs/);
-    expect(indexMdx).toMatch(/Generated reference/);
-    expect(indexMdx).toMatch(/Root context/);
-  });
-
-  it("source-map points generated-reference edits at the generator/source files", () => {
-    expect(indexMdx).toContain("site/scripts/gen.ts");
-    expect(indexMdx).toContain("plugins/ca/");
-    expect(indexMdx).toContain("site/src/curated/");
-  });
-
-  it("source-map cards have dedicated visual styling", () => {
-    expect(landingCss).toContain(".ca-source-map");
-    expect(landingCss).toContain(".ca-source-map__grid");
-    expect(landingCss).toContain(".ca-source-map__card");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// MDX raw HTML: avoid nested paragraph output
-// ---------------------------------------------------------------------------
-
-describe("landing MDX paragraph wrappers", () => {
-  it("does not use multiline raw-HTML <p> wrappers that render as nested paragraphs", () => {
+  it("keeps raw HTML paragraphs on one line to avoid nested MDX paragraphs", () => {
     expect(indexMdx).not.toMatch(/<p(?:\s+class="[^"]+")?>\s*\n/);
+  });
+});
+
+describe("captured gate proof", () => {
+  it("ships accessible video controls and an exact text transcript", () => {
+    expect(proofCmp).toContain("<video");
+    expect(proofCmp).toContain("controls");
+    expect(proofCmp).toContain("playsinline");
+    expect(proofCmp).toMatch(/aria-label="[^"]+"/);
+    expect(proofCmp).toContain('type="video/webm"');
+    expect(proofCmp).toContain('type="video/mp4"');
+    expect(proofCmp).toContain("Read the exact invocation result");
+    expect(proofCmp).toContain("proof.invocation.stderr");
+    expect(proofCmp).not.toContain("autoplay");
+    expect(proofCmp).not.toContain("loop");
+  });
+
+  it("is traceable to the current shipped hook and proves the denied command stayed unstaged", () => {
+    const proofPath = path.join(siteRoot, "src/assets/proof/hook-proof.json");
+    const proof = JSON.parse(readFileSync(proofPath, "utf8"));
+    const hookPath = path.resolve(siteRoot, "..", proof.source);
+    const digest = createHash("sha256").update(readFileSync(hookPath)).digest("hex");
+
+    expect(proof.sourceSha256).toBe(digest);
+    expect(proof.invocation.exitCode).toBe(2);
+    expect(proof.invocation.commandExecuted).toBe(false);
+    expect(proof.evidenceKind).toBe("direct-hook-invocation-rendered-replay");
+    expect(proof.hostDiscoveryProven).toBe(false);
+    expect(proof.invocation.stderr).toContain("BLOCKED [H-03]");
+    expect(proof.fixture.stagedAfter).toBe("");
+    expect(proof.fixture.statusAfter).toContain("?? note.txt");
+    expect(proof.fixture.gateEvent).toContain("BLOCK [H-03]");
+  });
+
+  it("keeps both efficient video formats and a poster in the repository", () => {
+    for (const asset of ["hook-proof.mp4", "hook-proof.webm", "hook-proof-poster.webp"]) {
+      expect(statSync(path.join(siteRoot, "src/assets/proof", asset)).size).toBeGreaterThan(10_000);
+    }
+  });
+
+  it("does not overuse em dashes in adopter-facing copy", () => {
+    const prose = indexMdx
+      .replace(/^---[\s\S]*?---\n/, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/^import\s+.*$/gm, "");
+    expect((prose.match(/—/g) ?? []).length).toBeLessThanOrEqual(3);
+  });
+});
+
+describe("shared docs design system", () => {
+  it("is registered before page-specific styles", () => {
+    const designAt = astroConfig.indexOf("./src/styles/design-system.css");
+    const landingAt = astroConfig.indexOf("./src/styles/landing.css");
+    expect(designAt).toBeGreaterThan(-1);
+    expect(landingAt).toBeGreaterThan(designAt);
+  });
+
+  it("bundles local variable fonts and exposes shared tokens", () => {
+    expect(designCss).toContain('font-family: "Manrope Variable"');
+    expect(designCss).toContain("../assets/fonts/manrope-latin-wght-normal.woff2");
+    expect(designCss).toContain('font-family: "JetBrains Mono Variable"');
+    expect(designCss).toContain("../assets/fonts/jetbrains-mono-latin-wght-normal.woff2");
+    expect(designCss).toContain("--ca-space-9");
+    expect(designCss).toContain("--ca-bg-panel");
+    expect(designCss).toContain(".ca-reference-lead");
+  });
+
+  it("pins the reviewed font assets beside their complete OFL texts", () => {
+    const fonts = [
+      ["manrope-latin-wght-normal.woff2", "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"],
+      ["jetbrains-mono-latin-wght-normal.woff2", "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e"],
+    ] as const;
+    for (const [file, expected] of fonts) {
+      const bytes = readFileSync(path.join(siteRoot, "src/assets/fonts", file));
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected);
+    }
+    expect(readSrc("src/assets/fonts/LICENSE-Manrope.txt")).toContain(
+      "SIL OPEN FONT LICENSE Version 1.1",
+    );
+    expect(readSrc("src/assets/fonts/LICENSE-JetBrains-Mono.txt")).toContain(
+      "SIL OPEN FONT LICENSE Version 1.1",
+    );
+    const provenance = readSrc("src/assets/fonts/README.md");
+    expect(provenance).toContain("@fontsource-variable/manrope@5.3.0");
+    expect(provenance).toContain("@fontsource-variable/jetbrains-mono@5.3.0");
+    expect(provenance).toContain(
+      "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+    );
+    expect(provenance).toContain(
+      "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+    );
+  });
+
+  it("keeps the canonical gate diagram asset available to inner docs", () => {
+    expect(existsSync(path.join(siteRoot, "public/diagrams/lane-flow.svg"))).toBe(true);
   });
 });

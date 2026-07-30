@@ -1,91 +1,137 @@
 ---
-title: "Run an Autonomous Sprint"
-description: "Hand a goal to codeArbiter and have it plan, implement, and open a PR with one interactive gate at the start."
+title: Run an Autonomous Sprint
+description: "Approve one sprint package, then let codeArbiter execute the plan to a pull request while SMARTS records non-hard-gate decisions."
+journey:
+  level: Power user
+  time: 15–20 min
+  outcome: "a safe operating model for autonomous plan-to-PR work, including resumability, SMARTS decisions, hard stops, and exact-head evidence."
+  prerequisites:
+    - Comfortable with the feature lane
+    - A scoped sprint goal
+  proof: "You can identify the one interactive approval, every persisted restart artifact, and every condition that still stops for the user."
 ---
 
-`/ca:sprint` runs a full development cycle without continuous input. You review a spec and approve a plan once, at the start. After that, codeArbiter handles every implementation task, scores every decision it makes in your place, logs the lot, and opens a PR when the gate chain clears. You come back at the end to decide whether to merge.
+Use an autonomous sprint when you can describe a substantial outcome and want codeArbiter to carry
+the approved work through implementation, review, commits, and a pull request without stopping
+between task batches. The sprint is autonomous after one interactive approval package; it is never
+authorized to merge.
 
 <figure class="ca-diagram">
   <img
     src="/codeArbiter/diagrams/lane-sprint.svg"
-    alt="The /ca:sprint lane in three rows: Commands (/ca:sprint), Skills (writing-plans, subagent-driven-development, commit-gate, finishing-a-development-branch), and Agents (author subagent, reviewer fleet), with a connector weaving through them in execution order."
+    alt="The autonomous sprint lane from one combined spec and plan approval through small implementation cells, SMARTS-logged decisions, review, verification, commit, and pull request."
     loading="lazy"
-    width="920"
-    height="250"
   />
-  <figcaption>The <code>/ca:sprint</code> lane by piece type: command (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
+  <figcaption>One interactive approval opens the autonomous lane; durable plan and log state make each later cell resumable.</figcaption>
 </figure>
 
-## Before You Begin
+<div class="ca-host-syntax">
+  <strong>Host syntax:</strong> Claude Code uses <code>/ca:sprint</code>; Codex uses
+  <code>$ca-sprint</code>; Pi uses <code>/ca-sprint</code>. Examples below use Claude Code syntax.
+</div>
 
-Your repository must be opted in (`arbiter: enabled` in `.codearbiter/CONTEXT.md`). If it isn't yet, run `/ca:init`. The [Quickstart](/getting-started/quickstart/) walks through the opt-in.
+## Before you begin
 
-## Approve the Spec and Plan
+- Start on a non-default branch or allow the sprint to create an isolated worktree.
+- State the outcome, boundaries, and any spending or external-side-effect limits.
+- Resolve any existing `[CONFIRM-NN]` that the goal depends on.
+- Expect one review package containing both the written spec and implementation plan.
 
-Run the sprint with your goal as the argument:
-
-```text
-/ca:sprint "add pagination to the /posts API endpoint: cursor-based, 50 items per page, expose Link header"
-```
-
-codeArbiter enters the spec and plan phase and works in two passes before touching any code.
-
-First, it drafts a full spec from your goal and presents it for approval. Read it carefully. This is your primary opportunity to correct scope, add constraints, or reject and restate the goal. The sprint will not proceed until you approve.
-
-Second, it runs the [`writing-plans`](/reference/skills/writing-plans/) skill. The approved spec is decomposed into individual tasks of roughly two to five minutes each. Every task carries the exact file paths it will touch and a concrete verification step that maps to a test obligation. The plan is written to `.codearbiter/plans/<slug>.md`, ordered with dependencies flagged. You review the plan and approve or send it back.
-
-That plan approval is the last required interaction before execution begins.
-
-## Autonomous Execution
-
-Each task in the approved plan dispatches a fresh subagent through [`subagent-driven-development`](/reference/skills/subagent-driven-development/): test first via the `tdd` gate, then spec-compliance review, quality review, and a fresh-run verification. No single agent context accumulates state across tasks.
-
-When the sprint must make a choice in your place, such as which approach to take for an edge case the spec didn't cover, it uses **SMARTS**: a structured, multi-lens scoring rubric. SMARTS weighs the available options, scores each against a set of lenses, picks the highest-scoring option, and flags its confidence in that call. Every auto-decision and its score lands in an append-only **sprint log**. Low-confidence calls are marked so you can find them quickly after the run.
-
-Nothing hides behind the autonomy. Every choice the sprint made on your behalf is in the log.
-
-## Hard Gates That Always Stop
-
-Some decisions are never auto-decided, regardless of confidence. The sprint halts and waits when it encounters:
-
-- A finding in the security controls, including any auth, crypto, or secret-handling change
-- An irreversible operation
-- A gate-bypass attempt
-- An unresolved decision the spec does not cover and SMARTS cannot score with sufficient confidence
-
-These stops are rare when the spec is thorough. A sprint that halts often on hard gates is a signal that the goal needed more detail before starting, not that the gates are miscalibrated.
-
-## The Pull Request
-
-When the commit gate clears on the final task, [`finishing-a-development-branch`](/reference/skills/finishing-a-development-branch/) runs. Under `/ca:sprint`, it auto-selects "open PR." It will not merge to the default branch. Direct merge is prohibited. A pull request is opened and the merge decision is yours to make on your own timeline.
-
-## Route Implementation Through Farm Workers
-
-<div class="ca-callout ca-callout--preview"><p class="ca-callout__label">Preview</p><p><code>--farm</code> is a Feature Forge preview feature. It ships dormant and is off by default. It has not been promoted to stable. Turn it on deliberately; do not rely on it for production workflows until promotion is tracked and recorded.</p></div>
-
-The `--farm` flag routes each implementation task to a pool of lower-cost worker agents rather than the primary agent context. The review chain is identical to a standard sprint: the same commit gate, the same reviewer fleet, the same hard stops. Only the execution workers change.
-
-To use it:
-
-1. Set `FARM_API_KEY` in your environment to a valid farm API key.
-2. Run:
+Invoke the sprint with the outcome, not a list of implementation guesses:
 
 ```text
-/ca:sprint --farm "add pagination to the /posts API endpoint: cursor-based, 50 items per page, expose Link header"
+/ca:sprint "Add an export flow for saved searches, including empty-state behavior, audit records, and user documentation"
 ```
 
-The spec and plan gate runs exactly as it does without the flag. Farm routing takes over for the execution phase.
+## The one interactive approval
 
-Because `--farm` is a Feature Forge preview, its behavior may change between releases. Promotion to stable requires real-world evidence and is recorded as a deliberate tracked decision in the project, not an automatic calendar event.
+codeArbiter investigates the repository and prepares two linked artifacts:
 
-## Review the Sprint Log
+1. **Sprint spec:** the user outcome, scope, exclusions, acceptance criteria, and hard constraints.
+2. **Implementation plan:** exact tasks, files, tests, dependencies, ordering, and verification
+   mapped back to every acceptance criterion.
 
-After the PR opens, read the sprint log before merging. It lists every auto-decision in order: the options considered, the SMARTS lens scores, the chosen option, and the confidence flag. The low-confidence entries are the ones worth reading first. They are where the sprint was least certain and where a brief review returns the most value.
+It presents the spec and plan together at one STOP. Approve the package, request changes, or decline.
+Implementation does not begin until both artifacts are approved in that one decision.
 
-## Related
+This is not two approvals. If the plan exposes a weakness in the spec, codeArbiter revises the
+package and presents the combined result again.
 
-- [`/ca:sprint` command](/reference/commands/sprint/): full command signature and flags
-- [`writing-plans` skill](/reference/skills/writing-plans/): how the plan is built from the spec
-- [`subagent-driven-development` skill](/reference/skills/subagent-driven-development/): the per-task implementation engine
-- [`finishing-a-development-branch` skill](/reference/skills/finishing-a-development-branch/): how the PR decision is handled at the end
-- [Concepts: SMARTS and the Feature Forge](/concepts/): the ideas behind scored decisions and the preview model
+## What happens after approval
+
+The sprint executes the plan in resumable task cells:
+
+1. derive test obligations for the next task;
+2. observe the new tests fail for the intended reason;
+3. implement the smallest change that satisfies them;
+4. run the task's verification and reviewer checks;
+5. record the accepted task state on disk; and
+6. continue to the next independent cell.
+
+An interrupted session resumes from the approved spec, plan, task statuses, and sprint log. It does
+not re-interview you or discard accepted work.
+
+## How autonomous decisions work
+
+For a choice that is not a hard gate, the sprint compares options with
+[SMARTS](/concepts/smarts/): Scalable, Maintainable, Available, Reliable, Testable, and Securable.
+The options, lens verdicts, decision, and confidence are appended to
+`.codearbiter/sprint-log.md`.
+
+Low-confidence decisions are called out in the pull request so you can review the places where the
+evidence was genuinely close. Spending outside your stated limit is not treated as an ordinary
+SMARTS choice.
+
+## Stops that remain yours
+
+Autonomy never clears these boundaries:
+
+- authentication, cryptography, secrets, or a declared security control;
+- irreversible deletion or another destructive operation;
+- `/ca:override`, which is itself a user-authorized bypass;
+- an unresolved `[CONFIRM-NN]`;
+- external spending or side effects outside the approved scope; and
+- merging to the default branch.
+
+When one hard gate affects only one task, the sprint leaves that cell stopped and continues
+independent safe work. It returns to the blocked cell once the required decision exists.
+
+## Pull request and verification
+
+The normal sprint exit is a pull request, not a merge. The PR should contain:
+
+- the approved spec and plan;
+- acceptance-criterion to task/test coverage;
+- verification commands and results;
+- reviewer findings and their dispositions;
+- SMARTS decisions, with low-confidence calls highlighted; and
+- remaining hard-gated or out-of-scope work.
+
+Confirm the PR is draft when you want a deliberate merge barrier. Hosted checks still need to run
+against the exact current PR head before the work is treated as ready.
+
+## Optional farm backend
+
+`--farm` replaces the normal premium-author execution with a configured OpenAI-compatible worker:
+
+```text
+/ca:sprint "Normalize the public API error contract" --farm
+```
+
+The same spec package, hard gates, task checks, review, and PR boundary apply. Farm use is a Feature
+Forge preview and requires provider configuration. It may transmit secret-redacted, byte-capped
+task context to the endpoint you configure; read [Compatibility: Network Calls](/getting-started/compatibility/#network-calls)
+before enabling it.
+
+## Verify and review
+
+After the PR opens:
+
+1. read the acceptance criteria and plan delta;
+2. review low-confidence SMARTS entries in `.codearbiter/sprint-log.md`;
+3. confirm every required local verification is present;
+4. wait for hosted checks on the exact PR head; and
+5. make the merge decision yourself.
+
+For the exact orchestration contract, see the [`sprint` command](/reference/commands/sprint/) and
+the [`subagent-driven-development` skill](/reference/skills/subagent-driven-development/).

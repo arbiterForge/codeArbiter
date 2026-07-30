@@ -1,0 +1,227 @@
+---
+import ArbiterIcon, { type ArbiterIconName } from "./ArbiterIcon.astro";
+
+interface ConceptDestination {
+  href: string;
+  title: string;
+  question: string;
+  label: string;
+  icon: ArbiterIconName;
+}
+
+const destinations: ConceptDestination[] = [
+  {
+    href: "concepts/gated-lanes/",
+    title: "The gated-lane model",
+    question: "Why must each kind of work follow a different path?",
+    label: "Work routing",
+    icon: "gate",
+  },
+  {
+    href: "concepts/smarts/",
+    title: "SMARTS",
+    question: "How does an autonomous sprint choose without asking every time?",
+    label: "Autonomy",
+    icon: "sprint",
+  },
+  {
+    href: "enforcement/",
+    title: "Enforcement & Security",
+    question: "Which protections are deterministic and which are advisory?",
+    label: "Protection",
+    icon: "operate",
+  },
+  {
+    href: "concepts/adrs/",
+    title: "ADRs and the decision log",
+    question: "How is a long-lived architecture choice recorded?",
+    label: "Decisions",
+    icon: "decision",
+  },
+  {
+    href: "concepts/provenance-drift/",
+    title: "Provenance and context drift",
+    question: "How do repository facts stay current as source changes?",
+    label: "Repository truth",
+    icon: "repository",
+  },
+  {
+    href: "concepts/jit-context-injection/",
+    title: "Just-in-time context injection",
+    question: "How does the right rule reach an agent at file-read time?",
+    label: "Context",
+    icon: "reference",
+  },
+  {
+    href: "concepts/persona-and-context/",
+    title: "The persona-register split",
+    question: "Why are authors, reviewers, and routing kept separate?",
+    label: "Separation",
+    icon: "understand",
+  },
+  {
+    href: "concepts/checkpoints/",
+    title: "Checkpoints",
+    question: "What catches drift outside one feature lane?",
+    label: "Review cadence",
+    icon: "audit",
+  },
+  {
+    href: "concepts/auditability/",
+    title: "Auditability",
+    question: "What evidence can be reconstructed later?",
+    label: "Evidence",
+    icon: "audit",
+  },
+  {
+    href: "concepts/hardening-history/",
+    title: "Selected hardening notes",
+    question: "Why does a particular hardening control exist?",
+    label: "Design history",
+    icon: "fix",
+  },
+];
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<nav class="ca-concept-nav" aria-label="Concept map">
+  {
+    destinations.map((destination, index) => (
+      <a class="ca-concept-nav__item" href={`${base}${destination.href}`}>
+        <span class="ca-concept-nav__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+        <span class="ca-concept-nav__icon">
+          <ArbiterIcon name={destination.icon} size="1.35rem" />
+        </span>
+        <span class="ca-concept-nav__copy">
+          <span class="ca-concept-nav__label">{destination.label}</span>
+          <strong>{destination.title}</strong>
+          <span>{destination.question}</span>
+        </span>
+        <svg class="ca-concept-nav__arrow" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h13m-5-5 5 5-5 5" />
+        </svg>
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .ca-concept-nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 0.75rem;
+    margin-block: 1.25rem 2rem;
+  }
+
+  .ca-concept-nav__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 8.25rem;
+    padding: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--ca-line);
+    border-radius: var(--ca-radius-lg);
+    color: var(--ca-ink-soft);
+    text-decoration: none;
+    background:
+      linear-gradient(135deg, rgb(240 185 47 / 7%), transparent 48%),
+      var(--ca-bg-raised);
+    box-shadow: 0 12px 32px -28px rgb(0 0 0 / 90%);
+    transition:
+      border-color 160ms ease,
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .ca-concept-nav__item::after {
+    content: "";
+    position: absolute;
+    inset: auto -2rem -3.5rem auto;
+    width: 8rem;
+    aspect-ratio: 1;
+    border: 1px solid rgb(240 185 47 / 8%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .ca-concept-nav__item:hover {
+    border-color: rgb(240 185 47 / 55%);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 42px -28px rgb(240 185 47 / 28%);
+  }
+
+  .ca-concept-nav__index {
+    align-self: start;
+    color: var(--ca-brand);
+    font: 700 0.64rem/1 var(--ca-font-mono);
+    letter-spacing: 0.12em;
+  }
+
+  .ca-concept-nav__icon {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    aspect-ratio: 1;
+    border: 1px solid rgb(240 185 47 / 28%);
+    border-radius: 0.72rem;
+    color: var(--ca-brand-bright);
+    background: rgb(240 185 47 / 8%);
+  }
+
+  .ca-concept-nav__copy {
+    display: grid;
+    gap: 0.24rem;
+    min-width: 0;
+  }
+
+  .ca-concept-nav__label {
+    color: var(--ca-brand);
+    font: 700 0.62rem/1.2 var(--ca-font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .ca-concept-nav__copy strong {
+    color: var(--ca-ink);
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  .ca-concept-nav__copy > span:last-child {
+    color: var(--ca-ink-muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .ca-concept-nav__arrow {
+    z-index: 1;
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--ca-ink-muted);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition:
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .ca-concept-nav__item:hover .ca-concept-nav__arrow {
+    color: var(--ca-brand-bright);
+    transform: translateX(0.2rem);
+  }
+
+  @media (max-width: 48rem) {
+    .ca-concept-nav__item {
+      min-height: 0;
+    }
+  }
+</style>

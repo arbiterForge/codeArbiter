@@ -1,72 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" role="img"
-     aria-label="File to knowledge map for file-scoped context injection. A Read of a governed file is matched against four tiers in priority order: security-controls.md, accepted ADRs, approved specs, and provenance. The highest-priority match's pointer is injected within a 150-token budget. A Read of a non-governed file injects nothing and makes no git call.">
-  <title>File-scoped context injection: the four-tier file-to-knowledge map</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1128 430" role="img" data-diagram-system="ca-v2">
+  <title>File-to-knowledge priority map</title>
+  <desc>A file read is matched in priority order against security controls, accepted architecture decisions, approved specifications, and fresh provenance.</desc>
   <defs>
-    <linearGradient id="ftm-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0f14"/>
-      <stop offset="1" stop-color="#131a23"/>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#090d12"/>
+      <stop offset="1" stop-color="#0e141c"/>
     </linearGradient>
-    <pattern id="ftm-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="ftm-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#46505a"/>
-    </marker>
-    <marker id="ftm-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
     </marker>
   </defs>
-
-  <rect width="900" height="380" fill="url(#ftm-bg)"/>
-  <rect width="900" height="380" fill="url(#ftm-grid)"/>
-  <rect x="8" y="8" width="884" height="364" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
-
-  <!-- header -->
-  <text x="30" y="36" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" letter-spacing="3" fill="#8b95a2">FILE → KNOWLEDGE MAP</text>
-  <text x="30" y="57" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="15" fill="#e6edf3" font-weight="600">a Read, matched against four tiers in priority order</text>
-
-  <!-- Read node -->
-  <rect x="30" y="150" width="150" height="64" rx="5" fill="#1c2430" stroke="#6e7b8b" stroke-width="1.2"/>
-  <text x="105" y="178" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="12" fill="#e6edf3">Read(file)</text>
-  <text x="105" y="197" text-anchor="middle" font-family="'Segoe UI', -apple-system, Arial, sans-serif"
-        font-size="10" fill="#8b95a2">PreToolUse hook</text>
-  <line x1="180" y1="182" x2="246" y2="182" stroke="#46505a" stroke-width="1.5" marker-end="url(#ftm-arrow)"/>
-
-  <!-- tier stack (priority: top = highest) -->
-  <!-- tier 1 -->
-  <rect x="250" y="78" width="380" height="48" rx="4" fill="#1c2430" stroke="#d29922" stroke-width="1.4"/>
-  <text x="266" y="100" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#d29922">1 · security-controls.md</text>
-  <text x="266" y="117" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">security-entry files (auth · middleware · jwt)</text>
-  <!-- tier 2 -->
-  <rect x="250" y="134" width="380" height="48" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.2"/>
-  <text x="266" y="156" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#e6edf3">2 · decisions/</text>
-  <text x="266" y="173" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">accepted ADR whose governs: glob matches</text>
-  <!-- tier 3 -->
-  <rect x="250" y="190" width="380" height="48" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.2"/>
-  <text x="266" y="212" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#e6edf3">3 · specs/</text>
-  <text x="266" y="229" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">approved spec with a <tspan font-weight="600">Governs:</tspan> header</text>
-  <!-- tier 4 -->
-  <rect x="250" y="246" width="380" height="48" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.2"/>
-  <text x="266" y="268" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#e6edf3">4 · provenance (enrichment)</text>
-  <text x="266" y="285" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b95a2">claim whose stored hash still matches the file</text>
-
-  <!-- priority bracket -->
-  <text x="232" y="92" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#828d9a">high</text>
-  <line x1="240" y1="100" x2="240" y2="272" stroke="#2a3340" stroke-width="1" stroke-dasharray="3 3"/>
-  <text x="232" y="284" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#828d9a">low</text>
-
-  <!-- highest match injects -->
-  <line x1="630" y1="102" x2="700" y2="102" stroke="#d29922" stroke-width="1.5" marker-end="url(#ftm-arrow-gold)"/>
-  <rect x="700" y="74" width="172" height="58" rx="5" fill="#1c2430" stroke="#d29922" stroke-width="1.2"/>
-  <text x="786" y="98" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#e6edf3">inject the pointer</text>
-  <text x="786" y="116" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#8b95a2">budget ≤ 150 tokens</text>
-
-  <!-- miss path -->
-  <text x="105" y="250" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#828d9a">no tier matches?</text>
-  <path d="M 105 214 L 105 332 L 246 332" fill="none" stroke="#2a3340" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#ftm-arrow)"/>
-  <rect x="250" y="312" width="622" height="40" rx="4" fill="#11161d" stroke="#2a3340" stroke-width="1"/>
-  <text x="561" y="337" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#8b95a2">non-governed Read: nothing fires, zero git calls, deduped once per (session, file)</text>
+  <rect width="1128" height="430" rx="14" fill="url(#canvas)"/>
+  <rect width="1128" height="430" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1126" height="428" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">JUST-IN-TIME CONTEXT</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Read(file) checks four tiers in strict priority order.</text>
+<rect x="42" y="154" width="188" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="136" y="185" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Read(file)</text>
+<text x="136" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">PreToolUse hook</text>
+<rect x="300" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="385" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">1 · security-controls.md</text>
+<text x="385" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">security-entry files</text>
+<path d="M236 200 L290 200" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<path d="M476 200 L495 200" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="505" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="590" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">2 · decisions/</text>
+<text x="590" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">accepted ADR governs glob</text>
+<path d="M681 200 L700 200" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="710" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="795" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">3 · specs/</text>
+<text x="795" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">approved Governs header</text>
+<path d="M886 200 L905 200" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="915" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="1000" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">4 · provenance</text>
+<text x="1000" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">stored hash still matches</text>
+<rect x="300" y="310" width="375" height="82" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="487.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Inject highest-priority pointer</text>
+<text x="487.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">budget ≤ 150 tokens</text>
+<rect x="710" y="310" width="375" height="82" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="897.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">No tier matches</text>
+<text x="897.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">no injection · zero git calls</text>
+<polyline points="642,268 642,290 487,290 487,300" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<polyline points="970,268 970,300" fill="none" stroke="#3a4c60" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
 </svg>

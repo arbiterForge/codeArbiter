@@ -20,15 +20,10 @@
   background: color-mix(in srgb, var(--ca-callout-preview-border) 14%, transparent);
 }
 
-/* Diagrams embedded mid-prose get room to breathe and never overflow the column. */
+/* Diagrams embedded mid-prose get room to breathe. The shared theme owns media
+   sizing so labeled diagrams may remain intrinsically legible on phones. */
 .sl-markdown-content .ca-diagram {
   margin-block: 1.75rem;
-}
-.ca-diagram img,
-.ca-diagram svg {
-  display: block;
-  width: 100%;
-  height: auto;
 }
 .ca-diagram figcaption {
   margin-top: 0.6rem;

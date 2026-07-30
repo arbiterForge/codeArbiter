@@ -4,6 +4,7 @@ import starlight from "@astrojs/starlight";
 import { unified } from "@astrojs/markdown-remark";
 import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
+import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
 
 // Served from https://arbiterforge.github.io/codeArbiter/ — shared by the
 // `base` option below and the rehype plugin that base-prefixes markdown links.
@@ -85,12 +86,15 @@ export default defineConfig({
   // scheduled removal. `@astrojs/markdown-remark` is a direct dependency
   // because of this import — see site/package.json.
   markdown: {
-    processor: unified({ rehypePlugins: [rehypeBaseLinks(BASE)] }),
+    processor: unified({ rehypePlugins: [rehypeBaseLinks(BASE), rehypeTableShell()] }),
   },
   integrations: [
     starlight({
       title: "codeArbiter",
       description: "Shared enforcement and project-context parity across Claude Code, Codex, and Pi.",
+      // A custom StarlightPage-backed src/pages/404.astro owns the production
+      // fallback without forcing a phantom docs collection lookup at build time.
+      disable404Route: true,
       logo: {
         src: "./src/assets/logo.svg",
         replacesTitle: true,
@@ -113,8 +117,11 @@ export default defineConfig({
         // inline search (live as you type, results drop below the box)
         // replacing Starlight's stock modal-on-click search
         Search: "./src/components/Search.astro",
+        // authored navigation groups with the codeArbiter icon language
+        Sidebar: "./src/components/Sidebar.astro",
       },
       customCss: [
+        "./src/styles/design-system.css",
         "./src/styles/theme.css",
         "./src/styles/callouts.css",
         "./src/styles/landing.css",
@@ -129,59 +136,58 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Getting Started",
-          collapsed: true,
+          label: "Start",
+          collapsed: false,
           items: [
             { label: "What Is codeArbiter", slug: "overview" },
+            { label: "Learning Path", slug: "learn" },
+            { label: "Choose Your Host", slug: "getting-started/choose-your-host" },
             { label: "Install", slug: "getting-started/install" },
+            { label: "Protect Your First Repository", slug: "getting-started/quickstart" },
             { label: "Claude Code + Codex", slug: "getting-started/claude-code-and-codex" },
             { label: "Pi", slug: "getting-started/pi" },
-            { label: "Quickstart", slug: "getting-started/quickstart" },
             { label: "Compatibility", slug: "getting-started/compatibility" },
             { label: "FAQ", slug: "faq" },
           ],
         },
         {
-          label: "Guides",
+          label: "Workflows",
           collapsed: true,
           items: [
             { label: "Opt a Repository In", slug: "guides/opt-in-a-repo" },
-            { label: "Record an Architecture Decision", slug: "guides/recording-adrs" },
-            { label: "Add a Dependency Safely", slug: "guides/adding-a-dependency" },
-            { label: "Set Up the Statusline", slug: "guides/the-statusline" },
             { label: "Build a Feature End to End", slug: "guides/feature-lane" },
             { label: "Run an Autonomous Sprint", slug: "guides/autonomous-sprints" },
-            { label: "Override a Gate Safely", slug: "guides/overriding-a-gate" },
+            { label: "Record an Architecture Decision", slug: "guides/recording-adrs" },
+            { label: "Add a Dependency Safely", slug: "guides/adding-a-dependency" },
             { label: "Cut a Release", slug: "guides/releasing-a-version" },
+          ],
+        },
+        {
+          label: "Operate",
+          collapsed: true,
+          items: [
+            { label: "Set Up the Statusline", slug: "guides/the-statusline" },
+            { label: "Override a Gate Safely", slug: "guides/overriding-a-gate" },
             { label: "Troubleshooting", slug: "guides/troubleshooting" },
             { label: "Uninstall & Disable", slug: "guides/uninstalling" },
-            { label: "ca-sandbox: Explore Untrusted Code", slug: "guides/ca-sandbox" },
+            { label: "Explore Untrusted Code", slug: "guides/ca-sandbox" },
           ],
         },
         {
-          label: "Preview Features",
+          label: "Understand",
           collapsed: true,
           items: [
-            { label: "What Is the Feature Forge", slug: "feature-forge/overview" },
-            { label: "What's in the Forge", slug: "feature-forge/whats-in-the-forge" },
-            { label: "Using Features Still in the Forge", slug: "feature-forge/using-preview-features" },
-          ],
-        },
-        {
-          label: "Concepts",
-          collapsed: true,
-          items: [
-            { label: "Overview", slug: "concepts" },
+            { label: "Concept Map", slug: "concepts" },
+            { label: "The Gated-Lane Model", slug: "concepts/gated-lanes" },
             { label: "SMARTS", slug: "concepts/smarts" },
+            { label: "Enforcement & Security", slug: "enforcement" },
             { label: "Provenance and Context Drift", slug: "concepts/provenance-drift" },
             { label: "ADRs and the Decision Log", slug: "concepts/adrs" },
             { label: "Just-in-Time Context Injection", slug: "concepts/jit-context-injection" },
-            { label: "The Gated-Lane Model", slug: "concepts/gated-lanes" },
-            { label: "Enforcement & Security", slug: "enforcement" },
-            { label: "Hardening History", slug: "concepts/hardening-history" },
             { label: "Checkpoints", slug: "concepts/checkpoints" },
             { label: "The Persona-Register Split", slug: "concepts/persona-and-context" },
             { label: "Auditability", slug: "concepts/auditability" },
+            { label: "Selected Hardening Notes", slug: "concepts/hardening-history" },
           ],
         },
         {
@@ -189,12 +195,22 @@ export default defineConfig({
           collapsed: true,
           items: [
             { label: "The .codearbiter/ Directory", slug: "codearbiter-directory" },
+            { label: "Configuration", slug: "reference/configuration" },
             { label: "Glossary", slug: "glossary" },
             { label: "All Reference", slug: "reference" },
             { label: "Hooks Reference", slug: "hooks" },
             { label: "Hook Gates", slug: "reference/hooks-gates" },
             { label: "Changelog", slug: "changelog" },
             ...referenceGroups,
+          ],
+        },
+        {
+          label: "Labs",
+          collapsed: true,
+          items: [
+            { label: "What Is the Feature Forge", slug: "feature-forge/overview" },
+            { label: "What's in the Forge", slug: "feature-forge/whats-in-the-forge" },
+            { label: "Use a Preview Feature", slug: "feature-forge/using-preview-features" },
           ],
         },
       ],

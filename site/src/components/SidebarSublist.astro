@@ -1,0 +1,199 @@
+---
+import { Badge, Icon } from "@astrojs/starlight/components";
+import SidebarRestorePoint from "@astrojs/starlight/components/SidebarRestorePoint.astro";
+import ArbiterIcon, { type ArbiterIconName } from "./ArbiterIcon.astro";
+
+type SidebarBadge = {
+  variant?: "note" | "tip" | "caution" | "danger" | "success" | "default";
+  class?: string;
+  text: string;
+};
+type SidebarLink = {
+  type: "link";
+  label: string;
+  href: string;
+  isCurrent: boolean;
+  badge?: SidebarBadge;
+  attrs: Record<string, string | boolean | undefined>;
+};
+type SidebarGroup = {
+  type: "group";
+  label: string;
+  entries: SidebarEntry[];
+  collapsed: boolean;
+  badge?: SidebarBadge;
+};
+type SidebarEntry = SidebarLink | SidebarGroup;
+
+interface Props {
+  sublist: SidebarEntry[];
+  nested?: boolean;
+}
+
+const { sublist, nested } = Astro.props;
+const groupIcons: Record<string, ArbiterIconName> = {
+  Start: "start",
+  Workflows: "workflow",
+  Operate: "operate",
+  Understand: "understand",
+  Reference: "reference",
+  Labs: "forge",
+};
+const hasCurrentLink = (entries: SidebarEntry[]): boolean =>
+  entries.some((entry) => entry.type === "link" ? entry.isCurrent : hasCurrentLink(entry.entries));
+---
+
+<ul class:list={{ "top-level": !nested }}>
+  {
+    sublist.map((entry) => (
+      <li>
+        {entry.type === "link" ? (
+          <a
+            href={entry.href}
+            aria-current={entry.isCurrent ? "page" : undefined}
+            class:list={[{ large: !nested }, entry.attrs.class]}
+            {...entry.attrs}
+          >
+            <span>{entry.label}</span>
+            {entry.badge && <Badge variant={entry.badge.variant} class={entry.badge.class} text={entry.badge.text} />}
+          </a>
+        ) : (
+          <details open={hasCurrentLink(entry.entries) || !entry.collapsed}>
+            <summary>
+              <span class="group-label">
+                {!nested && groupIcons[entry.label] && (
+                  <span class="group-icon">
+                    <ArbiterIcon name={groupIcons[entry.label]} size="1rem" />
+                  </span>
+                )}
+                <span class="large">{entry.label}</span>
+                {entry.badge && <Badge variant={entry.badge.variant} class={entry.badge.class} text={entry.badge.text} />}
+              </span>
+              <Icon name="right-caret" class="caret" size="1.25rem" />
+            </summary>
+            <SidebarRestorePoint />
+            <Astro.self sublist={entry.entries} nested />
+          </details>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  @layer starlight.core {
+    ul {
+      --sl-sidebar-item-padding-inline: 0.5rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      overflow-wrap: anywhere;
+    }
+
+    ul ul li {
+      margin-inline-start: var(--sl-sidebar-item-padding-inline);
+      border-inline-start: 1px solid var(--sl-color-hairline-light);
+      padding-inline-start: var(--sl-sidebar-item-padding-inline);
+    }
+
+    .large {
+      color: var(--sl-color-white);
+      font-size: var(--sl-text-lg);
+      font-weight: 650;
+    }
+
+    .top-level > li + li {
+      margin-top: 0.8rem;
+    }
+
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.25em var(--sl-sidebar-item-padding-inline);
+      line-height: 1.4;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    summary::marker,
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .group-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .group-icon {
+      display: inline-grid;
+      width: 1.65rem;
+      height: 1.65rem;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--ca-brand) 28%, var(--ca-line));
+      border-radius: 0.45rem;
+      color: var(--ca-brand);
+      background: var(--ca-brand-wash);
+    }
+
+    .caret {
+      flex-shrink: 0;
+      color: var(--ca-ink-muted);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    :global([dir="rtl"]) .caret {
+      transform: rotateZ(180deg);
+    }
+
+    [open] > summary .caret {
+      transform: rotateZ(90deg);
+    }
+
+    a {
+      display: block;
+      padding: 0.34em var(--sl-sidebar-item-padding-inline);
+      border-radius: 0.35rem;
+      color: var(--sl-color-gray-2);
+      line-height: 1.45;
+      text-decoration: none;
+    }
+
+    a:hover,
+    a:focus {
+      color: var(--sl-color-white);
+      background: rgb(255 255 255 / 2.5%);
+    }
+
+    [aria-current="page"],
+    [aria-current="page"]:hover,
+    [aria-current="page"]:focus {
+      color: var(--ca-ink);
+      background: var(--ca-brand-wash);
+      font-weight: 650;
+    }
+
+    a > *:not(:last-child),
+    .group-label > *:not(:last-child) {
+      margin-inline-end: 0;
+    }
+
+    @media (min-width: 50rem) {
+      .top-level > li + li {
+        margin-top: 0.65rem;
+      }
+
+      .large {
+        font-size: var(--sl-text-base);
+      }
+
+      a {
+        font-size: var(--sl-text-sm);
+      }
+    }
+  }
+</style>

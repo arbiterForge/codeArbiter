@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "codeArbiter documentation site (MVP) — Astro Starlight + auto-generated reference",
+  "description": "Professional codeArbiter product documentation with source-backed generated reference.",
   "scripts": {
-    "gen": "tsx scripts/gen.ts",
+    "gen": "tsx scripts/gen.ts && npm run gen:diagrams && npm run audit:diagrams",
+    "gen:diagrams": "tsx scripts/generate-diagrams.ts",
+    "gen:readme-hero": "tsx scripts/generate-readme-hero.ts",
+    "capture:proof": "tsx scripts/capture-hook-proof.ts",
     "predev": "npm run gen",
     "dev": "astro dev",
     "prebuild": "npm run gen",
@@ -15,6 +18,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "link-audit": "tsx scripts/link-audit.ts",
+    "audit:diagrams": "tsx scripts/diagram-audit.ts",
     "coverage": "vitest run --coverage"
   },
   "overrides": {

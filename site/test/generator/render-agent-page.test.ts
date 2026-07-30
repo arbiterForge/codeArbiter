@@ -29,6 +29,57 @@ describe("renderAgentPage", () => {
     expect(md).toContain("`Read`, `Grep`");
   });
 
+  it("explains direct-page dispatch semantics for Claude Code, Codex, and Pi", () => {
+    const md = renderAgentPage(
+      input({
+        name: "myagent",
+        description: "reviews a thing",
+        model: "sonnet",
+        tools: "Read, Grep",
+      }),
+    );
+
+    expect(md).toContain("Claude Code");
+    expect(md).toContain("Codex");
+    expect(md).toContain("Pi");
+    expect(md).toContain("host-provided agent thread");
+    expect(md).toContain("older-host fallback");
+    expect(md).toContain("codearbiter_dispatch");
+  });
+
+  it("translates Claude-only path variables in reader-facing summaries but keeps exact source", () => {
+    const md = renderAgentPage(
+      input({
+        name: "myagent",
+        description: "Reads ${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md.",
+        tools: "Read",
+      }),
+    );
+    const beforeSource = md.slice(0, md.indexOf("## Source"));
+    const source = md.slice(md.indexOf("## Source"));
+
+    expect(beforeSource).toContain("the repository's .codearbiter/tech-stack.md");
+    expect(beforeSource).not.toContain("${CLAUDE_PROJECT_DIR}");
+    expect(source).toContain("Body.");
+  });
+
+  it("keeps the orientation lead concise while retaining the full metadata description", () => {
+    const md = renderAgentPage(
+      input({
+        name: "myagent",
+        description: "Owns the architecture lens. Reviews structural drift. Writes one finding file.",
+        tools: "Read",
+      }),
+    );
+    const lead = md.match(/<div class="ca-reference-lead"[\s\S]+?<\/div>\n<\/div>/)?.[0] ?? "";
+
+    expect(md).toContain(
+      'description: "Owns the architecture lens. Reviews structural drift. Writes one finding file."',
+    );
+    expect(lead).toContain("Owns the architecture lens. Reviews structural drift.");
+    expect(lead).not.toContain("Writes one finding file.");
+  });
+
   it("shows the default tier when model is missing", () => {
     const md = renderAgentPage(
       input({ name: "nomodel", description: "no model here", tools: "Read" }),
@@ -70,7 +121,7 @@ describe("renderAgentPage", () => {
   it("always renders a source embed, even with no curated content", () => {
     const md = renderAgentPage(input({ name: "myagent", tools: "Read" }));
     expect(md).toContain("## Source");
-    expect(md).toContain('<details class="ca-source">');
+    expect(md).toContain('<details class="ca-source" data-pagefind-ignore>');
   });
 
   it("places Model tier / Tools before the curated body", () => {

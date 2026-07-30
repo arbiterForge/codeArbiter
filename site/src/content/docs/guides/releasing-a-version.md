@@ -1,133 +1,162 @@
 ---
-title: "Cut a Release"
-description: "Tag and publish a codeArbiter version with /ca:release: SemVer derivation from Conventional Commits, CHANGELOG.md update, and authorized GitHub Release publication."
+title: Cut a Release
+description: "Release one codeArbiter plugin through its own tag series, manifests, changelog, built artifacts, and verified GitHub Release."
+journey:
+  level: "Power user"
+  time: "15 minutes"
+  outcome: "Cut one target-specific release with consistent versions, artifacts, tag, and hosted checks."
+  prerequisites:
+    - "Maintainer access"
+    - "A clean release branch with the target's changes committed"
+  proof: "Manifest, changelog, tag, release artifacts, and hosted verification all name the same target version."
 ---
 
-`/ca:release` is the only permitted path to a version tag. It derives the SemVer bump from Conventional Commits history since the last `ca` tag, updates `CHANGELOG.md`, composes an annotated tag locally, and publishes a GitHub Release only after you explicitly authorize it.
+codeArbiter ships four independently-versioned plugins. The release lane selects one target and
+keeps every version input and output inside that plugin's row. Use it only when the target's work is
+already landed on a clean release branch and its verification is green.
 
 <figure class="ca-diagram">
   <img
     src="/codeArbiter/diagrams/lane-release.svg"
-    alt="The /ca:release lane in two rows: Commands (/ca:release) and Skills (release, then commit-gate), with a connector running in execution order from /ca:release through the release skill to commit-gate."
+    alt="The release lane from selecting one plugin target through derived semantic version, changelog and manifest updates, verification, annotated tag, and explicitly authorized publication."
     loading="lazy"
-    width="920"
-    height="190"
   />
-  <figcaption>The <code>/ca:release</code> lane by piece type: command (gold) and the skills it routes through (violet), each loaded in execution order.</figcaption>
+  <figcaption>Each release is scoped to one plugin target; publication remains a separate explicit decision.</figcaption>
 </figure>
+
+<div class="ca-host-syntax">
+  <strong>Host syntax:</strong> Claude Code uses <code>/ca:release</code>; Codex uses
+  <code>$ca-release</code>; Pi uses <code>/ca-release</code>. Examples below use Claude Code syntax.
+</div>
+
+## Choose the target
+
+| Target | Tag | Manifest(s) | Changelog | Built artifacts |
+|---|---|---|---|---|
+| `ca` | `vX.Y.Z` | `plugins/ca/.claude-plugin/plugin.json` | `CHANGELOG.md` | `plugins/ca/tools/farm.js` |
+| `ca-codex` | `ca-codex-vX.Y.Z` | `plugins/ca-codex/.codex-plugin/plugin.json` | `plugins/ca-codex/CHANGELOG.md` | none |
+| `ca-sandbox` | `ca-sandbox-vX.Y.Z` | `plugins/ca-sandbox/.claude-plugin/plugin.json` | `plugins/ca-sandbox/CHANGELOG.md` | sandbox and Claude-inside bundles |
+| `ca-pi` | `ca-pi-vX.Y.Z` | `plugins/ca-pi/package.json` and generated root `package.json` | `plugins/ca-pi/CHANGELOG.md` | parent and child extension bundles |
+
+A bare `/ca:release` means `ca`. Prefer the explicit target in maintainer work:
+
+```text
+/ca:release ca-codex
+```
+
+The command accepts a target, not a version. SemVer is derived from the selected payload's commit
+history.
 
 ## Prerequisites
 
-Four conditions must hold before `/ca:release` will proceed:
+Before invoking the lane:
 
-- **On a feature branch.** The current branch must not be the default branch (`main`, `master`, or equivalent). Releases land through the normal branch-and-PR path; if HEAD is the default branch, the release stops immediately.
-- **Clean working tree.** No uncommitted changes. Commit or stash through `/ca:commit` first.
-- **Green suite.** The last suite run must have passed. A red suite blocks tagging.
-- **No open CONFIRM blocks.** Any unresolved `[CONFIRM-NN]` block stops the release.
+- check out a non-default release branch;
+- leave the working tree clean;
+- confirm the target has new commits in its payload since its own latest stable tag;
+- confirm the last applicable suite was green;
+- make sure every `feat` and `fix` commit carries a `CHANGELOG:` footer; add one to `perf` when the
+  performance change should appear in user-facing release notes; and
+- authenticate `gh` if you expect to authorize publication later.
 
-Every `feat` and `fix` commit in the release window must carry a `CHANGELOG:` footer. A commit missing that footer is a hard block. The skill never auto-fills one.
+Do not run release as a readiness query. It is a mutating lane that may update manifests, changelog,
+generated surfaces, and a local tag.
 
-### CHANGELOG: Footer Format
+## 1. Target-scoped pre-flight
 
-The `CHANGELOG:` footer is part of the commit body, following the Conventional Commits trailer convention:
+The release skill resolves the target through the shared release register. It does not use bare
+`git describe`, because the nearest tag in a multi-plugin repository may belong to a sibling.
 
-```
-feat(release): resolve baseline tag through tested helper
+It then verifies:
 
-CHANGELOG: Tag derivation now resolves the ca baseline tag through the tested helper, excluding pre-releases and ca-sandbox tags.
-```
+1. the last tag belongs to the target's tag series;
+2. the commit window contains only changes under the target payload;
+3. the window contains a SemVer-earning change;
+4. the target manifest version can move to the derived version;
+5. every committed bundle rebuilds without a diff; and
+6. target-specific generated surfaces agree.
 
-`/ca:release` rolls these footers into the new changelog section. If a `feat` or `fix` commit has no footer, it surfaces the commit and stops.
+For `ca-pi`, the root `package.json` is generated install metadata and must equal the plugin
+manifest. For `ca`, README badges, catalog counts, and command tables are synchronized from the
+repository rather than incremented by hand.
 
-## Check Readiness Without Tagging
+## 2. Derive the version and changelog
 
-Before running the full release, use `--dry-run` to see the bump classification and the commit window:
+The highest-precedence change in the target payload decides the bump:
 
-```text
-/ca:release --dry-run
-```
-
-This runs every gate and surfaces a readiness report. It stops before composing the tag. Use it to confirm the derived version and the commit set look correct before proceeding.
-
-`--dry-run` combines with an explicit version:
-
-```text
-/ca:release "X.Y.Z" --dry-run
-```
-
-## Run the Release
-
-```text
-/ca:release
-```
-
-No version argument means `--auto`: the version is derived from the commit log. Supply it explicitly when you need a specific version:
-
-```text
-/ca:release "X.Y.Z"
-```
-
-An explicit version that disagrees with what the commit log requires is a hard block. The bump is never silently adjusted. An explicit version and `--auto` are mutually exclusive.
-
-### Phase 1: Version and CHANGELOG
-
-The skill reads every `plugins/ca/`-scoped commit since the last `ca` SemVer tag. Commits under `plugins/ca-sandbox/` do not affect the bump or the changelog. The highest-precedence type in the window determines the bump:
-
-| Highest-precedence type in the window | Bump |
+| Commit evidence | Bump |
 |---|---|
-| `BREAKING CHANGE:` footer or `!` after type/scope | major |
+| `BREAKING CHANGE:` or a Conventional-Commit `!` | major |
 | `feat` | minor |
 | `fix`, `perf`, or `refactor` | patch |
-| `test`, `docs`, `chore`, or `ci` only | no bump; nothing to release |
+| only `test`, `docs`, `chore`, or `ci` | no release; stop |
 
-The `CHANGELOG:` footers from `feat`, `fix`, and `perf` commits are appended to `CHANGELOG.md` under a new Keep-a-Changelog heading:
+The same window supplies the changelog entries. Every `feat` and `fix` requires a `CHANGELOG:`
+footer because release notes must not omit a user-visible change or invent one after the fact.
+A `perf` footer is rolled when present. A `refactor` earns a patch version but does not require or
+synthesize a user-facing changelog entry.
 
-```
+The selected changelog receives:
+
+```markdown
 ## [X.Y.Z] — YYYY-MM-DD
 
 ### Added
-- ...
 
-### Fixed
 - ...
 ```
 
-Prior sections stay intact. If `CHANGELOG.md` does not exist, the skill creates it. The README version badge, command/skill/agent count badges, and the `COMMANDS.md` catalog are also updated to match the repo. If those changes require a commit before tagging, it routes through commit-gate.
+Any manifest, changelog, or generated-surface update lands through the normal commit gate before
+tagging.
 
-### Phase 2: Tag
+## 3. Compose the local tag
 
-The annotated tag is composed locally from the Phase 1 changelog section. The tag is never pushed without authorization. Phase 2 ends with a report: version, bump rationale, per-commit classification, the new changelog section, and the tag SHA.
+The skill writes a multi-line annotated tag in the selected namespace and reports:
 
-### Phase 3: Publish (Requires Authorization)
+- target and payload window;
+- previous and next version;
+- per-commit classification;
+- changelog section;
+- rebuilt artifact status; and
+- local tag SHA.
 
-The tag and GitHub Release publish together, and only after you authorize them. Without authorization, nothing leaves the local repository.
+If the tag already exists at HEAD with the matching manifest version but has no GitHub Release, the
+lane classifies that as a resumable publish rather than composing another tag.
 
-## Review and Authorize
+## 4. Review and authorize publication
 
-Read the Phase 2 report. When the version, classification, and changelog section look correct, authorize publication.
+Nothing leaves the repository until you explicitly authorize publishing. On authorization, the
+lane:
 
-On authorization:
+1. pushes the selected tag;
+2. verifies the release-notes heading matches that tag;
+3. creates the GitHub Release from the exact changelog section;
+4. passes `--latest=false` for every sibling series;
+5. reads the release back and requires a non-draft result on the expected tag; and
+6. records the remote tag SHA and dereferenced commit in `.github/published-tags.json`.
 
-1. The tag is pushed to the remote.
-2. A GitHub Release is created. The notes are the Phase 1 changelog section verbatim; they are never re-derived or hand-written.
-3. The Release is read back via `gh release view` to confirm it is non-draft and on the correct tag. If `gh` is unavailable or the call fails, the skill surfaces the exact manual command so you can finish publication by hand rather than leave it in an incomplete state.
+Only a `ca` release may take GitHub's single repo-wide Latest badge, and only when it is actually
+the newest release across all four series.
 
-The Release URL is reported only after the read-back confirms a non-draft Release on the correct tag.
+## Common stops
 
-## Common Blocks
-
-| Situation | Effect | Resolution |
+| Stop | Meaning | Recovery |
 |---|---|---|
-| A `feat` or `fix` commit has no `CHANGELOG:` footer | Phase 1 stops; the commit is surfaced | Add the footer to the commit; re-run |
-| Explicit version disagrees with the commit log | Hard block | Use `--auto` or supply the correct version |
-| Suite is not green | Pre-flight stops | Fix the failing tests; re-run |
-| Window is non-bumping (`test`/`docs`/`chore`/`ci` only) | Phase 1 stops | Nothing user-visible to release |
-| Dirty working tree | Pre-flight stops | Commit or stash via `/ca:commit` |
-| HEAD is on the default branch | Pre-flight stops | Switch to a feature branch |
+| Unknown target | No release row exists | Invoke one of the four exact target names |
+| Empty or non-bumping window | This payload has nothing releasable | Land a bump-earning change or do not release |
+| Manifest mismatch | The tag would advertise a version the payload does not report | Update the target surfaces through commit-gate |
+| Bundle diff after rebuild | The repository would ship stale generated code | Commit the rebuilt artifact, verify, then re-run |
+| Missing required `CHANGELOG:` footer on `feat` or `fix` | Release notes would silently omit a user-visible change | Correct the commit history through the governed path |
+| Publish read-back fails | Tag/Release may be partially published | Keep the exact state and resume the missing step |
 
-Any block may be bypassed only through `/ca:override`.
+## Recover from a bad published release
 
-## Related
+Never move, retarget, or delete a published tag. Consumers can pin exact tags; changing the object
+behind a published version makes verification history describe different code.
 
-- [release command reference](/reference/commands/release/): arguments and hard gates
-- [release skill reference](/reference/skills/release-2/): full phase-by-phase specification
+Fix the defect through a normal PR, invoke `/ca:release <target>` again, and publish the next
+version. Mark the bad GitHub Release as a prerelease and add a note naming the superseding version.
+The old tag remains the immutable identity of what shipped.
+
+For the exact target register and every hard rule, read the
+[`release` command](/reference/commands/release/) and [`release` skill](/reference/skills/release/).

@@ -1,6 +1,12 @@
 ---
 title: FAQ
 description: "Honest answers to the objections a skeptical adopter raises before trying codeArbiter: blocking, bypass, uninstall, speed, data, teams, and misfitted gates."
+journey:
+  level: "Reference"
+  time: "Lookup"
+  outcome: "Resolve common operational questions and follow the linked workflow for deeper action."
+  prerequisites: []
+  proof: "The answer leads to a command, guide, or source-backed reference rather than a guess."
 ---
 
 ## Why would I let a plugin block my commits?
@@ -9,20 +15,21 @@ Because the class of mistake it blocks is exactly the kind that's easy to miss u
 review pressure: a banned crypto primitive, a hardcoded secret, a direct push to `main`. The
 [blocking gates](/enforcement/#blocking-commit-time-gates) are narrow and specific, not a general
 "looks risky" heuristic, and each one names exactly what it caught and how to clear it. You don't
-have to trust the framework's judgment in the abstract; the [Quickstart](/getting-started/quickstart/)
-walks a real MD5 mistake getting caught at commit time so you can see the mechanism, not just a
-claim about it.
+have to trust the framework's judgment in the abstract; the
+[first protected repository](/getting-started/quickstart/) runs doctor's harmless live-fire probe
+and requires the host to honor a real H-03 block.
 
 ## Can a determined session bypass a hook?
 
-Yes, and that's by design, not a gap. Hooks fire at the Claude Code tool-call boundary and fail
-closed: an ambiguous spelling of a destructive command is blocked, not guessed at. Direct `git`
-usage outside the tool-call path is covered by a `.git/hooks` backstop
-([Enforcement & Security](/enforcement/)). But a user can always uninstall the plugin, edit
-`CONTEXT.md` to disable it, or run [`/ca:override`](/glossary/#override). The actual design goal
-isn't that bypass is impossible. It's that **every bypass is logged**. An override appends a
-permanent line to `overrides.log`; uninstalling removes the enforcement, not the record that it
-was there. See the [Hooks reference](/hooks/) for what each hook actually checks.
+Yes. Hooks cover supported host tool calls, and the installed Git backstop covers matching commit
+and push operations, but the repository owner ultimately controls the machine. They can uninstall
+the plugin, remove hooks, use an external tool, or disable the repository.
+
+The precise guarantee is that **every sanctioned bypass is logged**. `/ca:override` appends an
+attributed line to `overrides.log`; `/ca:dev` records entry and exit. An out-of-band bypass is not
+magically observable, and codeArbiter does not claim otherwise. Uninstalling leaves existing audit
+files on disk, but the uninstall itself is not recorded unless the user records it. See the
+[Hooks reference](/hooks/) for the boundaries each hook actually covers.
 
 ## What happens if I uninstall mid-feature?
 
@@ -45,22 +52,31 @@ code. See [The Gated-Lane Model](/concepts/gated-lanes/) for how gates scale to 
 
 ## What data leaves my machine?
 
-None, from the enforcement hooks themselves: they're Python, stdlib-only, and the code that
-actually blocks/reminds/warns (`pre-bash.py`, `pre-write.py`, `pre-edit.py`, `post-write-edit.py`,
-the crypto/secret/migration gates) makes no network calls; this was verified directly against the
-hooks' imports, not assumed. There is one narrow exception, separate from enforcement: a
-once-daily, off-hot-path check against GitHub's public releases API to notify you when a newer
-plugin version exists. It sends no project data, just an unauthenticated GET to a public
-endpoint, and it's fail-silent (a network error just means no notice, never a broken session).
-Everything else (your code, your `.codearbiter/` state, your commit history) stays local.
+The blocking enforcement core sends nothing. Its Python guards are stdlib-only and make no network
+calls while evaluating shell, write, crypto, secret, or migration gates.
+
+Other features have narrower, documented network behavior:
+
+- SessionStart may run a detached, read-only `git fetch` against the repository's configured
+  remote for hygiene status. That uses normal Git transport and credentials.
+- A once-daily, fail-silent update check sends an unauthenticated GET to GitHub's public Releases
+  API. It sends no repository content.
+- `/ca:sprint --farm` is opt-in and sends byte-capped, secret-redacted task context to the
+  OpenAI-compatible endpoint you configure. It is inert without the flag and provider key.
+- Installing plugins, Pi tags, or sandbox container images uses the network in the ordinary way
+  for those package sources.
+
+Your `.codearbiter/` state is repository data; codeArbiter has no hosted account or telemetry
+service that receives it. See [Compatibility: Network Calls](/getting-started/compatibility/#network-calls)
+for the source-level inventory.
 
 ## Can I use it on a team?
 
 Yes. `.codearbiter/` is meant to be committed. The board, the decision log, the audit trail, and
 the specs are shared project state, not personal configuration, so everyone working in the repo
 sees the same gates and the same history. The persona and hooks activate per-session for whoever
-has the plugin installed and the repo opted in; there's no server component and no per-seat
-account to manage.
+has the plugin installed and the repo opted in. Core enforcement has no server component or
+per-seat account; the optional farm uses the provider endpoint you configure.
 
 ## Can two users mix Claude Code and Codex in one repository?
 
@@ -73,12 +89,13 @@ differences.
 
 ## What if the gates are wrong for my project?
 
-Two knobs exist before you'd reach for a bypass. First, `stage` in `CONTEXT.md`'s frontmatter is a
-maturity signal the project can carry; see
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd). Second,
-`security-controls.md`, `tech-stack.md`, and `coding-standards.md` are hand-editable living docs
-that every reviewer agent reads before judging a change. If a default pattern doesn't fit your
-stack, that's the place to correct it, not the gate. For a one-off exception,
+Start with the project contracts: `security-controls.md`, `tech-stack.md`, and
+`coding-standards.md` are hand-editable living documents that reviewers read before judging a
+change. If a default pattern does not fit your stack, correct the governing contract or the gate
+implementation instead of normalizing repeated bypasses.
+
+`stage` in `CONTEXT.md` is a displayed maturity signal, not an enforcement tuning knob. Changing it
+does not weaken or strengthen a gate. For a one-off exception,
 [`/ca:override`](/guides/overriding-a-gate/) is the sanctioned, logged path: it's for individual
 bypasses, not a substitute for fixing a gate that's structurally wrong for the project.
 

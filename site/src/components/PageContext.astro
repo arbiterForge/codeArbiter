@@ -1,0 +1,52 @@
+---
+import ArbiterIcon, { type ArbiterIconName } from "./ArbiterIcon.astro";
+
+interface Props {
+  level: "Foundation" | "Practitioner" | "Power user" | "Reference" | "Labs";
+  time: string;
+  outcome: string;
+  prerequisites?: string[];
+  proof?: string;
+}
+
+const { level, time, outcome, prerequisites = [], proof } = Astro.props;
+const timeLabel = time === "Lookup"
+  ? "Reference lookup"
+  : time === "Symptom-driven"
+    ? time
+    : `Read / walkthrough / ${time}`;
+const iconByLevel: Record<Props["level"], ArbiterIconName> = {
+  Foundation: "start",
+  Practitioner: "workflow",
+  "Power user": "understand",
+  Reference: "reference",
+  Labs: "forge",
+};
+---
+
+<aside class="ca-page-context" aria-label="Page orientation">
+  <div class="ca-page-context__icon">
+    <ArbiterIcon name={iconByLevel[level]} size="1.45rem" />
+  </div>
+  <div class="ca-page-context__body">
+    <div class="ca-page-context__meta">
+      <span>{level}</span>
+      <span>{timeLabel}</span>
+    </div>
+    <p><strong>Outcome:</strong> {outcome}</p>
+    {
+      prerequisites.length > 0 && (
+        <p class="ca-page-context__support">
+          <strong>Before you start:</strong> {prerequisites.join(" · ")}
+        </p>
+      )
+    }
+    {
+      proof && (
+        <p class="ca-page-context__support">
+          <strong>Proof of completion:</strong> {proof}
+        </p>
+      )
+    }
+  </div>
+</aside>

@@ -1,0 +1,144 @@
+---
+title: The codeArbiter Learning Path
+description: "A progressive, hands-on route from first install to confident operation, diagnosis, customization, audit, and release."
+journey:
+  level: Foundation
+  time: 3–4 hours total
+  outcome: "a working repository, a mental model of every major lane, and a capstone checklist that proves you can operate codeArbiter without guesswork."
+  prerequisites:
+    - Git installed
+    - Python 3 on PATH
+  proof: "Complete the power-user capstone at the end of this page."
+---
+
+import ArbiterIcon from '../../../components/ArbiterIcon.astro';
+
+export const base = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+
+You do not need to understand codeArbiter’s internals before using it. Follow this path in order,
+perform the short exercise in each stage, and keep the proof it asks you to produce. The reference
+stays available for lookup; the path teaches you when and why to use it.
+
+<div class="ca-learning-map" aria-label="Four-stage learning path">
+  <a href="#stage-1-foundation"><span>1</span> Foundation</a>
+  <a href="#stage-2-daily-operation"><span>2</span> Daily operation</a>
+  <a href="#stage-3-governed-autonomy"><span>3</span> Governed autonomy</a>
+  <a href="#stage-4-power-user"><span>4</span> Power user</a>
+</div>
+
+## Stage 1: Foundation
+
+<section class="ca-learning-stage">
+  <div class="ca-learning-stage__head">
+    <span class="ca-learning-stage__icon"><ArbiterIcon name="start" size="1.5rem" /></span>
+    <div>
+      <p class="ca-kicker">Target: a verified install</p>
+      <h3>Know what is enforcing your repository.</h3>
+    </div>
+  </div>
+  <p>Choose one host, install its adapter, opt a disposable repository in, and prove the blocking hook actually runs. This is the minimum trustworthy starting point.</p>
+  <ol class="ca-module-list">
+    <li><a href={`${base}overview/`}>Understand the promise and request flow</a><span>5 min</span></li>
+    <li><a href={`${base}getting-started/choose-your-host/`}>Choose Claude Code, Codex, or Pi</a><span>5 min</span></li>
+    <li><a href={`${base}getting-started/install/`}>Install and trust the adapter</a><span>10 min</span></li>
+    <li><a href={`${base}getting-started/quickstart/`}>Protect a disposable repository</a><span>15 min</span></li>
+  </ol>
+  <div class="ca-learning-proof"><strong>Proof</strong> Doctor reports a healthy H-03 live-fire probe, and <code>$ca-status</code> or its host-native equivalent names your branch, stage, tasks, and questions.</div>
+</section>
+
+## Stage 2: Daily operation
+
+<section class="ca-learning-stage">
+  <div class="ca-learning-stage__head">
+    <span class="ca-learning-stage__icon"><ArbiterIcon name="workflow" size="1.5rem" /></span>
+    <div>
+      <p class="ca-kicker">Target: choose the right lane</p>
+      <h3>Turn ordinary development work into repeatable evidence.</h3>
+    </div>
+  </div>
+  <p>Learn the difference between new behavior, a known defect, investigation, dependency risk, and an architectural decision. The power move is choosing the smallest correct lane before work begins.</p>
+  <ol class="ca-module-list">
+    <li><a href={`${base}concepts/gated-lanes/`}>Learn the gated-lane model</a><span>8 min</span></li>
+    <li><a href={`${base}guides/feature-lane/`}>Build a feature end to end</a><span>15 min</span></li>
+    <li><a href={`${base}reference/commands/fix/`}>Fix a confirmed defect test-first</a><span>5 min</span></li>
+    <li><a href={`${base}guides/adding-a-dependency/`}>Add a dependency safely</a><span>10 min</span></li>
+    <li><a href={`${base}guides/recording-adrs/`}>Record an architecture decision</a><span>10 min</span></li>
+    <li><a href={`${base}guides/overriding-a-gate/`}>Use an override without hiding it</a><span>5 min</span></li>
+  </ol>
+  <div class="ca-learning-proof"><strong>Proof</strong> Given a feature, a failing behavior with unknown cause, and a known regression, you can explain why they route to <code>feature</code>, <code>debug</code>, and <code>fix</code> respectively.</div>
+</section>
+
+## Stage 3: Governed autonomy
+
+<section class="ca-learning-stage">
+  <div class="ca-learning-stage__head">
+    <span class="ca-learning-stage__icon"><ArbiterIcon name="sprint" size="1.5rem" /></span>
+    <div>
+      <p class="ca-kicker">Target: delegate without losing control</p>
+      <h3>Approve the destination, then audit the decisions.</h3>
+    </div>
+  </div>
+  <p>An autonomous sprint is not a longer prompt. It has one interactive spec-and-plan gate, persisted tasks, SMARTS-scored non-hard decisions, hard stops, exact-head review, and a PR boundary.</p>
+  <ol class="ca-module-list">
+    <li><a href={`${base}guides/autonomous-sprints/`}>Run a resumable sprint</a><span>15 min</span></li>
+    <li><a href={`${base}concepts/smarts/`}>Read and challenge SMARTS verdicts</a><span>8 min</span></li>
+    <li><a href={`${base}concepts/checkpoints/`}>Use checkpoints for periodic review</a><span>8 min</span></li>
+    <li><a href={`${base}concepts/provenance-drift/`}>Detect context drift</a><span>8 min</span></li>
+    <li><a href={`${base}concepts/auditability/`}>Assemble the audit story</a><span>8 min</span></li>
+  </ol>
+  <div class="ca-learning-proof"><strong>Proof</strong> You can locate the approved spec, execution plan, task board, sprint decision log, low-confidence calls, and exact PR head without relying on chat history.</div>
+</section>
+
+## Stage 4: Power user
+
+<section class="ca-learning-stage">
+  <div class="ca-learning-stage__head">
+    <span class="ca-learning-stage__icon"><ArbiterIcon name="understand" size="1.5rem" /></span>
+    <div>
+      <p class="ca-kicker">Target: diagnose and extend</p>
+      <h3>Operate the system from source-backed evidence.</h3>
+    </div>
+  </div>
+  <p>Power users do not memorize every hook or environment variable. They know where state lives, how to trace a verdict to source, how to recover a stale install, and which changes require a specialist lane.</p>
+  <ol class="ca-module-list">
+    <li><a href={`${base}codearbiter-directory/`}>Read the repository-owned state store</a><span>10 min</span></li>
+    <li><a href={`${base}reference/configuration/`}>Configure scope and runtime behavior</a><span>Lookup</span></li>
+    <li><a href={`${base}hooks/`}>Trace a hook from event to verdict</a><span>10 min</span></li>
+    <li><a href={`${base}enforcement/`}>Understand blocking and fail-loud behavior</a><span>10 min</span></li>
+    <li><a href={`${base}guides/troubleshooting/`}>Diagnose installation and runtime failures</a><span>10 min</span></li>
+    <li><a href={`${base}guides/releasing-a-version/`}>Cut a target-aware release</a><span>10 min</span></li>
+    <li><a href={`${base}feature-forge/using-preview-features/`}>Evaluate previews without confusing them with stable features</a><span>5 min</span></li>
+  </ol>
+  <div class="ca-learning-proof"><strong>Proof</strong> Starting from a hook ID, you can find its event, blocking behavior, implementation source, relevant configuration, remediation path, and durable audit record.</div>
+</section>
+
+## Power-user capstone
+
+Use a disposable repository. Do not perform this exercise in active production work.
+
+<div class="ca-capstone">
+  <p class="ca-kicker">Final exercise</p>
+  <h3>Prove the entire operating loop.</h3>
+  <ol>
+    <li>Run doctor and save the live-fire result.</li>
+    <li>Use status to identify the stage, current branch, one task, and one open question.</li>
+    <li>Explain which lane owns a new feature, a confirmed bug, a risky dependency, and a structural refactor.</li>
+    <li>Locate the hook-gate entry for H-03 and the source file that emitted your block.</li>
+    <li>Find the security controls and commit-gate references that govern migration, CI, and deployment scope.</li>
+    <li>Describe what an override records and what authority it does not grant.</li>
+    <li>Trace one sprint decision from the log to its SMARTS evidence and confidence flag.</li>
+    <li>Explain why a green local test is not proof that a pull request is safe to merge.</li>
+  </ol>
+  <p><strong>You are a codeArbiter power user when you can complete all eight from the repository and docs without reconstructing the answer from a prior chat.</strong></p>
+</div>
+
+## Keep this path honest
+
+The docs intentionally separate three kinds of evidence:
+
+- **Captured product evidence** comes from a real shipped path and includes its source digest.
+- **Generated reference** comes from current plugin frontmatter and source files on every build.
+- **Conceptual diagrams** explain relationships; they are not presented as runtime captures.
+
+When those disagree, trust the live source and file an issue. The site should make the discrepancy
+obvious, never smooth it over.

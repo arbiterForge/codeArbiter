@@ -1,6 +1,14 @@
 ---
 title: Using Features Still in the Forge
 description: "How to turn on a codeArbiter preview feature, what to expect while it is in the Forge, and how it graduates to stable."
+journey:
+  level: Labs
+  time: 10 min
+  outcome: "a bounded preview trial with a known opt-in, observable success signal, documented off switch, and no confusion with stable guarantees."
+  prerequisites:
+    - A disposable or low-consequence repository
+    - The preview's required environment and host version
+  proof: "The feature works only while explicitly armed and is dormant again after you remove the opt-in."
 ---
 
 Features in the [Feature Forge](/feature-forge/overview/) are real and usable, but they stay off
@@ -44,6 +52,20 @@ earns its evidence, so do not build an unattended workflow on one until it is pr
 A preview feature becomes **stable** (on by default) only when real-world evidence shows it holds
 up. That promotion is a deliberate, recorded decision in the project's decision log, not a calendar
 event and not something the plugin flips on its own. Until then it stays in the Forge.
+
+## 5. Verify and Turn It Back Off
+
+Before using a preview on meaningful work:
+
+1. Record the plugin version, host, exact flag or environment variable, and expected visible signal.
+2. Exercise the least consequential mode first. For pruning, begin with `dry`; for a new host
+   adapter, use a disposable repository.
+3. Confirm hard gates still block the same unsafe calls.
+4. Remove the flag or environment variable and restart any session-started service.
+5. Confirm the feature is dormant and ordinary behavior returns.
+
+If the off switch fails, stop the trial, capture the version and host, and report it as a defect.
+Do not promote a local success into a stable claim; promotion requires the forge's broader evidence.
 
 ## Related
 
