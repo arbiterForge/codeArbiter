@@ -74,11 +74,16 @@ export function auditDiagram(svg: string, filename: string): string[] {
 
     const size = Number(sizeMatch[1]);
     const maximum = Number(maximumMatch[1]);
-    const copy = (match.groups?.copy ?? "")
-      .replaceAll("&amp;", "&")
-      .replaceAll("&lt;", "<")
-      .replaceAll("&gt;", ">")
-      .replaceAll("&quot;", '"');
+    const entities: Record<string, string> = {
+      "&amp;": "&",
+      "&lt;": "<",
+      "&gt;": ">",
+      "&quot;": '"',
+    };
+    const copy = (match.groups?.copy ?? "").replace(
+      /&(amp|lt|gt|quot);/g,
+      (entity) => entities[entity],
+    );
     const characters = [...copy];
     const mono = familyMatch[1].includes("monospace");
     const weight = Number(attributes.match(/\bfont-weight="([\d.]+)"/)?.[1] ?? 500);

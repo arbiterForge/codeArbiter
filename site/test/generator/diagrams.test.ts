@@ -186,4 +186,24 @@ describe("concept diagrams (AC-9)", () => {
       ),
     ]);
   });
+
+  it("decodes XML entities exactly once when estimating text width", () => {
+    const svg = `<svg data-diagram-system="ca-v2">
+      <title>Entity decoding fixture</title>
+      <desc>Exercises escaped entity text without double decoding it.</desc>
+      <text
+        x="10"
+        y="20"
+        font-family="Manrope Variable, Segoe UI, Arial, sans-serif"
+        font-size="14"
+        data-max-width="20"
+      >&amp;lt;</text>
+    </svg>`;
+
+    expect(auditDiagram(svg, "entity-decoding.svg")).toEqual([
+      expect.stringMatching(
+        /^entity-decoding\.svg: text width \d+(?:\.\d+)? exceeds declared maximum 20$/,
+      ),
+    ]);
+  });
 });
