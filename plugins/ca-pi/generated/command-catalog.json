@@ -146,7 +146,7 @@
   },
   {
     "name": "release",
-    "description": "Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. The only path to a version tag.",
+    "description": "Cut a release for one of the four independently-versioned plugins. Selects the target's tag series, payload, manifests, changelog, and built artifacts; derives SemVer from that payload's commit window; publishes only on explicit authorization.",
     "skillPath": "skills/ca-release/SKILL.md"
   },
   {

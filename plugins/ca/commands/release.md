@@ -50,7 +50,12 @@ Only `ca` may hold GitHub's repo-wide Latest badge. Every sibling release explic
 /ca:release ca-pi
 ```
 
-Codex uses `$ca-release <target>`; Pi uses `/ca-release <target>`.
+Claude Code uses `/ca:release <target>`; Codex uses `$ca-release <target>`; Pi uses
+`/ca-release <target>`.
+
+## Routes to
+
+`release` (`${CLAUDE_PLUGIN_ROOT}/skills/release/SKILL.md`).
 
 ## When not to use it
 
@@ -66,6 +71,6 @@ Codex uses `$ca-release <target>`; Pi uses `/ca-release <target>`.
 MUST resolve exactly one supported target before release work begins. MUST scope the tag series,
 commit window, manifest, changelog, payload, and built artifacts to that target. MUST derive SemVer
 from the target's Conventional-Commit history and MUST NOT tag a non-bumping window. MUST NOT
-auto-fill a missing required `feat`/`fix` changelog footer. MUST NOT publish a tag or GitHub Release without explicit
-authorization. MUST NOT give the Latest badge to a sibling series. MUST NOT move, retarget, or
-delete a published tag; correction is a new version.
+auto-fill a missing required `feat`/`fix` changelog footer. MUST NOT publish a tag or GitHub Release
+without explicit authorization. MUST NOT give the Latest badge to a sibling series. MUST NOT move,
+retarget, or delete a published tag; correction is a new version.
