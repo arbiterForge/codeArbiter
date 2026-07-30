@@ -57,6 +57,10 @@ describe("first-class product splash", () => {
     expect(docsRail).toMatch(/event\.key\s*!==\s*"Tab"/);
     expect(docsRail).toContain("document.body.style.overflow");
     expect(docsRail).toContain("opener.focus()");
+    expect(docsRail).toContain("getFocusableElements");
+    expect(docsRail).toContain("element.getClientRects().length > 0");
+    expect(docsRail).toMatch(/\(first \?\? drawer\)\.focus\(\)/);
+    expect(docsRail).toContain("activeIndex <= 0");
     expect(docsRail).toContain("ca-docs-drawer__backdrop");
     expect(docsRail).toContain("import.meta.env.BASE_URL");
     expect(docsRail).toContain('import.meta.env.BASE_URL.replace(/\\/$/, "")');
@@ -68,12 +72,16 @@ describe("first-class product splash", () => {
   it("uses the approved rail and drawer dimensions", () => {
     expect(landingCss).toMatch(/\.ca-docs-rail\s*\{[^}]*width:\s*38px;/s);
     expect(landingCss).toMatch(/\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*38px;/s);
+    expect(landingCss).toMatch(/\.ca-landing\s*\{[^}]*padding-inline-start:\s*38px;/s);
     expect(landingCss).toMatch(/\.ca-docs-drawer\s*\{[^}]*width:\s*292px;/s);
     expect(landingCss).toMatch(
       /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-rail\s*\{[^}]*width:\s*31px;/,
     );
     expect(landingCss).toMatch(
       /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*31px;/,
+    );
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-landing\s*\{[^}]*padding-inline-start:\s*31px;/,
     );
     expect(landingCss).toContain("min(292px, calc(100vw - 31px))");
   });

@@ -78,6 +78,16 @@ const overviewHref = `${basePath}/overview/`;
     '[tabindex]:not([tabindex="-1"])',
   ].join(",");
 
+  function getFocusableElements(): HTMLElement[] {
+    if (!drawer) return [];
+    return [...drawer.querySelectorAll<HTMLElement>(focusableSelector)].filter(
+      (element) =>
+        !element.hasAttribute("hidden") &&
+        element.getAttribute("aria-hidden") !== "true" &&
+        element.getClientRects().length > 0,
+    );
+  }
+
   function openDrawer(): void {
     if (!opener || !layer || !drawer) return;
     previousBodyOverflow = document.body.style.overflow;
@@ -86,7 +96,8 @@ const overviewHref = `${basePath}/overview/`;
     opener.setAttribute("aria-expanded", "true");
     rail.dataset.open = "true";
     document.body.style.overflow = "hidden";
-    drawer.focus();
+    const [first] = getFocusableElements();
+    (first ?? drawer).focus();
   }
 
   function closeDrawer(options: { restoreFocus?: boolean } = { restoreFocus: true }): void {
@@ -101,9 +112,7 @@ const overviewHref = `${basePath}/overview/`;
 
   function trapFocus(event: KeyboardEvent): void {
     if (event.key !== "Tab" || !drawer || layer?.hidden) return;
-    const focusable = [...drawer.querySelectorAll<HTMLElement>(focusableSelector)].filter(
-      (element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true",
-    );
+    const focusable = getFocusableElements();
     if (focusable.length === 0) {
       event.preventDefault();
       drawer.focus();
@@ -111,10 +120,11 @@ const overviewHref = `${basePath}/overview/`;
     }
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
+    const activeIndex = focusable.indexOf(document.activeElement as HTMLElement);
+    if (event.shiftKey && activeIndex <= 0) {
       event.preventDefault();
       last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
+    } else if (!event.shiftKey && activeIndex >= focusable.length - 1) {
       event.preventDefault();
       first.focus();
     }

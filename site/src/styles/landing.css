@@ -27,6 +27,7 @@
   position: relative;
   isolation: isolate;
   width: 100%;
+  padding-inline-start: 38px;
   overflow: clip;
 }
 
@@ -902,6 +903,10 @@
 }
 
 @media (max-width: 48rem) {
+  .ca-landing {
+    padding-inline-start: 31px;
+  }
+
   .ca-landing::before {
     background-position: 57% top;
   }
