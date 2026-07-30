@@ -24,6 +24,14 @@ A non-blocking reminder that surfaces right after a write (e.g. a crypto pattern
 change) so the blocking gate at commit time is not a surprise. Advisories never stop a tool call.
 See [Enforcement & Security](/enforcement/#advisory-non-blocking-reminders).
 
+## Agent
+
+A focused author or reviewer role dispatched by a [skill](#skill). An agent is not a public
+command and not a second orchestrator; it receives only the tools and context its role needs.
+Claude Code dispatches packaged plugin agents. Current Codex releases load the equivalent charter
+into host-provided agent threads, with inline execution only as an older-host fallback; Pi uses
+hardened child dispatch. See the [Agents reference](/reference/#agents).
+
 ## Arbiter (enabled flag)
 
 The `arbiter: enabled` line in `.codearbiter/CONTEXT.md`'s frontmatter: the single activation
@@ -33,9 +41,10 @@ without it loads nothing and blocks nothing. See
 
 ## Blocking gate
 
-A gate whose failure stops the tool call outright: the call never happens, and the only
-sanctioned way past it is fixing the underlying issue or a logged `/ca:override`. Contrast with
-an [advisory](#advisory). See [Enforcement & Security](/enforcement/#blocking-commit-time-gates).
+A gate whose failure stops the tool call outright: the call never happens. Most blocks are resolved
+by fixing the issue or, when the gate permits it, a logged `/ca:override`; H-18 activation
+protection deliberately has no in-session override path. Contrast with an [advisory](#advisory).
+See [Enforcement & Security](/enforcement/#blocking-commit-time-gates).
 
 ## Board
 
@@ -48,6 +57,12 @@ an [advisory](#advisory). See [Enforcement & Security](/enforcement/#blocking-co
 A periodic, read-only sweep of the whole codebase by the reviewer fleet, consolidated into a
 dated report under `.codearbiter/checkpoints/`. Catches drift between feature work without
 blocking any single change. See [Checkpoints](/concepts/checkpoints/).
+
+## Command
+
+A public entry point the user invokes for an outcome, using the current host's syntax:
+`/ca:name` in Claude Code, `$ca-name` in Codex, or `/ca-name` in Pi. The orchestrator routes that
+command to its owning skill. See the [Commands reference](/reference/#commands).
 
 ## CONFIRM-NN
 
@@ -85,6 +100,12 @@ A sanctioned path through the system, with gates scaled to the work's risk: impl
 commit & ship, decisions, or project & meta. Not a "workflow" and not a "track." See
 [The Gated-Lane Model](/concepts/gated-lanes/).
 
+## Layer
+
+A level in the greenfield decomposition interview. “Layer” describes how `/ca:decompose` structures
+discovery; it is not a project maturity stage, skill phase, or enforcement gate. See the
+[`decompose` skill reference](/reference/skills/decompose/).
+
 ## Marker
 
 A small file under `.codearbiter/.markers/` that records a gate's pass state, for example
@@ -106,15 +127,22 @@ freelances. See [The Persona-Register Split](/concepts/persona-and-context/).
 
 ## Override
 
-The sanctioned, logged bypass of a gate, invoked as `/ca:override "reason"`. It appends one
-permanent line to `.codearbiter/overrides.log` before proceeding. Never call this a "workaround"
-or a "skip." See [Override a Gate Safely](/guides/overriding-a-gate/).
+The sanctioned, logged bypass for a gate that allows bypass, invoked as `/ca:override "reason"`.
+It appends one permanent line to `.codearbiter/overrides.log` before the immediate action proceeds.
+H-18 is intentionally non-overridable from the governed session. Never call an override a
+“workaround” or a “skip.” See [Override a Gate Safely](/guides/overriding-a-gate/).
 
 ## Persona
 
 A named voice codeArbiter speaks with: the terse orchestrator, or a focused author/reviewer
 agent, each scoped to its own job and context footprint. See
 [The Persona-Register Split](/concepts/persona-and-context/).
+
+## Phase
+
+One named step inside a skill, with an entry purpose and often a gate at its exit. A phase is not a
+project [stage](#stage) or a decomposition [layer](#layer). See
+[The Gated-Lane Model](/concepts/gated-lanes/).
 
 ## Provenance
 
@@ -127,6 +155,18 @@ justified which claim), used to detect when that source has since drifted. See
 The named framework an autonomous `/ca:sprint` uses to decide "as the user" on non-hard-gate
 points, scoring each auto-decision and logging it with a confidence flag. See
 [SMARTS](/concepts/smarts/).
+
+## Severity
+
+A finding classification—CRITICAL, HIGH, MEDIUM, or LOW—that expresses impact. Severity does not
+itself say whether a phase must STOP or BLOCK; gate action is a separate decision. See
+[Checkpoints](/concepts/checkpoints/#the-funnel).
+
+## Skill
+
+An orchestrator routine with named phases. The orchestrator routes to a skill from a command, and
+the skill may dispatch agents; users do not invoke internal skill files as an alternate command
+surface. See the [Skills reference](/reference/#skills).
 
 ## Spike
 
@@ -143,8 +183,9 @@ remain true stops even under autonomy. See
 
 ## Stage
 
-A single project-maturity number in `.codearbiter/CONTEXT.md`'s frontmatter. It scales how
-strict a gate behaves for this project and is surfaced by `/ca:status` and the statusline. See
+A single project-maturity number in `.codearbiter/CONTEXT.md`'s frontmatter. It records where the
+project is in its maturity progression and is surfaced by `/ca:status` and the statusline; it is not
+a skill phase, decomposition layer, gate action, or finding severity. See
 [The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd).
 
 ## Statusline

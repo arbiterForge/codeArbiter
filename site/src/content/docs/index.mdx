@@ -13,9 +13,9 @@ import TrustRow from '../../components/TrustRow.astro';
 import ArbiterIcon from '../../components/ArbiterIcon.astro';
 import heroArt from '../../assets/hero-gates.webp';
 
-<div class="ca-landing">
+<div class="ca-landing" id="_top" tabindex="-1" style={`--ca-hero-art: url("${heroArt.src}")`}>
 
-<section class="ca-splash" aria-labelledby="ca-splash-title" style={`--ca-hero-art: url("${heroArt.src}")`}>
+<section class="ca-splash" aria-labelledby="ca-splash-title">
   <div class="ca-splash__copy">
     <p class="ca-eyebrow">Governed autonomy for serious repositories</p>
     <h1 id="ca-splash-title">Hard gates for agentic coding.</h1>
@@ -79,7 +79,7 @@ import heroArt from '../../assets/hero-gates.webp';
     <article class="ca-feature ca-panel">
       <span class="ca-feature__icon"><ArbiterIcon name="gate" size="1.55rem" /></span>
       <h3>Stops at the tool boundary</h3>
-      <p>Host hooks run before shell and write calls. A blocking verdict prevents the call; it does not depend on the model remembering a prompt.</p>
+      <p>Host enforcement adapters run before shell and write calls. A blocking verdict prevents the call; it does not depend on the model remembering a prompt.</p>
       <a href="./enforcement/">Inspect enforcement</a>
     </article>
     <article class="ca-feature ca-panel">

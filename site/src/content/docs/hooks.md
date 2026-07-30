@@ -1,6 +1,6 @@
 ---
-title: Hooks Reference
-description: "A complete per-hook reference for codeArbiter: every registered hook across the three governance hosts, the gates it enforces, its fail posture, and the non-event scripts behind the commands."
+title: Hooks & Host Adapters
+description: "The shared Python hook core in detail, plus the Claude Code, Codex, and Pi registration surfaces that carry its decisions."
 journey:
   level: "Reference"
   time: "10 minutes"
@@ -30,13 +30,25 @@ The complete `ca-pi` adapter currently carries Feature Forge `preview` status.
 Its documented matrix is green and real use is welcome, while broader testing
 continues before stable status or a claim of 100% validation.
 
-codeArbiter enforces its gates as Claude Code hooks under `plugins/ca/hooks/`. Every hook is stdlib-only Python, registered in `hooks.json`, and runs only in an arbiter-enabled repo (see [Enforcement & Security](/enforcement) for the activation contract and the fail-loud posture). A blocking hook exits 2; an advisory hook prints a reminder and exits 0.
+The shared guard core lives under `plugins/ca/hooks/`, but the three hosts register it differently.
+Claude Code consumes Python hook exits directly. Codex uses an adapter that translates the same
+decision into its structured hook result. Pi wraps its native tools and sends normalized events to
+the bridge. Every surface checks the same repository activation state; see
+[Enforcement & Security](/enforcement/) for the activation contract and fail posture.
 
-Every hook is registered **twice** in `hooks.json`: once under `python3`, and once under a `python3 -c "" || python` fallback. On a stock Windows box that has only the `python` interpreter, the gates still fire. The two entries each receive their own stdin, so a real block is never swallowed by the fallback.
+For the exact message text emitted at each shared guard call site, see the generated
+[Hook Gates reference](/reference/hooks-gates/). That page is generated from the Python
+`block()`/`remind()` calls. The host tables below explain how each host reaches those guards.
 
-For the exact, word-for-word message text a hook prints for every gate ID (generated directly from each `block()`/`remind()` call site, so it can never drift from the narrative summaries below), see the [Hook Gates reference](/reference/hooks-gates/).
+## Registered enforcement surfaces
 
-## Registered Hooks
+### Claude Code registrations
+
+`plugins/ca/hooks/hooks.json` registers the shared scripts at Claude Code lifecycle and tool
+boundaries. Each logical registration includes a direct `python` command and a compatibility
+command that falls back to `python3` when `python` is not a usable Python 3 interpreter. They are
+compatibility entries for the same script, not separate gate definitions. Run `/ca:doctor` to prove
+the interpreter and live hook path on the machine actually in use.
 
 | Event | Matcher | Script |
 |-------|---------|--------|
@@ -48,6 +60,39 @@ For the exact, word-for-word message text a hook prints for every gate ID (gener
 | `PostToolUse` | `Write\|Edit` | `post-write-edit.py` |
 | `UserPromptSubmit` | (any) | `prune-transcript.py` |
 | `PreCompact` | (any) | `prune-transcript.py` |
+
+### Codex adapter registrations
+
+`plugins/ca-codex/hooks/hooks.json` uses OS-specific `command` and `commandWindows` entries. Shell
+and write calls enter `pre-tool-adapter.py`, which normalizes the event, calls the shared guard, and
+returns a Codex-native deny result when blocked.
+
+| Event | Matcher | Script |
+|---|---|---|
+| `SessionStart` | (any) | `session-start.py` |
+| `PreToolUse` | `Bash\|shell_command\|exec_command\|unified_exec` | `pre-tool-adapter.py` |
+| `PreToolUse` | `apply_patch\|Write\|Edit` | `pre-tool-adapter.py` |
+| `PostToolUse` | `apply_patch\|Write\|Edit` | `post-write-edit.py` |
+| `UserPromptSubmit` | (any) | `prune-transcript.py` |
+
+Codex does not register the Claude-only Read injection, `PreCompact`, or statusline surfaces.
+The [host evidence page](/getting-started/claude-code-and-codex/) records that boundary.
+
+### Pi wrapper events
+
+Pi has no `hooks.json`. Its parent extension installs final wrappers around native and
+codeArbiter-owned mutating tools, then uses Pi lifecycle events for the rest:
+
+| Pi surface | What enters the shared core |
+|---|---|
+| Wrapped `bash`, `write`, `edit`, and governed custom tools | Normalized `tool_call` before execution |
+| `read` and `tool_result` | Advisory context/result handling; reads do not become blocking Claude hooks |
+| `session_start` / `before_agent_start` | Trust, activation, bridge readiness, and injected orchestration context |
+| `session_before_compact` / `session_compact` | Native compaction validation and governance-state preservation |
+| `session_shutdown` | Cleanup, background-job verification, and native-footer restoration |
+
+Pi registers repository-aware dispatch only in an affirmatively trusted, enabled project. Hardened
+children do not receive the parent-only footer, background-job, or nested-dispatch surfaces.
 
 ---
 
@@ -82,7 +127,11 @@ For the exact, word-for-word message text a hook prints for every gate ID (gener
   - **H-11:** ADRs only via `/ca:adr`. Shell redirects/verbs into `.codearbiter/decisions/` are blocked; reads pass.
   - **H-14:** migration review. A commit staging a migration is blocked unless `migration-gate-passed` covers that file's content digest.
   - **H-18:** the activation switch is protected. A shell write that would flip `.codearbiter/CONTEXT.md` off (`arbiter: disabled` or broken frontmatter) is blocked, so the gates cannot be silenced from inside the repo they govern.
-  - **H-19:** gate-pass markers are unforgeable by hand. Shell redirects/verbs naming `security-gate-passed`/`migration-gate-passed` are blocked; only the sanctioned recorder scripts may write them.
+  - **H-19:** gate-pass markers are cooperative attestation on the governed path. Common shell,
+    Write, Edit, and patch forge attempts naming `security-gate-passed` or
+    `migration-gate-passed` are blocked, while sanctioned recorder scripts bind a pass to content
+    digests. This adds friction and an audit record; it does not make a public digest unforgeable to
+    a determined same-user process. See the [marker trust boundary](/codearbiter-directory/#markers).
   - **H-20:** no `--no-verify` bypass. A literal `--no-verify`/`-n` on `git commit` (including bundled and attached-value short-flag clusters like `-nm`, mirroring git's own parsing) and a literal `--no-verify` on `git push` are blocked, because that flag skips the `.git/hooks` git-enforce backstop.
 - **Why:** This is the load-bearing commit-time gate. The branch and force-push rules keep the default branch PR-only; the crypto/secret/migration gates keep dangerous content out of the committed artifact.
 - **Fail posture:** Blocking (exit 2). Ambiguity resolves **closed**: a spelling indistinguishable from a destructive one is blocked. H-09b/H-10b and H-14 fail **closed** when git cannot read the diff or file list (a `None` sentinel, distinct from an empty diff), and a crash inside the guard itself blocks rather than allows (H-00). `/ca:override` is the sanctioned escape hatch.

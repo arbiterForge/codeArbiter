@@ -10,6 +10,11 @@ interface Props {
 }
 
 const { level, time, outcome, prerequisites = [], proof } = Astro.props;
+const timeLabel = time === "Lookup"
+  ? "Reference lookup"
+  : time === "Symptom-driven"
+    ? time
+    : `Read / walkthrough / ${time}`;
 const iconByLevel: Record<Props["level"], ArbiterIconName> = {
   Foundation: "start",
   Practitioner: "workflow",
@@ -26,7 +31,7 @@ const iconByLevel: Record<Props["level"], ArbiterIconName> = {
   <div class="ca-page-context__body">
     <div class="ca-page-context__meta">
       <span>{level}</span>
-      <span>{time}</span>
+      <span>{timeLabel}</span>
     </div>
     <p><strong>Outcome:</strong> {outcome}</p>
     {

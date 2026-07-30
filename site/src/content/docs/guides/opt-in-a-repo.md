@@ -12,9 +12,10 @@ journey:
   proof: "A fresh session shows the startup briefing, and doctor completes its harmless live-fire probe."
 ---
 
-The repository opt-in is shared by Claude Code and Codex. Run `/ca:init` in Claude Code or
-`$ca-init` in Codex; both create or observe the same `.codearbiter/` directory. See the
-[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for mixed-host operation.
+The repository opt-in is shared by Claude Code, Codex, and Pi. Run `/ca:init` in Claude Code,
+`$ca-init` in Codex, or `/ca-init` in Pi; all three create or observe the same `.codearbiter/`
+directory. See the [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for a
+worked mixed-host example, and [Pi](/getting-started/pi/) for Pi's parent-process trust boundary.
 
 The plugin installs once, globally. Enabling enforcement is a per-repo step you run once inside each repository you want covered. Complete the [plugin install](/getting-started/install/) before starting here.
 

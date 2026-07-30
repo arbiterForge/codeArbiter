@@ -11,7 +11,7 @@
 import { yamlDescriptionLine } from "./yaml-quote";
 
 const DESCRIPTION =
-  "Every released version of codeArbiter, generated from the repository's own CHANGELOG.md.";
+  "Release history for the core ca plugin, generated from the repository's root CHANGELOG.md, with links to each independently versioned sibling.";
 
 const REPO_URL = "https://github.com/arbiterForge/codeArbiter";
 
@@ -53,9 +53,13 @@ export function renderChangelog(changelogSource: string): string {
   return (
     frontmatterLines.join("\n") +
     "\n\n" +
-    "Every released version of codeArbiter. See the " +
+    "This timeline covers the core `ca` plugin. See the " +
     "[GitHub Releases page](https://github.com/arbiterForge/codeArbiter/releases) " +
-    "for the same history with release assets.\n\n" +
+    "for the same history with release assets. The host and sandbox adapters are versioned " +
+    "independently; read the [Codex changelog](https://github.com/arbiterForge/codeArbiter/blob/main/plugins/ca-codex/CHANGELOG.md), " +
+    "[Pi changelog](https://github.com/arbiterForge/codeArbiter/blob/main/plugins/ca-pi/CHANGELOG.md), and " +
+    "[sandbox changelog](https://github.com/arbiterForge/codeArbiter/blob/main/plugins/ca-sandbox/CHANGELOG.md) " +
+    "for their release lines.\n\n" +
     body +
     "\n"
   );

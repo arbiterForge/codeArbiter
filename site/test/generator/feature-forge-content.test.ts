@@ -28,7 +28,7 @@ const FORGE = join(DOCS, "feature-forge");
 const overview = readFileSync(join(FORGE, "overview.md"), "utf8");
 const whatsIn = readFileSync(join(FORGE, "whats-in-the-forge.mdx"), "utf8");
 const usingPreview = readFileSync(join(FORGE, "using-preview-features.md"), "utf8");
-const concepts = readFileSync(join(DOCS, "concepts.md"), "utf8");
+const concepts = readFileSync(join(DOCS, "concepts.mdx"), "utf8");
 
 describe("Feature Forge section (its own top-level group)", () => {
   it("overview is titled 'What Is the Feature Forge'", () => {

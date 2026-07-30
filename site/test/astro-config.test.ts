@@ -29,11 +29,11 @@ describe("astro.config markdown wiring", () => {
     expect(config.markdown?.remarkRehype).toBeUndefined();
   });
 
-  it("wires the base-path plugin onto an explicit unified processor", () => {
+  it("wires both local rehype plugins onto an explicit unified processor", () => {
     const processor = config.markdown?.processor;
     expect(processor).toBeDefined();
     expect(isUnifiedProcessor(processor)).toBe(true);
-    expect(processor.options.rehypePlugins).toHaveLength(1);
+    expect(processor.options.rehypePlugins).toHaveLength(2);
   });
 
   it("base-prefixes a root-absolute markdown link through the configured processor", async () => {
@@ -49,5 +49,13 @@ describe("astro.config markdown wiring", () => {
     const { code } = await renderer.render("[GitHub](https://github.com/arbiterForge/codeArbiter)");
 
     expect(code).toContain(`href="https://github.com/arbiterForge/codeArbiter"`);
+  });
+
+  it("wraps rendered markdown tables through the configured processor", async () => {
+    const renderer = await config.markdown.processor.createRenderer({});
+    const { code } = await renderer.render("| Reviewer | Checks |\n|---|---|\n| security | gates |");
+
+    expect(code).toContain('<div class="ca-table-shell">');
+    expect(code).toContain("<table>");
   });
 });

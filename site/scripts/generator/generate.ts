@@ -10,6 +10,7 @@ import { renderSkillPage } from "./render-skill-page";
 import { buildIndex } from "./build-index";
 import { getCommandForgeStatus } from "./forge-status";
 import { loadCurated } from "./load-curated";
+import { publicReferenceDescription } from "./render-reference-lead";
 import {
   commandHostAvailability,
   loadHostCommandCatalogs,
@@ -207,7 +208,7 @@ export function generate(
       slug: slugs[i],
       title: name,
       markdown: renderPage(source.type, input),
-      description: doc.fields.description,
+      description: publicReferenceDescription(doc.fields.description ?? ""),
       model: doc.fields.model,
       forgeStatus,
     };
@@ -243,13 +244,16 @@ export function generate(
   };
   // The entities come from the Claude Code payload, while each command page
   // derives its host availability from all three shipped COMMANDS.md catalogs.
-  // Agent dispatch remains a Claude-specific catalog boundary.
+  // Agent identities remain a Claude-specific catalog boundary even though
+  // current Codex hosts can execute the same charter in host-provided threads.
   const hostNote =
     "Commands, skills, and agents below are generated from the `ca` (Claude Code) plugin " +
     "payload. Each command page checks the shipped Claude Code, Codex, and Pi catalogs and marks " +
     "adapters where that command is not shipped. The Agents catalog below describes Claude " +
-    "Code's isolated `Task`-tool dispatch — Codex executes the same reviewer and author roles " +
-    "inline in the current thread instead, until packaged agent dispatch lands for that host. " +
+    "Code's packaged agent charters. Current Codex releases load those charters into host-provided " +
+    "agent threads and retain thread receipts; older hosts may fall back to inline execution except " +
+    "where isolated scouts are mandatory. Pi dispatches hardened children through the parent-only " +
+    "`codearbiter_dispatch` tool. " +
     "See [Compatibility → Host Differences](/getting-started/compatibility/#host-differences) " +
     "for the full per-surface breakdown across all three hosts.";
   const indexBody = sidebar
@@ -276,7 +280,7 @@ export function generate(
         : "Focused author and reviewer roles a skill may dispatch.";
     return `<a href="#${group.type}s"><span>${group.items.length}</span><strong>${plural}</strong><small>${purpose}</small></a>`;
   }).join("\n");
-  const indexContent = `---\ntitle: Reference\ndescription: Source-backed command, skill, and agent catalogs with host syntax, operating context, gates, relationships, and exact shipped source.\n---\n\nThis section is generated from the plugin's own frontmatter and regenerates on every build, so it can never drift from the source. See how the three catalogs cooperate in [How a Request Flows](/overview/#how-a-request-flows): a command routes to an owning skill, which may dispatch specialist agents.\n\n<div class="ca-reference-map">\n${catalogCards}\n</div>\n\n<div class="ca-reference-guide">\n<strong>Use the catalog from left to right.</strong>\n<ol>\n<li>Choose the public <strong>command</strong> that matches the outcome you need.</li>\n<li>Follow its owning <strong>skill</strong> to understand phases, stops, and durable artifacts.</li>\n<li>Open an <strong>agent</strong> only to inspect a dispatched role's tools and constraints; agents are not a second command surface.</li>\n</ol>\n<p>Every entity page begins with host-native syntax or dispatch context, then curated operating guidance, gates, related routes, and the exact source used to generate it.</p>\n</div>\n\n${hostNote}\n\n${indexBody}\n`;
+  const indexContent = `---\ntitle: Reference\ndescription: Source-backed command, skill, and agent catalogs with host syntax, operating context, gates, relationships, and exact shipped source.\n---\n\nEntity identities, frontmatter, host availability, and exact source embeds regenerate from the shipped payload on every build. Curated operating guidance is hand-reviewed and contract-tested, but it can still lag a source change; when the two disagree, the exact source embed is authoritative. See how the three catalogs cooperate in [How a Request Flows](/overview/#how-a-request-flows): a command routes to an owning skill, which may dispatch specialist agents.\n\n<div class="ca-reference-map">\n${catalogCards}\n</div>\n\n<div class="ca-reference-guide">\n<strong>Use the catalog from left to right.</strong>\n<ol>\n<li>Choose the public <strong>command</strong> that matches the outcome you need.</li>\n<li>Follow its owning <strong>skill</strong> to understand phases, stops, and durable artifacts.</li>\n<li>Open an <strong>agent</strong> only to inspect a dispatched role's tools and constraints; agents are not a second command surface.</li>\n</ol>\n<p>Every entity page begins with host-native syntax or dispatch context, then curated operating guidance, gates, related routes, and the exact source used to generate it.</p>\n</div>\n\n${hostNote}\n\n${indexBody}\n`;
 
   mkdirSync(outDir, { recursive: true });
   mkdirSync(dirname(resolvedSidebarPath), { recursive: true });

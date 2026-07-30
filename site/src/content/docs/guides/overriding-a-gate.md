@@ -1,6 +1,6 @@
 ---
 title: "Override a Gate Safely"
-description: "Bypass a blocked gate with /ca:override, the only sanctioned path: one audit line is appended to overrides.log, your identity comes from git config user.email, and the bypass is permanent in the trail."
+description: "Bypass an overridable gate with /ca:override: one audit line is appended to overrides.log, your identity comes from git config user.email, and the immediate exception is permanent in the trail."
 journey:
   level: "Power user"
   time: "9 minutes"
@@ -11,7 +11,11 @@ journey:
   proof: "The immediate action proceeds and exactly one attributable line appears in overrides.log."
 ---
 
-A gate blocked your command and the action is genuinely justified. Use `/ca:override "reason"` to bypass it. That is the only sanctioned path, since any other bypass leaves no record in the audit trail.
+An overridable gate blocked your command and the action is genuinely justified. Use
+`/ca:override "reason"` to bypass the immediate action. That is the only sanctioned bypass path,
+because an alternate bypass leaves no record in the audit trail. H-18 activation protection is not
+overridable from inside the governed session; [Uninstall & Disable](/guides/uninstalling/) documents
+its external-edit boundary.
 
 Before running it, identify which kind of gate you are facing. The two paths are different.
 
@@ -33,6 +37,7 @@ Hard gates exist because the cost of the mistake they prevent is higher than the
 
 Do not use `/ca:override` when:
 
+- H-18 blocked an attempt to disable repository activation. It has no in-session override path.
 - The gate caught a real problem. Fix the problem instead: replace the banned primitive, correct the failing test, remove the secret.
 - Routine work passed all gates. The command is not needed and running it creates a permanent log entry for no reason.
 - Two sources conflict rather than one blocking the other. Use `/ca:conflict` instead.

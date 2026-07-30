@@ -1,36 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 28" width="160" height="28" role="img" aria-label="codeArbiter">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 188 36" width="188" height="36" role="img" aria-label="codeArbiter">
   <title>codeArbiter</title>
   <defs>
-    <filter id="lg-glow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="1" result="b"/>
-      <feMerge>
-        <feMergeNode in="b"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <linearGradient id="mark-gold" x1="8" y1="6" x2="28" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5d36d"/>
+      <stop offset=".48" stop-color="#e3b341"/>
+      <stop offset="1" stop-color="#b97813"/>
+    </linearGradient>
+    <linearGradient id="mark-field" x1="5" y1="3" x2="31" y2="34" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1b2633"/>
+      <stop offset="1" stop-color="#0d131a"/>
+    </linearGradient>
   </defs>
 
-  <!-- gate mark (compact, left) -->
-  <!-- commit line segment -->
-  <line x1="2" y1="20" x2="26" y2="20" stroke="#46505a" stroke-width="1.5"/>
-  <!-- gate posts -->
-  <g filter="url(#lg-glow)">
-    <line x1="11" y1="10" x2="11" y2="22" stroke="#d29922" stroke-width="2"/>
-    <line x1="17" y1="10" x2="17" y2="22" stroke="#d29922" stroke-width="2"/>
-    <!-- balance beam -->
-    <rect x="6" y="7" width="16" height="2.5" fill="#e3b341"/>
-    <!-- pivot -->
-    <path d="M 14 7 L 12 3.5 L 16 3.5 Z" fill="#e3b341"/>
+  <g aria-hidden="true">
+    <rect x="1.5" y="1.5" width="33" height="33" rx="9.5" fill="url(#mark-field)" stroke="#33465b"/>
+    <path d="M9 28 18 7l9 21" fill="none" stroke="url(#mark-gold)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.5 20h11" fill="none" stroke="#f2cc60" stroke-width="2.1" stroke-linecap="round"/>
+    <circle cx="18" cy="7" r="2.15" fill="#f5d36d"/>
+    <circle cx="9" cy="28" r="1.65" fill="#18222e" stroke="#8b99aa" stroke-width="1.25"/>
+    <circle cx="27" cy="28" r="1.85" fill="#e3b341"/>
+    <path d="M5.5 31.25h25" stroke="#465b72" stroke-width="1" stroke-linecap="round"/>
   </g>
-  <!-- proved commit dot -->
-  <circle cx="24" cy="20" r="2.5" fill="#e3b341" filter="url(#lg-glow)"/>
-  <!-- unproven commit dot -->
-  <circle cx="4" cy="20" r="2" fill="none" stroke="#6e7b8b" stroke-width="1.2"/>
 
-  <!-- wordmark -->
-  <text x="34" y="21"
-        font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="16" letter-spacing="0.2">
-    <tspan fill="#e6edf3" font-weight="300">code</tspan><tspan fill="#e3b341" font-weight="700">Arbiter</tspan>
+  <text x="44" y="23.5"
+        font-family="'Segoe UI Variable', 'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="18" letter-spacing="-.25">
+    <tspan fill="#dfe7ef" font-weight="420">code</tspan><tspan fill="#f0bd45" font-weight="720">Arbiter</tspan>
   </text>
 </svg>

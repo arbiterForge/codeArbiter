@@ -24,6 +24,13 @@ describe("first-class product splash", () => {
     expect(landingCss).toContain(":root:has(.ca-landing) .main-pane");
   });
 
+  it("keeps the atmospheric hero artwork fixed behind the scrolling landing narrative", () => {
+    expect(indexMdx).toMatch(/class="ca-landing"[^>]*--ca-hero-art/);
+    expect(indexMdx).not.toMatch(/class="ca-splash"[^>]*--ca-hero-art/);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*position:\s*fixed;/s);
+    expect(landingCss).not.toContain(".ca-splash::before");
+  });
+
   it("leads with the reader outcome and supported hosts", () => {
     expect(indexMdx).toContain("Hard gates for agentic coding.");
     expect(indexMdx).toContain("You decide. codeArbiter enforces.");

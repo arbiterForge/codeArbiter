@@ -40,7 +40,10 @@ codeArbiter is dormant until a repository opts in. Every enforcement hook calls 
 
 ## Blocking Commit-Time Gates
 
-These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit guards for the audit trail and ADRs). Each blocks the tool call outright. Ambiguity resolves **closed**: a spelling that cannot be told apart from a destructive one is blocked, and `/ca:override` is the sanctioned escape hatch.
+These originate in the shared Python guard core and reach each host through its registered hooks,
+adapter, or wrappers. Each blocks the tool call outright. Ambiguity resolves **closed**: a spelling
+that cannot be told apart from a destructive one is blocked. `/ca:override` is the sanctioned
+escape hatch only for gates that permit bypass; H-18 deliberately does not.
 
 | Gate | Enforces |
 |------|----------|
@@ -51,7 +54,7 @@ These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit
 | **H-09b / H-10b** | Crypto and secret commit gate. A commit that introduces a crypto/TLS or secret line is blocked unless the crypto-compliance / secret-handling gate has recorded a pass for **those exact lines**. |
 | **H-11** | ADRs are authored only via `/ca:adr`. Both the shell flank (redirects, `cp`, `rm`, `sed -i` into `decisions/`) and the Write/Edit flank are guarded; the skill drops a fresh authoring marker first. |
 | **H-14** | Migration review. A commit staging a database migration is blocked unless a migration-review pass is recorded for that file's current content. |
-| **H-18 / H-19** | Repository activation and gate-pass markers cannot be disabled or forged through shell, Write, Edit, or patch operations. |
+| **H-18 / H-19** | Repository activation cannot be disabled through governed shell, Write, Edit, or patch operations. Common gate-pass marker forge paths are blocked as cooperative attestation; a determined same-user process remains outside that guarantee. |
 | **H-20** | `--no-verify` and its supported short forms cannot bypass the repository's pre-commit or pre-push backstop. |
 | **H-21** | A write or edit envelope the host adapter cannot decompose into guardable per-file operations is refused instead of being allowed through uninspected. Retry as a plain supported patch or split the operation. |
 

@@ -29,12 +29,21 @@ Confirm both before installing:
   failure, and Pi blocks mutating calls with an interpreter breadcrumb. None of those states is
   active governance. Verify before installation with:
 
+  macOS / Linux:
+
   ```sh
   python3 --version || python --version
   ```
 
-  Either succeeding is enough: hooks are registered under both names, falling back to whichever
-  resolves.
+  Windows PowerShell:
+
+  ```powershell
+  if (Get-Command python -ErrorAction SilentlyContinue) { python --version } elseif (Get-Command python3 -ErrorAction SilentlyContinue) { python3 --version } else { throw "Python 3 was not found on PATH" }
+  ```
+
+  Either interpreter name is sufficient. Host registration is not identical: Claude Code carries
+  interpreter-compatibility commands in `hooks.json`, Codex has OS-specific `command` and
+  `commandWindows` entries, and Pi validates the interpreter before its bridge admits mutations.
 
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity. Verify with:
 
@@ -86,8 +95,8 @@ Pi is a third governance host, `ca-pi`, distributed Git-only (no npm release) wi
 line and prerequisites. The complete adapter is a Feature Forge `preview`: it is available and
 welcomed for real use, with broader testing still required before stable status or a claim of 100%
 validation. It is not covered here; see [Install for Pi](/getting-started/pi/) for the full flow,
-including `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>` and the project-trust
-step Pi requires before it activates.
+  including mechanical tag discovery, an exact pinned `ca-pi-v<version>` install, and the
+  project-trust step Pi requires before it activates.
 
 ## 2. Scaffold and Activate the Repo
 

@@ -196,6 +196,15 @@ describe("generate", () => {
       expect(indexContent).toContain("agents are not a second command surface");
     });
 
+    it("distinguishes generated source facts from hand-reviewed operating guidance", () => {
+      generate(pluginDir, outDir);
+      const indexContent = readFileSync(join(outDir, "index.md"), "utf8");
+
+      expect(indexContent).not.toContain("it can never drift from the source");
+      expect(indexContent).toContain("Curated operating guidance is hand-reviewed");
+      expect(indexContent).toContain("exact source embed is authoritative");
+    });
+
     it("renders one markdown table per non-empty collection, headers matching the collection", () => {
       generate(pluginDir, outDir);
       const indexContent = readFileSync(join(outDir, "index.md"), "utf8");

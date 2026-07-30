@@ -24,11 +24,27 @@
 
 .ca-landing {
   --ca-landing-width: 76rem;
+  position: relative;
+  isolation: isolate;
   width: 100%;
   overflow: clip;
 }
 
+.ca-landing::before {
+  position: fixed;
+  z-index: 0;
+  inset: 4rem 0 0;
+  background:
+    linear-gradient(90deg, rgb(9 13 18 / 96%) 0%, rgb(9 13 18 / 66%) 45%, rgb(9 13 18 / 82%) 100%),
+    linear-gradient(180deg, rgb(9 13 18 / 18%) 0%, rgb(9 13 18 / 72%) 52%, rgb(9 13 18 / 94%) 100%),
+    var(--ca-hero-art) center top / cover no-repeat;
+  pointer-events: none;
+  content: "";
+}
+
 .ca-landing section {
+  position: relative;
+  z-index: 1;
   scroll-margin-top: 5rem;
 }
 
@@ -46,20 +62,6 @@
 
 .ca-splash > * {
   min-width: 0;
-}
-
-.ca-splash::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0 -25vw;
-  background:
-    linear-gradient(90deg, var(--ca-bg) 0%, rgb(9 13 18 / 92%) 35%, rgb(9 13 18 / 50%) 66%, var(--ca-bg) 100%),
-    linear-gradient(180deg, rgb(9 13 18 / 8%) 58%, var(--ca-bg) 100%),
-    var(--ca-hero-art) center / cover no-repeat;
-  opacity: 0.62;
-  mask-image: linear-gradient(180deg, #000 0%, #000 75%, transparent 100%);
-  pointer-events: none;
-  content: "";
 }
 
 .ca-splash__copy h1 {

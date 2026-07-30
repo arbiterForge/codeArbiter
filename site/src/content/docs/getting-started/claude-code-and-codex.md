@@ -138,7 +138,7 @@ absence. That closes the public-installation gate with the same GitHub-slug comm
 | Statusline | Available | No Codex statusline surface; startup state carries governance status |
 | Transcript pruning | Claude transcript-pruning engine available | No transcript pruning; the host-neutral audit-staleness warning remains |
 | Governed-file Read hook | Available on Claude's Read tool | No Codex Read hook; reads happen through shell, while write-time notices remain |
-| Reviewer roles | Plugin agents can be dispatched | Roles execute inline until Codex agent packaging reaches its later milestone |
+| Reviewer roles | Packaged plugin agents can be dispatched | Host-provided agent threads load the role charter and return a retained thread receipt; older hosts may fall back inline, except context creation requires isolated scouts |
 
 These differences are host capabilities and packaging choices. They do not create a second project
 context, weaken the blocking shell/write gates, or split the audit trail.

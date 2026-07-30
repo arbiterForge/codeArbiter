@@ -10,6 +10,8 @@ journey:
   proof: "You can trace one real change from its entry lane to the evidence retained after shipment."
 ---
 
+import ConceptNavigator from "../../components/ConceptNavigator.astro";
+
 codeArbiter is easiest to understand as a chain:
 
 1. **A request enters a lane.** The lane defines the work, its required evidence, and its stops.
@@ -24,18 +26,7 @@ codeArbiter is easiest to understand as a chain:
 
 ## Start with the problem you are trying to understand
 
-| Question | Read |
-|---|---|
-| Why must each kind of work follow a different path? | [The gated-lane model](/concepts/gated-lanes/) |
-| How does an autonomous sprint choose without asking every time? | [SMARTS](/concepts/smarts/) |
-| Which protections are deterministic and which are advisory? | [Enforcement & Security](/enforcement/) |
-| How is a long-lived architecture choice recorded? | [ADRs and the decision log](/concepts/adrs/) |
-| How do repository facts stay current as source changes? | [Provenance and context drift](/concepts/provenance-drift/) |
-| How does the right rule reach an agent at file-read time? | [Just-in-time context injection](/concepts/jit-context-injection/) |
-| Why are authors, reviewers, and routing kept separate? | [The persona-register split](/concepts/persona-and-context/) |
-| What catches drift outside one feature lane? | [Checkpoints](/concepts/checkpoints/) |
-| What evidence can be reconstructed later? | [Auditability](/concepts/auditability/) |
-| Why does a particular hardening control exist? | [Selected hardening notes](/concepts/hardening-history/) |
+<ConceptNavigator />
 
 ## A concrete example
 

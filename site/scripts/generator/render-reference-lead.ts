@@ -10,6 +10,32 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
+/** Translate Claude-specific environment placeholders in reader-facing copy.
+ * The verbatim source embed remains untouched and authoritative. */
+export function publicReferenceDescription(value: string): string {
+  return value
+    .replaceAll("${CLAUDE_PROJECT_DIR}/.codearbiter/", "the repository's .codearbiter/")
+    .replaceAll("${CLAUDE_PROJECT_DIR}/", "the repository root/")
+    .replaceAll("${CLAUDE_PROJECT_DIR}", "the repository root")
+    .replaceAll("${CLAUDE_PLUGIN_ROOT}/", "the installed plugin root/")
+    .replaceAll("${CLAUDE_PLUGIN_ROOT}", "the installed plugin root");
+}
+
+function compactReferenceSummary(value: string): string {
+  const abbreviations = new Set(["vs.", "e.g.", "i.e.", "etc.", "mr.", "mrs.", "ms.", "dr."]);
+  let sentenceCount = 0;
+  for (let index = 0; index < value.length - 1; index += 1) {
+    if (value[index] === "." && /\s/.test(value[index + 1] ?? "")) {
+      const prefix = value.slice(0, index + 1);
+      const token = prefix.match(/(?:^|\s)(\S+)$/)?.[1]?.toLowerCase() ?? "";
+      if (abbreviations.has(token)) continue;
+      sentenceCount += 1;
+      if (sentenceCount === 2) return value.slice(0, index + 1);
+    }
+  }
+  return value;
+}
+
 const HOST_LABEL: Readonly<Record<CommandHost, string>> = {
   claude: "Claude Code",
   codex: "Codex",
@@ -58,7 +84,7 @@ function usageFor(
 
   return [
     '<span class="ca-reference-lead__usage-label">How it is used</span>',
-    "<p>An owning skill dispatches this specialist. You invoke the command that owns the lane, not the agent directly.</p>",
+    "<p>Invoke the owning command. Claude Code: an isolated plugin agent. Codex: a host-provided agent thread loaded with this charter, with inline execution only as an older-host fallback. Pi: a hardened child through parent-only <code>codearbiter_dispatch</code>.</p>",
   ].join("\n");
 }
 
@@ -74,7 +100,7 @@ export function renderReferenceLead(
   commandHosts?: CommandHostAvailability,
 ): string {
   const label = kind === "command" ? "Command" : kind === "skill" ? "Routed skill" : "Specialist agent";
-  const summary = escapeHtml(description);
+  const summary = escapeHtml(compactReferenceSummary(publicReferenceDescription(description)));
 
   return [
     `<div class="ca-reference-lead" data-reference-kind="${kind}">`,

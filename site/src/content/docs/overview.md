@@ -35,9 +35,11 @@ your behalf.
    command surface differs in spelling, not ownership or policy.
 2. **Route.** The orchestrator hands the command to the workflow that owns that lane.
    `/ca:fix` and `$ca-fix` both reach the same test-first obligations.
-3. **Dispatch.** The owning skill calls the agents the change actually demands: an author
-   to write code test-first, plus a reviewer fleet matched to the diff (security,
-   auth/crypto, dependencies, migrations, coverage).
+3. **Execute the roles.** The owning skill selects the author and reviewer roles the change actually
+   demands. Claude Code dispatches plugin agents. Current Codex releases load the same charters into
+   host-provided agent threads and retain their thread receipts; older hosts may use an inline
+   fallback unless the workflow requires isolation. Pi launches hardened child processes through
+   its trusted parent. The policy stays shared even though each host's mechanism differs.
 4. **Gate.** Nothing advances until its gates are green. A failing test, a CRITICAL
    security finding, an unresolved decision: each is a real stop.
 5. **Ship.** Code reaches version control only through the commit gate, and the default

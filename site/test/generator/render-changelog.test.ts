@@ -43,9 +43,15 @@ describe("renderChangelog", () => {
     expect(out).toContain("Cut SessionStart blocking work (#194).");
   });
 
-  it("links the GitHub releases page", () => {
+  it("labels the timeline as the core ca plugin and links every sibling changelog", () => {
     const out = renderChangelog(SOURCE);
+
+    expect(out).toContain("core `ca` plugin");
     expect(out).toContain("https://github.com/arbiterForge/codeArbiter/releases");
+    expect(out).toContain("plugins/ca-codex/CHANGELOG.md");
+    expect(out).toContain("plugins/ca-pi/CHANGELOG.md");
+    expect(out).toContain("plugins/ca-sandbox/CHANGELOG.md");
+    expect(out).not.toContain("Every released version of codeArbiter");
   });
 
   it("is idempotent: rendering the same source twice yields byte-identical output", () => {

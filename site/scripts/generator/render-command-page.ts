@@ -4,7 +4,7 @@ import { yamlDescriptionLine } from "./yaml-quote";
 import { renderSourceEmbed } from "./render-source-embed";
 import { renderGatesTable } from "./render-gates-table";
 import { renderRelatedLinks } from "./render-related-links";
-import { renderReferenceLead } from "./render-reference-lead";
+import { publicReferenceDescription, renderReferenceLead } from "./render-reference-lead";
 
 /**
  * Render a command reference page as Starlight-compatible markdown.
@@ -21,7 +21,7 @@ import { renderReferenceLead } from "./render-reference-lead";
  */
 export function renderCommandPage(input: PageInput): string {
   const { name, description, forgeStatus, curated, relatedLinks } = input;
-  const desc = description ?? "";
+  const desc = publicReferenceDescription(description ?? "");
 
   let decoration = "";
   if (forgeStatus?.kind === "preview-command") {

@@ -40,19 +40,22 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 | Plan mode | Host plan workflow | Read-only collaboration mode | Plan mode is read-only except for the current canonical spec, plan, and plan ledger |
 | Background jobs | Host managed | Host managed | Bounded session-only jobs, never restored from Pi session entries; unverified cleanup blocks later launches with `/ca-doctor` direction |
 | `/ca:sprint --farm` | `preview`, shared `farm.js` backend | `preview`, shared `farm.js` backend | `preview`, same shared `farm.js` backend through the trusted parent extension; no Pi-native farm engine |
-| Subagent/child dispatch | Plugin agents dispatched directly | Roles run inline (packaging pending) | Fresh child Pi processes via the parent-only `codearbiter_dispatch` EXEC tool; single/chain/parallel modes share bounded depth, concurrency, timeout, cancellation, and process-tree cleanup |
+| Subagent/child dispatch | Plugin agents dispatched directly | Current hosts provide agent threads: codeArbiter loads the role charter and retains the thread receipt; older hosts may fall back inline, but context creation blocks without isolated scouts | Fresh child Pi processes via the parent-only `codearbiter_dispatch` EXEC tool; single/chain/parallel modes share bounded depth, concurrency, timeout, cancellation, and process-tree cleanup |
 | Transcript pruning / compaction | Claude transcript-pruning engine | No transcript pruning; host-neutral staleness warning | Native Pi compaction event; codeArbiter does not rewrite Pi session JSONL |
 | Project state | Shared `.codearbiter/` store | Shared `.codearbiter/` store | Shared `.codearbiter/` store |
 
 The full exception ledger with status and evidence for every host delta lives in
 [`docs/parity.md`](https://github.com/arbiterForge/codeArbiter/blob/main/docs/parity.md).
 
-The Pi platform aggregate has a cold prerequisite: if the tools workspace lacks
-its resolved Vitest binary, it returns `missing_prerequisite` before fixtures
-start and directs the operator to
-`npm --prefix plugins/ca-pi/tools ci --ignore-scripts`. It never installs on the
-verification path. Footer, permission UI, plan UI, and background jobs are
-parent-interactive only and absent from JSON, RPC, print, and hardened children.
+:::note[Maintainer verification only]
+When running Pi's repository-level platform aggregate, a tools workspace without its resolved
+Vitest binary returns `missing_prerequisite` before fixtures start. Maintainers can prepare that
+workspace with `npm --prefix plugins/ca-pi/tools ci --ignore-scripts`; the verification path never
+installs dependencies itself. This setup is not required to install or use codeArbiter.
+:::
+
+Footer, permission UI, plan UI, and background jobs are parent-interactive only and absent from
+JSON, RPC, print, and hardened children.
 
 ## Prerequisites Checklist
 

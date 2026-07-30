@@ -10,8 +10,9 @@ import PageContext from './PageContext.astro';
 
 const { id, entry } = Astro.locals.starlightRoute;
 const isHome = id === '' || id === 'index';
+const isGeneratedEntity = /^reference\/(?:commands|skills|agents)\//.test(id);
 const explicitJourney = entry.data.journey;
-const inferred = id.startsWith('reference/') || id === 'reference' || id === 'hooks' || id === 'glossary'
+const inferred = id.startsWith('reference/') || id === 'reference' || id === 'hooks' || id === 'glossary' || id === 'changelog'
   ? { level: 'Reference' as const, time: 'Lookup', outcome: entry.data.description ?? `the source-backed details for ${entry.data.title}` }
   : id.startsWith('getting-started/')
     ? { level: 'Foundation' as const, time: '10–15 min', outcome: entry.data.description ?? `a working understanding of ${entry.data.title}` }
@@ -29,7 +30,7 @@ const journey = explicitJourney ?? inferred;
   !isHome && (
     <>
       <Default><slot /></Default>
-      <PageContext {...journey} />
+      {!isGeneratedEntity && <PageContext {...journey} />}
     </>
   )
 }

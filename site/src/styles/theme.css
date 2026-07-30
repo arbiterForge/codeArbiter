@@ -1,7 +1,7 @@
 /* codeArbiter docs — brand theme.
-   Palette lifted from docs/banner.svg: "gate gold" (#e3b341 / #d29922) on a
-   deep slate (#0b0f14). The accent variables retint Starlight site-wide; the
-   rest is scoped to the splash landing page.
+   Gate gold (#e3b341 / #d29922) on deep slate (#0b0f14) anchors the shared
+   rendered-art and interface system. Accent variables retint Starlight
+   site-wide; landing-specific composition stays in landing.css.
 
    DESIGN SYSTEM CONTRACT — downstream authors build on these tokens and
    classes; never edit this file for per-page content.
@@ -313,6 +313,79 @@
   text-align: center;
   font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
   letter-spacing: 0.04em;
+}
+
+@media (max-width: 48rem) {
+  /* Labeled process diagrams are reference material, not thumbnails. Keep a
+     readable drawing scale and let the bordered figure provide the scroll
+     viewport instead of shrinking labels into illegibility. */
+  .ca-diagram {
+    align-items: flex-start;
+    overscroll-behavior-inline: contain;
+    scrollbar-color: var(--ca-gold-dim) transparent;
+  }
+
+  .ca-diagram > svg,
+  .ca-diagram > img {
+    width: 42rem;
+    min-width: 42rem;
+    max-width: none;
+  }
+
+  .ca-diagram > .ca-statusline-map {
+    min-width: 54rem;
+  }
+
+  .ca-diagram figcaption {
+    position: sticky;
+    inset-inline-start: 0;
+    width: min(100%, calc(100vw - 4.5rem));
+    text-align: start;
+  }
+}
+
+/* Decorative rendered art establishes a section's emotional register; it never
+   substitutes for the precise diagrams that explain an operating contract. */
+.ca-art-banner {
+  position: relative;
+  margin-block: 1.75rem 2.25rem;
+  border: 1px solid color-mix(in srgb, var(--ca-gold) 24%, var(--ca-border));
+  border-radius: 0.8rem;
+  background: var(--ca-slate);
+  box-shadow:
+    0 1.5rem 3rem rgb(0 0 0 / 24%),
+    inset 0 0 0 1px rgb(255 255 255 / 2%);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ca-art-banner::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent 45%, rgb(4 8 12 / 82%) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.ca-art-banner > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+}
+
+.ca-art-banner > figcaption {
+  position: absolute;
+  inset-inline: clamp(1rem, 3vw, 1.5rem);
+  inset-block-end: clamp(0.85rem, 2vw, 1.25rem);
+  z-index: 2;
+  max-width: 38rem;
+  margin: 0;
+  color: var(--ca-text);
+  font: 600 clamp(0.78rem, 1.35vw, 0.92rem) / 1.45 var(--ca-font-sans);
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 1rem rgb(0 0 0 / 90%);
 }
 
 /* The statusline guide annotates the real PNG without modifying or redrawing it. */

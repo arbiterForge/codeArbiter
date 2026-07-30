@@ -4,6 +4,7 @@ import starlight from "@astrojs/starlight";
 import { unified } from "@astrojs/markdown-remark";
 import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
+import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
 
 // Served from https://arbiterforge.github.io/codeArbiter/ — shared by the
 // `base` option below and the rehype plugin that base-prefixes markdown links.
@@ -85,7 +86,7 @@ export default defineConfig({
   // scheduled removal. `@astrojs/markdown-remark` is a direct dependency
   // because of this import — see site/package.json.
   markdown: {
-    processor: unified({ rehypePlugins: [rehypeBaseLinks(BASE)] }),
+    processor: unified({ rehypePlugins: [rehypeBaseLinks(BASE), rehypeTableShell()] }),
   },
   integrations: [
     starlight({

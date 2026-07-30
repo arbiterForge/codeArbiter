@@ -54,7 +54,11 @@ The isolation holds by construction, not by trust:
 
 ## Install
 
+Register the self-hosted marketplace first if `codearbiter` is not already listed, then install the
+sandbox sibling:
+
 ```text
+/plugin marketplace add arbiterForge/codeArbiter
 /plugin install ca-sandbox@codearbiter
 ```
 

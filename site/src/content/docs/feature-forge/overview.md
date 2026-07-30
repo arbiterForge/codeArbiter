@@ -20,6 +20,11 @@ anyone's behavior until they turn it on. Once real-world evidence shows it holds
 promoted to **stable** and becomes on by default. The version says the whole payload moved;
 the forge says which individual features have earned trust.
 
+<figure class="ca-art-banner ca-art-banner--forge">
+  <img src="/codeArbiter/art/feature-forge.webp" alt="" loading="lazy" />
+  <figcaption>Preview is not unfinished. It is shipped work still earning the right to become the default.</figcaption>
+</figure>
+
 That is the two-axis model. Read them together and a release is legible: SemVer governs the
 whole payload, the Feature Forge governs each feature's maturity.
 

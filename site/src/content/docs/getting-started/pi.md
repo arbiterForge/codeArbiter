@@ -6,7 +6,7 @@ journey:
   time: "12 minutes"
   outcome: "Install a pinned ca-pi preview, trust the project, opt in a repository, and verify a real gate."
   prerequisites:
-    - "Pi 0.80.10 or newer"
+    - "Pi 0.80.5 or Pi 0.80.10"
     - "Node.js 22.19 or newer"
   proof: "Pi reports the pinned extension and a disposable broad-stage probe is blocked by H-03."
 ---
@@ -31,7 +31,14 @@ Confirm all before installing:
 
 ## 1. Install
 
-Pi distribution is Git-only. Pin the independent `ca-pi` release tag, then inspect the installed
+Pi distribution is Git-only. First list the repository's published Pi tags; do not guess a version
+or substitute the core plugin's release number:
+
+```sh
+git ls-remote --tags --refs https://github.com/arbiterForge/codeArbiter.git "ca-pi-v*"
+```
+
+Choose an exact tag from that output, pin it in the install source, then inspect the installed
 source and enabled resources:
 
 ```text
@@ -40,7 +47,9 @@ pi list
 pi config
 ```
 
-`pi list` and `pi config` let you verify the installed source before trusting it. See
+Replace `<version>` with only the numeric suffix from the chosen tag. For example, the tag
+`ca-pi-v0.1.32` maps to `@ca-pi-v0.1.32`; keep the full tag in the source. `pi list` and
+`pi config` let you verify the installed source before trusting it. See
 [Trust and Security](#trust-and-security) below.
 
 ## 2. Grant Project Trust

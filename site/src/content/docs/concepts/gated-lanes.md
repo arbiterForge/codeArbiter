@@ -77,9 +77,10 @@ Every change lands through a PR, via
 [finishing-a-development-branch](/reference/skills/finishing-a-development-branch/). Direct
 merge to the default branch is forbidden.
 
-The one sanctioned way around any of this is [`/ca:override`](/reference/commands/override/):
-a deliberate bypass that appends one line to `overrides.log` and proceeds. It is logged, not
-silent.
+Where a gate permits bypass, the one sanctioned path is
+[`/ca:override`](/reference/commands/override/): a deliberate, immediate-action exception that
+appends one line to `overrides.log`. It is logged, not silent. H-18 activation protection is the
+important exception: it has no in-session override path.
 
 ## Check your understanding
 
