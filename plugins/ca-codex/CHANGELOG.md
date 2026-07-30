@@ -4,6 +4,36 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ---
 
+## [Unreleased]
+
+## [0.3.2] — 2026-07-29
+
+### Changed
+
+- **The supported-Codex claim now names the versions CI continuously verifies
+  (#408 AC-1).** The manifest advertised `Codex >= 0.143.0; live-verified on
+  0.144.1` while CI installed exactly one version, so the LOWER BOUND of the
+  supported range rested on a single manual check from July. The required
+  real-host lane now runs at both ends of the window - 0.143.0 and 0.145.0 - and
+  a contract test derives the claim from that matrix, so bumping one without the
+  other fails.
+
+### Added
+
+- **The real-host check verifies every declared hook has a script to run
+  (#408 AC-3).** The existing check compared the installed hook manifest to the
+  source manifest - and the install is a copy of that same source, so the two
+  agreed by construction for anything source declared. Measured: a hook added to
+  source with no script behind it left that check passing. Every
+  plugin-root-relative script the installed manifest points at must now exist in
+  the install, which is what makes a declared-but-absent hook visible. Still
+  credential-free.
+- **An advisory upstream-compatibility lane** installs `@openai/codex@latest` and
+  runs the same host check, so protocol or plugin-install drift is reported
+  rather than discovered at the next pin bump. Never blocking - an upstream
+  release must not be able to fail a merge. It is already useful: `latest` is
+  0.146.0 while the required lane pins 0.145.0, and nothing reported that.
+
 ## [0.3.1] — 2026-07-28
 
 ### Changed

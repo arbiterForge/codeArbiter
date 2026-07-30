@@ -1466,6 +1466,73 @@ jobs:
           BASE_COMMIT: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
         run: python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"
 
+  codex-host-latest:
+    # Issue #408 AC-4. The required lane above pins the supported window, so it
+    # can never tell you upstream has moved - by construction. This one installs
+    # `@latest` and runs the identical host check, so protocol or plugin-install
+    # drift is REPORTED rather than discovered the next time somebody bumps the
+    # pin.
+    #
+    # ADVISORY, on the same terms as the Pi canary (#381): awaited by `ci-passed`
+    # so the run settles, never in `required_results`. An upstream release must
+    # not be able to block a merge here - that is the whole point of separating
+    # the two lanes, and it is why the probe absorbs its own failure at step level
+    # rather than carrying a job-level continue-on-error, which would still render
+    # the check run as FAILURE.
+    #
+    # Already earning its keep: at the time of writing `latest` is 0.146.0 while
+    # the required lane pins 0.145.0 and the manifest says live-verified on
+    # 0.144.1. Nothing in CI reported that.
+    name: "[WATCH] | [CDX ] | Upstream compatibility  <runtime: npm latest>"
+    needs: changes
+    if: needs.changes.outputs.ca-codex == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - name: Install the latest Codex runtime
+        id: install-latest
+        continue-on-error: true
+        run: npm install -g @openai/codex@latest
+      - name: Probe the real host at latest
+        id: host-probe
+        # CA_REQUIRE_CODEX is deliberately NOT set: on this lane a runtime that
+        # cannot be installed is upstream news, not a repository defect.
+        continue-on-error: true
+        run: python3 .github/scripts/check_codex_host.py
+      - name: Publish the advisory receipt
+        # always(): the receipt is the entire product of this lane. A skipped
+        # receipt turns "upstream moved and the probe failed" into silence, which
+        # is worse than either outcome it is reporting.
+        if: always()
+        run: |
+          installed=$(codex --version 2>/dev/null || echo "unavailable")
+          pinned=$(grep -oE '@openai/codex@[0-9]+\.[0-9]+\.[0-9]+' .github/workflows/ci.yml                      | head -1 | cut -d@ -f3)
+          {
+            echo "### Codex upstream compatibility (advisory)"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| npm latest, as installed | \`${installed}\` |"
+            echo "| required lane pins | \`${pinned}\` |"
+            echo "| install step | \`${{ steps.install-latest.outcome }}\` |"
+            echo "| host probe | \`${{ steps.host-probe.outcome }}\` |"
+            echo ""
+            if [ "${{ steps.host-probe.outcome }}" != "success" ]; then
+              echo "The host check FAILED against npm latest. This does not block a merge."
+              echo "Read it as upstream drift until proven otherwise, and reconcile the"
+              echo "supported window in the ca-codex manifest before bumping the pin."
+            else
+              echo "npm latest still satisfies the host-install contract."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
   prose:
     name: "[CHECK] | [CA  ] | Reference graph"
     needs: changes
@@ -1581,7 +1648,7 @@ jobs:
         run: python3 tools/build-surface.py --check
 
   codex-host:
-    name: "[CHECK] | [CDX ] | Real-host install"
+    name: "[CHECK] | [CDX ] | Real-host install  <codex: ${{ matrix.codex-version }}>"
     # Issue #408. Every other ca-codex gate invokes Python directly and proves
     # what the GUARD answers; none of them proves the HOST calls it, or even
     # that the host can load the plugin at all. The live-parity runbook says so
@@ -1597,8 +1664,27 @@ jobs:
     # What it does NOT cover is stated rather than implied: proving a hook FIRES
     # needs a turn, a turn needs a model, and a provider credential cannot be a
     # required check on forks. That half is tracked separately.
+    #
+    # Issue #408 AC-1, second pass. The manifest advertised `Codex >= 0.143.0`
+    # while CI continuously tested exactly ONE version, so the LOWER BOUND of the
+    # supported window rested on a single manual check from 2026-07. A range
+    # nothing exercises at its edge is a claim, not a guarantee.
+    #
+    # Both ends now run every time: the documented minimum and the current pin.
+    # That satisfies AC-1's first arm - the host is launched at the documented
+    # minimum - rather than its second, which would have meant shrinking the
+    # claim to one version and telling working 0.143 installs they are
+    # unsupported.
     needs: changes
     if: needs.changes.outputs.ca-codex == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        # The window's floor and its ceiling. Intermediate versions buy nothing a
+        # boundary does not: the guard is version-agnostic (it reads the PLUGIN's
+        # version, never the runtime's), so what is under test is the host's
+        # plugin-install contract, and that changes at boundaries.
+        codex-version: ["0.143.0", "0.145.0"]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -1612,8 +1698,9 @@ jobs:
       - name: Install the pinned Codex runtime
         # Pinned, not @latest: an unpinned host makes this gate report upstream
         # drift as a ca-codex regression, and the version claim in the manifest
-        # has to mean something continuously tested.
-        run: npm install -g @openai/codex@0.145.0
+        # has to mean something continuously tested. The @latest canary below is
+        # where drift is allowed to show up, without blocking a merge.
+        run: npm install -g @openai/codex@${{ matrix.codex-version }}
       - name: Install ca-codex through the real host and read it back
         env:
           # A missing runtime must FAIL here rather than skip. On a developer
@@ -1899,6 +1986,7 @@ jobs:
       - version-bump-codex
       - codex-host
       - version-bump-pi
+      - codex-host-latest
       - prose
       - badge-consistency
       - prose-sandbox
