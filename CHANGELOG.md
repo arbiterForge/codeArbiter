@@ -12,6 +12,25 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.10.5] — 2026-07-30
+
+### Changed
+
+- **`_hooklib` sheds its H-09b/H-10b sensitive-scan concern (#321, slice 1 of 4).**
+  The 1,263-line hook core drops to 1,051. `_sensitivelib` now owns the crypto and
+  secret detectors, the pinned security diff argv, the path-aware diff walk, and
+  the digests that bind a recorded gate pass to the lines it reviewed;
+  `_pathnorm` holds `norm_path` as the dependency floor beneath every path
+  classifier.
+
+  The seam was measured rather than guessed: the cluster referenced exactly ONE
+  symbol from the rest of `_hooklib`, and nothing in the rest of `_hooklib`
+  referenced the cluster. `_hooklib` re-exports every moved name, so all 59
+  consuming files are untouched and behavioural parity rests on 1,185
+  pre-existing hook tests that did not move.
+
+  No behaviour change.
+
 ## [2.10.4] — 2026-07-29
 
 ### Fixed
