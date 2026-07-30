@@ -65,11 +65,30 @@ describe("first-class product splash", () => {
 
   it("uses the approved rail and drawer dimensions", () => {
     expect(landingCss).toMatch(/\.ca-docs-rail\s*\{[^}]*width:\s*38px;/s);
+    expect(landingCss).toMatch(/\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*38px;/s);
     expect(landingCss).toMatch(/\.ca-docs-drawer\s*\{[^}]*width:\s*292px;/s);
     expect(landingCss).toMatch(
       /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-rail\s*\{[^}]*width:\s*31px;/,
     );
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*31px;/,
+    );
     expect(landingCss).toContain("min(292px, calc(100vw - 31px))");
+  });
+
+  it("gives the reused sidebar tree a compact drawer-specific presentation", () => {
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav ul ul li\s*\{[^}]*border-inline-start:\s*0;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav summary\s*\{[^}]*list-style:\s*none;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav ul ul a\s*\{[^}]*padding:/s,
+    );
+    expect(docsRail).toContain('rail.dataset.open = "true"');
+    expect(docsRail).toContain("delete rail.dataset.open");
+    expect(docsRail).toContain("layer.hidden ? openDrawer() : closeDrawer()");
   });
 
   it("leads with the reader outcome and supported hosts", () => {

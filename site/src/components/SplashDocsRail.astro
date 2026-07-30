@@ -83,6 +83,7 @@ const overviewHref = `${import.meta.env.BASE_URL}overview/`;
     layer.hidden = false;
     drawer.setAttribute("aria-hidden", "false");
     opener.setAttribute("aria-expanded", "true");
+    rail.dataset.open = "true";
     document.body.style.overflow = "hidden";
     drawer.focus();
   }
@@ -92,6 +93,7 @@ const overviewHref = `${import.meta.env.BASE_URL}overview/`;
     layer.hidden = true;
     drawer.setAttribute("aria-hidden", "true");
     opener.setAttribute("aria-expanded", "false");
+    delete rail.dataset.open;
     document.body.style.overflow = previousBodyOverflow;
     if (options.restoreFocus !== false) opener.focus();
   }
@@ -117,7 +119,10 @@ const overviewHref = `${import.meta.env.BASE_URL}overview/`;
     }
   }
 
-  opener?.addEventListener("click", openDrawer);
+  opener?.addEventListener("click", () => {
+    if (!layer) return;
+    layer.hidden ? openDrawer() : closeDrawer();
+  });
   closeControls?.forEach((control) => control.addEventListener("click", () => closeDrawer()));
   drawer?.addEventListener("keydown", trapFocus);
   document.addEventListener("keydown", (event) => {

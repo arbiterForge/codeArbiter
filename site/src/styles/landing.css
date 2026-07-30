@@ -54,7 +54,7 @@
 
 .ca-docs-rail {
   position: fixed;
-  z-index: 45;
+  z-index: 65;
   inset-block: 4rem 0;
   inset-inline-start: 0;
   width: 38px;
@@ -87,6 +87,11 @@
   height: 0;
   border-block: 5px solid transparent;
   border-inline-start: 7px solid currentColor;
+  transition: transform 160ms ease;
+}
+
+.ca-docs-rail[data-open="true"] .ca-docs-rail__triangle {
+  transform: rotate(180deg);
 }
 
 .ca-docs-rail__label {
@@ -106,7 +111,9 @@
 .ca-docs-drawer-layer {
   position: fixed;
   z-index: 60;
-  inset: 4rem 0 0;
+  inset-block: 4rem 0;
+  inset-inline-end: 0;
+  inset-inline-start: 38px;
 }
 
 .ca-docs-drawer-layer[hidden] {
@@ -184,7 +191,69 @@
 }
 
 .ca-docs-drawer__nav {
-  padding: 0.75rem 0.6rem 2rem;
+  padding: 0.65rem 0.55rem 2rem;
+}
+
+.ca-docs-drawer__nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ca-docs-drawer__nav .top-level > li + li {
+  margin-block-start: 0.25rem;
+}
+
+.ca-docs-drawer__nav .top-level > li {
+  padding-block-end: 0.3rem;
+  border-block-end: 1px solid rgb(58 76 96 / 42%);
+}
+
+.ca-docs-drawer__nav summary {
+  padding: 0.65rem 0.7rem;
+  border-radius: var(--ca-radius-sm);
+  list-style: none;
+}
+
+.ca-docs-drawer__nav summary:hover {
+  background: rgb(255 255 255 / 2.5%);
+}
+
+.ca-docs-drawer__nav summary::marker,
+.ca-docs-drawer__nav summary::-webkit-details-marker {
+  display: none;
+  content: "";
+}
+
+.ca-docs-drawer__nav ul ul {
+  padding: 0.15rem 0 0.45rem 2.55rem;
+}
+
+.ca-docs-drawer__nav ul ul li {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+
+.ca-docs-drawer__nav ul ul a {
+  padding: 0.4rem 0.6rem;
+  color: var(--ca-ink-muted);
+  font-size: 0.81rem;
+  line-height: 1.35;
+}
+
+.ca-docs-drawer__nav ul ul a:hover,
+.ca-docs-drawer__nav ul ul a:focus-visible {
+  color: var(--ca-ink);
+}
+
+.ca-docs-drawer__nav .top-level > li > details > summary .large {
+  font-size: 0.91rem;
+}
+
+.ca-docs-drawer__nav .group-icon {
+  width: 1.8rem;
+  height: 1.8rem;
 }
 
 .ca-docs-drawer__direct {
@@ -829,6 +898,10 @@
 
   .ca-docs-rail {
     width: 31px;
+  }
+
+  .ca-docs-drawer-layer {
+    inset-inline-start: 31px;
   }
 
   .ca-docs-rail__label {
