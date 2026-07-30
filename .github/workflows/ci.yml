@@ -83,6 +83,9 @@ on:
       # workflow's dispatch-exclusivity, merge-readiness, and tag-integrity
       # gates. A push that weakens only release.yml must still start a run.
       - ".github/workflows/release.yml"
+      # test_pi_promotion.py guards the promotion workflow itself. A workflow-
+      # only edit must start the hooks job that executes that contract suite.
+      - ".github/workflows/pi-promotion.yml"
       # The publish mechanics moved out of release.yml into a shared
       # composite action (#382), so the same reasoning covers it.
       - ".github/actions/**"
@@ -185,6 +188,9 @@ jobs:
               # test_release_workflow.py runs in the hooks job and is the only
               # guard on the release workflow's publish gates (#378/#380/#385).
               - '.github/workflows/release.yml'
+              # test_pi_promotion.py guards this workflow's runner-bound state
+              # and receipt contract, so a workflow-only PR must reach hooks.
+              - '.github/workflows/pi-promotion.yml'
               # The publish mechanics moved out of release.yml into a
               # shared composite action (#382); without this, the one
               # file that can weaken the #380 tag guards is unwatched.

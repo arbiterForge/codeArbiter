@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -16,6 +17,7 @@ REPO = Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO / ".github" / "scripts" / "pi_promotion.py"
 DOCS_MODULE_PATH = REPO / ".github" / "scripts" / "check_docs_contract.py"
 WORKFLOW_PATH = REPO / ".github" / "workflows" / "pi-promotion.yml"
+CI_WORKFLOW_PATH = REPO / ".github" / "workflows" / "ci.yml"
 
 
 def validation_job(workflow: str) -> str:
@@ -271,6 +273,34 @@ class PromotionReceiptTests(unittest.TestCase):
             with self.subTest(contract=identifier):
                 self.assertIn(f"contract --id {identifier} ", validate)
                 self.assertIn(identifier, module.CONTRACT_IDS)
+
+    def test_receipt_state_is_bound_after_the_runner_environment_exists(self):
+        validate = validation_job(WORKFLOW_PATH.read_text(encoding="utf-8"))
+        binding = (
+            'echo "CA_PI_RECEIPT_STATE=$RUNNER_TEMP/pi-promotion-failures.json" '
+            '>> "$GITHUB_ENV"'
+        )
+        self.assertNotIn("${{ runner.temp }}", validate)
+        self.assertEqual(validate.count(binding), 1)
+        self.assertLess(
+            validate.index("Bind receipt state inside the runner environment"),
+            validate.index("actions/checkout@"),
+        )
+        consumers = [match.start() for match in re.finditer(r"\$CA_PI_RECEIPT_STATE", validate)]
+        self.assertGreater(len(consumers), 0)
+        self.assertLess(validate.index(binding), min(consumers))
+
+    def test_workflow_only_changes_reach_the_promotion_contract_suite(self):
+        from test_ci_impact import paths_filter, push_trigger_paths, workflow_jobs
+
+        ci = CI_WORKFLOW_PATH.read_text(encoding="utf-8")
+        guarded = ".github/workflows/pi-promotion.yml"
+        self.assertIn(guarded, push_trigger_paths(ci))
+        self.assertIn(guarded, paths_filter(ci, "hooks"))
+        self.assertIn(
+            "python .github/scripts/test_pi_promotion.py",
+            workflow_jobs(ci)["hooks"],
+        )
 
     def test_failed_candidate_renders_one_receipt_to_the_summary_and_artifact(self):
         validate = validation_job(WORKFLOW_PATH.read_text(encoding="utf-8"))

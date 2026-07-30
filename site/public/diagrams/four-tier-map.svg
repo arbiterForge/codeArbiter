@@ -16,33 +16,39 @@
   <rect width="1128" height="430" rx="14" fill="url(#canvas)"/>
   <rect width="1128" height="430" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1126" height="428" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">JUST-IN-TIME CONTEXT</text>
-<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Read(file) checks four tiers in strict priority order.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1062">JUST-IN-TIME CONTEXT</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1062">Read(file) checks four tiers in strict priority order.</text>
 <rect x="42" y="154" width="188" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="136" y="185" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Read(file)</text>
-<text x="136" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">PreToolUse hook</text>
-<rect x="300" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="385" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">1 · security-controls.md</text>
-<text x="385" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">security-entry files</text>
+<text x="136" y="185" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="164">Read(file)</text>
+<text x="136" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="164">PreToolUse hook</text>
+<rect x="300" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="392" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">1</text>
+<text x="392" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">security-</text>
+<text x="392" y="201" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">controls.md</text>
+<text x="392" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">security-entry</text>
+<text x="392" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">files</text>
 <path d="M236 200 L290 200" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
-<path d="M476 200 L495 200" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="505" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="590" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">2 · decisions/</text>
-<text x="590" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">accepted ADR governs glob</text>
-<path d="M681 200 L700 200" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="710" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="795" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">3 · specs/</text>
-<text x="795" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">approved Governs header</text>
-<path d="M886 200 L905 200" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="915" y="132" width="170" height="136" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="1000" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">4 · provenance</text>
-<text x="1000" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">stored hash still matches</text>
+<rect x="500" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="592" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">2</text>
+<text x="592" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">decisions/</text>
+<text x="592" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">accepted ADR</text>
+<text x="592" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">governs glob</text>
+<rect x="700" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="792" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">3</text>
+<text x="792" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">specs/</text>
+<text x="792" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">approved Governs</text>
+<text x="792" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">header</text>
+<rect x="900" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="992" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">4</text>
+<text x="992" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">provenance</text>
+<text x="992" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">stored hash</text>
+<text x="992" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">still matches</text>
 <rect x="300" y="310" width="375" height="82" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="487.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Inject highest-priority pointer</text>
-<text x="487.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">budget ≤ 150 tokens</text>
+<text x="487.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="351">Inject highest-priority pointer</text>
+<text x="487.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="351">budget ≤ 150 tokens</text>
 <rect x="710" y="310" width="375" height="82" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="897.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">No tier matches</text>
-<text x="897.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">no injection · zero git calls</text>
+<text x="897.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="351">No tier matches</text>
+<text x="897.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="351">no injection · zero git calls</text>
 <polyline points="642,268 642,290 487,290 487,300" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <polyline points="970,268 970,300" fill="none" stroke="#3a4c60" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
 </svg>

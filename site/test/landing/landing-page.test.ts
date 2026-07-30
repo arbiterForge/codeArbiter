@@ -40,18 +40,24 @@ describe("first-class product splash", () => {
     );
   });
 
-  it("opens the canonical docs sidebar from a persistent splash-only rail", () => {
+  it("opens the canonical docs sidebar from the moving edge of one splash tray", () => {
     expect(indexMdx).toContain("import SplashDocsRail");
     expect(indexMdx).toContain("<SplashDocsRail />");
     expect(docsRail).toContain("Astro.locals.starlightRoute");
     expect(docsRail).toContain("<SidebarSublist sublist={sidebar} />");
+    expect(docsRail).toContain('class="ca-docs-tray"');
     expect(docsRail).toContain('aria-controls="ca-docs-drawer"');
     expect(docsRail).toContain('aria-expanded="false"');
     expect(docsRail).toContain('id="ca-docs-drawer"');
-    expect(docsRail).toContain('aria-labelledby="ca-docs-drawer-title"');
-    expect(docsRail).toContain('role="dialog"');
-    expect(docsRail).toContain('aria-modal="true"');
+    expect(docsRail).not.toMatch(/<aside[\s\S]*?role="dialog"/);
+    expect(docsRail).toContain('tray.setAttribute("role", "dialog")');
+    expect(docsRail).toContain('tray.setAttribute("aria-modal", "true")');
+    expect(docsRail).toContain('tray.removeAttribute("role")');
+    expect(docsRail).toContain('tray.removeAttribute("aria-modal")');
     expect(docsRail).toContain("OPEN DOCS");
+    expect(docsRail).toContain("CLOSE DOCS");
+    expect(docsRail).not.toContain("Find your next move");
+    expect(docsRail).not.toContain("ca-docs-drawer__close");
   });
 
   it("keeps the docs drawer keyboard-safe and restores page state when it closes", () => {
@@ -76,21 +82,35 @@ describe("first-class product splash", () => {
     expect(docsRail).toContain("overview/");
   });
 
-  it("uses the approved rail and drawer dimensions", () => {
-    expect(landingCss).toMatch(/\.ca-docs-rail\s*\{[^}]*width:\s*38px;/s);
-    expect(landingCss).toMatch(/\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*38px;/s);
-    expect(landingCss).toMatch(/\.ca-landing\s*\{[^}]*padding-inline-start:\s*38px;/s);
-    expect(landingCss).toMatch(/\.ca-docs-drawer\s*\{[^}]*width:\s*292px;/s);
+  it("slides the tray and its literal right-edge control as one unit", () => {
     expect(landingCss).toMatch(
-      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-rail\s*\{[^}]*width:\s*31px;/,
+      /\.ca-docs-tray\s*\{[^}]*--ca-docs-handle-width:\s*38px;[^}]*--ca-docs-drawer-width:\s*292px;/s,
     );
     expect(landingCss).toMatch(
-      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-drawer-layer\s*\{[^}]*inset-inline-start:\s*31px;/,
+      /\.ca-docs-tray\s*\{[^}]*inset-block:\s*var\(--sl-nav-height\) 0;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-tray\s*\{[^}]*grid-template-columns:\s*var\(--ca-docs-drawer-width\) var\(--ca-docs-handle-width\);/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-tray\s*\{[^}]*transform:\s*translateX\(calc\(-1 \* var\(--ca-docs-drawer-width\)\)\);/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-tray\[data-open="true"\]\s*\{[^}]*transform:\s*translateX\(0\);/s,
+    );
+    expect(landingCss).toMatch(/\.ca-landing\s*\{[^}]*padding-inline-start:\s*38px;/s);
+    expect(landingCss).toMatch(
+      /\.ca-landing::before\s*\{[^}]*inset:\s*var\(--sl-nav-height\) 0 0;/s,
+    );
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-tray\s*\{[^}]*--ca-docs-handle-width:\s*31px;[^}]*--ca-docs-drawer-width:\s*min\(292px, calc\(100vw - 31px\)\);/,
     );
     expect(landingCss).toMatch(
       /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-landing\s*\{[^}]*padding-inline-start:\s*31px;/,
     );
-    expect(landingCss).toContain("min(292px, calc(100vw - 31px))");
+    expect(landingCss).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?\.ca-docs-tray\s*\{[^}]*transition:\s*none;/,
+    );
   });
 
   it("gives the reused sidebar tree a compact drawer-specific presentation", () => {
@@ -99,6 +119,9 @@ describe("first-class product splash", () => {
     );
     expect(landingCss).toMatch(
       /\.ca-docs-drawer__nav summary\s*\{[^}]*list-style:\s*none;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav summary::before\s*\{[^}]*content:\s*none;[^}]*display:\s*none;/s,
     );
     expect(landingCss).toMatch(
       /\.ca-docs-drawer__nav summary\s*\{[^}]*display:\s*flex;[^}]*justify-content:\s*space-between;/s,
@@ -110,8 +133,10 @@ describe("first-class product splash", () => {
     expect(landingCss).toMatch(
       /\.ca-docs-drawer__nav ul ul a\s*\{[^}]*padding:/s,
     );
-    expect(docsRail).toContain('rail.dataset.open = "true"');
-    expect(docsRail).toContain("delete rail.dataset.open");
+    expect(docsRail).toContain('tray.dataset.open = "true"');
+    expect(docsRail).toContain("delete tray.dataset.open");
+    expect(docsRail).toContain('opener.setAttribute("aria-label", "Close documentation navigation")');
+    expect(docsRail).toContain('opener.setAttribute("aria-label", "Open documentation navigation")');
     expect(docsRail).toContain("layer.hidden ? openDrawer() : closeDrawer()");
   });
 

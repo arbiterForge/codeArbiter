@@ -16,27 +16,27 @@
   <rect width="1200" height="310" rx="14" fill="url(#canvas)"/>
   <rect width="1200" height="310" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1198" height="308" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">GATED LANE FLOW</text>
-<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Intent routes to its owner, clears the applicable gates, and ships through a pull request.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1134">GATED LANE FLOW</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1134">Intent routes to its owner, clears the applicable gates, and ships through a pull request.</text>
 <rect x="42" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="136.8" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">/ca:fix</text>
-<text x="136.8" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">COMMAND</text>
+<text x="136.8" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="165.6">/ca:fix</text>
+<text x="136.8" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="165.6">COMMAND</text>
 <path d="M237.6 166 L265.6 166" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="273.6" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="368.40000000000003" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">orchestrator</text>
-<text x="368.40000000000003" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">ROUTE</text>
+<text x="368.40000000000003" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="165.6">orchestrator</text>
+<text x="368.40000000000003" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="165.6">ROUTE</text>
 <path d="M469.20000000000005 166 L497.20000000000005 166" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="505.2" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="600" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">tests · review</text>
-<text x="600" y="170" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">security</text>
-<text x="600" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">GATE</text>
+<text x="600" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="165.6">tests · review</text>
+<text x="600" y="170" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="165.6">security</text>
+<text x="600" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="165.6">GATE</text>
 <path d="M700.8 166 L728.8 166" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="736.8" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="831.5999999999999" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">version control</text>
-<text x="831.5999999999999" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">SHIP</text>
+<text x="831.5999999999999" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="165.6">version control</text>
+<text x="831.5999999999999" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="165.6">SHIP</text>
 <path d="M932.4 166 L960.4 166" fill="none" stroke="#58d68d" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="968.4" y="120" width="189.6" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="1063.2" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">pull request</text>
-<text x="1063.2" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">MERGE PATH</text>
-<text x="1158" y="274" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">never a direct write to the default branch</text>
+<text x="1063.2" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="165.6">pull request</text>
+<text x="1063.2" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="165.6">MERGE PATH</text>
+<text x="1158" y="274" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1134">never a direct write to the default branch</text>
 </svg>

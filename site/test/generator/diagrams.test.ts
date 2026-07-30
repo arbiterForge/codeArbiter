@@ -132,4 +132,58 @@ describe("concept diagrams (AC-9)", () => {
       expect(designSystem).toContain(token);
     }
   });
+
+  it("rejects copy that exceeds a generator-declared safe text width", () => {
+    const svg = `<svg data-diagram-system="ca-v2">
+      <title>Bounds fixture</title>
+      <desc>Exercises generated copy bounds.</desc>
+      <text
+        x="10"
+        y="20"
+        font-family="Manrope Variable, Segoe UI, Arial, sans-serif"
+        font-size="14"
+        fill="#c7d0da"
+        data-label-kind="copy"
+        data-max-width="40"
+      >This sentence cannot fit.</text>
+    </svg>`;
+
+    expect(auditDiagram(svg, "bounds-fixture.svg")).toEqual([
+      expect.stringMatching(
+        /^bounds-fixture\.svg: copy width \d+(?:\.\d+)? exceeds declared maximum 40$/,
+      ),
+    ]);
+  });
+
+  it("requires a declared safe width on every generated text node", () => {
+    const svg = `<svg data-diagram-system="ca-v2">
+      <title>Missing bounds fixture</title>
+      <desc>Exercises missing generated text bounds.</desc>
+      <text x="10" y="20" font-family="Arial, sans-serif" font-size="14">Unbounded</text>
+    </svg>`;
+
+    expect(auditDiagram(svg, "missing-bounds.svg")).toContain(
+      "missing-bounds.svg: text has no declared maximum width",
+    );
+  });
+
+  it("uses conservative fallback-font metrics for wide proportional glyphs", () => {
+    const svg = `<svg data-diagram-system="ca-v2">
+      <title>Fallback metrics fixture</title>
+      <desc>Exercises wide glyphs in permitted fallback fonts.</desc>
+      <text
+        x="10"
+        y="20"
+        font-family="Manrope Variable, Segoe UI, Arial, sans-serif"
+        font-size="14"
+        data-max-width="32"
+      >mmmm</text>
+    </svg>`;
+
+    expect(auditDiagram(svg, "fallback-metrics.svg")).toEqual([
+      expect.stringMatching(
+        /^fallback-metrics\.svg: text width \d+(?:\.\d+)? exceeds declared maximum 32$/,
+      ),
+    ]);
+  });
 });
