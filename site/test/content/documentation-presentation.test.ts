@@ -58,12 +58,29 @@ describe("documentation presentation regressions", () => {
     expect(icons).toContain("M6 21V4.5");
   });
 
-  it("OBL-PRES-05 uses a crisp, ownable header lockup instead of a glow-filtered utility mark", () => {
+  it("OBL-PRES-05 restores the historic commit-line gate as a crisp brand system", () => {
     const logo = readFileSync(join(siteRoot, "src", "assets", "logo.svg"), "utf8");
+    const gateMark = readFileSync(join(siteRoot, "src", "assets", "gate-mark.svg"), "utf8");
+    const favicon = readFileSync(join(siteRoot, "src", "assets", "favicon.svg"), "utf8");
 
-    expect(logo).toContain('viewBox="0 0 188 36"');
-    expect(logo).toContain('id="mark-gold"');
+    expect(logo).toContain('viewBox="0 0 160 28"');
+    for (const element of [
+      "commit-line",
+      "unproven-node",
+      "gate-posts",
+      "gate-beam",
+      "terminal-chevron",
+      "proven-node",
+    ]) {
+      expect(logo).toContain(`data-brand-element="${element}"`);
+      expect(gateMark).toContain(`data-brand-element="${element}"`);
+    }
     expect(logo).not.toContain("<filter");
+    expect(gateMark).not.toContain("<filter");
+    expect(favicon).not.toContain("<filter");
+    expect(logo).toMatch(
+      /data-brand-element="terminal-chevron"[^>]*fill="none"[^>]*stroke-linejoin="round"/,
+    );
     expect(styles).toMatch(/@media \(max-width: 34rem\)[\s\S]*?\.site-title\s*\{[^}]*overflow:\s*hidden;/);
   });
 
