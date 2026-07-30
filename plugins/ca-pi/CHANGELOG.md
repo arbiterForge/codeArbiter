@@ -4,6 +4,26 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [Unreleased]
+
+## [0.1.41] - 2026-07-30
+
+### Changed
+
+- **`_hooklib` sheds its protected-path classifiers (#321, slice 2 of 4).** The
+  hook core drops from 1,050 to 880 lines - 1,263 before the partition began.
+  `_protectedlib` now owns which repo paths are append-only audit logs (H-05),
+  ADR decision files (H-11), the activation manifest, and the gate-marker
+  directory. `repo_rel` joined `norm_path` on the `_pathnorm` floor, because it
+  references no module symbol and the remaining slices need it too.
+
+  Measured the same way slice 1 was: one outward reference, zero inward.
+  `_hooklib` re-exports every moved name, so all consumers are untouched and
+  parity rests on 1,185 pre-existing hook tests that did not move. The public
+  surface is preserved exactly - nothing lost, nothing gained.
+
+  No behaviour change.
+
 ## [0.1.40] - 2026-07-30
 
 ### Changed
