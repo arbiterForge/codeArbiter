@@ -12,6 +12,18 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.10.6] — 2026-07-30
+
+### Fixed
+
+- **The release command now matches the target-aware release skill.** Its
+  operator contract names `ca`, `ca-codex`, `ca-sandbox`, and `ca-pi`, selects
+  the correct tag series and manifest for each target, and points maintainers
+  to the matching changelog. The command and skill now also agree that
+  `CHANGELOG:` footers are mandatory for `feat` and `fix`, rolled for `perf`
+  when present, and never synthesized for `refactor`. The generated reference
+  no longer publishes the obsolete `ca`-only or all-bumping-footer contracts.
+
 ## [2.10.5] — 2026-07-30
 
 ### Changed
