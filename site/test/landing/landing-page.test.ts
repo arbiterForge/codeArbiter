@@ -16,6 +16,8 @@ const proofCmp = readSrc("src/components/HookProof.astro");
 const astroConfig = readSrc("astro.config.mjs");
 const landingCss = readSrc("src/styles/landing.css");
 const designCss = readSrc("src/styles/design-system.css");
+const docsRailPath = path.join(siteRoot, "src/components/SplashDocsRail.astro");
+const docsRail = existsSync(docsRailPath) ? readFileSync(docsRailPath, "utf8") : "";
 
 describe("first-class product splash", () => {
   it("uses the sidebar-free Starlight splash shell", () => {
@@ -29,6 +31,38 @@ describe("first-class product splash", () => {
     expect(indexMdx).not.toMatch(/class="ca-splash"[^>]*--ca-hero-art/);
     expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*position:\s*fixed;/s);
     expect(landingCss).not.toContain(".ca-splash::before");
+  });
+
+  it("opens the canonical docs sidebar from a persistent splash-only rail", () => {
+    expect(indexMdx).toContain("import SplashDocsRail");
+    expect(indexMdx).toContain("<SplashDocsRail />");
+    expect(docsRail).toContain("Astro.locals.starlightRoute");
+    expect(docsRail).toContain("<SidebarSublist sublist={sidebar} />");
+    expect(docsRail).toContain('aria-controls="ca-docs-drawer"');
+    expect(docsRail).toContain('aria-expanded="false"');
+    expect(docsRail).toContain('id="ca-docs-drawer"');
+    expect(docsRail).toContain('aria-label="Documentation navigation"');
+    expect(docsRail).toContain("OPEN DOCS");
+  });
+
+  it("keeps the docs drawer keyboard-safe and restores page state when it closes", () => {
+    expect(docsRail).toContain('event.key === "Escape"');
+    expect(docsRail).toMatch(/event\.key\s*!==\s*"Tab"/);
+    expect(docsRail).toContain("document.body.style.overflow");
+    expect(docsRail).toContain("opener.focus()");
+    expect(docsRail).toContain("ca-docs-drawer__backdrop");
+    expect(docsRail).toContain("import.meta.env.BASE_URL");
+    expect(docsRail).toContain("<noscript>");
+    expect(docsRail).toContain("overview/");
+  });
+
+  it("uses the approved rail and drawer dimensions", () => {
+    expect(landingCss).toMatch(/\.ca-docs-rail\s*\{[^}]*width:\s*38px;/s);
+    expect(landingCss).toMatch(/\.ca-docs-drawer\s*\{[^}]*width:\s*292px;/s);
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-docs-rail\s*\{[^}]*width:\s*31px;/,
+    );
+    expect(landingCss).toContain("min(292px, calc(100vw - 31px))");
   });
 
   it("leads with the reader outcome and supported hosts", () => {

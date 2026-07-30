@@ -1,0 +1,126 @@
+---
+import SidebarSublist from "./SidebarSublist.astro";
+
+const { sidebar } = Astro.locals.starlightRoute;
+const overviewHref = `${import.meta.env.BASE_URL}overview/`;
+---
+
+<div class="ca-docs-rail" data-ca-docs-rail>
+  <button
+    class="ca-docs-rail__opener"
+    type="button"
+    aria-controls="ca-docs-drawer"
+    aria-expanded="false"
+  >
+    <span class="ca-docs-rail__triangle" aria-hidden="true"></span>
+    <span class="ca-docs-rail__label">OPEN DOCS</span>
+  </button>
+  <noscript>
+    <a class="ca-docs-rail__fallback" href={overviewHref}>Open docs</a>
+  </noscript>
+</div>
+
+<div class="ca-docs-drawer-layer" data-ca-docs-drawer-layer hidden>
+  <button
+    class="ca-docs-drawer__backdrop"
+    type="button"
+    aria-label="Close documentation navigation"
+    data-ca-docs-drawer-close
+  ></button>
+  <aside
+    class="ca-docs-drawer"
+    id="ca-docs-drawer"
+    aria-label="Documentation navigation"
+    aria-hidden="true"
+    tabindex="-1"
+  >
+    <div class="ca-docs-drawer__head">
+      <div>
+        <span>Documentation</span>
+        <strong>Find your next move</strong>
+      </div>
+      <button
+        class="ca-docs-drawer__close"
+        type="button"
+        aria-label="Close documentation navigation"
+        data-ca-docs-drawer-close
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <nav class="ca-docs-drawer__nav" aria-label="Documentation sections">
+      {
+        sidebar.length > 0 ? (
+          <SidebarSublist sublist={sidebar} />
+        ) : (
+          <a class="ca-docs-drawer__direct" href={overviewHref}>What Is codeArbiter</a>
+        )
+      }
+    </nav>
+  </aside>
+</div>
+
+<script>
+  const rail = document.querySelector<HTMLElement>("[data-ca-docs-rail]");
+  const opener = rail?.querySelector<HTMLButtonElement>(".ca-docs-rail__opener");
+  const layer = document.querySelector<HTMLElement>("[data-ca-docs-drawer-layer]");
+  const drawer = document.querySelector<HTMLElement>("#ca-docs-drawer");
+  const closeControls = layer?.querySelectorAll<HTMLButtonElement>("[data-ca-docs-drawer-close]");
+  let previousBodyOverflow = "";
+
+  const focusableSelector = [
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(",");
+
+  function openDrawer(): void {
+    if (!opener || !layer || !drawer) return;
+    previousBodyOverflow = document.body.style.overflow;
+    layer.hidden = false;
+    drawer.setAttribute("aria-hidden", "false");
+    opener.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+    drawer.focus();
+  }
+
+  function closeDrawer(options: { restoreFocus?: boolean } = { restoreFocus: true }): void {
+    if (!opener || !layer || !drawer) return;
+    layer.hidden = true;
+    drawer.setAttribute("aria-hidden", "true");
+    opener.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = previousBodyOverflow;
+    if (options.restoreFocus !== false) opener.focus();
+  }
+
+  function trapFocus(event: KeyboardEvent): void {
+    if (event.key !== "Tab" || !drawer || layer?.hidden) return;
+    const focusable = [...drawer.querySelectorAll<HTMLElement>(focusableSelector)].filter(
+      (element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true",
+    );
+    if (focusable.length === 0) {
+      event.preventDefault();
+      drawer.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  opener?.addEventListener("click", openDrawer);
+  closeControls?.forEach((control) => control.addEventListener("click", () => closeDrawer()));
+  drawer?.addEventListener("keydown", trapFocus);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && layer && !layer.hidden) closeDrawer();
+  });
+</script>
