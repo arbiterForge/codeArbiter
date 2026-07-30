@@ -4,6 +4,7 @@ import { yamlDescriptionLine } from "./yaml-quote";
 import { renderSourceEmbed } from "./render-source-embed";
 import { renderGatesTable } from "./render-gates-table";
 import { renderRelatedLinks } from "./render-related-links";
+import { renderReferenceLead } from "./render-reference-lead";
 
 /**
  * Render a command reference page as Starlight-compatible markdown.
@@ -37,10 +38,12 @@ export function renderCommandPage(input: PageInput): string {
 
   const descriptionLine = yamlDescriptionLine(desc);
   const frontMatter = descriptionLine
-    ? `title: ${name}\n${descriptionLine}`
-    : `title: ${name}`;
+    ? `title: ${name} command\n${descriptionLine}`
+    : `title: ${name} command`;
 
-  const sections: string[] = [`${decoration}${desc}`.trimEnd()];
+  const sections: string[] = [
+    `${decoration}${renderReferenceLead("command", name, desc, input.commandHosts)}`.trimEnd(),
+  ];
 
   if (curated?.body) {
     sections.push(curated.body.trim());

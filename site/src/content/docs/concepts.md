@@ -1,15 +1,59 @@
 ---
-title: Concepts
-description: "The core ideas behind codeArbiter: gated lanes, SMARTS, ADRs, checkpoints, and the full governance model."
+title: Concept Map
+description: "A practical map of codeArbiter's governance model: how work enters a lane, decisions are recorded, context stays current, and evidence becomes auditable."
+journey:
+  level: "Practitioner"
+  time: "7 minutes"
+  outcome: "Connect lanes, decisions, repository context, review, and audit evidence."
+  prerequisites:
+    - "What Is codeArbiter"
+  proof: "You can trace one real change from its entry lane to the evidence retained after shipment."
 ---
 
-codeArbiter is built on a set of interlocking ideas. Each page covers one concept in full.
+codeArbiter is easiest to understand as a chain:
 
-- [The gated-lane model](/concepts/gated-lanes/): every kind of work has a sanctioned path with gates scaled to its risk.
-- [SMARTS](/concepts/smarts/): the structured scoring rubric for autonomous decisions, recorded in the sprint log.
-- [ADRs and the decision log](/concepts/adrs/): numbered, dated, user-attributed records of architecturally significant choices.
-- [Checkpoints](/concepts/checkpoints/): periodic read-only sweeps that catch drift and latent issues between feature work.
-- [The persona-register split](/concepts/persona-and-context/): separate orchestrator, author, and reviewer personas that keep each role sharp.
-- [Provenance & context drift](/concepts/provenance-drift/): source-hash tracking that surfaces stale claims and heals them at commit time.
-- [Just-in-time context injection](/concepts/jit-context-injection/): a four-tier map that injects a governance pointer on every governed-file Read.
-- [Auditability](/concepts/auditability/): how the pieces compose into an auditable record for any range of work.
+1. **A request enters a lane.** The lane defines the work, its required evidence, and its stops.
+2. **Material choices are explicit.** The user decides hard gates; SMARTS records bounded autonomous
+   choices; ADRs preserve architectural choices.
+3. **The repository carries the context.** Provenance and just-in-time injection keep agents aligned
+   with the checked-in rules that govern the files they touch.
+4. **Independent reviewers challenge the result.** Checkpoints and lane-specific reviewers produce
+   findings without silently rewriting the author's work.
+5. **The audit record explains what happened.** Commits, decisions, overrides, questions, sprint
+   choices, and reports can be assembled for a range after the work is done.
+
+## Start with the problem you are trying to understand
+
+| Question | Read |
+|---|---|
+| Why must each kind of work follow a different path? | [The gated-lane model](/concepts/gated-lanes/) |
+| How does an autonomous sprint choose without asking every time? | [SMARTS](/concepts/smarts/) |
+| Which protections are deterministic and which are advisory? | [Enforcement & Security](/enforcement/) |
+| How is a long-lived architecture choice recorded? | [ADRs and the decision log](/concepts/adrs/) |
+| How do repository facts stay current as source changes? | [Provenance and context drift](/concepts/provenance-drift/) |
+| How does the right rule reach an agent at file-read time? | [Just-in-time context injection](/concepts/jit-context-injection/) |
+| Why are authors, reviewers, and routing kept separate? | [The persona-register split](/concepts/persona-and-context/) |
+| What catches drift outside one feature lane? | [Checkpoints](/concepts/checkpoints/) |
+| What evidence can be reconstructed later? | [Auditability](/concepts/auditability/) |
+| Why does a particular hardening control exist? | [Selected hardening notes](/concepts/hardening-history/) |
+
+## A concrete example
+
+Suppose a feature adds an authentication dependency and changes a security entry point. The feature
+lane provides the specification, tests, and author/reviewer sequence. The dependency lane vets the
+new package before installation. Reading the security file injects the controlling security
+document. An unresolved trust-boundary choice becomes an ADR instead of an implementation guess.
+The commit gate requires the applicable evidence, and the final audit can show the decision,
+dependency review, security findings, override history, and commit together.
+
+No single concept is the product. The value comes from their composition: the lane limits what may
+happen, repository context says what must remain true, reviewers challenge the result, and the audit
+trail makes the path inspectable.
+
+## Put the model to work
+
+- To complete a task, choose a page under [Workflows](/guides/feature-lane/) and follow its
+  host-native command.
+- To investigate a block, start with [Troubleshooting](/guides/troubleshooting/) and the
+  [Hook Gates reference](/reference/hooks-gates/).
+- To inspect exact command, skill, or agent behavior, use [All Reference](/reference/).

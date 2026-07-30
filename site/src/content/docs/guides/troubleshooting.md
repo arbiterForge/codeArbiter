@@ -1,6 +1,13 @@
 ---
 title: Troubleshooting
 description: "Use /ca:doctor or $ca-doctor to diagnose dormant gates, persona loading, trust, payload, and host-specific installation problems."
+journey:
+  level: Power user
+  time: Symptom-driven
+  outcome: "a deterministic diagnosis path from visible symptom to activation, interpreter, cache, hook, or host-adapter cause."
+  prerequisites:
+    - Run doctor first when possible
+  proof: "You can distinguish installed files from active enforcement and choose the smallest remediation that restores a live hook proof."
 ---
 
 Run `/ca:doctor` in Claude Code or `$ca-doctor` in Codex when codeArbiter is not behaving as
@@ -23,9 +30,11 @@ Doctor prints a result for each check and exits 0 if all pass, non-zero otherwis
 
 ### Interpreter Health
 
-Doctor confirms that at least one Python interpreter resolves. codeArbiter registers every hook twice in `hooks.json`: once under `python3`, and once under a `python3 -c "" || python` fallback. On a stock Windows machine with only `python` on PATH, the fallback fires and the gates still run. If neither name resolves, doctor warns loudly: the gates are dormant and no enforcement is active.
-
-Interpreter failure is the most common cause of a silent install.
+Doctor confirms that the interpreter selected by the active adapter resolves. Claude Code carries
+its documented `python3`/`python` fallback shape. Codex uses OS-specific hook handlers and reports a
+loud failure if the selected interpreter is absent. Pi keeps its TypeScript wrappers active and
+blocks mutating calls with an interpreter breadcrumb until the Python bridge is healthy. In every
+case, a failed interpreter row means governance is not healthy.
 
 **To fix:** add Python 3 to PATH. Verify outside Claude Code with `python3 --version` or `python --version`. At least one must succeed.
 
@@ -111,7 +120,9 @@ Pi has several distinct silent-inactivity states that look alike but have differ
 
 | Symptom | Likely cause | Suggested check |
 |---------|--------------|-----------------|
-| Gates don't fire in any repo | `python3` and `python` both absent from PATH | Doctor's interpreter section; verify with `python --version` in a shell |
+| Claude gates don't fire in any repo | neither registered interpreter resolves | Claude doctor's interpreter section; verify `python3 --version` or `python --version` in a shell |
+| Codex hook handler fails before evaluating a gate | its OS-specific Python command does not resolve | Codex doctor's interpreter section and the exact handler error |
+| Pi mutation is blocked with an interpreter breadcrumb | Python bridge is unavailable | `/ca-doctor`, then add Python 3 to `PATH` and start a fresh session |
 | Gates don't fire in one specific repo | `arbiter: enabled` missing or frontmatter unclosed | Doctor's repo activation section; inspect `.codearbiter/CONTEXT.md` |
 | Orchestrator persona not loading | Repo not opted in; `SessionStart` finds no activation flag | Doctor's repo activation section; run `/ca:init` if the file is absent |
 | Stale behavior after a plugin update | Cached payload or statusline path is outdated | Doctor's stale-cache and statusline sections |

@@ -1,6 +1,12 @@
 ---
 title: Compatibility
 description: "Platform, interpreter, and dependency requirements for codeArbiter: what the plugin itself needs, versus what's only required to develop the docs site."
+journey:
+  level: "Reference"
+  time: "Lookup"
+  outcome: "Confirm host, Python, platform, and optional-feature prerequisites before installation."
+  prerequisites: []
+  proof: "Your selected host and optional features meet every requirement in the relevant row."
 ---
 
 codeArbiter's requirements are deliberately narrow: Claude Code, Codex, or Pi, plus Python 3 on
@@ -15,7 +21,7 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 | **Claude Code** | Any version with plugin support | `plugin.json` states no explicit minimum version; the plugin uses standard hook events (`SessionStart`, `PreToolUse`, `PostToolUse`) and the plugin/marketplace install commands documented in [Install](/getting-started/install/). |
 | **Codex** | Minimum 0.143.0; live-verified on 0.144.1 | `ca-codex` uses one OS-specific handler per event and a Codex adapter that converts the shared guard verdict to structured deny output. Trust the hook set through `/hooks`. |
 | **Pi** | 0.80.5 or 0.80.10 (this release line) | `ca-pi` is a Feature Forge `preview`, available and welcomed for real use while broader testing continues before stable status or a claim of 100% validation. Install it Git-only: `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`. Also requires Node.js 22.19+. Requires an affirmative project-trust decision before repository-aware startup. Its human-readable generated catalog is `plugins/ca-pi/SKILLS.md`. See [Install for Pi](/getting-started/pi/). |
-| **Python** | Python 3, stdlib only, resolvable as `python3` **or** `python` on `PATH` | Every hook is registered twice in `hooks.json` (once under `python3`, once under a `python3 -c "" \|\| python` fallback), so it runs on a machine where only `python` resolves. No third-party Python packages are ever installed or imported (ADR-0004: database-free, stdlib-only architecture). On Pi, a missing interpreter blocks mutating calls and surfaces an interpreter breadcrumb rather than failing silently. |
+| **Python** | Python 3, stdlib only, available under the interpreter name your adapter registers | Claude Code carries its documented `python3`/`python` fallback shape. Codex uses OS-specific `command` and `commandWindows` handlers and fails loud if its selected interpreter is absent. Pi installs final TypeScript wrappers first, then blocks mutating calls with an interpreter breadcrumb until the Python bridge is healthy. No adapter treats that state as active enforcement. No third-party Python packages are installed or imported (ADR-0004). |
 | **Operating system** | Windows, macOS, or Linux | Hooks are pure Python stdlib and carry no OS-specific code path beyond the interpreter-name fallback above. The `.git/hooks` backstop shim is a POSIX `sh` script; on Windows this runs under Git for Windows' bundled `sh.exe`, which ships with every standard Git install. Windows is also a promoted, tested platform for `ca-pi`; see [Windows notes](/getting-started/pi/#windows). |
 | **git** | Any reasonably current git | Required regardless of codeArbiter: the plugin reads repo state (`git config user.email`, branch, diff) via subprocess calls to your existing `git` binary, and installs the `.git/hooks` backstop through it. |
 | **Node.js** | Not required for Claude Code or Codex | Node is required for `ca-pi` (22.19+) and is only otherwise needed to build or develop **this documentation site** (`site/`) and the optional pluggable-execution-farm TypeScript dispatcher (`plugins/ca/tools/`) if you use `/ca:sprint --farm`. Node is not a runtime dependency of the Claude Code/Codex enforcement hooks themselves. |
@@ -52,8 +58,9 @@ parent-interactive only and absent from JSON, RPC, print, and hardened children.
 
 Confirm both before installing, per [Install](/getting-started/install/):
 
-- **Python 3 on `PATH`.** Without it, the gates and the session-startup injection silently do not
-  run. <kbd>/ca:doctor</kbd> catches this as an interpreter-resolution failure.
+- **Python 3 on `PATH`.** Without it, Claude Code can be inactive, Codex's hook handler fails loud,
+  and Pi blocks mutation. Run the host-native doctor command and require a healthy interpreter and
+  live-fire row before treating the adapter as active.
 - **`git config user.email` set.** Overrides and ADRs are attributed to this identity; an unset email
   is asked for once, interactively, rather than silently defaulting.
 

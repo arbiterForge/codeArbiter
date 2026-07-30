@@ -1,6 +1,14 @@
 ---
 title: Build a Feature End to End
 description: "Take an idea through spec, plan, test-first implementation, and pull request using the /ca:feature lane."
+journey:
+  level: Practitioner
+  time: 15 min
+  outcome: "Run feature work from one-line intent through approved spec, obligation-mapped TDD, review, commit, and PR."
+  prerequisites:
+    - An opted-in repository
+    - A behavior-changing product idea
+  proof: "You can locate each persisted artifact and name the gate that must clear before the next phase begins."
 ---
 
 `/ca:feature` is the one entry point for new implementation work. Run it with a one-line description of what you want built:
@@ -8,6 +16,12 @@ description: "Take an idea through spec, plan, test-first implementation, and pu
 ```text
 /ca:feature "add rate limiting to the public search endpoint"
 ```
+
+<div class="ca-callout ca-callout--host">
+  <p class="ca-callout__label">Host syntax</p>
+  Claude Code uses <code>/ca:feature "…"</code>; Codex uses <code>$ca-feature "…"</code>;
+  Pi uses <code>/ca-feature "…"</code>. The persisted artifacts and gates are the same.
+</div>
 
 The lane runs in order and gates at each transition. Nothing moves until the previous gate clears.
 Each piece loads only when the lane reaches it: the command you run, the skills it routes through,
@@ -23,6 +37,24 @@ and the author and reviewer agents it dispatches on demand.
   />
   <figcaption>The <code>/ca:feature</code> lane by piece type: commands (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
 </figure>
+
+## First: full lane, small lane, or resume
+
+The command classifies the request before it writes anything.
+
+| Path | When it applies | First durable evidence |
+|---|---|---|
+| **Full lane** | Any scope touch, new public surface, new dependency, more than two implementation files, or uncertainty | An approved spec under `.codearbiter/specs/` |
+| **Small lane** | At most two implementation files, no sensitive or architectural scope touch, and one to three testable criteria | Your confirmed mini-spec plus one append-only `triage.log` line |
+| **Resume** | A matching spec or plan already exists | The existing pipeline re-enters at its furthest completed checkpoint |
+
+The small lane trims ceremony, not gates: it still starts with test obligations, clears review and
+commit-gate, and finishes through a PR. If the classifier is uncertain, the full lane wins.
+
+An interrupted run is never silently restarted. Invoke the feature command with the same description,
+or invoke it bare to list resumable pipelines. A plan with unfinished tasks resumes execution; a
+fully accepted plan resumes at commit-gate; an approved spec without a plan resumes planning; an
+unapproved spec returns to its approval gate.
 
 ## Refine the Idea Into a Spec
 
@@ -76,6 +108,30 @@ Once all batches are committed, run:
 ```
 
 The [pr command](/reference/commands/pr/) runs the review fleet and clears every BLOCK-level finding before the PR is staged. A PR is never written directly to the default branch. Unresolved BLOCK findings are resolved first, not deferred.
+
+## Know that the lane is complete
+
+Before calling the feature done, verify all of these:
+
+- the spec's acceptance criteria are unchanged or explicitly re-approved;
+- every plan task is `ACCEPTED`;
+- each acceptance criterion maps to a passing test obligation;
+- the focused checks and the repository's full verification are green on the current head;
+- commit-gate created the commit from an explicitly reviewed stage;
+- the PR exists and its BLOCK-level review findings are clear.
+
+The presence of code or a green focused test is not completion. The persisted spec, plan status,
+fresh verification, commit, and PR are the proof chain.
+
+## Common stops
+
+| Stop | What it means | Resume path |
+|---|---|---|
+| A blocking `[CONFIRM-NN]` | The user owns an unresolved fact | Answer it, update the spec or plan, and resume the same slug |
+| A task has no exact path or verification | The plan is underspecified | Return that task to writing-plans |
+| The test does not fail in Red | The obligation is not demonstrated | Repair the test or the premise before implementation |
+| A reviewer reports BLOCK | The batch is not accepted | Resolve the finding and rerun fresh verification |
+| The session ends | Durable state remains on disk | Reinvoke feature; do not start over |
 
 ## Related
 

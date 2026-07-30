@@ -1,0 +1,117 @@
+---
+import proofMp4 from "../assets/proof/hook-proof.mp4";
+import proofWebm from "../assets/proof/hook-proof.webm";
+import proofPoster from "../assets/proof/hook-proof-poster.webp";
+import proof from "../assets/proof/hook-proof.json";
+
+const capturedDate = new Intl.DateTimeFormat("en", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+}).format(new Date(proof.capturedAt));
+const shortDigest = proof.sourceSha256.slice(0, 12);
+---
+
+<figure class="ca-hook-proof">
+  <video
+    class="ca-hook-proof__video"
+    controls
+    muted
+    playsinline
+    preload="metadata"
+    poster={proofPoster.src}
+    aria-label="Rendered replay of a captured direct invocation of the shipped pre-bash hook blocking broad Git staging"
+  >
+    <source src={proofWebm} type="video/webm" />
+    <source src={proofMp4} type="video/mp4" />
+    Your browser cannot play the replay. The exact invocation result follows below.
+  </video>
+  <figcaption>
+    <span><strong>Verified direct hook invocation</strong> · {capturedDate}</span>
+    <span><code>{shortDigest}</code> source digest</span>
+  </figcaption>
+  <details>
+    <summary>Read the exact invocation result</summary>
+    <div class="ca-hook-proof__transcript">
+      <p><strong>Attempted tool call</strong> <code>{proof.invocation.attemptedCommand}</code></p>
+      <pre>{proof.invocation.stderr}</pre>
+      <p><strong>Exit</strong> {proof.invocation.exitCode} · command not executed · no staged files</p>
+      <p><strong>Audit side effect</strong> The block appended an H-03 event to <code>.codearbiter/gate-events.log</code>.</p>
+      <p><strong>Capture source</strong> <code>{proof.source}</code> at SHA-256 <code>{proof.sourceSha256}</code>.</p>
+      <p><strong>Evidence boundary</strong> This directly invoked the shipped hook with the host payload shape. It does not prove a host discovered or registered that hook.</p>
+    </div>
+  </details>
+</figure>
+
+<style>
+  .ca-hook-proof {
+    margin: 0;
+  }
+
+  .ca-hook-proof__video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--ca-line-strong);
+    border-radius: var(--ca-radius-sm);
+    background: var(--ca-bg);
+    box-shadow: inset 0 1px rgb(255 255 255 / 3%);
+  }
+
+  figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    justify-content: space-between;
+    margin-block-start: 0.7rem;
+    color: var(--ca-ink-muted);
+    font-size: var(--ca-text-xs);
+    line-height: 1.5;
+  }
+
+  figcaption strong {
+    color: var(--ca-positive);
+  }
+
+  figcaption code {
+    color: var(--ca-ink-soft);
+  }
+
+  details {
+    margin-block-start: 0.7rem;
+    border-block-start: 1px solid var(--ca-line);
+  }
+
+  summary {
+    padding-block: 0.75rem 0.15rem;
+    color: var(--ca-brand-bright);
+    font-size: var(--ca-text-xs);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .ca-hook-proof__transcript {
+    padding-block: 0.4rem;
+    color: var(--ca-ink-muted);
+    font-size: var(--ca-text-xs);
+  }
+
+  .ca-hook-proof__transcript p {
+    margin: 0.5rem 0;
+    line-height: 1.55;
+  }
+
+  .ca-hook-proof__transcript pre {
+    max-height: 9rem;
+    margin: 0.5rem 0;
+    padding: 0.7rem;
+    overflow: auto;
+    border: 1px solid var(--ca-line);
+    border-radius: 0.35rem;
+    color: var(--ca-danger);
+    background: var(--ca-bg);
+    font-size: 0.68rem;
+    white-space: pre-wrap;
+  }
+</style>

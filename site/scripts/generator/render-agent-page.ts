@@ -5,6 +5,7 @@ import { yamlDescriptionLine } from "./yaml-quote";
 import { renderSourceEmbed } from "./render-source-embed";
 import { renderGatesTable } from "./render-gates-table";
 import { renderRelatedLinks } from "./render-related-links";
+import { renderReferenceLead } from "./render-reference-lead";
 
 /**
  * Render an agent reference page as Starlight-compatible markdown.
@@ -23,13 +24,15 @@ export function renderAgentPage(input: PageInput): string {
   const description = input.description ?? "";
   const descriptionLine = yamlDescriptionLine(description);
   const frontMatterFields = descriptionLine
-    ? `title: ${input.name}\n${descriptionLine}`
-    : `title: ${input.name}`;
+    ? `title: ${input.name} agent\n${descriptionLine}`
+    : `title: ${input.name} agent`;
   const frontMatter = `---\n${frontMatterFields}\n---`;
   const modelLine = `- **Model tier:** ${modelTier(input.model)}`;
   const toolsLine = `- **Tools:** ${formatToolsList(input.tools)}`;
 
-  const sections: string[] = [`${description}\n\n${modelLine}\n${toolsLine}`];
+  const sections: string[] = [
+    `${renderReferenceLead("agent", input.name, description)}\n\n${modelLine}\n${toolsLine}`,
+  ];
 
   if (curated?.body) {
     sections.push(curated.body.trim());

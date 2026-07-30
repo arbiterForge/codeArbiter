@@ -1,74 +1,147 @@
 ---
-title: Quickstart
-description: "Opt a repository into codeArbiter enforcement, run a first command through a gated lane, and watch the commit gate block a real crypto mistake."
+title: Protect Your First Repository
+description: "Opt a disposable repository into codeArbiter, verify the live hook path with doctor, and run a first host-native command."
+journey:
+  level: Foundation
+  time: 15 min
+  outcome: "a disposable, opted-in repository with a verified SessionStart briefing, real H-03 hook block, and first status report."
+  prerequisites:
+    - One supported host adapter installed
+    - Python 3 on PATH
+    - Git identity configured
+  proof: "Doctor sees BLOCKED [H-03], and status names the branch, stage, tasks, questions, and overrides."
 ---
 
-This walkthrough works in Claude Code and Codex against the same `.codearbiter/` state. Where a
-step shows `/ca:<name>`, Codex uses `$ca-<name>`. The
-[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) records the live parity test
-and intentional differences.
+This walkthrough produces a reproducible proof without relying on a fictional application bug or
+an agent choosing a particular implementation. You will create a disposable Git repository, opt it
+in, restart the host, and let `doctor` exercise a harmless blocking hook.
 
-This tutorial walks three steps in order: opt a repository into enforcement, run a first command through a gated lane, and watch a gate catch a mistake before it reaches version control.
+## Before you start
 
-Before starting, complete the plugin install from the [Install](/getting-started/install/) page.
-Python 3 must be on your `PATH` and `git config user.email` must be set. Verify the host with
-`/ca:doctor` in Claude Code or `$ca-doctor` in Codex.
+Complete [Install](/getting-started/install/) for one host. If you have more than one supported
+host installed, use [Choose Your Host](/getting-started/choose-your-host/) and review the
+[Claude Code and Codex parity boundary](/getting-started/claude-code-and-codex/) before continuing.
+Confirm:
 
-## 1. Opt the Repo In
-
-Open the target repository in Claude Code or Codex and run the host-native form:
-
-```text
-/ca:init
-$ca-init
+```sh
+python3 --version || python --version
+git config user.email
 ```
 
-`/ca:init` scaffolds `.codearbiter/` at the repo root and routes to a context populator for your situation. See [Opt a Repository In](/guides/opt-in-a-repo/) for the two routing paths and how to confirm the `arbiter: enabled` activation flag. With that flag set in a properly closed frontmatter block, the next session opens with the orchestrator active and every gate armed.
+Both commands must print a usable value. The examples below use `ca-first-repo`; delete that
+directory when you finish.
 
-## 2. Run a First Command
+## 1. Create a disposable repository
 
-Send the first real work through a gated [lane](/glossary/#lane):
-
-```text
-/ca:fix "webhook retries create duplicate payment records"
+```sh
+mkdir ca-first-repo
+cd ca-first-repo
+git init
+printf "# My first protected repository\n" > README.md
+mkdir -p src
+printf 'print("hello from a real source file")\n' > src/app.py
+git add README.md src/app.py
+git commit -m "chore: create disposable repository"
 ```
 
-The `fix` lane routes to the test-first skill. An author agent reads the relevant source, writes a failing test, then writes the minimum implementation to pass it.
+On PowerShell, create the same fixture with:
 
-As the author writes `payment.ts`, the [advisory](/glossary/#advisory) hook fires immediately after the `Write` call. You should see it in the tool-call output before the write is even done:
-
-```text
-REMINDER [H-09]: Crypto/TLS pattern detected. Run the crypto-compliance check + dispatch auth-crypto-reviewer (no MD5/SHA1/DES/3DES/RC2/RC4/Blowfish; do not disable TLS verification). The commit will block until the gate records a pass.
+```powershell
+New-Item -ItemType Directory ca-first-repo
+Set-Location ca-first-repo
+git init
+Set-Content -Encoding utf8 README.md "# My first protected repository"
+New-Item -ItemType Directory src
+Set-Content -Encoding utf8 src/app.py 'print("hello from a real source file")'
+git add README.md src/app.py
+git commit -m "chore: create disposable repository"
 ```
 
-`[H-09]` is a gate ID. Look up any gate ID you see bracketed like this in the
-[hook gates reference](/reference/hooks-gates/).
+You should have one clean initial commit and a meaningful source file under `src/`. That source file
+is load-bearing: context creation intentionally ignores a README-only repository when it decides
+between brownfield scouting and greenfield decomposition.
 
-The author wrote `createHash("md5")` to derive an idempotency key from the payment payload. MD5 is in codeArbiter's banned-primitive list. The advisory does not stop the write. It tells you the commit will. (The scan behind this gate is language-agnostic: a Python `hashlib.md5` call trips the identical H-09/H-09b pair.)
+## 2. Opt the repository in
 
-## 3. Observe the Gate Catch
+Open the directory in your installed host and invoke the native command:
 
-The tests pass. The author proposes to commit the work. Run it:
+| Host | Command |
+|---|---|
+| Claude Code | `/ca:init` |
+| Codex | `$ca-init` |
+| Pi | `/ca-init` |
 
-```text
-/ca:commit
+For a repository with source, init routes to context creation. Review the generated project context
+and complete the activation flow. Before leaving the session, verify
+`.codearbiter/CONTEXT.md` begins with a closed frontmatter block containing:
+
+```yaml
+---
+arbiter: enabled
+---
 ```
 
-The commit gate runs `pre-bash.py` before the `git commit` shell call fires. It reads the staged diff, finds the MD5 line, and exits 2. You should see the commit rejected:
+Commit the initialized state through the host-native commit command if the context flow has not
+already done so.
+
+## 3. Start a fresh session
+
+Close the current host session and open a new one in the same repository. SessionStart should show
+the codeArbiter briefing: project stage, blocking questions, in-flight tasks, and the command-catalog
+pointer.
+
+If you see no briefing, stop here and use [Troubleshooting](/guides/troubleshooting/). Do not treat
+installed files as proof that hooks are active.
+
+## 4. Run the live-fire verification
+
+Invoke doctor:
+
+| Host | Command |
+|---|---|
+| Claude Code | `/ca:doctor` |
+| Codex | `$ca-doctor` |
+| Pi | `/ca-doctor` |
+
+Doctor checks the interpreter, installed payload, cache, activation state, and hook wiring. Its
+live-fire probe attempts a harmless `git add --all --dry-run`. The pre-tool hook should refuse the
+broad add with a message containing:
 
 ```text
-BLOCKED [H-09b]: This commit introduces crypto/TLS changes, but no security-gate pass is recorded (.codearbiter/.markers/security-gate-passed). Run the crypto-compliance gate (it records the pass), then commit.
+BLOCKED [H-03]
 ```
 
-`.codearbiter/.markers/security-gate-passed` is a [marker](/glossary/#marker), a small file that
-records a gate's pass state so a later gate can check it without re-running the review. `[H-09b]` is
-the blocking counterpart to the `[H-09]` advisory above; see the
-[hook gates reference](/reference/hooks-gates/) for both.
+The probe changes no files and stages nothing. That block is the important result: it proves the
+host discovered the hook, delivered the tool payload, ran the shared guard, and honored the deny
+verdict.
 
-The `git commit` did not run. The mistake did not reach version control.
+Doctor then reports the probe as healthy. If the shell command runs instead of being blocked, follow
+the remediation ladder printed by doctor and the matching symptom in
+[Troubleshooting](/guides/troubleshooting/).
 
-To clear the gate, the crypto-compliance skill reviews the flagged line. MD5 as a hashing primitive is a banned pattern; the skill proposes replacing it with `createHash("sha256")`, which is on the approved list. Once the fix lands and the tests still pass, run `/ca:commit` again. You should see it succeed, with a line confirming the security-gate pass was recorded and bound to the changed line.
+## 5. Run your first real command
 
-That is the commit gate working as designed: the advisory surfaces the problem at write time, and the hard gate closes before the mistake ships.
+Ask for the current governed state:
 
-For the full catalog of blocking gates, see [Enforcement & Security](/enforcement/). For the ideas behind lanes and gate strengths, see [Concepts](/concepts/).
+| Host | Command |
+|---|---|
+| Claude Code | `/ca:status` |
+| Codex | `$ca-status` |
+| Pi | `/ca-status` |
+
+The report should name the current branch, maturity stage, open tasks, open questions, and overrides
+since the last checkpoint. It is read-only.
+
+From here, choose the work in front of you:
+
+- [Build a feature end to end](/guides/feature-lane/)
+- [Fix a confirmed defect](/reference/commands/fix/)
+- [Run an autonomous sprint](/guides/autonomous-sprints/)
+- [Add a dependency safely](/guides/adding-a-dependency/)
+- [Record an architecture decision](/guides/recording-adrs/)
+
+## Clean up
+
+When you are done, leave the repository directory and delete `ca-first-repo`. It contains only the
+disposable Git history and generated `.codearbiter/` state you just reviewed. Removing it does not
+uninstall the plugin from your host.

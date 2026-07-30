@@ -117,7 +117,7 @@ describe("generate", () => {
       const result = generate(pluginDir, outDir);
       const anyPage = result.pages[0];
       expect(anyPage.markdown).toContain("## Source");
-      expect(anyPage.markdown).toContain('<details class="ca-source">');
+      expect(anyPage.markdown).toContain('<details class="ca-source" data-pagefind-ignore>');
     });
 
     it("cleans stale files out of outDir before writing", () => {
@@ -192,6 +192,8 @@ describe("generate", () => {
         "[How a Request Flows](/overview/#how-a-request-flows)",
       );
       expect(indexContent).toMatch(/command routes to an owning skill.*specialist agents/);
+      expect(indexContent).toContain("Use the catalog from left to right.");
+      expect(indexContent).toContain("agents are not a second command surface");
     });
 
     it("renders one markdown table per non-empty collection, headers matching the collection", () => {

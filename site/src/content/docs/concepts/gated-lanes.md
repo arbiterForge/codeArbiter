@@ -1,6 +1,13 @@
 ---
 title: The Gated-Lane Model
 description: "How codeArbiter assigns every kind of work to a sanctioned path with gates scaled to its risk, and what distinguishes soft gates from hard gates."
+journey:
+  level: "Foundation"
+  time: "8 minutes"
+  outcome: "Choose the correct lane for a change and recognize who can clear its next gate."
+  prerequisites:
+    - "Read What Is codeArbiter"
+  proof: "You can classify a real repository task without reaching for override or implementation first."
 ---
 
 Every kind of work has a **lane**: a sanctioned path with gates scaled to its risk, and the
@@ -20,6 +27,21 @@ at the spec rather than working around at the gate.
   <img src="/codeArbiter/diagrams/gate-model.svg" alt="Gate model. A soft gate surfaces a decision bubble and waits for the user. A hard gate is a closed cross-bar that is never auto-decided." loading="lazy" />
   <figcaption>Soft gates surface and wait. Hard gates stop, and only the user can clear them.</figcaption>
 </figure>
+
+## Choose a lane from the work, not its size
+
+| Situation | Start here | Why |
+|---|---|---|
+| Add user-visible behavior | `/ca:feature` | A spec and failing test establish the new contract. |
+| Repair a defect with a confirmed cause | `/ca:fix` | A regression test must fail before the minimal repair. |
+| Find the cause of an unexplained failure | `/ca:debug` | Investigation comes before selecting a change lane. |
+| Restructure without changing behavior | `/ca:refactor` | Existing tests must remain unmodified and prove parity. |
+| Change docs, bump a dependency, or revert | `/ca:chore` | The lighter lane scales evidence to non-feature work. |
+| Explore a disposable idea | `/ca:spike` | The branch cannot merge or become a PR. |
+| Run a governed multi-task campaign | `/ca:sprint` | One approved spec and plan drive logged autonomous decisions. |
+
+The number of changed lines does not choose the lane. A one-line behavior change is still a feature
+or fix; a 500-line generated reference refresh can still be a chore.
 
 ## How many gates, concretely
 
@@ -58,3 +80,15 @@ merge to the default branch is forbidden.
 The one sanctioned way around any of this is [`/ca:override`](/reference/commands/override/):
 a deliberate bypass that appends one line to `overrides.log` and proceeds. It is logged, not
 silent.
+
+## Check your understanding
+
+Take the next item from your issue tracker and write down three things before invoking a command:
+
+1. the lane that owns it;
+2. the first evidence that lane must produce;
+3. whether the next stop is a soft decision or a hard gate.
+
+Then compare your choice with the command's [generated reference page](/reference/). A correct
+classification is the proof for this module; invoking an override because the wrong lane stopped
+you is not.

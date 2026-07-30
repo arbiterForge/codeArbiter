@@ -1,6 +1,13 @@
 ---
-title: Hardening History
-description: "Design notes on why codeArbiter's enforcement gates are built the way they are, plus a dated log of hardening work as it shipped."
+title: Selected Hardening Notes
+description: "Design notes for several important enforcement choices, plus selected historical examples; the changelog remains the complete release record."
+journey:
+  level: "Reference"
+  time: "8 minutes"
+  outcome: "Explain why selected controls use digest binding, single writers, and fail-closed reads."
+  prerequisites:
+    - "Enforcement & Security"
+  proof: "You can connect each design choice to the race, drift, or bypass it prevents."
 ---
 
 [Enforcement & Security](/enforcement/) states what is enforced. This page explains why some of those gates are built the way they are, and records the hardening work that shaped them over time.
@@ -28,9 +35,10 @@ This design replaced an earlier pattern of a separate, lagging `chore(board)` PR
 
 `/ca:standup` and `/ca:doctor` each run a read-only reconciliation sweep and surface any merged-but-not-flipped task; they report findings without writing to the board themselves.
 
-## Hardening Log
+## Selected Historical Examples
 
-Dated record of enforcement hardening as it shipped, newest first. Versions correspond to `CHANGELOG.md` entries in the repository root.
+These examples explain the defenses established in v2.5.2; they are not a complete hardening log.
+Use the generated [Changelog](/changelog/) for the current, chronological release record.
 
 - **v2.5.2 (2026-06-25)** — Broadened crypto detection: `CRYPTO_RE` now flags `rc2` and `blowfish` alongside MD5, SHA-1, DES, 3DES, and RC4, plus TLS-disable forms (`rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED`, `verify=False`, `InsecureSkipVerify`).
 - **v2.5.2 (2026-06-25)** — Compound-name secret detection: `SECRET_RE` now matches compound keys (`aws_secret_access_key`, `client_secret`, `private_key`) and known token shapes (`AKIA…`, `ghp_…`, `sk-ant-…`).
@@ -43,3 +51,4 @@ Dated record of enforcement hardening as it shipped, newest first. Versions corr
 - [Enforcement & Security](/enforcement/): the user-facing statement of what is enforced.
 - [ADRs and the Decision Log](/concepts/adrs/)
 - [Hooks reference](/hooks/)
+- [Changelog](/changelog/)

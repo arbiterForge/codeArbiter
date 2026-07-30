@@ -1,6 +1,13 @@
 ---
 title: "The .codearbiter/ Directory Reference"
 description: "Every file and directory under .codearbiter/, what writes it, what reads it, and what happens if it's deleted."
+journey:
+  level: "Power user"
+  time: "12 minutes"
+  outcome: "Locate the authoritative project-state artifact for a task, decision, audit, or recovery."
+  prerequisites:
+    - "An initialized repository"
+  proof: "You can answer where a spec, plan, decision, gate event, checkpoint, and audit packet live."
 ---
 
 `.codearbiter/` is codeArbiter's project-state store: a root-level directory, outside `.claude/`,
@@ -14,30 +21,32 @@ this directory is where to look.
 Enforcement itself is gated on one file in here: `CONTEXT.md`. Everything else described below
 only matters once that file carries `arbiter: enabled`.
 
-This page documents every file and directory a stock install produces or reads. Some appear only
-once the feature that uses them first runs (`.markers/`, `.provenance/`, `spikes/`, `reports/`);
-those are noted below.
+This page documents every stock path the scaffold or a governed lane produces or reads. Some appear
+only while a flow is active or after the owning feature first runs (`.decompose-draft/`,
+`.markers/`, `.provenance/`, `spikes/`, `reports/`); those lifecycles are noted below.
 
 ## At a glance
 
 | Path | Written by | Read by | Editable by hand? |
 |---|---|---|---|
 | `CONTEXT.md` | `/ca:init`, `/ca:decompose`, `/ca:create-context` | every enforcement hook (`arbiter_active()`), the orchestrator | Yes, but the frontmatter is guarded (see below) |
+| `code-map.md` | `/ca:create-context`, `/ca:decompose`, commit-gate provenance heal | feature/task orientation, context checks | Yes; refresh source-backed claims through `/ca:context-check` |
 | `open-tasks.md` | `/ca:task` only | `/ca:status`, the statusline, `SessionStart` | No: guarded to `/ca:task` |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
 | `specs/*.md` | `brainstorming` skill (via `/ca:feature`, `/ca:sprint`) | `writing-plans`, `/ca:status` | Yes |
 | `plans/*.md` | `writing-plans` skill | `executing-plans`, `subagent-driven-development`, `/ca:status` | Yes |
+| `.decompose-draft/` | `/ca:decompose` while an interview is in progress | `/ca:decompose` on resume | No need: temporary resumable interview state |
 | `checkpoints/*.md` | `checkpoint-aggregator` agent (`/ca:checkpoint`) | `/ca:audit`, `/ca:status`-adjacent reads | Yes |
 | `audits/*.md` | `/ca:audit` | humans (report only) | Yes |
-| `reports/<run-id>/` | `/ca:tribunal` | `/ca:tribunal` on resume, the filing gate | Yes, but not while a run is in flight |
+| `reports/` | `/ca:tribunal` and named handoff/evidence workflows | the owning workflow on resume, humans | Yes, but not while an owning run is in flight |
 | `sprint-log.md` | `/ca:sprint` | `/ca:status`, `/ca:audit` | No: append-only, guarded (H-05) |
 | `overrides.log` | `/ca:override`, `/ca:dev` entry/exit | statusline, `/ca:status`, `/ca:audit`, staleness-warn | No: append-only, guarded (H-05) |
 | `triage.log` | `/ca:feature` small-lane triage | `/ca:metrics`, `/ca:audit` | No: append-only, guarded (H-05) |
 | `gate-events.log` | every `block()`/`remind()`/`warn()` call in the hooks | (durable sink; no reader ships yet) | No: append-only, guarded (H-05) |
 | `.markers/` | `security-pass.py`, `migration-pass.py`, `/ca:dev`, `/ca:adr` | the commit-gate hooks (`pre-bash.py`, `pre-write.py`, `pre-edit.py`) | No: guarded, and hand-writing one is friction and an audit trail, not a proof (see below) |
 | `.provenance/*.json` | `context-creation`, `decompose`, `context-check` (re-scout/re-baseline) | `SessionStart` (drift line), `commit-gate` (auto-heal) | Not by hand: regenerate via `/ca:context-check` |
-| `security-controls.md`, `tech-stack.md`, `coding-standards.md` | `/ca:init` / `/ca:create-context` / `/ca:decompose`, kept current by hand or `/ca:context-check` | every reviewer agent, the crypto/secret gates | Yes |
+| `security-controls.md`, `tech-stack.md`, `coding-standards.md` | `/ca:create-context` or `/ca:decompose`, kept current by hand or `/ca:context-check` | every reviewer agent, the crypto/secret gates | Yes |
 | `last-checkpoint` | `checkpoint-aggregator` agent | `/ca:status`, the statusline (overrides-since-checkpoint) | Not normally: it's a counter, not a note |
 | `spikes/*.md` | `/ca:spike` | humans, `/ca:feature` (seeds `brainstorming`) | Yes |
 
@@ -80,6 +89,20 @@ issue #159). The file that turns every gate off can't itself be edited past the 
 enforcement, nothing loads). The rest of `.codearbiter/` is untouched on disk; recreating
 `CONTEXT.md` (or running `/ca:init` again) reactivates it against whatever state remains.
 
+## code-map.md
+
+A source-backed orientation map from repository concerns to paths and roles. Context creation or
+decomposition writes it after inspecting the codebase; feature and planning lanes read it when
+present so task discovery begins from known seams instead of a whole-tree search.
+
+The map is not an access-control list. Its claims carry provenance and can become stale when source
+paths move. `/ca:context-check` reports that drift and offers re-scout, re-baseline, or defer.
+
+**Writers:** `/ca:create-context`, `/ca:decompose`, and provenance auto-heal.
+**Readers:** feature/task planning and context-check flows.
+**Editable by hand?** Yes, but source claims should be re-proven.
+**Delete it:** governed lanes fall back to repository discovery; enforcement remains active.
+
 ## open-tasks.md
 
 The [board](/glossary/#board): one top-level `- ` bullet per task, in one of three states:
@@ -99,7 +122,7 @@ it (statusline, `/ca:status`) reports zero until tasks are re-added.
 
 The record of unresolved `[CONFIRM-NN]` items: numbered placeholders for a question only the
 user can answer, per the terminology lock in `ORCHESTRATOR.md` §0.1. An open `CONFIRM-NN` blocks
-stage promotion until it's resolved; it is never guessed at or resolved inside an ADR. The
+the dependent work until it is resolved; it is never guessed at or resolved inside an ADR. The
 `SessionStart` hook and the statusline both count occurrences here.
 
 **Writers:** the orchestrator, when a skill surfaces a genuine unknown. **Readers:** `/ca:status`,
@@ -148,6 +171,20 @@ the ACCEPTED-vs-total count for an in-progress plan.
 plan from tasks already marked accepted. **Delete it:** an in-progress feature loses its
 resumption point; `/ca:status` can no longer report that pipeline's progress.
 
+## .decompose-draft/
+
+Temporary, resumable state for a greenfield decomposition interview. Each completed layer is
+persisted here before the final project documents are assembled, so a closed session can continue
+without repeating accepted answers.
+
+The directory is working state, not a second project context. A successful decomposition consumes
+the draft into the normal scaffold and removes the temporary directory.
+
+**Writers/readers:** `/ca:decompose` only.
+**Editable by hand?** No useful reason; resume through the command.
+**Delete it:** an unfinished interview loses its saved progress and must restart. A completed
+scaffold is unaffected because the directory should already be gone.
+
 ## checkpoints/
 
 One dated report per `/ca:checkpoint` sweep (`YYYY-MM-DD.md`), written by the
@@ -174,18 +211,18 @@ presence, since `/ca:audit` re-derives everything from the underlying logs and f
 
 ## reports/
 
-`/ca:tribunal`'s working directory: `.codearbiter/reports/<run-id>/`, where `<run-id>` is
-`<UTC-date>-<scope-slug>`. A fresh run creates the directory and opens `run.jsonl`; a resumed run
-reuses the same `run-id` (the date is the run's creation date and never changes on resume). Every
-lens's findings are written one file per finding, plus append-only triage/run logs, so an
-interrupted deep audit picks back up from disk instead of restarting. Tribunal writes are confined
-to this directory until the filing gate. It never edits, refactors, or commits project code.
+Durable evidence and handoff material owned by a named workflow. Tribunal uses
+`.codearbiter/reports/<run-id>/`, where `<run-id>` is `<UTC-date>-<scope-slug>`. A fresh run opens
+`run.jsonl`; a resumed run reuses the same ID. Findings are written one file at a time with
+append-only triage/run logs so an interruption resumes from disk.
 
-**Writers:** `/ca:tribunal` only. **Readers:** `/ca:tribunal` itself, on resume, and the filing
-gate that turns approved findings into GitHub issues. **Editable by hand?** Not while a run is
-in flight: you'd desync the resumable state. **Delete it:** an in-flight tribunal run can no
-longer resume and restarts from scratch on next invocation; completed runs' local record is gone
-(filed GitHub issues, if any, are unaffected: they live on GitHub, not here).
+Other governed campaigns may write a clearly named report or handoff directory here. The owning
+spec or plan defines its schema; the directory is not an unstructured dumping ground.
+
+**Writers:** the owning governed workflow. **Readers:** that workflow on resume and humans reviewing
+its evidence. **Editable by hand?** Not while an owning run is active.
+**Delete it:** an in-flight workflow may lose its resumption record; completed evidence disappears.
+Filed GitHub issues, if any, are unaffected.
 
 ## sprint-log.md
 
@@ -300,8 +337,10 @@ re-baselined and a fresh provenance file is written.
 
 ## Other scaffold docs
 
-`security-controls.md`, `tech-stack.md`, and `coding-standards.md` round out the scaffold `/ca:init`
-produces. They're living reference documents, not audit logs: hand-editable, read by every
+`/ca:init` creates the activation file, open boards, override log, and checkpoint counter. It then
+routes an existing codebase to `/ca:create-context` or a greenfield repository to `/ca:decompose`.
+Those context-building flows produce `security-controls.md`, `tech-stack.md`, and
+`coding-standards.md`. They are living reference documents, not audit logs: hand-editable, read by every
 reviewer agent (`security-controls.md` especially: the crypto-compliance and secret-handling gates
 read it before every review, and it's level 1 in the conflict hierarchy). `last-checkpoint` is a
 one-line counter (the override count at the time of the last `/ca:checkpoint`) that the statusline

@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "codeArbiter documentation site (MVP) — Astro Starlight + auto-generated reference",
+  "description": "Professional codeArbiter product documentation with source-backed generated reference.",
   "scripts": {
     "gen": "tsx scripts/gen.ts",
+    "capture:proof": "tsx scripts/capture-hook-proof.ts",
     "predev": "npm run gen",
     "dev": "astro dev",
     "prebuild": "npm run gen",

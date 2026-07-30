@@ -1,6 +1,14 @@
 ---
 title: Pi
 description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi Git-only install, supported versions, and version pinning."
+journey:
+  level: "Foundation"
+  time: "12 minutes"
+  outcome: "Install a pinned ca-pi preview, trust the project, opt in a repository, and verify a real gate."
+  prerequisites:
+    - "Pi 0.80.10 or newer"
+    - "Node.js 22.19 or newer"
+  proof: "Pi reports the pinned extension and a disposable broad-stage probe is blocked by H-03."
 ---
 
 codeArbiter ships `ca-pi` as a third sibling plugin, alongside `ca` (Claude Code) and `ca-codex`
@@ -72,6 +80,16 @@ supported-version expansion fingerprints, Python/core/bridge health, child finge
 wrappers, and the H-03 wrapper self-test. The module-identity row proves self-consistency between the
 operator-launched Pi CLI, imported module, package root, and reported version. It does **not** prove
 publisher authenticity. Verify the source separately with `pi list` and `pi config`.
+
+## Rich Footer
+
+In an interactive, trusted session, `ca-pi` installs a rich footer that preserves Pi's native
+session information and adds codeArbiter state and usage metrics. There is no separate wiring
+command. Non-interactive modes do not install footer UI.
+
+On session shutdown, the extension restores Pi's native footer. If custom-footer initialization
+fails or the required interactive UI surface is absent, it also restores the native footer and
+prints a bounded direction to run `/ca-doctor`; governance does not depend on the footer rendering.
 
 ## Trust and Security
 

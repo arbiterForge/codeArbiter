@@ -1,6 +1,14 @@
 ---
 title: Install
 description: "Install codeArbiter for Claude Code, Codex, or Pi, opt into the shared .codearbiter/ store, and verify enforcement."
+journey:
+  level: Foundation
+  time: 10–15 min
+  outcome: "one installed and trusted host adapter, plus a clear boundary between plugin installation and repository activation."
+  prerequisites:
+    - Python 3 on PATH
+    - Git identity configured
+  proof: "The host lists the adapter, and doctor reports the cached payload version after repository opt-in."
 ---
 
 codeArbiter ships four sibling plugins from one marketplace. Three are governance hosts: `ca` (Claude
@@ -16,8 +24,10 @@ and [Compatibility](/getting-started/compatibility/) has the full host-differenc
 
 Confirm both before installing:
 
-- **Python 3 on `PATH`**: every enforcement hook is pure Python. Without it, the gates and the
-  session-startup injection silently do not run. Verify with:
+- **Python 3 on `PATH`**: every shared enforcement hook is pure Python. The failure posture is
+  host-specific: Claude Code can leave an unresolved hook inactive, Codex reports a loud handler
+  failure, and Pi blocks mutating calls with an interpreter breadcrumb. None of those states is
+  active governance. Verify before installation with:
 
   ```sh
   python3 --version || python --version

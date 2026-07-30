@@ -53,7 +53,7 @@ describe("renderSkillPage", () => {
   it("always renders a source embed, even with no curated content", () => {
     const md = renderSkillPage(input({ name: "tdd", description: "d" }));
     expect(md).toContain("## Source");
-    expect(md).toContain('<details class="ca-source">');
+    expect(md).toContain('<details class="ca-source" data-pagefind-ignore>');
   });
 
   it("merges curated body, gates table, and related links", () => {

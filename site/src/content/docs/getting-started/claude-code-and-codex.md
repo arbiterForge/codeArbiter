@@ -1,12 +1,19 @@
 ---
 title: Claude Code + Codex
 description: Verified shared enforcement and project-context parity across Claude Code and Codex, including evidence, installation status, and intentional host differences.
+journey:
+  level: "Reference"
+  time: "9 minutes"
+  outcome: "Choose safely between Claude Code and Codex while sharing one governed repository state."
+  prerequisites:
+    - "Choose Your Host"
+  proof: "You can name the shared enforcement core, the host-specific command form, and the concurrency boundary."
 ---
-
-# Shared enforcement and project-context parity across Claude Code and Codex
 
 **Documentation launch: 2026-07-12.** This page announces the verified 2026-07-11 Codex support
 result while retaining the public-marketplace smoke test as a release gate.
+
+**Shared enforcement and project-context parity across Claude Code and Codex.**
 
 Of codeArbiter's four sibling plugins, this page covers two: `ca` for Claude Code and `ca-codex` for
 OpenAI Codex (see [Pi](/getting-started/pi/) for the third governance host, currently a Feature Forge

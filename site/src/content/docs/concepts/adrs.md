@@ -1,6 +1,13 @@
 ---
 title: ADRs and the Decision Log
 description: "How architecturally significant choices are captured as numbered, dated, user-attributed Architecture Decision Records with supersede chains and decision-health reporting."
+journey:
+  level: Power user
+  time: 8 min
+  outcome: "the ability to distinguish ADR files from the append-only decision ledger, trace active governs globs, and follow a forward-only supersession chain."
+  prerequisites:
+    - Know why the decision matters to later work
+  proof: "You can find the active ADR for a path and explain why the prior record was not rewritten."
 ---
 
 Architecturally significant choices are written down as **Architecture Decision Records**:
@@ -46,3 +53,15 @@ for the full gate catalog.
 `/ca:adr-status` MAY additionally dispatch
 [`decision-challenger`](/reference/agents/decision-challenger/), an optional adversarial
 reviewer that red-teams each decision and assigns it a confidence score from 1 to 5.
+
+## Use the Records in Practice
+
+When a write reminder says a path is governed by an ADR, open that numbered record and verify three
+things before continuing: its status is `accepted`, the edited path matches a `governs:` glob, and no
+later ADR supersedes it. Use `/ca:adr-status --adr N` (Codex: `$ca-adr-status --adr N`) when the
+chain is not obvious.
+
+Use an ADR for a durable architectural choice future work must obey. Do not use one for a temporary
+task, a debugging hypothesis, or an option you have not decided. Record a decision through the
+[ADR workflow](/guides/recording-adrs/); use reconcile when competing artifacts still need SMARTS
+arbitration.

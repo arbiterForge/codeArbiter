@@ -1,6 +1,13 @@
 ---
 title: Enforcement & Security
 description: "How codeArbiter enforces its gates at the tool-call boundary: the activation contract, the blocking commit-time gates, advisory reminders, and the fail-loud posture."
+journey:
+  level: "Power user"
+  time: "12 minutes"
+  outcome: "Distinguish deterministic hook enforcement from orchestrator policy and diagnose the right layer."
+  prerequisites:
+    - "The gated-lane model"
+  proof: "Given a blocked action, you can name its hook flank, gate id, and sanctioned remediation."
 ---
 
 codeArbiter's gates are not advice the model can talk past. They run as Claude Code or Codex
@@ -44,8 +51,11 @@ These run in `pre-bash.py` on `PreToolUse(Bash|PowerShell)` (plus the Write/Edit
 | **H-09b / H-10b** | Crypto and secret commit gate. A commit that introduces a crypto/TLS or secret line is blocked unless the crypto-compliance / secret-handling gate has recorded a pass for **those exact lines**. |
 | **H-11** | ADRs are authored only via `/ca:adr`. Both the shell flank (redirects, `cp`, `rm`, `sed -i` into `decisions/`) and the Write/Edit flank are guarded; the skill drops a fresh authoring marker first. |
 | **H-14** | Migration review. A commit staging a database migration is blocked unless a migration-review pass is recorded for that file's current content. |
+| **H-18 / H-19** | Repository activation and gate-pass markers cannot be disabled or forged through shell, Write, Edit, or patch operations. |
+| **H-20** | `--no-verify` and its supported short forms cannot bypass the repository's pre-commit or pre-push backstop. |
+| **H-21** | A write or edit envelope the host adapter cannot decompose into guardable per-file operations is refused instead of being allowed through uninspected. Retry as a plain supported patch or split the operation. |
 
-H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. The board-sync behavior implied by the commit gate (only `/ca:task` writes `open-tasks.md`) follows from ADR-0008. For the design rationale behind both, see [Hardening History](/concepts/hardening-history/).
+H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. The board-sync behavior implied by the commit gate (only `/ca:task` writes `open-tasks.md`) follows from ADR-0008. For the design rationale behind both, see [Selected Hardening Notes](/concepts/hardening-history/).
 
 ## Advisory, Non-Blocking Reminders
 
@@ -62,7 +72,7 @@ These are advisory **because they bite at a later boundary, not at commit.** A b
 
 ## Sandbox Isolation for Untrusted Repositories
 
-codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-root (`--user 1000:1000`), with a `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, and a fail-closed network policy (default `--network none`; an unknown policy is a hard error, not a silent pass-through). No host bind mounts; the docker socket is never mounted. For how this posture evolved release over release, see [Hardening History](/concepts/hardening-history/).
+codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-root (`--user 1000:1000`), with a `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, and a fail-closed network policy (default `--network none`; an unknown policy is a hard error, not a silent pass-through). No host bind mounts; the docker socket is never mounted. For selected rationale behind this posture, see [Selected Hardening Notes](/concepts/hardening-history/).
 
 <figure class="ca-diagram">
   <img

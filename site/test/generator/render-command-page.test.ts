@@ -61,7 +61,7 @@ describe("renderCommandPage", () => {
   it("always renders a source embed, even with no curated content", () => {
     const md = renderCommandPage(input({ name: "commit", description: "d" }));
     expect(md).toContain("## Source");
-    expect(md).toContain('<details class="ca-source">');
+    expect(md).toContain('<details class="ca-source" data-pagefind-ignore>');
     expect(md).toContain("plugins/ca/commands/commit.md");
     expect(md).toContain("v2.8.11");
   });
@@ -113,5 +113,32 @@ describe("renderCommandPage", () => {
     const md = renderCommandPage(input({ name: "commit", description: "d" }));
     expect(md).not.toContain("## Gates");
     expect(md).not.toContain("## Related");
+  });
+
+  it("renders only the host syntaxes present in the shipped adapter catalogs", () => {
+    const md = renderCommandPage(
+      input({
+        name: "statusline",
+        description: "d",
+        commandHosts: { claude: true, codex: false, pi: false },
+      }),
+    );
+    expect(md).toContain("<code>/ca:statusline</code>");
+    expect(md).not.toContain("<code>$ca-statusline</code>");
+    expect(md).not.toContain("<code>/ca-statusline</code>");
+    expect(md.match(/Not shipped/g)).toHaveLength(2);
+  });
+
+  it("can show a command shared by Claude Code and Pi but absent from Codex", () => {
+    const md = renderCommandPage(
+      input({
+        name: "prune",
+        description: "d",
+        commandHosts: { claude: true, codex: false, pi: true },
+      }),
+    );
+    expect(md).toContain("<code>/ca:prune</code>");
+    expect(md).toContain("<code>/ca-prune</code>");
+    expect(md).not.toContain("<code>$ca-prune</code>");
   });
 });

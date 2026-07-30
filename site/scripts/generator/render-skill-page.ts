@@ -3,6 +3,7 @@ import { yamlDescriptionLine } from "./yaml-quote";
 import { renderSourceEmbed } from "./render-source-embed";
 import { renderGatesTable } from "./render-gates-table";
 import { renderRelatedLinks } from "./render-related-links";
+import { renderReferenceLead } from "./render-reference-lead";
 
 /**
  * Render a skill reference page as Starlight-compatible markdown.
@@ -20,10 +21,12 @@ export function renderSkillPage(input: PageInput): string {
   const description = input.description ?? "";
   const descriptionLine = yamlDescriptionLine(description);
   const frontMatterFields = descriptionLine
-    ? `title: ${input.name}\n${descriptionLine}`
-    : `title: ${input.name}`;
+    ? `title: ${input.name} skill\n${descriptionLine}`
+    : `title: ${input.name} skill`;
 
-  const sections: string[] = [description];
+  const sections: string[] = [
+    renderReferenceLead("skill", input.name, description),
+  ];
 
   if (curated?.body) {
     sections.push(curated.body.trim());

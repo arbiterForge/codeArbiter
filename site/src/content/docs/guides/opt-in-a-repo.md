@@ -1,6 +1,15 @@
 ---
 title: Opt a Repository In
 description: "Enable codeArbiter enforcement on an existing or new repository: scaffold .codearbiter/ and set the activation flag."
+journey:
+  level: Foundation
+  time: 10–20 min
+  outcome: "a repository-owned state store populated for the project and an activation flag that all supported hosts recognize."
+  prerequisites:
+    - A supported host adapter installed
+    - Python 3 on PATH
+    - Git identity configured
+  proof: "A fresh session shows the startup briefing, and doctor completes its harmless live-fire probe."
 ---
 
 The repository opt-in is shared by Claude Code and Codex. Run `/ca:init` in Claude Code or
@@ -24,11 +33,13 @@ The plugin installs once, globally. Enabling enforcement is a per-repo step you 
 
 ## 1. Scaffold the State Store
 
-In a Claude Code session with the target repository open, run:
+Open the target repository in one supported host and invoke its native command:
 
-```text
-/ca:init
-```
+| Host | Command |
+|---|---|
+| Claude Code | `/ca:init` |
+| Codex | `$ca-init` |
+| Pi | `/ca-init` |
 
 `/ca:init` creates `.codearbiter/` at the repo root and routes to the right context builder for your situation. If the directory already exists, it will not overwrite what is there.
 
@@ -60,6 +71,34 @@ Two things to verify:
 
 A file with no frontmatter at all is silently dormant. A frontmatter block that opens but never closes surfaces a malformed-state error rather than treating the repo as disabled.
 
-Once the flag is present and the block is closed, the next Claude Code session opens with the orchestrator active and every gate armed.
+Once the flag is present and the block is closed, the next supported-host session opens with the
+orchestrator active and every gate armed.
+
+## 4. Restart and Prove Enforcement
+
+Close the current session and open a fresh one in the same repository. The first response should
+include the codeArbiter startup briefing: stage, blocking questions, in-flight tasks, and a pointer
+to the command catalog.
+
+Then run doctor using the same host syntax convention:
+
+| Host | Command |
+|---|---|
+| Claude Code | `/ca:doctor` |
+| Codex | `$ca-doctor` |
+| Pi | `/ca-doctor` |
+
+Doctor's harmless H-03 probe should be blocked. If the briefing is absent or the probe executes,
+the repository is not proven active. Follow [Troubleshooting](/guides/troubleshooting/) before
+starting governed work.
+
+## Common Stops
+
+| Symptom | Meaning | Recovery |
+|---|---|---|
+| Init reports an existing `.codearbiter/` directory | Project state already exists | Inspect it; do not overwrite another session's context |
+| The repo has source but no initialized marker | Brownfield context is incomplete | Complete the routed create-context flow |
+| Frontmatter opens but does not close | Activation state is malformed | Repair the frontmatter structure, then restart |
+| Fresh session has no briefing | Plugin trust, interpreter, cache, or activation failed | Run doctor and use the symptom table in Troubleshooting |
 
 For the full catalog of what the gates enforce and how they fail, see [Enforcement & Security](/enforcement/).

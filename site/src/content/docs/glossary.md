@@ -1,6 +1,12 @@
 ---
 title: Glossary
 description: "One-to-three-sentence definitions of codeArbiter's core terms, each linking to the page that explains it fully."
+journey:
+  level: "Reference"
+  time: "Lookup"
+  outcome: "Use codeArbiter terms with their exact, non-overlapping meanings."
+  prerequisites: []
+  proof: "You can distinguish command, skill, agent, phase, stage, layer, gate, and severity."
 ---
 
 Short definitions for terms used across these docs. Each entry links to the page that explains

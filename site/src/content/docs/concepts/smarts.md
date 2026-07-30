@@ -1,6 +1,13 @@
 ---
 title: SMARTS
 description: "The structured, multi-lens scoring rubric codeArbiter uses when weighing options during autonomous runs, with every verdict recorded in an append-only sprint log."
+journey:
+  level: Power user
+  time: 8 min
+  outcome: "the ability to read, challenge, and audit a SMARTS verdict without mistaking the rubric for a complete business decision."
+  prerequisites:
+    - Understand autonomous sprint boundaries
+  proof: "You can explain all six lenses, the three recommendation strengths, and which non-SMARTS concerns must be surfaced separately."
 ---
 
 When codeArbiter must weigh options, and especially when `/ca:sprint` decides "as the user"

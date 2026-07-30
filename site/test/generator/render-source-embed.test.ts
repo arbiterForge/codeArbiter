@@ -29,13 +29,13 @@ describe("renderSourceEmbed", () => {
   it("pins the View in repo link to the given version tag", () => {
     const md = renderSourceEmbed("x", "plugins/ca/commands/sprint.md", "2.8.11");
     expect(md).toContain(
-      '<a href="https://github.com/arbiterForge/codeArbiter/blob/v2.8.11/plugins/ca/commands/sprint.md">View in repo</a>',
+      '<a href="https://github.com/arbiterForge/codeArbiter/blob/main/plugins/ca/commands/sprint.md">View in repo</a>',
     );
   });
 
   it("renders the details/summary structure with the repo-relative path and version", () => {
     const md = renderSourceEmbed("x", "plugins/ca/commands/sprint.md", "2.8.11");
-    expect(md).toContain('<details class="ca-source">');
+    expect(md).toContain('<details class="ca-source" data-pagefind-ignore>');
     expect(md).toContain(
       "<summary>Source — <code>plugins/ca/commands/sprint.md</code> (v2.8.11)</summary>",
     );

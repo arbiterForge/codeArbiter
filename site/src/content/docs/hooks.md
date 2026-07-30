@@ -1,6 +1,13 @@
 ---
 title: Hooks Reference
 description: "A complete per-hook reference for codeArbiter: every registered hook across the three governance hosts, the gates it enforces, its fail posture, and the non-event scripts behind the commands."
+journey:
+  level: "Reference"
+  time: "10 minutes"
+  outcome: "Locate a hook by event, entry point, or gate id and trace it to source."
+  prerequisites:
+    - "Enforcement & Security"
+  proof: "You can take one live hook message and find its event, implementation file, and detailed gate entry."
 ---
 
 The `ca`, `ca-codex`, and `ca-pi` plugins share the same Python guard core and `.codearbiter/`
@@ -90,7 +97,8 @@ For the exact, word-for-word message text a hook prints for every gate ID (gener
   - **H-05:** a Write is a full overwrite, so any Write to an audit log (`overrides.log`/`triage.log`/`sprint-log.md`/`gate-events.log`) is blocked (append with Edit or `>>`).
   - **H-11:** a Write to any `.md` under `decisions/` is blocked unless a fresh `adr-authoring-active` marker is present (set by `/ca:adr`).
   - **H-18 / H-19:** a Write that would disable the `CONTEXT.md` activation switch, or a Write to a `.codearbiter/.markers/` gate-pass token, is blocked (the same integrity rules pre-bash enforces on the shell flank).
-- **Why:** Closes the Write flank of the audit-trail, ADR-authoring, activation-switch, and gate-marker integrity rules.
+  - **H-21:** a host write envelope that cannot be decomposed into guardable per-file operations is blocked. Retry as a plain supported patch or split the operation; an opaque envelope never passes uninspected.
+- **Why:** Closes the Write flank of the audit-trail, ADR-authoring, activation-switch, gate-marker, and opaque-envelope integrity rules.
 - **Fail posture:** Blocking (exit 2).
 
 ---
@@ -103,7 +111,8 @@ For the exact, word-for-word message text a hook prints for every gate ID (gener
   - **H-05:** on an audit log, MultiEdit is blocked outright (cannot express a verifiable append), an Edit with an empty `old_string` is blocked (it can never be a pure append), a `replace_all` Edit is rejected outright, and an Edit is admitted only as a strict **tail append**: `new_string` must equal the current content plus an appended tail, with `old_string` occurring exactly once. This closes the earlier hole where a mid-file insertion or a multi-site suffix rewrite passed as an "append".
   - **H-11:** the same fresh `adr-authoring-active` marker requirement for `decisions/` `.md` files.
   - **H-18 / H-19:** the same activation-switch and gate-marker protections as the Write flank.
-- **Why:** Closes the Edit/MultiEdit flank; an append-only log accepts only verifiable tail appends.
+  - **H-21:** an edit operation that cannot be normalized into guarded per-file operations is blocked and must be retried in a supported, decomposable form.
+- **Why:** Closes the Edit/MultiEdit flank; an append-only log accepts only verifiable tail appends, and an opaque target set is never assumed safe.
 - **Fail posture:** Blocking (exit 2).
 
 ---

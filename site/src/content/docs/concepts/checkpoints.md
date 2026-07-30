@@ -1,6 +1,14 @@
 ---
 title: Checkpoints
 description: "Periodic, read-only sweeps of the whole codebase by the reviewer fleet, consolidated into dated reports to catch drift and latent issues between feature work."
+journey:
+  level: Power user
+  time: 10–30 min
+  outcome: "a repeatable whole-tree review cadence, a dated triaged report, and a clear boundary between checkpoint findings and required change gates."
+  prerequisites:
+    - An initialized repository
+    - Enough time for six read-only review lenses
+  proof: "A dated checkpoint report exists, every finding has severity and location, and follow-up work is routed separately."
 ---
 
 A **checkpoint** is a periodic, read-only sweep of the whole codebase by the reviewer fleet.
@@ -40,6 +48,23 @@ report.
 
 A checkpoint is a report, not a promotion gate. It enforces no sign-off and blocks nothing by
 itself.
+
+## Run and Act on a Checkpoint
+
+Invoke `/ca:checkpoint` in Claude Code, `$ca-checkpoint` in Codex, or `/ca-checkpoint` in Pi. Let the
+read-only fleet finish; do not edit in parallel and then mistake moving source for a stable review
+target.
+
+Review `.codearbiter/checkpoints/YYYY-MM-DD.md` from highest severity down:
+
+1. Confirm each finding still points to the named file and line.
+2. Route a confirmed defect through the fix lane, a structural change through refactor, and new
+   behavior through feature. A checkpoint does not implement its own findings.
+3. Triage `[NEEDS-TRIAGE]` items into a scoped follow-up or an explicit defer condition.
+4. Run status and confirm the override counter reset captured by `.codearbiter/last-checkpoint`.
+
+If a reviewer fails or its evidence is incomplete, the report must say so. A partially populated
+file is not equivalent to a clean sweep.
 
 ## The deep counterpart
 

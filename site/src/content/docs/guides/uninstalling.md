@@ -1,6 +1,13 @@
 ---
 title: "Uninstall & Disable"
 description: "How to turn codeArbiter off in one repository, or remove it entirely: the activation flag, the plugin uninstall command, the statusline, and the git-hooks backstop."
+journey:
+  level: "Practitioner"
+  time: "12 minutes"
+  outcome: "Disable one repository or remove a host plugin without losing project records or another tool's git hooks."
+  prerequisites:
+    - "Know whether you want repository dormancy, one-host removal, or complete removal"
+  proof: "A fresh session is dormant or the host plugin is absent, retained state is intentional, and only codeArbiter-owned hook shims were removed."
 ---
 
 codeArbiter's pitch is enforcement, so it documents the exit. This page covers three levels: turning
@@ -8,13 +15,25 @@ it off in one repository, removing it globally, and what to check before uninsta
 Claude Code and Codex share `.codearbiter/`, so removing either plugin leaves project context and
 audit history available to the other host.
 
+## Choose the exit you actually want
+
+| Goal | Action | Repository records |
+|---|---|---|
+| Pause governance in one repository | Change only that repository's activation flag | Kept |
+| Stop using one host | Uninstall only that host's plugin | Kept and usable by another host |
+| Remove codeArbiter from the machine | Remove every installed host plugin, the Claude statusline, and managed git-hook shims | Kept unless you separately archive and delete them |
+| Erase project governance history | Archive, review, then delete `.codearbiter/` as a separate destructive action | Deleted |
+
+Do not delete `.codearbiter/` merely to uninstall a plugin. It contains project-owned history, not
+plugin cache.
+
 ## Disable in One Repository
 
 Enforcement in a repository is controlled by a single flag: `arbiter: enabled` in `.codearbiter/CONTEXT.md`
 frontmatter. Every enforcement hook checks that flag through `arbiter_active()` and exits immediately,
 without running any gate logic, when it is absent or set to anything other than `enabled`. Turning it
 off makes the plugin genuinely dormant in that repository: the orchestrator persona never loads, and
-every `PreToolUse`/`PreToolUse`-guarded hook returns before doing anything.
+every `PreToolUse`-guarded hook returns before doing anything.
 
 The flag is deliberately hard to flip from inside a session, by design. **H-18** blocks a shell
 redirect, `Write`, or `Edit` that would change `arbiter: enabled` to `arbiter: disabled` (or otherwise
@@ -129,6 +148,12 @@ Consider whether the audit trail in `.codearbiter/overrides.log` and `.codearbit
 value to keep even after you stop using the plugin day to day: it's a plain-file record, readable
 without codeArbiter installed.
 
+Before deletion, confirm `git rev-parse --show-toplevel` names the intended repository, inspect
+`git status --short -- .codearbiter`, and copy any audit or decision records you must retain. On
+Windows PowerShell the scoped equivalent is `Remove-Item -LiteralPath .codearbiter -Recurse` from
+the verified repository root. This deletion is not required for dormancy or plugin removal and is
+not recoverable unless Git or your archive contains the files.
+
 ### 3. Remove the Statusline
 
 If you wired the statusline with <kbd>/ca:statusline</kbd>, remove it **before** uninstalling the
@@ -204,3 +229,17 @@ what to check first.
 3. If a commit is staged but hasn't cleared `commit-gate`, either finish the commit through the plugin
    first or be aware you're now committing without the gate's verification, secret-scan, and
    behavioral-proof checks. Nothing enforces those once the plugin is gone.
+
+## Final verification
+
+Start a fresh session after the chosen exit:
+
+- for repository dormancy, confirm no orchestrator startup state appears and a read-only status check
+  does not report an active arbiter;
+- for one-host removal, confirm that host no longer lists the plugin and that another installed host
+  can still read the retained `.codearbiter/` state;
+- for full removal, confirm the Claude statusline no longer points into the plugin cache and inspect
+  `pre-commit` and `pre-push` before removing only files with the codeArbiter sentinel.
+
+The proof is a fresh-session observation plus an intentional decision about retained repository
+state, not merely a successful uninstall command.

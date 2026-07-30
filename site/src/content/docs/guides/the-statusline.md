@@ -1,10 +1,19 @@
 ---
 title: "Set Up the Statusline"
 description: "What codeArbiter's statusline shows, and how to wire it into Claude Code so every session shows usage metrics and enabled repos show the active project state."
+journey:
+  level: "Practitioner"
+  time: "10 minutes"
+  outcome: "Wire, read, diagnose, and remove the Claude Code statusline safely."
+  prerequisites:
+    - "Claude Code with the ca plugin installed"
+  proof: "Status reports the codeArbiter-owned command, a fresh render shows live values, and uninstall restores prior settings."
 ---
 
-> **Claude Code only.** Codex has no statusline surface. Its SessionStart briefing presents the
-> shared `.codearbiter/` governance state instead; this is an intentional host difference.
+> **Claude Code only for this settings-wired bar.** Codex has
+> no statusline surface and presents the shared `.codearbiter/` state in its SessionStart briefing.
+> Interactive Pi sessions install codeArbiter's rich footer automatically and restore Pi's native
+> footer on shutdown or when the custom footer cannot initialize.
 
 codeArbiter ships a token-aware statusline for Claude Code: a compact, full-width box that shows
 your session usage in every repo and, in an [arbiter-enabled](/glossary/#arbiter-enabled-flag) one, the live project state. It is
@@ -182,3 +191,5 @@ Open the file in a text editor, restore valid JSON, then re-run `/ca:statusline`
 ---
 
 For the `statusline.py` renderer and `wire-statusline.py` script reference, see [Hooks reference: non-event scripts](/hooks/#non-event-scripts).
+For Pi's automatic rich-footer behavior and its fail-soft native fallback, see
+[Pi host support](/getting-started/pi/).

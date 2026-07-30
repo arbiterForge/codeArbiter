@@ -23,3 +23,6 @@
 2026-07-19T21:45:48.4804940-04:00 | BY: SUaDtL@users.noreply.github.com | GATE: append-only sprint-log byte rewrite | REASON: Content-preserving CRLF-to-LF normalization of the already appended sprint records is required for the mandatory git diff --check gate; exact text and order remain unchanged; user explicitly approved this immediate action.
 2026-07-30T07:22:18.5387323-04:00 | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: —
 [2026-07-30T11:48:22Z] | BY: session-cleanup | HOST: codex | DEV: exit | NOTE: cleared by SessionStart (prior session ended mid-dev without $ca-arbiter)
+2026-07-30T07:24:09.5507998-04:00 | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: isolated docs-site worktree
+[2026-07-30T09:25:46.2296648-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: resume docs-site work after upstream replay removed local marker
+[2026-07-30T09:43:51.6342839-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: exit

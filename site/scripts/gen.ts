@@ -7,6 +7,7 @@ import { generate } from "./generator/generate";
 import { extractHookGates } from "./generator/extract-hook-gates";
 import { renderHooksReference, buildEventMap, type HooksJson } from "./generator/render-hooks-reference";
 import { renderChangelog } from "./generator/render-changelog";
+import { renderConfigurationReference } from "./generator/configuration-reference";
 
 const here = dirname(fileURLToPath(import.meta.url)); // site/scripts
 const repoRoot = resolve(here, "..", ".."); // -> repo root
@@ -56,6 +57,10 @@ if (skipped.length > 0) {
     console.log(`  skipped (non-literal tag): ${s.file}:${s.line}`);
   }
 }
+
+const configurationOutPath = join(outDir, "configuration.md");
+writeFileSync(configurationOutPath, renderConfigurationReference());
+console.log(`Generated configuration reference -> ${configurationOutPath}`);
 
 // On-site changelog (docs-site-overhaul spec, decision f): the repo-root
 // CHANGELOG.md is the single source of truth for release history — this emits

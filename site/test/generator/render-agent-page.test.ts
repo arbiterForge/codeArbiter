@@ -70,7 +70,7 @@ describe("renderAgentPage", () => {
   it("always renders a source embed, even with no curated content", () => {
     const md = renderAgentPage(input({ name: "myagent", tools: "Read" }));
     expect(md).toContain("## Source");
-    expect(md).toContain('<details class="ca-source">');
+    expect(md).toContain('<details class="ca-source" data-pagefind-ignore>');
   });
 
   it("places Model tier / Tools before the curated body", () => {

@@ -1,6 +1,12 @@
 ---
 title: What Is codeArbiter
 description: How codeArbiter orchestrates shared gated workflows in Claude Code, Codex, and Pi.
+journey:
+  level: "Foundation"
+  time: "6 minutes"
+  outcome: "Explain the command-to-skill-to-agent flow and choose the next learning module."
+  prerequisites: []
+  proof: "You can identify who routes, who implements, who reviews, and who resolves a gate."
 ---
 
 codeArbiter ships four sibling plugins from one marketplace. Three are governance hosts: `ca` for

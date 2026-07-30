@@ -1,6 +1,13 @@
 ---
 title: What Is the Feature Forge
 description: "The two-axis model that governs per-feature maturity independently of the version payload: SemVer for the whole plugin, the Feature Forge for each feature's preview or stable status."
+journey:
+  level: Labs
+  time: 5 min
+  outcome: "the ability to read version and feature-maturity labels together and decide whether preview risk fits your repository."
+  prerequisites:
+    - Know the plugin and host version you are running
+  proof: "You can name the preview's opt-in, off switch, evidence gap, and stable-promotion bar."
 ---
 
 SemVer answers one question: did the plugin payload change? A version bump means every user
@@ -25,6 +32,20 @@ Promotion is driven by evidence, not by a calendar. A preview feature graduates 
 real-world use shows it is safe to default on, and that judgment is recorded as a tracked
 decision rather than assumed. The forge keeps the cost of trying something new low and the
 cost of trusting it honest.
+
+## What preview means for you
+
+A preview feature must stay dormant until you opt in. Before enabling one, read its live entry,
+identify the environment variable or command that arms it, and note how to turn it off. Start with
+the least consequential mode when one exists, such as transcript pruning's `dry` mode. A preview
+label is not permission to weaken a hard gate or to accept undocumented spending.
+
+If behavior changes while its opt-in is absent, treat that as a defect. Disable the feature, record
+the observed version and host, and follow [Troubleshooting](/guides/troubleshooting/).
+
+After enabling a preview, verify the inverse as well: remove its flag or environment variable, start
+a fresh session when startup state is involved, and prove the feature is dormant again. A preview
+whose off switch cannot be demonstrated is not safe to evaluate in consequential work.
 
 ## Related
 
