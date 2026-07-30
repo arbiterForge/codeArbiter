@@ -34,10 +34,14 @@
   position: fixed;
   z-index: 0;
   inset: 4rem 0 0;
-  background:
+  background-color: var(--ca-bg);
+  background-image:
     linear-gradient(90deg, rgb(9 13 18 / 96%) 0%, rgb(9 13 18 / 66%) 45%, rgb(9 13 18 / 82%) 100%),
     linear-gradient(180deg, rgb(9 13 18 / 18%) 0%, rgb(9 13 18 / 72%) 52%, rgb(9 13 18 / 94%) 100%),
-    var(--ca-hero-art) center top / cover no-repeat;
+    var(--ca-hero-art);
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
   pointer-events: none;
   content: "";
 }
@@ -819,6 +823,10 @@
 }
 
 @media (max-width: 48rem) {
+  .ca-landing::before {
+    background-position: 57% top;
+  }
+
   .ca-docs-rail {
     width: 31px;
   }

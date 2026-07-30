@@ -30,7 +30,14 @@ describe("first-class product splash", () => {
     expect(indexMdx).toMatch(/class="ca-landing"[^>]*--ca-hero-art/);
     expect(indexMdx).not.toMatch(/class="ca-splash"[^>]*--ca-hero-art/);
     expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*position:\s*fixed;/s);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*background-repeat:\s*no-repeat;/s);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*background-size:\s*cover;/s);
+    expect(landingCss).toMatch(/\.ca-landing::before\s*\{[^}]*background-position:\s*center top;/s);
     expect(landingCss).not.toContain(".ca-splash::before");
+    expect(landingCss).not.toContain("background-attachment");
+    expect(landingCss).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.ca-landing::before\s*\{[^}]*background-position:/,
+    );
   });
 
   it("opens the canonical docs sidebar from a persistent splash-only rail", () => {
