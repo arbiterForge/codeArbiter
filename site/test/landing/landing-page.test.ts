@@ -49,7 +49,7 @@ describe("first-class product splash", () => {
     expect(docsRail).toContain("<Sidebar />");
     expect(docsRail).not.toContain("<SidebarSublist");
     expect(docsRail).not.toContain('<nav aria-label="Documentation sections">');
-    expect(docsRail).toContain('class="ca-docs-tray"');
+    expect(docsRail).toContain('class="ca-docs-tray not-content"');
     expect(docsRail).toContain('aria-controls="ca-docs-drawer"');
     expect(docsRail).toContain('aria-expanded="false"');
     expect(docsRail).toContain('id="ca-docs-drawer"');
