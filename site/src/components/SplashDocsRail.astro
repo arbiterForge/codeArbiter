@@ -1,5 +1,5 @@
 ---
-import SidebarSublist from "./SidebarSublist.astro";
+import Sidebar from "./Sidebar.astro";
 
 const { sidebar } = Astro.locals.starlightRoute;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -18,22 +18,22 @@ const overviewHref = `${basePath}/overview/`;
 
 <div class="ca-docs-tray" data-ca-docs-tray>
   <aside
-    class="ca-docs-drawer"
+    class="ca-docs-drawer sidebar-pane not-content"
     id="ca-docs-drawer"
     aria-label="Documentation navigation"
     aria-hidden="true"
     inert
     tabindex="-1"
   >
-    <nav class="ca-docs-drawer__nav" aria-label="Documentation sections">
+    <div class="sidebar-content sl-flex">
       {
         sidebar.length > 0 ? (
-          <SidebarSublist sublist={sidebar} />
+          <Sidebar />
         ) : (
           <a class="ca-docs-drawer__direct" href={overviewHref}>What Is codeArbiter</a>
         )
       }
-    </nav>
+    </div>
   </aside>
   <button
     class="ca-docs-rail__opener"
