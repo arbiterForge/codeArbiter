@@ -72,6 +72,19 @@
   --ca-danger: #ff7b72;
   --ca-preview: #ed946d;
 
+  /*
+   * Diagram palette
+   *
+   * The generated SVGs resolve these values at build time so screenshots,
+   * downloaded assets, and the live site retain the same visual language.
+   */
+  --ca-diagram-canvas: var(--ca-bg);
+  --ca-diagram-surface: var(--ca-bg-panel);
+  --ca-diagram-grid: var(--ca-bg-soft);
+  --ca-diagram-line: var(--ca-line-strong);
+  --ca-diagram-copy: var(--ca-ink-soft);
+  --ca-diagram-muted: var(--ca-ink-muted);
+
   /* Starlight bridge */
   --sl-font: var(--ca-font-sans);
   --sl-font-mono: var(--ca-font-mono);

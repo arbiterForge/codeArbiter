@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Professional codeArbiter product documentation with source-backed generated reference.",
   "scripts": {
-    "gen": "tsx scripts/gen.ts",
+    "gen": "tsx scripts/gen.ts && npm run gen:diagrams && npm run audit:diagrams",
+    "gen:diagrams": "tsx scripts/generate-diagrams.ts",
     "capture:proof": "tsx scripts/capture-hook-proof.ts",
     "predev": "npm run gen",
     "dev": "astro dev",
@@ -16,6 +17,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "link-audit": "tsx scripts/link-audit.ts",
+    "audit:diagrams": "tsx scripts/diagram-audit.ts",
     "coverage": "vitest run --coverage"
   },
   "overrides": {

@@ -1,109 +1,64 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 300" role="img"
-     aria-label="Commit-gate's nine phases as a left-to-right gated pipeline: permission, branch, classification, verification, behavioral proof, diff review, selective stage, message, commit. Every phase is a hard BLOCK gate. Phase 5.5, provenance auto-heal, is a conditional side-lane that only runs when a tracked source drifted, then rejoins before diff review. The sanctioned bypass for a BLOCK is /ca:override, which appends one line to overrides.log and proceeds.">
-  <title>Commit-gate: nine gated phases, permission through commit</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1230 540" role="img" data-diagram-system="ca-v2">
+  <title>Commit-gate: nine hard-gated phases</title>
+  <desc>Permission, branch, classification, verification, behavioral proof, diff review, selective stage, message, and commit form a nine-phase pipeline. Provenance auto-heal is a conditional side lane after behavioral proof.</desc>
   <defs>
-    <linearGradient id="cg-bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0b0f14"/>
-      <stop offset="1" stop-color="#131a23"/>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#090d12"/>
+      <stop offset="1" stop-color="#0e141c"/>
     </linearGradient>
-    <pattern id="cg-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6edf3" stroke-opacity="0.028" stroke-width="1"/>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <filter id="cg-glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="2.4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <marker id="cg-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#46505a"/>
-    </marker>
-    <marker id="cg-arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 Z" fill="#d29922"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
     </marker>
   </defs>
-
-  <rect width="1260" height="300" fill="url(#cg-bg)"/>
-  <rect width="1260" height="300" fill="url(#cg-grid)"/>
-  <rect x="8" y="8" width="1244" height="284" fill="none" stroke="#e3b341" stroke-opacity="0.14" stroke-width="1"/>
-
-  <text x="30" y="34" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="10" letter-spacing="3" fill="#8b95a2">COMMIT-GATE</text>
-  <text x="30" y="55" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
-        font-size="15" fill="#e6edf3" font-weight="600">nine phases, each a hard BLOCK gate</text>
-
-  <!-- main pipeline row -->
-  <g font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif">
-    <!-- 1 Permission -->
-    <rect x="24" y="100" width="110" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="79" y="123" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Permission</text>
-    <text x="79" y="140" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">1</text>
-    <line x1="134" y1="130" x2="168" y2="130" stroke="#46505a" stroke-width="1.5" marker-end="url(#cg-arrow)"/>
-
-    <!-- 2 Branch -->
-    <rect x="168" y="100" width="110" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="223" y="123" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Branch</text>
-    <text x="223" y="140" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">2</text>
-    <line x1="278" y1="130" x2="312" y2="130" stroke="#46505a" stroke-width="1.5" marker-end="url(#cg-arrow)"/>
-
-    <!-- 3 Classification -->
-    <rect x="312" y="100" width="110" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="367" y="123" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Classify</text>
-    <text x="367" y="140" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">3</text>
-    <line x1="422" y1="130" x2="456" y2="130" stroke="#46505a" stroke-width="1.5" marker-end="url(#cg-arrow)"/>
-
-    <!-- 4 Verification -->
-    <rect x="456" y="100" width="110" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="511" y="123" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Verify</text>
-    <text x="511" y="140" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">4 · test/lint/secrets</text>
-    <line x1="566" y1="130" x2="600" y2="130" stroke="#46505a" stroke-width="1.5" marker-end="url(#cg-arrow)"/>
-
-    <!-- 5 Behavioral proof -->
-    <rect x="600" y="100" width="110" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="655" y="118" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Behavioral</text>
-    <text x="655" y="132" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">proof</text>
-    <text x="655" y="148" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">5</text>
-    <line x1="710" y1="130" x2="744" y2="130" stroke="#46505a" stroke-width="1.5" marker-end="url(#cg-arrow)"/>
-
-    <!-- 6 Diff review -->
-    <rect x="744" y="100" width="110" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="799" y="118" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Diff</text>
-    <text x="799" y="132" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">review</text>
-    <text x="799" y="148" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">6</text>
-    <line x1="854" y1="130" x2="888" y2="130" stroke="#46505a" stroke-width="1.5" marker-end="url(#cg-arrow)"/>
-
-    <!-- 7 Selective stage -->
-    <rect x="888" y="100" width="110" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="943" y="118" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Selective</text>
-    <text x="943" y="132" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">stage</text>
-    <text x="943" y="148" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">7</text>
-    <line x1="998" y1="130" x2="1032" y2="130" stroke="#46505a" stroke-width="1.5" marker-end="url(#cg-arrow)"/>
-
-    <!-- 8 Message -->
-    <rect x="1032" y="100" width="105" height="60" rx="4" fill="#1c2430" stroke="#46505a" stroke-width="1.4"/>
-    <text x="1084" y="123" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="600">Message</text>
-    <text x="1084" y="140" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#828d9a">8</text>
-    <line x1="1137" y1="130" x2="1171" y2="130" stroke="#d29922" stroke-width="1.5" marker-end="url(#cg-arrow-gold)"/>
-
-    <!-- 9 Commit -->
-    <g filter="url(#cg-glow)">
-      <rect x="1171" y="96" width="66" height="68" rx="4" fill="#131a23" stroke="#d29922" stroke-width="1.6"/>
-    </g>
-    <text x="1204" y="126" text-anchor="middle" font-size="12" fill="#e6edf3" font-weight="700">Commit</text>
-    <text x="1204" y="144" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#e3b341">9</text>
-  </g>
-
-  <!-- BLOCK marker row above pipeline -->
-  <text x="640" y="86" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1.5" fill="#c04040">every phase: gate BLOCK on failure</text>
-
-  <!-- 5.5 conditional side lane -->
-  <path d="M 655 160 L 655 196 L 799 196 L 799 160" fill="none" stroke="#828d9a" stroke-width="1.2" stroke-dasharray="4 4"/>
-  <rect x="700" y="200" width="150" height="52" rx="4" fill="#171d26" stroke="#828d9a" stroke-width="1.2" stroke-dasharray="3 3"/>
-  <text x="775" y="221" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#c8d0d8">5.5 · Provenance</text>
-  <text x="775" y="235" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#c8d0d8">auto-heal</text>
-  <text x="775" y="248" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="8" letter-spacing="1" fill="#828d9a">conditional · only on drift</text>
-  <path d="M 799 200 L 799 165" fill="none" stroke="#828d9a" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#cg-arrow)"/>
-
-  <!-- override note -->
-  <text x="1204" y="280" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace"
-        font-size="9" letter-spacing="1" fill="#828d9a">a BLOCK clears only via /ca:override — logged, never silent</text>
+  <rect width="1230" height="540" rx="14" fill="url(#canvas)"/>
+  <rect width="1230" height="540" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1228" height="538" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="42" y="48" font-family="JetBrains Mono Variable" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">COMMIT-GATE</text>
+<text x="42" y="78" font-family="Manrope Variable" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Nine phases. Every failure is a hard BLOCK.</text>
+<rect x="42" y="126" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="172" y="157" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Permission</text>
+<text x="172" y="200" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 1</text>
+<path d="M308 172 L366 172" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="376" y="126" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="506" y="157" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Branch</text>
+<text x="506" y="200" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 2</text>
+<path d="M642 172 L700 172" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="710" y="126" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="840" y="157" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Classify</text>
+<text x="840" y="200" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 3</text>
+<polyline points="840,224 840,248" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="710" y="258" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="840" y="289" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Verify</text>
+<text x="840" y="332" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 4</text>
+<path d="M704 304 L646 304" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="376" y="258" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="506" y="289" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Behavioral</text>
+<text x="506" y="308" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">proof</text>
+<text x="506" y="332" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 5</text>
+<path d="M370 304 L312 304" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="42" y="258" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="172" y="289" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Diff review</text>
+<text x="172" y="332" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 6</text>
+<polyline points="172,356 172,380" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="42" y="390" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="172" y="421" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Selective</text>
+<text x="172" y="440" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">stage</text>
+<text x="172" y="464" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 7</text>
+<path d="M308 436 L366 436" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="376" y="390" width="260" height="92" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
+<text x="506" y="421" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Message</text>
+<text x="506" y="464" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 8</text>
+<path d="M642 436 L700 436" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="710" y="390" width="260" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="840" y="421" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Commit</text>
+<text x="840" y="464" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">phase 9</text>
+<rect x="970" y="258" width="218" height="92" rx="10" fill="#17212d" stroke="#f0b92f" stroke-width="2" stroke-dasharray="7 6"/>
+<text x="1079" y="289" font-family="Manrope Variable" font-size="14" font-weight="700" fill="#f6f7f9" text-anchor="middle">5.5 · Provenance</text>
+<text x="1079" y="308" font-family="Manrope Variable" font-size="14" font-weight="700" fill="#f6f7f9" text-anchor="middle">auto-heal</text>
+<text x="1079" y="334" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">only on drift</text>
+<polyline points="636,304 956,304" fill="none" stroke="#f0b92f" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+<text x="1188" y="508" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">A BLOCK clears only through the logged /ca:override path.</text>
 </svg>
