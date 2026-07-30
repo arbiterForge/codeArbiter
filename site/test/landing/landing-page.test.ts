@@ -60,6 +60,7 @@ describe("first-class product splash", () => {
     expect(docsRail).toContain("document.body.style.overflow");
     expect(docsRail).toContain("opener.focus()");
     expect(docsRail).toContain("getFocusableElements");
+    expect(docsRail).toContain('"summary"');
     expect(docsRail).toContain("element.getClientRects().length > 0");
     expect(docsRail).toMatch(/\(first \?\? drawer\)\.focus\(\)/);
     expect(docsRail).toContain("activeIndex <= 0");
