@@ -6,6 +6,29 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [Unreleased]
+
+## [0.1.42] - 2026-07-30
+
+### Changed
+
+- **`_hooklib` sheds its path-scope detection (#321, slice 3 of 4).** The hook
+  core drops from 880 to 663 lines - **1,263 before the partition began**, so
+  three slices have taken nearly half off the god module. `_scopelib` now owns
+  which repo paths are database migrations (H-14), CI/CD workflow files (H-15),
+  and deployment / IaC manifests (H-16), plus the security-controls.md reader and
+  glob compiler they share.
+
+  The cleanest seam of the four: this cluster referenced NOTHING from the rest of
+  `_hooklib`, and nothing referenced it. Its only dependency was `norm_path`,
+  already on the `_pathnorm` floor.
+
+  `_hooklib` re-exports every moved name - including the private ones, which have
+  real consumers - so the public surface is unchanged and parity rests on 1,185
+  pre-existing hook tests that did not move.
+
+  No behaviour change.
+
 ## [0.1.41] - 2026-07-30
 
 ### Changed
