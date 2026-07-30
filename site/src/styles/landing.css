@@ -210,9 +210,14 @@
 }
 
 .ca-docs-drawer__nav summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
   padding: 0.65rem 0.7rem;
   border-radius: var(--ca-radius-sm);
   list-style: none;
+  cursor: pointer;
 }
 
 .ca-docs-drawer__nav summary:hover {
@@ -223,6 +228,11 @@
 .ca-docs-drawer__nav summary::-webkit-details-marker {
   display: none;
   content: "";
+}
+
+.ca-docs-drawer__nav summary .caret {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
 }
 
 .ca-docs-drawer__nav ul ul {

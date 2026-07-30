@@ -59,6 +59,8 @@ describe("first-class product splash", () => {
     expect(docsRail).toContain("opener.focus()");
     expect(docsRail).toContain("ca-docs-drawer__backdrop");
     expect(docsRail).toContain("import.meta.env.BASE_URL");
+    expect(docsRail).toContain('import.meta.env.BASE_URL.replace(/\\/$/, "")');
+    expect(docsRail).toContain('`${basePath}/overview/`');
     expect(docsRail).toContain("<noscript>");
     expect(docsRail).toContain("overview/");
   });
@@ -83,6 +85,13 @@ describe("first-class product splash", () => {
     expect(landingCss).toMatch(
       /\.ca-docs-drawer__nav summary\s*\{[^}]*list-style:\s*none;/s,
     );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav summary\s*\{[^}]*display:\s*flex;[^}]*justify-content:\s*space-between;/s,
+    );
+    expect(landingCss).toMatch(
+      /\.ca-docs-drawer__nav summary \.caret\s*\{[^}]*margin-inline-start:\s*auto;/s,
+    );
+    expect(docsRail).toContain('class="ca-docs-drawer-layer not-content"');
     expect(landingCss).toMatch(
       /\.ca-docs-drawer__nav ul ul a\s*\{[^}]*padding:/s,
     );

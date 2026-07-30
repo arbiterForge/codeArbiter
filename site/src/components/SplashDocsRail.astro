@@ -2,7 +2,8 @@
 import SidebarSublist from "./SidebarSublist.astro";
 
 const { sidebar } = Astro.locals.starlightRoute;
-const overviewHref = `${import.meta.env.BASE_URL}overview/`;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const overviewHref = `${basePath}/overview/`;
 ---
 
 <div class="ca-docs-rail" data-ca-docs-rail>
@@ -20,7 +21,7 @@ const overviewHref = `${import.meta.env.BASE_URL}overview/`;
   </noscript>
 </div>
 
-<div class="ca-docs-drawer-layer" data-ca-docs-drawer-layer hidden>
+<div class="ca-docs-drawer-layer not-content" data-ca-docs-drawer-layer hidden>
   <button
     class="ca-docs-drawer__backdrop"
     type="button"
