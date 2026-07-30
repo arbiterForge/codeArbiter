@@ -20,8 +20,8 @@ const C = {
   danger: "#ff7b72",
 } as const;
 
-const sans = "Manrope Variable";
-const mono = "JetBrains Mono Variable";
+const sans = "Manrope Variable, Segoe UI, Arial, sans-serif";
+const mono = "JetBrains Mono Variable, Consolas, Cascadia Mono, monospace";
 
 function escapeXml(value: string): string {
   return value

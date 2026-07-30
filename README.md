@@ -10,7 +10,7 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.10.6" src="https://img.shields.io/badge/version-2.10.6-2b7489">
+<img alt="version 2.10.8" src="https://img.shields.io/badge/version-2.10.8-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-40-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-28-555">
@@ -66,7 +66,7 @@ separates continuously verified packaging from the live checks that require a mo
 ## See it catch something
 
 The landing page includes a
-[faithful replay of a shipped hook invocation](https://arbiterforge.github.io/codeArbiter/#direct-hook-proof).
+[faithful replay of a shipped hook invocation](https://arbiterforge.github.io/codeArbiter/#proof).
 It invokes the real `pre-bash.py` guard, records the source digest, proves the blocked command never
 ran, and preserves the exact stderr and audit effect. It does not pretend that a direct hook replay
 proves host discovery or trust.
@@ -119,7 +119,7 @@ Approve the normal plugin trust prompt, open the target repository, and continue
 
 ### Codex CLI
 
-The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.3.5`;
+The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.3.7`;
 the dated end-to-end public-install record discovered `ca-codex 0.2.4` from release `v2.8.13`.
 Current packaging and shared-core parity are continuously verified, while that dated live-install
 record stays labeled rather than being silently promoted to evidence for a newer adapter:

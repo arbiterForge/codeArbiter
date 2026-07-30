@@ -1,46 +1,34 @@
 ---
 entity: skills/release
-related: [commands/release, skills/commit-gate]
+related: [commands/release, commit-gate]
 gates:
-  - gate: target isolation
-    when: pre-flight resolves the release row
-    effect: one plugin's tag or commit cannot influence another plugin's version, changelog, or payload
-  - gate: version and artifact proof
+  - gate: version derivation
     when: before tagging
-    effect: the derived version must match every target manifest and all shipped bundles must rebuild without a diff
+    effect: the version bump is derived mechanically from the commit log, not guessed, and must match the manifest's version field before anything is tagged
   - gate: publication authorization
-    when: after the local tag and report exist
-    effect: pushing the tag and creating the public release wait for explicit approval
-  - gate: publication read-back
-    when: GitHub operations return
-    effect: the release is not accepted until a non-draft release on the expected tag is read back
+    when: after the local tag is composed
+    effect: pushing the tag and creating the public release both wait for your explicit go-ahead — nothing about the tag composition authorizes publishing it
 ---
 
 ## What it does
 
-The release command routes here with one of four plugin targets. The skill resolves that target's
-registered tag prefix, payload path, manifests, changelog, built artifacts, and Latest-badge policy;
-then it derives the release from that isolated row.
+This is the only sanctioned path to a version tag, invoked by the release command on a
+non-default branch with a green suite. It derives the version bump from the Conventional Commits
+history since the last tag, rolls the relevant commits into the changelog, composes an annotated
+tag locally, and — only once you authorize it — pushes the tag and publishes it as a public
+release using that same changelog section as its notes.
 
 ## Phases
 
-1. Prove the branch, tree, target-specific tag baseline, payload window, manifests, and built
-   artifacts are ready.
-2. Derive SemVer from the selected payload's commits, update its changelog and release surfaces, and
-   route any required commit through the commit gate. Every `feat` and `fix` must already carry a
-   `CHANGELOG:` footer; `perf` footers roll when present and `refactor` does not synthesize one.
-3. Compose an annotated tag locally and report the classification, notes, and tag SHA.
-4. After explicit authorization, publish the tag and GitHub Release, read the release back, and
-   record the published tag's provenance.
+1. Derive the version bump mechanically from the commit log, confirm it against the manifest, and
+   roll the qualifying commits into a new changelog section.
+2. Compose the annotated tag locally from that changelog section and report the version, the
+   bump rationale, and the tag — without publishing anything yet.
+3. On your explicit authorization, push the tag, create the public release from the same
+   changelog section, and read the result back to confirm it actually published.
 
-## Target-specific state
+## Exits
 
-`ca-pi` has two manifests and generated extension bundles. `ca` owns README version/count surfaces
-and may receive the repo-wide Latest badge. Every sibling explicitly publishes with
-`--latest=false`. The helper register, not prose memory, supplies each tag prefix.
-
-## Exits and recovery
-
-Without publish authorization, the local release state remains unpushed. A partial publish is named
-and resumed rather than repeated blindly. A bad published release is superseded with a new version;
-the original tag is immutable.
+A completed run leaves a pushed tag and a confirmed, non-draft public release whose notes are
+exactly the changelog section composed in the first phase. Without your authorization, the tag
+and changelog stay staged locally and nothing leaves the repository.

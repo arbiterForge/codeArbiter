@@ -6,16 +6,74 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [Unreleased]
+
+## [Unreleased]
+
+## [Unreleased]
+
+## [Unreleased]
+
+## [Unreleased]
+
+## [0.3.7] — 2026-07-30
+
+### Changed
+
+- **`_hooklib` sheds activation, completing the #321 partition (slice 4 of 4).**
+  The hook core finishes at **557 lines, from 1,263** - a 56% reduction across
+  four slices. `_activationlib` now owns which Host the process runs under, where
+  the project root is, and whether the arbiter is switched on, together with the
+  two process-lifetime caches those answers share.
+
+  `_HOST` is deliberately **not** re-exported: importing a mutable global binds
+  its *value*, so a later `set_host()` would rebind it in the owning module and
+  leave a stale copy behind forever. The accessors are re-exported instead, and
+  a test proves both modules share one cache in both directions.
+
+  `_hooklib` re-exports every name with a consumer, so the public surface is
+  unchanged and parity rests on 1,185 pre-existing hook tests that did not move.
+
+  No behaviour change.
+
+## [0.3.6] — 2026-07-30
+
+### Changed
+
+- **`_hooklib` sheds its path-scope detection (#321, slice 3 of 4).** The hook
+  core drops from 880 to 663 lines - **1,263 before the partition began**, so
+  three slices have taken nearly half off the god module. `_scopelib` now owns
+  which repo paths are database migrations (H-14), CI/CD workflow files (H-15),
+  and deployment / IaC manifests (H-16), plus the security-controls.md reader and
+  glob compiler they share.
+
+  The cleanest seam of the four: this cluster referenced NOTHING from the rest of
+  `_hooklib`, and nothing referenced it. Its only dependency was `norm_path`,
+  already on the `_pathnorm` floor.
+
+  `_hooklib` re-exports every moved name - including the private ones, which have
+  real consumers - so the public surface is unchanged and parity rests on 1,185
+  pre-existing hook tests that did not move.
+
+  No behaviour change.
+
 ## [0.3.5] — 2026-07-30
 
-### Fixed
+### Changed
 
-- Render the target-aware release command and footer rules from the canonical shared surface, so
-  the Codex package stays synchronized with the Claude Code and Pi hosts.
+- **`_hooklib` sheds its protected-path classifiers (#321, slice 2 of 4).** The
+  hook core drops from 1,050 to 880 lines - 1,263 before the partition began.
+  `_protectedlib` now owns which repo paths are append-only audit logs (H-05),
+  ADR decision files (H-11), the activation manifest, and the gate-marker
+  directory. `repo_rel` joined `norm_path` on the `_pathnorm` floor, because it
+  references no module symbol and the remaining slices need it too.
 
-## [Unreleased]
+  Measured the same way slice 1 was: one outward reference, zero inward.
+  `_hooklib` re-exports every moved name, so all consumers are untouched and
+  parity rests on 1,185 pre-existing hook tests that did not move. The public
+  surface is preserved exactly - nothing lost, nothing gained.
 
-## [Unreleased]
+  No behaviour change.
 
 ## [0.3.4] — 2026-07-30
 

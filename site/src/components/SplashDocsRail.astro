@@ -6,6 +6,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const overviewHref = `${basePath}/overview/`;
 ---
 
+<ca-splash-docs>
 <div class="ca-docs-rail" data-ca-docs-rail>
   <button
     class="ca-docs-rail__opener"
@@ -31,14 +32,16 @@ const overviewHref = `${basePath}/overview/`;
   <aside
     class="ca-docs-drawer"
     id="ca-docs-drawer"
-    aria-label="Documentation navigation"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ca-docs-drawer-title"
     aria-hidden="true"
     tabindex="-1"
   >
     <div class="ca-docs-drawer__head">
       <div>
         <span>Documentation</span>
-        <strong>Find your next move</strong>
+        <strong id="ca-docs-drawer-title">Find your next move</strong>
       </div>
       <button
         class="ca-docs-drawer__close"
@@ -60,83 +63,150 @@ const overviewHref = `${basePath}/overview/`;
     </nav>
   </aside>
 </div>
+</ca-splash-docs>
 
 <script>
-  const rail = document.querySelector<HTMLElement>("[data-ca-docs-rail]");
-  const opener = rail?.querySelector<HTMLButtonElement>(".ca-docs-rail__opener");
-  const layer = document.querySelector<HTMLElement>("[data-ca-docs-drawer-layer]");
-  const drawer = document.querySelector<HTMLElement>("#ca-docs-drawer");
-  const closeControls = layer?.querySelectorAll<HTMLButtonElement>("[data-ca-docs-drawer-close]");
-  let previousBodyOverflow = "";
+  class SplashDocsElement extends HTMLElement {
+    private cleanup?: () => void;
 
-  const focusableSelector = [
-    "a[href]",
-    "button:not([disabled])",
-    "input:not([disabled])",
-    "select:not([disabled])",
-    "textarea:not([disabled])",
-    '[tabindex]:not([tabindex="-1"])',
-  ].join(",");
+    connectedCallback(): void {
+      if (this.dataset.initialized === "true") return;
 
-  function getFocusableElements(): HTMLElement[] {
-    if (!drawer) return [];
-    return [...drawer.querySelectorAll<HTMLElement>(focusableSelector)].filter(
-      (element) =>
-        !element.hasAttribute("hidden") &&
-        element.getAttribute("aria-hidden") !== "true" &&
-        element.getClientRects().length > 0,
-    );
-  }
+      const rail = this.querySelector<HTMLElement>("[data-ca-docs-rail]");
+      const opener = rail?.querySelector<HTMLButtonElement>(".ca-docs-rail__opener");
+      const layer = this.querySelector<HTMLElement>("[data-ca-docs-drawer-layer]");
+      const drawer = this.querySelector<HTMLElement>("#ca-docs-drawer");
+      const closeControls =
+        layer?.querySelectorAll<HTMLButtonElement>("[data-ca-docs-drawer-close]");
+      if (!rail || !opener || !layer || !drawer || !closeControls) return;
 
-  function openDrawer(): void {
-    if (!opener || !layer || !drawer) return;
-    previousBodyOverflow = document.body.style.overflow;
-    layer.hidden = false;
-    drawer.setAttribute("aria-hidden", "false");
-    opener.setAttribute("aria-expanded", "true");
-    rail.dataset.open = "true";
-    document.body.style.overflow = "hidden";
-    const [first] = getFocusableElements();
-    (first ?? drawer).focus();
-  }
+      this.dataset.initialized = "true";
+      let previousBodyOverflow = "";
+      let backgroundStates: Array<{
+        background: HTMLElement;
+        inert: boolean;
+        ariaHidden: string | null;
+      }> = [];
 
-  function closeDrawer(options: { restoreFocus?: boolean } = { restoreFocus: true }): void {
-    if (!opener || !layer || !drawer) return;
-    layer.hidden = true;
-    drawer.setAttribute("aria-hidden", "true");
-    opener.setAttribute("aria-expanded", "false");
-    delete rail.dataset.open;
-    document.body.style.overflow = previousBodyOverflow;
-    if (options.restoreFocus !== false) opener.focus();
-  }
+      const focusableSelector = [
+        "a[href]",
+        "button:not([disabled])",
+        "input:not([disabled])",
+        "select:not([disabled])",
+        "textarea:not([disabled])",
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(",");
 
-  function trapFocus(event: KeyboardEvent): void {
-    if (event.key !== "Tab" || !drawer || layer?.hidden) return;
-    const focusable = getFocusableElements();
-    if (focusable.length === 0) {
-      event.preventDefault();
-      drawer.focus();
-      return;
+      const getFocusableElements = (): HTMLElement[] =>
+        [...drawer.querySelectorAll<HTMLElement>(focusableSelector)].filter(
+          (element) =>
+            !element.hasAttribute("hidden") &&
+            element.getAttribute("aria-hidden") !== "true" &&
+            element.getClientRects().length > 0,
+        );
+
+      const setBackgroundInert = (inert: boolean): void => {
+        if (inert) {
+          const header = document.querySelector<HTMLElement>("header");
+          const pageSiblings = [...(this.parentElement?.children ?? [])].filter(
+            (element): element is HTMLElement =>
+              element instanceof HTMLElement && element !== this,
+          );
+          const backgrounds = [header, ...pageSiblings].filter(
+            (element): element is HTMLElement => element instanceof HTMLElement,
+          );
+          backgroundStates = backgrounds.map((background) => ({
+            background,
+            inert: background.inert,
+            ariaHidden: background.getAttribute("aria-hidden"),
+          }));
+          for (const background of backgrounds) {
+            background.inert = true;
+            background.setAttribute("aria-hidden", "true");
+          }
+          return;
+        }
+
+        for (const state of backgroundStates) {
+          const { background } = state;
+          background.inert = state.inert;
+          if (state.ariaHidden === null) background.removeAttribute("aria-hidden");
+          else background.setAttribute("aria-hidden", state.ariaHidden);
+        }
+        backgroundStates = [];
+      };
+
+      const openDrawer = (): void => {
+        previousBodyOverflow = document.body.style.overflow;
+        layer.hidden = false;
+        drawer.setAttribute("aria-hidden", "false");
+        opener.setAttribute("aria-expanded", "true");
+        rail.dataset.open = "true";
+        document.body.style.overflow = "hidden";
+        setBackgroundInert(true);
+        const [first] = getFocusableElements();
+        (first ?? drawer).focus();
+      };
+
+      const closeDrawer = (
+        options: { restoreFocus?: boolean } = { restoreFocus: true },
+      ): void => {
+        layer.hidden = true;
+        drawer.setAttribute("aria-hidden", "true");
+        opener.setAttribute("aria-expanded", "false");
+        delete rail.dataset.open;
+        document.body.style.overflow = previousBodyOverflow;
+        setBackgroundInert(false);
+        if (options.restoreFocus !== false) opener.focus();
+      };
+
+      const trapFocus = (event: KeyboardEvent): void => {
+        if (event.key !== "Tab" || layer.hidden) return;
+        const focusable = getFocusableElements();
+        if (focusable.length === 0) {
+          event.preventDefault();
+          drawer.focus();
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const activeIndex = focusable.indexOf(document.activeElement as HTMLElement);
+        if (event.shiftKey && activeIndex <= 0) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && activeIndex >= focusable.length - 1) {
+          event.preventDefault();
+          first.focus();
+        }
+      };
+
+      const handleEscape = (event: KeyboardEvent): void => {
+        if (event.key === "Escape" && !layer.hidden) closeDrawer();
+      };
+
+      opener.addEventListener("click", () => {
+        layer.hidden ? openDrawer() : closeDrawer();
+      });
+      closeControls.forEach((control) =>
+        control.addEventListener("click", () => closeDrawer()),
+      );
+      drawer.addEventListener("keydown", trapFocus);
+      document.addEventListener("keydown", handleEscape);
+
+      this.cleanup = () => {
+        document.removeEventListener("keydown", handleEscape);
+        if (!layer.hidden) closeDrawer({ restoreFocus: false });
+      };
     }
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    const activeIndex = focusable.indexOf(document.activeElement as HTMLElement);
-    if (event.shiftKey && activeIndex <= 0) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && activeIndex >= focusable.length - 1) {
-      event.preventDefault();
-      first.focus();
+
+    disconnectedCallback(): void {
+      this.cleanup?.();
+      this.cleanup = undefined;
+      delete this.dataset.initialized;
     }
   }
 
-  opener?.addEventListener("click", () => {
-    if (!layer) return;
-    layer.hidden ? openDrawer() : closeDrawer();
-  });
-  closeControls?.forEach((control) => control.addEventListener("click", () => closeDrawer()));
-  drawer?.addEventListener("keydown", trapFocus);
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && layer && !layer.hidden) closeDrawer();
-  });
+  if (!customElements.get("ca-splash-docs")) {
+    customElements.define("ca-splash-docs", SplashDocsElement);
+  }
 </script>

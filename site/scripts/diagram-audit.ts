@@ -20,7 +20,10 @@ const APPROVED_COLORS = new Set([
   "#ff7b72",
 ]);
 
-const APPROVED_FONTS = ["Manrope Variable", "JetBrains Mono Variable"];
+const APPROVED_FONT_STACKS = new Set([
+  "Manrope Variable, Segoe UI, Arial, sans-serif",
+  "JetBrains Mono Variable, Consolas, Cascadia Mono, monospace",
+]);
 
 export function auditDiagram(svg: string, filename: string): string[] {
   const violations: string[] = [];
@@ -39,8 +42,8 @@ export function auditDiagram(svg: string, filename: string): string[] {
   }
 
   for (const match of svg.matchAll(/font-family="([^"]+)"/g)) {
-    if (!APPROVED_FONTS.some((font) => match[1].includes(font))) {
-      violations.push(`${filename}: unapproved font family "${match[1]}"`);
+    if (!APPROVED_FONT_STACKS.has(match[1])) {
+      violations.push(`${filename}: font stack is not self-contained "${match[1]}"`);
     }
   }
 

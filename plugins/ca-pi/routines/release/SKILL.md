@@ -63,7 +63,7 @@ Derive the bump mechanically from the commit log; do not guess it.
    A badge, prose-count, README-table, catalog, or root-manifest drift is a **BLOCK** — reconcile it before tagging. CI's badge-consistency guard (`.github/scripts/check_badge_consistency.py`) and the per-plugin version-bump gates are the mechanical backstop; if either is red, this step is not done.
 6. If the changelog edit or the surface sync needs to land as a commit before tagging, route it through `commit-gate`. Do not reimplement the commit path here.
 
-Gate: version confirmed, strictly monotonic within `$TARGET`'s series, matching the commit log, and equal to `$MANIFEST` (both, for ca-pi); `$CHANGELOG` updated; `$TARGET`'s surfaces reconciled to the repo. BLOCK if the classification disagrees with the log, the window is non-bumping, a `feat`/`fix` commit's required `CHANGELOG:` footer is missing, or any surface drifts.
+Gate: version confirmed, strictly monotonic within `$TARGET`'s series, matching the commit log, and equal to `$MANIFEST` (both, for ca-pi); `$CHANGELOG` updated; `$TARGET`'s surfaces reconciled to the repo. BLOCK if the classification disagrees with the log, the window is non-bumping, a bumping commit's `CHANGELOG:` footer is missing, or any surface drifts.
 
 ## Phase 2 — Tag & report · gate: BLOCK
 
@@ -121,7 +121,7 @@ The one case that is **not** a correction: a tag pushed by mistake with **no** G
 - MUST NOT assert `--latest` for any target except `ca`, and not even for `ca` unless the tag is the newest release across all four series.
 - MUST use the Phase-1 changelog section verbatim as the GitHub Release notes — never re-derive or hand-write them.
 - MUST NOT guess the version — derive it from the commit log. A `feat` in the window cannot ship as a `patch`.
-- MUST NOT auto-fill a missing `CHANGELOG:` footer, and MUST NOT tag past a missing required footer — a `feat`/`fix` commit without one is a Phase-1 BLOCK, surfaced as `[NEEDS-TRIAGE]` and stopped. A `perf` footer is rolled when present; `refactor` earns a patch but does not require or synthesize a user-facing entry.
+- MUST NOT auto-fill a missing `CHANGELOG:` footer, and MUST NOT tag past one — a missing footer on a bumping commit is a Phase-1 BLOCK, surfaced as `[NEEDS-TRIAGE]` and stopped.
 - MUST NOT tag a non-bumping window — `test`/`docs`/`chore`/`ci`-only sets do not release.
 - **MUST NOT move, retarget, delete, or re-point a published tag**, in any namespace (`v*`, `ca-codex-v*`, `ca-sandbox-v*`, `ca-pi-v*`), for any reason — no `git push --force` on a tag, no `git push --delete`, no `gh release delete`. A bad release is corrected by publishing a NEW version; see "Recovering from a bad release". There is no break-glass path (issue #386).
 - MUST record every newly published tag in `.github/published-tags.json`, and MUST NOT edit an existing entry to silence a red `[CHECK] | [REPO] | Published tag immutability` run — a red run means a ref moved, and the manifest is the evidence of where it belonged.

@@ -82,6 +82,12 @@ describe("concept diagrams (AC-9)", () => {
       it("passes the shared professional diagram contract", () => {
         const svg = readFileSync(path, "utf8");
         expect(svg).toMatch(/<desc\b[^>]*>[^<]+<\/desc>/);
+        expect(svg).toContain(
+          'font-family="Manrope Variable, Segoe UI, Arial, sans-serif"',
+        );
+        expect(svg).toContain(
+          'font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace"',
+        );
         expect(auditDiagram(svg, name)).toEqual([]);
       });
 

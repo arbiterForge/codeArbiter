@@ -16,33 +16,33 @@
   <rect width="1166" height="476" rx="14" fill="url(#canvas)"/>
   <rect width="1166" height="476" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1164" height="474" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">BUILD-TIME GENERATION</text>
-<text x="42" y="78" font-family="Manrope Variable" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">One source fans out only after the byte-identity gate.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">BUILD-TIME GENERATION</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">One source fans out only after the byte-identity gate.</text>
 <rect x="42" y="190" width="220" height="110" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="152" y="221" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">core/pysrc</text>
-<text x="152" y="240" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">core/surface</text>
-<text x="152" y="282" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">shared hook core + surface</text>
+<text x="152" y="221" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">core/pysrc</text>
+<text x="152" y="240" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">core/surface</text>
+<text x="152" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">shared hook core + surface</text>
 <rect x="334" y="190" width="190" height="110" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="429" y="221" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">CI gate</text>
-<text x="429" y="282" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">byte-identity check</text>
+<text x="429" y="221" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">CI gate</text>
+<text x="429" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">byte-identity check</text>
 <path d="M268 245 L324 245" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="604" y="118" width="220" height="84" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="714" y="149" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">ca</text>
-<text x="714" y="184" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Claude Code plugin</text>
+<text x="714" y="149" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">ca</text>
+<text x="714" y="184" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Claude Code plugin</text>
 <rect x="604" y="222" width="220" height="84" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="714" y="253" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">ca-codex</text>
-<text x="714" y="288" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Codex plugin</text>
+<text x="714" y="253" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">ca-codex</text>
+<text x="714" y="288" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Codex plugin</text>
 <rect x="604" y="326" width="220" height="84" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="714" y="357" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">ca-pi</text>
-<text x="714" y="392" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Pi plugin</text>
+<text x="714" y="357" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">ca-pi</text>
+<text x="714" y="392" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">Pi plugin</text>
 <polyline points="530,245 564,245 564,160 594,160" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <path d="M530 245 L594 264" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <polyline points="530,245 564,245 564,368 594,368" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="904" y="222" width="220" height="84" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="1014" y="253" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">one .codearbiter/</text>
-<text x="1014" y="288" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">shared checked-in state</text>
+<text x="1014" y="253" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">one .codearbiter/</text>
+<text x="1014" y="288" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">shared checked-in state</text>
 <polyline points="830,160 864,160 864,264 894,264" fill="none" stroke="#3a4c60" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
 <path d="M830 264 L894 264" fill="none" stroke="#3a4c60" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
 <polyline points="830,368 864,368 864,264 894,264" fill="none" stroke="#3a4c60" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
-<text x="42" y="444" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation">sync-core.py and build-surface.py generate host-native surfaces; CI gates every edge.</text>
+<text x="42" y="444" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation">sync-core.py and build-surface.py generate host-native surfaces; CI gates every edge.</text>
 </svg>

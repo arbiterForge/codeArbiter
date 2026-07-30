@@ -16,31 +16,31 @@
   <rect width="1120" height="360" rx="14" fill="url(#canvas)"/>
   <rect width="1120" height="360" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1118" height="358" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="52" y="48" font-family="JetBrains Mono Variable" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">FEATURE LANE</text>
-<text x="52" y="78" font-family="Manrope Variable" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">From approved intent to reviewed pull request.</text>
+  <text x="52" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">FEATURE LANE</text>
+<text x="52" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">From approved intent to reviewed pull request.</text>
 <rect x="52" y="112" width="313.3333333333333" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="70" y="140" font-family="JetBrains Mono Variable" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">COMMANDS</text>
+<text x="70" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">COMMANDS</text>
 <rect x="68" y="160" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
-<text x="208.66666666666666" y="180" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:feature</text>
+<text x="208.66666666666666" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:feature</text>
 <rect x="68" y="198" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
-<text x="208.66666666666666" y="218" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:commit</text>
+<text x="208.66666666666666" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:commit</text>
 <rect x="68" y="236" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
-<text x="208.66666666666666" y="256" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:pr</text>
+<text x="208.66666666666666" y="256" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">/ca:pr</text>
 <path d="M371.3333333333333 202 L395.3333333333333 202" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="403.3333333333333" y="112" width="313.3333333333333" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="421.3333333333333" y="140" font-family="JetBrains Mono Variable" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">SKILLS</text>
+<text x="421.3333333333333" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">SKILLS</text>
 <rect x="419.3333333333333" y="160" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="560" y="180" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">brainstorming</text>
+<text x="560" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">brainstorming</text>
 <rect x="419.3333333333333" y="198" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="560" y="218" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">writing-plans</text>
+<text x="560" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">writing-plans</text>
 <rect x="419.3333333333333" y="236" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="560" y="256" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">tdd</text>
+<text x="560" y="256" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">tdd</text>
 <path d="M722.6666666666666 202 L746.6666666666666 202" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="754.6666666666666" y="112" width="313.3333333333333" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="772.6666666666666" y="140" font-family="JetBrains Mono Variable" font-size="12" font-weight="750" fill="#58d68d" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">AGENTS</text>
+<text x="772.6666666666666" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#58d68d" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation">AGENTS</text>
 <rect x="770.6666666666666" y="160" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#58d68d" stroke-width="1.5"/>
-<text x="911.3333333333333" y="180" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">author agents</text>
+<text x="911.3333333333333" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">author agents</text>
 <rect x="770.6666666666666" y="198" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#58d68d" stroke-width="1.5"/>
-<text x="911.3333333333333" y="218" font-family="JetBrains Mono Variable" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">reviewer agents</text>
-<text x="1068" y="329" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">execution order is governed; the default branch is never a direct write</text>
+<text x="911.3333333333333" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle">reviewer agents</text>
+<text x="1068" y="329" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">execution order is governed; the default branch is never a direct write</text>
 </svg>

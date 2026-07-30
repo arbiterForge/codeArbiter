@@ -16,22 +16,22 @@
   <rect width="1200" height="310" rx="14" fill="url(#canvas)"/>
   <rect width="1200" height="310" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1198" height="308" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">CONTEXT-DRIFT PROVENANCE</text>
-<text x="42" y="78" font-family="Manrope Variable" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Detect, surface, and heal stale documentation claims.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">CONTEXT-DRIFT PROVENANCE</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Detect, surface, and heal stale documentation claims.</text>
 <rect x="42" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="165.75" y="151" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Source changes</text>
-<text x="165.75" y="194" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">tracked file edited</text>
+<text x="165.75" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Source changes</text>
+<text x="165.75" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">tracked file edited</text>
 <path d="M295.5 166 L323.5 166" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="331.5" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="455.25" y="151" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Drift detected</text>
-<text x="455.25" y="194" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">hash mismatch</text>
+<text x="455.25" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Drift detected</text>
+<text x="455.25" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">hash mismatch</text>
 <path d="M585 166 L613 166" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="621" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="744.75" y="151" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">SessionStart</text>
-<text x="744.75" y="194" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">one passive line</text>
+<text x="744.75" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">SessionStart</text>
+<text x="744.75" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">one passive line</text>
 <path d="M874.5 166 L902.5 166" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="910.5" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="1034.25" y="151" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Commit-gate</text>
-<text x="1034.25" y="194" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">re-baseline or update</text>
-<text x="1158" y="274" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">A drifted claim is suppressed; /ca:context-check performs the same detection manually.</text>
+<text x="1034.25" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Commit-gate</text>
+<text x="1034.25" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">re-baseline or update</text>
+<text x="1158" y="274" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation">A drifted claim is suppressed; /ca:context-check performs the same detection manually.</text>
 </svg>

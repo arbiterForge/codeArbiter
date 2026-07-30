@@ -53,6 +53,10 @@
   scroll-margin-top: 5rem;
 }
 
+ca-splash-docs {
+  display: contents;
+}
+
 .ca-docs-rail {
   position: fixed;
   z-index: 65;

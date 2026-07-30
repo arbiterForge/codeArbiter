@@ -33,8 +33,9 @@ GitHub Pages project site.
 | `npm run build` | Regenerate content, build every route, and create the Pagefind index. |
 | `npm run preview` | Serve the current production build locally. |
 
-Generated files are deterministic. If two runs against the same source produce a diff, the
-generator has a defect.
+Generated files are deterministic for a fixed source tree and source-link ref. Production builds
+use `GITHUB_SHA` so “View in repo” links point at the exact published commit; local builds use
+`main`. If two runs with the same source and ref produce a diff, the generator has a defect.
 
 ## Content ownership
 

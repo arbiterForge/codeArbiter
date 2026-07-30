@@ -16,31 +16,31 @@
   <rect width="1140" height="470" rx="14" fill="url(#canvas)"/>
   <rect width="1140" height="470" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1138" height="468" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="44" y="50" font-family="JetBrains Mono Variable" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">GATE BEHAVIOR</text>
-<text x="44" y="82" font-family="Manrope Variable" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">The same approach. Two different outcomes.</text>
+  <text x="44" y="50" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">GATE BEHAVIOR</text>
+<text x="44" y="82" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">The same approach. Two different outcomes.</text>
 <rect x="44" y="116" width="512" height="284" rx="14" fill="#121a24" stroke="#9b6811" stroke-width="2"/>
 <rect x="584" y="116" width="512" height="284" rx="14" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="74" y="154" font-family="JetBrains Mono Variable" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">SOFT GATE</text>
-<text x="614" y="154" font-family="JetBrains Mono Variable" font-size="12" font-weight="750" fill="#ff7b72" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">HARD GATE</text>
+<text x="74" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">SOFT GATE</text>
+<text x="614" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#ff7b72" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">HARD GATE</text>
 <rect x="74" y="184" width="190" height="94" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="169" y="215" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Decision surfaced</text>
-<text x="169" y="260" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">waiting for user</text>
+<text x="169" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Decision surfaced</text>
+<text x="169" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">waiting for user</text>
 <rect x="344" y="184" width="182" height="94" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="435" y="215" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Work proceeds</text>
-<text x="435" y="260" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">after user acts</text>
+<text x="435" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Work proceeds</text>
+<text x="435" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">after user acts</text>
 <path d="M270 231 L334 231" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<text x="300" y="216" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">human choice</text>
+<text x="300" y="216" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">human choice</text>
 <rect x="614" y="184" width="190" height="94" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="709" y="215" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Stopped</text>
-<text x="709" y="260" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">never auto-decided</text>
+<text x="709" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">Stopped</text>
+<text x="709" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">never auto-decided</text>
 <rect x="884" y="184" width="182" height="94" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="975" y="215" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">User action</text>
-<text x="975" y="260" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">required to continue</text>
+<text x="975" y="215" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">User action</text>
+<text x="975" y="260" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">required to continue</text>
 <path d="M810 231 L874 231" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
-<text x="840" y="216" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#ff7b72" text-anchor="middle" data-label-kind="annotation">hard stop</text>
-<text x="74" y="322" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Surfaces the exact choice.</text>
-<text x="74" y="341" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Resumes when the user decides.</text>
-<text x="614" y="322" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Security, auth/crypto, irreversible ops,</text>
-<text x="614" y="341" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">gate bypass, and merge-to-default remain stops.</text>
-<text x="44" y="436" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation">Frequent hard-gate trips indicate a thin specification, not a normal control loop.</text>
+<text x="840" y="216" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#ff7b72" text-anchor="middle" data-label-kind="annotation">hard stop</text>
+<text x="74" y="322" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Surfaces the exact choice.</text>
+<text x="74" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Resumes when the user decides.</text>
+<text x="614" y="322" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Security, auth/crypto, irreversible ops,</text>
+<text x="614" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">gate bypass, and merge-to-default remain stops.</text>
+<text x="44" y="436" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation">Frequent hard-gate trips indicate a thin specification, not a normal control loop.</text>
 </svg>

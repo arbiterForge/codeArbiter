@@ -1,59 +1,54 @@
 ---
 entity: commands/release
-related: [commands/commit, commands/pr, skills/release]
+related: [commit, pr, skills/release]
 gates:
-  - gate: target resolution
-    when: before release state is inspected
-    effect: selects exactly one plugin row and stops on an unknown target rather than inferring one
-  - gate: target-scoped version derivation
+  - gate: version derivation
     when: before a tag is composed
-    effect: only commits in the selected payload and tag series influence the SemVer bump and changelog
+    effect: the SemVer bump is computed mechanically from Conventional Commits since the last tag — an explicit version that disagrees with that classification blocks rather than being silently adjusted
   - gate: changelog completeness
-    when: version and release notes are assembled
-    effect: every feat and fix must carry its own changelog note; perf notes roll when present and refactor notes are never invented
+    when: same phase as version derivation
+    effect: every feat/fix/perf commit in the release window must carry its own changelog note; a missing one blocks rather than being auto-filled
   - gate: publish authorization
-    when: after the annotated tag and report exist locally
-    effect: the tag and GitHub Release publish together only after explicit approval
+    when: after the tag is composed locally
+    effect: the tag and the GitHub Release publish together, and only once you explicitly say to
 ---
 
 ## What it does
 
-codeArbiter contains four plugins with independent versions. This command selects the release target
-and routes the matching tag namespace, payload, manifests, changelog, and built artifacts through
-one release skill. A bare invocation preserves the default `ca` release path.
+This is the only sanctioned way a version tag gets created. It never invents a version number — it
+walks every commit since the last tag, classifies each by its Conventional Commits type, and applies
+whichever bump that history actually earns (a breaking change beats a feature, a feature beats a
+fix). The changelog section is assembled the same mechanical way, pulled from the commit footers
+rather than freehand summary, and a commit that should have carried one but didn't is a hard stop
+rather than a gap silently papered over. Composing the tag locally and publishing it are two separate
+moments: nothing pushes to the remote or shows up as a GitHub Release until you explicitly authorize
+that second step.
 
 ## Usage
 
-```text
-/ca:release [ca | ca-codex | ca-sandbox | ca-pi]
+```
+/ca:release ["<version>"] | --auto | --dry-run
 ```
 
-Codex uses `$ca-release`; Pi uses `/ca-release`. The target defaults to `ca`. There is no
-user-supplied version: the selected payload's Conventional-Commit history determines it.
+An explicit version still gets checked against the derived classification; `--auto` derives it
+outright (the default when no version is given); `--dry-run` runs every check and reports readiness
+without composing anything.
 
 ## Example
 
 ```text
-> /ca:release ca-pi
+> /ca:release --dry-run
 
-Target: ca-pi
-Tag series: ca-pi-v*
-Payload window: plugins/ca-pi/ (tools/ excluded)
-Manifest parity: plugins/ca-pi/package.json = generated root package.json
-Derived bump: patch
-Next version: ca-pi-v0.1.33
-Built extensions: clean
+Working tree clean. Branch: release/prep (not the default branch — OK).
+Last tag: v2.4.1. Scanning 14 commits since...
+Classification: 3 feat, 6 fix, 5 chore -> minor bump.
+Derived version: v2.5.0. Matches plugin manifest? no — manifest still reads 2.4.1, would need updating.
+Changelog: all 9 feat/fix commits carry a CHANGELOG: footer.
+Dry run complete — no tag composed. Update the manifest version, then re-run without --dry-run.
 ```
 
-The command continues through changelog and local tag composition. It stops again before pushing
-the tag or creating the GitHub Release.
+## When to reach for it
 
-## Choose the target deliberately
-
-- `ca`: Claude Code governance plugin and the only series eligible for the repo-wide Latest badge.
-- `ca-codex`: Codex adapter.
-- `ca-sandbox`: isolated exploration plugin.
-- `ca-pi`: Git-installed Pi adapter with two manifests and committed extension bundles.
-
-Use the [release guide](/guides/releasing-a-version/) for the per-target verification checklist and
-bad-release recovery procedure.
+Reach for `/ca:release` once the target branch is clean and its suite is green and you're ready to
+cut a version. Work still in progress lands through `/ca:feature` or `/ca:fix` first — a release
+aggregates what already passed, it doesn't chase down anything new.

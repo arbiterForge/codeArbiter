@@ -97,12 +97,84 @@ import time
 
 import hostapi
 
-# Issue #321 - the H-09b/H-10b sensitive-line scan moved to _sensitivelib, and
-# norm_path to the _pathnorm floor beneath it. Re-exported here, unchanged, so
+# Issue #321 - the H-09b/H-10b sensitive-line scan moved to _sensitivelib, the
+# protected-path classifiers to _protectedlib, the H-14/H-15/H-16 scope
+# detection to _scopelib, activation and the host/root caches to
+# _activationlib, and the path primitives to the
+# _pathnorm floor beneath both. Re-exported here, unchanged, so
 # every one of the 59 consuming files keeps importing from _hooklib and the
 # pre-existing suites prove parity without moving. New code SHOULD import from
 # the owning module; this facade exists so the partition costs no caller a diff.
-from _pathnorm import norm_path  # noqa: F401
+from _pathnorm import norm_path, repo_rel  # noqa: F401
+from _activationlib import (  # noqa: F401
+    # `_HOST` is deliberately ABSENT: importing a mutable global binds its VALUE,
+    # so a later set_host() would rebind it in _activationlib and leave a stale
+    # copy here forever. The accessors below all read and write that module's
+    # global, so one cache is shared however a caller reached them. Verified that
+    # nothing in the repo reads _hooklib._HOST directly.
+    # `_reset_root_cache` is a FUNCTION and has a consumer (test_hooklib calls it
+    # through `_hooklib.`), so it is re-exported: a function binding stays live.
+    # `_ROOT_CACHE` and `_root_cache_key` have none and are dropped rather than
+    # relocated.
+    _reset_root_cache,
+    ARBITER_RE,
+    arbiter_active,
+    frontmatter_enabled,
+    frontmatter_enabled_text,
+    get_host,
+    project_root,
+    reset_host,
+    set_host,
+)
+from _scopelib import (  # noqa: F401
+    # The private names are re-exported too, deliberately. `_read_controls`,
+    # `_glob_to_re` and the precompiled default tuples have real consumers
+    # (test_hooklib reaches them through `_hooklib.`), and `_CONTROLS_CACHE` is
+    # mutated in place rather than rebound, so sharing the binding shares the
+    # cache correctly. Slice 1 taught this: an underscore prefix means "not
+    # public", never "unused".
+    _CI_DECL_RE,
+    _CI_DEFAULT_RES,
+    _CONTROLS_CACHE,
+    _DEFAULT_RES_BY_GLOBS,
+    _DEPLOY_DECL_RE,
+    _DEPLOY_DEFAULT_RES,
+    _MIG_DECL_RE,
+    _MIGRATION_DEFAULT_RES,
+    _controls_mtime,
+    _custom_re_cache,
+    _glob_to_re,
+    _read_controls,
+    _scope_res,
+    CI_DEFAULT_GLOBS,
+    DEPLOY_DEFAULT_GLOBS,
+    MIGRATION_DEFAULT_GLOBS,
+    is_ci_path,
+    is_deploy_path,
+    is_migration_path,
+    migration_globs,
+    path_in_globs,
+    scope_globs,
+)
+from _protectedlib import (  # noqa: F401
+    AUDIT_LOG_BASENAMES,
+    AUDIT_LOG_FLAT_BASENAMES,
+    AUDIT_LOG_NAMES,
+    AUDIT_LOG_RE,
+    CONTEXT_MD_RE,
+    DECISIONS_DIR_RE,
+    DECISIONS_PATH_RE,
+    DECISION_LOG_BASENAME,
+    DECISION_LOG_RE,
+    GATE_MARKER_NAMES,
+    MARKERS_RE,
+    classify_protected,
+    is_audit_log,
+    is_context_md,
+    is_decisions_path,
+    is_marker_path,
+    is_tail_append,
+)
 from _sensitivelib import (  # noqa: F401
     CRYPTO_RE,
     SECRET_RE,
@@ -115,10 +187,6 @@ from _sensitivelib import (  # noqa: F401
     sensitive_scan_added_lines,
 )
 
-# The loaded Host is process-cached: hooks are single-shot processes, and the
-# host's identity cannot change mid-process (its methods read env/payload state
-# live at call time, so caching the OBJECT changes no verdict).
-_HOST = None
 
 # Serialize same-process Windows writers before taking the cross-process lock.
 _GATE_EVENTS_WINDOWS_LOCK = threading.Lock()
@@ -142,258 +210,12 @@ def _is_lock_contention(exc):
             getattr(exc, "winerror", None) in (32, 33))
 
 
-def get_host():
-    """The process's Host instance (hostapi.load_host(), cached)."""
-    global _HOST
-    if _HOST is None:
-        _HOST = hostapi.load_host()
-    return _HOST
-
-
-def set_host(host):
-    """Dependency-injection seam (#257 architecture-001/performance-002).
-
-    Primes the module-cached `_HOST` that `get_host()` reads. Every entry
-    script's `run(host, argv=None)` calls this BEFORE `main()`, so the Host
-    instance the `__main__` guard already resolved via `hostapi.load_host()`
-    is the SAME object `get_host()` serves inside `main()` — closing two
-    defects at once: (1) `main()` no longer triggers its own redundant
-    `hostapi.load_host()` (a second `_host.py` load per invocation), and
-    (2) `run(host)` stops silently ignoring its `host` argument — a test that
-    calls `run(fake_host)` now genuinely exercises `fake_host`, not whatever
-    `load_host()` resolves from disk. In production the injected host IS the
-    `load_host()` result the guard already computed, so this changes no
-    behavior — it only removes the redundant second load and makes the
-    existing `run(host)` parameter live."""
-    global _HOST
-    _HOST = host
-
-
-def reset_host():
-    """Test-only: clear the injected/cached `_HOST` so the next `get_host()`
-    lazy-loads afresh. Production hook processes are single-shot and never need
-    this; but `set_host()` makes `_HOST` a process-lifetime singleton, so a test
-    that calls `run(fake_host)` must reset it in tearDown — otherwise the fake
-    leaks into any later in-process test that calls `get_host()` without its own
-    patch, silently running against the wrong host and masking a gate
-    regression (security review #257, LOW)."""
-    global _HOST
-    _HOST = None
-
-
-# project_root() memoization (performance-001/003, #260). A hook is a
-# single-shot process, so CLAUDE_PROJECT_DIR and the process cwd cannot
-# change mid-process — but the resolved VALUE is cached keyed on those two
-# inputs (not unconditionally) rather than as one bare value, so an env/cwd
-# change is a cache MISS, never a stale hit. This keeps the production
-# single-shot contract (the same hook process always sees an unchanging
-# env/cwd, so it resolves at most once) while staying correct for the
-# in-process integration-test harnesses that legitimately re-target
-# project_root() across many fixtures/envs within one Python process
-# (`python -m unittest discover` runs the whole suite in ONE interpreter —
-# an unconditional single-value cache would leak the FIRST test's resolved
-# root into every later test that calls project_root() or warn()/block()/
-# remind() in-process). A payload's `cwd` is deliberately NOT part of the
-# cache key: within one real hook process the payload is parsed at most once
-# and never changes, so a payload-bearing call and a later no-payload call in
-# the SAME (env, cwd) context are the SAME logical resolution and must return
-# the SAME value — exactly the "payload-bearing first call, later no-arg
-# calls stay consistent" contract. (A payload-only scenario — Codex, no
-# CLAUDE_PROJECT_DIR — still resolves once: the first call's payload wins and
-# is cached against the current (env, cwd); env/cwd don't change either.)
-_ROOT_CACHE = {}
-
-
-def _root_cache_key():
-    return (os.environ.get("CLAUDE_PROJECT_DIR"), os.getcwd())
-
-
-def _reset_root_cache():
-    """Test-only: drop every memoized project_root() resolution. Production
-    hook processes never need this (each is single-shot); integration tests
-    that simulate MANY logical hook invocations in one Python process and
-    need a resolution to be genuinely re-computed (rather than served from an
-    still-valid (env, cwd) cache entry) call this between scenarios."""
-    _ROOT_CACHE.clear()
 
 
 
-ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
-
-# Append-only audit logs (H-05) and ADR-decisions paths (H-11) — centralized
-# here (architecture-004) so the three pre-* hooks import ONE definition instead
-# of re-encoding the regex inline (the exact drift this module exists to
-# prevent: adding sprint-log.md once meant hand-editing every copy). Same home,
-# same rationale, as CRYPTO_RE/SECRET_RE/MIGRATION_DEFAULT_GLOBS.
-#
-# AUDIT_LOG_NAMES is the bare filename alternation; pre-bash.py composes its
-# shell LOG_NAMES from it, and AUDIT_LOG_RE anchors it under .codearbiter/ for
-# the Write/Edit file-path guards. DECISIONS_DIR_RE is the separator-tolerant
-# decisions directory token; pre-bash.py composes its shell DECISIONS from it,
-# and DECISIONS_PATH_RE extends it to a full ADR file path. `[\\/]+` matches the
-# norm_path'd `/` as well as a raw backslash, so both the file-path and shell
-# flanks derive from one source.
-#
-# gate-events.log (observability-001, #186) joins this set: it is the durable,
-# mechanical BLOCK/REMIND/WARN sink block()/remind()/warn() append to below —
-# an append-only audit artifact exactly like the other three, so it gets the
-# SAME H-05 tool-call protection (Write/Edit + shell) for free via this one
-# alternation, with no separate guard to maintain. Note this protects it only
-# from Write/Edit/Bash TOOL CALLS; the hooks' own os-level `open(..., "a")`
-# append (below) is plain file I/O, never a tool call, so H-05 never gates it.
-#
-# AUDIT_LOG_BASENAMES is the single authoritative list of bare filenames — the
-# ONE place a new audit log gets added. pre-bash.py's H-05 shell guard needs
-# these as plain strings too (a cheap `n in cmd` substring pre-filter before
-# running the regexes below), so it imports this tuple directly instead of
-# re-deriving/hand-copying the name set (the exact drift this centralization
-# exists to prevent — a filter that silently skips a future audit log because
-# its literal name was never added to a second, hand-maintained copy).
-# AUDIT_LOG_NAMES is built FROM this tuple (re.escape'd, alternated) — behavior
-# is unchanged from the prior hand-written pattern (same four literal
-# filenames, same (?:...) grouping), only the source of truth moved.
-AUDIT_LOG_FLAT_BASENAMES = ("overrides.log", "triage.log", "gate-events.log", "sprint-log.md")
-# #528: the SMARTS arbitration log is an append-only audit artifact that happens
-# to sit under decisions/ for filing reasons. It is NOT an ADR, and governing it
-# as one was a live deadlock: `decision-variance` Phase 4 is REQUIRED to append
-# to it, H-11 refused every write without the /adr authoring marker, and only
-# decision-lifecycle arms that marker. So a SMARTS arbitration outside an /adr
-# session made a decision it could not record. Its own format doc states H-05's
-# rule verbatim — "strictly append-only … to supersede, append a new entry" — so
-# H-05 is the correct guard: append freely, never rewrite.
-#
-# It is listed separately from AUDIT_LOG_BASENAMES because those are anchored
-# directly under .codearbiter/ and this one is nested a level deeper. Both halves
-# of the reclassification are load-bearing: adding it here WITHOUT removing it
-# from the H-11 set below leaves the append blocked, because classify_protected
-# reports every class a path hits and pre-write checks them independently.
-DECISION_LOG_BASENAME = "decision-log.md"
-DECISION_LOG_RE = re.compile(
-    r"\.codearbiter[\\/]+decisions[\\/]+" + re.escape(DECISION_LOG_BASENAME) + r"$"
-)
-# AUDIT_LOG_BASENAMES stays the SINGLE AUTHORITATIVE BASENAME LIST, and the
-# arbitration log is in it. _bashguardlib's H-05 shell check pre-filters with
-# `any(n in cmd for n in AUDIT_LOG_BASENAMES)` precisely so a newly added audit
-# log cannot silently skip the shell flank — adding the name only to the regex
-# alternation below would sail past that pre-filter and leave the log deletable
-# from the shell. (Caught by test_hook_guards.py, which the comment on that
-# pre-filter predicted verbatim.)
-AUDIT_LOG_BASENAMES = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
-AUDIT_LOG_NAMES = "(?:" + "|".join(re.escape(n) for n in AUDIT_LOG_BASENAMES) + ")"
-# The path anchor stays scoped to the FLAT logs — those sit directly under
-# .codearbiter/, the arbitration log one level deeper — so is_audit_log() tests
-# both patterns rather than loosening this one into matching any nesting.
-AUDIT_LOG_RE = re.compile(
-    r"\.codearbiter/" + "(?:" + "|".join(re.escape(n) for n in AUDIT_LOG_FLAT_BASENAMES) + ")" + r"$"
-)
-DECISIONS_DIR_RE = r"\.codearbiter[\\/]+decisions"
-DECISIONS_PATH_RE = re.compile(DECISIONS_DIR_RE + r"[\\/]+.+\.md$")
-
-# The activation file (#159) and the gate-marker store (#160). CONTEXT.md is the
-# master switch every hook gates on via arbiter_active(); .markers/ holds the
-# gate-pass tokens (security-gate-passed, migration-gate-passed,
-# adr-authoring-active). Both were writable project state with no Write/Edit
-# guard — the token strings are centralized here beside the audit-log/decisions
-# sets so the pre-* hooks import ONE definition (same anti-drift rationale).
-CONTEXT_MD_RE = re.compile(r"\.codearbiter/CONTEXT\.md$")
-MARKERS_RE = re.compile(r"\.codearbiter/\.markers(?:/|$)")
-# The two load-bearing gate-pass markers a commit gate consumes (H-09b/H-10b,
-# H-14). Their bare filenames feed pre-bash.py's shell flank — these are NEVER
-# legitimately shell-written (the sanctioned producers are the python
-# security-pass.py / migration-pass.py helpers), unlike adr-authoring-active
-# which /adr legitimately `touch`es.
-GATE_MARKER_NAMES = r"(?:security-gate-passed|migration-gate-passed)"
 
 
-def is_audit_log(rel):
-    """True iff `rel` is one of the append-only .codearbiter audit logs
-    (overrides.log, triage.log, sprint-log.md, gate-events.log) or the SMARTS
-    arbitration log decisions/decision-log.md (#528) — the H-05 guard set."""
-    n = norm_path(rel)
-    return bool(AUDIT_LOG_RE.search(n) or DECISION_LOG_RE.search(n))
 
-
-def is_tail_append(current, old, new):
-    """True iff an Edit's (old_string, new_string) pair is a verifiable,
-    TAIL-ANCHORED pure append against `current` (the file's REAL on-disk
-    content) — the H-05 guard (reliability-003, #172).
-
-    `new.startswith(old)` alone is not sufficient: `old` could be any interior
-    line that happens to be a prefix of `new`, which inserts content BETWEEN
-    existing lines rather than appending at the end. This requires TWO things:
-    `current` must literally END with `old` (old_string is the file's actual
-    trailing content, not just some substring elsewhere), and `new` must
-    extend `old`. An empty `old` is never a valid append — every string
-    "ends with" the empty string, so the tail-anchor check would trivially
-    pass and reopen the migration-003 empty-old_string hole this closes.
-
-    `old` must also occur EXACTLY ONCE in `current`: a non-unique old_string
-    that happens to also match the tail is not self-evidently an append — this
-    keeps the guard correct on its own terms rather than depending on the Edit
-    tool's own (client-side, not re-verified here) uniqueness enforcement for
-    a non-replace_all Edit."""
-    if not old:
-        return False
-    if current.count(old) != 1:
-        return False
-    return current.endswith(old) and new.startswith(old)
-
-
-def is_decisions_path(rel):
-    """True iff `rel` is a `.md` ADR anywhere under .codearbiter/decisions/ —
-    the H-11 guard set (a non-numbered draft or a nested path still counts).
-
-    decisions/decision-log.md is the ONE exception (#528): it is the append-only
-    arbitration log, not immutable ADR history, and is governed by H-05 instead.
-    The carve-out is exactly one path wide and anchored — `old-decision-log.md`
-    and a nested `sub/decision-log.md` remain ADRs, so a near-miss filename
-    cannot launder itself out of the marker gate. (`decision-log.md.bak` is in
-    NEITHER set: it does not end in `.md`, so it was never an H-11 path either.)"""
-    n = norm_path(rel)
-    if DECISION_LOG_RE.search(n):
-        return False
-    return bool(DECISIONS_PATH_RE.search(n))
-
-
-def is_context_md(rel):
-    """True iff `rel` is the .codearbiter/CONTEXT.md activation file (#159) —
-    the master switch arbiter_active() reads. Guarded so it can't be flipped to
-    `arbiter: disabled` (or corrupted) to make every enforcement hook dormant."""
-    return bool(CONTEXT_MD_RE.search(norm_path(rel)))
-
-
-def is_marker_path(rel):
-    """True iff `rel` is anywhere under .codearbiter/.markers/ (#160) — the
-    gate-pass token store. Load-bearing markers turn a BLOCK into an allow, so a
-    hand-written marker must not be admitted by the Write/Edit tools."""
-    return bool(MARKERS_RE.search(norm_path(rel)))
-
-
-def classify_protected(fpath, root):
-    """The set of protected classes a Write/Edit `fpath` targets, resolving
-    symlinks (#162). Each classifier runs against BOTH the raw normalized path
-    AND the realpath-resolved repo-relative form: a symlink alias whose visible
-    path lacks `.codearbiter/` still realpaths back inside the repo, so an alias
-    can no longer launder a write past the guard. Centralized so pre-write.py and
-    pre-edit.py apply the identical symlink-safe check to every class (H-05,
-    H-11, #159 CONTEXT.md, #160 markers) instead of re-encoding it twice.
-
-    Classes: "audit", "decisions", "context", "marker". repo_rel() returns "" for
-    a target outside the repo (which cannot be a `.codearbiter` path), so that
-    flank is simply skipped."""
-    hits = set()
-    for p in (norm_path(fpath), repo_rel(fpath, root)):
-        if not p:
-            continue
-        if is_audit_log(p):
-            hits.add("audit")
-        if is_decisions_path(p):
-            hits.add("decisions")
-        if is_context_md(p):
-            hits.add("context")
-        if is_marker_path(p):
-            hits.add("marker")
-    return hits
 
 
 
@@ -415,47 +237,6 @@ def utf8_stdio():
 
 
 
-def frontmatter_enabled_text(text):
-    """(enabled, malformed) for CONTEXT.md *content* (see frontmatter_enabled).
-    Split out so the #159 Write/Edit guard can vet the RESULTING content of an
-    edit — 'does this edit keep the repo arbiter-enabled?' — without going to
-    disk, sharing one parser with the on-disk activation check so the two never
-    disagree on what 'enabled' means."""
-    lines = (text or "").split("\n")
-    if not lines:
-        return (False, False)
-    first = lines[0].lstrip("﻿")  # tolerate a leading UTF-8 BOM
-    if first.strip() != "---":
-        return (False, False)  # no opening delimiter — dormant, not malformed
-    found = False
-    for ln in lines[1:]:
-        if ln.strip() == "---":
-            return (found, False)  # closing delimiter — decision is final
-        if ARBITER_RE.match(ln):
-            found = True
-    return (False, True)  # opened but never closed — malformed
-
-
-def frontmatter_enabled(ctx_path):
-    """Return (enabled, malformed) for CONTEXT.md ON DISK. `enabled` iff
-    `arbiter: enabled` appears in a properly-closed leading YAML frontmatter
-    block. `malformed` iff a block opens (`---` on line 1) but never closes — the
-    fail-loud case. A file with no frontmatter at all is simply dormant (not
-    malformed). Unreadable file -> (False, False)."""
-    try:
-        with open(ctx_path, encoding="utf-8", errors="replace") as f:
-            text = f.read()
-    except Exception:  # noqa: BLE001
-        return (False, False)
-    return frontmatter_enabled_text(text)
-
-
-def arbiter_active(root):
-    """True iff this repo opted in (`arbiter: enabled` in CONTEXT.md frontmatter).
-    Every enforcement hook gates on this so the plugin is genuinely dormant in
-    repos that never opted in — the plugin.json activation contract."""
-    enabled, _ = frontmatter_enabled(os.path.join(root, ".codearbiter", "CONTEXT.md"))
-    return enabled
 
 
 def read_input():
@@ -498,281 +279,12 @@ def tool_input(data):
     return (data or {}).get("tool_input", {}) or {}
 
 
-def project_root(payload=None):
-    """The project root. `CLAUDE_PROJECT_DIR` is the harness's own authoritative
-    signal and is trusted first: a hook subprocess is not guaranteed to start
-    with the project directory as its cwd, and a `git rev-parse` from elsewhere
-    can resolve to a different repo entirely (e.g. the plugin's own marketplace
-    clone). The env-first read also saves one git spawn per hook invocation.
-    Test harnesses that spawn hooks into fixture repos must pin the variable to
-    the fixture, as the production harness pins it to the project.
-
-    The resolution itself lives on the Host seam (hostapi.Host.project_root,
-    ADR-0011) — this function keeps its public signature (now accepting an
-    optional `payload`, architecture-006/#260, so a caller that already has
-    the parsed hook payload can hand it through to the payload-cwd leg) and
-    delegates, so every existing no-arg caller/import keeps working unchanged.
-
-    Memoized per (CLAUDE_PROJECT_DIR, process cwd) — see _ROOT_CACHE above for
-    the full contract (performance-001/003, #260): at most one resolution
-    (and at most one git spawn) per that key, so the repeated project_root()
-    reads inside block()/remind()/warn()'s gate-event logging don't each pay
-    a fresh subprocess."""
-    key = _root_cache_key()
-    if key not in _ROOT_CACHE:
-        _ROOT_CACHE[key] = get_host().project_root(payload)
-    return _ROOT_CACHE[key]
-
-
-def repo_rel(fpath, root):
-    """Repo-relative POSIX path for `fpath`, or "" when it lies outside `root`.
-
-    realpath BOTH sides before relpath: `git rev-parse --show-toplevel`
-    (project_root) canonicalizes symlinks and 8.3 short names, but the
-    `file_path` in a hook payload may not — so on macOS (TMPDIR `/var` ->
-    `/private/var`) and Windows (`RUNNER~1` -> `runneradmin`) the two name the
-    same repo via divergent forms. A purely lexical relpath on those forms
-    yields a bogus `..`-prefixed path, which silently suppressed every
-    path-scoped reminder (#125 CI: H-12/H-15/H-16/H-13 dropped on macOS +
-    Windows runners while ubuntu passed)."""
-    if not fpath:
-        return ""
-    rel = os.path.relpath(os.path.realpath(fpath), os.path.realpath(root))
-    rel = rel.replace(os.sep, "/")
-    return "" if rel == ".." or rel.startswith("../") else rel
 
 
 
 
-# Migration-path detection (H-14). Shared by migration-pass.py (the producer)
-# and pre-bash.py (the backstop) so the two never drift on what counts as a
-# migration. Default globs cover the common ORM/migration ecosystems; a project
-# extends or narrows the set via a `migration-paths` block in
-# security-controls.md. `**` matches any run of path segments (including none);
-# `*`/`?` stay within one segment.
-MIGRATION_DEFAULT_GLOBS = (
-    "**/migrations/**",
-    "**/migrate/**",
-    "**/db/migrate/**",
-    "**/alembic/versions/*.py",
-    "**/prisma/migrations/**",
-)
-_MIG_DECL_RE = re.compile(
-    r"<!--\s*migration-paths\s*-->(.*?)<!--\s*/migration-paths\s*-->", re.S | re.I)
-
-# CI/CD workflow detection (H-15, #73). Advisory only — no commit gate; the
-# defaults cover the common CI ecosystems and a project extends/narrows them via
-# a `ci-paths` block in security-controls.md (same `+`/`-` grammar as migrations).
-CI_DEFAULT_GLOBS = (
-    ".github/workflows/**",
-    ".circleci/**",
-    "**/.gitlab-ci.yml",
-    "**/Jenkinsfile",
-    "**/azure-pipelines.yml",
-    "**/bitbucket-pipelines.yml",
-)
-_CI_DECL_RE = re.compile(
-    r"<!--\s*ci-paths\s*-->(.*?)<!--\s*/ci-paths\s*-->", re.S | re.I)
-
-# Deployment / IaC detection (H-16, #73). Advisory only. Defaults cover the
-# common container/orchestration/IaC manifests; extend/narrow via a
-# `deploy-paths` block in security-controls.md.
-DEPLOY_DEFAULT_GLOBS = (
-    "**/Dockerfile",
-    "**/Dockerfile.*",
-    "**/docker-compose*.yml",
-    "**/docker-compose*.yaml",
-    "**/*.tf",
-    "**/*.tfvars",
-    "**/k8s/**",
-    "**/helm/**",
-    "**/kustomization.yaml",
-    "**/kustomization.yml",
-    "**/Procfile",
-)
-_DEPLOY_DECL_RE = re.compile(
-    r"<!--\s*deploy-paths\s*-->(.*?)<!--\s*/deploy-paths\s*-->", re.S | re.I)
 
 
-def _glob_to_re(glob):
-    """Compile a forward-slash glob into a full-path regex. `**/` is an optional
-    run of leading segments, `**` is any chars, `*`/`?` stay within a segment."""
-    g = norm_path(glob)
-    out, i = ["^"], 0
-    while i < len(g):
-        if g[i:i + 3] == "**/":
-            out.append("(?:.*/)?")
-            i += 3
-        elif g[i:i + 2] == "**":
-            out.append(".*")
-            i += 2
-        elif g[i] == "*":
-            out.append("[^/]*")
-            i += 1
-        elif g[i] == "?":
-            out.append("[^/]")
-            i += 1
-        else:
-            out.append(re.escape(g[i]))
-            i += 1
-    out.append("$")
-    return re.compile("".join(out))
-
-
-# performance-002: the DEFAULT glob tuples are module constants, so compile each
-# to a regex ONCE at module load instead of per glob per path_in_globs() call.
-# A single post-write-edit.py invocation otherwise recompiled up to 44 regexes
-# (5 migration + 6 CI + 11 deploy x the calls that hit them). These compiled
-# tuples line up 1:1 with their string tuples; the matcher uses them directly
-# for the defaults and only compiles the per-controls custom globs on demand.
-_MIGRATION_DEFAULT_RES = tuple(_glob_to_re(g) for g in MIGRATION_DEFAULT_GLOBS)
-_CI_DEFAULT_RES = tuple(_glob_to_re(g) for g in CI_DEFAULT_GLOBS)
-_DEPLOY_DEFAULT_RES = tuple(_glob_to_re(g) for g in DEPLOY_DEFAULT_GLOBS)
-
-# Map each default string tuple to its precompiled regex tuple, so the matcher
-# can look up the right precompiled set from the `defaults` argument alone
-# (preserving the existing public signatures of scope_globs/path_in_globs).
-_DEFAULT_RES_BY_GLOBS = {
-    MIGRATION_DEFAULT_GLOBS: _MIGRATION_DEFAULT_RES,
-    CI_DEFAULT_GLOBS: _CI_DEFAULT_RES,
-    DEPLOY_DEFAULT_GLOBS: _DEPLOY_DEFAULT_RES,
-}
-
-
-# performance-001: hooks are EPHEMERAL single-shot processes (one invocation
-# then exit), so a module-level cache lives for exactly one invocation — there
-# is NO cross-invocation persistence. Within that one process, scope_globs reads
-# security-controls.md on every is_migration_path/is_ci_path/is_deploy_path call
-# (2-3 reads per hook). Cache the controls text keyed by (root, mtime) so a hit
-# skips the read; the mtime key keeps it correct even on an intra-process change
-# (the file is re-read when its mtime moves), and keys the absent-file state too.
-_CONTROLS_CACHE = {}
-
-
-def _controls_mtime(root):
-    """mtime of `root`'s security-controls.md, or None when absent/unreadable.
-    The cache key — distinct mtimes (and the None absent-state) bust the cache."""
-    try:
-        return os.path.getmtime(
-            os.path.join(root, ".codearbiter", "security-controls.md"))
-    except Exception:  # noqa: BLE001 — no controls file -> None (defaults only)
-        return None
-
-
-def _read_controls(root):
-    """The repo's security-controls.md text, or "" when absent/unreadable.
-
-    Process-cached keyed by (root, mtime): a cache hit skips the file read, and
-    the mtime component invalidates the entry whenever the file changes (or is
-    created/removed), so verdicts are unchanged. Single-shot hook process only —
-    no cross-invocation persistence."""
-    mtime = _controls_mtime(root)
-    key = (root, mtime)
-    cached = _CONTROLS_CACHE.get(key)
-    if cached is not None:
-        return cached[0]
-    try:
-        with open(os.path.join(root, ".codearbiter", "security-controls.md"),
-                  encoding="utf-8", errors="replace") as f:
-            text = f.read()
-    except Exception:  # noqa: BLE001 — no controls file -> defaults only
-        text = ""
-    # Cache the text AND the compiled custom globs per scope (filled lazily by
-    # scope_globs) under the same mtime key, so a custom-glob set compiles at
-    # most once per (root, mtime) instead of once per path_in_globs() call.
-    _CONTROLS_CACHE[key] = (text, {})
-    return text
-
-
-def _custom_re_cache(root):
-    """The per-(root, mtime) dict that caches compiled custom-glob regexes for
-    this controls revision. Populated lazily by scope_globs. Returns a throwaway
-    dict only if the controls entry is somehow missing (defensive; the read
-    above always seeds it first)."""
-    entry = _CONTROLS_CACHE.get((root, _controls_mtime(root)))
-    return entry[1] if entry is not None else {}
-
-
-def scope_globs(root, defaults, decl_re):
-    """(includes, excludes) for one scope category: the built-in `defaults` plus
-    any declaration block matched by `decl_re` in security-controls.md
-    (`+ glob` extends, `- glob` excludes). Shared by every path-glob scope
-    detector (migration/CI/deploy) so they never drift on the grammar."""
-    includes, excludes = list(defaults), []
-    m = decl_re.search(_read_controls(root))
-    if not m:
-        return includes, excludes
-    for ln in m.group(1).splitlines():
-        ln = ln.strip()
-        if ln.startswith("+ "):
-            includes.append(ln[2:].strip())
-        elif ln.startswith("- "):
-            excludes.append(ln[2:].strip())
-    return includes, excludes
-
-
-def _scope_res(root, defaults, decl_re):
-    """(include_res, exclude_res) as compiled regexes for one scope category.
-    Default globs use the module-precompiled regexes (zero per-call compilation);
-    any per-controls custom globs are compiled at most once per (root, mtime) and
-    cached. Equivalent to compiling each string from scope_globs() — verdicts are
-    identical; only the regex work is amortised."""
-    includes, excludes = scope_globs(root, defaults, decl_re)
-    default_res = _DEFAULT_RES_BY_GLOBS.get(defaults)
-    if default_res is None:
-        # Unknown defaults set (no precompiled tuple) — compile everything.
-        return ([_glob_to_re(g) for g in includes],
-                [_glob_to_re(g) for g in excludes])
-    # Defaults occupy the head of `includes` (scope_globs builds list(defaults)
-    # then appends customs); reuse the precompiled regexes for that head and
-    # compile only the trailing customs. Excludes are all custom.
-    custom_cache = _custom_re_cache(root)
-
-    def _compile(g):
-        r = custom_cache.get(g)
-        if r is None:
-            r = _glob_to_re(g)
-            custom_cache[g] = r
-        return r
-
-    n = len(defaults)
-    include_res = list(default_res) + [_compile(g) for g in includes[n:]]
-    exclude_res = [_compile(g) for g in excludes]
-    return include_res, exclude_res
-
-
-def path_in_globs(rel, root, defaults, decl_re):
-    """True iff `rel` (a repo-relative path) matches an include glob and no
-    exclude glob for the given scope category. Excludes win — the false-positive
-    escape hatch. The one matcher behind is_migration_path/is_ci_path/
-    is_deploy_path."""
-    rel = norm_path(rel).lstrip("/")
-    include_res, exclude_res = _scope_res(root, defaults, decl_re)
-    if any(r.match(rel) for r in exclude_res):
-        return False
-    return any(r.match(rel) for r in include_res)
-
-
-def migration_globs(root):
-    """(includes, excludes) for migration detection: defaults plus any
-    `migration-paths` declaration in security-controls.md."""
-    return scope_globs(root, MIGRATION_DEFAULT_GLOBS, _MIG_DECL_RE)
-
-
-def is_migration_path(rel, root):
-    """True iff `rel` is a database migration (H-14). Excludes win — the
-    escape hatch for a project whose `migrations/` dir holds non-DB files."""
-    return path_in_globs(rel, root, MIGRATION_DEFAULT_GLOBS, _MIG_DECL_RE)
-
-
-def is_ci_path(rel, root):
-    """True iff `rel` is a CI/CD workflow file (H-15, advisory)."""
-    return path_in_globs(rel, root, CI_DEFAULT_GLOBS, _CI_DECL_RE)
-
-
-def is_deploy_path(rel, root):
-    """True iff `rel` is a deployment / IaC manifest (H-16, advisory)."""
-    return path_in_globs(rel, root, DEPLOY_DEFAULT_GLOBS, _DEPLOY_DECL_RE)
 
 
 def write_text_atomic(path, text, newline=None):

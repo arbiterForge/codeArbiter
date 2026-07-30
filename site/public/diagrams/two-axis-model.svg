@@ -16,35 +16,35 @@
   <rect width="1112" height="450" rx="14" fill="url(#canvas)"/>
   <rect width="1112" height="450" rx="14" fill="url(#grid)"/>
   <rect x="1" y="1" width="1110" height="448" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">RELEASE MODEL</text>
-<text x="42" y="78" font-family="Manrope Variable" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Payload versions and feature maturity answer different questions.</text>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2">RELEASE MODEL</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start">Payload versions and feature maturity answer different questions.</text>
 <rect x="42" y="116" width="500" height="300" rx="14" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
 <rect x="570" y="116" width="500" height="300" rx="14" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="72" y="154" font-family="JetBrains Mono Variable" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">SEMVER AXIS</text>
-<text x="600" y="154" font-family="JetBrains Mono Variable" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">FEATURE FORGE AXIS</text>
-<text x="72" y="188" font-family="Manrope Variable" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">Whole payload</text>
-<text x="600" y="188" font-family="Manrope Variable" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">Per-feature maturity</text>
+<text x="72" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">SEMVER AXIS</text>
+<text x="600" y="154" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.8" data-label-kind="annotation">FEATURE FORGE AXIS</text>
+<text x="72" y="188" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">Whole payload</text>
+<text x="600" y="188" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#f6f7f9" text-anchor="start">Per-feature maturity</text>
 <rect x="72" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="134" y="255" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.5.1</text>
-<text x="134" y="282" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">released</text>
+<text x="134" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.5.1</text>
+<text x="134" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">released</text>
 <rect x="230" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="292" y="255" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.5.2</text>
-<text x="292" y="282" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">current</text>
+<text x="292" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.5.2</text>
+<text x="292" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">current</text>
 <rect x="388" y="224" width="124" height="76" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="450" y="255" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.6.0</text>
-<text x="450" y="282" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">next</text>
+<text x="450" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">v2.6.0</text>
+<text x="450" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">next</text>
 <path d="M202 262 L220 262" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
 <path d="M360 262 L378 262" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
 <rect x="600" y="224" width="154" height="76" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="677" y="255" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">preview</text>
-<text x="677" y="282" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">opt-in · dormant</text>
+<text x="677" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">preview</text>
+<text x="677" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">opt-in · dormant</text>
 <rect x="886" y="224" width="154" height="76" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="963" y="255" font-family="Manrope Variable" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">stable</text>
-<text x="963" y="282" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">on by default</text>
+<text x="963" y="255" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle">stable</text>
+<text x="963" y="282" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">on by default</text>
 <path d="M760 262 L876 262" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<text x="818" y="246" font-family="JetBrains Mono Variable" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">evidence</text>
-<text x="72" y="344" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">A version bump reaches every user.</text>
-<text x="72" y="363" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Governed by MAJOR · MINOR · PATCH.</text>
-<text x="600" y="344" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">A preview can exist inside a stable release.</text>
-<text x="600" y="363" font-family="Manrope Variable" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Promotion requires real-world evidence.</text>
+<text x="818" y="246" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation">evidence</text>
+<text x="72" y="344" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">A version bump reaches every user.</text>
+<text x="72" y="363" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Governed by MAJOR · MINOR · PATCH.</text>
+<text x="600" y="344" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">A preview can exist inside a stable release.</text>
+<text x="600" y="363" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start">Promotion requires real-world evidence.</text>
 </svg>

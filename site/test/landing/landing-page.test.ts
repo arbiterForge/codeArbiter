@@ -48,7 +48,9 @@ describe("first-class product splash", () => {
     expect(docsRail).toContain('aria-controls="ca-docs-drawer"');
     expect(docsRail).toContain('aria-expanded="false"');
     expect(docsRail).toContain('id="ca-docs-drawer"');
-    expect(docsRail).toContain('aria-label="Documentation navigation"');
+    expect(docsRail).toContain('aria-labelledby="ca-docs-drawer-title"');
+    expect(docsRail).toContain('role="dialog"');
+    expect(docsRail).toContain('aria-modal="true"');
     expect(docsRail).toContain("OPEN DOCS");
   });
 
@@ -61,6 +63,10 @@ describe("first-class product splash", () => {
     expect(docsRail).toContain("element.getClientRects().length > 0");
     expect(docsRail).toMatch(/\(first \?\? drawer\)\.focus\(\)/);
     expect(docsRail).toContain("activeIndex <= 0");
+    expect(docsRail).toContain("customElements.define");
+    expect(docsRail).toContain("connectedCallback");
+    expect(docsRail).toContain("background.inert = true");
+    expect(docsRail).toContain("background.inert = state.inert");
     expect(docsRail).toContain("ca-docs-drawer__backdrop");
     expect(docsRail).toContain("import.meta.env.BASE_URL");
     expect(docsRail).toContain('import.meta.env.BASE_URL.replace(/\\/$/, "")');
@@ -242,6 +248,15 @@ describe("shared docs design system", () => {
     );
     expect(readSrc("src/assets/fonts/LICENSE-JetBrains-Mono.txt")).toContain(
       "SIL OPEN FONT LICENSE Version 1.1",
+    );
+    const provenance = readSrc("src/assets/fonts/README.md");
+    expect(provenance).toContain("@fontsource-variable/manrope@5.3.0");
+    expect(provenance).toContain("@fontsource-variable/jetbrains-mono@5.3.0");
+    expect(provenance).toContain(
+      "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+    );
+    expect(provenance).toContain(
+      "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
     );
   });
 

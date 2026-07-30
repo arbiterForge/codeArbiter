@@ -5,6 +5,9 @@ import { describe, expect, it } from "vitest";
 const repoRoot = resolve(process.cwd(), "..");
 const readme = readFileSync(join(repoRoot, "README.md"), "utf8");
 const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8"));
+const codexManifest = JSON.parse(
+  readFileSync(join(repoRoot, "plugins", "ca-codex", ".codex-plugin", "plugin.json"), "utf8"),
+);
 
 describe("professional repository README", () => {
   it("leads with the rendered product artwork instead of the legacy SVG banner", () => {
@@ -37,6 +40,8 @@ describe("professional repository README", () => {
     }
 
     expect(readme.indexOf("## Get running")).toBeLessThan(readme.indexOf("## How governance works"));
+    expect(readme).toContain("https://arbiterforge.github.io/codeArbiter/#proof");
+    expect(readme).not.toContain("#direct-hook-proof");
   });
 
   it("uses rendered Feature Forge atmosphere while linking the source-backed live catalog", () => {
@@ -58,7 +63,7 @@ describe("professional repository README", () => {
   });
 
   it("separates the current Codex adapter from the dated live-install evidence", () => {
-    expect(readme).toContain("currently ships `ca-codex 0.3.5`");
+    expect(readme).toContain(`currently ships \`ca-codex ${codexManifest.version}\``);
     expect(readme).toContain("dated end-to-end public-install record");
     expect(readme).toContain("`ca-codex 0.2.4` from release `v2.8.13`");
   });
