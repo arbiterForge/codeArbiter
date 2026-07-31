@@ -70,15 +70,80 @@ all-parents graph walk is exercised over a first-parent-only one within
 `WINDOW_COMMITS` itself (see `WindowCommitsTest`), which is a genuine,
 narrower property `WINDOW_COMMITS` alone can still fail on.
 
+`ThisRepoStillReleasesTest` (T-77, spec A-6.7) — the same two lanes, extended
+from the frozen fixture to LIVE-repo HEAD: real tags (`git tag --list`), the
+real `.codearbiter/release-targets.md` declared rows (the NEW lane) against
+a hand-transcribed set of the same facts (the OLD lane, exactly as
+`_OLD_LANE_TRANSCRIBED` above does for the fixture), real manifests, real
+CHANGELOGs, and a composed tag **message file** — with `notes-match` and
+`dates-consistent` run against it, the same guards Phase 3 applies before
+publishing. It creates **zero refs**: no `git tag`, no branch, nothing
+committed to this repository. The message file is a plain OS temp file
+outside the repository, read back and diffed against the in-memory string
+to prove the round trip is lossless, then removed.
+
+Four honest limits carry over, restated for the live-HEAD case:
+
+1. The transcription problem is the same as `_OLD_LANE_TRANSCRIBED`'s: the
+   OLD lane's manifest/changelog/payload facts for each live target exist
+   only as prose (this repo's `release/SKILL.md` Targets table), so they
+   enter this test by hand-transcription rather than being read from
+   anywhere the pre-change lane could read them. A transcription error would
+   surface as a self-consistent mismatch, but nothing here can catch a fact
+   the Targets table itself had wrong.
+2. `WINDOW_COMMITS`' "no independent discriminating power" limit applies
+   here unchanged, now over a REAL `git log` walk instead of a frozen graph:
+   both lanes share one subprocess call, differing only in which `LAST_TAG`
+   each resolves.
+3. `last_tag_select`'s marker-scope divergence (AC-1.12) is intentional and
+   is not re-asserted here — `PrereleaseMarkerScopeDivergenceTest` above
+   already covers it against the frozen fixture; none of this repo's four
+   real prefixes carry a marker substring, so live HEAD cannot exercise it.
+4. **New for T-77**: the tag-message COMPOSITION rule itself (Phase-1
+   section text plus a `Released-at: DATE` footer) is release-SKILL prose,
+   not a `_releaselib` function in either lane — there is no
+   `compose_tag_message` in the pre-change module or the portable one. Both
+   lanes below therefore share ONE test-local composer, exactly the same
+   shared-helper pattern as `_window_commits`, and differ only in which
+   CHANGELOG TEXT and which MANIFEST VERSION each lane resolved — the
+   composition arithmetic itself carries no independent discriminating
+   power and a bug in `_compose_tag_message` would pass on both lanes
+   identically. What genuinely discriminates is covered by direct,
+   single-lane assertions (`assertTrue`/`assertFalse` against one lane's
+   real return value), never only by comparing the two lanes' shared-helper
+   output to each other.
+
+**Manifest/changelog reconciliation is asserted, not assumed, for every
+live target this class checks.** A plugin's manifest version bumps on
+every merged feat/fix PR (this campaign's own per-PR version-gate
+convention); its CHANGELOG section is written by hand as part of
+publishing, on a separate, slower cadence. The two mechanisms can
+therefore run apart between merges — `plugin.json` ahead of the newest
+`## [X.Y.Z]` CHANGELOG heading — and `/release`'s Phase 1 BLOCKS exactly
+when they do. `NEXT_VERSION` is read from the MANIFEST throughout (Phase 1
+step 3's own contract: derive the version, then assert it EQUALS the
+manifest), never redefined as "whichever version the changelog's newest
+heading already names" merely to make a mismatch disappear — so this test
+asserts the two agree for `ca` and `ca-pi` alike, the same live guard
+`/release` itself applies, rather than branching on whichever state
+happens to hold when the suite runs and reporting green either way. A
+future failure here means the mechanism has diverged again: the fix is to
+add the missing CHANGELOG section, never to relax this assertion.
+
 Stdlib only. No side effects at import beyond loading the two `_releaselib`
 copies, which is dynamic module loading, not a mutation.
+`ThisRepoStillReleasesTest` reads real repo files (no side effect:
+read-only) and writes one plain temp file OUTSIDE this repository, via
+`tempfile`, removed in `tearDown`.
 """
 
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
+import tempfile
 import types
 import unittest
 
@@ -568,6 +633,417 @@ class PrereleaseMarkerScopeDivergenceTest(unittest.TestCase):
         # trace to state explicitly, not a regression.
         self.assertEqual(
             self.core_lane.last_tag_select(self.tags, self.PREFIX), self.TAG)
+
+
+# --------------------------------------------------------------------------- #
+# T-77 (spec A-6.7) — the trace apparatus extended to LIVE-repo HEAD.
+# See the module docstring for the full design and its four honest limits.
+# --------------------------------------------------------------------------- #
+
+LIVE_RELEASE_TARGETS_PATH = os.path.join(REPO_ROOT, ".codearbiter", "release-targets.md")
+
+_ANY_MD_HEADING_RE = re.compile(r"^## .*$", re.MULTILINE)
+_VERSION_MD_HEADING_RE = re.compile(r"^##\s+\[?v?(\d+\.\d+\.\d+)\]?")
+_HEADING_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})")
+
+
+def _git(args):
+    """A single, read-only `git` invocation against THIS repository's real
+    working tree. Every call site below passes a read-only subcommand
+    (`rev-parse`, `tag --list`, `log`, `rev-list`, `show-ref`, `status
+    --porcelain`) — never `tag`, `branch`, `commit`, or `checkout` — which is
+    what `ThisRepoStillReleasesTest.test_this_repo_still_releases_creates_
+    zero_refs` verifies mechanically rather than asserting by code review
+    alone."""
+    result = subprocess.run(
+        ["git"] + args, cwd=REPO_ROOT, capture_output=True, text=True, timeout=30)
+    if result.returncode != 0:
+        raise RuntimeError(f"git {' '.join(args)} failed: {result.stderr}")
+    return result.stdout
+
+
+def _independent_last_tag(tags, prefix):
+    """A second, separate LAST_TAG oracle sharing no code with either
+    `_releaselib` lane — generalizes `OldLaneLiveTest._independent_last_ca_tag`
+    to an arbitrary prefix so the same real cross-validation covers ca-pi's
+    `ca-pi-v` series too, not only ca's bare `v`."""
+    rx = re.compile(r"^" + re.escape(prefix) + r"(\d+)\.(\d+)\.(\d+)$")
+    best = None
+    for tag in tags:
+        m = rx.match(tag)
+        if not m:
+            continue
+        version = tuple(int(g) for g in m.groups())
+        if best is None or version > best[0]:
+            best = (version, tag)
+    return best[1] if best else None
+
+
+def _window_pathspecs(payload, payload_exclude):
+    """The pathspec list a release lane's window derivation actually walks:
+    the payload itself, plus one `:(exclude)`-prefixed pathspec per declared
+    `payload-exclude` entry (adversarial review 2026-07-31, HIGH-3). Without
+    this, `ca-pi`'s window would include commits touching
+    `plugins/ca-pi/tools/` — a path the declared row explicitly excludes
+    from the release payload (it ships neither generated policy nor a built
+    runtime artifact) — driving a different SemVer bump than the real
+    lane. Shared by both callers below so the pathspec shape can only drift
+    once, not twice."""
+    return [payload] + [":(exclude)" + p for p in payload_exclude]
+
+
+def _live_window_shas(last_tag, head_sha, payload, payload_exclude=()):
+    """`git log <last_tag>..<head_sha> -- <payload> [:(exclude)<p> ...]`, a
+    REAL subprocess call against live HEAD, for one already-resolved
+    (non-sentinel) LAST_TAG. Both of T-77's live targets (`ca`, `ca-pi`)
+    carry a real release tag, so the NONE_SENTINEL "no prior release"
+    branch `_window_commits` (the fixture-based walk above) handles does
+    not arise here."""
+    out = _git(["log", "--format=%H", f"{last_tag}..{head_sha}", "--"] +
+               _window_pathspecs(payload, payload_exclude))
+    return [line.strip() for line in out.splitlines() if line.strip()]
+
+
+def _independent_window_count(last_tag, head_sha, payload, payload_exclude=()):
+    """A SEPARATE git subcommand (`rev-list --count`, not `log` parsed line
+    by line) computing the same window's size, so agreement with
+    `_live_window_shas` is genuine cross-validation of its line-parsing
+    rather than the same command compared against itself."""
+    out = _git(["rev-list", "--count", f"{last_tag}..{head_sha}", "--"] +
+               _window_pathspecs(payload, payload_exclude))
+    return int(out.strip())
+
+
+def _first_release_section(changelog_text):
+    """The first (topmost) CHANGELOG section whose heading names a real
+    MAJOR.MINOR.PATCH version — skips any number of leading `## [Unreleased]`
+    headings (this repo's `ca-codex`/`ca-pi` CHANGELOGs each carry several
+    stacked blank ones). Returns `(version, section_text, date)` for the
+    first match, `section_text` spanning from that heading up to (not
+    including) the next `## ` heading or end of file; `(None, None, None)` if
+    no versioned heading exists at all."""
+    headings = list(_ANY_MD_HEADING_RE.finditer(changelog_text))
+    for i, h in enumerate(headings):
+        m = _VERSION_MD_HEADING_RE.match(h.group(0))
+        if not m:
+            continue
+        start = h.start()
+        end = headings[i + 1].start() if i + 1 < len(headings) else len(changelog_text)
+        section_text = changelog_text[start:end]
+        date_match = _HEADING_DATE_RE.search(h.group(0))
+        date = date_match.group(1) if date_match else None
+        return m.group(1), section_text, date
+    return None, None, None
+
+
+def _compose_tag_message(section_text, released_at_date):
+    """Phase 2 step 1's composition rule (`release/SKILL.md`), transcribed
+    ONCE and shared by both lanes below — see the module docstring's fourth
+    honest limit: the Phase-1 changelog section plus a `Released-at: DATE`
+    footer. Neither the pre-change nor the portable `_releaselib.py`
+    implements this; it is release-SKILL prose, not a mechanism function
+    either lane owns, so this composition carries no independent
+    discriminating power of its own between the two lanes."""
+    return section_text.rstrip("\n") + f"\nReleased-at: {released_at_date}\n"
+
+
+class ThisRepoStillReleasesTest(unittest.TestCase):
+    """T-77 (spec A-6.7): the T-27 trace apparatus extended from the frozen
+    fixture to LIVE-repo HEAD. See the module docstring for the full design,
+    its four honest limits, and why manifest/changelog reconciliation is
+    asserted — rather than assumed, or branched on and quietly tolerated
+    either way — for every target this class checks.
+
+    Creates ZERO refs. Every git call this class makes is read-only
+    (`rev-parse`, `tag --list`, `log`, `rev-list`, `show-ref`, `status
+    --porcelain`) — nothing here runs `git tag`, `git branch`, `git commit`,
+    or `git checkout`, and `test_this_repo_still_releases_creates_zero_refs`
+    verifies that mechanically rather than resting on code review alone. The
+    composed tag "message file" is a plain OS temp file OUTSIDE this
+    repository (never a git ref, never written under REPO_ROOT), removed in
+    the same test that creates it."""
+
+    # The OLD lane's facts, transcribed by hand from this repo's release
+    # skill Targets table (`core/surface/skills/release/SKILL.md`) — the
+    # pre-change module has no declared file to read them from, the same
+    # transcription pattern `_OLD_LANE_TRANSCRIBED` above uses for the
+    # fixture. Narrows the oracle problem; does not eliminate it (honest
+    # limit 1 in the module docstring).
+    _LIVE_OLD_LANE_FACTS = {
+        "ca": {
+            "prefix": "v",
+            "manifests": ["plugins/ca/.claude-plugin/plugin.json"],
+            "changelog": "CHANGELOG.md",
+            "payload": "plugins/ca/",
+            "payload_exclude": [],
+        },
+        "ca-pi": {
+            "prefix": "ca-pi-v",
+            "manifests": ["plugins/ca-pi/package.json", "package.json"],
+            "changelog": "plugins/ca-pi/CHANGELOG.md",
+            "payload": "plugins/ca-pi/",
+            "payload_exclude": ["plugins/ca-pi/tools/"],
+        },
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        cls.old_lane = _load_old_lane()
+        cls.core_lane = _load_core_lane()
+        cls.rows_by_target = {
+            row["target"]: row
+            for row in cls.core_lane.load_targets(LIVE_RELEASE_TARGETS_PATH)
+        }
+        cls.head_sha = _git(["rev-parse", "HEAD"]).strip()
+        cls.live_tags = [t.strip() for t in _git(["tag", "--list"]).splitlines() if t.strip()]
+        # Zero-refs baseline — re-checked bit-for-bit in
+        # test_this_repo_still_releases_creates_zero_refs. Every OTHER test
+        # method in this class only reads (git log/rev-list/tag --list and
+        # plain file opens), so this snapshot is valid regardless of test
+        # execution order.
+        cls._refs_before = _git(["show-ref"])
+        cls._status_before = _git(["status", "--porcelain"])
+
+    def _read_repo_file(self, rel_path):
+        with open(os.path.join(REPO_ROOT, rel_path), encoding="utf-8") as fh:
+            return fh.read()
+
+    def _manifest_version(self, rel_path):
+        return json.loads(self._read_repo_file(rel_path))["version"]
+
+    def test_this_repo_still_releases_declared_row_facts_agree_with_the_transcribed_old_lane(self):
+        # Row-shape agreement at LIVE HEAD — T-26 restated as this class's
+        # own precondition rather than assumed.
+        for target, facts in self._LIVE_OLD_LANE_FACTS.items():
+            with self.subTest(target=target):
+                row = self.rows_by_target[target]
+                self.assertEqual(row["prefix"], facts["prefix"])
+                self.assertEqual(row["manifest"], facts["manifests"])
+                self.assertEqual(row["changelog"], facts["changelog"])
+                self.assertEqual(row["payload"], facts["payload"])
+                self.assertEqual(row["payload_exclude"], facts["payload_exclude"])
+
+    def test_this_repo_still_releases_last_tag_agrees_across_lanes_and_an_independent_oracle(self):
+        for target, facts in self._LIVE_OLD_LANE_FACTS.items():
+            with self.subTest(target=target):
+                row = self.rows_by_target[target]
+                old_last_tag = self.old_lane.last_tag_select(self.live_tags, facts["prefix"])
+                new_last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
+                oracle = _independent_last_tag(self.live_tags, facts["prefix"])
+                self.assertIsNotNone(
+                    oracle,
+                    f"{target}: no real {facts['prefix']}MAJOR.MINOR.PATCH tag "
+                    "found in this repo to validate against")
+                self.assertEqual(old_last_tag, oracle)
+                self.assertEqual(new_last_tag, oracle)
+                self.assertEqual(old_last_tag, new_last_tag)
+
+    def test_this_repo_still_releases_manifest_versions_agree_across_lanes(self):
+        for target, facts in self._LIVE_OLD_LANE_FACTS.items():
+            with self.subTest(target=target):
+                row = self.rows_by_target[target]
+                old_versions = [self._manifest_version(p) for p in facts["manifests"]]
+                new_versions = [self._manifest_version(p) for p in row["manifest"]]
+                self.assertEqual(old_versions, new_versions)
+
+    def test_this_repo_still_releases_ca_pi_dual_manifest_agrees(self):
+        # ca-pi's own two-manifest invariant (Phase 1 step 3: "for ca-pi,
+        # both manifests count"), live — the property T-27d's fixture
+        # exercises, exercised here against the REAL generated repo-root
+        # package.json build artifact rather than a synthetic copy.
+        row = self.rows_by_target["ca-pi"]
+        versions = [self._manifest_version(p) for p in row["manifest"]]
+        self.assertEqual(len(versions), 2)
+        self.assertEqual(
+            versions[0], versions[1],
+            "ca-pi's plugin manifest and the generated repo-root package.json "
+            "disagree — tools/build-host-packages.py has not been re-run "
+            "since the last manifest bump")
+
+    def test_this_repo_still_releases_ca_pi_commit_window_matches_between_lanes(self):
+        facts = self._LIVE_OLD_LANE_FACTS["ca-pi"]
+        row = self.rows_by_target["ca-pi"]
+        last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
+        self.assertNotEqual(last_tag, self.core_lane.NONE_SENTINEL)
+
+        old_window = _live_window_shas(
+            last_tag, self.head_sha, facts["payload"], facts["payload_exclude"])
+        new_window = _live_window_shas(
+            last_tag, self.head_sha, row["payload"], row["payload_exclude"])
+        # Honest limit 2 (module docstring): this equality has no independent
+        # discriminating power of its own — both lanes share ONE `last_tag`
+        # and ONE (identical, for ca-pi) payload string AND ONE identical
+        # payload-exclude list, so it can only diverge if LAST_TAG, the
+        # payload path, or the exclude list had already diverged, which the
+        # tests above (including the payload_exclude row-facts check) assert
+        # separately.
+        self.assertEqual(old_window, new_window)
+        self.assertTrue(new_window, "ca-pi's window is empty at live HEAD — nothing to trace")
+
+        independent_count = _independent_window_count(
+            last_tag, self.head_sha, row["payload"], row["payload_exclude"])
+        self.assertEqual(len(new_window), independent_count)
+
+    def test_this_repo_still_releases_ca_pi_payload_exclude_actually_narrows_the_window(self):
+        # AC-1.11 names payload-exclude as one of the three behaviors ca-pi
+        # exists in this trace to exercise (adversarial review 2026-07-31,
+        # HIGH-3). A direct, single-lane check that it is doing something
+        # real, not just declared: the excluded window must be a STRICT
+        # subset of the unexcluded window, both computed fresh against live
+        # HEAD (never a hand-written commit count, which would go stale on
+        # the very next merge).
+        row = self.rows_by_target["ca-pi"]
+        last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
+        self.assertNotEqual(last_tag, self.core_lane.NONE_SENTINEL)
+        self.assertTrue(
+            row["payload_exclude"],
+            "ca-pi's declared row lost its payload-exclude entry — the "
+            "release window would then drive a different SemVer bump than "
+            "the real lane (a commit touching only plugins/ca-pi/tools/ "
+            "would count)")
+
+        excluded_window = set(_live_window_shas(
+            last_tag, self.head_sha, row["payload"], row["payload_exclude"]))
+        unexcluded_window = set(_live_window_shas(
+            last_tag, self.head_sha, row["payload"], []))
+        self.assertTrue(
+            excluded_window < unexcluded_window,
+            "ca-pi's payload-exclude removed no commits from the release "
+            "window at live HEAD — the exclude pathspec is not being "
+            "applied")
+
+    def test_this_repo_still_releases_ca_pi_composed_message_passes_notes_match_and_dates_consistent(self):
+        facts = self._LIVE_OLD_LANE_FACTS["ca-pi"]
+        row = self.rows_by_target["ca-pi"]
+        old_text = self._read_repo_file(facts["changelog"])
+        new_text = self._read_repo_file(row["changelog"])
+        self.assertEqual(old_text, new_text)  # same real file, two path spellings
+
+        next_version = self._manifest_version(row["manifest"][0])
+        section_version, section_text, date = _first_release_section(new_text)
+        self.assertEqual(
+            section_version, next_version,
+            "ca-pi's manifest and CHANGELOG must be reconciled — this is "
+            "T-77's end-to-end lane; per the module docstring, the two can "
+            "diverge between merges (manifest bumps per-PR, CHANGELOG lands "
+            "on a slower hand-written cadence), which would BLOCK /release "
+            "at Phase 1")
+        self.assertIsNotNone(date)
+        # A direct boundary check on the shared section-extraction helper
+        # itself (honest limit 4): comparing old-vs-new lane output alone
+        # cannot catch an off-by-one in _first_release_section, since both
+        # lanes call the SAME helper on the SAME text and would shift
+        # together. section_text must contain its OWN heading and no
+        # other — never bleed into the NEXT section.
+        self.assertEqual(
+            len(_ANY_MD_HEADING_RE.findall(section_text)), 1,
+            "the extracted section spans more than one CHANGELOG heading — "
+            "_first_release_section's end boundary is wrong")
+
+        last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
+        self.assertTrue(
+            self.core_lane.semver_greater(next_version, self.core_lane._bare_version(last_tag)),
+            f"ca-pi's manifest version {next_version!r} is not a strict "
+            f"SemVer advance over its last tag {last_tag!r}")
+
+        message = _compose_tag_message(section_text, date)
+        tag = row["prefix"] + next_version
+
+        for lane, label in ((self.old_lane, "old"), (self.core_lane, "new")):
+            with self.subTest(lane=label):
+                self.assertTrue(
+                    lane.notes_heading_matches(message, tag),
+                    f"{label} lane: notes_heading_matches rejected a message "
+                    "composed from ca-pi's own reconciled CHANGELOG section")
+                self.assertTrue(
+                    lane.release_dates_consistent(section_text, message),
+                    f"{label} lane: release_dates_consistent rejected the "
+                    "composed message's own Released-at footer")
+
+        # The "message file": a plain OS temp file OUTSIDE this repository —
+        # zero refs, nothing committed — round-tripped to prove the write is
+        # lossless. Windows text-mode open() flips LF to CRLF on rewrite, so
+        # newline="\n" on write and newline="" on read-back throughout.
+        fd, path = tempfile.mkstemp(prefix="release-trace-t77-", suffix=".txt")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(message)
+            with open(path, encoding="utf-8", newline="") as fh:
+                roundtripped = fh.read()
+            self.assertEqual(roundtripped, message)
+        finally:
+            os.remove(path)
+
+    def test_this_repo_still_releases_ca_manifest_and_changelog_are_reconciled(self):
+        # ca's manifest bumps on every merged feat/fix PR (this campaign's
+        # own per-PR version-gate convention); CHANGELOG.md lands on a
+        # separate, slower, hand-written cadence. NEXT_VERSION is read from
+        # the MANIFEST throughout (Phase 1 step 3's own contract: derive the
+        # version, then assert it EQUALS the manifest), never redefined as
+        # "whichever version the changelog's newest heading already names"
+        # merely to dodge a mismatch — so this asserts the two agree, the
+        # same live guard `/release ca` Phase 1 applies, rather than
+        # branching on whichever state happens to hold when the suite runs
+        # and reporting green either way (adversarial review 2026-07-31,
+        # HIGH-2: the prior if/else's drift arm asserted only a tautology
+        # that a corrupted NEXT_VERSION could select without failing
+        # anything). A failure here means ca's manifest has run ahead of
+        # CHANGELOG.md again — add the missing `## [X.Y.Z]` section; do not
+        # relax this assertion to tolerate the gap.
+        row = self.rows_by_target["ca"]
+        changelog_text = self._read_repo_file(row["changelog"])
+        next_version = self._manifest_version(row["manifest"][0])
+        section_version, section_text, date = _first_release_section(changelog_text)
+        self.assertEqual(
+            section_version, next_version,
+            f"ca's CHANGELOG top section ({section_version!r}) does not "
+            f"match the manifest version ({next_version!r}) — /release ca "
+            "would BLOCK at Phase 1 in this state")
+        self.assertIsNotNone(date)
+        # A direct boundary check on the shared section-extraction helper
+        # itself (honest limit 4): section_text must contain its OWN
+        # heading and no other — never bleed into the NEXT section.
+        self.assertEqual(
+            len(_ANY_MD_HEADING_RE.findall(section_text)), 1,
+            "the extracted section spans more than one CHANGELOG heading — "
+            "_first_release_section's end boundary is wrong")
+
+        last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
+        self.assertTrue(
+            self.core_lane.semver_greater(next_version, self.core_lane._bare_version(last_tag)),
+            f"ca's manifest version {next_version!r} is not a strict SemVer "
+            f"advance over its last tag {last_tag!r}")
+
+        message = _compose_tag_message(section_text, date)
+        tag = row["prefix"] + next_version
+        for lane, label in ((self.old_lane, "old"), (self.core_lane, "new")):
+            with self.subTest(lane=label):
+                self.assertTrue(
+                    lane.notes_heading_matches(message, tag),
+                    f"{label} lane: notes_heading_matches rejected a message "
+                    "composed from ca's own reconciled CHANGELOG section")
+                self.assertTrue(
+                    lane.release_dates_consistent(section_text, message),
+                    f"{label} lane: release_dates_consistent rejected the "
+                    "composed message's own Released-at footer")
+
+    def test_this_repo_still_releases_creates_zero_refs(self):
+        # Every git call this class makes is read-only (rev-parse, tag
+        # --list, log, rev-list, show-ref, status --porcelain) — no `git
+        # tag`, `git branch`, `git commit`, or `git checkout` anywhere in
+        # this class. This is the mechanical proof of that invariant, rather
+        # than an assertion resting on code review alone.
+        refs_after = _git(["show-ref"])
+        status_after = _git(["status", "--porcelain"])
+        head_after = _git(["rev-parse", "HEAD"]).strip()
+        self.assertEqual(
+            refs_after, self._refs_before,
+            "a ref (tag/branch) was created or moved while this trace ran")
+        self.assertEqual(
+            status_after, self._status_before,
+            "the working tree changed while this trace ran — this class "
+            "must never write inside this repository")
+        self.assertEqual(head_after, self.head_sha, "HEAD moved while this trace ran")
 
 
 if __name__ == "__main__":
