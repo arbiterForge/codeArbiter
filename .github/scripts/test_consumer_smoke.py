@@ -2250,9 +2250,26 @@ class BackfillTwoArmProofTest(unittest.TestCase):
         # The property `AbsentBlockError` is CORRECT and MUST stay (the task
         # brief's own instruction): the back-fill lane HANDLES this error,
         # it is never a silent default inside the parser itself.
-        self.assertFalse(os.path.isfile(self.targets_path))
-        with self.assertRaises(self.core_lane.AbsentBlockError):
-            self.core_lane.load_targets(self.targets_path)
+        #
+        # This owns its own pristine consumer rather than reading the shared
+        # class fixture. It previously asserted absence against `self.
+        # targets_path`, which `test_arm_2_persist_...` legitimately CREATES —
+        # and unittest orders methods alphabetically, so `arm_2` runs first and
+        # the absence assertion failed. It only ever passed while the class's
+        # setUpClass was erroring and none of these methods ran at all. A test
+        # asserting "no declared file exists" must not depend on no other test
+        # having made one.
+        pristine = _BackfillFixture("t76-pristine")
+        try:
+            path = os.path.join(
+                pristine.consumer_root, ".codearbiter", "release-targets.md")
+            self.assertFalse(
+                os.path.isfile(path),
+                "a freshly built consumer must carry no declared file")
+            with self.assertRaises(self.core_lane.AbsentBlockError):
+                self.core_lane.load_targets(path)
+        finally:
+            pristine.cleanup()
 
     def test_detection_extracted_from_the_installed_skill_finds_the_candidate(self):
         proc = self._run_detect()
