@@ -1,0 +1,670 @@
+#!/usr/bin/env python3
+# codeArbiter — portable release-lane MECHANISM (anchored per-series tag
+# selection, semver comparison, publish-state classification, notes-heading
+# matching, date consistency) plus the declared-target-file parser.
+#
+# This module is the PORTABLE half of the release helper split (issue #563).
+# It ships from core/pysrc/ into every governance plugin's hooks/ directory
+# (tools/sync-core.py, CI-enforced byte-identity) and therefore MUST carry no
+# fact about this repository or its CI vocabulary — no plugin name, no path
+# under this repository, no check-run name, no tag-namespace mapping. Every
+# such fact is DATA, supplied by the caller (a required parameter) or read
+# from an operator-declared file via load_targets(). A consuming repository
+# supplies its own facts; this module supplies only the mechanism.
+#
+# Design invariants (mirror the other _*lib helpers):
+#   - Stdlib only; zero side effects at import (no git, no file I/O, no
+#     argument parsing at import time).
+#   - Every mechanism function (semver_key, semver_greater, last_tag_select,
+#     notes_heading_matches, release_dates_consistent, classify_publish_state,
+#     select_release_target, classify_merge_readiness, peel_tag) is pure over
+#     synthetic input and NEVER raises on malformed input — it degrades to the
+#     safe/refusing answer, per this codebase's "never raise on malformed user
+#     input" rule for hook-adjacent helpers.
+#   - The declared-target-file parser (parse_release_targets / load_targets)
+#     is the deliberate, documented exception to that rule: its input is not
+#     arbitrary user/session data but an OPERATOR-AUTHORED configuration file
+#     that a `contents: write` release lane later executes. A malformed
+#     declaration is a configuration error that MUST surface loudly to the
+#     operator rather than silently defaulting or partially parsing — so every
+#     parser-contract violation raises its own distinguishable
+#     ReleaseTargetsError subclass instead of returning a degraded value or
+#     letting a bare exception escape from deep inside the parser.
+#
+# Public API:
+#   semver_key(value) -> tuple | None
+#   semver_greater(current, base) -> bool
+#   last_tag_select(tags, prefix) -> str
+#   notes_heading_matches(notes_text, tag) -> bool
+#   release_dates_consistent(changelog_section, tag_message) -> bool
+#   classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
+#                          manifest_version, release_is_nondraft) -> str
+#   select_release_target(*confirmations, targets) -> str
+#   classify_merge_readiness(check_runs, head_sha, check_name) -> str
+#   peel_tag(ls_remote_text, tag) -> str
+#   parse_release_targets(text) -> list[dict]
+#   load_targets(path) -> list[dict]
+#
+# Declared exceptions (all subclass ReleaseTargetsError):
+#   AbsentBlockError        — no delimiter block present at all
+#   EmptyBlockError         — the delimiter block is present but blank
+#   MalformedBlockError     — bad `[target]` header grammar, a key before the
+#                             first header, or an unparsable line
+#   UnknownKeyError         — a key outside the declared grammar
+#   DuplicateKeyError       — a scalar key repeated within one target block
+#   DuplicateTargetError    — the same `[target]` header declared twice
+#   InvalidBooleanError     — a boolean value that is not exactly true/false
+#   MultipleBlocksError     — more than one delimiter block in the file
+#   DelimiterInValueError   — a value contains the literal closing delimiter,
+#                             which would otherwise truncate the block under a
+#                             naive non-greedy match
+#   MissingRequiredKeyError — a target block is missing prefix/changelog/payload
+
+from __future__ import annotations
+
+import re
+
+
+class ReleaseTargetsError(RuntimeError):
+    """Base for every declared release-targets-file parse error. Callers that
+    only care that the declaration was bad, not which rule it broke, can catch
+    this one type; callers that need to react differently per violation catch
+    the specific subclass."""
+
+
+class AbsentBlockError(ReleaseTargetsError):
+    """No delimiter block is present in the file at all."""
+
+
+class EmptyBlockError(ReleaseTargetsError):
+    """The delimiter block is present but contains no declaration content."""
+
+
+class MalformedBlockError(ReleaseTargetsError):
+    """A `[target]` header is malformed (empty, or carries a character outside
+    `[A-Za-z0-9._-]`), a key line appears before the first header, or a line is
+    neither a header nor a `key: value` pair."""
+
+
+class UnknownKeyError(ReleaseTargetsError):
+    """A key outside the declared grammar (e.g. a typo) was used."""
+
+
+class DuplicateKeyError(ReleaseTargetsError):
+    """A scalar (non-repeating) key was declared twice within one target block."""
+
+
+class DuplicateTargetError(ReleaseTargetsError):
+    """The same `[target]` header was declared more than once."""
+
+
+class InvalidBooleanError(ReleaseTargetsError):
+    """A boolean-typed value was neither exactly `true` nor exactly `false`."""
+
+
+class MultipleBlocksError(ReleaseTargetsError):
+    """More than one delimiter block was found in the file."""
+
+
+class DelimiterInValueError(ReleaseTargetsError):
+    """A declared value contains the literal closing-delimiter text, which
+    would otherwise silently truncate the block under a naive non-greedy
+    match rather than being treated as part of the value."""
+
+
+class MissingRequiredKeyError(ReleaseTargetsError):
+    """A target block is missing one of the required keys (prefix, changelog,
+    payload)."""
+
+
+# A `2.9.1`-style series tag is exactly `<prefix>MAJOR.MINOR.PATCH` — no
+# suffix. The anchored form already excludes pre-releases (`2.6.0-beta.1`);
+# _PRERELEASE_MARKERS is the explicit, legible second line of defense.
+_RELEASE_RE_CACHE = {}
+
+
+def _release_re(prefix):
+    """The anchored `<prefix>MAJOR.MINOR.PATCH` matcher for one release series."""
+    rx = _RELEASE_RE_CACHE.get(prefix)
+    if rx is None:
+        rx = re.compile(r"^" + re.escape(prefix) + r"(\d+)\.(\d+)\.(\d+)$")
+        _RELEASE_RE_CACHE[prefix] = rx
+    return rx
+
+
+_PRERELEASE_MARKERS = ("-beta", "-rc", "-alpha")
+
+# A changelog section heading, in either the `## vX.Y.Z - DATE` form or the
+# Keep-a-Changelog `## [X.Y.Z] - DATE` bracket form. The capture is the bare
+# `X.Y.Z`; the optional leading `v` and the surrounding brackets sit OUTSIDE
+# the group, so heading comparison is style-agnostic. Any separator is
+# allowed between version and date. Plus the annotated-tag `Released-at:`
+# footer.
+_HEADING_RE = re.compile(r"^##\s+\[?v?(\d+\.\d+\.\d+)\]?", re.MULTILINE)
+_CHANGELOG_DATE_RE = re.compile(
+    r"^##\s+\[?v?\d+\.\d+\.\d+\]?\D+(\d{4}-\d{2}-\d{2})", re.MULTILINE)
+_RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
+
+# Full SemVer, including the pre-release and build-metadata tails a release
+# tag never carries but a version MANIFEST can. The anchored `_release_re`
+# above deliberately rejects those, because it selects a published release
+# series; this one parses a version for ORDERING, which is a different
+# question and needs the tail.
+SEMVER = re.compile(
+    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+    r"(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?"
+    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
+)
+
+
+def semver_key(value):
+    """`"2.9.1"` -> a sortable key; `None` when `value` is not valid SemVer.
+
+    Non-raising per this module's mechanism-function invariant. Build
+    metadata is parsed and discarded: SemVer §10 says it is not part of
+    precedence, so `1.0.0+a` and `1.0.0+b` compare equal.
+    """
+    if not isinstance(value, str):
+        return None
+    match = SEMVER.fullmatch(value)
+    if match is None:
+        return None
+    prerelease = match.group(4)
+    if prerelease is None:
+        pre_key = None
+    else:
+        pre_key = tuple(
+            (0, int(part)) if part.isdigit() else (1, part)
+            for part in prerelease.split(".")
+        )
+    return int(match.group(1)), int(match.group(2)), int(match.group(3)), pre_key
+
+
+def semver_greater(current, base):
+    """True iff `current` is a STRICT SemVer advance over `base`.
+
+    The single definition of "advance" every payload-version gate shares.
+    Degrades to False when either side is unparseable, which refuses the
+    gate rather than passing it. Pre-release ordering follows SemVer §11: a
+    pre-release is LOWER than its release (`1.0.0-beta` < `1.0.0`), numeric
+    identifiers compare numerically and rank below alphanumeric ones.
+    """
+    current_key = semver_key(current)
+    base_key = semver_key(base)
+    if current_key is None or base_key is None:
+        return False
+    if current_key[:3] != base_key[:3]:
+        return current_key[:3] > base_key[:3]
+    current_pre, base_pre = current_key[3], base_key[3]
+    if current_pre is None:
+        return base_pre is not None
+    if base_pre is None:
+        return False
+    return current_pre > base_pre
+
+
+def _bare_version(tag):
+    """`v2.6.0` / `[2.6.0]` / `2.6.0` / `myapp-v0.1.31` -> the bare SemVer.
+
+    Lets the heading match compare a tag against a bracket-style changelog
+    heading without caring about either spelling.
+
+    Anchored on the SemVer at the END rather than by stripping a known
+    prefix, so a namespaced series' tag (`<prefix>vMAJOR.MINOR.PATCH`) works
+    without the prefix being known here — stripping only a LEADING "v" is
+    right for a bare `v2.9.1` and wrong for any namespaced series, since
+    `"myapp-v0.1.31".lstrip("v")` is unchanged and never equals the `0.1.31`
+    parsed out of the heading."""
+    if not isinstance(tag, str):
+        return tag
+    text = tag.strip().strip("[]")
+    match = re.search(r"(\d+\.\d+\.\d+.*)$", text)
+    return match.group(1) if match else text.lstrip("v")
+
+
+def last_tag_select(tags, prefix):
+    """Return the highest SemVer tag in `tags` for ONE release series,
+    excluding pre-releases (`-beta`/`-rc`/`-alpha`). Returns NONE_SENTINEL
+    when the series has no release tag yet.
+
+    `prefix` selects the series and is REQUIRED — this repository's default
+    was a repo-specific fact (which series is "the" release) and could not
+    survive as a module default without smuggling that fact back in. The
+    caller supplies the prefix for the series it means, typically a value
+    loaded from a declared row (see `load_targets`).
+
+    This is the single source of `LAST_TAG`, replacing an inline grep
+    one-liner: bare `git describe --tags` returns the nearest tag by commit-
+    graph ANCESTRY, which in a multi-series repo is routinely another
+    series' tag, and silently bases an entire release on the wrong baseline.
+
+    Series isolation is a property of the ANCHORED match rather than a list
+    of exclusions to maintain: `^v` cannot match `myapp-v0.1.30`, and
+    `^myapp-v` cannot match `v2.9.1`. A new series therefore cannot leak into
+    an existing one by being forgotten in an exclusion list."""
+    best = None  # ((major, minor, patch), original_tag)
+    if not isinstance(tags, (list, tuple)):
+        return NONE_SENTINEL
+    if not isinstance(prefix, str) or not prefix:
+        return NONE_SENTINEL
+    matcher = _release_re(prefix)
+    for t in tags:
+        if not isinstance(t, str):
+            continue
+        m = matcher.match(t)
+        if not m:
+            continue
+        # Tested against the VERSION portion only, after the prefix is
+        # stripped — never the whole tag. A consumer's own prefix can
+        # legitimately contain one of these substrings (`web-beta-v`,
+        # `api-rc-v`); testing the whole tag would reject every one of that
+        # series' real releases, reading `<none>` as "never released" for a
+        # series that has releases.
+        if any(marker in t[len(prefix):] for marker in _PRERELEASE_MARKERS):
+            continue
+        ver = tuple(int(g) for g in m.groups())
+        if best is None or ver > best[0]:
+            best = (ver, t)
+    return best[1] if best else NONE_SENTINEL
+
+
+NONE_SENTINEL = "<none>"
+
+
+def notes_heading_matches(notes_text, tag):
+    """True iff the FIRST changelog heading in `notes_text` (either `## vX.Y.Z`
+    or the Keep-a-Changelog `## [X.Y.Z]` form) names the same version as
+    `tag`. A stale notes-file (whose first section is an older version)
+    returns False, so a release lane cannot publish the wrong changelog
+    section under the right tag. Missing heading or non-string input ->
+    False."""
+    if not isinstance(notes_text, str) or not isinstance(tag, str):
+        return False
+    m = _HEADING_RE.search(notes_text)
+    if not m:
+        return False
+    return m.group(1) == _bare_version(tag)
+
+
+def release_dates_consistent(changelog_section, tag_message):
+    """True iff the date in `changelog_section`'s heading (`## vX.Y.Z - DATE`
+    or `## [X.Y.Z] - DATE`) equals the `Released-at: DATE` date in
+    `tag_message`. Guards against the date being hand-typed inconsistently
+    across surfaces. Either date absent, or non-string input -> False."""
+    if not isinstance(changelog_section, str) or not isinstance(tag_message, str):
+        return False
+    cm = _CHANGELOG_DATE_RE.search(changelog_section)
+    tm = _RELEASED_AT_RE.search(tag_message)
+    if not cm or not tm:
+        return False
+    return cm.group(1) == tm.group(1)
+
+
+def classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
+                           manifest_version, release_is_nondraft):
+    """Classify a (re)publish attempt so a release lane can resume a
+    half-finished publish instead of dead-ending on 'tag exists -> STOP'.
+    Returns one of:
+
+      publish_fresh      - no tag yet; the normal path.
+      already_published  - the tag is at HEAD and a non-draft release exists.
+      resume_publish     - tag is at HEAD and its version matches the
+                           manifest, but no non-draft release exists (tag
+                           pushed, release never created) -> finish publish.
+      abort_mismatch     - tag points at a non-HEAD commit, or its version
+                           disagrees with the manifest -> STOP, never overwrite.
+
+    Mismatch OUTRANKS publication state. An existing release used to
+    short-circuit to `already_published` before the tag was compared to
+    HEAD, so a resumed publish could silently accept a release whose tag
+    installs a different snapshot. The tag is what consumers actually fetch;
+    if it does not name this commit, nothing about the release makes the
+    state safe.
+    """
+    if not tag_exists:
+        return "publish_fresh"
+    if tag_sha != head_sha or tag_version != manifest_version:
+        return "abort_mismatch"
+    if release_is_nondraft:
+        return "already_published"
+    return "resume_publish"
+
+
+def select_release_target(*confirmations, targets):
+    """Resolve which single target a release dispatch selected.
+    `confirmations` are the per-target version inputs, positionally aligned
+    with `targets`. `targets` is REQUIRED — the register of releasable names
+    is a repo-specific fact and cannot survive as a module default. Returns
+    one of:
+
+      <target>   - exactly one input was supplied; the matching name from
+                   `targets`.
+      none       - no input was supplied; there is nothing to publish.
+      multiple   - more than one; the dispatch is ambiguous and MUST be
+                   refused.
+      arity      - `confirmations` and `targets` are not the same length.
+
+    Selection is one decision, made once, by a caller that holds no write
+    token of its own, so a dispatch that supplies more than one confirmation
+    can never start two `contents: write` publishers. Blank-ish input
+    (whitespace, non-string) counts as "not selected" so a stray space can
+    never read as a second target.
+
+    The count is checked against `targets` rather than zipped-to-shortest on
+    purpose: a caller wired for fewer targets than were actually supplied
+    would otherwise silently resolve the wrong one. `arity` is not a target
+    and is meant to match no dispatch case, so a caller's fail-closed default
+    arm refuses it - and, like every other return here, it is a LABEL rather
+    than an exception, so a caller's contract of "prints a label and never
+    raises" holds."""
+    def _selected(value):
+        return isinstance(value, str) and value.strip() != ""
+
+    if not isinstance(targets, (list, tuple)):
+        return "arity"
+    if len(confirmations) != len(targets):
+        return "arity"
+    selected = [target for target, value in zip(targets, confirmations)
+                if _selected(value)]
+    if len(selected) > 1:
+        return "multiple"
+    if selected:
+        return selected[0]
+    return "none"
+
+
+def classify_merge_readiness(check_runs, head_sha, check_name):
+    """Classify the merge-readiness evidence for ONE exact commit. `check_runs`
+    is the `check_runs` array from a commit's check-runs API response.
+    `check_name` — the single aggregate check that means "every required job
+    for this commit concluded green" — is REQUIRED: its exact text is a
+    repo-specific fact (this codebase's own CI vocabulary) and cannot survive
+    as a module default. Returns one of:
+
+      green           - the gate ran for this commit, completed, and succeeded.
+      missing         - no check run by that name is present at all.
+      pending         - present but not `completed` (queued / in_progress / ...).
+      sha_mismatch    - a matching run reports a different `head_sha`.
+      not_successful  - completed with any conclusion other than `success`
+                        (failure, cancelled, skipped, timed_out, neutral, ...).
+
+    A hosted release workflow that only proves it was dispatched from a
+    protected branch shows how a commit ENTERED that branch, not that
+    post-merge evidence exists for the exact commit about to be tagged.
+
+    Fail-closed throughout: unparseable input is `missing`, and several runs
+    share one name only when a re-run is in flight - we cannot tell which
+    verdict is authoritative, so EVERY matching run must be green."""
+    if not isinstance(check_runs, list):
+        return "missing"
+    matching = [run for run in check_runs
+                if isinstance(run, dict) and run.get("name") == check_name]
+    if not matching:
+        return "missing"
+    if any(run.get("head_sha") != head_sha for run in matching):
+        return "sha_mismatch"
+    if any(run.get("status") != "completed" for run in matching):
+        return "pending"
+    if any(run.get("conclusion") != "success" for run in matching):
+        return "not_successful"
+    return "green"
+
+
+def peel_tag(ls_remote_text, tag):
+    """Resolve the COMMIT a remote tag names, from `git ls-remote --tags`
+    output. Returns "" when the tag is absent.
+
+    An annotated tag's own object id is not the commit it points at; the
+    peeled `refs/tags/<tag>^{}` line is. A workflow that treats any remote
+    hit as a resumable publish without comparing the tag to the current
+    commit can accept a stale tag as a successful rerun and publish for the
+    wrong commit. Matching is exact on the ref name, so `v2.6.0` is never
+    resolved from `v2.6.0-beta.1`."""
+    if not isinstance(ls_remote_text, str) or not isinstance(tag, str):
+        return ""
+    direct = peeled = ""
+    ref = f"refs/tags/{tag}"
+    for line in ls_remote_text.splitlines():
+        parts = line.split()
+        if len(parts) != 2:
+            continue
+        sha, name = parts
+        if name == ref + "^{}":
+            peeled = sha
+        elif name == ref:
+            direct = sha
+    return peeled or direct
+
+
+# --------------------------------------------------------------------------- #
+# Declared-target-file parser. Grammar: per-target `[name]` sub-blocks of
+# `key: value` lines inside the HTML-comment delimiter convention this
+# codebase's path-scope reader (`_scopelib.py`) already uses — reused here
+# rather than inventing a second delimiter syntax.
+# --------------------------------------------------------------------------- #
+
+_OPEN_RE = re.compile(r"<!--\s*release-targets\s*-->")
+_CLOSE_RE = re.compile(r"<!--\s*/release-targets\s*-->")
+_HEADER_RE = re.compile(r"^\[([A-Za-z0-9._-]+)\]$")
+
+# A key not in _LIST_KEYS is scalar: exactly one value per target block, a
+# second occurrence of the same key within one block is a DuplicateKeyError.
+# List keys repeat by design and preserve declaration order.
+_LIST_KEYS = frozenset({"manifest", "artifacts", "pre-tag", "payload-exclude"})
+_BOOLEAN_KEYS = frozenset({"latest-eligible"})
+_REQUIRED_KEYS = ("prefix", "changelog", "payload")
+
+# Grammar key -> row field name (rows use `_` throughout, the grammar uses
+# `-`, matching this codebase's `key: value` / `snake_case` convention split).
+_KEY_FIELD = {
+    "prefix": "prefix",
+    "changelog": "changelog",
+    "payload": "payload",
+    "rebuild": "rebuild",
+    "provenance-manifest": "provenance_manifest",
+    "latest-eligible": "latest_eligible",
+    "manifest": "manifest",
+    "artifacts": "artifacts",
+    "pre-tag": "pre_tag",
+    "payload-exclude": "payload_exclude",
+}
+
+
+def _new_row(name):
+    return {
+        "target": name,
+        "prefix": None,
+        "manifest": [],
+        "changelog": None,
+        "payload": None,
+        "payload_exclude": [],
+        "rebuild": None,
+        "artifacts": [],
+        "provenance_manifest": None,
+        "pre_tag": [],
+        "latest_eligible": False,
+    }
+
+
+def _finish_row(row):
+    # A parsed key line always assigns a string (`.strip()`-ed at read time),
+    # so `prefix:` with no value yields `''`, never `None` — an `is None`
+    # check alone lets that empty declaration pass as "present". Treat a
+    # blank or whitespace-only value as missing too, so a typo'd required key
+    # cannot silently become a first-release baseline downstream (`''` fed to
+    # `last_tag_select` resolves the NONE_SENTINEL).
+    missing = [key for key in _REQUIRED_KEYS
+               if (row[_KEY_FIELD[key]] or "").strip() == ""]
+    if missing:
+        raise MissingRequiredKeyError(
+            f"target {row['target']!r} is missing required key(s): "
+            + ", ".join(missing)
+        )
+
+
+def parse_release_targets(text):
+    """Parse the declared-target-file GRAMMAR from `text` (already-read file
+    content) into a list of row dicts, one per `[target]` block, each
+    carrying: target, prefix, manifest (list), changelog, payload,
+    payload_exclude (list), rebuild, artifacts (list), provenance_manifest,
+    pre_tag (list), latest_eligible (bool).
+
+    Pure — no file I/O — so it is testable with synthetic input; `load_targets`
+    is the one function that touches the filesystem.
+
+    Every parser-contract violation raises its own ReleaseTargetsError
+    subclass; never a silent default, never a partial parse. See the module
+    docstring for the full list of declared exceptions.
+
+    Cross-platform LF/CRLF editing drift means a value like
+    `latest-eligible: true\\r` must parse as the boolean `true`, not as an
+    unrecognised value that would otherwise silently drop a feature — the
+    exact silent-default failure this module's loud-failure contract
+    forbids. There is no dedicated CRLF-stripping pass: every line is
+    `.strip()`-ed on extraction from the block (`raw_line.strip()` below)
+    and every key/value pair is independently `.strip()`-ed again off the
+    split — Python's `str.strip()` with no argument removes `\\r` along with
+    every other whitespace character, so a trailing `\\r` never survives to
+    a comparison regardless of which layer runs first."""
+    if not isinstance(text, str):
+        # Every declared parser-contract violation raises a ReleaseTargetsError
+        # subclass so a caller can catch one type (see module docstring); a
+        # non-string input must not be the one escape hatch that raises a bare
+        # TypeError instead. There is no block to find in non-text input, so
+        # this is the same declared answer as an absent block.
+        raise AbsentBlockError(
+            "no <!-- release-targets --> block found (input is not text)")
+    normalized = text
+
+    opens = list(_OPEN_RE.finditer(normalized))
+    if not opens:
+        raise AbsentBlockError("no <!-- release-targets --> block found")
+    if len(opens) > 1:
+        raise MultipleBlocksError(
+            f"found {len(opens)} <!-- release-targets --> opening delimiters; "
+            "exactly one is allowed")
+
+    after_open = normalized[opens[0].end():]
+    closes = list(_CLOSE_RE.finditer(after_open))
+    if not closes:
+        raise MalformedBlockError(
+            "<!-- release-targets --> block is never closed")
+
+    # The GENUINE closing delimiter is the first match that sits ALONE on its
+    # line (only whitespace precedes it since the last newline). A match that
+    # is preceded by other content on the same line is embedded inside a
+    # declared value (e.g. `rebuild: echo <!-- /release-targets -->`) and
+    # must error rather than silently become the block boundary — otherwise a
+    # value's embedded delimiter truncates the block and, for a REQUIRED key,
+    # can silently empty it (`payload: <!-- /release-targets -->` would parse
+    # with `payload == ''`). A close match that occurs entirely AFTER the
+    # genuine terminator — a legitimate stray mention of the delimiter text in
+    # prose following the block — is not inspected at all, so it can never be
+    # misdiagnosed as a value violation.
+    genuine = None
+    for m in closes:
+        line_start = after_open.rfind("\n", 0, m.start()) + 1
+        prefix = after_open[line_start:m.start()]
+        if prefix.strip() == "":
+            genuine = m
+            break
+        raise DelimiterInValueError(
+            "a declared value contains the literal closing delimiter "
+            "'<!-- /release-targets -->', which would truncate the block "
+            "under a naive parse instead of being treated as part of the value")
+
+    block = after_open[:genuine.start()]
+    if not block.strip():
+        raise EmptyBlockError("<!-- release-targets --> block is empty")
+
+    rows = []
+    row = None
+    seen_keys = None
+    seen_names = set()
+
+    for raw_line in block.split("\n"):
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        if line.startswith("["):
+            m = _HEADER_RE.match(line)
+            if not m:
+                raise MalformedBlockError(
+                    f"malformed target header: {raw_line!r}")
+            name = m.group(1)
+            if name in seen_names:
+                raise DuplicateTargetError(f"duplicate target block: {name!r}")
+            seen_names.add(name)
+            if row is not None:
+                _finish_row(row)
+                rows.append(row)
+            row = _new_row(name)
+            seen_keys = set()
+            continue
+
+        if row is None:
+            raise MalformedBlockError(
+                f"key line before the first [target] header: {raw_line!r}")
+
+        idx = line.find(":")
+        if idx == -1:
+            raise MalformedBlockError(
+                f"malformed line (expected 'key: value'): {raw_line!r}")
+        key = line[:idx].strip()
+        value = line[idx + 1:].strip()
+
+        if key not in _KEY_FIELD:
+            raise UnknownKeyError(
+                f"unknown key {key!r} in target {row['target']!r}")
+        field = _KEY_FIELD[key]
+
+        if key in _LIST_KEYS:
+            row[field].append(value)
+            continue
+
+        if key in seen_keys:
+            raise DuplicateKeyError(
+                f"duplicate key {key!r} in target {row['target']!r}")
+        seen_keys.add(key)
+
+        if key in _BOOLEAN_KEYS:
+            if value == "true":
+                row[field] = True
+            elif value == "false":
+                row[field] = False
+            else:
+                raise InvalidBooleanError(
+                    f"key {key!r} in target {row['target']!r} must be "
+                    f"exactly 'true' or 'false', got {value!r}")
+        else:
+            row[field] = value
+
+    if row is not None:
+        _finish_row(row)
+        rows.append(row)
+
+    return rows
+
+
+def load_targets(path):
+    """Read `path` and parse it via `parse_release_targets`. The one function
+    in this module that touches the filesystem — opened with `newline=""` so
+    a `\\r\\n` line ending survives into the parser exactly as it is on disk,
+    rather than being silently normalised away by Python's own text-mode
+    universal-newline translation before this module's own CRLF handling
+    ever runs.
+
+    An unreadable path (missing file, permission error, a directory, ...)
+    raises `AbsentBlockError` rather than a bare `OSError` — the same
+    declared-error contract `parse_release_targets` gives every other
+    violation, so a `contents: write` caller can catch one exception type
+    instead of one type for content problems and another for I/O ones. There
+    is, in the end, no block to find at an unreadable path either."""
+    try:
+        with open(path, encoding="utf-8", newline="") as fh:
+            text = fh.read()
+    except OSError as exc:
+        raise AbsentBlockError(
+            f"could not read release-targets file {path!r}: {exc}") from exc
+    return parse_release_targets(text)

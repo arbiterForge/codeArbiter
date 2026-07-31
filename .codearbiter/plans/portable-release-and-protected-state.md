@@ -157,14 +157,14 @@ Paths resolve per `coding-standards.md`: Python hooks in `plugins/ca/hooks/`, sh
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-17 | `core/pysrc/_releaselib.py` | `python tools/sync-core.py --check` passes | mechanism ships | A-1.1 | T-15 | PENDING |
-| T-18 | `core/pysrc/_releaselib.py`, `.github/scripts/test_release_lib.py` | `python .github/scripts/test_release_lib.py -k denylist` — no repo literal | data-free mechanism | A-1.2 | T-17 | PENDING |
-| T-19 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k required_params` — three functions reject missing args | required params | A-1.3 | T-18 | PENDING |
-| T-20 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k load_targets` — full row schema from a fixture | loader | A-1.4 | T-19 | PENDING |
-| T-21 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k absent_block` raises the declared error | absent-block error | A-1.5 | T-20 | PENDING |
-| T-22 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k parser_contract` — 8 violations, 8 distinguishable errors | parser contract | A-1.6 | T-21 | PENDING |
-| T-23 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k empty_block` raises the declared error | empty-block error | A-1.7 | T-22 | PENDING |
-| T-24 | `.github/scripts/test_release_lib.py` | `-k series_isolation` — `v` and `ca-pi-v` resolve independently | series isolation | A-1.8 | T-23 | PENDING |
+| T-17 | `core/pysrc/_releaselib.py` | `python tools/sync-core.py --check` passes | mechanism ships | A-1.1 | T-15 | ACCEPTED |
+| T-18 | `core/pysrc/_releaselib.py`, `.github/scripts/test_release_lib.py` | `python .github/scripts/test_release_lib.py -k denylist` — no repo literal | data-free mechanism | A-1.2 | T-17 | ACCEPTED |
+| T-19 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k required_params` — three functions reject missing args | required params | A-1.3 | T-18 | ACCEPTED |
+| T-20 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k load_targets` — full row schema from a fixture | loader | A-1.4 | T-19 | ACCEPTED |
+| T-21 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k absent_block` raises the declared error | absent-block error | A-1.5 | T-20 | ACCEPTED |
+| T-22 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k parser_contract` — 8 violations, 8 distinguishable errors | parser contract | A-1.6 | T-21 | ACCEPTED |
+| T-23 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k empty_block` raises the declared error | empty-block error | A-1.7 | T-22 | ACCEPTED |
+| T-24 | `.github/scripts/test_release_lib.py` | `-k series_isolation` — `v` and `ca-pi-v` resolve independently | series isolation | A-1.8 | T-23 | ACCEPTED |
 | T-25 | `.github/scripts/_releaselib.py` | `python .github/scripts/payload_version_gate.py --plugin plugins/ca --base origin/main` exits 0 (bare invocation exits 2 — args are required) | transitional shim | A-1.9 | T-24 | PENDING |
 | T-26 | `.codearbiter/release-targets.md` | `python .github/scripts/test_release_lib.py -k this_repo_rows` — 4 rows load, prefixes match constants, **and every one of the four declares `provenance-manifest`** | repo rows declared | A-1.10 | T-25 | PENDING |
 | T-27a | `.github/scripts/fixtures/release-trace/` | `python .github/scripts/test_release_trace.py -k fixture_shape` — frozen tag list, manifests, commit graph, 4 rows | trace fixture | A-1.11 | T-26 | PENDING |

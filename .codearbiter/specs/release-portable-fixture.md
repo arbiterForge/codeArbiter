@@ -166,9 +166,24 @@ Grouped by slice; each is one `tdd` Phase 1 obligation and individually testable
     `payload`, `payload_exclude[]`, `rebuild`, `artifacts[]`, `provenance_manifest`, `pre_tag[]`,
     `latest_eligible`, stdlib only.
 1.5 An **absent** block raises a distinguishable declared error.
-1.6 Each parser-contract violation raises its own distinguishable declared error: malformed block,
-    CRLF-bearing boolean, non-boolean boolean, duplicate scalar key, duplicate target block, unknown
-    key, multiple delimiter blocks, delimiter-in-value.
+1.6 Each parser-contract violation raises its own distinguishable declared error: malformed block
+    (including a bad `[target]` header), non-boolean boolean, duplicate scalar key, duplicate target
+    block, unknown key, multiple delimiter blocks, delimiter-in-value. A missing required key errors
+    too, rather than silently defaulting. *(Rev 4.2: an earlier draft listed "CRLF-bearing boolean"
+    among the violations. That is the opposite — `latest-eligible: true\r` must parse cleanly to
+    `True`. It is a positive case and is asserted as one.)*
+
+    **A dedicated CR-stripping pass is dead code.** Every line is independently `.strip()`-ed and
+    Python's `str.strip()` already removes `\r`, so a separate pass can be deleted with the CRLF
+    test still green. Do not reintroduce one.
+
+    *(Rev 4.3 correction: an earlier revision of this note also claimed "a single-point mutant
+    cannot kill the CRLF test." That is false and was written in from an unverified report. Measured,
+    removing `raw_line.strip()` alone DOES kill it — and for an incidental reason: with CRLF input
+    the extracted block's first line is a bare `\r`, which unstripped becomes a spurious key line and
+    raises `MalformedBlockError` before the boolean assertion is reached. The other two strip points
+    do survive individually. The CRLF property therefore needs a test that asserts the parsed boolean
+    directly against a CRLF fixture, not one that passes because an earlier error path fires.)*
 1.7 An **empty** block raises a distinguishable declared error.
 1.8 Series isolation holds against loaded data: a fixture with `v1.0.0` and `ca-pi-v0.1.0` resolves
     each declared prefix to its own newest tag, pre-releases excluded.
