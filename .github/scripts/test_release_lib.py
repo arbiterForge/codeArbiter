@@ -2344,6 +2344,57 @@ class CoreCLITest(unittest.TestCase):
             self.assertEqual(rc, 2, argv)
             self.assertIn("not valid SemVer", err.getvalue())
 
+    # ---- A-2.4: the declared-value cap (ADR-0002 precedent) ----
+    @staticmethod
+    def _block(lines):
+        """Wrap declaration lines in the delimiter block, so a cap test
+        exercises the REAL parser entry point rather than an internal."""
+        return ("<!-- release-targets -->\n" + "\n".join(lines)
+                + "\n<!-- /release-targets -->\n")
+
+    def test_pre_tag_cap_rejects_an_over_long_value(self):
+        block = self._block([
+            "[app]", "prefix: v", "changelog: CHANGELOG.md", "payload: .",
+            "pre-tag: " + "A" * (core_releaselib.VALUE_MAX_CHARS + 1)])
+        with self.assertRaises(core_releaselib.ValueTooLongError):
+            core_releaselib.parse_release_targets(block)
+
+    def test_pre_tag_cap_admits_a_value_exactly_at_the_limit(self):
+        # Off-by-one in the boundary is the whole risk of a cap: a `>=`
+        # would reject a legitimate 1024-char value, a `>` on the wrong
+        # side would admit 1025.
+        block = self._block([
+            "[app]", "prefix: v", "changelog: CHANGELOG.md", "payload: .",
+            "pre-tag: " + "A" * core_releaselib.VALUE_MAX_CHARS])
+        rows = core_releaselib.parse_release_targets(block)
+        self.assertEqual(len(rows[0]["pre_tag"][0]), core_releaselib.VALUE_MAX_CHARS)
+
+    def test_pre_tag_cap_applies_to_every_key_not_only_pre_tag(self):
+        # The cap exists because these values are operator-authored input a
+        # `contents: write` lane later executes or interpolates. `rebuild`
+        # and `generate` are executed exactly as `pre-tag` is, so capping
+        # only the key that motivated the rule would leave the identical
+        # exposure one field over.
+        for key in ("rebuild", "generate", "payload", "prefix"):
+            with self.subTest(key=key):
+                block = self._block([
+                    "[app]", "prefix: v", "changelog: CHANGELOG.md", "payload: .",
+                    f"{key}: " + "A" * (core_releaselib.VALUE_MAX_CHARS + 1)])
+                with self.assertRaises(core_releaselib.ValueTooLongError):
+                    core_releaselib.parse_release_targets(block)
+
+    def test_value_too_long_is_a_declared_file_error_exiting_4_not_3(self):
+        # Exit 3 is the Back-fill lane's ONE trigger. An over-long value is
+        # a malformed declaration on a file that plainly exists; routing it
+        # to 3 would send the lane to overwrite that file.
+        self.assertIsInstance(
+            core_releaselib.ValueTooLongError("x"), core_releaselib.ReleaseTargetsError)
+        self.assertNotIsInstance(
+            core_releaselib.ValueTooLongError("x"), core_releaselib.AbsentBlockError)
+        self.assertEqual(
+            core_releaselib._targets_error_exit_code(
+                core_releaselib.ValueTooLongError("x")), 4)
+
     def test_semver_greater_bad_invocation_exits_2(self):
         import io, contextlib
         err = io.StringIO()

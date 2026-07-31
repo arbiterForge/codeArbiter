@@ -176,11 +176,11 @@ Paths resolve per `coding-standards.md`: Python hooks in `plugins/ca/hooks/`, sh
 | T-27b | `.github/scripts/test_release_trace.py` | `-k old_lane_loads` — helpers pinned via `git show <pre-change-sha>:.github/scripts/_releaselib.py` | pinned old lane | A-1.11 | T-27a | ACCEPTED |
 | T-27c | `.github/scripts/test_release_trace.py` | `-k old_lane_live` — the transcribed old lane resolves `ca`'s real last tag against the live repo; **divergence is a STOP, not a fixup** | old-lane validation | A-1.11 | T-27b | ACCEPTED |
 | T-27d | `.github/scripts/test_release_trace.py` | `-k trace_matches` — new lane reproduces the recorded variable dict for `ca` **and** `ca-pi` | trace assertion | A-1.11 | T-27c | ACCEPTED |
-| T-28 | `core/surface/skills/release/SKILL.md` | `test_release_lib.py -k pre_tag_order` — declared order preserved | pre-tag order | A-2.1 | T-27 | PENDING |
-| T-29 | `core/pysrc/_releaselib.py` | `-k pre_tag_exit` — non-zero exit blocks | pre-tag exit | A-2.2 | T-28 | PENDING |
-| T-30 | `core/pysrc/_releaselib.py` | `-k pre_tag_dirty` — dirty tree blocks, assertion precedes rebuild | clean-tree gate | A-2.3 | T-29 | PENDING |
-| T-31 | `core/pysrc/_releaselib.py` | `-k pre_tag_cap` — >1024 chars rejected | length cap | A-2.4 | T-30 | PENDING |
-| T-32 | `.codearbiter/security-controls.md` | boundary-crossings entry present; `test_release_lib.py -k boundary_entry` | boundary declared | A-2.5 | T-31 | PENDING |
+| T-28 | `core/surface/skills/release/SKILL.md` | `test_release_lib.py -k pre_tag_order` — declared order preserved | pre-tag order | A-2.1 | T-27 | ACCEPTED |
+| T-29 | `core/pysrc/_releaselib.py` | `-k pre_tag_exit` — non-zero exit blocks | pre-tag exit | A-2.2 | T-28 | ACCEPTED |
+| T-30 | `core/pysrc/_releaselib.py` | `-k pre_tag_dirty` — dirty tree blocks, assertion precedes rebuild | clean-tree gate | A-2.3 | T-29 | ACCEPTED |
+| T-31 | `core/pysrc/_releaselib.py` | `-k pre_tag_cap` — >1024 chars rejected | length cap | A-2.4 | T-30 | ACCEPTED |
+| T-32 | `.codearbiter/security-controls.md` | boundary-crossings entry present; `test_release_lib.py -k boundary_entry` | boundary declared | A-2.5 | T-31 | ACCEPTED |
 | T-33 | `core/pysrc/_protectedstatelib.py`, `.codearbiter/release-targets.md` | `SUITE -k test_release_targets_registered` — marker-gated, 4-case flank test passes | consumer 1 enrolled | A-2.6, A-2.7, B-13 | T-32 | PENDING |
 
 **HARD GATE at T-32** — `security-controls.md` is a trust-boundary change.

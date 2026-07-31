@@ -1,7 +1,7 @@
 {
   "$schema_note": "Agent-judgment exercise record for the release skill (issue #563, spec .codearbiter/specs/release-portable-fixture.md AC-6.6 'agent judgment' layer). EIGHT independent blind exercises were run, each against the skill as the previous one left it. This file records the campaign; `exercise` below is the one run whose hash the freshness gate enforces. It is a record, not a test -- no number in it is re-derived by any test in this suite.",
-  "proof_current": true,
-  "proof_current_note": "TRUE as of run 8 (2026-07-31). `exercise.exercised_skill_sha256` is the hash of the skill an agent actually read and acted on, verified byte-for-byte equal to the shipped payload at record time; `check_skill_proof_fresh.py` re-verifies it on every invocation of the `ca` row's pre-tag commands. Any later edit to plugins/ca/skills/release/SKILL.md invalidates this and MUST fail the gate -- that is the gate's purpose, and the correct response is to re-run the exercise, never to hand-edit this field. `post_remediation_skill_sha256` remains traceability-only and is deliberately never read as a proof source.",
+  "proof_current": false,
+  "proof_current_note": "FALSE as of the T-28..T-32 slice (2026-07-31). The slice edited the release skill -- Phase 1 step 6 now names `run-pre-tag` instead of restating three execution rules as prose -- so run 8's recorded hash no longer covers what ships (recorded e4deb4e456f85ad6..., shipped 63e9dd513820dd7a...). This is the gate operating exactly as designed, on the first change after it was wired, and it is being honoured rather than routed around: `ca`'s pre-tag gate is RED until a fresh blind exercise runs against the new content and this record is updated. Do not hand-edit this field to clear the block -- that defeats the only check covering whether an agent can follow the release prose.",
   "stopping_rule": {
     "what_was_applied": "Stop when a run probes a region ALREADY covered by the previous run's fix and finds no HIGH. Runs 5, 6 and 7 each found exactly one HIGH, and each was in a region newly probed -- run 5 by accident (a tag prefix with no tags), runs 6 and 7 by deliberate direction. That is coverage expanding, not the skill degrading, so a clean run in a NEW region would have proved little. Run 8 was aimed at the same region run 7's fix touched (version derivation) and returned no HIGH; that is the condition that ended the campaign.",
     "what_this_record_does_NOT_claim": "Not convergence. The HIGH sequence is 4, 2, 0, 2, 1, 1, 1, 0 -- run 3's zero was sampling, not settlement, and treating it as convergence at the time was an error corrected here. Two clean runs out of eight is what the evidence supports, and it is what this file says.",
@@ -240,5 +240,10 @@
     "row": "`pre-tag: python3 .github/scripts/check_skill_proof_fresh.py` on the [ca] row of .codearbiter/release-targets.md",
     "decision": "DECISION-0034 (pre-tag commands are check-only and non-mutating). This one reads two files and prints; it never writes.",
     "consequence": "Every future edit to plugins/ca/skills/release/SKILL.md now fails `ca`'s pre-tag gate until the exercise is re-run and this artifact refreshed. Intended. The cost is one blind run per skill revision; the purpose is that a prose change to the release lane cannot ship on the strength of a green mechanical suite alone -- which all eight runs demonstrated it should not."
+  },
+  "pending_reexercise": {
+    "shipped_hash_awaiting_proof": "63e9dd513820dd7a8f325a8322c3f4a06efee58025ea64394f1d009bd440783c",
+    "what_changed": "T-28..T-31: Phase 1 step 6 replaced three prose rules (declared order, non-zero exit BLOCKs, clean-tree assertion) with one `run-pre-tag $TARGET` command, and the parser gained a 1024-char cap on every declared value (A-2.4).",
+    "why_a_re_run_is_owed": "The change is precisely the class eight runs showed is riskiest: prose describing how a caller wires a command. It replaced agent-followed procedure with a helper, which should REDUCE that risk -- but the claim that it does is exactly what a blind exercise tests and a green suite cannot."
   }
 }

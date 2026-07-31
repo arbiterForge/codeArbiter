@@ -95,6 +95,7 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
 import sys
 
 
@@ -168,6 +169,13 @@ class MultipleBlocksError(ReleaseTargetsError):
     """More than one delimiter block was found in the file."""
 
 
+class ValueTooLongError(ReleaseTargetsError):
+    """A declared value exceeds `VALUE_MAX_CHARS` (A-2.4, ADR-0002's
+    precedent). A sibling of every other declared-file error, so it exits 4
+    and never 3 -- an over-long value is a malformed declaration, never the
+    genuinely-absent state that triggers the Back-fill lane."""
+
+
 class DelimiterInValueError(ReleaseTargetsError):
     """A declared value contains the literal closing-delimiter text, which
     would otherwise silently truncate the block under a naive non-greedy
@@ -221,6 +229,11 @@ _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
 # above deliberately rejects those, because it selects a published release
 # series; this one parses a version for ORDERING, which is a different
 # question and needs the tail.
+# A-2.4 / ADR-0002 precedent. Named rather than inlined so the parser, the
+# error message, and the tests all read the same number, and so raising it
+# is one edit rather than three.
+VALUE_MAX_CHARS = 1024
+
 SEMVER = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
     r"(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?"
@@ -740,6 +753,21 @@ def parse_release_targets(text):
                 f"unknown key {key!r} in target {row['target']!r}")
         field = _KEY_FIELD[key]
 
+        # A-2.4: a declared value longer than VALUE_MAX_CHARS is rejected,
+        # on ADR-0002's precedent. Checked for EVERY key, not only
+        # `pre-tag`: the cap exists because these values are operator-
+        # authored input a `contents: write` lane later executes or
+        # interpolates, and `rebuild`/`generate` are executed exactly like
+        # `pre-tag` is. Capping only the key that motivated the rule would
+        # leave the same exposure one field over.
+        if len(value) > VALUE_MAX_CHARS:
+            raise ValueTooLongError(
+                f"key {key!r} in target {row['target']!r} declares a value "
+                f"of {len(value)} characters, over the {VALUE_MAX_CHARS}-"
+                "character limit. A declared value this long is far more "
+                "likely to be a smuggled command line than a path or a "
+                "build invocation")
+
         if key in _LIST_KEYS:
             row[field].append(value)
             continue
@@ -1067,6 +1095,14 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
+      run-pre-tag <target>       runs the row's declared `pre-tag` commands in
+                                  DECLARED ORDER, stopping at the first
+                                  non-zero exit, and asserts a clean tree after
+                                  each (DECISION-0034: check-only, never a
+                                  fixer). exit 0 all passed - 5 a command
+                                  failed - 6 a command mutated the tree (or the
+                                  tree was already dirty) - 2 bad invocation /
+                                  unknown target - 3/4 declared-file states.
       semver-greater <candidate> <floor>
                                   exit 0 iff `candidate` is STRICTLY greater
                                   than `floor`; 1 when equal or lesser; 2 when
@@ -1125,7 +1161,7 @@ def main(argv):
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
             "notes-match|dates-match|semver-greater|classify|peel-tag|"
-            "backfill-detect} ...\n")
+            "run-pre-tag|backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -1201,6 +1237,81 @@ def main(argv):
         except OSError:
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+
+    if cmd == "run-pre-tag" and len(rest) == 1:
+        # A-2.1/2.2/2.3 (DECISION-0034). Runs the row's declared `pre-tag`
+        # commands IN DECLARED ORDER, stops at the first non-zero exit, and
+        # asserts a clean tree after each one.
+        #
+        # This is a subcommand rather than four prose rules because
+        # operator-declared shell commands are exactly where an
+        # agent-followed procedure is least trustworthy: the clean-tree
+        # assertion is what surfaces a rogue command's writes before
+        # tagging, and an assertion an agent has to remember is one it can
+        # skip. Logged as a SMARTS decision in .codearbiter/sprint-log.md
+        # (2026-07-31), Scalable weighted heavily per the standing steer.
+        #
+        # The clean-tree check runs BEFORE any `rebuild` (2.3): this
+        # subcommand never invokes rebuild at all, so a rebuild's
+        # legitimate bundle rewrite can never be attributed to a pre-tag
+        # command. Ordering the lane correctly is the caller's job; making
+        # it impossible to conflate the two is this command's.
+        #
+        # Exit codes: 0 all passed - 5 a command exited non-zero - 6 a
+        # command left the tree dirty - 2 bad invocation or unknown target
+        # - 3/4 the declared-file states, unchanged.
+        try:
+            rows = load_targets(default_targets_path())
+        except ReleaseTargetsError as exc:
+            sys.stderr.write(f"{type(exc).__name__}: {exc}\n")
+            return _targets_error_exit_code(exc)
+        row = next((r for r in rows if r["target"] == rest[0]), None)
+        if row is None:
+            sys.stderr.write(f"unknown release target: {rest[0]}\n")
+            return 2
+
+        def _tree_dirty():
+            probe = subprocess.run(
+                ["git", "status", "--porcelain"],
+                capture_output=True, text=True)
+            if probe.returncode != 0:
+                return probe.stderr.strip() or "git status failed"
+            return probe.stdout.strip()
+
+        before = _tree_dirty()
+        if before:
+            sys.stderr.write(
+                "run-pre-tag: refusing to start on an already-dirty tree -- "
+                "a pre-existing modification would be indistinguishable from "
+                "one a declared command made:\n" + before + "\n")
+            return 6
+
+        for command in (row.get("pre_tag") or []):
+            # flush=True: the subprocess writes to the same fds directly and
+            # is not buffered, so without this the label lands AFTER the
+            # output it labels and the log misattributes which command
+            # produced what -- actively misleading in the one report an
+            # operator reads to decide whether a release is safe.
+            print(f"pre-tag: {command}", flush=True)
+            proc = subprocess.run(command, shell=True)
+            if proc.returncode != 0:
+                sys.stderr.write(
+                    f"run-pre-tag: BLOCK -- {command!r} exited "
+                    f"{proc.returncode}. Reconcile the drift it reports and "
+                    "commit that through commit-gate, then re-run the "
+                    "release; a pre-tag command is a check, never a fixer "
+                    "(DECISION-0034)\n")
+                return 5
+            dirty = _tree_dirty()
+            if dirty:
+                sys.stderr.write(
+                    f"run-pre-tag: BLOCK -- {command!r} exited 0 but MUTATED "
+                    "the tree. Declared pre-tag commands are check-only "
+                    "(DECISION-0034); reconciliation is a separate action "
+                    "the operator commits before releasing. Changed:\n"
+                    + dirty + "\n")
+                return 6
+        return 0
 
     if cmd == "semver-greater" and len(rest) == 2:
         # MEDIUM (adversarial review 2026-07-31, run 6): the hard rules say

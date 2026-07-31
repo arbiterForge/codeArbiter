@@ -10,9 +10,14 @@ spec's "Source of truth" table, never hardcoded here as the checker's own
 truth — only as this test's independent expectation), the derivation's own
 declared failure mode via a synthetic descriptor set, and every one of
 `check()`'s named failure causes via synthetic artifact fixtures — most
-importantly the live, current state of this repo's own artifact, which is
-genuinely stale (`proof_current: false`) and must fail this guard for
-exactly that reason.
+importantly the live state of this repo's own artifact.
+
+The live-repo assertions are written as INVARIANTS ("the gate's verdict
+matches the actual hash relationship"), not as "the artifact is currently
+fresh". The second form has to be hand-inverted every time the release
+skill legitimately changes, which is how a gate's own test rots into
+decoration. Freshness is proven separately, in both directions, by
+perturbing the real document.
 """
 import hashlib
 import json
@@ -100,28 +105,59 @@ class PayloadDerivationTest(unittest.TestCase):
 
 
 class CheckLiveRepoTest(unittest.TestCase):
-    """The live artifact is CURRENT as of run 3, so this guard must pass on
-    the real repo — and, per the standing "a gate that cannot fail is worse
-    than none" discipline, must still be shown to fail for the right reason
-    when the real artifact is perturbed. Both directions are asserted here
-    against the REAL file, not merely against synthetic fixtures.
+    """Live-repo behaviour, asserted as invariants that hold whether or not
+    the recorded proof currently covers the shipped skill.
 
-    This class previously asserted the opposite (that HEAD was stale). It
-    was inverted when the run-3 exercise settled the proof; the mutation
-    test below is what keeps the inversion honest, because a guard that
-    only ever passes proves nothing.
+    This class has been inverted twice already — stale, then fresh — each
+    time the artifact's real state changed. That churn was the signal that
+    the assertion was wrong in shape, not merely in polarity: a gate whose
+    test must be rewritten on every legitimate change is one nobody can
+    trust. It now asserts that the gate's verdict TRACKS the artifact, and
+    proves the gate can still fail by perturbing the real document.
     """
 
-    def test_head_passes_now_that_the_proof_is_current(self):
+    def test_the_gates_verdict_matches_the_actual_hash_relationship(self):
+        # Stated as an INVARIANT rather than "the artifact is currently
+        # fresh", because the second form has to be inverted by hand every
+        # time the skill legitimately changes — and a test rewritten on
+        # every change is one nobody trusts.
+        #
+        # This form holds in both states and still fails if the gate lies
+        # in either direction: reporting drift when the hashes match, or
+        # reporting freshness when they do not.
+        #
+        # Discovered by the gate firing on its own author: the T-28 prose
+        # change edited the skill, the recorded proof went stale, and the
+        # previous assertion ("HEAD passes") failed for a correct reason.
+        with open(REAL_ARTIFACT, encoding="utf-8") as fh:
+            document = json.load(fh)
+        recorded = document.get("exercise", {}).get("exercised_skill_sha256")
+        shipped = _real_hash()
+        hashes_agree = (recorded == shipped)
+        claims_current = document.get("proof_current") is True
         errors = G.check()
         self.assertEqual(
-            errors,
-            [],
-            "the live artifact records proof_current=true and a hash that "
-            "should match the shipped skill; a failure here means either "
-            "the skill was edited without re-running the agent-judgment "
-            f"exercise, or the artifact was hand-edited. Errors: {errors}",
-        )
+            errors == [], hashes_agree and claims_current,
+            f"gate said {'fresh' if not errors else 'stale'} while "
+            f"proof_current={claims_current} and hashes "
+            f"{'agree' if hashes_agree else 'differ'} "
+            f"(recorded={recorded}, shipped={shipped}). The gate's verdict "
+            f"must track the artifact, not diverge from it. Errors: {errors}")
+
+    def test_a_stale_proof_names_the_skill_drift_as_its_reason(self):
+        # When the artifact IS stale, the reason must be the hash — not a
+        # generic failure. This is what tells an operator to re-run the
+        # exercise rather than go hunting.
+        with open(REAL_ARTIFACT, encoding="utf-8") as fh:
+            document = json.load(fh)
+        if document.get("exercise", {}).get("exercised_skill_sha256") == _real_hash():
+            self.skipTest("proof is current; the drift-reason path is covered "
+                          "by the perturbation tests below")
+        errors = G.check()
+        self.assertTrue(errors)
+        self.assertTrue(
+            any("has changed since" in e or "proof_current" in e for e in errors),
+            f"a stale proof must name skill drift or proof_current: {errors}")
 
     def test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong(self):
         # The real document, perturbed in exactly one field. Proves the
@@ -130,6 +166,12 @@ class CheckLiveRepoTest(unittest.TestCase):
         # anything in the first place.
         with open(REAL_ARTIFACT, encoding="utf-8") as fh:
             document = json.load(fh)
+        # proof_current is checked BEFORE the hash, so it must be true here
+        # or check() short-circuits and never reaches the comparison this
+        # test exists to exercise. (Found when the live artifact went
+        # legitimately stale: the test still "passed a failure", but for
+        # the wrong reason.)
+        document["proof_current"] = True
         document["exercise"]["exercised_skill_sha256"] = "0" * 64
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "artifact.json"
@@ -295,15 +337,21 @@ class MainCLITest(unittest.TestCase):
             [sys.executable, str(REPO_ROOT / ".github" / "scripts" / "check_skill_proof_fresh.py")],
             cwd=str(cwd or REPO_ROOT), capture_output=True, text=True)
 
-    def test_cli_exits_0_now_that_the_recorded_proof_is_current(self):
+    def test_cli_exit_code_agrees_with_check(self):
+        # Same invariant as CheckLiveRepoTest's, at the process boundary:
+        # main()'s exit code must agree with check()'s verdict. Asserting a
+        # fixed exit code here would need hand-inversion on every
+        # legitimate skill change, which is how a gate's own test rots.
         result = self._run()
+        expected = 0 if G.check() == [] else 1
         self.assertEqual(
-            result.returncode, 0,
-            "this is a DECLARED pre-tag command on the `ca` row; a non-zero "
-            "exit here BLOCKS every release of `ca`. Either the skill was "
-            "edited without re-running the agent-judgment exercise, or the "
-            f"artifact was hand-edited. stdout: {result.stdout}")
-        self.assertIn("still covers the shipped release skill", result.stdout)
+            result.returncode, expected,
+            "this is a DECLARED pre-tag command on the `ca` row, so its exit "
+            "code is what BLOCKS or permits a release; it must agree with "
+            f"check(). stdout: {result.stdout} stderr: {result.stderr}")
+        marker = ("still covers the shipped release skill" if expected == 0
+                  else "no longer covers the shipped release skill")
+        self.assertIn(marker, result.stdout)
 
     def test_cli_exits_1_when_the_shipped_skill_drifts_from_the_record(self):
         # Proves the declared command can still FAIL, against the real
@@ -316,6 +364,9 @@ class MainCLITest(unittest.TestCase):
             (root / ".codearbiter" / "reports").mkdir(parents=True)
             with open(REAL_ARTIFACT, encoding="utf-8") as fh:
                 document = json.load(fh)
+            # See the note in CheckLiveRepoTest: proof_current gates the
+            # hash comparison, so it must be true to reach it.
+            document["proof_current"] = True
             document["exercise"]["exercised_skill_sha256"] = "0" * 64
             (root / ".codearbiter" / "reports" / "agent-lane-proof.json").write_text(
                 json.dumps(document), encoding="utf-8")
