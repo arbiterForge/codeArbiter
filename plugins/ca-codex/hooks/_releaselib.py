@@ -1067,10 +1067,19 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
+      dates-match <changelog_section_file> <tag_message_file>
+                                  exit 0 iff the changelog section's heading
+                                  date equals the `Released-at:` date in the
+                                  tag message. The prose has always REQUIRED
+                                  this check; until run 4 it had no CLI
+                                  entry point, so no operator following the
+                                  skill could actually run it.
       classify <tag_exists> <tag_sha> <head_sha> <tag_version>
                <manifest_version> <release_nondraft>
-                                  prints the publish-state label
-                                  (bools: true/false).
+                                  prints the publish-state label. Bools are
+                                  the bare literals `true`/`false` -- NOT
+                                  `gh`'s JSON. Note `release_nondraft` is
+                                  the NEGATION of `gh`'s `isDraft`.
       peel-tag <tag>             stdin = `<sha> <ref>` lines in either
                                   `git ls-remote --tags` or `git show-ref
                                   --tags -d` format -> prints the COMMIT
@@ -1183,6 +1192,26 @@ def main(argv):
         except OSError:
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+
+    if cmd == "dates-match" and len(rest) == 2:
+        # MEDIUM (adversarial review 2026-07-31, run 4): Phase 1 step 5 and
+        # Phase 2 step 1 both name `release_dates_consistent`, and Phase 2
+        # says it "must pass" -- but this CLI exposed no way to run it, so
+        # an operator following the prose could not perform a check the
+        # prose demanded. The exercising agent could only reach it by
+        # importing the module, which the skill never tells anyone to do.
+        # Same read-and-compare shape as `notes-match` above, including its
+        # unreadable-file-is-empty-text behaviour (an unreadable file has
+        # no date, so the comparison is False, so the exit code is 1 --
+        # never a traceback).
+        texts = []
+        for path in rest:
+            try:
+                with open(path, encoding="utf-8") as fh:
+                    texts.append(fh.read())
+            except OSError:
+                texts.append("")
+        return 0 if release_dates_consistent(texts[0], texts[1]) else 1
 
     if cmd == "classify" and len(rest) == 6:
         as_bool = lambda s: str(s).lower() == "true"

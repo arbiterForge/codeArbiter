@@ -2274,6 +2274,48 @@ class CoreCLITest(unittest.TestCase):
             rc = core_releaselib.main(["list-targets", "unexpected-positional"])
         self.assertEqual(rc, 2)
 
+    # `dates-match` (run 4). Phase 1 step 5 and Phase 2 step 1 both named
+    # `release_dates_consistent`, and Phase 2 said it "must pass" — with no
+    # CLI entry point, so an operator following the prose could not run the
+    # check the prose demanded. The exercising agent reached it only by
+    # importing the module, which the skill never instructs.
+    def _dates_files(self, tmp, section_date, released_at):
+        section = os.path.join(tmp, "section.md")
+        message = os.path.join(tmp, "msg.txt")
+        with open(section, "w", encoding="utf-8") as fh:
+            fh.write(f"## [1.3.0] - {section_date}\n\n### Added\n\n- A thing.\n")
+        with open(message, "w", encoding="utf-8") as fh:
+            fh.write(f"## [1.3.0] - {section_date}\n\n- A thing.\n\n"
+                     f"Released-at: {released_at}\n")
+        return section, message
+
+    def test_dates_match_exits_0_when_the_two_dates_agree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            section, message = self._dates_files(tmp, "2026-07-31", "2026-07-31")
+            self.assertEqual(core_releaselib.main(["dates-match", section, message]), 0)
+
+    def test_dates_match_exits_1_when_the_dates_disagree(self):
+        # The defect the guard exists for: a hand-typed second date.
+        with tempfile.TemporaryDirectory() as tmp:
+            section, message = self._dates_files(tmp, "2026-07-31", "2026-01-01")
+            self.assertEqual(core_releaselib.main(["dates-match", section, message]), 1)
+
+    def test_dates_match_exits_1_on_an_unreadable_file_never_a_traceback(self):
+        # Same contract as notes-match: an unreadable file is empty text,
+        # which has no date, so the comparison is False and the exit is 1.
+        # A traceback here would break a `set -e` lane with no diagnosis.
+        with tempfile.TemporaryDirectory() as tmp:
+            _section, message = self._dates_files(tmp, "2026-07-31", "2026-07-31")
+            missing = os.path.join(tmp, "does-not-exist.md")
+            self.assertEqual(core_releaselib.main(["dates-match", missing, message]), 1)
+
+    def test_dates_match_bad_invocation_exits_2(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(["dates-match", "only-one-arg"])
+        self.assertEqual(rc, 2)
+
     def test_default_targets_path_prefers_claude_project_dir_env(self):
         old = os.environ.get("CLAUDE_PROJECT_DIR")
         os.environ["CLAUDE_PROJECT_DIR"] = os.path.join("some", "project", "root")
@@ -2823,6 +2865,43 @@ _GOVERNANCE_RULES = {
         "remedy is the operator's to choose",),
     "MEDIUM (re-run): the Phase-1 section file's home is outside the tree": (
         "OUTSIDE the working tree", "mktemp"),
+    # Run 4 (2026-07-31). The first two are defects this campaign's own
+    # earlier "fix" introduced: run 3 found three classify arguments named
+    # but never sourced, and the sourcing added in response was wrong for
+    # two of them. Pinned here because a prose-only fix has no other guard.
+    # Anchored on the flag AS IT APPEARS IN THE COMMAND, not the bare
+    # `--cleanup=verbatim` token: that token occurs twice on this line
+    # (once in the command, once in the sentence explaining it), so a rule
+    # anchored on it survives deletion from the command while the
+    # explanation keeps the rule green — the precise inversion of what it
+    # guards. Found by mutating it: the bare-token form SURVIVED.
+    "HIGH (run 4): the tag message is written verbatim, not strip-cleaned": (
+        "-F <message-file> --cleanup=verbatim", "DEFAULT cleanup mode is `strip`"),
+    "HIGH (run 4): the stored tag message is verified, not assumed": (
+        "verify it round-tripped", "%(contents)"),
+    "HIGH (run 4): manifest_version is re-read after the bump, not carried": (
+        "re-read from the file NOW", "never the value Pre-flight read"),
+    "HIGH (run 4): release_nondraft inverts gh's isDraft": (
+        "with its answer inverted", "--jq '.isDraft'"),
+    "MEDIUM (run 4): the required date check has a runnable command": (
+        "dates-match",),
+}
+
+# Rules whose every anchor token also occurs elsewhere in the skill, so the
+# rule cannot detect deletion of the sentence it guards. Discovered while
+# mutation-testing the run-4 rules (issue #571). Declared here as a ratchet
+# rather than silently tolerated: the test below fails in BOTH directions,
+# so a newly-weak rule is caught and a repaired one must be removed from
+# this set. Re-anchoring these six means finding a span unique to each
+# protected sentence, which is prose work on a dense file and is tracked
+# separately rather than rushed into a HIGH-remediation commit.
+_KNOWN_WEAK_ANCHORS = {
+    "footer BLOCK / never-auto-fill",
+    "publish read-back",
+    "immutable-tag hard rule",
+    "pre-tag BLOCK-on-nonzero",
+    "HIGH-1 (re-run): tag_sha is peeled, never a raw rev-parse",
+    "HIGH-2 (re-run): back-fill declares latest-eligible for its one target",
 }
 
 
@@ -2906,6 +2985,40 @@ class GovernanceSurvivalTest(unittest.TestCase):
         # the source and never notice a rendering regression -- the same
         # vacuous-scope failure mode MEDIUM-3 found by a different door.
         self.assertGreaterEqual(len(self.texts), 4)
+
+    def test_every_rule_has_at_least_one_uniquely_occurring_anchor(self):
+        # A rule fires only when ALL its tokens are present, so it can
+        # detect its own deletion only if at least ONE token disappears
+        # entirely when the protected sentence goes. A rule whose every
+        # token also occurs elsewhere stays green while the doctrine it
+        # guards is deleted — the exact inversion of its purpose.
+        #
+        # A live defect, not a hypothetical: the run-4 `--cleanup=verbatim`
+        # rule was first anchored on the bare flag, which occurs once in
+        # the `git tag` command and once in the sentence explaining it.
+        # Mutating the flag OUT of the command left the rule green. Only
+        # running the mutant caught it; it is now anchored on the flag as
+        # it appears IN the command.
+        #
+        # The manual habit this replaces was itself unreliable: `grep -c`
+        # counts matching LINES, and Phase 2 step 1 is a single line
+        # thousands of characters long, so two occurrences on it report as
+        # one. Counting occurrences is the only form that discriminates.
+        #
+        # Ratchet, not a clean sweep: six PRE-EXISTING rules fail this and
+        # are declared below rather than silently tolerated or hastily
+        # re-anchored. New rules must be sound from the start.
+        weak = set()
+        for label, text in self.texts.items():
+            for rule, tokens in _GOVERNANCE_RULES.items():
+                if not any(text.count(token) == 1 for token in tokens):
+                    weak.add(rule)
+        self.assertEqual(
+            weak, _KNOWN_WEAK_ANCHORS,
+            "the weak-anchor ratchet moved. Newly weak rules (fix by "
+            f"re-anchoring): {sorted(weak - _KNOWN_WEAK_ANCHORS)}. Rules "
+            "that are now sound (remove them from _KNOWN_WEAK_ANCHORS): "
+            f"{sorted(_KNOWN_WEAK_ANCHORS - weak)}")
 
     def test_every_governance_rule_survives_in_every_payload(self):
         for label, text in self.texts.items():

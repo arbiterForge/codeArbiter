@@ -90,6 +90,32 @@ predate the plugin rewrite and are grouped by date.
   of every published Release was improvised. It is now derived from the
   changelog section the release already composed.
 
+- **Every Markdown heading was silently deleted from composed tag messages.**
+  `git tag`'s default cleanup mode is `strip`, which treats `#`-prefixed lines
+  as comments and removes them. A Keep-a-Changelog section is entirely
+  `#`-prefixed, so the version heading and every group heading vanished,
+  leaving an undifferentiated bullet list that no longer says which version it
+  describes. This already happened to this repository's published `v2.8.13`,
+  and a published tag is immutable, so it can only be superseded. The lane now
+  passes `--cleanup=verbatim` and then re-reads what git actually stored to
+  confirm the heading survived - neither of the two guards the skill already
+  named could see this, because both read the section file rather than the tag.
+
+- **The publish classifier was fed a stale version and an un-negated flag.**
+  Two arguments added one commit earlier were sourced wrongly.
+  `manifest_version` said to read the manifest "as Pre-flight read it" - but
+  Pre-flight reads it before the version bump, and the stale value makes the
+  classifier return `abort_mismatch`, a terminal stop, on a release where
+  nothing is wrong. `release_nondraft` was sourced from `gh release view --json
+  isDraft`, which emits a JSON object rather than a bare boolean and carries
+  the opposite polarity, so `already_published` was unreachable. Both now carry
+  an exact command and, for the second, an explicit inversion.
+
+- **A check the skill required could not be run.** Both phases named
+  `release_dates_consistent` and Phase 2 called it mandatory, but no CLI
+  subcommand exposed it, so it was reachable only by importing the module -
+  something the skill never instructs. Added as `dates-match`.
+
 ## [2.10.8] — 2026-07-30
 
 ### Changed
