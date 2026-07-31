@@ -105,14 +105,43 @@ Paths resolve per `coding-standards.md`: Python hooks in `plugins/ca/hooks/`, sh
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-01 | `core/pysrc/_protectedstatelib.py` | `python -m py_compile` passes; module imports with zero side effects | registry module exists | B-01 | — | PENDING |
-| T-02 | `core/pysrc/_protectedstatelib.py`, `plugins/ca/hooks/tests/test_protectedstatelib.py` | `SUITE -k test_policy_enum` — all three policies present, unknown policy raises | policy enum | B-01 | T-01 | PENDING |
-| T-03 | `core/pysrc/_protectedstatelib.py`, `.../tests/test_protectedstatelib.py` | `SUITE -k test_registry_lookup` — registered path returns its policy, unregistered returns None | registry lookup | B-01 | T-02 | PENDING |
-| T-04 | `core/pysrc/_hooklib.py`, `.../tests/test_protectedstatelib.py` | `SUITE -k test_marker_gated_write` — fresh marker admits, absent marker blocks | marker-gated Write | B-02 | T-03 | PENDING |
-| T-05 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_marker_stale` — marker older than the window blocks | marker freshness | B-10 | T-04 | PENDING |
-| T-06 | `core/pysrc/pre-write.py` | `python .github/scripts/test_hook_guards.py` — Write flank dispatches on policy | pre-write flank | B-02, B-05 | T-04 | PENDING |
-| T-07 | `core/pysrc/pre-edit.py` | `python .github/scripts/test_hook_guards.py` — Edit flank blocks per class | pre-edit flank | B-03, B-05 | T-06 | PENDING |
-| T-08 | `core/pysrc/_bashguardlib.py` | `python .github/scripts/test_hook_guards.py` — redirect + write-verb pair blocks | shell flank | B-04, B-05 | T-07 | PENDING |
+| T-01 | `core/pysrc/_protectedstatelib.py` | `python -m py_compile` passes; module imports with zero side effects | registry module exists | B-01 | — | ACCEPTED |
+| T-02 | `core/pysrc/_protectedstatelib.py`, `plugins/ca/hooks/tests/test_protectedstatelib.py` | `SUITE -k test_policy_enum` — all three policies present, unknown policy raises | policy enum | B-01 | T-01 | ACCEPTED |
+| T-03 | `core/pysrc/_protectedstatelib.py`, `.../tests/test_protectedstatelib.py` | `SUITE -k test_registry_lookup` — registered path returns its policy, unregistered returns None | registry lookup | B-01 | T-02 | ACCEPTED |
+| T-04 | `core/pysrc/_protectedstatelib.py`, `.../tests/test_protectedstatelib.py` | `SUITE -k test_marker_gated_write` — fresh marker admits, absent marker blocks | marker-gated Write | B-02 | T-03 | ACCEPTED |
+| T-05 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_marker_stale` — marker older than the window blocks | marker freshness | B-10 | T-04 | ACCEPTED |
+**Flank wiring design — proxy-ruled 2026-07-31, do not re-derive.** Full reasoning in `sprint-log.md`.
+
+| id | path(s) | verification | maps-to | covers | depends | status |
+|---|---|---|---|---|---|---|
+| T-05a | `core/pysrc/_protectedlib.py` | `python .github/scripts/test_hook_guards.py` — `classify_protected` returns a `"state"` class for a registered path, evaluated **after** the existing four; return contract stays a set of strings so its four consumers see no change | classifier extension | B-01 | T-05 | PENDING |
+| T-05b | `plugins/ca/hooks/tests/test_protectedstatelib.py` | `SUITE -k test_no_legacy_overlap` — **no** registered path classifies into any legacy class; overlap fails loudly as a configuration error rather than resolving by precedence | overlap guard | B-01 | T-05a | PENDING |
+| T-06 | `core/pysrc/pre-write.py` | `python .github/scripts/test_hook_guards.py` — one generic `"state"` branch resolves the entry's policy from the registry and applies it; no second lookup | pre-write flank | B-02, B-05 | T-05b | PENDING |
+| T-07 | `core/pysrc/pre-edit.py` | `python .github/scripts/test_hook_guards.py` — same generic branch; `helper-only` blocks **unconditionally**, no marker path | pre-edit flank | B-03, B-05 | T-06 | PENDING |
+| T-08 | `core/pysrc/_bashguardlib.py` | `python .github/scripts/test_hook_guards.py` — `_state_write_res(basename) -> (redirect_re, write_re)` template mirroring `CONTEXT_REDIRECT_RE`/`CONTEXT_WRITE_RE` (lines 355-359), compiled once at import from the **code-constant** registry, per entry rather than one alternation | shell flank | B-04, B-05 | T-07 | PENDING |
+| T-08a | `plugins/ca/hooks/tests/test_protectedstatelib.py` | `SUITE -k test_marker_touch_allowed` — `touch .codearbiter/.markers/release-targets-authoring` passes the shell flank; `GATE_MARKER_NAMES` gains a comment stating it enumerates **block-to-allow** markers while friction markers stay touchable by design | minting fence | B-04 | T-08 | PENDING |
+| T-08b | `plugins/ca/hooks/tests/test_protectedstatelib.py` | `SUITE -k test_verb_in_description_residual` — documents that `taskwrite add -- "remember to tee open-tasks.md"` false-blocks; pins the **passing** B-08 form and records the residual rather than chasing it with smarter parsing | lexical residual | B-08 | T-08a | PENDING |
+
+**Rulings encoded above, with the reasoning that produced them:**
+
+- **The registry is code constants, never disk-loaded.** A disk registry would let a consumer repo
+  un-protect `open-tasks.md` by editing a file. Zero-side-effects-at-import prohibits file I/O and
+  git, not regex compilation from module constants (`_scopelib.py:109-117` precedent).
+- **Dispatch extends `classify_protected` rather than sitting beside it.** `_protectedlib.py:13-19`
+  records #528/#529, where independent class checks deadlocked because set membership was
+  uncoordinated; and #162 symlink laundering is closed *inside* the classifier
+  (`_protectedlib.py:180-204` runs every classifier against raw and realpath forms). A parallel
+  lookup ships without symlink resolution, and a symlink alias writes through the guard on day one.
+- **`helper-only` is unconditional, with merge conflicts as a named residual.** A conflict in
+  `open-tasks.md` itself has no `taskwrite` verb, so resolution routes through logged
+  `/ca:override`. The ADR carries a reopen condition: if `gate-events.log` shows board-conflict
+  overrides recurring, build a `taskwrite resolve` verb — never a guard exception. A
+  conflict-marker content predicate was rejected as converting file content into an authorization
+  signal.
+- **`GATE_MARKER_NAMES` is not widened.** It enumerates markers that convert a BLOCK into an ALLOW;
+  an authoring marker fakes nothing and is self-mintable by design (ADR-0010). The risk runs
+  opposite to intuition — a future generic "hardening" over every registered marker would brick
+  every minting lane while stopping no non-cooperative agent. T-08a is the fence against that.
 | T-09 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_flank_git_add` — `git add open-tasks.md` passes | git-verb non-regression | B-07 | T-08 | PENDING |
 | T-10 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_flank_filename_as_data` — helper call with filename in description passes | argv-data non-regression | B-08 | T-08 | PENDING |
 | T-11 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_flank_shell_writes_block` — `tee` and `>>` both block | shell-write blocking | B-09 | T-08 | PENDING |
@@ -283,14 +312,16 @@ A-2.10→T-36, A-3.1→T-37, A-3.2→T-38, A-3.3→T-39, A-3.4→T-40, A-3.5→T
 A-4.1→T-43, A-4.2→T-44a/T-44b, A-4.3→T-45, A-4.4→T-46, A-5.1→T-47, A-5.2→T-48, A-5.3→T-49,
 A-5.4→T-50, A-5.5→T-51, A-5.6→T-52, **A-6.0→T-41a/T-41b/T-41c/T-41d/T-41e**, A-6.1→T-68a/T-68b,
 A-6.2→T-69, A-6.3→T-70, A-6.4→T-71, A-6.5→T-72, **A-6.6→T-73/T-74/T-75, A-6.7→T-76**.
-B-01→T-01/02/03/15, B-02→T-04/T-06, B-03→T-07, B-04→T-08, B-05→T-06/07/08/T-67, B-06→T-13,
-B-07→T-09, B-08→T-10, B-09→T-11, B-10→T-05, B-11→T-14, B-12→T-12/T-67, B-13→T-33, B-14→T-66,
+B-01→T-01/02/03/15/T-05a/T-05b, B-02→T-04/T-06, B-03→T-07, B-04→T-08/T-08a, B-05→T-06/07/08/T-67,
+B-06→T-13, B-07→T-09, B-08→T-10/T-08b, B-09→T-11, B-10→T-05, B-11→T-14, B-12→T-12/T-67, B-13→T-33, B-14→T-66,
 B-15→T-65, B-16→T-54, B-17→T-53, B-18→T-55, B-19→T-56/T-67, B-20→T-57/T-58, B-21→T-59, B-22→T-60,
 B-23→T-58/T-61, B-24→T-64, B-25→T-62, B-26→T-63, B-27→T-16.
 
-**Every task → at least one AC.** Verified across all 86 tasks; no task covers nothing.
+**Every task → at least one AC.** Verified across all 90 tasks; no task covers nothing.
 
-Bijective coverage proven: **72 criteria, 86 tasks**, no uncovered criterion and no orphan task.
+Bijective coverage proven: **72 criteria, 90 tasks**, no uncovered criterion and no orphan task.
+(90 rather than 86 after the proxy rulings added T-05a, T-05b, T-08a, T-08b — the classifier
+extension, the legacy-overlap guard, the marker-minting fence, and the lexical-residual pin.)
 
 *Rev 2/3 note — two holes were in the ledger, not the task set.* The first draft claimed bijection
 over 69 criteria and 72 tasks. The claim was formally true and hollow both times: A-6.1 mapped to the
