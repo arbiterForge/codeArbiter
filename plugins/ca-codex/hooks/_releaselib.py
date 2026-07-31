@@ -41,6 +41,7 @@
 #                          manifest_version, release_is_nondraft) -> str
 #   select_release_target(*confirmations, targets) -> str
 #   classify_merge_readiness(check_runs, head_sha, check_name) -> str
+#   _manifest_version(path) -> str | None
 #   classify_commit(subject, body) -> dict
 #   classify_window(commits) -> dict
 #   parse_window_log(text) -> list[dict]
@@ -518,6 +519,39 @@ _CHANGELOG_FOOTER_RE = re.compile(r"^CHANGELOG:", re.MULTILINE)
 _BUMPING_TYPES = {"feat": "minor", "fix": "patch", "perf": "patch",
                   "refactor": "patch"}
 _BUMP_RANK = {"none": 0, "patch": 1, "minor": 2, "major": 3}
+
+
+def _manifest_version(path):
+    """The `version` a manifest declares, or `None` when it cannot be read
+    or parsed. Dispatches on EXTENSION, because the declared-file grammar
+    permits any format and one reader cannot serve them all -- applying a
+    JSON parser to a `pyproject.toml` raises rather than answering.
+
+    `None` means "no comparison happened", which callers MUST keep
+    distinct from "the versions differ". Non-raising, per this module's
+    mechanism invariant.
+    """
+    lower = str(path).lower()
+    try:
+        if lower.endswith(".json"):
+            import json
+            with open(path, encoding="utf-8") as fh:
+                value = json.load(fh).get("version")
+        elif lower.endswith(".toml"):
+            try:
+                import tomllib
+            except ImportError:  # pragma: no cover - Python < 3.11
+                return None
+            with open(path, "rb") as fh:
+                data = tomllib.load(fh)
+            value = data.get("project", {}).get("version")
+            if value is None:
+                value = data.get("tool", {}).get("poetry", {}).get("version")
+        else:
+            return None
+    except (OSError, ValueError, AttributeError, TypeError):
+        return None
+    return value if isinstance(value, str) else None
 
 
 def classify_commit(subject, body=""):
@@ -1260,6 +1294,15 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
+      check-manifests <target> <version>
+                                  asserts EVERY declared `manifest` in the row
+                                  equals <version>. exit 0 all match - 1 at
+                                  least one disagrees (each named) - 2 bad
+                                  invocation or a manifest that cannot be
+                                  parsed. The lane's only runnable all-paths
+                                  equality guard: `classify` short-circuits on
+                                  a fresh publish and never reaches its own
+                                  version comparison (run 12).
       classify-window            stdin = `git log $WINDOW --pretty=format:
                                   %H%n%s%n%b%n---- -- $PAYLOAD` -> prints the
                                   derived bump, then one
@@ -1343,7 +1386,7 @@ def main(argv):
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
             "notes-match|dates-match|semver-greater|classify|peel-tag|"
-            "run-pre-tag|adoption-commit|classify-window|"
+            "run-pre-tag|adoption-commit|classify-window|check-manifests|"
             "backfill-detect} ...\n")
         return 2
 
@@ -1420,6 +1463,57 @@ def main(argv):
         except OSError:
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+
+    if cmd == "check-manifests" and len(rest) == 2:
+        # HIGH (adversarial review 2026-07-31, run 12). A row MAY declare
+        # several manifests, and Phase 1 must bump every one to the derived
+        # version -- but nothing mechanical asserted it. The skill claimed
+        # `classify` would catch a partial bump; it does not on the path
+        # that matters. `classify_publish_state` short-circuits on
+        # `if not tag_exists: return "publish_fresh"` BEFORE comparing
+        # versions, so the catch fires only when a tag already exists (the
+        # resume path). On a FRESH publish -- every ordinary release, and
+        # every first release -- a lagging secondary manifest sails
+        # through, and the Traps section's own named consequence lands: a
+        # tag that installs a version string the tag does not name.
+        #
+        # Exit 0 every declared manifest equals <version> - 1 at least one
+        # disagrees (each named) - 2 bad invocation, unknown target, or a
+        # manifest that cannot be read or parsed. Unparseable is NEVER
+        # folded into "disagrees": one is "I compared and they differ", the
+        # other is "I could not compare", and this lane has already had to
+        # separate those twice.
+        target, expected = rest
+        try:
+            rows = load_targets(default_targets_path())
+        except ReleaseTargetsError as exc:
+            sys.stderr.write(f"{type(exc).__name__}: {exc}\n")
+            return _targets_error_exit_code(exc)
+        row = next((r for r in rows if r["target"] == target), None)
+        if row is None:
+            sys.stderr.write(f"unknown release target: {target}\n")
+            return 2
+        root = os.path.dirname(os.path.dirname(default_targets_path())) or "."
+        mismatched, unreadable = [], []
+        for rel in (row.get("manifest") or []):
+            path = os.path.join(root, *rel.split("/"))
+            found = _manifest_version(path)
+            if found is None:
+                unreadable.append(rel)
+            elif found != expected:
+                mismatched.append((rel, found))
+        for rel in unreadable:
+            sys.stderr.write(
+                f"check-manifests: cannot read a version from {rel!r} -- this "
+                "is NOT the same answer as 'disagrees' (exit 1); no "
+                "comparison happened\n")
+        for rel, found in mismatched:
+            sys.stderr.write(
+                f"check-manifests: {rel} declares {found!r}, expected "
+                f"{expected!r}\n")
+        if unreadable:
+            return 2
+        return 1 if mismatched else 0
 
     if cmd == "classify-window" and not rest:
         # stdin = `git log $WINDOW --pretty=format:%H%n%s%n%b%n---- --

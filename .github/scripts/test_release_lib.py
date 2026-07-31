@@ -2462,6 +2462,96 @@ class CoreCLITest(unittest.TestCase):
             # Only the NEW path is reported, not the operator's own edits.
             self.assertNotIn("package.json", proc.stderr)
 
+    # ---- check-manifests: the all-paths equality guard (run 12 HIGH) ----
+    def test_classify_short_circuits_before_comparing_versions_on_a_fresh_publish(self):
+        # The defect that motivated check-manifests, pinned as a FACT about
+        # classify rather than a claim in prose. The skill asserted this
+        # comparison catches a partial bump; it cannot, because
+        # `if not tag_exists: return "publish_fresh"` runs first.
+        head = "a" * 40
+        self.assertEqual(
+            core_releaselib.classify_publish_state(
+                False, "", head, "1.4.3", "1.1.0", False),
+            "publish_fresh",
+            "if this ever returns abort_mismatch, classify grew a fresh-path "
+            "version check and the check-manifests rationale needs revisiting")
+        self.assertEqual(
+            core_releaselib.classify_publish_state(
+                True, head, head, "1.4.3", "1.1.0", False),
+            "abort_mismatch")
+
+    def test_manifest_version_reads_json_and_toml_and_refuses_others(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            js = os.path.join(tmp, "package.json")
+            with open(js, "w") as fh:
+                fh.write('{"version": "1.2.3"}')
+            self.assertEqual(core_releaselib._manifest_version(js), "1.2.3")
+            tm = os.path.join(tmp, "pyproject.toml")
+            with open(tm, "w") as fh:
+                fh.write('[project]\nversion = "4.5.6"\n')
+            self.assertEqual(core_releaselib._manifest_version(tm), "4.5.6")
+            # An unknown extension is "no comparison happened", not a guess.
+            other = os.path.join(tmp, "version.txt")
+            with open(other, "w") as fh:
+                fh.write("7.8.9\n")
+            self.assertIsNone(core_releaselib._manifest_version(other))
+            self.assertIsNone(
+                core_releaselib._manifest_version(os.path.join(tmp, "missing.json")))
+
+    def test_manifest_version_never_raises_on_malformed_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bad = os.path.join(tmp, "package.json")
+            with open(bad, "w") as fh:
+                fh.write("{not json")
+            self.assertIsNone(core_releaselib._manifest_version(bad))
+
+    def _manifest_fixture(self, tmp, versions):
+        """A consumer declaring one manifest per entry in `versions`."""
+        root = os.path.join(tmp, "consumer")
+        os.makedirs(os.path.join(root, ".codearbiter"))
+        lines = ["[app]", "prefix: v", "changelog: CHANGELOG.md", "payload: ."]
+        for i, version in enumerate(versions):
+            rel = f"m{i}.json"
+            with open(os.path.join(root, rel), "w") as fh:
+                fh.write('{"version": "%s"}' % version)
+            lines.append(f"manifest: {rel}")
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
+            fh.write("<!-- release-targets -->\n" + "\n".join(lines)
+                     + "\n<!-- /release-targets -->\n")
+        return root
+
+    def _run_check_manifests(self, root, version):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root, PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "check-manifests", "app", version],
+            cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
+
+    def test_check_manifests_passes_when_every_declared_path_agrees(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._manifest_fixture(tmp, ["1.4.3", "1.4.3"])
+            self.assertEqual(self._run_check_manifests(root, "1.4.3").returncode, 0)
+
+    def test_check_manifests_catches_a_PARTIAL_bump_and_names_the_laggard(self):
+        # The exact fresh-publish hole: one path bumped, one left behind.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._manifest_fixture(tmp, ["1.4.3", "1.1.0"])
+            proc = self._run_check_manifests(root, "1.4.3")
+            self.assertEqual(proc.returncode, 1, proc.stderr)
+            self.assertIn("m1.json", proc.stderr)
+            self.assertNotIn("m0.json", proc.stderr)
+
+    def test_check_manifests_exit_2_is_unparseable_not_disagreeing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._manifest_fixture(tmp, ["1.4.3"])
+            with open(os.path.join(root, "m0.json"), "w") as fh:
+                fh.write("{not json")
+            proc = self._run_check_manifests(root, "1.4.3")
+            self.assertEqual(
+                proc.returncode, 2,
+                "an unreadable manifest must not be reported as a version "
+                "disagreement -- no comparison happened")
+            self.assertIn("NOT the same answer", proc.stderr)
+
     # ---- Conventional-Commits classification + footer scan ----
     def test_breaking_marker_is_major_with_and_without_a_scope(self):
         # THE defect this helper exists for. Run 11's agent wrote
@@ -3287,8 +3377,13 @@ _GOVERNANCE_RULES = {
         "re-derive from `$BASE_VERSION` rather than raising the bump"),
     "MEDIUM (run 7): the manifest reader follows the file's format": (
         "import tomllib,sys",),
-    "MEDIUM (run 7): max-vs-first manifest coupling is stated": (
-        "a half-finished bump",),
+    # Re-anchored: run 12 corrected this paragraph's FALSE claim (that
+    # `classify` catches a partial bump -- it short-circuits first), which
+    # deleted the old anchor. The rule now pins the corrected statement
+    # AND the guard that replaced the imaginary one.
+    "MEDIUM (run 7) / HIGH (run 12): max-vs-first coupling, with a REAL guard": (
+        "reads the FIRST declared manifest, while Pre-flight",
+        "check-manifests $TARGET <derived>"),
     "LOW (run 6): the show-ref exit-status rationale is corrected, not repeated": (
         "the reason given for it was wrong",),
     # Run 10 (2026-07-31).
