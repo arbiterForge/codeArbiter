@@ -3196,6 +3196,15 @@ _GOVERNANCE_RULES = {
         "this is not conditional", "names a COMMIT, not the working tree"),
     "HIGH (run 10): the Phase-1 gate requires a clean tree on exit": (
         "the release edits are COMMITTED",),
+    # Run 11 (2026-07-31).
+    "HIGH (run 11): exit 6 names the declaration as the fault, with a terminating remedy": (
+        "a broken DECLARATION, not a dirty tree",
+        "cannot converge"),
+    "A-5.5 (run 11 prose): the first-release window floors at the adoption commit": (
+        "floor the window at the adoption commit",
+        "_releaselib.py adoption-commit"),
+    "A-3.6: the interpreter fallback is stated as a file-wide convention": (
+        "Interpreter convention, stated once",),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the

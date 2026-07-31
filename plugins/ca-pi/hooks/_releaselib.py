@@ -1445,9 +1445,18 @@ def main(argv):
                     "the operator commits before releasing.\n"
                     "  Introduced by this command:\n    "
                     + "\n    ".join(introduced) + "\n"
-                    "  Revert those paths before re-running; this command "
-                    "does not undo them, and on a re-run they would be "
-                    "indistinguishable from the release's own edits.\n")
+                    "  FIX THE DECLARATION -- do not simply re-run. This "
+                    "command mutates the tree every time it is invoked, so "
+                    "reverting and re-running cannot converge; make it "
+                    "check-only (assert and exit non-zero on drift) or "
+                    "remove the row entry. Only then restart the release "
+                    "from Pre-flight.\n"
+                    "  This run's edits can be discarded wholesale, because "
+                    "nothing has been committed or tagged yet: `git "
+                    "checkout -- <tracked paths>` for files that existed "
+                    "before, and `rm` for any the lane CREATED (a first "
+                    "release composes $CHANGELOG from nothing, and `git "
+                    "checkout --` errors on a path git has never seen).\n")
                 return 6
         return 0
 

@@ -222,7 +222,7 @@ generate from it).
 > in this campaign — the first two were the missing skill rewrite (A-6.0) and the missing
 > portability proof (A-6.6/6.7) — and all three shared a shape: a criterion set that was
 > internally consistent and silent about a step nobody had named.
-| T-42 | `core/surface/skills/release/SKILL.md` | `-k interpreter_fallback` — uses the shipped `python3 "<p>" … \|\| python "<p>" …` pattern (`taskwrite.py:11`) | interpreter fallback | A-3.6 | T-41e | PENDING |
+| T-42 | `core/surface/skills/release/SKILL.md` | `-k interpreter_fallback` — uses the shipped `python3 "<p>" … \|\| python "<p>" …` pattern (`taskwrite.py:11`) | interpreter fallback | A-3.6 | T-41e | ACCEPTED |
 | T-43 | `.github/scripts/payload_version_gate.py` | `python .github/scripts/test_payload_version_gate.py -k no_prefix_literal` | CI reads declared source | A-4.1 | T-42 | PENDING |
 | T-44a | `.github/scripts/_releaselib.py` | `python .github/scripts/test_release_lib.py -k select_target_name_keyed` — `name=value` argv pairs; unknown name fails closed | shim CLI shape | A-4.2 | T-43 | PENDING |
 | T-44b | `.github/workflows/release.yml` | `python .github/scripts/test_release_workflow.py -k name_keyed` — inputs plumbed by name, order-independent | workflow plumbing | A-4.2 | T-44a | PENDING |
@@ -237,8 +237,8 @@ generate from it).
 | T-48 | `core/surface/skills/context-creation/SKILL.md` | `python .github/scripts/test_release_lib.py -k context_creation_writes_loadable` — the written file parses via `load_targets` | full elicitation | A-5.2 | T-47 | ACCEPTED |
 | T-49 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_requires_confirmation` — no write without confirm | back-fill gate | A-5.3 | T-48 | ACCEPTED |
 | T-50 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_persists` — second run reads, does not re-detect | back-fill persist | A-5.4 | T-49 | ACCEPTED |
-| T-51 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k first_release_baseline` — baseline derived from `git log --diff-filter=A -- .codearbiter/CONTEXT.md`, with a user override offered in the prompt | adoption baseline | A-5.5 | T-50 | PENDING |
-> **T-51 partial (2026-07-31).** The MECHANISM and its CLI entry point (`first_release_baseline`, `adoption-commit`) are built, tested and mutation-verified. The row stays PENDING because criterion 5.5 requires the LANE to offer the baseline, which is skill prose — and a mechanism with no caller is the exact defect class this campaign already found once (`peel-tag` was public API with no CLI while the skill aimed prose at it). The prose is batched with T-42's into one edit after run 11 reports, so a single exercise covers both rather than owing two. Flipping this row before that lands would assert a lane behaviour that does not exist.
+| T-51 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k first_release_baseline` — baseline derived from `git log --diff-filter=A -- .codearbiter/CONTEXT.md`, with a user override offered in the prompt | adoption baseline | A-5.5 | T-50 | ACCEPTED |
+> **T-51 completed (2026-07-31).** Mechanism and CLI landed in `a31d398`; the lane prose that USES them landed with run 11's remediation, batched with T-42's so one exercise covers both. The row is now ACCEPTED because the lane genuinely offers the baseline, not merely because the helper exists.
 
 | T-52 | `.codearbiter/.provenance/release-targets.json` | `python .github/scripts/test_provenancelib.py -k release_targets_triggers` | drift triggers | A-5.6 | T-51 | PENDING |
 
