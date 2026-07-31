@@ -609,8 +609,19 @@ class TestH22ProtectedState(unittest.TestCase):
         self.assertAllowed(self.run_edit(
             os.path.join(self.ca, "open-tasks.md"), old_string="seed", new_string="seed2"))
 
-    def test_default_empty_registry_blocks_nothing_new(self):
-        # The REAL production registry — empty at this slice.
+    def test_the_real_production_registry_protects_release_targets(self):
+        # Was "the REAL production registry blocks nothing new -- empty at
+        # this slice". T-33 enrols the first consumer, so the real registry
+        # now BLOCKS this write. Deliberately uses the production registry
+        # (no _set_registry call): every other test in this class injects a
+        # synthetic one, so without this the enrolment itself -- the thing
+        # T-33 actually ships -- would be untested on this flank.
+        self.assertBlockedH22(self.run_edit(
+            os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
+
+    def test_the_real_registry_admits_the_edit_under_a_fresh_marker(self):
+        # Spec 2.7's fourth case on the Edit door.
+        self._touch_marker("release-targets-authoring", age_seconds=0)
         self.assertAllowed(self.run_edit(
             os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
 

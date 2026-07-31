@@ -565,11 +565,15 @@ vague "if the threat model expands to untrusted agents". Any ONE reopens it:
 `_protectedstatelib.py` (B1/#564) is a generic path->policy registry — `marker-
 gated`, `helper-only`, or `append-only` — enforced by a fifth `classify_protected`
 class (`"state"`) across all three flanks: `pre-write.py`/`pre-edit.py` (Write/
-Edit) and `_bashguardlib.py`'s H-22 check (shell). The registry itself ships
-EMPTY as of this slice; `release-targets.md`, `open-tasks.md`, and
-`done-tasks.md` are enrolled by their own later tasks (T-33/T-65/T-66). The
-residuals below are declared now, ahead of that enrolment, so they are visible
-from day one rather than discovered live.
+Edit) and `_bashguardlib.py`'s H-22 check (shell). `.codearbiter/release-targets.md` is enrolled as
+`marker-gated` (T-33) -- the first and, as of this slice, only consumer;
+`open-tasks.md` and `done-tasks.md` follow in their own tasks (T-65/T-66).
+It is marker-gated rather than helper-only because it has THREE sanctioned
+authors (`context-creation`, the release skill's back-fill lane, and its
+row-edit path), so a hard block would leave them no route; the marker is the
+route. `git add` on it stays deliberately unblocked, or `commit-gate` could
+not commit a sanctioned row edit. The residuals below were declared ahead of
+enrolment and remain live.
 
 **Case and canonicalization are deliberately GLOBAL, not host-filesystem-
 dependent.** Both flanks — `_protectedstatelib.lookup_policy`'s registry

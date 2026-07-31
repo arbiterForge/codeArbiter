@@ -153,7 +153,23 @@ class ProtectedPolicy(str, Enum):
 # open-tasks.md/done-tasks.md are added by their own later tasks
 # (B-13/B-14/B-15), each a one-line entry, which is the whole point of
 # building this as a registry instead of a per-file hook branch.
-REGISTRY: dict[str, ProtectedPolicy] = {}
+REGISTRY: dict[str, ProtectedPolicy] = {
+    # B-13/T-33 (spec 2.6). The declared release-target file carries
+    # per-row `pre-tag`, `rebuild`, and `generate` shell commands that
+    # `/ca:release` executes before composing a tag, on a lane that later
+    # holds `contents: write`. Planting a command in it is therefore a
+    # code-execution path, which is why writing it costs a fresh authoring
+    # marker rather than being an ordinary edit (ADR-0024, DECISION-0035).
+    #
+    # MARKER_GATED, not HELPER_ONLY: unlike `open-tasks.md` -- whose sole
+    # blessed writer is `taskwrite.py`, writing through Python file I/O
+    # whose argv never names the file and is therefore invisible to every
+    # flank by construction -- this file has THREE sanctioned authors
+    # (`context-creation`, the release skill's back-fill lane, and its
+    # row-edit path), all of which mint the marker. A hard block would
+    # leave them no route; the marker is the route.
+    ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+}
 
 
 def _canon(rel_path):

@@ -37,11 +37,12 @@ entry — are operator-authored executable input that a `contents: write`
 release lane later runs, which is why it is a *declared* candidate for the
 H-22 protected-state registry
 (`.codearbiter/security-controls.md`, "Protected-state registry"). **It is
-NOT protected yet** — the registry ships EMPTY as of this slice, and this
-file's own enrolment is tracked, PENDING, as task T-33
-(`.codearbiter/plans/portable-release-and-protected-state.md`). Until T-33
-lands, this file sits on disk with no marker-gated write protection, same as
-any other file (M-1, adversarial review 2026-07-31).
+now protected** — T-33 enrolled it as `marker-gated`, so a Write, an Edit, a
+shell redirect, and a `sed -i`-class verb all block unless a fresh
+`release-targets-authoring` marker is present. `git add` stays allowed, or
+`commit-gate` could not commit a sanctioned row edit. The three sanctioned
+authors (`context-creation`, the release skill's back-fill lane, and its
+row-edit path) each mint that marker.
 
 <!-- release-targets -->
 [ca]

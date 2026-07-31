@@ -336,9 +336,40 @@ class TestH22ProtectedState(unittest.TestCase):
                             self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
         self.assertAllowed(self.run_write(os.path.join(self.ca, "open-tasks.md")))
 
-    def test_default_empty_registry_blocks_nothing_new(self):
-        # The REAL production registry — empty at this slice.
-        self.assertAllowed(self.run_write(os.path.join(self.ca, "release-targets.md")))
+    def test_the_real_production_registry_protects_release_targets(self):
+        # Was "the REAL production registry blocks nothing new -- empty at
+        # this slice". T-33 enrols the first consumer, so the real registry
+        # now BLOCKS this write. Deliberately uses the production registry
+        # (no _set_registry call): every other test in this class injects a
+        # synthetic one, so without this the enrolment itself -- the thing
+        # T-33 actually ships -- would be untested on this flank.
+        self.assertBlockedH22(self.run_write(
+            os.path.join(self.ca, "release-targets.md")))
+
+    def test_the_real_registry_admits_the_write_under_a_fresh_marker(self):
+        # Spec 2.7's fourth case, against the PRODUCTION registry: the
+        # sanctioned authors (context-creation, the release skill's
+        # back-fill lane and its row-edit path) all mint this marker, so a
+        # block with no marker path would leave them no route at all.
+        self._touch_marker("release-targets-authoring", age_seconds=0)
+        self.assertAllowed(self.run_write(
+            os.path.join(self.ca, "release-targets.md")))
+
+    def test_the_real_registry_still_blocks_under_a_STALE_marker(self):
+        # Freshness is the control, not mere presence -- a marker left
+        # behind by a lane that exited without cleanup must not keep the
+        # file writable indefinitely.
+        self._touch_marker("release-targets-authoring", age_seconds=60 * 60 * 3)
+        self.assertBlockedH22(self.run_write(
+            os.path.join(self.ca, "release-targets.md")))
+
+    def test_the_marker_for_a_DIFFERENT_file_does_not_admit_this_one(self):
+        # Marker names encode the path, so minting one consumer's marker
+        # must not arm another's -- the exact failure the spec rejects
+        # reusing `adr-authoring-active` for.
+        self._touch_marker("adr-authoring-active", age_seconds=0)
+        self.assertBlockedH22(self.run_write(
+            os.path.join(self.ca, "release-targets.md")))
 
     @unittest.skipUnless(_symlinks_supported(), "symlink creation not permitted here")
     def test_symlinked_dir_alias_blocks_registered_state_file(self):

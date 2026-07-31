@@ -181,7 +181,7 @@ Paths resolve per `coding-standards.md`: Python hooks in `plugins/ca/hooks/`, sh
 | T-30 | `core/pysrc/_releaselib.py` | `-k pre_tag_dirty` — dirty tree blocks, assertion precedes rebuild | clean-tree gate | A-2.3 | T-29 | ACCEPTED |
 | T-31 | `core/pysrc/_releaselib.py` | `-k pre_tag_cap` — >1024 chars rejected | length cap | A-2.4 | T-30 | ACCEPTED |
 | T-32 | `.codearbiter/security-controls.md` | boundary-crossings entry present; `test_release_lib.py -k boundary_entry` | boundary declared | A-2.5 | T-31 | ACCEPTED |
-| T-33 | `core/pysrc/_protectedstatelib.py`, `.codearbiter/release-targets.md` | `SUITE -k test_release_targets_registered` — marker-gated, 4-case flank test passes | consumer 1 enrolled | A-2.6, A-2.7, B-13 | T-32 | PENDING |
+| T-33 | `core/pysrc/_protectedstatelib.py`, `.codearbiter/release-targets.md` | `SUITE -k test_release_targets_registered` — marker-gated, 4-case flank test passes | consumer 1 enrolled | A-2.6, A-2.7, B-13 | T-32 | ACCEPTED |
 
 **HARD GATE at T-32** — `security-controls.md` is a trust-boundary change.
 
