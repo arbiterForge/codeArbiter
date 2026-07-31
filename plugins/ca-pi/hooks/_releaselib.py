@@ -1270,20 +1270,39 @@ def main(argv):
             sys.stderr.write(f"unknown release target: {rest[0]}\n")
             return 2
 
-        def _tree_dirty():
+        # Run the declared commands in the PROJECT root, not whatever cwd
+        # this process inherited (MEDIUM, run 9). The declaration is
+        # resolved from CLAUDE_PROJECT_DIR while the commands and the tree
+        # probe used to run wherever the caller happened to be -- so a
+        # declared check could pass having inspected a DIFFERENT
+        # repository's files, and the clean-tree probe could report an
+        # unrelated repo's dirt. Both directions were demonstrated.
+        project_root = os.path.dirname(os.path.dirname(default_targets_path())) or "."
+
+        def _tree_state():
             probe = subprocess.run(
                 ["git", "status", "--porcelain"],
-                capture_output=True, text=True)
+                capture_output=True, text=True, cwd=project_root)
             if probe.returncode != 0:
-                return probe.stderr.strip() or "git status failed"
-            return probe.stdout.strip()
+                return None, (probe.stderr.strip() or "git status failed")
+            return set(probe.stdout.splitlines()), None
 
-        before = _tree_dirty()
-        if before:
-            sys.stderr.write(
-                "run-pre-tag: refusing to start on an already-dirty tree -- "
-                "a pre-existing modification would be indistinguishable from "
-                "one a declared command made:\n" + before + "\n")
+        # The assertion is "this command changed NOTHING NEW", not "the
+        # tree is pristine" (HIGH, run 9). The first form is what this
+        # command is for; the second form BLOCKS EVERY RELEASE, because
+        # Phase 1 rolls the changelog and bumps the manifest BEFORE this
+        # step runs -- and it must, since a badge or catalog check compares
+        # a surface against the NEW version and would pass vacuously
+        # against the old one. Requiring a pristine tree here made the lane
+        # exit 6 even for a row declaring no commands at all.
+        #
+        # Snapshotting instead keeps the property that matters: any path a
+        # declared command touches appears as a NEW entry and is reported,
+        # while the operator's own in-flight release edits are carried
+        # through untouched.
+        baseline, failure = _tree_state()
+        if failure is not None:
+            sys.stderr.write(f"run-pre-tag: cannot read the tree state: {failure}\n")
             return 6
 
         for command in (row.get("pre_tag") or []):
@@ -1293,23 +1312,39 @@ def main(argv):
             # produced what -- actively misleading in the one report an
             # operator reads to decide whether a release is safe.
             print(f"pre-tag: {command}", flush=True)
-            proc = subprocess.run(command, shell=True)
+            proc = subprocess.run(command, shell=True, cwd=project_root)
             if proc.returncode != 0:
                 sys.stderr.write(
                     f"run-pre-tag: BLOCK -- {command!r} exited "
-                    f"{proc.returncode}. Reconcile the drift it reports and "
-                    "commit that through commit-gate, then re-run the "
-                    "release; a pre-tag command is a check, never a fixer "
-                    "(DECISION-0034)\n")
+                    f"{proc.returncode}.\n"
+                    "  A pre-tag command is a check, never a fixer "
+                    "(DECISION-0034), so reconcile the drift it reports.\n"
+                    "  Then DISCARD this run's uncommitted release edits "
+                    "(the manifest bump and the composed changelog section) "
+                    "before starting over: leaving the bump in place makes "
+                    "it the NEXT run's version floor, so the restart derives "
+                    "a HIGHER version and strands the section this run "
+                    "already wrote for a version that was never tagged "
+                    "(HIGH, adversarial review run 9). Commit the "
+                    "reconciliation alone, then re-run the release from "
+                    "Pre-flight.\n")
                 return 5
-            dirty = _tree_dirty()
-            if dirty:
+            current, failure = _tree_state()
+            if failure is not None:
+                sys.stderr.write(f"run-pre-tag: cannot read the tree state: {failure}\n")
+                return 6
+            introduced = sorted(current - baseline)
+            if introduced:
                 sys.stderr.write(
                     f"run-pre-tag: BLOCK -- {command!r} exited 0 but MUTATED "
                     "the tree. Declared pre-tag commands are check-only "
                     "(DECISION-0034); reconciliation is a separate action "
-                    "the operator commits before releasing. Changed:\n"
-                    + dirty + "\n")
+                    "the operator commits before releasing.\n"
+                    "  Introduced by this command:\n    "
+                    + "\n    ".join(introduced) + "\n"
+                    "  Revert those paths before re-running; this command "
+                    "does not undo them, and on a re-run they would be "
+                    "indistinguishable from the release's own edits.\n")
                 return 6
         return 0
 

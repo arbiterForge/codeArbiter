@@ -51,6 +51,7 @@ import inspect
 import io
 import json
 import os
+import subprocess
 import re
 import sys
 import tempfile
@@ -2394,6 +2395,85 @@ class CoreCLITest(unittest.TestCase):
         self.assertEqual(
             core_releaselib._targets_error_exit_code(
                 core_releaselib.ValueTooLongError("x")), 4)
+
+    # ---- run-pre-tag: the tree assertion is "changed nothing NEW" ----
+    def _pretag_repo(self, tmp, commands, dirty=False):
+        """A consumer with `commands` declared, optionally left with the
+        uncommitted manifest/changelog edits Phase 1 makes BEFORE this step
+        runs -- which is the normal lane, not an edge case."""
+        root = os.path.join(tmp, "consumer")
+        os.makedirs(os.path.join(root, ".codearbiter"))
+        with open(os.path.join(root, "package.json"), "w") as fh:
+            fh.write('{"version": "1.0.0"}\n')
+        with open(os.path.join(root, "CHANGELOG.md"), "w") as fh:
+            fh.write("# Changelog\n")
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
+            fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
+                     "changelog: CHANGELOG.md\npayload: .\n"
+                     + "".join(f"pre-tag: {c}\n" for c in commands)
+                     + "<!-- /release-targets -->\n")
+        for argv in (["init", "-q"], ["config", "user.email", "t@t"],
+                     ["config", "user.name", "t"],
+                     ["add", "package.json", "CHANGELOG.md",
+                      ".codearbiter/release-targets.md"],
+                     ["commit", "-q", "-m", "init"]):
+            subprocess.run(["git"] + argv, cwd=root, capture_output=True)
+        if dirty:
+            with open(os.path.join(root, "package.json"), "w") as fh:
+                fh.write('{"version": "1.1.0"}\n')
+            with open(os.path.join(root, "CHANGELOG.md"), "w") as fh:
+                fh.write("# Changelog\n\n## [1.1.0] - 2026-07-31\n")
+        return root
+
+    def _run_pre_tag(self, root):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root, PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "run-pre-tag", "app"],
+            cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
+
+    def test_run_pre_tag_tolerates_the_release_edits_that_precede_it(self):
+        # HIGH, run 9: the assertion used to be "the tree is pristine",
+        # which BLOCKED EVERY RELEASE -- Phase 1 rolls the changelog and
+        # bumps the manifest before this step, and it must, because a badge
+        # check compares a surface against the NEW version.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, ['python -c "print(1)"'], dirty=True)
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+
+    def test_run_pre_tag_exits_0_with_no_declared_commands_on_a_dirty_tree(self):
+        # The starkest form of the same defect: a row declaring NOTHING
+        # still exited 6.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [], dirty=True)
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+
+    def test_run_pre_tag_still_catches_a_mutation_on_top_of_those_edits(self):
+        # The property the loosening must NOT cost: a declared command's
+        # own writes still surface, even when the tree was already dirty.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(
+                tmp, ['python -c "open(\'sneaky.txt\',\'w\').write(\'x\')"'],
+                dirty=True)
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 6, proc.stdout + proc.stderr)
+            self.assertIn("sneaky.txt", proc.stderr)
+            # Only the NEW path is reported, not the operator's own edits.
+            self.assertNotIn("package.json", proc.stderr)
+
+    def test_run_pre_tag_runs_commands_in_the_project_root(self):
+        # MEDIUM, run 9: commands used to run in the inherited cwd while
+        # the declaration came from CLAUDE_PROJECT_DIR, so a check could
+        # pass having inspected a DIFFERENT repository. The subprocess
+        # above is deliberately launched from the system temp dir.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(
+                tmp, ['python -c "import json;print(json.load(open(\'package.json\'))[\'version\'])"'],
+                dirty=True)
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("1.1.0", proc.stdout)
 
     def test_semver_greater_bad_invocation_exits_2(self):
         import io, contextlib
